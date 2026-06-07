@@ -1,0 +1,25 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Angular build output
+dist/
+
+# Environment files
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Windsurf/Cursor rules (optional - remove if you want these in repo)
+.windsurf/
