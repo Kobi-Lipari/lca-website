@@ -1,5 +1,5 @@
-import type { FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, type FormEvent } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -13,15 +13,63 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function RegisterPage() {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const { user, loading, signUp } = useAuth()
+  const navigate = useNavigate()
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  if (!loading && user) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // Auth logic will be wired to Supabase in a future PR
+    setError(null)
+    setSuccess(null)
+    setSubmitting(true)
+
+    const formData = new FormData(event.currentTarget)
+    const name = formData.get('name') as string
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+    const confirmPassword = formData.get('confirmPassword') as string
+    const uscfId = (formData.get('uscfId') as string) || undefined
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.')
+      setSubmitting(false)
+      return
+    }
+
+    const { error: signUpError, needsEmailConfirmation } = await signUp(
+      email,
+      password,
+      { fullName: name, uscfId },
+    )
+
+    if (signUpError) {
+      setError(signUpError)
+      setSubmitting(false)
+      return
+    }
+
+    if (needsEmailConfirmation) {
+      setSuccess(
+        'Account created! Check your email to confirm your address, then log in.',
+      )
+      setSubmitting(false)
+      return
+    }
+
+    navigate('/dashboard', { replace: true })
   }
 
   return (
@@ -58,6 +106,18 @@ export function RegisterPage() {
 
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
+                {error && (
+                  <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    {error}
+                  </p>
+                )}
+
+                {success && (
+                  <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                    {success}
+                  </p>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="name">Full Name</Label>
                   <Input
@@ -67,6 +127,7 @@ export function RegisterPage() {
                     placeholder="Jane Doe"
                     autoComplete="name"
                     required
+                    disabled={submitting}
                   />
                 </div>
 
@@ -79,6 +140,7 @@ export function RegisterPage() {
                     placeholder="you@example.com"
                     autoComplete="email"
                     required
+                    disabled={submitting}
                   />
                 </div>
 
@@ -91,6 +153,8 @@ export function RegisterPage() {
                     placeholder="••••••••"
                     autoComplete="new-password"
                     required
+                    minLength={6}
+                    disabled={submitting}
                   />
                 </div>
 
@@ -103,6 +167,8 @@ export function RegisterPage() {
                     placeholder="••••••••"
                     autoComplete="new-password"
                     required
+                    minLength={6}
+                    disabled={submitting}
                   />
                 </div>
 
@@ -120,6 +186,7 @@ export function RegisterPage() {
                     placeholder="12345678"
                     inputMode="numeric"
                     pattern="[0-9]*"
+                    disabled={submitting}
                   />
                   <p className="text-xs text-muted-foreground">
                     Your USCF membership number, if you have one. You can add
@@ -132,8 +199,9 @@ export function RegisterPage() {
                 <Button
                   type="submit"
                   className={cn('w-full', goldButtonClass)}
+                  disabled={submitting}
                 >
-                  Create Account
+                  {submitting ? 'Creating account...' : 'Create Account'}
                 </Button>
 
                 <p className="text-center text-sm text-muted-foreground">
