@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 
 const navLinks = [
@@ -14,6 +15,14 @@ const navLinks = [
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { user, loading, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleSignOut() {
+    await signOut()
+    setMobileMenuOpen(false)
+    navigate('/')
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-[#1a2744] text-white shadow-md">
@@ -38,13 +47,32 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <Button
-            asChild
-            className="bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90"
-          >
-            <Link to="/login">Log in</Link>
-          </Button>
+        <div className="hidden items-center gap-3 md:flex">
+          {!loading && user ? (
+            <>
+              <Button
+                asChild
+                variant="outline"
+                className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              >
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>
+              <Button
+                type="button"
+                onClick={handleSignOut}
+                className="bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90"
+              >
+                Log out
+              </Button>
+            </>
+          ) : (
+            <Button
+              asChild
+              className="bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90"
+            >
+              <Link to="/login">Log in</Link>
+            </Button>
+          )}
         </div>
 
         <button
@@ -75,14 +103,34 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Button
-            asChild
-            className="mt-2 w-full bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90"
-          >
-            <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-              Log in
-            </Link>
-          </Button>
+
+          {!loading && user ? (
+            <>
+              <Link
+                to="/dashboard"
+                className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-[#c8a94a]"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <Button
+                type="button"
+                onClick={handleSignOut}
+                className="mt-2 w-full bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90"
+              >
+                Log out
+              </Button>
+            </>
+          ) : (
+            <Button
+              asChild
+              className="mt-2 w-full bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90"
+            >
+              <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                Log in
+              </Link>
+            </Button>
+          )}
         </nav>
       </div>
     </header>

@@ -9,13 +9,12 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 
 type MembershipStatus = 'active' | 'expired' | 'pending'
 
-interface PlaceholderMember {
-  name: string
-  email: string
+interface MembershipInfo {
   uscfId?: string
   rating?: number
   membershipStatus: MembershipStatus
@@ -41,13 +40,11 @@ interface TournamentHistoryItem {
   score: string
 }
 
-const member: PlaceholderMember = {
-  name: 'James Whitfield',
-  email: 'james.whitfield@example.com',
-  uscfId: '12345678',
-  rating: 2145,
-  membershipStatus: 'active',
-  membershipExpiry: 'December 31, 2026',
+const membershipInfo: MembershipInfo = {
+  uscfId: undefined,
+  rating: undefined,
+  membershipStatus: 'pending',
+  membershipExpiry: 'Not yet purchased',
 }
 
 const upcomingRegistrations: UpcomingRegistration[] = [
@@ -120,7 +117,18 @@ const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function DashboardPage() {
-  const status = statusConfig[member.membershipStatus]
+  const { user } = useAuth()
+
+  const displayName =
+    (user?.user_metadata?.full_name as string | undefined) ||
+    user?.email?.split('@')[0] ||
+    'Member'
+  const email = user?.email ?? ''
+  const uscfId =
+    membershipInfo.uscfId ||
+    (user?.user_metadata?.uscf_id as string | undefined)
+
+  const status = statusConfig[membershipInfo.membershipStatus]
 
   return (
     <div>
@@ -133,7 +141,7 @@ export function DashboardPage() {
                 My Dashboard
               </h1>
               <p className="mt-2 max-w-2xl text-white/80">
-                Welcome back, {member.name}. Manage your membership, view
+                Welcome back, {displayName}. Manage your membership, view
                 registrations, and track your tournament history.
               </p>
             </div>
@@ -143,7 +151,7 @@ export function DashboardPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-12">
         <p className="text-sm text-muted-foreground">
-          Placeholder data — will load from your account once Supabase auth is
+          Tournament and membership data below are placeholders until D1 is
           connected.
         </p>
 
@@ -157,22 +165,24 @@ export function DashboardPage() {
             <dl className="mt-4 space-y-3 text-sm">
               <div>
                 <dt className="font-medium text-[#1a2744]">Name</dt>
-                <dd className="text-muted-foreground">{member.name}</dd>
+                <dd className="text-muted-foreground">{displayName}</dd>
               </div>
               <div>
                 <dt className="font-medium text-[#1a2744]">Email</dt>
-                <dd className="text-muted-foreground">{member.email}</dd>
+                <dd className="text-muted-foreground">{email}</dd>
               </div>
-              {member.uscfId && (
+              {uscfId && (
                 <div>
                   <dt className="font-medium text-[#1a2744]">USCF ID</dt>
-                  <dd className="text-muted-foreground">{member.uscfId}</dd>
+                  <dd className="text-muted-foreground">{uscfId}</dd>
                 </div>
               )}
-              {member.rating != null && (
+              {membershipInfo.rating != null && (
                 <div>
                   <dt className="font-medium text-[#1a2744]">Rating</dt>
-                  <dd className="text-muted-foreground">{member.rating}</dd>
+                  <dd className="text-muted-foreground">
+                    {membershipInfo.rating}
+                  </dd>
                 </div>
               )}
             </dl>
@@ -199,13 +209,13 @@ export function DashboardPage() {
             <p className="mt-4 text-sm text-muted-foreground">
               Your LCA membership is valid through{' '}
               <span className="font-medium text-[#1a2744]">
-                {member.membershipExpiry}
+                {membershipInfo.membershipExpiry}
               </span>
               .
             </p>
 
             <Button asChild className={cn('mt-4', goldButtonClass)}>
-              <Link to="/membership">Renew Membership</Link>
+              <Link to="/membership">Join / Renew Membership</Link>
             </Button>
           </div>
         </div>

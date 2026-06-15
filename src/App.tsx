@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
 import { AboutPage } from '@/pages/AboutPage'
@@ -29,7 +30,14 @@ function App() {
             <Route path="/clubs/:id" element={<ClubDetailPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/membership" element={<MembershipPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
           </Routes>
