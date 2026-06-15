@@ -1,5 +1,5 @@
-import type { FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, type FormEvent } from 'react'
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { LogIn } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -13,15 +13,44 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function LoginPage() {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const { user, loading, signIn } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [error, setError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  const redirectTo =
+    (location.state as { from?: string } | null)?.from ?? '/dashboard'
+
+  if (!loading && user) {
+    return <Navigate to="/dashboard" replace />
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // Auth logic will be wired to Supabase in a future PR
+    setError(null)
+    setSubmitting(true)
+
+    const formData = new FormData(event.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+
+    const { error: signInError } = await signIn(email, password)
+
+    if (signInError) {
+      setError(signInError)
+      setSubmitting(false)
+      return
+    }
+
+    navigate(redirectTo, { replace: true })
   }
 
   return (
@@ -57,6 +86,12 @@ export function LoginPage() {
 
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
+                {error && (
+                  <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                    {error}
+                  </p>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -66,6 +101,7 @@ export function LoginPage() {
                     placeholder="you@example.com"
                     autoComplete="email"
                     required
+                    disabled={submitting}
                   />
                 </div>
 
@@ -86,6 +122,7 @@ export function LoginPage() {
                     placeholder="••••••••"
                     autoComplete="current-password"
                     required
+                    disabled={submitting}
                   />
                 </div>
               </CardContent>
@@ -94,8 +131,9 @@ export function LoginPage() {
                 <Button
                   type="submit"
                   className={cn('w-full', goldButtonClass)}
+                  disabled={submitting}
                 >
-                  Log In
+                  {submitting ? 'Signing in...' : 'Log In'}
                 </Button>
 
                 <p className="text-center text-sm text-muted-foreground">
