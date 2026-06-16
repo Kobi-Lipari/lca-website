@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useEffect, useState, type FormEvent } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   Calendar,
+  CheckCircle2,
   Clock,
   MapPin,
   Trophy,
@@ -10,7 +11,10 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { useAuth } from '@/contexts/AuthContext'
 import {
+  createRegistration,
   getTournament,
   type ApiRosterPlayer,
   type ApiTournamentDetail,
@@ -41,11 +45,21 @@ const goldButtonClass =
 
 export function TournamentDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const location = useLocation()
+  const { user } = useAuth()
   const [tournament, setTournament] = useState<ApiTournamentDetail | null>(null)
   const [roster, setRoster] = useState<ApiRosterPlayer[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [selectedSection, setSelectedSection] = useState('')
+  const [registering, setRegistering] = useState(false)
+  const [registerError, setRegisterError] = useState<string | null>(null)
+  const [confirmation, setConfirmation] = useState<{
+    message: string
+    paymentUrl: string
+    section: string
+  } | null>(null)
 
   useEffect(() => {
     if (!id) {
@@ -59,6 +73,7 @@ export function TournamentDetailPage() {
         const data = await getTournament(id!)
         setTournament(data.tournament)
         setRoster(data.roster)
+        setSelectedSection(data.tournament.sections[0]?.name ?? '')
         setNotFound(false)
         setError(null)
       } catch (err) {
@@ -75,6 +90,29 @@ export function TournamentDetailPage() {
     }
     load()
   }, [id])
+
+  async function handleRegister(event: FormEvent) {
+    event.preventDefault()
+    if (!id || !selectedSection) return
+    setRegistering(true)
+    setRegisterError(null)
+    try {
+      const result = await createRegistration(id, selectedSection)
+      setConfirmation({
+        message: result.message,
+        paymentUrl: result.paymentUrl,
+        section: selectedSection,
+      })
+      const data = await getTournament(id)
+      setRoster(data.roster)
+    } catch (err) {
+      setRegisterError(
+        err instanceof Error ? err.message : 'Registration failed',
+      )
+    } finally {
+      setRegistering(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -281,13 +319,80 @@ export function TournamentDetailPage() {
             </dl>
 
             {tournament.status === 'upcoming' ? (
-              <Button
-                asChild
-                size="lg"
-                className={cn('mt-6 w-full', goldButtonClass)}
-              >
-                <Link to="/login">Register Now</Link>
-              </Button>
+              confirmation ? (
+                <div className="mt-6 space-y-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-emerald-700" />
+                    <div>
+                      <p className="font-medium text-emerald-900">
+                        Registration submitted
+                      </p>
+                      <p className="mt-1 text-sm text-emerald-800">
+                        {confirmation.message}
+                      </p>
+                      <p className="mt-2 text-sm text-emerald-800">
+                        Section: <strong>{confirmation.section}</strong>
+                      </p>
+                    </div>
+                  </div>
+                  <Button asChild className={cn('w-full', goldButtonClass)}>
+                    <a
+                      href={confirmation.paymentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Complete payment (Stripe)
+                    </a>
+                  </Button>
+                  <Button asChild variant="outline" className="w-full">
+                    <Link to="/dashboard">View my dashboard</Link>
+                  </Button>
+                </div>
+              ) : user ? (
+                <form onSubmit={handleRegister} className="mt-6 space-y-4">
+                  {registerError && (
+                    <p className="text-sm text-destructive">{registerError}</p>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="section">Select section</Label>
+                    <select
+                      id="section"
+                      className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                      value={selectedSection}
+                      onChange={(e) => setSelectedSection(e.target.value)}
+                      required
+                      disabled={registering}
+                    >
+                      {tournament.sections.map((section) => (
+                        <option key={section.name} value={section.name}>
+                          {section.name} — ${section.entryFee}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className={cn('w-full', goldButtonClass)}
+                    disabled={registering}
+                  >
+                    {registering ? 'Registering…' : 'Register Now'}
+                  </Button>
+                </form>
+              ) : (
+                <Button
+                  asChild
+                  size="lg"
+                  className={cn('mt-6 w-full', goldButtonClass)}
+                >
+                  <Link
+                    to="/login"
+                    state={{ from: location.pathname }}
+                  >
+                    Log in to register
+                  </Link>
+                </Button>
+              )
             ) : (
               <p className="mt-6 text-sm text-muted-foreground">
                 {tournament.status === 'active'

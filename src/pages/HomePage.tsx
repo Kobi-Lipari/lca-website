@@ -1,18 +1,10 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, MapPin, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { getTournaments, type ApiTournamentListItem } from '@/lib/api'
 import { cn } from '@/lib/utils'
-
-interface PlaceholderTournament {
-  id: string
-  name: string
-  date: string
-  location: string
-  sections: string[]
-  entryFee: number
-  rounds: number
-}
 
 interface PlaceholderNewsItem {
   id: string
@@ -25,36 +17,6 @@ const stats = [
   { value: '500+', label: 'Members' },
   { value: '30+', label: 'Tournaments / Year' },
   { value: '15+', label: 'Affiliated Clubs' },
-]
-
-const upcomingTournaments: PlaceholderTournament[] = [
-  {
-    id: 'spring-open-2026',
-    name: 'LCA Spring Open',
-    date: 'Saturday, March 14, 2026',
-    location: 'Baton Rouge, LA',
-    sections: ['Open', 'U1800', 'U1400'],
-    entryFee: 45,
-    rounds: 5,
-  },
-  {
-    id: 'new-orleans-classic-2026',
-    name: 'New Orleans Classic',
-    date: 'Saturday, April 18, 2026',
-    location: 'New Orleans, LA',
-    sections: ['Open', 'U1600', 'Scholastic'],
-    entryFee: 40,
-    rounds: 4,
-  },
-  {
-    id: 'shreveport-summer-swiss-2026',
-    name: 'Shreveport Summer Swiss',
-    date: 'Saturday, June 6, 2026',
-    location: 'Shreveport, LA',
-    sections: ['Open', 'U2000', 'U1200'],
-    entryFee: 35,
-    rounds: 5,
-  },
 ]
 
 const latestNews: PlaceholderNewsItem[] = [
@@ -85,6 +47,29 @@ const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function HomePage() {
+  const [upcomingTournaments, setUpcomingTournaments] = useState<
+    ApiTournamentListItem[]
+  >([])
+  const [loadingTournaments, setLoadingTournaments] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const tournaments = await getTournaments()
+        const upcoming = tournaments
+          .filter((t) => t.status === 'upcoming')
+          .reverse()
+          .slice(0, 3)
+        setUpcomingTournaments(upcoming)
+      } catch {
+        setUpcomingTournaments([])
+      } finally {
+        setLoadingTournaments(false)
+      }
+    }
+    load()
+  }, [])
+
   return (
     <div>
       <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
@@ -142,48 +127,59 @@ export function HomePage() {
           </Button>
         </div>
 
-        <ul className="mt-8 space-y-4">
-          {upcomingTournaments.map((tournament) => (
-            <li
-              key={tournament.id}
-              className="rounded-xl border bg-card p-5 shadow-sm sm:p-6"
-            >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-[#1a2744]">
-                    {tournament.name}
-                  </h3>
-                  <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-6">
-                    <span className="inline-flex items-center gap-1.5">
-                      <Calendar className="size-4 shrink-0 text-[#c8a94a]" />
-                      {tournament.date}
-                    </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      <MapPin className="size-4 shrink-0 text-[#c8a94a]" />
-                      {tournament.location}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {tournament.sections.map((section) => (
-                      <span
-                        key={section}
-                        className="rounded-full bg-[#1a2744]/10 px-2.5 py-0.5 text-xs font-medium text-[#1a2744]"
-                      >
-                        {section}
+        {loadingTournaments ? (
+          <p className="mt-8 text-muted-foreground">Loading tournaments…</p>
+        ) : upcomingTournaments.length === 0 ? (
+          <p className="mt-8 text-muted-foreground">
+            No upcoming tournaments scheduled. Check back soon.
+          </p>
+        ) : (
+          <ul className="mt-8 space-y-4">
+            {upcomingTournaments.map((tournament) => (
+              <li
+                key={tournament.id}
+                className="rounded-xl border bg-card p-5 shadow-sm sm:p-6"
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-[#1a2744]">
+                      {tournament.name}
+                    </h3>
+                    <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-x-6">
+                      <span className="inline-flex items-center gap-1.5">
+                        <Calendar className="size-4 shrink-0 text-[#c8a94a]" />
+                        {tournament.date}
                       </span>
-                    ))}
+                      <span className="inline-flex items-center gap-1.5">
+                        <MapPin className="size-4 shrink-0 text-[#c8a94a]" />
+                        {tournament.location}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {tournament.sections.map((section) => (
+                        <span
+                          key={section}
+                          className="rounded-full bg-[#1a2744]/10 px-2.5 py-0.5 text-xs font-medium text-[#1a2744]"
+                        >
+                          {section}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      ${tournament.entry_fee} entry · {tournament.rounds} rounds
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
-                    ${tournament.entryFee} entry · {tournament.rounds} rounds
-                  </p>
+                  <Button
+                    asChild
+                    className={cn('w-full sm:w-auto', goldButtonClass)}
+                  >
+                    <Link to={`/tournaments/${tournament.id}`}>Register</Link>
+                  </Button>
                 </div>
-                <Button asChild className={cn('w-full sm:w-auto', goldButtonClass)}>
-                  <Link to={`/tournaments/${tournament.id}`}>Register</Link>
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="bg-muted/30">

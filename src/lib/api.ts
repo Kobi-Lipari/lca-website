@@ -145,6 +145,7 @@ export interface ApiTournamentListItem {
   location: string
   entry_fee: number
   sections: string[]
+  rounds: number
   status: TournamentStatus
 }
 
@@ -414,4 +415,49 @@ export async function adminUpdateGameResult(
     },
   )
   return handleResponse<{ game: ApiTournamentGame }>(response)
+}
+
+export async function createRegistration(
+  tournamentId: string,
+  section: string,
+): Promise<{
+  registration: ApiRegistration
+  payment: { id: string; amount: number; status: string }
+  paymentUrl: string
+  message: string
+}> {
+  const response = await fetch('/api/registrations', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ tournamentId, section }),
+  })
+  return handleResponse(response)
+}
+
+export async function createMembershipCheckout(tier: string): Promise<{
+  paymentId: string
+  tier: string
+  amount: number
+  paymentUrl: string
+  successUrl: string
+}> {
+  const response = await fetch('/api/membership/checkout', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ tier }),
+  })
+  return handleResponse(response)
+}
+
+export async function confirmMembership(paymentId: string): Promise<{
+  member: ApiMember
+  tier?: string
+  alreadyConfirmed?: boolean
+}> {
+  const response = await fetch('/api/membership/confirm', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ paymentId }),
+  })
+  return handleResponse(response)
 }
