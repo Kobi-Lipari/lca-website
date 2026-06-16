@@ -5,11 +5,18 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { results } = await context.env.DB.prepare(
-    `SELECT id, name, date, location, entry_fee, sections, status FROM tournaments ORDER BY date DESC`,
+    `SELECT id, name, date, location, entry_fee, sections, rounds, status FROM tournaments ORDER BY date DESC`,
   ).all<
     Pick<
       TournamentRow,
-      'id' | 'name' | 'date' | 'location' | 'entry_fee' | 'sections' | 'status'
+      | 'id'
+      | 'name'
+      | 'date'
+      | 'location'
+      | 'entry_fee'
+      | 'sections'
+      | 'rounds'
+      | 'status'
     >
   >()
 
