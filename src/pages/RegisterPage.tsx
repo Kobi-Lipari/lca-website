@@ -20,7 +20,7 @@ const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function RegisterPage() {
-  const { user, loading, signUp } = useAuth()
+  const { user, loading, signUp, syncMember } = useAuth()
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -67,6 +67,12 @@ export function RegisterPage() {
       )
       setSubmitting(false)
       return
+    }
+
+    try {
+      await syncMember()
+    } catch {
+      // Continue even if D1 sync fails
     }
 
     navigate('/dashboard', { replace: true })

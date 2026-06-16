@@ -1,99 +1,25 @@
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Calendar,
   CreditCard,
-  History,
   LayoutDashboard,
-  Trophy,
   User,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
+import {
+  getMe,
+  updateMe,
+  type ApiMember,
+  type ApiRegistration,
+} from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 type MembershipStatus = 'active' | 'expired' | 'pending'
-
-interface MembershipInfo {
-  uscfId?: string
-  rating?: number
-  membershipStatus: MembershipStatus
-  membershipExpiry: string
-}
-
-interface UpcomingRegistration {
-  id: string
-  tournamentId: string
-  tournamentName: string
-  date: string
-  location: string
-  section: string
-  paymentStatus: 'paid' | 'pending'
-}
-
-interface TournamentHistoryItem {
-  id: string
-  tournamentName: string
-  date: string
-  section: string
-  place: number
-  score: string
-}
-
-const membershipInfo: MembershipInfo = {
-  uscfId: undefined,
-  rating: undefined,
-  membershipStatus: 'pending',
-  membershipExpiry: 'Not yet purchased',
-}
-
-const upcomingRegistrations: UpcomingRegistration[] = [
-  {
-    id: 'reg-1',
-    tournamentId: 'spring-open-2026',
-    tournamentName: 'LCA Spring Open',
-    date: 'Saturday, March 14, 2026',
-    location: 'Baton Rouge, LA',
-    section: 'Open',
-    paymentStatus: 'paid',
-  },
-  {
-    id: 'reg-2',
-    tournamentId: 'new-orleans-classic-2026',
-    tournamentName: 'New Orleans Classic',
-    date: 'Saturday, April 18, 2026',
-    location: 'New Orleans, LA',
-    section: 'Open',
-    paymentStatus: 'pending',
-  },
-]
-
-const tournamentHistory: TournamentHistoryItem[] = [
-  {
-    id: 'hist-1',
-    tournamentName: 'Louisiana State Championship',
-    date: 'November 15, 2025',
-    section: 'Championship',
-    place: 2,
-    score: '5.5/7',
-  },
-  {
-    id: 'hist-2',
-    tournamentName: 'Baton Rouge Fall Open',
-    date: 'October 11, 2025',
-    section: 'Open',
-    place: 1,
-    score: '4.5/5',
-  },
-  {
-    id: 'hist-3',
-    tournamentName: 'Lafayette Winter Classic',
-    date: 'February 8, 2025',
-    section: 'Open',
-    place: 3,
-    score: '3.5/5',
-  },
-]
 
 const statusConfig: Record<
   MembershipStatus,
@@ -118,17 +44,61 @@ const goldButtonClass =
 
 export function DashboardPage() {
   const { user } = useAuth()
+  const [member, setMember] = useState<ApiMember | null>(null)
+  const [registrations, setRegistrations] = useState<ApiRegistration[]>([])
+  const [loadingData, setLoadingData] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [editing, setEditing] = useState(false)
+  const [fullName, setFullName] = useState('')
+  const [uscfId, setUscfId] = useState('')
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
 
-  const displayName =
-    (user?.user_metadata?.full_name as string | undefined) ||
-    user?.email?.split('@')[0] ||
-    'Member'
-  const email = user?.email ?? ''
-  const uscfId =
-    membershipInfo.uscfId ||
-    (user?.user_metadata?.uscf_id as string | undefined)
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getMe()
+        setMember(data.member)
+        setRegistrations(data.registrations)
+        setFullName(data.member.full_name)
+        setUscfId(data.member.uscf_id ?? '')
+        setLoadError(null)
+      } catch (err) {
+        setLoadError(err instanceof Error ? err.message : 'Failed to load profile')
+      } finally {
+        setLoadingData(false)
+      }
+    }
+    load()
+  }, [user?.id])
 
-  const status = statusConfig[membershipInfo.membershipStatus]
+  async function handleProfileSave(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setSaving(true)
+    setSaveError(null)
+    try {
+      const updated = await updateMe({
+        fullName,
+        uscfId: uscfId.trim() || null,
+      })
+      setMember(updated)
+      setEditing(false)
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to save profile')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const displayName = member?.full_name || user?.email?.split('@')[0] || 'Member'
+  const email = member?.email || user?.email || ''
+  const membershipStatus = (member?.membership_status ?? 'pending') as MembershipStatus
+  const status = statusConfig[membershipStatus]
+  const membershipExpiry = member?.membership_expiry ?? 'Not yet purchased'
+
+  const upcomingRegistrations = registrations.filter((reg) => {
+    return reg.payment_status === 'paid' || reg.payment_status === 'pending'
+  })
 
   return (
     <div>
@@ -150,75 +120,140 @@ export function DashboardPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-12">
-        <p className="text-sm text-muted-foreground">
-          Tournament and membership data below are placeholders until D1 is
-          connected.
-        </p>
+        {loadingData && (
+          <p className="text-muted-foreground">Loading your profile...</p>
+        )}
+        {loadError && (
+          <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {loadError}
+          </p>
+        )}
 
-        <div className="mt-6 grid gap-6 lg:grid-cols-3">
-          <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-1">
-            <div className="flex items-center gap-2">
-              <User className="size-5 text-[#c8a94a]" />
-              <h2 className="text-lg font-bold text-[#1a2744]">Profile</h2>
-            </div>
-
-            <dl className="mt-4 space-y-3 text-sm">
-              <div>
-                <dt className="font-medium text-[#1a2744]">Name</dt>
-                <dd className="text-muted-foreground">{displayName}</dd>
-              </div>
-              <div>
-                <dt className="font-medium text-[#1a2744]">Email</dt>
-                <dd className="text-muted-foreground">{email}</dd>
-              </div>
-              {uscfId && (
-                <div>
-                  <dt className="font-medium text-[#1a2744]">USCF ID</dt>
-                  <dd className="text-muted-foreground">{uscfId}</dd>
+        {!loadingData && !loadError && (
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-1">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <User className="size-5 text-[#c8a94a]" />
+                  <h2 className="text-lg font-bold text-[#1a2744]">Profile</h2>
                 </div>
-              )}
-              {membershipInfo.rating != null && (
-                <div>
-                  <dt className="font-medium text-[#1a2744]">Rating</dt>
-                  <dd className="text-muted-foreground">
-                    {membershipInfo.rating}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </div>
-
-          <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-2">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div className="flex items-center gap-2">
-                <CreditCard className="size-5 text-[#c8a94a]" />
-                <h2 className="text-lg font-bold text-[#1a2744]">
-                  Membership
-                </h2>
-              </div>
-              <span
-                className={cn(
-                  'w-fit rounded-full px-2.5 py-0.5 text-xs font-medium',
-                  status.className,
+                {!editing && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditing(true)}
+                  >
+                    Edit
+                  </Button>
                 )}
-              >
-                {status.label}
-              </span>
+              </div>
+
+              {editing ? (
+                <form onSubmit={handleProfileSave} className="mt-4 space-y-4">
+                  {saveError && (
+                    <p className="text-sm text-destructive">{saveError}</p>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input
+                      id="fullName"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      required
+                      disabled={saving}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="uscfId">USCF ID</Label>
+                    <Input
+                      id="uscfId"
+                      value={uscfId}
+                      onChange={(e) => setUscfId(e.target.value)}
+                      disabled={saving}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      type="submit"
+                      className={goldButtonClass}
+                      disabled={saving}
+                    >
+                      {saving ? 'Saving...' : 'Save'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={saving}
+                      onClick={() => {
+                        setEditing(false)
+                        setFullName(member?.full_name ?? '')
+                        setUscfId(member?.uscf_id ?? '')
+                        setSaveError(null)
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <dl className="mt-4 space-y-3 text-sm">
+                  <div>
+                    <dt className="font-medium text-[#1a2744]">Name</dt>
+                    <dd className="text-muted-foreground">{displayName}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-medium text-[#1a2744]">Email</dt>
+                    <dd className="text-muted-foreground">{email}</dd>
+                  </div>
+                  {member?.uscf_id && (
+                    <div>
+                      <dt className="font-medium text-[#1a2744]">USCF ID</dt>
+                      <dd className="text-muted-foreground">{member.uscf_id}</dd>
+                    </div>
+                  )}
+                </dl>
+              )}
             </div>
 
-            <p className="mt-4 text-sm text-muted-foreground">
-              Your LCA membership is valid through{' '}
-              <span className="font-medium text-[#1a2744]">
-                {membershipInfo.membershipExpiry}
-              </span>
-              .
-            </p>
+            <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-2">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="size-5 text-[#c8a94a]" />
+                  <h2 className="text-lg font-bold text-[#1a2744]">
+                    Membership
+                  </h2>
+                </div>
+                <span
+                  className={cn(
+                    'w-fit rounded-full px-2.5 py-0.5 text-xs font-medium',
+                    status.className,
+                  )}
+                >
+                  {status.label}
+                </span>
+              </div>
 
-            <Button asChild className={cn('mt-4', goldButtonClass)}>
-              <Link to="/membership">Join / Renew Membership</Link>
-            </Button>
+              <p className="mt-4 text-sm text-muted-foreground">
+                {membershipStatus === 'active' ? (
+                  <>
+                    Your LCA membership is valid through{' '}
+                    <span className="font-medium text-[#1a2744]">
+                      {membershipExpiry}
+                    </span>
+                    .
+                  </>
+                ) : (
+                  <>Membership status: {status.label.toLowerCase()}.</>
+                )}
+              </p>
+
+              <Button asChild className={cn('mt-4', goldButtonClass)}>
+                <Link to="/membership">Join / Renew Membership</Link>
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       <section className="bg-muted/30">
@@ -226,11 +261,11 @@ export function DashboardPage() {
           <div className="flex items-center gap-2">
             <Calendar className="size-6 text-[#c8a94a]" />
             <h2 className="text-2xl font-bold text-[#1a2744]">
-              Upcoming Registrations
+              My Registrations
             </h2>
           </div>
           <p className="mt-1 text-muted-foreground">
-            Tournaments you are registered for.
+            Tournaments you are registered for (from D1).
           </p>
 
           {upcomingRegistrations.length > 0 ? (
@@ -242,25 +277,29 @@ export function DashboardPage() {
                 >
                   <div>
                     <h3 className="font-semibold text-[#1a2744]">
-                      {reg.tournamentName}
+                      {reg.tournament_name ?? reg.tournament_id}
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {reg.date} · {reg.location} · {reg.section}
+                      {reg.tournament_date ?? ''}{' '}
+                      {reg.tournament_location
+                        ? `· ${reg.tournament_location}`
+                        : ''}{' '}
+                      · {reg.section}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
                     <span
                       className={cn(
                         'rounded-full px-2.5 py-0.5 text-xs font-medium',
-                        reg.paymentStatus === 'paid'
+                        reg.payment_status === 'paid'
                           ? 'bg-emerald-100 text-emerald-800'
                           : 'bg-[#c8a94a]/20 text-[#1a2744]',
                       )}
                     >
-                      {reg.paymentStatus === 'paid' ? 'Paid' : 'Payment pending'}
+                      {reg.payment_status === 'paid' ? 'Paid' : 'Payment pending'}
                     </span>
                     <Button asChild variant="outline" size="sm">
-                      <Link to={`/tournaments/${reg.tournamentId}`}>View</Link>
+                      <Link to={`/tournaments/${reg.tournament_id}`}>View</Link>
                     </Button>
                   </div>
                 </li>
@@ -268,64 +307,12 @@ export function DashboardPage() {
             </ul>
           ) : (
             <p className="mt-8 text-sm text-muted-foreground">
-              No upcoming registrations.{' '}
+              No registrations yet.{' '}
               <Link to="/tournaments" className="text-[#c8a94a] hover:underline">
                 Browse tournaments
               </Link>
             </p>
           )}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-12">
-        <div className="flex items-center gap-2">
-          <History className="size-6 text-[#c8a94a]" />
-          <h2 className="text-2xl font-bold text-[#1a2744]">
-            Tournament History
-          </h2>
-        </div>
-        <p className="mt-1 text-muted-foreground">
-          Your past results and standings.
-        </p>
-
-        <div className="mt-8 overflow-x-auto rounded-xl border">
-          <table className="w-full min-w-[500px] text-left text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50">
-                <th className="px-4 py-3 font-semibold text-[#1a2744]">
-                  Tournament
-                </th>
-                <th className="px-4 py-3 font-semibold text-[#1a2744]">Date</th>
-                <th className="px-4 py-3 font-semibold text-[#1a2744]">
-                  Section
-                </th>
-                <th className="px-4 py-3 font-semibold text-[#1a2744]">Place</th>
-                <th className="px-4 py-3 font-semibold text-[#1a2744]">Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tournamentHistory.map((item) => (
-                <tr key={item.id} className="border-b last:border-0">
-                  <td className="px-4 py-3 font-medium">{item.tournamentName}</td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {item.date}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {item.section}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {item.place}
-                    {item.place === 1 && (
-                      <Trophy className="ml-1 inline size-3.5 text-[#c8a94a]" />
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-muted-foreground">
-                    {item.score}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </section>
     </div>
