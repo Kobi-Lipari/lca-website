@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS members (
     CHECK (membership_status IN ('active', 'expired', 'pending')),
   membership_expiry TEXT,
   role TEXT NOT NULL DEFAULT 'member'
-    CHECK (role IN ('member', 'admin', 'club_rep', 'tournament_director')),
+    CHECK (role IN ('member', 'club_rep', 'tournament_director', 'lca_admin')),
   club_id TEXT REFERENCES clubs(id),
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );

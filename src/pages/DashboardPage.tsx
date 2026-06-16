@@ -1,9 +1,12 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  Building2,
   Calendar,
   CreditCard,
   LayoutDashboard,
+  Shield,
+  Trophy,
   User,
 } from 'lucide-react'
 
@@ -17,6 +20,7 @@ import {
   type ApiMember,
   type ApiRegistration,
 } from '@/lib/api'
+import { ROLE_LABELS } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 
 type MembershipStatus = 'active' | 'expired' | 'pending'
@@ -43,7 +47,7 @@ const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function DashboardPage() {
-  const { user } = useAuth()
+  const { user, role, member: authMember, directedTournaments } = useAuth()
   const [member, setMember] = useState<ApiMember | null>(null)
   const [registrations, setRegistrations] = useState<ApiRegistration[]>([])
   const [loadingData, setLoadingData] = useState(true)
@@ -130,6 +134,44 @@ export function DashboardPage() {
         )}
 
         {!loadingData && !loadError && (
+          <>
+          {(role === 'lca_admin' ||
+            role === 'club_rep' ||
+            role === 'tournament_director') && (
+            <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
+              <h2 className="text-lg font-bold text-[#1a2744]">
+                {ROLE_LABELS[role]} tools
+              </h2>
+              <div className="mt-4 flex flex-wrap gap-3">
+                {role === 'lca_admin' && (
+                  <Button asChild className={goldButtonClass}>
+                    <Link to="/admin">
+                      <Shield className="size-4" />
+                      Admin Panel
+                    </Link>
+                  </Button>
+                )}
+                {role === 'club_rep' && authMember?.club_id && (
+                  <Button asChild className={goldButtonClass}>
+                    <Link to="/manage/club">
+                      <Building2 className="size-4" />
+                      Manage Club
+                    </Link>
+                  </Button>
+                )}
+                {role === 'tournament_director' &&
+                  directedTournaments.map((t) => (
+                    <Button key={t.id} asChild variant="outline">
+                      <Link to={`/admin/tournaments/${t.id}`}>
+                        <Trophy className="size-4" />
+                        Manage {t.name}
+                      </Link>
+                    </Button>
+                  ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-1">
               <div className="flex items-center justify-between gap-2">
@@ -253,6 +295,7 @@ export function DashboardPage() {
               </Button>
             </div>
           </div>
+          </>
         )}
       </section>
 

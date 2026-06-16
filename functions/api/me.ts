@@ -5,6 +5,7 @@ import {
   updateMemberProfile,
   upsertMemberFromAuth,
 } from '../utils/members'
+import { getDirectedTournamentIds } from '../utils/permissions'
 import {
   errorResponse,
   handleOptions,
@@ -25,7 +26,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   let member = await getMemberById(context.env.DB, authResult.id)
   if (!member) {
-    member = await upsertMemberFromAuth(context.env.DB, authResult)
+    member = await upsertMemberFromAuth(context.env.DB, authResult, context.env)
   }
 
   const registrations = await context.env.DB.prepare(
@@ -38,9 +39,26 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .bind(authResult.id)
     .all()
 
+  const directedTournamentIds = await getDirectedTournamentIds(
+    context.env.DB,
+    authResult.id,
+  )
+
+  let directedTournaments: unknown[] = []
+  if (directedTournamentIds.length > 0) {
+    const placeholders = directedTournamentIds.map(() => '?').join(', ')
+    const directed = await context.env.DB.prepare(
+      `SELECT id, name, date, status FROM tournaments WHERE id IN (${placeholders})`,
+    )
+      .bind(...directedTournamentIds)
+      .all()
+    directedTournaments = directed.results ?? []
+  }
+
   return jsonResponse({
     member,
     registrations: registrations.results ?? [],
+    directedTournaments,
   })
 }
 
@@ -48,7 +66,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const authResult = await requireUser(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
-  const member = await upsertMemberFromAuth(context.env.DB, authResult)
+  const member = await upsertMemberFromAuth(context.env.DB, authResult, context.env)
   return jsonResponse({ member }, 201)
 }
 
@@ -63,7 +81,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   let member = await getMemberById(context.env.DB, authResult.id)
   if (!member) {
-    member = await upsertMemberFromAuth(context.env.DB, authResult)
+    member = await upsertMemberFromAuth(context.env.DB, authResult, context.env)
   }
 
   const updated = await updateMemberProfile(context.env.DB, authResult.id, {

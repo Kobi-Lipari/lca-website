@@ -9,13 +9,24 @@ import {
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 
+import {
+  getMe,
+  syncMember as apiSyncMember,
+  type ApiDirectedTournament,
+  type ApiMember,
+} from '@/lib/api'
+import { resolveRole, type MemberRole } from '@/lib/roles'
 import { supabase } from '@/lib/supabase'
-import { syncMember as apiSyncMember } from '@/lib/api'
 
 interface AuthContextValue {
   user: User | null
   session: Session | null
+  member: ApiMember | null
+  role: MemberRole
+  directedTournaments: ApiDirectedTournament[]
+  directedTournamentIds: string[]
   loading: boolean
+  memberLoading: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (
     email: string,
@@ -24,14 +35,45 @@ interface AuthContextValue {
   ) => Promise<{ error: string | null; needsEmailConfirmation: boolean }>
   signOut: () => Promise<void>
   syncMember: () => Promise<void>
+  refreshMember: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+async function loadMemberProfile() {
+  const data = await getMe()
+  return data
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [member, setMember] = useState<ApiMember | null>(null)
+  const [directedTournaments, setDirectedTournaments] = useState<
+    ApiDirectedTournament[]
+  >([])
   const [loading, setLoading] = useState(true)
+  const [memberLoading, setMemberLoading] = useState(false)
+
+  const refreshMember = useCallback(async () => {
+    if (!session) {
+      setMember(null)
+      setDirectedTournaments([])
+      return
+    }
+
+    setMemberLoading(true)
+    try {
+      const data = await loadMemberProfile()
+      setMember(data.member)
+      setDirectedTournaments(data.directedTournaments ?? [])
+    } catch {
+      setMember(null)
+      setDirectedTournaments([])
+    } finally {
+      setMemberLoading(false)
+    }
+  }, [session])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
@@ -50,14 +92,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (nextSession?.user) {
         try {
           await apiSyncMember()
+          const data = await loadMemberProfile()
+          setMember(data.member)
+          setDirectedTournaments(data.directedTournaments ?? [])
         } catch {
-          // D1 sync may fail in local Vite-only dev without Pages Functions
+          setMember(null)
+          setDirectedTournaments([])
         }
+      } else {
+        setMember(null)
+        setDirectedTournaments([])
       }
     })
 
     return () => subscription.unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (session && !member && !memberLoading) {
+      refreshMember()
+    }
+  }, [session, member, memberLoading, refreshMember])
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -77,6 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           data: {
             full_name: metadata?.fullName,
             uscf_id: metadata?.uscfId || undefined,
+            role: 'member',
           },
         },
       })
@@ -91,23 +147,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
+    setMember(null)
+    setDirectedTournaments([])
   }, [])
 
   const syncMember = useCallback(async () => {
-    await apiSyncMember()
-  }, [])
+    const synced = await apiSyncMember()
+    setMember(synced)
+    await refreshMember()
+  }, [refreshMember])
+
+  const role = resolveRole(
+    member?.role,
+    user?.user_metadata?.role as string | undefined,
+  )
+
+  const directedTournamentIds = useMemo(
+    () => directedTournaments.map((t) => t.id),
+    [directedTournaments],
+  )
 
   const value = useMemo(
     () => ({
       user,
       session,
+      member,
+      role,
+      directedTournaments,
+      directedTournamentIds,
       loading,
+      memberLoading,
       signIn,
       signUp,
       signOut,
       syncMember,
+      refreshMember,
     }),
-    [user, session, loading, signIn, signUp, signOut, syncMember],
+    [
+      user,
+      session,
+      member,
+      role,
+      directedTournaments,
+      directedTournamentIds,
+      loading,
+      memberLoading,
+      signIn,
+      signUp,
+      signOut,
+      syncMember,
+      refreshMember,
+    ],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

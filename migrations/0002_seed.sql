@@ -23,7 +23,7 @@ INSERT INTO clubs (id, name, city, location, description, meeting_schedule, cont
 
 -- ─── Seed members (officers + sample players; not Supabase auth users) ───────
 INSERT INTO members (id, email, full_name, uscf_id, membership_status, membership_expiry, role) VALUES
-('00000000-0000-4000-8000-000000000001', 'admin@louisianachess.org', 'LCA Admin', NULL, 'active', '2026-12-31', 'admin'),
+('00000000-0000-4000-8000-000000000001', 'admin@louisianachess.org', 'LCA Admin', NULL, 'active', '2026-12-31', 'lca_admin'),
 ('00000000-0000-4000-8000-000000000002', 'james.whitfield@example.com', 'James Whitfield', '12345678', 'active', '2026-12-31', 'member'),
 ('00000000-0000-4000-8000-000000000003', 'maria.santos@example.com', 'Maria Santos', '23456789', 'active', '2026-12-31', 'member'),
 ('00000000-0000-4000-8000-000000000004', 'david.chen@example.com', 'David Chen', '34567890', 'active', '2026-12-31', 'member'),
