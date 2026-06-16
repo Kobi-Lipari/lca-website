@@ -13,6 +13,46 @@ const navLinks = [
   { label: 'Membership', href: '/membership' },
 ]
 
+function RoleLinks({
+  mobile,
+  onNavigate,
+}: {
+  mobile?: boolean
+  onNavigate?: () => void
+}) {
+  const { role, member, directedTournaments } = useAuth()
+
+  const linkClass = mobile
+    ? 'rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-[#c8a94a]'
+    : 'text-sm font-medium text-white/90 transition-colors hover:text-[#c8a94a]'
+
+  const items: { label: string; href: string }[] = []
+
+  if (role === 'lca_admin') {
+    items.push({ label: 'Admin Panel', href: '/admin' })
+  }
+  if (role === 'club_rep' && member?.club_id) {
+    items.push({ label: 'Manage Club', href: '/manage/club' })
+  }
+  if (role === 'tournament_director' && directedTournaments[0]) {
+    items.push({
+      label: 'Manage Tournament',
+      href: `/admin/tournaments/${directedTournaments[0].id}`,
+    })
+  }
+
+  return items.map((item) => (
+    <Link
+      key={item.href}
+      to={item.href}
+      className={linkClass}
+      onClick={onNavigate}
+    >
+      {item.label}
+    </Link>
+  ))
+}
+
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { user, loading, signOut } = useAuth()
@@ -35,7 +75,7 @@ export function Navbar() {
           Louisiana Chess Association
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -45,6 +85,7 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+          {!loading && user && <RoleLinks />}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -106,6 +147,7 @@ export function Navbar() {
 
           {!loading && user ? (
             <>
+              <RoleLinks mobile onNavigate={() => setMobileMenuOpen(false)} />
               <Link
                 to="/dashboard"
                 className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-[#c8a94a]"

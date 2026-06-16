@@ -1,0 +1,341 @@
+import { useEffect, useState, type FormEvent } from 'react'
+import { Link, useParams } from 'react-router-dom'
+import { ArrowLeft, Trophy } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  adminCreatePairings,
+  adminGetTournamentManage,
+  adminUpdateGameResult,
+  type ApiStanding,
+  type ApiTournamentDetail,
+  type ApiTournamentGame,
+} from '@/lib/api'
+import { cn } from '@/lib/utils'
+
+const goldButtonClass =
+  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+
+const RESULT_OPTIONS = ['pending', '1-0', '0-1', '1/2-1/2', 'bye']
+
+export function TournamentManagePage() {
+  const { id } = useParams<{ id: string }>()
+  const [tournament, setTournament] = useState<ApiTournamentDetail | null>(
+    null,
+  )
+  const [games, setGames] = useState<ApiTournamentGame[]>([])
+  const [standings, setStandings] = useState<ApiStanding[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [savingPairings, setSavingPairings] = useState(false)
+
+  const [pairingForm, setPairingForm] = useState({
+    round: '1',
+    section: 'Open',
+    whiteMemberId: '',
+    blackMemberId: '',
+    board: '1',
+  })
+
+  async function loadManage() {
+    if (!id) return
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await adminGetTournamentManage(id)
+      setTournament(data.tournament)
+      setGames(data.games)
+      setStandings(data.standings)
+      if (data.tournament.sections[0]?.name) {
+        setPairingForm((p) => ({
+          ...p,
+          section: data.tournament.sections[0].name,
+        }))
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load tournament')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadManage()
+  }, [id])
+
+  async function handleAddPairing(event: FormEvent) {
+    event.preventDefault()
+    if (!id) return
+    setSavingPairings(true)
+    setError(null)
+    try {
+      await adminCreatePairings(id, {
+        round: Number(pairingForm.round),
+        section: pairingForm.section,
+        pairings: [
+          {
+            board: Number(pairingForm.board),
+            whiteMemberId: pairingForm.whiteMemberId || null,
+            blackMemberId: pairingForm.blackMemberId || null,
+          },
+        ],
+      })
+      setPairingForm((p) => ({
+        ...p,
+        whiteMemberId: '',
+        blackMemberId: '',
+        board: String(Number(p.board) + 1),
+      }))
+      await loadManage()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add pairing')
+    } finally {
+      setSavingPairings(false)
+    }
+  }
+
+  async function handleResultChange(gameId: string, result: string) {
+    if (!id) return
+    try {
+      await adminUpdateGameResult(id, gameId, result)
+      await loadManage()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update result')
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        <p className="text-muted-foreground">Loading tournament...</p>
+      </div>
+    )
+  }
+
+  if (!tournament) {
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-12 text-center">
+        <p className="text-destructive">{error ?? 'Tournament not found'}</p>
+        <Button asChild className="mt-4" variant="outline">
+          <Link to="/dashboard">Back to dashboard</Link>
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
+        <div className="mx-auto max-w-6xl px-6 py-12">
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-[#c8a94a]"
+          >
+            <ArrowLeft className="size-4" />
+            Dashboard
+          </Link>
+          <div className="mt-4 flex items-center gap-3">
+            <Trophy className="size-8 text-[#c8a94a]" />
+            <div>
+              <h1 className="text-3xl font-bold">{tournament.name}</h1>
+              <p className="mt-1 text-white/80">
+                Tournament director panel · {tournament.status}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl space-y-10 px-6 py-12">
+        {error && (
+          <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        )}
+
+        <form
+          onSubmit={handleAddPairing}
+          className="rounded-xl border bg-card p-6 shadow-sm"
+        >
+          <h2 className="text-lg font-bold text-[#1a2744]">Add pairing</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Enter member IDs from the registration roster. Manual pairings for
+            now — bbpPairings integration coming later.
+          </p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-2">
+              <Label htmlFor="round">Round</Label>
+              <Input
+                id="round"
+                type="number"
+                min={1}
+                value={pairingForm.round}
+                onChange={(e) =>
+                  setPairingForm((p) => ({ ...p, round: e.target.value }))
+                }
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="section">Section</Label>
+              <select
+                id="section"
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                value={pairingForm.section}
+                onChange={(e) =>
+                  setPairingForm((p) => ({ ...p, section: e.target.value }))
+                }
+              >
+                {tournament.sections.map((s) => (
+                  <option key={s.name} value={s.name}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="board">Board</Label>
+              <Input
+                id="board"
+                type="number"
+                min={1}
+                value={pairingForm.board}
+                onChange={(e) =>
+                  setPairingForm((p) => ({ ...p, board: e.target.value }))
+                }
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="white">White (member ID)</Label>
+              <Input
+                id="white"
+                value={pairingForm.whiteMemberId}
+                onChange={(e) =>
+                  setPairingForm((p) => ({
+                    ...p,
+                    whiteMemberId: e.target.value,
+                  }))
+                }
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="black">Black (member ID)</Label>
+              <Input
+                id="black"
+                value={pairingForm.blackMemberId}
+                onChange={(e) =>
+                  setPairingForm((p) => ({
+                    ...p,
+                    blackMemberId: e.target.value,
+                  }))
+                }
+              />
+            </div>
+          </div>
+          <Button
+            type="submit"
+            className={cn('mt-4', goldButtonClass)}
+            disabled={savingPairings}
+          >
+            {savingPairings ? 'Saving...' : 'Add pairing'}
+          </Button>
+        </form>
+
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-[#1a2744]">Pairings &amp; results</h2>
+          {games.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              No pairings entered yet.
+            </p>
+          ) : (
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="px-3 py-2">Rd</th>
+                    <th className="px-3 py-2">Bd</th>
+                    <th className="px-3 py-2">Section</th>
+                    <th className="px-3 py-2">White</th>
+                    <th className="px-3 py-2">Black</th>
+                    <th className="px-3 py-2">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {games.map((game) => (
+                    <tr key={game.id} className="border-b">
+                      <td className="px-3 py-2">{game.round}</td>
+                      <td className="px-3 py-2">{game.board}</td>
+                      <td className="px-3 py-2">{game.section}</td>
+                      <td className="px-3 py-2">
+                        {game.white_name ?? game.white_member_id ?? '—'}
+                      </td>
+                      <td className="px-3 py-2">
+                        {game.black_name ?? game.black_member_id ?? '—'}
+                      </td>
+                      <td className="px-3 py-2">
+                        <select
+                          className="rounded-md border bg-background px-2 py-1"
+                          value={game.result}
+                          onChange={(e) =>
+                            handleResultChange(game.id, e.target.value)
+                          }
+                        >
+                          {RESULT_OPTIONS.map((r) => (
+                            <option key={r} value={r}>
+                              {r}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-[#1a2744]">Standings</h2>
+          {standings.length === 0 ? (
+            <p className="mt-4 text-sm text-muted-foreground">
+              Standings appear once results are recorded.
+            </p>
+          ) : (
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full min-w-[480px] text-left text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="px-3 py-2">Player</th>
+                    <th className="px-3 py-2">Section</th>
+                    <th className="px-3 py-2">Score</th>
+                    <th className="px-3 py-2">W-D-L</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {standings.map((s) => (
+                    <tr key={s.member_id} className="border-b">
+                      <td className="px-3 py-2 font-medium">{s.full_name}</td>
+                      <td className="px-3 py-2">{s.section}</td>
+                      <td className="px-3 py-2">{s.score}</td>
+                      <td className="px-3 py-2 text-muted-foreground">
+                        {s.wins}-{s.draws}-{s.losses}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <Button asChild variant="outline">
+          <Link to={`/tournaments/${id}`}>View public tournament page</Link>
+        </Button>
+      </section>
+    </div>
+  )
+}

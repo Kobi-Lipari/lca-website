@@ -1,45 +1,67 @@
-import type { Env } from '../../types'
-import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
+import type { Env } from '../../../types'
+import { isResponse, requireClubRep } from '../../utils/auth'
+import {
+  errorResponse,
+  handleOptions,
+  jsonResponse,
+  parseJsonBody,
+} from '../../utils/response'
+
+interface UpdateClubBody {
+  name?: string
+  city?: string
+  location?: string | null
+  description?: string | null
+  meetingSchedule?: string | null
+  contactEmail?: string | null
+}
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
-export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const id = context.params.id as string
+export const onRequestPatch: PagesFunction<Env> = async (context) => {
+  const clubId = context.params.id as string
+  const authResult = await requireClubRep(context.request, context.env, clubId)
+  if (isResponse(authResult)) return authResult
 
-  const club = await context.env.DB.prepare(`SELECT * FROM clubs WHERE id = ?`)
-    .bind(id)
-    .first()
+  const existing = await context.env.DB.prepare(
+    'SELECT * FROM clubs WHERE id = ?',
+  )
+    .bind(clubId)
+    .first<Record<string, unknown>>()
 
-  if (!club) {
+  if (!existing) {
     return errorResponse('Club not found', 404)
   }
 
-  const officers = await context.env.DB.prepare(
-    `SELECT co.role, m.full_name, m.email
-     FROM club_officers co
-     JOIN members m ON m.id = co.member_id
-     WHERE co.club_id = ?
-     ORDER BY co.role ASC`,
-  )
-    .bind(id)
-    .all()
+  const body = await parseJsonBody<UpdateClubBody>(context.request)
+  if (!body) {
+    return errorResponse('Invalid JSON body', 400)
+  }
 
-  const tournaments = await context.env.DB.prepare(
-    `SELECT id, name, date, status FROM tournaments WHERE club_id = ? ORDER BY date DESC`,
+  await context.env.DB.prepare(
+    `UPDATE clubs SET
+      name = ?, city = ?, location = ?, description = ?,
+      meeting_schedule = ?, contact_email = ?
+     WHERE id = ?`,
   )
-    .bind(id)
-    .all()
+    .bind(
+      body.name ?? existing.name,
+      body.city ?? existing.city,
+      body.location !== undefined ? body.location : existing.location,
+      body.description !== undefined ? body.description : existing.description,
+      body.meetingSchedule !== undefined
+        ? body.meetingSchedule
+        : existing.meeting_schedule,
+      body.contactEmail !== undefined
+        ? body.contactEmail
+        : existing.contact_email,
+      clubId,
+    )
+    .run()
 
-  const news = await context.env.DB.prepare(
-    `SELECT id, title, news_date, excerpt FROM club_news WHERE club_id = ? ORDER BY news_date DESC`,
-  )
-    .bind(id)
-    .all()
+  const club = await context.env.DB.prepare('SELECT * FROM clubs WHERE id = ?')
+    .bind(clubId)
+    .first()
 
-  return jsonResponse({
-    club,
-    officers: officers.results ?? [],
-    tournaments: tournaments.results ?? [],
-    news: news.results ?? [],
-  })
+  return jsonResponse({ club })
 }

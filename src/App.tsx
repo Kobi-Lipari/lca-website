@@ -1,18 +1,23 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
 import { AboutPage } from '@/pages/AboutPage'
+import { AdminClubPage } from '@/pages/AdminClubPage'
+import { AdminPage } from '@/pages/AdminPage'
 import { ClubDetailPage } from '@/pages/ClubDetailPage'
 import { ClubsPage } from '@/pages/ClubsPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
+import { ManageClubPage } from '@/pages/ManageClubPage'
 import { MembershipPage } from '@/pages/MembershipPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { TournamentDetailPage } from '@/pages/TournamentDetailPage'
+import { TournamentManagePage } from '@/pages/TournamentManagePage'
 import { TournamentsPage } from '@/pages/TournamentsPage'
 
 function App() {
@@ -36,6 +41,41 @@ function App() {
                 <ProtectedRoute>
                   <DashboardPage />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <RoleProtectedRoute roles={['lca_admin']}>
+                  <AdminPage />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/clubs/:id"
+              element={
+                <RoleProtectedRoute requireClubMatch>
+                  <AdminClubPage />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/tournaments/:id"
+              element={
+                <RoleProtectedRoute
+                  roles={['lca_admin', 'club_rep', 'tournament_director']}
+                  requireTournamentAccess
+                >
+                  <TournamentManagePage />
+                </RoleProtectedRoute>
+              }
+            />
+            <Route
+              path="/manage/club"
+              element={
+                <RoleProtectedRoute roles={['club_rep']}>
+                  <ManageClubPage />
+                </RoleProtectedRoute>
               }
             />
             <Route path="/login" element={<LoginPage />} />
