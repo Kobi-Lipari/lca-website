@@ -54,3 +54,21 @@ export interface RegistrationRow {
   payment_status: string
   registered_at: string
 }
+
+export interface TournamentDirectorRow {
+  tournament_id: string
+  member_id: string
+  assigned_at: string
+}
+
+export interface TournamentGameRow {
+  id: string
+  tournament_id: string
+  round: number
+  board: number
+  section: string
+  white_member_id: string | null
+  black_member_id: string | null
+  result: string
+  created_at: string
+}

@@ -60,11 +60,23 @@ export async function syncMember(): Promise<ApiMember> {
 export async function getMe(): Promise<{
   member: ApiMember
   registrations: ApiRegistration[]
+  directedTournaments: ApiDirectedTournament[]
 }> {
   const response = await fetch('/api/me', {
     headers: await authHeaders(),
   })
   return handleResponse(response)
+}
+
+export interface ApiDirectedTournament {
+  id: string
+  name: string
+  date: string
+  status: string
+}
+
+export interface ApiAdminMember extends ApiMember {
+  club_name?: string | null
 }
 
 export async function updateMe(body: {
@@ -191,4 +203,215 @@ export async function getTournament(id: string): Promise<{
 }> {
   const response = await fetch(`/api/tournaments/${id}`)
   return handleResponse(response)
+}
+
+// --- Admin API ---
+
+export async function adminGetMembers(): Promise<ApiAdminMember[]> {
+  const response = await fetch('/api/admin/members', {
+    headers: await authHeaders(),
+  })
+  const data = await handleResponse<{ members: ApiAdminMember[] }>(response)
+  return data.members
+}
+
+export async function adminUpdateMemberRole(
+  memberId: string,
+  role: string,
+): Promise<ApiMember> {
+  const response = await fetch(`/api/admin/members/${memberId}/role`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify({ role }),
+  })
+  const data = await handleResponse<{ member: ApiMember }>(response)
+  return data.member
+}
+
+export async function adminUpdateMemberClub(
+  memberId: string,
+  clubId: string | null,
+): Promise<ApiMember> {
+  const response = await fetch(`/api/admin/members/${memberId}/club`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify({ clubId }),
+  })
+  const data = await handleResponse<{ member: ApiMember }>(response)
+  return data.member
+}
+
+export async function adminCreateTournament(body: {
+  name: string
+  location: string
+  date: string
+  entryFee: number
+  venue?: string | null
+  endDate?: string | null
+  sections?: ApiTournamentSection[]
+  rounds?: number
+  maxPlayers?: number | null
+  status?: TournamentStatus
+  description?: string | null
+  registrationDeadline?: string | null
+  clubId?: string | null
+}): Promise<Record<string, unknown>> {
+  const response = await fetch('/api/admin/tournaments', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ tournament: Record<string, unknown> }>(
+    response,
+  )
+  return data.tournament
+}
+
+export async function adminUpdateTournament(
+  id: string,
+  body: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  const response = await fetch(`/api/admin/tournaments/${id}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ tournament: Record<string, unknown> }>(
+    response,
+  )
+  return data.tournament
+}
+
+export async function adminUpdateClub(
+  id: string,
+  body: {
+    name?: string
+    city?: string
+    location?: string | null
+    description?: string | null
+    meetingSchedule?: string | null
+    contactEmail?: string | null
+  },
+): Promise<ApiClubDetail> {
+  const response = await fetch(`/api/admin/clubs/${id}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ club: ApiClubDetail }>(response)
+  return data.club
+}
+
+export async function adminCreateClubNews(
+  clubId: string,
+  body: { title: string; newsDate: string; excerpt: string },
+): Promise<ApiClubNews> {
+  const response = await fetch(`/api/admin/clubs/${clubId}/news`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ news: ApiClubNews }>(response)
+  return data.news
+}
+
+export async function adminGetClubRoster(clubId: string) {
+  const response = await fetch(`/api/admin/clubs/${clubId}/roster`, {
+    headers: await authHeaders(),
+  })
+  const data = await handleResponse<{ roster: ApiAdminMember[] }>(response)
+  return data.roster
+}
+
+export async function adminAssignTournamentDirector(
+  tournamentId: string,
+  memberId: string,
+) {
+  const response = await fetch(
+    `/api/admin/tournaments/${tournamentId}/directors`,
+    {
+      method: 'POST',
+      headers: await authHeaders(),
+      body: JSON.stringify({ memberId }),
+    },
+  )
+  return handleResponse(response)
+}
+
+export interface ApiTournamentGame {
+  id: string
+  tournament_id: string
+  round: number
+  board: number
+  section: string
+  white_member_id: string | null
+  black_member_id: string | null
+  result: string
+  white_name?: string
+  black_name?: string
+}
+
+export interface ApiStanding {
+  member_id: string
+  full_name: string
+  section: string
+  score: number
+  wins: number
+  draws: number
+  losses: number
+}
+
+export async function adminGetTournamentManage(tournamentId: string) {
+  const response = await fetch(`/api/admin/tournaments/${tournamentId}/manage`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse<{
+    tournament: ApiTournamentDetail
+    roster: Array<{
+      member_id: string
+      section: string
+      full_name: string
+      uscf_id: string | null
+      payment_status: string
+    }>
+    games: ApiTournamentGame[]
+    standings: ApiStanding[]
+    directors: Array<{ member_id: string; full_name: string; email: string }>
+  }>(response)
+}
+
+export async function adminCreatePairings(
+  tournamentId: string,
+  body: {
+    round: number
+    section: string
+    pairings: Array<{
+      board?: number
+      whiteMemberId?: string | null
+      blackMemberId?: string | null
+    }>
+  },
+) {
+  const response = await fetch(`/api/admin/tournaments/${tournamentId}/games`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse<{ games: ApiTournamentGame[] }>(response)
+}
+
+export async function adminUpdateGameResult(
+  tournamentId: string,
+  gameId: string,
+  result: string,
+) {
+  const response = await fetch(
+    `/api/admin/tournaments/${tournamentId}/games/${gameId}`,
+    {
+      method: 'PATCH',
+      headers: await authHeaders(),
+      body: JSON.stringify({ result }),
+    },
+  )
+  return handleResponse<{ game: ApiTournamentGame }>(response)
 }
