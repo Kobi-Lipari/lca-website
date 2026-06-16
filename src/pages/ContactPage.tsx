@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Mail, MapPin, MessageSquare, Phone } from 'lucide-react'
 
@@ -18,10 +18,48 @@ import { cn } from '@/lib/utils'
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
+const formspreeId = import.meta.env.VITE_FORMSPREE_FORM_ID
+
 export function ContactPage() {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    // Form submission will be wired to backend in a future PR
+    setSubmitting(true)
+    setError(null)
+
+    try {
+      const response = await fetch(`https://formspree.io/f/${formspreeId}`, {
+        method: 'POST',
+        body: new FormData(event.currentTarget),
+        headers: { Accept: 'application/json' },
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
+      setSubmitted(true)
+      event.currentTarget.reset()
+    } catch {
+      setError('Could not send your message. Please try again or email us directly.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (!formspreeId) {
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        <p className="text-destructive">
+          Contact form is not configured. Set{' '}
+          <code className="text-sm">VITE_FORMSPREE_FORM_ID</code> in your
+          environment variables.
+        </p>
+      </div>
+    )
   }
 
   return (
@@ -108,68 +146,81 @@ export function ContactPage() {
               </CardDescription>
             </CardHeader>
 
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder="Your name"
-                    autoComplete="name"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    autoComplete="email"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="subject">Subject</Label>
-                  <Input
-                    id="subject"
-                    name="subject"
-                    type="text"
-                    placeholder="Membership, tournaments, clubs..."
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={5}
-                    placeholder="How can we help?"
-                    required
-                    className={cn(
-                      'flex w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-2 text-base shadow-xs transition-colors outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30',
-                      'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
-                    )}
-                  />
-                </div>
+            {submitted ? (
+              <CardContent>
+                <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+                  Thank you! Your message has been sent. We&apos;ll respond within
+                  2–3 business days.
+                </p>
               </CardContent>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <CardContent className="space-y-4">
+                  {error && (
+                    <p className="text-sm text-destructive">{error}</p>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      placeholder="Your name"
+                      autoComplete="name"
+                      required
+                    />
+                  </div>
 
-              <CardFooter>
-                <Button
-                  type="submit"
-                  className={cn('w-full', goldButtonClass)}
-                >
-                  Send Message
-                </Button>
-              </CardFooter>
-            </form>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="subject">Subject</Label>
+                    <Input
+                      id="subject"
+                      name="subject"
+                      type="text"
+                      placeholder="Membership, tournaments, clubs..."
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="message">Message</Label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={5}
+                      placeholder="How can we help?"
+                      required
+                      className={cn(
+                        'flex w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-2 text-base shadow-xs transition-colors outline-none placeholder:text-muted-foreground md:text-sm dark:bg-input/30',
+                        'focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50',
+                      )}
+                    />
+                  </div>
+                </CardContent>
+
+                <CardFooter>
+                  <Button
+                    type="submit"
+                    className={cn('w-full', goldButtonClass)}
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Sending…' : 'Send Message'}
+                  </Button>
+                </CardFooter>
+              </form>
+            )}
           </Card>
         </div>
       </section>

@@ -1,7 +1,10 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Check, CreditCard, Shield, Trophy, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/contexts/AuthContext'
+import { createMembershipCheckout } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 interface MembershipTier {
@@ -101,7 +104,66 @@ const tierBenefits: Record<string, string[]> = {
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
+function TierButton({
+  tierId,
+  user,
+}: {
+  tierId: string
+  user: ReturnType<typeof useAuth>['user']
+}) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleCheckout() {
+    setLoading(true)
+    setError(null)
+    try {
+      const checkout = await createMembershipCheckout(tierId)
+      sessionStorage.setItem('lca_pending_payment_id', checkout.paymentId)
+      window.open(checkout.paymentUrl, '_blank', 'noopener,noreferrer')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Checkout failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!user) {
+    return (
+      <Button asChild className={cn('mt-6 w-full', goldButtonClass)}>
+        <Link to="/register" state={{ from: '/membership' }}>
+          Join Now
+        </Link>
+      </Button>
+    )
+  }
+
+  return (
+    <div className="mt-6">
+      {error && <p className="mb-2 text-sm text-destructive">{error}</p>}
+      <Button
+        type="button"
+        className={cn('w-full', goldButtonClass)}
+        disabled={loading}
+        onClick={handleCheckout}
+      >
+        {loading ? 'Starting checkout…' : 'Join / Renew'}
+      </Button>
+      <p className="mt-2 text-center text-xs text-muted-foreground">
+        After payment, return to{' '}
+        <Link to="/membership/success" className="text-[#c8a94a] hover:underline">
+          confirm membership
+        </Link>
+        .
+      </p>
+    </div>
+  )
+}
+
 export function MembershipPage() {
+  const { user, member } = useAuth()
+  const navigate = useNavigate()
+
   return (
     <div>
       <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
@@ -121,6 +183,25 @@ export function MembershipPage() {
           </div>
         </div>
       </section>
+
+      {member?.membership_status === 'active' && (
+        <section className="border-b bg-emerald-50">
+          <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-emerald-900">
+            Your membership is <strong>active</strong>
+            {member.membership_expiry && (
+              <> through {member.membership_expiry}</>
+            )}
+            .{' '}
+            <button
+              type="button"
+              className="font-medium text-[#1a2744] underline"
+              onClick={() => navigate('/dashboard')}
+            >
+              View dashboard
+            </button>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-6xl px-6 py-12">
         <h2 className="text-2xl font-bold text-[#1a2744]">Member Benefits</h2>
@@ -153,7 +234,8 @@ export function MembershipPage() {
             Membership Tiers
           </h2>
           <p className="mt-1 text-muted-foreground">
-            Placeholder pricing — final rates to be confirmed by the LCA board.
+            Pay securely via Stripe. Placeholder payment links until live
+            Stripe products are configured.
           </p>
 
           <ul className="mt-8 grid gap-6 lg:grid-cols-3">
@@ -197,12 +279,7 @@ export function MembershipPage() {
                   ))}
                 </ul>
 
-                <Button
-                  asChild
-                  className={cn('mt-6 w-full', goldButtonClass)}
-                >
-                  <Link to="/register">Join Now</Link>
-                </Button>
+                <TierButton tierId={tier.id} user={user} />
               </li>
             ))}
           </ul>
@@ -220,8 +297,7 @@ export function MembershipPage() {
                 1
               </span>
               <span>
-                Create an account and select your membership tier. Scholastic
-                members must be under 18 at the time of registration.
+                Create an account and select your membership tier.
               </span>
             </li>
             <li className="flex gap-3">
@@ -229,8 +305,8 @@ export function MembershipPage() {
                 2
               </span>
               <span>
-                Pay annual dues online. Club memberships are billed to the club
-                representative on behalf of the organization.
+                Pay annual dues via Stripe. A pending payment record is created
+                in your account.
               </span>
             </li>
             <li className="flex gap-3">
@@ -238,8 +314,8 @@ export function MembershipPage() {
                 3
               </span>
               <span>
-                Receive your membership confirmation and access your member
-                dashboard to register for tournaments and track your history.
+                After payment, visit the confirmation page to activate your
+                membership in D1 (or wait for the Stripe webhook once live).
               </span>
             </li>
           </ol>
@@ -251,21 +327,6 @@ export function MembershipPage() {
             </Link>{' '}
             or manage your account.
           </p>
-        </div>
-      </section>
-
-      <section className="bg-[#1a2744] text-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-center px-6 py-12 text-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">
-            Ready to Join?
-          </h2>
-          <p className="mt-3 max-w-xl text-white/80">
-            Become part of Louisiana&apos;s official chess community. Membership
-            is annual and renews each calendar year.
-          </p>
-          <Button asChild size="lg" className={cn('mt-8', goldButtonClass)}>
-            <Link to="/register">Join Now</Link>
-          </Button>
         </div>
       </section>
     </div>

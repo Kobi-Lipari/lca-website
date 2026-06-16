@@ -30,7 +30,7 @@ export function LoginPage() {
     (location.state as { from?: string } | null)?.from ?? '/dashboard'
 
   if (!loading && user) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={redirectTo} replace />
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
