@@ -1,86 +1,14 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, MapPin, Trophy } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import {
+  getTournaments,
+  type ApiTournamentListItem,
+  type TournamentStatus,
+} from '@/lib/api'
 import { cn } from '@/lib/utils'
-
-type TournamentStatus = 'upcoming' | 'active' | 'completed'
-
-interface Tournament {
-  id: string
-  name: string
-  date: string
-  location: string
-  entryFee: number
-  sections: string[]
-  status: TournamentStatus
-}
-
-const tournaments: Tournament[] = [
-  {
-    id: 'spring-open-2026',
-    name: 'LCA Spring Open',
-    date: 'Saturday, March 14, 2026',
-    location: 'Baton Rouge, LA',
-    entryFee: 45,
-    sections: ['Open', 'U1800', 'U1400'],
-    status: 'upcoming',
-  },
-  {
-    id: 'new-orleans-classic-2026',
-    name: 'New Orleans Classic',
-    date: 'Saturday, April 18, 2026',
-    location: 'New Orleans, LA',
-    entryFee: 40,
-    sections: ['Open', 'U1600', 'Scholastic'],
-    status: 'upcoming',
-  },
-  {
-    id: 'shreveport-summer-swiss-2026',
-    name: 'Shreveport Summer Swiss',
-    date: 'Saturday, June 6, 2026',
-    location: 'Shreveport, LA',
-    entryFee: 35,
-    sections: ['Open', 'U2000', 'U1200'],
-    status: 'upcoming',
-  },
-  {
-    id: 'lafayette-winter-classic-2026',
-    name: 'Lafayette Winter Classic',
-    date: 'Saturday, February 8, 2026',
-    location: 'Lafayette, LA',
-    entryFee: 40,
-    sections: ['Open', 'U1800', 'U1400', 'Scholastic'],
-    status: 'active',
-  },
-  {
-    id: 'state-championship-2025',
-    name: 'Louisiana State Championship',
-    date: 'November 15–17, 2025',
-    location: 'New Orleans, LA',
-    entryFee: 75,
-    sections: ['Championship', 'Reserve', 'Class A', 'Class B'],
-    status: 'completed',
-  },
-  {
-    id: 'baton-rouge-fall-open-2025',
-    name: 'Baton Rouge Fall Open',
-    date: 'Saturday, October 11, 2025',
-    location: 'Baton Rouge, LA',
-    entryFee: 45,
-    sections: ['Open', 'U2000', 'U1600', 'U1200'],
-    status: 'completed',
-  },
-  {
-    id: 'monroe-scholastic-2025',
-    name: 'Monroe Scholastic Championship',
-    date: 'Saturday, September 20, 2025',
-    location: 'Monroe, LA',
-    entryFee: 25,
-    sections: ['K–5', '6–8', '9–12', 'Open Scholastic'],
-    status: 'completed',
-  },
-]
 
 const statusConfig: Record<
   TournamentStatus,
@@ -103,7 +31,7 @@ const statusConfig: Record<
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
-function TournamentCard({ tournament }: { tournament: Tournament }) {
+function TournamentCard({ tournament }: { tournament: ApiTournamentListItem }) {
   const status = statusConfig[tournament.status]
 
   return (
@@ -152,7 +80,7 @@ function TournamentCard({ tournament }: { tournament: Tournament }) {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            ${tournament.entryFee} entry
+            ${tournament.entry_fee} entry
           </p>
         </div>
 
@@ -172,6 +100,26 @@ function TournamentCard({ tournament }: { tournament: Tournament }) {
 }
 
 export function TournamentsPage() {
+  const [tournaments, setTournaments] = useState<ApiTournamentListItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function load() {
+      try {
+        setTournaments(await getTournaments())
+        setError(null)
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Failed to load tournaments',
+        )
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [])
+
   const upcomingAndActive = tournaments.filter(
     (t) => t.status === 'upcoming' || t.status === 'active',
   )
@@ -196,33 +144,59 @@ export function TournamentsPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-12">
-        <h2 className="text-2xl font-bold text-[#1a2744]">
-          Upcoming &amp; Active
-        </h2>
-        <p className="mt-1 text-muted-foreground">
-          Tournaments open for registration or currently in progress.
-        </p>
-        <ul className="mt-8 space-y-4">
-          {upcomingAndActive.map((tournament) => (
-            <TournamentCard key={tournament.id} tournament={tournament} />
-          ))}
-        </ul>
-      </section>
+      {loading ? (
+        <section className="mx-auto max-w-6xl px-6 py-12">
+          <p className="text-muted-foreground">Loading tournaments…</p>
+        </section>
+      ) : error ? (
+        <section className="mx-auto max-w-6xl px-6 py-12">
+          <p className="text-destructive">{error}</p>
+        </section>
+      ) : (
+        <>
+          <section className="mx-auto max-w-6xl px-6 py-12">
+            <h2 className="text-2xl font-bold text-[#1a2744]">
+              Upcoming &amp; Active
+            </h2>
+            <p className="mt-1 text-muted-foreground">
+              Tournaments open for registration or currently in progress.
+            </p>
+            {upcomingAndActive.length === 0 ? (
+              <p className="mt-8 text-muted-foreground">
+                No upcoming or active tournaments at this time.
+              </p>
+            ) : (
+              <ul className="mt-8 space-y-4">
+                {upcomingAndActive.map((tournament) => (
+                  <TournamentCard key={tournament.id} tournament={tournament} />
+                ))}
+              </ul>
+            )}
+          </section>
 
-      <section className="bg-muted/30">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <h2 className="text-2xl font-bold text-[#1a2744]">Past Tournaments</h2>
-          <p className="mt-1 text-muted-foreground">
-            Results and details from completed events.
-          </p>
-          <ul className="mt-8 space-y-4">
-            {past.map((tournament) => (
-              <TournamentCard key={tournament.id} tournament={tournament} />
-            ))}
-          </ul>
-        </div>
-      </section>
+          <section className="bg-muted/30">
+            <div className="mx-auto max-w-6xl px-6 py-12">
+              <h2 className="text-2xl font-bold text-[#1a2744]">
+                Past Tournaments
+              </h2>
+              <p className="mt-1 text-muted-foreground">
+                Results and details from completed events.
+              </p>
+              {past.length === 0 ? (
+                <p className="mt-8 text-muted-foreground">
+                  No past tournaments to display.
+                </p>
+              ) : (
+                <ul className="mt-8 space-y-4">
+                  {past.map((tournament) => (
+                    <TournamentCard key={tournament.id} tournament={tournament} />
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+        </>
+      )}
     </div>
   )
 }
