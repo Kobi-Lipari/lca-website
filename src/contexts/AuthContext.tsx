@@ -10,6 +10,7 @@ import {
 import type { Session, User } from '@supabase/supabase-js'
 
 import { supabase } from '@/lib/supabase'
+import { syncMember as apiSyncMember } from '@/lib/api'
 
 interface AuthContextValue {
   user: User | null
@@ -22,6 +23,7 @@ interface AuthContextValue {
     metadata?: { fullName?: string; uscfId?: string },
   ) => Promise<{ error: string | null; needsEmailConfirmation: boolean }>
   signOut: () => Promise<void>
+  syncMember: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -40,10 +42,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    } = supabase.auth.onAuthStateChange(async (_event, nextSession) => {
       setSession(nextSession)
       setUser(nextSession?.user ?? null)
       setLoading(false)
+
+      if (nextSession?.user) {
+        try {
+          await apiSyncMember()
+        } catch {
+          // D1 sync may fail in local Vite-only dev without Pages Functions
+        }
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -83,6 +93,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut()
   }, [])
 
+  const syncMember = useCallback(async () => {
+    await apiSyncMember()
+  }, [])
+
   const value = useMemo(
     () => ({
       user,
@@ -91,8 +105,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signUp,
       signOut,
+      syncMember,
     }),
-    [user, session, loading, signIn, signUp, signOut],
+    [user, session, loading, signIn, signUp, signOut, syncMember],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
