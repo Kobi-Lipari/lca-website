@@ -20,7 +20,7 @@ const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function LoginPage() {
-  const { user, loading, signIn } = useAuth()
+  const { user, loading, signIn, syncMember } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [error, setError] = useState<string | null>(null)
@@ -48,6 +48,12 @@ export function LoginPage() {
       setError(signInError)
       setSubmitting(false)
       return
+    }
+
+    try {
+      await syncMember()
+    } catch {
+      // Continue even if D1 sync fails (e.g. local dev without Pages Functions)
     }
 
     navigate(redirectTo, { replace: true })
