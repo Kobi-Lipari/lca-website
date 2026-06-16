@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -9,210 +10,13 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import {
+  getTournament,
+  type ApiRosterPlayer,
+  type ApiTournamentDetail,
+  type TournamentStatus,
+} from '@/lib/api'
 import { cn } from '@/lib/utils'
-
-type TournamentStatus = 'upcoming' | 'active' | 'completed'
-
-interface TournamentSection {
-  name: string
-  entryFee: number
-  prizeFund?: string
-}
-
-interface RegisteredPlayer {
-  name: string
-  section: string
-  rating?: number
-  uscfId?: string
-}
-
-interface TournamentDetail {
-  id: string
-  name: string
-  date: string
-  location: string
-  venue: string
-  status: TournamentStatus
-  rounds: number
-  maxPlayers: number
-  registrationDeadline: string
-  description: string
-  sections: TournamentSection[]
-  roster: RegisteredPlayer[]
-}
-
-const tournamentDetails: Record<string, TournamentDetail> = {
-  'spring-open-2026': {
-    id: 'spring-open-2026',
-    name: 'LCA Spring Open',
-    date: 'Saturday, March 14, 2026',
-    location: 'Baton Rouge, LA',
-    venue: 'Baton Rouge Community Center, 555 Government St',
-    status: 'upcoming',
-    rounds: 5,
-    maxPlayers: 120,
-    registrationDeadline: 'March 12, 2026 at 11:59 PM',
-    description:
-      'The LCA Spring Open kicks off the 2026 tournament season with five rounds of USCF-rated Swiss pairings. Open to all players — join competitors from across Louisiana for a full day of chess.',
-    sections: [
-      { name: 'Open', entryFee: 45, prizeFund: '$800' },
-      { name: 'U1800', entryFee: 40, prizeFund: '$400' },
-      { name: 'U1400', entryFee: 35, prizeFund: '$250' },
-    ],
-    roster: [
-      { name: 'James Whitfield', section: 'Open', rating: 2145, uscfId: '12345678' },
-      { name: 'Maria Santos', section: 'Open', rating: 1987, uscfId: '23456789' },
-      { name: 'David Chen', section: 'U1800', rating: 1762, uscfId: '34567890' },
-      { name: 'Priya Patel', section: 'U1800', rating: 1698, uscfId: '45678901' },
-      { name: 'Tyler Brooks', section: 'U1400', rating: 1385, uscfId: '56789012' },
-    ],
-  },
-  'new-orleans-classic-2026': {
-    id: 'new-orleans-classic-2026',
-    name: 'New Orleans Classic',
-    date: 'Saturday, April 18, 2026',
-    location: 'New Orleans, LA',
-    venue: 'New Orleans Marriott, 555 Canal St',
-    status: 'upcoming',
-    rounds: 4,
-    maxPlayers: 80,
-    registrationDeadline: 'April 16, 2026 at 11:59 PM',
-    description:
-      'A four-round Swiss tournament in the heart of New Orleans. Features Open, U1600, and Scholastic sections with cash prizes in each.',
-    sections: [
-      { name: 'Open', entryFee: 40, prizeFund: '$600' },
-      { name: 'U1600', entryFee: 35, prizeFund: '$300' },
-      { name: 'Scholastic', entryFee: 20, prizeFund: 'Trophies' },
-    ],
-    roster: [
-      { name: 'Andre Williams', section: 'Open', rating: 2055, uscfId: '67890123' },
-      { name: 'Sophie Martin', section: 'U1600', rating: 1542, uscfId: '78901234' },
-      { name: 'Ethan Nguyen', section: 'Scholastic', rating: 1120, uscfId: '89012345' },
-    ],
-  },
-  'shreveport-summer-swiss-2026': {
-    id: 'shreveport-summer-swiss-2026',
-    name: 'Shreveport Summer Swiss',
-    date: 'Saturday, June 6, 2026',
-    location: 'Shreveport, LA',
-    venue: 'Shreveport Public Library, Main Branch',
-    status: 'upcoming',
-    rounds: 5,
-    maxPlayers: 64,
-    registrationDeadline: 'June 4, 2026 at 11:59 PM',
-    description:
-      'Beat the summer heat with five rounds of competitive chess in Shreveport. Family-friendly venue with plenty of parking.',
-    sections: [
-      { name: 'Open', entryFee: 35, prizeFund: '$500' },
-      { name: 'U2000', entryFee: 30, prizeFund: '$250' },
-      { name: 'U1200', entryFee: 25, prizeFund: '$150' },
-    ],
-    roster: [
-      { name: 'Robert Hale', section: 'Open', rating: 1890, uscfId: '90123456' },
-      { name: 'Linda Foster', section: 'U2000', rating: 1823, uscfId: '01234567' },
-    ],
-  },
-  'lafayette-winter-classic-2026': {
-    id: 'lafayette-winter-classic-2026',
-    name: 'Lafayette Winter Classic',
-    date: 'Saturday, February 8, 2026',
-    location: 'Lafayette, LA',
-    venue: 'Lafayette Science Museum',
-    status: 'active',
-    rounds: 5,
-    maxPlayers: 96,
-    registrationDeadline: 'Registration closed',
-    description:
-      'Round 3 is currently in progress. Five-round Swiss with four sections including a dedicated Scholastic division.',
-    sections: [
-      { name: 'Open', entryFee: 40, prizeFund: '$700' },
-      { name: 'U1800', entryFee: 35, prizeFund: '$350' },
-      { name: 'U1400', entryFee: 30, prizeFund: '$200' },
-      { name: 'Scholastic', entryFee: 20, prizeFund: 'Trophies' },
-    ],
-    roster: [
-      { name: 'Carlos Rivera', section: 'Open', rating: 2210, uscfId: '11223344' },
-      { name: 'Anna Kowalski', section: 'Open', rating: 2012, uscfId: '22334455' },
-      { name: 'Marcus Johnson', section: 'U1800', rating: 1745, uscfId: '33445566' },
-      { name: 'Emily Tran', section: 'U1400', rating: 1360, uscfId: '44556677' },
-      { name: 'Noah Davis', section: 'Scholastic', rating: 980, uscfId: '55667788' },
-      { name: 'Grace Wilson', section: 'Scholastic', rating: 1055, uscfId: '66778899' },
-    ],
-  },
-  'state-championship-2025': {
-    id: 'state-championship-2025',
-    name: 'Louisiana State Championship',
-    date: 'November 15–17, 2025',
-    location: 'New Orleans, LA',
-    venue: 'Hilton New Orleans Riverside',
-    status: 'completed',
-    rounds: 7,
-    maxPlayers: 150,
-    registrationDeadline: 'Registration closed',
-    description:
-      'The premier event of the Louisiana chess calendar. Seven rounds over three days determine the state champion across four sections.',
-    sections: [
-      { name: 'Championship', entryFee: 75, prizeFund: '$2,000' },
-      { name: 'Reserve', entryFee: 60, prizeFund: '$800' },
-      { name: 'Class A', entryFee: 50, prizeFund: '$400' },
-      { name: 'Class B', entryFee: 40, prizeFund: '$250' },
-    ],
-    roster: [
-      { name: 'James Whitfield', section: 'Championship', rating: 2145, uscfId: '12345678' },
-      { name: 'Andre Williams', section: 'Championship', rating: 2055, uscfId: '67890123' },
-      { name: 'Maria Santos', section: 'Reserve', rating: 1987, uscfId: '23456789' },
-      { name: 'David Chen', section: 'Class A', rating: 1762, uscfId: '34567890' },
-    ],
-  },
-  'baton-rouge-fall-open-2025': {
-    id: 'baton-rouge-fall-open-2025',
-    name: 'Baton Rouge Fall Open',
-    date: 'Saturday, October 11, 2025',
-    location: 'Baton Rouge, LA',
-    venue: 'Baton Rouge Community Center',
-    status: 'completed',
-    rounds: 5,
-    maxPlayers: 100,
-    registrationDeadline: 'Registration closed',
-    description:
-      'A five-round fall classic that drew players from across the Gulf South. Final standings are published below.',
-    sections: [
-      { name: 'Open', entryFee: 45, prizeFund: '$700' },
-      { name: 'U2000', entryFee: 40, prizeFund: '$350' },
-      { name: 'U1600', entryFee: 35, prizeFund: '$200' },
-      { name: 'U1200', entryFee: 30, prizeFund: '$150' },
-    ],
-    roster: [
-      { name: 'Robert Hale', section: 'Open', rating: 1890, uscfId: '90123456' },
-      { name: 'Priya Patel', section: 'U1600', rating: 1698, uscfId: '45678901' },
-      { name: 'Tyler Brooks', section: 'U1200', rating: 1385, uscfId: '56789012' },
-    ],
-  },
-  'monroe-scholastic-2025': {
-    id: 'monroe-scholastic-2025',
-    name: 'Monroe Scholastic Championship',
-    date: 'Saturday, September 20, 2025',
-    location: 'Monroe, LA',
-    venue: 'Monroe Civic Center',
-    status: 'completed',
-    rounds: 4,
-    maxPlayers: 80,
-    registrationDeadline: 'Registration closed',
-    description:
-      'Louisiana\'s premier scholastic event, organized by grade level. Trophies awarded in each section.',
-    sections: [
-      { name: 'K–5', entryFee: 20, prizeFund: 'Trophies' },
-      { name: '6–8', entryFee: 20, prizeFund: 'Trophies' },
-      { name: '9–12', entryFee: 25, prizeFund: 'Trophies' },
-      { name: 'Open Scholastic', entryFee: 25, prizeFund: 'Trophies' },
-    ],
-    roster: [
-      { name: 'Ethan Nguyen', section: '6–8', rating: 1120, uscfId: '89012345' },
-      { name: 'Noah Davis', section: 'K–5', rating: 980, uscfId: '55667788' },
-      { name: 'Grace Wilson', section: '9–12', rating: 1055, uscfId: '66778899' },
-    ],
-  },
-}
 
 const statusConfig: Record<
   TournamentStatus,
@@ -237,9 +41,64 @@ const goldButtonClass =
 
 export function TournamentDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const tournament = id ? tournamentDetails[id] : undefined
+  const [tournament, setTournament] = useState<ApiTournamentDetail | null>(null)
+  const [roster, setRoster] = useState<ApiRosterPlayer[]>([])
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-  if (!tournament) {
+  useEffect(() => {
+    if (!id) {
+      setNotFound(true)
+      setLoading(false)
+      return
+    }
+
+    async function load() {
+      try {
+        const data = await getTournament(id!)
+        setTournament(data.tournament)
+        setRoster(data.roster)
+        setNotFound(false)
+        setError(null)
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Failed to load tournament'
+        if (message.toLowerCase().includes('not found')) {
+          setNotFound(true)
+        } else {
+          setError(message)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-12">
+        <p className="text-muted-foreground">Loading tournament…</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-6xl px-6 py-12 text-center">
+        <p className="text-destructive">{error}</p>
+        <Button asChild className="mt-6" variant="outline">
+          <Link to="/tournaments">
+            <ArrowLeft className="size-4" />
+            Back to tournaments
+          </Link>
+        </Button>
+      </div>
+    )
+  }
+
+  if (notFound || !tournament) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-12 text-center">
         <Trophy className="mx-auto size-12 text-muted-foreground" />
@@ -261,6 +120,7 @@ export function TournamentDetailPage() {
   }
 
   const status = statusConfig[tournament.status]
+  const maxPlayers = tournament.max_players ?? '—'
 
   return (
     <div>
@@ -303,7 +163,7 @@ export function TournamentDetailPage() {
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Users className="size-4 shrink-0 text-[#c8a94a]" />
-              {tournament.roster.length} / {tournament.maxPlayers} registered
+              {roster.length} / {maxPlayers} registered
             </span>
           </div>
         </div>
@@ -314,13 +174,17 @@ export function TournamentDetailPage() {
           <div className="space-y-8 lg:col-span-2">
             <div>
               <h2 className="text-xl font-bold text-[#1a2744]">About</h2>
-              <p className="mt-3 text-muted-foreground">
-                {tournament.description}
-              </p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                <span className="font-medium text-[#1a2744]">Venue:</span>{' '}
-                {tournament.venue}
-              </p>
+              {tournament.description && (
+                <p className="mt-3 text-muted-foreground">
+                  {tournament.description}
+                </p>
+              )}
+              {tournament.venue && (
+                <p className="mt-2 text-sm text-muted-foreground">
+                  <span className="font-medium text-[#1a2744]">Venue:</span>{' '}
+                  {tournament.venue}
+                </p>
+              )}
             </div>
 
             <div>
@@ -363,26 +227,30 @@ export function TournamentDetailPage() {
               <h2 className="text-xl font-bold text-[#1a2744]">
                 Registered Players
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Placeholder roster — live registration data coming soon.
-              </p>
-              <ul className="mt-4 divide-y rounded-xl border bg-card">
-                {tournament.roster.map((player) => (
-                  <li
-                    key={`${player.name}-${player.section}`}
-                    className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div>
-                      <p className="font-medium text-[#1a2744]">{player.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {player.section}
-                        {player.rating != null && ` · ${player.rating}`}
-                        {player.uscfId && ` · USCF ${player.uscfId}`}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              {roster.length === 0 ? (
+                <p className="mt-4 text-sm text-muted-foreground">
+                  No players registered yet.
+                </p>
+              ) : (
+                <ul className="mt-4 divide-y rounded-xl border bg-card">
+                  {roster.map((player) => (
+                    <li
+                      key={`${player.full_name}-${player.section}`}
+                      className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                      <div>
+                        <p className="font-medium text-[#1a2744]">
+                          {player.full_name}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {player.section}
+                          {player.uscf_id && ` · USCF ${player.uscf_id}`}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           </div>
 
@@ -390,17 +258,18 @@ export function TournamentDetailPage() {
             <h2 className="text-lg font-bold text-[#1a2744]">Registration</h2>
 
             <dl className="mt-4 space-y-3 text-sm">
-              <div>
-                <dt className="font-medium text-[#1a2744]">Deadline</dt>
-                <dd className="text-muted-foreground">
-                  {tournament.registrationDeadline}
-                </dd>
-              </div>
+              {tournament.registration_deadline && (
+                <div>
+                  <dt className="font-medium text-[#1a2744]">Deadline</dt>
+                  <dd className="text-muted-foreground">
+                    {tournament.registration_deadline}
+                  </dd>
+                </div>
+              )}
               <div>
                 <dt className="font-medium text-[#1a2744]">Capacity</dt>
                 <dd className="text-muted-foreground">
-                  {tournament.roster.length} of {tournament.maxPlayers} spots
-                  filled
+                  {roster.length} of {maxPlayers} spots filled
                 </dd>
               </div>
               <div>
