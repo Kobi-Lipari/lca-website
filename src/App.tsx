@@ -15,6 +15,7 @@ import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { ManageClubPage } from '@/pages/ManageClubPage'
 import { MembershipPage } from '@/pages/MembershipPage'
+import { MembershipSuccessPage } from '@/pages/MembershipSuccessPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { TournamentDetailPage } from '@/pages/TournamentDetailPage'
 import { TournamentManagePage } from '@/pages/TournamentManagePage'
@@ -35,6 +36,7 @@ function App() {
             <Route path="/clubs/:id" element={<ClubDetailPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/membership" element={<MembershipPage />} />
+            <Route path="/membership/success" element={<MembershipSuccessPage />} />
             <Route
               path="/dashboard"
               element={

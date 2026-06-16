@@ -2,6 +2,12 @@ export interface Env {
   DB: D1Database
   SUPABASE_URL: string
   SUPABASE_SERVICE_ROLE_KEY: string
+  STRIPE_MEMBERSHIP_URL?: string
+  STRIPE_MEMBERSHIP_REGULAR_URL?: string
+  STRIPE_MEMBERSHIP_SCHOLASTIC_URL?: string
+  STRIPE_MEMBERSHIP_CLUB_URL?: string
+  STRIPE_TOURNAMENT_PAYMENT_URL?: string
+  STRIPE_WEBHOOK_SECRET?: string
 }
 
 export interface MemberRow {
