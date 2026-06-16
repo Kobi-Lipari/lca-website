@@ -9,8 +9,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "pages:dev": "npm run build && wrangler pages dev dist",
-    "db:migrate:local": "wrangler d1 execute lca-db --local --file=migrations/0001_schema.sql && wrangler d1 execute lca-db --local --file=migrations/0002_seed.sql",
-    "db:migrate:remote": "wrangler d1 execute lca-db --remote --file=migrations/0001_schema.sql && wrangler d1 execute lca-db --remote --file=migrations/0002_seed.sql"
+    "db:migrate:local": "wrangler d1 execute lca-db --local --file=migrations/0001_schema.sql && wrangler d1 execute lca-db --local --file=migrations/0002_seed.sql && wrangler d1 execute lca-db --local --file=migrations/0003_roles_and_directors.sql",
+    "db:migrate:remote": "wrangler d1 execute lca-db --remote --file=migrations/0001_schema.sql && wrangler d1 execute lca-db --remote --file=migrations/0002_seed.sql && wrangler d1 execute lca-db --remote --file=migrations/0003_roles_and_directors.sql",
+    "db:migrate:roles:local": "wrangler d1 execute lca-db --local --file=migrations/0003_roles_and_directors.sql",
+    "db:migrate:roles:remote": "wrangler d1 execute lca-db --remote --file=migrations/0003_roles_and_directors.sql"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.9",
