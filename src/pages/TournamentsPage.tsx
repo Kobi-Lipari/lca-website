@@ -9,6 +9,7 @@ import {
   type TournamentStatus,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const statusConfig: Record<
   TournamentStatus,
@@ -100,6 +101,7 @@ function TournamentCard({ tournament }: { tournament: ApiTournamentListItem }) {
 }
 
 export function TournamentsPage() {
+  usePageTitle('Tournaments')
   const [tournaments, setTournaments] = useState<ApiTournamentListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

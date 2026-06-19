@@ -1,12 +1,14 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Trophy } from 'lucide-react'
+import { ArrowLeft, Sparkles, Trophy } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { usePageTitle } from '@/hooks/usePageTitle'
 import {
   adminCreatePairings,
+  adminGeneratePairings,
   adminGetTournamentManage,
   adminUpdateGameResult,
   type ApiStanding,
@@ -29,7 +31,13 @@ export function TournamentManagePage() {
   const [standings, setStandings] = useState<ApiStanding[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [generating, setGenerating] = useState(false)
   const [savingPairings, setSavingPairings] = useState(false)
+
+  const [generateForm, setGenerateForm] = useState({
+    round: '1',
+    section: 'Open',
+  })
 
   const [pairingForm, setPairingForm] = useState({
     round: '1',
@@ -38,6 +46,10 @@ export function TournamentManagePage() {
     blackMemberId: '',
     board: '1',
   })
+
+  usePageTitle(
+    tournament ? `Manage ${tournament.name}` : 'Manage Tournament',
+  )
 
   async function loadManage() {
     if (!id) return
@@ -48,12 +60,9 @@ export function TournamentManagePage() {
       setTournament(data.tournament)
       setGames(data.games)
       setStandings(data.standings)
-      if (data.tournament.sections[0]?.name) {
-        setPairingForm((p) => ({
-          ...p,
-          section: data.tournament.sections[0].name,
-        }))
-      }
+      const defaultSection = data.tournament.sections[0]?.name ?? 'Open'
+      setGenerateForm((p) => ({ ...p, section: defaultSection }))
+      setPairingForm((p) => ({ ...p, section: defaultSection }))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load tournament')
     } finally {
@@ -64,6 +73,23 @@ export function TournamentManagePage() {
   useEffect(() => {
     loadManage()
   }, [id])
+
+  async function handleGeneratePairings() {
+    if (!id) return
+    setGenerating(true)
+    setError(null)
+    try {
+      await adminGeneratePairings(id, {
+        round: Number(generateForm.round),
+        section: generateForm.section,
+      })
+      await loadManage()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate pairings')
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   async function handleAddPairing(event: FormEvent) {
     event.preventDefault()
@@ -109,7 +135,9 @@ export function TournamentManagePage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-12">
-        <p className="text-muted-foreground">Loading tournament...</p>
+        <p className="text-muted-foreground" role="status">
+          Loading tournament...
+        </p>
       </div>
     )
   }
@@ -124,6 +152,10 @@ export function TournamentManagePage() {
       </div>
     )
   }
+
+  const maxRound =
+    games.length > 0 ? Math.max(...games.map((g) => g.round)) : 0
+  const suggestedRound = String(maxRound > 0 ? maxRound + 1 : 1)
 
   return (
     <div>
@@ -155,37 +187,40 @@ export function TournamentManagePage() {
           </p>
         )}
 
-        <form
-          onSubmit={handleAddPairing}
-          className="rounded-xl border bg-card p-6 shadow-sm"
-        >
-          <h2 className="text-lg font-bold text-[#1a2744]">Add pairing</h2>
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <div className="flex items-center gap-2">
+            <Sparkles className="size-5 text-[#c8a94a]" />
+            <h2 className="text-lg font-bold text-[#1a2744]">
+              Generate pairings (FIDE Dutch)
+            </h2>
+          </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            Enter member IDs from the registration roster. Manual pairings for
-            now — bbpPairings integration coming later.
+            Pair all registered players in a section using the FIDE Dutch system
+            (C.04) — rating order in round 1, score groups with optimal matching
+            thereafter.
           </p>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <div className="space-y-2">
-              <Label htmlFor="round">Round</Label>
+              <Label htmlFor="gen-round">Round</Label>
               <Input
-                id="round"
+                id="gen-round"
                 type="number"
                 min={1}
-                value={pairingForm.round}
+                value={generateForm.round}
+                placeholder={suggestedRound}
                 onChange={(e) =>
-                  setPairingForm((p) => ({ ...p, round: e.target.value }))
+                  setGenerateForm((p) => ({ ...p, round: e.target.value }))
                 }
-                required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="section">Section</Label>
+              <Label htmlFor="gen-section">Section</Label>
               <select
-                id="section"
+                id="gen-section"
                 className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                value={pairingForm.section}
+                value={generateForm.section}
                 onChange={(e) =>
-                  setPairingForm((p) => ({ ...p, section: e.target.value }))
+                  setGenerateForm((p) => ({ ...p, section: e.target.value }))
                 }
               >
                 {tournament.sections.map((s) => (
@@ -195,60 +230,111 @@ export function TournamentManagePage() {
                 ))}
               </select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="board">Board</Label>
-              <Input
-                id="board"
-                type="number"
-                min={1}
-                value={pairingForm.board}
-                onChange={(e) =>
-                  setPairingForm((p) => ({ ...p, board: e.target.value }))
-                }
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="white">White (member ID)</Label>
-              <Input
-                id="white"
-                value={pairingForm.whiteMemberId}
-                onChange={(e) =>
-                  setPairingForm((p) => ({
-                    ...p,
-                    whiteMemberId: e.target.value,
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="black">Black (member ID)</Label>
-              <Input
-                id="black"
-                value={pairingForm.blackMemberId}
-                onChange={(e) =>
-                  setPairingForm((p) => ({
-                    ...p,
-                    blackMemberId: e.target.value,
-                  }))
-                }
-              />
+            <div className="flex items-end">
+              <Button
+                type="button"
+                className={cn('w-full', goldButtonClass)}
+                disabled={generating}
+                onClick={handleGeneratePairings}
+              >
+                {generating ? 'Generating…' : 'Generate pairings'}
+              </Button>
             </div>
           </div>
-          <Button
-            type="submit"
-            className={cn('mt-4', goldButtonClass)}
-            disabled={savingPairings}
-          >
-            {savingPairings ? 'Saving...' : 'Add pairing'}
-          </Button>
-        </form>
+        </div>
+
+        <details className="rounded-xl border bg-card p-6 shadow-sm">
+          <summary className="cursor-pointer text-lg font-bold text-[#1a2744]">
+            Manual pairing override
+          </summary>
+          <form onSubmit={handleAddPairing} className="mt-4">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="space-y-2">
+                <Label htmlFor="round">Round</Label>
+                <Input
+                  id="round"
+                  type="number"
+                  min={1}
+                  value={pairingForm.round}
+                  onChange={(e) =>
+                    setPairingForm((p) => ({ ...p, round: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="section">Section</Label>
+                <select
+                  id="section"
+                  className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                  value={pairingForm.section}
+                  onChange={(e) =>
+                    setPairingForm((p) => ({ ...p, section: e.target.value }))
+                  }
+                >
+                  {tournament.sections.map((s) => (
+                    <option key={s.name} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="board">Board</Label>
+                <Input
+                  id="board"
+                  type="number"
+                  min={1}
+                  value={pairingForm.board}
+                  onChange={(e) =>
+                    setPairingForm((p) => ({ ...p, board: e.target.value }))
+                  }
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="white">White (member ID)</Label>
+                <Input
+                  id="white"
+                  value={pairingForm.whiteMemberId}
+                  onChange={(e) =>
+                    setPairingForm((p) => ({
+                      ...p,
+                      whiteMemberId: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="black">Black (member ID)</Label>
+                <Input
+                  id="black"
+                  value={pairingForm.blackMemberId}
+                  onChange={(e) =>
+                    setPairingForm((p) => ({
+                      ...p,
+                      blackMemberId: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <Button
+              type="submit"
+              variant="outline"
+              className="mt-4"
+              disabled={savingPairings}
+            >
+              {savingPairings ? 'Saving...' : 'Add manual pairing'}
+            </Button>
+          </form>
+        </details>
 
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h2 className="text-lg font-bold text-[#1a2744]">Pairings &amp; results</h2>
           {games.length === 0 ? (
             <p className="mt-4 text-sm text-muted-foreground">
-              No pairings entered yet.
+              No pairings yet. Generate round 1 pairings above.
             </p>
           ) : (
             <div className="mt-4 overflow-x-auto">
@@ -273,12 +359,13 @@ export function TournamentManagePage() {
                         {game.white_name ?? game.white_member_id ?? '—'}
                       </td>
                       <td className="px-3 py-2">
-                        {game.black_name ?? game.black_member_id ?? '—'}
+                        {game.black_name ?? game.black_member_id ?? 'BYE'}
                       </td>
                       <td className="px-3 py-2">
                         <select
                           className="rounded-md border bg-background px-2 py-1"
                           value={game.result}
+                          aria-label={`Result for board ${game.board}`}
                           onChange={(e) =>
                             handleResultChange(game.id, e.target.value)
                           }

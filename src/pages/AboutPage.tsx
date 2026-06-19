@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 interface BoardMember {
   name: string
@@ -53,6 +54,7 @@ const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function AboutPage() {
+  usePageTitle('About')
   return (
     <div>
       <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
