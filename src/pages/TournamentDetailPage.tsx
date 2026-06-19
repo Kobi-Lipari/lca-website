@@ -18,9 +18,11 @@ import {
   getTournament,
   type ApiRosterPlayer,
   type ApiTournamentDetail,
+  type ApiTournamentPairing,
   type TournamentStatus,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const statusConfig: Record<
   TournamentStatus,
@@ -49,6 +51,7 @@ export function TournamentDetailPage() {
   const { user } = useAuth()
   const [tournament, setTournament] = useState<ApiTournamentDetail | null>(null)
   const [roster, setRoster] = useState<ApiRosterPlayer[]>([])
+  const [pairings, setPairings] = useState<ApiTournamentPairing[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -60,6 +63,8 @@ export function TournamentDetailPage() {
     paymentUrl: string
     section: string
   } | null>(null)
+
+  usePageTitle(tournament?.name ?? 'Tournament')
 
   useEffect(() => {
     if (!id) {
@@ -73,6 +78,7 @@ export function TournamentDetailPage() {
         const data = await getTournament(id!)
         setTournament(data.tournament)
         setRoster(data.roster)
+        setPairings(data.pairings ?? [])
         setSelectedSection(data.tournament.sections[0]?.name ?? '')
         setNotFound(false)
         setError(null)
@@ -159,6 +165,15 @@ export function TournamentDetailPage() {
 
   const status = statusConfig[tournament.status]
   const maxPlayers = tournament.max_players ?? '—'
+
+  const pairingRounds = [...new Set(pairings.map((p) => p.round))].sort(
+    (a, b) => a - b,
+  )
+
+  function formatPlayer(name?: string, rating?: number | null) {
+    if (!name) return '—'
+    return rating != null ? `${name} (${rating})` : name
+  }
 
   return (
     <div>
@@ -273,12 +288,17 @@ export function TournamentDetailPage() {
                 <ul className="mt-4 divide-y rounded-xl border bg-card">
                   {roster.map((player) => (
                     <li
-                      key={`${player.full_name}-${player.section}`}
+                      key={player.member_id}
                       className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                       <div>
                         <p className="font-medium text-[#1a2744]">
                           {player.full_name}
+                          {player.uscf_rating != null && (
+                            <span className="ml-2 text-sm font-normal text-muted-foreground">
+                              {player.uscf_rating}
+                            </span>
+                          )}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {player.section}
@@ -290,6 +310,66 @@ export function TournamentDetailPage() {
                 </ul>
               )}
             </div>
+
+            {pairingRounds.length > 0 && (
+              <div>
+                <h2 className="text-xl font-bold text-[#1a2744]">Pairings</h2>
+                <div className="mt-4 space-y-6">
+                  {pairingRounds.map((round) => {
+                    const roundGames = pairings.filter((p) => p.round === round)
+                    const sections = [
+                      ...new Set(roundGames.map((g) => g.section)),
+                    ]
+                    return (
+                      <div key={round}>
+                        <h3 className="font-semibold text-[#1a2744]">
+                          Round {round}
+                        </h3>
+                        {sections.map((section) => (
+                          <div key={`${round}-${section}`} className="mt-3">
+                            <p className="text-sm font-medium text-[#c8a94a]">
+                              {section}
+                            </p>
+                            <ul className="mt-2 divide-y rounded-xl border bg-card">
+                              {roundGames
+                                .filter((g) => g.section === section)
+                                .map((game) => (
+                                  <li
+                                    key={game.id}
+                                    className="flex flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                                  >
+                                    <span className="text-muted-foreground">
+                                      Board {game.board}
+                                    </span>
+                                    <span>
+                                      {formatPlayer(
+                                        game.white_name,
+                                        game.white_rating,
+                                      )}{' '}
+                                      vs{' '}
+                                      {game.black_member_id
+                                        ? formatPlayer(
+                                            game.black_name,
+                                            game.black_rating,
+                                          )
+                                        : 'BYE'}
+                                    </span>
+                                    {game.result !== 'pending' && (
+                                      <span className="font-medium">
+                                        {game.result}
+                                      </span>
+                                    )}
+                                  </li>
+                                ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="h-fit rounded-xl border bg-card p-6 shadow-sm lg:sticky lg:top-20">

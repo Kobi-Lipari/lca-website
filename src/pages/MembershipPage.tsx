@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/AuthContext'
 import { createMembershipCheckout } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 interface MembershipTier {
   id: string
@@ -161,6 +162,7 @@ function TierButton({
 }
 
 export function MembershipPage() {
+  usePageTitle('Membership')
   const { user, member } = useAuth()
   const navigate = useNavigate()
 
@@ -332,3 +334,4 @@ export function MembershipPage() {
     </div>
   )
 }
+

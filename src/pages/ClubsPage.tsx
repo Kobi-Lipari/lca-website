@@ -5,11 +5,13 @@ import { Calendar, MapPin, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getClubs, type ApiClubListItem } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function ClubsPage() {
+  usePageTitle('Clubs')
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -95,3 +97,4 @@ export function ClubsPage() {
     </div>
   )
 }
+

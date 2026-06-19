@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-
 import type { Env } from '../types'
 
 export function getSupabaseAdmin(env: Env) {
@@ -24,6 +23,7 @@ export async function syncSupabaseUserMetadata(
     },
   })
   if (error) {
-    throw new Error(`Failed to sync Supabase metadata: ${error.message}`)
+    // Log warning but don't fail — seed/test members may not exist in Supabase
+    console.warn(`Could not sync Supabase metadata for ${userId}: ${error.message}`)
   }
 }

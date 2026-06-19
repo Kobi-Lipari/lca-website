@@ -5,6 +5,8 @@ export interface ApiMember {
   email: string
   full_name: string
   uscf_id: string | null
+  uscf_rating: number | null
+  uscf_rating_updated_at: string | null
   membership_status: 'active' | 'expired' | 'pending'
   membership_expiry: string | null
   role: string
@@ -168,10 +170,27 @@ export interface ApiTournamentDetail {
 }
 
 export interface ApiRosterPlayer {
+  member_id: string
   section: string
   payment_status: string
   full_name: string
   uscf_id: string | null
+  uscf_rating: number | null
+}
+
+export interface ApiTournamentPairing {
+  id: string
+  tournament_id: string
+  round: number
+  board: number
+  section: string
+  white_member_id: string | null
+  black_member_id: string | null
+  result: string
+  white_name?: string
+  black_name?: string
+  white_rating?: number | null
+  black_rating?: number | null
 }
 
 export async function getClubs(): Promise<ApiClubListItem[]> {
@@ -201,8 +220,19 @@ export async function getTournaments(): Promise<ApiTournamentListItem[]> {
 export async function getTournament(id: string): Promise<{
   tournament: ApiTournamentDetail
   roster: ApiRosterPlayer[]
+  pairings: ApiTournamentPairing[]
 }> {
   const response = await fetch(`/api/tournaments/${id}`)
+  return handleResponse(response)
+}
+
+export async function lookupUscfRating(uscfId: string): Promise<{
+  uscfId: string
+  rating: number | null
+  name?: string | null
+  cached?: boolean
+}> {
+  const response = await fetch(`/api/uscf/${encodeURIComponent(uscfId)}`)
   return handleResponse(response)
 }
 
@@ -399,6 +429,26 @@ export async function adminCreatePairings(
     body: JSON.stringify(body),
   })
   return handleResponse<{ games: ApiTournamentGame[] }>(response)
+}
+
+export async function adminGeneratePairings(
+  tournamentId: string,
+  body: { round: number; section: string },
+) {
+  const response = await fetch(
+    `/api/admin/tournaments/${tournamentId}/generate-pairings`,
+    {
+      method: 'POST',
+      headers: await authHeaders(),
+      body: JSON.stringify(body),
+    },
+  )
+  return handleResponse<{
+    round: number
+    section: string
+    pairings: ApiTournamentGame[]
+    count: number
+  }>(response)
 }
 
 export async function adminUpdateGameResult(
