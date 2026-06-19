@@ -1,4 +1,4 @@
-import type { Env } from '../../../types'
+import type { Env } from '../../types'
 import { isResponse, requireClubRep } from '../../../utils/auth'
 import {
   errorResponse,

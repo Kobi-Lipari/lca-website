@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getTournaments, type ApiTournamentListItem } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 interface PlaceholderNewsItem {
   id: string
@@ -47,6 +48,7 @@ const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function HomePage() {
+  usePageTitle('Home')
   const [upcomingTournaments, setUpcomingTournaments] = useState<
     ApiTournamentListItem[]
   >([])

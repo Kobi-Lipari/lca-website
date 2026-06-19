@@ -18,6 +18,7 @@ import {
 } from '@/lib/api'
 import { MEMBER_ROLES, ROLE_LABELS, type MemberRole } from '@/lib/roles'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 type AdminTab = 'members' | 'tournaments' | 'clubs'
 
@@ -25,6 +26,7 @@ const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function AdminPage() {
+  usePageTitle('Admin Panel')
   const [tab, setTab] = useState<AdminTab>('members')
   const [members, setMembers] = useState<ApiAdminMember[]>([])
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])

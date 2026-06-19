@@ -22,6 +22,7 @@ import {
 } from '@/lib/api'
 import { ROLE_LABELS } from '@/lib/roles'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 type MembershipStatus = 'active' | 'expired' | 'pending'
 
@@ -57,6 +58,8 @@ export function DashboardPage() {
   const [uscfId, setUscfId] = useState('')
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+
+  usePageTitle('My Dashboard')
 
   useEffect(() => {
     async function load() {
@@ -125,7 +128,9 @@ export function DashboardPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-12">
         {loadingData && (
-          <p className="text-muted-foreground">Loading your profile...</p>
+          <p className="text-muted-foreground" role="status">
+            Loading your profile...
+          </p>
         )}
         {loadError && (
           <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -252,6 +257,22 @@ export function DashboardPage() {
                     <div>
                       <dt className="font-medium text-[#1a2744]">USCF ID</dt>
                       <dd className="text-muted-foreground">{member.uscf_id}</dd>
+                    </div>
+                  )}
+                  {member?.uscf_rating != null && (
+                    <div>
+                      <dt className="font-medium text-[#1a2744]">USCF Rating</dt>
+                      <dd className="text-muted-foreground">
+                        {member.uscf_rating}
+                        {member.uscf_rating_updated_at && (
+                          <span className="block text-xs text-muted-foreground/80">
+                            Updated{' '}
+                            {new Date(
+                              member.uscf_rating_updated_at,
+                            ).toLocaleDateString()}
+                          </span>
+                        )}
+                      </dd>
                     </div>
                   )}
                 </dl>

@@ -15,11 +15,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function LoginPage() {
+  usePageTitle('Log In')
   const { user, loading, signIn, syncMember } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()

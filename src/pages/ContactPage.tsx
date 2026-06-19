@@ -14,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
@@ -21,6 +22,7 @@ const goldButtonClass =
 const formspreeId = import.meta.env.VITE_FORMSPREE_FORM_ID
 
 export function ContactPage() {
+  usePageTitle('Contact')
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -54,9 +56,17 @@ export function ContactPage() {
     return (
       <div className="mx-auto max-w-6xl px-6 py-12">
         <p className="text-destructive">
-          Contact form is not configured. Set{' '}
-          <code className="text-sm">VITE_FORMSPREE_FORM_ID</code> in your
-          environment variables.
+          Contact form is not configured. Create a form at{' '}
+          <a
+            href="https://formspree.io"
+            className="underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            formspree.io
+          </a>{' '}
+          and set <code className="text-sm">VITE_FORMSPREE_FORM_ID</code> in
+          your environment variables.
         </p>
       </div>
     )
@@ -227,3 +237,4 @@ export function ContactPage() {
     </div>
   )
 }
+
