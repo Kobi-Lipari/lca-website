@@ -9,5 +9,9 @@ database_id = "e891b93f-e7fe-48d0-9afc-8570d805ef08"
 
 [vars]
 SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
-# Set SUPABASE_SERVICE_ROLE_KEY as a secret (never commit):
+FROM_EMAIL = "noreply@louisianachess.org"
+CONTACT_EMAIL = "contact@louisianachess.org"
+SUPPORT_EMAIL = "support@louisianachess.org"
+
+# Set these as secrets (never commit):
 #   npx wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY

@@ -5,6 +5,7 @@ import {
   Calendar,
   CreditCard,
   LayoutDashboard,
+  MessageSquare,
   Shield,
   Trophy,
   User,
@@ -379,6 +380,20 @@ export function DashboardPage() {
           )}
         </div>
       </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-8">
+        <div className="flex items-center gap-2 mb-4">
+          <MessageSquare className="size-5 text-[#c8a94a]" />
+          <h2 className="text-lg font-bold text-[#1a2744]">Need help?</h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-3">
+          Have a question or issue? Our support team is here to help.
+        </p>
+        <Button asChild variant="outline">
+          <Link to="/support">Open a support ticket</Link>
+        </Button>
+      </section>
+
     </div>
   )
 }
