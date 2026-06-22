@@ -1,11 +1,11 @@
-import type { Env } from '../../../types'
-import { verifySupabaseUser } from '../../../utils/auth'
+import type { Env } from '../../../../types'
+import { verifySupabaseUser } from '../../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
   jsonResponse,
   parseJsonBody,
-} from '../../../utils/response'
+} from '../../../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
