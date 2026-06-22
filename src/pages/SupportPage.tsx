@@ -1,0 +1,310 @@
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { MessageSquare, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { useAuth } from '@/contexts/AuthContext'
+import {
+  createSupportTicket,
+  getMyTickets,
+  getTicket,
+  replyToTicket,
+  type ApiSupportTicket,
+  type ApiSupportMessage,
+} from '@/lib/api'
+
+const statusColors: Record<string, string> = {
+  open: 'bg-blue-100 text-blue-800',
+  in_progress: 'bg-yellow-100 text-yellow-800',
+  resolved: 'bg-emerald-100 text-emerald-800',
+}
+
+export function SupportPage() {
+  const { user, member } = useAuth()
+  const [view, setView] = useState<'list' | 'new' | 'ticket'>('list')
+  const [tickets, setTickets] = useState<ApiSupportTicket[]>([])
+  const [selectedTicket, setSelectedTicket] = useState<{
+    ticket: ApiSupportTicket
+    messages: ApiSupportMessage[]
+  } | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [replyBody, setReplyBody] = useState('')
+  const [sending, setSending] = useState(false)
+
+  const [form, setForm] = useState({
+    name: member?.full_name ?? '',
+    email: user?.email ?? '',
+    subject: '',
+    body: '',
+  })
+  const [submitStatus, setSubmitStatus] = useState
+    <'idle' | 'sending' | 'success'>('idle')
+
+  useEffect(() => {
+    if (user) {
+      setLoading(true)
+      getMyTickets()
+        .then(d => setTickets(d.tickets))
+        .catch(() => {})
+        .finally(() => setLoading(false))
+    }
+  }, [user])
+
+  async function handleCreateTicket(e: React.FormEvent) {
+    e.preventDefault()
+    setSending(true)
+    try {
+      await createSupportTicket(form)
+      setSubmitStatus('success')
+      const data = await getMyTickets()
+      setTickets(data.tickets)
+    } catch {
+    } finally {
+      setSending(false)
+    }
+  }
+
+  async function openTicket(ticket: ApiSupportTicket) {
+    const data = await getTicket(ticket.id)
+    setSelectedTicket(data)
+    setView('ticket')
+  }
+
+  async function handleReply(e: React.FormEvent) {
+    e.preventDefault()
+    if (!selectedTicket) return
+    setSending(true)
+    try {
+      await replyToTicket(selectedTicket.ticket.id, replyBody)
+      const data = await getTicket(selectedTicket.ticket.id)
+      setSelectedTicket(data)
+      setReplyBody('')
+    } catch {
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl px-6 py-12">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-[#1a2744]">Support</h1>
+          <p className="text-muted-foreground mt-1">
+            Get help from the LCA team
+          </p>
+        </div>
+        {view === 'list' && (
+          <Button
+            className="bg-[#c8a94a] text-[#1a2744] hover:bg-[#c8a94a]/90"
+            onClick={() => { setView('new'); setSubmitStatus('idle') }}
+          >
+            <Plus className="size-4 mr-2" />
+            New ticket
+          </Button>
+        )}
+        {view !== 'list' && (
+          <Button variant="outline" onClick={() => setView('list')}>
+            ← Back
+          </Button>
+        )}
+      </div>
+
+      {view === 'list' && (
+        <div>
+          {!user && (
+            <div className="rounded-lg border p-6 text-center text-muted-foreground">
+              <MessageSquare className="size-8 mx-auto mb-3 text-[#c8a94a]" />
+              <p className="font-medium text-foreground mb-1">
+                Sign in to view your tickets
+              </p>
+              <p className="text-sm mb-4">
+                Or create a ticket without an account below.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button asChild variant="outline">
+                  <Link to="/login">Sign in</Link>
+                </Button>
+                <Button
+                  className="bg-[#c8a94a] text-[#1a2744]"
+                  onClick={() => setView('new')}
+                >
+                  Create ticket
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {user && loading && (
+            <p className="text-muted-foreground">Loading tickets…</p>
+          )}
+
+          {user && !loading && tickets.length === 0 && (
+            <div className="rounded-lg border p-6 text-center text-muted-foreground">
+              <p>No support tickets yet.</p>
+            </div>
+          )}
+
+          {user && tickets.length > 0 && (
+            <div className="space-y-3">
+              {tickets.map(ticket => (
+                <button
+                  key={ticket.id}
+                  onClick={() => openTicket(ticket)}
+                  className="w-full text-left rounded-lg border p-4 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="font-medium text-[#1a2744]">
+                        {ticket.subject}
+                      </p>
+                      <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
+                        {ticket.last_message}
+                      </p>
+                    </div>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full font-medium shrink-0 ${statusColors[ticket.status] ?? ''}`}
+                    >
+                      {ticket.status.replace('_', ' ')}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {new Date(ticket.updated_at).toLocaleDateString()}
+                    {' · '}
+                    {ticket.message_count} message
+                    {ticket.message_count !== 1 ? 's' : ''}
+                  </p>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {view === 'new' && (
+        <div className="max-w-lg">
+          {submitStatus === 'success' ? (
+            <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-6 text-center">
+              <p className="text-emerald-800 font-medium text-lg">
+                Ticket created!
+              </p>
+              <p className="text-emerald-700 text-sm mt-1">
+                We'll respond as soon as possible.
+                Check your email for confirmation.
+              </p>
+              <Button
+                className="mt-4"
+                variant="outline"
+                onClick={() => setView('list')}
+              >
+                View my tickets
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleCreateTicket} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name</Label>
+                <Input
+                  id="name"
+                  value={form.name}
+                  onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={form.email}
+                  onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="subject">Subject</Label>
+                <Input
+                  id="subject"
+                  value={form.subject}
+                  onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="body">Describe your issue</Label>
+                <Textarea
+                  id="body"
+                  rows={6}
+                  value={form.body}
+                  onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
+                  required
+                />
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-[#1a2744] hover:bg-[#1a2744]/90"
+                disabled={sending}
+              >
+                {sending ? 'Creating ticket…' : 'Create ticket'}
+              </Button>
+            </form>
+          )}
+        </div>
+      )}
+
+      {view === 'ticket' && selectedTicket && (
+        <div>
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-xl font-semibold text-[#1a2744]">
+              {selectedTicket.ticket.subject}
+            </h2>
+            <span
+              className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[selectedTicket.ticket.status] ?? ''}`}
+            >
+              {selectedTicket.ticket.status.replace('_', ' ')}
+            </span>
+          </div>
+
+          <div className="space-y-4 mb-8">
+            {selectedTicket.messages.map(msg => (
+              <div
+                key={msg.id}
+                className={`rounded-lg p-4 ${msg.sender_type === 'admin' ? 'bg-[#1a2744]/5 border border-[#1a2744]/10' : 'bg-muted'}`}
+              >
+                <p className="text-xs font-medium text-muted-foreground mb-2">
+                  {msg.sender_type === 'admin' ? 'LCA Support' : 'You'} ·{' '}
+                  {new Date(msg.created_at).toLocaleString()}
+                </p>
+                <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
+              </div>
+            ))}
+          </div>
+
+          {selectedTicket.ticket.status !== 'resolved' && (
+            <form onSubmit={handleReply} className="space-y-3">
+              <Label htmlFor="reply">Reply</Label>
+              <Textarea
+                id="reply"
+                rows={4}
+                value={replyBody}
+                onChange={e => setReplyBody(e.target.value)}
+                placeholder="Type your reply…"
+                required
+              />
+              <Button
+                type="submit"
+                className="bg-[#1a2744] hover:bg-[#1a2744]/90"
+                disabled={sending}
+              >
+                {sending ? 'Sending…' : 'Send reply'}
+              </Button>
+            </form>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
