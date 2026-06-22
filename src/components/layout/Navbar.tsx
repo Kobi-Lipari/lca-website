@@ -11,6 +11,7 @@ const navLinks = [
   { label: 'Clubs', href: '/clubs' },
   { label: 'About', href: '/about' },
   { label: 'Membership', href: '/membership' },
+  { label: 'Support', href: '/support' },
 ]
 
 function RoleLinks({

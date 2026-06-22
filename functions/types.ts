@@ -8,6 +8,9 @@ export interface Env {
   STRIPE_MEMBERSHIP_CLUB_URL?: string
   STRIPE_TOURNAMENT_PAYMENT_URL?: string
   STRIPE_WEBHOOK_SECRET?: string
+  FROM_EMAIL: string
+  CONTACT_EMAIL: string
+  SUPPORT_EMAIL: string
 }
 
 export interface MemberRow {
@@ -45,6 +48,12 @@ export interface TournamentRow {
   rounds: number
   max_players: number | null
   status: string
+  registration_status: string
+  registration_opens_at: string | null
+  reminder_1_days_before: number
+  reminder_1_enabled: number
+  reminder_2_days_before: number
+  reminder_2_enabled: number
   description: string | null
   registration_deadline: string | null
   club_id: string | null

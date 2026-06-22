@@ -511,3 +511,170 @@ export async function confirmMembership(paymentId: string): Promise<{
   })
   return handleResponse(response)
 }
+
+
+// ── Contact ──────────────────────────────────────────────────────
+
+export async function submitContact(data: {
+  name: string
+  email: string
+  subject: string
+  body: string
+}): Promise<void> {
+  const response = await fetch('/api/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return handleResponse(response)
+}
+
+// ── Tournament reminders ─────────────────────────────────────────
+
+export async function getTournamentReminderStatus(
+  tournamentId: string,
+): Promise<{ opted_in: boolean }> {
+  const response = await fetch(`/api/tournaments/${tournamentId}/remind`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function optInTournamentReminder(
+  tournamentId: string,
+): Promise<void> {
+  const response = await fetch(`/api/tournaments/${tournamentId}/remind`, {
+    method: 'POST',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function optOutTournamentReminder(
+  tournamentId: string,
+): Promise<void> {
+  const response = await fetch(`/api/tournaments/${tournamentId}/remind`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function updateTournamentRegistration(
+  tournamentId: string,
+  data: {
+    registration_status?: 'draft' | 'open' | 'closed'
+    registration_opens_at?: string | null
+    reminder_1_days_before?: number
+    reminder_1_enabled?: boolean
+    reminder_2_days_before?: number
+    reminder_2_enabled?: boolean
+  },
+): Promise<void> {
+  const response = await fetch(
+    `/api/admin/tournaments/${tournamentId}/registration`,
+    {
+      method: 'PATCH',
+      headers: await authHeaders(),
+      body: JSON.stringify(data),
+    },
+  )
+  return handleResponse(response)
+}
+
+// ── Support tickets ──────────────────────────────────────────────
+
+export interface ApiSupportTicket {
+  id: string
+  subject: string
+  status: string
+  created_at: string
+  updated_at: string
+  message_count: number
+  last_message: string
+}
+
+export interface ApiSupportMessage {
+  id: string
+  ticket_id: string
+  sender_type: string
+  body: string
+  created_at: string
+}
+
+export async function createSupportTicket(data: {
+  name: string
+  email: string
+  subject: string
+  body: string
+}): Promise<{ ticketId: string }> {
+  const response = await fetch('/api/support', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  return handleResponse(response)
+}
+
+export async function getMyTickets(): Promise<{
+  tickets: ApiSupportTicket[]
+}> {
+  const response = await fetch('/api/support', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function getTicket(id: string): Promise<{
+  ticket: ApiSupportTicket
+  messages: ApiSupportMessage[]
+}> {
+  const response = await fetch(`/api/support/${id}`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function replyToTicket(
+  ticketId: string,
+  body: string,
+): Promise<void> {
+  const response = await fetch(`/api/support/${ticketId}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ body }),
+  })
+  return handleResponse(response)
+}
+
+export async function adminGetTickets(status?: string): Promise<{
+  tickets: ApiSupportTicket[]
+}> {
+  const url = status ? `/api/admin/support?status=${status}` : '/api/admin/support'
+  const response = await fetch(url, { headers: await authHeaders() })
+  return handleResponse(response)
+}
+
+export async function adminUpdateTicket(
+  ticketId: string,
+  status: string,
+): Promise<void> {
+  const response = await fetch(`/api/admin/support/${ticketId}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify({ status }),
+  })
+  return handleResponse(response)
+}
+
+export async function adminReplyToTicket(
+  ticketId: string,
+  body: string,
+): Promise<void> {
+  const response = await fetch(`/api/admin/support/${ticketId}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ body }),
+  })
+  return handleResponse(response)
+}
