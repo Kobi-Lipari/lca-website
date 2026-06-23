@@ -1,3 +1,4 @@
+// src/pages/AdminPage.tsx
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Building2, MessageSquare, Shield, Trophy, Users } from 'lucide-react'
@@ -41,6 +42,7 @@ export function AdminPage() {
     date: '',
     entryFee: '45',
     clubId: '',
+    isRated: true,
   })
   const [creatingTournament, setCreatingTournament] = useState(false)
 
@@ -63,9 +65,7 @@ export function AdminPage() {
     }
   }
 
-  useEffect(() => {
-    loadAll()
-  }, [])
+  useEffect(() => { loadAll() }, [])
 
   async function handleRoleChange(memberId: string, role: MemberRole) {
     setSavingId(memberId)
@@ -84,10 +84,7 @@ export function AdminPage() {
   async function handleClubChange(memberId: string, clubId: string) {
     setSavingId(memberId)
     try {
-      const updated = await adminUpdateMemberClub(
-        memberId,
-        clubId || null,
-      )
+      const updated = await adminUpdateMemberClub(memberId, clubId || null)
       setMembers((prev) =>
         prev.map((m) =>
           m.id === memberId
@@ -117,8 +114,9 @@ export function AdminPage() {
         date: newTournament.date,
         entryFee: Number(newTournament.entryFee),
         clubId: newTournament.clubId || null,
+        isRated: newTournament.isRated,
       })
-      setNewTournament({ name: '', location: '', date: '', entryFee: '45', clubId: '' })
+      setNewTournament({ name: '', location: '', date: '', entryFee: '45', clubId: '', isRated: true })
       const tournamentList = await getTournaments()
       setTournaments(tournamentList)
       setTab('tournaments')
@@ -200,9 +198,7 @@ export function AdminPage() {
                     {members.map((m) => (
                       <tr key={m.id} className="border-b">
                         <td className="px-3 py-3">{m.full_name}</td>
-                        <td className="px-3 py-3 text-muted-foreground">
-                          {m.email}
-                        </td>
+                        <td className="px-3 py-3 text-muted-foreground">{m.email}</td>
                         <td className="px-3 py-3">
                           <select
                             className="rounded-md border bg-background px-2 py-1"
@@ -213,9 +209,7 @@ export function AdminPage() {
                             }
                           >
                             {MEMBER_ROLES.map((r) => (
-                              <option key={r} value={r}>
-                                {ROLE_LABELS[r]}
-                              </option>
+                              <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                             ))}
                           </select>
                         </td>
@@ -224,15 +218,11 @@ export function AdminPage() {
                             className="max-w-[200px] rounded-md border bg-background px-2 py-1"
                             value={m.club_id ?? ''}
                             disabled={savingId === m.id}
-                            onChange={(e) =>
-                              handleClubChange(m.id, e.target.value)
-                            }
+                            onChange={(e) => handleClubChange(m.id, e.target.value)}
                           >
                             <option value="">No club</option>
                             {clubs.map((c) => (
-                              <option key={c.id} value={c.id}>
-                                {c.name}
-                              </option>
+                              <option key={c.id} value={c.id}>{c.name}</option>
                             ))}
                           </select>
                         </td>
@@ -259,10 +249,7 @@ export function AdminPage() {
                         id="t-name"
                         value={newTournament.name}
                         onChange={(e) =>
-                          setNewTournament((p) => ({
-                            ...p,
-                            name: e.target.value,
-                          }))
+                          setNewTournament((p) => ({ ...p, name: e.target.value }))
                         }
                         required
                       />
@@ -273,10 +260,7 @@ export function AdminPage() {
                         id="t-location"
                         value={newTournament.location}
                         onChange={(e) =>
-                          setNewTournament((p) => ({
-                            ...p,
-                            location: e.target.value,
-                          }))
+                          setNewTournament((p) => ({ ...p, location: e.target.value }))
                         }
                         required
                       />
@@ -285,12 +269,10 @@ export function AdminPage() {
                       <Label htmlFor="t-date">Date</Label>
                       <Input
                         id="t-date"
+                        type="date"
                         value={newTournament.date}
                         onChange={(e) =>
-                          setNewTournament((p) => ({
-                            ...p,
-                            date: e.target.value,
-                          }))
+                          setNewTournament((p) => ({ ...p, date: e.target.value }))
                         }
                         required
                       />
@@ -302,10 +284,7 @@ export function AdminPage() {
                         type="number"
                         value={newTournament.entryFee}
                         onChange={(e) =>
-                          setNewTournament((p) => ({
-                            ...p,
-                            entryFee: e.target.value,
-                          }))
+                          setNewTournament((p) => ({ ...p, entryFee: e.target.value }))
                         }
                         required
                       />
@@ -317,21 +296,57 @@ export function AdminPage() {
                         className="w-full rounded-md border bg-background px-3 py-2"
                         value={newTournament.clubId}
                         onChange={(e) =>
-                          setNewTournament((p) => ({
-                            ...p,
-                            clubId: e.target.value,
-                          }))
+                          setNewTournament((p) => ({ ...p, clubId: e.target.value }))
                         }
                       >
                         <option value="">No club</option>
                         {clubs.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name}
-                          </option>
+                          <option key={c.id} value={c.id}>{c.name}</option>
                         ))}
                       </select>
                     </div>
+
+                    {/* Rated / Unrated toggle */}
+                    <div className="sm:col-span-2">
+                      <Label className="mb-2 block">Rating status</Label>
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setNewTournament((p) => ({ ...p, isRated: true }))
+                          }
+                          className={cn(
+                            'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
+                            newTournament.isRated
+                              ? 'border-[#1a2744] bg-[#1a2744] text-white'
+                              : 'border-border text-muted-foreground hover:border-[#1a2744]/40',
+                          )}
+                        >
+                          USCF Rated
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setNewTournament((p) => ({ ...p, isRated: false }))
+                          }
+                          className={cn(
+                            'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
+                            !newTournament.isRated
+                              ? 'border-[#1a2744] bg-[#1a2744] text-white'
+                              : 'border-border text-muted-foreground hover:border-[#1a2744]/40',
+                          )}
+                        >
+                          Unrated
+                        </button>
+                      </div>
+                      <p className="mt-1.5 text-xs text-muted-foreground">
+                        {newTournament.isRated
+                          ? 'Players must have a USCF ID to register.'
+                          : 'Open to all — no USCF ID required.'}
+                      </p>
+                    </div>
                   </div>
+
                   <Button
                     type="submit"
                     className={cn('mt-4', goldButtonClass)}
@@ -365,10 +380,7 @@ export function AdminPage() {
             {tab === 'clubs' && (
               <ul className="mt-8 grid gap-4 sm:grid-cols-2">
                 {clubs.map((club) => (
-                  <li
-                    key={club.id}
-                    className="rounded-xl border bg-card p-5 shadow-sm"
-                  >
+                  <li key={club.id} className="rounded-xl border bg-card p-5 shadow-sm">
                     <h3 className="font-semibold text-[#1a2744]">{club.name}</h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {club.city}, LA · {club.meeting_schedule}

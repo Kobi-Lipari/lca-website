@@ -1,14 +1,7 @@
+// functions/api/admin/tournaments.ts
 import type { Env } from '../types'
-import {
-  isResponse,
-  requireAuthedMember,
-} from '../../utils/auth'
-import {
-  errorResponse,
-  handleOptions,
-  jsonResponse,
-  parseJsonBody,
-} from '../../utils/response'
+import { isResponse, requireAuthedMember } from '../../utils/auth'
+import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 
 interface CreateTournamentBody {
   id?: string
@@ -25,6 +18,7 @@ interface CreateTournamentBody {
   description?: string | null
   registrationDeadline?: string | null
   clubId?: string | null
+  isRated?: boolean
 }
 
 function slugify(value: string): string {
@@ -51,10 +45,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const body = await parseJsonBody<CreateTournamentBody>(context.request)
   if (!body?.name || !body.location || !body.date || body.entryFee == null) {
-    return errorResponse(
-      'name, location, date, and entryFee are required',
-      400,
-    )
+    return errorResponse('name, location, date, and entryFee are required', 400)
   }
 
   const clubId = body.clubId ?? (isClubRep ? member.club_id : null)
@@ -63,33 +54,30 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   if (clubId) {
-    const club = await context.env.DB.prepare(
-      'SELECT id FROM clubs WHERE id = ?',
-    )
+    const club = await context.env.DB.prepare('SELECT id FROM clubs WHERE id = ?')
       .bind(clubId)
       .first()
-    if (!club) {
-      return errorResponse('Club not found', 404)
-    }
+    if (!club) return errorResponse('Club not found', 404)
   }
 
   const sections = body.sections?.length
     ? body.sections
     : [{ name: 'Open', entryFee: body.entryFee }]
-  const id =
-    body.id?.trim() ||
-    `${slugify(body.name)}-${Date.now().toString(36)}`
+
+  const id = body.id?.trim() || `${slugify(body.name)}-${Date.now().toString(36)}`
   const status = body.status ?? 'upcoming'
   if (!['upcoming', 'active', 'completed'].includes(status)) {
     return errorResponse('Invalid status', 400)
   }
 
+  const isRated = body.isRated !== false ? 1 : 0
+
   await context.env.DB.prepare(
     `INSERT INTO tournaments (
       id, name, location, venue, date, end_date, entry_fee, sections,
       rounds, max_players, status, description, registration_deadline,
-      club_id, created_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      club_id, created_by, is_rated
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   )
     .bind(
       id,
@@ -107,6 +95,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       body.registrationDeadline ?? null,
       clubId,
       member.id,
+      isRated,
     )
     .run()
 
