@@ -123,13 +123,12 @@ export async function searchUscfByName(
   lastName: string,
   firstName?: string,
 ): Promise<UscfSearchResult> {
-  // MSA prefers "Last, First" format
   const query = firstName
     ? `${lastName.trim()}, ${firstName.trim()}`
     : lastName.trim()
 
   try {
-    const url = `${PLAYER_SEARCH_URL}?name=${encodeURIComponent(query)}&state=&rating=&order=alpha`
+    const url = `https://www.uschess.org/datapage/player-search.php?name=${encodeURIComponent(query)}&state=&rating=&order=alpha`
     const response = await fetch(url, {
       headers: { 'User-Agent': 'LouisianaChessAssociation/1.0' },
       signal: AbortSignal.timeout(10000),
@@ -139,43 +138,55 @@ export async function searchUscfByName(
 
     const html = await response.text()
 
-    // Each result row links to MbrDtlMain.php?ID and contains name, state, rating, expiry
-    const rowRegex =
-      /MbrDtlMain\.php\?(\d+)[^>]*>([^<]+)<\/a>\s*<\/td>\s*<td[^>]*>([^<]*)<\/td>\s*<td[^>]*>([^<]*)<\/td>\s*<td[^>]*>([^<]*)<\/td>/gi
+    if (!html.includes('Player Search Results')) {
+      return { players: [], scraperDown: true }
+    }
+
+    // Each row: <tr><td valign=top>ID &nbsp;&nbsp;</td><td valign=top>RATING &nbsp;&nbsp;</td>
+    // ... 5 more td's ... <td valign=top>STATE &nbsp;&nbsp;</td>
+    // <td valign=top>EXPDATE &nbsp;&nbsp;</td>
+    // <td valign=top><a href=...?ID >NAME</a></td></tr>
+    const rowRegex = /<tr><td valign=top>(\d+)\s*&nbsp;&nbsp;\s*<\/td><td valign=top>([^<]*?)\s*&nbsp;&nbsp;\s*<\/td>(?:<td valign=top>[^<]*?<\/td>){5}<td valign=top>([A-Z]{2})\s*&nbsp;&nbsp;\s*<\/td><td valign=top>([^<]*?)\s*&nbsp;&nbsp;\s*<\/td><td valign=top><a href=[^>]+>([^<]+)<\/a><\/td>/gi
 
     const players: UscfPlayer[] = []
     let match: RegExpExecArray | null
 
     while ((match = rowRegex.exec(html)) !== null && players.length < 20) {
       const uscfId = match[1].trim()
-      const rawName = match[2].trim()
-      const state = match[3].trim() || null
-      const ratingRaw = match[4].trim()
-      const expirationDate = match[5].trim() || null
+      const ratingRaw = match[2].trim()
+      const state = match[3].trim()
+      const expirationDate = match[4].trim() === 'Non-Member' ? null : match[4].trim()
+      const rawName = match[5].trim() // "LIPARI, KOBI"
 
-      // MSA name format is "LAST, FIRST"
+      // Parse rating — strip provisional info like "1517" or "1150/4"
+      const ratingNum = ratingRaw.match(/^(\d+)/)
+      const rating = ratingNum ? Number(ratingNum[1]) : null
+
+      // Parse name — MSA format "LAST, FIRST"
       const nameParts = rawName.split(',')
       const last = nameParts[0]?.trim() ?? ''
       const first = nameParts[1]?.trim() ?? ''
-      const fullName = first ? `${first} ${last}` : last
 
-      const rating =
-        ratingRaw && /^\d+$/.test(ratingRaw) ? Number(ratingRaw) : null
+      // Capitalize properly
+      const capitalize = (s: string) =>
+        s.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
+
+      const lastName = capitalize(last)
+      const firstName = capitalize(first)
+      const fullName = firstName ? `${firstName} ${lastName}` : lastName
 
       const status = expirationDate
-        ? new Date(expirationDate) >= new Date()
-          ? 'Active'
-          : 'Expired'
-        : null
+        ? new Date(expirationDate) >= new Date() ? 'Active' : 'Expired'
+        : 'Non-Member'
 
       players.push({
         uscfId,
-        firstName: first,
-        lastName: last,
+        firstName,
+        lastName,
         fullName,
         rating,
         ratingType: rating ? 'Regular' : null,
-        isProvisional: false,
+        isProvisional: ratingRaw.includes('/'),
         expirationDate,
         state,
         status,
