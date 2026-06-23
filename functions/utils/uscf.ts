@@ -58,20 +58,24 @@ export async function fetchUscfById(
       return { player: null, scraperDown: false }
     }
 
-    // Name
-    const nameMatch =
-      html.match(/Name:\s*<\/[^>]+>\s*([^<\n]+)/i) ??
-      html.match(/<title>\s*([^<|]+)/i)
-    const fullName = nameMatch ? nameMatch[1].trim() : null
+    // Name — MSA format: <font size=+1><b>31334465: KOBI LIPARI</b></font>
+    const nameMatch = html.match(/<font size=\+1><b>\d+:\s*([^<]+)<\/b><\/font>/i)
+    let fullName: string | null = nameMatch ? nameMatch[1].trim() : null
 
-    // Split "LAST, FIRST" format MSA uses
-    let firstName = ''
-    let lastName = ''
+    // Capitalize: "KOBI LIPARI" → "Kobi Lipari"
     if (fullName) {
-      const parts = fullName.split(',')
-      lastName = parts[0]?.trim() ?? fullName
-      firstName = parts[1]?.trim() ?? ''
+      fullName = fullName
+        .split(' ')
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ')
     }
+
+    // MSA format is "LAST FIRST" — last word is the first name
+    const nameParts = fullName ? fullName.split(' ') : []
+    const firstName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
+    const lastName = nameParts.length > 1
+      ? nameParts.slice(0, -1).join(' ')
+      : (nameParts[0] ?? '')
 
     // Rating
     const ratingMatch =
@@ -82,28 +86,25 @@ export async function fetchUscfById(
     // Provisional flag
     const isProvisional = /provisional/i.test(html)
 
-    // Expiration date — MSA shows "Expires: MM/DD/YYYY" or "Expiration Date: ..."
-    const expiryMatch =
-      html.match(/Expir(?:es|ation Date)[^0-9]*(\d{1,2}\/\d{1,2}\/\d{4})/i) ??
-      html.match(/Expir(?:es|ation Date)[^0-9]*(\d{4}-\d{2}-\d{2})/i)
-    const expirationDate = expiryMatch ? expiryMatch[1] : null
-
-    // State — MSA shows state code in member details
-    const stateMatch = html.match(/State:\s*<\/[^>]+>\s*([A-Z]{2})/i)
+    // State — "State Ranking (LA)"
+    const stateMatch = html.match(/State Ranking \(([A-Z]{2})\)/)
     const state = stateMatch ? stateMatch[1] : null
 
-    // Active/expired status
+    // Expiration
+    const expiryMatch =
+      html.match(/Membership Expires?:?\s*<[^>]*>\s*([^<]+)/i) ??
+      html.match(/Expir[^:]*:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/i)
+    const expirationDate = expiryMatch ? expiryMatch[1].trim() : null
+
     const status = expirationDate
-      ? new Date(expirationDate) >= new Date()
-        ? 'Active'
-        : 'Expired'
+      ? new Date(expirationDate) >= new Date() ? 'Active' : 'Expired'
       : null
 
     const player: UscfPlayer = {
       uscfId: normalizedId,
       firstName,
       lastName,
-      fullName: firstName ? `${firstName} ${lastName}` : lastName,
+      fullName: fullName ?? normalizedId,
       rating,
       ratingType: rating ? 'Regular' : null,
       isProvisional,
