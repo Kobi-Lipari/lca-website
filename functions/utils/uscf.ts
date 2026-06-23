@@ -54,39 +54,39 @@ export async function fetchUscfById(
 
     const html = await response.text()
 
-    if (html.includes('No such member') || html.includes('Invalid member')) {
+    // The ONLY reliable indicator the member exists is this exact pattern:
+    // <font size=+1><b>31334465: KOBI LIPARI</b></font>
+    // If the ID doesn't match, MSA shows a generic page without this line
+    const nameMatch = html.match(
+      new RegExp(`<font size=\\+1><b>${normalizedId}:\\s*([^<]+)<\\/b><\\/font>`, 'i')
+    )
+
+    if (!nameMatch) {
+      // ID not found on MSA — not a valid USCF ID
       return { player: null, scraperDown: false }
     }
 
-    // Name — MSA format: <font size=+1><b>31334465: KOBI LIPARI</b></font>
-    const nameMatch = html.match(/<font size=\+1><b>\d+:\s*([^<]+)<\/b><\/font>/i)
-    let fullName: string | null = nameMatch ? nameMatch[1].trim() : null
+    let fullName: string | null = nameMatch[1].trim()
 
     // Capitalize: "KOBI LIPARI" → "Kobi Lipari"
-    if (fullName) {
-      fullName = fullName
-        .split(' ')
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-        .join(' ')
-    }
+    fullName = fullName
+      .split(' ')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ')
 
-    // MSA format is "LAST FIRST" — last word is the first name
-    const nameParts = fullName ? fullName.split(' ') : []
+    // MSA format is "LAST FIRST" — last word is first name
+    const nameParts = fullName.split(' ')
     const firstName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
     const lastName = nameParts.length > 1
       ? nameParts.slice(0, -1).join(' ')
       : (nameParts[0] ?? '')
 
-    // Rating
-    const ratingMatch =
-      html.match(/Regular\s+Rating[^0-9]*(\d{3,4})/i) ??
-      html.match(/Rating[^0-9]*(\d{3,4})/i)
+    // Rating — only match after confirmed valid member page
+    const ratingMatch = html.match(/Regular\s+Rating[^0-9]*(\d{3,4})/i)
     const rating = ratingMatch ? Number(ratingMatch[1]) : null
-
-    // Provisional flag
     const isProvisional = /provisional/i.test(html)
 
-    // State — "State Ranking (LA)"
+    // State
     const stateMatch = html.match(/State Ranking \(([A-Z]{2})\)/)
     const state = stateMatch ? stateMatch[1] : null
 
@@ -100,20 +100,21 @@ export async function fetchUscfById(
       ? new Date(expirationDate) >= new Date() ? 'Active' : 'Expired'
       : null
 
-    const player: UscfPlayer = {
-      uscfId: normalizedId,
-      firstName,
-      lastName,
-      fullName: fullName ?? normalizedId,
-      rating,
-      ratingType: rating ? 'Regular' : null,
-      isProvisional,
-      expirationDate,
-      state,
-      status,
+    return {
+      player: {
+        uscfId: normalizedId,
+        firstName,
+        lastName,
+        fullName,
+        rating,
+        ratingType: rating ? 'Regular' : null,
+        isProvisional,
+        expirationDate,
+        state,
+        status,
+      },
+      scraperDown: false,
     }
-
-    return { player, scraperDown: false }
   } catch {
     return { player: null, scraperDown: true }
   }
@@ -142,34 +143,38 @@ export async function searchUscfByName(
       return { players: [], scraperDown: true }
     }
 
-    // Each row: <tr><td valign=top>ID &nbsp;&nbsp;</td><td valign=top>RATING &nbsp;&nbsp;</td>
-    // ... 5 more td's ... <td valign=top>STATE &nbsp;&nbsp;</td>
-    // <td valign=top>EXPDATE &nbsp;&nbsp;</td>
-    // <td valign=top><a href=...?ID >NAME</a></td></tr>
-    const rowRegex = /<tr><td valign=top>(\d+)\s*&nbsp;&nbsp;\s*<\/td><td valign=top>([^<]*?)\s*&nbsp;&nbsp;\s*<\/td>(?:<td valign=top>[^<]*?<\/td>){5}<td valign=top>([A-Z]{2})\s*&nbsp;&nbsp;\s*<\/td><td valign=top>([^<]*?)\s*&nbsp;&nbsp;\s*<\/td><td valign=top><a href=[^>]+>([^<]+)<\/a><\/td>/gi
+    // Parse each data row
+    const rowMatches = html.match(/<tr><td valign=top>[\s\S]*?<\/tr>/gi) ?? []
+
+    const capitalize = (s: string) =>
+      s.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
 
     const players: UscfPlayer[] = []
-    let match: RegExpExecArray | null
 
-    while ((match = rowRegex.exec(html)) !== null && players.length < 20) {
-      const uscfId = match[1].trim()
-      const ratingRaw = match[2].trim()
-      const state = match[3].trim()
-      const expirationDate = match[4].trim() === 'Non-Member' ? null : match[4].trim()
-      const rawName = match[5].trim() // "LIPARI, KOBI"
+    for (const row of rowMatches) {
+      const cells = row.match(/<td valign=top>([\s\S]*?)<\/td>/gi) ?? []
+      if (cells.length < 10) continue
 
-      // Parse rating — strip provisional info like "1517" or "1150/4"
+      const val = (i: number) =>
+        cells[i].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '').trim()
+
+      const uscfId = val(0)
+      if (!/^\d+$/.test(uscfId)) continue // skip non-data rows
+
+      const ratingRaw = val(1)
+      const state = val(7)
+      const expirationDate = val(8) === 'Non-Member' ? null : val(8)
+      const rawName = val(9) // "LIPARI, KOBI"
+
+      // Parse rating — strip provisional suffix like "1150/4"
       const ratingNum = ratingRaw.match(/^(\d+)/)
       const rating = ratingNum ? Number(ratingNum[1]) : null
+      const isProvisional = ratingRaw.includes('/')
 
-      // Parse name — MSA format "LAST, FIRST"
-      const nameParts = rawName.split(',')
-      const last = nameParts[0]?.trim() ?? ''
-      const first = nameParts[1]?.trim() ?? ''
-
-      // Capitalize properly
-      const capitalize = (s: string) =>
-        s.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
+      // Parse name — "LAST, FIRST" or "LAST, FIRST MIDDLE"
+      const commaIdx = rawName.indexOf(',')
+      const last = commaIdx >= 0 ? rawName.slice(0, commaIdx).trim() : rawName
+      const first = commaIdx >= 0 ? rawName.slice(commaIdx + 1).trim() : ''
 
       const lastName = capitalize(last)
       const firstName = capitalize(first)
@@ -186,11 +191,13 @@ export async function searchUscfByName(
         fullName,
         rating,
         ratingType: rating ? 'Regular' : null,
-        isProvisional: ratingRaw.includes('/'),
+        isProvisional,
         expirationDate,
         state,
         status,
       })
+
+      if (players.length >= 20) break
     }
 
     return { players, scraperDown: false }

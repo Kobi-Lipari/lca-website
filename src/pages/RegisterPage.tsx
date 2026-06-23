@@ -27,6 +27,7 @@ export function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [uscfIdTyped, setUscfIdTyped] = useState(false)
   const [uscfPlayer, setUscfPlayer] = useState<UscfPlayerResult | null>(null)
 
   if (!loading && user) {
@@ -47,6 +48,12 @@ export function RegisterPage() {
 
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
+      setSubmitting(false)
+      return
+    }
+
+    if (uscfIdTyped && !uscfPlayer) {
+      setError('Please select a valid USCF record from the search results, or clear the USCF ID field.')
       setSubmitting(false)
       return
     }
@@ -182,9 +189,9 @@ export function RegisterPage() {
                   />
                 </div>
 
-                {/* USCF lookup — replaces the old plain text input */}
                 <UscfSearchInput
                   onSelect={(player) => setUscfPlayer(player)}
+                  onIdInput={(hasInput) => setUscfIdTyped(hasInput)}
                   initialUscfId=""
                 />
 
