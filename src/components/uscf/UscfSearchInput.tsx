@@ -23,6 +23,7 @@ export interface UscfPlayerResult {
 interface Props {
   onSelect: (player: UscfPlayerResult | null) => void
   onScraperDown?: () => void
+  onIdInput?: (hasInput: boolean) => void  // ADD THIS
   initialUscfId?: string
   className?: string
 }
@@ -122,6 +123,7 @@ function PlayerCard({
 export default function UscfSearchInput({
   onSelect,
   onScraperDown,
+  onIdInput,
   initialUscfId,
   className,
 }: Props) {
@@ -215,6 +217,7 @@ export default function UscfSearchInput({
     setSelectedPlayer(null)
     setIdInput('')
     onSelect(null)
+    onIdInput?.(false)
     reset()
   }
 
@@ -282,6 +285,7 @@ export default function UscfSearchInput({
             onChange={(e) => {
               setIdInput(e.target.value)
               setSelectedPlayer(null)
+              onIdInput?.(e.target.value.trim().length > 0)
             }}
             className={cn(
               status === 'selected' && 'border-green-500',
