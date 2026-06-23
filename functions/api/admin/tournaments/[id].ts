@@ -1,14 +1,14 @@
-import type { Env } from '../../../../types'
+import type { Env } from '../../../types'
 import {
   isResponse,
   requireTournamentManager,
-} from '../../../../utils/auth'
+} from '../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
   jsonResponse,
   parseJsonBody,
-} from '../../../../utils/response'
+} from '../../../utils/response'
 
 interface UpdateTournamentBody {
   name?: string
