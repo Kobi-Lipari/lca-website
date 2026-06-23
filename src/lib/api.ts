@@ -167,6 +167,7 @@ export interface ApiTournamentDetail {
   club_id: string | null
   created_by: string | null
   created_at: string
+  is_rated: number // 1 = rated, 0 = unrated
 }
 
 export interface ApiRosterPlayer {
@@ -286,6 +287,7 @@ export async function adminCreateTournament(body: {
   description?: string | null
   registrationDeadline?: string | null
   clubId?: string | null
+  isRated?: boolean
 }): Promise<Record<string, unknown>> {
   const response = await fetch('/api/admin/tournaments', {
     method: 'POST',

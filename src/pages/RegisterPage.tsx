@@ -1,3 +1,4 @@
+// src/pages/RegisterPage.tsx
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { UserPlus } from 'lucide-react'
@@ -14,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
+import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
 import { cn } from '@/lib/utils'
 
 const goldButtonClass =
@@ -25,6 +27,7 @@ export function RegisterPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [uscfPlayer, setUscfPlayer] = useState<UscfPlayerResult | null>(null)
 
   if (!loading && user) {
     return <Navigate to="/dashboard" replace />
@@ -41,7 +44,6 @@ export function RegisterPage() {
     const email = formData.get('email') as string
     const password = formData.get('password') as string
     const confirmPassword = formData.get('confirmPassword') as string
-    const uscfId = (formData.get('uscfId') as string) || undefined
 
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
@@ -52,7 +54,10 @@ export function RegisterPage() {
     const { error: signUpError, needsEmailConfirmation } = await signUp(
       email,
       password,
-      { fullName: name, uscfId },
+      {
+        fullName: name,
+        uscfId: uscfPlayer?.uscfId,
+      },
     )
 
     if (signUpError) {
@@ -117,7 +122,6 @@ export function RegisterPage() {
                     {error}
                   </p>
                 )}
-
                 {success && (
                   <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
                     {success}
@@ -178,27 +182,18 @@ export function RegisterPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="uscfId">
-                    USCF ID{' '}
-                    <span className="font-normal text-muted-foreground">
-                      (optional)
-                    </span>
-                  </Label>
-                  <Input
-                    id="uscfId"
-                    name="uscfId"
-                    type="text"
-                    placeholder="12345678"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    disabled={submitting}
-                  />
+                {/* USCF lookup — replaces the old plain text input */}
+                <UscfSearchInput
+                  onSelect={(player) => setUscfPlayer(player)}
+                  initialUscfId=""
+                />
+
+                {uscfPlayer && (
                   <p className="text-xs text-muted-foreground">
-                    Your USCF membership number, if you have one. You can add
-                    this later from your dashboard.
+                    Rating {uscfPlayer.rating ?? 'unrated'} will be saved to
+                    your profile automatically.
                   </p>
-                </div>
+                )}
               </CardContent>
 
               <CardFooter className="flex flex-col gap-4">
