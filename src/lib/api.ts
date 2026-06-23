@@ -678,3 +678,13 @@ export async function adminReplyToTicket(
   })
   return handleResponse(response)
 }
+
+export async function adminGetTicket(id: string): Promise<{
+  ticket: ApiSupportTicket
+  messages: ApiSupportMessage[]
+}> {
+  const response = await fetch(`/api/admin/support/${id}`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}

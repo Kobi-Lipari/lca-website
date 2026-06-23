@@ -18,6 +18,7 @@ import { MembershipPage } from '@/pages/MembershipPage'
 import { MembershipSuccessPage } from '@/pages/MembershipSuccessPage'
 import { RegisterPage } from '@/pages/RegisterPage'
 import { SupportPage } from '@/pages/SupportPage'
+import { AdminSupportPage } from '@/pages/AdminSupportPage'
 import { TournamentDetailPage } from '@/pages/TournamentDetailPage'
 import { TournamentManagePage } from '@/pages/TournamentManagePage'
 import { TournamentsPage } from '@/pages/TournamentsPage'
@@ -39,6 +40,14 @@ function App() {
             <Route path="/membership" element={<MembershipPage />} />
             <Route path="/membership/success" element={<MembershipSuccessPage />} />
             <Route path="/support" element={<SupportPage />} />
+            <Route
+              path="/admin/support"
+              element={
+                <RoleProtectedRoute roles={['lca_admin']}>
+                  <AdminSupportPage />
+                </RoleProtectedRoute>
+              }
+            />
             <Route
               path="/dashboard"
               element={

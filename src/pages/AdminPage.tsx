@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { Building2, Shield, Trophy, Users } from 'lucide-react'
+import { Building2, MessageSquare, Shield, Trophy, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -167,6 +167,12 @@ export function AdminPage() {
               {label}
             </Button>
           ))}
+          <Button asChild variant="outline">
+            <Link to="/admin/support">
+              <MessageSquare className="size-4" />
+              Support Tickets
+            </Link>
+          </Button>
         </div>
 
         {error && (
