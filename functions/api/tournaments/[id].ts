@@ -1,7 +1,7 @@
 // functions/api/admin/tournaments/[id].ts
-import type { Env } from '../../../types'
-import { isResponse, requireTournamentManager } from '../../../utils/auth'
-import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
+import type { Env } from '../../types'
+import { isResponse, requireTournamentManager } from '../../utils/auth'
+import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 
 interface UpdateTournamentBody {
   name?: string
