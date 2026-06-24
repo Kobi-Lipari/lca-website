@@ -12,6 +12,7 @@ export default {
   async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0]
+    const nowIso = new Date().toISOString()
 
     // 1. Auto-open tournaments where registration_opens_at <= today
     await env.DB.prepare(
@@ -21,6 +22,15 @@ export default {
          AND registration_opens_at IS NOT NULL
          AND registration_opens_at <= ?`,
     ).bind(todayStr).run()
+
+    // 1b. Auto-close registrations past their closing datetime
+    await env.DB.prepare(
+      `UPDATE tournaments
+       SET registration_status = 'closed'
+       WHERE registration_closes_at IS NOT NULL
+         AND registration_closes_at <= ?
+         AND registration_status = 'open'`,
+    ).bind(nowIso).run()
 
     // 2. Send registration-open reminders
     const newlyOpenedReminders = await env.DB.prepare(

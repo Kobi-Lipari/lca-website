@@ -1,38 +1,35 @@
-import type { Env, TournamentRow } from '../types'
+// functions/api/tournaments.ts
+import type { Env } from '../types'
 import { handleOptions, jsonResponse } from '../utils/response'
+import { requireAuthedMember, isResponse } from '../utils/auth'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const { results } = await context.env.DB.prepare(
-    `SELECT id, name, date, location, entry_fee, sections, rounds, status FROM tournaments ORDER BY date DESC`,
-  ).all<
-    Pick<
-      TournamentRow,
-      | 'id'
-      | 'name'
-      | 'date'
-      | 'location'
-      | 'entry_fee'
-      | 'sections'
-      | 'rounds'
-      | 'status'
-    >
-  >()
+  // Check if requester is admin/TD — they see all tournaments
+  let isPrivileged = false
+  try {
+    const authed = await requireAuthedMember(context.request, context.env)
+    if (!isResponse(authed)) {
+      isPrivileged = ['lca_admin', 'club_rep', 'tournament_director'].includes(
+        authed.member.role,
+      )
+    }
+  } catch {
+    // Not logged in — public view only
+  }
 
-  const tournaments = (results ?? []).map((row) => ({
-    ...row,
-    sections: parseSections(row.sections),
-  }))
+  const { results } = await context.env.DB.prepare(
+    isPrivileged
+      ? `SELECT * FROM tournaments ORDER BY date ASC`
+      : `SELECT * FROM tournaments WHERE is_visible = 1 ORDER BY date ASC`,
+  ).all<Record<string, unknown>>()
+
+  const tournaments = (results ?? []).map((t) => {
+    let sections: unknown[] = []
+    try { sections = JSON.parse(t.sections as string) } catch { sections = [] }
+    return { ...t, sections }
+  })
 
   return jsonResponse({ tournaments })
-}
-
-function parseSections(sectionsJson: string): string[] {
-  try {
-    const parsed = JSON.parse(sectionsJson) as Array<{ name: string } | string>
-    return parsed.map((s) => (typeof s === 'string' ? s : s.name))
-  } catch {
-    return []
-  }
 }

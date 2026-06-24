@@ -1,3 +1,4 @@
+// src/pages/LoginPage.tsx
 import { useState, type FormEvent } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { LogIn } from 'lucide-react'
@@ -55,7 +56,7 @@ export function LoginPage() {
     try {
       await syncMember()
     } catch {
-      // Continue even if D1 sync fails (e.g. local dev without Pages Functions)
+      // Continue even if D1 sync fails
     }
 
     navigate(redirectTo, { replace: true })
@@ -117,7 +118,7 @@ export function LoginPage() {
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password">Password</Label>
                     <Link
-                      to="/login"
+                      to="/forgot-password"
                       className="text-xs text-[#c8a94a] hover:underline"
                     >
                       Forgot password?

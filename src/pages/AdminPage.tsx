@@ -1,13 +1,16 @@
 // src/pages/AdminPage.tsx
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { Building2, MessageSquare, Shield, Trophy, Users } from 'lucide-react'
+import { Building2, MessageSquare, Shield, Trash2, Trophy, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   adminCreateTournament,
+  adminDeleteClub,
+  adminDeleteMember,
+  adminDeleteTournament,
   adminGetMembers,
   adminUpdateMemberClub,
   adminUpdateMemberRole,
@@ -26,6 +29,40 @@ type AdminTab = 'members' | 'tournaments' | 'clubs'
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
+// Simple inline confirmation dialog
+function ConfirmDialog({
+  message,
+  onConfirm,
+  onCancel,
+}: {
+  message: string
+  onConfirm: () => void
+  onCancel: () => void
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.45)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onCancel() }}
+    >
+      <div className="bg-background rounded-xl border shadow-lg p-6 w-full max-w-sm mx-4">
+        <p className="text-sm font-medium text-foreground mb-6">{message}</p>
+        <div className="flex gap-3">
+          <Button variant="outline" className="flex-1" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
+            className="flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            onClick={onConfirm}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function AdminPage() {
   usePageTitle('Admin Panel')
   const [tab, setTab] = useState<AdminTab>('members')
@@ -35,6 +72,12 @@ export function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [savingId, setSavingId] = useState<string | null>(null)
+
+  // Delete confirmation state
+  const [confirm, setConfirm] = useState<{
+    message: string
+    onConfirm: () => void
+  } | null>(null)
 
   const [newTournament, setNewTournament] = useState({
     name: '',
@@ -127,6 +170,50 @@ export function AdminPage() {
     }
   }
 
+  function confirmDelete(message: string, action: () => Promise<void>) {
+    setConfirm({
+      message,
+      onConfirm: async () => {
+        setConfirm(null)
+        try {
+          await action()
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Delete failed')
+        }
+      },
+    })
+  }
+
+  function handleDeleteMember(member: ApiAdminMember) {
+    confirmDelete(
+      `Delete member "${member.full_name}"? This will remove all their registrations, tickets, and tournament history. This cannot be undone.`,
+      async () => {
+        await adminDeleteMember(member.id)
+        setMembers((prev) => prev.filter((m) => m.id !== member.id))
+      },
+    )
+  }
+
+  function handleDeleteTournament(tournament: ApiTournamentListItem) {
+    confirmDelete(
+      `Delete tournament "${tournament.name}"? All registrations and pairings will be permanently removed. This cannot be undone.`,
+      async () => {
+        await adminDeleteTournament(tournament.id)
+        setTournaments((prev) => prev.filter((t) => t.id !== tournament.id))
+      },
+    )
+  }
+
+  function handleDeleteClub(club: ApiClubListItem) {
+    confirmDelete(
+      `Delete club "${club.name}"? Members will be unassigned from this club. This cannot be undone.`,
+      async () => {
+        await adminDeleteClub(club.id)
+        setClubs((prev) => prev.filter((c) => c.id !== club.id))
+      },
+    )
+  }
+
   const tabs: { id: AdminTab; label: string; icon: typeof Users }[] = [
     { id: 'members', label: 'Members', icon: Users },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy },
@@ -135,6 +222,14 @@ export function AdminPage() {
 
   return (
     <div>
+      {confirm && (
+        <ConfirmDialog
+          message={confirm.message}
+          onConfirm={confirm.onConfirm}
+          onCancel={() => setConfirm(null)}
+        />
+      )}
+
       <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
@@ -192,6 +287,7 @@ export function AdminPage() {
                       <th className="px-3 py-2 font-semibold">Email</th>
                       <th className="px-3 py-2 font-semibold">Role</th>
                       <th className="px-3 py-2 font-semibold">Club</th>
+                      <th className="px-3 py-2 font-semibold w-12"></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -225,6 +321,16 @@ export function AdminPage() {
                               <option key={c.id} value={c.id}>{c.name}</option>
                             ))}
                           </select>
+                        </td>
+                        <td className="px-3 py-3">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteMember(m)}
+                            className="text-muted-foreground hover:text-destructive transition-colors"
+                            title="Delete member"
+                          >
+                            <Trash2 className="size-4" />
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -306,7 +412,6 @@ export function AdminPage() {
                       </select>
                     </div>
 
-                    {/* Rated / Unrated toggle */}
                     <div className="sm:col-span-2">
                       <Label className="mb-2 block">Rating status</Label>
                       <div className="flex gap-3">
@@ -368,9 +473,19 @@ export function AdminPage() {
                           {t.date} · {t.location} · {t.status}
                         </p>
                       </div>
-                      <Button asChild variant="outline" size="sm">
-                        <Link to={`/admin/tournaments/${t.id}`}>Manage</Link>
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button asChild variant="outline" size="sm">
+                          <Link to={`/admin/tournaments/${t.id}`}>Manage</Link>
+                        </Button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTournament(t)}
+                          className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                          title="Delete tournament"
+                        >
+                          <Trash2 className="size-4" />
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -380,11 +495,26 @@ export function AdminPage() {
             {tab === 'clubs' && (
               <ul className="mt-8 grid gap-4 sm:grid-cols-2">
                 {clubs.map((club) => (
-                  <li key={club.id} className="rounded-xl border bg-card p-5 shadow-sm">
-                    <h3 className="font-semibold text-[#1a2744]">{club.name}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {club.city}, LA · {club.meeting_schedule}
-                    </p>
+                  <li
+                    key={club.id}
+                    className="rounded-xl border bg-card p-5 shadow-sm"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="font-semibold text-[#1a2744]">{club.name}</h3>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {club.city}, LA · {club.meeting_schedule}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteClub(club)}
+                        className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                        title="Delete club"
+                      >
+                        <Trash2 className="size-4" />
+                      </button>
+                    </div>
                     <Button asChild className={cn('mt-4', goldButtonClass)} size="sm">
                       <Link to={`/admin/clubs/${club.id}`}>Edit club</Link>
                     </Button>

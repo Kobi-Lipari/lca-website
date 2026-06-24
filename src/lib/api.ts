@@ -164,10 +164,15 @@ export interface ApiTournamentDetail {
   status: TournamentStatus
   description: string | null
   registration_deadline: string | null
+  registration_status: string
+  registration_closes_at: string | null
   club_id: string | null
   created_by: string | null
   created_at: string
-  is_rated: number // 1 = rated, 0 = unrated
+  is_rated: number
+  is_visible: number
+  round_schedule: ApiRoundScheduleItem[]
+  custom_details: ApiCustomDetail[]
 }
 
 export interface ApiRosterPlayer {
@@ -472,6 +477,7 @@ export async function adminUpdateGameResult(
 export async function createRegistration(
   tournamentId: string,
   section: string,
+  byeRounds: number[] = [],
 ): Promise<{
   registration: ApiRegistration
   payment: { id: string; amount: number; status: string }
@@ -481,7 +487,7 @@ export async function createRegistration(
   const response = await fetch('/api/registrations', {
     method: 'POST',
     headers: await authHeaders(),
-    body: JSON.stringify({ tournamentId, section }),
+    body: JSON.stringify({ tournamentId, section, byeRounds }),
   })
   return handleResponse(response)
 }
@@ -689,4 +695,106 @@ export async function adminGetTicket(id: string): Promise<{
     headers: await authHeaders(),
   })
   return handleResponse(response)
+}
+
+// Add to src/lib/api.ts
+
+export async function adminDeleteMember(memberId: string): Promise<void> {
+  const response = await fetch(`/api/admin/members/${memberId}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function adminDeleteTournament(tournamentId: string): Promise<void> {
+  const response = await fetch(`/api/admin/tournaments/${tournamentId}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function adminDeleteClub(clubId: string): Promise<void> {
+  const response = await fetch(`/api/admin/clubs/${clubId}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+// Add to existing interfaces:
+
+export interface ApiRoundScheduleItem {
+  round: number
+  date: string
+  time: string
+}
+
+export interface ApiCustomDetail {
+  title: string
+  body: string
+}
+
+// Update ApiTournamentDetail to include new fields:
+// (add these fields to the existing interface)
+//   is_visible: number
+//   round_schedule: ApiRoundScheduleItem[]
+//   custom_details: ApiCustomDetail[]
+//   registration_closes_at: string | null
+//   myRegistration?: ApiMyRegistration | null
+
+export interface ApiMyRegistration {
+  id: string
+  tournament_id: string
+  member_id: string
+  section: string
+  payment_status: string
+  bye_rounds: number[]
+  registered_at: string
+}
+
+// Add these new API functions:
+
+export async function updateRegistrationByes(
+  registrationId: string,
+  byeRounds: number[],
+): Promise<void> {
+  const response = await fetch(`/api/registrations/${registrationId}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify({ byeRounds }),
+  })
+  return handleResponse(response)
+}
+
+export async function adminUpdateTournamentFull(
+  id: string,
+  body: {
+    name?: string
+    location?: string
+    venue?: string | null
+    date?: string
+    endDate?: string | null
+    entryFee?: number
+    sections?: ApiTournamentSection[]
+    rounds?: number
+    maxPlayers?: number | null
+    status?: TournamentStatus
+    description?: string | null
+    registrationDeadline?: string | null
+    isRated?: boolean
+    isVisible?: boolean
+    roundSchedule?: ApiRoundScheduleItem[]
+    registrationClosesAt?: string | null
+    customDetails?: ApiCustomDetail[]
+  },
+): Promise<Record<string, unknown>> {
+  const response = await fetch(`/api/admin/tournaments/${id}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ tournament: Record<string, unknown> }>(response)
+  return data.tournament
 }
