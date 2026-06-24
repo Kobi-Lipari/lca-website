@@ -1,130 +1,98 @@
-// functions/api/admin/tournaments/[id].ts
+// functions/api/tournaments/[id].ts
 import type { Env } from '../../types'
-import { isResponse, requireTournamentManager, requireAdmin } from '../../utils/auth'
-import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
-
-interface UpdateTournamentBody {
-  name?: string
-  location?: string
-  venue?: string | null
-  date?: string
-  endDate?: string | null
-  entryFee?: number
-  sections?: Array<{ name: string; entryFee: number; prizeFund?: string }>
-  rounds?: number
-  maxPlayers?: number | null
-  status?: string
-  description?: string | null
-  registrationDeadline?: string | null
-  isRated?: boolean
-  isVisible?: boolean
-  roundSchedule?: Array<{ round: number; date: string; time: string }>
-  registrationClosesAt?: string | null
-  customDetails?: Array<{ title: string; body: string }>
-}
+import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
+import { requireAuthedMember, isResponse } from '../../utils/auth'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
-export const onRequestPatch: PagesFunction<Env> = async (context) => {
+export const onRequestGet: PagesFunction<Env> = async (context) => {
   const tournamentId = context.params.id as string
-  const authResult = await requireTournamentManager(context.request, context.env, tournamentId)
-  if (isResponse(authResult)) return authResult
-
-  const existing = await context.env.DB.prepare(
-    'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first<Record<string, unknown>>()
-
-  if (!existing) return errorResponse('Tournament not found', 404)
-
-  const body = await parseJsonBody<UpdateTournamentBody>(context.request)
-  if (!body) return errorResponse('Invalid JSON body', 400)
-
-  if (body.status && !['upcoming', 'active', 'completed'].includes(body.status)) {
-    return errorResponse('Invalid status', 400)
-  }
-
-  const sections = body.sections != null
-    ? JSON.stringify(body.sections)
-    : (existing.sections as string)
-
-  const isRated = body.isRated !== undefined
-    ? body.isRated ? 1 : 0
-    : existing.is_rated
-
-  const isVisible = body.isVisible !== undefined
-    ? body.isVisible ? 1 : 0
-    : existing.is_visible
-
-  const roundSchedule = body.roundSchedule !== undefined
-    ? JSON.stringify(body.roundSchedule)
-    : existing.round_schedule
-
-  const customDetails = body.customDetails !== undefined
-    ? JSON.stringify(body.customDetails)
-    : existing.custom_details
-
-  const registrationClosesAt = body.registrationClosesAt !== undefined
-    ? body.registrationClosesAt
-    : existing.registration_closes_at
-
-  await context.env.DB.prepare(
-    `UPDATE tournaments SET
-      name = ?, location = ?, venue = ?, date = ?, end_date = ?,
-      entry_fee = ?, sections = ?, rounds = ?, max_players = ?,
-      status = ?, description = ?, registration_deadline = ?,
-      is_rated = ?, is_visible = ?, round_schedule = ?,
-      registration_closes_at = ?, custom_details = ?
-     WHERE id = ?`,
-  ).bind(
-    body.name ?? existing.name,
-    body.location ?? existing.location,
-    body.venue !== undefined ? body.venue : existing.venue,
-    body.date ?? existing.date,
-    body.endDate !== undefined ? body.endDate : existing.end_date,
-    body.entryFee ?? existing.entry_fee,
-    sections,
-    body.rounds ?? existing.rounds,
-    body.maxPlayers !== undefined ? body.maxPlayers : existing.max_players,
-    body.status ?? existing.status,
-    body.description !== undefined ? body.description : existing.description,
-    body.registrationDeadline !== undefined ? body.registrationDeadline : existing.registration_deadline,
-    isRated,
-    isVisible,
-    roundSchedule ?? null,
-    registrationClosesAt ?? null,
-    customDetails ?? null,
-    tournamentId,
-  ).run()
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first<Record<string, unknown>>()
+  )
+    .bind(tournamentId)
+    .first<Record<string, unknown>>()
 
-  let parsedSections: unknown[] = []
-  try { parsedSections = JSON.parse((tournament as Record<string, unknown>).sections as string) } catch { parsedSections = [] }
+  if (!tournament) return errorResponse('Tournament not found', 404)
+
+  if (!tournament.is_visible) {
+    let isPrivileged = false
+    try {
+      const authed = await requireAuthedMember(context.request, context.env)
+      if (!isResponse(authed)) {
+        isPrivileged = ['lca_admin', 'club_rep', 'tournament_director'].includes(
+          authed.member.role,
+        )
+      }
+    } catch { /* not logged in */ }
+    if (!isPrivileged) return errorResponse('Tournament not found', 404)
+  }
+
+  let sections: unknown[] = []
+  try { sections = JSON.parse(tournament.sections as string) } catch { sections = [] }
+
+  let roundSchedule: unknown[] = []
+  try { roundSchedule = JSON.parse(tournament.round_schedule as string) } catch { roundSchedule = [] }
+
+  let customDetails: unknown[] = []
+  try { customDetails = JSON.parse(tournament.custom_details as string) } catch { customDetails = [] }
+
+  let myRegistration: Record<string, unknown> | null = null
+  try {
+    const authed = await requireAuthedMember(context.request, context.env)
+    if (!isResponse(authed)) {
+      myRegistration = await context.env.DB.prepare(
+        'SELECT * FROM registrations WHERE tournament_id = ? AND member_id = ?',
+      )
+        .bind(tournamentId, authed.member.id)
+        .first<Record<string, unknown>>()
+
+      if (myRegistration?.bye_rounds) {
+        try {
+          myRegistration = {
+            ...myRegistration,
+            bye_rounds: JSON.parse(myRegistration.bye_rounds as string),
+          }
+        } catch { /* leave as string */ }
+      }
+    }
+  } catch { /* not logged in */ }
+
+  const roster = await context.env.DB.prepare(
+    `SELECT r.member_id, r.section, r.payment_status,
+            m.full_name, m.uscf_id, m.uscf_rating
+     FROM registrations r
+     JOIN members m ON m.id = r.member_id
+     WHERE r.tournament_id = ?
+     ORDER BY m.full_name ASC`,
+  )
+    .bind(tournamentId)
+    .all()
+
+  const pairings = await context.env.DB.prepare(
+    `SELECT g.*,
+            w.full_name as white_name, w.uscf_rating as white_rating,
+            b.full_name as black_name, b.uscf_rating as black_rating
+     FROM tournament_games g
+     LEFT JOIN members w ON w.id = g.white_member_id
+     LEFT JOIN members b ON b.id = g.black_member_id
+     WHERE g.tournament_id = ?
+     ORDER BY g.round ASC, g.board ASC`,
+  )
+    .bind(tournamentId)
+    .all()
 
   return jsonResponse({
-    tournament: { ...(tournament as object), sections: parsedSections },
+    tournament: {
+      ...tournament,
+      sections,
+      round_schedule: roundSchedule,
+      custom_details: customDetails,
+      is_rated: tournament.is_rated ?? 1,
+    },
+    roster: roster.results ?? [],
+    pairings: pairings.results ?? [],
+    myRegistration,
   })
-}
-
-export const onRequestDelete: PagesFunction<Env> = async (context) => {
-  const tournamentId = context.params.id as string
-  const authResult = await requireAdmin(context.request, context.env)
-  if (isResponse(authResult)) return authResult
-
-  const existing = await context.env.DB.prepare(
-    'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first()
-
-  if (!existing) return errorResponse('Tournament not found', 404)
-
-  await context.env.DB.prepare('DELETE FROM registrations WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournament_games WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournament_directors WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournament_reminders WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournament_attendee_reminders WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournaments WHERE id = ?').bind(tournamentId).run()
-
-  return jsonResponse({ success: true })
 }
