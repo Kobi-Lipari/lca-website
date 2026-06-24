@@ -1,5 +1,6 @@
+// functions/api/admin/tournaments/[id]/registration.ts
 import type { Env } from '../../../../types'
-import { isResponse, requireAuthedMember } from '../../../../utils/auth'
+import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -19,27 +20,19 @@ interface RegistrationControlBody {
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAuthedMember(context.request, context.env)
+  const tournamentId = context.params.id as string
+
+  const authResult = await requireTournamentManager(context.request, context.env, tournamentId)
   if (isResponse(authResult)) return authResult
 
-  const tournamentId = context.params.id as string
   const body = await parseJsonBody<RegistrationControlBody>(context.request)
   if (!body) return errorResponse('Invalid JSON body', 400)
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first<{ club_id: string; created_by: string }>()
+  ).bind(tournamentId).first()
 
   if (!tournament) return errorResponse('Tournament not found', 404)
-
-  const member = authResult
-  const isAdmin = member.role === 'lca_admin'
-  const isClubRep =
-    member.role === 'club_rep' && member.club_id === tournament.club_id
-
-  if (!isAdmin && !isClubRep) {
-    return errorResponse('Forbidden', 403)
-  }
 
   await context.env.DB.prepare(
     `UPDATE tournaments SET
