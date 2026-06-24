@@ -160,10 +160,10 @@ export function HomePage() {
                     <div className="flex flex-wrap gap-2">
                       {tournament.sections.map((section) => (
                         <span
-                          key={section}
+                          key={typeof section === "string" ? section : section.name}
                           className="rounded-full bg-[#1a2744]/10 px-2.5 py-0.5 text-xs font-medium text-[#1a2744]"
                         >
-                          {section}
+                          {typeof section === "string" ? section : section.name}
                         </span>
                       ))}
                     </div>
