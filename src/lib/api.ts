@@ -146,7 +146,7 @@ export interface ApiTournamentListItem {
   date: string
   location: string
   entry_fee: number
-  sections: string[]
+  sections: Array<string | { name: string; entryFee: number }>
   rounds: number
   status: TournamentStatus
 }
