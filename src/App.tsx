@@ -1,3 +1,4 @@
+// src/App.tsx
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
@@ -7,18 +8,20 @@ import { Navbar } from '@/components/layout/Navbar'
 import { AboutPage } from '@/pages/AboutPage'
 import { AdminClubPage } from '@/pages/AdminClubPage'
 import { AdminPage } from '@/pages/AdminPage'
+import { AdminSupportPage } from '@/pages/AdminSupportPage'
 import { ClubDetailPage } from '@/pages/ClubDetailPage'
 import { ClubsPage } from '@/pages/ClubsPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { HomePage } from '@/pages/HomePage'
 import { LoginPage } from '@/pages/LoginPage'
 import { ManageClubPage } from '@/pages/ManageClubPage'
 import { MembershipPage } from '@/pages/MembershipPage'
 import { MembershipSuccessPage } from '@/pages/MembershipSuccessPage'
 import { RegisterPage } from '@/pages/RegisterPage'
+import { ResetPasswordPage } from '@/pages/ResetPasswordPage'
 import { SupportPage } from '@/pages/SupportPage'
-import { AdminSupportPage } from '@/pages/AdminSupportPage'
 import { TournamentDetailPage } from '@/pages/TournamentDetailPage'
 import { TournamentManagePage } from '@/pages/TournamentManagePage'
 import { TournamentsPage } from '@/pages/TournamentsPage'
@@ -40,6 +43,10 @@ function App() {
             <Route path="/membership" element={<MembershipPage />} />
             <Route path="/membership/success" element={<MembershipSuccessPage />} />
             <Route path="/support" element={<SupportPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route
               path="/admin/support"
               element={
@@ -91,8 +98,6 @@ function App() {
                 </RoleProtectedRoute>
               }
             />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
           </Routes>
         </main>
         <Footer />

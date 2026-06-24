@@ -1,5 +1,6 @@
+// functions/api/admin/clubs/[id].ts
 import type { Env } from '../../../types'
-import { isResponse, requireClubRep } from '../../../utils/auth'
+import { isResponse, requireClubRep, requireAdmin } from '../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -77,4 +78,31 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     .bind(clubId).first()
 
   return jsonResponse({ club })
+}
+
+export const onRequestDelete: PagesFunction<Env> = async (context) => {
+  const clubId = context.params.id as string
+
+  // Only full admins can delete clubs
+  const authResult = await requireAdmin(context.request, context.env)
+  if (isResponse(authResult)) return authResult
+
+  const existing = await context.env.DB.prepare('SELECT * FROM clubs WHERE id = ?')
+    .bind(clubId)
+    .first()
+
+  if (!existing) return errorResponse('Club not found', 404)
+
+  // Unassign members from this club before deleting
+  await context.env.DB.prepare(
+    'UPDATE members SET club_id = NULL WHERE club_id = ?'
+  ).bind(clubId).run()
+
+  // Delete related records
+  await context.env.DB.prepare('DELETE FROM club_officers WHERE club_id = ?').bind(clubId).run()
+  await context.env.DB.prepare('DELETE FROM club_news WHERE club_id = ?').bind(clubId).run()
+
+  await context.env.DB.prepare('DELETE FROM clubs WHERE id = ?').bind(clubId).run()
+
+  return jsonResponse({ success: true })
 }
