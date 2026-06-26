@@ -588,8 +588,15 @@ export function TournamentDetailPage() {
                 <dt className="font-medium text-[#1a2744]">Format</dt>
                 <dd className="text-muted-foreground">
                   {tournament.rounds}-round Swiss{isRated ? ', USCF-rated' : ', unrated'}
+                  {tournament.time_control && ` · ${tournament.time_control}`}
                 </dd>
               </div>
+              {tournament.time_control && (
+                <div>
+                  <dt className="font-medium text-[#1a2744]">Time control</dt>
+                  <dd className="text-muted-foreground">{tournament.time_control}</dd>
+                </div>
+              )}
             </dl>
 
             {/* Already registered */}

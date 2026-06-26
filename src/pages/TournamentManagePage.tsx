@@ -25,14 +25,25 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
-
-
 const goldButtonClass = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 const RESULT_OPTIONS = ['pending', '1-0', '0-1', '1/2-1/2', 'bye']
 
 const SECTION_PRESETS = [
   'Open', 'U2200', 'U2000', 'U1800', 'U1600',
   'U1400', 'U1200', 'U1000', 'K-12', 'K-8', 'K-5', 'Blitz', 'Quick',
+]
+
+const TIME_CONTROL_PRESETS = [
+  'G/60+5', 'G/90+30', 'G/120+30', 'G/30+5', 'G/15+2', 'G/5+2', 'G/3+2',
+]
+
+const ROUND_GAP_OPTIONS = [
+  { label: '1.5 hours', minutes: 90 },
+  { label: '2 hours', minutes: 120 },
+  { label: '2.5 hours', minutes: 150 },
+  { label: '3 hours', minutes: 180 },
+  { label: '3.5 hours', minutes: 210 },
+  { label: '4 hours', minutes: 240 },
 ]
 
 interface RosterPlayer {
@@ -69,6 +80,9 @@ export function TournamentManagePage() {
   const [registrationClosesAt, setRegistrationClosesAt] = useState('')
   const [roundSchedule, setRoundSchedule] = useState<ApiRoundScheduleItem[]>([])
   const [customDetails, setCustomDetails] = useState<ApiCustomDetail[]>([])
+  const [timeControl, setTimeControl] = useState('')
+  const [customTimeControl, setCustomTimeControl] = useState('')
+  const [autoFillGap, setAutoFillGap] = useState(120)
 
   const [generateForm, setGenerateForm] = useState({ round: '1', section: 'Open' })
   const [pairingForm, setPairingForm] = useState({
@@ -88,7 +102,6 @@ export function TournamentManagePage() {
       setGames(data.games)
       setStandings(data.standings)
 
-      // Populate settings from tournament
       setSections(data.tournament.sections ?? [])
       setRounds(String(data.tournament.rounds ?? 5))
       setIsVisible((data.tournament as any).is_visible !== 0)
@@ -97,6 +110,7 @@ export function TournamentManagePage() {
       setRegistrationClosesAt((data.tournament as any).registration_closes_at ?? '')
       setRoundSchedule((data.tournament as any).round_schedule ?? [])
       setCustomDetails((data.tournament as any).custom_details ?? [])
+      setTimeControl((data.tournament as any).time_control ?? '')
 
       const defaultSection = data.tournament.sections[0]?.name ?? 'Open'
       setGenerateForm((p) => ({ ...p, section: defaultSection }))
@@ -110,7 +124,7 @@ export function TournamentManagePage() {
 
   useEffect(() => { loadManage() }, [id])
 
-  // Sync round schedule when rounds count changes
+  // Sync round schedule rows when rounds count changes
   useEffect(() => {
     const n = Number(rounds)
     if (!n || n < 1) return
@@ -137,13 +151,8 @@ export function TournamentManagePage() {
         roundSchedule,
         registrationClosesAt: registrationClosesAt || null,
         customDetails,
+        timeControl: timeControl || null,
       })
-      // Update registration status separately if changed
-      await adminUpdateTournamentFull(id, {
-        status: registrationStatus === 'open' ? 'upcoming' : undefined,
-      })
-      // Use the registration_status field via a raw update
-      // REPLACE with:
       await updateTournamentRegistration(id, {
         registration_status: registrationStatus as 'draft' | 'open' | 'closed',
       })
@@ -154,6 +163,21 @@ export function TournamentManagePage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  function autoFillSchedule() {
+    if (!roundSchedule[0]?.date || !roundSchedule[0]?.time) return
+    const baseDate = new Date(`${roundSchedule[0].date}T${roundSchedule[0].time}`)
+    if (isNaN(baseDate.getTime())) return
+    setRoundSchedule((prev) =>
+      prev.map((r, i) => {
+        if (i === 0) return r
+        const d = new Date(baseDate.getTime() + i * autoFillGap * 60 * 1000)
+        const date = d.toISOString().split('T')[0]
+        const time = d.toTimeString().slice(0, 5)
+        return { ...r, date, time }
+      }),
+    )
   }
 
   function addSectionPreset(name: string) {
@@ -277,13 +301,17 @@ export function TournamentManagePage() {
                     'rounded-full px-2 py-0.5 text-xs font-medium',
                     isVisible ? 'bg-green-500/20 text-green-300' : 'bg-white/10 text-white/50',
                   )}>
-                    {isVisible ? <><Eye className="inline size-3 mr-1" />Visible</> : <><EyeOff className="inline size-3 mr-1" />Hidden</>}
+                    {isVisible
+                      ? <><Eye className="inline size-3 mr-1" />Visible</>
+                      : <><EyeOff className="inline size-3 mr-1" />Hidden</>}
                   </span>
                   <span className={cn(
                     'rounded-full px-2 py-0.5 text-xs font-medium',
-                    registrationStatus === 'open' ? 'bg-emerald-500/20 text-emerald-300'
-                    : registrationStatus === 'closed' ? 'bg-red-500/20 text-red-300'
-                    : 'bg-white/10 text-white/50',
+                    registrationStatus === 'open'
+                      ? 'bg-emerald-500/20 text-emerald-300'
+                      : registrationStatus === 'closed'
+                      ? 'bg-red-500/20 text-red-300'
+                      : 'bg-white/10 text-white/50',
                   )}>
                     Reg: {registrationStatus}
                   </span>
@@ -313,7 +341,7 @@ export function TournamentManagePage() {
           <div className="rounded-xl border bg-card p-6 shadow-sm space-y-8">
             <h2 className="text-lg font-bold text-[#1a2744]">Tournament Settings</h2>
 
-            {/* Visibility & status */}
+            {/* Visibility, status, rating, auto-close, rounds */}
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Visibility</Label>
@@ -384,10 +412,76 @@ export function TournamentManagePage() {
               </div>
             </div>
 
-            {/* Round schedule */}
+            {/* Time control */}
+            <div className="space-y-3">
+              <Label>Time control</Label>
+              <div className="flex flex-wrap gap-2">
+                {TIME_CONTROL_PRESETS.map((tc) => (
+                  <button
+                    key={tc}
+                    type="button"
+                    onClick={() => { setTimeControl(tc); setCustomTimeControl('') }}
+                    className={cn(
+                      'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                      timeControl === tc
+                        ? 'border-[#1a2744] bg-[#1a2744] text-white'
+                        : 'border-border text-muted-foreground hover:border-[#c8a94a] hover:text-[#1a2744]',
+                    )}
+                  >
+                    {tc}
+                  </button>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Custom time control (e.g. G/45+15)…"
+                  value={customTimeControl}
+                  onChange={(e) => {
+                    setCustomTimeControl(e.target.value)
+                    setTimeControl(e.target.value)
+                  }}
+                />
+              </div>
+              {timeControl && !TIME_CONTROL_PRESETS.includes(timeControl) && (
+                <p className="text-xs text-muted-foreground">
+                  Custom: <span className="font-medium text-foreground">{timeControl}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Round schedule with auto-fill */}
             <div className="space-y-3">
               <Label>Round schedule</Label>
-              <p className="text-xs text-muted-foreground">Set the date and time for each round. Supports multi-day tournaments.</p>
+              <p className="text-xs text-muted-foreground">
+                Set round 1 date and time, then use auto-fill to populate the rest. You can adjust any round individually after.
+              </p>
+
+              {/* Auto-fill controls */}
+              <div className="flex flex-wrap items-end gap-3 rounded-lg border bg-muted/30 p-3">
+                <div className="space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">Time between rounds</p>
+                  <select
+                    className="rounded-md border bg-background px-3 py-1.5 text-sm"
+                    value={autoFillGap}
+                    onChange={(e) => setAutoFillGap(Number(e.target.value))}
+                  >
+                    {ROUND_GAP_OPTIONS.map((o) => (
+                      <option key={o.minutes} value={o.minutes}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={autoFillSchedule}
+                  disabled={!roundSchedule[0]?.date || !roundSchedule[0]?.time}
+                >
+                  Auto-fill rounds 2–{rounds}
+                </Button>
+                <p className="text-xs text-muted-foreground">Set round 1 first, then click auto-fill.</p>
+              </div>
+
               <div className="space-y-2">
                 {roundSchedule.map((rs, i) => (
                   <div key={rs.round} className="grid grid-cols-3 gap-2 items-center">
