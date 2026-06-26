@@ -173,6 +173,7 @@ export interface ApiTournamentDetail {
   is_visible: number
   round_schedule: ApiRoundScheduleItem[]
   custom_details: ApiCustomDetail[]
+  time_control: string | null
 }
 
 export interface ApiRosterPlayer {
@@ -788,6 +789,7 @@ export async function adminUpdateTournamentFull(
     roundSchedule?: ApiRoundScheduleItem[]
     registrationClosesAt?: string | null
     customDetails?: ApiCustomDetail[]
+    timeControl: string | null
   },
 ): Promise<Record<string, unknown>> {
   const response = await fetch(`/api/admin/tournaments/${id}`, {

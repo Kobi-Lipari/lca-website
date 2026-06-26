@@ -17,6 +17,11 @@ interface UpdateTournamentBody {
   description?: string | null
   registrationDeadline?: string | null
   isRated?: boolean
+  isVisible?: boolean
+  roundSchedule?: Array<{ round: number; date: string; time: string }>
+  registrationClosesAt?: string | null
+  customDetails?: Array<{ title: string; body: string }>
+  timeControl?: string | null
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -45,48 +50,67 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     return errorResponse('Invalid status', 400)
   }
 
-  const sections =
-    body.sections != null
-      ? JSON.stringify(body.sections)
-      : (existing.sections as string)
+  const sections = body.sections != null
+    ? JSON.stringify(body.sections)
+    : (existing.sections as string)
 
-  const isRated =
-    body.isRated !== undefined
-      ? body.isRated ? 1 : 0
-      : existing.is_rated
+  const isRated = body.isRated !== undefined
+    ? body.isRated ? 1 : 0
+    : existing.is_rated
+
+  const isVisible = body.isVisible !== undefined
+    ? body.isVisible ? 1 : 0
+    : existing.is_visible
+
+  const roundSchedule = body.roundSchedule !== undefined
+    ? JSON.stringify(body.roundSchedule)
+    : existing.round_schedule
+
+  const customDetails = body.customDetails !== undefined
+    ? JSON.stringify(body.customDetails)
+    : existing.custom_details
+
+  const registrationClosesAt = body.registrationClosesAt !== undefined
+    ? body.registrationClosesAt
+    : existing.registration_closes_at
+
+  const timeControl = body.timeControl !== undefined
+    ? body.timeControl
+    : existing.time_control
 
   await context.env.DB.prepare(
     `UPDATE tournaments SET
       name = ?, location = ?, venue = ?, date = ?, end_date = ?,
       entry_fee = ?, sections = ?, rounds = ?, max_players = ?,
-      status = ?, description = ?, registration_deadline = ?, is_rated = ?
+      status = ?, description = ?, registration_deadline = ?,
+      is_rated = ?, is_visible = ?, round_schedule = ?,
+      registration_closes_at = ?, custom_details = ?, time_control = ?
      WHERE id = ?`,
-  )
-    .bind(
-      body.name ?? existing.name,
-      body.location ?? existing.location,
-      body.venue !== undefined ? body.venue : existing.venue,
-      body.date ?? existing.date,
-      body.endDate !== undefined ? body.endDate : existing.end_date,
-      body.entryFee ?? existing.entry_fee,
-      sections,
-      body.rounds ?? existing.rounds,
-      body.maxPlayers !== undefined ? body.maxPlayers : existing.max_players,
-      body.status ?? existing.status,
-      body.description !== undefined ? body.description : existing.description,
-      body.registrationDeadline !== undefined
-        ? body.registrationDeadline
-        : existing.registration_deadline,
-      isRated,
-      tournamentId,
-    )
-    .run()
+  ).bind(
+    body.name ?? existing.name,
+    body.location ?? existing.location,
+    body.venue !== undefined ? body.venue : existing.venue,
+    body.date ?? existing.date,
+    body.endDate !== undefined ? body.endDate : existing.end_date,
+    body.entryFee ?? existing.entry_fee,
+    sections,
+    body.rounds ?? existing.rounds,
+    body.maxPlayers !== undefined ? body.maxPlayers : existing.max_players,
+    body.status ?? existing.status,
+    body.description !== undefined ? body.description : existing.description,
+    body.registrationDeadline !== undefined ? body.registrationDeadline : existing.registration_deadline,
+    isRated,
+    isVisible,
+    roundSchedule ?? null,
+    registrationClosesAt ?? null,
+    customDetails ?? null,
+    timeControl ?? null,
+    tournamentId,
+  ).run()
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  )
-    .bind(tournamentId)
-    .first()
+  ).bind(tournamentId).first()
 
   let parsedSections: unknown[] = []
   try {
@@ -104,18 +128,15 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
   const tournamentId = context.params.id as string
-
-  // Only full admins can delete tournaments
   const authResult = await requireAdmin(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const existing = await context.env.DB.prepare(
-    'SELECT * FROM tournaments WHERE id = ?'
+    'SELECT * FROM tournaments WHERE id = ?',
   ).bind(tournamentId).first()
 
   if (!existing) return errorResponse('Tournament not found', 404)
 
-  // Delete related records first
   await context.env.DB.prepare('DELETE FROM registrations WHERE tournament_id = ?').bind(tournamentId).run()
   await context.env.DB.prepare('DELETE FROM tournament_games WHERE tournament_id = ?').bind(tournamentId).run()
   await context.env.DB.prepare('DELETE FROM tournament_directors WHERE tournament_id = ?').bind(tournamentId).run()
