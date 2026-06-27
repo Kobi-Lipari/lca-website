@@ -6,6 +6,7 @@ import { getClubs, type ApiClubListItem } from '@/lib/api'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { LCAMap } from '@/components/maps/LCAMap'
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -312,39 +313,16 @@ export function ClubsPage() {
         )}
       </section>
 
-      {/* ── Map section ── */}
+            {/* ── Map section ── */}
       <section className="border-t border-border">
         <div className="mx-auto max-w-6xl px-6 py-8">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-[#1a2744]">Club locations</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Click any marker to see club details.
-              </p>
-            </div>
+          <div className="mb-4">
+            <h2 className="text-xl font-bold text-[#1a2744]">Club locations</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Click any marker to see club details.
+            </p>
           </div>
-
-          {/*
-            TODO: Replace this iframe with a Google Maps JavaScript API embed
-            for custom navy/gold styling and interactive markers.
-            Steps:
-              1. Go to console.cloud.google.com and create a Maps JavaScript API key
-              2. Add VITE_GOOGLE_MAPS_KEY to your .env.local
-              3. Replace this iframe with the styled map component
-            Remind K to set this up when ready.
-          */}
-          <div className="overflow-hidden rounded-xl border">
-            <iframe
-              title="Louisiana chess clubs map"
-              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1757950.0!2d-91.96!3d31.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1699900000000!5m2!1sen!2sus"
-              width="100%"
-              height="400"
-              style={{ border: 0, display: 'block' }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
+          <LCAMap mode="all" height={480} clubs={allClubs} />
         </div>
       </section>
 
