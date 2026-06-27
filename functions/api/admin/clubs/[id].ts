@@ -15,6 +15,7 @@ interface UpdateClubBody {
   description?: string | null
   meetingSchedule?: string | null
   contactEmail?: string | null
+  color?: string | null
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -59,10 +60,15 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const body = await parseJsonBody<UpdateClubBody>(context.request)
   if (!body) return errorResponse('Invalid JSON body', 400)
 
+  // Validate hex color if provided
+  const color = body.color !== undefined
+    ? (body.color && /^#[0-9A-Fa-f]{6}$/.test(body.color) ? body.color : existing.color)
+    : existing.color
+
   await context.env.DB.prepare(
     `UPDATE clubs SET
       name = ?, city = ?, location = ?, description = ?,
-      meeting_schedule = ?, contact_email = ?
+      meeting_schedule = ?, contact_email = ?, color = ?
      WHERE id = ?`,
   ).bind(
     body.name ?? existing.name,
@@ -71,6 +77,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     body.description !== undefined ? body.description : existing.description,
     body.meetingSchedule !== undefined ? body.meetingSchedule : existing.meeting_schedule,
     body.contactEmail !== undefined ? body.contactEmail : existing.contact_email,
+    color,
     clubId,
   ).run()
 
@@ -82,26 +89,17 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
-
-  // Only full admins can delete clubs
   const authResult = await requireAdmin(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const existing = await context.env.DB.prepare('SELECT * FROM clubs WHERE id = ?')
-    .bind(clubId)
-    .first()
+    .bind(clubId).first()
 
   if (!existing) return errorResponse('Club not found', 404)
 
-  // Unassign members from this club before deleting
-  await context.env.DB.prepare(
-    'UPDATE members SET club_id = NULL WHERE club_id = ?'
-  ).bind(clubId).run()
-
-  // Delete related records
+  await context.env.DB.prepare('UPDATE members SET club_id = NULL WHERE club_id = ?').bind(clubId).run()
   await context.env.DB.prepare('DELETE FROM club_officers WHERE club_id = ?').bind(clubId).run()
   await context.env.DB.prepare('DELETE FROM club_news WHERE club_id = ?').bind(clubId).run()
-
   await context.env.DB.prepare('DELETE FROM clubs WHERE id = ?').bind(clubId).run()
 
   return jsonResponse({ success: true })

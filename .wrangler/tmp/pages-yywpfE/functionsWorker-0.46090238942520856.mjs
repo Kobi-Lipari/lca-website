@@ -9,7 +9,7 @@ var __export = (target, all) => {
     __defProp(target, name, { get: all[name], enumerable: true });
 };
 
-// ../.wrangler/tmp/bundle-kuQnRR/checked-fetch.js
+// ../.wrangler/tmp/bundle-2ywdVX/checked-fetch.js
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
     (typeof request === "string" ? new Request(request, init) : request).url
@@ -27,7 +27,7 @@ function checkURL(request, init) {
 }
 var urls;
 var init_checked_fetch = __esm({
-  "../.wrangler/tmp/bundle-kuQnRR/checked-fetch.js"() {
+  "../.wrangler/tmp/bundle-2ywdVX/checked-fetch.js"() {
     urls = /* @__PURE__ */ new Set();
     __name(checkURL, "checkURL");
     globalThis.fetch = new Proxy(globalThis.fetch, {
@@ -85,7 +85,7 @@ function __awaiter(thisArg, _arguments, P, generator) {
 }
 var init_tslib_es6 = __esm({
   "../node_modules/tslib/tslib.es6.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     __name(__rest, "__rest");
     __name(__awaiter, "__awaiter");
@@ -96,7 +96,7 @@ var init_tslib_es6 = __esm({
 var resolveFetch;
 var init_helper = __esm({
   "../node_modules/@supabase/functions-js/dist/module/helper.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     resolveFetch = /* @__PURE__ */ __name((customFetch) => {
       if (customFetch) {
@@ -111,7 +111,7 @@ var init_helper = __esm({
 var FunctionsError, FunctionsFetchError, FunctionsRelayError, FunctionsHttpError, FunctionRegion;
 var init_types = __esm({
   "../node_modules/@supabase/functions-js/dist/module/types.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     FunctionsError = class extends Error {
       static {
@@ -178,7 +178,7 @@ var init_types = __esm({
 var FunctionsClient;
 var init_FunctionsClient = __esm({
   "../node_modules/@supabase/functions-js/dist/module/FunctionsClient.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_tslib_es6();
     init_helper();
@@ -457,7 +457,7 @@ var init_FunctionsClient = __esm({
 // ../node_modules/@supabase/functions-js/dist/module/index.js
 var init_module = __esm({
   "../node_modules/@supabase/functions-js/dist/module/index.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_FunctionsClient();
   }
@@ -542,7 +542,7 @@ function _objectSpread2(e) {
 var DEFAULT_MAX_RETRIES, getRetryDelay, RETRYABLE_STATUS_CODES, RETRYABLE_METHODS, PostgrestError, PostgrestBuilder, PostgrestTransformBuilder, PostgrestReservedCharsRegexp, PostgrestFilterBuilder, PostgrestQueryBuilder, PostgrestClient;
 var init_dist = __esm({
   "../node_modules/@supabase/postgrest-js/dist/index.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     DEFAULT_MAX_RETRIES = 3;
     getRetryDelay = /* @__PURE__ */ __name((attemptIndex) => Math.min(1e3 * 2 ** attemptIndex, 3e4), "getRetryDelay");
@@ -5559,7 +5559,7 @@ ${cause.stack}`;
 var WebSocketFactory, websocket_factory_default;
 var init_websocket_factory = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     WebSocketFactory = class {
       static {
@@ -5684,7 +5684,7 @@ Suggested solution: ${env.workaround}`;
 var version;
 var init_version = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/version.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     version = "2.108.2";
   }
@@ -5694,7 +5694,7 @@ var init_version = __esm({
 var DEFAULT_VERSION, VSN_1_0_0, VSN_2_0_0, DEFAULT_VSN, DEFAULT_TIMEOUT, MAX_PUSH_BUFFER_SIZE, CHANNEL_STATES, CHANNEL_EVENTS, CONNECTION_STATE;
 var init_constants = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/constants.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_version();
     DEFAULT_VERSION = `realtime-js/${version}`;
@@ -5731,7 +5731,7 @@ var init_constants = __esm({
 var Serializer;
 var init_serializer = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/serializer.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     Serializer = class {
       static {
@@ -5881,7 +5881,7 @@ var init_serializer = __esm({
 var PostgresTypes, convertChangeData, convertColumn, convertCell, noop, toBoolean, toNumber, toJson, toArray, toTimestampString, httpEndpointURL;
 var init_transformers = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/transformers.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     (function(PostgresTypes2) {
       PostgresTypes2["abstime"] = "abstime";
@@ -6050,7 +6050,7 @@ var init_transformers = __esm({
 var closure, globalSelf, phxWindow, global2, DEFAULT_VSN2, DEFAULT_TIMEOUT2, WS_CLOSE_NORMAL, SOCKET_STATES, CHANNEL_STATES2, CHANNEL_EVENTS2, TRANSPORTS, XHR_STATES, AUTH_TOKEN_PREFIX, Push, Timer, Channel, Ajax, arrayBufferToBase64, LongPoll, Presence, serializer_default, Socket;
 var init_phoenix = __esm({
   "../node_modules/@supabase/phoenix/priv/static/phoenix.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     closure = /* @__PURE__ */ __name((value) => {
       if (typeof value === "function") {
@@ -7861,7 +7861,7 @@ function parseCurrentPresences(currentPresences) {
 var PresenceAdapter;
 var init_presenceAdapter = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/phoenix/presenceAdapter.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_phoenix();
     PresenceAdapter = class _PresenceAdapter {
@@ -7949,7 +7949,7 @@ var init_presenceAdapter = __esm({
 var REALTIME_PRESENCE_LISTEN_EVENTS, RealtimePresence;
 var init_RealtimePresence = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/RealtimePresence.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_presenceAdapter();
     (function(REALTIME_PRESENCE_LISTEN_EVENTS2) {
@@ -8009,7 +8009,7 @@ function normalizeChannelError(reason) {
 }
 var init_normalizeChannelError = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/normalizeChannelError.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     __name(normalizeChannelError, "normalizeChannelError");
   }
@@ -8028,7 +8028,7 @@ function phoenixChannelParams(options) {
 var ChannelAdapter;
 var init_channelAdapter = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/phoenix/channelAdapter.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_constants();
     ChannelAdapter = class {
@@ -8130,7 +8130,7 @@ var init_channelAdapter = __esm({
 var REALTIME_POSTGRES_CHANGES_LISTEN_EVENT, REALTIME_LISTEN_TYPES, REALTIME_SUBSCRIBE_STATES, RealtimeChannel;
 var init_RealtimeChannel = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/RealtimeChannel.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_constants();
     init_RealtimePresence();
@@ -8841,7 +8841,7 @@ var init_RealtimeChannel = __esm({
 var SocketAdapter;
 var init_socketAdapter = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/phoenix/socketAdapter.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_phoenix();
     init_constants();
@@ -8995,7 +8995,7 @@ function resolveSessionStorage() {
 var CONNECTION_TIMEOUTS, RECONNECT_INTERVALS, DEFAULT_RECONNECT_FALLBACK, WORKER_SCRIPT, RealtimeClient;
 var init_RealtimeClient = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/RealtimeClient.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_websocket_factory();
     init_constants();
@@ -9634,7 +9634,7 @@ Option 2: Install and provide the "ws" package:
 // ../node_modules/@supabase/realtime-js/dist/module/index.js
 var init_module2 = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/index.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_RealtimeClient();
     init_RealtimeChannel();
@@ -9720,7 +9720,7 @@ function namespaceToPath2(namespace) {
 var IcebergError, NamespaceOperations, TableOperations, IcebergRestCatalog;
 var init_dist2 = __esm({
   "../node_modules/iceberg-js/dist/index.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     IcebergError = class extends Error {
       static {
@@ -10303,7 +10303,7 @@ function createFetchApi(namespace = "storage") {
 var StorageError, StorageApiError, StorageUnknownError, resolveFetch2, isPlainObject, recursiveToCamel, isValidBucketName, _getErrorMessage, handleError, _getRequestParams, defaultApi, get, post, put, head, remove, vectorsApi, BaseApiClient, _Symbol$toStringTag$1, StreamDownloadBuilder, _Symbol$toStringTag, BlobDownloadBuilder, DEFAULT_SEARCH_OPTIONS, DEFAULT_FILE_OPTIONS, StorageFileApi, version2, DEFAULT_HEADERS, StorageBucketApi, StorageAnalyticsClient, VectorIndexApi, VectorDataApi, VectorBucketApi, StorageVectorsClient, VectorBucketScope, VectorIndexScope, StorageClient;
 var init_dist3 = __esm({
   "../node_modules/@supabase/storage-js/dist/index.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_dist2();
     __name(_typeof2, "_typeof");
@@ -12961,7 +12961,7 @@ var init_dist3 = __esm({
 var version3;
 var init_version2 = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/version.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     version3 = "2.108.2";
   }
@@ -12971,7 +12971,7 @@ var init_version2 = __esm({
 var AUTO_REFRESH_TICK_DURATION_MS, AUTO_REFRESH_TICK_THRESHOLD, EXPIRY_MARGIN_MS, REFRESH_FAILURE_COOLDOWN_MS, GOTRUE_URL, STORAGE_KEY, DEFAULT_HEADERS2, API_VERSION_HEADER_NAME, API_VERSIONS, BASE64URL_REGEX, JWKS_TTL;
 var init_constants2 = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/constants.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_version2();
     AUTO_REFRESH_TICK_DURATION_MS = 30 * 1e3;
@@ -13015,7 +13015,7 @@ function isAuthRefreshDiscardedError(error) {
 var AuthError, AuthApiError, AuthUnknownError, CustomAuthError, AuthSessionMissingError, AuthInvalidTokenResponseError, AuthInvalidCredentialsError, AuthImplicitGrantRedirectError, AuthPKCEGrantCodeExchangeError, AuthPKCECodeVerifierMissingError, AuthRetryableFetchError, AuthRefreshDiscardedError, AuthWeakPasswordError, AuthInvalidJwtError;
 var init_errors = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/errors.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     AuthError = class extends Error {
       static {
@@ -13320,7 +13320,7 @@ function bytesToBase64URL(bytes) {
 var TO_BASE64URL, IGNORE_BASE64URL, FROM_BASE64URL;
 var init_base64url = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/base64url.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     TO_BASE64URL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".split("");
     IGNORE_BASE64URL = " 	\n\r=".split("");
@@ -13568,7 +13568,7 @@ function deepClone(obj) {
 var isBrowser, localStorageWriteTests, supportsLocalStorage, resolveFetch3, looksLikeFetchResponse, setItemAsync, getItemAsync, removeItemAsync, Deferred, API_VERSION_REGEX, UUID_REGEX;
 var init_helpers = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/helpers.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_constants2();
     init_errors();
@@ -13796,7 +13796,7 @@ function hasSession(data) {
 var _getErrorMessage2, NETWORK_ERROR_CODES, _getRequestParams2;
 var init_fetch = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/fetch.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_tslib_es6();
     init_constants2();
@@ -13860,7 +13860,7 @@ var init_fetch = __esm({
 var SIGN_OUT_SCOPES;
 var init_types2 = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/types.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     SIGN_OUT_SCOPES = ["global", "local", "others"];
   }
@@ -13870,7 +13870,7 @@ var init_types2 = __esm({
 var GoTrueAdminApi;
 var init_GoTrueAdminApi = __esm({
   "../node_modules/@supabase/auth-js/dist/module/GoTrueAdminApi.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_tslib_es6();
     init_fetch();
@@ -14974,7 +14974,7 @@ function memoryLocalStorageAdapter(store = {}) {
 }
 var init_local_storage = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/local-storage.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     __name(memoryLocalStorageAdapter, "memoryLocalStorageAdapter");
   }
@@ -14984,7 +14984,7 @@ var init_local_storage = __esm({
 var internals, LockAcquireTimeoutError;
 var init_locks = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/locks.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_helpers();
     internals = {
@@ -15026,7 +15026,7 @@ function polyfillGlobalThis() {
 }
 var init_polyfills = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/polyfills.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     __name(polyfillGlobalThis, "polyfillGlobalThis");
   }
@@ -15101,7 +15101,7 @@ ${suffix}`;
 }
 var init_ethereum = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/web3/ethereum.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     __name(getAddress, "getAddress");
     __name(fromHex, "fromHex");
@@ -15260,7 +15260,7 @@ function identifyAuthenticationError({ error, options }) {
 var WebAuthnError, WebAuthnUnknownError;
 var init_webauthn_errors = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/webauthn.errors.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_webauthn();
     WebAuthnError = class extends Error {
@@ -15512,7 +15512,7 @@ function mergeCredentialRequestOptions(baseOptions, overrides) {
 var WebAuthnAbortService, webAuthnAbortService, DEFAULT_CREATION_OPTIONS, DEFAULT_REQUEST_OPTIONS, WebAuthnApi;
 var init_webauthn = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/webauthn.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_tslib_es6();
     init_base64url();
@@ -15857,7 +15857,7 @@ var init_webauthn = __esm({
 var DEFAULT_OPTIONS, GLOBAL_JWKS, GoTrueClient, GoTrueClient_default;
 var init_GoTrueClient = __esm({
   "../node_modules/@supabase/auth-js/dist/module/GoTrueClient.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_GoTrueAdminApi();
     init_constants2();
@@ -20977,7 +20977,7 @@ var init_GoTrueClient = __esm({
 // ../node_modules/@supabase/auth-js/dist/module/AuthAdminApi.js
 var init_AuthAdminApi = __esm({
   "../node_modules/@supabase/auth-js/dist/module/AuthAdminApi.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_GoTrueAdminApi();
   }
@@ -20987,7 +20987,7 @@ var init_AuthAdminApi = __esm({
 var AuthClient, AuthClient_default;
 var init_AuthClient = __esm({
   "../node_modules/@supabase/auth-js/dist/module/AuthClient.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_GoTrueClient();
     AuthClient = GoTrueClient_default;
@@ -20998,7 +20998,7 @@ var init_AuthClient = __esm({
 // ../node_modules/@supabase/auth-js/dist/module/index.js
 var init_module3 = __esm({
   "../node_modules/@supabase/auth-js/dist/module/index.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_GoTrueAdminApi();
     init_GoTrueClient();
@@ -21242,7 +21242,7 @@ function shouldShowDeprecationWarning() {
 var version4, JS_ENV, JS_RUNTIME_VERSION, _Deno$version, _process$version, _runtimeMeta, DEFAULT_HEADERS3, DEFAULT_GLOBAL_OPTIONS, DEFAULT_DB_OPTIONS, DEFAULT_AUTH_OPTIONS, DEFAULT_REALTIME_OPTIONS, DEFAULT_TRACE_PROPAGATION_OPTIONS, otelModulePromise, OTEL_PKG, resolveFetch4, resolveHeadersConstructor, fetchWithAuth, SupabaseAuthClient, SupabaseClient, createClient;
 var init_dist4 = __esm({
   "../node_modules/@supabase/supabase-js/dist/index.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_module();
     init_dist();
@@ -21798,7 +21798,7 @@ async function syncSupabaseUserMetadata(env, userId, metadata) {
 }
 var init_supabase = __esm({
   "utils/supabase.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_dist4();
     __name(getSupabaseAdmin, "getSupabaseAdmin");
@@ -21880,7 +21880,7 @@ async function updateMemberProfile(db, id, data) {
 }
 var init_members = __esm({
   "utils/members.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_supabase();
     __name(getMemberById, "getMemberById");
@@ -21913,7 +21913,7 @@ function parseJsonBody(request) {
 var corsHeaders;
 var init_response = __esm({
   "utils/response.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     corsHeaders = {
       "Access-Control-Allow-Origin": "*",
@@ -21975,7 +21975,7 @@ async function getDirectedTournamentIds(db, memberId) {
 var MEMBER_ROLES;
 var init_permissions = __esm({
   "utils/permissions.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     MEMBER_ROLES = [
       "member",
@@ -22070,7 +22070,7 @@ function isResponse(value) {
 }
 var init_auth = __esm({
   "utils/auth.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_dist4();
     init_members();
@@ -22090,7 +22090,7 @@ var init_auth = __esm({
 // utils/pairing/types.ts
 var init_types3 = __esm({
   "utils/pairing/types.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
   }
 });
@@ -22192,7 +22192,7 @@ function applyTiebreakers(players, games) {
 }
 var init_tiebreakers = __esm({
   "utils/pairing/tiebreakers.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     __name(buildScoreMap, "buildScoreMap");
     __name(computeBuchholz, "computeBuchholz");
@@ -22269,7 +22269,7 @@ function getLastColor(player) {
 }
 var init_player_state = __esm({
   "utils/pairing/player-state.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_tiebreakers();
     __name(buildPlayerStates, "buildPlayerStates");
@@ -22337,7 +22337,7 @@ function assignColors(a, b) {
 }
 var init_colors = __esm({
   "utils/pairing/colors.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_player_state();
     __name(getColorPreference, "getColorPreference");
@@ -22441,7 +22441,7 @@ function pairingEdgeWeight(a, b, s1Index, s2Index) {
 var FORBIDDEN, BASE_WEIGHT;
 var init_blossom = __esm({
   "utils/pairing/blossom.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_colors();
     FORBIDDEN = Number.POSITIVE_INFINITY;
@@ -22544,7 +22544,7 @@ function toGeneratedPairings(pairings, byes) {
 }
 var init_score_groups = __esm({
   "utils/pairing/score-groups.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_blossom();
     __name(splitS1S2, "splitS1S2");
@@ -22602,7 +22602,7 @@ function generateDutchPairings(players, games, round) {
 }
 var init_dutch = __esm({
   "utils/pairing/dutch.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_colors();
     init_player_state();
@@ -22615,7 +22615,7 @@ var init_dutch = __esm({
 // utils/pairing/index.ts
 var init_pairing = __esm({
   "utils/pairing/index.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_types3();
     init_tiebreakers();
@@ -22631,7 +22631,7 @@ var init_pairing = __esm({
 var onRequestOptions, onRequestPost;
 var init_generate = __esm({
   "api/admin/tournaments/[id]/pairings/generate.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_pairing();
@@ -22742,7 +22742,7 @@ var init_generate = __esm({
 var VALID_RESULTS, onRequestOptions2, onRequestPatch;
 var init_gameId = __esm({
   "api/admin/tournaments/[id]/game/[gameId].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -22782,7 +22782,7 @@ var init_gameId = __esm({
 var onRequestOptions3, onRequestPost2;
 var init_news = __esm({
   "api/admin/clubs/[id]/news.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -22816,7 +22816,7 @@ var init_news = __esm({
 var onRequestOptions4, onRequestGet;
 var init_roster = __esm({
   "api/admin/clubs/[id]/roster.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -22841,7 +22841,7 @@ var init_roster = __esm({
 var onRequestOptions5, onRequestPatch2;
 var init_club = __esm({
   "api/admin/members/[id]/club.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_members();
@@ -22881,7 +22881,7 @@ var init_club = __esm({
 var onRequestOptions6, onRequestPatch3;
 var init_role = __esm({
   "api/admin/members/[id]/role.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_members();
@@ -22914,7 +22914,7 @@ var init_role = __esm({
 var onRequestOptions7, onRequestPost3;
 var init_directors = __esm({
   "api/admin/tournaments/[id]/directors.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_permissions();
@@ -22983,7 +22983,7 @@ var init_directors = __esm({
 var onRequestOptions8, onRequestPost4;
 var init_games = __esm({
   "api/admin/tournaments/[id]/games.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23036,7 +23036,7 @@ var init_games = __esm({
 var onRequestOptions9, onRequestPost5;
 var init_generate_pairings = __esm({
   "api/admin/tournaments/[id]/generate-pairings.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_pairing();
@@ -23147,7 +23147,7 @@ var init_generate_pairings = __esm({
 var onRequestOptions10, onRequestGet2;
 var init_manage = __esm({
   "api/admin/tournaments/[id]/manage.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23259,7 +23259,7 @@ var init_manage = __esm({
 var onRequestOptions11, onRequestPatch4;
 var init_registration = __esm({
   "api/admin/tournaments/[id]/registration.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23305,7 +23305,7 @@ var init_registration = __esm({
 var onRequestOptions12, onRequestPost6, onRequestDelete, onRequestGet3;
 var init_remind = __esm({
   "api/admin/tournaments/[id]/remind.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23357,7 +23357,7 @@ var init_remind = __esm({
 var onRequestOptions13, onRequestGet4, onRequestPatch5, onRequestDelete2;
 var init_id = __esm({
   "api/admin/clubs/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23388,10 +23388,11 @@ var init_id = __esm({
       if (!existing) return errorResponse("Club not found", 404);
       const body = await parseJsonBody(context.request);
       if (!body) return errorResponse("Invalid JSON body", 400);
+      const color = body.color !== void 0 ? body.color && /^#[0-9A-Fa-f]{6}$/.test(body.color) ? body.color : existing.color : existing.color;
       await context.env.DB.prepare(
         `UPDATE clubs SET
       name = ?, city = ?, location = ?, description = ?,
-      meeting_schedule = ?, contact_email = ?
+      meeting_schedule = ?, contact_email = ?, color = ?
      WHERE id = ?`
       ).bind(
         body.name ?? existing.name,
@@ -23400,6 +23401,7 @@ var init_id = __esm({
         body.description !== void 0 ? body.description : existing.description,
         body.meetingSchedule !== void 0 ? body.meetingSchedule : existing.meeting_schedule,
         body.contactEmail !== void 0 ? body.contactEmail : existing.contact_email,
+        color,
         clubId
       ).run();
       const club = await context.env.DB.prepare("SELECT * FROM clubs WHERE id = ?").bind(clubId).first();
@@ -23411,9 +23413,7 @@ var init_id = __esm({
       if (isResponse(authResult)) return authResult;
       const existing = await context.env.DB.prepare("SELECT * FROM clubs WHERE id = ?").bind(clubId).first();
       if (!existing) return errorResponse("Club not found", 404);
-      await context.env.DB.prepare(
-        "UPDATE members SET club_id = NULL WHERE club_id = ?"
-      ).bind(clubId).run();
+      await context.env.DB.prepare("UPDATE members SET club_id = NULL WHERE club_id = ?").bind(clubId).run();
       await context.env.DB.prepare("DELETE FROM club_officers WHERE club_id = ?").bind(clubId).run();
       await context.env.DB.prepare("DELETE FROM club_news WHERE club_id = ?").bind(clubId).run();
       await context.env.DB.prepare("DELETE FROM clubs WHERE id = ?").bind(clubId).run();
@@ -23426,7 +23426,7 @@ var init_id = __esm({
 var onRequestOptions14, onRequestDelete3;
 var init_id2 = __esm({
   "api/admin/members/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23522,7 +23522,7 @@ function supportReplyNotificationEmail(data) {
 }
 var init_email = __esm({
   "utils/email.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     __name(sendEmail, "sendEmail");
     __name(contactConfirmationEmail, "contactConfirmationEmail");
@@ -23535,7 +23535,7 @@ var init_email = __esm({
 var onRequestOptions15, onRequestGet5, onRequestPatch6, onRequestPost7;
 var init_id3 = __esm({
   "api/admin/support/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23600,7 +23600,7 @@ var init_id3 = __esm({
 var onRequestOptions16, onRequestPatch7, onRequestDelete4;
 var init_id4 = __esm({
   "api/admin/tournaments/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23624,11 +23624,18 @@ var init_id4 = __esm({
       }
       const sections = body.sections != null ? JSON.stringify(body.sections) : existing.sections;
       const isRated = body.isRated !== void 0 ? body.isRated ? 1 : 0 : existing.is_rated;
+      const isVisible = body.isVisible !== void 0 ? body.isVisible ? 1 : 0 : existing.is_visible;
+      const roundSchedule = body.roundSchedule !== void 0 ? JSON.stringify(body.roundSchedule) : existing.round_schedule;
+      const customDetails = body.customDetails !== void 0 ? JSON.stringify(body.customDetails) : existing.custom_details;
+      const registrationClosesAt = body.registrationClosesAt !== void 0 ? body.registrationClosesAt : existing.registration_closes_at;
+      const timeControl = body.timeControl !== void 0 ? body.timeControl : existing.time_control;
       await context.env.DB.prepare(
         `UPDATE tournaments SET
       name = ?, location = ?, venue = ?, date = ?, end_date = ?,
       entry_fee = ?, sections = ?, rounds = ?, max_players = ?,
-      status = ?, description = ?, registration_deadline = ?, is_rated = ?
+      status = ?, description = ?, registration_deadline = ?,
+      is_rated = ?, is_visible = ?, round_schedule = ?,
+      registration_closes_at = ?, custom_details = ?, time_control = ?
      WHERE id = ?`
       ).bind(
         body.name ?? existing.name,
@@ -23644,6 +23651,11 @@ var init_id4 = __esm({
         body.description !== void 0 ? body.description : existing.description,
         body.registrationDeadline !== void 0 ? body.registrationDeadline : existing.registration_deadline,
         isRated,
+        isVisible,
+        roundSchedule ?? null,
+        registrationClosesAt ?? null,
+        customDetails ?? null,
+        timeControl ?? null,
         tournamentId
       ).run();
       const tournament = await context.env.DB.prepare(
@@ -23812,7 +23824,7 @@ async function refreshMemberUscfRating(db, memberId, uscfId) {
 var RATING_CACHE_MS, MSA_BASE;
 var init_uscf = __esm({
   "utils/uscf.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     RATING_CACHE_MS = 7 * 24 * 60 * 60 * 1e3;
     MSA_BASE = "https://www.uschess.org/msa";
@@ -23828,7 +23840,7 @@ var init_uscf = __esm({
 var onRequestOptions17, onRequestGet6;
 var init_id5 = __esm({
   "api/tournaments/uscf/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_uscf();
     init_response();
@@ -23866,7 +23878,7 @@ var init_id5 = __esm({
 var onRequestOptions18, onRequestPost8;
 var init_news2 = __esm({
   "api/clubs/[id]/news.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23902,7 +23914,7 @@ var init_news2 = __esm({
 var onRequestOptions19, onRequestGet7;
 var init_roster2 = __esm({
   "api/clubs/[id]/roster.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -23926,7 +23938,7 @@ var init_roster2 = __esm({
 var onRequestOptions20, onRequestPost9;
 var init_generate2 = __esm({
   "api/tournaments/[id]/generate.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_pairing();
@@ -24037,7 +24049,7 @@ var init_generate2 = __esm({
 var onRequestOptions21, onRequestPost10;
 var init_generate_pairings2 = __esm({
   "api/tournaments/[id]/generate-pairings.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_pairing();
@@ -24148,7 +24160,7 @@ var init_generate_pairings2 = __esm({
 var onRequestOptions22, onRequestGet8;
 var init_members2 = __esm({
   "api/admin/members.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24171,7 +24183,7 @@ var init_members2 = __esm({
 var onRequestOptions23, onRequestGet9;
 var init_support = __esm({
   "api/admin/support.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24201,7 +24213,7 @@ function slugify(value) {
 var onRequestOptions24, onRequestPost11;
 var init_tournaments = __esm({
   "api/admin/tournaments.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24279,7 +24291,7 @@ function membershipPaymentUrl(env, tier) {
 var TIER_PRICES, onRequestOptions25, onRequestPost12;
 var init_checkout = __esm({
   "api/membership/checkout.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24324,7 +24336,7 @@ function oneYearFromNow() {
 var onRequestOptions26, onRequestPost13;
 var init_confirm = __esm({
   "api/membership/confirm.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24370,7 +24382,7 @@ var init_confirm = __esm({
 var onRequestGet10;
 var init_lookup = __esm({
   "api/uscf/lookup.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_uscf();
     init_response();
@@ -24393,7 +24405,7 @@ var init_lookup = __esm({
 var onRequestGet11;
 var init_search = __esm({
   "api/uscf/search.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_uscf();
     init_response();
@@ -24448,7 +24460,7 @@ async function completePayment(db, paymentId) {
 var onRequestOptions27, onRequestPost14;
 var init_stripe = __esm({
   "api/webhooks/stripe.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_response();
     __name(oneYearFromNow2, "oneYearFromNow");
@@ -24489,7 +24501,7 @@ var init_stripe = __esm({
 var onRequestOptions28, onRequestGet12, onRequestPatch8;
 var init_id6 = __esm({
   "api/clubs/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24565,7 +24577,7 @@ var init_id6 = __esm({
 var onRequestOptions29, onRequestPatch9;
 var init_id7 = __esm({
   "api/registrations/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24617,7 +24629,7 @@ var init_id7 = __esm({
 var onRequestOptions30, onRequestGet13, onRequestPost15;
 var init_id8 = __esm({
   "api/support/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24674,7 +24686,7 @@ var init_id8 = __esm({
 var onRequestOptions31, onRequestGet14;
 var init_id9 = __esm({
   "api/tournaments/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_response();
     init_auth();
@@ -24773,7 +24785,7 @@ var init_id9 = __esm({
 var onRequestOptions32, onRequestGet15;
 var init_clubs = __esm({
   "api/clubs.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_response();
     onRequestOptions32 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
@@ -24790,7 +24802,7 @@ var init_clubs = __esm({
 var onRequestOptions33, onRequestPost16, onRequestGet16;
 var init_contact = __esm({
   "api/contact.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_response();
     init_email();
@@ -24838,7 +24850,7 @@ var init_contact = __esm({
 var onRequestGet17;
 var init_health = __esm({
   "api/health.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_response();
     onRequestGet17 = /* @__PURE__ */ __name(async () => {
@@ -24851,7 +24863,7 @@ var init_health = __esm({
 var onRequestOptions34, onRequestGet18, onRequestPost17, onRequestPatch10;
 var init_me = __esm({
   "api/me.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_members();
@@ -24943,7 +24955,7 @@ function paymentUrl(env) {
 var onRequestOptions35, onRequestPost18;
 var init_registrations = __esm({
   "api/registrations.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -25035,7 +25047,7 @@ var init_registrations = __esm({
 var onRequestOptions36, onRequestPost19, onRequestGet19;
 var init_support2 = __esm({
   "api/support.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -25120,7 +25132,7 @@ var init_support2 = __esm({
 var onRequestOptions37, onRequestGet20;
 var init_tournaments2 = __esm({
   "api/tournaments.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_6667503643162983();
     init_checked_fetch();
     init_response();
     init_auth();
@@ -25136,9 +25148,15 @@ var init_tournaments2 = __esm({
         }
       } catch {
       }
-      const { results } = await context.env.DB.prepare(
-        isPrivileged ? `SELECT * FROM tournaments ORDER BY date ASC` : `SELECT * FROM tournaments WHERE is_visible = 1 ORDER BY date ASC`
-      ).all();
+      const query = isPrivileged ? `SELECT t.*, c.color AS club_color, c.name AS club_name
+       FROM tournaments t
+       LEFT JOIN clubs c ON t.club_id = c.id
+       ORDER BY t.date ASC` : `SELECT t.*, c.color AS club_color, c.name AS club_name
+       FROM tournaments t
+       LEFT JOIN clubs c ON t.club_id = c.id
+       WHERE t.is_visible = 1
+       ORDER BY t.date ASC`;
+      const { results } = await context.env.DB.prepare(query).all();
       const tournaments = (results ?? []).map((t) => {
         let sections = [];
         try {
@@ -25153,10 +25171,10 @@ var init_tournaments2 = __esm({
   }
 });
 
-// ../.wrangler/tmp/pages-i4rutd/functionsRoutes-0.8253679978614472.mjs
+// ../.wrangler/tmp/pages-yywpfE/functionsRoutes-0.6667503643162983.mjs
 var routes;
-var init_functionsRoutes_0_8253679978614472 = __esm({
-  "../.wrangler/tmp/pages-i4rutd/functionsRoutes-0.8253679978614472.mjs"() {
+var init_functionsRoutes_0_6667503643162983 = __esm({
+  "../.wrangler/tmp/pages-yywpfE/functionsRoutes-0.6667503643162983.mjs"() {
     init_generate();
     init_generate();
     init_gameId();
@@ -25882,20 +25900,20 @@ var init_functionsRoutes_0_8253679978614472 = __esm({
   }
 });
 
-// ../.wrangler/tmp/bundle-kuQnRR/middleware-loader.entry.ts
-init_functionsRoutes_0_8253679978614472();
+// ../.wrangler/tmp/bundle-2ywdVX/middleware-loader.entry.ts
+init_functionsRoutes_0_6667503643162983();
 init_checked_fetch();
 
-// ../.wrangler/tmp/bundle-kuQnRR/middleware-insertion-facade.js
-init_functionsRoutes_0_8253679978614472();
+// ../.wrangler/tmp/bundle-2ywdVX/middleware-insertion-facade.js
+init_functionsRoutes_0_6667503643162983();
 init_checked_fetch();
 
 // ../node_modules/wrangler/templates/pages-template-worker.ts
-init_functionsRoutes_0_8253679978614472();
+init_functionsRoutes_0_6667503643162983();
 init_checked_fetch();
 
 // ../node_modules/wrangler/node_modules/path-to-regexp/dist.es2015/index.js
-init_functionsRoutes_0_8253679978614472();
+init_functionsRoutes_0_6667503643162983();
 init_checked_fetch();
 function lexer(str) {
   var tokens = [];
@@ -26343,7 +26361,7 @@ var cloneResponse = /* @__PURE__ */ __name((response) => (
 ), "cloneResponse");
 
 // ../node_modules/wrangler/templates/middleware/middleware-ensure-req-body-drained.ts
-init_functionsRoutes_0_8253679978614472();
+init_functionsRoutes_0_6667503643162983();
 init_checked_fetch();
 var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
   try {
@@ -26363,7 +26381,7 @@ var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 var middleware_ensure_req_body_drained_default = drainBody;
 
 // ../node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts
-init_functionsRoutes_0_8253679978614472();
+init_functionsRoutes_0_6667503643162983();
 init_checked_fetch();
 function reduceError(e) {
   return {
@@ -26387,7 +26405,7 @@ var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx)
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
 
-// ../.wrangler/tmp/bundle-kuQnRR/middleware-insertion-facade.js
+// ../.wrangler/tmp/bundle-2ywdVX/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
@@ -26395,7 +26413,7 @@ var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
 var middleware_insertion_facade_default = pages_template_worker_default;
 
 // ../node_modules/wrangler/templates/middleware/common.ts
-init_functionsRoutes_0_8253679978614472();
+init_functionsRoutes_0_6667503643162983();
 init_checked_fetch();
 var __facade_middleware__ = [];
 function __facade_register__(...args) {
@@ -26421,7 +26439,7 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
 }
 __name(__facade_invoke__, "__facade_invoke__");
 
-// ../.wrangler/tmp/bundle-kuQnRR/middleware-loader.entry.ts
+// ../.wrangler/tmp/bundle-2ywdVX/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
@@ -26521,4 +26539,4 @@ export {
   __INTERNAL_WRANGLER_MIDDLEWARE__,
   middleware_loader_entry_default as default
 };
-//# sourceMappingURL=functionsWorker-0.5737025525640923.mjs.map
+//# sourceMappingURL=functionsWorker-0.46090238942520856.mjs.map
