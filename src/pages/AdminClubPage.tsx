@@ -1,6 +1,7 @@
+// src/pages/AdminClubPage.tsx
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Building2, Newspaper, Users } from 'lucide-react'
+import { ArrowLeft, Building2, Newspaper, Palette, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,8 +17,7 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
-const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+const goldButtonClass = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 export function AdminClubPage() {
   const { id } = useParams<{ id: string }>()
@@ -36,6 +36,7 @@ export function AdminClubPage() {
     description: '',
     meetingSchedule: '',
     contactEmail: '',
+    color: '#c8a94a',
   })
 
   const [newsForm, setNewsForm] = useState({
@@ -67,6 +68,7 @@ export function AdminClubPage() {
           description: clubData.club.description ?? '',
           meetingSchedule: clubData.club.meeting_schedule ?? '',
           contactEmail: clubData.club.contact_email ?? '',
+          color: clubData.club.color ?? '#c8a94a',
         })
         setRoster(rosterData)
       } catch (err) {
@@ -91,6 +93,7 @@ export function AdminClubPage() {
         description: form.description || null,
         meetingSchedule: form.meetingSchedule || null,
         contactEmail: form.contactEmail || null,
+        color: form.color || null,
       })
       setClub(updated)
     } catch (err) {
@@ -130,9 +133,7 @@ export function AdminClubPage() {
       })
       setTournamentForm({ name: '', location: '', date: '', entryFee: '40' })
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to create tournament',
-      )
+      setError(err instanceof Error ? err.message : 'Failed to create tournament')
     } finally {
       setTournamentSaving(false)
     }
@@ -159,7 +160,10 @@ export function AdminClubPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
+      <section
+        className="border-b-4 text-white"
+        style={{ backgroundColor: '#1a2744', borderBottomColor: form.color }}
+      >
         <div className="mx-auto max-w-6xl px-6 py-12">
           <Link
             to="/dashboard"
@@ -169,7 +173,12 @@ export function AdminClubPage() {
             Dashboard
           </Link>
           <div className="mt-4 flex items-center gap-3">
-            <Building2 className="size-8 text-[#c8a94a]" />
+            <div
+              className="flex h-10 w-10 items-center justify-center rounded-lg"
+              style={{ backgroundColor: form.color }}
+            >
+              <Building2 className="size-5 text-white" />
+            </div>
             <h1 className="text-3xl font-bold">Manage {club.name}</h1>
           </div>
         </div>
@@ -182,10 +191,8 @@ export function AdminClubPage() {
           </p>
         )}
 
-        <form
-          onSubmit={handleSaveClub}
-          className="rounded-xl border bg-card p-6 shadow-sm"
-        >
+        {/* Club details form */}
+        <form onSubmit={handleSaveClub} className="rounded-xl border bg-card p-6 shadow-sm">
           <h2 className="text-lg font-bold text-[#1a2744]">Club details</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
@@ -211,9 +218,7 @@ export function AdminClubPage() {
               <Input
                 id="location"
                 value={form.location}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, location: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
               />
             </div>
             <div className="space-y-2 sm:col-span-2">
@@ -222,9 +227,7 @@ export function AdminClubPage() {
                 id="description"
                 className="min-h-[100px] w-full rounded-md border bg-background px-3 py-2 text-sm"
                 value={form.description}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, description: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -232,9 +235,7 @@ export function AdminClubPage() {
               <Input
                 id="schedule"
                 value={form.meetingSchedule}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, meetingSchedule: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, meetingSchedule: e.target.value }))}
               />
             </div>
             <div className="space-y-2">
@@ -243,10 +244,53 @@ export function AdminClubPage() {
                 id="email"
                 type="email"
                 value={form.contactEmail}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, contactEmail: e.target.value }))
-                }
+                onChange={(e) => setForm((p) => ({ ...p, contactEmail: e.target.value }))}
               />
+            </div>
+
+            {/* Club color picker */}
+            <div className="space-y-2 sm:col-span-2">
+              <Label htmlFor="color" className="flex items-center gap-2">
+                <Palette className="size-4 text-muted-foreground" />
+                Club color
+              </Label>
+              <div className="flex items-center gap-3">
+                <input
+                  id="color"
+                  type="color"
+                  value={form.color}
+                  onChange={(e) => setForm((p) => ({ ...p, color: e.target.value }))}
+                  className="h-10 w-10 cursor-pointer rounded-md border border-border bg-transparent p-0.5"
+                />
+                <Input
+                  value={form.color}
+                  onChange={(e) => {
+                    const val = e.target.value
+                    setForm((p) => ({ ...p, color: val }))
+                  }}
+                  placeholder="#c8a94a"
+                  className="w-36 font-mono text-sm"
+                  maxLength={7}
+                />
+                {/* Live preview */}
+                <div
+                  className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium"
+                  style={{
+                    backgroundColor: `${form.color}15`,
+                    borderColor: `${form.color}40`,
+                    color: form.color,
+                  }}
+                >
+                  <div
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: form.color }}
+                  />
+                  {form.name || 'Club name'}
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                This color appears as a tint on tournament cards and club listings. LCA gold is the default.
+              </p>
             </div>
           </div>
           <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={saving}>
@@ -254,10 +298,8 @@ export function AdminClubPage() {
           </Button>
         </form>
 
-        <form
-          onSubmit={handlePostNews}
-          className="rounded-xl border bg-card p-6 shadow-sm"
-        >
+        {/* Post news */}
+        <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2">
             <Newspaper className="size-5 text-[#c8a94a]" />
             <h2 className="text-lg font-bold text-[#1a2744]">Post club news</h2>
@@ -268,9 +310,7 @@ export function AdminClubPage() {
               <Input
                 id="news-title"
                 value={newsForm.title}
-                onChange={(e) =>
-                  setNewsForm((p) => ({ ...p, title: e.target.value }))
-                }
+                onChange={(e) => setNewsForm((p) => ({ ...p, title: e.target.value }))}
                 required
               />
             </div>
@@ -278,10 +318,9 @@ export function AdminClubPage() {
               <Label htmlFor="news-date">Date</Label>
               <Input
                 id="news-date"
+                type="date"
                 value={newsForm.newsDate}
-                onChange={(e) =>
-                  setNewsForm((p) => ({ ...p, newsDate: e.target.value }))
-                }
+                onChange={(e) => setNewsForm((p) => ({ ...p, newsDate: e.target.value }))}
                 required
               />
             </div>
@@ -291,38 +330,26 @@ export function AdminClubPage() {
                 id="news-excerpt"
                 className="min-h-[80px] w-full rounded-md border bg-background px-3 py-2 text-sm"
                 value={newsForm.excerpt}
-                onChange={(e) =>
-                  setNewsForm((p) => ({ ...p, excerpt: e.target.value }))
-                }
+                onChange={(e) => setNewsForm((p) => ({ ...p, excerpt: e.target.value }))}
                 required
               />
             </div>
           </div>
-          <Button
-            type="submit"
-            className={cn('mt-4', goldButtonClass)}
-            disabled={newsSaving}
-          >
+          <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={newsSaving}>
             {newsSaving ? 'Posting...' : 'Post news'}
           </Button>
         </form>
 
-        <form
-          onSubmit={handleCreateTournament}
-          className="rounded-xl border bg-card p-6 shadow-sm"
-        >
-          <h2 className="text-lg font-bold text-[#1a2744]">
-            Create club tournament
-          </h2>
+        {/* Create tournament */}
+        <form onSubmit={handleCreateTournament} className="rounded-xl border bg-card p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-[#1a2744]">Create club tournament</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="ct-name">Name</Label>
               <Input
                 id="ct-name"
                 value={tournamentForm.name}
-                onChange={(e) =>
-                  setTournamentForm((p) => ({ ...p, name: e.target.value }))
-                }
+                onChange={(e) => setTournamentForm((p) => ({ ...p, name: e.target.value }))}
                 required
               />
             </div>
@@ -331,9 +358,7 @@ export function AdminClubPage() {
               <Input
                 id="ct-location"
                 value={tournamentForm.location}
-                onChange={(e) =>
-                  setTournamentForm((p) => ({ ...p, location: e.target.value }))
-                }
+                onChange={(e) => setTournamentForm((p) => ({ ...p, location: e.target.value }))}
                 required
               />
             </div>
@@ -341,10 +366,9 @@ export function AdminClubPage() {
               <Label htmlFor="ct-date">Date</Label>
               <Input
                 id="ct-date"
+                type="date"
                 value={tournamentForm.date}
-                onChange={(e) =>
-                  setTournamentForm((p) => ({ ...p, date: e.target.value }))
-                }
+                onChange={(e) => setTournamentForm((p) => ({ ...p, date: e.target.value }))}
                 required
               />
             </div>
@@ -354,31 +378,24 @@ export function AdminClubPage() {
                 id="ct-fee"
                 type="number"
                 value={tournamentForm.entryFee}
-                onChange={(e) =>
-                  setTournamentForm((p) => ({ ...p, entryFee: e.target.value }))
-                }
+                onChange={(e) => setTournamentForm((p) => ({ ...p, entryFee: e.target.value }))}
                 required
               />
             </div>
           </div>
-          <Button
-            type="submit"
-            className={cn('mt-4', goldButtonClass)}
-            disabled={tournamentSaving}
-          >
+          <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={tournamentSaving}>
             {tournamentSaving ? 'Creating...' : 'Create tournament'}
           </Button>
         </form>
 
+        {/* Roster */}
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2">
             <Users className="size-5 text-[#c8a94a]" />
             <h2 className="text-lg font-bold text-[#1a2744]">Club roster</h2>
           </div>
           {roster.length === 0 ? (
-            <p className="mt-4 text-sm text-muted-foreground">
-              No members assigned to this club yet.
-            </p>
+            <p className="mt-4 text-sm text-muted-foreground">No members assigned to this club yet.</p>
           ) : (
             <ul className="mt-4 divide-y">
               {roster.map((m) => (

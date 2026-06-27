@@ -99,6 +99,7 @@ export interface ApiClubListItem {
   name: string
   city: string
   meeting_schedule: string
+  color: string
 }
 
 export interface ApiClubDetail {
@@ -110,6 +111,7 @@ export interface ApiClubDetail {
   meeting_schedule: string | null
   contact_email: string | null
   created_at: string
+  color: string
 }
 
 export interface ApiClubOfficer {
@@ -330,6 +332,7 @@ export async function adminUpdateClub(
     description?: string | null
     meetingSchedule?: string | null
     contactEmail?: string | null
+    color?: string | null
   },
 ): Promise<ApiClubDetail> {
   const response = await fetch(`/api/admin/clubs/${id}`, {
@@ -799,4 +802,77 @@ export async function adminUpdateTournamentFull(
   })
   const data = await handleResponse<{ tournament: Record<string, unknown> }>(response)
   return data.tournament
+}
+
+// ── Governance types ──────────────────────────────────────────────────────────
+
+export interface ApiBoardMember {
+  id: string
+  role: string
+  name: string
+  email: string | null
+  sort_order: number
+  created_at: string
+}
+
+export interface ApiGovernanceDocument {
+  id: string
+  category: 'bylaws' | 'rules' | 'minutes' | 'treasurer' | 'amendments'
+  title: string
+  filename: string | null
+  file_url: string | null
+  doc_date: string | null
+  year: number | null
+  created_at: string
+}
+
+// ── Board members ─────────────────────────────────────────────────────────────
+
+export async function getBoardMembers(): Promise<ApiBoardMember[]> {
+  const r = await fetch('/api/governance/board')
+  const d = await handleResponse<{ members: ApiBoardMember[] }>(r)
+  return d.members
+}
+
+export async function adminCreateBoardMember(body: Omit<ApiBoardMember, 'id' | 'created_at'>): Promise<ApiBoardMember> {
+  const r = await fetch('/api/governance/board', { method: 'POST', headers: await authHeaders(), body: JSON.stringify(body) })
+  const d = await handleResponse<{ member: ApiBoardMember }>(r)
+  return d.member
+}
+
+export async function adminUpdateBoardMember(id: string, body: Partial<Omit<ApiBoardMember, 'id' | 'created_at'>>): Promise<ApiBoardMember> {
+  const r = await fetch(`/api/governance/board/${id}`, { method: 'PUT', headers: await authHeaders(), body: JSON.stringify(body) })
+  const d = await handleResponse<{ member: ApiBoardMember }>(r)
+  return d.member
+}
+
+export async function adminDeleteBoardMember(id: string): Promise<void> {
+  const r = await fetch(`/api/governance/board/${id}`, { method: 'DELETE', headers: await authHeaders() })
+  await handleResponse(r)
+}
+
+// ── Governance documents ──────────────────────────────────────────────────────
+
+export async function getGovernanceDocuments(category?: string): Promise<ApiGovernanceDocument[]> {
+  const url = category ? `/api/governance/documents?category=${category}` : '/api/governance/documents'
+  const r = await fetch(url)
+  const d = await handleResponse<{ documents: ApiGovernanceDocument[] }>(r)
+  return d.documents
+}
+
+export async function adminCreateGovernanceDocument(body: Omit<ApiGovernanceDocument, 'id' | 'created_at'>): Promise<ApiGovernanceDocument> {
+  const r = await fetch('/api/governance/documents', { method: 'POST', headers: await authHeaders(), body: JSON.stringify(body) })
+  const d = await handleResponse<{ document: ApiGovernanceDocument }>(r)
+  return d.document
+}
+
+export async function adminUpdateGovernanceDocument(id: string, body: Partial<Omit<ApiGovernanceDocument, 'id' | 'created_at'>>): Promise<ApiGovernanceDocument> {
+  const r = await fetch(`/api/governance/documents/${id}`, { method: 'PUT', headers: await authHeaders(), body: JSON.stringify(body) })
+  const d = await handleResponse<{ document: ApiGovernanceDocument }>(r)
+  return d.document
+}
+
+export async function adminDeleteGovernanceDocument(id: string): Promise<void> {
+  const r = await fetch(`/api/governance/documents/${id}`, { method: 'DELETE', headers: await authHeaders() })
+  await handleResponse(r)
 }

@@ -275,7 +275,7 @@ export function TournamentManagePage() {
       <div className="mx-auto max-w-6xl px-6 py-12 text-center">
         <p className="text-destructive">{error ?? 'Tournament not found'}</p>
         <Button asChild className="mt-4" variant="outline">
-          <Link to="/dashboard">Back to dashboard</Link>
+          <Link to="/admin/tournaments">Back to tournaments</Link>
         </Button>
       </div>
     )
@@ -287,8 +287,8 @@ export function TournamentManagePage() {
     <div>
       <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
-          <Link to="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-[#c8a94a]">
-            <ArrowLeft className="size-4" />Dashboard
+          <Link to="/admin/tournaments" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-[#c8a94a]">
+            <ArrowLeft className="size-4" />All Tournaments
           </Link>
           <div className="mt-4 flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">

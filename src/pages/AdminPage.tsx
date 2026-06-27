@@ -1,16 +1,19 @@
-// src/pages/AdminPage.tsx
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
-import { Building2, MessageSquare, Shield, Trash2, Trophy, Users } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import {
+  ArrowLeft, ArrowRight, Building2, Check, Copy,
+  MessageSquare, Pencil, Plus, Share2, Shield,
+  Trash2, Trophy, Users, X,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAuth } from '@/contexts/AuthContext'
 import {
   adminCreateTournament,
   adminDeleteClub,
   adminDeleteMember,
-  adminDeleteTournament,
   adminGetMembers,
   adminUpdateMemberClub,
   adminUpdateMemberRole,
@@ -19,90 +22,716 @@ import {
   type ApiAdminMember,
   type ApiClubListItem,
   type ApiTournamentListItem,
+  type ApiTournamentSection,
 } from '@/lib/api'
 import { MEMBER_ROLES, ROLE_LABELS, type MemberRole } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
-type AdminTab = 'members' | 'tournaments' | 'clubs'
+// ── Constants ─────────────────────────────────────────────────────────────────
 
-const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
-// Simple inline confirmation dialog
-function ConfirmDialog({
-  message,
-  onConfirm,
-  onCancel,
-}: {
-  message: string
-  onConfirm: () => void
-  onCancel: () => void
+const SECTION_PRESETS = [
+  'Open','U2200','U2000','U1800','U1600','U1400','U1200','U1000',
+  'K-12','K-8','K-5','Blitz','Quick',
+]
+const TC_PRESETS = ['G/60+5','G/90+30','G/120+30','G/30+5','G/15+2','G/5+2','G/3+2']
+const ROUND_OPTIONS = [3,4,5,6,7]
+
+type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support'
+type WizardStep = 'template' | 'basics' | 'sections' | 'schedule' | 'review'
+
+interface WizardState {
+  templateType: 'existing' | 'scratch'
+  existingTournamentId: string
+  name: string
+  startDate: string
+  endDate: string
+  location: string
+  venue: string
+  rounds: number
+  timeControl: string
+  customTimeControl: string
+  isRated: boolean
+  maxPlayers: string
+  description: string
+  sections: ApiTournamentSection[]
+  registrationClosesAt: string
+}
+
+const defaultWizard = (): WizardState => ({
+  templateType: 'scratch',
+  existingTournamentId: '',
+  name: '', startDate: '', endDate: '',
+  location: '', venue: '',
+  rounds: 5, timeControl: 'G/90+30', customTimeControl: '',
+  isRated: true, maxPlayers: '', description: '',
+  sections: [], registrationClosesAt: '',
+})
+
+// ── Confirm dialog ────────────────────────────────────────────────────────────
+
+function ConfirmDialog({ message, onConfirm, onCancel }: {
+  message: string; onConfirm: () => void; onCancel: () => void
 }) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.45)' }}
-      onClick={(e) => { if (e.target === e.currentTarget) onCancel() }}
-    >
-      <div className="bg-background rounded-xl border shadow-lg p-6 w-full max-w-sm mx-4">
-        <p className="text-sm font-medium text-foreground mb-6">{message}</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.45)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onCancel() }}>
+      <div className="mx-4 w-full max-w-sm rounded-xl border bg-background p-6 shadow-lg">
+        <p className="mb-6 text-sm font-medium">{message}</p>
         <div className="flex gap-3">
-          <Button variant="outline" className="flex-1" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button
-            className="flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            onClick={onConfirm}
-          >
-            Delete
-          </Button>
+          <Button variant="outline" className="flex-1" onClick={onCancel}>Cancel</Button>
+          <Button className="flex-1 bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={onConfirm}>Delete</Button>
         </div>
       </div>
     </div>
   )
 }
 
+// ── Share permissions modal ───────────────────────────────────────────────────
+
+function ShareModal({ tournament, onClose }: { tournament: ApiTournamentListItem; onClose: () => void }) {
+  const [email, setEmail] = useState('')
+  const [invited, setInvited] = useState<string[]>([])
+  const [sending, setSending] = useState(false)
+
+  function handleInvite(e: FormEvent) {
+    e.preventDefault()
+    if (!email.trim()) return
+    setSending(true)
+    setTimeout(() => { setInvited((p) => [...p, email.trim()]); setEmail(''); setSending(false) }, 600)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center"
+      style={{ background: 'rgba(0,0,0,0.45)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="w-full max-w-md rounded-t-2xl border bg-background p-6 shadow-lg sm:rounded-xl">
+        <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-border sm:hidden" />
+        <div className="mb-1 flex items-start justify-between">
+          <h3 className="text-base font-semibold text-[#1a2744]">Share edit permissions</h3>
+          <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
+        </div>
+        <p className="mb-5 text-sm text-muted-foreground">{tournament.name} — editors can manage settings, roster, and pairings.</p>
+        {invited.length > 0 && (
+          <div className="mb-4">
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Pending invites</p>
+            {invited.map((inv) => (
+              <div key={inv} className="flex items-center justify-between border-b border-border py-2 last:border-0">
+                <div>
+                  <p className="text-sm font-medium">{inv}</p>
+                  <p className="text-xs text-muted-foreground">Invite sent · pending account</p>
+                </div>
+                <button type="button" onClick={() => setInvited((p) => p.filter((i) => i !== inv))} className="text-xs text-muted-foreground hover:text-destructive">Remove</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Invite by email</p>
+        <form onSubmit={handleInvite} className="flex gap-2">
+          <Input type="email" placeholder="td@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1" />
+          <Button type="submit" className={GOLD} disabled={sending || !email.trim()}>{sending ? 'Sending…' : 'Invite'}</Button>
+        </form>
+        <p className="mt-2 text-xs text-muted-foreground">If this email isn't linked to an LCA account yet, they'll receive an invite. Permissions activate once they log in.</p>
+        <Button variant="outline" className="mt-5 w-full" onClick={onClose}>Done</Button>
+      </div>
+    </div>
+  )
+}
+
+// ── Wizard step bar ───────────────────────────────────────────────────────────
+
+const WIZARD_STEPS: { key: WizardStep; label: string }[] = [
+  { key: 'basics', label: 'Basics' },
+  { key: 'sections', label: 'Sections' },
+  { key: 'schedule', label: 'Schedule' },
+  { key: 'review', label: 'Review' },
+]
+
+function StepBar({ current }: { current: WizardStep }) {
+  const currentIdx = WIZARD_STEPS.findIndex((s) => s.key === current)
+  return (
+    <div className="flex items-center overflow-x-auto border-b border-border bg-muted/20 px-4">
+      {WIZARD_STEPS.map((step, idx) => (
+        <div key={step.key} className="flex flex-shrink-0 items-center">
+          <div className={cn('flex items-center gap-1.5 border-b-2 py-2.5 pr-3 text-[11px] font-medium transition-colors',
+            idx < currentIdx ? 'border-transparent text-muted-foreground'
+            : idx === currentIdx ? 'border-[#c8a94a] text-[#1a2744]'
+            : 'border-transparent text-muted-foreground/50')}>
+            <span className={cn('flex size-4 flex-shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold',
+              idx < currentIdx ? 'border-[#c8a94a] bg-[#c8a94a] text-[#1a2744]'
+              : idx === currentIdx ? 'border-[#1a2744] bg-[#1a2744] text-white'
+              : 'border-border text-muted-foreground')}>
+              {idx < currentIdx ? <Check className="size-2.5" /> : idx + 1}
+            </span>
+            {step.label}
+          </div>
+          {idx < WIZARD_STEPS.length - 1 && <ArrowRight className="mx-1 size-3 flex-shrink-0 text-border" />}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── Preview banner ────────────────────────────────────────────────────────────
+
+function PreviewBanner({ w }: { w: WizardState }) {
+  if (!w.name && !w.startDate) return null
+  return (
+    <div className="mb-4 rounded-lg border border-[#c8a94a]/30 bg-[#c8a94a]/8 p-3">
+      <p className="text-sm font-semibold text-[#1a2744]">{w.name || 'New tournament'}</p>
+      {(w.startDate || w.location) && (
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          {w.startDate}{w.location ? ` · ${w.location}` : ''}
+        </p>
+      )}
+      <p className="mt-0.5 text-xs text-muted-foreground">
+        {w.rounds} rounds · {w.timeControl || w.customTimeControl || '—'} · {w.isRated ? 'USCF Rated' : 'Unrated'}
+      </p>
+      {w.sections.length > 0 && (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {w.sections.map((s) => (
+            <span key={s.name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-2 py-0.5 text-[10px] font-medium text-[#1a2744]">{s.name}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Preview sidebar ───────────────────────────────────────────────────────────
+
+function PreviewSidebar({ w }: { w: WizardState }) {
+  return (
+    <div className="hidden lg:block lg:w-52 lg:flex-shrink-0">
+      <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Preview</p>
+      <div className="overflow-hidden rounded-xl border">
+        <div className="bg-[#1a2744] px-3 py-2.5">
+          <p className="text-sm font-semibold text-white">{w.name || 'New tournament'}</p>
+        </div>
+        <div className="space-y-1.5 p-3 text-xs text-muted-foreground">
+          <p>{w.startDate || 'Date not set'}</p>
+          <p>{w.location || 'Location not set'}</p>
+          <p>{w.rounds} rounds · {w.timeControl || '—'}</p>
+          {w.sections.length > 0 && (
+            <div className="flex flex-wrap gap-1 pt-1">
+              {w.sections.map((s) => (
+                <span key={s.name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-2 py-0.5 text-[10px] font-medium text-[#1a2744]">{s.name}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      <p className="mt-2 text-[10px] italic text-muted-foreground">Preview updates as you fill in details.</p>
+    </div>
+  )
+}
+
+// ── Wizard steps ──────────────────────────────────────────────────────────────
+
+function StepTemplate({ w, set, tournaments, onNext }: {
+  w: WizardState; set: (p: Partial<WizardState>) => void
+  tournaments: ApiTournamentListItem[]; onNext: () => void
+}) {
+  function handleContinue() {
+    if (w.templateType === 'existing' && w.existingTournamentId) {
+      const src = tournaments.find((t) => t.id === w.existingTournamentId)
+      if (src) {
+        const sections = (src.sections as Array<string | { name: string; entryFee: number }>).map((s) =>
+          typeof s === 'string' ? { name: s, entryFee: 0 } : s)
+        set({ sections, rounds: src.rounds })
+      }
+    }
+    onNext()
+  }
+  return (
+    <div className="p-5">
+      <p className="mb-3 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Start from</p>
+      <div className="space-y-3">
+        {([
+          { type: 'existing' as const, icon: Copy, title: 'From an existing tournament', desc: 'Copy sections, time control, and rounds from a past tournament.', note: 'Name, date, and round times are not copied.' },
+          { type: 'scratch' as const, icon: Pencil, title: 'From scratch', desc: 'Step-by-step wizard. Start with a blank slate.', note: undefined },
+        ] as { type: 'existing' | 'scratch'; icon: any; title: string; desc: string; note?: string }[]).map(({ type, icon: Icon, title, desc, note }) => (
+          <button key={type} type="button" onClick={() => set({ templateType: type })}
+            className={cn('w-full rounded-xl border p-4 text-left transition-colors',
+              w.templateType === type ? 'border-[2px] border-[#c8a94a] bg-[#c8a94a]/4' : 'border-border hover:border-border-strong')}>
+            <div className="mb-1.5 flex items-center gap-3">
+              <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a2744]/8">
+                <Icon className="size-3.5 text-[#1a2744]" />
+              </div>
+              <span className="text-sm font-semibold">{title}</span>
+            </div>
+            <p className="pl-10 text-xs text-muted-foreground">{desc}</p>
+            {note && <p className="pl-10 mt-1 text-xs italic text-[#c8a94a]">{note}</p>}
+            {type === 'existing' && w.templateType === 'existing' && (
+              <div className="mt-3 pl-10">
+                <select className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                  value={w.existingTournamentId} onChange={(e) => set({ existingTournamentId: e.target.value })}
+                  onClick={(e) => e.stopPropagation()}>
+                  <option value="">Select a tournament…</option>
+                  {tournaments.map((t) => <option key={t.id} value={t.id}>{t.name} ({t.date})</option>)}
+                </select>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {['Sections','Time control','Rounds','Custom details'].map((p) => (
+                    <span key={p} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-2 py-0.5 text-[10px] font-medium text-[#1a2744]">{p}</span>
+                  ))}
+                  {['Name','Date','Round times'].map((p) => (
+                    <span key={p} className="rounded-full border border-border bg-muted/30 px-2 py-0.5 text-[10px] text-muted-foreground line-through">{p}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
+      <div className="mt-5 flex justify-end">
+        <Button type="button" className={GOLD} disabled={w.templateType === 'existing' && !w.existingTournamentId} onClick={handleContinue}>
+          Continue <ArrowRight className="ml-1.5 size-3.5" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function StepBasics({ w, set, onBack, onNext, onDraft }: {
+  w: WizardState; set: (p: Partial<WizardState>) => void
+  onBack: () => void; onNext: () => void; onDraft: () => void
+}) {
+  return (
+    <div className="flex gap-6 p-5">
+      <div className="flex-1 min-w-0 space-y-4">
+        <PreviewBanner w={w} />
+        <div>
+          <Label htmlFor="t-name">Tournament name</Label>
+          <Input id="t-name" placeholder="e.g. Louisiana Open Championship 2026" value={w.name} onChange={(e) => set({ name: e.target.value })} className="mt-1" />
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div><Label htmlFor="t-start">Start date</Label><Input id="t-start" type="date" value={w.startDate} onChange={(e) => set({ startDate: e.target.value })} className="mt-1" /></div>
+          <div><Label htmlFor="t-end">End date <span className="text-xs font-normal text-muted-foreground">(if multi-day)</span></Label><Input id="t-end" type="date" value={w.endDate} onChange={(e) => set({ endDate: e.target.value })} className="mt-1" /></div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div><Label htmlFor="t-loc">Location</Label><Input id="t-loc" placeholder="Baton Rouge, LA" value={w.location} onChange={(e) => set({ location: e.target.value })} className="mt-1" /></div>
+          <div><Label htmlFor="t-venue">Venue <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label><Input id="t-venue" placeholder="Convention Center" value={w.venue} onChange={(e) => set({ venue: e.target.value })} className="mt-1" /></div>
+        </div>
+        <div>
+          <Label>Rounds</Label>
+          <div className="mt-1.5 flex flex-wrap gap-2">
+            {ROUND_OPTIONS.map((n) => (
+              <button key={n} type="button" onClick={() => set({ rounds: n })}
+                className={cn('rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
+                  w.rounds === n ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground hover:border-[#1a2744]/40')}>
+                {n}
+              </button>
+            ))}
+            <Input type="number" min={1} max={20} placeholder="Other" className="h-8 w-20 text-sm"
+              value={ROUND_OPTIONS.includes(w.rounds) ? '' : w.rounds}
+              onChange={(e) => set({ rounds: Number(e.target.value) })} />
+          </div>
+        </div>
+        <div>
+          <Label>Time control</Label>
+          <div className="mt-1.5 flex flex-wrap gap-2">
+            {TC_PRESETS.map((tc) => (
+              <button key={tc} type="button" onClick={() => set({ timeControl: tc, customTimeControl: '' })}
+                className={cn('rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+                  w.timeControl === tc ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground hover:border-[#c8a94a]')}>
+                {tc}
+              </button>
+            ))}
+            <Input placeholder="Custom…" className="h-8 w-28 text-xs"
+              value={!TC_PRESETS.includes(w.timeControl) ? w.timeControl : w.customTimeControl}
+              onChange={(e) => set({ timeControl: e.target.value, customTimeControl: e.target.value })} />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <Label>Rating</Label>
+            <div className="mt-1.5 flex gap-2">
+              {[{ val: true, label: 'USCF Rated' }, { val: false, label: 'Unrated' }].map(({ val, label }) => (
+                <button key={label} type="button" onClick={() => set({ isRated: val })}
+                  className={cn('flex-1 rounded-lg border py-2 text-sm font-medium transition-colors',
+                    w.isRated === val ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground')}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div><Label htmlFor="t-max">Max players <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label><Input id="t-max" type="number" min={1} placeholder="No limit" value={w.maxPlayers} onChange={(e) => set({ maxPlayers: e.target.value })} className="mt-1" /></div>
+        </div>
+        <div>
+          <Label htmlFor="t-desc">Description <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label>
+          <textarea id="t-desc" className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm min-h-[72px]"
+            placeholder="Brief description shown on the public tournament page…"
+            value={w.description} onChange={(e) => set({ description: e.target.value })} />
+        </div>
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <Button type="button" variant="outline" onClick={onBack}><ArrowLeft className="mr-1.5 size-3.5" /> Back</Button>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onDraft}>Save draft</Button>
+            <Button type="button" className={GOLD} disabled={!w.name || !w.startDate || !w.location} onClick={onNext}>
+              Next: Sections <ArrowRight className="ml-1.5 size-3.5" />
+            </Button>
+          </div>
+        </div>
+      </div>
+      <PreviewSidebar w={w} />
+    </div>
+  )
+}
+
+function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
+  w: WizardState; set: (p: Partial<WizardState>) => void
+  onBack: () => void; onNext: () => void; onDraft: () => void; copiedFrom?: string
+}) {
+  const [custom, setCustom] = useState('')
+  const addPreset = (name: string) => {
+    if (w.sections.some((s) => s.name === name)) return
+    set({ sections: [...w.sections, { name, entryFee: 0 }] })
+  }
+  const removeSection = (name: string) => set({ sections: w.sections.filter((s) => s.name !== name) })
+  const updateFee = (name: string, val: string) => set({ sections: w.sections.map((s) => s.name === name ? { ...s, entryFee: Number(val) } : s) })
+  const updatePrize = (name: string, val: string) => set({ sections: w.sections.map((s) => s.name === name ? { ...s, prizeFund: val } : s) })
+  const addCustom = () => {
+    const n = custom.trim()
+    if (!n || w.sections.some((s) => s.name === n)) return
+    set({ sections: [...w.sections, { name: n, entryFee: 0 }] })
+    setCustom('')
+  }
+
+  return (
+    <div className="flex gap-6 p-5">
+      <div className="flex-1 min-w-0">
+        <PreviewBanner w={w} />
+        {copiedFrom && (
+          <div className="mb-4 flex items-center gap-2 rounded-lg border border-[#c8a94a]/30 bg-[#c8a94a]/8 px-3 py-2 text-xs text-[#7a5c00]">
+            <Copy className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+            Pre-filled from {copiedFrom} · edit freely — the original is unchanged.
+          </div>
+        )}
+        <div className="mb-3">
+          <Label>Add sections</Label>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {SECTION_PRESETS.map((name) => (
+              <button key={name} type="button" onClick={() => addPreset(name)}
+                className={cn('rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+                  w.sections.some((s) => s.name === name)
+                    ? 'border-[#1a2744] bg-[#1a2744] text-white cursor-default'
+                    : 'border-border text-muted-foreground hover:border-[#c8a94a]')}>
+                {name}
+              </button>
+            ))}
+          </div>
+          <div className="mt-2 flex gap-2">
+            <Input placeholder="Custom section…" value={custom} onChange={(e) => setCustom(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustom() } }} className="h-8 text-sm" />
+            <Button type="button" variant="outline" size="sm" onClick={addCustom}><Plus className="mr-1 size-3.5" />Add</Button>
+          </div>
+        </div>
+        {w.sections.length > 0 && (
+          <div className="mt-4 overflow-hidden rounded-xl border">
+            <div className="grid bg-muted/30 border-b border-border" style={{ gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.1fr) 32px' }}>
+              {['Section','Entry fee','Prize fund',''].map((h) => (
+                <div key={h} className="px-3 py-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">{h}</div>
+              ))}
+            </div>
+            {w.sections.map((s) => (
+              <div key={s.name} className="grid border-t border-border" style={{ gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.1fr) 32px' }}>
+                <div className="flex items-center px-3 py-2 text-sm font-medium">{s.name}</div>
+                <div className="flex items-center px-2 py-1.5">
+                  <Input type="number" min={0} value={s.entryFee} onChange={(e) => updateFee(s.name, e.target.value)}
+                    className="h-8 text-sm" style={{ paddingTop: '6px', paddingBottom: '2px' }} />
+                </div>
+                <div className="flex items-center px-2 py-1.5">
+                  <Input placeholder="e.g. $500" value={s.prizeFund ?? ''} onChange={(e) => updatePrize(s.name, e.target.value)}
+                    className="h-8 text-sm" style={{ paddingTop: '6px', paddingBottom: '2px' }} />
+                </div>
+                <div className="flex items-center justify-center">
+                  <button type="button" onClick={() => removeSection(s.name)} className="text-muted-foreground hover:text-destructive"><X className="size-3.5" /></button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="mt-4">
+          <Label htmlFor="reg-closes">Registration closes <span className="text-xs font-normal text-muted-foreground">(optional)</span></Label>
+          <Input id="reg-closes" type="datetime-local" value={w.registrationClosesAt} onChange={(e) => set({ registrationClosesAt: e.target.value })} className="mt-1" />
+          <p className="mt-1 text-xs text-muted-foreground">Registration will automatically close at this time.</p>
+        </div>
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <Button type="button" variant="outline" onClick={onBack}><ArrowLeft className="mr-1.5 size-3.5" /> Back</Button>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onDraft}>Save draft</Button>
+            <Button type="button" className={GOLD} disabled={w.sections.length === 0} onClick={onNext}>
+              Next: Schedule <ArrowRight className="ml-1.5 size-3.5" />
+            </Button>
+          </div>
+        </div>
+      </div>
+      <PreviewSidebar w={w} />
+    </div>
+  )
+}
+
+function StepSchedule({ w, onBack, onNext, onDraft }: {
+  w: WizardState; onBack: () => void; onNext: () => void; onDraft: () => void
+}) {
+  return (
+    <div className="flex gap-6 p-5">
+      <div className="flex-1 min-w-0">
+        <PreviewBanner w={w} />
+        <div className="rounded-xl border bg-muted/20 p-6 text-center">
+          <Trophy className="mx-auto mb-3 size-8 text-[#c8a94a]" />
+          <h3 className="text-base font-semibold text-[#1a2744]">Round schedule</h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Round-by-round dates and times are configured in the tournament management page after creation.
+            The auto-fill tool lets you set round 1 and fill the rest automatically.
+          </p>
+        </div>
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <Button type="button" variant="outline" onClick={onBack}><ArrowLeft className="mr-1.5 size-3.5" /> Back</Button>
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" onClick={onDraft}>Save draft</Button>
+            <Button type="button" className={GOLD} onClick={onNext}>Review <ArrowRight className="ml-1.5 size-3.5" /></Button>
+          </div>
+        </div>
+      </div>
+      <PreviewSidebar w={w} />
+    </div>
+  )
+}
+
+function StepReview({ w, onBack, onCreate, creating, error }: {
+  w: WizardState; onBack: () => void; onCreate: () => void; creating: boolean; error: string | null
+}) {
+  return (
+    <div className="flex gap-6 p-5">
+      <div className="flex-1 min-w-0">
+        <div className="space-y-4 rounded-xl border bg-card p-5">
+          <h3 className="text-base font-semibold text-[#1a2744]">{w.name}</h3>
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+            <div><dt className="text-muted-foreground">Date</dt><dd className="font-medium">{w.startDate}{w.endDate ? ` – ${w.endDate}` : ''}</dd></div>
+            <div><dt className="text-muted-foreground">Location</dt><dd className="font-medium">{w.location}</dd></div>
+            {w.venue && <div><dt className="text-muted-foreground">Venue</dt><dd className="font-medium">{w.venue}</dd></div>}
+            <div><dt className="text-muted-foreground">Rounds</dt><dd className="font-medium">{w.rounds}</dd></div>
+            <div><dt className="text-muted-foreground">Time control</dt><dd className="font-medium">{w.timeControl || '—'}</dd></div>
+            <div><dt className="text-muted-foreground">Rating</dt><dd className="font-medium">{w.isRated ? 'USCF Rated' : 'Unrated'}</dd></div>
+          </dl>
+          <div>
+            <p className="mb-2 text-sm text-muted-foreground">Sections</p>
+            <div className="flex flex-wrap gap-2">
+              {w.sections.map((s) => (
+                <span key={s.name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-3 py-1 text-xs font-medium text-[#1a2744]">
+                  {s.name}{s.entryFee > 0 ? ` · $${s.entryFee}` : ''}
+                </span>
+              ))}
+            </div>
+          </div>
+          {w.description && <div><p className="mb-1 text-sm text-muted-foreground">Description</p><p className="text-sm">{w.description}</p></div>}
+        </div>
+        <div className="mt-3 rounded-lg border border-[#c8a94a]/30 bg-[#c8a94a]/8 px-4 py-3 text-xs text-[#7a5c00]">
+          Tournament will be created as a <strong>draft</strong> — hidden from the public until you make it visible in the management page.
+        </div>
+        {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+        <div className="mt-5 flex items-center justify-between gap-3">
+          <Button type="button" variant="outline" onClick={onBack}><ArrowLeft className="mr-1.5 size-3.5" /> Back</Button>
+          <Button type="button" className={GOLD} onClick={onCreate} disabled={creating}>
+            {creating ? 'Creating…' : 'Create tournament'}
+          </Button>
+        </div>
+      </div>
+      <PreviewSidebar w={w} />
+    </div>
+  )
+}
+
+// ── Tournaments tab content ───────────────────────────────────────────────────
+
+function TournamentsTab({ tournaments, role, directedTournamentIds, onRefresh }: {
+  tournaments: ApiTournamentListItem[]
+  role: string
+  directedTournamentIds: string[]
+  onRefresh: () => void
+}) {
+  const navigate = useNavigate()
+  const [shareTarget, setShareTarget] = useState<ApiTournamentListItem | null>(null)
+  const [showCreate, setShowCreate] = useState(false)
+  const [step, setStep] = useState<WizardStep>('template')
+  const [wizard, setWizard] = useState<WizardState>(defaultWizard())
+  const [creating, setCreating] = useState(false)
+  const [createError, setCreateError] = useState<string | null>(null)
+
+  function patchWizard(patch: Partial<WizardState>) {
+    setWizard((prev) => ({ ...prev, ...patch }))
+  }
+
+  // Scope tournaments by role
+  const visibleTournaments = role === 'lca_admin'
+    ? tournaments
+    : role === 'tournament_director'
+    ? tournaments.filter((t) => directedTournamentIds.includes(t.id))
+    : tournaments // club_rep sees their club's (already filtered by API)
+
+  const copiedFromName = wizard.templateType === 'existing' && wizard.existingTournamentId
+    ? tournaments.find((t) => t.id === wizard.existingTournamentId)?.name
+    : undefined
+
+  async function handleCreate() {
+    setCreating(true)
+    setCreateError(null)
+    try {
+      const result = await adminCreateTournament({
+        name: wizard.name,
+        location: wizard.location,
+        date: wizard.startDate,
+        endDate: wizard.endDate || null,
+        venue: wizard.venue || null,
+        entryFee: wizard.sections[0]?.entryFee ?? 0,
+        sections: wizard.sections,
+        rounds: wizard.rounds,
+        maxPlayers: wizard.maxPlayers ? Number(wizard.maxPlayers) : null,
+        description: wizard.description || null,
+        isRated: wizard.isRated,
+        status: 'upcoming' as const,
+      } as any)
+      const newId = (result as any).id
+      navigate(`/admin/tournaments/${newId}`)
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : 'Failed to create tournament')
+      setCreating(false)
+    }
+  }
+
+  const statusConfig: Record<string, { label: string; className: string }> = {
+    upcoming: { label: 'Upcoming', className: 'bg-[#c8a94a]/15 text-[#7a5c00] border border-[#c8a94a]/40' },
+    active:   { label: 'Active',   className: 'bg-emerald-100 text-emerald-800' },
+    completed:{ label: 'Done',     className: 'bg-muted text-muted-foreground border border-border' },
+  }
+
+  return (
+    <>
+      {shareTarget && <ShareModal tournament={shareTarget} onClose={() => setShareTarget(null)} />}
+
+      <div className="mb-5 flex items-center justify-between">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          {showCreate ? 'New tournament' : 'Your tournaments'}
+        </h2>
+        {!showCreate && (
+          <Button type="button" className={GOLD} size="sm" onClick={() => { setWizard(defaultWizard()); setStep('template'); setCreateError(null); setShowCreate(true) }}>
+            <Plus className="mr-1.5 size-3.5" /> New tournament
+          </Button>
+        )}
+      </div>
+
+      {showCreate ? (
+        <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between border-b border-border bg-muted/20 px-5 py-3">
+            <p className="text-sm font-semibold text-[#1a2744]">
+              {step === 'template' ? 'Choose a starting point' : WIZARD_STEPS.find((s) => s.key === step)?.label}
+            </p>
+            <button type="button" onClick={() => setShowCreate(false)} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
+          </div>
+          {step !== 'template' && <StepBar current={step} />}
+          {step === 'template' && <StepTemplate w={wizard} set={patchWizard} tournaments={visibleTournaments} onNext={() => setStep('basics')} />}
+          {step === 'basics' && <StepBasics w={wizard} set={patchWizard} onBack={() => setStep('template')} onNext={() => setStep('sections')} onDraft={handleCreate} />}
+          {step === 'sections' && <StepSections w={wizard} set={patchWizard} onBack={() => setStep('basics')} onNext={() => setStep('schedule')} onDraft={handleCreate} copiedFrom={copiedFromName} />}
+          {step === 'schedule' && <StepSchedule w={wizard} onBack={() => setStep('sections')} onNext={() => setStep('review')} onDraft={handleCreate} />}
+          {step === 'review' && <StepReview w={wizard} onBack={() => setStep('schedule')} onCreate={handleCreate} creating={creating} error={createError} />}
+        </div>
+      ) : visibleTournaments.length === 0 ? (
+        <div className="rounded-xl border border-dashed px-6 py-12 text-center">
+          <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
+          <p className="font-medium text-[#1a2744]">No tournaments yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">Create your first tournament to get started.</p>
+          <Button type="button" className={cn('mt-4', GOLD)} size="sm" onClick={() => { setWizard(defaultWizard()); setStep('template'); setShowCreate(true) }}>
+            <Plus className="mr-1.5 size-4" /> New tournament
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {visibleTournaments.map((t) => {
+            const sc = statusConfig[t.status] ?? statusConfig.upcoming
+            return (
+              <div key={t.id} className="overflow-hidden rounded-xl border bg-card shadow-sm">
+                <div className="flex items-start justify-between gap-4 px-5 py-4">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-[#1a2744]">{t.name}</p>
+                    <p className="mt-0.5 text-sm text-muted-foreground">
+                      {t.date} · {t.location}{t.rounds ? ` · ${t.rounds} rounds` : ''}
+                    </p>
+                  </div>
+                  <div className="flex flex-shrink-0 items-center gap-2">
+                    <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-medium', sc.className)}>{sc.label}</span>
+                    {t.status === 'completed' ? (
+                      <Button asChild variant="outline" size="sm" className="h-7 text-xs"><Link to={`/tournaments/${t.id}`}>View</Link></Button>
+                    ) : (
+                      <Button asChild size="sm" className={cn('h-7 text-xs', GOLD)}>
+                        <Link to={`/admin/tournaments/${t.id}`}>{t.status === 'upcoming' ? 'Edit' : 'Manage'}</Link>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 border-t border-dashed border-border/60 bg-muted/10 px-5 py-2">
+                  <Users className="size-3.5 flex-shrink-0 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Editors: None assigned</span>
+                  <button type="button" onClick={() => setShareTarget(t)}
+                    className="ml-auto flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors">
+                    <Share2 className="size-3" /> Share edit permissions
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </>
+  )
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
+
 export function AdminPage() {
-  usePageTitle('Admin Panel')
-  const [tab, setTab] = useState<AdminTab>('members')
+  usePageTitle('Admin panel')
+  const { role, member, directedTournaments } = useAuth()
+
   const [members, setMembers] = useState<ApiAdminMember[]>([])
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [tournaments, setTournaments] = useState<ApiTournamentListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [savingId, setSavingId] = useState<string | null>(null)
+  const [confirm, setConfirm] = useState<{ message: string; onConfirm: () => void } | null>(null)
 
-  // Delete confirmation state
-  const [confirm, setConfirm] = useState<{
-    message: string
-    onConfirm: () => void
-  } | null>(null)
+  const isAdmin = role === 'lca_admin'
+  const isClubRep = role === 'club_rep'
+  const isTD = role === 'tournament_director'
+  const directedIds = directedTournaments?.map((t: any) => t.id) ?? []
 
-  const [newTournament, setNewTournament] = useState({
-    name: '',
-    location: '',
-    date: '',
-    entryFee: '45',
-    clubId: '',
-    isRated: true,
-  })
-  const [creatingTournament, setCreatingTournament] = useState(false)
+  // Default tab based on role
+  const defaultTab: AdminTab = isAdmin ? 'members' : 'tournaments'
+  const [tab, setTab] = useState<AdminTab>(defaultTab)
+
+  // Tabs visible per role
+  const visibleTabs: { id: AdminTab; label: string; icon: typeof Users }[] = [
+    ...(isAdmin ? [{ id: 'members' as AdminTab, label: 'Members', icon: Users }] : []),
+    { id: 'tournaments' as AdminTab, label: 'Tournaments', icon: Trophy },
+    ...(isAdmin || isClubRep ? [{ id: 'clubs' as AdminTab, label: 'Clubs', icon: Building2 }] : []),
+    ...(isAdmin ? [{ id: 'support' as AdminTab, label: 'Support tickets', icon: MessageSquare }] : []),
+  ]
 
   async function loadAll() {
     setLoading(true)
     setError(null)
     try {
-      const [memberList, clubList, tournamentList] = await Promise.all([
-        adminGetMembers(),
-        getClubs(),
-        getTournaments(),
-      ])
-      setMembers(memberList)
-      setClubs(clubList)
-      setTournaments(tournamentList)
+      const promises: Promise<any>[] = [getTournaments()]
+      if (isAdmin || isClubRep) promises.push(getClubs())
+      if (isAdmin) promises.push(adminGetMembers())
+      const [tournamentList, clubList, memberList] = await Promise.all(promises)
+      setTournaments(tournamentList ?? [])
+      if (clubList) setClubs(clubList)
+      if (memberList) setMembers(memberList)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load admin data')
+      setError(err instanceof Error ? err.message : 'Failed to load data')
     } finally {
       setLoading(false)
     }
@@ -110,225 +739,109 @@ export function AdminPage() {
 
   useEffect(() => { loadAll() }, [])
 
-  async function handleRoleChange(memberId: string, role: MemberRole) {
+  async function handleRoleChange(memberId: string, newRole: MemberRole) {
     setSavingId(memberId)
     try {
-      await adminUpdateMemberRole(memberId, role)
-      setMembers((prev) =>
-        prev.map((m) => (m.id === memberId ? { ...m, role } : m)),
-      )
+      await adminUpdateMemberRole(memberId, newRole)
+      setMembers((prev) => prev.map((m) => m.id === memberId ? { ...m, role: newRole } : m))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update role')
-    } finally {
-      setSavingId(null)
-    }
+    } finally { setSavingId(null) }
   }
 
   async function handleClubChange(memberId: string, clubId: string) {
     setSavingId(memberId)
     try {
       const updated = await adminUpdateMemberClub(memberId, clubId || null)
-      setMembers((prev) =>
-        prev.map((m) =>
-          m.id === memberId
-            ? {
-                ...m,
-                club_id: updated.club_id,
-                club_name: clubs.find((c) => c.id === updated.club_id)?.name,
-              }
-            : m,
-        ),
-      )
+      setMembers((prev) => prev.map((m) =>
+        m.id === memberId ? { ...m, club_id: updated.club_id, club_name: clubs.find((c) => c.id === updated.club_id)?.name } : m))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update club')
-    } finally {
-      setSavingId(null)
-    }
-  }
-
-  async function handleCreateTournament(event: FormEvent) {
-    event.preventDefault()
-    setCreatingTournament(true)
-    setError(null)
-    try {
-      await adminCreateTournament({
-        name: newTournament.name,
-        location: newTournament.location,
-        date: newTournament.date,
-        entryFee: Number(newTournament.entryFee),
-        clubId: newTournament.clubId || null,
-        isRated: newTournament.isRated,
-      })
-      setNewTournament({ name: '', location: '', date: '', entryFee: '45', clubId: '', isRated: true })
-      const tournamentList = await getTournaments()
-      setTournaments(tournamentList)
-      setTab('tournaments')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create tournament')
-    } finally {
-      setCreatingTournament(false)
-    }
+    } finally { setSavingId(null) }
   }
 
   function confirmDelete(message: string, action: () => Promise<void>) {
-    setConfirm({
-      message,
-      onConfirm: async () => {
-        setConfirm(null)
-        try {
-          await action()
-        } catch (err) {
-          setError(err instanceof Error ? err.message : 'Delete failed')
-        }
-      },
-    })
+    setConfirm({ message, onConfirm: async () => { setConfirm(null); try { await action() } catch (err) { setError(err instanceof Error ? err.message : 'Delete failed') } } })
   }
 
-  function handleDeleteMember(member: ApiAdminMember) {
-    confirmDelete(
-      `Delete member "${member.full_name}"? This will remove all their registrations, tickets, and tournament history. This cannot be undone.`,
-      async () => {
-        await adminDeleteMember(member.id)
-        setMembers((prev) => prev.filter((m) => m.id !== member.id))
-      },
-    )
-  }
-
-  function handleDeleteTournament(tournament: ApiTournamentListItem) {
-    confirmDelete(
-      `Delete tournament "${tournament.name}"? All registrations and pairings will be permanently removed. This cannot be undone.`,
-      async () => {
-        await adminDeleteTournament(tournament.id)
-        setTournaments((prev) => prev.filter((t) => t.id !== tournament.id))
-      },
-    )
+  function handleDeleteMember(m: ApiAdminMember) {
+    confirmDelete(`Delete member "${m.full_name}"? This will remove all their data. This cannot be undone.`,
+      async () => { await adminDeleteMember(m.id); setMembers((prev) => prev.filter((x) => x.id !== m.id)) })
   }
 
   function handleDeleteClub(club: ApiClubListItem) {
-    confirmDelete(
-      `Delete club "${club.name}"? Members will be unassigned from this club. This cannot be undone.`,
-      async () => {
-        await adminDeleteClub(club.id)
-        setClubs((prev) => prev.filter((c) => c.id !== club.id))
-      },
-    )
+    confirmDelete(`Delete club "${club.name}"? Members will be unassigned. This cannot be undone.`,
+      async () => { await adminDeleteClub(club.id); setClubs((prev) => prev.filter((c) => c.id !== club.id)) })
   }
-
-  const tabs: { id: AdminTab; label: string; icon: typeof Users }[] = [
-    { id: 'members', label: 'Members', icon: Users },
-    { id: 'tournaments', label: 'Tournaments', icon: Trophy },
-    { id: 'clubs', label: 'Clubs', icon: Building2 },
-  ]
 
   return (
     <div>
-      {confirm && (
-        <ConfirmDialog
-          message={confirm.message}
-          onConfirm={confirm.onConfirm}
-          onCancel={() => setConfirm(null)}
-        />
-      )}
+      {confirm && <ConfirmDialog message={confirm.message} onConfirm={confirm.onConfirm} onCancel={() => setConfirm(null)} />}
 
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
+      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744] text-white">
+        <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="flex items-center gap-3">
-            <Shield className="size-8 text-[#c8a94a] sm:size-10" />
+            <Shield className="size-7 text-[#c8a94a]" />
             <div>
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Admin Panel
-              </h1>
-              <p className="mt-2 max-w-2xl text-white/80">
-                Manage members, roles, clubs, and tournaments across the LCA.
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Admin panel</h1>
+              <p className="mt-1 text-sm text-white/60">
+                {isAdmin ? 'Manage members, clubs, and tournaments across the LCA.' : 'Manage your tournaments and club.'}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-12">
-        <div className="flex flex-wrap gap-2 border-b pb-4">
-          {tabs.map(({ id, label, icon: Icon }) => (
-            <Button
-              key={id}
-              type="button"
-              variant={tab === id ? 'default' : 'outline'}
-              className={cn(tab === id && goldButtonClass)}
-              onClick={() => setTab(id)}
-            >
-              <Icon className="size-4" />
-              {label}
+      <section className="mx-auto max-w-6xl px-6 py-8">
+        <div className="mb-6 flex flex-wrap gap-2 border-b pb-4">
+          {visibleTabs.map(({ id, label, icon: Icon }) => (
+            <Button key={id} type="button" variant={tab === id ? 'default' : 'outline'}
+              className={cn(tab === id && GOLD)} onClick={() => setTab(id)}>
+              <Icon className="mr-1.5 size-4" /> {label}
             </Button>
           ))}
-          <Button asChild variant="outline">
-            <Link to="/admin/support">
-              <MessageSquare className="size-4" />
-              Support Tickets
-            </Link>
-          </Button>
         </div>
 
         {error && (
-          <p className="mt-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {error}
-          </p>
+          <p className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>
         )}
 
         {loading ? (
-          <p className="mt-8 text-muted-foreground">Loading...</p>
+          <p className="text-muted-foreground">Loading…</p>
         ) : (
           <>
-            {tab === 'members' && (
-              <div className="mt-8 overflow-x-auto">
-                <table className="w-full min-w-[720px] text-left text-sm">
+            {tab === 'members' && isAdmin && (
+              <div className="overflow-x-auto">
+                <table className="w-full min-w-[640px] text-left text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="px-3 py-2 font-semibold">Name</th>
-                      <th className="px-3 py-2 font-semibold">Email</th>
-                      <th className="px-3 py-2 font-semibold">Role</th>
-                      <th className="px-3 py-2 font-semibold">Club</th>
-                      <th className="px-3 py-2 font-semibold w-12"></th>
+                      <th className="px-3 py-2.5 font-semibold">Name</th>
+                      <th className="px-3 py-2.5 font-semibold">Email</th>
+                      <th className="px-3 py-2.5 font-semibold">Role</th>
+                      <th className="px-3 py-2.5 font-semibold">Club</th>
+                      <th className="w-10 px-3 py-2.5" />
                     </tr>
                   </thead>
                   <tbody>
                     {members.map((m) => (
                       <tr key={m.id} className="border-b">
-                        <td className="px-3 py-3">{m.full_name}</td>
-                        <td className="px-3 py-3 text-muted-foreground">{m.email}</td>
-                        <td className="px-3 py-3">
-                          <select
-                            className="rounded-md border bg-background px-2 py-1"
-                            value={m.role}
-                            disabled={savingId === m.id}
-                            onChange={(e) =>
-                              handleRoleChange(m.id, e.target.value as MemberRole)
-                            }
-                          >
-                            {MEMBER_ROLES.map((r) => (
-                              <option key={r} value={r}>{ROLE_LABELS[r]}</option>
-                            ))}
+                        <td className="px-3 py-2.5 font-medium">{m.full_name}</td>
+                        <td className="px-3 py-2.5 text-muted-foreground">{m.email}</td>
+                        <td className="px-3 py-2.5">
+                          <select className="rounded-md border bg-background px-2 py-1 text-sm" value={m.role} disabled={savingId === m.id}
+                            onChange={(e) => handleRoleChange(m.id, e.target.value as MemberRole)}>
+                            {MEMBER_ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                           </select>
                         </td>
-                        <td className="px-3 py-3">
-                          <select
-                            className="max-w-[200px] rounded-md border bg-background px-2 py-1"
-                            value={m.club_id ?? ''}
-                            disabled={savingId === m.id}
-                            onChange={(e) => handleClubChange(m.id, e.target.value)}
-                          >
+                        <td className="px-3 py-2.5">
+                          <select className="max-w-[180px] rounded-md border bg-background px-2 py-1 text-sm" value={m.club_id ?? ''} disabled={savingId === m.id}
+                            onChange={(e) => handleClubChange(m.id, e.target.value)}>
                             <option value="">No club</option>
-                            {clubs.map((c) => (
-                              <option key={c.id} value={c.id}>{c.name}</option>
-                            ))}
+                            {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                           </select>
                         </td>
-                        <td className="px-3 py-3">
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteMember(m)}
-                            className="text-muted-foreground hover:text-destructive transition-colors"
-                            title="Delete member"
-                          >
+                        <td className="px-3 py-2.5">
+                          <button type="button" onClick={() => handleDeleteMember(m)} className="text-muted-foreground transition-colors hover:text-destructive" title="Delete member">
                             <Trash2 className="size-4" />
                           </button>
                         </td>
@@ -340,187 +853,48 @@ export function AdminPage() {
             )}
 
             {tab === 'tournaments' && (
-              <div className="mt-8 space-y-8">
-                <form
-                  onSubmit={handleCreateTournament}
-                  className="rounded-xl border bg-card p-6 shadow-sm"
-                >
-                  <h2 className="text-lg font-bold text-[#1a2744]">
-                    Create Tournament
-                  </h2>
-                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="t-name">Name</Label>
-                      <Input
-                        id="t-name"
-                        value={newTournament.name}
-                        onChange={(e) =>
-                          setNewTournament((p) => ({ ...p, name: e.target.value }))
-                        }
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="t-location">Location</Label>
-                      <Input
-                        id="t-location"
-                        value={newTournament.location}
-                        onChange={(e) =>
-                          setNewTournament((p) => ({ ...p, location: e.target.value }))
-                        }
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="t-date">Date</Label>
-                      <Input
-                        id="t-date"
-                        type="date"
-                        value={newTournament.date}
-                        onChange={(e) =>
-                          setNewTournament((p) => ({ ...p, date: e.target.value }))
-                        }
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="t-fee">Entry fee ($)</Label>
-                      <Input
-                        id="t-fee"
-                        type="number"
-                        value={newTournament.entryFee}
-                        onChange={(e) =>
-                          setNewTournament((p) => ({ ...p, entryFee: e.target.value }))
-                        }
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2 sm:col-span-2">
-                      <Label htmlFor="t-club">Host club (optional)</Label>
-                      <select
-                        id="t-club"
-                        className="w-full rounded-md border bg-background px-3 py-2"
-                        value={newTournament.clubId}
-                        onChange={(e) =>
-                          setNewTournament((p) => ({ ...p, clubId: e.target.value }))
-                        }
-                      >
-                        <option value="">No club</option>
-                        {clubs.map((c) => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <Label className="mb-2 block">Rating status</Label>
-                      <div className="flex gap-3">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setNewTournament((p) => ({ ...p, isRated: true }))
-                          }
-                          className={cn(
-                            'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
-                            newTournament.isRated
-                              ? 'border-[#1a2744] bg-[#1a2744] text-white'
-                              : 'border-border text-muted-foreground hover:border-[#1a2744]/40',
-                          )}
-                        >
-                          USCF Rated
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setNewTournament((p) => ({ ...p, isRated: false }))
-                          }
-                          className={cn(
-                            'flex-1 rounded-lg border px-4 py-3 text-sm font-medium transition-colors',
-                            !newTournament.isRated
-                              ? 'border-[#1a2744] bg-[#1a2744] text-white'
-                              : 'border-border text-muted-foreground hover:border-[#1a2744]/40',
-                          )}
-                        >
-                          Unrated
-                        </button>
-                      </div>
-                      <p className="mt-1.5 text-xs text-muted-foreground">
-                        {newTournament.isRated
-                          ? 'Players must have a USCF ID to register.'
-                          : 'Open to all — no USCF ID required.'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className={cn('mt-4', goldButtonClass)}
-                    disabled={creatingTournament}
-                  >
-                    {creatingTournament ? 'Creating...' : 'Create tournament'}
-                  </Button>
-                </form>
-
-                <ul className="space-y-3">
-                  {tournaments.map((t) => (
-                    <li
-                      key={t.id}
-                      className="flex flex-col gap-2 rounded-xl border bg-card p-4 sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <div>
-                        <p className="font-medium text-[#1a2744]">{t.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {t.date} · {t.location} · {t.status}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Button asChild variant="outline" size="sm">
-                          <Link to={`/admin/tournaments/${t.id}`}>Manage</Link>
-                        </Button>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteTournament(t)}
-                          className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                          title="Delete tournament"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <TournamentsTab
+                tournaments={tournaments}
+                role={role ?? 'member'}
+                directedTournamentIds={directedIds}
+                onRefresh={loadAll}
+              />
             )}
 
-            {tab === 'clubs' && (
-              <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-                {clubs.map((club) => (
-                  <li
-                    key={club.id}
-                    className="rounded-xl border bg-card p-5 shadow-sm"
-                  >
+            {tab === 'clubs' && (isAdmin || isClubRep) && (
+              <ul className="grid gap-4 sm:grid-cols-2">
+                {(isClubRep ? clubs.filter((c) => c.id === member?.club_id) : clubs).map((club) => (
+                  <li key={club.id} className="rounded-xl border bg-card p-5 shadow-sm">
                     <div className="flex items-start justify-between">
                       <div>
                         <h3 className="font-semibold text-[#1a2744]">{club.name}</h3>
                         <p className="mt-1 text-sm text-muted-foreground">
-                          {club.city}, LA · {club.meeting_schedule}
+                          {club.city}, LA{club.meeting_schedule ? ` · ${club.meeting_schedule}` : ''}
                         </p>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteClub(club)}
-                        className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                        title="Delete club"
-                      >
-                        <Trash2 className="size-4" />
-                      </button>
+                      {isAdmin && (
+                        <button type="button" onClick={() => handleDeleteClub(club)} className="p-1 text-muted-foreground transition-colors hover:text-destructive" title="Delete club">
+                          <Trash2 className="size-4" />
+                        </button>
+                      )}
                     </div>
-                    <Button asChild className={cn('mt-4', goldButtonClass)} size="sm">
+                    <Button asChild className={cn('mt-4', GOLD)} size="sm">
                       <Link to={`/admin/clubs/${club.id}`}>Edit club</Link>
                     </Button>
                   </li>
                 ))}
               </ul>
+            )}
+
+            {tab === 'support' && isAdmin && (
+              <div className="py-8 text-center">
+                <MessageSquare className="mx-auto mb-3 size-8 text-muted-foreground" />
+                <p className="font-medium text-[#1a2744]">Support tickets</p>
+                <p className="mt-1 text-sm text-muted-foreground">View and respond to member support requests.</p>
+                <Button asChild className={cn('mt-4', GOLD)}>
+                  <Link to="/admin/support">Open support tickets</Link>
+                </Button>
+              </div>
             )}
           </>
         )}

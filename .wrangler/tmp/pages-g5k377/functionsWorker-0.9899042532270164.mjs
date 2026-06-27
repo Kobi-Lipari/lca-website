@@ -1,8 +1,15 @@
 var __defProp = Object.defineProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 
-// .wrangler/tmp/bundle-CpGIla/checked-fetch.js
-var urls = /* @__PURE__ */ new Set();
+// ../.wrangler/tmp/bundle-3vKEAb/checked-fetch.js
 function checkURL(request, init) {
   const url = request instanceof URL ? request : new URL(
     (typeof request === "string" ? new Request(request, init) : request).url
@@ -18,56 +25,22 @@ function checkURL(request, init) {
     }
   }
 }
-__name(checkURL, "checkURL");
-globalThis.fetch = new Proxy(globalThis.fetch, {
-  apply(target, thisArg, argArray) {
-    const [request, init] = argArray;
-    checkURL(request, init);
-    return Reflect.apply(target, thisArg, argArray);
-  }
-});
-
-// .wrangler/tmp/pages-i4rutd/functionsWorker-0.5737025525640923.mjs
-var __defProp2 = Object.defineProperty;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __name2 = /* @__PURE__ */ __name((target, value) => __defProp2(target, "name", { value, configurable: true }), "__name");
-var __esm = /* @__PURE__ */ __name((fn, res) => /* @__PURE__ */ __name(function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
-}, "__init"), "__esm");
-var __export = /* @__PURE__ */ __name((target, all) => {
-  for (var name in all)
-    __defProp2(target, name, { get: all[name], enumerable: true });
-}, "__export");
-function checkURL2(request, init) {
-  const url = request instanceof URL ? request : new URL(
-    (typeof request === "string" ? new Request(request, init) : request).url
-  );
-  if (url.port && url.port !== "443" && url.protocol === "https:") {
-    if (!urls2.has(url.toString())) {
-      urls2.add(url.toString());
-      console.warn(
-        `WARNING: known issue with \`fetch()\` requests to custom HTTPS ports in published Workers:
- - ${url.toString()} - the custom port will be ignored when the Worker is published using the \`wrangler deploy\` command.
-`
-      );
-    }
-  }
-}
-__name(checkURL2, "checkURL");
-var urls2;
+var urls;
 var init_checked_fetch = __esm({
-  "../.wrangler/tmp/bundle-kuQnRR/checked-fetch.js"() {
-    urls2 = /* @__PURE__ */ new Set();
-    __name2(checkURL2, "checkURL");
+  "../.wrangler/tmp/bundle-3vKEAb/checked-fetch.js"() {
+    urls = /* @__PURE__ */ new Set();
+    __name(checkURL, "checkURL");
     globalThis.fetch = new Proxy(globalThis.fetch, {
       apply(target, thisArg, argArray) {
         const [request, init] = argArray;
-        checkURL2(request, init);
+        checkURL(request, init);
         return Reflect.apply(target, thisArg, argArray);
       }
     });
   }
 });
+
+// ../node_modules/tslib/tslib.es6.mjs
 function __rest(s, e) {
   var t = {};
   for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -79,7 +52,6 @@ function __rest(s, e) {
     }
   return t;
 }
-__name(__rest, "__rest");
 function __awaiter(thisArg, _arguments, P, generator) {
   function adopt(value) {
     return value instanceof P ? value : new P(function(resolve) {
@@ -87,7 +59,6 @@ function __awaiter(thisArg, _arguments, P, generator) {
     });
   }
   __name(adopt, "adopt");
-  __name2(adopt, "adopt");
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
@@ -97,7 +68,6 @@ function __awaiter(thisArg, _arguments, P, generator) {
       }
     }
     __name(fulfilled, "fulfilled");
-    __name2(fulfilled, "fulfilled");
     function rejected(value) {
       try {
         step(generator["throw"](value));
@@ -106,30 +76,29 @@ function __awaiter(thisArg, _arguments, P, generator) {
       }
     }
     __name(rejected, "rejected");
-    __name2(rejected, "rejected");
     function step(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
     __name(step, "step");
-    __name2(step, "step");
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 }
-__name(__awaiter, "__awaiter");
 var init_tslib_es6 = __esm({
   "../node_modules/tslib/tslib.es6.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    __name2(__rest, "__rest");
-    __name2(__awaiter, "__awaiter");
+    __name(__rest, "__rest");
+    __name(__awaiter, "__awaiter");
   }
 });
+
+// ../node_modules/@supabase/functions-js/dist/module/helper.js
 var resolveFetch;
 var init_helper = __esm({
   "../node_modules/@supabase/functions-js/dist/module/helper.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    resolveFetch = /* @__PURE__ */ __name2((customFetch) => {
+    resolveFetch = /* @__PURE__ */ __name((customFetch) => {
       if (customFetch) {
         return (...args) => customFetch(...args);
       }
@@ -137,21 +106,16 @@ var init_helper = __esm({
     }, "resolveFetch");
   }
 });
-var FunctionsError;
-var FunctionsFetchError;
-var FunctionsRelayError;
-var FunctionsHttpError;
-var FunctionRegion;
+
+// ../node_modules/@supabase/functions-js/dist/module/types.js
+var FunctionsError, FunctionsFetchError, FunctionsRelayError, FunctionsHttpError, FunctionRegion;
 var init_types = __esm({
   "../node_modules/@supabase/functions-js/dist/module/types.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     FunctionsError = class extends Error {
       static {
         __name(this, "FunctionsError");
-      }
-      static {
-        __name2(this, "FunctionsError");
       }
       constructor(message, name = "FunctionsError", context) {
         super(message);
@@ -170,9 +134,6 @@ var init_types = __esm({
       static {
         __name(this, "FunctionsFetchError");
       }
-      static {
-        __name2(this, "FunctionsFetchError");
-      }
       constructor(context) {
         super("Failed to send a request to the Edge Function", "FunctionsFetchError", context);
       }
@@ -181,9 +142,6 @@ var init_types = __esm({
       static {
         __name(this, "FunctionsRelayError");
       }
-      static {
-        __name2(this, "FunctionsRelayError");
-      }
       constructor(context) {
         super("Relay Error invoking the Edge Function", "FunctionsRelayError", context);
       }
@@ -191,9 +149,6 @@ var init_types = __esm({
     FunctionsHttpError = class extends FunctionsError {
       static {
         __name(this, "FunctionsHttpError");
-      }
-      static {
-        __name2(this, "FunctionsHttpError");
       }
       constructor(context) {
         super("Edge Function returned a non-2xx status code", "FunctionsHttpError", context);
@@ -218,10 +173,12 @@ var init_types = __esm({
     })(FunctionRegion || (FunctionRegion = {}));
   }
 });
+
+// ../node_modules/@supabase/functions-js/dist/module/FunctionsClient.js
 var FunctionsClient;
 var init_FunctionsClient = __esm({
   "../node_modules/@supabase/functions-js/dist/module/FunctionsClient.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_tslib_es6();
     init_helper();
@@ -229,9 +186,6 @@ var init_FunctionsClient = __esm({
     FunctionsClient = class {
       static {
         __name(this, "FunctionsClient");
-      }
-      static {
-        __name2(this, "FunctionsClient");
       }
       /**
        * Creates a new Functions client bound to an Edge Functions URL.
@@ -499,13 +453,17 @@ var init_FunctionsClient = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/functions-js/dist/module/index.js
 var init_module = __esm({
   "../node_modules/@supabase/functions-js/dist/module/index.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_FunctionsClient();
   }
 });
+
+// ../node_modules/@supabase/postgrest-js/dist/index.mjs
 function sleep(ms, signal) {
   return new Promise((resolve) => {
     if (signal === null || signal === void 0 ? void 0 : signal.aborted) {
@@ -521,18 +479,15 @@ function sleep(ms, signal) {
       resolve();
     }
     __name(onAbort, "onAbort");
-    __name2(onAbort, "onAbort");
     signal === null || signal === void 0 || signal.addEventListener("abort", onAbort);
   });
 }
-__name(sleep, "sleep");
 function shouldRetry(method, status, attemptCount, retryEnabled) {
   if (!retryEnabled || attemptCount >= DEFAULT_MAX_RETRIES) return false;
   if (!RETRYABLE_METHODS.includes(method)) return false;
   if (!RETRYABLE_STATUS_CODES.includes(status)) return false;
   return true;
 }
-__name(shouldRetry, "shouldRetry");
 function _typeof(o) {
   "@babel/helpers - typeof";
   return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o$1) {
@@ -541,7 +496,6 @@ function _typeof(o) {
     return o$1 && "function" == typeof Symbol && o$1.constructor === Symbol && o$1 !== Symbol.prototype ? "symbol" : typeof o$1;
   }, _typeof(o);
 }
-__name(_typeof, "_typeof");
 function toPrimitive(t, r) {
   if ("object" != _typeof(t) || !t) return t;
   var e = t[Symbol.toPrimitive];
@@ -552,12 +506,10 @@ function toPrimitive(t, r) {
   }
   return ("string" === r ? String : Number)(t);
 }
-__name(toPrimitive, "toPrimitive");
 function toPropertyKey(t) {
   var i = toPrimitive(t, "string");
   return "symbol" == _typeof(i) ? i : i + "";
 }
-__name(toPropertyKey, "toPropertyKey");
 function _defineProperty(e, r, t) {
   return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
     value: t,
@@ -566,7 +518,6 @@ function _defineProperty(e, r, t) {
     writable: true
   }) : e[r] = t, e;
 }
-__name(_defineProperty, "_defineProperty");
 function ownKeys(e, r) {
   var t = Object.keys(e);
   if (Object.getOwnPropertySymbols) {
@@ -577,7 +528,6 @@ function ownKeys(e, r) {
   }
   return t;
 }
-__name(ownKeys, "ownKeys");
 function _objectSpread2(e) {
   for (var r = 1; r < arguments.length; r++) {
     var t = null != arguments[r] ? arguments[r] : {};
@@ -589,24 +539,13 @@ function _objectSpread2(e) {
   }
   return e;
 }
-__name(_objectSpread2, "_objectSpread2");
-var DEFAULT_MAX_RETRIES;
-var getRetryDelay;
-var RETRYABLE_STATUS_CODES;
-var RETRYABLE_METHODS;
-var PostgrestError;
-var PostgrestBuilder;
-var PostgrestTransformBuilder;
-var PostgrestReservedCharsRegexp;
-var PostgrestFilterBuilder;
-var PostgrestQueryBuilder;
-var PostgrestClient;
+var DEFAULT_MAX_RETRIES, getRetryDelay, RETRYABLE_STATUS_CODES, RETRYABLE_METHODS, PostgrestError, PostgrestBuilder, PostgrestTransformBuilder, PostgrestReservedCharsRegexp, PostgrestFilterBuilder, PostgrestQueryBuilder, PostgrestClient;
 var init_dist = __esm({
   "../node_modules/@supabase/postgrest-js/dist/index.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     DEFAULT_MAX_RETRIES = 3;
-    getRetryDelay = /* @__PURE__ */ __name2((attemptIndex) => Math.min(1e3 * 2 ** attemptIndex, 3e4), "getRetryDelay");
+    getRetryDelay = /* @__PURE__ */ __name((attemptIndex) => Math.min(1e3 * 2 ** attemptIndex, 3e4), "getRetryDelay");
     RETRYABLE_STATUS_CODES = [520, 503];
     RETRYABLE_METHODS = [
       "GET",
@@ -616,9 +555,6 @@ var init_dist = __esm({
     PostgrestError = class extends Error {
       static {
         __name(this, "PostgrestError");
-      }
-      static {
-        __name2(this, "PostgrestError");
       }
       /**
       * @example
@@ -650,14 +586,11 @@ var init_dist = __esm({
         };
       }
     };
-    __name2(sleep, "sleep");
-    __name2(shouldRetry, "shouldRetry");
+    __name(sleep, "sleep");
+    __name(shouldRetry, "shouldRetry");
     PostgrestBuilder = class {
       static {
         __name(this, "PostgrestBuilder");
-      }
-      static {
-        __name2(this, "PostgrestBuilder");
       }
       /**
       * Creates a builder configured for a specific PostgREST request.
@@ -826,7 +759,7 @@ var init_dist = __esm({
           else if (!currentAccept || currentAccept === "application/json") this.headers.set("Accept", "application/vnd.pgrst.array+json;nulls=stripped");
         }
         const _fetch = this.fetch;
-        const executeWithRetry = /* @__PURE__ */ __name2(async () => {
+        const executeWithRetry = /* @__PURE__ */ __name(async () => {
           let attemptCount = 0;
           while (true) {
             const headers = {};
@@ -1100,9 +1033,6 @@ ${cause.stack}`;
     PostgrestTransformBuilder = class extends PostgrestBuilder {
       static {
         __name(this, "PostgrestTransformBuilder");
-      }
-      static {
-        __name2(this, "PostgrestTransformBuilder");
       }
       throwOnError() {
         return super.throwOnError();
@@ -1941,9 +1871,6 @@ ${cause.stack}`;
     PostgrestFilterBuilder = class extends PostgrestTransformBuilder {
       static {
         __name(this, "PostgrestFilterBuilder");
-      }
-      static {
-        __name2(this, "PostgrestFilterBuilder");
       }
       throwOnError() {
         return super.throwOnError();
@@ -3742,9 +3669,6 @@ ${cause.stack}`;
       static {
         __name(this, "PostgrestQueryBuilder");
       }
-      static {
-        __name2(this, "PostgrestQueryBuilder");
-      }
       /**
       * Creates a query builder scoped to a Postgres table or view.
       *
@@ -5315,18 +5239,15 @@ ${cause.stack}`;
         });
       }
     };
-    __name2(_typeof, "_typeof");
-    __name2(toPrimitive, "toPrimitive");
-    __name2(toPropertyKey, "toPropertyKey");
-    __name2(_defineProperty, "_defineProperty");
-    __name2(ownKeys, "ownKeys");
-    __name2(_objectSpread2, "_objectSpread2");
+    __name(_typeof, "_typeof");
+    __name(toPrimitive, "toPrimitive");
+    __name(toPropertyKey, "toPropertyKey");
+    __name(_defineProperty, "_defineProperty");
+    __name(ownKeys, "ownKeys");
+    __name(_objectSpread2, "_objectSpread2");
     PostgrestClient = class PostgrestClient2 {
       static {
-        __name(this, "PostgrestClient2");
-      }
-      static {
-        __name2(this, "PostgrestClient");
+        __name(this, "PostgrestClient");
       }
       /**
       * Creates a PostgREST client.
@@ -5382,7 +5303,7 @@ ${cause.stack}`;
               clearTimeout(timeoutId);
               return originalFetch(input, init);
             }
-            const abortHandler = /* @__PURE__ */ __name2(() => {
+            const abortHandler = /* @__PURE__ */ __name(() => {
               clearTimeout(timeoutId);
               controller.abort();
             }, "abortHandler");
@@ -5602,7 +5523,7 @@ ${cause.stack}`;
         let method;
         const url = new URL(`${this.url}/rpc/${fn}`);
         let body;
-        const _isObject = /* @__PURE__ */ __name2((v) => v !== null && typeof v === "object" && (!Array.isArray(v) || v.some(_isObject)), "_isObject");
+        const _isObject = /* @__PURE__ */ __name((v) => v !== null && typeof v === "object" && (!Array.isArray(v) || v.some(_isObject)), "_isObject");
         const _hasObjectArg = head2 && Object.values(args).some(_isObject);
         if (_hasObjectArg) {
           method = "POST";
@@ -5633,18 +5554,16 @@ ${cause.stack}`;
     };
   }
 });
-var WebSocketFactory;
-var websocket_factory_default;
+
+// ../node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js
+var WebSocketFactory, websocket_factory_default;
 var init_websocket_factory = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/websocket-factory.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     WebSocketFactory = class {
       static {
         __name(this, "WebSocketFactory");
-      }
-      static {
-        __name2(this, "WebSocketFactory");
       }
       /**
        * Static-only utility – prevent instantiation.
@@ -5760,26 +5679,22 @@ Suggested solution: ${env.workaround}`;
     websocket_factory_default = WebSocketFactory;
   }
 });
+
+// ../node_modules/@supabase/realtime-js/dist/module/lib/version.js
 var version;
 var init_version = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/version.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     version = "2.108.2";
   }
 });
-var DEFAULT_VERSION;
-var VSN_1_0_0;
-var VSN_2_0_0;
-var DEFAULT_VSN;
-var DEFAULT_TIMEOUT;
-var MAX_PUSH_BUFFER_SIZE;
-var CHANNEL_STATES;
-var CHANNEL_EVENTS;
-var CONNECTION_STATE;
+
+// ../node_modules/@supabase/realtime-js/dist/module/lib/constants.js
+var DEFAULT_VERSION, VSN_1_0_0, VSN_2_0_0, DEFAULT_VSN, DEFAULT_TIMEOUT, MAX_PUSH_BUFFER_SIZE, CHANNEL_STATES, CHANNEL_EVENTS, CONNECTION_STATE;
 var init_constants = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/constants.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_version();
     DEFAULT_VERSION = `realtime-js/${version}`;
@@ -5811,17 +5726,16 @@ var init_constants = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/realtime-js/dist/module/lib/serializer.js
 var Serializer;
 var init_serializer = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/serializer.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     Serializer = class {
       static {
         __name(this, "Serializer");
-      }
-      static {
-        __name2(this, "Serializer");
       }
       constructor(allowedMetadataKeys) {
         this.HEADER_LENGTH = 1;
@@ -5962,20 +5876,12 @@ var init_serializer = __esm({
     };
   }
 });
-var PostgresTypes;
-var convertChangeData;
-var convertColumn;
-var convertCell;
-var noop;
-var toBoolean;
-var toNumber;
-var toJson;
-var toArray;
-var toTimestampString;
-var httpEndpointURL;
+
+// ../node_modules/@supabase/realtime-js/dist/module/lib/transformers.js
+var PostgresTypes, convertChangeData, convertColumn, convertCell, noop, toBoolean, toNumber, toJson, toArray, toTimestampString, httpEndpointURL;
 var init_transformers = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/transformers.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     (function(PostgresTypes2) {
       PostgresTypes2["abstime"] = "abstime";
@@ -6003,7 +5909,7 @@ var init_transformers = __esm({
       PostgresTypes2["tsrange"] = "tsrange";
       PostgresTypes2["tstzrange"] = "tstzrange";
     })(PostgresTypes || (PostgresTypes = {}));
-    convertChangeData = /* @__PURE__ */ __name2((columns, record, options = {}) => {
+    convertChangeData = /* @__PURE__ */ __name((columns, record, options = {}) => {
       var _a;
       const skipTypes = (_a = options.skipTypes) !== null && _a !== void 0 ? _a : [];
       if (!record) {
@@ -6014,7 +5920,7 @@ var init_transformers = __esm({
         return acc;
       }, {});
     }, "convertChangeData");
-    convertColumn = /* @__PURE__ */ __name2((columnName, columns, record, skipTypes) => {
+    convertColumn = /* @__PURE__ */ __name((columnName, columns, record, skipTypes) => {
       const column = columns.find((x) => x.name === columnName);
       const colType = column === null || column === void 0 ? void 0 : column.type;
       const value = record[columnName];
@@ -6023,7 +5929,7 @@ var init_transformers = __esm({
       }
       return noop(value);
     }, "convertColumn");
-    convertCell = /* @__PURE__ */ __name2((type, value) => {
+    convertCell = /* @__PURE__ */ __name((type, value) => {
       if (type.charAt(0) === "_") {
         const dataType = type.slice(1, type.length);
         return toArray(value, dataType);
@@ -6069,10 +5975,10 @@ var init_transformers = __esm({
           return noop(value);
       }
     }, "convertCell");
-    noop = /* @__PURE__ */ __name2((value) => {
+    noop = /* @__PURE__ */ __name((value) => {
       return value;
     }, "noop");
-    toBoolean = /* @__PURE__ */ __name2((value) => {
+    toBoolean = /* @__PURE__ */ __name((value) => {
       switch (value) {
         case "t":
           return true;
@@ -6082,7 +5988,7 @@ var init_transformers = __esm({
           return value;
       }
     }, "toBoolean");
-    toNumber = /* @__PURE__ */ __name2((value) => {
+    toNumber = /* @__PURE__ */ __name((value) => {
       if (typeof value === "string") {
         const parsedValue = parseFloat(value);
         if (!Number.isNaN(parsedValue)) {
@@ -6091,7 +5997,7 @@ var init_transformers = __esm({
       }
       return value;
     }, "toNumber");
-    toJson = /* @__PURE__ */ __name2((value) => {
+    toJson = /* @__PURE__ */ __name((value) => {
       if (typeof value === "string") {
         try {
           return JSON.parse(value);
@@ -6101,7 +6007,7 @@ var init_transformers = __esm({
       }
       return value;
     }, "toJson");
-    toArray = /* @__PURE__ */ __name2((value, type) => {
+    toArray = /* @__PURE__ */ __name((value, type) => {
       if (typeof value !== "string") {
         return value;
       }
@@ -6120,13 +6026,13 @@ var init_transformers = __esm({
       }
       return value;
     }, "toArray");
-    toTimestampString = /* @__PURE__ */ __name2((value) => {
+    toTimestampString = /* @__PURE__ */ __name((value) => {
       if (typeof value === "string") {
         return value.replace(" ", "T");
       }
       return value;
     }, "toTimestampString");
-    httpEndpointURL = /* @__PURE__ */ __name2((socketUrl) => {
+    httpEndpointURL = /* @__PURE__ */ __name((socketUrl) => {
       const wsUrl = new URL(socketUrl);
       wsUrl.protocol = wsUrl.protocol.replace(/^ws/i, "http");
       wsUrl.pathname = wsUrl.pathname.replace(/\/+$/, "").replace(/\/socket\/websocket$/i, "").replace(/\/socket$/i, "").replace(/\/websocket$/i, "");
@@ -6139,40 +6045,21 @@ var init_transformers = __esm({
     }, "httpEndpointURL");
   }
 });
-var closure;
-var globalSelf;
-var phxWindow;
-var global2;
-var DEFAULT_VSN2;
-var DEFAULT_TIMEOUT2;
-var WS_CLOSE_NORMAL;
-var SOCKET_STATES;
-var CHANNEL_STATES2;
-var CHANNEL_EVENTS2;
-var TRANSPORTS;
-var XHR_STATES;
-var AUTH_TOKEN_PREFIX;
-var Push;
-var Timer;
-var Channel;
-var Ajax;
-var arrayBufferToBase64;
-var LongPoll;
-var Presence;
-var serializer_default;
-var Socket;
+
+// ../node_modules/@supabase/phoenix/priv/static/phoenix.mjs
+var closure, globalSelf, phxWindow, global2, DEFAULT_VSN2, DEFAULT_TIMEOUT2, WS_CLOSE_NORMAL, SOCKET_STATES, CHANNEL_STATES2, CHANNEL_EVENTS2, TRANSPORTS, XHR_STATES, AUTH_TOKEN_PREFIX, Push, Timer, Channel, Ajax, arrayBufferToBase64, LongPoll, Presence, serializer_default, Socket;
 var init_phoenix = __esm({
   "../node_modules/@supabase/phoenix/priv/static/phoenix.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    closure = /* @__PURE__ */ __name2((value) => {
+    closure = /* @__PURE__ */ __name((value) => {
       if (typeof value === "function") {
         return (
           /** @type {() => T} */
           value
         );
       } else {
-        let closure2 = /* @__PURE__ */ __name2(function() {
+        let closure2 = /* @__PURE__ */ __name(function() {
           return value;
         }, "closure2");
         return closure2;
@@ -6215,9 +6102,6 @@ var init_phoenix = __esm({
     Push = class {
       static {
         __name(this, "Push");
-      }
-      static {
-        __name2(this, "Push");
       }
       /**
        * Initializes the Push
@@ -6337,9 +6221,6 @@ var init_phoenix = __esm({
       static {
         __name(this, "Timer");
       }
-      static {
-        __name2(this, "Timer");
-      }
       /**
       * @param {() => void} callback
       * @param {(tries: number) => number} timerCalc
@@ -6368,9 +6249,6 @@ var init_phoenix = __esm({
     Channel = class {
       static {
         __name(this, "Channel");
-      }
-      static {
-        __name2(this, "Channel");
       }
       /**
        * @param {string} topic
@@ -6592,7 +6470,7 @@ var init_phoenix = __esm({
         this.rejoinTimer.reset();
         this.joinPush.cancelTimeout();
         this.state = CHANNEL_STATES2.leaving;
-        let onClose = /* @__PURE__ */ __name2(() => {
+        let onClose = /* @__PURE__ */ __name(() => {
           if (this.socket.hasLogger()) this.socket.log("channel", `leave ${this.topic}`);
           this.trigger(CHANNEL_EVENTS2.close, "leave");
           this.joinedOnce = false;
@@ -6694,9 +6572,6 @@ var init_phoenix = __esm({
     Ajax = class {
       static {
         __name(this, "Ajax");
-      }
-      static {
-        __name2(this, "Ajax");
       }
       static request(method, endPoint, headers, body, timeout, ontimeout, callback) {
         if (global2.XDomainRequest) {
@@ -6801,7 +6676,7 @@ var init_phoenix = __esm({
         return `${url}${prefix}${this.serialize(params)}`;
       }
     };
-    arrayBufferToBase64 = /* @__PURE__ */ __name2((buffer) => {
+    arrayBufferToBase64 = /* @__PURE__ */ __name((buffer) => {
       let binary = "";
       let bytes = new Uint8Array(buffer);
       let len = bytes.byteLength;
@@ -6813,9 +6688,6 @@ var init_phoenix = __esm({
     LongPoll = class {
       static {
         __name(this, "LongPoll");
-      }
-      static {
-        __name2(this, "LongPoll");
       }
       constructor(endPoint, protocols) {
         if (protocols && protocols.length === 2 && protocols[1].startsWith(AUTH_TOKEN_PREFIX)) {
@@ -6953,7 +6825,7 @@ var init_phoenix = __esm({
       }
       ajax(method, headers, body, onCallerTimeout, callback) {
         let req;
-        let ontimeout = /* @__PURE__ */ __name2(() => {
+        let ontimeout = /* @__PURE__ */ __name(() => {
           this.reqs.delete(req);
           onCallerTimeout();
         }, "ontimeout");
@@ -6970,9 +6842,6 @@ var init_phoenix = __esm({
       static {
         __name(this, "_Presence");
       }
-      static {
-        __name2(this, "_Presence");
-      }
       /**
        * Initializes the Presence
        * @param {Channel} channel - The Channel
@@ -6986,11 +6855,11 @@ var init_phoenix = __esm({
         this.channel = channel;
         this.joinRef = null;
         this.caller = {
-          onJoin: /* @__PURE__ */ __name2(function() {
+          onJoin: /* @__PURE__ */ __name(function() {
           }, "onJoin"),
-          onLeave: /* @__PURE__ */ __name2(function() {
+          onLeave: /* @__PURE__ */ __name(function() {
           }, "onLeave"),
-          onSync: /* @__PURE__ */ __name2(function() {
+          onSync: /* @__PURE__ */ __name(function() {
           }, "onSync")
         };
         this.channel.on(events.state, (newState) => {
@@ -7106,11 +6975,11 @@ var init_phoenix = __esm({
       static syncDiff(state, diff, onJoin, onLeave) {
         let { joins, leaves } = this.clone(diff);
         if (!onJoin) {
-          onJoin = /* @__PURE__ */ __name2(function() {
+          onJoin = /* @__PURE__ */ __name(function() {
           }, "onJoin");
         }
         if (!onLeave) {
-          onLeave = /* @__PURE__ */ __name2(function() {
+          onLeave = /* @__PURE__ */ __name(function() {
           }, "onLeave");
         }
         this.map(joins, (key, newPresence) => {
@@ -7150,7 +7019,7 @@ var init_phoenix = __esm({
        */
       static list(presences, chooser) {
         if (!chooser) {
-          chooser = /* @__PURE__ */ __name2(function(key, pres) {
+          chooser = /* @__PURE__ */ __name(function(key, pres) {
             return pres;
           }, "chooser");
         }
@@ -7295,9 +7164,6 @@ var init_phoenix = __esm({
     Socket = class {
       static {
         __name(this, "Socket");
-      }
-      static {
-        __name2(this, "Socket");
       }
       /** Initializes the Socket *
        *
@@ -7635,7 +7501,7 @@ var init_phoenix = __esm({
         let primaryTransport = true;
         let openRef, errorRef;
         let fallbackTransportName = this.transportName(fallbackTransport);
-        let fallback = /* @__PURE__ */ __name2((reason) => {
+        let fallback = /* @__PURE__ */ __name((reason) => {
           this.log("transport", `falling back to ${fallbackTransportName}...`, reason);
           this.off([openRef, errorRef]);
           primaryTransport = false;
@@ -7973,6 +7839,8 @@ var init_phoenix = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/realtime-js/dist/module/phoenix/presenceAdapter.js
 function transformState(presences) {
   return presences.metas.map((presence) => {
     presence["presence_ref"] = presence["phx_ref"];
@@ -7981,31 +7849,24 @@ function transformState(presences) {
     return presence;
   });
 }
-__name(transformState, "transformState");
 function cloneState(state) {
   return JSON.parse(JSON.stringify(state));
 }
-__name(cloneState, "cloneState");
 function phoenixPresenceOptions(opts) {
   return (opts === null || opts === void 0 ? void 0 : opts.events) && { events: opts.events };
 }
-__name(phoenixPresenceOptions, "phoenixPresenceOptions");
 function parseCurrentPresences(currentPresences) {
   return (currentPresences === null || currentPresences === void 0 ? void 0 : currentPresences.metas) ? transformState(currentPresences) : [];
 }
-__name(parseCurrentPresences, "parseCurrentPresences");
 var PresenceAdapter;
 var init_presenceAdapter = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/phoenix/presenceAdapter.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_phoenix();
     PresenceAdapter = class _PresenceAdapter {
       static {
-        __name(this, "_PresenceAdapter");
-      }
-      static {
-        __name2(this, "PresenceAdapter");
+        __name(this, "PresenceAdapter");
       }
       constructor(channel, opts) {
         const phoenixOptions = phoenixPresenceOptions(opts);
@@ -8077,17 +7938,18 @@ var init_presenceAdapter = __esm({
         };
       }
     };
-    __name2(transformState, "transformState");
-    __name2(cloneState, "cloneState");
-    __name2(phoenixPresenceOptions, "phoenixPresenceOptions");
-    __name2(parseCurrentPresences, "parseCurrentPresences");
+    __name(transformState, "transformState");
+    __name(cloneState, "cloneState");
+    __name(phoenixPresenceOptions, "phoenixPresenceOptions");
+    __name(parseCurrentPresences, "parseCurrentPresences");
   }
 });
-var REALTIME_PRESENCE_LISTEN_EVENTS;
-var RealtimePresence;
+
+// ../node_modules/@supabase/realtime-js/dist/module/RealtimePresence.js
+var REALTIME_PRESENCE_LISTEN_EVENTS, RealtimePresence;
 var init_RealtimePresence = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/RealtimePresence.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_presenceAdapter();
     (function(REALTIME_PRESENCE_LISTEN_EVENTS2) {
@@ -8098,9 +7960,6 @@ var init_RealtimePresence = __esm({
     RealtimePresence = class {
       static {
         __name(this, "RealtimePresence");
-      }
-      static {
-        __name2(this, "RealtimePresence");
       }
       get state() {
         return this.presenceAdapter.state;
@@ -8129,6 +7988,8 @@ var init_RealtimePresence = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/realtime-js/dist/module/lib/normalizeChannelError.js
 function normalizeChannelError(reason) {
   if (reason instanceof Error) {
     return reason;
@@ -8146,14 +8007,15 @@ function normalizeChannelError(reason) {
   }
   return new Error("channel error: connection lost");
 }
-__name(normalizeChannelError, "normalizeChannelError");
 var init_normalizeChannelError = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/lib/normalizeChannelError.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    __name2(normalizeChannelError, "normalizeChannelError");
+    __name(normalizeChannelError, "normalizeChannelError");
   }
 });
+
+// ../node_modules/@supabase/realtime-js/dist/module/phoenix/channelAdapter.js
 function phoenixChannelParams(options) {
   return {
     config: Object.assign({
@@ -8163,19 +8025,15 @@ function phoenixChannelParams(options) {
     }, options.config)
   };
 }
-__name(phoenixChannelParams, "phoenixChannelParams");
 var ChannelAdapter;
 var init_channelAdapter = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/phoenix/channelAdapter.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_constants();
     ChannelAdapter = class {
       static {
         __name(this, "ChannelAdapter");
-      }
-      static {
-        __name2(this, "ChannelAdapter");
       }
       constructor(socket, topic, params) {
         const phoenixParams = phoenixChannelParams(params);
@@ -8264,16 +8122,15 @@ var init_channelAdapter = __esm({
         return this.channel;
       }
     };
-    __name2(phoenixChannelParams, "phoenixChannelParams");
+    __name(phoenixChannelParams, "phoenixChannelParams");
   }
 });
-var REALTIME_POSTGRES_CHANGES_LISTEN_EVENT;
-var REALTIME_LISTEN_TYPES;
-var REALTIME_SUBSCRIBE_STATES;
-var RealtimeChannel;
+
+// ../node_modules/@supabase/realtime-js/dist/module/RealtimeChannel.js
+var REALTIME_POSTGRES_CHANGES_LISTEN_EVENT, REALTIME_LISTEN_TYPES, REALTIME_SUBSCRIBE_STATES, RealtimeChannel;
 var init_RealtimeChannel = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/RealtimeChannel.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_constants();
     init_RealtimePresence();
@@ -8301,10 +8158,7 @@ var init_RealtimeChannel = __esm({
     })(REALTIME_SUBSCRIBE_STATES || (REALTIME_SUBSCRIBE_STATES = {}));
     RealtimeChannel = class _RealtimeChannel {
       static {
-        __name(this, "_RealtimeChannel");
-      }
-      static {
-        __name2(this, "RealtimeChannel");
+        __name(this, "RealtimeChannel");
       }
       get state() {
         return this.channelAdapter.state;
@@ -8982,19 +8836,18 @@ var init_RealtimeChannel = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/realtime-js/dist/module/phoenix/socketAdapter.js
 var SocketAdapter;
 var init_socketAdapter = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/phoenix/socketAdapter.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_phoenix();
     init_constants();
     SocketAdapter = class {
       static {
         __name(this, "SocketAdapter");
-      }
-      static {
-        __name2(this, "SocketAdapter");
       }
       constructor(endPoint, options) {
         this.socket = new Socket(endPoint, options);
@@ -9104,6 +8957,8 @@ var init_socketAdapter = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/realtime-js/dist/module/RealtimeClient.js
 function createMemorySessionStorage() {
   const store = /* @__PURE__ */ new Map();
   return {
@@ -9128,7 +8983,6 @@ function createMemorySessionStorage() {
     }
   };
 }
-__name(createMemorySessionStorage, "createMemorySessionStorage");
 function resolveSessionStorage() {
   try {
     if (typeof globalThis !== "undefined" && globalThis.sessionStorage) {
@@ -9138,15 +8992,10 @@ function resolveSessionStorage() {
   }
   return createMemorySessionStorage();
 }
-__name(resolveSessionStorage, "resolveSessionStorage");
-var CONNECTION_TIMEOUTS;
-var RECONNECT_INTERVALS;
-var DEFAULT_RECONNECT_FALLBACK;
-var WORKER_SCRIPT;
-var RealtimeClient;
+var CONNECTION_TIMEOUTS, RECONNECT_INTERVALS, DEFAULT_RECONNECT_FALLBACK, WORKER_SCRIPT, RealtimeClient;
 var init_RealtimeClient = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/RealtimeClient.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_websocket_factory();
     init_constants();
@@ -9161,8 +9010,8 @@ var init_RealtimeClient = __esm({
     };
     RECONNECT_INTERVALS = [1e3, 2e3, 5e3, 1e4];
     DEFAULT_RECONNECT_FALLBACK = 1e4;
-    __name2(createMemorySessionStorage, "createMemorySessionStorage");
-    __name2(resolveSessionStorage, "resolveSessionStorage");
+    __name(createMemorySessionStorage, "createMemorySessionStorage");
+    __name(resolveSessionStorage, "resolveSessionStorage");
     WORKER_SCRIPT = `
   addEventListener("message", (e) => {
     if (e.data.event === "start") {
@@ -9172,9 +9021,6 @@ var init_RealtimeClient = __esm({
     RealtimeClient = class {
       static {
         __name(this, "RealtimeClient");
-      }
-      static {
-        __name2(this, "RealtimeClient");
       }
       get endPoint() {
         return this.socketAdapter.endPoint;
@@ -9743,10 +9589,10 @@ Option 2: Install and provide the "ws" package:
         const vsn = (_k = options === null || options === void 0 ? void 0 : options.vsn) !== null && _k !== void 0 ? _k : DEFAULT_VSN;
         switch (vsn) {
           case VSN_1_0_0:
-            defaultEncode = /* @__PURE__ */ __name2((payload, callback) => {
+            defaultEncode = /* @__PURE__ */ __name((payload, callback) => {
               return callback(JSON.stringify(payload));
             }, "defaultEncode");
-            defaultDecode = /* @__PURE__ */ __name2((payload, callback) => {
+            defaultDecode = /* @__PURE__ */ __name((payload, callback) => {
               return callback(JSON.parse(payload));
             }, "defaultDecode");
             break;
@@ -9784,9 +9630,11 @@ Option 2: Install and provide the "ws" package:
     };
   }
 });
+
+// ../node_modules/@supabase/realtime-js/dist/module/index.js
 var init_module2 = __esm({
   "../node_modules/@supabase/realtime-js/dist/module/index.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_RealtimeClient();
     init_RealtimeChannel();
@@ -9794,6 +9642,8 @@ var init_module2 = __esm({
     init_websocket_factory();
   }
 });
+
+// ../node_modules/iceberg-js/dist/index.mjs
 function buildUrl(baseUrl, path, query) {
   const url = new URL(path, baseUrl);
   if (query) {
@@ -9805,7 +9655,6 @@ function buildUrl(baseUrl, path, query) {
   }
   return url.toString();
 }
-__name(buildUrl, "buildUrl");
 async function buildAuthHeaders(auth) {
   if (!auth || auth.type === "none") {
     return {};
@@ -9821,7 +9670,6 @@ async function buildAuthHeaders(auth) {
   }
   return {};
 }
-__name(buildAuthHeaders, "buildAuthHeaders");
 function createFetchClient(options) {
   const fetchFn = options.fetchImpl ?? globalThis.fetch;
   return {
@@ -9863,29 +9711,20 @@ function createFetchClient(options) {
     }
   };
 }
-__name(createFetchClient, "createFetchClient");
 function namespaceToPath(namespace) {
   return namespace.join("");
 }
-__name(namespaceToPath, "namespaceToPath");
 function namespaceToPath2(namespace) {
   return namespace.join("");
 }
-__name(namespaceToPath2, "namespaceToPath2");
-var IcebergError;
-var NamespaceOperations;
-var TableOperations;
-var IcebergRestCatalog;
+var IcebergError, NamespaceOperations, TableOperations, IcebergRestCatalog;
 var init_dist2 = __esm({
   "../node_modules/iceberg-js/dist/index.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     IcebergError = class extends Error {
       static {
         __name(this, "IcebergError");
-      }
-      static {
-        __name2(this, "IcebergError");
       }
       constructor(message, opts) {
         super(message);
@@ -9915,16 +9754,13 @@ var init_dist2 = __esm({
         return this.status === 419;
       }
     };
-    __name2(buildUrl, "buildUrl");
-    __name2(buildAuthHeaders, "buildAuthHeaders");
-    __name2(createFetchClient, "createFetchClient");
-    __name2(namespaceToPath, "namespaceToPath");
+    __name(buildUrl, "buildUrl");
+    __name(buildAuthHeaders, "buildAuthHeaders");
+    __name(createFetchClient, "createFetchClient");
+    __name(namespaceToPath, "namespaceToPath");
     NamespaceOperations = class {
       static {
         __name(this, "NamespaceOperations");
-      }
-      static {
-        __name2(this, "NamespaceOperations");
       }
       constructor(client, prefix = "") {
         this.client = client;
@@ -9991,13 +9827,10 @@ var init_dist2 = __esm({
         }
       }
     };
-    __name2(namespaceToPath2, "namespaceToPath2");
+    __name(namespaceToPath2, "namespaceToPath2");
     TableOperations = class {
       static {
         __name(this, "TableOperations");
-      }
-      static {
-        __name2(this, "TableOperations");
       }
       constructor(client, prefix = "", accessDelegation) {
         this.client = client;
@@ -10087,9 +9920,6 @@ var init_dist2 = __esm({
     IcebergRestCatalog = class {
       static {
         __name(this, "IcebergRestCatalog");
-      }
-      static {
-        __name2(this, "IcebergRestCatalog");
       }
       /**
        * Creates a new Iceberg REST Catalog client.
@@ -10369,6 +10199,8 @@ var init_dist2 = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/storage-js/dist/index.mjs
 function _typeof2(o) {
   "@babel/helpers - typeof";
   return _typeof2 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o$1) {
@@ -10377,7 +10209,6 @@ function _typeof2(o) {
     return o$1 && "function" == typeof Symbol && o$1.constructor === Symbol && o$1 !== Symbol.prototype ? "symbol" : typeof o$1;
   }, _typeof2(o);
 }
-__name(_typeof2, "_typeof2");
 function toPrimitive2(t, r) {
   if ("object" != _typeof2(t) || !t) return t;
   var e = t[Symbol.toPrimitive];
@@ -10388,12 +10219,10 @@ function toPrimitive2(t, r) {
   }
   return ("string" === r ? String : Number)(t);
 }
-__name(toPrimitive2, "toPrimitive2");
 function toPropertyKey2(t) {
   var i = toPrimitive2(t, "string");
   return "symbol" == _typeof2(i) ? i : i + "";
 }
-__name(toPropertyKey2, "toPropertyKey2");
 function _defineProperty2(e, r, t) {
   return (r = toPropertyKey2(r)) in e ? Object.defineProperty(e, r, {
     value: t,
@@ -10402,7 +10231,6 @@ function _defineProperty2(e, r, t) {
     writable: true
   }) : e[r] = t, e;
 }
-__name(_defineProperty2, "_defineProperty2");
 function ownKeys2(e, r) {
   var t = Object.keys(e);
   if (Object.getOwnPropertySymbols) {
@@ -10413,7 +10241,6 @@ function ownKeys2(e, r) {
   }
   return t;
 }
-__name(ownKeys2, "ownKeys2");
 function _objectSpread22(e) {
   for (var r = 1; r < arguments.length; r++) {
     var t = null != arguments[r] ? arguments[r] : {};
@@ -10425,11 +10252,9 @@ function _objectSpread22(e) {
   }
   return e;
 }
-__name(_objectSpread22, "_objectSpread22");
 function isStorageError(error) {
   return typeof error === "object" && error !== null && "__isStorageError" in error;
 }
-__name(isStorageError, "isStorageError");
 function setHeader(headers, name, value) {
   const result = _objectSpread22({}, headers);
   const nameLower = name.toLowerCase();
@@ -10437,13 +10262,11 @@ function setHeader(headers, name, value) {
   result[nameLower] = value;
   return result;
 }
-__name(setHeader, "setHeader");
 function normalizeHeaders(headers) {
   const result = {};
   for (const [key, value] of Object.entries(headers)) result[key.toLowerCase()] = value;
   return result;
 }
-__name(normalizeHeaders, "normalizeHeaders");
 async function _handleRequest(fetcher, method, url, options, parameters, body, namespace) {
   return new Promise((resolve, reject) => {
     fetcher(url, _getRequestParams(method, options, parameters, body)).then((result) => {
@@ -10458,80 +10281,40 @@ async function _handleRequest(fetcher, method, url, options, parameters, body, n
     }).then((data) => resolve(data)).catch((error) => handleError(error, reject, options, namespace));
   });
 }
-__name(_handleRequest, "_handleRequest");
 function createFetchApi(namespace = "storage") {
   return {
-    get: /* @__PURE__ */ __name2(async (fetcher, url, options, parameters) => {
+    get: /* @__PURE__ */ __name(async (fetcher, url, options, parameters) => {
       return _handleRequest(fetcher, "GET", url, options, parameters, void 0, namespace);
     }, "get"),
-    post: /* @__PURE__ */ __name2(async (fetcher, url, body, options, parameters) => {
+    post: /* @__PURE__ */ __name(async (fetcher, url, body, options, parameters) => {
       return _handleRequest(fetcher, "POST", url, options, parameters, body, namespace);
     }, "post"),
-    put: /* @__PURE__ */ __name2(async (fetcher, url, body, options, parameters) => {
+    put: /* @__PURE__ */ __name(async (fetcher, url, body, options, parameters) => {
       return _handleRequest(fetcher, "PUT", url, options, parameters, body, namespace);
     }, "put"),
-    head: /* @__PURE__ */ __name2(async (fetcher, url, options, parameters) => {
+    head: /* @__PURE__ */ __name(async (fetcher, url, options, parameters) => {
       return _handleRequest(fetcher, "HEAD", url, _objectSpread22(_objectSpread22({}, options), {}, { noResolveJson: true }), parameters, void 0, namespace);
     }, "head"),
-    remove: /* @__PURE__ */ __name2(async (fetcher, url, body, options, parameters) => {
+    remove: /* @__PURE__ */ __name(async (fetcher, url, body, options, parameters) => {
       return _handleRequest(fetcher, "DELETE", url, options, parameters, body, namespace);
     }, "remove")
   };
 }
-__name(createFetchApi, "createFetchApi");
-var StorageError;
-var StorageApiError;
-var StorageUnknownError;
-var resolveFetch2;
-var isPlainObject;
-var recursiveToCamel;
-var isValidBucketName;
-var _getErrorMessage;
-var handleError;
-var _getRequestParams;
-var defaultApi;
-var get;
-var post;
-var put;
-var head;
-var remove;
-var vectorsApi;
-var BaseApiClient;
-var _Symbol$toStringTag$1;
-var StreamDownloadBuilder;
-var _Symbol$toStringTag;
-var BlobDownloadBuilder;
-var DEFAULT_SEARCH_OPTIONS;
-var DEFAULT_FILE_OPTIONS;
-var StorageFileApi;
-var version2;
-var DEFAULT_HEADERS;
-var StorageBucketApi;
-var StorageAnalyticsClient;
-var VectorIndexApi;
-var VectorDataApi;
-var VectorBucketApi;
-var StorageVectorsClient;
-var VectorBucketScope;
-var VectorIndexScope;
-var StorageClient;
+var StorageError, StorageApiError, StorageUnknownError, resolveFetch2, isPlainObject, recursiveToCamel, isValidBucketName, _getErrorMessage, handleError, _getRequestParams, defaultApi, get, post, put, head, remove, vectorsApi, BaseApiClient, _Symbol$toStringTag$1, StreamDownloadBuilder, _Symbol$toStringTag, BlobDownloadBuilder, DEFAULT_SEARCH_OPTIONS, DEFAULT_FILE_OPTIONS, StorageFileApi, version2, DEFAULT_HEADERS, StorageBucketApi, StorageAnalyticsClient, VectorIndexApi, VectorDataApi, VectorBucketApi, StorageVectorsClient, VectorBucketScope, VectorIndexScope, StorageClient;
 var init_dist3 = __esm({
   "../node_modules/@supabase/storage-js/dist/index.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_dist2();
-    __name2(_typeof2, "_typeof");
-    __name2(toPrimitive2, "toPrimitive");
-    __name2(toPropertyKey2, "toPropertyKey");
-    __name2(_defineProperty2, "_defineProperty");
-    __name2(ownKeys2, "ownKeys");
-    __name2(_objectSpread22, "_objectSpread2");
+    __name(_typeof2, "_typeof");
+    __name(toPrimitive2, "toPrimitive");
+    __name(toPropertyKey2, "toPropertyKey");
+    __name(_defineProperty2, "_defineProperty");
+    __name(ownKeys2, "ownKeys");
+    __name(_objectSpread22, "_objectSpread2");
     StorageError = class extends Error {
       static {
         __name(this, "StorageError");
-      }
-      static {
-        __name2(this, "StorageError");
       }
       constructor(message, namespace = "storage", status, statusCode) {
         super(message);
@@ -10550,13 +10333,10 @@ var init_dist3 = __esm({
         };
       }
     };
-    __name2(isStorageError, "isStorageError");
+    __name(isStorageError, "isStorageError");
     StorageApiError = class extends StorageError {
       static {
         __name(this, "StorageApiError");
-      }
-      static {
-        __name2(this, "StorageApiError");
       }
       constructor(message, status, statusCode, namespace = "storage") {
         super(message, namespace, status, statusCode);
@@ -10572,27 +10352,24 @@ var init_dist3 = __esm({
       static {
         __name(this, "StorageUnknownError");
       }
-      static {
-        __name2(this, "StorageUnknownError");
-      }
       constructor(message, originalError, namespace = "storage") {
         super(message, namespace);
         this.name = namespace === "vectors" ? "StorageVectorsUnknownError" : "StorageUnknownError";
         this.originalError = originalError;
       }
     };
-    __name2(setHeader, "setHeader");
-    __name2(normalizeHeaders, "normalizeHeaders");
-    resolveFetch2 = /* @__PURE__ */ __name2((customFetch) => {
+    __name(setHeader, "setHeader");
+    __name(normalizeHeaders, "normalizeHeaders");
+    resolveFetch2 = /* @__PURE__ */ __name((customFetch) => {
       if (customFetch) return (...args) => customFetch(...args);
       return (...args) => fetch(...args);
     }, "resolveFetch");
-    isPlainObject = /* @__PURE__ */ __name2((value) => {
+    isPlainObject = /* @__PURE__ */ __name((value) => {
       if (typeof value !== "object" || value === null) return false;
       const prototype = Object.getPrototypeOf(value);
       return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in value) && !(Symbol.iterator in value);
     }, "isPlainObject");
-    recursiveToCamel = /* @__PURE__ */ __name2((item) => {
+    recursiveToCamel = /* @__PURE__ */ __name((item) => {
       if (Array.isArray(item)) return item.map((el) => recursiveToCamel(el));
       else if (typeof item === "function" || item !== Object(item)) return item;
       const result = {};
@@ -10602,14 +10379,14 @@ var init_dist3 = __esm({
       });
       return result;
     }, "recursiveToCamel");
-    isValidBucketName = /* @__PURE__ */ __name2((bucketName) => {
+    isValidBucketName = /* @__PURE__ */ __name((bucketName) => {
       if (!bucketName || typeof bucketName !== "string") return false;
       if (bucketName.length === 0 || bucketName.length > 100) return false;
       if (bucketName.trim() !== bucketName) return false;
       if (bucketName.includes("/") || bucketName.includes("\\")) return false;
       return /^[\w!.\*'() &$@=;:+,?-]+$/.test(bucketName);
     }, "isValidBucketName");
-    _getErrorMessage = /* @__PURE__ */ __name2((err) => {
+    _getErrorMessage = /* @__PURE__ */ __name((err) => {
       if (typeof err === "object" && err !== null) {
         const e = err;
         if (typeof e.msg === "string") return e.msg;
@@ -10623,7 +10400,7 @@ var init_dist3 = __esm({
       }
       return JSON.stringify(err);
     }, "_getErrorMessage");
-    handleError = /* @__PURE__ */ __name2(async (error, reject, options, namespace) => {
+    handleError = /* @__PURE__ */ __name(async (error, reject, options, namespace) => {
       if (error !== null && typeof error === "object" && "json" in error && typeof error.json === "function") {
         const responseError = error;
         let status = parseInt(String(responseError.status), 10);
@@ -10637,7 +10414,7 @@ var init_dist3 = __esm({
         });
       } else reject(new StorageUnknownError(_getErrorMessage(error), error, namespace));
     }, "handleError");
-    _getRequestParams = /* @__PURE__ */ __name2((method, options, parameters, body) => {
+    _getRequestParams = /* @__PURE__ */ __name((method, options, parameters, body) => {
       const params = {
         method,
         headers: (options === null || options === void 0 ? void 0 : options.headers) || {}
@@ -10654,17 +10431,14 @@ var init_dist3 = __esm({
       if (options === null || options === void 0 ? void 0 : options.duplex) params.duplex = options.duplex;
       return _objectSpread22(_objectSpread22({}, params), parameters);
     }, "_getRequestParams");
-    __name2(_handleRequest, "_handleRequest");
-    __name2(createFetchApi, "createFetchApi");
+    __name(_handleRequest, "_handleRequest");
+    __name(createFetchApi, "createFetchApi");
     defaultApi = createFetchApi("storage");
     ({ get, post, put, head, remove } = defaultApi);
     vectorsApi = createFetchApi("vectors");
     BaseApiClient = class {
       static {
         __name(this, "BaseApiClient");
-      }
-      static {
-        __name2(this, "BaseApiClient");
       }
       /**
       * Creates a new BaseApiClient instance
@@ -10749,9 +10523,6 @@ var init_dist3 = __esm({
       static {
         __name(this, "StreamDownloadBuilder");
       }
-      static {
-        __name2(this, "StreamDownloadBuilder");
-      }
       constructor(downloadFn, shouldThrowOnError) {
         this.downloadFn = downloadFn;
         this.shouldThrowOnError = shouldThrowOnError;
@@ -10792,9 +10563,6 @@ var init_dist3 = __esm({
     BlobDownloadBuilder = class {
       static {
         __name(this, "BlobDownloadBuilder");
-      }
-      static {
-        __name2(this, "BlobDownloadBuilder");
       }
       constructor(downloadFn, shouldThrowOnError) {
         this.downloadFn = downloadFn;
@@ -10851,9 +10619,6 @@ var init_dist3 = __esm({
     StorageFileApi = class extends BaseApiClient {
       static {
         __name(this, "StorageFileApi");
-      }
-      static {
-        __name2(this, "StorageFileApi");
       }
       constructor(url, headers = {}, bucketId, fetch$1) {
         super(url, headers, fetch$1, "storage");
@@ -11449,7 +11214,7 @@ var init_dist3 = __esm({
         if ((options === null || options === void 0 ? void 0 : options.cacheNonce) != null) query.set("cacheNonce", String(options.cacheNonce));
         const queryString = query.toString();
         const _path = this._getFinalPath(path);
-        const downloadFn = /* @__PURE__ */ __name2(() => get(this.fetch, `${this.url}/${renderPath}/${_path}${queryString ? `?${queryString}` : ""}`, {
+        const downloadFn = /* @__PURE__ */ __name(() => get(this.fetch, `${this.url}/${renderPath}/${_path}${queryString ? `?${queryString}` : ""}`, {
           headers: this.headers,
           noResolveJson: true
         }, parameters), "downloadFn");
@@ -11813,9 +11578,6 @@ var init_dist3 = __esm({
       static {
         __name(this, "StorageBucketApi");
       }
-      static {
-        __name2(this, "StorageBucketApi");
-      }
       constructor(url, headers = {}, fetch$1, opts) {
         const baseUrl = new URL(url);
         if (opts === null || opts === void 0 ? void 0 : opts.useNewHostname) {
@@ -12118,9 +11880,6 @@ var init_dist3 = __esm({
     StorageAnalyticsClient = class extends BaseApiClient {
       static {
         __name(this, "StorageAnalyticsClient");
-      }
-      static {
-        __name2(this, "StorageAnalyticsClient");
       }
       /**
       * @alpha
@@ -12438,7 +12197,7 @@ var init_dist3 = __esm({
           catalogName: bucketName,
           auth: {
             type: "custom",
-            getHeaders: /* @__PURE__ */ __name2(async () => _this4.headers, "getHeaders")
+            getHeaders: /* @__PURE__ */ __name(async () => _this4.headers, "getHeaders")
           },
           fetch: this.fetch
         });
@@ -12466,9 +12225,6 @@ var init_dist3 = __esm({
     VectorIndexApi = class extends BaseApiClient {
       static {
         __name(this, "VectorIndexApi");
-      }
-      static {
-        __name2(this, "VectorIndexApi");
       }
       /** Creates a new VectorIndexApi instance */
       constructor(url, headers = {}, fetch$1) {
@@ -12514,9 +12270,6 @@ var init_dist3 = __esm({
     VectorDataApi = class extends BaseApiClient {
       static {
         __name(this, "VectorDataApi");
-      }
-      static {
-        __name2(this, "VectorDataApi");
       }
       /** Creates a new VectorDataApi instance */
       constructor(url, headers = {}, fetch$1) {
@@ -12572,9 +12325,6 @@ var init_dist3 = __esm({
       static {
         __name(this, "VectorBucketApi");
       }
-      static {
-        __name2(this, "VectorBucketApi");
-      }
       /** Creates a new VectorBucketApi instance */
       constructor(url, headers = {}, fetch$1) {
         const finalUrl = url.replace(/\/$/, "");
@@ -12613,9 +12363,6 @@ var init_dist3 = __esm({
     StorageVectorsClient = class extends VectorBucketApi {
       static {
         __name(this, "StorageVectorsClient");
-      }
-      static {
-        __name2(this, "StorageVectorsClient");
       }
       /**
       * @alpha
@@ -12693,7 +12440,7 @@ var init_dist3 = __esm({
       * ```
       */
       async createBucket(vectorBucketName) {
-        var _superprop_getCreateBucket = /* @__PURE__ */ __name2(() => super.createBucket, "_superprop_getCreateBucket"), _this = this;
+        var _superprop_getCreateBucket = /* @__PURE__ */ __name(() => super.createBucket, "_superprop_getCreateBucket"), _this = this;
         return _superprop_getCreateBucket().call(_this, vectorBucketName);
       }
       /**
@@ -12720,7 +12467,7 @@ var init_dist3 = __esm({
       * ```
       */
       async getBucket(vectorBucketName) {
-        var _superprop_getGetBucket = /* @__PURE__ */ __name2(() => super.getBucket, "_superprop_getGetBucket"), _this2 = this;
+        var _superprop_getGetBucket = /* @__PURE__ */ __name(() => super.getBucket, "_superprop_getGetBucket"), _this2 = this;
         return _superprop_getGetBucket().call(_this2, vectorBucketName);
       }
       /**
@@ -12749,7 +12496,7 @@ var init_dist3 = __esm({
       * ```
       */
       async listBuckets(options = {}) {
-        var _superprop_getListBuckets = /* @__PURE__ */ __name2(() => super.listBuckets, "_superprop_getListBuckets"), _this3 = this;
+        var _superprop_getListBuckets = /* @__PURE__ */ __name(() => super.listBuckets, "_superprop_getListBuckets"), _this3 = this;
         return _superprop_getListBuckets().call(_this3, options);
       }
       /**
@@ -12775,16 +12522,13 @@ var init_dist3 = __esm({
       * ```
       */
       async deleteBucket(vectorBucketName) {
-        var _superprop_getDeleteBucket = /* @__PURE__ */ __name2(() => super.deleteBucket, "_superprop_getDeleteBucket"), _this4 = this;
+        var _superprop_getDeleteBucket = /* @__PURE__ */ __name(() => super.deleteBucket, "_superprop_getDeleteBucket"), _this4 = this;
         return _superprop_getDeleteBucket().call(_this4, vectorBucketName);
       }
     };
     VectorBucketScope = class extends VectorIndexApi {
       static {
         __name(this, "VectorBucketScope");
-      }
-      static {
-        __name2(this, "VectorBucketScope");
       }
       /**
       * @alpha
@@ -12833,7 +12577,7 @@ var init_dist3 = __esm({
       * ```
       */
       async createIndex(options) {
-        var _superprop_getCreateIndex = /* @__PURE__ */ __name2(() => super.createIndex, "_superprop_getCreateIndex"), _this5 = this;
+        var _superprop_getCreateIndex = /* @__PURE__ */ __name(() => super.createIndex, "_superprop_getCreateIndex"), _this5 = this;
         return _superprop_getCreateIndex().call(_this5, _objectSpread22(_objectSpread22({}, options), {}, { vectorBucketName: _this5.vectorBucketName }));
       }
       /**
@@ -12857,7 +12601,7 @@ var init_dist3 = __esm({
       * ```
       */
       async listIndexes(options = {}) {
-        var _superprop_getListIndexes = /* @__PURE__ */ __name2(() => super.listIndexes, "_superprop_getListIndexes"), _this6 = this;
+        var _superprop_getListIndexes = /* @__PURE__ */ __name(() => super.listIndexes, "_superprop_getListIndexes"), _this6 = this;
         return _superprop_getListIndexes().call(_this6, _objectSpread22(_objectSpread22({}, options), {}, { vectorBucketName: _this6.vectorBucketName }));
       }
       /**
@@ -12882,7 +12626,7 @@ var init_dist3 = __esm({
       * ```
       */
       async getIndex(indexName) {
-        var _superprop_getGetIndex = /* @__PURE__ */ __name2(() => super.getIndex, "_superprop_getGetIndex"), _this7 = this;
+        var _superprop_getGetIndex = /* @__PURE__ */ __name(() => super.getIndex, "_superprop_getGetIndex"), _this7 = this;
         return _superprop_getGetIndex().call(_this7, _this7.vectorBucketName, indexName);
       }
       /**
@@ -12906,7 +12650,7 @@ var init_dist3 = __esm({
       * ```
       */
       async deleteIndex(indexName) {
-        var _superprop_getDeleteIndex = /* @__PURE__ */ __name2(() => super.deleteIndex, "_superprop_getDeleteIndex"), _this8 = this;
+        var _superprop_getDeleteIndex = /* @__PURE__ */ __name(() => super.deleteIndex, "_superprop_getDeleteIndex"), _this8 = this;
         return _superprop_getDeleteIndex().call(_this8, _this8.vectorBucketName, indexName);
       }
       /**
@@ -12948,9 +12692,6 @@ var init_dist3 = __esm({
     VectorIndexScope = class extends VectorDataApi {
       static {
         __name(this, "VectorIndexScope");
-      }
-      static {
-        __name2(this, "VectorIndexScope");
       }
       /**
       *
@@ -13001,7 +12742,7 @@ var init_dist3 = __esm({
       * ```
       */
       async putVectors(options) {
-        var _superprop_getPutVectors = /* @__PURE__ */ __name2(() => super.putVectors, "_superprop_getPutVectors"), _this9 = this;
+        var _superprop_getPutVectors = /* @__PURE__ */ __name(() => super.putVectors, "_superprop_getPutVectors"), _this9 = this;
         return _superprop_getPutVectors().call(_this9, _objectSpread22(_objectSpread22({}, options), {}, {
           vectorBucketName: _this9.vectorBucketName,
           indexName: _this9.indexName
@@ -13031,7 +12772,7 @@ var init_dist3 = __esm({
       * ```
       */
       async getVectors(options) {
-        var _superprop_getGetVectors = /* @__PURE__ */ __name2(() => super.getVectors, "_superprop_getGetVectors"), _this10 = this;
+        var _superprop_getGetVectors = /* @__PURE__ */ __name(() => super.getVectors, "_superprop_getGetVectors"), _this10 = this;
         return _superprop_getGetVectors().call(_this10, _objectSpread22(_objectSpread22({}, options), {}, {
           vectorBucketName: _this10.vectorBucketName,
           indexName: _this10.indexName
@@ -13061,7 +12802,7 @@ var init_dist3 = __esm({
       * ```
       */
       async listVectors(options = {}) {
-        var _superprop_getListVectors = /* @__PURE__ */ __name2(() => super.listVectors, "_superprop_getListVectors"), _this11 = this;
+        var _superprop_getListVectors = /* @__PURE__ */ __name(() => super.listVectors, "_superprop_getListVectors"), _this11 = this;
         return _superprop_getListVectors().call(_this11, _objectSpread22(_objectSpread22({}, options), {}, {
           vectorBucketName: _this11.vectorBucketName,
           indexName: _this11.indexName
@@ -13094,7 +12835,7 @@ var init_dist3 = __esm({
       * ```
       */
       async queryVectors(options) {
-        var _superprop_getQueryVectors = /* @__PURE__ */ __name2(() => super.queryVectors, "_superprop_getQueryVectors"), _this12 = this;
+        var _superprop_getQueryVectors = /* @__PURE__ */ __name(() => super.queryVectors, "_superprop_getQueryVectors"), _this12 = this;
         return _superprop_getQueryVectors().call(_this12, _objectSpread22(_objectSpread22({}, options), {}, {
           vectorBucketName: _this12.vectorBucketName,
           indexName: _this12.indexName
@@ -13123,7 +12864,7 @@ var init_dist3 = __esm({
       * ```
       */
       async deleteVectors(options) {
-        var _superprop_getDeleteVectors = /* @__PURE__ */ __name2(() => super.deleteVectors, "_superprop_getDeleteVectors"), _this13 = this;
+        var _superprop_getDeleteVectors = /* @__PURE__ */ __name(() => super.deleteVectors, "_superprop_getDeleteVectors"), _this13 = this;
         return _superprop_getDeleteVectors().call(_this13, _objectSpread22(_objectSpread22({}, options), {}, {
           vectorBucketName: _this13.vectorBucketName,
           indexName: _this13.indexName
@@ -13133,9 +12874,6 @@ var init_dist3 = __esm({
     StorageClient = class extends StorageBucketApi {
       static {
         __name(this, "StorageClient");
-      }
-      static {
-        __name2(this, "StorageClient");
       }
       /**
       * Creates a client for Storage buckets, files, analytics, and vectors.
@@ -13218,28 +12956,22 @@ var init_dist3 = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/version.js
 var version3;
 var init_version2 = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/version.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     version3 = "2.108.2";
   }
 });
-var AUTO_REFRESH_TICK_DURATION_MS;
-var AUTO_REFRESH_TICK_THRESHOLD;
-var EXPIRY_MARGIN_MS;
-var REFRESH_FAILURE_COOLDOWN_MS;
-var GOTRUE_URL;
-var STORAGE_KEY;
-var DEFAULT_HEADERS2;
-var API_VERSION_HEADER_NAME;
-var API_VERSIONS;
-var BASE64URL_REGEX;
-var JWKS_TTL;
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/constants.js
+var AUTO_REFRESH_TICK_DURATION_MS, AUTO_REFRESH_TICK_THRESHOLD, EXPIRY_MARGIN_MS, REFRESH_FAILURE_COOLDOWN_MS, GOTRUE_URL, STORAGE_KEY, DEFAULT_HEADERS2, API_VERSION_HEADER_NAME, API_VERSIONS, BASE64URL_REGEX, JWKS_TTL;
 var init_constants2 = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/constants.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_version2();
     AUTO_REFRESH_TICK_DURATION_MS = 30 * 1e3;
@@ -13260,54 +12992,34 @@ var init_constants2 = __esm({
     JWKS_TTL = 10 * 60 * 1e3;
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/errors.js
 function isAuthError(error) {
   return typeof error === "object" && error !== null && "__isAuthError" in error;
 }
-__name(isAuthError, "isAuthError");
 function isAuthApiError(error) {
   return isAuthError(error) && error.name === "AuthApiError";
 }
-__name(isAuthApiError, "isAuthApiError");
 function isAuthSessionMissingError(error) {
   return isAuthError(error) && error.name === "AuthSessionMissingError";
 }
-__name(isAuthSessionMissingError, "isAuthSessionMissingError");
 function isAuthImplicitGrantRedirectError(error) {
   return isAuthError(error) && error.name === "AuthImplicitGrantRedirectError";
 }
-__name(isAuthImplicitGrantRedirectError, "isAuthImplicitGrantRedirectError");
 function isAuthRetryableFetchError(error) {
   return isAuthError(error) && error.name === "AuthRetryableFetchError";
 }
-__name(isAuthRetryableFetchError, "isAuthRetryableFetchError");
 function isAuthRefreshDiscardedError(error) {
   return isAuthError(error) && error.name === "AuthRefreshDiscardedError";
 }
-__name(isAuthRefreshDiscardedError, "isAuthRefreshDiscardedError");
-var AuthError;
-var AuthApiError;
-var AuthUnknownError;
-var CustomAuthError;
-var AuthSessionMissingError;
-var AuthInvalidTokenResponseError;
-var AuthInvalidCredentialsError;
-var AuthImplicitGrantRedirectError;
-var AuthPKCEGrantCodeExchangeError;
-var AuthPKCECodeVerifierMissingError;
-var AuthRetryableFetchError;
-var AuthRefreshDiscardedError;
-var AuthWeakPasswordError;
-var AuthInvalidJwtError;
+var AuthError, AuthApiError, AuthUnknownError, CustomAuthError, AuthSessionMissingError, AuthInvalidTokenResponseError, AuthInvalidCredentialsError, AuthImplicitGrantRedirectError, AuthPKCEGrantCodeExchangeError, AuthPKCECodeVerifierMissingError, AuthRetryableFetchError, AuthRefreshDiscardedError, AuthWeakPasswordError, AuthInvalidJwtError;
 var init_errors = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/errors.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     AuthError = class extends Error {
       static {
         __name(this, "AuthError");
-      }
-      static {
-        __name2(this, "AuthError");
       }
       constructor(message, status, code) {
         super(message);
@@ -13325,13 +13037,10 @@ var init_errors = __esm({
         };
       }
     };
-    __name2(isAuthError, "isAuthError");
+    __name(isAuthError, "isAuthError");
     AuthApiError = class extends AuthError {
       static {
         __name(this, "AuthApiError");
-      }
-      static {
-        __name2(this, "AuthApiError");
       }
       constructor(message, status, code) {
         super(message, status, code);
@@ -13340,13 +13049,10 @@ var init_errors = __esm({
         this.code = code;
       }
     };
-    __name2(isAuthApiError, "isAuthApiError");
+    __name(isAuthApiError, "isAuthApiError");
     AuthUnknownError = class extends AuthError {
       static {
         __name(this, "AuthUnknownError");
-      }
-      static {
-        __name2(this, "AuthUnknownError");
       }
       constructor(message, originalError) {
         super(message);
@@ -13358,9 +13064,6 @@ var init_errors = __esm({
       static {
         __name(this, "CustomAuthError");
       }
-      static {
-        __name2(this, "CustomAuthError");
-      }
       constructor(message, name, status, code) {
         super(message, status, code);
         this.name = name;
@@ -13371,20 +13074,14 @@ var init_errors = __esm({
       static {
         __name(this, "AuthSessionMissingError");
       }
-      static {
-        __name2(this, "AuthSessionMissingError");
-      }
       constructor() {
         super("Auth session missing!", "AuthSessionMissingError", 400, void 0);
       }
     };
-    __name2(isAuthSessionMissingError, "isAuthSessionMissingError");
+    __name(isAuthSessionMissingError, "isAuthSessionMissingError");
     AuthInvalidTokenResponseError = class extends CustomAuthError {
       static {
         __name(this, "AuthInvalidTokenResponseError");
-      }
-      static {
-        __name2(this, "AuthInvalidTokenResponseError");
       }
       constructor() {
         super("Auth session or user missing", "AuthInvalidTokenResponseError", 500, void 0);
@@ -13394,9 +13091,6 @@ var init_errors = __esm({
       static {
         __name(this, "AuthInvalidCredentialsError");
       }
-      static {
-        __name2(this, "AuthInvalidCredentialsError");
-      }
       constructor(message) {
         super(message, "AuthInvalidCredentialsError", 400, void 0);
       }
@@ -13404,9 +13098,6 @@ var init_errors = __esm({
     AuthImplicitGrantRedirectError = class extends CustomAuthError {
       static {
         __name(this, "AuthImplicitGrantRedirectError");
-      }
-      static {
-        __name2(this, "AuthImplicitGrantRedirectError");
       }
       constructor(message, details = null) {
         super(message, "AuthImplicitGrantRedirectError", 500, void 0);
@@ -13417,13 +13108,10 @@ var init_errors = __esm({
         return Object.assign(Object.assign({}, super.toJSON()), { details: this.details });
       }
     };
-    __name2(isAuthImplicitGrantRedirectError, "isAuthImplicitGrantRedirectError");
+    __name(isAuthImplicitGrantRedirectError, "isAuthImplicitGrantRedirectError");
     AuthPKCEGrantCodeExchangeError = class extends CustomAuthError {
       static {
         __name(this, "AuthPKCEGrantCodeExchangeError");
-      }
-      static {
-        __name2(this, "AuthPKCEGrantCodeExchangeError");
       }
       constructor(message, details = null) {
         super(message, "AuthPKCEGrantCodeExchangeError", 500, void 0);
@@ -13438,9 +13126,6 @@ var init_errors = __esm({
       static {
         __name(this, "AuthPKCECodeVerifierMissingError");
       }
-      static {
-        __name2(this, "AuthPKCECodeVerifierMissingError");
-      }
       constructor() {
         super("PKCE code verifier not found in storage. This can happen if the auth flow was initiated in a different browser or device, or if the storage was cleared. For SSR frameworks (Next.js, SvelteKit, etc.), use @supabase/ssr on both the server and client to store the code verifier in cookies.", "AuthPKCECodeVerifierMissingError", 400, "pkce_code_verifier_not_found");
       }
@@ -13449,32 +13134,23 @@ var init_errors = __esm({
       static {
         __name(this, "AuthRetryableFetchError");
       }
-      static {
-        __name2(this, "AuthRetryableFetchError");
-      }
       constructor(message, status) {
         super(message, "AuthRetryableFetchError", status, void 0);
       }
     };
-    __name2(isAuthRetryableFetchError, "isAuthRetryableFetchError");
+    __name(isAuthRetryableFetchError, "isAuthRetryableFetchError");
     AuthRefreshDiscardedError = class extends CustomAuthError {
       static {
         __name(this, "AuthRefreshDiscardedError");
-      }
-      static {
-        __name2(this, "AuthRefreshDiscardedError");
       }
       constructor(message = "Refresh result discarded: session state changed mid-flight (e.g., concurrent signOut)") {
         super(message, "AuthRefreshDiscardedError", 409, void 0);
       }
     };
-    __name2(isAuthRefreshDiscardedError, "isAuthRefreshDiscardedError");
+    __name(isAuthRefreshDiscardedError, "isAuthRefreshDiscardedError");
     AuthWeakPasswordError = class extends CustomAuthError {
       static {
         __name(this, "AuthWeakPasswordError");
-      }
-      static {
-        __name2(this, "AuthWeakPasswordError");
       }
       constructor(message, status, reasons) {
         super(message, "AuthWeakPasswordError", status, "weak_password");
@@ -13488,15 +13164,14 @@ var init_errors = __esm({
       static {
         __name(this, "AuthInvalidJwtError");
       }
-      static {
-        __name2(this, "AuthInvalidJwtError");
-      }
       constructor(message) {
         super(message, "AuthInvalidJwtError", 400, "invalid_jwt");
       }
     };
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/base64url.js
 function byteToBase64URL(byte, state, emit) {
   if (byte !== null) {
     state.queue = state.queue << 8 | byte;
@@ -13516,7 +13191,6 @@ function byteToBase64URL(byte, state, emit) {
     }
   }
 }
-__name(byteToBase64URL, "byteToBase64URL");
 function byteFromBase64URL(charCode, state, emit) {
   const bits = FROM_BASE64URL[charCode];
   if (bits > -1) {
@@ -13532,10 +13206,9 @@ function byteFromBase64URL(charCode, state, emit) {
     throw new Error(`Invalid Base64-URL character "${String.fromCharCode(charCode)}"`);
   }
 }
-__name(byteFromBase64URL, "byteFromBase64URL");
 function stringFromBase64URL(str) {
   const conv = [];
-  const utf8Emit = /* @__PURE__ */ __name2((codepoint) => {
+  const utf8Emit = /* @__PURE__ */ __name((codepoint) => {
     conv.push(String.fromCodePoint(codepoint));
   }, "utf8Emit");
   const utf8State = {
@@ -13543,7 +13216,7 @@ function stringFromBase64URL(str) {
     codepoint: 0
   };
   const b64State = { queue: 0, queuedBits: 0 };
-  const byteEmit = /* @__PURE__ */ __name2((byte) => {
+  const byteEmit = /* @__PURE__ */ __name((byte) => {
     stringFromUTF8(byte, utf8State, utf8Emit);
   }, "byteEmit");
   for (let i = 0; i < str.length; i += 1) {
@@ -13551,7 +13224,6 @@ function stringFromBase64URL(str) {
   }
   return conv.join("");
 }
-__name(stringFromBase64URL, "stringFromBase64URL");
 function codepointToUTF8(codepoint, emit) {
   if (codepoint <= 127) {
     emit(codepoint);
@@ -13574,7 +13246,6 @@ function codepointToUTF8(codepoint, emit) {
   }
   throw new Error(`Unrecognized Unicode codepoint: ${codepoint.toString(16)}`);
 }
-__name(codepointToUTF8, "codepointToUTF8");
 function stringToUTF8(str, emit) {
   for (let i = 0; i < str.length; i += 1) {
     let codepoint = str.charCodeAt(i);
@@ -13587,7 +13258,6 @@ function stringToUTF8(str, emit) {
     codepointToUTF8(codepoint, emit);
   }
 }
-__name(stringToUTF8, "stringToUTF8");
 function stringFromUTF8(byte, state, emit) {
   if (state.utf8seq === 0) {
     if (byte <= 127) {
@@ -13621,11 +13291,10 @@ function stringFromUTF8(byte, state, emit) {
     }
   }
 }
-__name(stringFromUTF8, "stringFromUTF8");
 function base64UrlToUint8Array(str) {
   const result = [];
   const state = { queue: 0, queuedBits: 0 };
-  const onByte = /* @__PURE__ */ __name2((byte) => {
+  const onByte = /* @__PURE__ */ __name((byte) => {
     result.push(byte);
   }, "onByte");
   for (let i = 0; i < str.length; i += 1) {
@@ -13633,30 +13302,25 @@ function base64UrlToUint8Array(str) {
   }
   return new Uint8Array(result);
 }
-__name(base64UrlToUint8Array, "base64UrlToUint8Array");
 function stringToUint8Array(str) {
   const result = [];
   stringToUTF8(str, (byte) => result.push(byte));
   return new Uint8Array(result);
 }
-__name(stringToUint8Array, "stringToUint8Array");
 function bytesToBase64URL(bytes) {
   const result = [];
   const state = { queue: 0, queuedBits: 0 };
-  const onChar = /* @__PURE__ */ __name2((char) => {
+  const onChar = /* @__PURE__ */ __name((char) => {
     result.push(char);
   }, "onChar");
   bytes.forEach((byte) => byteToBase64URL(byte, state, onChar));
   byteToBase64URL(null, state, onChar);
   return result.join("");
 }
-__name(bytesToBase64URL, "bytesToBase64URL");
-var TO_BASE64URL;
-var IGNORE_BASE64URL;
-var FROM_BASE64URL;
+var TO_BASE64URL, IGNORE_BASE64URL, FROM_BASE64URL;
 var init_base64url = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/base64url.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     TO_BASE64URL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".split("");
     IGNORE_BASE64URL = " 	\n\r=".split("");
@@ -13673,26 +13337,26 @@ var init_base64url = __esm({
       }
       return charMap;
     })();
-    __name2(byteToBase64URL, "byteToBase64URL");
-    __name2(byteFromBase64URL, "byteFromBase64URL");
-    __name2(stringFromBase64URL, "stringFromBase64URL");
-    __name2(codepointToUTF8, "codepointToUTF8");
-    __name2(stringToUTF8, "stringToUTF8");
-    __name2(stringFromUTF8, "stringFromUTF8");
-    __name2(base64UrlToUint8Array, "base64UrlToUint8Array");
-    __name2(stringToUint8Array, "stringToUint8Array");
-    __name2(bytesToBase64URL, "bytesToBase64URL");
+    __name(byteToBase64URL, "byteToBase64URL");
+    __name(byteFromBase64URL, "byteFromBase64URL");
+    __name(stringFromBase64URL, "stringFromBase64URL");
+    __name(codepointToUTF8, "codepointToUTF8");
+    __name(stringToUTF8, "stringToUTF8");
+    __name(stringFromUTF8, "stringFromUTF8");
+    __name(base64UrlToUint8Array, "base64UrlToUint8Array");
+    __name(stringToUint8Array, "stringToUint8Array");
+    __name(bytesToBase64URL, "bytesToBase64URL");
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/helpers.js
 function expiresAt(expiresIn) {
   const timeNow = Math.round(Date.now() / 1e3);
   return timeNow + expiresIn;
 }
-__name(expiresAt, "expiresAt");
 function generateCallbackId() {
   return /* @__PURE__ */ Symbol("auth-callback");
 }
-__name(generateCallbackId, "generateCallbackId");
 function parseParametersFromURL(href) {
   const result = {};
   const url = new URL(href);
@@ -13710,7 +13374,6 @@ function parseParametersFromURL(href) {
   });
   return result;
 }
-__name(parseParametersFromURL, "parseParametersFromURL");
 function decodeJWT(token) {
   const parts = token.split(".");
   if (parts.length !== 3) {
@@ -13733,13 +13396,11 @@ function decodeJWT(token) {
   };
   return data;
 }
-__name(decodeJWT, "decodeJWT");
 async function sleep2(time) {
   return await new Promise((accept) => {
     setTimeout(() => accept(null), time);
   });
 }
-__name(sleep2, "sleep2");
 function retryable(fn, isRetryable) {
   const promise = new Promise((accept, reject) => {
     ;
@@ -13762,11 +13423,9 @@ function retryable(fn, isRetryable) {
   });
   return promise;
 }
-__name(retryable, "retryable");
 function dec2hex(dec) {
   return ("0" + dec.toString(16)).substr(-2);
 }
-__name(dec2hex, "dec2hex");
 function generatePKCEVerifier() {
   const verifierLength = 56;
   const array = new Uint32Array(verifierLength);
@@ -13782,7 +13441,6 @@ function generatePKCEVerifier() {
   crypto.getRandomValues(array);
   return Array.from(array, dec2hex).join("");
 }
-__name(generatePKCEVerifier, "generatePKCEVerifier");
 async function sha256(randomString) {
   const encoder = new TextEncoder();
   const encodedData = encoder.encode(randomString);
@@ -13790,7 +13448,6 @@ async function sha256(randomString) {
   const bytes = new Uint8Array(hash);
   return Array.from(bytes).map((c) => String.fromCharCode(c)).join("");
 }
-__name(sha256, "sha256");
 async function generatePKCEChallenge(verifier) {
   const hasCryptoSupport = typeof crypto !== "undefined" && typeof crypto.subtle !== "undefined" && typeof TextEncoder !== "undefined";
   if (!hasCryptoSupport) {
@@ -13800,7 +13457,6 @@ async function generatePKCEChallenge(verifier) {
   const hashed = await sha256(verifier);
   return btoa(hashed).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
-__name(generatePKCEChallenge, "generatePKCEChallenge");
 async function getCodeChallengeAndMethod(storage, storageKey, isPasswordRecovery = false) {
   const codeVerifier = generatePKCEVerifier();
   let storedCodeVerifier = codeVerifier;
@@ -13812,7 +13468,6 @@ async function getCodeChallengeAndMethod(storage, storageKey, isPasswordRecovery
   const codeChallengeMethod = codeVerifier === codeChallenge ? "plain" : "s256";
   return [codeChallenge, codeChallengeMethod];
 }
-__name(getCodeChallengeAndMethod, "getCodeChallengeAndMethod");
 function parseResponseAPIVersion(response) {
   const apiVersion = response.headers.get(API_VERSION_HEADER_NAME);
   if (!apiVersion) {
@@ -13828,7 +13483,6 @@ function parseResponseAPIVersion(response) {
     return null;
   }
 }
-__name(parseResponseAPIVersion, "parseResponseAPIVersion");
 function validateExp(exp) {
   if (!exp) {
     throw new Error("Missing exp claim");
@@ -13838,7 +13492,6 @@ function validateExp(exp) {
     throw new Error("JWT has expired");
   }
 }
-__name(validateExp, "validateExp");
 function getAlgorithm(alg) {
   switch (alg) {
     case "RS256":
@@ -13856,23 +13509,20 @@ function getAlgorithm(alg) {
       throw new Error("Invalid alg claim");
   }
 }
-__name(getAlgorithm, "getAlgorithm");
 function validateUUID(str) {
   if (!UUID_REGEX.test(str)) {
     throw new Error("@supabase/auth-js: Expected parameter to be UUID but is not");
   }
 }
-__name(validateUUID, "validateUUID");
 function assertPasskeyExperimentalEnabled(experimental) {
   if (!experimental.passkey) {
     throw new Error("@supabase/auth-js: the passkey API is experimental and disabled by default. Enable it by passing `auth: { experimental: { passkey: true } }` to createClient (or to the GoTrueClient constructor).");
   }
 }
-__name(assertPasskeyExperimentalEnabled, "assertPasskeyExperimentalEnabled");
 function userNotAvailableProxy() {
   const proxyTarget = {};
   return new Proxy(proxyTarget, {
-    get: /* @__PURE__ */ __name2((target, prop) => {
+    get: /* @__PURE__ */ __name((target, prop) => {
       if (prop === "__isUserNotAvailableProxy") {
         return true;
       }
@@ -13884,18 +13534,17 @@ function userNotAvailableProxy() {
       }
       throw new Error(`@supabase/auth-js: client was created with userStorage option and there was no user stored in the user storage. Accessing the "${prop}" property of the session object is not supported. Please use getUser() instead.`);
     }, "get"),
-    set: /* @__PURE__ */ __name2((_target, prop) => {
+    set: /* @__PURE__ */ __name((_target, prop) => {
       throw new Error(`@supabase/auth-js: client was created with userStorage option and there was no user stored in the user storage. Setting the "${prop}" property of the session object is not supported. Please use getUser() to fetch a user object you can manipulate.`);
     }, "set"),
-    deleteProperty: /* @__PURE__ */ __name2((_target, prop) => {
+    deleteProperty: /* @__PURE__ */ __name((_target, prop) => {
       throw new Error(`@supabase/auth-js: client was created with userStorage option and there was no user stored in the user storage. Deleting the "${prop}" property of the session object is not supported. Please use getUser() to fetch a user object you can manipulate.`);
     }, "deleteProperty")
   });
 }
-__name(userNotAvailableProxy, "userNotAvailableProxy");
 function insecureUserWarningProxy(user, suppressWarningRef) {
   return new Proxy(user, {
-    get: /* @__PURE__ */ __name2((target, prop, receiver) => {
+    get: /* @__PURE__ */ __name((target, prop, receiver) => {
       if (prop === "__isInsecureUserWarningProxy") {
         return true;
       }
@@ -13913,37 +13562,25 @@ function insecureUserWarningProxy(user, suppressWarningRef) {
     }, "get")
   });
 }
-__name(insecureUserWarningProxy, "insecureUserWarningProxy");
 function deepClone(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
-__name(deepClone, "deepClone");
-var isBrowser;
-var localStorageWriteTests;
-var supportsLocalStorage;
-var resolveFetch3;
-var looksLikeFetchResponse;
-var setItemAsync;
-var getItemAsync;
-var removeItemAsync;
-var Deferred;
-var API_VERSION_REGEX;
-var UUID_REGEX;
+var isBrowser, localStorageWriteTests, supportsLocalStorage, resolveFetch3, looksLikeFetchResponse, setItemAsync, getItemAsync, removeItemAsync, Deferred, API_VERSION_REGEX, UUID_REGEX;
 var init_helpers = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/helpers.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_constants2();
     init_errors();
     init_base64url();
-    __name2(expiresAt, "expiresAt");
-    __name2(generateCallbackId, "generateCallbackId");
-    isBrowser = /* @__PURE__ */ __name2(() => typeof window !== "undefined" && typeof document !== "undefined", "isBrowser");
+    __name(expiresAt, "expiresAt");
+    __name(generateCallbackId, "generateCallbackId");
+    isBrowser = /* @__PURE__ */ __name(() => typeof window !== "undefined" && typeof document !== "undefined", "isBrowser");
     localStorageWriteTests = {
       tested: false,
       writable: false
     };
-    supportsLocalStorage = /* @__PURE__ */ __name2(() => {
+    supportsLocalStorage = /* @__PURE__ */ __name(() => {
       if (!isBrowser()) {
         return false;
       }
@@ -13969,20 +13606,20 @@ var init_helpers = __esm({
       }
       return localStorageWriteTests.writable;
     }, "supportsLocalStorage");
-    __name2(parseParametersFromURL, "parseParametersFromURL");
-    resolveFetch3 = /* @__PURE__ */ __name2((customFetch) => {
+    __name(parseParametersFromURL, "parseParametersFromURL");
+    resolveFetch3 = /* @__PURE__ */ __name((customFetch) => {
       if (customFetch) {
         return (...args) => customFetch(...args);
       }
       return (...args) => fetch(...args);
     }, "resolveFetch");
-    looksLikeFetchResponse = /* @__PURE__ */ __name2((maybeResponse) => {
+    looksLikeFetchResponse = /* @__PURE__ */ __name((maybeResponse) => {
       return typeof maybeResponse === "object" && maybeResponse !== null && "status" in maybeResponse && "ok" in maybeResponse && "json" in maybeResponse && typeof maybeResponse.json === "function";
     }, "looksLikeFetchResponse");
-    setItemAsync = /* @__PURE__ */ __name2(async (storage, key, data) => {
+    setItemAsync = /* @__PURE__ */ __name(async (storage, key, data) => {
       await storage.setItem(key, JSON.stringify(data));
     }, "setItemAsync");
-    getItemAsync = /* @__PURE__ */ __name2(async (storage, key) => {
+    getItemAsync = /* @__PURE__ */ __name(async (storage, key) => {
       const value = await storage.getItem(key);
       if (!value) {
         return null;
@@ -13993,15 +13630,12 @@ var init_helpers = __esm({
         return null;
       }
     }, "getItemAsync");
-    removeItemAsync = /* @__PURE__ */ __name2(async (storage, key) => {
+    removeItemAsync = /* @__PURE__ */ __name(async (storage, key) => {
       await storage.removeItem(key);
     }, "removeItemAsync");
     Deferred = class _Deferred {
       static {
-        __name(this, "_Deferred");
-      }
-      static {
-        __name2(this, "Deferred");
+        __name(this, "Deferred");
       }
       constructor() {
         ;
@@ -14013,26 +13647,28 @@ var init_helpers = __esm({
       }
     };
     Deferred.promiseConstructor = Promise;
-    __name2(decodeJWT, "decodeJWT");
-    __name2(sleep2, "sleep");
-    __name2(retryable, "retryable");
-    __name2(dec2hex, "dec2hex");
-    __name2(generatePKCEVerifier, "generatePKCEVerifier");
-    __name2(sha256, "sha256");
-    __name2(generatePKCEChallenge, "generatePKCEChallenge");
-    __name2(getCodeChallengeAndMethod, "getCodeChallengeAndMethod");
+    __name(decodeJWT, "decodeJWT");
+    __name(sleep2, "sleep");
+    __name(retryable, "retryable");
+    __name(dec2hex, "dec2hex");
+    __name(generatePKCEVerifier, "generatePKCEVerifier");
+    __name(sha256, "sha256");
+    __name(generatePKCEChallenge, "generatePKCEChallenge");
+    __name(getCodeChallengeAndMethod, "getCodeChallengeAndMethod");
     API_VERSION_REGEX = /^2[0-9]{3}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])$/i;
-    __name2(parseResponseAPIVersion, "parseResponseAPIVersion");
-    __name2(validateExp, "validateExp");
-    __name2(getAlgorithm, "getAlgorithm");
+    __name(parseResponseAPIVersion, "parseResponseAPIVersion");
+    __name(validateExp, "validateExp");
+    __name(getAlgorithm, "getAlgorithm");
     UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-    __name2(validateUUID, "validateUUID");
-    __name2(assertPasskeyExperimentalEnabled, "assertPasskeyExperimentalEnabled");
-    __name2(userNotAvailableProxy, "userNotAvailableProxy");
-    __name2(insecureUserWarningProxy, "insecureUserWarningProxy");
-    __name2(deepClone, "deepClone");
+    __name(validateUUID, "validateUUID");
+    __name(assertPasskeyExperimentalEnabled, "assertPasskeyExperimentalEnabled");
+    __name(userNotAvailableProxy, "userNotAvailableProxy");
+    __name(insecureUserWarningProxy, "insecureUserWarningProxy");
+    __name(deepClone, "deepClone");
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/fetch.js
 async function handleError2(error) {
   var _a;
   if (!looksLikeFetchResponse(error)) {
@@ -14065,7 +13701,6 @@ async function handleError2(error) {
   }
   throw new AuthApiError(_getErrorMessage2(data), error.status || 500, errorCode);
 }
-__name(handleError2, "handleError2");
 async function _request(fetcher, method, url, options) {
   var _a;
   const headers = Object.assign({}, options === null || options === void 0 ? void 0 : options.headers);
@@ -14086,7 +13721,6 @@ async function _request(fetcher, method, url, options) {
   }, {}, options === null || options === void 0 ? void 0 : options.body);
   return (options === null || options === void 0 ? void 0 : options.xform) ? options === null || options === void 0 ? void 0 : options.xform(data) : { data: Object.assign({}, data), error: null };
 }
-__name(_request, "_request");
 async function _handleRequest2(fetcher, method, url, options, parameters, body) {
   const requestParams = _getRequestParams2(method, options, parameters, body);
   let result;
@@ -14108,7 +13742,6 @@ async function _handleRequest2(fetcher, method, url, options, parameters, body) 
     await handleError2(e);
   }
 }
-__name(_handleRequest2, "_handleRequest2");
 function _sessionResponse(data) {
   var _a;
   let session = null;
@@ -14121,7 +13754,6 @@ function _sessionResponse(data) {
   const user = (_a = data.user) !== null && _a !== void 0 ? _a : typeof (data === null || data === void 0 ? void 0 : data.id) === "string" ? data : null;
   return { data: { session, user }, error: null };
 }
-__name(_sessionResponse, "_sessionResponse");
 function _sessionResponsePassword(data) {
   const response = _sessionResponse(data);
   if (!response.error && data.weak_password && typeof data.weak_password === "object" && Array.isArray(data.weak_password.reasons) && data.weak_password.reasons.length && data.weak_password.message && typeof data.weak_password.message === "string" && data.weak_password.reasons.reduce((a, i) => a && typeof i === "string", true)) {
@@ -14129,17 +13761,14 @@ function _sessionResponsePassword(data) {
   }
   return response;
 }
-__name(_sessionResponsePassword, "_sessionResponsePassword");
 function _userResponse(data) {
   var _a;
   const user = (_a = data.user) !== null && _a !== void 0 ? _a : data;
   return { data: { user }, error: null };
 }
-__name(_userResponse, "_userResponse");
 function _ssoResponse(data) {
   return { data, error: null };
 }
-__name(_ssoResponse, "_ssoResponse");
 function _generateLinkResponse(data) {
   const { action_link, email_otp, hashed_token, redirect_to, verification_type } = data, rest = __rest(data, ["action_link", "email_otp", "hashed_token", "redirect_to", "verification_type"]);
   const properties = {
@@ -14158,27 +13787,22 @@ function _generateLinkResponse(data) {
     error: null
   };
 }
-__name(_generateLinkResponse, "_generateLinkResponse");
 function _noResolveJsonResponse(data) {
   return data;
 }
-__name(_noResolveJsonResponse, "_noResolveJsonResponse");
 function hasSession(data) {
   return !!data.access_token && !!data.refresh_token && !!data.expires_in;
 }
-__name(hasSession, "hasSession");
-var _getErrorMessage2;
-var NETWORK_ERROR_CODES;
-var _getRequestParams2;
+var _getErrorMessage2, NETWORK_ERROR_CODES, _getRequestParams2;
 var init_fetch = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/fetch.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_tslib_es6();
     init_constants2();
     init_helpers();
     init_errors();
-    _getErrorMessage2 = /* @__PURE__ */ __name2((err) => {
+    _getErrorMessage2 = /* @__PURE__ */ __name((err) => {
       if (typeof err === "object" && err !== null) {
         const e = err;
         if (typeof e.msg === "string")
@@ -14210,8 +13834,8 @@ var init_fetch = __esm({
       529,
       530
     ];
-    __name2(handleError2, "handleError");
-    _getRequestParams2 = /* @__PURE__ */ __name2((method, options, parameters, body) => {
+    __name(handleError2, "handleError");
+    _getRequestParams2 = /* @__PURE__ */ __name((method, options, parameters, body) => {
       const params = { method, headers: (options === null || options === void 0 ? void 0 : options.headers) || {} };
       if (method === "GET") {
         return params;
@@ -14220,29 +13844,33 @@ var init_fetch = __esm({
       params.body = JSON.stringify(body);
       return Object.assign(Object.assign({}, params), parameters);
     }, "_getRequestParams");
-    __name2(_request, "_request");
-    __name2(_handleRequest2, "_handleRequest");
-    __name2(_sessionResponse, "_sessionResponse");
-    __name2(_sessionResponsePassword, "_sessionResponsePassword");
-    __name2(_userResponse, "_userResponse");
-    __name2(_ssoResponse, "_ssoResponse");
-    __name2(_generateLinkResponse, "_generateLinkResponse");
-    __name2(_noResolveJsonResponse, "_noResolveJsonResponse");
-    __name2(hasSession, "hasSession");
+    __name(_request, "_request");
+    __name(_handleRequest2, "_handleRequest");
+    __name(_sessionResponse, "_sessionResponse");
+    __name(_sessionResponsePassword, "_sessionResponsePassword");
+    __name(_userResponse, "_userResponse");
+    __name(_ssoResponse, "_ssoResponse");
+    __name(_generateLinkResponse, "_generateLinkResponse");
+    __name(_noResolveJsonResponse, "_noResolveJsonResponse");
+    __name(hasSession, "hasSession");
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/types.js
 var SIGN_OUT_SCOPES;
 var init_types2 = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/types.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     SIGN_OUT_SCOPES = ["global", "local", "others"];
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/GoTrueAdminApi.js
 var GoTrueAdminApi;
 var init_GoTrueAdminApi = __esm({
   "../node_modules/@supabase/auth-js/dist/module/GoTrueAdminApi.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_tslib_es6();
     init_fetch();
@@ -14252,9 +13880,6 @@ var init_GoTrueAdminApi = __esm({
     GoTrueAdminApi = class {
       static {
         __name(this, "GoTrueAdminApi");
-      }
-      static {
-        __name2(this, "GoTrueAdminApi");
       }
       /**
        * Creates an admin API client that can be used to manage users and OAuth clients.
@@ -14998,7 +14623,7 @@ var init_GoTrueAdminApi = __esm({
         try {
           const { data, error } = await _request(this.fetch, "GET", `${this.url}/admin/users/${params.userId}/factors`, {
             headers: this.headers,
-            xform: /* @__PURE__ */ __name2((factors) => {
+            xform: /* @__PURE__ */ __name((factors) => {
               return { data: { factors }, error: null };
             }, "xform")
           });
@@ -15076,7 +14701,7 @@ var init_GoTrueAdminApi = __esm({
           return await _request(this.fetch, "POST", `${this.url}/admin/oauth/clients`, {
             body: params,
             headers: this.headers,
-            xform: /* @__PURE__ */ __name2((client) => {
+            xform: /* @__PURE__ */ __name((client) => {
               return { data: client, error: null };
             }, "xform")
           });
@@ -15097,7 +14722,7 @@ var init_GoTrueAdminApi = __esm({
         try {
           return await _request(this.fetch, "GET", `${this.url}/admin/oauth/clients/${clientId}`, {
             headers: this.headers,
-            xform: /* @__PURE__ */ __name2((client) => {
+            xform: /* @__PURE__ */ __name((client) => {
               return { data: client, error: null };
             }, "xform")
           });
@@ -15119,7 +14744,7 @@ var init_GoTrueAdminApi = __esm({
           return await _request(this.fetch, "PUT", `${this.url}/admin/oauth/clients/${clientId}`, {
             body: params,
             headers: this.headers,
-            xform: /* @__PURE__ */ __name2((client) => {
+            xform: /* @__PURE__ */ __name((client) => {
               return { data: client, error: null };
             }, "xform")
           });
@@ -15160,7 +14785,7 @@ var init_GoTrueAdminApi = __esm({
         try {
           return await _request(this.fetch, "POST", `${this.url}/admin/oauth/clients/${clientId}/regenerate_secret`, {
             headers: this.headers,
-            xform: /* @__PURE__ */ __name2((client) => {
+            xform: /* @__PURE__ */ __name((client) => {
               return { data: client, error: null };
             }, "xform")
           });
@@ -15185,7 +14810,7 @@ var init_GoTrueAdminApi = __esm({
           return await _request(this.fetch, "GET", `${this.url}/admin/custom-providers`, {
             headers: this.headers,
             query,
-            xform: /* @__PURE__ */ __name2((data) => {
+            xform: /* @__PURE__ */ __name((data) => {
               var _a;
               return { data: { providers: (_a = data === null || data === void 0 ? void 0 : data.providers) !== null && _a !== void 0 ? _a : [] }, error: null };
             }, "xform")
@@ -15213,7 +14838,7 @@ var init_GoTrueAdminApi = __esm({
           return await _request(this.fetch, "POST", `${this.url}/admin/custom-providers`, {
             body: params,
             headers: this.headers,
-            xform: /* @__PURE__ */ __name2((provider) => {
+            xform: /* @__PURE__ */ __name((provider) => {
               return { data: provider, error: null };
             }, "xform")
           });
@@ -15233,7 +14858,7 @@ var init_GoTrueAdminApi = __esm({
         try {
           return await _request(this.fetch, "GET", `${this.url}/admin/custom-providers/${identifier}`, {
             headers: this.headers,
-            xform: /* @__PURE__ */ __name2((provider) => {
+            xform: /* @__PURE__ */ __name((provider) => {
               return { data: provider, error: null };
             }, "xform")
           });
@@ -15259,7 +14884,7 @@ var init_GoTrueAdminApi = __esm({
           return await _request(this.fetch, "PUT", `${this.url}/admin/custom-providers/${identifier}`, {
             body: params,
             headers: this.headers,
-            xform: /* @__PURE__ */ __name2((provider) => {
+            xform: /* @__PURE__ */ __name((provider) => {
               return { data: provider, error: null };
             }, "xform")
           });
@@ -15300,7 +14925,7 @@ var init_GoTrueAdminApi = __esm({
         assertPasskeyExperimentalEnabled(this.experimental);
         validateUUID(params.userId);
         try {
-          return await _request(this.fetch, "GET", `${this.url}/admin/users/${params.userId}/passkeys`, { headers: this.headers, xform: /* @__PURE__ */ __name2((data) => ({ data, error: null }), "xform") });
+          return await _request(this.fetch, "GET", `${this.url}/admin/users/${params.userId}/passkeys`, { headers: this.headers, xform: /* @__PURE__ */ __name((data) => ({ data, error: null }), "xform") });
         } catch (error) {
           if (isAuthError(error)) {
             return { data: null, error };
@@ -15332,32 +14957,34 @@ var init_GoTrueAdminApi = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/local-storage.js
 function memoryLocalStorageAdapter(store = {}) {
   return {
-    getItem: /* @__PURE__ */ __name2((key) => {
+    getItem: /* @__PURE__ */ __name((key) => {
       return store[key] || null;
     }, "getItem"),
-    setItem: /* @__PURE__ */ __name2((key, value) => {
+    setItem: /* @__PURE__ */ __name((key, value) => {
       store[key] = value;
     }, "setItem"),
-    removeItem: /* @__PURE__ */ __name2((key) => {
+    removeItem: /* @__PURE__ */ __name((key) => {
       delete store[key];
     }, "removeItem")
   };
 }
-__name(memoryLocalStorageAdapter, "memoryLocalStorageAdapter");
 var init_local_storage = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/local-storage.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    __name2(memoryLocalStorageAdapter, "memoryLocalStorageAdapter");
+    __name(memoryLocalStorageAdapter, "memoryLocalStorageAdapter");
   }
 });
-var internals;
-var LockAcquireTimeoutError;
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/locks.js
+var internals, LockAcquireTimeoutError;
 var init_locks = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/locks.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_helpers();
     internals = {
@@ -15370,9 +14997,6 @@ var init_locks = __esm({
       static {
         __name(this, "LockAcquireTimeoutError");
       }
-      static {
-        __name2(this, "LockAcquireTimeoutError");
-      }
       constructor(message) {
         super(message);
         this.isAcquireTimeout = true;
@@ -15380,12 +15004,14 @@ var init_locks = __esm({
     };
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/polyfills.js
 function polyfillGlobalThis() {
   if (typeof globalThis === "object")
     return;
   try {
     Object.defineProperty(Object.prototype, "__magic__", {
-      get: /* @__PURE__ */ __name2(function() {
+      get: /* @__PURE__ */ __name(function() {
         return this;
       }, "get"),
       configurable: true
@@ -15398,31 +15024,29 @@ function polyfillGlobalThis() {
     }
   }
 }
-__name(polyfillGlobalThis, "polyfillGlobalThis");
 var init_polyfills = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/polyfills.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    __name2(polyfillGlobalThis, "polyfillGlobalThis");
+    __name(polyfillGlobalThis, "polyfillGlobalThis");
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/web3/ethereum.js
 function getAddress(address) {
   if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
     throw new Error(`@supabase/auth-js: Address "${address}" is invalid.`);
   }
   return address.toLowerCase();
 }
-__name(getAddress, "getAddress");
 function fromHex(hex) {
   return parseInt(hex, 16);
 }
-__name(fromHex, "fromHex");
 function toHex(value) {
   const bytes = new TextEncoder().encode(value);
   const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
   return "0x" + hex;
 }
-__name(toHex, "toHex");
 function createSiweMessage(parameters) {
   var _a;
   const { chainId, domain, expirationTime, issuedAt = /* @__PURE__ */ new Date(), nonce, notBefore, requestId, resources, scheme, uri, version: version5 } = parameters;
@@ -15475,17 +15099,18 @@ Request ID: ${requestId}`;
   return `${prefix}
 ${suffix}`;
 }
-__name(createSiweMessage, "createSiweMessage");
 var init_ethereum = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/web3/ethereum.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    __name2(getAddress, "getAddress");
-    __name2(fromHex, "fromHex");
-    __name2(toHex, "toHex");
-    __name2(createSiweMessage, "createSiweMessage");
+    __name(getAddress, "getAddress");
+    __name(fromHex, "fromHex");
+    __name(toHex, "toHex");
+    __name(createSiweMessage, "createSiweMessage");
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/webauthn.errors.js
 function identifyRegistrationError({ error, options }) {
   var _a, _b, _c;
   const { publicKey } = options;
@@ -15585,7 +15210,6 @@ function identifyRegistrationError({ error, options }) {
     cause: error
   });
 }
-__name(identifyRegistrationError, "identifyRegistrationError");
 function identifyAuthenticationError({ error, options }) {
   const { publicKey } = options;
   if (!publicKey) {
@@ -15633,20 +15257,15 @@ function identifyAuthenticationError({ error, options }) {
     cause: error
   });
 }
-__name(identifyAuthenticationError, "identifyAuthenticationError");
-var WebAuthnError;
-var WebAuthnUnknownError;
+var WebAuthnError, WebAuthnUnknownError;
 var init_webauthn_errors = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/webauthn.errors.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_webauthn();
     WebAuthnError = class extends Error {
       static {
         __name(this, "WebAuthnError");
-      }
-      static {
-        __name2(this, "WebAuthnError");
       }
       constructor({ message, code, cause, name }) {
         var _a;
@@ -15667,9 +15286,6 @@ var init_webauthn_errors = __esm({
       static {
         __name(this, "WebAuthnUnknownError");
       }
-      static {
-        __name2(this, "WebAuthnUnknownError");
-      }
       constructor(message, originalError) {
         super({
           code: "ERROR_PASSTHROUGH_SEE_CAUSE_PROPERTY",
@@ -15680,10 +15296,12 @@ var init_webauthn_errors = __esm({
         this.originalError = originalError;
       }
     };
-    __name2(identifyRegistrationError, "identifyRegistrationError");
-    __name2(identifyAuthenticationError, "identifyAuthenticationError");
+    __name(identifyRegistrationError, "identifyRegistrationError");
+    __name(identifyAuthenticationError, "identifyAuthenticationError");
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/lib/webauthn.js
 function deserializeCredentialCreationOptions(options) {
   if (!options) {
     throw new Error("Credential creation options are required");
@@ -15718,7 +15336,6 @@ function deserializeCredentialCreationOptions(options) {
   }
   return result;
 }
-__name(deserializeCredentialCreationOptions, "deserializeCredentialCreationOptions");
 function deserializeCredentialRequestOptions(options) {
   if (!options) {
     throw new Error("Credential request options are required");
@@ -15746,7 +15363,6 @@ function deserializeCredentialRequestOptions(options) {
   }
   return result;
 }
-__name(deserializeCredentialRequestOptions, "deserializeCredentialRequestOptions");
 function serializeCredentialCreationResponse(credential) {
   var _a;
   if ("toJSON" in credential && typeof credential.toJSON === "function") {
@@ -15766,7 +15382,6 @@ function serializeCredentialCreationResponse(credential) {
     authenticatorAttachment: (_a = credentialWithAttachment.authenticatorAttachment) !== null && _a !== void 0 ? _a : void 0
   };
 }
-__name(serializeCredentialCreationResponse, "serializeCredentialCreationResponse");
 function serializeCredentialRequestResponse(credential) {
   var _a;
   if ("toJSON" in credential && typeof credential.toJSON === "function") {
@@ -15791,19 +15406,16 @@ function serializeCredentialRequestResponse(credential) {
     authenticatorAttachment: (_a = credentialWithAttachment.authenticatorAttachment) !== null && _a !== void 0 ? _a : void 0
   };
 }
-__name(serializeCredentialRequestResponse, "serializeCredentialRequestResponse");
 function isValidDomain(hostname) {
   return (
     // Consider localhost valid as well since it's okay wrt Secure Contexts
     hostname === "localhost" || /^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/i.test(hostname)
   );
 }
-__name(isValidDomain, "isValidDomain");
 function browserSupportsWebAuthn() {
   var _a, _b;
   return !!(isBrowser() && "PublicKeyCredential" in window && window.PublicKeyCredential && "credentials" in navigator && typeof ((_a = navigator === null || navigator === void 0 ? void 0 : navigator.credentials) === null || _a === void 0 ? void 0 : _a.create) === "function" && typeof ((_b = navigator === null || navigator === void 0 ? void 0 : navigator.credentials) === null || _b === void 0 ? void 0 : _b.get) === "function");
 }
-__name(browserSupportsWebAuthn, "browserSupportsWebAuthn");
 async function createCredential(options) {
   try {
     const response = await navigator.credentials.create(
@@ -15833,7 +15445,6 @@ async function createCredential(options) {
     };
   }
 }
-__name(createCredential, "createCredential");
 async function getCredential(options) {
   try {
     const response = await navigator.credentials.get(
@@ -15863,10 +15474,9 @@ async function getCredential(options) {
     };
   }
 }
-__name(getCredential, "getCredential");
 function deepMerge(...sources) {
-  const isObject = /* @__PURE__ */ __name2((val) => val !== null && typeof val === "object" && !Array.isArray(val), "isObject");
-  const isArrayBufferLike = /* @__PURE__ */ __name2((val) => val instanceof ArrayBuffer || ArrayBuffer.isView(val), "isArrayBufferLike");
+  const isObject = /* @__PURE__ */ __name((val) => val !== null && typeof val === "object" && !Array.isArray(val), "isObject");
+  const isArrayBufferLike = /* @__PURE__ */ __name((val) => val instanceof ArrayBuffer || ArrayBuffer.isView(val), "isArrayBufferLike");
   const result = {};
   for (const source of sources) {
     if (!source)
@@ -15893,23 +15503,16 @@ function deepMerge(...sources) {
   }
   return result;
 }
-__name(deepMerge, "deepMerge");
 function mergeCredentialCreationOptions(baseOptions, overrides) {
   return deepMerge(DEFAULT_CREATION_OPTIONS, baseOptions, overrides || {});
 }
-__name(mergeCredentialCreationOptions, "mergeCredentialCreationOptions");
 function mergeCredentialRequestOptions(baseOptions, overrides) {
   return deepMerge(DEFAULT_REQUEST_OPTIONS, baseOptions, overrides || {});
 }
-__name(mergeCredentialRequestOptions, "mergeCredentialRequestOptions");
-var WebAuthnAbortService;
-var webAuthnAbortService;
-var DEFAULT_CREATION_OPTIONS;
-var DEFAULT_REQUEST_OPTIONS;
-var WebAuthnApi;
+var WebAuthnAbortService, webAuthnAbortService, DEFAULT_CREATION_OPTIONS, DEFAULT_REQUEST_OPTIONS, WebAuthnApi;
 var init_webauthn = __esm({
   "../node_modules/@supabase/auth-js/dist/module/lib/webauthn.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_tslib_es6();
     init_base64url();
@@ -15919,9 +15522,6 @@ var init_webauthn = __esm({
     WebAuthnAbortService = class {
       static {
         __name(this, "WebAuthnAbortService");
-      }
-      static {
-        __name2(this, "WebAuthnAbortService");
       }
       /**
        * Create an abort signal for a new WebAuthn operation.
@@ -15956,14 +15556,14 @@ var init_webauthn = __esm({
       }
     };
     webAuthnAbortService = new WebAuthnAbortService();
-    __name2(deserializeCredentialCreationOptions, "deserializeCredentialCreationOptions");
-    __name2(deserializeCredentialRequestOptions, "deserializeCredentialRequestOptions");
-    __name2(serializeCredentialCreationResponse, "serializeCredentialCreationResponse");
-    __name2(serializeCredentialRequestResponse, "serializeCredentialRequestResponse");
-    __name2(isValidDomain, "isValidDomain");
-    __name2(browserSupportsWebAuthn, "browserSupportsWebAuthn");
-    __name2(createCredential, "createCredential");
-    __name2(getCredential, "getCredential");
+    __name(deserializeCredentialCreationOptions, "deserializeCredentialCreationOptions");
+    __name(deserializeCredentialRequestOptions, "deserializeCredentialRequestOptions");
+    __name(serializeCredentialCreationResponse, "serializeCredentialCreationResponse");
+    __name(serializeCredentialRequestResponse, "serializeCredentialRequestResponse");
+    __name(isValidDomain, "isValidDomain");
+    __name(browserSupportsWebAuthn, "browserSupportsWebAuthn");
+    __name(createCredential, "createCredential");
+    __name(getCredential, "getCredential");
     DEFAULT_CREATION_OPTIONS = {
       hints: ["security-key"],
       authenticatorSelection: {
@@ -15981,15 +15581,12 @@ var init_webauthn = __esm({
       hints: ["security-key"],
       attestation: "direct"
     };
-    __name2(deepMerge, "deepMerge");
-    __name2(mergeCredentialCreationOptions, "mergeCredentialCreationOptions");
-    __name2(mergeCredentialRequestOptions, "mergeCredentialRequestOptions");
+    __name(deepMerge, "deepMerge");
+    __name(mergeCredentialCreationOptions, "mergeCredentialCreationOptions");
+    __name(mergeCredentialRequestOptions, "mergeCredentialRequestOptions");
     WebAuthnApi = class {
       static {
         __name(this, "WebAuthnApi");
-      }
-      static {
-        __name2(this, "WebAuthnApi");
       }
       constructor(client) {
         this.client = client;
@@ -16255,13 +15852,12 @@ var init_webauthn = __esm({
     };
   }
 });
-var DEFAULT_OPTIONS;
-var GLOBAL_JWKS;
-var GoTrueClient;
-var GoTrueClient_default;
+
+// ../node_modules/@supabase/auth-js/dist/module/GoTrueClient.js
+var DEFAULT_OPTIONS, GLOBAL_JWKS, GoTrueClient, GoTrueClient_default;
 var init_GoTrueClient = __esm({
   "../node_modules/@supabase/auth-js/dist/module/GoTrueClient.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_GoTrueAdminApi();
     init_constants2();
@@ -16295,10 +15891,7 @@ var init_GoTrueClient = __esm({
     GLOBAL_JWKS = {};
     GoTrueClient = class _GoTrueClient {
       static {
-        __name(this, "_GoTrueClient");
-      }
-      static {
-        __name2(this, "GoTrueClient");
+        __name(this, "GoTrueClient");
       }
       /**
        * The JWKS used for verifying asymmetric JWTs
@@ -19570,7 +19163,7 @@ var init_GoTrueClient = __esm({
         const subscription = {
           id,
           callback,
-          unsubscribe: /* @__PURE__ */ __name2(() => {
+          unsubscribe: /* @__PURE__ */ __name(() => {
             this._debug("#unsubscribe()", "state change callback with id removed", id);
             this.stateChangeEmitters.delete(id);
           }, "unsubscribe")
@@ -20581,7 +20174,7 @@ var init_GoTrueClient = __esm({
         }
       }
       async _verify(params) {
-        const run = /* @__PURE__ */ __name2(async () => {
+        const run = /* @__PURE__ */ __name(async () => {
           try {
             return await this._useSession(async (result) => {
               var _a;
@@ -20617,7 +20210,7 @@ var init_GoTrueClient = __esm({
         return run();
       }
       async _challenge(params) {
-        const run = /* @__PURE__ */ __name2(async () => {
+        const run = /* @__PURE__ */ __name(async () => {
           try {
             return await this._useSession(async (result) => {
               var _a;
@@ -20779,7 +20372,7 @@ var init_GoTrueClient = __esm({
             return await _request(this.fetch, "GET", `${this.url}/oauth/authorizations/${authorizationId}`, {
               headers: this.headers,
               jwt: session.access_token,
-              xform: /* @__PURE__ */ __name2((data) => ({ data, error: null }), "xform")
+              xform: /* @__PURE__ */ __name((data) => ({ data, error: null }), "xform")
             });
           });
         } catch (error) {
@@ -20807,7 +20400,7 @@ var init_GoTrueClient = __esm({
               headers: this.headers,
               jwt: session.access_token,
               body: { action: "approve" },
-              xform: /* @__PURE__ */ __name2((data) => ({ data, error: null }), "xform")
+              xform: /* @__PURE__ */ __name((data) => ({ data, error: null }), "xform")
             });
             if (response.data && response.data.redirect_url) {
               if (isBrowser() && !(options === null || options === void 0 ? void 0 : options.skipBrowserRedirect)) {
@@ -20841,7 +20434,7 @@ var init_GoTrueClient = __esm({
               headers: this.headers,
               jwt: session.access_token,
               body: { action: "deny" },
-              xform: /* @__PURE__ */ __name2((data) => ({ data, error: null }), "xform")
+              xform: /* @__PURE__ */ __name((data) => ({ data, error: null }), "xform")
             });
             if (response.data && response.data.redirect_url) {
               if (isBrowser() && !(options === null || options === void 0 ? void 0 : options.skipBrowserRedirect)) {
@@ -20874,7 +20467,7 @@ var init_GoTrueClient = __esm({
             return await _request(this.fetch, "GET", `${this.url}/user/oauth/grants`, {
               headers: this.headers,
               jwt: session.access_token,
-              xform: /* @__PURE__ */ __name2((data) => ({ data, error: null }), "xform")
+              xform: /* @__PURE__ */ __name((data) => ({ data, error: null }), "xform")
             });
           });
         } catch (error) {
@@ -21299,7 +20892,7 @@ var init_GoTrueClient = __esm({
             const { data, error } = await _request(this.fetch, "GET", `${this.url}/passkeys`, {
               headers: this.headers,
               jwt: session.access_token,
-              xform: /* @__PURE__ */ __name2((data2) => ({ data: data2, error: null }), "xform")
+              xform: /* @__PURE__ */ __name((data2) => ({ data: data2, error: null }), "xform")
             });
             if (error) {
               return this._returnResult({ data: null, error });
@@ -21380,27 +20973,32 @@ var init_GoTrueClient = __esm({
     GoTrueClient_default = GoTrueClient;
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/AuthAdminApi.js
 var init_AuthAdminApi = __esm({
   "../node_modules/@supabase/auth-js/dist/module/AuthAdminApi.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_GoTrueAdminApi();
   }
 });
-var AuthClient;
-var AuthClient_default;
+
+// ../node_modules/@supabase/auth-js/dist/module/AuthClient.js
+var AuthClient, AuthClient_default;
 var init_AuthClient = __esm({
   "../node_modules/@supabase/auth-js/dist/module/AuthClient.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_GoTrueClient();
     AuthClient = GoTrueClient_default;
     AuthClient_default = AuthClient;
   }
 });
+
+// ../node_modules/@supabase/auth-js/dist/module/index.js
 var init_module3 = __esm({
   "../node_modules/@supabase/auth-js/dist/module/index.js"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_GoTrueAdminApi();
     init_GoTrueClient();
@@ -21411,6 +21009,8 @@ var init_module3 = __esm({
     init_locks();
   }
 });
+
+// ../node_modules/@supabase/supabase-js/dist/index.mjs
 function __awaiter2(thisArg, _arguments, P, generator) {
   function adopt(value) {
     return value instanceof P ? value : new P(function(resolve) {
@@ -21418,7 +21018,6 @@ function __awaiter2(thisArg, _arguments, P, generator) {
     });
   }
   __name(adopt, "adopt");
-  __name2(adopt, "adopt");
   return new (P || (P = Promise))(function(resolve, reject) {
     function fulfilled(value) {
       try {
@@ -21428,7 +21027,6 @@ function __awaiter2(thisArg, _arguments, P, generator) {
       }
     }
     __name(fulfilled, "fulfilled");
-    __name2(fulfilled, "fulfilled");
     function rejected(value) {
       try {
         step(generator["throw"](value));
@@ -21437,16 +21035,13 @@ function __awaiter2(thisArg, _arguments, P, generator) {
       }
     }
     __name(rejected, "rejected");
-    __name2(rejected, "rejected");
     function step(result) {
       result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
     }
     __name(step, "step");
-    __name2(step, "step");
     step((generator = generator.apply(thisArg, _arguments || [])).next());
   });
 }
-__name(__awaiter2, "__awaiter2");
 function loadOtel() {
   if (otelModulePromise === null) otelModulePromise = import(
     /* webpackIgnore: true */
@@ -21456,7 +21051,6 @@ function loadOtel() {
   ).catch(() => null);
   return otelModulePromise;
 }
-__name(loadOtel, "loadOtel");
 function extractTraceContext() {
   return __awaiter2(this, void 0, void 0, function* () {
     try {
@@ -21476,7 +21070,6 @@ function extractTraceContext() {
     }
   });
 }
-__name(extractTraceContext, "extractTraceContext");
 function parseTraceParent(traceparent) {
   if (!traceparent || typeof traceparent !== "string") return null;
   const parts = traceparent.split("-");
@@ -21494,7 +21087,6 @@ function parseTraceParent(traceparent) {
     isSampled: (parseInt(traceFlags, 16) & 1) === 1
   };
 }
-__name(parseTraceParent, "parseTraceParent");
 function shouldPropagateToTarget(targetUrl, targets) {
   if (!targetUrl || !targets || targets.length === 0) return false;
   let url;
@@ -21517,7 +21109,6 @@ function shouldPropagateToTarget(targetUrl, targets) {
   }
   return false;
 }
-__name(shouldPropagateToTarget, "shouldPropagateToTarget");
 function matchStringTarget(hostname, target) {
   if (target === hostname) return true;
   if (target.startsWith("*.")) {
@@ -21528,7 +21119,6 @@ function matchStringTarget(hostname, target) {
   }
   return false;
 }
-__name(matchStringTarget, "matchStringTarget");
 function getDefaultPropagationTargets(supabaseUrl) {
   const targets = [];
   try {
@@ -21540,7 +21130,6 @@ function getDefaultPropagationTargets(supabaseUrl) {
   targets.push("localhost", "127.0.0.1", "[::1]");
   return targets;
 }
-__name(getDefaultPropagationTargets, "getDefaultPropagationTargets");
 function _typeof3(o) {
   "@babel/helpers - typeof";
   return _typeof3 = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o$1) {
@@ -21549,7 +21138,6 @@ function _typeof3(o) {
     return o$1 && "function" == typeof Symbol && o$1.constructor === Symbol && o$1 !== Symbol.prototype ? "symbol" : typeof o$1;
   }, _typeof3(o);
 }
-__name(_typeof3, "_typeof3");
 function toPrimitive3(t, r) {
   if ("object" != _typeof3(t) || !t) return t;
   var e = t[Symbol.toPrimitive];
@@ -21560,12 +21148,10 @@ function toPrimitive3(t, r) {
   }
   return ("string" === r ? String : Number)(t);
 }
-__name(toPrimitive3, "toPrimitive3");
 function toPropertyKey3(t) {
   var i = toPrimitive3(t, "string");
   return "symbol" == _typeof3(i) ? i : i + "";
 }
-__name(toPropertyKey3, "toPropertyKey3");
 function _defineProperty3(e, r, t) {
   return (r = toPropertyKey3(r)) in e ? Object.defineProperty(e, r, {
     value: t,
@@ -21574,7 +21160,6 @@ function _defineProperty3(e, r, t) {
     writable: true
   }) : e[r] = t, e;
 }
-__name(_defineProperty3, "_defineProperty3");
 function ownKeys3(e, r) {
   var t = Object.keys(e);
   if (Object.getOwnPropertySymbols) {
@@ -21585,7 +21170,6 @@ function ownKeys3(e, r) {
   }
   return t;
 }
-__name(ownKeys3, "ownKeys3");
 function _objectSpread23(e) {
   for (var r = 1; r < arguments.length; r++) {
     var t = null != arguments[r] ? arguments[r] : {};
@@ -21597,7 +21181,6 @@ function _objectSpread23(e) {
   }
   return e;
 }
-__name(_objectSpread23, "_objectSpread23");
 async function getTraceHeaders(input, targets, respectSampling) {
   if (!shouldPropagateToTarget(typeof input === "string" ? input : input instanceof URL ? input : input.url, targets)) return null;
   const traceContext = await extractTraceContext();
@@ -21608,15 +21191,12 @@ async function getTraceHeaders(input, targets, respectSampling) {
   }
   return traceContext;
 }
-__name(getTraceHeaders, "getTraceHeaders");
 function normalizeTracePropagation(value) {
   return typeof value === "boolean" ? { enabled: value } : value;
 }
-__name(normalizeTracePropagation, "normalizeTracePropagation");
 function ensureTrailingSlash(url) {
   return url.endsWith("/") ? url : url + "/";
 }
-__name(ensureTrailingSlash, "ensureTrailingSlash");
 function applySettingDefaults(options, defaults) {
   var _DEFAULT_GLOBAL_OPTIO, _globalOptions$header, _ref, _tracePropagationOpti, _ref2, _tracePropagationOpti2;
   const { db: dbOptions, auth: authOptions, realtime: realtimeOptions, global: globalOptions } = options;
@@ -21633,13 +21213,12 @@ function applySettingDefaults(options, defaults) {
       enabled: (_ref = (_tracePropagationOpti = tracePropagationOptions === null || tracePropagationOptions === void 0 ? void 0 : tracePropagationOptions.enabled) !== null && _tracePropagationOpti !== void 0 ? _tracePropagationOpti : DEFAULT_TRACE_PROPAGATION_OPTIONS$1 === null || DEFAULT_TRACE_PROPAGATION_OPTIONS$1 === void 0 ? void 0 : DEFAULT_TRACE_PROPAGATION_OPTIONS$1.enabled) !== null && _ref !== void 0 ? _ref : false,
       respectSamplingDecision: (_ref2 = (_tracePropagationOpti2 = tracePropagationOptions === null || tracePropagationOptions === void 0 ? void 0 : tracePropagationOptions.respectSamplingDecision) !== null && _tracePropagationOpti2 !== void 0 ? _tracePropagationOpti2 : DEFAULT_TRACE_PROPAGATION_OPTIONS$1 === null || DEFAULT_TRACE_PROPAGATION_OPTIONS$1 === void 0 ? void 0 : DEFAULT_TRACE_PROPAGATION_OPTIONS$1.respectSamplingDecision) !== null && _ref2 !== void 0 ? _ref2 : true
     },
-    accessToken: /* @__PURE__ */ __name2(async () => "", "accessToken")
+    accessToken: /* @__PURE__ */ __name(async () => "", "accessToken")
   };
   if (options.accessToken) result.accessToken = options.accessToken;
   else delete result.accessToken;
   return result;
 }
-__name(applySettingDefaults, "applySettingDefaults");
 function validateSupabaseUrl(supabaseUrl) {
   const trimmedUrl = supabaseUrl === null || supabaseUrl === void 0 ? void 0 : supabaseUrl.trim();
   if (!trimmedUrl) throw new Error("supabaseUrl is required.");
@@ -21650,7 +21229,6 @@ function validateSupabaseUrl(supabaseUrl) {
     throw Error("Invalid supabaseUrl: Provided URL is malformed.");
   }
 }
-__name(validateSupabaseUrl, "validateSupabaseUrl");
 function shouldShowDeprecationWarning() {
   if (typeof window !== "undefined") return false;
   const _process = globalThis["process"];
@@ -21661,30 +21239,10 @@ function shouldShowDeprecationWarning() {
   if (!versionMatch) return false;
   return parseInt(versionMatch[1], 10) <= 18;
 }
-__name(shouldShowDeprecationWarning, "shouldShowDeprecationWarning");
-var version4;
-var JS_ENV;
-var JS_RUNTIME_VERSION;
-var _Deno$version;
-var _process$version;
-var _runtimeMeta;
-var DEFAULT_HEADERS3;
-var DEFAULT_GLOBAL_OPTIONS;
-var DEFAULT_DB_OPTIONS;
-var DEFAULT_AUTH_OPTIONS;
-var DEFAULT_REALTIME_OPTIONS;
-var DEFAULT_TRACE_PROPAGATION_OPTIONS;
-var otelModulePromise;
-var OTEL_PKG;
-var resolveFetch4;
-var resolveHeadersConstructor;
-var fetchWithAuth;
-var SupabaseAuthClient;
-var SupabaseClient;
-var createClient;
+var version4, JS_ENV, JS_RUNTIME_VERSION, _Deno$version, _process$version, _runtimeMeta, DEFAULT_HEADERS3, DEFAULT_GLOBAL_OPTIONS, DEFAULT_DB_OPTIONS, DEFAULT_AUTH_OPTIONS, DEFAULT_REALTIME_OPTIONS, DEFAULT_TRACE_PROPAGATION_OPTIONS, otelModulePromise, OTEL_PKG, resolveFetch4, resolveHeadersConstructor, fetchWithAuth, SupabaseAuthClient, SupabaseClient, createClient;
 var init_dist4 = __esm({
   "../node_modules/@supabase/supabase-js/dist/index.mjs"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_module();
     init_dist();
@@ -21720,29 +21278,29 @@ var init_dist4 = __esm({
       enabled: false,
       respectSamplingDecision: true
     };
-    __name2(__awaiter2, "__awaiter");
+    __name(__awaiter2, "__awaiter");
     otelModulePromise = null;
     OTEL_PKG = "@opentelemetry/api";
-    __name2(loadOtel, "loadOtel");
-    __name2(extractTraceContext, "extractTraceContext");
-    __name2(parseTraceParent, "parseTraceParent");
-    __name2(shouldPropagateToTarget, "shouldPropagateToTarget");
-    __name2(matchStringTarget, "matchStringTarget");
-    __name2(getDefaultPropagationTargets, "getDefaultPropagationTargets");
-    __name2(_typeof3, "_typeof");
-    __name2(toPrimitive3, "toPrimitive");
-    __name2(toPropertyKey3, "toPropertyKey");
-    __name2(_defineProperty3, "_defineProperty");
-    __name2(ownKeys3, "ownKeys");
-    __name2(_objectSpread23, "_objectSpread2");
-    resolveFetch4 = /* @__PURE__ */ __name2((customFetch) => {
+    __name(loadOtel, "loadOtel");
+    __name(extractTraceContext, "extractTraceContext");
+    __name(parseTraceParent, "parseTraceParent");
+    __name(shouldPropagateToTarget, "shouldPropagateToTarget");
+    __name(matchStringTarget, "matchStringTarget");
+    __name(getDefaultPropagationTargets, "getDefaultPropagationTargets");
+    __name(_typeof3, "_typeof");
+    __name(toPrimitive3, "toPrimitive");
+    __name(toPropertyKey3, "toPropertyKey");
+    __name(_defineProperty3, "_defineProperty");
+    __name(ownKeys3, "ownKeys");
+    __name(_objectSpread23, "_objectSpread2");
+    resolveFetch4 = /* @__PURE__ */ __name((customFetch) => {
       if (customFetch) return (...args) => customFetch(...args);
       return (...args) => fetch(...args);
     }, "resolveFetch");
-    resolveHeadersConstructor = /* @__PURE__ */ __name2(() => {
+    resolveHeadersConstructor = /* @__PURE__ */ __name(() => {
       return Headers;
     }, "resolveHeadersConstructor");
-    fetchWithAuth = /* @__PURE__ */ __name2((supabaseKey, supabaseUrl, getAccessToken, customFetch, tracePropagationOptions) => {
+    fetchWithAuth = /* @__PURE__ */ __name((supabaseKey, supabaseUrl, getAccessToken, customFetch, tracePropagationOptions) => {
       const fetch$1 = resolveFetch4(customFetch);
       const HeadersConstructor = resolveHeadersConstructor();
       const traceEnabled = (tracePropagationOptions === null || tracePropagationOptions === void 0 ? void 0 : tracePropagationOptions.enabled) === true;
@@ -21765,17 +21323,14 @@ var init_dist4 = __esm({
         return fetch$1(input, _objectSpread23(_objectSpread23({}, init), {}, { headers }));
       };
     }, "fetchWithAuth");
-    __name2(getTraceHeaders, "getTraceHeaders");
-    __name2(normalizeTracePropagation, "normalizeTracePropagation");
-    __name2(ensureTrailingSlash, "ensureTrailingSlash");
-    __name2(applySettingDefaults, "applySettingDefaults");
-    __name2(validateSupabaseUrl, "validateSupabaseUrl");
+    __name(getTraceHeaders, "getTraceHeaders");
+    __name(normalizeTracePropagation, "normalizeTracePropagation");
+    __name(ensureTrailingSlash, "ensureTrailingSlash");
+    __name(applySettingDefaults, "applySettingDefaults");
+    __name(validateSupabaseUrl, "validateSupabaseUrl");
     SupabaseAuthClient = class extends AuthClient_default {
       static {
         __name(this, "SupabaseAuthClient");
-      }
-      static {
-        __name2(this, "SupabaseAuthClient");
       }
       constructor(options) {
         super(options);
@@ -21784,9 +21339,6 @@ var init_dist4 = __esm({
     SupabaseClient = class {
       static {
         __name(this, "SupabaseClient");
-      }
-      static {
-        __name2(this, "SupabaseClient");
       }
       /**
       * Create a new client for use in the browser.
@@ -22027,7 +21579,7 @@ var init_dist4 = __esm({
           this.auth = this._initSupabaseAuthClient((_settings$auth = settings.auth) !== null && _settings$auth !== void 0 ? _settings$auth : {}, this.headers, settings.global.fetch);
         } else {
           this.accessToken = settings.accessToken;
-          this.auth = new Proxy({}, { get: /* @__PURE__ */ __name2((_, prop) => {
+          this.auth = new Proxy({}, { get: /* @__PURE__ */ __name((_, prop) => {
             throw new Error(`@supabase/supabase-js: Supabase Client is configured with the accessToken option, accessing supabase.auth.${String(prop)} is not possible`);
           }, "get") });
         }
@@ -22215,13 +21767,15 @@ var init_dist4 = __esm({
         }
       }
     };
-    createClient = /* @__PURE__ */ __name2((supabaseUrl, supabaseKey, options) => {
+    createClient = /* @__PURE__ */ __name((supabaseUrl, supabaseKey, options) => {
       return new SupabaseClient(supabaseUrl, supabaseKey, options);
     }, "createClient");
-    __name2(shouldShowDeprecationWarning, "shouldShowDeprecationWarning");
+    __name(shouldShowDeprecationWarning, "shouldShowDeprecationWarning");
     if (shouldShowDeprecationWarning()) console.warn("\u26A0\uFE0F  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217");
   }
 });
+
+// utils/supabase.ts
 function getSupabaseAdmin(env) {
   return createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
     auth: {
@@ -22230,7 +21784,6 @@ function getSupabaseAdmin(env) {
     }
   });
 }
-__name(getSupabaseAdmin, "getSupabaseAdmin");
 async function syncSupabaseUserMetadata(env, userId, metadata) {
   const supabase = getSupabaseAdmin(env);
   const { error } = await supabase.auth.admin.updateUserById(userId, {
@@ -22243,20 +21796,20 @@ async function syncSupabaseUserMetadata(env, userId, metadata) {
     console.warn(`Could not sync Supabase metadata for ${userId}: ${error.message}`);
   }
 }
-__name(syncSupabaseUserMetadata, "syncSupabaseUserMetadata");
 var init_supabase = __esm({
   "utils/supabase.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_dist4();
-    __name2(getSupabaseAdmin, "getSupabaseAdmin");
-    __name2(syncSupabaseUserMetadata, "syncSupabaseUserMetadata");
+    __name(getSupabaseAdmin, "getSupabaseAdmin");
+    __name(syncSupabaseUserMetadata, "syncSupabaseUserMetadata");
   }
 });
+
+// utils/members.ts
 async function getMemberById(db, id) {
   return db.prepare("SELECT * FROM members WHERE id = ?").bind(id).first();
 }
-__name(getMemberById, "getMemberById");
 async function upsertMemberFromAuth(db, user, env) {
   const existing = await getMemberById(db, user.id);
   const fullName = user.user_metadata?.full_name || existing?.full_name || user.email?.split("@")[0] || "Member";
@@ -22287,7 +21840,6 @@ async function upsertMemberFromAuth(db, user, env) {
   }
   return member;
 }
-__name(upsertMemberFromAuth, "upsertMemberFromAuth");
 async function updateMemberRole(db, env, memberId, role) {
   const existing = await getMemberById(db, memberId);
   if (!existing) return null;
@@ -22301,7 +21853,6 @@ async function updateMemberRole(db, env, memberId, role) {
   }
   return updated;
 }
-__name(updateMemberRole, "updateMemberRole");
 async function updateMemberClub(db, env, memberId, clubId) {
   const existing = await getMemberById(db, memberId);
   if (!existing) return null;
@@ -22315,7 +21866,6 @@ async function updateMemberClub(db, env, memberId, clubId) {
   }
   return updated;
 }
-__name(updateMemberClub, "updateMemberClub");
 async function updateMemberProfile(db, id, data) {
   const existing = await getMemberById(db, id);
   if (!existing) return null;
@@ -22328,19 +21878,20 @@ async function updateMemberProfile(db, id, data) {
   ).run();
   return getMemberById(db, id);
 }
-__name(updateMemberProfile, "updateMemberProfile");
 var init_members = __esm({
   "utils/members.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_supabase();
-    __name2(getMemberById, "getMemberById");
-    __name2(upsertMemberFromAuth, "upsertMemberFromAuth");
-    __name2(updateMemberRole, "updateMemberRole");
-    __name2(updateMemberClub, "updateMemberClub");
-    __name2(updateMemberProfile, "updateMemberProfile");
+    __name(getMemberById, "getMemberById");
+    __name(upsertMemberFromAuth, "upsertMemberFromAuth");
+    __name(updateMemberRole, "updateMemberRole");
+    __name(updateMemberClub, "updateMemberClub");
+    __name(updateMemberProfile, "updateMemberProfile");
   }
 });
+
+// utils/response.ts
 function jsonResponse(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -22350,61 +21901,56 @@ function jsonResponse(data, status = 200) {
     }
   });
 }
-__name(jsonResponse, "jsonResponse");
 function errorResponse(message, status) {
   return jsonResponse({ error: message }, status);
 }
-__name(errorResponse, "errorResponse");
 function handleOptions() {
   return new Response(null, { status: 204, headers: corsHeaders });
 }
-__name(handleOptions, "handleOptions");
 function parseJsonBody(request) {
   return request.json().catch(() => null);
 }
-__name(parseJsonBody, "parseJsonBody");
 var corsHeaders;
 var init_response = __esm({
   "utils/response.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PATCH, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization"
     };
-    __name2(jsonResponse, "jsonResponse");
-    __name2(errorResponse, "errorResponse");
-    __name2(handleOptions, "handleOptions");
-    __name2(parseJsonBody, "parseJsonBody");
+    __name(jsonResponse, "jsonResponse");
+    __name(errorResponse, "errorResponse");
+    __name(handleOptions, "handleOptions");
+    __name(parseJsonBody, "parseJsonBody");
   }
 });
+
+// utils/permissions.ts
 var permissions_exports = {};
 __export(permissions_exports, {
-  MEMBER_ROLES: /* @__PURE__ */ __name(() => MEMBER_ROLES, "MEMBER_ROLES"),
-  canManageClub: /* @__PURE__ */ __name(() => canManageClub, "canManageClub"),
-  canManageTournament: /* @__PURE__ */ __name(() => canManageTournament, "canManageTournament"),
-  getDirectedTournamentIds: /* @__PURE__ */ __name(() => getDirectedTournamentIds, "getDirectedTournamentIds"),
-  getTournamentClubId: /* @__PURE__ */ __name(() => getTournamentClubId, "getTournamentClubId"),
-  isMemberRole: /* @__PURE__ */ __name(() => isMemberRole, "isMemberRole"),
-  isTournamentDirector: /* @__PURE__ */ __name(() => isTournamentDirector, "isTournamentDirector")
+  MEMBER_ROLES: () => MEMBER_ROLES,
+  canManageClub: () => canManageClub,
+  canManageTournament: () => canManageTournament,
+  getDirectedTournamentIds: () => getDirectedTournamentIds,
+  getTournamentClubId: () => getTournamentClubId,
+  isMemberRole: () => isMemberRole,
+  isTournamentDirector: () => isTournamentDirector
 });
 function isMemberRole(value) {
   return MEMBER_ROLES.includes(value);
 }
-__name(isMemberRole, "isMemberRole");
 async function isTournamentDirector(db, memberId, tournamentId) {
   const row = await db.prepare(
     "SELECT 1 FROM tournament_directors WHERE tournament_id = ? AND member_id = ?"
   ).bind(tournamentId, memberId).first();
   return !!row;
 }
-__name(isTournamentDirector, "isTournamentDirector");
 async function getTournamentClubId(db, tournamentId) {
   const row = await db.prepare("SELECT club_id FROM tournaments WHERE id = ?").bind(tournamentId).first();
   return row?.club_id ?? null;
 }
-__name(getTournamentClubId, "getTournamentClubId");
 async function canManageTournament(db, member, tournamentId) {
   if (member.role === "lca_admin") return true;
   const clubId = await getTournamentClubId(db, tournamentId);
@@ -22416,23 +21962,20 @@ async function canManageTournament(db, member, tournamentId) {
   }
   return false;
 }
-__name(canManageTournament, "canManageTournament");
 async function canManageClub(member, clubId) {
   if (member.role === "lca_admin") return true;
   return member.role === "club_rep" && member.club_id === clubId;
 }
-__name(canManageClub, "canManageClub");
 async function getDirectedTournamentIds(db, memberId) {
   const { results } = await db.prepare(
     "SELECT tournament_id FROM tournament_directors WHERE member_id = ?"
   ).bind(memberId).all();
   return (results ?? []).map((row) => row.tournament_id);
 }
-__name(getDirectedTournamentIds, "getDirectedTournamentIds");
 var MEMBER_ROLES;
 var init_permissions = __esm({
   "utils/permissions.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     MEMBER_ROLES = [
       "member",
@@ -22440,14 +21983,16 @@ var init_permissions = __esm({
       "tournament_director",
       "lca_admin"
     ];
-    __name2(isMemberRole, "isMemberRole");
-    __name2(isTournamentDirector, "isTournamentDirector");
-    __name2(getTournamentClubId, "getTournamentClubId");
-    __name2(canManageTournament, "canManageTournament");
-    __name2(canManageClub, "canManageClub");
-    __name2(getDirectedTournamentIds, "getDirectedTournamentIds");
+    __name(isMemberRole, "isMemberRole");
+    __name(isTournamentDirector, "isTournamentDirector");
+    __name(getTournamentClubId, "getTournamentClubId");
+    __name(canManageTournament, "canManageTournament");
+    __name(canManageClub, "canManageClub");
+    __name(getDirectedTournamentIds, "getDirectedTournamentIds");
   }
 });
+
+// utils/auth.ts
 async function verifySupabaseUser(request, env) {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -22469,7 +22014,6 @@ async function verifySupabaseUser(request, env) {
   }
   return user;
 }
-__name(verifySupabaseUser, "verifySupabaseUser");
 async function requireUser(request, env) {
   const user = await verifySupabaseUser(request, env);
   if (!user) {
@@ -22477,7 +22021,6 @@ async function requireUser(request, env) {
   }
   return user;
 }
-__name(requireUser, "requireUser");
 async function requireAuthedMember(request, env) {
   const userResult = await requireUser(request, env);
   if (userResult instanceof Response) return userResult;
@@ -22487,7 +22030,6 @@ async function requireAuthedMember(request, env) {
   }
   return { user: userResult, member };
 }
-__name(requireAuthedMember, "requireAuthedMember");
 async function requireRole(request, env, roles) {
   const authed = await requireAuthedMember(request, env);
   if (authed instanceof Response) return authed;
@@ -22497,11 +22039,9 @@ async function requireRole(request, env, roles) {
   }
   return authed;
 }
-__name(requireRole, "requireRole");
 async function requireAdmin(request, env) {
   return requireRole(request, env, "lca_admin");
 }
-__name(requireAdmin, "requireAdmin");
 async function requireClubRep(request, env, clubId) {
   const authed = await requireAuthedMember(request, env);
   if (authed instanceof Response) return authed;
@@ -22511,7 +22051,6 @@ async function requireClubRep(request, env, clubId) {
   }
   return errorResponse("Forbidden", 403);
 }
-__name(requireClubRep, "requireClubRep");
 async function requireTournamentManager(request, env, tournamentId) {
   const authed = await requireAuthedMember(request, env);
   if (authed instanceof Response) return authed;
@@ -22526,35 +22065,37 @@ async function requireTournamentManager(request, env, tournamentId) {
   }
   return authed;
 }
-__name(requireTournamentManager, "requireTournamentManager");
 function isResponse(value) {
   return value instanceof Response;
 }
-__name(isResponse, "isResponse");
 var init_auth = __esm({
   "utils/auth.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_dist4();
     init_members();
     init_response();
     init_permissions();
-    __name2(verifySupabaseUser, "verifySupabaseUser");
-    __name2(requireUser, "requireUser");
-    __name2(requireAuthedMember, "requireAuthedMember");
-    __name2(requireRole, "requireRole");
-    __name2(requireAdmin, "requireAdmin");
-    __name2(requireClubRep, "requireClubRep");
-    __name2(requireTournamentManager, "requireTournamentManager");
-    __name2(isResponse, "isResponse");
+    __name(verifySupabaseUser, "verifySupabaseUser");
+    __name(requireUser, "requireUser");
+    __name(requireAuthedMember, "requireAuthedMember");
+    __name(requireRole, "requireRole");
+    __name(requireAdmin, "requireAdmin");
+    __name(requireClubRep, "requireClubRep");
+    __name(requireTournamentManager, "requireTournamentManager");
+    __name(isResponse, "isResponse");
   }
 });
+
+// utils/pairing/types.ts
 var init_types3 = __esm({
   "utils/pairing/types.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
   }
 });
+
+// utils/pairing/tiebreakers.ts
 function buildScoreMap(playerIds, games) {
   const scores = /* @__PURE__ */ new Map();
   const opponents = /* @__PURE__ */ new Map();
@@ -22586,7 +22127,6 @@ function buildScoreMap(playerIds, games) {
   }
   return { scores, opponents };
 }
-__name(buildScoreMap, "buildScoreMap");
 function computeBuchholz(playerId, scores, opponents) {
   let total = 0;
   for (const opp of opponents.get(playerId) ?? []) {
@@ -22594,7 +22134,6 @@ function computeBuchholz(playerId, scores, opponents) {
   }
   return total;
 }
-__name(computeBuchholz, "computeBuchholz");
 function computeProgressive(playerId, games) {
   let cumulative = 0;
   let running = 0;
@@ -22615,7 +22154,6 @@ function computeProgressive(playerId, games) {
   }
   return cumulative;
 }
-__name(computeProgressive, "computeProgressive");
 function computeDirectEncounter(playerId, tiedPlayerIds, games) {
   if (tiedPlayerIds.length <= 1) return 0;
   let points = 0;
@@ -22633,7 +22171,6 @@ function computeDirectEncounter(playerId, tiedPlayerIds, games) {
   }
   return points;
 }
-__name(computeDirectEncounter, "computeDirectEncounter");
 function applyTiebreakers(players, games) {
   const ids = players.map((p) => p.id);
   const { scores, opponents } = buildScoreMap(ids, games);
@@ -22653,18 +22190,19 @@ function applyTiebreakers(players, games) {
     };
   });
 }
-__name(applyTiebreakers, "applyTiebreakers");
 var init_tiebreakers = __esm({
   "utils/pairing/tiebreakers.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    __name2(buildScoreMap, "buildScoreMap");
-    __name2(computeBuchholz, "computeBuchholz");
-    __name2(computeProgressive, "computeProgressive");
-    __name2(computeDirectEncounter, "computeDirectEncounter");
-    __name2(applyTiebreakers, "applyTiebreakers");
+    __name(buildScoreMap, "buildScoreMap");
+    __name(computeBuchholz, "computeBuchholz");
+    __name(computeProgressive, "computeProgressive");
+    __name(computeDirectEncounter, "computeDirectEncounter");
+    __name(applyTiebreakers, "applyTiebreakers");
   }
 });
+
+// utils/pairing/player-state.ts
 function buildPlayerStates(players, games) {
   const states = players.map((p) => ({
     id: p.id,
@@ -22712,7 +22250,6 @@ function buildPlayerStates(players, games) {
   const withTiebreaks = applyTiebreakers(states, games);
   return sortPlayersForRanking(withTiebreaks);
 }
-__name(buildPlayerStates, "buildPlayerStates");
 function comparePlayers(a, b) {
   if (b.score !== a.score) return b.score - a.score;
   if (b.buchholz !== a.buchholz) return b.buchholz - a.buchholz;
@@ -22723,27 +22260,26 @@ function comparePlayers(a, b) {
   if (b.rating !== a.rating) return b.rating - a.rating;
   return a.id.localeCompare(b.id);
 }
-__name(comparePlayers, "comparePlayers");
 function sortPlayersForRanking(players) {
   const sorted = [...players].sort(comparePlayers);
   return sorted.map((p, index) => ({ ...p, rank: index + 1 }));
 }
-__name(sortPlayersForRanking, "sortPlayersForRanking");
 function getLastColor(player) {
   return player.colorHistory.length > 0 ? player.colorHistory[player.colorHistory.length - 1] : null;
 }
-__name(getLastColor, "getLastColor");
 var init_player_state = __esm({
   "utils/pairing/player-state.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_tiebreakers();
-    __name2(buildPlayerStates, "buildPlayerStates");
-    __name2(comparePlayers, "comparePlayers");
-    __name2(sortPlayersForRanking, "sortPlayersForRanking");
-    __name2(getLastColor, "getLastColor");
+    __name(buildPlayerStates, "buildPlayerStates");
+    __name(comparePlayers, "comparePlayers");
+    __name(sortPlayersForRanking, "sortPlayersForRanking");
+    __name(getLastColor, "getLastColor");
   }
 });
+
+// utils/pairing/colors.ts
 function getColorPreference(player) {
   const last = getLastColor(player);
   const balance = player.colorBalance;
@@ -22769,7 +22305,6 @@ function getColorPreference(player) {
   const preferred = last === "white" ? "black" : last === "black" ? "white" : "white";
   return { absolute: null, preferred, strength: "mild" };
 }
-__name(getColorPreference, "getColorPreference");
 function colorViolationCost(player, color) {
   const pref = getColorPreference(player);
   if (pref.absolute && pref.absolute !== color) return 1e6;
@@ -22778,7 +22313,6 @@ function colorViolationCost(player, color) {
   }
   return 0;
 }
-__name(colorViolationCost, "colorViolationCost");
 function assignColors(a, b) {
   const prefA = getColorPreference(a);
   const prefB = getColorPreference(b);
@@ -22801,24 +22335,25 @@ function assignColors(a, b) {
   }
   return a.id < b.id ? { white: a, black: b } : { white: b, black: a };
 }
-__name(assignColors, "assignColors");
 var init_colors = __esm({
   "utils/pairing/colors.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_player_state();
-    __name2(getColorPreference, "getColorPreference");
-    __name2(colorViolationCost, "colorViolationCost");
-    __name2(assignColors, "assignColors");
+    __name(getColorPreference, "getColorPreference");
+    __name(colorViolationCost, "colorViolationCost");
+    __name(assignColors, "assignColors");
   }
 });
+
+// utils/pairing/blossom.ts
 function maxWeightBipartiteMatching(s1Count, s2Count, weight) {
   const n = Math.max(s1Count, s2Count);
   const u = new Array(n + 1).fill(0);
   const v = new Array(n + 1).fill(0);
   const p = new Array(n + 1).fill(0);
   const way = new Array(n + 1).fill(0);
-  const cost = /* @__PURE__ */ __name2((i, j) => {
+  const cost = /* @__PURE__ */ __name((i, j) => {
     const w = weight(i, j);
     if (!Number.isFinite(w) || w <= -BASE_WEIGHT / 2) return FORBIDDEN;
     return BASE_WEIGHT - w;
@@ -22867,7 +22402,6 @@ function maxWeightBipartiteMatching(s1Count, s2Count, weight) {
   }
   return pairs;
 }
-__name(maxWeightBipartiteMatching, "maxWeightBipartiteMatching");
 function pairScoreGroupPool(pool, s1Size) {
   const s1 = pool.slice(0, s1Size);
   const s2 = pool.slice(s1Size);
@@ -22890,7 +22424,6 @@ function pairScoreGroupPool(pool, s1Size) {
   }
   return result;
 }
-__name(pairScoreGroupPool, "pairScoreGroupPool");
 function pairingEdgeWeight(a, b, s1Index, s2Index) {
   if (a.opponents.has(b.id)) return Number.NEGATIVE_INFINITY;
   const colors = assignColors(a, b);
@@ -22905,21 +22438,21 @@ function pairingEdgeWeight(a, b, s1Index, s2Index) {
   w -= colorViolationCost(black, "black");
   return w;
 }
-__name(pairingEdgeWeight, "pairingEdgeWeight");
-var FORBIDDEN;
-var BASE_WEIGHT;
+var FORBIDDEN, BASE_WEIGHT;
 var init_blossom = __esm({
   "utils/pairing/blossom.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_colors();
     FORBIDDEN = Number.POSITIVE_INFINITY;
     BASE_WEIGHT = 1e6;
-    __name2(maxWeightBipartiteMatching, "maxWeightBipartiteMatching");
-    __name2(pairScoreGroupPool, "pairScoreGroupPool");
-    __name2(pairingEdgeWeight, "pairingEdgeWeight");
+    __name(maxWeightBipartiteMatching, "maxWeightBipartiteMatching");
+    __name(pairScoreGroupPool, "pairScoreGroupPool");
+    __name(pairingEdgeWeight, "pairingEdgeWeight");
   }
 });
+
+// utils/pairing/score-groups.ts
 function splitS1S2(pool) {
   const s1Size = Math.ceil(pool.length / 2);
   return {
@@ -22928,12 +22461,10 @@ function splitS1S2(pool) {
     s1Size
   };
 }
-__name(splitS1S2, "splitS1S2");
 function selectDownfloater(pool) {
   const { s2 } = splitS1S2(pool);
   return s2[s2.length - 1];
 }
-__name(selectDownfloater, "selectDownfloater");
 function selectByePlayer(pool) {
   const withoutBye = pool.filter((p) => !p.hadBye);
   const candidates = withoutBye.length > 0 ? withoutBye : pool;
@@ -22941,7 +22472,6 @@ function selectByePlayer(pool) {
     (a, b) => a.rank - b.rank || a.rating - b.rating || a.id.localeCompare(b.id)
   )[0];
 }
-__name(selectByePlayer, "selectByePlayer");
 function groupByScore(players) {
   const groups = [];
   let currentScore = null;
@@ -22960,7 +22490,6 @@ function groupByScore(players) {
   }
   return groups;
 }
-__name(groupByScore, "groupByScore");
 function buildHomogeneousPool(bracketPlayers, downfloaters) {
   if (downfloaters.length === 0) return [...bracketPlayers];
   const s1Size = Math.ceil((bracketPlayers.length + downfloaters.length) / 2);
@@ -22969,7 +22498,6 @@ function buildHomogeneousPool(bracketPlayers, downfloaters) {
   const s2 = bracketPlayers.slice(s1MainCount);
   return [...s1Main, ...downfloaters, ...s2];
 }
-__name(buildHomogeneousPool, "buildHomogeneousPool");
 function pairAllBrackets(scoreGroups) {
   const allPairings = [];
   const byes = [];
@@ -22995,7 +22523,6 @@ function pairAllBrackets(scoreGroups) {
   }
   return { pairings: allPairings, byes };
 }
-__name(pairAllBrackets, "pairAllBrackets");
 function toGeneratedPairings(pairings, byes) {
   const result = [];
   for (const bye of byes) {
@@ -23015,21 +22542,22 @@ function toGeneratedPairings(pairings, byes) {
   }
   return result.map((p, index) => ({ ...p, board: index + 1 }));
 }
-__name(toGeneratedPairings, "toGeneratedPairings");
 var init_score_groups = __esm({
   "utils/pairing/score-groups.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_blossom();
-    __name2(splitS1S2, "splitS1S2");
-    __name2(selectDownfloater, "selectDownfloater");
-    __name2(selectByePlayer, "selectByePlayer");
-    __name2(groupByScore, "groupByScore");
-    __name2(buildHomogeneousPool, "buildHomogeneousPool");
-    __name2(pairAllBrackets, "pairAllBrackets");
-    __name2(toGeneratedPairings, "toGeneratedPairings");
+    __name(splitS1S2, "splitS1S2");
+    __name(selectDownfloater, "selectDownfloater");
+    __name(selectByePlayer, "selectByePlayer");
+    __name(groupByScore, "groupByScore");
+    __name(buildHomogeneousPool, "buildHomogeneousPool");
+    __name(pairAllBrackets, "pairAllBrackets");
+    __name(toGeneratedPairings, "toGeneratedPairings");
   }
 });
+
+// utils/pairing/dutch.ts
 function pairRoundOne(players) {
   const sorted = sortPlayersForRanking(
     players.map((p) => ({ ...p, score: 0 }))
@@ -23061,7 +22589,6 @@ function pairRoundOne(players) {
   }
   return pairings;
 }
-__name(pairRoundOne, "pairRoundOne");
 function generateDutchPairings(players, games, round) {
   if (players.length === 0) return [];
   const states = buildPlayerStates(players, games);
@@ -23073,21 +22600,22 @@ function generateDutchPairings(players, games, round) {
   const { pairings, byes } = pairAllBrackets(scoreGroups);
   return toGeneratedPairings(pairings, byes);
 }
-__name(generateDutchPairings, "generateDutchPairings");
 var init_dutch = __esm({
   "utils/pairing/dutch.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_colors();
     init_player_state();
     init_score_groups();
-    __name2(pairRoundOne, "pairRoundOne");
-    __name2(generateDutchPairings, "generateDutchPairings");
+    __name(pairRoundOne, "pairRoundOne");
+    __name(generateDutchPairings, "generateDutchPairings");
   }
 });
+
+// utils/pairing/index.ts
 var init_pairing = __esm({
   "utils/pairing/index.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_types3();
     init_tiebreakers();
@@ -23098,17 +22626,18 @@ var init_pairing = __esm({
     init_dutch();
   }
 });
-var onRequestOptions;
-var onRequestPost;
+
+// api/admin/tournaments/[id]/pairings/generate.ts
+var onRequestOptions, onRequestPost;
 var init_generate = __esm({
   "api/admin/tournaments/[id]/pairings/generate.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_pairing();
     init_response();
-    onRequestOptions = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireTournamentManager(
         context.request,
@@ -23208,18 +22737,18 @@ var init_generate = __esm({
     }, "onRequestPost");
   }
 });
-var VALID_RESULTS;
-var onRequestOptions2;
-var onRequestPatch;
+
+// api/admin/tournaments/[id]/game/[gameId].ts
+var VALID_RESULTS, onRequestOptions2, onRequestPatch;
 var init_gameId = __esm({
   "api/admin/tournaments/[id]/game/[gameId].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
     VALID_RESULTS = ["1-0", "0-1", "1/2-1/2", "bye", "pending"];
-    onRequestOptions2 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPatch = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions2 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPatch = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const gameId = context.params.gameId;
       const authResult = await requireTournamentManager(
@@ -23248,16 +22777,17 @@ var init_gameId = __esm({
     }, "onRequestPatch");
   }
 });
-var onRequestOptions3;
-var onRequestPost2;
+
+// api/admin/clubs/[id]/news.ts
+var onRequestOptions3, onRequestPost2;
 var init_news = __esm({
   "api/admin/clubs/[id]/news.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions3 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost2 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions3 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost2 = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const authResult = await requireClubRep(context.request, context.env, clubId);
       if (isResponse(authResult)) return authResult;
@@ -23281,16 +22811,17 @@ var init_news = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions4;
-var onRequestGet;
+
+// api/admin/clubs/[id]/roster.ts
+var onRequestOptions4, onRequestGet;
 var init_roster = __esm({
   "api/admin/clubs/[id]/roster.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions4 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions4 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const authResult = await requireClubRep(context.request, context.env, clubId);
       if (isResponse(authResult)) return authResult;
@@ -23305,17 +22836,18 @@ var init_roster = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions5;
-var onRequestPatch2;
+
+// api/admin/members/[id]/club.ts
+var onRequestOptions5, onRequestPatch2;
 var init_club = __esm({
   "api/admin/members/[id]/club.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_members();
     init_response();
-    onRequestOptions5 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPatch2 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions5 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPatch2 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const memberId = context.params.id;
@@ -23344,18 +22876,19 @@ var init_club = __esm({
     }, "onRequestPatch");
   }
 });
-var onRequestOptions6;
-var onRequestPatch3;
+
+// api/admin/members/[id]/role.ts
+var onRequestOptions6, onRequestPatch3;
 var init_role = __esm({
   "api/admin/members/[id]/role.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_members();
     init_permissions();
     init_response();
-    onRequestOptions6 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPatch3 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions6 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPatch3 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const memberId = context.params.id;
@@ -23376,18 +22909,19 @@ var init_role = __esm({
     }, "onRequestPatch");
   }
 });
-var onRequestOptions7;
-var onRequestPost3;
+
+// api/admin/tournaments/[id]/directors.ts
+var onRequestOptions7, onRequestPost3;
 var init_directors = __esm({
   "api/admin/tournaments/[id]/directors.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_permissions();
     init_supabase();
     init_response();
-    onRequestOptions7 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost3 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions7 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost3 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authed = await requireAuthedMember(context.request, context.env);
       if (isResponse(authed)) return authed;
@@ -23444,16 +22978,17 @@ var init_directors = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions8;
-var onRequestPost4;
+
+// api/admin/tournaments/[id]/games.ts
+var onRequestOptions8, onRequestPost4;
 var init_games = __esm({
   "api/admin/tournaments/[id]/games.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions8 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost4 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions8 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost4 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireTournamentManager(
         context.request,
@@ -23496,17 +23031,18 @@ var init_games = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions9;
-var onRequestPost5;
+
+// api/admin/tournaments/[id]/generate-pairings.ts
+var onRequestOptions9, onRequestPost5;
 var init_generate_pairings = __esm({
   "api/admin/tournaments/[id]/generate-pairings.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_pairing();
     init_response();
-    onRequestOptions9 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost5 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions9 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost5 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireTournamentManager(
         context.request,
@@ -23606,16 +23142,17 @@ var init_generate_pairings = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions10;
-var onRequestGet2;
+
+// api/admin/tournaments/[id]/manage.ts
+var onRequestOptions10, onRequestGet2;
 var init_manage = __esm({
   "api/admin/tournaments/[id]/manage.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions10 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet2 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions10 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet2 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireTournamentManager(context.request, context.env, tournamentId);
       if (isResponse(authResult)) return authResult;
@@ -23717,16 +23254,17 @@ var init_manage = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions11;
-var onRequestPatch4;
+
+// api/admin/tournaments/[id]/registration.ts
+var onRequestOptions11, onRequestPatch4;
 var init_registration = __esm({
   "api/admin/tournaments/[id]/registration.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions11 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPatch4 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions11 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPatch4 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireTournamentManager(context.request, context.env, tournamentId);
       if (isResponse(authResult)) return authResult;
@@ -23762,18 +23300,17 @@ var init_registration = __esm({
     }, "onRequestPatch");
   }
 });
-var onRequestOptions12;
-var onRequestPost6;
-var onRequestDelete;
-var onRequestGet3;
+
+// api/admin/tournaments/[id]/remind.ts
+var onRequestOptions12, onRequestPost6, onRequestDelete, onRequestGet3;
 var init_remind = __esm({
   "api/admin/tournaments/[id]/remind.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions12 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost6 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions12 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost6 = /* @__PURE__ */ __name(async (context) => {
       const user = await verifySupabaseUser(context.request, context.env);
       if (!user) return errorResponse("Unauthorized", 401);
       const tournamentId = context.params.id;
@@ -23793,7 +23330,7 @@ var init_remind = __esm({
       ).bind(id, user.id, tournamentId, member.email).run();
       return jsonResponse({ success: true });
     }, "onRequestPost");
-    onRequestDelete = /* @__PURE__ */ __name2(async (context) => {
+    onRequestDelete = /* @__PURE__ */ __name(async (context) => {
       const user = await verifySupabaseUser(context.request, context.env);
       if (!user) return errorResponse("Unauthorized", 401);
       const tournamentId = context.params.id;
@@ -23803,7 +23340,7 @@ var init_remind = __esm({
       ).bind(id).run();
       return jsonResponse({ success: true });
     }, "onRequestDelete");
-    onRequestGet3 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestGet3 = /* @__PURE__ */ __name(async (context) => {
       const user = await verifySupabaseUser(context.request, context.env);
       if (!user) return jsonResponse({ opted_in: false });
       const tournamentId = context.params.id;
@@ -23815,18 +23352,17 @@ var init_remind = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions13;
-var onRequestGet4;
-var onRequestPatch5;
-var onRequestDelete2;
+
+// api/admin/clubs/[id].ts
+var onRequestOptions13, onRequestGet4, onRequestPatch5, onRequestDelete2;
 var init_id = __esm({
   "api/admin/clubs/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions13 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet4 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions13 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet4 = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const authResult = await requireClubRep(context.request, context.env, clubId);
       if (isResponse(authResult)) return authResult;
@@ -23844,7 +23380,7 @@ var init_id = __esm({
       ).bind(clubId).all();
       return jsonResponse({ club, officers: officers.results, roster: roster.results });
     }, "onRequestGet");
-    onRequestPatch5 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestPatch5 = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const authResult = await requireClubRep(context.request, context.env, clubId);
       if (isResponse(authResult)) return authResult;
@@ -23852,10 +23388,11 @@ var init_id = __esm({
       if (!existing) return errorResponse("Club not found", 404);
       const body = await parseJsonBody(context.request);
       if (!body) return errorResponse("Invalid JSON body", 400);
+      const color = body.color !== void 0 ? body.color && /^#[0-9A-Fa-f]{6}$/.test(body.color) ? body.color : existing.color : existing.color;
       await context.env.DB.prepare(
         `UPDATE clubs SET
       name = ?, city = ?, location = ?, description = ?,
-      meeting_schedule = ?, contact_email = ?
+      meeting_schedule = ?, contact_email = ?, color = ?
      WHERE id = ?`
       ).bind(
         body.name ?? existing.name,
@@ -23864,20 +23401,19 @@ var init_id = __esm({
         body.description !== void 0 ? body.description : existing.description,
         body.meetingSchedule !== void 0 ? body.meetingSchedule : existing.meeting_schedule,
         body.contactEmail !== void 0 ? body.contactEmail : existing.contact_email,
+        color,
         clubId
       ).run();
       const club = await context.env.DB.prepare("SELECT * FROM clubs WHERE id = ?").bind(clubId).first();
       return jsonResponse({ club });
     }, "onRequestPatch");
-    onRequestDelete2 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestDelete2 = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const existing = await context.env.DB.prepare("SELECT * FROM clubs WHERE id = ?").bind(clubId).first();
       if (!existing) return errorResponse("Club not found", 404);
-      await context.env.DB.prepare(
-        "UPDATE members SET club_id = NULL WHERE club_id = ?"
-      ).bind(clubId).run();
+      await context.env.DB.prepare("UPDATE members SET club_id = NULL WHERE club_id = ?").bind(clubId).run();
       await context.env.DB.prepare("DELETE FROM club_officers WHERE club_id = ?").bind(clubId).run();
       await context.env.DB.prepare("DELETE FROM club_news WHERE club_id = ?").bind(clubId).run();
       await context.env.DB.prepare("DELETE FROM clubs WHERE id = ?").bind(clubId).run();
@@ -23885,16 +23421,17 @@ var init_id = __esm({
     }, "onRequestDelete");
   }
 });
-var onRequestOptions14;
-var onRequestDelete3;
+
+// api/admin/members/[id].ts
+var onRequestOptions14, onRequestDelete3;
 var init_id2 = __esm({
   "api/admin/members/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions14 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestDelete3 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions14 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestDelete3 = /* @__PURE__ */ __name(async (context) => {
       const memberId = context.params.id;
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
@@ -23915,6 +23452,8 @@ var init_id2 = __esm({
     }, "onRequestDelete");
   }
 });
+
+// utils/email.ts
 async function sendEmail(env, message) {
   const from = env.FROM_EMAIL ?? "noreply@louisianachess.org";
   const response = await fetch("https://api.mailchannels.net/tx/v1/send", {
@@ -23938,7 +23477,6 @@ async function sendEmail(env, message) {
     console.warn(`Email send failed (${response.status}): ${error}`);
   }
 }
-__name(sendEmail, "sendEmail");
 function contactConfirmationEmail(data) {
   return {
     to: "",
@@ -23952,7 +23490,6 @@ function contactConfirmationEmail(data) {
     text: `Hi ${data.name}, we received your message and will get back to you soon.`
   };
 }
-__name(contactConfirmationEmail, "contactConfirmationEmail");
 function supportTicketConfirmationEmail(data) {
   return {
     to: "",
@@ -23968,7 +23505,6 @@ function supportTicketConfirmationEmail(data) {
     text: `Hi ${data.name}, your support ticket (${data.ticketId}) has been created. Subject: ${data.subject}`
   };
 }
-__name(supportTicketConfirmationEmail, "supportTicketConfirmationEmail");
 function supportReplyNotificationEmail(data) {
   return {
     to: "",
@@ -23984,30 +23520,28 @@ function supportReplyNotificationEmail(data) {
     text: `New reply on your support ticket "${data.subject}": ${data.replyBody}`
   };
 }
-__name(supportReplyNotificationEmail, "supportReplyNotificationEmail");
 var init_email = __esm({
   "utils/email.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
-    __name2(sendEmail, "sendEmail");
-    __name2(contactConfirmationEmail, "contactConfirmationEmail");
-    __name2(supportTicketConfirmationEmail, "supportTicketConfirmationEmail");
-    __name2(supportReplyNotificationEmail, "supportReplyNotificationEmail");
+    __name(sendEmail, "sendEmail");
+    __name(contactConfirmationEmail, "contactConfirmationEmail");
+    __name(supportTicketConfirmationEmail, "supportTicketConfirmationEmail");
+    __name(supportReplyNotificationEmail, "supportReplyNotificationEmail");
   }
 });
-var onRequestOptions15;
-var onRequestGet5;
-var onRequestPatch6;
-var onRequestPost7;
+
+// api/admin/support/[id].ts
+var onRequestOptions15, onRequestGet5, onRequestPatch6, onRequestPost7;
 var init_id3 = __esm({
   "api/admin/support/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
     init_email();
-    onRequestOptions15 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet5 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions15 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet5 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const ticketId = context.params.id;
@@ -24020,7 +23554,7 @@ var init_id3 = __esm({
       ).bind(ticketId).all();
       return jsonResponse({ ticket, messages: messages.results });
     }, "onRequestGet");
-    onRequestPatch6 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestPatch6 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const ticketId = context.params.id;
@@ -24031,7 +23565,7 @@ var init_id3 = __esm({
       ).bind(body.status, ticketId).run();
       return jsonResponse({ success: true });
     }, "onRequestPatch");
-    onRequestPost7 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestPost7 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const ticketId = context.params.id;
@@ -24061,17 +23595,17 @@ var init_id3 = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions16;
-var onRequestPatch7;
-var onRequestDelete4;
+
+// api/admin/tournaments/[id].ts
+var onRequestOptions16, onRequestPatch7, onRequestDelete4;
 var init_id4 = __esm({
   "api/admin/tournaments/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions16 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPatch7 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions16 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPatch7 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireTournamentManager(
         context.request,
@@ -24090,11 +23624,18 @@ var init_id4 = __esm({
       }
       const sections = body.sections != null ? JSON.stringify(body.sections) : existing.sections;
       const isRated = body.isRated !== void 0 ? body.isRated ? 1 : 0 : existing.is_rated;
+      const isVisible = body.isVisible !== void 0 ? body.isVisible ? 1 : 0 : existing.is_visible;
+      const roundSchedule = body.roundSchedule !== void 0 ? JSON.stringify(body.roundSchedule) : existing.round_schedule;
+      const customDetails = body.customDetails !== void 0 ? JSON.stringify(body.customDetails) : existing.custom_details;
+      const registrationClosesAt = body.registrationClosesAt !== void 0 ? body.registrationClosesAt : existing.registration_closes_at;
+      const timeControl = body.timeControl !== void 0 ? body.timeControl : existing.time_control;
       await context.env.DB.prepare(
         `UPDATE tournaments SET
       name = ?, location = ?, venue = ?, date = ?, end_date = ?,
       entry_fee = ?, sections = ?, rounds = ?, max_players = ?,
-      status = ?, description = ?, registration_deadline = ?, is_rated = ?
+      status = ?, description = ?, registration_deadline = ?,
+      is_rated = ?, is_visible = ?, round_schedule = ?,
+      registration_closes_at = ?, custom_details = ?, time_control = ?
      WHERE id = ?`
       ).bind(
         body.name ?? existing.name,
@@ -24110,6 +23651,11 @@ var init_id4 = __esm({
         body.description !== void 0 ? body.description : existing.description,
         body.registrationDeadline !== void 0 ? body.registrationDeadline : existing.registration_deadline,
         isRated,
+        isVisible,
+        roundSchedule ?? null,
+        registrationClosesAt ?? null,
+        customDetails ?? null,
+        timeControl ?? null,
         tournamentId
       ).run();
       const tournament = await context.env.DB.prepare(
@@ -24127,7 +23673,7 @@ var init_id4 = __esm({
         tournament: { ...tournament, sections: parsedSections }
       });
     }, "onRequestPatch");
-    onRequestDelete4 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestDelete4 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
@@ -24145,13 +23691,14 @@ var init_id4 = __esm({
     }, "onRequestDelete");
   }
 });
+
+// utils/uscf.ts
 function isRatingCacheStale(updatedAt) {
   if (!updatedAt) return true;
   const updated = Date.parse(updatedAt);
   if (Number.isNaN(updated)) return true;
   return Date.now() - updated > RATING_CACHE_MS;
 }
-__name(isRatingCacheStale, "isRatingCacheStale");
 async function fetchUscfById(uscfId) {
   const normalizedId = uscfId.trim();
   if (!/^\d+$/.test(normalizedId)) return { player: null, scraperDown: false };
@@ -24203,7 +23750,6 @@ async function fetchUscfById(uscfId) {
     return { player: null, scraperDown: true };
   }
 }
-__name(fetchUscfById, "fetchUscfById");
 async function searchUscfByName(lastName, firstName) {
   const query = firstName ? `${lastName.trim()}, ${firstName.trim()}` : lastName.trim();
   try {
@@ -24218,12 +23764,12 @@ async function searchUscfByName(lastName, firstName) {
       return { players: [], scraperDown: true };
     }
     const rowMatches = html.match(/<tr><td valign=top>[\s\S]*?<\/tr>/gi) ?? [];
-    const capitalize = /* @__PURE__ */ __name2((s) => s.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" "), "capitalize");
+    const capitalize = /* @__PURE__ */ __name((s) => s.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" "), "capitalize");
     const players = [];
     for (const row of rowMatches) {
       const cells = row.match(/<td valign=top>([\s\S]*?)<\/td>/gi) ?? [];
       if (cells.length < 10) continue;
-      const val = /* @__PURE__ */ __name2((i) => cells[i].replace(/<[^>]+>/g, "").replace(/&nbsp;/g, "").trim(), "val");
+      const val = /* @__PURE__ */ __name((i) => cells[i].replace(/<[^>]+>/g, "").replace(/&nbsp;/g, "").trim(), "val");
       const uscfId = val(0);
       if (!/^\d+$/.test(uscfId)) continue;
       const ratingRaw = val(1);
@@ -24259,7 +23805,6 @@ async function searchUscfByName(lastName, firstName) {
     return { players: [], scraperDown: true };
   }
 }
-__name(searchUscfByName, "searchUscfByName");
 async function fetchUscfRatingFromWeb(uscfId) {
   const { player } = await fetchUscfById(uscfId);
   return {
@@ -24268,7 +23813,6 @@ async function fetchUscfRatingFromWeb(uscfId) {
     name: player?.fullName ?? null
   };
 }
-__name(fetchUscfRatingFromWeb, "fetchUscfRatingFromWeb");
 async function refreshMemberUscfRating(db, memberId, uscfId) {
   const lookup = await fetchUscfRatingFromWeb(uscfId);
   const now = (/* @__PURE__ */ new Date()).toISOString();
@@ -24277,32 +23821,31 @@ async function refreshMemberUscfRating(db, memberId, uscfId) {
   ).bind(lookup.rating, now, memberId).run();
   return lookup.rating;
 }
-__name(refreshMemberUscfRating, "refreshMemberUscfRating");
-var RATING_CACHE_MS;
-var MSA_BASE;
+var RATING_CACHE_MS, MSA_BASE;
 var init_uscf = __esm({
   "utils/uscf.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     RATING_CACHE_MS = 7 * 24 * 60 * 60 * 1e3;
     MSA_BASE = "https://www.uschess.org/msa";
-    __name2(isRatingCacheStale, "isRatingCacheStale");
-    __name2(fetchUscfById, "fetchUscfById");
-    __name2(searchUscfByName, "searchUscfByName");
-    __name2(fetchUscfRatingFromWeb, "fetchUscfRatingFromWeb");
-    __name2(refreshMemberUscfRating, "refreshMemberUscfRating");
+    __name(isRatingCacheStale, "isRatingCacheStale");
+    __name(fetchUscfById, "fetchUscfById");
+    __name(searchUscfByName, "searchUscfByName");
+    __name(fetchUscfRatingFromWeb, "fetchUscfRatingFromWeb");
+    __name(refreshMemberUscfRating, "refreshMemberUscfRating");
   }
 });
-var onRequestOptions17;
-var onRequestGet6;
+
+// api/tournaments/uscf/[id].ts
+var onRequestOptions17, onRequestGet6;
 var init_id5 = __esm({
   "api/tournaments/uscf/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_uscf();
     init_response();
-    onRequestOptions17 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet6 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions17 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet6 = /* @__PURE__ */ __name(async (context) => {
       const uscfId = context.params.id;
       if (!uscfId?.trim()) {
         return errorResponse("USCF ID is required", 400);
@@ -24330,16 +23873,17 @@ var init_id5 = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions18;
-var onRequestPost8;
+
+// api/clubs/[id]/news.ts
+var onRequestOptions18, onRequestPost8;
 var init_news2 = __esm({
   "api/clubs/[id]/news.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions18 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost8 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions18 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost8 = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const authResult = await requireClubRep(context.request, context.env, clubId);
       if (isResponse(authResult)) return authResult;
@@ -24365,16 +23909,17 @@ var init_news2 = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions19;
-var onRequestGet7;
+
+// api/clubs/[id]/roster.ts
+var onRequestOptions19, onRequestGet7;
 var init_roster2 = __esm({
   "api/clubs/[id]/roster.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions19 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet7 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions19 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet7 = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const authResult = await requireClubRep(context.request, context.env, clubId);
       if (isResponse(authResult)) return authResult;
@@ -24388,17 +23933,18 @@ var init_roster2 = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions20;
-var onRequestPost9;
+
+// api/tournaments/[id]/generate.ts
+var onRequestOptions20, onRequestPost9;
 var init_generate2 = __esm({
   "api/tournaments/[id]/generate.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_pairing();
     init_response();
-    onRequestOptions20 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost9 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions20 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost9 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireTournamentManager(
         context.request,
@@ -24498,17 +24044,18 @@ var init_generate2 = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions21;
-var onRequestPost10;
+
+// api/tournaments/[id]/generate-pairings.ts
+var onRequestOptions21, onRequestPost10;
 var init_generate_pairings2 = __esm({
   "api/tournaments/[id]/generate-pairings.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_pairing();
     init_response();
-    onRequestOptions21 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost10 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions21 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost10 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const authResult = await requireTournamentManager(
         context.request,
@@ -24608,16 +24155,17 @@ var init_generate_pairings2 = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions22;
-var onRequestGet8;
+
+// api/admin/members.ts
+var onRequestOptions22, onRequestGet8;
 var init_members2 = __esm({
   "api/admin/members.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions22 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet8 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions22 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet8 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const { results } = await context.env.DB.prepare(
@@ -24630,16 +24178,17 @@ var init_members2 = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions23;
-var onRequestGet9;
+
+// api/admin/support.ts
+var onRequestOptions23, onRequestGet9;
 var init_support = __esm({
   "api/admin/support.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions23 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet9 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions23 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet9 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireAdmin(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const status = new URL(context.request.url).searchParams.get("status");
@@ -24656,21 +24205,21 @@ var init_support = __esm({
     }, "onRequestGet");
   }
 });
+
+// api/admin/tournaments.ts
 function slugify(value) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 64);
 }
-__name(slugify, "slugify");
-var onRequestOptions24;
-var onRequestPost11;
+var onRequestOptions24, onRequestPost11;
 var init_tournaments = __esm({
   "api/admin/tournaments.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    __name2(slugify, "slugify");
-    onRequestOptions24 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost11 = /* @__PURE__ */ __name2(async (context) => {
+    __name(slugify, "slugify");
+    onRequestOptions24 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost11 = /* @__PURE__ */ __name(async (context) => {
       const authed = await requireAuthedMember(context.request, context.env);
       if (isResponse(authed)) return authed;
       const { member } = authed;
@@ -24729,21 +24278,20 @@ var init_tournaments = __esm({
     }, "onRequestPost");
   }
 });
+
+// api/membership/checkout.ts
 function membershipPaymentUrl(env, tier) {
-  const urls22 = {
+  const urls2 = {
     regular: env.STRIPE_MEMBERSHIP_REGULAR_URL,
     scholastic: env.STRIPE_MEMBERSHIP_SCHOLASTIC_URL,
     club: env.STRIPE_MEMBERSHIP_CLUB_URL
   };
-  return urls22[tier] ?? env.STRIPE_MEMBERSHIP_URL ?? "https://buy.stripe.com/test_lca_membership_placeholder";
+  return urls2[tier] ?? env.STRIPE_MEMBERSHIP_URL ?? "https://buy.stripe.com/test_lca_membership_placeholder";
 }
-__name(membershipPaymentUrl, "membershipPaymentUrl");
-var TIER_PRICES;
-var onRequestOptions25;
-var onRequestPost12;
+var TIER_PRICES, onRequestOptions25, onRequestPost12;
 var init_checkout = __esm({
   "api/membership/checkout.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
@@ -24752,9 +24300,9 @@ var init_checkout = __esm({
       scholastic: 20,
       club: 150
     };
-    __name2(membershipPaymentUrl, "membershipPaymentUrl");
-    onRequestOptions25 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost12 = /* @__PURE__ */ __name2(async (context) => {
+    __name(membershipPaymentUrl, "membershipPaymentUrl");
+    onRequestOptions25 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost12 = /* @__PURE__ */ __name(async (context) => {
       const authed = await requireAuthedMember(context.request, context.env);
       if (isResponse(authed)) return authed;
       const body = await parseJsonBody(context.request);
@@ -24778,23 +24326,23 @@ var init_checkout = __esm({
     }, "onRequestPost");
   }
 });
+
+// api/membership/confirm.ts
 function oneYearFromNow() {
   const date = /* @__PURE__ */ new Date();
   date.setFullYear(date.getFullYear() + 1);
   return date.toISOString().slice(0, 10);
 }
-__name(oneYearFromNow, "oneYearFromNow");
-var onRequestOptions26;
-var onRequestPost13;
+var onRequestOptions26, onRequestPost13;
 var init_confirm = __esm({
   "api/membership/confirm.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    __name2(oneYearFromNow, "oneYearFromNow");
-    onRequestOptions26 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost13 = /* @__PURE__ */ __name2(async (context) => {
+    __name(oneYearFromNow, "oneYearFromNow");
+    onRequestOptions26 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost13 = /* @__PURE__ */ __name(async (context) => {
       const authed = await requireAuthedMember(context.request, context.env);
       if (isResponse(authed)) return authed;
       const body = await parseJsonBody(context.request);
@@ -24829,14 +24377,16 @@ var init_confirm = __esm({
     }, "onRequestPost");
   }
 });
+
+// api/uscf/lookup.ts
 var onRequestGet10;
 var init_lookup = __esm({
   "api/uscf/lookup.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_uscf();
     init_response();
-    onRequestGet10 = /* @__PURE__ */ __name2(async (ctx) => {
+    onRequestGet10 = /* @__PURE__ */ __name(async (ctx) => {
       const url = new URL(ctx.request.url);
       const id = url.searchParams.get("id")?.trim();
       if (!id || !/^\d+$/.test(id)) {
@@ -24850,14 +24400,16 @@ var init_lookup = __esm({
     }, "onRequestGet");
   }
 });
+
+// api/uscf/search.ts
 var onRequestGet11;
 var init_search = __esm({
   "api/uscf/search.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_uscf();
     init_response();
-    onRequestGet11 = /* @__PURE__ */ __name2(async (ctx) => {
+    onRequestGet11 = /* @__PURE__ */ __name(async (ctx) => {
       const url = new URL(ctx.request.url);
       const lastName = url.searchParams.get("lastName")?.trim();
       const firstName = url.searchParams.get("firstName")?.trim();
@@ -24869,12 +24421,13 @@ var init_search = __esm({
     }, "onRequestGet");
   }
 });
+
+// api/webhooks/stripe.ts
 function oneYearFromNow2() {
   const date = /* @__PURE__ */ new Date();
   date.setFullYear(date.getFullYear() + 1);
   return date.toISOString().slice(0, 10);
 }
-__name(oneYearFromNow2, "oneYearFromNow2");
 async function completePayment(db, paymentId) {
   const payment = await db.prepare("SELECT * FROM payments WHERE id = ?").bind(paymentId).first();
   if (!payment || payment.status === "completed") {
@@ -24904,18 +24457,16 @@ async function completePayment(db, paymentId) {
   }
   return false;
 }
-__name(completePayment, "completePayment");
-var onRequestOptions27;
-var onRequestPost14;
+var onRequestOptions27, onRequestPost14;
 var init_stripe = __esm({
   "api/webhooks/stripe.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_response();
-    __name2(oneYearFromNow2, "oneYearFromNow");
-    __name2(completePayment, "completePayment");
-    onRequestOptions27 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost14 = /* @__PURE__ */ __name2(async (context) => {
+    __name(oneYearFromNow2, "oneYearFromNow");
+    __name(completePayment, "completePayment");
+    onRequestOptions27 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost14 = /* @__PURE__ */ __name(async (context) => {
       const body = await parseJsonBody(
         context.request
       );
@@ -24945,17 +24496,17 @@ var init_stripe = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions28;
-var onRequestGet12;
-var onRequestPatch8;
+
+// api/clubs/[id].ts
+var onRequestOptions28, onRequestGet12, onRequestPatch8;
 var init_id6 = __esm({
   "api/clubs/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions28 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet12 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions28 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet12 = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const club = await context.env.DB.prepare("SELECT * FROM clubs WHERE id = ?").bind(clubId).first();
       if (!club) {
@@ -24988,7 +24539,7 @@ var init_id6 = __esm({
         news: news.results
       });
     }, "onRequestGet");
-    onRequestPatch8 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestPatch8 = /* @__PURE__ */ __name(async (context) => {
       const clubId = context.params.id;
       const authResult = await requireClubRep(context.request, context.env, clubId);
       if (isResponse(authResult)) return authResult;
@@ -25021,16 +24572,17 @@ var init_id6 = __esm({
     }, "onRequestPatch");
   }
 });
-var onRequestOptions29;
-var onRequestPatch9;
+
+// api/registrations/[id].ts
+var onRequestOptions29, onRequestPatch9;
 var init_id7 = __esm({
   "api/registrations/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    onRequestOptions29 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPatch9 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions29 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPatch9 = /* @__PURE__ */ __name(async (context) => {
       const registrationId = context.params.id;
       const authed = await requireAuthedMember(context.request, context.env);
       if (isResponse(authed)) return authed;
@@ -25072,18 +24624,18 @@ var init_id7 = __esm({
     }, "onRequestPatch");
   }
 });
-var onRequestOptions30;
-var onRequestGet13;
-var onRequestPost15;
+
+// api/support/[id].ts
+var onRequestOptions30, onRequestGet13, onRequestPost15;
 var init_id8 = __esm({
   "api/support/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
     init_email();
-    onRequestOptions30 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet13 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions30 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet13 = /* @__PURE__ */ __name(async (context) => {
       const user = await verifySupabaseUser(context.request, context.env);
       if (!user) return errorResponse("Unauthorized", 401);
       const ticketId = context.params.id;
@@ -25096,7 +24648,7 @@ var init_id8 = __esm({
       ).bind(ticketId).all();
       return jsonResponse({ ticket, messages: messages.results });
     }, "onRequestGet");
-    onRequestPost15 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestPost15 = /* @__PURE__ */ __name(async (context) => {
       const user = await verifySupabaseUser(context.request, context.env);
       if (!user) return errorResponse("Unauthorized", 401);
       const ticketId = context.params.id;
@@ -25129,16 +24681,17 @@ var init_id8 = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions31;
-var onRequestGet14;
+
+// api/tournaments/[id].ts
+var onRequestOptions31, onRequestGet14;
 var init_id9 = __esm({
   "api/tournaments/[id].ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_response();
     init_auth();
-    onRequestOptions31 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet14 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions31 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet14 = /* @__PURE__ */ __name(async (context) => {
       const tournamentId = context.params.id;
       const tournament = await context.env.DB.prepare(
         "SELECT * FROM tournaments WHERE id = ?"
@@ -25227,15 +24780,16 @@ var init_id9 = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions32;
-var onRequestGet15;
+
+// api/clubs.ts
+var onRequestOptions32, onRequestGet15;
 var init_clubs = __esm({
   "api/clubs.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_response();
-    onRequestOptions32 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet15 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions32 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet15 = /* @__PURE__ */ __name(async (context) => {
       const { results } = await context.env.DB.prepare(
         `SELECT id, name, city, meeting_schedule FROM clubs ORDER BY name ASC`
       ).all();
@@ -25243,17 +24797,17 @@ var init_clubs = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions33;
-var onRequestPost16;
-var onRequestGet16;
+
+// api/contact.ts
+var onRequestOptions33, onRequestPost16, onRequestGet16;
 var init_contact = __esm({
   "api/contact.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_response();
     init_email();
-    onRequestOptions33 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost16 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions33 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost16 = /* @__PURE__ */ __name(async (context) => {
       const body = await parseJsonBody(context.request);
       if (!body?.name || !body?.email || !body?.subject || !body?.body) {
         return errorResponse("All fields are required", 400);
@@ -25283,7 +24837,7 @@ var init_contact = __esm({
       await sendEmail(context.env, { ...confirmation, to: body.email });
       return jsonResponse({ success: true, id }, 201);
     }, "onRequestPost");
-    onRequestGet16 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestGet16 = /* @__PURE__ */ __name(async (context) => {
       const messages = await context.env.DB.prepare(
         `SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 100`
       ).all();
@@ -25291,31 +24845,32 @@ var init_contact = __esm({
     }, "onRequestGet");
   }
 });
+
+// api/health.ts
 var onRequestGet17;
 var init_health = __esm({
   "api/health.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_response();
-    onRequestGet17 = /* @__PURE__ */ __name2(async () => {
+    onRequestGet17 = /* @__PURE__ */ __name(async () => {
       return jsonResponse({ status: "ok", service: "lca-api" });
     }, "onRequestGet");
   }
 });
-var onRequestOptions34;
-var onRequestGet18;
-var onRequestPost17;
-var onRequestPatch10;
+
+// api/me.ts
+var onRequestOptions34, onRequestGet18, onRequestPost17, onRequestPatch10;
 var init_me = __esm({
   "api/me.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_members();
     init_permissions();
     init_response();
-    onRequestOptions34 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet18 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions34 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet18 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireUser(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       let member = await getMemberById(context.env.DB, authResult.id);
@@ -25347,13 +24902,13 @@ var init_me = __esm({
         directedTournaments
       });
     }, "onRequestGet");
-    onRequestPost17 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestPost17 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireUser(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const member = await upsertMemberFromAuth(context.env.DB, authResult, context.env);
       return jsonResponse({ member }, 201);
     }, "onRequestPost");
-    onRequestPatch10 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestPatch10 = /* @__PURE__ */ __name(async (context) => {
       const authResult = await requireUser(context.request, context.env);
       if (isResponse(authResult)) return authResult;
       const body = await parseJsonBody(context.request);
@@ -25375,6 +24930,8 @@ var init_me = __esm({
     }, "onRequestPatch");
   }
 });
+
+// api/registrations.ts
 function parseSectionNames(sectionsJson) {
   try {
     const parsed = JSON.parse(sectionsJson);
@@ -25383,7 +24940,6 @@ function parseSectionNames(sectionsJson) {
     return [];
   }
 }
-__name(parseSectionNames, "parseSectionNames");
 function getSectionEntryFee(sectionsJson, sectionName, defaultFee) {
   try {
     const parsed = JSON.parse(sectionsJson);
@@ -25393,24 +24949,21 @@ function getSectionEntryFee(sectionsJson, sectionName, defaultFee) {
     return defaultFee;
   }
 }
-__name(getSectionEntryFee, "getSectionEntryFee");
 function paymentUrl(env) {
   return env.STRIPE_TOURNAMENT_PAYMENT_URL ?? "https://buy.stripe.com/test_lca_tournament_placeholder";
 }
-__name(paymentUrl, "paymentUrl");
-var onRequestOptions35;
-var onRequestPost18;
+var onRequestOptions35, onRequestPost18;
 var init_registrations = __esm({
   "api/registrations.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
-    __name2(parseSectionNames, "parseSectionNames");
-    __name2(getSectionEntryFee, "getSectionEntryFee");
-    __name2(paymentUrl, "paymentUrl");
-    onRequestOptions35 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost18 = /* @__PURE__ */ __name2(async (context) => {
+    __name(parseSectionNames, "parseSectionNames");
+    __name(getSectionEntryFee, "getSectionEntryFee");
+    __name(paymentUrl, "paymentUrl");
+    onRequestOptions35 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost18 = /* @__PURE__ */ __name(async (context) => {
       const authed = await requireAuthedMember(context.request, context.env);
       if (isResponse(authed)) return authed;
       const body = await parseJsonBody(context.request);
@@ -25489,18 +25042,18 @@ var init_registrations = __esm({
     }, "onRequestPost");
   }
 });
-var onRequestOptions36;
-var onRequestPost19;
-var onRequestGet19;
+
+// api/support.ts
+var onRequestOptions36, onRequestPost19, onRequestGet19;
 var init_support2 = __esm({
   "api/support.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_auth();
     init_response();
     init_email();
-    onRequestOptions36 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestPost19 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions36 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestPost19 = /* @__PURE__ */ __name(async (context) => {
       const body = await parseJsonBody(context.request);
       if (!body?.name || !body?.email || !body?.subject || !body?.body) {
         return errorResponse("All fields are required", 400);
@@ -25556,7 +25109,7 @@ var init_support2 = __esm({
       }
       return jsonResponse({ success: true, ticketId }, 201);
     }, "onRequestPost");
-    onRequestGet19 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestGet19 = /* @__PURE__ */ __name(async (context) => {
       const user = await verifySupabaseUser(context.request, context.env);
       if (!user) return errorResponse("Unauthorized", 401);
       const member = await context.env.DB.prepare(
@@ -25574,16 +25127,17 @@ var init_support2 = __esm({
     }, "onRequestGet");
   }
 });
-var onRequestOptions37;
-var onRequestGet20;
+
+// api/tournaments.ts
+var onRequestOptions37, onRequestGet20;
 var init_tournaments2 = __esm({
   "api/tournaments.ts"() {
-    init_functionsRoutes_0_8253679978614472();
+    init_functionsRoutes_0_5712509009623857();
     init_checked_fetch();
     init_response();
     init_auth();
-    onRequestOptions37 = /* @__PURE__ */ __name2(async () => handleOptions(), "onRequestOptions");
-    onRequestGet20 = /* @__PURE__ */ __name2(async (context) => {
+    onRequestOptions37 = /* @__PURE__ */ __name(async () => handleOptions(), "onRequestOptions");
+    onRequestGet20 = /* @__PURE__ */ __name(async (context) => {
       let isPrivileged = false;
       try {
         const authed = await requireAuthedMember(context.request, context.env);
@@ -25594,9 +25148,15 @@ var init_tournaments2 = __esm({
         }
       } catch {
       }
-      const { results } = await context.env.DB.prepare(
-        isPrivileged ? `SELECT * FROM tournaments ORDER BY date ASC` : `SELECT * FROM tournaments WHERE is_visible = 1 ORDER BY date ASC`
-      ).all();
+      const query = isPrivileged ? `SELECT t.*, c.color AS club_color, c.name AS club_name
+       FROM tournaments t
+       LEFT JOIN clubs c ON t.club_id = c.id
+       ORDER BY t.date ASC` : `SELECT t.*, c.color AS club_color, c.name AS club_name
+       FROM tournaments t
+       LEFT JOIN clubs c ON t.club_id = c.id
+       WHERE t.is_visible = 1
+       ORDER BY t.date ASC`;
+      const { results } = await context.env.DB.prepare(query).all();
       const tournaments = (results ?? []).map((t) => {
         let sections = [];
         try {
@@ -25610,9 +25170,11 @@ var init_tournaments2 = __esm({
     }, "onRequestGet");
   }
 });
+
+// ../.wrangler/tmp/pages-g5k377/functionsRoutes-0.5712509009623857.mjs
 var routes;
-var init_functionsRoutes_0_8253679978614472 = __esm({
-  "../.wrangler/tmp/pages-i4rutd/functionsRoutes-0.8253679978614472.mjs"() {
+var init_functionsRoutes_0_5712509009623857 = __esm({
+  "../.wrangler/tmp/pages-g5k377/functionsRoutes-0.5712509009623857.mjs"() {
     init_generate();
     init_generate();
     init_gameId();
@@ -26337,13 +25899,21 @@ var init_functionsRoutes_0_8253679978614472 = __esm({
     ];
   }
 });
-init_functionsRoutes_0_8253679978614472();
+
+// ../.wrangler/tmp/bundle-3vKEAb/middleware-loader.entry.ts
+init_functionsRoutes_0_5712509009623857();
 init_checked_fetch();
-init_functionsRoutes_0_8253679978614472();
+
+// ../.wrangler/tmp/bundle-3vKEAb/middleware-insertion-facade.js
+init_functionsRoutes_0_5712509009623857();
 init_checked_fetch();
-init_functionsRoutes_0_8253679978614472();
+
+// ../node_modules/wrangler/templates/pages-template-worker.ts
+init_functionsRoutes_0_5712509009623857();
 init_checked_fetch();
-init_functionsRoutes_0_8253679978614472();
+
+// ../node_modules/wrangler/node_modules/path-to-regexp/dist.es2015/index.js
+init_functionsRoutes_0_5712509009623857();
 init_checked_fetch();
 function lexer(str) {
   var tokens = [];
@@ -26429,7 +25999,6 @@ function lexer(str) {
   return tokens;
 }
 __name(lexer, "lexer");
-__name2(lexer, "lexer");
 function parse(str, options) {
   if (options === void 0) {
     options = {};
@@ -26440,18 +26009,18 @@ function parse(str, options) {
   var key = 0;
   var i = 0;
   var path = "";
-  var tryConsume = /* @__PURE__ */ __name2(function(type) {
+  var tryConsume = /* @__PURE__ */ __name(function(type) {
     if (i < tokens.length && tokens[i].type === type)
       return tokens[i++].value;
   }, "tryConsume");
-  var mustConsume = /* @__PURE__ */ __name2(function(type) {
+  var mustConsume = /* @__PURE__ */ __name(function(type) {
     var value2 = tryConsume(type);
     if (value2 !== void 0)
       return value2;
     var _a2 = tokens[i], nextType = _a2.type, index = _a2.index;
     throw new TypeError("Unexpected ".concat(nextType, " at ").concat(index, ", expected ").concat(type));
   }, "mustConsume");
-  var consumeText = /* @__PURE__ */ __name2(function() {
+  var consumeText = /* @__PURE__ */ __name(function() {
     var result2 = "";
     var value2;
     while (value2 = tryConsume("CHAR") || tryConsume("ESCAPED_CHAR")) {
@@ -26459,7 +26028,7 @@ function parse(str, options) {
     }
     return result2;
   }, "consumeText");
-  var isSafe = /* @__PURE__ */ __name2(function(value2) {
+  var isSafe = /* @__PURE__ */ __name(function(value2) {
     for (var _i = 0, delimiter_1 = delimiter; _i < delimiter_1.length; _i++) {
       var char2 = delimiter_1[_i];
       if (value2.indexOf(char2) > -1)
@@ -26467,7 +26036,7 @@ function parse(str, options) {
     }
     return false;
   }, "isSafe");
-  var safePattern = /* @__PURE__ */ __name2(function(prefix2) {
+  var safePattern = /* @__PURE__ */ __name(function(prefix2) {
     var prev = result[result.length - 1];
     var prevText = prefix2 || (prev && typeof prev === "string" ? prev : "");
     if (prev && !prevText) {
@@ -26530,14 +26099,12 @@ function parse(str, options) {
   return result;
 }
 __name(parse, "parse");
-__name2(parse, "parse");
 function match(str, options) {
   var keys = [];
   var re = pathToRegexp(str, keys, options);
   return regexpToFunction(re, keys, options);
 }
 __name(match, "match");
-__name2(match, "match");
 function regexpToFunction(re, keys, options) {
   if (options === void 0) {
     options = {};
@@ -26551,7 +26118,7 @@ function regexpToFunction(re, keys, options) {
       return false;
     var path = m[0], index = m.index;
     var params = /* @__PURE__ */ Object.create(null);
-    var _loop_1 = /* @__PURE__ */ __name2(function(i2) {
+    var _loop_1 = /* @__PURE__ */ __name(function(i2) {
       if (m[i2] === void 0)
         return "continue";
       var key = keys[i2 - 1];
@@ -26570,17 +26137,14 @@ function regexpToFunction(re, keys, options) {
   };
 }
 __name(regexpToFunction, "regexpToFunction");
-__name2(regexpToFunction, "regexpToFunction");
 function escapeString(str) {
   return str.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
 }
 __name(escapeString, "escapeString");
-__name2(escapeString, "escapeString");
 function flags(options) {
   return options && options.sensitive ? "" : "i";
 }
 __name(flags, "flags");
-__name2(flags, "flags");
 function regexpToRegexp(path, keys) {
   if (!keys)
     return path;
@@ -26601,7 +26165,6 @@ function regexpToRegexp(path, keys) {
   return path;
 }
 __name(regexpToRegexp, "regexpToRegexp");
-__name2(regexpToRegexp, "regexpToRegexp");
 function arrayToRegexp(paths, keys, options) {
   var parts = paths.map(function(path) {
     return pathToRegexp(path, keys, options).source;
@@ -26609,12 +26172,10 @@ function arrayToRegexp(paths, keys, options) {
   return new RegExp("(?:".concat(parts.join("|"), ")"), flags(options));
 }
 __name(arrayToRegexp, "arrayToRegexp");
-__name2(arrayToRegexp, "arrayToRegexp");
 function stringToRegexp(path, keys, options) {
   return tokensToRegexp(parse(path, options), keys, options);
 }
 __name(stringToRegexp, "stringToRegexp");
-__name2(stringToRegexp, "stringToRegexp");
 function tokensToRegexp(tokens, keys, options) {
   if (options === void 0) {
     options = {};
@@ -26670,7 +26231,6 @@ function tokensToRegexp(tokens, keys, options) {
   return new RegExp(route, flags(options));
 }
 __name(tokensToRegexp, "tokensToRegexp");
-__name2(tokensToRegexp, "tokensToRegexp");
 function pathToRegexp(path, keys, options) {
   if (path instanceof RegExp)
     return regexpToRegexp(path, keys);
@@ -26679,7 +26239,8 @@ function pathToRegexp(path, keys, options) {
   return stringToRegexp(path, keys, options);
 }
 __name(pathToRegexp, "pathToRegexp");
-__name2(pathToRegexp, "pathToRegexp");
+
+// ../node_modules/wrangler/templates/pages-template-worker.ts
 var escapeRegex = /[.+?^${}()|[\]\\]/g;
 function* executeRequest(request) {
   const requestPath = new URL(request.url).pathname;
@@ -26730,14 +26291,13 @@ function* executeRequest(request) {
   }
 }
 __name(executeRequest, "executeRequest");
-__name2(executeRequest, "executeRequest");
 var pages_template_worker_default = {
   async fetch(originalRequest, env, workerContext) {
     let request = originalRequest;
     const handlerIterator = executeRequest(request);
     let data = {};
     let isFailOpen = false;
-    const next = /* @__PURE__ */ __name2(async (input, init) => {
+    const next = /* @__PURE__ */ __name(async (input, init) => {
       if (input !== void 0) {
         let url = input;
         if (typeof input === "string") {
@@ -26764,7 +26324,7 @@ var pages_template_worker_default = {
           },
           env,
           waitUntil: workerContext.waitUntil.bind(workerContext),
-          passThroughOnException: /* @__PURE__ */ __name2(() => {
+          passThroughOnException: /* @__PURE__ */ __name(() => {
             isFailOpen = true;
           }, "passThroughOnException")
         };
@@ -26792,16 +26352,18 @@ var pages_template_worker_default = {
     }
   }
 };
-var cloneResponse = /* @__PURE__ */ __name2((response) => (
+var cloneResponse = /* @__PURE__ */ __name((response) => (
   // https://fetch.spec.whatwg.org/#null-body-status
   new Response(
     [101, 204, 205, 304].includes(response.status) ? null : response.body,
     response
   )
 ), "cloneResponse");
-init_functionsRoutes_0_8253679978614472();
+
+// ../node_modules/wrangler/templates/middleware/middleware-ensure-req-body-drained.ts
+init_functionsRoutes_0_5712509009623857();
 init_checked_fetch();
-var drainBody = /* @__PURE__ */ __name2(async (request, env, _ctx, middlewareCtx) => {
+var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
   try {
     return await middlewareCtx.next(request, env);
   } finally {
@@ -26817,7 +26379,9 @@ var drainBody = /* @__PURE__ */ __name2(async (request, env, _ctx, middlewareCtx
   }
 }, "drainBody");
 var middleware_ensure_req_body_drained_default = drainBody;
-init_functionsRoutes_0_8253679978614472();
+
+// ../node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts
+init_functionsRoutes_0_5712509009623857();
 init_checked_fetch();
 function reduceError(e) {
   return {
@@ -26828,8 +26392,7 @@ function reduceError(e) {
   };
 }
 __name(reduceError, "reduceError");
-__name2(reduceError, "reduceError");
-var jsonError = /* @__PURE__ */ __name2(async (request, env, _ctx, middlewareCtx) => {
+var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
   try {
     return await middlewareCtx.next(request, env);
   } catch (e) {
@@ -26841,19 +26404,22 @@ var jsonError = /* @__PURE__ */ __name2(async (request, env, _ctx, middlewareCtx
   }
 }, "jsonError");
 var middleware_miniflare3_json_error_default = jsonError;
+
+// ../.wrangler/tmp/bundle-3vKEAb/middleware-insertion-facade.js
 var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
   middleware_ensure_req_body_drained_default,
   middleware_miniflare3_json_error_default
 ];
 var middleware_insertion_facade_default = pages_template_worker_default;
-init_functionsRoutes_0_8253679978614472();
+
+// ../node_modules/wrangler/templates/middleware/common.ts
+init_functionsRoutes_0_5712509009623857();
 init_checked_fetch();
 var __facade_middleware__ = [];
 function __facade_register__(...args) {
   __facade_middleware__.push(...args.flat());
 }
 __name(__facade_register__, "__facade_register__");
-__name2(__facade_register__, "__facade_register__");
 function __facade_invokeChain__(request, env, ctx, dispatch, middlewareChain) {
   const [head2, ...tail] = middlewareChain;
   const middlewareCtx = {
@@ -26865,7 +26431,6 @@ function __facade_invokeChain__(request, env, ctx, dispatch, middlewareChain) {
   return head2(request, env, ctx, middlewareCtx);
 }
 __name(__facade_invokeChain__, "__facade_invokeChain__");
-__name2(__facade_invokeChain__, "__facade_invokeChain__");
 function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
   return __facade_invokeChain__(request, env, ctx, dispatch, [
     ...__facade_middleware__,
@@ -26873,18 +26438,16 @@ function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
   ]);
 }
 __name(__facade_invoke__, "__facade_invoke__");
-__name2(__facade_invoke__, "__facade_invoke__");
+
+// ../.wrangler/tmp/bundle-3vKEAb/middleware-loader.entry.ts
 var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
-  static {
-    __name(this, "___Facade_ScheduledController__");
-  }
   constructor(scheduledTime, cron, noRetry) {
     this.scheduledTime = scheduledTime;
     this.cron = cron;
     this.#noRetry = noRetry;
   }
   static {
-    __name2(this, "__Facade_ScheduledController__");
+    __name(this, "__Facade_ScheduledController__");
   }
   #noRetry;
   noRetry() {
@@ -26901,7 +26464,7 @@ function wrapExportedHandler(worker) {
   for (const middleware of __INTERNAL_WRANGLER_MIDDLEWARE__) {
     __facade_register__(middleware);
   }
-  const fetchDispatcher = /* @__PURE__ */ __name2(function(request, env, ctx) {
+  const fetchDispatcher = /* @__PURE__ */ __name(function(request, env, ctx) {
     if (worker.fetch === void 0) {
       throw new Error("Handler does not export a fetch() function.");
     }
@@ -26910,7 +26473,7 @@ function wrapExportedHandler(worker) {
   return {
     ...worker,
     fetch(request, env, ctx) {
-      const dispatcher = /* @__PURE__ */ __name2(function(type, init) {
+      const dispatcher = /* @__PURE__ */ __name(function(type, init) {
         if (type === "scheduled" && worker.scheduled !== void 0) {
           const controller = new __Facade_ScheduledController__(
             Date.now(),
@@ -26926,7 +26489,6 @@ function wrapExportedHandler(worker) {
   };
 }
 __name(wrapExportedHandler, "wrapExportedHandler");
-__name2(wrapExportedHandler, "wrapExportedHandler");
 function wrapWorkerEntrypoint(klass) {
   if (__INTERNAL_WRANGLER_MIDDLEWARE__ === void 0 || __INTERNAL_WRANGLER_MIDDLEWARE__.length === 0) {
     return klass;
@@ -26935,7 +26497,7 @@ function wrapWorkerEntrypoint(klass) {
     __facade_register__(middleware);
   }
   return class extends klass {
-    #fetchDispatcher = /* @__PURE__ */ __name2((request, env, ctx) => {
+    #fetchDispatcher = /* @__PURE__ */ __name((request, env, ctx) => {
       this.env = env;
       this.ctx = ctx;
       if (super.fetch === void 0) {
@@ -26943,7 +26505,7 @@ function wrapWorkerEntrypoint(klass) {
       }
       return super.fetch(request);
     }, "#fetchDispatcher");
-    #dispatcher = /* @__PURE__ */ __name2((type, init) => {
+    #dispatcher = /* @__PURE__ */ __name((type, init) => {
       if (type === "scheduled" && super.scheduled !== void 0) {
         const controller = new __Facade_ScheduledController__(
           Date.now(),
@@ -26966,7 +26528,6 @@ function wrapWorkerEntrypoint(klass) {
   };
 }
 __name(wrapWorkerEntrypoint, "wrapWorkerEntrypoint");
-__name2(wrapWorkerEntrypoint, "wrapWorkerEntrypoint");
 var WRAPPED_ENTRY;
 if (typeof middleware_insertion_facade_default === "object") {
   WRAPPED_ENTRY = wrapExportedHandler(middleware_insertion_facade_default);
@@ -26974,178 +26535,8 @@ if (typeof middleware_insertion_facade_default === "object") {
   WRAPPED_ENTRY = wrapWorkerEntrypoint(middleware_insertion_facade_default);
 }
 var middleware_loader_entry_default = WRAPPED_ENTRY;
-
-// node_modules/wrangler/templates/middleware/middleware-ensure-req-body-drained.ts
-var drainBody2 = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
-  try {
-    return await middlewareCtx.next(request, env);
-  } finally {
-    try {
-      if (request.body !== null && !request.bodyUsed) {
-        const reader = request.body.getReader();
-        while (!(await reader.read()).done) {
-        }
-      }
-    } catch (e) {
-      console.error("Failed to drain the unused request body.", e);
-    }
-  }
-}, "drainBody");
-var middleware_ensure_req_body_drained_default2 = drainBody2;
-
-// node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts
-function reduceError2(e) {
-  return {
-    name: e?.name,
-    message: e?.message ?? String(e),
-    stack: e?.stack,
-    cause: e?.cause === void 0 ? void 0 : reduceError2(e.cause)
-  };
-}
-__name(reduceError2, "reduceError");
-var jsonError2 = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
-  try {
-    return await middlewareCtx.next(request, env);
-  } catch (e) {
-    const error = reduceError2(e);
-    return Response.json(error, {
-      status: 500,
-      headers: { "MF-Experimental-Error-Stack": "true" }
-    });
-  }
-}, "jsonError");
-var middleware_miniflare3_json_error_default2 = jsonError2;
-
-// .wrangler/tmp/bundle-CpGIla/middleware-insertion-facade.js
-var __INTERNAL_WRANGLER_MIDDLEWARE__2 = [
-  middleware_ensure_req_body_drained_default2,
-  middleware_miniflare3_json_error_default2
-];
-var middleware_insertion_facade_default2 = middleware_loader_entry_default;
-
-// node_modules/wrangler/templates/middleware/common.ts
-var __facade_middleware__2 = [];
-function __facade_register__2(...args) {
-  __facade_middleware__2.push(...args.flat());
-}
-__name(__facade_register__2, "__facade_register__");
-function __facade_invokeChain__2(request, env, ctx, dispatch, middlewareChain) {
-  const [head2, ...tail] = middlewareChain;
-  const middlewareCtx = {
-    dispatch,
-    next(newRequest, newEnv) {
-      return __facade_invokeChain__2(newRequest, newEnv, ctx, dispatch, tail);
-    }
-  };
-  return head2(request, env, ctx, middlewareCtx);
-}
-__name(__facade_invokeChain__2, "__facade_invokeChain__");
-function __facade_invoke__2(request, env, ctx, dispatch, finalMiddleware) {
-  return __facade_invokeChain__2(request, env, ctx, dispatch, [
-    ...__facade_middleware__2,
-    finalMiddleware
-  ]);
-}
-__name(__facade_invoke__2, "__facade_invoke__");
-
-// .wrangler/tmp/bundle-CpGIla/middleware-loader.entry.ts
-var __Facade_ScheduledController__2 = class ___Facade_ScheduledController__2 {
-  constructor(scheduledTime, cron, noRetry) {
-    this.scheduledTime = scheduledTime;
-    this.cron = cron;
-    this.#noRetry = noRetry;
-  }
-  static {
-    __name(this, "__Facade_ScheduledController__");
-  }
-  #noRetry;
-  noRetry() {
-    if (!(this instanceof ___Facade_ScheduledController__2)) {
-      throw new TypeError("Illegal invocation");
-    }
-    this.#noRetry();
-  }
-};
-function wrapExportedHandler2(worker) {
-  if (__INTERNAL_WRANGLER_MIDDLEWARE__2 === void 0 || __INTERNAL_WRANGLER_MIDDLEWARE__2.length === 0) {
-    return worker;
-  }
-  for (const middleware of __INTERNAL_WRANGLER_MIDDLEWARE__2) {
-    __facade_register__2(middleware);
-  }
-  const fetchDispatcher = /* @__PURE__ */ __name(function(request, env, ctx) {
-    if (worker.fetch === void 0) {
-      throw new Error("Handler does not export a fetch() function.");
-    }
-    return worker.fetch(request, env, ctx);
-  }, "fetchDispatcher");
-  return {
-    ...worker,
-    fetch(request, env, ctx) {
-      const dispatcher = /* @__PURE__ */ __name(function(type, init) {
-        if (type === "scheduled" && worker.scheduled !== void 0) {
-          const controller = new __Facade_ScheduledController__2(
-            Date.now(),
-            init.cron ?? "",
-            () => {
-            }
-          );
-          return worker.scheduled(controller, env, ctx);
-        }
-      }, "dispatcher");
-      return __facade_invoke__2(request, env, ctx, dispatcher, fetchDispatcher);
-    }
-  };
-}
-__name(wrapExportedHandler2, "wrapExportedHandler");
-function wrapWorkerEntrypoint2(klass) {
-  if (__INTERNAL_WRANGLER_MIDDLEWARE__2 === void 0 || __INTERNAL_WRANGLER_MIDDLEWARE__2.length === 0) {
-    return klass;
-  }
-  for (const middleware of __INTERNAL_WRANGLER_MIDDLEWARE__2) {
-    __facade_register__2(middleware);
-  }
-  return class extends klass {
-    #fetchDispatcher = /* @__PURE__ */ __name((request, env, ctx) => {
-      this.env = env;
-      this.ctx = ctx;
-      if (super.fetch === void 0) {
-        throw new Error("Entrypoint class does not define a fetch() function.");
-      }
-      return super.fetch(request);
-    }, "#fetchDispatcher");
-    #dispatcher = /* @__PURE__ */ __name((type, init) => {
-      if (type === "scheduled" && super.scheduled !== void 0) {
-        const controller = new __Facade_ScheduledController__2(
-          Date.now(),
-          init.cron ?? "",
-          () => {
-          }
-        );
-        return super.scheduled(controller);
-      }
-    }, "#dispatcher");
-    fetch(request) {
-      return __facade_invoke__2(
-        request,
-        this.env,
-        this.ctx,
-        this.#dispatcher,
-        this.#fetchDispatcher
-      );
-    }
-  };
-}
-__name(wrapWorkerEntrypoint2, "wrapWorkerEntrypoint");
-var WRAPPED_ENTRY2;
-if (typeof middleware_insertion_facade_default2 === "object") {
-  WRAPPED_ENTRY2 = wrapExportedHandler2(middleware_insertion_facade_default2);
-} else if (typeof middleware_insertion_facade_default2 === "function") {
-  WRAPPED_ENTRY2 = wrapWorkerEntrypoint2(middleware_insertion_facade_default2);
-}
-var middleware_loader_entry_default2 = WRAPPED_ENTRY2;
 export {
-  __INTERNAL_WRANGLER_MIDDLEWARE__2 as __INTERNAL_WRANGLER_MIDDLEWARE__,
-  middleware_loader_entry_default2 as default
+  __INTERNAL_WRANGLER_MIDDLEWARE__,
+  middleware_loader_entry_default as default
 };
-//# sourceMappingURL=functionsWorker-0.5737025525640923.js.map
+//# sourceMappingURL=functionsWorker-0.9899042532270164.mjs.map

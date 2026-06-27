@@ -1,8 +1,8 @@
-				import worker, * as OTHER_EXPORTS from "/workspaces/lca-website/.wrangler/tmp/pages-i4rutd/functionsWorker-0.5737025525640923.mjs";
+				import worker, * as OTHER_EXPORTS from "/workspaces/lca-website/.wrangler/tmp/pages-yywpfE/functionsWorker-0.46090238942520856.mjs";
 				import * as __MIDDLEWARE_0__ from "/workspaces/lca-website/node_modules/wrangler/templates/middleware/middleware-ensure-req-body-drained.ts";
 import * as __MIDDLEWARE_1__ from "/workspaces/lca-website/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts";
 
-				export * from "/workspaces/lca-website/.wrangler/tmp/pages-i4rutd/functionsWorker-0.5737025525640923.mjs";
+				export * from "/workspaces/lca-website/.wrangler/tmp/pages-yywpfE/functionsWorker-0.46090238942520856.mjs";
 				const MIDDLEWARE_TEST_INJECT = "__INJECT_FOR_TESTING_WRANGLER_MIDDLEWARE__";
 				export const __INTERNAL_WRANGLER_MIDDLEWARE__ = [
 					
