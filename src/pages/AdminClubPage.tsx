@@ -1,33 +1,40 @@
 // src/pages/AdminClubPage.tsx
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Building2, Newspaper, Palette, Users } from 'lucide-react'
+import {
+  ArrowLeft, Building2, Newspaper, Palette, Trophy, Upload, Users,
+} from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   adminCreateClubNews,
-  adminCreateTournament,
   adminGetClubRoster,
   adminUpdateClub,
   getClub,
   type ApiAdminMember,
   type ApiClubDetail,
+  type ApiClubTournament,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
+type ClubTab = 'details' | 'news' | 'roster' | 'tournaments'
+
 export function AdminClubPage() {
   const { id } = useParams<{ id: string }>()
+
   const [club, setClub] = useState<ApiClubDetail | null>(null)
   const [roster, setRoster] = useState<ApiAdminMember[]>([])
+  const [tournaments, setTournaments] = useState<ApiClubTournament[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [newsSaving, setNewsSaving] = useState(false)
-  const [tournamentSaving, setTournamentSaving] = useState(false)
+  const [tab, setTab] = useState<ClubTab>('details')
 
   const [form, setForm] = useState({
     name: '',
@@ -37,6 +44,8 @@ export function AdminClubPage() {
     meetingSchedule: '',
     contactEmail: '',
     color: '#c8a94a',
+    imageUrl: '',
+    region: '',
   })
 
   const [newsForm, setNewsForm] = useState({
@@ -45,12 +54,7 @@ export function AdminClubPage() {
     excerpt: '',
   })
 
-  const [tournamentForm, setTournamentForm] = useState({
-    name: '',
-    location: '',
-    date: '',
-    entryFee: '40',
-  })
+  usePageTitle(club ? `Manage ${club.name}` : 'Manage Club')
 
   useEffect(() => {
     if (!id) return
@@ -60,15 +64,19 @@ export function AdminClubPage() {
           getClub(id!),
           adminGetClubRoster(id!),
         ])
-        setClub(clubData.club)
+        const c = clubData.club
+        setClub(c)
+        setTournaments(clubData.tournaments ?? [])
         setForm({
-          name: clubData.club.name,
-          city: clubData.club.city,
-          location: clubData.club.location ?? '',
-          description: clubData.club.description ?? '',
-          meetingSchedule: clubData.club.meeting_schedule ?? '',
-          contactEmail: clubData.club.contact_email ?? '',
-          color: clubData.club.color ?? '#c8a94a',
+          name: c.name,
+          city: c.city,
+          location: c.location ?? '',
+          description: c.description ?? '',
+          meetingSchedule: c.meeting_schedule ?? '',
+          contactEmail: c.contact_email ?? '',
+          color: (c as any).color ?? '#c8a94a',
+          imageUrl: (c as any).image_url ?? '',
+          region: (c as any).region ?? '',
         })
         setRoster(rosterData)
       } catch (err) {
@@ -80,8 +88,8 @@ export function AdminClubPage() {
     load()
   }, [id])
 
-  async function handleSaveClub(event: FormEvent) {
-    event.preventDefault()
+  async function handleSaveClub(e: FormEvent) {
+    e.preventDefault()
     if (!id) return
     setSaving(true)
     setError(null)
@@ -94,7 +102,7 @@ export function AdminClubPage() {
         meetingSchedule: form.meetingSchedule || null,
         contactEmail: form.contactEmail || null,
         color: form.color || null,
-      })
+      } as any)
       setClub(updated)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save club')
@@ -103,8 +111,8 @@ export function AdminClubPage() {
     }
   }
 
-  async function handlePostNews(event: FormEvent) {
-    event.preventDefault()
+  async function handlePostNews(e: FormEvent) {
+    e.preventDefault()
     if (!id) return
     setNewsSaving(true)
     setError(null)
@@ -118,145 +126,156 @@ export function AdminClubPage() {
     }
   }
 
-  async function handleCreateTournament(event: FormEvent) {
-    event.preventDefault()
-    if (!id) return
-    setTournamentSaving(true)
-    setError(null)
-    try {
-      await adminCreateTournament({
-        name: tournamentForm.name,
-        location: tournamentForm.location,
-        date: tournamentForm.date,
-        entryFee: Number(tournamentForm.entryFee),
-        clubId: id,
-      })
-      setTournamentForm({ name: '', location: '', date: '', entryFee: '40' })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create tournament')
-    } finally {
-      setTournamentSaving(false)
-    }
-  }
+  if (loading) return (
+    <div className="mx-auto max-w-6xl px-6 py-12">
+      <p className="text-muted-foreground">Loading club…</p>
+    </div>
+  )
 
-  if (loading) {
-    return (
-      <div className="mx-auto max-w-6xl px-6 py-12">
-        <p className="text-muted-foreground">Loading club...</p>
-      </div>
-    )
-  }
+  if (!club) return (
+    <div className="mx-auto max-w-6xl px-6 py-12 text-center">
+      <p className="text-destructive">{error ?? 'Club not found'}</p>
+      <Button asChild className="mt-4" variant="outline">
+        <Link to="/admin">Back to admin</Link>
+      </Button>
+    </div>
+  )
 
-  if (!club) {
-    return (
-      <div className="mx-auto max-w-6xl px-6 py-12 text-center">
-        <p className="text-destructive">{error ?? 'Club not found'}</p>
-        <Button asChild className="mt-4" variant="outline">
-          <Link to="/dashboard">Back to dashboard</Link>
-        </Button>
-      </div>
-    )
-  }
+  const color = form.color || '#c8a94a'
+
+  const tabs: { id: ClubTab; label: string; icon: typeof Users }[] = [
+    { id: 'details',     label: 'Club details',  icon: Building2  },
+    { id: 'news',        label: 'Post news',      icon: Newspaper  },
+    { id: 'roster',      label: `Roster (${roster.length})`, icon: Users },
+    { id: 'tournaments', label: 'Tournaments',    icon: Trophy     },
+  ]
 
   return (
     <div>
+      {/* ── Hero ── */}
       <section
-        className="border-b-4 text-white"
-        style={{ backgroundColor: '#1a2744', borderBottomColor: form.color }}
+        className="border-b-[3px] text-white"
+        style={{ backgroundColor: '#1a2744', borderBottomColor: color }}
       >
-        <div className="mx-auto max-w-6xl px-6 py-12">
+        <div className="mx-auto max-w-6xl px-6 py-8">
           <Link
-            to="/dashboard"
-            className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-[#c8a94a]"
+            to="/admin"
+            className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-[#c8a94a]"
           >
-            <ArrowLeft className="size-4" />
-            Dashboard
+            <ArrowLeft className="size-3.5" /> Admin panel
           </Link>
           <div className="mt-4 flex items-center gap-3">
             <div
-              className="flex h-10 w-10 items-center justify-center rounded-lg"
-              style={{ backgroundColor: form.color }}
+              className="flex size-9 flex-shrink-0 items-center justify-center rounded-lg"
+              style={{ backgroundColor: color }}
             >
               <Building2 className="size-5 text-white" />
             </div>
-            <h1 className="text-3xl font-bold">Manage {club.name}</h1>
+            <div>
+              <h1 className="text-2xl font-bold sm:text-3xl">Manage {club.name}</h1>
+              <p className="mt-0.5 text-sm text-white/55">{club.city}, LA</p>
+            </div>
+          </div>
+
+          {/* Tab bar */}
+          <div className="mt-5 flex gap-1 border-t border-white/10 pt-1">
+            {tabs.map(({ id: tid, label, icon: Icon }) => (
+              <button
+                key={tid}
+                type="button"
+                onClick={() => setTab(tid)}
+                className={cn(
+                  'flex items-center gap-1.5 border-b-2 px-3 py-2 text-[11px] font-medium transition-colors',
+                  tab === tid
+                    ? 'border-[#c8a94a] text-[#c8a94a]'
+                    : 'border-transparent text-white/45 hover:text-white/70',
+                )}
+              >
+                <Icon className="size-3.5" />
+                {label}
+              </button>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl space-y-10 px-6 py-12">
+      {/* ── Body ── */}
+      <section className="mx-auto max-w-6xl px-6 py-8">
         {error && (
-          <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          <p className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error}
           </p>
         )}
 
-        {/* Club details form */}
-        <form onSubmit={handleSaveClub} className="rounded-xl border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-[#1a2744]">Club details</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                value={form.name}
-                onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                value={form.city}
-                onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="location">Meeting location</Label>
-              <Input
-                id="location"
-                value={form.location}
-                onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="description">Description</Label>
-              <textarea
-                id="description"
-                className="min-h-[100px] w-full rounded-md border bg-background px-3 py-2 text-sm"
-                value={form.description}
-                onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="schedule">Meeting schedule</Label>
-              <Input
-                id="schedule"
-                value={form.meetingSchedule}
-                onChange={(e) => setForm((p) => ({ ...p, meetingSchedule: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Contact email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={form.contactEmail}
-                onChange={(e) => setForm((p) => ({ ...p, contactEmail: e.target.value }))}
-              />
+        {/* ── Details tab ── */}
+        {tab === 'details' && (
+          <form onSubmit={handleSaveClub} className="space-y-6">
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <h2 className="mb-4 text-base font-semibold text-[#1a2744]">Basic information</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-1.5">
+                  <Label htmlFor="name">Club name</Label>
+                  <Input id="name" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} required />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="city">City</Label>
+                  <Input id="city" value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} required />
+                </div>
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor="location">Meeting location</Label>
+                  <Input id="location" placeholder="e.g. Alexandria Public Library, Room B" value={form.location} onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))} />
+                </div>
+                <div className="space-y-1.5 sm:col-span-2">
+                  <Label htmlFor="description">Description</Label>
+                  <textarea
+                    id="description"
+                    className="min-h-[90px] w-full rounded-md border bg-background px-3 py-2 text-sm"
+                    placeholder="A brief description shown on the club's public page…"
+                    value={form.description}
+                    onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="schedule">Meeting schedule</Label>
+                  <Input id="schedule" placeholder="e.g. Tuesdays 6:00 PM" value={form.meetingSchedule} onChange={(e) => setForm((p) => ({ ...p, meetingSchedule: e.target.value }))} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="email">Contact email</Label>
+                  <Input id="email" type="email" value={form.contactEmail} onChange={(e) => setForm((p) => ({ ...p, contactEmail: e.target.value }))} />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="region">Region</Label>
+                  <select
+                    id="region"
+                    className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                    value={form.region}
+                    onChange={(e) => setForm((p) => ({ ...p, region: e.target.value }))}
+                  >
+                    <option value="">Select a region…</option>
+                    {[
+                      'North Louisiana',
+                      'Central Louisiana',
+                      'North of Lake Pontchartrain',
+                      'New Orleans Metro',
+                      'Southwest Louisiana',
+                      'South Central Louisiana',
+                      'Bayou Region',
+                    ].map((r) => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
 
-            {/* Club color picker */}
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="color" className="flex items-center gap-2">
+            {/* Club color */}
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-2">
                 <Palette className="size-4 text-muted-foreground" />
-                Club color
-              </Label>
-              <div className="flex items-center gap-3">
+                <h2 className="text-base font-semibold text-[#1a2744]">Club color</h2>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
                 <input
-                  id="color"
                   type="color"
                   value={form.color}
                   onChange={(e) => setForm((p) => ({ ...p, color: e.target.value }))}
@@ -264,153 +283,184 @@ export function AdminClubPage() {
                 />
                 <Input
                   value={form.color}
-                  onChange={(e) => {
-                    const val = e.target.value
-                    setForm((p) => ({ ...p, color: val }))
-                  }}
+                  onChange={(e) => setForm((p) => ({ ...p, color: e.target.value }))}
                   placeholder="#c8a94a"
-                  className="w-36 font-mono text-sm"
+                  className="w-32 font-mono text-sm"
                   maxLength={7}
                 />
-                {/* Live preview */}
                 <div
                   className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium"
                   style={{
-                    backgroundColor: `${form.color}15`,
-                    borderColor: `${form.color}40`,
-                    color: form.color,
+                    backgroundColor: `${color}15`,
+                    borderColor: `${color}40`,
+                    color,
                   }}
                 >
-                  <div
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: form.color }}
-                  />
+                  <div className="size-3 rounded-full" style={{ backgroundColor: color }} />
                   {form.name || 'Club name'}
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">
-                This color appears as a tint on tournament cards and club listings. LCA gold is the default.
+              <p className="mt-2 text-xs text-muted-foreground">
+                Appears as a tint on tournament cards and the club carousel. LCA gold is the default.
               </p>
             </div>
-          </div>
-          <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={saving}>
-            {saving ? 'Saving...' : 'Save club'}
-          </Button>
-        </form>
 
-        {/* Post news */}
-        <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center gap-2">
-            <Newspaper className="size-5 text-[#c8a94a]" />
-            <h2 className="text-lg font-bold text-[#1a2744]">Post club news</h2>
-          </div>
-          <div className="mt-4 grid gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="news-title">Title</Label>
-              <Input
-                id="news-title"
-                value={newsForm.title}
-                onChange={(e) => setNewsForm((p) => ({ ...p, title: e.target.value }))}
-                required
-              />
+            {/* Club image */}
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-2">
+                <Upload className="size-4 text-muted-foreground" />
+                <h2 className="text-base font-semibold text-[#1a2744]">Club image</h2>
+              </div>
+              <p className="mb-3 text-sm text-muted-foreground">
+                Upload a logo or promotional photo. This appears at the top of your club's card in the carousel and in the hero of your club detail page.
+              </p>
+              <div className="space-y-1.5">
+                <Label htmlFor="image-url">Image URL</Label>
+                <Input
+                  id="image-url"
+                  type="url"
+                  placeholder="https://example.com/club-logo.jpg"
+                  value={form.imageUrl}
+                  onChange={(e) => setForm((p) => ({ ...p, imageUrl: e.target.value }))}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Paste a direct link to your image. Recommended size: 400×220px or wider, JPG or PNG.
+                </p>
+              </div>
+              {form.imageUrl && (
+                <div className="mt-3 overflow-hidden rounded-lg border" style={{ maxWidth: 260 }}>
+                  <img
+                    src={form.imageUrl}
+                    alt="Club image preview"
+                    className="h-32 w-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                  />
+                </div>
+              )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="news-date">Date</Label>
-              <Input
-                id="news-date"
-                type="date"
-                value={newsForm.newsDate}
-                onChange={(e) => setNewsForm((p) => ({ ...p, newsDate: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="news-excerpt">Excerpt</Label>
-              <textarea
-                id="news-excerpt"
-                className="min-h-[80px] w-full rounded-md border bg-background px-3 py-2 text-sm"
-                value={newsForm.excerpt}
-                onChange={(e) => setNewsForm((p) => ({ ...p, excerpt: e.target.value }))}
-                required
-              />
-            </div>
-          </div>
-          <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={newsSaving}>
-            {newsSaving ? 'Posting...' : 'Post news'}
-          </Button>
-        </form>
 
-        {/* Create tournament */}
-        <form onSubmit={handleCreateTournament} className="rounded-xl border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-[#1a2744]">Create club tournament</h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="ct-name">Name</Label>
-              <Input
-                id="ct-name"
-                value={tournamentForm.name}
-                onChange={(e) => setTournamentForm((p) => ({ ...p, name: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="ct-location">Location</Label>
-              <Input
-                id="ct-location"
-                value={tournamentForm.location}
-                onChange={(e) => setTournamentForm((p) => ({ ...p, location: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="ct-date">Date</Label>
-              <Input
-                id="ct-date"
-                type="date"
-                value={tournamentForm.date}
-                onChange={(e) => setTournamentForm((p) => ({ ...p, date: e.target.value }))}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="ct-fee">Entry fee ($)</Label>
-              <Input
-                id="ct-fee"
-                type="number"
-                value={tournamentForm.entryFee}
-                onChange={(e) => setTournamentForm((p) => ({ ...p, entryFee: e.target.value }))}
-                required
-              />
-            </div>
-          </div>
-          <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={tournamentSaving}>
-            {tournamentSaving ? 'Creating...' : 'Create tournament'}
-          </Button>
-        </form>
+            <Button type="submit" className={goldButtonClass} disabled={saving}>
+              {saving ? 'Saving…' : 'Save club'}
+            </Button>
 
-        {/* Roster */}
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <div className="flex items-center gap-2">
-            <Users className="size-5 text-[#c8a94a]" />
-            <h2 className="text-lg font-bold text-[#1a2744]">Club roster</h2>
-          </div>
-          {roster.length === 0 ? (
-            <p className="mt-4 text-sm text-muted-foreground">No members assigned to this club yet.</p>
-          ) : (
-            <ul className="mt-4 divide-y">
-              {roster.map((m) => (
-                <li key={m.id} className="py-2 text-sm">
-                  <span className="font-medium">{m.full_name}</span>
-                  <span className="text-muted-foreground"> · {m.email}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+            <div className="pt-2">
+              <Button asChild variant="outline">
+                <Link to={`/clubs/${id}`}>View public club page</Link>
+              </Button>
+            </div>
+          </form>
+        )}
 
-        <Button asChild variant="outline">
-          <Link to={`/clubs/${id}`}>View public club page</Link>
-        </Button>
+        {/* ── News tab ── */}
+        {tab === 'news' && (
+          <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
+              <Newspaper className="size-5 text-[#c8a94a]" />
+              <h2 className="text-base font-semibold text-[#1a2744]">Post club news</h2>
+            </div>
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="news-title">Title</Label>
+                <Input id="news-title" value={newsForm.title} onChange={(e) => setNewsForm((p) => ({ ...p, title: e.target.value }))} required />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="news-date">Date</Label>
+                <Input id="news-date" type="date" value={newsForm.newsDate} onChange={(e) => setNewsForm((p) => ({ ...p, newsDate: e.target.value }))} required />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="news-excerpt">Excerpt</Label>
+                <textarea
+                  id="news-excerpt"
+                  className="min-h-[90px] w-full rounded-md border bg-background px-3 py-2 text-sm"
+                  value={newsForm.excerpt}
+                  onChange={(e) => setNewsForm((p) => ({ ...p, excerpt: e.target.value }))}
+                  required
+                />
+              </div>
+            </div>
+            <Button type="submit" className={cn('mt-4', goldButtonClass)} disabled={newsSaving}>
+              {newsSaving ? 'Posting…' : 'Post news'}
+            </Button>
+          </form>
+        )}
+
+        {/* ── Roster tab ── */}
+        {tab === 'roster' && (
+          <div className="rounded-xl border bg-card p-6 shadow-sm">
+            <div className="mb-4 flex items-center gap-2">
+              <Users className="size-5 text-[#c8a94a]" />
+              <h2 className="text-base font-semibold text-[#1a2744]">Club roster · {roster.length} members</h2>
+            </div>
+            {roster.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No members assigned to this club yet.</p>
+            ) : (
+              <ul className="divide-y">
+                {roster.map((m) => (
+                  <li key={m.id} className="flex items-center justify-between py-2.5">
+                    <div>
+                      <p className="text-sm font-medium">{m.full_name}</p>
+                      <p className="text-xs text-muted-foreground">{m.email}</p>
+                    </div>
+                    {m.uscf_rating && (
+                      <span className="font-mono text-sm text-muted-foreground">{m.uscf_rating}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {/* ── Tournaments tab ── */}
+        {tab === 'tournaments' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Trophy className="size-5 text-[#c8a94a]" />
+                <h2 className="text-base font-semibold text-[#1a2744]">Club tournaments</h2>
+              </div>
+              <Link
+                to="/admin"
+                className="flex items-center gap-1 text-sm text-[#c8a94a] hover:underline"
+                onClick={() => {
+                  sessionStorage.setItem('adminTab', 'tournaments')
+                }}
+              >
+                Create new tournament →
+              </Link>
+            </div>
+
+            {tournaments.length === 0 ? (
+              <div className="rounded-xl border border-dashed px-6 py-10 text-center">
+                <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
+                <p className="font-medium text-[#1a2744]">No tournaments yet</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Create a tournament for this club from the Admin panel.
+                </p>
+                <Button asChild className={cn('mt-4', goldButtonClass)} size="sm">
+                  <Link to="/admin">Go to tournament management</Link>
+                </Button>
+              </div>
+            ) : (
+              <ul className="space-y-3">
+                {tournaments.map((t) => (
+                  <li
+                    key={t.id}
+                    className="flex items-center justify-between rounded-xl border bg-card p-4 shadow-sm"
+                  >
+                    <div>
+                      <p className="font-medium text-[#1a2744]">{t.name}</p>
+                      <p className="text-sm text-muted-foreground">{t.date} · {t.status}</p>
+                    </div>
+                    <Button asChild size="sm" className={goldButtonClass}>
+                      <Link to={`/admin/tournaments/${t.id}`}>Manage</Link>
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
       </section>
     </div>
   )
