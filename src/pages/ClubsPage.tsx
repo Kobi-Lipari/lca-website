@@ -1,100 +1,383 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, MapPin, Users } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import { getClubs, type ApiClubListItem } from '@/lib/api'
+import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
-const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+// ── Types ────────────────────────────────────────────────────────────────────
 
-export function ClubsPage() {
-  usePageTitle('Clubs')
-  const [clubs, setClubs] = useState<ApiClubListItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+type ExtendedClub = ApiClubListItem & {
+  image_url?: string | null
+  region?: string | null
+}
 
-  useEffect(() => {
-    async function load() {
-      try {
-        setClubs(await getClubs())
-        setError(null)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load clubs')
-      } finally {
-        setLoading(false)
-      }
-    }
-    load()
-  }, [])
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const LCA_GOLD = '#c8a94a'
+const NAVY = '#1a2744'
+
+const REGIONS = [
+  'North Louisiana',
+  'Central Louisiana',
+  'North of Lake Pontchartrain',
+  'New Orleans Metro',
+  'Southwest Louisiana',
+  'South Central Louisiana',
+  'Bayou Region',
+]
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+// ── Club card image area ──────────────────────────────────────────────────────
+
+function ClubCardImage({ club }: { club: ExtendedClub }) {
+  const color = club.color || LCA_GOLD
+
+  if (club.image_url) {
+    return (
+      <div
+        className="h-28 w-full flex-shrink-0 border-b border-border bg-cover bg-center"
+        style={{ backgroundImage: `url(${club.image_url})` }}
+      />
+    )
+  }
+
+  return (
+    <div
+      className="flex h-28 w-full flex-shrink-0 items-center justify-center border-b border-border"
+      style={{ backgroundColor: clubColorTint(color, 0.1) }}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        className="size-10 opacity-30"
+        fill="none"
+        stroke={color}
+        strokeWidth={1.5}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+      </svg>
+    </div>
+  )
+}
+
+// ── Club card ─────────────────────────────────────────────────────────────────
+
+function ClubCard({ club }: { club: ExtendedClub }) {
+  const color = club.color || LCA_GOLD
+
+  return (
+    <div
+      className="flex w-[200px] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+      style={{ scrollSnapAlign: 'start' }}
+    >
+      <div className="h-1 w-full flex-shrink-0" style={{ backgroundColor: color }} />
+      <ClubCardImage club={club} />
+      <div className="flex flex-1 flex-col p-3.5">
+        <div className="mb-2 flex items-center gap-1.5">
+          <span
+            className="size-2 flex-shrink-0 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+          <p className="line-clamp-2 text-[11px] font-semibold leading-tight text-foreground">
+            {club.name}
+          </p>
+        </div>
+        <div className="space-y-1 text-[10px] text-muted-foreground">
+          <p className="flex items-center gap-1.5">
+            <MapPin className="size-3 flex-shrink-0 text-[#c8a94a]" />
+            <span className="truncate">{club.city}, LA</span>
+          </p>
+          {club.meeting_schedule && (
+            <p className="flex items-center gap-1.5">
+              <Calendar className="size-3 flex-shrink-0 text-[#c8a94a]" />
+              <span className="truncate">{club.meeting_schedule}</span>
+            </p>
+          )}
+        </div>
+        <div className="mt-auto pt-3">
+          <Link
+            to={`/clubs/${club.id}`}
+            className="block w-full rounded-md bg-[#c8a94a] py-1.5 text-center text-[10px] font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90"
+          >
+            Visit club
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Carousel ──────────────────────────────────────────────────────────────────
+
+function ClubCarousel({
+  clubs,
+  isFiltered,
+}: {
+  clubs: ExtendedClub[]
+  isFiltered: boolean
+}) {
+  const trackRef = useRef<HTMLDivElement>(null)
+  const CARD_WIDTH = 212 // 200px + 12px gap
+
+  function scroll(dir: 'left' | 'right') {
+    if (!trackRef.current) return
+    trackRef.current.scrollBy({
+      left: dir === 'left' ? -CARD_WIDTH * 2 : CARD_WIDTH * 2,
+      behavior: 'smooth',
+    })
+  }
 
   return (
     <div>
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <div className="flex items-center gap-3">
-            <Users className="size-8 text-[#c8a94a] sm:size-10" />
+      <div className="mb-3 flex items-center justify-between">
+        <div>
+          <p className="text-xs font-medium text-foreground">
+            {isFiltered ? `${clubs.length} clubs` : `All clubs · ${clubs.length}`}
+          </p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">
+            {isFiltered
+              ? 'Sorted A–Z'
+              : 'Order rotates randomly each visit — no favourites'}
+          </p>
+        </div>
+        <div className="flex gap-1.5">
+          <button
+            type="button"
+            onClick={() => scroll('left')}
+            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="size-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scroll('right')}
+            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="size-4" />
+          </button>
+        </div>
+      </div>
+
+      <div
+        ref={trackRef}
+        className="flex gap-3 overflow-x-auto pb-3"
+        style={{ scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
+      >
+        {clubs.map((club) => (
+          <ClubCard key={club.id} club={club} />
+        ))}
+        {/* Peek spacer */}
+        <div className="w-4 flex-shrink-0" />
+      </div>
+    </div>
+  )
+}
+
+// ── Main page ─────────────────────────────────────────────────────────────────
+
+export function ClubsPage() {
+  usePageTitle('Clubs')
+  const [allClubs, setAllClubs] = useState<ExtendedClub[]>([])
+  const [shuffled, setShuffled] = useState<ExtendedClub[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [activeRegion, setActiveRegion] = useState<string | null>(null)
+
+  useEffect(() => {
+    getClubs()
+      .then((data) => {
+        const clubs = data as ExtendedClub[]
+        setAllClubs(clubs)
+        setShuffled(shuffleArray(clubs))
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load clubs'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  const isFiltered = activeRegion !== null
+
+  const displayedClubs = isFiltered
+    ? allClubs
+        .filter((c) => (c as any).region === activeRegion)
+        .sort((a, b) => a.name.localeCompare(b.name))
+    : shuffled
+
+  return (
+    <div>
+      {/* ── Hero ── */}
+      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744]">
+        <div className="mx-auto max-w-6xl px-6 py-8">
+          <div
+            className="mb-1 inline-block rounded-full border border-[#c8a94a]/50 bg-[#c8a94a]/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]"
+          >
+            Louisiana Chess Association
+          </div>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                Affiliated Clubs
+              <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Find your chess community
               </h1>
-              <p className="mt-2 max-w-2xl text-white/80">
-                Find a chess club near you. LCA-affiliated clubs host regular
-                meetings, lessons, and local tournaments across Louisiana.
+              <p className="mt-2 max-w-md text-sm text-white/60">
+                Clubs across Louisiana host weekly meetings, lessons, and local tournaments.
+                New players always welcome — no experience required.
               </p>
+            </div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+              {[
+                { n: '25+', l: 'clubs statewide' },
+                { n: '7', l: 'regions' },
+                { n: '340+', l: 'members' },
+                { n: 'Free', l: 'first visit' },
+              ].map((s) => (
+                <div
+                  key={s.l}
+                  className="rounded-lg border border-white/10 bg-white/6 px-3 py-2 text-center"
+                >
+                  <div className="text-base font-semibold text-[#c8a94a]">{s.n}</div>
+                  <div className="mt-0.5 text-[9px] text-white/45">{s.l}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-12">
+      {/* ── Region filter bar ── */}
+      <div className="border-b border-border bg-muted/20">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="flex items-center gap-2 overflow-x-auto py-2.5" style={{ scrollbarWidth: 'none' }}>
+            <span className="flex-shrink-0 text-[10px] font-medium text-muted-foreground">
+              Region
+            </span>
+            <button
+              type="button"
+              onClick={() => setActiveRegion(null)}
+              className={cn(
+                'flex-shrink-0 rounded-full px-3 py-1 text-[10px] font-medium transition-colors',
+                !activeRegion
+                  ? 'bg-[#1a2744] text-white'
+                  : 'border border-border text-muted-foreground hover:border-border-strong',
+              )}
+            >
+              All regions
+            </button>
+            {REGIONS.map((region) => (
+              <button
+                key={region}
+                type="button"
+                onClick={() => setActiveRegion(region)}
+                className={cn(
+                  'flex-shrink-0 rounded-full px-3 py-1 text-[10px] font-medium transition-colors',
+                  activeRegion === region
+                    ? 'bg-[#1a2744] text-white'
+                    : 'border border-border text-muted-foreground hover:border-border-strong',
+                )}
+              >
+                {region}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Carousel ── */}
+      <section className="mx-auto max-w-6xl px-6 py-8">
         {loading ? (
-          <p className="text-muted-foreground">Loading clubs…</p>
+          <p className="text-sm text-muted-foreground">Loading clubs…</p>
         ) : error ? (
-          <p className="text-destructive">{error}</p>
-        ) : (
-          <>
-            <p className="text-muted-foreground">
-              {clubs.length} clubs affiliated with the Louisiana Chess
-              Association.
+          <p className="text-sm text-destructive">{error}</p>
+        ) : displayedClubs.length === 0 ? (
+          <div className="rounded-xl border border-dashed px-6 py-10 text-center">
+            <p className="font-medium text-[#1a2744]">No clubs in this region yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Check back soon — new clubs are added regularly.
             </p>
-
-            <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {clubs.map((club) => (
-                <li
-                  key={club.id}
-                  className="flex flex-col rounded-xl border bg-card p-5 shadow-sm sm:p-6"
-                >
-                  <h2 className="text-lg font-semibold text-[#1a2744]">
-                    {club.name}
-                  </h2>
-
-                  <div className="mt-3 space-y-2 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <MapPin className="size-4 shrink-0 text-[#c8a94a]" />
-                      {club.city}, LA
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="size-4 shrink-0 text-[#c8a94a]" />
-                      {club.meeting_schedule}
-                    </span>
-                  </div>
-
-                  <Button
-                    asChild
-                    className={cn('mt-5 w-full sm:w-auto', goldButtonClass)}
-                  >
-                    <Link to={`/clubs/${club.id}`}>View Club</Link>
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          </>
+          </div>
+        ) : (
+          <ClubCarousel clubs={displayedClubs} isFiltered={isFiltered} />
         )}
+      </section>
+
+      {/* ── Map section ── */}
+      <section className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-6 py-8">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-[#1a2744]">Club locations</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Click any marker to see club details.
+              </p>
+            </div>
+          </div>
+
+          {/*
+            TODO: Replace this iframe with a Google Maps JavaScript API embed
+            for custom navy/gold styling and interactive markers.
+            Steps:
+              1. Go to console.cloud.google.com and create a Maps JavaScript API key
+              2. Add VITE_GOOGLE_MAPS_KEY to your .env.local
+              3. Replace this iframe with the styled map component
+            Remind K to set this up when ready.
+          */}
+          <div className="overflow-hidden rounded-xl border">
+            <iframe
+              title="Louisiana chess clubs map"
+              src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d1757950.0!2d-91.96!3d31.0!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sus!4v1699900000000!5m2!1sen!2sus"
+              width="100%"
+              height="400"
+              style={{ border: 0, display: 'block' }}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer CTA ── */}
+      <section className="border-t border-border bg-[#1a2744]">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-white sm:text-2xl">
+                Did we miss a club?
+              </h2>
+              <p className="mt-2 text-sm text-white/60">
+                If your club isn't listed, or the information is incorrect, let us know.
+                LCA also supports new club formation across the state.
+              </p>
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:flex-shrink-0">
+              <Link
+                to="/contact"
+                className="rounded-lg bg-[#c8a94a] px-5 py-2.5 text-center text-sm font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90"
+              >
+                Contact LCA
+              </Link>
+              <Link
+                to="/membership"
+                className="rounded-lg border border-white/25 bg-transparent px-5 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-white/10"
+              >
+                Join LCA
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   )
 }
-
