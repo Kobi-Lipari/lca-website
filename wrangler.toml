@@ -7,5 +7,12 @@ binding = "DB"
 database_name = "lca-db"
 database_id = "e891b93f-e7fe-48d0-9afc-8570d805ef08"
 
-# All environment variables and secrets are managed via the Cloudflare Pages dashboard.
-# For local dev, use .env.local instead.
+[vars]
+SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
+FROM_EMAIL = "noreply@louisianachess.org"
+CONTACT_EMAIL = "contact@louisianachess.org"
+SUPPORT_EMAIL = "support@louisianachess.org"
+VITE_SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
+VITE_SUPABASE_ANON_KEY = "sb_publishable_f19vYEFtISf2_oBdOWSHLA_h3AY2sT3"
+VITE_GOOGLE_MAPS_API_KEY = "AIzaSyA0sTvidf63X8gWIqYn-NVklp-phgceW1g"
+# SUPABASE_SERVICE_ROLE_KEY is a secret - managed via Cloudflare dashboard only
