@@ -103,7 +103,6 @@ export function LCAMap(props: Props) {
   const height = props.height ?? (props.mode === 'all' ? 480 : 240)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
   const singlePin = props.mode === 'single' ? findPinByName(props.clubName) : undefined
-  const dbClubs = props.mode === 'all' ? (props.clubs ?? []) : []
 
   useEffect(() => {
     if (!apiKey) return
@@ -114,6 +113,7 @@ export function LCAMap(props: Props) {
     if (!loaded || !mapRef.current) return
 
     const g = window.google.maps
+    const dbClubs = props.mode === 'all' ? ((props as AllClubsProps).clubs ?? []) : []
     const pins: ClubMapPin[] =
       props.mode === 'single' ? (singlePin ? [singlePin] : []) : CLUB_MAP_PINS
     const center =
@@ -177,7 +177,7 @@ export function LCAMap(props: Props) {
         })
       }
     })
-  }, [loaded, props.mode, singlePin])
+  }, [loaded, props.mode, singlePin, props.mode === 'all' ? (props as AllClubsProps).clubs : null])
 
   if (!apiKey) {
     return (

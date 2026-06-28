@@ -1,0 +1,41 @@
+-- Migration 0013: Replace placeholder clubs with real KML club data
+
+-- Delete placeholder clubs with no real data
+DELETE FROM clubs WHERE id = 'alexandria';
+DELETE FROM clubs WHERE id = 'covington';
+DELETE FROM clubs WHERE id = 'hammond';
+DELETE FROM clubs WHERE id = 'natchitoches';
+DELETE FROM clubs WHERE id = 'new-orleans';
+DELETE FROM clubs WHERE id = 'thibodaux';
+DELETE FROM clubs WHERE id = 'lake-charles';
+DELETE FROM clubs WHERE id = 'lafayette';
+DELETE FROM clubs WHERE id = 'kenner';
+
+-- Update existing clubs with real data
+UPDATE clubs SET name = 'Baton Rouge Chess Club', city = 'Baton Rouge', description = 'Meets Saturdays 10am at Jones Creek Branch Library. G/90+30i time control. Casual meets Wednesdays 6pm at Boba ParTea on O''Neil Lane.', meeting_schedule = 'Saturdays 10:00 AM', location = 'Jones Creek Branch Library, Baton Rouge, LA' WHERE id = 'baton-rouge';
+UPDATE clubs SET name = 'Monroe Chess Club', city = 'Monroe', description = 'Monday evenings 5:30 PM at Enochs Pub and Grill. Saturday mornings 10:00 AM at Books-A-Million. All ages welcome.', meeting_schedule = 'Mon 5:30 PM & Sat 10:00 AM', location = 'Enochs Pub and Grill / Books-A-Million, Monroe, LA' WHERE id = 'monroe';
+UPDATE clubs SET name = 'Shreveport-Bossier Chess Club', city = 'Shreveport', description = 'Mondays at Gamers XP 1-5 PM. Thursdays at Pierre Bossier Mall Food Court 1-5 PM.', meeting_schedule = 'Mon & Thu 1:00-5:00 PM', location = 'Gamers XP / Pierre Bossier Mall, Shreveport, LA' WHERE id = 'shreveport';
+UPDATE clubs SET name = 'Slidell Chess Club', city = 'Slidell', description = 'Meets Fridays at 7 PM at St. Luke''''s, 910 Cross Gates Blvd., Slidell, LA 70461, Classroom 3.', meeting_schedule = 'Fridays 7:00 PM', location = 'St. Luke''''s, 910 Cross Gates Blvd., Slidell, LA 70461' WHERE id = 'slidell';
+UPDATE clubs SET name = 'Metairie Chess Academy', city = 'Metairie', description = 'Chess instruction and play for kids of all ages.', meeting_schedule = 'See club for details', location = 'Metairie, LA' WHERE id = 'metairie';
+UPDATE clubs SET name = 'Ruston Knights Chess Club', city = 'Ruston', description = 'Tuesday nights at 6 PM at Utility Brewing Company.', meeting_schedule = 'Tuesdays 6:00 PM', location = 'Utility Brewing Company, Ruston, LA' WHERE id = 'ruston';
+
+-- Insert new clubs from KML data
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('beauregard-parish-youth-chess', 'Beauregard Parish Youth Chess', 'DeRidder', 'Youth chess program. Every Wednesday during summer months, 1:00-2:00 PM.', 'Wednesdays 1:00 PM (summer)', 'Beauregard Parish, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('bluebonnet-chess-club', 'Bluebonnet Chess Club', 'Baton Rouge', 'Meets bi-weekly at Bluebonnet Library on the 1st and 3rd Sunday of the month, 4:30-5:30 PM.', '1st & 3rd Sundays 4:30 PM', 'Bluebonnet Library, Baton Rouge, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('bunkie-chess-club', 'Bunkie Chess Club', 'Bunkie', 'Open to all ages 8-108. Free to join. Meets Tuesdays 4-6 PM at the Bunkie Library.', 'Tuesdays 4:00-6:00 PM', 'Bunkie Library, Bunkie, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('casa-de-ajedrez', 'Casa de Ajedrez', 'Sulphur', 'Leisure/casual play, USCF rated tournaments, online chess, and lessons. Sulphur/Lake Charles area.', 'See club for details', 'Sulphur/Lake Charles, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('downriver-chess-club', 'Downriver Chess Club', 'New Orleans', 'Monday and Thursday evenings at 7 PM. Game 15, no delay. $1-2 entry with USCF membership.', 'Mon & Thu 7:00 PM', 'New Orleans, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('greater-new-orleans-chess-club', 'Greater New Orleans Chess Club', 'New Orleans', 'Tuesdays 7:00 PM. 5-round G/90 tournaments, 1 round per week. Arrive by 6:30 to register.', 'Tuesdays 7:00 PM', 'New Orleans, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('heart-of-worship-church-chess', 'Heart of Worship Church Chess', 'Opelousas', 'Meets Fridays 5:30-7 PM before church. Open to anyone.', 'Fridays 5:30-7:00 PM', 'Heart of Worship Church, Opelousas, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('houma-chess-club', 'Houma Chess Club', 'Houma', 'Meets Mondays 6:00-8:30 PM at Terrebonne Parish North Library.', 'Mondays 6:00-8:30 PM', 'Terrebonne Parish North Library, Houma, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('knight-light-chess', 'Knight Light Chess', 'New Orleans', 'Summer camps, after-school programs, private instruction, and community tournaments.', 'See club for details', 'New Orleans, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('lafayette-chess-club', 'Lafayette Chess Club', 'Lafayette', 'Hosts the Louisiana Open every Memorial Day Weekend and Lafayette Open in October. All skill levels welcome.', 'See club for details', 'Lafayette, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('mandeville-chess-club', 'Mandeville Chess Club', 'Mandeville', 'Meets Mondays at 5:00 PM at George''''s Mexican Restaurant.', 'Mondays 5:00 PM', 'George''''s Mexican Restaurant, Mandeville, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('marrero-chess-organization', 'Marrero Chess Organization', 'Marrero', 'Meets Wednesdays 6-10 PM at Chopsticks Buffet. No entry fee, all welcome. Skittles games only.', 'Wednesdays 6:00-10:00 PM', 'Chopsticks Buffet, Marrero, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('morgan-city-chess-club', 'Morgan City Chess Club', 'Morgan City', 'Meets 1st, 3rd, and 5th Tuesday evenings at 5:30 PM at First Baptist Church.', '1st, 3rd & 5th Tuesdays 5:30 PM', 'First Baptist Church, Morgan City, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('new-orleans-westbank-chess-club', 'New Orleans Westbank Chess Club', 'Gretna', 'USCF Rated Tournaments - Thursdays 7:30-11:30 PM. Beginners welcome.', 'Thursdays 7:30-11:30 PM', 'Gretna, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('north-kenner-library-chess-club', 'North Kenner Library Chess Club', 'Kenner', 'Skittles chess for players of all ages and abilities. North Kenner Public Library Meeting Room.', 'See club for details', 'North Kenner Public Library, Kenner, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('picayune-chess-club', 'Picayune Chess Club', 'Picayune', 'Mondays 6-10 PM at IHop. Casual games. Quick rated tournaments 1st Monday of each month (4 rounds, G/20d5).', 'Mondays 6:00-10:00 PM', 'IHop, Picayune, MS');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('pineville-homeschool-chess-club', 'Pineville Homeschool Chess Club', 'Pineville', 'Must be a CCHSA homeschool group member. Meets monthly 12:30-2:30 PM at 300 Pearce Rd, Pineville, LA.', 'Monthly 12:30-2:30 PM', '300 Pearce Rd, Pineville, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('strategic-thoughts-nola', 'Strategic Thoughts NOLA', 'New Orleans', 'Youth chess programs in schools and NORD centers. Building a diverse chess community in New Orleans.', 'See club for details', 'New Orleans, LA');
+INSERT OR IGNORE INTO clubs (id, name, city, description, meeting_schedule, location) VALUES ('gonzales-chess-club', 'Gonzales Chess Club', 'Gonzales', 'Chess club serving the Gonzales area.', 'See club for details', 'Gonzales, LA');
