@@ -52,7 +52,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .all()
 
   const news = await context.env.DB.prepare(
-    `SELECT id, title, body, news_date
+    `SELECT id, title, excerpt, news_date
      FROM club_news
      WHERE club_id = ?
      ORDER BY news_date DESC
