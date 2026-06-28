@@ -14,6 +14,7 @@ CONTACT_EMAIL = "contact@louisianachess.org"
 SUPPORT_EMAIL = "support@louisianachess.org"
 VITE_SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
 VITE_SUPABASE_ANON_KEY = "sb_publishable_f19vYEFtISf2_oBdOWSHLA_h3AY2sT3"
+VITE_GOOGLE_MAPS_API_KEY = "AIzaSyA0sTvidf63X8gWIqYn-NVklp-phgceW1g"
 
 # Set these as secrets (never commit):
 #   npx wrangler pages secret put SUPABASE_SERVICE_ROLE_KEY

@@ -14,6 +14,9 @@ interface UpdateClubBody {
   description?: string | null
   meetingSchedule?: string | null
   contactEmail?: string | null
+  color?: string | null        // add
+  imageUrl?: string | null     // add
+  region?: string | null       // add
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -89,7 +92,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   await context.env.DB.prepare(
     `UPDATE clubs SET
       name = ?, city = ?, location = ?, description = ?,
-      meeting_schedule = ?, contact_email = ?
+      meeting_schedule = ?, contact_email = ?,
+      color = ?, image_url = ?, region = ?
      WHERE id = ?`,
   )
     .bind(
@@ -97,12 +101,11 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       body.city ?? existing.city,
       body.location !== undefined ? body.location : existing.location,
       body.description !== undefined ? body.description : existing.description,
-      body.meetingSchedule !== undefined
-        ? body.meetingSchedule
-        : existing.meeting_schedule,
-      body.contactEmail !== undefined
-        ? body.contactEmail
-        : existing.contact_email,
+      body.meetingSchedule !== undefined ? body.meetingSchedule : existing.meeting_schedule,
+      body.contactEmail !== undefined ? body.contactEmail : existing.contact_email,
+      body.color !== undefined ? body.color : existing.color,
+      body.imageUrl !== undefined ? body.imageUrl : existing.image_url,
+      body.region !== undefined ? body.region : existing.region,
       clubId,
     )
     .run()
