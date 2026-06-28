@@ -14,6 +14,7 @@ import {
 } from '@/lib/api'
 import { clubColorTint } from '@/lib/clubColors'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { LCAMap } from '@/components/maps/LCAMap'
 
 const LCA_GOLD = '#c8a94a'
 const NAVY = '#1a2744'
@@ -279,6 +280,9 @@ export function ClubDetailPage() {
                     </div>
                   )}
                 </dl>
+                <div className="mt-4 overflow-hidden rounded-lg -mx-5 -mb-5">
+                  <LCAMap mode="single" clubName={club.name} height={200} />
+                </div>
                 <p className="mt-4 text-xs text-muted-foreground">
                   New players are always welcome. No membership required to attend your first meeting.
                 </p>
