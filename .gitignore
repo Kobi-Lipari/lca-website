@@ -8,3 +8,5 @@ dist/
 *.njsproj
 *.sln
 .env.local
+.wrangler/
+tsconfig.app.tsbuildinfo
