@@ -5,7 +5,7 @@ import {
   MapPin, Trophy, Clock, Building2, ExternalLink, Globe, Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { clubAccentStyle, clubColorTint } from '@/lib/clubColors'
+import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
