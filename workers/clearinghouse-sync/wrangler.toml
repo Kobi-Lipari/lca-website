@@ -1,0 +1,14 @@
+name = "lca-clearinghouse-sync"
+main = "index.ts"
+compatibility_date = "2024-08-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lca-db"
+database_id = "e891b93f-e7fe-48d0-9afc-8570d805ef08"
+
+[vars]
+CLEARINGHOUSE_JSON_URL = "https://script.google.com/macros/s/AKfycbwUyoi9aqip96a5FzXdIfdFWIumAz7J0IRTvS8KV-84zVxoQwQvxP4yUhJGIn6yqmbw/exec"
+
+[triggers]
+crons = ["0 6 * * *"]
