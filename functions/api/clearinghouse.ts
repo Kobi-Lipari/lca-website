@@ -29,7 +29,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       t.location AS city,
       'LA' AS state,
       t.venue,
-      t.time_control AS rating_system,
+      NULL AS rating_system,
       NULL AS eligibility,
       NULL AS contact,
       NULL AS link,
