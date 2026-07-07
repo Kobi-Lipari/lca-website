@@ -826,6 +826,7 @@ export interface ApiGovernanceDocument {
   doc_date: string | null
   year: number | null
   created_at: string
+  content: string | null
 }
 
 // ── Board members ─────────────────────────────────────────────────────────────

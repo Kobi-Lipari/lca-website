@@ -1,0 +1,1 @@
+ALTER TABLE governance_documents ADD COLUMN content TEXT;
