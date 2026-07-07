@@ -155,13 +155,6 @@ function TierButton({
       >
         {loading ? 'Starting checkout…' : 'Join / Renew'}
       </Button>
-      <p className="mt-2 text-center text-xs text-muted-foreground">
-        After payment, return to{' '}
-        <Link to="/membership/success" className="text-[#c8a94a] hover:underline">
-          confirm membership
-        </Link>
-        .
-      </p>
     </div>
   )
 }
