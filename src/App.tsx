@@ -14,6 +14,7 @@ import { ClubDetailPage } from '@/pages/ClubDetailPage'
 import { ClubsPage } from '@/pages/ClubsPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { DonationSuccessPage } from '@/pages/DonationSuccessPage'
 import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
 import { GovernancePage } from '@/pages/GovernancePage'
 import { HomePage } from '@/pages/HomePage'
@@ -56,6 +57,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/donate/success" element={<DonationSuccessPage />} />
 
           {/* ── Governance ── */}
           <Route path="/about" element={<AboutPage />} />

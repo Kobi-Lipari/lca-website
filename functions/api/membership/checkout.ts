@@ -8,15 +8,19 @@ interface CheckoutBody {
 }
 
 const TIER_PRICES: Record<string, number> = {
-  regular: 35,
-  scholastic: 20,
-  club: 150,
+  adult: 15,
+  scholastic: 5,
+  family: 25,
+  senior: 10,
+  test: 0.5, // TODO: remove this tier before public launch — board demo only
 }
 
 const TIER_LABELS: Record<string, string> = {
-  regular: 'LCA Regular Membership (1 year)',
+  adult: 'LCA Adult Membership (1 year)',
   scholastic: 'LCA Scholastic Membership (1 year)',
-  club: 'LCA Club Membership (1 year)',
+  family: 'LCA Family Membership (1 year)',
+  senior: 'LCA Senior Membership (1 year)',
+  test: 'LCA Test Membership (demo)',
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
