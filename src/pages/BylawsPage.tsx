@@ -10,8 +10,8 @@ export function BylawsPage() {
   return (
     <GovLayout title="Bylaws" subtitle="Official constitution of the Louisiana Chess Association">
       <div className="space-y-8">
-        <GovernanceDocuments category="bylaws" title="Bylaws documents" isAdmin={role === 'lca_admin'} />
-        <GovernanceDocuments category="amendments" title="Proposed amendments" isAdmin={role === 'lca_admin'} />
+        <GovernanceDocuments category="bylaws" title="Bylaws documents" isAdmin={role === 'lca_admin'} layout="preview" />
+        <GovernanceDocuments category="amendments" title="Proposed amendments" isAdmin={role === 'lca_admin'} layout="preview" />
       </div>
     </GovLayout>
   )
