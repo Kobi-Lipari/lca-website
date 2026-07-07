@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Plus, Trash2, Upload, FileText } from 'lucide-react'
+import { Plus, Trash2, Upload, FileText, Pencil, ChevronDown } from 'lucide-react'
 import { DocRow } from '@/components/governance/GovLayout'
 import { RichTextEditor } from '@/components/governance/RichTextEditor'
 import { Button } from '@/components/ui/button'
@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
   adminCreateGovernanceDocument,
+  adminUpdateGovernanceDocument,
   adminDeleteGovernanceDocument,
   getGovernanceDocuments,
   type ApiGovernanceDocument,
@@ -16,24 +17,127 @@ import { parseFileToHtml, ACCEPTED_UPLOAD_TYPES } from '@/lib/parseDocumentFile'
 
 const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
+const emptyForm = { title: '', content: '', doc_date: '', year: '' }
+
+function stripHtml(html: string): string {
+  const div = document.createElement('div')
+  div.innerHTML = html
+  return (div.textContent || div.innerText || '').trim()
+}
+
+function DocumentCard({
+  doc,
+  isAdmin,
+  layout,
+  onEdit,
+  onDelete,
+}: {
+  doc: ApiGovernanceDocument
+  isAdmin: boolean
+  layout: 'accordion' | 'preview'
+  onEdit: () => void
+  onDelete: () => void
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const plainText = doc.content ? stripHtml(doc.content) : ''
+  const snippet = plainText.length > 220 ? plainText.slice(0, 220).trim() + '…' : plainText
+
+  return (
+    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setExpanded((e) => !e)}
+        className="flex w-full items-start justify-between gap-2 px-4 pt-3 pb-2 text-left"
+      >
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h4 className="font-semibold text-[#1a2744]">{doc.title}</h4>
+            <ChevronDown className={`size-4 flex-shrink-0 text-muted-foreground transition-transform ${expanded ? 'rotate-180' : ''}`} />
+          </div>
+          {doc.doc_date && <p className="text-xs text-muted-foreground">{doc.doc_date}</p>}
+          {layout === 'accordion' && !expanded && snippet && (
+            <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{snippet}</p>
+          )}
+        </div>
+        {isAdmin && (
+          <div className="flex flex-shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()}>
+            <button type="button" onClick={onEdit} className="p-1 text-muted-foreground hover:text-[#1a2744]">
+              <Pencil className="size-3.5" />
+            </button>
+            <button type="button" onClick={onDelete} className="p-1 text-muted-foreground hover:text-destructive">
+              <Trash2 className="size-3.5" />
+            </button>
+          </div>
+        )}
+      </button>
+
+      {layout === 'accordion' ? (
+        expanded && (
+          <div className="px-4 pb-4 pt-1">
+            {doc.content ? (
+              <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: doc.content }} />
+            ) : (
+              <div className="flex items-center gap-2 text-sm">
+                <FileText className="size-3.5 text-muted-foreground" />
+                <DocRow title="" filename={doc.filename} file_url={doc.file_url} />
+              </div>
+            )}
+          </div>
+        )
+      ) : (
+        <div className="px-4 pb-4 pt-1">
+          {doc.content ? (
+            <div className="relative">
+              <div
+                className={`prose prose-sm max-w-none ${!expanded ? 'max-h-40 overflow-hidden' : ''}`}
+                dangerouslySetInnerHTML={{ __html: doc.content }}
+              />
+              {!expanded && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-card to-transparent" />
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 text-sm">
+              <FileText className="size-3.5 text-muted-foreground" />
+              <DocRow title="" filename={doc.filename} file_url={doc.file_url} />
+            </div>
+          )}
+          {doc.content && (
+            <button
+              type="button"
+              onClick={() => setExpanded((e) => !e)}
+              className="mt-2 text-sm font-medium text-[#1a2744] underline underline-offset-2 hover:text-[#c8a94a]"
+            >
+              {expanded ? 'Show less' : 'Read more'}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 export function GovernanceDocuments({
   category,
   title,
   isAdmin,
+  layout = 'accordion',
 }: {
   category: ApiGovernanceDocument['category']
   title: string
   isAdmin: boolean
+  layout?: 'accordion' | 'preview'
 }) {
   const [docs, setDocs] = useState<ApiGovernanceDocument[]>([])
   const [loading, setLoading] = useState(true)
   const [adding, setAdding] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [parsing, setParsing] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [form, setForm] = useState({ title: '', content: '', doc_date: '', year: '' })
+  const [form, setForm] = useState(emptyForm)
 
   useEffect(() => {
     getGovernanceDocuments(category)
@@ -41,6 +145,29 @@ export function GovernanceDocuments({
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [category])
+
+  function startAdd() {
+    setForm(emptyForm)
+    setEditingId(null)
+    setAdding(true)
+  }
+
+  function startEdit(doc: ApiGovernanceDocument) {
+    setForm({
+      title: doc.title,
+      content: doc.content || '',
+      doc_date: doc.doc_date || '',
+      year: doc.year ? String(doc.year) : '',
+    })
+    setEditingId(doc.id)
+    setAdding(true)
+  }
+
+  function cancelForm() {
+    setAdding(false)
+    setEditingId(null)
+    setForm(emptyForm)
+  }
 
   async function handleFile(file: File) {
     setParsing(true)
@@ -58,10 +185,10 @@ export function GovernanceDocuments({
     }
   }
 
-  async function handleAdd() {
+  async function handleSave() {
     setSaving(true)
     try {
-      const created = await adminCreateGovernanceDocument({
+      const payload = {
         category,
         title: form.title,
         content: form.content || null,
@@ -69,18 +196,30 @@ export function GovernanceDocuments({
         file_url: null,
         doc_date: form.doc_date || null,
         year: form.year ? Number(form.year) : null,
-      })
-      setDocs((prev) => [created, ...prev])
-      setForm({ title: '', content: '', doc_date: '', year: '' })
-      setAdding(false)
+      }
+
+      if (editingId) {
+        const updated = await adminUpdateGovernanceDocument(editingId, payload)
+        setDocs((prev) => prev.map((d) => (d.id === editingId ? updated : d)))
+      } else {
+        const created = await adminCreateGovernanceDocument(payload)
+        setDocs((prev) => [created, ...prev])
+      }
+
+      cancelForm()
+    } catch (err) {
+      console.error('Failed to save document:', err)
+      alert(err instanceof Error ? err.message : 'Failed to save document.')
     } finally {
       setSaving(false)
     }
   }
 
   async function handleDelete(id: string) {
+    if (!confirm('Delete this document? This cannot be undone.')) return
     await adminDeleteGovernanceDocument(id)
     setDocs((prev) => prev.filter((d) => d.id !== id))
+    if (editingId === id) cancelForm()
   }
 
   if (loading) return <p className="text-sm text-muted-foreground">Loading…</p>
@@ -90,7 +229,7 @@ export function GovernanceDocuments({
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-semibold text-[#1a2744]">{title}</h3>
         {isAdmin && !adding && (
-          <Button type="button" variant="outline" size="sm" onClick={() => setAdding(true)}>
+          <Button type="button" variant="outline" size="sm" onClick={startAdd}>
             <Plus className="mr-1.5 size-3.5" /> Add document
           </Button>
         )}
@@ -98,7 +237,7 @@ export function GovernanceDocuments({
 
       {adding && (
         <div className="mb-4 rounded-xl border bg-card p-4 shadow-sm space-y-3">
-          <p className="text-sm font-medium text-[#1a2744]">Add document</p>
+          <p className="text-sm font-medium text-[#1a2744]">{editingId ? 'Edit document' : 'Add document'}</p>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div><Label className="text-xs">Title</Label><Input className="mt-1 h-8 text-sm" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} /></div>
@@ -159,8 +298,10 @@ export function GovernanceDocuments({
           </Tabs>
 
           <div className="flex gap-2">
-            <Button type="button" className={GOLD} size="sm" onClick={handleAdd} disabled={saving || !form.title || !form.content}>Save</Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => setAdding(false)}>Cancel</Button>
+            <Button type="button" className={GOLD} size="sm" onClick={handleSave} disabled={saving || !form.title || !form.content}>
+              {editingId ? 'Save changes' : 'Save'}
+            </Button>
+            <Button type="button" variant="outline" size="sm" onClick={cancelForm}>Cancel</Button>
           </div>
         </div>
       )}
@@ -172,31 +313,14 @@ export function GovernanceDocuments({
           </div>
         ) : (
           docs.map((doc) => (
-            <div key={doc.id} className="rounded-xl border bg-card shadow-sm">
-              <div className="flex items-start justify-between gap-2 px-4 pt-3">
-                <div>
-                  <h4 className="font-semibold text-[#1a2744]">{doc.title}</h4>
-                  {doc.doc_date && <p className="text-xs text-muted-foreground">{doc.doc_date}</p>}
-                </div>
-                {isAdmin && (
-                  <button type="button" onClick={() => handleDelete(doc.id)} className="flex-shrink-0 p-1 text-muted-foreground hover:text-destructive">
-                    <Trash2 className="size-3.5" />
-                  </button>
-                )}
-              </div>
-
-              <div className="px-4 pb-4 pt-2">
-                {doc.content ? (
-                  <div className="prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: doc.content }} />
-                ) : (
-                  // Legacy fallback for docs added the old way (file_url/filename, no content)
-                  <div className="flex items-center gap-2 text-sm">
-                    <FileText className="size-3.5 text-muted-foreground" />
-                    <DocRow title="" filename={doc.filename} file_url={doc.file_url} />
-                  </div>
-                )}
-              </div>
-            </div>
+            <DocumentCard
+              key={doc.id}
+              doc={doc}
+              isAdmin={isAdmin}
+              layout={layout}
+              onEdit={() => startEdit(doc)}
+              onDelete={() => handleDelete(doc.id)}
+            />
           ))
         )}
       </div>

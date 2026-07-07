@@ -9,7 +9,7 @@ export function RulesPage() {
   return (
     <GovLayout title="Rules & policies" subtitle="Tournament rules and conduct policies">
       <div className="space-y-8">
-        <GovernanceDocuments category="rules" title="Rules & policy documents" isAdmin={role === 'lca_admin'} />
+        <GovernanceDocuments category="rules" title="Rules & policy documents" isAdmin={role === 'lca_admin'} layout="preview" />
         <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
           <div>
             <h2 className="mb-2 text-base font-bold text-[#1a2744]">Tournament rules</h2>
