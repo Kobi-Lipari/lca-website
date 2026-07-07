@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ExternalLink } from 'lucide-react'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -26,8 +27,36 @@ const PINNED: { title: string; summary: string; href: string; date: string }[] =
   },
 ]
 
+// Facebook's raw iframe page-plugin embed does not honor adapt_container_width the
+// way the JS SDK div version does — it locks in whatever `width` is passed in the
+// URL. So we measure the real container width ourselves and rebuild the iframe src
+// to match, keeping it responsive on resize.
+function useMeasuredWidth(maxWidth: number) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [width, setWidth] = useState<number | null>(null)
+
+  useEffect(() => {
+    const el = containerRef.current
+    if (!el) return
+
+    function update() {
+      if (!el) return
+      const w = Math.min(Math.floor(el.getBoundingClientRect().width), maxWidth)
+      setWidth(w)
+    }
+
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [maxWidth])
+
+  return { containerRef, width }
+}
+
 export function NewsPage() {
   usePageTitle('News')
+  const { containerRef, width } = useMeasuredWidth(500)
 
   return (
     <div>
@@ -131,21 +160,26 @@ export function NewsPage() {
                 4. Add VITE_FACEBOOK_APP_ID to your .env.local
                 5. Load the FB SDK in index.html and replace this iframe with the Page Plugin div
 
-              For now this iframe links directly to the Facebook page as a fallback.
-              Remind K to set up the Facebook App ID when ready.
+              The raw iframe embed below doesn't honor adapt_container_width — Facebook only
+              resizes the JS-SDK div version reliably. So we measure the container ourselves
+              (useMeasuredWidth above) and rebuild the src with the real pixel width, updating
+              on resize via ResizeObserver.
             */}
-            <div className="p-5">
-              <iframe
-                src={`https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FLouisianaChessAssociation&tabs=timeline&width=680&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false`}
-                width="100%"
-                height="500"
-                style={{ border: 'none', overflow: 'hidden', display: 'block' }}
-                scrolling="no"
-                frameBorder="0"
-                allowFullScreen
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                title="Louisiana Chess Association Facebook feed"
-              />
+            <div ref={containerRef} className="flex justify-center p-5">
+              {width && (
+                <iframe
+                  key={width}
+                  src={`https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FLouisianaChessAssociation&tabs=timeline&width=${width}&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false`}
+                  width={width}
+                  height="500"
+                  style={{ border: 'none', overflow: 'hidden', display: 'block' }}
+                  scrolling="no"
+                  frameBorder="0"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  title="Louisiana Chess Association Facebook feed"
+                />
+              )}
             </div>
 
             <div className="border-t border-border px-5 py-3 text-center">
