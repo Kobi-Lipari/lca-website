@@ -25,44 +25,55 @@ interface MembershipBenefit {
 
 const tiers: MembershipTier[] = [
   {
-    id: 'regular',
-    name: 'Regular Member',
-    price: 35,
+    id: 'adult',
+    name: 'LCA Adult Membership',
+    price: 15,
     period: 'per year',
-    description:
-      'Full LCA membership for adult players. Includes discounted tournament entry and access to all member events.',
+    description: 'For players 18 and up.',
     highlighted: true,
   },
   {
     id: 'scholastic',
-    name: 'Scholastic Member',
-    price: 20,
+    name: 'LCA Scholastic Membership',
+    price: 5,
     period: 'per year',
-    description:
-      'For players under 18. Same benefits as regular membership at a reduced rate to support youth chess.',
+    description: 'For K–12 students. Same benefits as adult membership at a reduced rate to support youth chess.',
   },
   {
-    id: 'club',
-    name: 'Club Membership',
-    price: 150,
+    id: 'family',
+    name: 'LCA Family Membership',
+    price: 25,
     period: 'per year',
-    description:
-      'Annual affiliation for chess clubs. Includes club page on the LCA site, tournament hosting privileges, and group member discounts.',
+    description: 'Covers 1 adult and up to 3 dependents. The best value for households with multiple players.',
+  },
+  {
+    id: 'senior',
+    name: 'LCA Senior Membership',
+    price: 10,
+    period: 'per year',
+    description: 'For members 65 and up. Full membership benefits at a reduced rate.',
+  },
+  {
+    id: 'test',
+    name: 'Test Membership',
+    price: 0.50,
+    period: 'demo only — remove before launch',
+    description: 'Confirms the full Stripe checkout, webhook, and activation flow with a real transaction.',
   },
 ]
 
 const benefits: MembershipBenefit[] = [
   {
     icon: Trophy,
-    title: 'Discounted Tournament Entry',
+    title: 'LCA Tournament Entry',
     description:
-      'Save on entry fees at every LCA-sanctioned tournament across Louisiana.',
+      'Eligible to enter LCA run tournaments across Louisiana.',
   },
   {
     icon: Users,
     title: 'Member Profile',
     description:
-      'Your official LCA profile with USCF ID, rating tracking, and tournament history.',
+      'Your official LCA profile connected with USCF ID, rating tracking, and tournament history.',
   },
   {
     icon: Shield,
@@ -79,26 +90,20 @@ const benefits: MembershipBenefit[] = [
 ]
 
 const tierBenefits: Record<string, string[]> = {
-  regular: [
-    'Discounted tournament entry fees',
-    'Member profile and history',
-    'Voting rights in LCA elections',
-    'Membership card and confirmation',
-    'Access to member-only events',
+  adult: [
+
   ],
   scholastic: [
-    'Discounted tournament entry fees',
-    'Member profile and history',
-    'Scholastic tournament access',
-    'Membership card and confirmation',
-    'Youth coaching event discounts',
+  
   ],
-  club: [
-    'Official club page on LCA website',
-    'Tournament hosting privileges',
-    'Group member discount codes',
-    'Club representative dashboard access',
-    'Listed in affiliated clubs directory',
+  family: [
+
+  ],
+  senior: [
+ 
+  ],
+  test: [
+
   ],
 }
 

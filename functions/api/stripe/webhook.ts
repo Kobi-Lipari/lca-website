@@ -21,6 +21,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object
     const paymentId = session.metadata?.payment_id
+    const type = session.metadata?.type
+
+    // Donations: just mark the payment completed, no member record to update
+    if (type === 'donation') {
+      if (paymentId) {
+        await context.env.DB.prepare(
+          `UPDATE payments SET status = 'completed', stripe_payment_intent = ? WHERE id = ?`
+        ).bind(session.payment_intent ?? null, paymentId).run()
+      }
+      return jsonResponse({ received: true })
+    }
+
+    // Memberships: activate the member on successful payment
     const memberId = session.metadata?.member_id
     const tier = session.metadata?.tier
 
