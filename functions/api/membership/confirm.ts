@@ -1,3 +1,11 @@
+import type { Env } from '../../types'
+import { isResponse, requireAuthedMember } from '../../utils/auth'
+import { errorResponse, jsonResponse, parseJsonBody } from '../../utils/response'
+
+interface ConfirmBody {
+  paymentId?: string
+}
+
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const authed = await requireAuthedMember(context.request, context.env)
   if (isResponse(authed)) return authed
