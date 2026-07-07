@@ -17,8 +17,8 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
   const body = await ctx.request.json() as any
   const id = crypto.randomUUID().replace(/-/g, '').slice(0, 16)
   await ctx.env.DB.prepare(
-    'INSERT INTO governance_documents (id, category, title, filename, file_url, doc_date, year) VALUES (?, ?, ?, ?, ?, ?, ?)'
-  ).bind(id, body.category, body.title, body.filename || null, body.file_url || null, body.doc_date || null, body.year || null).run()
+    'INSERT INTO governance_documents (id, category, title, content, filename, file_url, doc_date, year) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+  ).bind(id, body.category, body.title, body.content || null, body.filename || null, body.file_url || null, body.doc_date || null, body.year || null).run()
   const doc = await ctx.env.DB.prepare('SELECT * FROM governance_documents WHERE id = ?').bind(id).first()
   return jsonResponse({ document: doc }, 201)
 }
