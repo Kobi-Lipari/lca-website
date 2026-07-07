@@ -333,6 +333,8 @@ export async function adminUpdateClub(
     meetingSchedule?: string | null
     contactEmail?: string | null
     color?: string | null
+    imageUrl?: string | null
+    region?: string | null
   },
 ): Promise<ApiClubDetail> {
   const response = await fetch(`/api/admin/clubs/${id}`, {
