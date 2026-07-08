@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Menu, Trophy, X } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
+import lcaLogo from '@/assets/lca-logo.jpg'
 
 const navLinks = [
   { label: 'Tournaments', href: '/tournaments' },
@@ -88,9 +89,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#1a2744] text-white shadow-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90" onClick={() => setMobileOpen(false)}>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#c8a94a]">
-            <Trophy className="size-4 text-[#1a2744]" />
-          </div>
+          <img src={lcaLogo} alt="Louisiana Chess Association" className="h-8 w-8 rounded-lg object-cover" />
           <div>
             <div className="text-sm font-semibold leading-tight text-white">Louisiana Chess</div>
             <div className="text-[10px] leading-tight text-white/50">Association</div>
