@@ -1,3 +1,4 @@
+// tournamnets page
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -5,7 +6,7 @@ import {
   MapPin, Trophy, Clock, Building2, ExternalLink, Globe, Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { clubAccentStyle, clubColorTint } from '@/lib/clubColors'
+import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
@@ -41,8 +42,8 @@ interface UnifiedTournament {
 type StateFilter = 'LA' | 'MS' | 'AL' | 'TX' | 'FL' | 'out-of-state' | 'all'
 type ViewMode = 'list' | 'calendar'
 type TypeFilter = 'all' | 'open' | 'scholastic'
+type TimeTab = 'upcoming' | 'past'
 
-// Right column selection
 type RightSelection =
   | { kind: 'lca' }
   | { kind: 'club'; clubId: string }
@@ -53,10 +54,6 @@ type RightSelection =
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const LCA_GOLD = '#c8a94a'
-const NAVY = '#1a2744'
-
-const LA_STATES = ['LA']
-const OUT_OF_STATE = ['MS', 'AL', 'TX', 'FL']
 
 const STATE_PILLS: { value: StateFilter; label: string }[] = [
   { value: 'LA', label: 'Louisiana' },
@@ -77,6 +74,7 @@ const MONTH_NAMES = [
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00')
+  if (isNaN(d.getTime())) return dateStr
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
@@ -89,6 +87,15 @@ function stateMatchesPill(state: string | null, pill: StateFilter): boolean {
   if (pill === 'all') return true
   if (pill === 'out-of-state') return state !== 'LA'
   return state === pill
+}
+
+function isPastTournament(t: UnifiedTournament): boolean {
+  if (t.is_lca === 1 && t.status === 'completed') return true
+  const end = new Date((t.end_date ?? t.start_date) + 'T00:00:00')
+  if (isNaN(end.getTime())) return false
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return end < today
 }
 
 // ── Dropdown ──────────────────────────────────────────────────────────────────
@@ -119,24 +126,24 @@ function Dropdown<T extends string>({ label, value, options, onChange }: Dropdow
         type="button"
         onClick={() => setOpen(o => !o)}
         className={cn(
-          'flex items-center gap-1 rounded-md border px-2.5 py-1 text-[10px] font-medium transition-colors',
+          'flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors',
           isActive
             ? 'border-[#c8a94a]/50 bg-[#c8a94a]/15 text-[#f0d07a]'
             : 'border-white/15 bg-white/6 text-white/50 hover:border-white/25 hover:text-white/70',
         )}
       >
         {isActive ? options.find(o => o.value === value)?.label ?? label : label}
-        <ChevronDown className="size-2.5" />
+        <ChevronDown className="size-3" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-1 min-w-[140px] overflow-hidden rounded-lg border border-border bg-popover shadow-md">
+        <div className="absolute right-0 top-full z-50 mt-1 min-w-[150px] overflow-hidden rounded-lg border border-border bg-popover shadow-md">
           {options.map(opt => (
             <button
               key={opt.value}
               type="button"
               onClick={() => { onChange(opt.value); setOpen(false) }}
               className={cn(
-                'flex w-full items-center gap-2 px-3 py-1.5 text-left text-[11px] transition-colors hover:bg-muted/50',
+                'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50',
                 opt.value === value ? 'bg-[#c8a94a]/8 font-medium text-[#1a2744]' : 'text-muted-foreground',
               )}
             >
@@ -163,33 +170,34 @@ function StatusDot({ regStatus }: { regStatus?: string | null }) {
 function LCADetailPane({ t }: { t: UnifiedTournament }) {
   const color = t.club_color || LCA_GOLD
   const regOpen = t.registration_status === 'open'
+  const isPast = t.status === 'completed'
   const sections = (t.sections ?? []) as Array<string | { name: string }>
 
   return (
-    <div className="p-3.5">
-      <h3 className="mb-2.5 text-[14px] font-semibold leading-snug">
+    <div className="p-4">
+      <h3 className="mb-3 text-[15px] font-semibold leading-snug">
         <Link to={`/tournaments/${t.id}`} className="text-[#1a2744] hover:text-[#c8a94a] hover:underline transition-colors">
           {t.name}
         </Link>
       </h3>
-      <div className="space-y-1.5">
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Calendar className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
           {formatDate(t.start_date)}
         </div>
         {t.city && (
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <MapPin className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
             {t.city}
           </div>
         )}
         {t.time_control && (
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Clock className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
             {t.time_control}
           </div>
         )}
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Building2 className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full" style={{ backgroundColor: color }} />
@@ -202,31 +210,31 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
           {sections.map(s => {
             const name = typeof s === 'string' ? s : s.name
             return (
-              <span key={name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/8 px-2 py-0.5 text-[10px] font-medium text-[#1a2744]">
+              <span key={name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/8 px-2 py-0.5 text-[11px] font-medium text-[#1a2744]">
                 {name}
               </span>
             )
           })}
           {t.is_rated === 1 && (
-            <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-blue-800">
+            <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-800">
               USCF Rated
             </span>
           )}
         </div>
       )}
       {t.entry_fee != null && (
-        <p className="mt-2.5 text-[11px] text-muted-foreground">${t.entry_fee} entry</p>
+        <p className="mt-3 text-xs text-muted-foreground">${t.entry_fee} entry</p>
       )}
-      {regOpen && <p className="mt-0.5 text-[11px] font-medium text-emerald-600">Registration open</p>}
-      <div className="mt-3 flex gap-2">
-        {regOpen && (
+      {regOpen && !isPast && <p className="mt-0.5 text-xs font-medium text-emerald-600">Registration open</p>}
+      <div className="mt-3.5 flex gap-2">
+        {regOpen && !isPast && (
           <Button asChild size="sm" className="h-7 bg-[#c8a94a] text-xs font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
             <Link to={`/tournaments/${t.id}`}>Register</Link>
           </Button>
         )}
         <Button asChild size="sm" variant="outline" className="h-7 text-xs">
           <Link to={`/tournaments/${t.id}`}>
-            {t.status === 'completed' ? 'View results' : 'Full details'}
+            {isPast ? 'View results' : 'Full details'}
           </Link>
         </Button>
       </div>
@@ -238,48 +246,48 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
 
 function ExternalDetailPane({ t }: { t: UnifiedTournament }) {
   return (
-    <div className="p-3.5">
+    <div className="p-4">
       <div className="mb-2 flex items-center gap-1.5">
-        <span className="rounded-full border border-border px-1.5 py-0.5 text-[9px] text-muted-foreground">External</span>
+        <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">External</span>
         {t.state && t.state !== 'LA' && (
-          <span className="rounded-full border border-border px-1.5 py-0.5 text-[9px] text-muted-foreground">{t.state}</span>
+          <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">{t.state}</span>
         )}
       </div>
-      <h3 className="mb-2.5 text-[14px] font-semibold leading-snug text-[#1a2744]">{t.name}</h3>
-      <div className="space-y-1.5">
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+      <h3 className="mb-3 text-[15px] font-semibold leading-snug text-[#1a2744]">{t.name}</h3>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Calendar className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
           {formatDate(t.start_date)}
           {t.end_date && t.end_date !== t.start_date ? ` – ${formatDate(t.end_date)}` : ''}
         </div>
         {(t.venue || t.city) && (
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <MapPin className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
             {t.venue ?? t.city}{t.state ? `, ${t.state}` : ''}
           </div>
         )}
         {t.organizer && (
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Users className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
             {t.organizer}
           </div>
         )}
         {t.rating_system && (
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Trophy className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
             {t.rating_system}
             {t.eligibility && t.eligibility !== 'All ages' ? ` · ${t.eligibility}` : ''}
           </div>
         )}
         {t.contact && (
-          <div className="flex items-start gap-1.5 text-[11px] text-muted-foreground">
+          <div className="flex items-start gap-2 text-xs text-muted-foreground">
             <Globe className="mt-0.5 size-3.5 flex-shrink-0 text-[#c8a94a]" />
             <span className="break-all">{t.contact}</span>
           </div>
         )}
       </div>
       {t.link && (
-        <div className="mt-3">
+        <div className="mt-3.5">
           <Button asChild size="sm" className="h-7 bg-[#c8a94a] text-xs font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
             <a href={t.link} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-1.5 size-3" />
@@ -295,17 +303,16 @@ function ExternalDetailPane({ t }: { t: UnifiedTournament }) {
 // ── Right column ──────────────────────────────────────────────────────────────
 
 interface RightColumnProps {
-  tournaments: UnifiedTournament[]
   lcaClubs: Map<string, { name: string; color: string; count: number }>
+  lcaDirectCount: number
   selection: RightSelection
   onSelect: (s: RightSelection) => void
   otherLaCount: number
   outOfStateCount: number
 }
 
-function RightColumn({ tournaments, lcaClubs, selection, onSelect, otherLaCount, outOfStateCount }: RightColumnProps) {
+function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCount, outOfStateCount }: RightColumnProps) {
   function isSelected(s: RightSelection): boolean {
-    if (!selection && !s) return false
     if (!selection || !s) return false
     if (selection.kind !== s.kind) return false
     if (selection.kind === 'club' && s.kind === 'club') return selection.clubId === s.clubId
@@ -317,83 +324,76 @@ function RightColumn({ tournaments, lcaClubs, selection, onSelect, otherLaCount,
   }
 
   const rowClass = (s: RightSelection) => cn(
-    'flex w-full items-center gap-2.5 border-b border-border px-3 py-2.5 text-left transition-colors last:border-b-0 hover:bg-muted/30',
+    'flex w-full items-center gap-2.5 border-b border-border px-3 py-3 text-left transition-colors last:border-b-0 hover:bg-muted/30',
     isSelected(s) && 'border-l-2 border-l-[#c8a94a] bg-[#c8a94a]/5 pl-[10px]',
   )
 
   return (
     <div className="flex flex-col">
-      <div className="flex items-center justify-between border-b border-border bg-muted/20 px-3 py-1.5">
+      <div className="flex items-center justify-between border-b border-border bg-muted/20 px-3 py-2">
         <div className="flex items-center gap-1.5">
-          <Building2 className="size-3 text-[#c8a94a]" />
-          <span className="text-[10px] font-semibold text-foreground">By organizer</span>
+          <Building2 className="size-3.5 text-[#c8a94a]" />
+          <span className="text-xs font-semibold text-foreground">By organizer</span>
         </div>
-        <span className="text-[10px] text-muted-foreground">click to filter</span>
+        <span className="text-[11px] text-muted-foreground">click to filter</span>
       </div>
 
       <div className="max-h-[320px] flex-1 overflow-y-auto sm:max-h-none">
-        {/* LCA events */}
-        {lcaClubs.size > 0 && (
+        {(lcaClubs.size > 0 || lcaDirectCount > 0) && (
           <>
-            <div className="bg-muted/30 px-3 py-1 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="bg-muted/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               LCA Clubs
             </div>
-            <button type="button" onClick={() => toggle({ kind: 'lca' })} className={rowClass({ kind: 'lca' })}>
-              <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full" style={{ backgroundColor: LCA_GOLD }} />
-              <div className="min-w-0">
-                <p className="truncate text-[11px] font-medium text-foreground">LCA direct events</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {[...lcaClubs.values()].reduce((a, c) => a + c.count, 0)} tournaments
-                </p>
-              </div>
-            </button>
+            {lcaDirectCount > 0 && (
+              <button type="button" onClick={() => toggle({ kind: 'lca' })} className={rowClass({ kind: 'lca' })}>
+                <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full" style={{ backgroundColor: LCA_GOLD }} />
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-medium text-foreground">LCA direct events</p>
+                  <p className="text-[11px] text-muted-foreground">{lcaDirectCount} {lcaDirectCount === 1 ? 'tournament' : 'tournaments'}</p>
+                </div>
+              </button>
+            )}
             {[...lcaClubs.entries()].map(([clubId, club]) => (
               <button key={clubId} type="button" onClick={() => toggle({ kind: 'club', clubId })} className={rowClass({ kind: 'club', clubId })}>
                 <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full" style={{ backgroundColor: club.color }} />
                 <div className="min-w-0">
-                  <p className="truncate text-[11px] font-medium text-foreground">{club.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{club.count} {club.count === 1 ? 'tournament' : 'tournaments'}</p>
+                  <p className="truncate text-[13px] font-medium text-foreground">{club.name}</p>
+                  <p className="text-[11px] text-muted-foreground">{club.count} {club.count === 1 ? 'tournament' : 'tournaments'}</p>
                 </div>
               </button>
             ))}
           </>
         )}
 
-        {/* Other Louisiana */}
         {otherLaCount > 0 && (
           <>
-            <div className="bg-muted/30 px-3 py-1 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="bg-muted/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Louisiana (External)
             </div>
             <button type="button" onClick={() => toggle({ kind: 'other-la' })} className={rowClass({ kind: 'other-la' })}>
               <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full bg-slate-400" />
               <div className="min-w-0">
-                <p className="truncate text-[11px] font-medium text-foreground">Other (Louisiana)</p>
-                <p className="text-[10px] text-muted-foreground">{otherLaCount} tournaments</p>
+                <p className="truncate text-[13px] font-medium text-foreground">Other (Louisiana)</p>
+                <p className="text-[11px] text-muted-foreground">{otherLaCount} tournaments</p>
               </div>
             </button>
           </>
         )}
 
-        {/* Out of state */}
         {outOfStateCount > 0 && (
           <>
-            <div className="bg-muted/30 px-3 py-1 text-[9px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="bg-muted/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Regional
             </div>
             <button type="button" onClick={() => toggle({ kind: 'out-of-state' })} className={rowClass({ kind: 'out-of-state' })}>
               <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full bg-slate-500" />
               <div className="min-w-0">
-                <p className="truncate text-[11px] font-medium text-foreground">Out of State</p>
-                <p className="text-[10px] text-muted-foreground">{outOfStateCount} tournaments</p>
+                <p className="truncate text-[13px] font-medium text-foreground">Out of State</p>
+                <p className="text-[11px] text-muted-foreground">{outOfStateCount} tournaments</p>
               </div>
             </button>
           </>
         )}
-      </div>
-
-      <div className="border-t border-border px-3 py-1.5">
-        <p className="text-[10px] italic text-muted-foreground">Tournaments in current selection</p>
       </div>
     </div>
   )
@@ -418,7 +418,9 @@ function TournamentCalendar({ tournaments, onSelect }: {
   const dayMap = new Map<string, UnifiedTournament[]>()
   tournaments.forEach(t => {
     const start = new Date(t.start_date + 'T00:00:00')
-    const end = t.end_date ? new Date(t.end_date + 'T00:00:00') : start
+    if (isNaN(start.getTime())) return
+    const endRaw = t.end_date ? new Date(t.end_date + 'T00:00:00') : start
+    const end = isNaN(endRaw.getTime()) ? start : endRaw
     const cur = new Date(start)
     while (cur <= end) {
       if (cur.getFullYear() === year && cur.getMonth() === month) {
@@ -438,22 +440,22 @@ function TournamentCalendar({ tournaments, onSelect }: {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <button type="button" onClick={prev} className="rounded p-1 hover:bg-muted/50">
+        <button type="button" onClick={prev} className="rounded p-1.5 hover:bg-muted/50" aria-label="Previous month">
           <ChevronLeft className="size-4 text-muted-foreground" />
         </button>
         <h3 className="text-sm font-semibold text-[#1a2744]">{MONTH_NAMES[month]} {year}</h3>
-        <button type="button" onClick={next} className="rounded p-1 hover:bg-muted/50">
+        <button type="button" onClick={next} className="rounded p-1.5 hover:bg-muted/50" aria-label="Next month">
           <ChevronRight className="size-4 text-muted-foreground" />
         </button>
       </div>
       <div className="grid grid-cols-7 border-b border-border">
         {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => (
-          <div key={d} className="py-1.5 text-center text-[10px] font-medium text-muted-foreground">{d}</div>
+          <div key={d} className="py-1.5 text-center text-[11px] font-medium text-muted-foreground">{d}</div>
         ))}
       </div>
       <div className="grid grid-cols-7">
         {cells.map((day, i) => {
-          if (!day) return <div key={`e-${i}`} className="h-10 border-b border-r border-border/40 last:border-r-0" />
+          if (!day) return <div key={`e-${i}`} className="h-12 border-b border-r border-border/40 last:border-r-0" />
           const ts = dayMap.get(day.toString()) ?? []
           const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year
           const hasLCA = ts.some(t => t.is_lca === 1)
@@ -461,14 +463,14 @@ function TournamentCalendar({ tournaments, onSelect }: {
           return (
             <div
               key={day}
-              className={cn('relative h-10 border-b border-r border-border/40 p-0.5 last:border-r-0', ts.length > 0 && 'cursor-pointer hover:bg-muted/30')}
+              className={cn('relative h-12 border-b border-r border-border/40 p-1 last:border-r-0', ts.length > 0 && 'cursor-pointer hover:bg-muted/30')}
               onClick={() => ts.length > 0 && onSelect(ts[0])}
             >
-              <span className={cn('flex size-5 items-center justify-center rounded-full text-[11px]', isToday ? 'bg-[#1a2744] font-bold text-white' : 'text-foreground')}>
+              <span className={cn('flex size-6 items-center justify-center rounded-full text-xs', isToday ? 'bg-[#1a2744] font-bold text-white' : 'text-foreground')}>
                 {day}
               </span>
               {ts.length > 0 && (
-                <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 gap-0.5">
+                <div className="absolute bottom-1.5 left-1/2 flex -translate-x-1/2 gap-0.5">
                   {hasLCA && <span className="size-1.5 rounded-full bg-[#c8a94a]" />}
                   {hasExt && <span className="size-1.5 rounded-full bg-slate-400" />}
                 </div>
@@ -478,10 +480,10 @@ function TournamentCalendar({ tournaments, onSelect }: {
         })}
       </div>
       <div className="flex items-center gap-4 border-t border-border px-4 py-2.5">
-        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
           <span className="size-2 rounded-full bg-[#c8a94a]" /> LCA hosted
         </div>
-        <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
           <span className="size-2 rounded-full bg-slate-400" /> External
         </div>
       </div>
@@ -495,30 +497,50 @@ export function TournamentsPage() {
   usePageTitle('Tournaments')
 
   const [tournaments, setTournaments] = useState<UnifiedTournament[]>([])
+  const [pastTournaments, setPastTournaments] = useState<UnifiedTournament[]>([])
+  const [pastLoaded, setPastLoaded] = useState(false)
+  const [pastLoading, setPastLoading] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const [timeTab, setTimeTab] = useState<TimeTab>('upcoming')
   const [stateFilter, setStateFilter] = useState<StateFilter>('LA')
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [rightSelection, setRightSelection] = useState<RightSelection>(null)
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
+  const detailRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     fetch('/api/clearinghouse?upcoming=true')
       .then(r => r.json())
-      .then((d: { tournaments: UnifiedTournament[] }) => {
-        setTournaments(d.tournaments ?? [])
-      })
+      .then((d: { tournaments: UnifiedTournament[] }) => setTournaments(d.tournaments ?? []))
       .catch(err => setError(err instanceof Error ? err.message : 'Failed to load'))
       .finally(() => setLoading(false))
   }, [])
+
+  // Lazy-load past tournaments the first time the Past tab is opened
+  useEffect(() => {
+    if (timeTab !== 'past' || pastLoaded || pastLoading) return
+    setPastLoading(true)
+    fetch('/api/clearinghouse?upcoming=false')
+      .then(r => r.json())
+      .then((d: { tournaments: UnifiedTournament[] }) => {
+        const past = (d.tournaments ?? [])
+          .filter(isPastTournament)
+          .sort((a, b) => (b.start_date ?? '').localeCompare(a.start_date ?? ''))
+        setPastTournaments(past)
+        setPastLoaded(true)
+      })
+      .catch(() => setPastTournaments([]))
+      .finally(() => setPastLoading(false))
+  }, [timeTab, pastLoaded, pastLoading])
 
   // ── Sync state pill ↔ right column ────────────────────────────────────────
 
   function handleStatePill(pill: StateFilter) {
     setStateFilter(pill)
-    // Clear right selection unless it still makes sense
     if (pill === 'out-of-state') {
       setRightSelection({ kind: 'out-of-state' })
     } else if (pill !== 'LA' && pill !== 'all') {
@@ -538,21 +560,32 @@ export function TournamentsPage() {
     if (s.kind === 'out-of-state') {
       setStateFilter('out-of-state')
     } else {
-      // club, lca, other-la → ensure Louisiana is selected
       setStateFilter('LA')
     }
   }
 
-  // ── Derived: state-filtered tournaments ───────────────────────────────────
+  function handleRowClick(key: string) {
+    setSelectedId(key)
+    // On mobile, the detail pane stacks below the fold — bring it into view
+    if (window.innerWidth < 640) {
+      setTimeout(() => {
+        detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 60)
+    }
+  }
 
-  const stateFiltered = tournaments.filter(t => stateMatchesPill(t.state, stateFilter))
+  // ── Derived ───────────────────────────────────────────────────────────────
 
-  // ── Derived: right column data ────────────────────────────────────────────
+  const activeSet = timeTab === 'past' ? pastTournaments : tournaments
+  const activeLoading = timeTab === 'past' ? pastLoading : loading
+
+  const stateFiltered = activeSet.filter(t => stateMatchesPill(t.state, stateFilter))
 
   const lcaClubs = new Map<string, { name: string; color: string; count: number }>()
+  let lcaDirectCount = 0
   for (const t of stateFiltered) {
     if (t.is_lca !== 1) continue
-    if (!t.club_id) continue // LCA direct events handled separately
+    if (!t.club_id) { lcaDirectCount++; continue }
     if (!lcaClubs.has(t.club_id)) {
       lcaClubs.set(t.club_id, { name: t.club_name ?? 'Unknown club', color: t.club_color || LCA_GOLD, count: 0 })
     }
@@ -562,14 +595,9 @@ export function TournamentsPage() {
   const otherLaCount = stateFiltered.filter(t => t.is_lca === 0 && t.state === 'LA').length
   const outOfStateCount = stateFiltered.filter(t => t.state !== 'LA').length
 
-  // ── Derived: fully filtered list ──────────────────────────────────────────
-
   const filtered = stateFiltered.filter(t => {
-    // Type filter
     if (typeFilter === 'open' && isScholastic(t.name)) return false
     if (typeFilter === 'scholastic' && !isScholastic(t.name)) return false
-
-    // Right column selection
     if (rightSelection) {
       if (rightSelection.kind === 'lca') {
         if (t.is_lca !== 1 || t.club_id !== null) return false
@@ -581,11 +609,8 @@ export function TournamentsPage() {
         if (t.state === 'LA') return false
       }
     }
-
     return true
   })
-
-  // ── Derived: selected tournament ──────────────────────────────────────────
 
   const selected = selectedId
     ? filtered.find(t => `${t.source}-${t.id}` === selectedId) ?? filtered[0] ?? null
@@ -595,9 +620,8 @@ export function TournamentsPage() {
     if (filtered.length > 0 && (!selectedId || !filtered.find(t => `${t.source}-${t.id}` === selectedId))) {
       setSelectedId(`${filtered[0].source}-${filtered[0].id}`)
     }
-  }, [stateFilter, typeFilter, rightSelection])
-
-  // ── Banner ────────────────────────────────────────────────────────────────
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateFilter, typeFilter, rightSelection, timeTab])
 
   const banner = tournaments.find(t => t.is_lca === 1 && t.state === 'LA')
 
@@ -621,9 +645,7 @@ export function TournamentsPage() {
               LCA events and Gulf South regional tournaments — all in one place.
             </p>
 
-            {/* Controls row */}
             <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 py-2">
-              {/* State pills */}
               <div className="flex items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
                 {STATE_PILLS.map(s => (
                   <button
@@ -631,7 +653,7 @@ export function TournamentsPage() {
                     type="button"
                     onClick={() => handleStatePill(s.value)}
                     className={cn(
-                      'flex-shrink-0 rounded-full px-3 py-1 text-[10px] font-medium transition-colors',
+                      'flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
                       stateFilter === s.value
                         ? 'bg-[#c8a94a] text-[#1a2744]'
                         : 'border border-white/20 text-white/50 hover:text-white/70',
@@ -640,23 +662,22 @@ export function TournamentsPage() {
                     {s.label}
                     <span className="ml-1.5 opacity-60">
                       {s.value === 'all'
-                        ? tournaments.length
+                        ? activeSet.length
                         : s.value === 'out-of-state'
-                          ? tournaments.filter(t => t.state !== 'LA').length
-                          : tournaments.filter(t => t.state === s.value).length}
+                          ? activeSet.filter(t => t.state !== 'LA').length
+                          : activeSet.filter(t => t.state === s.value).length}
                     </span>
                   </button>
                 ))}
               </div>
 
-              {/* Right controls */}
               <div className="flex items-center gap-2">
                 <Dropdown label="Type" value={typeFilter} options={typeOptions} onChange={setTypeFilter} />
                 <div className="flex rounded-lg border border-white/20 p-0.5">
                   <button
                     type="button"
                     onClick={() => setViewMode('list')}
-                    className={cn('flex items-center gap-1 rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors',
+                    className={cn('flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
                       viewMode === 'list' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/50 hover:text-white/70')}
                   >
                     <Trophy className="size-3" /> List
@@ -664,7 +685,7 @@ export function TournamentsPage() {
                   <button
                     type="button"
                     onClick={() => setViewMode('calendar')}
-                    className={cn('flex items-center gap-1 rounded-md px-2.5 py-1 text-[10px] font-medium transition-colors',
+                    className={cn('flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
                       viewMode === 'calendar' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/50 hover:text-white/70')}
                   >
                     <Calendar className="size-3" /> Calendar
@@ -677,7 +698,7 @@ export function TournamentsPage() {
       </section>
 
       {/* ── Banner ── */}
-      {banner && (
+      {banner && timeTab === 'upcoming' && (
         <div className="flex items-center justify-between border-b border-[#c8a94a]/30 bg-[#c8a94a]/10 px-4 py-2 sm:px-6">
           <div className="flex min-w-0 items-center gap-2 text-sm">
             <Calendar className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
@@ -697,7 +718,7 @@ export function TournamentsPage() {
       )}
 
       {/* ── Body ── */}
-      {loading ? (
+      {activeLoading ? (
         <div className="px-6 py-12 text-center text-sm text-muted-foreground">Loading tournaments…</div>
       ) : error ? (
         <div className="px-6 py-12 text-center text-sm text-destructive">{error}</div>
@@ -722,17 +743,30 @@ export function TournamentsPage() {
 
             {/* ── Left: list ── */}
             <div className="border-b border-border sm:border-b-0 sm:border-r">
-              <div className="flex items-center justify-between border-b border-border bg-muted/20 px-3 py-1.5">
-                <div className="flex items-center gap-1.5">
-                  <Trophy className="size-3 text-[#c8a94a]" />
-                  <span className="text-[10px] font-semibold text-foreground">Upcoming</span>
-                  <span className="text-[10px] text-muted-foreground">· {filtered.length}</span>
+              <div className="flex items-center justify-between border-b border-border bg-muted/20 px-3 py-2">
+                <div className="flex items-center gap-1">
+                  {(['upcoming', 'past'] as TimeTab[]).map(tab => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => { setTimeTab(tab); setSelectedId(null) }}
+                      className={cn(
+                        'rounded-md px-2 py-0.5 text-xs font-semibold capitalize transition-colors',
+                        timeTab === tab
+                          ? 'bg-[#1a2744] text-white'
+                          : 'text-muted-foreground hover:text-foreground',
+                      )}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                  <span className="ml-1 text-xs text-muted-foreground">· {filtered.length}</span>
                 </div>
                 {rightSelection && (
                   <button
                     type="button"
                     onClick={() => handleRightSelection(null)}
-                    className="text-[10px] text-muted-foreground hover:text-foreground"
+                    className="text-[11px] text-muted-foreground hover:text-foreground"
                   >
                     Clear filter ×
                   </button>
@@ -740,7 +774,9 @@ export function TournamentsPage() {
               </div>
               <div className="max-h-[300px] overflow-y-auto sm:max-h-[420px]">
                 {filtered.length === 0 ? (
-                  <p className="px-3 py-6 text-center text-xs text-muted-foreground">No tournaments match the current filters.</p>
+                  <p className="px-3 py-6 text-center text-xs text-muted-foreground">
+                    {timeTab === 'past' ? 'No past tournaments yet.' : 'No tournaments match the current filters.'}
+                  </p>
                 ) : (
                   filtered.map(t => {
                     const key = `${t.source}-${t.id}`
@@ -750,21 +786,21 @@ export function TournamentsPage() {
                       <button
                         key={key}
                         type="button"
-                        onClick={() => setSelectedId(key)}
+                        onClick={() => handleRowClick(key)}
                         className={cn(
-                          'flex w-full items-center justify-between border-b border-border px-3 py-2.5 text-left transition-colors last:border-b-0 hover:bg-muted/30',
+                          'flex w-full items-center justify-between border-b border-border px-3 py-3 text-left transition-colors last:border-b-0 hover:bg-muted/30',
                           isSel && 'border-l-2 border-l-[#c8a94a] pl-[10px]',
                         )}
                         style={{ backgroundColor: isSel ? clubColorTint(color, 0.05) : undefined }}
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
-                            <p className="truncate text-[11px] font-medium text-foreground">{t.name}</p>
+                            <p className="truncate text-[13px] font-medium text-foreground">{t.name}</p>
                             {t.is_lca === 0 && (
-                              <span className="flex-shrink-0 rounded border border-border px-1 py-px text-[9px] text-muted-foreground">Ext</span>
+                              <span className="flex-shrink-0 rounded border border-border px-1 py-px text-[10px] text-muted-foreground">Ext</span>
                             )}
                           </div>
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-[11px] text-muted-foreground">
                             {formatDate(t.start_date)}
                             {t.city ? ` · ${t.city}` : ''}
                           </p>
@@ -780,11 +816,11 @@ export function TournamentsPage() {
             </div>
 
             {/* ── Middle: detail ── */}
-            <div className="border-b border-border sm:border-b-0 sm:border-r">
-              <div className="flex items-center border-b border-border bg-muted/20 px-3 py-1.5">
-                <span className="text-[10px] font-semibold text-foreground">Selected tournament</span>
+            <div ref={detailRef} className="scroll-mt-16 border-b border-border sm:border-b-0 sm:border-r">
+              <div className="flex items-center border-b border-border bg-muted/20 px-3 py-2">
+                <span className="text-xs font-semibold text-foreground">Selected tournament</span>
               </div>
-              <div className="max-h-[300px] overflow-y-auto sm:max-h-[420px]">
+              <div className="max-h-[340px] overflow-y-auto sm:max-h-[420px]">
                 {selected ? (
                   selected.is_lca === 1
                     ? <LCADetailPane t={selected} />
@@ -797,8 +833,8 @@ export function TournamentsPage() {
 
             {/* ── Right: organizer ── */}
             <RightColumn
-              tournaments={stateFiltered}
               lcaClubs={lcaClubs}
+              lcaDirectCount={lcaDirectCount}
               selection={rightSelection}
               onSelect={handleRightSelection}
               otherLaCount={otherLaCount}

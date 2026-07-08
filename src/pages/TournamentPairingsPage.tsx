@@ -1,3 +1,4 @@
+// TournamentPairingsPage
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, ChevronDown, ChevronRight, Trophy } from 'lucide-react'
