@@ -1,3 +1,4 @@
+// functions/api/admin/tournaments/[id]/generate-pairings.ts
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import { generateDutchPairings } from '../../../../utils/pairing'

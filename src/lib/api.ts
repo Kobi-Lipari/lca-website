@@ -1,3 +1,5 @@
+// api.ts
+
 import { supabase } from '@/lib/supabase'
 
 export interface ApiMember {
