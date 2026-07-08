@@ -176,8 +176,7 @@ export function MembershipPage() {
               </h1>
               <p className="mt-2 max-w-2xl text-white/80">
                 Join the Louisiana Chess Association and support chess across the
-                state. Members receive exclusive benefits, discounted entry
-                fees, and a voice in the organization.
+                state.
               </p>
             </div>
           </div>
@@ -305,8 +304,7 @@ export function MembershipPage() {
                 2
               </span>
               <span>
-                Pay annual dues via Stripe. A pending payment record is created
-                in your account.
+                Pay annual dues. A pending payment record is created in your account.
               </span>
             </li>
             <li className="flex gap-3">
@@ -314,8 +312,7 @@ export function MembershipPage() {
                 3
               </span>
               <span>
-                After payment, visit the confirmation page to activate your
-                membership in D1 (or wait for the Stripe webhook once live).
+                Shortly after payment, you should be able to see your membership active in your dashboard.
               </span>
             </li>
           </ol>

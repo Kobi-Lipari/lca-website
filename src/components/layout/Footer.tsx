@@ -4,7 +4,7 @@ import { Trophy } from 'lucide-react'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 
 const footerSections = [
-  { title: 'Tournaments', links: [{ label: 'Upcoming events', href: '/tournaments' }, { label: 'Past results', href: '/tournaments' }, { label: 'Bid on an event', href: '/contact' }] },
+  { title: 'Tournaments', links: [{ label: 'Upcoming events', href: '/tournaments' }, { label: 'Past results', href: '/tournaments' }, { label: 'Ask about an event', href: '/contact' }] },
   { title: 'Scholastic', links: [{ label: 'Annual schedule', href: '/scholastic' }, { label: 'State scholastic championship', href: '/scholastic' }, { label: 'School programs', href: '/scholastic' }] },
   { title: 'Governance', links: [{ label: 'About LCA', href: '/about' }, { label: 'Board members', href: '/governance/board' }, { label: 'Bylaws', href: '/governance/bylaws' }, { label: 'Rules & policies', href: '/governance/rules' }, { label: 'Meeting minutes', href: '/governance/minutes' }, { label: 'Contact us', href: '/contact' }] },
   { title: 'Membership', links: [{ label: 'Join LCA', href: '/membership' }, { label: 'Renew membership', href: '/membership' }, { label: 'Member benefits', href: '/membership' }, { label: 'Log in', href: '/login' }, { label: 'My dashboard', href: '/dashboard' }] },

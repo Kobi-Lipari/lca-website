@@ -150,7 +150,7 @@ function ClubCarousel({
           <p className="mt-0.5 text-[10px] text-muted-foreground">
             {isFiltered
               ? 'Sorted A–Z'
-              : 'Order rotates randomly each visit — no favourites'}
+              : ''}
           </p>
         </div>
         <div className="flex gap-1.5">
@@ -242,7 +242,7 @@ export function ClubsPage() {
                 { n: '25+', l: 'clubs statewide' },
                 { n: '7', l: 'regions' },
                 { n: '340+', l: 'members' },
-                { n: 'Free', l: 'first visit' },
+                { n: '80+', l: 'years of history' },
               ].map((s) => (
                 <div
                   key={s.l}

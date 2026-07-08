@@ -17,13 +17,13 @@ const PINNED: { title: string; summary: string; href: string; date: string }[] =
     title: 'New board members elected at annual meeting',
     summary: 'The LCA held its annual meeting on June 28. See governance for the updated board listing.',
     href: '/governance/board',
-    date: 'June 30, 2025',
+    date: 'Dec 1, 2025',
   },
   {
     title: 'LCA website now live at louisianachess.org',
     summary: 'Our new site is up. Member registration, tournament registration, and club info are all available online.',
     href: '/',
-    date: 'June 1, 2025',
+    date: 'July 1, 2026',
   },
 ]
 
