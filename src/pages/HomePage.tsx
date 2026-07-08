@@ -158,7 +158,7 @@ function FacebookPanel({ height }: { height: number }) {
   }
 
   return (
-    <div ref={containerRef} className="overflow-hidden" style={{ maxHeight: height }}>
+  <div ref={containerRef} className="flex justify-center overflow-hidden" style={{ maxHeight: height }}>
       <div
         className="fb-page"
         data-href="https://www.facebook.com/LouisianaChessAssociation"
