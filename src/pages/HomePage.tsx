@@ -83,7 +83,7 @@ function HeroSlideshow() {
           </Button>
         </div>
         <div className="mt-5 flex gap-6">
-          {[{ n: '340+', l: 'members' }, { n: '25+', l: 'clubs' }, { n: '50+', l: 'events/year' }].map((s) => (
+          {[{ n: '340+', l: 'members' }, { n: '25+', l: 'clubs' }, { n: '80+', l: 'years of history' }].map((s) => (
             <div key={s.l} className="text-center">
               <div className="text-lg font-bold text-white">{s.n}</div>
               <div className="text-xs text-white/60">{s.l}</div>
