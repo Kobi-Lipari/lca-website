@@ -30,6 +30,11 @@ declare module '*.jpeg' {
   export default content;
 }
 
+declare module '*.webp' {
+  const src: string
+  export default src
+}
+
 declare module '*.css' {
   const content: Record<string, string>;
   export default content;

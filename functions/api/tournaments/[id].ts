@@ -2,6 +2,7 @@
 import type { Env } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { requireAuthedMember, isResponse } from '../../utils/auth'
+import { computeStandings } from '../../utils/tournament-manage'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -59,8 +60,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
   } catch { /* not logged in */ }
 
+  // Public roster: payment_status is deliberately NOT selected — whether a
+  // named individual has paid is between them and the organizer. Withdrawn
+  // players are included (with the flag) so displays can grey/exclude them.
   const roster = await context.env.DB.prepare(
-    `SELECT r.member_id, r.section, r.payment_status,
+    `SELECT r.member_id, r.section, r.withdrawn_at,
             m.full_name, m.uscf_id, m.uscf_rating
      FROM registrations r
      JOIN members m ON m.id = r.member_id
@@ -83,6 +87,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .bind(tournamentId)
     .all()
 
+  // Single standings brain — shared with the manage endpoint
+  const standings = computeStandings(
+    (pairings.results ?? []) as never,
+    (roster.results ?? []) as Array<{ member_id: string; full_name: string; section: string }>,
+  )
+
   return jsonResponse({
     tournament: {
       ...tournament,
@@ -93,6 +103,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     },
     roster: roster.results ?? [],
     pairings: pairings.results ?? [],
+    standings,
     myRegistration,
   })
 }

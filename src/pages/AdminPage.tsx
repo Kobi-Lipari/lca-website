@@ -16,6 +16,7 @@ import {
   adminDeleteMember,
   adminGetMembers,
   adminUpdateMemberClub,
+  adminUpdateMemberMembership,
   adminUpdateMemberRole,
   getClubs,
   getTournaments,
@@ -688,6 +689,159 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, onRefresh }:
   )
 }
 
+// ── Members tab content (membership-focused, filterable; edit controls admin-only) ────
+
+type MembershipFilter = 'active' | 'all'
+
+function MembersTab({
+  members, clubs, isAdmin, savingId,
+  onRoleChange, onClubChange, onMembershipChange, onDelete,
+}: {
+  members: ApiAdminMember[]
+  clubs: ApiClubListItem[]
+  isAdmin: boolean
+  savingId: string | null
+  onRoleChange: (memberId: string, role: MemberRole) => void
+  onClubChange: (memberId: string, clubId: string) => void
+  onMembershipChange: (memberId: string, field: 'status' | 'expiry', value: string) => void
+  onDelete: (m: ApiAdminMember) => void
+}) {
+  const [filter, setFilter] = useState<MembershipFilter>('active')
+
+  const filtered = filter === 'active'
+    ? members.filter((m) => m.membership_status === 'active')
+    : members
+
+  const statusBadge = (status: string) => {
+    const map: Record<string, string> = {
+      active: 'bg-emerald-100 text-emerald-800',
+      expired: 'bg-destructive/10 text-destructive',
+      pending: 'bg-[#c8a94a]/15 text-[#7a5c00]',
+    }
+    return map[status] ?? 'bg-muted text-muted-foreground'
+  }
+
+  return (
+    <div>
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Members {filter === 'active' && `· ${filtered.length} active`}
+        </h2>
+        <div className="flex gap-1.5 rounded-lg border p-1">
+          {(['active', 'all'] as MembershipFilter[]).map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setFilter(f)}
+              className={cn(
+                'rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors',
+                filter === f ? 'bg-[#1a2744] text-white' : 'text-muted-foreground hover:text-foreground',
+              )}
+            >
+              {f === 'active' ? 'Active only' : 'All members'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="overflow-x-auto rounded-xl border">
+        <table className="w-full min-w-[760px] text-left text-sm">
+          <thead>
+            <tr className="border-b bg-muted/50">
+              <th className="px-3 py-2.5 font-semibold">Name</th>
+              <th className="px-3 py-2.5 font-semibold">Email</th>
+              <th className="px-3 py-2.5 font-semibold">Membership</th>
+              <th className="px-3 py-2.5 font-semibold">Expires</th>
+              {isAdmin && <th className="px-3 py-2.5 font-semibold">Role</th>}
+              {isAdmin && <th className="px-3 py-2.5 font-semibold">Club</th>}
+              {isAdmin && <th className="w-10 px-3 py-2.5" />}
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 ? (
+              <tr>
+                <td colSpan={isAdmin ? 7 : 4} className="px-3 py-8 text-center text-muted-foreground">
+                  {filter === 'active' ? 'No active members found.' : 'No members found.'}
+                </td>
+              </tr>
+            ) : (
+              filtered.map((m) => (
+                <tr key={m.id} className="border-b last:border-0">
+                  <td className="px-3 py-2.5 font-medium">{m.full_name}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{m.email}</td>
+                  <td className="px-3 py-2.5">
+                    {isAdmin ? (
+                      <select
+                        className="rounded-md border bg-background px-2 py-1 text-xs"
+                        value={m.membership_status}
+                        disabled={savingId === m.id}
+                        onChange={(e) => onMembershipChange(m.id, 'status', e.target.value)}
+                      >
+                        <option value="active">Active</option>
+                        <option value="expired">Expired</option>
+                        <option value="pending">Pending</option>
+                      </select>
+                    ) : (
+                      <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium capitalize', statusBadge(m.membership_status))}>
+                        {m.membership_status}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-3 py-2.5">
+                    {isAdmin ? (
+                      <Input
+                        type="date"
+                        className="h-8 w-[140px] text-xs"
+                        value={m.membership_expiry ?? ''}
+                        disabled={savingId === m.id}
+                        onChange={(e) => onMembershipChange(m.id, 'expiry', e.target.value)}
+                      />
+                    ) : (
+                      <span className="text-muted-foreground">{m.membership_expiry ?? '—'}</span>
+                    )}
+                  </td>
+                  {isAdmin && (
+                    <td className="px-3 py-2.5">
+                      <select
+                        className="rounded-md border bg-background px-2 py-1 text-sm"
+                        value={m.role}
+                        disabled={savingId === m.id}
+                        onChange={(e) => onRoleChange(m.id, e.target.value as MemberRole)}
+                      >
+                        {MEMBER_ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
+                      </select>
+                    </td>
+                  )}
+                  {isAdmin && (
+                    <td className="px-3 py-2.5">
+                      <select
+                        className="max-w-[180px] rounded-md border bg-background px-2 py-1 text-sm"
+                        value={m.club_id ?? ''}
+                        disabled={savingId === m.id}
+                        onChange={(e) => onClubChange(m.id, e.target.value)}
+                      >
+                        <option value="">No club</option>
+                        {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                      </select>
+                    </td>
+                  )}
+                  {isAdmin && (
+                    <td className="px-3 py-2.5">
+                      <button type="button" onClick={() => onDelete(m)} className="text-muted-foreground transition-colors hover:text-destructive" title="Delete member">
+                        <Trash2 className="size-4" />
+                      </button>
+                    </td>
+                  )}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export function AdminPage() {
@@ -707,13 +861,13 @@ export function AdminPage() {
   const isTD = role === 'tournament_director'
   const directedIds = directedTournaments?.map((t: any) => t.id) ?? []
 
-  // Default tab based on role
-  const defaultTab: AdminTab = isAdmin ? 'members' : 'tournaments'
+  // Default tab based on role — members tab is view-only for TDs, fully editable for admins
+  const defaultTab: AdminTab = (isAdmin || isTD) ? 'members' : 'tournaments'
   const [tab, setTab] = useState<AdminTab>(defaultTab)
 
   // Tabs visible per role
   const visibleTabs: { id: AdminTab; label: string; icon: typeof Users }[] = [
-    ...(isAdmin ? [{ id: 'members' as AdminTab, label: 'Members', icon: Users }] : []),
+    ...(isAdmin || isTD ? [{ id: 'members' as AdminTab, label: 'Members', icon: Users }] : []),
     { id: 'tournaments' as AdminTab, label: 'Tournaments', icon: Trophy },
     ...(isAdmin || isClubRep ? [{ id: 'clubs' as AdminTab, label: 'Clubs', icon: Building2 }] : []),
     ...(isAdmin ? [{ id: 'support' as AdminTab, label: 'Support tickets', icon: MessageSquare }] : []),
@@ -725,7 +879,7 @@ export function AdminPage() {
     try {
       const promises: Promise<any>[] = [getTournaments()]
       if (isAdmin || isClubRep) promises.push(getClubs())
-      if (isAdmin) promises.push(adminGetMembers())
+      if (isAdmin || isTD) promises.push(adminGetMembers())
       const [tournamentList, clubList, memberList] = await Promise.all(promises)
       setTournaments(tournamentList ?? [])
       if (clubList) setClubs(clubList)
@@ -757,6 +911,20 @@ export function AdminPage() {
         m.id === memberId ? { ...m, club_id: updated.club_id, club_name: clubs.find((c) => c.id === updated.club_id)?.name } : m))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update club')
+    } finally { setSavingId(null) }
+  }
+
+  async function handleMembershipChange(memberId: string, field: 'status' | 'expiry', value: string) {
+    setSavingId(memberId)
+    try {
+      const body = field === 'status'
+        ? { membershipStatus: value }
+        : { membershipExpiry: value || null }
+      const updated = await adminUpdateMemberMembership(memberId, body)
+      setMembers((prev) => prev.map((m) =>
+        m.id === memberId ? { ...m, membership_status: updated.membership_status, membership_expiry: updated.membership_expiry } : m))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update membership')
     } finally { setSavingId(null) }
   }
 
@@ -810,46 +978,17 @@ export function AdminPage() {
           <p className="text-muted-foreground">Loading…</p>
         ) : (
           <>
-            {tab === 'members' && isAdmin && (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[640px] text-left text-sm">
-                  <thead>
-                    <tr className="border-b bg-muted/50">
-                      <th className="px-3 py-2.5 font-semibold">Name</th>
-                      <th className="px-3 py-2.5 font-semibold">Email</th>
-                      <th className="px-3 py-2.5 font-semibold">Role</th>
-                      <th className="px-3 py-2.5 font-semibold">Club</th>
-                      <th className="w-10 px-3 py-2.5" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {members.map((m) => (
-                      <tr key={m.id} className="border-b">
-                        <td className="px-3 py-2.5 font-medium">{m.full_name}</td>
-                        <td className="px-3 py-2.5 text-muted-foreground">{m.email}</td>
-                        <td className="px-3 py-2.5">
-                          <select className="rounded-md border bg-background px-2 py-1 text-sm" value={m.role} disabled={savingId === m.id}
-                            onChange={(e) => handleRoleChange(m.id, e.target.value as MemberRole)}>
-                            {MEMBER_ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
-                          </select>
-                        </td>
-                        <td className="px-3 py-2.5">
-                          <select className="max-w-[180px] rounded-md border bg-background px-2 py-1 text-sm" value={m.club_id ?? ''} disabled={savingId === m.id}
-                            onChange={(e) => handleClubChange(m.id, e.target.value)}>
-                            <option value="">No club</option>
-                            {clubs.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                          </select>
-                        </td>
-                        <td className="px-3 py-2.5">
-                          <button type="button" onClick={() => handleDeleteMember(m)} className="text-muted-foreground transition-colors hover:text-destructive" title="Delete member">
-                            <Trash2 className="size-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+            {tab === 'members' && (isAdmin || isTD) && (
+              <MembersTab
+                members={members}
+                clubs={clubs}
+                isAdmin={isAdmin}
+                savingId={savingId}
+                onRoleChange={handleRoleChange}
+                onClubChange={handleClubChange}
+                onMembershipChange={handleMembershipChange}
+                onDelete={handleDeleteMember}
+              />
             )}
 
             {tab === 'tournaments' && (

@@ -1,8 +1,13 @@
+// functions/utils/pairing/types.ts
 /** FIDE C.04 Dutch system — core data types */
 
 export type Color = 'white' | 'black'
 
-export type GameResult = '1-0' | '0-1' | '1/2-1/2' | 'bye' | 'pending' | 'forfeit'
+export type GameResult =
+  | '1-0' | '0-1' | '1/2-1/2'
+  | '1-0 F' | '0-1 F' | '0-0 F'
+  | 'bye' | 'bye-half'
+  | 'pending'
 
 export interface PairingPlayerInput {
   id: string
@@ -38,7 +43,8 @@ export interface PlayerState {
   /** whites - blacks played */
   colorBalance: number
   opponents: Set<string>
-  hadBye: boolean
+  /** Has scored an unplayed win (assigned bye or forfeit win) — C.04 bye ineligibility */
+  hadUnplayedWin: boolean
   /** FIDE tiebreakers (C.04.1.1 ordering) */
   buchholz: number
   progressive: number

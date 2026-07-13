@@ -8,6 +8,7 @@ import { getTournaments, getClubs, type ApiTournamentListItem, type ApiClubListI
 import { clubColorTint, clubAccentStyle } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useAuth } from '@/contexts/AuthContext'
 
 import slide1 from '@/assets/LCA_Slide_1.jpg'
 import slide2 from '@/assets/LCA_Slide_2.jpg'
@@ -68,7 +69,7 @@ function HeroSlideshow() {
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 px-6 text-center text-white">
         <div className="mb-2 inline-block rounded-full border border-[#c8a94a]/50 bg-[#c8a94a]/20 px-3 py-1 text-xs text-[#f0d07a] backdrop-blur-sm">
-          Louisiana's chess community since 1935
+          Louisiana's chess community since 1915
         </div>
         <h1 className="mt-2 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">Play. Compete. Connect.</h1>
         <p className="mt-3 max-w-md text-sm leading-relaxed text-white/80">
@@ -83,7 +84,7 @@ function HeroSlideshow() {
           </Button>
         </div>
         <div className="mt-5 flex gap-6">
-          {[{ n: '340+', l: 'members' }, { n: '25+', l: 'clubs' }, { n: '80+', l: 'years of history' }].map((s) => (
+          {[{ n: '300+', l: 'members' }, { n: '25+', l: 'clubs' }, { n: '110+', l: 'years of history' }].map((s) => (
             <div key={s.l} className="text-center">
               <div className="text-lg font-bold text-white">{s.n}</div>
               <div className="text-xs text-white/60">{s.l}</div>
@@ -174,10 +175,11 @@ function FacebookPanel({ height }: { height: number }) {
   )
 }
 
-const COLUMN_HEIGHT = 280
+const COLUMN_HEIGHT = 340
 
 export function HomePage() {
   usePageTitle('Home')
+  const { member } = useAuth()
   const [tournaments, setTournaments] = useState<ApiTournamentListItem[]>([])
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [loadingTournaments, setLoadingTournaments] = useState(true)
@@ -300,6 +302,7 @@ export function HomePage() {
         </div>
       </div>
 
+      {member?.membership_status !== 'active' && (
       <div className="border-t-[3px] border-[#c8a94a] bg-[#1a2744] px-6 py-10 text-center text-white">
         <div className="mx-auto max-w-lg">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#c8a94a]">
@@ -319,6 +322,7 @@ export function HomePage() {
           </div>
         </div>
       </div>
+      )}
     </div>
   )
 }

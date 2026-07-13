@@ -1,3 +1,4 @@
+// functions/api/stripe/webhook.ts
 import type { Env } from '../../types'
 import { jsonResponse, errorResponse } from '../../utils/response'
 import { verifyStripeSignature } from '../../utils/stripe'
@@ -23,7 +24,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const paymentId = session.metadata?.payment_id
     const type = session.metadata?.type
 
-    // Donations: just mark the payment completed, no member record to update
+    // Donations: mark the payment completed, no other records to update
     if (type === 'donation') {
       if (paymentId) {
         await context.env.DB.prepare(
@@ -33,29 +34,54 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return jsonResponse({ received: true })
     }
 
-    // Memberships: activate the member on successful payment
-    const memberId = session.metadata?.member_id
-    const tier = session.metadata?.tier
+    // Tournament entries: complete the payment and confirm the registration
+    if (type === 'tournament') {
+      const registrationId = session.metadata?.registration_id
+      if (paymentId && registrationId) {
+        const payment = await context.env.DB.prepare(
+          `SELECT status FROM payments WHERE id = ?`
+        ).bind(paymentId).first<{ status: string }>()
 
-    if (!paymentId || !memberId) {
+        // Idempotency guard: Stripe retries delivery, and the retry-pay flow
+        // can produce multiple sessions for one payment
+        if (payment && payment.status !== 'completed') {
+          await context.env.DB.batch([
+            context.env.DB.prepare(
+              `UPDATE payments SET status = 'completed', stripe_payment_intent = ? WHERE id = ?`
+            ).bind(session.payment_intent ?? null, paymentId),
+            context.env.DB.prepare(
+              `UPDATE registrations SET payment_status = 'paid' WHERE id = ?`
+            ).bind(registrationId),
+          ])
+        }
+      }
       return jsonResponse({ received: true })
     }
 
-    const payment = await context.env.DB.prepare(
-      `SELECT status FROM payments WHERE id = ?`
-    ).bind(paymentId).first<{ status: string }>()
+    // Memberships: activate the member on successful payment.
+    // Explicit type check so unknown types no-op safely.
+    if (type === 'membership') {
+      const memberId = session.metadata?.member_id
+      if (!paymentId || !memberId) {
+        return jsonResponse({ received: true })
+      }
 
-    // Idempotency guard: Stripe can retry webhook delivery
-    if (payment && payment.status !== 'completed') {
-      const expiry = oneYearFromNow()
-      await context.env.DB.batch([
-        context.env.DB.prepare(
-          `UPDATE payments SET status = 'completed', stripe_payment_intent = ? WHERE id = ?`
-        ).bind(session.payment_intent ?? null, paymentId),
-        context.env.DB.prepare(
-          `UPDATE members SET membership_status = 'active', membership_expiry = ? WHERE id = ?`
-        ).bind(expiry, memberId),
-      ])
+      const payment = await context.env.DB.prepare(
+        `SELECT status FROM payments WHERE id = ?`
+      ).bind(paymentId).first<{ status: string }>()
+
+      // Idempotency guard: Stripe can retry webhook delivery
+      if (payment && payment.status !== 'completed') {
+        const expiry = oneYearFromNow()
+        await context.env.DB.batch([
+          context.env.DB.prepare(
+            `UPDATE payments SET status = 'completed', stripe_payment_intent = ? WHERE id = ?`
+          ).bind(session.payment_intent ?? null, paymentId),
+          context.env.DB.prepare(
+            `UPDATE members SET membership_status = 'active', membership_expiry = ? WHERE id = ?`
+          ).bind(expiry, memberId),
+        ])
+      }
     }
   }
 

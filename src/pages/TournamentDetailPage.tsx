@@ -15,6 +15,7 @@ import {
   optInTournamentReminder,
   optOutTournamentReminder,
   getTournamentReminderStatus,
+  payRegistration,
   updateRegistrationByes,
   type ApiMyRegistration,
   type ApiRosterPlayer,
@@ -122,6 +123,7 @@ function ByeRoundsEditor({
   const [selected, setSelected] = useState<number[]>(registration.bye_rounds ?? [])
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const maxByes = totalRounds - 1
 
   function toggle(round: number) {
@@ -129,13 +131,20 @@ function ByeRoundsEditor({
       prev.includes(round) ? prev.filter((r) => r !== round) : [...prev, round].sort((a, b) => a - b),
     )
     setSaved(false)
+    setSaveError(null)
   }
 
   async function handleSave() {
     setSaving(true)
-    await onSave(selected)
-    setSaving(false)
-    setSaved(true)
+    setSaveError(null)
+    try {
+      await onSave(selected)
+      setSaved(true)
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to update byes')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -167,6 +176,7 @@ function ByeRoundsEditor({
           )
         })}
       </div>
+      {saveError && <p className="text-xs text-destructive">{saveError}</p>}
       <Button type="button" size="sm" className={goldBtn} onClick={handleSave} disabled={saving}>
         {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Update bye rounds'}
       </Button>
@@ -195,8 +205,9 @@ export function TournamentDetailPage() {
   const [registering, setRegistering] = useState(false)
   const [registerError, setRegisterError] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
+  const [payingNow, setPayingNow] = useState(false)
   const [confirmation, setConfirmation] = useState<{
-    message: string; paymentUrl: string; section: string
+    message: string; paymentUrl: string | null; section: string
   } | null>(null)
 
   const [reminderOptedIn, setReminderOptedIn] = useState(false)
@@ -212,7 +223,7 @@ export function TournamentDetailPage() {
         setTournament(data.tournament)
         setRoster(data.roster)
         setPairings(data.pairings ?? [])
-        setMyRegistration((data as any).myRegistration ?? null)
+        setMyRegistration(data.myRegistration ?? null)
         setSelectedSection(data.tournament.sections[0]?.name ?? '')
         setNotFound(false)
         setError(null)
@@ -255,11 +266,25 @@ export function TournamentDetailPage() {
       setShowModal(false)
       const data = await getTournament(id)
       setRoster(data.roster)
-      setMyRegistration((data as any).myRegistration ?? null)
+      setMyRegistration(data.myRegistration ?? null)
     } catch (err) {
       setRegisterError(err instanceof Error ? err.message : 'Registration failed')
     } finally {
       setRegistering(false)
+    }
+  }
+
+  async function handlePayNow() {
+    if (!myRegistration) return
+    setPayingNow(true)
+    setRegisterError(null)
+    try {
+      const { paymentUrl } = await payRegistration(myRegistration.id)
+      window.location.href = paymentUrl
+    } catch (err) {
+      setRegisterError(err instanceof Error ? err.message : 'Could not start payment')
+    } finally {
+      setPayingNow(false)
     }
   }
 
@@ -322,16 +347,19 @@ export function TournamentDetailPage() {
 
   const status    = statusConfig[tournament.status]
   const isRated   = tournament.is_rated !== 0
-  const regStatus = (tournament as any).registration_status ?? 'draft'
-  const roundSchedule = (tournament as any).round_schedule ?? []
-  const customDetails = (tournament as any).custom_details ?? []
+  const regStatus = tournament.registration_status ?? 'draft'
+  const roundSchedule = tournament.round_schedule ?? []
+  const customDetails = tournament.custom_details ?? []
   const maxPlayers = tournament.max_players ?? '—'
   const maxByes = tournament.rounds - 1
   const hasPairings = pairings.length > 0
 
-  // Group roster by section, sorted by name within each section
+  // Withdrawn players are excluded from public display and counts
+  const activeRoster = roster.filter((p) => !p.withdrawn_at)
+
+  // Group active roster by section, sorted by name within each section
   const rosterBySectionMap = new Map<string, ApiRosterPlayer[]>()
-  for (const player of roster) {
+  for (const player of activeRoster) {
     const sec = player.section ?? 'Unknown'
     if (!rosterBySectionMap.has(sec)) rosterBySectionMap.set(sec, [])
     rosterBySectionMap.get(sec)!.push(player)
@@ -409,7 +437,7 @@ export function TournamentDetailPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <Users className="size-4 flex-shrink-0 text-[#c8a94a]" />
-                  {roster.length} / {maxPlayers} registered
+                  {activeRoster.length} / {maxPlayers} registered
                 </span>
               </div>
             </div>
@@ -483,7 +511,7 @@ export function TournamentDetailPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {roundSchedule.map((rs: any) => (
+                      {roundSchedule.map((rs) => (
                         <tr key={rs.round} className="border-b last:border-0">
                           <td className="px-4 py-3 font-medium">Round {rs.round}</td>
                           <td className="px-4 py-3 text-muted-foreground">{rs.date || '—'}</td>
@@ -552,13 +580,13 @@ export function TournamentDetailPage() {
             <div>
               <h2 className="text-xl font-bold text-[#1a2744]">
                 Registered players
-                {roster.length > 0 && (
+                {activeRoster.length > 0 && (
                   <span className="ml-2 text-base font-normal text-muted-foreground">
-                    · {roster.length}
+                    · {activeRoster.length}
                   </span>
                 )}
               </h2>
-              {roster.length === 0 ? (
+              {activeRoster.length === 0 ? (
                 <p className="mt-4 text-sm text-muted-foreground">No players registered yet.</p>
               ) : (
                 <div className="mt-4 overflow-hidden rounded-xl border">
@@ -608,7 +636,7 @@ export function TournamentDetailPage() {
             {/* Custom details */}
             {customDetails.length > 0 && (
               <div className="space-y-6">
-                {customDetails.map((cd: any, i: number) => (
+                {customDetails.map((cd, i) => (
                   <div key={i}>
                     <h2 className="text-xl font-bold text-[#1a2744]">{cd.title}</h2>
                     <p className="mt-2 whitespace-pre-wrap text-muted-foreground">{cd.body}</p>
@@ -638,7 +666,7 @@ export function TournamentDetailPage() {
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Spots</dt>
-                    <dd className="font-medium">{roster.length} / {maxPlayers}</dd>
+                    <dd className="font-medium">{activeRoster.length} / {maxPlayers}</dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Format</dt>
@@ -669,10 +697,29 @@ export function TournamentDetailPage() {
                 {/* Already registered */}
                 {myRegistration && !confirmation && (
                   <div className="mt-5 space-y-3">
-                    <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-800">
+                    <div className={cn(
+                      'flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium',
+                      myRegistration.payment_status === 'paid'
+                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                        : 'border-[#c8a94a]/40 bg-[#c8a94a]/10 text-[#1a2744]',
+                    )}>
                       <CheckCircle2 className="size-4" />
                       Registered · {myRegistration.section}
+                      {myRegistration.payment_status !== 'paid' && ' · payment pending'}
                     </div>
+                    {registerError && (
+                      <p className="text-sm text-destructive">{registerError}</p>
+                    )}
+                    {myRegistration.payment_status === 'pending' && (
+                      <Button
+                        type="button"
+                        className={cn('w-full', goldBtn)}
+                        disabled={payingNow}
+                        onClick={handlePayNow}
+                      >
+                        {payingNow ? 'Redirecting…' : 'Complete payment'}
+                      </Button>
+                    )}
                     <div>
                       <p className="mb-2 text-xs font-medium text-[#1a2744]">Bye rounds</p>
                       <ByeRoundsEditor
@@ -695,11 +742,13 @@ export function TournamentDetailPage() {
                           <p className="mt-1 text-sm text-emerald-800">{confirmation.message}</p>
                         </div>
                       </div>
-                      <Button asChild className={cn('w-full', goldBtn)}>
-                        <a href={confirmation.paymentUrl} target="_blank" rel="noopener noreferrer">
-                          Complete payment (Stripe)
-                        </a>
-                      </Button>
+                      {confirmation.paymentUrl && (
+                        <Button asChild className={cn('w-full', goldBtn)}>
+                          <a href={confirmation.paymentUrl} target="_blank" rel="noopener noreferrer">
+                            Complete payment (Stripe)
+                          </a>
+                        </Button>
+                      )}
                       <Button asChild variant="outline" className="w-full">
                         <Link to="/dashboard">View my dashboard</Link>
                       </Button>

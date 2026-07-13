@@ -1,8 +1,9 @@
 // src/pages/TournamentManagePage.tsx
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
-  ArrowLeft, Eye, EyeOff, Plus, Sparkles, Trash2, Trophy,
+  ArrowLeft, Download, Eye, EyeOff, FileText, Mail, Plus,
+  Sparkles, Trash2, Trophy, UserPlus,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -10,13 +11,21 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import {
+  adminAddWalkIn,
+  adminAnnounce,
+  adminCreatePairings,
+  adminDeleteRoundPairings,
   adminGeneratePairings,
+  adminGetRatingReport,
   adminGetTournamentManage,
   adminUpdateGameResult,
   adminUpdateTournamentFull,
-  adminCreatePairings,
+  lookupUscfRating,
+  updateRegistration,
   updateTournamentRegistration,
   type ApiCustomDetail,
+  type ApiManageRosterPlayer,
+  type ApiRatingReport,
   type ApiRoundScheduleItem,
   type ApiStanding,
   type ApiTournamentDetail,
@@ -26,7 +35,18 @@ import {
 import { cn } from '@/lib/utils'
 
 const goldButtonClass = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
-const RESULT_OPTIONS = ['pending', '1-0', '0-1', '1/2-1/2', 'bye']
+
+const RESULT_OPTIONS = [
+  { value: 'pending', label: 'pending' },
+  { value: '1-0', label: '1-0' },
+  { value: '0-1', label: '0-1' },
+  { value: '1/2-1/2', label: '1/2-1/2' },
+  { value: '1-0 F', label: '1-0 forfeit' },
+  { value: '0-1 F', label: '0-1 forfeit' },
+  { value: '0-0 F', label: '0-0 double forfeit' },
+  { value: 'bye', label: 'Bye (1 pt)' },
+  { value: 'bye-half', label: 'Bye (½ pt)' },
+]
 
 const SECTION_PRESETS = [
   'Open', 'U2200', 'U2000', 'U1800', 'U1600',
@@ -46,21 +66,37 @@ const ROUND_GAP_OPTIONS = [
   { label: '4 hours', minutes: 240 },
 ]
 
-interface RosterPlayer {
-  registration_id: string
-  member_id: string
-  full_name: string
-  uscf_id: string | null
-  uscf_rating: number | null
-  section: string
-  payment_status: string
-  bye_rounds: number[]
+function buildReportCsv(report: ApiRatingReport): string {
+  const rounds = report.tournament.rounds
+  const header = ['Section', 'Pairing#', 'Name', 'USCF ID', 'Pre-Rating', 'Total']
+  for (let r = 1; r <= rounds; r++) {
+    header.push(`Rd${r}`, `Rd${r} Opp`, `Rd${r} Color`)
+  }
+  const esc = (v: string | number | null) => {
+    const s = v == null ? '' : String(v)
+    return s.includes(',') || s.includes('"') ? `"${s.replace(/"/g, '""')}"` : s
+  }
+  const lines = [header.join(',')]
+  for (const section of report.sections) {
+    for (const p of section.players) {
+      const row = [
+        esc(section.name), p.pairingNum, esc(p.name), esc(p.uscfId),
+        p.preRating ?? '', p.score,
+      ]
+      for (let r = 1; r <= rounds; r++) {
+        const entry = p.rounds.find((x) => x.round === r)
+        row.push(entry?.code ?? 'U', entry?.opponentPairingNum ?? '', entry?.color ?? '')
+      }
+      lines.push(row.join(','))
+    }
+  }
+  return lines.join('\n')
 }
 
 export function TournamentManagePage() {
   const { id } = useParams<{ id: string }>()
   const [tournament, setTournament] = useState<ApiTournamentDetail | null>(null)
-  const [roster, setRoster] = useState<RosterPlayer[]>([])
+  const [roster, setRoster] = useState<ApiManageRosterPlayer[]>([])
   const [games, setGames] = useState<ApiTournamentGame[]>([])
   const [standings, setStandings] = useState<ApiStanding[]>([])
   const [loading, setLoading] = useState(true)
@@ -89,6 +125,33 @@ export function TournamentManagePage() {
     round: '1', section: 'Open', whiteMemberId: '', blackMemberId: '', board: '1',
   })
 
+  // Roster editing
+  const [rosterSaving, setRosterSaving] = useState<string | null>(null)
+
+  // Check-in filter for pairing generation (defaults on when any check-ins exist,
+  // until the TD touches it)
+  const [onlyCheckedIn, setOnlyCheckedIn] = useState(false)
+  const onlyCheckedInTouched = useRef(false)
+
+  // Walk-in form
+  const [walkIn, setWalkIn] = useState({ fullName: '', uscfId: '', uscfRating: '', section: '' })
+  const [walkInSaving, setWalkInSaving] = useState(false)
+  const [walkInLookingUp, setWalkInLookingUp] = useState(false)
+  const [walkInMarkPaid, setWalkInMarkPaid] = useState(true)
+
+  // Delete-round control
+  const [deleteSection, setDeleteSection] = useState('')
+  const [deletingRound, setDeletingRound] = useState(false)
+
+  // Announce
+  const [announce, setAnnounce] = useState({ subject: '', body: '' })
+  const [announceSending, setAnnounceSending] = useState(false)
+  const [announceResult, setAnnounceResult] = useState<string | null>(null)
+
+  // Rating report
+  const [report, setReport] = useState<ApiRatingReport | null>(null)
+  const [reportLoading, setReportLoading] = useState(false)
+
   usePageTitle(tournament ? `Manage ${tournament.name}` : 'Manage Tournament')
 
   async function loadManage() {
@@ -98,7 +161,7 @@ export function TournamentManagePage() {
     try {
       const data = await adminGetTournamentManage(id)
       setTournament(data.tournament)
-      setRoster((data.roster as unknown as RosterPlayer[]) ?? [])
+      setRoster(data.roster ?? [])
       setGames(data.games)
       setStandings(data.standings)
 
@@ -115,6 +178,8 @@ export function TournamentManagePage() {
       const defaultSection = data.tournament.sections[0]?.name ?? 'Open'
       setGenerateForm((p) => ({ ...p, section: defaultSection }))
       setPairingForm((p) => ({ ...p, section: defaultSection }))
+      setWalkIn((p) => ({ ...p, section: p.section || defaultSection }))
+      setDeleteSection((p) => p || defaultSection)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load tournament')
     } finally {
@@ -123,6 +188,14 @@ export function TournamentManagePage() {
   }
 
   useEffect(() => { loadManage() }, [id])
+
+  // Default the check-in filter on when any check-ins exist — but never
+  // override a choice the TD has made this session.
+  useEffect(() => {
+    if (!onlyCheckedInTouched.current) {
+      setOnlyCheckedIn(roster.some((p) => p.checked_in_at && !p.withdrawn_at))
+    }
+  }, [roster])
 
   // Sync round schedule rows when rounds count changes
   useEffect(() => {
@@ -216,12 +289,33 @@ export function TournamentManagePage() {
       await adminGeneratePairings(id, {
         round: Number(generateForm.round),
         section: generateForm.section,
+        onlyCheckedIn,
       })
       await loadManage()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate pairings')
     } finally {
       setGenerating(false)
+    }
+  }
+
+  async function handleDeleteLastRound() {
+    if (!id || !deleteSection) return
+    const sectionRounds = games.filter((g) => g.section === deleteSection).map((g) => g.round)
+    if (sectionRounds.length === 0) return
+    const lastRound = Math.max(...sectionRounds)
+    if (!window.confirm(
+      `Delete all round ${lastRound} pairings and results in ${deleteSection}? This cannot be undone.`,
+    )) return
+    setDeletingRound(true)
+    setError(null)
+    try {
+      await adminDeleteRoundPairings(id, lastRound, deleteSection)
+      await loadManage()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete round')
+    } finally {
+      setDeletingRound(false)
     }
   }
 
@@ -262,6 +356,119 @@ export function TournamentManagePage() {
     }
   }
 
+  async function handleRosterUpdate(
+    player: ApiManageRosterPlayer,
+    patch: {
+      section?: string
+      paymentStatus?: 'paid' | 'pending' | 'refunded'
+      byeRounds?: number[]
+      withdrawn?: boolean
+      checkedIn?: boolean
+    },
+  ) {
+    setRosterSaving(player.registration_id)
+    setError(null)
+    try {
+      const result = await updateRegistration(player.registration_id, patch)
+      if (result.feeNote) setError(result.feeNote) // surfaced as a warning, not a failure
+      await loadManage()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update registration')
+    } finally {
+      setRosterSaving(null)
+    }
+  }
+
+  async function handleWalkInLookup() {
+    if (!walkIn.uscfId.trim()) return
+    setWalkInLookingUp(true)
+    try {
+      const r = await lookupUscfRating(walkIn.uscfId.trim())
+      setWalkIn((p) => ({
+        ...p,
+        uscfRating: r.rating != null ? String(r.rating) : p.uscfRating,
+        fullName: p.fullName || (r.name ?? ''),
+      }))
+    } catch { /* lookup is best-effort */ } finally {
+      setWalkInLookingUp(false)
+    }
+  }
+
+  async function handleAddWalkIn(event: FormEvent) {
+    event.preventDefault()
+    if (!id || !walkIn.fullName.trim() || !walkIn.section) return
+    setWalkInSaving(true)
+    setError(null)
+    try {
+      await adminAddWalkIn(id, {
+        fullName: walkIn.fullName.trim(),
+        uscfId: walkIn.uscfId.trim() || null,
+        uscfRating: walkIn.uscfRating ? Number(walkIn.uscfRating) : null,
+        section: walkIn.section,
+        markPaid: walkInMarkPaid,
+      })
+      setWalkIn({ fullName: '', uscfId: '', uscfRating: '', section: walkIn.section })
+      await loadManage()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add walk-in')
+    } finally {
+      setWalkInSaving(false)
+    }
+  }
+
+  async function handleSendAnnouncement() {
+    if (!id || !announce.subject.trim() || !announce.body.trim()) return
+    const activeCount = roster.filter(
+      (p) => !p.withdrawn_at && !p.member_id.startsWith('guest-'),
+    ).length
+    if (!window.confirm(`Send this email to ${activeCount} active entrants?`)) return
+    setAnnounceSending(true)
+    setAnnounceResult(null)
+    setError(null)
+    try {
+      const result = await adminAnnounce(id, {
+        subject: announce.subject.trim(),
+        body: announce.body.trim(),
+      })
+      setAnnounceResult(
+        result.failed > 0
+          ? `Sent ${result.sent} of ${result.total} — ${result.failed} failed`
+          : `Sent to all ${result.sent} entrants`,
+      )
+      if (result.failed === 0) setAnnounce({ subject: '', body: '' })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send announcement')
+    } finally {
+      setAnnounceSending(false)
+    }
+  }
+
+  async function handleLoadReport() {
+    if (!id) return
+    setReportLoading(true)
+    setError(null)
+    try {
+      const data = await adminGetRatingReport(id)
+      setReport(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load rating report')
+    } finally {
+      setReportLoading(false)
+    }
+  }
+
+  function handleDownloadCsv() {
+    if (!report) return
+    const csv = buildReportCsv(report)
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${report.tournament.name.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-rating-report.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   if (loading) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-12">
@@ -281,7 +488,16 @@ export function TournamentManagePage() {
     )
   }
 
-  const maxRound = games.length > 0 ? Math.max(...games.map((g) => g.round)) : 0
+  const activeRoster = roster.filter((p) => !p.withdrawn_at)
+  const checkedInCount = roster.filter((p) => p.checked_in_at && !p.withdrawn_at).length
+  const roundsCount = Number(rounds) || tournament.rounds
+  const sectionsInGames = [...new Set(games.map((g) => g.section))]
+  const deleteSectionRounds = games
+    .filter((g) => g.section === deleteSection)
+    .map((g) => g.round)
+  const deleteLastRound = deleteSectionRounds.length > 0
+    ? Math.max(...deleteSectionRounds)
+    : null
 
   return (
     <div>
@@ -456,7 +672,6 @@ export function TournamentManagePage() {
                 Set round 1 date and time, then use auto-fill to populate the rest. You can adjust any round individually after.
               </p>
 
-              {/* Auto-fill controls */}
               <div className="flex flex-wrap items-end gap-3 rounded-lg border bg-muted/30 p-3">
                 <div className="space-y-1">
                   <p className="text-xs font-medium text-muted-foreground">Time between rounds</p>
@@ -642,54 +857,219 @@ export function TournamentManagePage() {
           </div>
         )}
 
-        {/* Roster with bye rounds */}
+        {/* Add walk-in */}
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <div className="flex items-center gap-2">
+            <UserPlus className="size-5 text-[#c8a94a]" />
+            <h2 className="text-lg font-bold text-[#1a2744]">Add walk-in player</h2>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Registers a player without a site account. Collect payment at the door.
+          </p>
+          <form onSubmit={handleAddWalkIn} className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <div className="space-y-2 lg:col-span-1">
+              <Label htmlFor="wi-uscf">USCF ID {isRated ? '' : '(optional)'}</Label>
+              <div className="flex gap-1.5">
+                <Input id="wi-uscf" value={walkIn.uscfId}
+                  onChange={(e) => setWalkIn((p) => ({ ...p, uscfId: e.target.value }))}
+                  required={isRated} />
+                <Button type="button" variant="outline" size="sm" className="shrink-0"
+                  onClick={handleWalkInLookup}
+                  disabled={walkInLookingUp || !walkIn.uscfId.trim()}>
+                  {walkInLookingUp ? '…' : 'Look up'}
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="wi-name">Full name</Label>
+              <Input id="wi-name" value={walkIn.fullName}
+                onChange={(e) => setWalkIn((p) => ({ ...p, fullName: e.target.value }))} required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="wi-rating">Rating</Label>
+              <Input id="wi-rating" type="number" value={walkIn.uscfRating}
+                onChange={(e) => setWalkIn((p) => ({ ...p, uscfRating: e.target.value }))}
+                placeholder="unrated" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="wi-section">Section</Label>
+              <select id="wi-section" required
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                value={walkIn.section}
+                onChange={(e) => setWalkIn((p) => ({ ...p, section: e.target.value }))}>
+                <option value="">Select…</option>
+                {sections.map((s) => (
+                  <option key={s.name} value={s.name}>
+                    {s.name}{(s.entryFee ?? 0) > 0 ? ` — $${s.entryFee}` : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label>Payment</Label>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setWalkInMarkPaid(true)}
+                  className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                    walkInMarkPaid ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground')}>
+                  Paid (cash/check)
+                </button>
+                <button type="button" onClick={() => setWalkInMarkPaid(false)}
+                  className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                    !walkInMarkPaid ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground')}>
+                  Pending
+                </button>
+              </div>
+            </div>
+            <div className="sm:col-span-2 lg:col-span-5">
+              <Button type="submit" className={goldButtonClass} disabled={walkInSaving}>
+                {walkInSaving ? 'Adding…' : 'Add walk-in'}
+              </Button>
+            </div>
+          </form>
+        </div>
+
+        {/* Roster: check-in, editing, withdrawal */}
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <h2 className="text-lg font-bold text-[#1a2744]">
-            Registered players ({roster.length})
+            Registered players ({activeRoster.length})
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              · {checkedInCount} checked in
+            </span>
           </h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Withdrawing removes a player from future pairings. Played games stand. Refunds are
+            handled manually in the Stripe dashboard — nothing is refunded automatically.
+          </p>
           {roster.length === 0 ? (
             <p className="mt-4 text-sm text-muted-foreground">No players registered yet.</p>
           ) : (
             <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-sm">
+              <table className="w-full min-w-[840px] text-left text-sm">
                 <thead>
                   <tr className="border-b bg-muted/50">
+                    <th className="px-3 py-2 font-semibold">Check-in</th>
                     <th className="px-3 py-2 font-semibold">Name</th>
                     <th className="px-3 py-2 font-semibold">USCF ID</th>
                     <th className="px-3 py-2 font-semibold">Rating</th>
                     <th className="px-3 py-2 font-semibold">Section</th>
                     <th className="px-3 py-2 font-semibold">Payment</th>
                     <th className="px-3 py-2 font-semibold">Bye rounds</th>
+                    <th className="px-3 py-2 font-semibold"></th>
                   </tr>
                 </thead>
                 <tbody>
-                  {roster.map((player) => (
-                    <tr key={player.member_id} className="border-b">
-                      <td className="px-3 py-2 font-medium">{player.full_name}</td>
-                      <td className="px-3 py-2 text-muted-foreground font-mono text-xs">
-                        {player.uscf_id ?? '—'}
-                      </td>
-                      <td className="px-3 py-2 text-muted-foreground">
-                        {player.uscf_rating ?? '—'}
-                      </td>
-                      <td className="px-3 py-2">{player.section}</td>
-                      <td className="px-3 py-2">
-                        <span className={cn(
-                          'rounded-full px-2 py-0.5 text-xs font-medium',
-                          player.payment_status === 'paid'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-[#c8a94a]/20 text-[#1a2744]',
-                        )}>
-                          {player.payment_status}
-                        </span>
-                      </td>
-                      <td className="px-3 py-2 text-muted-foreground text-xs">
-                        {player.bye_rounds?.length > 0
-                          ? player.bye_rounds.map((r) => `Rd ${r}`).join(', ')
-                          : '—'}
-                      </td>
-                    </tr>
-                  ))}
+                  {roster.map((player) => {
+                    const busy = rosterSaving === player.registration_id
+                    const withdrawn = !!player.withdrawn_at
+                    return (
+                      <tr key={player.registration_id} className={cn('border-b', withdrawn && 'opacity-50')}>
+                        <td className="px-3 py-2">
+                          <button
+                            type="button"
+                            disabled={busy || withdrawn}
+                            onClick={() => handleRosterUpdate(player, { checkedIn: !player.checked_in_at })}
+                            className={cn(
+                              'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
+                              player.checked_in_at
+                                ? 'border-emerald-600 bg-emerald-600 text-white'
+                                : 'border-border text-muted-foreground hover:border-emerald-600/50',
+                              withdrawn && 'opacity-40 cursor-not-allowed',
+                            )}
+                          >
+                            {player.checked_in_at ? '✓ Present' : 'Check in'}
+                          </button>
+                        </td>
+                        <td className="px-3 py-2 font-medium">
+                          {player.full_name}
+                          {withdrawn && (
+                            <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700">
+                              Withdrawn
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-muted-foreground font-mono text-xs">
+                          {player.uscf_id ?? '—'}
+                        </td>
+                        <td className="px-3 py-2 text-muted-foreground">
+                          {player.uscf_rating ?? '—'}
+                        </td>
+                        <td className="px-3 py-2">
+                          <select
+                            className="rounded-md border bg-background px-2 py-1 text-sm"
+                            value={player.section}
+                            disabled={busy || withdrawn}
+                            onChange={(e) => handleRosterUpdate(player, { section: e.target.value })}
+                          >
+                            {sections.map((s) => (
+                              <option key={s.name} value={s.name}>{s.name}</option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-3 py-2">
+                          <select
+                            className={cn(
+                              'rounded-md border px-2 py-1 text-xs font-medium',
+                              player.payment_status === 'paid'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-[#c8a94a]/20 text-[#1a2744]',
+                            )}
+                            value={player.payment_status}
+                            disabled={busy || withdrawn}
+                            onChange={(e) =>
+                              handleRosterUpdate(player, {
+                                paymentStatus: e.target.value as 'paid' | 'pending' | 'refunded',
+                              })
+                            }
+                          >
+                            <option value="pending">pending</option>
+                            <option value="paid">paid</option>
+                            <option value="refunded">refunded</option>
+                          </select>
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex flex-wrap gap-1">
+                            {Array.from({ length: roundsCount }, (_, i) => i + 1).map((round) => {
+                              const isSel = (player.bye_rounds ?? []).includes(round)
+                              return (
+                                <button
+                                  key={round}
+                                  type="button"
+                                  disabled={busy || withdrawn}
+                                  title={`Round ${round} bye`}
+                                  onClick={() => {
+                                    const current = player.bye_rounds ?? []
+                                    const next = isSel
+                                      ? current.filter((r) => r !== round)
+                                      : [...current, round].sort((a, b) => a - b)
+                                    handleRosterUpdate(player, { byeRounds: next })
+                                  }}
+                                  className={cn(
+                                    'size-6 rounded-full border text-[11px] font-medium transition-colors',
+                                    isSel
+                                      ? 'border-[#1a2744] bg-[#1a2744] text-white'
+                                      : 'border-border text-muted-foreground hover:border-[#1a2744]/40',
+                                  )}
+                                >
+                                  {round}
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            disabled={busy}
+                            onClick={() => handleRosterUpdate(player, { withdrawn: !withdrawn })}
+                          >
+                            {withdrawn ? 'Reinstate' : 'Withdraw'}
+                          </Button>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -703,7 +1083,8 @@ export function TournamentManagePage() {
             <h2 className="text-lg font-bold text-[#1a2744]">Generate pairings (FIDE Dutch)</h2>
           </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            Pair all registered players using the FIDE Dutch system. Requested byes are automatically applied.
+            Pair players using the FIDE Dutch system. Requested byes are applied as
+            half-point bye rows.
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             <div className="space-y-2">
@@ -713,7 +1094,6 @@ export function TournamentManagePage() {
                 type="number"
                 min={1}
                 value={generateForm.round}
-                placeholder={String(maxRound + 1)}
                 onChange={(e) => setGenerateForm((p) => ({ ...p, round: e.target.value }))}
               />
             </div>
@@ -725,7 +1105,7 @@ export function TournamentManagePage() {
                 value={generateForm.section}
                 onChange={(e) => setGenerateForm((p) => ({ ...p, section: e.target.value }))}
               >
-                {tournament.sections.map((s) => (
+                {sections.map((s) => (
                   <option key={s.name} value={s.name}>{s.name}</option>
                 ))}
               </select>
@@ -740,6 +1120,22 @@ export function TournamentManagePage() {
                 {generating ? 'Generating…' : 'Generate pairings'}
               </Button>
             </div>
+            <label className="flex items-center gap-2 text-sm text-muted-foreground sm:col-span-3">
+              <input
+                type="checkbox"
+                checked={onlyCheckedIn}
+                onChange={(e) => {
+                  onlyCheckedInTouched.current = true
+                  setOnlyCheckedIn(e.target.checked)
+                }}
+              />
+              Only pair checked-in players
+              {onlyCheckedIn && (
+                <span className="text-xs">
+                  ({roster.filter((p) => p.checked_in_at && !p.withdrawn_at && p.section === generateForm.section).length} in {generateForm.section})
+                </span>
+              )}
+            </label>
           </div>
         </div>
 
@@ -760,7 +1156,7 @@ export function TournamentManagePage() {
                 <select className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                   value={pairingForm.section}
                   onChange={(e) => setPairingForm((p) => ({ ...p, section: e.target.value }))}>
-                  {tournament.sections.map((s) => (
+                  {sections.map((s) => (
                     <option key={s.name} value={s.name}>{s.name}</option>
                   ))}
                 </select>
@@ -771,14 +1167,34 @@ export function TournamentManagePage() {
                   onChange={(e) => setPairingForm((p) => ({ ...p, board: e.target.value }))} required />
               </div>
               <div className="space-y-2">
-                <Label>White (member ID)</Label>
-                <Input value={pairingForm.whiteMemberId}
-                  onChange={(e) => setPairingForm((p) => ({ ...p, whiteMemberId: e.target.value }))} />
+                <Label>White</Label>
+                <select className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                  value={pairingForm.whiteMemberId}
+                  onChange={(e) => setPairingForm((p) => ({ ...p, whiteMemberId: e.target.value }))}>
+                  <option value="">Select player…</option>
+                  {roster
+                    .filter((p) => !p.withdrawn_at && p.section === pairingForm.section)
+                    .map((p) => (
+                      <option key={p.member_id} value={p.member_id}>
+                        {p.full_name}{p.uscf_rating != null ? ` (${p.uscf_rating})` : ''}
+                      </option>
+                    ))}
+                </select>
               </div>
               <div className="space-y-2">
-                <Label>Black (member ID)</Label>
-                <Input value={pairingForm.blackMemberId}
-                  onChange={(e) => setPairingForm((p) => ({ ...p, blackMemberId: e.target.value }))} />
+                <Label>Black (empty = bye)</Label>
+                <select className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                  value={pairingForm.blackMemberId}
+                  onChange={(e) => setPairingForm((p) => ({ ...p, blackMemberId: e.target.value }))}>
+                  <option value="">— Bye —</option>
+                  {roster
+                    .filter((p) => !p.withdrawn_at && p.section === pairingForm.section)
+                    .map((p) => (
+                      <option key={p.member_id} value={p.member_id}>
+                        {p.full_name}{p.uscf_rating != null ? ` (${p.uscf_rating})` : ''}
+                      </option>
+                    ))}
+                </select>
               </div>
             </div>
             <Button type="submit" variant="outline" className="mt-4" disabled={savingPairings}>
@@ -789,7 +1205,34 @@ export function TournamentManagePage() {
 
         {/* Pairings & results */}
         <div className="rounded-xl border bg-card p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-[#1a2744]">Pairings &amp; results</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-[#1a2744]">Pairings &amp; results</h2>
+            {sectionsInGames.length > 0 && (
+              <div className="flex items-center gap-2">
+                <select
+                  className="rounded-md border bg-background px-2 py-1 text-sm"
+                  value={deleteSection}
+                  onChange={(e) => setDeleteSection(e.target.value)}
+                >
+                  {sectionsInGames.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={deletingRound || deleteLastRound == null}
+                  onClick={handleDeleteLastRound}
+                >
+                  <Trash2 className="mr-1 size-3.5" />
+                  {deleteLastRound != null
+                    ? `Delete Rd ${deleteLastRound} pairings`
+                    : 'No rounds'}
+                </Button>
+              </div>
+            )}
+          </div>
           {games.length === 0 ? (
             <p className="mt-4 text-sm text-muted-foreground">No pairings yet.</p>
           ) : (
@@ -820,7 +1263,7 @@ export function TournamentManagePage() {
                           onChange={(e) => handleResultChange(game.id, e.target.value)}
                         >
                           {RESULT_OPTIONS.map((r) => (
-                            <option key={r} value={r}>{r}</option>
+                            <option key={r.value} value={r.value}>{r.label}</option>
                           ))}
                         </select>
                       </td>
@@ -853,7 +1296,7 @@ export function TournamentManagePage() {
                     <tr key={s.member_id} className="border-b">
                       <td className="px-3 py-2 font-medium">{s.full_name}</td>
                       <td className="px-3 py-2">{s.section}</td>
-                      <td className="px-3 py-2">{s.score}</td>
+                      <td className="px-3 py-2">{s.score % 1 === 0 ? s.score : s.score.toFixed(1)}</td>
                       <td className="px-3 py-2 text-muted-foreground">{s.wins}-{s.draws}-{s.losses}</td>
                     </tr>
                   ))}
@@ -862,6 +1305,135 @@ export function TournamentManagePage() {
             </div>
           )}
         </div>
+
+        {/* Email all entrants */}
+        <div className="rounded-xl border bg-card p-6 shadow-sm">
+          <div className="flex items-center gap-2">
+            <Mail className="size-5 text-[#c8a94a]" />
+            <h2 className="text-lg font-bold text-[#1a2744]">Email all entrants</h2>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Will send to {roster.filter((p) => !p.withdrawn_at && !p.member_id.startsWith('guest-')).length} active
+            entrants. Walk-ins and withdrawn players are not emailed.
+          </p>
+          <div className="mt-4 space-y-3">
+            <div className="space-y-2">
+              <Label htmlFor="announce-subject">Subject</Label>
+              <Input
+                id="announce-subject"
+                value={announce.subject}
+                placeholder="e.g. Round 3 moved to 3:00 PM"
+                onChange={(e) => setAnnounce((p) => ({ ...p, subject: e.target.value }))}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="announce-body">Message</Label>
+              <textarea
+                id="announce-body"
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm min-h-[120px]"
+                value={announce.body}
+                onChange={(e) => setAnnounce((p) => ({ ...p, body: e.target.value }))}
+              />
+            </div>
+            {announceResult && (
+              <p className="text-sm font-medium text-emerald-700">{announceResult}</p>
+            )}
+            <Button
+              type="button"
+              className={goldButtonClass}
+              disabled={announceSending || !announce.subject.trim() || !announce.body.trim()}
+              onClick={handleSendAnnouncement}
+            >
+              {announceSending ? 'Sending…' : 'Send announcement'}
+            </Button>
+          </div>
+        </div>
+
+        {/* USCF rating report */}
+        {isRated && (
+          <div className="rounded-xl border bg-card p-6 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <FileText className="size-5 text-[#c8a94a]" />
+                <h2 className="text-lg font-bold text-[#1a2744]">USCF rating report</h2>
+              </div>
+              <div className="flex gap-2">
+                <Button type="button" variant="outline" size="sm" disabled={reportLoading} onClick={handleLoadReport}>
+                  {reportLoading ? 'Loading…' : report ? 'Refresh report' : 'View report'}
+                </Button>
+                {report && (
+                  <Button type="button" variant="outline" size="sm" onClick={handleDownloadCsv}>
+                    <Download className="mr-1 size-3.5" />Download CSV
+                  </Button>
+                )}
+              </div>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Submit at uschess.org → your affiliate dashboard → Tournament Rating Reports →
+              New Event → Start Blank, and key in each section below. Only affiliate-authorized
+              certified TDs can submit.
+            </p>
+
+            {report && (
+              <div className="mt-4 space-y-6">
+                {report.validationErrors.length > 0 && (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+                    <p className="font-semibold">Fix these before submitting to US Chess:</p>
+                    <ul className="mt-1 list-disc pl-5">
+                      {report.validationErrors.map((e, i) => <li key={i}>{e}</li>)}
+                    </ul>
+                  </div>
+                )}
+                {report.sections.map((section) => (
+                  <div key={section.name}>
+                    <h3 className="mb-2 text-base font-semibold text-[#1a2744]">{section.name}</h3>
+                    <div className="overflow-x-auto rounded-lg border">
+                      <table className="w-full text-left text-sm">
+                        <thead>
+                          <tr className="border-b bg-muted/50">
+                            <th className="px-3 py-2">#</th>
+                            <th className="px-3 py-2">Name</th>
+                            <th className="px-3 py-2">USCF ID</th>
+                            <th className="px-3 py-2">Rating</th>
+                            <th className="px-3 py-2">Total</th>
+                            {Array.from({ length: report.tournament.rounds }, (_, i) => i + 1).map((r) => (
+                              <th key={r} className="px-3 py-2">Rd {r}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {section.players.map((p) => (
+                            <tr key={p.pairingNum} className="border-b last:border-0">
+                              <td className="px-3 py-2 font-medium">{p.pairingNum}</td>
+                              <td className="px-3 py-2">{p.name}</td>
+                              <td className={cn('px-3 py-2 font-mono text-xs', !p.uscfId && 'text-destructive font-semibold')}>
+                                {p.uscfId ?? 'MISSING'}
+                              </td>
+                              <td className="px-3 py-2 text-muted-foreground">{p.preRating ?? 'unr.'}</td>
+                              <td className="px-3 py-2 font-semibold">
+                                {p.score % 1 === 0 ? p.score : p.score.toFixed(1)}
+                              </td>
+                              {Array.from({ length: report.tournament.rounds }, (_, i) => i + 1).map((r) => {
+                                const entry = p.rounds.find((x) => x.round === r)
+                                return (
+                                  <td key={r} className="px-3 py-2 font-mono text-xs">
+                                    {entry
+                                      ? `${entry.code}${entry.opponentPairingNum ?? ''}${entry.color ? `/${entry.color}` : ''}`
+                                      : 'U'}
+                                  </td>
+                                )
+                              })}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <Button asChild variant="outline">
           <Link to={`/tournaments/${id}`}>View public tournament page</Link>

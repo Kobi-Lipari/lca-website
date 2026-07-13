@@ -1,3 +1,4 @@
+// functions/api/clubs/[id]/news.ts
 import type { Env } from '../../types'
 import { isResponse, requireClubRep } from '../../../utils/auth'
 import {

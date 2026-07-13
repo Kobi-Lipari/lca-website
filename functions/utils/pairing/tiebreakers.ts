@@ -1,4 +1,7 @@
-import type { GameResult, PastGameInput, PlayerState } from './types'
+// functions/utils/pairing/tiebreakers.ts
+
+import type { PastGameInput, PlayerState } from './types'
+import { whitePoints, blackPoints } from './result-points'
 
 interface ScoreMap {
   scores: Map<string, number>
@@ -21,27 +24,31 @@ function buildScoreMap(
     if (game.result === 'pending') continue
 
     const white = game.whiteId
-    if (!scores.has(white)) continue
+    const whiteKnown = scores.has(white)
 
-    if (!game.blackId || game.result === 'bye') {
-      scores.set(white, (scores.get(white) ?? 0) + 1)
+    // Bye rows (full or half): white side is the recipient.
+    if (!game.blackId) {
+      if (whiteKnown) {
+        scores.set(white, (scores.get(white) ?? 0) + whitePoints(game.result))
+      }
       continue
     }
 
     const black = game.blackId
-    if (!scores.has(black)) continue
+    const blackKnown = scores.has(black)
 
-    opponents.get(white)?.add(black)
-    opponents.get(black)?.add(white)
+    if (whiteKnown && blackKnown) {
+      opponents.get(white)?.add(black)
+      opponents.get(black)?.add(white)
+    }
 
-    const result = game.result as GameResult
-    if (result === '1-0') {
-      scores.set(white, (scores.get(white) ?? 0) + 1)
-    } else if (result === '0-1') {
-      scores.set(black, (scores.get(black) ?? 0) + 1)
-    } else if (result === '1/2-1/2') {
-      scores.set(white, (scores.get(white) ?? 0) + 0.5)
-      scores.set(black, (scores.get(black) ?? 0) + 0.5)
+    // A present player scores even if the opponent is absent from the
+    // current roster (withdrawn, non-roster manual pairing).
+    if (whiteKnown) {
+      scores.set(white, (scores.get(white) ?? 0) + whitePoints(game.result))
+    }
+    if (blackKnown) {
+      scores.set(black, (scores.get(black) ?? 0) + blackPoints(game.result))
     }
   }
 
@@ -61,7 +68,7 @@ export function computeBuchholz(
   return total
 }
 
-/** Progressive / Sonneborn-Berger style cumulative score (FIDE C.13.2.2 variant) */
+/** Progressive (cumulative) score tiebreak */
 export function computeProgressive(
   playerId: string,
   games: PastGameInput[],
@@ -75,15 +82,8 @@ export function computeProgressive(
   )
 
   for (const game of playerGames) {
-    if (game.result === 'bye' && game.whiteId === playerId) {
-      running += 1
-    } else if (game.blackId === playerId) {
-      if (game.result === '0-1') running += 1
-      else if (game.result === '1/2-1/2') running += 0.5
-    } else if (game.whiteId === playerId) {
-      if (game.result === '1-0') running += 1
-      else if (game.result === '1/2-1/2') running += 0.5
-    }
+    if (game.whiteId === playerId) running += whitePoints(game.result)
+    else if (game.blackId === playerId) running += blackPoints(game.result)
     cumulative += running
   }
 
@@ -106,13 +106,8 @@ export function computeDirectEncounter(
       tiedPlayerIds.includes(game.blackId)
     if (!inTie) continue
 
-    if (game.whiteId === playerId) {
-      if (game.result === '1-0') points += 1
-      else if (game.result === '1/2-1/2') points += 0.5
-    } else if (game.blackId === playerId) {
-      if (game.result === '0-1') points += 1
-      else if (game.result === '1/2-1/2') points += 0.5
-    }
+    if (game.whiteId === playerId) points += whitePoints(game.result)
+    else if (game.blackId === playerId) points += blackPoints(game.result)
   }
 
   return points

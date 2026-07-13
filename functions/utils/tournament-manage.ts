@@ -1,3 +1,7 @@
+// functions/utils/tournament-manage.ts
+import { whitePoints, blackPoints } from './pairing'
+import type { GameResult } from './pairing'
+
 interface GameRow {
   id: string
   tournament_id: string
@@ -40,7 +44,8 @@ export function computeStandings(
   }
 
   for (const game of games) {
-    if (game.result === 'pending') continue
+    if (!game.result || game.result === 'pending') continue
+    const result = game.result as GameResult
 
     const white = game.white_member_id
       ? standings.get(game.white_member_id)
@@ -49,45 +54,30 @@ export function computeStandings(
       ? standings.get(game.black_member_id)
       : undefined
 
-    if (game.result === 'bye') {
-      const player = white ?? black
-      if (player) {
-        player.score += 1
-        player.wins += 1
-      }
-      continue
-    }
+    // Points: single source of truth, shared with the pairing engine.
+    // Unknown result strings fall through every branch to zero effect.
+    if (white) white.score += whitePoints(result)
+    if (black) black.score += blackPoints(result)
 
-    if (game.result === '1-0') {
-      if (white) {
-        white.score += 1
-        white.wins += 1
-      }
-      if (black) {
-        black.losses += 1
-      }
-    } else if (game.result === '0-1') {
-      if (black) {
-        black.score += 1
-        black.wins += 1
-      }
-      if (white) {
-        white.losses += 1
-      }
-    } else if (game.result === '1/2-1/2') {
-      if (white) {
-        white.score += 0.5
-        white.draws += 1
-      }
-      if (black) {
-        black.score += 0.5
-        black.draws += 1
-      }
+    // W/D/L tallies (byes are neither wins nor losses)
+    if (result === '1-0' || result === '1-0 F') {
+      if (white) white.wins += 1
+      if (black) black.losses += 1
+    } else if (result === '0-1' || result === '0-1 F') {
+      if (black) black.wins += 1
+      if (white) white.losses += 1
+    } else if (result === '1/2-1/2') {
+      if (white) white.draws += 1
+      if (black) black.draws += 1
+    } else if (result === '0-0 F') {
+      if (white) white.losses += 1
+      if (black) black.losses += 1
     }
   }
 
   return [...standings.values()].sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score
+    if (b.wins !== a.wins) return b.wins - a.wins
     return a.full_name.localeCompare(b.full_name)
   })
 }

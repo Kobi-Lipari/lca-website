@@ -1,4 +1,4 @@
-// TournamentPairingsPage
+// src/pages/TournamentPairingsPage.tsx
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, ChevronDown, ChevronRight, Trophy } from 'lucide-react'
@@ -6,24 +6,12 @@ import { ArrowLeft, ChevronDown, ChevronRight, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   getTournament,
+  type ApiStanding,
   type ApiTournamentDetail,
   type ApiTournamentPairing,
-  type ApiRosterPlayer,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-
-// ── Types ────────────────────────────────────────────────────────────────────
-
-interface ApiStanding {
-  member_id: string
-  full_name: string
-  section: string
-  score: number
-  wins: number
-  draws: number
-  losses: number
-}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -32,45 +20,14 @@ function formatPlayer(name?: string, rating?: number | null) {
   return rating != null ? `${name} (${rating})` : name
 }
 
-function deriveStandings(
-  pairings: ApiTournamentPairing[],
-  roster: ApiRosterPlayer[],
-): ApiStanding[] {
-  const map = new Map<string, ApiStanding>()
-
-  for (const player of roster) {
-    map.set(player.member_id, {
-      member_id: player.member_id,
-      full_name: player.full_name,
-      section: player.section,
-      score: 0,
-      wins: 0,
-      draws: 0,
-      losses: 0,
-    })
-  }
-
-  for (const game of pairings) {
-    if (game.result === 'pending' || !game.result) continue
-
-    const white = game.white_member_id ? map.get(game.white_member_id) : null
-    const black = game.black_member_id ? map.get(game.black_member_id) : null
-
-    if (game.result === '1-0' || game.result === '1–0') {
-      if (white) { white.score += 1; white.wins += 1 }
-      if (black) { black.losses += 1 }
-    } else if (game.result === '0-1' || game.result === '0–1') {
-      if (black) { black.score += 1; black.wins += 1 }
-      if (white) { white.losses += 1 }
-    } else if (game.result === '1/2-1/2' || game.result === '½–½' || game.result === '1/2') {
-      if (white) { white.score += 0.5; white.draws += 1 }
-      if (black) { black.score += 0.5; black.draws += 1 }
-    } else if (game.result === 'bye' || game.result === 'BYE') {
-      if (white) { white.score += 0.5 }
-    }
-  }
-
-  return Array.from(map.values())
+function formatResult(result: string): string {
+  if (!result || result === 'pending') return '—'
+  if (result === 'bye') return '1'
+  if (result === 'bye-half') return '½'
+  if (result === '1-0 F') return '1-0 (F)'
+  if (result === '0-1 F') return '0-1 (F)'
+  if (result === '0-0 F') return '0-0 (F)'
+  return result
 }
 
 // ── Round accordion item ─────────────────────────────────────────────────────
@@ -141,13 +98,21 @@ function RoundAccordion({
                       </span>
                       <span className="flex-1 text-muted-foreground">
                         {formatPlayer(game.white_name, game.white_rating)}
-                        <span className="mx-2 text-border">vs</span>
-                        {game.black_member_id
-                          ? formatPlayer(game.black_name, game.black_rating)
-                          : 'BYE'}
+                        {game.black_member_id ? (
+                          <>
+                            <span className="mx-2 text-border">vs</span>
+                            {formatPlayer(game.black_name, game.black_rating)}
+                          </>
+                        ) : (
+                          <span className="ml-2 text-xs italic">
+                            {game.result === 'bye-half'
+                              ? '— requested bye (½ pt)'
+                              : '— bye (1 pt)'}
+                          </span>
+                        )}
                       </span>
-                      <span className="w-10 flex-shrink-0 text-right font-medium text-[#1a2744]">
-                        {game.result && game.result !== 'pending' ? game.result : '—'}
+                      <span className="w-16 flex-shrink-0 text-right font-medium text-[#1a2744]">
+                        {formatResult(game.result)}
                       </span>
                     </li>
                   ))}
@@ -170,9 +135,8 @@ function StandingsTable({
   standings: ApiStanding[]
   sectionName: string
 }) {
-  const sorted = [...standings]
-    .filter((s) => s.section === sectionName)
-    .sort((a, b) => b.score - a.score || b.wins - a.wins)
+  // Server order is authoritative (score desc, wins desc, name); filter only
+  const sorted = standings.filter((s) => s.section === sectionName)
 
   if (sorted.length === 0) return null
 
@@ -229,7 +193,7 @@ export function TournamentPairingsPage() {
 
   const [tournament, setTournament] = useState<ApiTournamentDetail | null>(null)
   const [pairings, setPairings] = useState<ApiTournamentPairing[]>([])
-  const [roster, setRoster] = useState<ApiRosterPlayer[]>([])
+  const [standings, setStandings] = useState<ApiStanding[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [notFound, setNotFound] = useState(false)
@@ -242,7 +206,7 @@ export function TournamentPairingsPage() {
       .then((data) => {
         setTournament(data.tournament)
         setPairings(data.pairings ?? [])
-        setRoster(data.roster)
+        setStandings(data.standings ?? [])
       })
       .catch((err) => {
         const msg = err instanceof Error ? err.message : 'Failed to load'
@@ -277,12 +241,12 @@ export function TournamentPairingsPage() {
     </div>
   )
 
-  const roundSchedule = (tournament as any).round_schedule ?? []
+  const roundSchedule = tournament.round_schedule ?? []
   const pairedRounds = [...new Set(pairings.map((p) => p.round))].sort((a, b) => a - b)
   const allRounds = Array.from({ length: tournament.rounds }, (_, i) => i + 1)
   const isCompleted = tournament.status === 'completed'
-  const standings = isCompleted ? deriveStandings(pairings, roster) : []
   const sectionOrder = tournament.sections.map((s) => s.name)
+  const hasScores = standings.some((s) => s.score > 0)
 
   // Auto-open logic: open the latest paired round only
   const latestPairedRound = pairedRounds[pairedRounds.length - 1] ?? null
@@ -339,10 +303,12 @@ export function TournamentPairingsPage() {
       {/* ── Body ── */}
       <div className="mx-auto max-w-4xl px-6 py-10 space-y-10">
 
-        {/* Final standings — only when tournament is completed */}
-        {isCompleted && standings.length > 0 && (
+        {/* Standings — live during the event, final after */}
+        {hasScores && (
           <div>
-            <h2 className="mb-6 text-2xl font-bold text-[#1a2744]">Final standings</h2>
+            <h2 className="mb-6 text-2xl font-bold text-[#1a2744]">
+              {isCompleted ? 'Final standings' : 'Current standings'}
+            </h2>
             {sectionOrder.map((sec) => (
               <StandingsTable key={sec} standings={standings} sectionName={sec} />
             ))}
@@ -372,7 +338,7 @@ export function TournamentPairingsPage() {
                         Round {round}
                       </span>
                       {(() => {
-                        const sch = roundSchedule.find((r: any) => r.round === round)
+                        const sch = roundSchedule.find((r) => r.round === round)
                         return sch ? (
                           <span className="text-xs text-muted-foreground">
                             · {sch.date}{sch.time ? ` · ${sch.time}` : ''}

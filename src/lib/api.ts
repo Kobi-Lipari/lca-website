@@ -1,4 +1,4 @@
-// api.ts
+// src/lib/api.ts
 
 import { supabase } from '@/lib/supabase'
 
@@ -96,13 +96,6 @@ export async function updateMe(body: {
   return data.member
 }
 
-export interface ApiClubListItem {
-  id: string
-  name: string
-  city: string
-  meeting_schedule: string
-  color: string
-}
 
 export interface ApiClubDetail {
   id: string
@@ -114,6 +107,7 @@ export interface ApiClubDetail {
   contact_email: string | null
   created_at: string
   color: string
+  image_url: string | null
 }
 
 export interface ApiClubOfficer {
@@ -155,6 +149,30 @@ export interface ApiTournamentListItem {
   status: TournamentStatus
 }
 
+export interface ApiRoundScheduleItem {
+  round: number
+  date: string
+  time: string
+}
+
+export interface ApiCustomDetail {
+  title: string
+  body: string
+  color?: string | null
+  image_url?: string | null
+  region?: string | null
+}
+
+export interface ApiClubListItem {
+  id: string
+  name: string
+  city: string
+  meeting_schedule: string
+  color: string | null
+  image_url: string | null
+  region: string | null
+}
+
 export interface ApiTournamentDetail {
   id: string
   name: string
@@ -183,7 +201,7 @@ export interface ApiTournamentDetail {
 export interface ApiRosterPlayer {
   member_id: string
   section: string
-  payment_status: string
+  withdrawn_at: string | null
   full_name: string
   uscf_id: string | null
   uscf_rating: number | null
@@ -202,6 +220,28 @@ export interface ApiTournamentPairing {
   black_name?: string
   white_rating?: number | null
   black_rating?: number | null
+}
+
+export interface ApiMyRegistration {
+  id: string
+  tournament_id: string
+  member_id: string
+  section: string
+  payment_status: string
+  bye_rounds: number[]
+  registered_at: string
+  withdrawn_at?: string | null
+  checked_in_at?: string | null
+}
+
+export interface ApiStanding {
+  member_id: string
+  full_name: string
+  section: string
+  score: number
+  wins: number
+  draws: number
+  losses: number
 }
 
 export async function getClubs(): Promise<ApiClubListItem[]> {
@@ -232,6 +272,8 @@ export async function getTournament(id: string): Promise<{
   tournament: ApiTournamentDetail
   roster: ApiRosterPlayer[]
   pairings: ApiTournamentPairing[]
+  standings: ApiStanding[]
+  myRegistration?: ApiMyRegistration | null
 }> {
   const response = await fetch(`/api/tournaments/${id}`)
   return handleResponse(response)
@@ -278,6 +320,19 @@ export async function adminUpdateMemberClub(
     method: 'PATCH',
     headers: await authHeaders(),
     body: JSON.stringify({ clubId }),
+  })
+  const data = await handleResponse<{ member: ApiMember }>(response)
+  return data.member
+}
+
+export async function adminUpdateMemberMembership(
+  memberId: string,
+  body: { membershipStatus?: string; membershipExpiry?: string | null },
+): Promise<ApiMember> {
+  const response = await fetch(`/api/admin/members/${memberId}/membership`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
   })
   const data = await handleResponse<{ member: ApiMember }>(response)
   return data.member
@@ -397,14 +452,17 @@ export interface ApiTournamentGame {
   black_name?: string
 }
 
-export interface ApiStanding {
+export interface ApiManageRosterPlayer {
+  registration_id: string
   member_id: string
-  full_name: string
   section: string
-  score: number
-  wins: number
-  draws: number
-  losses: number
+  payment_status: string
+  bye_rounds: number[]
+  withdrawn_at: string | null
+  checked_in_at: string | null
+  full_name: string
+  uscf_id: string | null
+  uscf_rating: number | null
 }
 
 export async function adminGetTournamentManage(tournamentId: string) {
@@ -413,13 +471,7 @@ export async function adminGetTournamentManage(tournamentId: string) {
   })
   return handleResponse<{
     tournament: ApiTournamentDetail
-    roster: Array<{
-      member_id: string
-      section: string
-      full_name: string
-      uscf_id: string | null
-      payment_status: string
-    }>
+    roster: ApiManageRosterPlayer[]
     games: ApiTournamentGame[]
     standings: ApiStanding[]
     directors: Array<{ member_id: string; full_name: string; email: string }>
@@ -448,7 +500,7 @@ export async function adminCreatePairings(
 
 export async function adminGeneratePairings(
   tournamentId: string,
-  body: { round: number; section: string },
+  body: { round: number; section: string; onlyCheckedIn?: boolean },
 ) {
   const response = await fetch(
     `/api/admin/tournaments/${tournamentId}/generate-pairings`,
@@ -464,6 +516,21 @@ export async function adminGeneratePairings(
     pairings: ApiTournamentGame[]
     count: number
   }>(response)
+}
+
+export async function adminDeleteRoundPairings(
+  tournamentId: string,
+  round: number,
+  section: string,
+): Promise<{ deleted: number; round: number; section: string }> {
+  const response = await fetch(
+    `/api/admin/tournaments/${tournamentId}/rounds/${round}?section=${encodeURIComponent(section)}`,
+    {
+      method: 'DELETE',
+      headers: await authHeaders(),
+    },
+  )
+  return handleResponse(response)
 }
 
 export async function adminUpdateGameResult(
@@ -489,13 +556,123 @@ export async function createRegistration(
 ): Promise<{
   registration: ApiRegistration
   payment: { id: string; amount: number; status: string }
-  paymentUrl: string
+  paymentUrl: string | null
   message: string
 }> {
   const response = await fetch('/api/registrations', {
     method: 'POST',
     headers: await authHeaders(),
     body: JSON.stringify({ tournamentId, section, byeRounds }),
+  })
+  return handleResponse(response)
+}
+
+export interface UpdateRegistrationResult {
+  registration: ApiMyRegistration
+  feeNote: string | null
+}
+
+export async function updateRegistration(
+  registrationId: string,
+  body: {
+    byeRounds?: number[]
+    section?: string
+    paymentStatus?: 'paid' | 'pending' | 'refunded'
+    withdrawn?: boolean
+    checkedIn?: boolean
+  },
+): Promise<UpdateRegistrationResult> {
+  const response = await fetch(`/api/registrations/${registrationId}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse<UpdateRegistrationResult>(response)
+}
+
+export async function updateRegistrationByes(
+  registrationId: string,
+  byeRounds: number[],
+): Promise<void> {
+  await updateRegistration(registrationId, { byeRounds })
+}
+
+export async function payRegistration(
+  registrationId: string,
+): Promise<{ paymentUrl: string }> {
+  const response = await fetch(`/api/registrations/${registrationId}/pay`, {
+    method: 'POST',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function adminAddWalkIn(
+  tournamentId: string,
+  body: {
+    fullName: string
+    uscfId?: string | null
+    uscfRating?: number | null
+    section: string
+    markPaid?: boolean
+  },
+): Promise<{ registration: ApiRegistration; guestId: string }> {
+  const response = await fetch(`/api/admin/tournaments/${tournamentId}/walk-ins`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse(response)
+}
+
+// ── USCF rating report ───────────────────────────────────────────
+
+export interface ApiRatingReportRound {
+  round: number
+  code: 'W' | 'L' | 'D' | 'X' | 'F' | 'B' | 'H' | 'U'
+  opponentPairingNum: number | null
+  color: 'W' | 'B' | null
+}
+
+export interface ApiRatingReportPlayer {
+  pairingNum: number
+  name: string
+  uscfId: string | null
+  preRating: number | null
+  score: number
+  rounds: ApiRatingReportRound[]
+}
+
+export interface ApiRatingReport {
+  tournament: {
+    name: string
+    startDate: string
+    endDate: string
+    location: string
+    rounds: number
+  }
+  sections: Array<{ name: string; players: ApiRatingReportPlayer[] }>
+  validationErrors: string[]
+}
+
+export async function adminGetRatingReport(
+  tournamentId: string,
+): Promise<ApiRatingReport> {
+  const response = await fetch(
+    `/api/admin/tournaments/${tournamentId}/rating-report`,
+    { headers: await authHeaders() },
+  )
+  return handleResponse(response)
+}
+
+export async function adminAnnounce(
+  tournamentId: string,
+  body: { subject: string; body: string },
+): Promise<{ sent: number; failed: number; total: number }> {
+  const response = await fetch(`/api/admin/tournaments/${tournamentId}/announce`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
   })
   return handleResponse(response)
 }
@@ -713,8 +890,6 @@ export async function adminGetTicket(id: string): Promise<{
   return handleResponse(response)
 }
 
-// Add to src/lib/api.ts
-
 export async function adminDeleteMember(memberId: string): Promise<void> {
   const response = await fetch(`/api/admin/members/${memberId}`, {
     method: 'DELETE',
@@ -735,51 +910,6 @@ export async function adminDeleteClub(clubId: string): Promise<void> {
   const response = await fetch(`/api/admin/clubs/${clubId}`, {
     method: 'DELETE',
     headers: await authHeaders(),
-  })
-  return handleResponse(response)
-}
-
-// Add to existing interfaces:
-
-export interface ApiRoundScheduleItem {
-  round: number
-  date: string
-  time: string
-}
-
-export interface ApiCustomDetail {
-  title: string
-  body: string
-}
-
-// Update ApiTournamentDetail to include new fields:
-// (add these fields to the existing interface)
-//   is_visible: number
-//   round_schedule: ApiRoundScheduleItem[]
-//   custom_details: ApiCustomDetail[]
-//   registration_closes_at: string | null
-//   myRegistration?: ApiMyRegistration | null
-
-export interface ApiMyRegistration {
-  id: string
-  tournament_id: string
-  member_id: string
-  section: string
-  payment_status: string
-  bye_rounds: number[]
-  registered_at: string
-}
-
-// Add these new API functions:
-
-export async function updateRegistrationByes(
-  registrationId: string,
-  byeRounds: number[],
-): Promise<void> {
-  const response = await fetch(`/api/registrations/${registrationId}`, {
-    method: 'PATCH',
-    headers: await authHeaders(),
-    body: JSON.stringify({ byeRounds }),
   })
   return handleResponse(response)
 }
