@@ -1,3 +1,4 @@
+// functions/api/membership/checkout.ts
 import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
@@ -30,9 +31,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (isResponse(authed)) return authed
 
   const body = await parseJsonBody<CheckoutBody>(context.request)
-  const tier = body?.tier ?? 'regular'
+  const tier = body?.tier
 
-  if (!TIER_PRICES[tier]) {
+  // Tier is required — the old '?? "regular"' fallback wasn't a real tier
+  // and rejected any request without one anyway.
+  if (!tier || TIER_PRICES[tier] === undefined) {
     return errorResponse('Invalid membership tier', 400)
   }
 
@@ -40,19 +43,28 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const amount = TIER_PRICES[tier]
   const origin = new URL(context.request.url).origin
 
-  const session = await createCheckoutSession(context.env.STRIPE_SECRET_KEY, {
-    productName: TIER_LABELS[tier],
-    amountUsd: amount,
-    successUrl: `${origin}/membership/success?paymentId=${paymentId}`,
-    cancelUrl: `${origin}/membership`,
-    clientReferenceId: paymentId,
-    metadata: {
-      payment_id: paymentId,
-      member_id: authed.member.id,
-      tier,
-      type: 'membership',
-    },
-  })
+  let session: { id: string; url: string }
+  try {
+    session = await createCheckoutSession(context.env.STRIPE_SECRET_KEY, {
+      productName: TIER_LABELS[tier],
+      amountUsd: amount,
+      successUrl: `${origin}/membership/success?paymentId=${paymentId}`,
+      cancelUrl: `${origin}/membership`,
+      clientReferenceId: paymentId,
+      metadata: {
+        payment_id: paymentId,
+        member_id: authed.member.id,
+        tier,
+        type: 'membership',
+      },
+    })
+  } catch (err) {
+    console.error('Stripe session creation failed:', err)
+    return errorResponse(
+      'Could not start the payment process. Please try again in a moment.',
+      502,
+    )
+  }
 
   await context.env.DB.prepare(
     `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)

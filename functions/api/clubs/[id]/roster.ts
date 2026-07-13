@@ -1,3 +1,4 @@
+// functinos/api/clubs/[id]/roster.ts
 import type { Env } from '../../types'
 import { isResponse, requireClubRep } from '../../../utils/auth'
 import { handleOptions, jsonResponse } from '../../../utils/response'

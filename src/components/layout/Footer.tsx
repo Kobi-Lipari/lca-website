@@ -1,29 +1,64 @@
 // src/components/layout/Footer.tsx
 import { Link } from 'react-router-dom'
-import { Trophy } from 'lucide-react'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
+import lcaLogo from '@/assets/lca-logo.webp'
 
+// Every link points somewhere DISTINCT. When pages grow filters/anchors
+// (e.g. /tournaments?filter=past), add richer links back then — no fake
+// destinations in the meantime.
 const footerSections = [
-  { title: 'Tournaments', links: [{ label: 'Upcoming events', href: '/tournaments' }, { label: 'Past results', href: '/tournaments' }, { label: 'Ask about an event', href: '/contact' }] },
-  { title: 'Scholastic', links: [{ label: 'Annual schedule', href: '/scholastic' }, { label: 'State scholastic championship', href: '/scholastic' }, { label: 'School programs', href: '/scholastic' }] },
-  { title: 'Governance', links: [{ label: 'About LCA', href: '/about' }, { label: 'Board members', href: '/governance/board' }, { label: 'Bylaws', href: '/governance/bylaws' }, { label: 'Rules & policies', href: '/governance/rules' }, { label: 'Meeting minutes', href: '/governance/minutes' }, { label: 'Contact us', href: '/contact' }] },
-  { title: 'Membership', links: [{ label: 'Join LCA', href: '/membership' }, { label: 'Renew membership', href: '/membership' }, { label: 'Member benefits', href: '/membership' }, { label: 'Log in', href: '/login' }, { label: 'My dashboard', href: '/dashboard' }] },
+  {
+    title: 'Play',
+    links: [
+      { label: 'Tournaments', href: '/tournaments' },
+      { label: 'Chess clubs', href: '/clubs' },
+      { label: 'Scholastic chess', href: '/scholastic' },
+    ],
+  },
+  {
+    title: 'Governance',
+    links: [
+      { label: 'About LCA', href: '/about' },
+      { label: 'Board members', href: '/governance/board' },
+      { label: 'Bylaws', href: '/governance/bylaws' },
+      { label: 'Rules & policies', href: '/governance/rules' },
+      { label: 'Meeting minutes', href: '/governance/minutes' },
+    ],
+  },
+  {
+    title: 'Membership',
+    links: [
+      { label: 'Join or renew', href: '/membership' },
+      { label: 'Log in', href: '/login' },
+      { label: 'My dashboard', href: '/dashboard' },
+    ],
+  },
+  {
+    title: 'Connect',
+    links: [
+      { label: 'News', href: '/news' },
+      { label: 'Contact us', href: '/contact' },
+      { label: 'Support', href: '/support' },
+    ],
+  },
 ]
 
 export function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer className="bg-[#1a2744] text-white">
+    <footer className="border-t-[3px] border-[#c8a94a] bg-[#1a2744] text-white">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-6 border-b border-white/10 pb-10 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#c8a94a]">
-                <Trophy className="size-4 text-[#1a2744]" />
-              </div>
+              <img
+                src={lcaLogo}
+                alt="Louisiana Chess Association"
+                className="h-10 w-10 rounded-lg object-contain"
+              />
               <div>
                 <div className="text-sm font-semibold text-white">Louisiana Chess Association</div>
-                <div className="text-xs text-white/50">Serving Louisiana players since 1935</div>
+                <div className="text-xs text-white/50">Serving Louisiana players since 1915</div>
               </div>
             </div>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
@@ -53,13 +88,10 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 sm:flex-row">
-          <p className="text-xs text-white/40">© {year} Louisiana Chess Association. All rights reserved.</p>
-          <div className="flex gap-4">
-            <Link to="/contact" className="text-xs text-white/40 transition-colors hover:text-white/60">Contact</Link>
-            <Link to="/support" className="text-xs text-white/40 transition-colors hover:text-white/60">Support</Link>
-            <Link to="/about" className="text-xs text-white/40 transition-colors hover:text-white/60">About</Link>
-          </div>
+        <div className="mt-10 border-t border-white/10 pt-6">
+          <p className="text-center text-xs text-white/40 sm:text-left">
+            © {year} Louisiana Chess Association. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

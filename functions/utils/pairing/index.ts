@@ -1,3 +1,5 @@
+// functions/utils/pairing/index.ts
+
 export type {
   Color,
   GameResult,
@@ -16,6 +18,8 @@ export {
   REMATCH_PENALTY,
   MAX_RATING,
 } from './types'
+
+export { whitePoints, blackPoints } from './result-points'
 
 export {
   computeBuchholz,

@@ -1,3 +1,4 @@
+// src/pages/ClubDetailPage.tsx
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
@@ -13,6 +14,7 @@ import {
   type ApiClubTournament,
 } from '@/lib/api'
 import { clubColorTint } from '@/lib/clubColors'
+import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/components/maps/LCAMap'
 
@@ -21,6 +23,50 @@ const NAVY = '#1a2744'
 
 function formatOfficerRole(role: string): string {
   return role.replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+/** Navy text on light club colors, white text on dark ones — some clubs use
+ *  dark brand colors and the old hardcoded navy-on-color was unreadable. */
+function readableTextOn(hex: string): string {
+  const m = /^#?([0-9a-fA-F]{6})$/.exec(hex)
+  if (!m) return NAVY
+  const n = parseInt(m[1], 16)
+  const r = (n >> 16) & 255
+  const g = (n >> 8) & 255
+  const b = n & 255
+  const luminance = 0.299 * r + 0.587 * g + 0.114 * b
+  return luminance > 150 ? NAVY : '#ffffff'
+}
+
+const statusBadge: Record<string, { label: string; className: string }> = {
+  upcoming: { label: 'Upcoming', className: 'bg-[#c8a94a]/15 text-[#8a6d1f]' },
+  active: { label: 'In progress', className: 'bg-emerald-100 text-emerald-800' },
+  completed: { label: 'Completed', className: 'bg-muted text-muted-foreground' },
+}
+
+function TournamentRow({ t, color }: { t: ApiClubTournament; color: string }) {
+  const badge = statusBadge[t.status] ?? statusBadge.upcoming
+  return (
+    <li
+      className="flex flex-col gap-2 rounded-xl border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+      style={{ backgroundColor: clubColorTint(color, 0.04) }}
+    >
+      <div>
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="font-medium text-[#1a2744]">{t.name}</p>
+          <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-medium', badge.className)}>
+            {badge.label}
+          </span>
+        </div>
+        <p className="text-sm text-muted-foreground">{t.date}</p>
+      </div>
+      <Button asChild variant="outline" size="sm">
+        <Link to={`/tournaments/${t.id}`}>
+          {t.status === 'completed' ? 'View results' : 'View tournament'}
+        </Link>
+      </Button>
+    </li>
+  )
 }
 
 export function ClubDetailPage() {
@@ -77,8 +123,12 @@ export function ClubDetailPage() {
     </div>
   )
 
-  const color = (club as any).color || LCA_GOLD
-  const imageUrl = (club as any).image_url as string | null | undefined
+  const color = club.color || LCA_GOLD
+  const imageUrl = club.image_url
+  const buttonText = readableTextOn(color)
+
+  const upcoming = tournaments.filter((t) => t.status === 'upcoming' || t.status === 'active')
+  const recent = tournaments.filter((t) => t.status === 'completed').slice(0, 5)
 
   return (
     <div>
@@ -186,28 +236,16 @@ export function ClubDetailPage() {
               </div>
             )}
 
-            {/* Tournaments */}
+            {/* Upcoming tournaments */}
             <div>
               <div className="flex items-center gap-2">
                 <Trophy className="size-5 text-[#c8a94a]" />
-                <h2 className="text-xl font-bold text-[#1a2744]">Club tournaments</h2>
+                <h2 className="text-xl font-bold text-[#1a2744]">Upcoming tournaments</h2>
               </div>
-              {tournaments.length > 0 ? (
+              {upcoming.length > 0 ? (
                 <ul className="mt-4 space-y-3">
-                  {tournaments.map((t) => (
-                    <li
-                      key={t.id}
-                      className="flex flex-col gap-2 rounded-xl border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between"
-                      style={{ backgroundColor: clubColorTint(color, 0.04) }}
-                    >
-                      <div>
-                        <p className="font-medium text-[#1a2744]">{t.name}</p>
-                        <p className="text-sm text-muted-foreground">{t.date}</p>
-                      </div>
-                      <Button asChild variant="outline" size="sm">
-                        <Link to={`/tournaments/${t.id}`}>View tournament</Link>
-                      </Button>
-                    </li>
+                  {upcoming.map((t) => (
+                    <TournamentRow key={t.id} t={t} color={color} />
                   ))}
                 </ul>
               ) : (
@@ -216,6 +254,18 @@ export function ClubDetailPage() {
                 </p>
               )}
             </div>
+
+            {/* Recent results */}
+            {recent.length > 0 && (
+              <div>
+                <h2 className="text-xl font-bold text-[#1a2744]">Recent tournaments</h2>
+                <ul className="mt-4 space-y-3">
+                  {recent.map((t) => (
+                    <TournamentRow key={t.id} t={t} color={color} />
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* News */}
             {news.length > 0 && (
@@ -271,7 +321,7 @@ export function ClubDetailPage() {
                       <dd>
                         <a
                           href={`mailto:${club.contact_email}`}
-                          className="text-muted-foreground hover:underline"
+                          className="hover:underline"
                           style={{ color }}
                         >
                           {club.contact_email}
@@ -288,8 +338,8 @@ export function ClubDetailPage() {
                 </p>
                 <Button
                   asChild
-                  className="mt-4 w-full font-semibold text-[#1a2744]"
-                  style={{ backgroundColor: color }}
+                  className="mt-4 w-full font-semibold"
+                  style={{ backgroundColor: color, color: buttonText }}
                 >
                   <Link to="/membership">Join LCA</Link>
                 </Button>

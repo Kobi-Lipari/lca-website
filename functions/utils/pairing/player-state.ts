@@ -1,4 +1,7 @@
+// functions/utils/pairing/player-state.ts
+
 import type { Color, PairingPlayerInput, PastGameInput, PlayerState } from './types'
+import { whitePoints, blackPoints } from './result-points'
 import { applyTiebreakers } from './tiebreakers'
 
 export function buildPlayerStates(
@@ -13,7 +16,7 @@ export function buildPlayerStates(
     colorHistory: [],
     colorBalance: 0,
     opponents: new Set<string>(),
-    hadBye: false,
+    hadUnplayedWin: false,
     buchholz: 0,
     progressive: 0,
     directEncounter: 0,
@@ -25,35 +28,54 @@ export function buildPlayerStates(
   for (const game of games) {
     if (game.result === 'pending') continue
 
+    // Either side may be absent from the current roster (withdrawn player,
+    // manually paired non-roster player). The present side still scores —
+    // played results stand.
     const white = byId.get(game.whiteId)
-    if (!white) continue
+    const black = game.blackId ? byId.get(game.blackId) : undefined
 
-    if (!game.blackId || game.result === 'bye') {
-      white.score += 1
-      white.hadBye = true
-      white.colorHistory.push('white')
-      white.colorBalance += 1
+    // Requested half-point bye: score only — no color effects, and does NOT
+    // count toward the assigned-bye rotation.
+    if (game.result === 'bye-half') {
+      if (white) white.score += whitePoints(game.result)
       continue
     }
 
-    const black = byId.get(game.blackId)
-    if (!black) continue
-
-    white.opponents.add(black.id)
-    black.opponents.add(white.id)
-    white.colorHistory.push('white')
-    black.colorHistory.push('black')
-    white.colorBalance += 1
-    black.colorBalance -= 1
-
-    if (game.result === '1-0') {
-      white.score += 1
-    } else if (game.result === '0-1') {
-      black.score += 1
-    } else if (game.result === '1/2-1/2') {
-      white.score += 0.5
-      black.score += 0.5
+    // Assigned full-point bye: no color effects (unplayed game).
+    if (!game.blackId || game.result === 'bye') {
+      if (white) {
+        white.score += whitePoints(game.result)
+        white.hadUnplayedWin = true
+      }
+      continue
     }
+
+    // The pairing happened either way — never repair these two (FIDE C.04.1.b).
+    if (white && black) {
+      white.opponents.add(black.id)
+      black.opponents.add(white.id)
+    }
+
+    // Only games actually played count for color allocation.
+    const isForfeit =
+      game.result === '1-0 F' || game.result === '0-1 F' || game.result === '0-0 F'
+    if (!isForfeit) {
+      if (white) {
+        white.colorHistory.push('white')
+        white.colorBalance += 1
+      }
+      if (black) {
+        black.colorHistory.push('black')
+        black.colorBalance -= 1
+      }
+    }
+
+    if (white) white.score += whitePoints(game.result)
+    if (black) black.score += blackPoints(game.result)
+
+    // Forfeit wins are unplayed wins — C.04 bye ineligibility.
+    if (game.result === '1-0 F' && white) white.hadUnplayedWin = true
+    else if (game.result === '0-1 F' && black) black.hadUnplayedWin = true
   }
 
   const withTiebreaks = applyTiebreakers(states, games)

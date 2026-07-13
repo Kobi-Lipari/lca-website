@@ -1,3 +1,5 @@
+// functions/utils/pairing/score-groups.ts
+
 import { pairScoreGroupPool } from './blossom'
 import type { GeneratedPairing, PlayerState } from './types'
 
@@ -21,12 +23,12 @@ export function selectDownfloater(pool: PlayerState[]): PlayerState {
   return s2[s2.length - 1]
 }
 
-/** C.04.1.7 — lowest pairing number without prior bye */
+/** C.04 — bye goes to the LOWEST-ranked player without a prior unplayed win */
 export function selectByePlayer(pool: PlayerState[]): PlayerState {
-  const withoutBye = pool.filter((p) => !p.hadBye)
-  const candidates = withoutBye.length > 0 ? withoutBye : pool
+  const withoutUnplayedWin = pool.filter((p) => !p.hadUnplayedWin)
+  const candidates = withoutUnplayedWin.length > 0 ? withoutUnplayedWin : pool
   return [...candidates].sort(
-    (a, b) => a.rank - b.rank || a.rating - b.rating || a.id.localeCompare(b.id),
+    (a, b) => b.rank - a.rank || a.rating - b.rating || a.id.localeCompare(b.id),
   )[0]
 }
 
@@ -111,20 +113,21 @@ export function toGeneratedPairings(
 ): GeneratedPairing[] {
   const result: GeneratedPairing[] = []
 
+  // Real games first — byes go on the last boards, matching wall-chart convention.
+  for (const { white, black } of pairings) {
+    result.push({
+      board: 0,
+      whiteId: white.id,
+      blackId: black.id,
+    })
+  }
+
   for (const bye of byes) {
     result.push({
       board: 0,
       whiteId: bye.id,
       blackId: null,
       isBye: true,
-    })
-  }
-
-  for (const { white, black } of pairings) {
-    result.push({
-      board: 0,
-      whiteId: white.id,
-      blackId: black.id,
     })
   }
 

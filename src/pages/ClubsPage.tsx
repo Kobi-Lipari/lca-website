@@ -1,3 +1,4 @@
+// src/pages/ClubsPage.tsx
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
@@ -8,17 +9,9 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/components/maps/LCAMap'
 
-// ── Types ────────────────────────────────────────────────────────────────────
-
-type ExtendedClub = ApiClubListItem & {
-  image_url?: string | null
-  region?: string | null
-}
-
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const LCA_GOLD = '#c8a94a'
-const NAVY = '#1a2744'
 
 const REGIONS = [
   'North Louisiana',
@@ -43,7 +36,7 @@ function shuffleArray<T>(arr: T[]): T[] {
 
 // ── Club card image area ──────────────────────────────────────────────────────
 
-function ClubCardImage({ club }: { club: ExtendedClub }) {
+function ClubCardImage({ club }: { club: ApiClubListItem }) {
   const color = club.color || LCA_GOLD
 
   if (club.image_url) {
@@ -75,12 +68,12 @@ function ClubCardImage({ club }: { club: ExtendedClub }) {
 
 // ── Club card ─────────────────────────────────────────────────────────────────
 
-function ClubCard({ club }: { club: ExtendedClub }) {
+function ClubCard({ club }: { club: ApiClubListItem }) {
   const color = club.color || LCA_GOLD
 
   return (
     <div
-      className="flex w-[200px] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+      className="flex w-[210px] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
       style={{ scrollSnapAlign: 'start' }}
     >
       <div className="h-1 w-full flex-shrink-0" style={{ backgroundColor: color }} />
@@ -91,11 +84,11 @@ function ClubCard({ club }: { club: ExtendedClub }) {
             className="size-2 flex-shrink-0 rounded-full"
             style={{ backgroundColor: color }}
           />
-          <p className="line-clamp-2 text-[11px] font-semibold leading-tight text-foreground">
+          <p className="line-clamp-2 text-xs font-semibold leading-tight text-foreground">
             {club.name}
           </p>
         </div>
-        <div className="space-y-1 text-[10px] text-muted-foreground">
+        <div className="space-y-1 text-[11px] text-muted-foreground">
           <p className="flex items-center gap-1.5">
             <MapPin className="size-3 flex-shrink-0 text-[#c8a94a]" />
             <span className="truncate">{club.city}, LA</span>
@@ -110,7 +103,7 @@ function ClubCard({ club }: { club: ExtendedClub }) {
         <div className="mt-auto pt-3">
           <Link
             to={`/clubs/${club.id}`}
-            className="block w-full rounded-md bg-[#c8a94a] py-1.5 text-center text-[10px] font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90"
+            className="block w-full rounded-md bg-[#c8a94a] py-1.5 text-center text-[11px] font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90"
           >
             Visit club
           </Link>
@@ -126,11 +119,11 @@ function ClubCarousel({
   clubs,
   isFiltered,
 }: {
-  clubs: ExtendedClub[]
+  clubs: ApiClubListItem[]
   isFiltered: boolean
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
-  const CARD_WIDTH = 212 // 200px + 12px gap
+  const CARD_WIDTH = 222 // 210px card + 12px gap
 
   function scroll(dir: 'left' | 'right') {
     if (!trackRef.current) return
@@ -148,16 +141,14 @@ function ClubCarousel({
             {isFiltered ? `${clubs.length} clubs` : `All clubs · ${clubs.length}`}
           </p>
           <p className="mt-0.5 text-[10px] text-muted-foreground">
-            {isFiltered
-              ? 'Sorted A–Z'
-              : ''}
+            {isFiltered ? 'Sorted A–Z' : 'Shuffled — refresh for a new order'}
           </p>
         </div>
         <div className="flex gap-1.5">
           <button
             type="button"
             onClick={() => scroll('left')}
-            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-[#1a2744]/40 hover:text-foreground"
             aria-label="Scroll left"
           >
             <ChevronLeft className="size-4" />
@@ -165,7 +156,7 @@ function ClubCarousel({
           <button
             type="button"
             onClick={() => scroll('right')}
-            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-border-strong hover:text-foreground"
+            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-[#1a2744]/40 hover:text-foreground"
             aria-label="Scroll right"
           >
             <ChevronRight className="size-4" />
@@ -192,16 +183,15 @@ function ClubCarousel({
 
 export function ClubsPage() {
   usePageTitle('Clubs')
-  const [allClubs, setAllClubs] = useState<ExtendedClub[]>([])
-  const [shuffled, setShuffled] = useState<ExtendedClub[]>([])
+  const [allClubs, setAllClubs] = useState<ApiClubListItem[]>([])
+  const [shuffled, setShuffled] = useState<ApiClubListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeRegion, setActiveRegion] = useState<string | null>(null)
 
   useEffect(() => {
     getClubs()
-      .then((data) => {
-        const clubs = data as ExtendedClub[]
+      .then((clubs) => {
         setAllClubs(clubs)
         setShuffled(shuffleArray(clubs))
       })
@@ -213,7 +203,7 @@ export function ClubsPage() {
 
   const displayedClubs = isFiltered
     ? allClubs
-        .filter((c) => (c as any).region === activeRegion)
+        .filter((c) => c.region === activeRegion)
         .sort((a, b) => a.name.localeCompare(b.name))
     : shuffled
 
@@ -241,8 +231,8 @@ export function ClubsPage() {
               {[
                 { n: '25+', l: 'clubs statewide' },
                 { n: '7', l: 'regions' },
-                { n: '340+', l: 'members' },
-                { n: '80+', l: 'years of history' },
+                { n: '300+', l: 'members' },
+                { n: '110+', l: 'years of history' },
               ].map((s) => (
                 <div
                   key={s.l}
@@ -271,7 +261,7 @@ export function ClubsPage() {
                 'flex-shrink-0 rounded-full px-3 py-1 text-[10px] font-medium transition-colors',
                 !activeRegion
                   ? 'bg-[#1a2744] text-white'
-                  : 'border border-border text-muted-foreground hover:border-border-strong',
+                  : 'border border-border text-muted-foreground hover:border-[#1a2744]/40',
               )}
             >
               All regions
@@ -285,7 +275,7 @@ export function ClubsPage() {
                   'flex-shrink-0 rounded-full px-3 py-1 text-[10px] font-medium transition-colors',
                   activeRegion === region
                     ? 'bg-[#1a2744] text-white'
-                    : 'border border-border text-muted-foreground hover:border-border-strong',
+                    : 'border border-border text-muted-foreground hover:border-[#1a2744]/40',
                 )}
               >
                 {region}
@@ -313,16 +303,23 @@ export function ClubsPage() {
         )}
       </section>
 
-            {/* ── Map section ── */}
+      {/* ── Map section — follows the region filter ── */}
       <section className="border-t border-border">
         <div className="mx-auto max-w-6xl px-6 py-8">
           <div className="mb-4">
-            <h2 className="text-xl font-bold text-[#1a2744]">Club locations</h2>
+            <h2 className="text-xl font-bold text-[#1a2744]">
+              Club locations
+              {isFiltered && (
+                <span className="ml-2 text-base font-normal text-muted-foreground">
+                  · {activeRegion}
+                </span>
+              )}
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Click any marker to see club details.
             </p>
           </div>
-          <LCAMap mode="all" height={480} clubs={allClubs} />
+          <LCAMap mode="all" height={480} clubs={displayedClubs} />
         </div>
       </section>
 

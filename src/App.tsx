@@ -1,86 +1,88 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
-
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
-import { AboutPage } from '@/pages/AboutPage'
-import { AdminClubPage } from '@/pages/AdminClubPage'
-import { AdminPage } from '@/pages/AdminPage'
-import { AdminSupportPage } from '@/pages/AdminSupportPage'
-import { BoardPage } from '@/pages/BoardPage'
-import { BylawsPage } from '@/pages/BylawsPage'
-import { ClubDetailPage } from '@/pages/ClubDetailPage'
-import { ClubsPage } from '@/pages/ClubsPage'
-import { ContactPage } from '@/pages/ContactPage'
-import { DashboardPage } from '@/pages/DashboardPage'
-import { DonationSuccessPage } from '@/pages/DonationSuccessPage'
-import { ForgotPasswordPage } from '@/pages/ForgotPasswordPage'
-import { GovernancePage } from '@/pages/GovernancePage'
 import { HomePage } from '@/pages/HomePage'
-import { LoginPage } from '@/pages/LoginPage'
-import { ManageClubPage } from '@/pages/ManageClubPage'
-import { MembershipPage } from '@/pages/MembershipPage'
-import { MembershipSuccessPage } from '@/pages/MembershipSuccessPage'
-import { MinutesPage } from '@/pages/MinutesPage'
-import { NewsPage } from '@/pages/NewsPage'
-import { RegisterPage } from '@/pages/RegisterPage'
-import { ResetPasswordPage } from '@/pages/ResetPasswordPage'
-import { RulesPage } from '@/pages/RulesPage'
-import { ScholasticPage } from '@/pages/ScholasticPage'
-import { SupportPage } from '@/pages/SupportPage'
-import { TournamentDetailPage } from '@/pages/TournamentDetailPage'
-import { TournamentManagePage } from '@/pages/TournamentManagePage'
-import { TournamentPairingsPage } from '@/pages/TournamentPairingsPage'
-import { TournamentsPage } from '@/pages/TournamentsPage'
+
+const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
+const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
+const AdminPage = lazy(() => import('@/pages/AdminPage').then(m => ({ default: m.AdminPage })))
+const AdminSupportPage = lazy(() => import('@/pages/AdminSupportPage').then(m => ({ default: m.AdminSupportPage })))
+const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m.BoardPage })))
+const BylawsPage = lazy(() => import('@/pages/BylawsPage').then(m => ({ default: m.BylawsPage })))
+const ClubDetailPage = lazy(() => import('@/pages/ClubDetailPage').then(m => ({ default: m.ClubDetailPage })))
+const ClubsPage = lazy(() => import('@/pages/ClubsPage').then(m => ({ default: m.ClubsPage })))
+const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })))
+const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
+const DonationSuccessPage = lazy(() => import('@/pages/DonationSuccessPage').then(m => ({ default: m.DonationSuccessPage })))
+const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })))
+const GovernancePage = lazy(() => import('@/pages/GovernancePage').then(m => ({ default: m.GovernancePage })))
+const LoginPage = lazy(() => import('@/pages/LoginPage').then(m => ({ default: m.LoginPage })))
+const ManageClubPage = lazy(() => import('@/pages/ManageClubPage').then(m => ({ default: m.ManageClubPage })))
+const MembershipPage = lazy(() => import('@/pages/MembershipPage').then(m => ({ default: m.MembershipPage })))
+const MembershipSuccessPage = lazy(() => import('@/pages/MembershipSuccessPage').then(m => ({ default: m.MembershipSuccessPage })))
+const MinutesPage = lazy(() => import('@/pages/MinutesPage').then(m => ({ default: m.MinutesPage })))
+const NewsPage = lazy(() => import('@/pages/NewsPage').then(m => ({ default: m.NewsPage })))
+const RegisterPage = lazy(() => import('@/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
+const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })))
+const RulesPage = lazy(() => import('@/pages/RulesPage').then(m => ({ default: m.RulesPage })))
+const ScholasticPage = lazy(() => import('@/pages/ScholasticPage').then(m => ({ default: m.ScholasticPage })))
+const SupportPage = lazy(() => import('@/pages/SupportPage').then(m => ({ default: m.SupportPage })))
+const TournamentDetailPage = lazy(() => import('@/pages/TournamentDetailPage').then(m => ({ default: m.TournamentDetailPage })))
+const TournamentManagePage = lazy(() => import('@/pages/TournamentManagePage').then(m => ({ default: m.TournamentManagePage })))
+const TournamentPairingsPage = lazy(() => import('@/pages/TournamentPairingsPage').then(m => ({ default: m.TournamentPairingsPage })))
+const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => ({ default: m.TournamentsPage })))
 
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <main className="flex-1">
-        <Routes>
-          {/* ── Public ── */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/tournaments" element={<TournamentsPage />} />
-          <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
-          <Route path="/tournaments/:id/pairings" element={<TournamentPairingsPage />} />
-          <Route path="/scholastic" element={<ScholasticPage />} />
-          <Route path="/clubs" element={<ClubsPage />} />
-          <Route path="/clubs/:id" element={<ClubDetailPage />} />
-          <Route path="/news" element={<NewsPage />} />
-          <Route path="/membership" element={<MembershipPage />} />
-          <Route path="/membership/success" element={<MembershipSuccessPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/support" element={<SupportPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
-          <Route path="/donate/success" element={<DonationSuccessPage />} />
+        <Suspense fallback={<div className="flex justify-center py-24 text-muted-foreground">Loading…</div>}>
+          <Routes>
+            {/* ── Public ── */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/tournaments" element={<TournamentsPage />} />
+            <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
+            <Route path="/tournaments/:id/pairings" element={<TournamentPairingsPage />} />
+            <Route path="/scholastic" element={<ScholasticPage />} />
+            <Route path="/clubs" element={<ClubsPage />} />
+            <Route path="/clubs/:id" element={<ClubDetailPage />} />
+            <Route path="/news" element={<NewsPage />} />
+            <Route path="/membership" element={<MembershipPage />} />
+            <Route path="/membership/success" element={<MembershipSuccessPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/support" element={<SupportPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/donate/success" element={<DonationSuccessPage />} />
 
-          {/* ── Governance ── */}
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/governance" element={<GovernancePage />} />
-          <Route path="/governance/board" element={<BoardPage />} />
-          <Route path="/governance/bylaws" element={<BylawsPage />} />
-          <Route path="/governance/rules" element={<RulesPage />} />
-          <Route path="/governance/minutes" element={<MinutesPage />} />
+            {/* ── Governance ── */}
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/governance" element={<GovernancePage />} />
+            <Route path="/governance/board" element={<BoardPage />} />
+            <Route path="/governance/bylaws" element={<BylawsPage />} />
+            <Route path="/governance/rules" element={<RulesPage />} />
+            <Route path="/governance/minutes" element={<MinutesPage />} />
 
-          {/* ── Protected ── */}
-          <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-          <Route path="/manage/club" element={<RoleProtectedRoute roles={['club_rep']}><ManageClubPage /></RoleProtectedRoute>} />
+            {/* ── Protected ── */}
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/manage/club" element={<RoleProtectedRoute roles={['club_rep']}><ManageClubPage /></RoleProtectedRoute>} />
 
-          {/* ── Admin ── */}
-          <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']}><AdminPage /></RoleProtectedRoute>} />
-          <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
-          <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']} requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
-          <Route path="/admin/support" element={<RoleProtectedRoute roles={['lca_admin']}><AdminSupportPage /></RoleProtectedRoute>} />
-        </Routes>
+            {/* ── Admin ── */}
+            <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']}><AdminPage /></RoleProtectedRoute>} />
+            <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
+            <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']} requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
+            <Route path="/admin/support" element={<RoleProtectedRoute roles={['lca_admin']}><AdminSupportPage /></RoleProtectedRoute>} />
+          </Routes>
+        </Suspense>
       </main>
       <Footer />
     </div>
   )
 }
-
 export default App

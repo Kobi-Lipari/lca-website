@@ -2,6 +2,7 @@
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
+import { computeStandings } from '../../../../utils/tournament-manage'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -26,7 +27,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   try { customDetails = JSON.parse(tournament.custom_details as string) } catch { customDetails = [] }
 
   const rosterRaw = await context.env.DB.prepare(
-    `SELECT r.id as registration_id, r.member_id, r.section, r.payment_status, r.bye_rounds,
+    `SELECT r.id as registration_id, r.member_id, r.section, r.payment_status,
+            r.bye_rounds, r.withdrawn_at, r.checked_in_at,
             m.full_name, m.uscf_id, m.uscf_rating
      FROM registrations r
      JOIN members m ON m.id = r.member_id
@@ -50,35 +52,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
      ORDER BY g.round ASC, g.board ASC`,
   ).bind(tournamentId).all()
 
-  const standings = await context.env.DB.prepare(
-    `SELECT
-       r.member_id, m.full_name, r.section,
-       SUM(CASE
-         WHEN (g.white_member_id = r.member_id AND g.result = '1-0') THEN 1.0
-         WHEN (g.black_member_id = r.member_id AND g.result = '0-1') THEN 1.0
-         WHEN g.result = '1/2-1/2' THEN 0.5
-         WHEN (g.white_member_id = r.member_id OR g.black_member_id = r.member_id) AND g.result = 'bye' THEN 0.5
-         ELSE 0
-       END) as score,
-       SUM(CASE
-         WHEN (g.white_member_id = r.member_id AND g.result = '1-0') THEN 1
-         WHEN (g.black_member_id = r.member_id AND g.result = '0-1') THEN 1
-         ELSE 0
-       END) as wins,
-       SUM(CASE WHEN g.result = '1/2-1/2' THEN 1 ELSE 0 END) as draws,
-       SUM(CASE
-         WHEN (g.white_member_id = r.member_id AND g.result = '0-1') THEN 1
-         WHEN (g.black_member_id = r.member_id AND g.result = '1-0') THEN 1
-         ELSE 0
-       END) as losses
-     FROM registrations r
-     JOIN members m ON m.id = r.member_id
-     LEFT JOIN tournament_games g ON g.tournament_id = r.tournament_id
-       AND (g.white_member_id = r.member_id OR g.black_member_id = r.member_id)
-     WHERE r.tournament_id = ?
-     GROUP BY r.member_id, m.full_name, r.section
-     ORDER BY score DESC`,
-  ).bind(tournamentId).all()
+  // Single standings brain — shared with the public endpoint.
+  // Withdrawn players are included: their played results stand.
+  const standings = computeStandings(
+    (games.results ?? []) as never,
+    roster as Array<{ member_id: string; full_name: string; section: string }>,
+  )
 
   const directors = await context.env.DB.prepare(
     `SELECT td.member_id, m.full_name, m.email
@@ -96,7 +75,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     },
     roster,
     games: games.results ?? [],
-    standings: standings.results ?? [],
+    standings,
     directors: directors.results ?? [],
   })
 }
