@@ -1,3 +1,4 @@
+// functions/api/membership/confirm.ts
 import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, jsonResponse, parseJsonBody } from '../../utils/response'

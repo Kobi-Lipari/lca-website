@@ -7,32 +7,58 @@ export interface EmailMessage {
   text?: string
 }
 
+/**
+ * Send via Resend REST API. THROWS on failure (network error or non-2xx),
+ * unlike the old MailChannels version which silently console.warn'd.
+ * Callers that treat email as best-effort should use trySendEmail instead.
+ */
 export async function sendEmail(env: Env, message: EmailMessage): Promise<void> {
   const from = env.FROM_EMAIL ?? 'noreply@louisianachess.org'
 
-  const response = await fetch('https://api.mailchannels.net/tx/v1/send', {
+  const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${env.RESEND_API_KEY}`,
+    },
     body: JSON.stringify({
-      personalizations: [{ to: [{ email: message.to }] }],
-      from: { email: from, name: 'Louisiana Chess Association' },
+      from: `Louisiana Chess Association <${from}>`,
+      to: [message.to],
       subject: message.subject,
-      content: [
-        {
-          type: 'text/html',
-          value: message.html,
-        },
-        ...(message.text
-          ? [{ type: 'text/plain', value: message.text }]
-          : []),
-      ],
+      html: message.html,
+      ...(message.text ? { text: message.text } : {}),
     }),
   })
 
-  if (!response.ok && response.status !== 202) {
+  if (!response.ok) {
     const error = await response.text()
-    console.warn(`Email send failed (${response.status}): ${error}`)
+    throw new Error(`Email send failed (${response.status}): ${error}`)
   }
+}
+
+/**
+ * Best-effort variant: returns true/false instead of throwing.
+ * Use for emails that must not fail the surrounding operation
+ * (registration confirmations, contact acknowledgments, cron sends).
+ */
+export async function trySendEmail(env: Env, message: EmailMessage): Promise<boolean> {
+  try {
+    await sendEmail(env, message)
+    return true
+  } catch (err) {
+    console.warn(err instanceof Error ? err.message : String(err))
+    return false
+  }
+}
+
+/** Escape user-provided text before interpolating into email HTML. */
+export function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 // ── Email templates ──────────────────────────────────────────────
@@ -188,10 +214,10 @@ export function supportReplyNotificationEmail(data: {
     subject: `New reply on your support ticket — ${data.subject}`,
     html: `
       <h2>New reply on your support ticket</h2>
-      <p>Hi ${data.name},</p>
-      <p>There is a new reply on your support ticket: <strong>${data.subject}</strong></p>
-      <blockquote>${data.replyBody}</blockquote>
-      <p><a href="${data.siteUrl}/support/${data.ticketId}">View full conversation</a></p>
+      <p>Hi ${escapeHtml(data.name)},</p>
+      <p>There is a new reply on your support ticket: <strong>${escapeHtml(data.subject)}</strong></p>
+      <blockquote style="white-space:pre-line">${escapeHtml(data.replyBody)}</blockquote>
+      <p><a href="${data.siteUrl}/support/${encodeURIComponent(data.ticketId)}">View full conversation</a></p>
       <p>— Louisiana Chess Association</p>
     `,
     text: `New reply on your support ticket "${data.subject}": ${data.replyBody}`,

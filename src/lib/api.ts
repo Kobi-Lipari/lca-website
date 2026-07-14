@@ -283,10 +283,26 @@ export async function lookupUscfRating(uscfId: string): Promise<{
   uscfId: string
   rating: number | null
   name?: string | null
-  cached?: boolean
+  scraperDown?: boolean
 }> {
-  const response = await fetch(`/api/uscf/${encodeURIComponent(uscfId)}`)
-  return handleResponse(response)
+  const response = await fetch(
+    `/api/uscf/lookup?id=${encodeURIComponent(uscfId)}`,
+  )
+  // 503 = scraper down: degrade to "no prefill" rather than throwing,
+  // matching how the manage page treats an unavailable lookup.
+  if (response.status === 503) {
+    return { uscfId, rating: null, name: null, scraperDown: true }
+  }
+  const data = await handleResponse<{
+    scraperDown: boolean
+    player: { rating: number | null; fullName: string | null } | null
+  }>(response)
+  return {
+    uscfId,
+    rating: data.player?.rating ?? null,
+    name: data.player?.fullName ?? null,
+    scraperDown: data.scraperDown,
+  }
 }
 
 // --- Admin API ---

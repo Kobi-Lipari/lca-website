@@ -1,3 +1,4 @@
+// functions/cron/daily-emails.ts
 import type { Env } from '../types'
 import {
   sendEmail,

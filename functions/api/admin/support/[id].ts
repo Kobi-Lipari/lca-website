@@ -1,3 +1,4 @@
+// functions/api/admin/support/[id].ts
 import type { Env } from '../../../types'
 import { isResponse, requireAdmin } from '../../../utils/auth'
 import {
@@ -6,7 +7,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../../utils/response'
-import { sendEmail, supportReplyNotificationEmail } from '../../../utils/email'
+import { trySendEmail, supportReplyNotificationEmail } from '../../../utils/email'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -76,7 +77,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     `UPDATE support_tickets SET status = 'in_progress', updated_at = datetime('now') WHERE id = ?`,
   ).bind(ticketId).run()
 
-  // Notify member of admin reply
+  // Best-effort: reply is saved; notify the member if mail is up.
   const notification = supportReplyNotificationEmail({
     name: ticket.name,
     ticketId,
@@ -84,7 +85,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     replyBody: body.body,
     siteUrl: 'https://lca-website.pages.dev',
   })
-  await sendEmail(context.env, { ...notification, to: ticket.email })
+  await trySendEmail(context.env, { ...notification, to: ticket.email })
 
   return jsonResponse({ success: true, messageId }, 201)
 }

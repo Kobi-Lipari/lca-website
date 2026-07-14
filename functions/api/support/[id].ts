@@ -1,3 +1,4 @@
+// functions/api/support/[id].ts
 import type { Env } from '../../types'
 import { verifySupabaseUser } from '../../utils/auth'
 import {
@@ -6,7 +7,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../utils/response'
-import { sendEmail, supportReplyNotificationEmail } from '../../utils/email'
+import { trySendEmail, escapeHtml } from '../../utils/email'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -55,16 +56,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     `UPDATE support_tickets SET updated_at = datetime('now') WHERE id = ?`,
   ).bind(ticketId).run()
 
-  // Notify support team
-  await sendEmail(context.env, {
+  // Best-effort: the reply is already saved; a mail failure must not 500 it.
+  await trySendEmail(context.env, {
     to: context.env.SUPPORT_EMAIL,
     subject: `Member reply on ticket: ${ticket.subject}`,
     html: `
       <h2>Member replied to support ticket</h2>
-      <p><strong>Ticket:</strong> ${ticketId}</p>
-      <p><strong>From:</strong> ${ticket.name}</p>
+      <p><strong>Ticket:</strong> ${escapeHtml(ticketId)}</p>
+      <p><strong>From:</strong> ${escapeHtml(ticket.name)}</p>
       <p><strong>Message:</strong></p>
-      <p>${body.body.replace(/\n/g, '<br>')}</p>
+      <p>${escapeHtml(body.body).replace(/\n/g, '<br>')}</p>
     `,
   })
 

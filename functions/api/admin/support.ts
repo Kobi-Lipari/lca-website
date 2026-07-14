@@ -1,3 +1,4 @@
+// functions/api/admin/support.ts
 import type { Env } from '../../types'
 import { isResponse, requireAdmin } from '../../utils/auth'
 import { handleOptions, jsonResponse } from '../../utils/response'

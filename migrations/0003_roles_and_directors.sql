@@ -82,8 +82,8 @@ CREATE TABLE IF NOT EXISTS club_news (
   id TEXT PRIMARY KEY,
   club_id TEXT NOT NULL REFERENCES clubs(id),
   title TEXT NOT NULL,
-  body TEXT,
-  news_date TEXT NOT NULL DEFAULT (date('now')),
+  news_date TEXT NOT NULL,
+  excerpt TEXT NOT NULL,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_club_news_club_id ON club_news(club_id);

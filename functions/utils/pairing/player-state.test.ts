@@ -47,7 +47,7 @@ describe('player-state', () => {
       colorHistory: [],
       colorBalance: 0,
       opponents: new Set<string>(),
-      hadBye: false,
+      hadUnplayedWin: false,
       rank: 1,
     }
     const b = { ...a, id: 'b', buchholz: 1, rank: 2 }

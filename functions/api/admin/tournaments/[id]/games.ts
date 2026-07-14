@@ -1,4 +1,5 @@
-import type { Env } from '../../../types'
+// functions/api/admin/tournaments/[id]/games.ts
+import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import {
   errorResponse,

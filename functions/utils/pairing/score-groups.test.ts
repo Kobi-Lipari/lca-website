@@ -1,3 +1,4 @@
+// functions/utils/pairing/score-groups.test.ts
 import { describe, expect, it } from 'vitest'
 import {
   buildHomogeneousPool,
@@ -16,7 +17,7 @@ function player(id: string, rank: number, score: number): PlayerState {
     colorHistory: [],
     colorBalance: 0,
     opponents: new Set(),
-    hadBye: false,
+    hadUnplayedWin: false,
     buchholz: 0,
     progressive: 0,
     directEncounter: 0,
@@ -42,14 +43,14 @@ describe('score-groups', () => {
     expect(selectDownfloater(pool).id).toBe('3')
   })
 
-  it('selects bye for lowest pairing number without prior bye', () => {
+  it('assigns the bye to the lowest-ranked player without a prior unplayed win (C.04)', () => {
     const pool = [
       player('1', 1, 1),
       player('2', 2, 1),
       player('3', 3, 1),
     ]
-    pool[2].hadBye = true
-    expect(selectByePlayer(pool).id).toBe('1')
+    pool[2].hadUnplayedWin = true // player 3 already had a bye/forfeit win
+    expect(selectByePlayer(pool).id).toBe('2') // lowest-ranked eligible
   })
 
   it('groups players by score preserving order', () => {
