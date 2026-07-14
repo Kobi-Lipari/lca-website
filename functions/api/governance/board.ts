@@ -1,3 +1,4 @@
+// functions/api/governance/board.ts
 import type { Env } from '../../types'
 import { jsonResponse } from '../../utils/response'
 import { requireAdmin, isResponse } from '../../utils/auth'

@@ -99,8 +99,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   // 5. Merge and sort
   const merged = [...lcaTournaments, ...chTournaments].sort((a, b) => {
-    const dateA = (a!.start_date as string) ?? ''
-    const dateB = (b!.start_date as string) ?? ''
+    const dateA = ((a as Record<string, unknown>)?.start_date as string) ?? ''
+    const dateB = ((b as Record<string, unknown>)?.start_date as string) ?? ''
     return dateA.localeCompare(dateB)
   })
 

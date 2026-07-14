@@ -1,3 +1,4 @@
+// functions/types.ts
 export interface Env {
   DB: D1Database
   SUPABASE_URL: string
@@ -9,6 +10,7 @@ export interface Env {
   STRIPE_TOURNAMENT_PAYMENT_URL?: string
   STRIPE_SECRET_KEY: string
   STRIPE_WEBHOOK_SECRET: string
+  RESEND_API_KEY: string
   FROM_EMAIL: string
   CONTACT_EMAIL: string
   SUPPORT_EMAIL: string

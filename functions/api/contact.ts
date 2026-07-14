@@ -1,4 +1,6 @@
+// functions/api/contact.ts
 import type { Env } from '../types'
+import { isResponse, requireAdmin } from '../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -6,8 +8,9 @@ import {
   parseJsonBody,
 } from '../utils/response'
 import {
-  sendEmail,
+  trySendEmail,
   contactConfirmationEmail,
+  escapeHtml,
 } from '../utils/email'
 
 interface ContactBody {
@@ -33,33 +36,33 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
      VALUES (?, ?, ?, ?, ?)`,
   ).bind(id, body.name, body.email, body.subject, body.body).run()
 
-  // Send notification to LCA contact email
-  await sendEmail(context.env, {
-    ...{
-      to: context.env.CONTACT_EMAIL,
-      subject: `New contact message: ${body.subject}`,
-      html: `
-        <h2>New contact message</h2>
-        <p><strong>From:</strong> ${body.name} (${body.email})</p>
-        <p><strong>Subject:</strong> ${body.subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${body.body.replace(/\n/g, '<br>')}</p>
-      `,
-    },
+  // Best-effort emails: the message is already saved above, so a mail
+  // outage must not turn a successful submission into a 500.
+  await trySendEmail(context.env, {
+    to: context.env.CONTACT_EMAIL,
+    subject: `New contact message: ${body.subject}`,
+    html: `
+      <h2>New contact message</h2>
+      <p><strong>From:</strong> ${escapeHtml(body.name)} (${escapeHtml(body.email)})</p>
+      <p><strong>Subject:</strong> ${escapeHtml(body.subject)}</p>
+      <p><strong>Message:</strong></p>
+      <p>${escapeHtml(body.body).replace(/\n/g, '<br>')}</p>
+    `,
   })
 
-  // Send confirmation to sender
   const confirmation = contactConfirmationEmail({
     name: body.name,
     subject: body.subject,
   })
-  await sendEmail(context.env, { ...confirmation, to: body.email })
+  await trySendEmail(context.env, { ...confirmation, to: body.email })
 
   return jsonResponse({ success: true, id }, 201)
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  // Admin only — list all contact messages
+  const authResult = await requireAdmin(context.request, context.env)
+  if (isResponse(authResult)) return authResult
+
   const messages = await context.env.DB.prepare(
     `SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 100`,
   ).all()

@@ -1,10 +1,4 @@
 // functions/api/admin/tournaments/[id]/announce.ts
-//
-// ⚠️ ADAPT BEFORE DEPLOY: this file assumes utils/email.ts exports
-//   sendEmail(env, { to, subject, text })
-// I have not seen utils/email.ts — match the import and the call below
-// to its actual signature. Everything else in this file is final.
-
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import {
@@ -13,12 +7,20 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../../../utils/response'
-// ADAPT: import the real send helper from utils/email
 import { sendEmail } from '../../../../utils/email'
 
 interface AnnounceBody {
   subject?: string
   body?: string
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -58,17 +60,26 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse('No entrants with email addresses to notify', 400)
   }
 
+  const fullSubject = `[${tournament.name}] ${subject}`
+  const htmlBody = `
+    <h2>${escapeHtml(tournament.name)}</h2>
+    <p style="white-space:pre-line">${escapeHtml(message)}</p>
+    <hr>
+    <p style="font-size:12px;color:#666">Sent by the tournament director via the Louisiana Chess Association website.</p>
+  `
+  const textBody = `${message}\n\n—\nSent by the tournament director via the Louisiana Chess Association website.`
+
   // Individual sends, not one BCC blast: per-recipient failure isolation,
   // no address leakage. At LCA field sizes the loop cost is nothing.
   let sent = 0
   const failures: string[] = []
   for (const r of list) {
     try {
-      // ADAPT: match utils/email.ts's actual signature
       await sendEmail(context.env, {
         to: r.email,
-        subject: `[${tournament.name}] ${subject}`,
-        text: `${message}\n\n—\nSent by the tournament director via the Louisiana Chess Association website.`,
+        subject: fullSubject,
+        html: htmlBody,
+        text: textBody,
       })
       sent++
     } catch {

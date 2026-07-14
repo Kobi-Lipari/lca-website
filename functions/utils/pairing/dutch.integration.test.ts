@@ -1,3 +1,4 @@
+// functions/utils/pairing/dutch.integration.test.ts
 import { describe, expect, it } from 'vitest'
 import { generateDutchPairings } from './dutch'
 import type { PairingPlayerInput, PastGameInput } from './types'
@@ -26,12 +27,12 @@ describe('FIDE Dutch integration', () => {
     expect(keys).toContain('4-8')
   })
 
-  it('round 1: odd count gives bye to extra S1 player', () => {
+  it('round 1: odd count gives the bye to the lowest-rated player (C.04)', () => {
     const players = makePlayers(5)
     const pairings = generateDutchPairings(players, [], 1)
     expect(pairings).toHaveLength(3)
     const bye = pairings.find((p) => p.blackId === null)
-    expect(bye?.whiteId).toBe('3')
+    expect(bye?.whiteId).toBe('5')
   })
 
   it('round 2: no rematches in generated pairings', () => {

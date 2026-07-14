@@ -1,4 +1,4 @@
-import type { Env } from '../../../types'
+import type { Env } from '../../../../types'
 import { isResponse, requireAuthedMember } from '../../../../utils/auth'
 import { canManageTournament } from '../../../../utils/permissions'
 import { syncSupabaseUserMetadata } from '../../../../utils/supabase'

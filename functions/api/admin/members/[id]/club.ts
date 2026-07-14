@@ -1,4 +1,4 @@
-import type { Env } from '../../../types'
+import type { Env } from '../../../../types'
 import { isResponse, requireAdmin } from '../../../../utils/auth'
 import { updateMemberClub } from '../../../../utils/members'
 import {

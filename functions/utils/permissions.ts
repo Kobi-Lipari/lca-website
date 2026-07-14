@@ -1,3 +1,4 @@
+// functions/utils/permissions.ts
 import type { MemberRow } from '../types'
 
 export type MemberRole =

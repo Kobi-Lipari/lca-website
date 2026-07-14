@@ -1,3 +1,4 @@
+// src/components/maps/LCAMap.tsx
 import { useEffect, useRef, useState } from 'react'
 import { CLUB_MAP_PINS, type ClubMapPin } from '@/lib/clubMapData'
 

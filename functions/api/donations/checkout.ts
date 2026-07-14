@@ -1,3 +1,4 @@
+// functions/api/donations/checkout.ts
 import type { Env } from '../../types'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 import { createCheckoutSession } from '../../utils/stripe'
@@ -23,22 +24,28 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const paymentId = `pay-donation-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
   const origin = new URL(context.request.url).origin
 
-  const session = await createCheckoutSession(context.env.STRIPE_SECRET_KEY, {
-    productName: 'Donation to Louisiana Chess Association',
-    amountUsd: amount,
-    successUrl: `${origin}/donate/success?paymentId=${paymentId}`,
-    cancelUrl: `${origin}/`,
-    clientReferenceId: paymentId,
-    metadata: {
-      payment_id: paymentId,
-      type: 'donation',
-      member_id: body?.memberId ?? '',
-    },
-  })
+  let session: { id: string; url: string }
+  try {
+    session = await createCheckoutSession(context.env.STRIPE_SECRET_KEY, {
+      productName: 'Donation to Louisiana Chess Association',
+      amountUsd: amount,
+      successUrl: `${origin}/donate/success?paymentId=${paymentId}`,
+      cancelUrl: `${origin}/`,
+      clientReferenceId: paymentId,
+      metadata: {
+        payment_id: paymentId,
+        type: 'donation',
+        member_id: body?.memberId ?? '',
+      },
+    })
+  } catch (err) {
+    console.error('Stripe session creation failed:', err)
+    return errorResponse('Could not start the payment process. Please try again in a moment.', 502)
+  }
 
   await context.env.DB.prepare(
     `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
-     VALUES (?, ?, ?, 'donation', 'donation', 'pending', ?)`
+     VALUES (?, ?, ?, 'donation', 'donation', 'pending', ?)`,
   ).bind(paymentId, body?.memberId ?? null, amount, session.id).run()
 
   return jsonResponse({ paymentId, paymentUrl: session.url })

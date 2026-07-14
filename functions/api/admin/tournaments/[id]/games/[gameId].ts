@@ -1,4 +1,5 @@
-import type { Env } from '../../../../types'
+// functions/api/admin/tournaments/[id]/games/[gameId].ts
+import type { Env } from '../../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../../utils/auth'
 import {
   errorResponse,
@@ -11,7 +12,12 @@ interface ResultBody {
   result?: string
 }
 
-const VALID_RESULTS = ['1-0', '0-1', '1/2-1/2', 'bye', 'pending']
+// Full GameResult union — matches the pairing engine and the 0019 CHECK.
+const VALID_RESULTS = [
+  '1-0', '0-1', '1/2-1/2',
+  '1-0 F', '0-1 F', '0-0 F',
+  'bye', 'bye-half', 'pending',
+]
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -33,25 +39,17 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   const existing = await context.env.DB.prepare(
     'SELECT * FROM tournament_games WHERE id = ? AND tournament_id = ?',
-  )
-    .bind(gameId, tournamentId)
-    .first()
+  ).bind(gameId, tournamentId).first()
 
-  if (!existing) {
-    return errorResponse('Game not found', 404)
-  }
+  if (!existing) return errorResponse('Game not found', 404)
 
   await context.env.DB.prepare(
     'UPDATE tournament_games SET result = ? WHERE id = ?',
-  )
-    .bind(body.result, gameId)
-    .run()
+  ).bind(body.result, gameId).run()
 
   const game = await context.env.DB.prepare(
     'SELECT * FROM tournament_games WHERE id = ?',
-  )
-    .bind(gameId)
-    .first()
+  ).bind(gameId).first()
 
   return jsonResponse({ game })
 }

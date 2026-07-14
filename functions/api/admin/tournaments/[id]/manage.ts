@@ -56,7 +56,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // Withdrawn players are included: their played results stand.
   const standings = computeStandings(
     (games.results ?? []) as never,
-    roster as Array<{ member_id: string; full_name: string; section: string }>,
+    roster as unknown as Array<{ member_id: string; full_name: string; section: string }>,
   )
 
   const directors = await context.env.DB.prepare(

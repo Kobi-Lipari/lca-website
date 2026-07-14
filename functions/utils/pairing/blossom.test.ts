@@ -14,7 +14,7 @@ function player(id: string, rank: number, rating: number): PlayerState {
     colorHistory: [],
     colorBalance: 0,
     opponents: new Set(),
-    hadBye: false,
+    hadUnplayedWin: false,
     buchholz: 0,
     progressive: 0,
     directEncounter: 0,

@@ -1,3 +1,4 @@
+// functions/api/support.ts
 import type { Env } from '../types'
 import { verifySupabaseUser } from '../utils/auth'
 import {
@@ -6,7 +7,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../utils/response'
-import { sendEmail, supportTicketConfirmationEmail } from '../utils/email'
+import { trySendEmail, supportTicketConfirmationEmail, escapeHtml } from '../utils/email'
 
 interface CreateTicketBody {
   name: string
@@ -53,34 +54,27 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   ).run()
 
   // Send confirmation to member (non-fatal)
-  try {
-    const confirmation = supportTicketConfirmationEmail({
-      name: body.name,
-      ticketId,
-      subject: body.subject,
-    })
-    await sendEmail(context.env, { ...confirmation, to: body.email })
-  } catch (e) {
-    console.warn('Failed to send ticket confirmation email:', e)
-  }
+  // Send confirmation to member (non-fatal)
+  const confirmation = supportTicketConfirmationEmail({
+    name: body.name,
+    ticketId,
+    subject: body.subject,
+  })
+  await trySendEmail(context.env, { ...confirmation, to: body.email })
 
   // Notify support email (non-fatal)
-  try {
-    await sendEmail(context.env, {
-      to: context.env.SUPPORT_EMAIL,
-      subject: `[Ticket #${ticketId}] ${body.subject}`,
-      html: `
-        <h2>New support ticket</h2>
-        <p><strong>From:</strong> ${body.name} (${body.email})</p>
-        <p><strong>Ticket ID:</strong> ${ticketId}</p>
-        <p><strong>Subject:</strong> ${body.subject}</p>
-        <p><strong>Message:</strong></p>
-        <p>${body.body.replace(/\n/g, '<br>')}</p>
-      `,
-    })
-  } catch (e) {
-    console.warn('Failed to send support notification email:', e)
-  }
+  await trySendEmail(context.env, {
+    to: context.env.SUPPORT_EMAIL,
+    subject: `[Ticket #${ticketId}] ${body.subject}`,
+    html: `
+      <h2>New support ticket</h2>
+      <p><strong>From:</strong> ${escapeHtml(body.name)} (${escapeHtml(body.email)})</p>
+      <p><strong>Ticket ID:</strong> ${ticketId}</p>
+      <p><strong>Subject:</strong> ${escapeHtml(body.subject)}</p>
+      <p><strong>Message:</strong></p>
+      <p>${escapeHtml(body.body).replace(/\n/g, '<br>')}</p>
+    `,
+  })
 
   return jsonResponse({ success: true, ticketId }, 201)
 }

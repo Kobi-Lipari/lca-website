@@ -1,11 +1,11 @@
-import type { Env } from '../../../../types'
-import { verifySupabaseUser } from '../../../../utils/auth'
+// functions/api/tournaments/[id]/remind.ts
+import type { Env } from '../../../types'
+import { verifySupabaseUser } from '../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
   jsonResponse,
-  parseJsonBody,
-} from '../../../../utils/response'
+} from '../../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 

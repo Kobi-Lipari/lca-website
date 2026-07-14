@@ -1,5 +1,5 @@
 // functions/api/admin/tournaments.ts
-import type { Env } from '../types'
+import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 
