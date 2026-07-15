@@ -36,8 +36,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (isResponse(authed)) return authed
 
   const { member } = authed
+
   const isAdmin = member.role === 'lca_admin'
   const isClubRep = member.role === 'club_rep'
+
+  // LAUNCH LOCKDOWN: tournament creation is lca_admin-only while the site is
+  // being tested with real member accounts. The club_rep path below is kept
+  // intact — to re-enable it, delete this guard and the pinning test
+  // 'club_rep cannot create tournaments during launch lockdown' will fail,
+  // reminding you the policy change is deliberate.
+  if (!isAdmin) {
+    return errorResponse('Tournament creation is limited to LCA admins during launch testing', 403)
+  }
 
   if (!isAdmin && !isClubRep) {
     return errorResponse('Forbidden', 403)
