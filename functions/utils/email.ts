@@ -1,3 +1,4 @@
+// functions/utils/email.ts
 import type { Env } from '../types'
 
 export interface EmailMessage {
