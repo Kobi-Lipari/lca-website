@@ -13,7 +13,6 @@ const TIER_PRICES: Record<string, number> = {
   scholastic: 5,
   family: 25,
   senior: 10,
-  test: 0.5, // TODO: remove this tier before public launch — board demo only
 }
 
 const TIER_LABELS: Record<string, string> = {
@@ -21,7 +20,6 @@ const TIER_LABELS: Record<string, string> = {
   scholastic: 'LCA Scholastic Membership (1 year)',
   family: 'LCA Family Membership (1 year)',
   senior: 'LCA Senior Membership (1 year)',
-  test: 'LCA Test Membership (demo)',
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
