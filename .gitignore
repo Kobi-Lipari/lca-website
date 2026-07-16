@@ -11,3 +11,8 @@ dist/
 .wrangler/
 tsconfig.app.tsbuildinfo
 prod-schema.txt
+audit-orphans.mjs
+scripts/lca-import.tsv
+scripts/launch-emails-sent.json
+scripts/lca-import.tsv
+scripts/launch-emails-sent.json

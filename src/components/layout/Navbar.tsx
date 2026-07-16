@@ -185,11 +185,13 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#1a2744] text-white shadow-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-90" onClick={closeMobile}>
+        <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-90" onClick={closeMobile}>
           <img src={lcaLogo} alt="Louisiana Chess Association" className="h-11 w-11 rounded-lg object-contain" />
           <div>
-            <div className="text-sm font-semibold leading-tight text-white">Louisiana Chess</div>
-            <div className="text-[10px] leading-tight text-white/50">Association</div>
+            <div className="text-base font-bold leading-tight text-white">Louisiana Chess</div>
+            <div className="text-[10px] font-semibold uppercase leading-tight tracking-[0.18em] text-[#c8a94a]/90">
+              Association
+            </div>
           </div>
         </Link>
 
@@ -216,8 +218,14 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="flex h-8 w-8 items-center justify-center rounded-lg text-white/60 transition-colors hover:bg-white/10 hover:text-[#1877F2]">
-            <FacebookIcon className="size-4" />
+          <a
+            href="https://www.facebook.com/LouisianaChessAssociation"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Follow LCA on Facebook"
+            className="mr-1 flex h-9 w-9 items-center justify-center rounded-lg border border-transparent text-white/70 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-[#1877F2]"
+          >
+            <FacebookIcon className="size-6" />
           </a>
           {!loading && user ? (
             <>

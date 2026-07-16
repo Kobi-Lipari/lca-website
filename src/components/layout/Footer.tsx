@@ -47,50 +47,68 @@ export function Footer() {
   const year = new Date().getFullYear()
   return (
     <footer className="border-t-[3px] border-[#c8a94a] bg-[#1a2744] text-white">
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-6 border-b border-white/10 pb-10 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr] lg:gap-16">
+          {/* Brand column — identity, social, and actions as one anchored block */}
           <div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-3.5">
               <img
                 src={lcaLogo}
                 alt="Louisiana Chess Association"
-                className="h-10 w-10 rounded-lg object-contain"
+                className="h-14 w-14 rounded-xl object-contain"
               />
               <div>
-                <div className="text-sm font-semibold text-white">Louisiana Chess Association</div>
-                <div className="text-xs text-white/50">Serving Louisiana players since 1915</div>
+                <div className="text-lg font-bold leading-tight text-white">
+                  Louisiana Chess Association
+                </div>
+                <div className="mt-0.5 text-sm text-white/60">
+                  Serving Louisiana players since 1915
+                </div>
               </div>
             </div>
-            <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/60">
-              The official home of chess in Louisiana — tournaments, clubs, scholastic programs, and community for players of every level.
-            </p>
-            <a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm text-white/50 transition-colors hover:text-[#1877F2]">
-              <FacebookIcon className="size-4" />
-              LouisianaChessAssociation
+
+            <a
+              href="https://www.facebook.com/LouisianaChessAssociation"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-flex items-center gap-2.5 rounded-full border border-white/20 bg-white/5 py-2 pl-3 pr-5 text-sm font-medium text-white/85 transition-colors hover:border-[#1877F2] hover:bg-[#1877F2] hover:text-white"
+            >
+              <FacebookIcon className="size-6 shrink-0" />
+              Follow us on Facebook
             </a>
-          </div>
-          <div className="flex gap-3">
-            <Link to="/tournaments" className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/80 transition-colors hover:border-[#c8a94a] hover:text-[#c8a94a]">Find a tournament</Link>
-            <Link to="/membership" className="rounded-lg bg-[#c8a94a] px-4 py-2 text-sm font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90">Join LCA</Link>
-          </div>
-        </div>
-        <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {footerSections.map((section) => (
-            <div key={section.title}>
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#c8a94a]">{section.title}</p>
-              <ul className="mt-4 space-y-2.5">
-                {section.links.map((link) => (
-                  <li key={link.label}>
-                    <Link to={link.href} className="text-sm text-white/60 transition-colors hover:text-[#c8a94a]">{link.label}</Link>
-                  </li>
-                ))}
-              </ul>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link to="/tournaments" className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/80 transition-colors hover:border-[#c8a94a] hover:text-[#c8a94a]">Find a tournament</Link>
+              <Link to="/membership" className="rounded-lg bg-[#c8a94a] px-4 py-2 text-sm font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90">Join LCA</Link>
             </div>
-          ))}
+          </div>
+
+          {/* Link columns — left-aligned on a shared grid so every column
+              scans down one clean edge */}
+          <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
+            {footerSections.map((section) => (
+              <div key={section.title}>
+                <p className="text-sm font-bold uppercase tracking-widest text-[#c8a94a]">
+                  {section.title}
+                </p>
+                <ul className="mt-4 space-y-2.5">
+                  {section.links.map((link) => (
+                    <li key={link.label}>
+                      <Link to={link.href} className="text-sm text-white/60 transition-colors hover:text-[#c8a94a]">{link.label}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="mt-10 border-t border-white/10 pt-6">
-          <p className="text-center text-xs text-white/40 sm:text-left">
+
+        <div className="mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-white/50">
             © {year} Louisiana Chess Association. All rights reserved.
+          </p>
+          <p className="text-sm text-white/40">
+            Baton Rouge · New Orleans · statewide
           </p>
         </div>
       </div>
