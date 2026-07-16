@@ -1,8 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react'
+// src/pages/AdminPage.tsx
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ArrowRight, Building2, Check, Copy,
-  MessageSquare, Pencil, Plus, Share2, Shield,
+  MessageSquare, Pencil, Plus, Search, Share2, Shield,
   Trash2, Trophy, Users, X,
 } from 'lucide-react'
 
@@ -11,10 +12,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import {
+  adminAssignTournamentDirector,
   adminCreateTournament,
   adminDeleteClub,
   adminDeleteMember,
+  adminGetClubRoster,
   adminGetMembers,
+  adminGetTournamentDirectors,
+  adminRemoveTournamentDirector,
   adminUpdateMemberClub,
   adminUpdateMemberMembership,
   adminUpdateMemberRole,
@@ -22,6 +27,7 @@ import {
   getTournaments,
   type ApiAdminMember,
   type ApiClubListItem,
+  type ApiTournamentDirector,
   type ApiTournamentListItem,
   type ApiTournamentSection,
 } from '@/lib/api'
@@ -90,18 +96,87 @@ function ConfirmDialog({ message, onConfirm, onCancel }: {
   )
 }
 
-// ── Share permissions modal ───────────────────────────────────────────────────
+// ── Tournament directors modal (real — assigns/removes via the directors API) ─
 
-function ShareModal({ tournament, onClose }: { tournament: ApiTournamentListItem; onClose: () => void }) {
-  const [email, setEmail] = useState('')
-  const [invited, setInvited] = useState<string[]>([])
-  const [sending, setSending] = useState(false)
+function ShareModal({ tournament, onClose, isAdmin, clubId }: {
+  tournament: ApiTournamentListItem
+  onClose: () => void
+  isAdmin: boolean
+  clubId: string | null
+}) {
+  const [directors, setDirectors] = useState<ApiTournamentDirector[]>([])
+  const [pool, setPool] = useState<ApiAdminMember[]>([])
+  const [search, setSearch] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [busyId, setBusyId] = useState<string | null>(null)
 
-  function handleInvite(e: FormEvent) {
-    e.preventDefault()
-    if (!email.trim()) return
-    setSending(true)
-    setTimeout(() => { setInvited((p) => [...p, email.trim()]); setEmail(''); setSending(false) }, 600)
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const [dirs, members] = await Promise.all([
+          adminGetTournamentDirectors(tournament.id),
+          // Admins search all members; club reps search their club roster.
+          isAdmin
+            ? adminGetMembers()
+            : clubId
+              ? adminGetClubRoster(clubId)
+              : Promise.resolve([] as ApiAdminMember[]),
+        ])
+        if (!cancelled) {
+          setDirectors(dirs)
+          setPool(members)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load directors')
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [tournament.id, isAdmin, clubId])
+
+  const query = search.trim().toLowerCase()
+  const directorIds = new Set(directors.map((d) => d.member_id))
+  const matches = query.length >= 2
+    ? pool
+        .filter((m) => !directorIds.has(m.id))
+        .filter((m) =>
+          m.full_name.toLowerCase().includes(query) ||
+          m.email.toLowerCase().includes(query),
+        )
+        .slice(0, 6)
+    : []
+
+  async function assign(memberId: string) {
+    setBusyId(memberId)
+    setError(null)
+    try {
+      const dirs = await adminAssignTournamentDirector(tournament.id, memberId)
+      setDirectors(dirs)
+      setSearch('')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to assign director')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  async function remove(memberId: string) {
+    setBusyId(memberId)
+    setError(null)
+    try {
+      const dirs = await adminRemoveTournamentDirector(tournament.id, memberId)
+      setDirectors(dirs)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to remove director')
+    } finally {
+      setBusyId(null)
+    }
   }
 
   return (
@@ -111,30 +186,89 @@ function ShareModal({ tournament, onClose }: { tournament: ApiTournamentListItem
       <div className="w-full max-w-md rounded-t-2xl border bg-background p-6 shadow-lg sm:rounded-xl">
         <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-border sm:hidden" />
         <div className="mb-1 flex items-start justify-between">
-          <h3 className="text-base font-semibold text-[#1a2744]">Share edit permissions</h3>
+          <h3 className="text-base font-semibold text-[#1a2744]">Tournament directors</h3>
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
         </div>
-        <p className="mb-5 text-sm text-muted-foreground">{tournament.name} — editors can manage settings, roster, and pairings.</p>
-        {invited.length > 0 && (
-          <div className="mb-4">
-            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Pending invites</p>
-            {invited.map((inv) => (
-              <div key={inv} className="flex items-center justify-between border-b border-border py-2 last:border-0">
-                <div>
-                  <p className="text-sm font-medium">{inv}</p>
-                  <p className="text-xs text-muted-foreground">Invite sent · pending account</p>
-                </div>
-                <button type="button" onClick={() => setInvited((p) => p.filter((i) => i !== inv))} className="text-xs text-muted-foreground hover:text-destructive">Remove</button>
-              </div>
-            ))}
-          </div>
+        <p className="mb-5 text-sm text-muted-foreground">
+          {tournament.name} — directors can manage the roster, pairings, and results.
+        </p>
+
+        {error && (
+          <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {error}
+          </p>
         )}
-        <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Invite by email</p>
-        <form onSubmit={handleInvite} className="flex gap-2">
-          <Input type="email" placeholder="td@example.com" value={email} onChange={(e) => setEmail(e.target.value)} className="flex-1" />
-          <Button type="submit" className={GOLD} disabled={sending || !email.trim()}>{sending ? 'Sending…' : 'Invite'}</Button>
-        </form>
-        <p className="mt-2 text-xs text-muted-foreground">If this email isn't linked to an LCA account yet, they'll receive an invite. Permissions activate once they log in.</p>
+
+        {loading ? (
+          <p className="text-sm text-muted-foreground" role="status">Loading…</p>
+        ) : (
+          <>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Current directors
+            </p>
+            {directors.length === 0 ? (
+              <p className="mb-4 text-sm text-muted-foreground">No directors assigned yet.</p>
+            ) : (
+              <div className="mb-4">
+                {directors.map((d) => (
+                  <div key={d.member_id} className="flex items-center justify-between border-b border-border py-2 last:border-0">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">{d.full_name}</p>
+                      <p className="truncate text-xs text-muted-foreground">{d.email}</p>
+                    </div>
+                    <button
+                      type="button"
+                      disabled={busyId === d.member_id}
+                      onClick={() => remove(d.member_id)}
+                      className="text-xs text-muted-foreground hover:text-destructive disabled:opacity-50"
+                    >
+                      {busyId === d.member_id ? 'Removing…' : 'Remove'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <p className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              Add a director
+            </p>
+            <Input
+              placeholder="Search members by name or email…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {query.length >= 2 && (
+              matches.length > 0 ? (
+                <div className="mt-2 overflow-hidden rounded-lg border">
+                  {matches.map((m) => (
+                    <div key={m.id} className="flex items-center justify-between border-b border-border px-3 py-2 last:border-0">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-medium">{m.full_name}</p>
+                        <p className="truncate text-xs text-muted-foreground">{m.email}</p>
+                      </div>
+                      <Button
+                        type="button"
+                        size="sm"
+                        className={cn('h-7 text-xs', GOLD)}
+                        disabled={busyId === m.id}
+                        onClick={() => assign(m.id)}
+                      >
+                        {busyId === m.id ? 'Adding…' : 'Add'}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-muted-foreground">No members match “{search.trim()}”.</p>
+              )
+            )}
+            <p className="mt-3 text-xs text-muted-foreground">
+              Members you add are given the Tournament Director role automatically,
+              and it's removed again when they no longer direct any tournaments.
+            </p>
+          </>
+        )}
+
         <Button variant="outline" className="mt-5 w-full" onClick={onClose}>Done</Button>
       </div>
     </div>
@@ -548,10 +682,12 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
 
 // ── Tournaments tab content ───────────────────────────────────────────────────
 
-function TournamentsTab({ tournaments, role, directedTournamentIds, onRefresh }: {
+function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clubId, onRefresh }: {
   tournaments: ApiTournamentListItem[]
   role: string
   directedTournamentIds: string[]
+  isAdmin: boolean
+  clubId: string | null
   onRefresh: () => void
 }) {
   const navigate = useNavigate()
@@ -611,7 +747,14 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, onRefresh }:
 
   return (
     <>
-      {shareTarget && <ShareModal tournament={shareTarget} onClose={() => setShareTarget(null)} />}
+      {shareTarget && (
+        <ShareModal
+          tournament={shareTarget}
+          onClose={() => setShareTarget(null)}
+          isAdmin={isAdmin}
+          clubId={clubId}
+        />
+      )}
 
       <div className="mb-5 flex items-center justify-between">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
@@ -672,14 +815,16 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, onRefresh }:
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-3 border-t border-dashed border-border/60 bg-muted/10 px-5 py-2">
-                  <Users className="size-3.5 flex-shrink-0 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Editors: None assigned</span>
-                  <button type="button" onClick={() => setShareTarget(t)}
-                    className="ml-auto flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors">
-                    <Share2 className="size-3" /> Share edit permissions
-                  </button>
-                </div>
+                {role !== 'tournament_director' && (
+                  <div className="flex items-center gap-3 border-t border-dashed border-border/60 bg-muted/10 px-5 py-2">
+                    <Users className="size-3.5 flex-shrink-0 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Tournament directors</span>
+                    <button type="button" onClick={() => setShareTarget(t)}
+                      className="ml-auto flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1 text-xs text-muted-foreground hover:border-border-strong hover:text-foreground transition-colors">
+                      <Share2 className="size-3" /> Manage directors
+                    </button>
+                  </div>
+                )}
               </div>
             )
           })}
@@ -689,7 +834,7 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, onRefresh }:
   )
 }
 
-// ── Members tab content (membership-focused, filterable; edit controls admin-only) ────
+// ── Members tab content (membership-focused, searchable + filterable; edit controls admin-only) ────
 
 type MembershipFilter = 'active' | 'all'
 
@@ -707,10 +852,28 @@ function MembersTab({
   onDelete: (m: ApiAdminMember) => void
 }) {
   const [filter, setFilter] = useState<MembershipFilter>('active')
+  const [search, setSearch] = useState('')
 
-  const filtered = filter === 'active'
-    ? members.filter((m) => m.membership_status === 'active')
-    : members
+  // Search matches name, email, or USCF ID (case-insensitive substring).
+  // When a search is typed, it looks across ALL members regardless of the
+  // active/all toggle — so "is this person in the system?" always gets a
+  // truthful answer, with the status badge/select showing whether they're
+  // active. With no search, the toggle behaves as before.
+  const query = search.trim().toLowerCase()
+  const matches = (m: ApiAdminMember) => {
+    if (!query) return true
+    const uscf = (m as unknown as { uscf_id?: string | null }).uscf_id ?? ''
+    return (
+      m.full_name.toLowerCase().includes(query) ||
+      m.email.toLowerCase().includes(query) ||
+      uscf.toLowerCase().includes(query)
+    )
+  }
+  const filtered = query
+    ? members.filter(matches)
+    : filter === 'active'
+      ? members.filter((m) => m.membership_status === 'active')
+      : members
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
@@ -723,24 +886,40 @@ function MembersTab({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Members {filter === 'active' && `· ${filtered.length} active`}
+          Members{' '}
+          {query
+            ? `· ${filtered.length} match${filtered.length !== 1 ? 'es' : ''} of ${members.length}`
+            : filter === 'active' ? `· ${filtered.length} active` : `· ${filtered.length} total`}
         </h2>
-        <div className="flex gap-1.5 rounded-lg border p-1">
-          {(['active', 'all'] as MembershipFilter[]).map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setFilter(f)}
-              className={cn(
-                'rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors',
-                filter === f ? 'bg-[#1a2744] text-white' : 'text-muted-foreground hover:text-foreground',
-              )}
-            >
-              {f === 'active' ? 'Active only' : 'All members'}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search name, email, USCF ID…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-8 w-56 pl-8 text-sm"
+            />
+          </div>
+          <div className={cn('flex gap-1.5 rounded-lg border p-1', query && 'opacity-50')}>
+            {(['active', 'all'] as MembershipFilter[]).map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setFilter(f)}
+                disabled={!!query}
+                className={cn(
+                  'rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors',
+                  filter === f ? 'bg-[#1a2744] text-white' : 'text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {f === 'active' ? 'Active only' : 'All members'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -761,7 +940,9 @@ function MembersTab({
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={isAdmin ? 7 : 4} className="px-3 py-8 text-center text-muted-foreground">
-                  {filter === 'active' ? 'No active members found.' : 'No members found.'}
+                  {query
+                    ? <>No members match “{search.trim()}”.</>
+                    : filter === 'active' ? 'No active members found.' : 'No members found.'}
                 </td>
               </tr>
             ) : (
@@ -996,6 +1177,8 @@ export function AdminPage() {
                 tournaments={tournaments}
                 role={role ?? 'member'}
                 directedTournamentIds={directedIds}
+                isAdmin={isAdmin}
+                clubId={member?.club_id ?? null}
                 onRefresh={loadAll}
               />
             )}

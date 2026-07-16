@@ -82,12 +82,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const isRated = body.isRated !== false ? 1 : 0
 
+  // is_visible = 0: new tournaments are true drafts, hidden from public pages
+  // until made visible from the management page. This makes the wizard's
+  // "created as a draft" banner accurate (the column otherwise defaults to 1).
   await context.env.DB.prepare(
     `INSERT INTO tournaments (
       id, name, location, venue, date, end_date, entry_fee, sections,
       rounds, max_players, status, description, registration_deadline,
-      club_id, created_by, is_rated
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      club_id, created_by, is_rated, is_visible
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
   )
     .bind(
       id,
