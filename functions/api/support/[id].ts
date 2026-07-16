@@ -11,6 +11,13 @@ import { trySendEmail, escapeHtml } from '../../utils/email'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
+// Tickets created through the site form historically have member_id = NULL
+// (the create call didn't send auth). A member still owns such a ticket if it
+// was filed under their account email — so ownership is:
+//   member_id matches, OR member_id is NULL and the ticket email matches.
+const OWNS_TICKET =
+  `id = ? AND (member_id = ? OR (member_id IS NULL AND lower(email) = lower(?)))`
+
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const user = await verifySupabaseUser(context.request, context.env)
   if (!user) return errorResponse('Unauthorized', 401)
@@ -18,8 +25,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const ticketId = context.params.id as string
 
   const ticket = await context.env.DB.prepare(
-    `SELECT * FROM support_tickets WHERE id = ? AND member_id = ?`,
-  ).bind(ticketId, user.id).first()
+    `SELECT * FROM support_tickets WHERE ${OWNS_TICKET}`,
+  ).bind(ticketId, user.id, user.email ?? '').first()
 
   if (!ticket) return errorResponse('Ticket not found', 404)
 
@@ -40,8 +47,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (!body?.body) return errorResponse('Message body is required', 400)
 
   const ticket = await context.env.DB.prepare(
-    `SELECT * FROM support_tickets WHERE id = ? AND member_id = ?`,
-  ).bind(ticketId, user.id).first<{ email: string; name: string; subject: string }>()
+    `SELECT * FROM support_tickets WHERE ${OWNS_TICKET}`,
+  ).bind(ticketId, user.id, user.email ?? '')
+    .first<{ email: string; name: string; subject: string; member_id: string | null }>()
 
   if (!ticket) return errorResponse('Ticket not found', 404)
 
@@ -52,9 +60,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
      VALUES (?, ?, ?, 'member', ?)`,
   ).bind(messageId, ticketId, user.id, body.body).run()
 
+  // A member reply reopens the conversation: an answered/resolved ticket the
+  // member responds to is, by definition, not resolved for them. Also claims
+  // ownership of legacy NULL-member tickets so future lookups hit the fast path.
   await context.env.DB.prepare(
-    `UPDATE support_tickets SET updated_at = datetime('now') WHERE id = ?`,
-  ).bind(ticketId).run()
+    `UPDATE support_tickets
+     SET status = 'open',
+         updated_at = datetime('now'),
+         member_id = COALESCE(member_id, ?)
+     WHERE id = ?`,
+  ).bind(user.id, ticketId).run()
 
   // Best-effort: the reply is already saved; a mail failure must not 500 it.
   await trySendEmail(context.env, {

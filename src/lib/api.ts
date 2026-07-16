@@ -440,10 +440,31 @@ export async function adminGetClubRoster(clubId: string) {
   return data.roster
 }
 
+export interface ApiTournamentDirector {
+  tournament_id: string
+  member_id: string
+  assigned_at: string
+  full_name: string
+  email: string
+}
+
+export async function adminGetTournamentDirectors(
+  tournamentId: string,
+): Promise<ApiTournamentDirector[]> {
+  const response = await fetch(
+    `/api/admin/tournaments/${tournamentId}/directors`,
+    { headers: await authHeaders() },
+  )
+  const data = await handleResponse<{ directors: ApiTournamentDirector[] }>(
+    response,
+  )
+  return data.directors
+}
+
 export async function adminAssignTournamentDirector(
   tournamentId: string,
   memberId: string,
-) {
+): Promise<ApiTournamentDirector[]> {
   const response = await fetch(
     `/api/admin/tournaments/${tournamentId}/directors`,
     {
@@ -452,7 +473,28 @@ export async function adminAssignTournamentDirector(
       body: JSON.stringify({ memberId }),
     },
   )
-  return handleResponse(response)
+  const data = await handleResponse<{ directors: ApiTournamentDirector[] }>(
+    response,
+  )
+  return data.directors
+}
+
+export async function adminRemoveTournamentDirector(
+  tournamentId: string,
+  memberId: string,
+): Promise<ApiTournamentDirector[]> {
+  const response = await fetch(
+    `/api/admin/tournaments/${tournamentId}/directors`,
+    {
+      method: 'DELETE',
+      headers: await authHeaders(),
+      body: JSON.stringify({ memberId }),
+    },
+  )
+  const data = await handleResponse<{ directors: ApiTournamentDirector[] }>(
+    response,
+  )
+  return data.directors
 }
 
 export interface ApiTournamentGame {
@@ -825,9 +867,13 @@ export async function createSupportTicket(data: {
   subject: string
   body: string
 }): Promise<{ ticketId: string }> {
+  // authHeaders (not bare Content-Type): logged-in creators get their
+  // member_id bound to the ticket, which is what lets them open it later.
+  // Guests are unaffected — the Authorization header is only added when a
+  // session exists, and the endpoint accepts anonymous requests.
   const response = await fetch('/api/support', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authHeaders(),
     body: JSON.stringify(data),
   })
   return handleResponse(response)

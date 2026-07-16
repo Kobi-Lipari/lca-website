@@ -7,6 +7,7 @@ import {
   CreditCard,
   LayoutDashboard,
   MessageSquare,
+  Plus,
   Shield,
   Trophy,
   User,
@@ -16,7 +17,14 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
-import { getMe, updateMe, type ApiMember, type ApiRegistration } from '@/lib/api'
+import {
+  getMe,
+  getMyTickets,
+  updateMe,
+  type ApiMember,
+  type ApiRegistration,
+  type ApiSupportTicket,
+} from '@/lib/api'
 import { ROLE_LABELS } from '@/lib/roles'
 import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
 import { cn } from '@/lib/utils'
@@ -30,6 +38,22 @@ const statusConfig: Record<MembershipStatus, { label: string; className: string 
   pending: { label: 'Pending', className: 'bg-[#c8a94a]/20 text-[#1a2744]' },
 }
 
+const ticketStatusColors: Record<string, string> = {
+  open: 'bg-blue-100 text-blue-800',
+  new: 'bg-blue-100 text-blue-800',
+  answered: 'bg-emerald-100 text-emerald-800',
+  in_progress: 'bg-yellow-100 text-yellow-800',
+  resolved: 'bg-gray-100 text-gray-600',
+}
+
+const ticketStatusLabels: Record<string, string> = {
+  open: 'New',
+  new: 'New',
+  answered: 'Answered',
+  in_progress: 'In Progress',
+  resolved: 'Resolved',
+}
+
 const goldButtonClass =
   'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
@@ -37,6 +61,7 @@ export function DashboardPage() {
   const { user, role, member: authMember, directedTournaments } = useAuth()
   const [member, setMember] = useState<ApiMember | null>(null)
   const [registrations, setRegistrations] = useState<ApiRegistration[]>([])
+  const [tickets, setTickets] = useState<ApiSupportTicket[]>([])
   const [loadingData, setLoadingData] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [editing, setEditing] = useState(false)
@@ -59,6 +84,14 @@ export function DashboardPage() {
         setLoadError(err instanceof Error ? err.message : 'Failed to load profile')
       } finally {
         setLoadingData(false)
+      }
+      // Tickets load separately and best-effort: a support hiccup should
+      // never block the dashboard itself.
+      try {
+        const t = await getMyTickets()
+        setTickets(t.tickets)
+      } catch {
+        // leave tickets empty; the section still links to /support
       }
     }
     load()
@@ -92,6 +125,14 @@ export function DashboardPage() {
   const upcomingRegistrations = registrations.filter(
     (reg) => reg.payment_status === 'paid' || reg.payment_status === 'pending',
   )
+
+  // Most recently updated first; the dashboard shows the top 3.
+  const recentTickets = [...tickets]
+    .sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1))
+    .slice(0, 3)
+  const openCount = tickets.filter(
+    (t) => t.status !== 'resolved',
+  ).length
 
   return (
     <div>
@@ -354,17 +395,82 @@ export function DashboardPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-8">
-        <div className="flex items-center gap-2 mb-4">
-          <MessageSquare className="size-5 text-[#c8a94a]" />
-          <h2 className="text-lg font-bold text-[#1a2744]">Need help?</h2>
+      <section className="mx-auto max-w-6xl px-6 py-12">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <MessageSquare className="size-6 text-[#c8a94a]" />
+              <h2 className="text-2xl font-bold text-[#1a2744]">My Support Tickets</h2>
+              {openCount > 0 && (
+                <span className="rounded-full bg-[#c8a94a]/20 px-2.5 py-0.5 text-xs font-semibold text-[#1a2744]">
+                  {openCount} open
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-muted-foreground">
+              Questions and issues you've raised with the LCA team, and our replies.
+            </p>
+          </div>
+          <Button asChild className={goldButtonClass}>
+            <Link to="/support?new=1">
+              <Plus className="size-4" />
+              New ticket
+            </Link>
+          </Button>
         </div>
-        <p className="text-sm text-muted-foreground mb-3">
-          Have a question or issue? Our support team is here to help.
-        </p>
-        <Button asChild variant="outline">
-          <Link to="/support">Open a support ticket</Link>
-        </Button>
+
+        {recentTickets.length > 0 ? (
+          <>
+            <ul className="mt-6 space-y-3">
+              {recentTickets.map((ticket) => (
+                <li key={ticket.id}>
+                  <Link
+                    to={`/support?ticket=${encodeURIComponent(ticket.id)}`}
+                    className="flex flex-col gap-2 rounded-xl border bg-card p-5 shadow-sm transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-[#1a2744]">
+                        {ticket.subject}
+                      </p>
+                      <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
+                        {ticket.last_message}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(ticket.updated_at).toLocaleDateString()} ·{' '}
+                        {ticket.message_count} message{ticket.message_count !== 1 ? 's' : ''}
+                      </span>
+                      <span
+                        className={cn(
+                          'rounded-full px-2.5 py-0.5 text-xs font-medium',
+                          ticketStatusColors[ticket.status] ?? 'bg-muted text-muted-foreground',
+                        )}
+                      >
+                        {ticketStatusLabels[ticket.status] ?? ticket.status}
+                      </span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {tickets.length > recentTickets.length && (
+              <p className="mt-4 text-sm">
+                <Link to="/support" className="font-medium text-[#c8a94a] hover:underline">
+                  View all {tickets.length} tickets →
+                </Link>
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="mt-6 rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+            No support tickets yet. If you hit a problem or have a question,{' '}
+            <Link to="/support?new=1" className="font-medium text-[#c8a94a] hover:underline">
+              open a ticket
+            </Link>{' '}
+            and the LCA team will get back to you.
+          </div>
+        )}
       </section>
     </div>
   )
