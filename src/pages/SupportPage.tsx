@@ -1,5 +1,6 @@
+// src/pages/SupportPage.tsx
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { MessageSquare, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -33,6 +34,7 @@ const statusLabels: Record<string, string> = {
 
 export function SupportPage() {
   const { user, member } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [view, setView] = useState<'list' | 'new' | 'ticket'>('list')
   const [tickets, setTickets] = useState<ApiSupportTicket[]>([])
   const [selectedTicket, setSelectedTicket] = useState<{
@@ -40,6 +42,7 @@ export function SupportPage() {
     messages: ApiSupportMessage[]
   } | null>(null)
   const [loading, setLoading] = useState(false)
+  const [ticketError, setTicketError] = useState<string | null>(null)
   const [replyBody, setReplyBody] = useState('')
   const [sending, setSending] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success'>('idle')
@@ -73,6 +76,21 @@ export function SupportPage() {
     }
   }, [user])
 
+  // Deep links: /support?ticket=<id> opens a ticket directly (used by the
+  // dashboard's ticket list); /support?new=1 opens the new-ticket form.
+  useEffect(() => {
+    const ticketId = searchParams.get('ticket')
+    if (ticketId && user) {
+      openTicketById(ticketId)
+      return
+    }
+    if (searchParams.get('new')) {
+      setView('new')
+      setSubmitStatus('idle')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, user])
+
   async function handleCreateTicket(e: React.FormEvent) {
     e.preventDefault()
     setSending(true)
@@ -90,22 +108,47 @@ export function SupportPage() {
     }
   }
 
+  async function openTicketById(ticketId: string) {
+    setTicketError(null)
+    try {
+      const data = await getTicket(ticketId)
+      setSelectedTicket(data)
+      setView('ticket')
+    } catch (err) {
+      // Never fail silently: surface why the ticket didn't open.
+      setTicketError(
+        err instanceof Error ? err.message : 'Could not open this ticket.',
+      )
+      setView('list')
+    }
+  }
+
   async function openTicket(ticket: ApiSupportTicket) {
-    const data = await getTicket(ticket.id)
-    setSelectedTicket(data)
-    setView('ticket')
+    await openTicketById(ticket.id)
+  }
+
+  function backToList() {
+    setView('list')
+    setTicketError(null)
+    if (searchParams.get('ticket') || searchParams.get('new')) {
+      setSearchParams({}, { replace: true })
+    }
   }
 
   async function handleReply(e: React.FormEvent) {
     e.preventDefault()
     if (!selectedTicket) return
     setSending(true)
+    setTicketError(null)
     try {
       await replyToTicket(selectedTicket.ticket.id, replyBody)
       const data = await getTicket(selectedTicket.ticket.id)
       setSelectedTicket(data)
       setReplyBody('')
-    } catch {
+    } catch (err) {
+      setTicketError(
+        err instanceof Error ? err.message : 'Failed to send reply.',
+      )
     } finally {
       setSending(false)
     }
@@ -137,11 +180,17 @@ export function SupportPage() {
           </Button>
         )}
         {view !== 'list' && (
-          <Button variant="outline" onClick={() => setView('list')}>
+          <Button variant="outline" onClick={backToList}>
             ← Back
           </Button>
         )}
       </div>
+
+      {ticketError && view === 'list' && (
+        <p className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {ticketError}
+        </p>
+      )}
 
       {view === 'list' && (
         <div className="space-y-8">
@@ -246,7 +295,7 @@ export function SupportPage() {
                 <Button
                   className="mt-4"
                   variant="outline"
-                  onClick={() => setView('list')}
+                  onClick={backToList}
                 >
                   View my tickets
                 </Button>
@@ -352,6 +401,11 @@ export function SupportPage() {
           </div>
 
           <form onSubmit={handleReply} className="space-y-3">
+            {ticketError && (
+              <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                {ticketError}
+              </p>
+            )}
             <Label htmlFor="reply">Add a reply</Label>
             <Textarea
               id="reply"
