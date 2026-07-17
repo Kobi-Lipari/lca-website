@@ -2,44 +2,20 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Calendar, ChevronDown, ChevronLeft, ChevronRight,
-  MapPin, Trophy, Clock, Building2, ExternalLink, Globe, Users,
+  Calendar, ChevronLeft, ChevronRight,
+  MapPin, Trophy, Clock, Building2, ExternalLink, Globe, Search, Users, X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PageHero } from '@/components/PageHero'
 import { StatusDot } from '@/components/StatusBadge'
+import { FilterDropdown } from '@/components/FilterDropdown'
+import { formatDate, isPastTournament, type UnifiedTournament } from '@/lib/clearinghouse'
+import { isScholasticTournament } from '@/lib/scholastic'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-
-interface UnifiedTournament {
-  id: string
-  name: string
-  start_date: string
-  end_date: string | null
-  organizer: string | null
-  city: string | null
-  state: string | null
-  venue: string | null
-  rating_system: string | null
-  eligibility: string | null
-  contact: string | null
-  link: string | null
-  is_lca: number
-  source: 'lca' | 'clearinghouse'
-  registration_status?: string | null
-  entry_fee?: number | null
-  sections?: Array<string | { name: string }>
-  rounds?: number | null
-  status?: string | null
-  is_rated?: number | null
-  club_id?: string | null
-  club_color?: string | null
-  club_name?: string | null
-  time_control?: string | null
-}
 
 type StateFilter = 'LA' | 'MS' | 'AL' | 'TX' | 'FL' | 'out-of-state' | 'all'
 type ViewMode = 'list' | 'calendar'
@@ -74,89 +50,10 @@ const MONTH_NAMES = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr + 'T00:00:00')
-  if (isNaN(d.getTime())) return dateStr
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function isScholastic(name: string): boolean {
-  const n = name.toLowerCase()
-  return n.includes('scholastic') || n.includes('youth') || n.includes('junior') || n.includes('kids') || n.includes('school')
-}
-
 function stateMatchesPill(state: string | null, pill: StateFilter): boolean {
   if (pill === 'all') return true
   if (pill === 'out-of-state') return state !== 'LA'
   return state === pill
-}
-
-function isPastTournament(t: UnifiedTournament): boolean {
-  if (t.is_lca === 1 && t.status === 'completed') return true
-  const end = new Date((t.end_date ?? t.start_date) + 'T00:00:00')
-  if (isNaN(end.getTime())) return false
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  return end < today
-}
-
-// ── Dropdown ──────────────────────────────────────────────────────────────────
-
-interface DropdownProps<T extends string> {
-  label: string
-  value: T
-  options: { value: T; label: string }[]
-  onChange: (v: T) => void
-}
-
-function Dropdown<T extends string>({ label, value, options, onChange }: DropdownProps<T>) {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  const isActive = value !== options[0].value
-
-  useEffect(() => {
-    function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('mousedown', handle)
-    return () => document.removeEventListener('mousedown', handle)
-  }, [])
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen(o => !o)}
-        className={cn(
-          'flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors',
-          isActive
-            ? 'border-[#c8a94a]/50 bg-[#c8a94a]/15 text-[#f0d07a]'
-            : 'border-white/15 bg-white/6 text-white/50 hover:border-white/25 hover:text-white/70',
-        )}
-      >
-        {isActive ? options.find(o => o.value === value)?.label ?? label : label}
-        <ChevronDown className="size-3" />
-      </button>
-      {open && (
-        <div className="absolute right-0 top-full z-50 mt-1 min-w-[150px] overflow-hidden rounded-lg border border-border bg-popover shadow-md">
-          {options.map(opt => (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => { onChange(opt.value); setOpen(false) }}
-              className={cn(
-                'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50',
-                opt.value === value ? 'bg-[#c8a94a]/8 font-medium text-[#1a2744]' : 'text-muted-foreground',
-              )}
-            >
-              <span className={cn('size-3 flex-shrink-0 rounded-full border', opt.value === value ? 'border-[#c8a94a] bg-[#c8a94a]' : 'border-border')} />
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
 }
 
 // ── LCA Detail pane ───────────────────────────────────────────────────────────
@@ -502,6 +399,7 @@ export function TournamentsPage() {
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [rightSelection, setRightSelection] = useState<RightSelection>(null)
+  const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
 
   const detailRef = useRef<HTMLDivElement>(null)
@@ -589,9 +487,14 @@ export function TournamentsPage() {
   const otherLaCount = stateFiltered.filter(t => t.is_lca === 0 && t.state === 'LA').length
   const outOfStateCount = stateFiltered.filter(t => t.state !== 'LA').length
 
+  const query = search.trim().toLowerCase()
   const filtered = stateFiltered.filter(t => {
-    if (typeFilter === 'open' && isScholastic(t.name)) return false
-    if (typeFilter === 'scholastic' && !isScholastic(t.name)) return false
+    if (query && !(
+      t.name.toLowerCase().includes(query) ||
+      (t.city ?? '').toLowerCase().includes(query)
+    )) return false
+    if (typeFilter === 'open' && isScholasticTournament(t.name, t.sections)) return false
+    if (typeFilter === 'scholastic' && !isScholasticTournament(t.name, t.sections)) return false
     if (rightSelection) {
       if (rightSelection.kind === 'lca') {
         if (t.is_lca !== 1 || t.club_id !== null) return false
@@ -615,7 +518,7 @@ export function TournamentsPage() {
       setSelectedId(`${filtered[0].source}-${filtered[0].id}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateFilter, typeFilter, rightSelection, timeTab])
+  }, [stateFilter, typeFilter, rightSelection, timeTab, search])
 
   const banner = tournaments.find(t => t.is_lca === 1 && t.state === 'LA')
 
@@ -634,33 +537,49 @@ export function TournamentsPage() {
         subtitle="LCA events and Gulf South regional tournaments — all in one place."
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-            {STATE_PILLS.map(s => (
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-white/40" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search tournaments…"
+              className="h-8 w-44 rounded-full border border-white/20 bg-white/10 pl-8 pr-7 text-xs text-white placeholder:text-white/40 outline-none transition-colors focus:border-[#c8a94a]/70 sm:w-60"
+            />
+            {search && (
               <button
-                key={s.value}
                 type="button"
-                onClick={() => handleStatePill(s.value)}
-                className={cn(
-                  'flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
-                  stateFilter === s.value
-                    ? 'bg-[#c8a94a] text-[#1a2744]'
-                    : 'border border-white/20 text-white/50 hover:text-white/70',
-                )}
+                onClick={() => setSearch('')}
+                aria-label="Clear search"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80"
               >
-                {s.label}
-                <span className="ml-1.5 opacity-60">
-                  {s.value === 'all'
-                    ? activeSet.length
-                    : s.value === 'out-of-state'
-                      ? activeSet.filter(t => t.state !== 'LA').length
-                      : activeSet.filter(t => t.state === s.value).length}
-                </span>
+                <X className="size-3.5" />
               </button>
-            ))}
+            )}
           </div>
 
           <div className="flex items-center gap-2">
-            <Dropdown label="Type" value={typeFilter} options={typeOptions} onChange={setTypeFilter} />
+            <FilterDropdown
+              on="navy"
+              value={stateFilter}
+              onChange={handleStatePill}
+              options={STATE_PILLS.map(s => ({
+                value: s.value,
+                label: `${s.label} (${
+                  s.value === 'all'
+                    ? activeSet.length
+                    : s.value === 'out-of-state'
+                      ? activeSet.filter(t => t.state !== 'LA').length
+                      : activeSet.filter(t => t.state === s.value).length
+                })`,
+              }))}
+            />
+            <FilterDropdown
+              on="navy"
+              value={typeFilter}
+              onChange={setTypeFilter}
+              options={typeOptions}
+            />
             <div className="flex rounded-lg border border-white/20 p-0.5">
               <button
                 type="button"

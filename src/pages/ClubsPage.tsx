@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Calendar, ChevronLeft, ChevronRight, MapPin, Search, X } from 'lucide-react'
 
 import { getClubs, type ApiClubListItem } from '@/lib/api'
+import { FilterDropdown } from '@/components/FilterDropdown'
 import { PageHero } from '@/components/PageHero'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
@@ -30,17 +31,6 @@ const HERO_STATS = [
   { n: '300+', l: 'members' },
   { n: '110+', l: 'years of history' },
 ]
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function shuffleArray<T>(arr: T[]): T[] {
-  const a = [...arr]
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
-  }
-  return a
-}
 
 // ── Club card image area ──────────────────────────────────────────────────────
 
@@ -148,9 +138,7 @@ function ClubCarousel({
           <p className="text-xs font-medium text-foreground">
             {isFiltered ? `${clubs.length} clubs` : `All clubs · ${clubs.length}`}
           </p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">
-            {isFiltered ? 'Sorted A–Z' : 'Shuffled — refresh for a new order'}
-          </p>
+          <p className="mt-0.5 text-[10px] text-muted-foreground">Sorted A–Z</p>
         </div>
         <div className="flex gap-1.5">
           <button
@@ -192,7 +180,6 @@ function ClubCarousel({
 export function ClubsPage() {
   usePageTitle('Clubs')
   const [allClubs, setAllClubs] = useState<ApiClubListItem[]>([])
-  const [shuffled, setShuffled] = useState<ApiClubListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeRegion, setActiveRegion] = useState<string | null>(null)
@@ -200,10 +187,7 @@ export function ClubsPage() {
 
   useEffect(() => {
     getClubs()
-      .then((clubs) => {
-        setAllClubs(clubs)
-        setShuffled(shuffleArray(clubs))
-      })
+      .then(setAllClubs)
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load clubs'))
       .finally(() => setLoading(false))
   }, [])
@@ -222,9 +206,9 @@ export function ClubsPage() {
   const regionScoped = activeRegion
     ? searched.filter((c) => c.region === activeRegion)
     : searched
-  const displayedClubs = isFiltered
-    ? [...regionScoped].sort((a, b) => a.name.localeCompare(b.name))
-    : shuffled
+  const displayedClubs = [...regionScoped].sort((a, b) =>
+    a.name.localeCompare(b.name),
+  )
 
   return (
     <div>
@@ -249,41 +233,20 @@ export function ClubsPage() {
         }
       />
 
-      {/* ── Region filter bar ── */}
+      {/* ── Filter bar: region dropdown + search ── */}
       <div className="border-b border-border bg-muted/20">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="flex items-center gap-3 py-2.5">
-            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-            <span className="flex-shrink-0 text-[10px] font-medium text-muted-foreground">
-              Region
-            </span>
-            <button
-              type="button"
-              onClick={() => setActiveRegion(null)}
-              className={cn(
-                'flex-shrink-0 rounded-full px-3 py-1 text-[10px] font-medium transition-colors',
-                !activeRegion
-                  ? 'bg-[#1a2744] text-white'
-                  : 'border border-border text-muted-foreground hover:border-[#1a2744]/40',
-              )}
-            >
-              All regions
-            </button>
-            {REGIONS.map((region) => (
-              <button
-                key={region}
-                type="button"
-                onClick={() => setActiveRegion(region)}
-                className={cn(
-                  'flex-shrink-0 rounded-full px-3 py-1 text-[10px] font-medium transition-colors',
-                  activeRegion === region
-                    ? 'bg-[#1a2744] text-white'
-                    : 'border border-border text-muted-foreground hover:border-[#1a2744]/40',
-                )}
-              >
-                {region}
-              </button>
-            ))}
+          <div className="flex items-center justify-between gap-3 py-2.5">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-medium text-muted-foreground">Region</span>
+              <FilterDropdown
+                value={activeRegion ?? 'all'}
+                onChange={(v) => setActiveRegion(v === 'all' ? null : v)}
+                options={[
+                  { value: 'all', label: 'All regions' },
+                  ...REGIONS.map((r) => ({ value: r, label: r })),
+                ]}
+              />
             </div>
             <div className="relative flex-shrink-0">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -292,7 +255,7 @@ export function ClubsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search clubs…"
-                className="h-8 w-40 rounded-full border border-border bg-background pl-8 pr-7 text-xs outline-none transition-colors focus:border-[#c8a94a] sm:w-52"
+                className="h-8 w-40 rounded-full border border-border bg-background pl-8 pr-7 text-xs outline-none transition-colors focus:border-[#c8a94a] sm:w-56"
               />
               {search && (
                 <button

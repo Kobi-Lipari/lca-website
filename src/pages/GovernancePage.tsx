@@ -16,7 +16,6 @@ export function GovernancePage() {
   return (
     <div>
       <PageHero
-        eyebrow="Governance"
         title="LCA governance"
         subtitle="Bylaws, board members, policies, and meeting records for the Louisiana Chess Association."
       />

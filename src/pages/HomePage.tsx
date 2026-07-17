@@ -27,6 +27,19 @@ const heroSlides = [
   { label: 'Chess for every generation', src: slide5 },
 ]
 
+/** Fisher–Yates shuffle. Moved here from ClubsPage — the homepage preview
+ *  column is advertisement-only, so a fresh random order on each visit is a
+ *  nice touch there; the actual Clubs page now sorts A–Z so people can find
+ *  a specific club instead of hunting through a shuffled grid. */
+function shuffleArray<T>(arr: T[]): T[] {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 function HeroSlideshow() {
   const [current, setCurrent] = useState(0)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
@@ -191,7 +204,10 @@ export function HomePage() {
 
   useEffect(() => {
     getTournaments().then((data) => setTournaments(data.filter((t) => t.status !== 'completed'))).catch(() => setTournaments([])).finally(() => setLoadingTournaments(false))
-    getClubs().then(setClubs).catch(() => setClubs([])).finally(() => setLoadingClubs(false))
+    // Shuffled here (was on ClubsPage) — this preview column is
+    // advertisement-only, so a fresh random order per visit is a nice touch.
+    // The actual Clubs page sorts A–Z so people can find a specific club.
+    getClubs().then((data) => setClubs(shuffleArray(data))).catch(() => setClubs([])).finally(() => setLoadingClubs(false))
   }, [])
 
   return (
