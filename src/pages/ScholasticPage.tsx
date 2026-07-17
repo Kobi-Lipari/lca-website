@@ -1,3 +1,4 @@
+// src/pages/ScholasticPage.tsx
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, MapPin, Trophy, Users } from 'lucide-react'

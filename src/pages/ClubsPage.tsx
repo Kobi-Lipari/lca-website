@@ -1,9 +1,10 @@
 // src/pages/ClubsPage.tsx
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight, MapPin, Search, X } from 'lucide-react'
 
 import { getClubs, type ApiClubListItem } from '@/lib/api'
+import { PageHero } from '@/components/PageHero'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -21,6 +22,13 @@ const REGIONS = [
   'Southwest Louisiana',
   'South Central Louisiana',
   'Bayou Region',
+]
+
+const HERO_STATS = [
+  { n: '25+', l: 'clubs statewide' },
+  { n: '7', l: 'regions' },
+  { n: '300+', l: 'members' },
+  { n: '110+', l: 'years of history' },
 ]
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -188,6 +196,7 @@ export function ClubsPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeRegion, setActiveRegion] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     getClubs()
@@ -199,58 +208,52 @@ export function ClubsPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const isFiltered = activeRegion !== null
+  const query = search.trim().toLowerCase()
+  const isSearching = query.length > 0
+  const isFiltered = isSearching || activeRegion !== null
 
+  const searched = isSearching
+    ? allClubs.filter(
+        (c) =>
+          c.name.toLowerCase().includes(query) ||
+          (c.city ?? '').toLowerCase().includes(query),
+      )
+    : allClubs
+  const regionScoped = activeRegion
+    ? searched.filter((c) => c.region === activeRegion)
+    : searched
   const displayedClubs = isFiltered
-    ? allClubs
-        .filter((c) => c.region === activeRegion)
-        .sort((a, b) => a.name.localeCompare(b.name))
+    ? [...regionScoped].sort((a, b) => a.name.localeCompare(b.name))
     : shuffled
 
   return (
     <div>
       {/* ── Hero ── */}
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744]">
-        <div className="mx-auto max-w-6xl px-6 py-8">
-          <div
-            className="mb-1 inline-block rounded-full border border-[#c8a94a]/50 bg-[#c8a94a]/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]"
-          >
-            Louisiana Chess Association
+      <PageHero
+        size="compact"
+        title="Find your chess community"
+        subtitle="Clubs across Louisiana host weekly meetings, lessons, and local tournaments. New players always welcome — no experience required."
+        asideAlign="end"
+        aside={
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
+            {HERO_STATS.map((s) => (
+              <div
+                key={s.l}
+                className="rounded-lg border border-white/10 bg-white/6 px-3 py-2 text-center"
+              >
+                <div className="text-base font-semibold text-[#c8a94a]">{s.n}</div>
+                <div className="mt-0.5 text-[9px] text-white/45">{s.l}</div>
+              </div>
+            ))}
           </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-                Find your chess community
-              </h1>
-              <p className="mt-2 max-w-md text-sm text-white/60">
-                Clubs across Louisiana host weekly meetings, lessons, and local tournaments.
-                New players always welcome — no experience required.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-              {[
-                { n: '25+', l: 'clubs statewide' },
-                { n: '7', l: 'regions' },
-                { n: '300+', l: 'members' },
-                { n: '110+', l: 'years of history' },
-              ].map((s) => (
-                <div
-                  key={s.l}
-                  className="rounded-lg border border-white/10 bg-white/6 px-3 py-2 text-center"
-                >
-                  <div className="text-base font-semibold text-[#c8a94a]">{s.n}</div>
-                  <div className="mt-0.5 text-[9px] text-white/45">{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+        }
+      />
 
       {/* ── Region filter bar ── */}
       <div className="border-b border-border bg-muted/20">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="flex items-center gap-2 overflow-x-auto py-2.5" style={{ scrollbarWidth: 'none' }}>
+          <div className="flex items-center gap-3 py-2.5">
+            <div className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
             <span className="flex-shrink-0 text-[10px] font-medium text-muted-foreground">
               Region
             </span>
@@ -281,6 +284,27 @@ export function ClubsPage() {
                 {region}
               </button>
             ))}
+            </div>
+            <div className="relative flex-shrink-0">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search clubs…"
+                className="h-8 w-40 rounded-full border border-border bg-background pl-8 pr-7 text-xs outline-none transition-colors focus:border-[#c8a94a] sm:w-52"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  aria-label="Clear search"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-3.5" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -293,9 +317,13 @@ export function ClubsPage() {
           <p className="text-sm text-destructive">{error}</p>
         ) : displayedClubs.length === 0 ? (
           <div className="rounded-xl border border-dashed px-6 py-10 text-center">
-            <p className="font-medium text-[#1a2744]">No clubs in this region yet</p>
+            <p className="font-medium text-[#1a2744]">
+              {isSearching ? 'No clubs match your search' : 'No clubs in this region yet'}
+            </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Check back soon — new clubs are added regularly.
+              {isSearching
+                ? 'Try a different club name or city.'
+                : 'Check back soon — new clubs are added regularly.'}
             </p>
           </div>
         ) : (

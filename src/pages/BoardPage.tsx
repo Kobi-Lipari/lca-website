@@ -1,3 +1,4 @@
+// src/pages/BoardPage.tsx
 import { useEffect, useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { GovLayout } from '@/components/governance/GovLayout'

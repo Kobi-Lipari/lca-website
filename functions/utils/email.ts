@@ -1,5 +1,4 @@
 // functions/utils/email.ts
-import type { Env } from '../types'
 
 export interface EmailMessage {
   to: string
@@ -9,11 +8,21 @@ export interface EmailMessage {
 }
 
 /**
+ * The minimal environment the email transport needs. Both the Pages
+ * Functions Env and the daily-emails Worker Env satisfy it structurally,
+ * so this module can be shared by both without importing either Env type.
+ */
+export interface EmailEnv {
+  RESEND_API_KEY: string
+  FROM_EMAIL?: string
+}
+
+/**
  * Send via Resend REST API. THROWS on failure (network error or non-2xx),
  * unlike the old MailChannels version which silently console.warn'd.
  * Callers that treat email as best-effort should use trySendEmail instead.
  */
-export async function sendEmail(env: Env, message: EmailMessage): Promise<void> {
+export async function sendEmail(env: EmailEnv, message: EmailMessage): Promise<void> {
   const from = env.FROM_EMAIL ?? 'noreply@louisianachess.org'
 
   const response = await fetch('https://api.resend.com/emails', {
@@ -42,7 +51,7 @@ export async function sendEmail(env: Env, message: EmailMessage): Promise<void> 
  * Use for emails that must not fail the surrounding operation
  * (registration confirmations, contact acknowledgments, cron sends).
  */
-export async function trySendEmail(env: Env, message: EmailMessage): Promise<boolean> {
+export async function trySendEmail(env: EmailEnv, message: EmailMessage): Promise<boolean> {
   try {
     await sendEmail(env, message)
     return true

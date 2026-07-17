@@ -20,8 +20,7 @@ const footerSections = [
     links: [
       { label: 'About LCA', href: '/about' },
       { label: 'Board members', href: '/governance/board' },
-      { label: 'Bylaws', href: '/governance/bylaws' },
-      { label: 'Rules & policies', href: '/governance/rules' },
+      { label: 'Bylaws & rules', href: '/governance/bylaws' },
       { label: 'Meeting minutes', href: '/governance/minutes' },
     ],
   },
@@ -108,7 +107,7 @@ export function Footer() {
             © {year} Louisiana Chess Association. All rights reserved.
           </p>
           <p className="text-sm text-white/40">
-            Baton Rouge · New Orleans · statewide
+            
           </p>
         </div>
       </div>

@@ -1,4 +1,4 @@
-// tournamnets page
+// src/pages/TournamentsPage.tsx
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -6,6 +6,8 @@ import {
   MapPin, Trophy, Clock, Building2, ExternalLink, Globe, Users,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { PageHero } from '@/components/PageHero'
+import { StatusDot } from '@/components/StatusBadge'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -155,14 +157,6 @@ function Dropdown<T extends string>({ label, value, options, onChange }: Dropdow
       )}
     </div>
   )
-}
-
-// ── Status dot ────────────────────────────────────────────────────────────────
-
-function StatusDot({ regStatus }: { regStatus?: string | null }) {
-  if (regStatus === 'open')
-    return <span className="size-1.5 flex-shrink-0 rounded-full bg-emerald-500" title="Registration open" />
-  return <span className="size-1.5 flex-shrink-0 rounded-full bg-[#c8a94a]" title="Opening soon" />
 }
 
 // ── LCA Detail pane ───────────────────────────────────────────────────────────
@@ -634,68 +628,60 @@ export function TournamentsPage() {
   return (
     <div>
       {/* ── Hero ── */}
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744]">
-        <div className="px-6 pb-0 pt-8">
-          <div className="mx-auto max-w-6xl">
-            <div className="mb-1 inline-block rounded-full border border-[#c8a94a]/50 bg-[#c8a94a]/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]">
-              Louisiana Chess Association
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Tournaments</h1>
-            <p className="mt-1.5 text-sm text-white/60">
-              LCA events and Gulf South regional tournaments — all in one place.
-            </p>
+      <PageHero
+        size="compact"
+        title="Tournaments"
+        subtitle="LCA events and Gulf South regional tournaments — all in one place."
+      >
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+            {STATE_PILLS.map(s => (
+              <button
+                key={s.value}
+                type="button"
+                onClick={() => handleStatePill(s.value)}
+                className={cn(
+                  'flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
+                  stateFilter === s.value
+                    ? 'bg-[#c8a94a] text-[#1a2744]'
+                    : 'border border-white/20 text-white/50 hover:text-white/70',
+                )}
+              >
+                {s.label}
+                <span className="ml-1.5 opacity-60">
+                  {s.value === 'all'
+                    ? activeSet.length
+                    : s.value === 'out-of-state'
+                      ? activeSet.filter(t => t.state !== 'LA').length
+                      : activeSet.filter(t => t.state === s.value).length}
+                </span>
+              </button>
+            ))}
+          </div>
 
-            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 py-2">
-              <div className="flex items-center gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-                {STATE_PILLS.map(s => (
-                  <button
-                    key={s.value}
-                    type="button"
-                    onClick={() => handleStatePill(s.value)}
-                    className={cn(
-                      'flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors',
-                      stateFilter === s.value
-                        ? 'bg-[#c8a94a] text-[#1a2744]'
-                        : 'border border-white/20 text-white/50 hover:text-white/70',
-                    )}
-                  >
-                    {s.label}
-                    <span className="ml-1.5 opacity-60">
-                      {s.value === 'all'
-                        ? activeSet.length
-                        : s.value === 'out-of-state'
-                          ? activeSet.filter(t => t.state !== 'LA').length
-                          : activeSet.filter(t => t.state === s.value).length}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Dropdown label="Type" value={typeFilter} options={typeOptions} onChange={setTypeFilter} />
-                <div className="flex rounded-lg border border-white/20 p-0.5">
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('list')}
-                    className={cn('flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
-                      viewMode === 'list' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/50 hover:text-white/70')}
-                  >
-                    <Trophy className="size-3" /> List
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('calendar')}
-                    className={cn('flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
-                      viewMode === 'calendar' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/50 hover:text-white/70')}
-                  >
-                    <Calendar className="size-3" /> Calendar
-                  </button>
-                </div>
-              </div>
+          <div className="flex items-center gap-2">
+            <Dropdown label="Type" value={typeFilter} options={typeOptions} onChange={setTypeFilter} />
+            <div className="flex rounded-lg border border-white/20 p-0.5">
+              <button
+                type="button"
+                onClick={() => setViewMode('list')}
+                className={cn('flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
+                  viewMode === 'list' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/50 hover:text-white/70')}
+              >
+                <Trophy className="size-3" /> List
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('calendar')}
+                className={cn('flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
+                  viewMode === 'calendar' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/50 hover:text-white/70')}
+              >
+                <Calendar className="size-3" /> Calendar
+              </button>
             </div>
           </div>
         </div>
-      </section>
+      </PageHero>
 
       {/* ── Banner ── */}
       {banner && timeTab === 'upcoming' && (

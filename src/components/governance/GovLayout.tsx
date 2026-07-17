@@ -1,11 +1,12 @@
+// src/components/governance/GovLayout.tsx
 import { Link, useLocation } from 'react-router-dom'
+import { PageHero } from '@/components/PageHero'
 import { cn } from '@/lib/utils'
 
 const GOV_LINKS = [
   { label: 'About LCA',        href: '/about' },
   { label: 'Board members',    href: '/governance/board' },
-  { label: 'Bylaws',           href: '/governance/bylaws' },
-  { label: 'Rules & policies', href: '/governance/rules' },
+  { label: 'Bylaws & rules',   href: '/governance/bylaws' },
   { label: 'Meeting minutes',  href: '/governance/minutes' },
 ]
 
@@ -49,15 +50,7 @@ export function GovLayout({
 }) {
   return (
     <div>
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744]">
-        <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="mb-2 inline-block rounded-full border border-[#c8a94a]/50 bg-[#c8a94a]/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]">
-            Governance
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{title}</h1>
-          {subtitle && <p className="mt-2 text-sm text-white/60">{subtitle}</p>}
-        </div>
-      </section>
+      <PageHero eyebrow="Governance" title={title} subtitle={subtitle} />
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="flex gap-8">
           <GovSidebar />

@@ -1,3 +1,4 @@
+// src/pages/MinutesPage.tsx
 import { GovLayout } from '@/components/governance/GovLayout'
 import { GovernanceDocuments } from '@/components/governance/GovernanceDocuments'
 import { useAuth } from '@/contexts/AuthContext'
