@@ -172,7 +172,7 @@ export function LCAMap(props: Props) {
     if (props.mode === 'all') {
       infoRef.current = new g.InfoWindow()
       // Highlight our state: gold outline + a whisper of fill.
-      new g.Polygon({
+      /*new g.Polygon({
         paths: LA_BOUNDARY,
         strokeColor: GOLD,
         strokeOpacity: 0.85,
@@ -181,7 +181,7 @@ export function LCAMap(props: Props) {
         fillOpacity: 0.05,
         clickable: false,
         map: mapObj.current,
-      })
+      })*/
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded])
