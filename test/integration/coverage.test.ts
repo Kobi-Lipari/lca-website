@@ -12,6 +12,7 @@ import {
 } from '../../functions/api/admin/clubs/[id]'
 import { onRequestGet as boardGet, onRequestPost as boardPost } from '../../functions/api/governance/board'
 import { onRequestGet as docsGet, onRequestPost as docsPost } from '../../functions/api/governance/documents'
+import { onRequestGet as newsGet } from '../../functions/api/news'
 import { onRequestPost as supportPost } from '../../functions/api/support'
 import { onRequestPost as membershipCheckout } from '../../functions/api/membership/checkout'
 import { onRequestPost as membershipConfirm } from '../../functions/api/membership/confirm'
@@ -128,6 +129,40 @@ describe('governance', () => {
     expect(documents.length).toBeGreaterThan(0)
     expect(documents.every((d: { category: string }) => d.category === 'bylaws')).toBe(true)
   })
+
+  it('board POST: missing name or role is 400, not 500', async () => {
+    const admin = await seedAdmin()
+    expect((await invoke(boardPost, {
+      method: 'POST', as: admin, body: { role: 'Treasurer' },
+    })).status).toBe(400)
+    expect((await invoke(boardPost, {
+      method: 'POST', as: admin, body: { name: 'No Role' },
+    })).status).toBe(400)
+    expect((await invoke(boardPost, {
+      method: 'POST', as: admin, rawBody: '{not json', headers: { 'Content-Type': 'application/json' },
+    })).status).toBe(400)
+  })
+
+  it('board POST: sort_order 0 is preserved, not coerced to the default', async () => {
+    const admin = await seedAdmin()
+    const res = await invoke(boardPost, {
+      method: 'POST', as: admin,
+      body: { role: 'President', name: 'First Sorter', sort_order: 0 },
+    })
+    expect(res.status).toBe(201)
+    const { member } = await res.json()
+    expect(member.sort_order).toBe(0)
+  })
+
+  it('documents POST: missing title or invalid category is 400, not 500', async () => {
+    const admin = await seedAdmin()
+    expect((await invoke(docsPost, {
+      method: 'POST', as: admin, body: { category: 'bylaws' },
+    })).status).toBe(400)
+    expect((await invoke(docsPost, {
+      method: 'POST', as: admin, body: { category: 'memes', title: 'Nope' },
+    })).status).toBe(400)
+  })
 })
 
 describe('support', () => {
@@ -191,13 +226,36 @@ describe('membership', () => {
   })
 
   // ── LAUNCH GUARD ─────────────────────────────────────────────────
-  // Uncomment when the 'test' tier is deleted from checkout.ts.
-  // From then on, CI permanently prevents its reintroduction.
-  //
-  // it('the test tier does not exist (launch blocker resolved)', async () => {
-  //   const res = await invoke(membershipCheckout, {
-  //     method: 'POST', as: await seedMember(), body: { tier: 'test' },
-  //   })
-  //   expect(res.status).toBe(400)
-  // })
+  // The 'test' tier is gone from checkout.ts; from now on CI permanently
+  // prevents its reintroduction.
+  it('the test tier does not exist (launch blocker resolved)', async () => {
+    const res = await invoke(membershipCheckout, {
+      method: 'POST', as: await seedMember(), body: { tier: 'test' },
+    })
+    expect(res.status).toBe(400)
+  })
+})
+
+describe('news', () => {
+  it('aggregate feed is public, joins club name/color, newest first', async () => {
+    const clubId = await seedClub()
+    await env.DB.prepare(`UPDATE clubs SET color = '#123abc' WHERE id = ?`)
+      .bind(clubId).run()
+    await env.DB.prepare(
+      `INSERT INTO club_news (id, club_id, title, news_date, excerpt)
+       VALUES (?, ?, 'Older post', '2026-07-01', 'first'),
+              (?, ?, 'Newer post', '2026-07-10', 'second')`,
+    ).bind(crypto.randomUUID(), clubId, crypto.randomUUID(), clubId).run()
+
+    const res = await invoke(newsGet) // no auth — endpoint is public
+    expect(res.status).toBe(200)
+    const { news } = await res.json()
+    expect(news.length).toBeGreaterThanOrEqual(2)
+    const idx = (title: string) => news.findIndex((n: { title: string }) => n.title === title)
+    expect(idx('Newer post')).toBeLessThan(idx('Older post'))
+    const newer = news[idx('Newer post')]
+    expect(newer.club_id).toBe(clubId)
+    expect(newer.club_color).toBe('#123abc')
+    expect(typeof newer.club_name).toBe('string')
+  })
 })

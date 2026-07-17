@@ -1,26 +1,25 @@
+// src/pages/GovernancePage.tsx
 import { Link } from 'react-router-dom'
-import { FileText, Gavel, Users, Clock, Coins, Edit } from 'lucide-react'
+import { Clock, FileText, Landmark, Users } from 'lucide-react'
+import { PageHero } from '@/components/PageHero'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const sections = [
-  { icon: Users,    label: 'About LCA',        sub: 'Our mission and history',           href: '/about' },
-  { icon: Users,    label: 'Board members',     sub: 'Current officers and directors',    href: '/governance/board' },
-  { icon: FileText, label: 'Bylaws',            sub: 'Official LCA constitution',         href: '/governance/bylaws' },
-  { icon: Gavel,    label: 'Rules & policies',  sub: 'Tournament and conduct rules',      href: '/governance/rules' },
-  { icon: Clock,    label: 'Meeting minutes',   sub: 'Board records and treasurer reports',href: '/governance/minutes' },
+  { icon: Landmark, label: 'About LCA',       sub: 'Our mission and history',                     href: '/about' },
+  { icon: Users,    label: 'Board members',   sub: 'Current officers and directors',              href: '/governance/board' },
+  { icon: FileText, label: 'Bylaws & rules',  sub: 'Constitution, tournament rules, and policies', href: '/governance/bylaws' },
+  { icon: Clock,    label: 'Meeting minutes', sub: 'Board records and treasurer reports',         href: '/governance/minutes' },
 ]
 
 export function GovernancePage() {
   usePageTitle('Governance')
   return (
     <div>
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744]">
-        <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="mb-2 inline-block rounded-full border border-[#c8a94a]/50 bg-[#c8a94a]/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]">Governance</div>
-          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">LCA governance</h1>
-          <p className="mt-2 text-sm text-white/60">Bylaws, board members, policies, and meeting records for the Louisiana Chess Association.</p>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Governance"
+        title="LCA governance"
+        subtitle="Bylaws, board members, policies, and meeting records for the Louisiana Chess Association."
+      />
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map(({ icon: Icon, label, sub, href }) => (

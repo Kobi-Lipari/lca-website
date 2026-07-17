@@ -1,3 +1,4 @@
+// src/App.tsx
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
@@ -27,7 +28,6 @@ const MinutesPage = lazy(() => import('@/pages/MinutesPage').then(m => ({ defaul
 const NewsPage = lazy(() => import('@/pages/NewsPage').then(m => ({ default: m.NewsPage })))
 const RegisterPage = lazy(() => import('@/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
 const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })))
-const RulesPage = lazy(() => import('@/pages/RulesPage').then(m => ({ default: m.RulesPage })))
 const ScholasticPage = lazy(() => import('@/pages/ScholasticPage').then(m => ({ default: m.ScholasticPage })))
 const SupportPage = lazy(() => import('@/pages/SupportPage').then(m => ({ default: m.SupportPage })))
 const TournamentDetailPage = lazy(() => import('@/pages/TournamentDetailPage').then(m => ({ default: m.TournamentDetailPage })))
@@ -66,7 +66,8 @@ function App() {
             <Route path="/governance" element={<GovernancePage />} />
             <Route path="/governance/board" element={<BoardPage />} />
             <Route path="/governance/bylaws" element={<BylawsPage />} />
-            <Route path="/governance/rules" element={<RulesPage />} />
+            {/* RulesPage retired — its content merged into /governance/bylaws */}
+            <Route path="/governance/rules" element={<Navigate to="/governance/bylaws" replace />} />
             <Route path="/governance/minutes" element={<MinutesPage />} />
 
             {/* ── Protected ── */}

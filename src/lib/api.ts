@@ -177,6 +177,7 @@ export interface ApiTournamentDetail {
   id: string
   name: string
   date: string
+  end_date: string | null
   location: string
   venue: string | null
   entry_fee: number
@@ -248,6 +249,23 @@ export async function getClubs(): Promise<ApiClubListItem[]> {
   const response = await fetch('/api/clubs')
   const data = await handleResponse<{ clubs: ApiClubListItem[] }>(response)
   return data.clubs
+}
+
+export interface ApiNewsItem {
+  id: string
+  club_id: string
+  club_name: string
+  club_color: string | null
+  title: string
+  news_date: string
+  excerpt: string
+}
+
+/** Aggregate club-news feed for the News page, newest first. */
+export async function getNews(): Promise<ApiNewsItem[]> {
+  const response = await fetch('/api/news')
+  const data = await handleResponse<{ news: ApiNewsItem[] }>(response)
+  return data.news
 }
 
 export async function getClub(id: string): Promise<{
@@ -381,9 +399,37 @@ export async function adminCreateTournament(body: {
   return data.tournament
 }
 
+/**
+ * Single wrapper for PATCH /api/admin/tournaments/:id.
+ * (Consolidates the former untyped `adminUpdateTournament` and
+ * `adminUpdateTournamentFull` — same route, one typed body.)
+ *
+ * Every field is optional: the backend uses field-present semantics
+ * (undefined = keep existing, explicit null = clear), so callers should
+ * send ONLY the keys that changed.
+ */
 export async function adminUpdateTournament(
   id: string,
-  body: Record<string, unknown>,
+  body: {
+    name?: string
+    location?: string
+    venue?: string | null
+    date?: string
+    endDate?: string | null
+    entryFee?: number
+    sections?: ApiTournamentSection[]
+    rounds?: number
+    maxPlayers?: number | null
+    status?: TournamentStatus
+    description?: string | null
+    registrationDeadline?: string | null
+    isRated?: boolean
+    isVisible?: boolean
+    roundSchedule?: ApiRoundScheduleItem[]
+    registrationClosesAt?: string | null
+    customDetails?: ApiCustomDetail[]
+    timeControl?: string | null
+  },
 ): Promise<Record<string, unknown>> {
   const response = await fetch(`/api/admin/tournaments/${id}`, {
     method: 'PATCH',
@@ -974,38 +1020,6 @@ export async function adminDeleteClub(clubId: string): Promise<void> {
     headers: await authHeaders(),
   })
   return handleResponse(response)
-}
-
-export async function adminUpdateTournamentFull(
-  id: string,
-  body: {
-    name?: string
-    location?: string
-    venue?: string | null
-    date?: string
-    endDate?: string | null
-    entryFee?: number
-    sections?: ApiTournamentSection[]
-    rounds?: number
-    maxPlayers?: number | null
-    status?: TournamentStatus
-    description?: string | null
-    registrationDeadline?: string | null
-    isRated?: boolean
-    isVisible?: boolean
-    roundSchedule?: ApiRoundScheduleItem[]
-    registrationClosesAt?: string | null
-    customDetails?: ApiCustomDetail[]
-    timeControl: string | null
-  },
-): Promise<Record<string, unknown>> {
-  const response = await fetch(`/api/admin/tournaments/${id}`, {
-    method: 'PATCH',
-    headers: await authHeaders(),
-    body: JSON.stringify(body),
-  })
-  const data = await handleResponse<{ tournament: Record<string, unknown> }>(response)
-  return data.tournament
 }
 
 // ── Governance types ──────────────────────────────────────────────────────────

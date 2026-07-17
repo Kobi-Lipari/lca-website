@@ -1,3 +1,4 @@
+// src/components/governance/GovernanceDocuments.tsx
 import { useEffect, useRef, useState } from 'react'
 import { Plus, Trash2, Upload, FileText, Pencil, ChevronDown } from 'lucide-react'
 import { DocRow } from '@/components/governance/GovLayout'

@@ -1,0 +1,23 @@
+# workers/daily-emails/wrangler.toml
+name = "lca-daily-emails"
+main = "src/index.ts"
+compatibility_date = "2026-07-01"
+
+# 12:00 UTC = 7:00 AM Central (CDT). Adjust if the board wants a different
+# send time; remember cron is always UTC.
+[triggers]
+crons = ["0 12 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lca-db"
+database_id = "e891b93f-e7fe-48d0-9afc-8570d805ef08"
+
+# FROM_EMAIL is optional (transport falls back to noreply@louisianachess.org).
+# [vars]
+# FROM_EMAIL = "noreply@louisianachess.org"
+
+# Secrets (set once, from repo root):
+#   npx wrangler secret put RESEND_API_KEY --config workers/daily-emails/wrangler.toml
+# Note: plain `wrangler secret put`, NOT `wrangler pages secret put` — this is
+# a standalone Worker, not a Pages project.

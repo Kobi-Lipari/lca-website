@@ -330,9 +330,6 @@ export function ClubDetailPage() {
                     </div>
                   )}
                 </dl>
-                <div className="mt-4 overflow-hidden rounded-lg -mx-5 -mb-5">
-                  <LCAMap mode="single" clubName={club.name} height={200} />
-                </div>
                 <p className="mt-4 text-xs text-muted-foreground">
                   New players are always welcome. No membership required to attend your first meeting.
                 </p>
@@ -343,6 +340,11 @@ export function ClubDetailPage() {
                 >
                   <Link to="/membership">Join LCA</Link>
                 </Button>
+                {/* Map goes LAST: the -mx-5/-mb-5 bleed means anything after it
+                    renders on top of the map (the overlap bug in the screenshots). */}
+                <div className="mt-5 -mx-5 -mb-5 overflow-hidden">
+                  <LCAMap mode="single" clubName={club.name} height={200} />
+                </div>
               </div>
             </div>
           </div>

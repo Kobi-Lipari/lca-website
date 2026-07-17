@@ -1,3 +1,4 @@
+// src/pages/AboutPage.tsx
 import { Link } from 'react-router-dom'
 import { GovLayout } from '@/components/governance/GovLayout'
 import { usePageTitle } from '@/hooks/usePageTitle'

@@ -31,17 +31,22 @@ const MAP_STYLES: any[] = [
   { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f0ede4' }] },
 ]
 
-function markerSvg(color: string, size = 24): string {
+/** Brand pin: navy teardrop, gold inner dot (inverted on hover). */
+function markerSvg(pinColor: string, dotColor: string, size = 24): string {
   const h = Math.round(size * 1.33)
   return (
     'data:image/svg+xml;charset=UTF-8,' +
     encodeURIComponent(
       `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${h}" viewBox="0 0 24 32">` +
-      `<path d="M12 0C7.03 0 3 4.03 3 9c0 7 9 23 9 23s9-16 9-23c0-4.97-4.03-9-9-9z" fill="${color}" stroke="#fff" stroke-width="1.5"/>` +
-      `<circle cx="12" cy="9" r="3.5" fill="#fff"/>` +
+      `<path d="M12 1C7.3 1 3.5 4.8 3.5 9.5c0 6.6 8.5 21.5 8.5 21.5s8.5-14.9 8.5-21.5C20.5 4.8 16.7 1 12 1z" fill="${pinColor}" stroke="#ffffff" stroke-width="1.5"/>` +
+      `<circle cx="12" cy="9.5" r="3.5" fill="${dotColor}"/>` +
       '</svg>'
     )
   )
+}
+
+function directionsUrl(pin: ClubMapPin): string {
+  return `https://www.google.com/maps/dir/?api=1&destination=${pin.lat},${pin.lng}`
 }
 
 function findPinByName(name: string): ClubMapPin | undefined {
@@ -100,29 +105,38 @@ function findDbClub(pinName: string, clubs: DbClub[]): DbClub | undefined {
 
 export function LCAMap(props: Props) {
   const mapRef = useRef<HTMLDivElement>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const mapObj = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const infoRef = useRef<any>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const markersRef = useRef<any[]>([])
   const [loaded, setLoaded] = useState(false)
+
   const height = props.height ?? (props.mode === 'all' ? 480 : 240)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
   const singlePin = props.mode === 'single' ? findPinByName(props.clubName) : undefined
+  const clubs = props.mode === 'all' ? (props.clubs ?? null) : null
+  // Stable key: markers only rebuild when the actual set of clubs changes,
+  // not when the parent re-renders with a new array identity (which used to
+  // tear down and rebuild the whole map on every keystroke/filter change).
+  const clubsKey = clubs ? clubs.map((c) => c.id).join(',') : 'all'
 
   useEffect(() => {
     if (!apiKey) return
     loadMapsScript(apiKey, () => setLoaded(true))
   }, [apiKey])
 
+  // Create the map ONCE per mount.
   useEffect(() => {
-    if (!loaded || !mapRef.current) return
-
+    if (!loaded || !mapRef.current || mapObj.current) return
     const g = window.google.maps
-    const dbClubs = props.mode === 'all' ? ((props as AllClubsProps).clubs ?? []) : []
-    const pins: ClubMapPin[] =
-      props.mode === 'single' ? (singlePin ? [singlePin] : []) : CLUB_MAP_PINS
     const center =
       props.mode === 'single' && singlePin
         ? { lat: singlePin.lat, lng: singlePin.lng }
         : { lat: 31.0, lng: -91.8 }
 
-    const map = new g.Map(mapRef.current, {
+    mapObj.current = new g.Map(mapRef.current, {
       center,
       zoom: props.mode === 'single' ? 14 : 7,
       styles: MAP_STYLES,
@@ -132,8 +146,31 @@ export function LCAMap(props: Props) {
       zoomControl: true,
       gestureHandling: props.mode === 'all' ? 'cooperative' : 'none',
     })
+    if (props.mode === 'all') infoRef.current = new g.InfoWindow()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded])
 
-    const infoWindow = props.mode === 'all' ? new g.InfoWindow() : null
+  // Sync markers whenever the club set changes.
+  useEffect(() => {
+    if (!loaded || !mapObj.current) return
+    const g = window.google.maps
+    const map = mapObj.current
+    const infoWindow = infoRef.current
+
+    markersRef.current.forEach((m) => m.setMap(null))
+    markersRef.current = []
+    infoWindow?.close()
+
+    const dbClubs = clubs ?? []
+    let pins: ClubMapPin[]
+    if (props.mode === 'single') {
+      pins = singlePin ? [singlePin] : []
+    } else if (clubs) {
+      // Pins follow the filtered/searched club list from the page.
+      pins = CLUB_MAP_PINS.filter((pin) => findDbClub(pin.name, dbClubs))
+    } else {
+      pins = CLUB_MAP_PINS
+    }
 
     pins.forEach((pin) => {
       const marker = new g.Marker({
@@ -141,44 +178,49 @@ export function LCAMap(props: Props) {
         map,
         title: pin.name,
         icon: {
-          url: markerSvg(NAVY, 24),
+          url: markerSvg(NAVY, GOLD, 24),
           scaledSize: new g.Size(24, 32),
           anchor: new g.Point(12, 32),
         },
       })
+      markersRef.current.push(marker)
 
       if (props.mode === 'all' && infoWindow) {
         marker.addListener('click', () => {
           const dbClub = findDbClub(pin.name, dbClubs)
-          const link = dbClub
-            ? `<a href="/clubs/${dbClub.id}" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:600;color:${NAVY};text-decoration:underline;">View club page →</a>`
+          const clubLink = dbClub
+            ? `<a href="/clubs/${dbClub.id}" style="font-size:12px;font-weight:600;color:${NAVY};text-decoration:underline;">View club page →</a>`
             : ''
+          const dirLink =
+            `<a href="${directionsUrl(pin)}" target="_blank" rel="noopener noreferrer" ` +
+            `style="font-size:12px;font-weight:600;color:${GOLD.replace('#c8a94a', '#8a6d1f')};text-decoration:underline;">Directions ↗</a>`
           infoWindow.setContent(
             `<div style="font-family:system-ui;max-width:240px;padding:4px 2px">` +
             `<p style="font-weight:600;color:${NAVY};margin:0 0 6px">${pin.name}</p>` +
             `<p style="font-size:12px;color:#555;margin:0;line-height:1.5">${pin.description}</p>` +
-            link +
+            `<div style="display:flex;gap:12px;margin-top:8px">${clubLink}${dirLink}</div>` +
             `</div>`,
           )
           infoWindow.open(map, marker)
         })
         marker.addListener('mouseover', () => {
           marker.setIcon({
-            url: markerSvg(GOLD, 28),
+            url: markerSvg(GOLD, NAVY, 28),
             scaledSize: new g.Size(28, 37),
             anchor: new g.Point(14, 37),
           })
         })
         marker.addListener('mouseout', () => {
           marker.setIcon({
-            url: markerSvg(NAVY, 24),
+            url: markerSvg(NAVY, GOLD, 24),
             scaledSize: new g.Size(24, 32),
             anchor: new g.Point(12, 32),
           })
         })
       }
     })
-  }, [loaded, props.mode, singlePin, props.mode === 'all' ? (props as AllClubsProps).clubs : null])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, clubsKey, singlePin])
 
   if (!apiKey) {
     return (
@@ -196,6 +238,16 @@ export function LCAMap(props: Props) {
   return (
     <div className="relative overflow-hidden rounded-xl border" style={{ height }}>
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
+      {props.mode === 'single' && singlePin && (
+        <a
+          href={directionsUrl(singlePin)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute bottom-2.5 right-2.5 z-10 rounded-md bg-[#1a2744] px-2.5 py-1.5 text-xs font-semibold text-white shadow-md transition-colors hover:bg-[#1a2744]/90"
+        >
+          Get directions ↗
+        </a>
+      )}
       {!loaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/30">
           <p className="text-sm text-muted-foreground">Loading map...</p>

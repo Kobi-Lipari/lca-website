@@ -23,8 +23,7 @@ const navLinks: Array<{ label: string; href: string; items?: NavChild[] }> = [
     items: [
       { label: 'About LCA', href: '/about' },
       { label: 'Board members', href: '/governance/board' },
-      { label: 'Bylaws', href: '/governance/bylaws' },
-      { label: 'Rules & policies', href: '/governance/rules' },
+      { label: 'Bylaws & rules', href: '/governance/bylaws' },
       { label: 'Meeting minutes', href: '/governance/minutes' },
     ],
   },
