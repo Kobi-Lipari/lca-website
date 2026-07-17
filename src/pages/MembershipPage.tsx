@@ -203,33 +203,8 @@ export function MembershipPage() {
         </section>
       )}
 
-      <section className="mx-auto max-w-6xl px-6 py-12">
-        <h2 className="text-2xl font-bold text-[#1a2744]">Member Benefits</h2>
-        <p className="mt-1 text-muted-foreground">
-          Every membership tier includes access to the LCA community and
-          platform.
-        </p>
-
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-          {benefits.map((benefit) => (
-            <li
-              key={benefit.title}
-              className="flex gap-4 rounded-xl border bg-card p-5 shadow-sm"
-            >
-              <benefit.icon className="size-6 shrink-0 text-[#c8a94a]" />
-              <div>
-                <h3 className="font-semibold text-[#1a2744]">{benefit.title}</h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {benefit.description}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
       <section className="bg-muted/30">
-        <div className="mx-auto max-w-6xl px-6 py-12">
+        <div className="mx-auto max-w-6xl px-6 py-8">
           <h2 className="text-2xl font-bold text-[#1a2744]">
             Membership Tiers
           </h2>
@@ -238,7 +213,7 @@ export function MembershipPage() {
             Stripe products are configured.
           </p>
 
-          <ul className="mt-8 grid gap-6 lg:grid-cols-3">
+          <ul className="mt-8 grid gap-3 lg:grid-cols-4">
             {tiers.map((tier) => (
               <li
                 key={tier.id}
@@ -286,7 +261,32 @@ export function MembershipPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-12">
+      <section className="mx-auto max-w-6xl px-6 py-8">
+        <h2 className="text-2xl font-bold text-[#1a2744]">Member Benefits</h2>
+        <p className="mt-1 text-muted-foreground">
+          Every membership tier includes access to the LCA community and
+          platform.
+        </p>
+
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+          {benefits.map((benefit) => (
+            <li
+              key={benefit.title}
+              className="flex gap-4 rounded-xl border bg-card p-5 shadow-sm"
+            >
+              <benefit.icon className="size-6 shrink-0 text-[#c8a94a]" />
+              <div>
+                <h3 className="font-semibold text-[#1a2744]">{benefit.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {benefit.description}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-8">
         <div className="rounded-xl border bg-card p-6 sm:p-8">
           <h2 className="text-xl font-bold text-[#1a2744]">
             How Membership Works
