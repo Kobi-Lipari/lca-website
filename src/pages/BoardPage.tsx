@@ -1,5 +1,6 @@
 // src/pages/BoardPage.tsx
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
 import { GovLayout } from '@/components/governance/GovLayout'
 import { Button } from '@/components/ui/button'
@@ -138,8 +139,8 @@ export function BoardPage() {
           )}
 
           <p className="mt-6 text-xs text-muted-foreground">
-            To contact the board, email{' '}
-            <a href="mailto:info@louisianachess.org" className="text-[#c8a94a] hover:underline">info@louisianachess.org</a>.
+            To contact the board, use the{' '}
+            <Link to="/contact" className="text-[#c8a94a] hover:underline">contact form</Link>.
           </p>
         </>
       )}

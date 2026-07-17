@@ -45,6 +45,29 @@ function markerSvg(pinColor: string, dotColor: string, size = 24): string {
   )
 }
 
+
+// Simplified Louisiana boundary (~30 points) — recognizable at statewide zoom.
+// Deliberately approximate; swap for real GeoJSON if pixel-accurate borders
+// ever matter.
+const LA_BOUNDARY: Array<{ lat: number; lng: number }> = [
+  { lat: 33.019, lng: -94.043 }, { lat: 33.008, lng: -91.166 },
+  { lat: 32.600, lng: -91.050 }, { lat: 32.300, lng: -90.950 },
+  { lat: 31.950, lng: -91.100 }, { lat: 31.620, lng: -91.400 },
+  { lat: 31.300, lng: -91.530 }, { lat: 31.000, lng: -91.640 },
+  { lat: 31.000, lng: -90.350 }, { lat: 30.999, lng: -89.728 },
+  { lat: 30.700, lng: -89.840 }, { lat: 30.400, lng: -89.680 },
+  { lat: 30.160, lng: -89.620 }, { lat: 29.900, lng: -89.420 },
+  { lat: 29.550, lng: -89.200 }, { lat: 29.150, lng: -89.000 },
+  { lat: 29.000, lng: -89.350 }, { lat: 29.250, lng: -89.800 },
+  { lat: 29.150, lng: -90.250 }, { lat: 29.250, lng: -90.750 },
+  { lat: 29.180, lng: -91.000 }, { lat: 29.550, lng: -91.350 },
+  { lat: 29.550, lng: -91.950 }, { lat: 29.720, lng: -92.600 },
+  { lat: 29.770, lng: -93.300 }, { lat: 29.760, lng: -93.840 },
+  { lat: 30.050, lng: -93.720 }, { lat: 30.400, lng: -93.750 },
+  { lat: 30.900, lng: -93.550 }, { lat: 31.400, lng: -93.700 },
+  { lat: 31.900, lng: -93.900 }, { lat: 32.600, lng: -94.043 },
+]
+
 function directionsUrl(pin: ClubMapPin): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${pin.lat},${pin.lng}`
 }
@@ -146,7 +169,20 @@ export function LCAMap(props: Props) {
       zoomControl: true,
       gestureHandling: props.mode === 'all' ? 'cooperative' : 'none',
     })
-    if (props.mode === 'all') infoRef.current = new g.InfoWindow()
+    if (props.mode === 'all') {
+      infoRef.current = new g.InfoWindow()
+      // Highlight our state: gold outline + a whisper of fill.
+      new g.Polygon({
+        paths: LA_BOUNDARY,
+        strokeColor: GOLD,
+        strokeOpacity: 0.85,
+        strokeWeight: 2.5,
+        fillColor: GOLD,
+        fillOpacity: 0.05,
+        clickable: false,
+        map: mapObj.current,
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded])
 

@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils'
 
 export interface PageHeroProps {
   title: ReactNode
+  /** Opt-in gold chip. Omitted by default — K retired it everywhere except the homepage. */
   eyebrow?: string | null
   subtitle?: ReactNode
   backTo?: { to: string; label: string }
@@ -39,7 +40,7 @@ export interface PageHeroProps {
 
 export function PageHero({
   title,
-  eyebrow = 'Louisiana Chess Association',
+  eyebrow,
   subtitle,
   backTo,
   badges,

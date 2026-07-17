@@ -50,7 +50,7 @@ export function GovLayout({
 }) {
   return (
     <div>
-      <PageHero eyebrow="Governance" title={title} subtitle={subtitle} />
+      <PageHero title={title} subtitle={subtitle} />
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="flex gap-8">
           <GovSidebar />
