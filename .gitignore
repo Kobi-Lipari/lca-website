@@ -15,3 +15,6 @@ prod-schema.txt
 scripts/launch-emails-sent.json
 scripts/lca-import.tsv
 tsconfig.app.tsbuildinfo
+scripts/provision.sql
+scripts/members.tsv
+.dev.vars
