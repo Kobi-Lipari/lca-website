@@ -9,6 +9,7 @@ import { HomePage } from '@/pages/HomePage'
 
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
+const AdminEmailPage = lazy(() => import('@/pages/AdminEmailPage').then(m => ({ default: m.AdminEmailPage })))
 const AdminPage = lazy(() => import('@/pages/AdminPage').then(m => ({ default: m.AdminPage })))
 const AdminSupportPage = lazy(() => import('@/pages/AdminSupportPage').then(m => ({ default: m.AdminSupportPage })))
 const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m.BoardPage })))
@@ -77,6 +78,7 @@ function App() {
             {/* ── Admin ── */}
             <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']}><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
+            <Route path="/admin/email" element={<RoleProtectedRoute roles={['lca_admin']}><AdminEmailPage /></RoleProtectedRoute>} />
             <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']} requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
             <Route path="/admin/support" element={<RoleProtectedRoute roles={['lca_admin']}><AdminSupportPage /></RoleProtectedRoute>} />
           </Routes>

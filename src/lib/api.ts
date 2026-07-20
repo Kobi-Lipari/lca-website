@@ -1095,3 +1095,77 @@ export async function adminDeleteGovernanceDocument(id: string): Promise<void> {
   const r = await fetch(`/api/governance/documents/${id}`, { method: 'DELETE', headers: await authHeaders() })
   await handleResponse(r)
 }
+
+// ── Append to src/lib/api.ts ──────────────────────────────────────────────────
+// Uses the same handleResponse<T>() helper already defined earlier in this file.
+
+export interface CampaignFilter {
+  all?: boolean
+  roles?: string[]
+  clubIds?: string[]
+  membershipStatuses?: string[]
+}
+
+export interface ApiCampaign {
+  id: string
+  subject: string
+  total_recipients: number
+  sent_count: number
+  failed_count: number
+  status: 'sending' | 'completed' | 'failed'
+  created_at: string
+  completed_at: string | null
+}
+
+export async function getCampaigns(): Promise<ApiCampaign[]> {
+  const response = await fetch('/api/admin/campaigns', {
+    headers: await authHeaders(),
+  })
+  const data = await handleResponse<{ campaigns: ApiCampaign[] }>(response)
+  return data.campaigns
+}
+
+export async function previewCampaignCount(
+  filter: CampaignFilter,
+): Promise<{ count: number; recipients: ApiCampaignRecipient[] }> {
+  const response = await fetch('/api/admin/campaigns/preview', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ filter }),
+  })
+  return handleResponse(response)
+}
+
+export async function createCampaign(payload: {
+  subject: string
+  bodyHtml: string
+  filter: CampaignFilter
+  excludeMemberIds?: string[]
+  includeMemberIds?: string[]
+}): Promise<{ campaignId: string; totalRecipients: number; status: string }> {
+  const response = await fetch('/api/admin/campaigns', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  return handleResponse(response)
+}
+
+export async function sendTestCampaignEmail(payload: {
+  email: string
+  subject: string
+  bodyHtml: string
+}): Promise<{ sent: true }> {
+  const response = await fetch('/api/admin/campaigns/test', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(payload),
+  })
+  return handleResponse(response)
+}
+
+export interface ApiCampaignRecipient {
+  id: string
+  email: string
+  full_name: string
+}

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ArrowRight, Building2, Check, Copy,
-  MessageSquare, Pencil, Plus, Search, Share2, Shield,
+  Mail, MessageSquare, Pencil, Plus, Search, Share2, Shield,
   Trash2, Trophy, Users, X,
 } from 'lucide-react'
 
@@ -46,7 +46,7 @@ const SECTION_PRESETS = [
 const TC_PRESETS = ['G/60+5','G/90+30','G/120+30','G/30+5','G/15+2','G/5+2','G/3+2']
 const ROUND_OPTIONS = [3,4,5,6,7]
 
-type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support'
+type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support' | 'email'
 type WizardStep = 'template' | 'basics' | 'sections' | 'schedule' | 'review'
 
 interface WizardState {
@@ -259,7 +259,7 @@ function ShareModal({ tournament, onClose, isAdmin, clubId }: {
                   ))}
                 </div>
               ) : (
-                <p className="mt-2 text-xs text-muted-foreground">No members match “{search.trim()}”.</p>
+                <p className="mt-2 text-xs text-muted-foreground">No members match "{search.trim()}".</p>
               )
             )}
             <p className="mt-3 text-xs text-muted-foreground">
@@ -941,7 +941,7 @@ function MembersTab({
               <tr>
                 <td colSpan={isAdmin ? 7 : 4} className="px-3 py-8 text-center text-muted-foreground">
                   {query
-                    ? <>No members match “{search.trim()}”.</>
+                    ? <>No members match "{search.trim()}".</>
                     : filter === 'active' ? 'No active members found.' : 'No members found.'}
                 </td>
               </tr>
@@ -1051,6 +1051,7 @@ export function AdminPage() {
     ...(isAdmin || isTD ? [{ id: 'members' as AdminTab, label: 'Members', icon: Users }] : []),
     { id: 'tournaments' as AdminTab, label: 'Tournaments', icon: Trophy },
     ...(isAdmin || isClubRep ? [{ id: 'clubs' as AdminTab, label: 'Clubs', icon: Building2 }] : []),
+    ...(isAdmin ? [{ id: 'email' as AdminTab, label: 'Group email', icon: Mail }] : []),
     ...(isAdmin ? [{ id: 'support' as AdminTab, label: 'Support tickets', icon: MessageSquare }] : []),
   ]
 
@@ -1206,6 +1207,19 @@ export function AdminPage() {
                   </li>
                 ))}
               </ul>
+            )}
+
+            {tab === 'email' && isAdmin && (
+              <div className="py-8 text-center">
+                <Mail className="mx-auto mb-3 size-8 text-muted-foreground" />
+                <p className="font-medium text-[#1a2744]">Group email</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Send an email to members — everyone, or a targeted group by role, club, or membership status.
+                </p>
+                <Button asChild className={cn('mt-4', GOLD)}>
+                  <Link to="/admin/email">Open group email</Link>
+                </Button>
+              </div>
             )}
 
             {tab === 'support' && isAdmin && (
