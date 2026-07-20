@@ -1,7 +1,7 @@
 // src/pages/BoardPage.tsx
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Trash2 } from 'lucide-react'
+import { Mail, Plus, ShieldCheck, MapPin, Trash2 } from 'lucide-react'
 import { GovLayout } from '@/components/governance/GovLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,9 +14,121 @@ import {
   getBoardMembers,
   type ApiBoardMember,
 } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+
+type EditableField = 'role' | 'name' | 'email'
+
+/** A role title containing "Representative" is a regional seat; everything
+ *  else (President, Vice President, Secretary-Treasurer, Scholastic
+ *  Director, Webmaster, etc.) is an executive officer. Simple, but matches
+ *  every role name LCA actually uses, and keeps the grouping automatic —
+ *  no separate admin toggle to keep in sync. */
+function isRegionalRole(role: string): boolean {
+  return /representative/i.test(role)
+}
+
+function firstName(fullName: string): string {
+  return fullName.trim().split(/\s+/)[0] || fullName
+}
+
+// ── A single officer or representative card ───────────────────────────────────
+// onLocalChange fires on every keystroke (just updates local state so typing
+// feels normal); onSave fires onBlur and is the actual PATCH — same two-phase
+// pattern the original page used, just shared across both card sizes.
+
+function MemberCard({
+  m, isAdmin, saving, size, onLocalChange, onSave, onDelete,
+}: {
+  m: ApiBoardMember
+  isAdmin: boolean
+  saving: boolean
+  size: 'large' | 'compact'
+  onLocalChange: (id: string, field: EditableField, value: string) => void
+  onSave: (id: string, field: EditableField, value: string) => void
+  onDelete: (id: string) => void
+}) {
+  const isVacant = m.name === 'TBD'
+  const large = size === 'large'
+
+  return (
+    <div
+      className={large ? 'rounded-xl border bg-card p-5 shadow-sm' : 'rounded-xl border bg-card p-4 shadow-sm'}
+      style={{ borderLeftColor: '#c8a94a', borderLeftWidth: large ? 4 : 3 }}
+    >
+      {isAdmin ? (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <Input
+              className={large ? 'h-7 text-xs font-semibold uppercase tracking-wide text-[#c8a94a]' : 'h-7 text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]'}
+              value={m.role}
+              disabled={saving}
+              onBlur={(e) => onSave(m.id, 'role', e.target.value)}
+              onChange={(e) => onLocalChange(m.id, 'role', e.target.value)}
+            />
+            <button type="button" onClick={() => onDelete(m.id)} disabled={saving} className="flex-shrink-0 text-muted-foreground hover:text-destructive">
+              <Trash2 className="size-3.5" />
+            </button>
+          </div>
+          <Input
+            className={large ? 'h-9 text-base font-bold text-[#1a2744]' : 'h-8 font-semibold text-[#1a2744]'}
+            value={m.name}
+            disabled={saving}
+            placeholder="Full name"
+            onBlur={(e) => onSave(m.id, 'name', e.target.value)}
+            onChange={(e) => onLocalChange(m.id, 'name', e.target.value)}
+          />
+          <Input
+            className="h-7 text-xs text-muted-foreground"
+            value={m.email ?? ''}
+            disabled={saving}
+            placeholder="email@louisianachess.org"
+            onBlur={(e) => onSave(m.id, 'email', e.target.value)}
+            onChange={(e) => onLocalChange(m.id, 'email', e.target.value)}
+          />
+        </div>
+      ) : (
+        <>
+          <p className={large ? 'text-xs font-semibold uppercase tracking-widest text-[#c8a94a]' : 'text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]'}>
+            {m.role}
+          </p>
+          {isVacant ? (
+            <div className="mt-1.5">
+              <p className={large ? 'text-base italic text-muted-foreground' : 'text-sm italic text-muted-foreground'}>
+                This seat is currently open
+              </p>
+              <Link
+                to="/contact"
+                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[#c8a94a] hover:underline"
+              >
+                Interested in serving? Contact us →
+              </Link>
+            </div>
+          ) : (
+            <>
+              <p className={large ? 'mt-1 text-lg font-bold text-[#1a2744]' : 'mt-1 font-semibold text-[#1a2744]'}>
+                {m.name}
+              </p>
+              {m.email && (
+                <a
+                  href={`mailto:${m.email}`}
+                  className={cn(
+                    'mt-3 inline-flex items-center gap-1.5 rounded-md border border-[#c8a94a]/40 bg-[#c8a94a]/8 font-medium text-[#7a5c00] transition-colors hover:bg-[#c8a94a]/15',
+                    large ? 'px-3 py-1.5 text-xs' : 'px-2.5 py-1 text-[11px]',
+                  )}
+                >
+                  <Mail className={large ? 'size-3.5' : 'size-3'} /> Email {firstName(m.name)}
+                </a>
+              )}
+            </>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
 
 export function BoardPage() {
   usePageTitle('Board Members')
@@ -36,13 +148,19 @@ export function BoardPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  async function handleUpdate(id: string, field: keyof ApiBoardMember, value: string) {
+  function handleLocalChange(id: string, field: EditableField, value: string) {
+    setMembers((prev) => prev.map((x) => (x.id === id ? { ...x, [field]: value } : x)))
+  }
+
+  async function handleSave(id: string, field: EditableField, value: string) {
     setSaving(id)
     try {
       const member = members.find((m) => m.id === id)!
       const updated = await adminUpdateBoardMember(id, { ...member, [field]: value })
-      setMembers((prev) => prev.map((m) => m.id === id ? updated : m))
-    } finally { setSaving(null) }
+      setMembers((prev) => prev.map((m) => (m.id === id ? updated : m)))
+    } finally {
+      setSaving(null)
+    }
   }
 
   async function handleAdd() {
@@ -64,67 +182,80 @@ export function BoardPage() {
     } finally { setSaving(null) }
   }
 
+  const officers = members.filter((m) => !isRegionalRole(m.role))
+  const reps = members.filter((m) => isRegionalRole(m.role))
+
   return (
-    <GovLayout title="Board members" subtitle="Current LCA officers and directors">
+    <GovLayout
+      title="Board & regional leadership"
+      subtitle="The volunteer officers and regional representatives who lead chess in Louisiana — reach out any time, that's what they're here for."
+    >
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : (
-        <>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {members.map((m) => (
-              <div key={m.id} className="rounded-xl border bg-card p-4 shadow-sm" style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}>
-                {isAdmin ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <Input
-                        className="h-7 text-xs font-semibold text-[#c8a94a]"
-                        value={m.role}
-                        disabled={saving === m.id}
-                        onBlur={(e) => handleUpdate(m.id, 'role', e.target.value)}
-                        onChange={(e) => setMembers((prev) => prev.map((x) => x.id === m.id ? { ...x, role: e.target.value } : x))}
-                      />
-                      <button type="button" onClick={() => handleDelete(m.id)} disabled={saving === m.id} className="text-muted-foreground hover:text-destructive flex-shrink-0">
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    </div>
-                    <Input
-                      className="h-8 font-semibold text-[#1a2744]"
-                      value={m.name}
-                      disabled={saving === m.id}
-                      placeholder="Full name"
-                      onBlur={(e) => handleUpdate(m.id, 'name', e.target.value)}
-                      onChange={(e) => setMembers((prev) => prev.map((x) => x.id === m.id ? { ...x, name: e.target.value } : x))}
-                    />
-                    <Input
-                      className="h-7 text-xs text-muted-foreground"
-                      value={m.email ?? ''}
-                      disabled={saving === m.id}
-                      placeholder="email@louisianachess.org"
-                      onBlur={(e) => handleUpdate(m.id, 'email', e.target.value)}
-                      onChange={(e) => setMembers((prev) => prev.map((x) => x.id === m.id ? { ...x, email: e.target.value } : x))}
-                    />
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-[10px] font-semibold uppercase tracking-widest text-[#c8a94a]">{m.role}</p>
-                    <p className="mt-1 font-semibold text-[#1a2744]">{m.name !== 'TBD' ? m.name : '—'}</p>
-                    {m.email && <a href={`mailto:${m.email}`} className="mt-0.5 block text-xs text-muted-foreground hover:text-[#c8a94a]">{m.email}</a>}
-                  </>
-                )}
+        <div className="space-y-10">
+
+          {officers.length > 0 && (
+            <div>
+              <div className="mb-4 flex items-center gap-2">
+                <ShieldCheck className="size-5 text-[#c8a94a]" />
+                <h2 className="text-base font-bold text-[#1a2744]">Officers</h2>
+                <span className="text-xs text-muted-foreground">· {officers.length}</span>
               </div>
-            ))}
-          </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {officers.map((m) => (
+                  <MemberCard
+                    key={m.id}
+                    m={m}
+                    isAdmin={isAdmin}
+                    saving={saving === m.id}
+                    size="large"
+                    onLocalChange={handleLocalChange}
+                    onSave={handleSave}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {reps.length > 0 && (
+            <div>
+              <div className="mb-4 flex items-center gap-2">
+                <MapPin className="size-5 text-[#c8a94a]" />
+                <h2 className="text-base font-bold text-[#1a2744]">Regional representatives</h2>
+                <span className="text-xs text-muted-foreground">· {reps.length}</span>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {reps.map((m) => (
+                  <MemberCard
+                    key={m.id}
+                    m={m}
+                    isAdmin={isAdmin}
+                    saving={saving === m.id}
+                    size="compact"
+                    onLocalChange={handleLocalChange}
+                    onSave={handleSave}
+                    onDelete={handleDelete}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {isAdmin && (
-            <div className="mt-6">
+            <div>
               {adding ? (
                 <div className="rounded-xl border bg-card p-4 shadow-sm space-y-3">
                   <p className="text-sm font-medium text-[#1a2744]">Add board member</p>
                   <div className="grid gap-3 sm:grid-cols-3">
-                    <div><Label className="text-xs">Role</Label><Input className="mt-1 h-8 text-sm" placeholder="e.g. President" value={newMember.role} onChange={(e) => setNewMember((p) => ({ ...p, role: e.target.value }))} /></div>
+                    <div><Label className="text-xs">Role</Label><Input className="mt-1 h-8 text-sm" placeholder="e.g. President, or '... Representative'" value={newMember.role} onChange={(e) => setNewMember((p) => ({ ...p, role: e.target.value }))} /></div>
                     <div><Label className="text-xs">Name</Label><Input className="mt-1 h-8 text-sm" placeholder="Full name" value={newMember.name} onChange={(e) => setNewMember((p) => ({ ...p, name: e.target.value }))} /></div>
                     <div><Label className="text-xs">Email</Label><Input className="mt-1 h-8 text-sm" placeholder="Optional" value={newMember.email} onChange={(e) => setNewMember((p) => ({ ...p, email: e.target.value }))} /></div>
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    Tip: a role containing "Representative" is automatically grouped under Regional representatives.
+                  </p>
                   <div className="flex gap-2">
                     <Button type="button" className={GOLD} size="sm" onClick={handleAdd} disabled={saving === 'new'}>Add member</Button>
                     <Button type="button" variant="outline" size="sm" onClick={() => setAdding(false)}>Cancel</Button>
@@ -138,11 +269,16 @@ export function BoardPage() {
             </div>
           )}
 
-          <p className="mt-6 text-xs text-muted-foreground">
-            To contact the board, use the{' '}
-            <Link to="/contact" className="text-[#c8a94a] hover:underline">contact form</Link>.
-          </p>
-        </>
+          <div className="rounded-xl border-[3px] border-[#c8a94a] bg-[#1a2744] p-5 text-white">
+            <h3 className="font-semibold">Want to reach the whole board at once?</h3>
+            <p className="mt-2 text-sm text-white/65">
+              For general inquiries, the contact form reaches the LCA directly and gets routed to the right person.
+            </p>
+            <Button asChild className={cn('mt-4', GOLD)}>
+              <Link to="/contact">Contact us</Link>
+            </Button>
+          </div>
+        </div>
       )}
     </GovLayout>
   )

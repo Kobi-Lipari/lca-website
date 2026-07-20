@@ -193,68 +193,19 @@ export function NewsPage() {
             <ClubNewsFeed news={news} loading={newsLoading} />
           </div>
 
-          {/* ── Facebook feed ── */}
+          {/* ── Facebook feed ──
+              No custom header card above this — Facebook's own Page Plugin
+              already renders its own name/Follow Page/follower-count block
+              whenever a timeline is shown, and there is no supported way to
+              suppress just that part (it lives inside a cross-origin
+              facebook.com iframe, which our CSS/JS can't reach into at all,
+              via either the JS-SDK embed or this raw iframe). A hand-built
+              header mimicking that same info used to sit here — pure
+              duplication, removed. The bottom "See all posts" link stays;
+              it's a footer CTA after the content, not a redundant identity
+              header. */}
           <div>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <svg viewBox="0 0 24 24" className="size-4 fill-[#1877F2]" aria-hidden="true">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                Latest from Facebook
-              </h2>
-              <a
-                href={FACEBOOK_PAGE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-xs text-[#1877F2] hover:underline"
-              >
-                View page <ExternalLink className="size-3" />
-              </a>
-            </div>
-
             <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-              {/* Facebook Page Plugin header */}
-              <div className="flex items-center gap-3 border-b border-border bg-[#1877F2]/5 px-5 py-3">
-                <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-full bg-[#1877F2]">
-                  <svg viewBox="0 0 24 24" className="size-5 fill-white" aria-hidden="true">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">Louisiana Chess Association</p>
-                  <a
-                    href={FACEBOOK_PAGE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-[#1877F2] hover:underline"
-                  >
-                    facebook.com/LouisianaChessAssociation
-                  </a>
-                </div>
-                <a
-                  href={FACEBOOK_PAGE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ml-auto rounded-md bg-[#1877F2] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#1877F2]/90"
-                >
-                  Follow
-                </a>
-              </div>
-
-              {/*
-                TODO: Replace this iframe with the Facebook Page Plugin for a richer embedded feed.
-                Steps:
-                  1. Go to https://developers.facebook.com/docs/plugins/page-plugin
-                  2. Set the href to https://www.facebook.com/LouisianaChessAssociation
-                  3. Create a Facebook App at developers.facebook.com to get an App ID
-                  4. Add VITE_FACEBOOK_APP_ID to your .env.local
-                  5. Load the FB SDK in index.html and replace this iframe with the Page Plugin div
-
-                The raw iframe embed below doesn't honor adapt_container_width — Facebook only
-                resizes the JS-SDK div version reliably. So we measure the container ourselves
-                (useMeasuredWidth above) and rebuild the src with the real pixel width, updating
-                on resize via ResizeObserver.
-              */}
               <div ref={containerRef} className="flex justify-center p-5">
                 {width && (
                   <iframe

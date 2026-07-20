@@ -1,10 +1,24 @@
-// src/components/governance/RichTextEditor/tsx
+// src/components/governance/RichTextEditor.tsx
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import { Bold, Italic, List, ListOrdered, Heading2, LinkIcon } from 'lucide-react'
 import { Toggle } from '@/components/ui/toggle'
 import { useEffect } from 'react'
+
+/**
+ * A bare domain/path typed with no scheme (e.g. "link.org") is a RELATIVE
+ * URL to a browser — clicked from /admin/email, "link.org" resolves to
+ * ".../admin/link.org", not "https://link.org". Assume https for anything
+ * that doesn't already declare a scheme (http, https, mailto, tel, etc.),
+ * so links behave the way whoever typed them obviously intended.
+ */
+function normalizeUrl(raw: string): string {
+  const trimmed = raw.trim()
+  if (!trimmed) return trimmed
+  if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed)) return trimmed
+  return `https://${trimmed}`
+}
 
 export function RichTextEditor({
   content,
@@ -19,7 +33,7 @@ export function RichTextEditor({
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none min-h-[200px] focus:outline-none px-3 py-2',
+        class: 'prose prose-sm max-w-none min-h-[200px] focus:outline-none px-3 py-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-0.5',
       },
     },
   })
@@ -57,7 +71,7 @@ export function RichTextEditor({
           pressed={editor.isActive('link')}
           onPressedChange={() => {
             const url = window.prompt('Link URL')
-            if (url) editor.chain().focus().setLink({ href: url }).run()
+            if (url) editor.chain().focus().setLink({ href: normalizeUrl(url) }).run()
           }}
         >
           <LinkIcon className="size-3.5" />

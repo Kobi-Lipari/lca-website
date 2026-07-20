@@ -132,6 +132,13 @@ function StatusDot({ regStatus }: { regStatus?: string }) {
  *    so client-side navigation (React Router) otherwise renders an empty div.
  * 2. Detects failure (ad blockers, SDK not loaded) and swaps in a designed
  *    fallback card so this column never renders as dead white space.
+ *
+ * No custom header row above this — Facebook's own Page Plugin always shows
+ * its own name/Follow Page/follower-count block when displaying a timeline
+ * (that's native FB chrome, not ours, and there's no supported way to
+ * suppress just that part), so a second "Latest from Facebook / Follow"
+ * label on top of it was pure duplication. The widget's own header now
+ * serves that role for this column.
  */
 function FacebookPanel({ height }: { height: number }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -270,15 +277,6 @@ export function HomePage() {
         </div>
 
         <div className="flex flex-col border-b border-border sm:border-b-0 sm:border-r">
-          <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
-            <div className="flex items-center gap-2">
-              <FacebookIcon className="size-3.5 text-[#1877F2]" />
-              <span className="text-[13px] font-semibold text-foreground">Latest from Facebook</span>
-            </div>
-            <a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer" className="flex items-center gap-0.5 text-xs text-[#1877F2] hover:underline">
-              Follow <ArrowRight className="size-3" />
-            </a>
-          </div>
           <FacebookPanel height={COLUMN_HEIGHT} />
         </div>
 
