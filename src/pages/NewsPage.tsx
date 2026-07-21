@@ -1,12 +1,12 @@
 // src/pages/NewsPage.tsx
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Building2, ExternalLink } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
+import { FacebookFeed } from '@/components/FacebookFeed'
 import { getNews, type ApiNewsItem } from '@/lib/api'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
-const FACEBOOK_PAGE_URL = 'https://www.facebook.com/LouisianaChessAssociation'
 const LCA_GOLD = '#c8a94a'
 
 // Pinned LCA announcements — edit this array to update pinned items
@@ -35,33 +35,6 @@ function formatDate(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00')
   if (isNaN(d.getTime())) return dateStr
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-// Facebook's raw iframe page-plugin embed does not honor adapt_container_width the
-// way the JS SDK div version does — it locks in whatever `width` is passed in the
-// URL. So we measure the real container width ourselves and rebuild the iframe src
-// to match, keeping it responsive on resize.
-function useMeasuredWidth(maxWidth: number) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [width, setWidth] = useState<number | null>(null)
-
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-
-    function update() {
-      if (!el) return
-      const w = Math.min(Math.floor(el.getBoundingClientRect().width), maxWidth)
-      setWidth(w)
-    }
-
-    update()
-    const observer = new ResizeObserver(update)
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [maxWidth])
-
-  return { containerRef, width }
 }
 
 // ── Club news feed ────────────────────────────────────────────────────────────
@@ -128,7 +101,6 @@ function ClubNewsFeed({
 
 export function NewsPage() {
   usePageTitle('News')
-  const { containerRef, width } = useMeasuredWidth(500)
 
   const [news, setNews] = useState<ApiNewsItem[]>([])
   const [newsLoading, setNewsLoading] = useState(true)
@@ -194,46 +166,15 @@ export function NewsPage() {
           </div>
 
           {/* ── Facebook feed ──
-              No custom header card above this — Facebook's own Page Plugin
-              already renders its own name/Follow Page/follower-count block
-              whenever a timeline is shown, and there is no supported way to
-              suppress just that part (it lives inside a cross-origin
-              facebook.com iframe, which our CSS/JS can't reach into at all,
-              via either the JS-SDK embed or this raw iframe). A hand-built
-              header mimicking that same info used to sit here — pure
-              duplication, removed. The bottom "See all posts" link stays;
-              it's a footer CTA after the content, not a redundant identity
-              header. */}
+              Pulled server-side via Graph API instead of Facebook's embedded
+              widget — the old Page Plugin (JS SDK div and raw iframe both)
+              always rendered its own name/Follow Page/follower-count chrome
+              inside a cross-origin facebook.com frame we couldn't touch.
+              FacebookFeed fetches from our own /api/facebook-posts and
+              renders fully in our own markup, so it owns its card, header,
+              and footer link below. */}
           <div>
-            <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-              <div ref={containerRef} className="flex justify-center p-5">
-                {width && (
-                  <iframe
-                    key={width}
-                    src={`https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FLouisianaChessAssociation&tabs=timeline&width=${width}&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false`}
-                    width={width}
-                    height="500"
-                    style={{ border: 'none', overflow: 'hidden', display: 'block' }}
-                    scrolling="no"
-                    frameBorder="0"
-                    allowFullScreen
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                    title="Louisiana Chess Association Facebook feed"
-                  />
-                )}
-              </div>
-
-              <div className="border-t border-border px-5 py-3 text-center">
-                <a
-                  href={FACEBOOK_PAGE_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[#1877F2] hover:underline"
-                >
-                  See all posts on Facebook →
-                </a>
-              </div>
-            </div>
+            <FacebookFeed variant="full" limit={8} />
           </div>
         </div>
       </section>

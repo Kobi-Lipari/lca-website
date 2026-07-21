@@ -1,6 +1,7 @@
 // functions/api/admin/tournaments/[id]/registration.ts
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
+import { notifyRegistrationOpen } from '../../../../utils/registrationOpenNotify'
 import {
   errorResponse,
   handleOptions,
@@ -30,7 +31,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first()
+  ).bind(tournamentId).first<{ registration_status: string; name: string }>()
 
   if (!tournament) return errorResponse('Tournament not found', 404)
 
@@ -57,6 +58,16 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const updated = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
   ).bind(tournamentId).first()
+
+  // Fire the registration-open notification only on the transition INTO
+  // 'open' — never on a re-save of an already-open tournament. Runs via
+  // waitUntil so a slow batch of subscriber emails doesn't hold up the
+  // admin's save request.
+  const wasOpen = tournament.registration_status === 'open'
+  const isNowOpen = body.registration_status === 'open'
+  if (!wasOpen && isNowOpen) {
+    context.waitUntil(notifyRegistrationOpen(context.env, tournamentId, tournament.name))
+  }
 
   return jsonResponse({ tournament: updated })
 }
