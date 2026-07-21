@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { PageHero } from '@/components/PageHero'
 import { StatusDot } from '@/components/StatusBadge'
 import { FilterDropdown } from '@/components/FilterDropdown'
+import { RegistrationReminderButton } from '@/components/RegistrationReminderButton'
 import { formatDate, isPastTournament, type UnifiedTournament } from '@/lib/clearinghouse'
 import { isScholasticTournament } from '@/lib/scholastic'
 import { clubColorTint } from '@/lib/clubColors'
@@ -117,7 +118,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
         <p className="mt-3 text-xs text-muted-foreground">${t.entry_fee} entry</p>
       )}
       {regOpen && !isPast && <p className="mt-0.5 text-xs font-medium text-emerald-600">Registration open</p>}
-      <div className="mt-3.5 flex gap-2">
+      <div className="mt-3.5 flex flex-wrap items-center gap-2">
         {regOpen && !isPast && (
           <Button asChild size="sm" className="h-7 bg-[#c8a94a] text-xs font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
             <Link to={`/tournaments/${t.id}`}>Register</Link>
@@ -128,6 +129,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
             {isPast ? 'View results' : 'Full details'}
           </Link>
         </Button>
+        {!regOpen && !isPast && <RegistrationReminderButton tournamentId={t.id} />}
       </div>
     </div>
   )
@@ -290,7 +292,10 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
   )
 }
 
-// ── Calendar ──────────────────────────────────────────────────────────────────
+// ── Calendar (redesigned: full-width event bars in each day cell, Google
+//    Calendar-style, instead of the old bottom-of-cell dots) ─────────────────
+
+const MAX_VISIBLE_PER_DAY = 2
 
 function TournamentCalendar({ tournaments, onSelect }: {
   tournaments: UnifiedTournament[]
@@ -346,24 +351,42 @@ function TournamentCalendar({ tournaments, onSelect }: {
       </div>
       <div className="grid grid-cols-7">
         {cells.map((day, i) => {
-          if (!day) return <div key={`e-${i}`} className="h-12 border-b border-r border-border/40 last:border-r-0" />
+          if (!day) return <div key={`e-${i}`} className="min-h-[92px] border-b border-r border-border/40 last:border-r-0" />
           const ts = dayMap.get(day.toString()) ?? []
           const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year
-          const hasLCA = ts.some(t => t.is_lca === 1)
-          const hasExt = ts.some(t => t.is_lca === 0)
+          const visible = ts.slice(0, MAX_VISIBLE_PER_DAY)
+          const overflow = ts.length - visible.length
+
           return (
-            <div
-              key={day}
-              className={cn('relative h-12 border-b border-r border-border/40 p-1 last:border-r-0', ts.length > 0 && 'cursor-pointer hover:bg-muted/30')}
-              onClick={() => ts.length > 0 && onSelect(ts[0])}
-            >
-              <span className={cn('flex size-6 items-center justify-center rounded-full text-xs', isToday ? 'bg-[#1a2744] font-bold text-white' : 'text-foreground')}>
+            <div key={day} className="min-h-[92px] border-b border-r border-border/40 p-1 last:border-r-0">
+              <span
+                className={cn(
+                  'flex size-5 items-center justify-center rounded-full text-[11px]',
+                  isToday ? 'bg-[#1a2744] font-bold text-white' : 'text-foreground',
+                )}
+              >
                 {day}
               </span>
               {ts.length > 0 && (
-                <div className="absolute bottom-1.5 left-1/2 flex -translate-x-1/2 gap-0.5">
-                  {hasLCA && <span className="size-1.5 rounded-full bg-[#c8a94a]" />}
-                  {hasExt && <span className="size-1.5 rounded-full bg-slate-400" />}
+                <div className="mt-1 space-y-0.5">
+                  {visible.map(t => {
+                    const color = t.is_lca === 1 ? (t.club_color || LCA_GOLD) : '#94a3b8'
+                    return (
+                      <button
+                        key={`${t.source}-${t.id}`}
+                        type="button"
+                        onClick={() => onSelect(t)}
+                        title={t.name}
+                        className="block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium text-[#1a2744] transition-opacity hover:opacity-80"
+                        style={{ backgroundColor: clubColorTint(color, 0.22) }}
+                      >
+                        {t.name}
+                      </button>
+                    )
+                  })}
+                  {overflow > 0 && (
+                    <p className="px-1 text-[10px] text-muted-foreground">+{overflow} more</p>
+                  )}
                 </div>
               )}
             </div>
@@ -536,29 +559,28 @@ export function TournamentsPage() {
         title="Tournaments"
         subtitle="LCA events and Gulf South regional tournaments — all in one place."
       >
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-white/40" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tournaments…"
-              className="h-8 w-44 rounded-full border border-white/20 bg-white/10 pl-8 pr-7 text-xs text-white placeholder:text-white/40 outline-none transition-colors focus:border-[#c8a94a]/70 sm:w-60"
-            />
-            {search && (
-              <button
-                type="button"
-                onClick={() => setSearch('')}
-                aria-label="Clear search"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80"
-              >
-                <X className="size-3.5" />
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-white/40" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search tournaments…"
+                className="h-8 w-44 rounded-full border border-white/20 bg-white/10 pl-8 pr-7 text-xs text-white placeholder:text-white/40 outline-none transition-colors focus:border-[#c8a94a]/70 sm:w-60"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  aria-label="Clear search"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80"
+                >
+                  <X className="size-3.5" />
+                </button>
+              )}
+            </div>
             <FilterDropdown
               on="navy"
               value={stateFilter}
@@ -580,24 +602,32 @@ export function TournamentsPage() {
               onChange={setTypeFilter}
               options={typeOptions}
             />
-            <div className="flex rounded-lg border border-white/20 p-0.5">
-              <button
-                type="button"
-                onClick={() => setViewMode('list')}
-                className={cn('flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
-                  viewMode === 'list' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/50 hover:text-white/70')}
-              >
-                <Trophy className="size-3" /> List
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('calendar')}
-                className={cn('flex items-center gap-1 rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-colors',
-                  viewMode === 'calendar' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/50 hover:text-white/70')}
-              >
-                <Calendar className="size-3" /> Calendar
-              </button>
-            </div>
+          </div>
+
+          {/* View switcher — kept as one bold, full-word control rather than
+              an icon-only pill, so it reads as "how you're viewing this"
+              rather than blending in as a third filter dropdown. */}
+          <div className="flex h-9 rounded-lg border border-[#c8a94a]/70 p-0.5">
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors',
+                viewMode === 'list' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/70 hover:text-white',
+              )}
+            >
+              <Trophy className="size-3.5" /> List
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('calendar')}
+              className={cn(
+                'flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors',
+                viewMode === 'calendar' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/70 hover:text-white',
+              )}
+            >
+              <Calendar className="size-3.5" /> Calendar
+            </button>
           </div>
         </div>
       </PageHero>

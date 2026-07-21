@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, Calendar, ChevronLeft, ChevronRight, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { FacebookIcon } from '@/components/ui/FacebookIcon'
+import { FacebookFeed } from '@/components/FacebookFeed'
 import { getTournaments, getClubs, type ApiTournamentListItem, type ApiClubListItem } from '@/lib/api'
 import { clubColorTint, clubAccentStyle } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
@@ -126,75 +126,6 @@ function StatusDot({ regStatus }: { regStatus?: string }) {
   return <span className="h-2 w-2 shrink-0 rounded-full bg-border" title="Coming soon" />
 }
 
-/**
- * Facebook Page embed with two fixes:
- * 1. Re-parses XFBML on mount — the FB SDK only parses on initial page load,
- *    so client-side navigation (React Router) otherwise renders an empty div.
- * 2. Detects failure (ad blockers, SDK not loaded) and swaps in a designed
- *    fallback card so this column never renders as dead white space.
- *
- * No custom header row above this — Facebook's own Page Plugin always shows
- * its own name/Follow Page/follower-count block when displaying a timeline
- * (that's native FB chrome, not ours, and there's no supported way to
- * suppress just that part), so a second "Latest from Facebook / Follow"
- * label on top of it was pure duplication. The widget's own header now
- * serves that role for this column.
- */
-function FacebookPanel({ height }: { height: number }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const w = window as any
-    if (w.FB?.XFBML && containerRef.current) {
-      try { w.FB.XFBML.parse(containerRef.current) } catch { /* noop */ }
-    }
-    const timer = setTimeout(() => {
-      const hasIframe = containerRef.current?.querySelector('iframe')
-      if (!hasIframe) setFailed(true)
-    }, 2500)
-    return () => clearTimeout(timer)
-  }, [])
-
-  if (failed) {
-    return (
-      <div className="flex flex-col items-center justify-center gap-3 px-6 text-center" style={{ height }}>
-        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1877F2]/10">
-          <FacebookIcon className="size-5 text-[#1877F2]" />
-        </div>
-        <div>
-          <p className="text-[13px] font-semibold text-foreground">Louisiana Chess Association</p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">
-            News, results, and photos from events across the state.
-          </p>
-        </div>
-        <Button asChild size="sm" variant="outline" className="h-7 text-xs">
-          <a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer">
-            Follow on Facebook
-          </a>
-        </Button>
-      </div>
-    )
-  }
-
-  return (
-  <div ref={containerRef} className="flex justify-center overflow-hidden" style={{ maxHeight: height }}>
-      <div
-        className="fb-page"
-        data-href="https://www.facebook.com/LouisianaChessAssociation"
-        data-tabs="timeline"
-        data-width="500"
-        data-height={String(height)}
-        data-small-header="true"
-        data-adapt-container-width="true"
-        data-hide-cover="true"
-        data-show-facepile="false"
-      />
-    </div>
-  )
-}
-
 const COLUMN_HEIGHT = 340
 
 export function HomePage() {
@@ -277,7 +208,7 @@ export function HomePage() {
         </div>
 
         <div className="flex flex-col border-b border-border sm:border-b-0 sm:border-r">
-          <FacebookPanel height={COLUMN_HEIGHT} />
+          <FacebookFeed variant="compact" limit={5} height={COLUMN_HEIGHT} />
         </div>
 
         <div className="flex flex-col">
