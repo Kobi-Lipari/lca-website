@@ -133,59 +133,59 @@ export function ClubDetailPage() {
   return (
     <div>
       {/* ── Hero ── */}
-      <section
-        className="border-b-[3px] text-white"
-        style={{ backgroundColor: '#1a2744', borderBottomColor: color }}
-      >
-        <div className="mx-auto max-w-6xl px-6 py-10">
-          <Link
-            to="/clubs"
-            className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-[#c8a94a]"
-          >
-            <ArrowLeft className="size-3.5" /> All clubs
-          </Link>
+<section
+  className="border-b-[3px] text-white"
+  style={{ backgroundColor: '#1a2744', borderBottomColor: color }}
+>
+  <div className="mx-auto max-w-6xl px-6 py-10">
+    <Link
+      to="/clubs"
+      className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-[#c8a94a]"
+    >
+      <ArrowLeft className="size-3.5" /> All clubs
+    </Link>
 
-          <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-            <div className="min-w-0">
-              <div className="mb-2 flex items-center gap-2.5">
-                <span
-                  className="size-2.5 flex-shrink-0 rounded-full"
-                  style={{ backgroundColor: color }}
-                />
-                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                  {club.name}
-                </h1>
-              </div>
-              <div className="flex flex-col gap-2 text-sm text-white/70 sm:flex-row sm:flex-wrap sm:gap-x-5">
-                <span className="inline-flex items-center gap-1.5">
-                  <MapPin className="size-4 flex-shrink-0 text-[#c8a94a]" />
-                  {club.city}, LA
-                </span>
-                {club.meeting_schedule && (
-                  <span className="inline-flex items-center gap-1.5">
-                    <Calendar className="size-4 flex-shrink-0 text-[#c8a94a]" />
-                    {club.meeting_schedule}
-                  </span>
-                )}
-                {club.contact_email && (
-                  <span className="inline-flex items-center gap-1.5">
-                    <Mail className="size-4 flex-shrink-0 text-[#c8a94a]" />
-                    {club.contact_email}
-                  </span>
-                )}
-              </div>
-            </div>
-
-            {/* Club image in hero if available */}
-            {imageUrl && (
-              <div
-                className="h-20 w-32 flex-shrink-0 overflow-hidden rounded-xl border border-white/20 bg-cover bg-center shadow-sm"
-                style={{ backgroundImage: `url(${imageUrl})` }}
-              />
-            )}
-          </div>
+    <div className="mt-4 flex flex-col gap-5 sm:flex-row sm:items-center">
+      {imageUrl && (
+        <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl border border-white/15 bg-white shadow-sm sm:h-28 sm:w-28">
+          <div
+            className="h-full w-full bg-contain bg-center bg-no-repeat"
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          />
         </div>
-      </section>
+      )}
+      <div className="min-w-0">
+        <div className="mb-2 flex items-center gap-2.5">
+          <span
+            className="size-2.5 flex-shrink-0 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            {club.name}
+          </h1>
+        </div>
+        <div className="flex flex-col gap-2 text-sm text-white/70 sm:flex-row sm:flex-wrap sm:gap-x-5">
+          <span className="inline-flex items-center gap-1.5">
+            <MapPin className="size-4 flex-shrink-0 text-[#c8a94a]" />
+            {club.city}, LA
+          </span>
+          {club.meeting_schedule && (
+            <span className="inline-flex items-center gap-1.5">
+              <Calendar className="size-4 flex-shrink-0 text-[#c8a94a]" />
+              {club.meeting_schedule}
+            </span>
+          )}
+          {club.contact_email && (
+            <span className="inline-flex items-center gap-1.5">
+              <Mail className="size-4 flex-shrink-0 text-[#c8a94a]" />
+              {club.contact_email}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* ── Body ── */}
       <section className="mx-auto max-w-6xl px-6 py-10">

@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { Calendar, ChevronLeft, ChevronRight, MapPin, Search, X } from 'lucide-react'
 
 import { getClubs, type ApiClubListItem } from '@/lib/api'
-import { FilterDropdown } from '@/components/FilterDropdown'
 import { PageHero } from '@/components/PageHero'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
@@ -25,6 +24,10 @@ const REGIONS = [
   'Bayou Region',
 ]
 
+function abbreviateRegion(region: string): string {
+  return region.replace(/\bLouisiana\b/, 'LA')
+}
+
 const HERO_STATS = [
   { n: '25+', l: 'clubs statewide' },
   { n: '7', l: 'regions' },
@@ -39,16 +42,18 @@ function ClubCardImage({ club }: { club: ApiClubListItem }) {
 
   if (club.image_url) {
     return (
-      <div
-        className="h-28 w-full flex-shrink-0 border-b border-border bg-cover bg-center"
-        style={{ backgroundImage: `url(${club.image_url})` }}
-      />
+      <div className="flex h-36 w-full flex-shrink-0 items-center justify-center border-b border-border bg-white">
+        <div
+          className="h-full w-full bg-contain bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${club.image_url})` }}
+        />
+      </div>
     )
   }
 
   return (
     <div
-      className="flex h-28 w-full flex-shrink-0 items-center justify-center border-b border-border"
+      className="flex h-36 w-full flex-shrink-0 items-center justify-center border-b border-border"
       style={{ backgroundColor: clubColorTint(color, 0.1) }}
     >
       <svg
@@ -71,7 +76,7 @@ function ClubCard({ club }: { club: ApiClubListItem }) {
 
   return (
     <div
-      className="flex w-[210px] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+      className="flex w-[174px] flex-shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
       style={{ scrollSnapAlign: 'start' }}
     >
       <div className="h-1 w-full flex-shrink-0" style={{ backgroundColor: color }} />
@@ -121,7 +126,7 @@ function ClubCarousel({
   isFiltered: boolean
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
-  const CARD_WIDTH = 222 // 210px card + 12px gap
+  const CARD_WIDTH = 186
 
   function scroll(dir: 'left' | 'right') {
     if (!trackRef.current) return
@@ -233,20 +238,29 @@ export function ClubsPage() {
         }
       />
 
-      {/* ── Filter bar: region dropdown + search ── */}
+      {/* ── Filter bar: region pills + search ── */}
       <div className="border-b border-border bg-muted/20">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="flex items-center justify-between gap-3 py-2.5">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-medium text-muted-foreground">Region</span>
-              <FilterDropdown
-                value={activeRegion ?? 'all'}
-                onChange={(v) => setActiveRegion(v === 'all' ? null : v)}
-                options={[
-                  { value: 'all', label: 'All regions' },
-                  ...REGIONS.map((r) => ({ value: r, label: r })),
-                ]}
-              />
+        <div className="mx-auto max-w-6xl px-6 py-3">
+          <div className="flex items-center gap-3">
+            <div
+              className="flex flex-1 items-center gap-1.5 overflow-x-auto"
+              style={{ scrollbarWidth: 'none' }}
+            >
+              {REGIONS.map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setActiveRegion(activeRegion === r ? null : r)}
+                  className={cn(
+                    'flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+                    activeRegion === r
+                      ? 'border-[#1a2744] bg-[#1a2744] text-white'
+                      : 'border-border bg-card text-muted-foreground hover:border-[#c8a94a]/60 hover:text-foreground',
+                  )}
+                >
+                  {abbreviateRegion(r)}
+                </button>
+              ))}
             </div>
             <div className="relative flex-shrink-0">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />

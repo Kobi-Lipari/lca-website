@@ -1207,3 +1207,13 @@ export async function adminUpdateAnnouncement(body: {
   })
   return handleResponse(response)
 }
+
+export async function adminUploadClubLogo(clubId: string, blob: Blob): Promise<{ imageUrl: string }> {
+  const headers = await authHeaders()
+  const response = await fetch(`/api/admin/clubs/${clubId}/logo`, {
+    method: 'POST',
+    headers: { ...headers, 'Content-Type': 'image/jpeg' },
+    body: blob,
+  })
+  return handleResponse(response)
+}

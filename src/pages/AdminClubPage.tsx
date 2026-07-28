@@ -1,5 +1,5 @@
 // src/pages/AdminClubPage.tsx
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft, Building2, Newspaper, Palette, Trophy, Upload, Users,
@@ -12,11 +12,13 @@ import {
   adminCreateClubNews,
   adminGetClubRoster,
   adminUpdateClub,
+  adminUploadClubLogo,
   getClub,
   type ApiAdminMember,
   type ApiClubDetail,
   type ApiClubTournament,
 } from '@/lib/api'
+import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
@@ -35,6 +37,10 @@ export function AdminClubPage() {
   const [saving, setSaving] = useState(false)
   const [newsSaving, setNewsSaving] = useState(false)
   const [tab, setTab] = useState<ClubTab>('details')
+
+  const [logoUploading, setLogoUploading] = useState(false)
+  const [logoError, setLogoError] = useState<string | null>(null)
+  const logoInputRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState({
     name: '',
@@ -108,6 +114,29 @@ export function AdminClubPage() {
       setError(err instanceof Error ? err.message : 'Failed to save club')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleLogoChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = '' // lets the same file be re-selected later if needed
+    if (!file || !id) return
+    if (!file.type.startsWith('image/')) {
+      setLogoError('Please choose an image file')
+      return
+    }
+    setLogoUploading(true)
+    setLogoError(null)
+    try {
+      // 400×220 matches the recommended size the old text-field hint used —
+      // now enforced automatically instead of trusted to whoever uploads.
+      const blob = await resizeImageToFit(file, 320, 320)
+      const { imageUrl } = await adminUploadClubLogo(id, blob)
+      setForm((p) => ({ ...p, imageUrl }))
+    } catch (err) {
+      setLogoError(err instanceof Error ? err.message : 'Failed to upload image')
+    } finally {
+      setLogoUploading(false)
     }
   }
 
@@ -312,21 +341,24 @@ export function AdminClubPage() {
                 <h2 className="text-base font-semibold text-[#1a2744]">Club image</h2>
               </div>
               <p className="mb-3 text-sm text-muted-foreground">
-                Upload a logo or promotional photo. This appears at the top of your club's card in the carousel and in the hero of your club detail page.
+                Upload a logo or promotional photo. This appears at the top of your club's card in the carousel and in the hero of your club detail page. It's automatically resized and cropped — no need to prepare an exact size yourself.
               </p>
-              <div className="space-y-1.5">
-                <Label htmlFor="image-url">Image URL</Label>
-                <Input
-                  id="image-url"
-                  type="url"
-                  placeholder="https://example.com/club-logo.jpg"
-                  value={form.imageUrl}
-                  onChange={(e) => setForm((p) => ({ ...p, imageUrl: e.target.value }))}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Paste a direct link to your image. Recommended size: 400×220px or wider, JPG or PNG.
-                </p>
-              </div>
+              <input
+                ref={logoInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoChange}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => logoInputRef.current?.click()}
+                disabled={logoUploading}
+              >
+                {logoUploading ? 'Uploading…' : 'Choose image'}
+              </Button>
+              {logoError && <p className="mt-2 text-xs text-destructive">{logoError}</p>}
               {form.imageUrl && (
                 <div className="mt-3 overflow-hidden rounded-lg border" style={{ maxWidth: 260 }}>
                   <img
