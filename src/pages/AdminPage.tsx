@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ArrowRight, Building2, Check, Copy,
-  Mail, MessageSquare, Pencil, Plus, Search, Share2, Shield,
+  Mail, Megaphone, MessageSquare, Pencil, Plus, Search, Share2, Shield,
   Trash2, Trophy, Users, X,
 } from 'lucide-react'
 
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
+import { AdminAnnouncementPanel } from '@/components/AdminAnnouncementPanel'
 import {
   adminAssignTournamentDirector,
   adminCreateTournament,
@@ -46,7 +47,7 @@ const SECTION_PRESETS = [
 const TC_PRESETS = ['G/60+5','G/90+30','G/120+30','G/30+5','G/15+2','G/5+2','G/3+2']
 const ROUND_OPTIONS = [3,4,5,6,7]
 
-type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support' | 'email'
+type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support' | 'email' | 'announcements'
 type WizardStep = 'template' | 'basics' | 'sections' | 'schedule' | 'review'
 
 interface WizardState {
@@ -1053,6 +1054,7 @@ export function AdminPage() {
     ...(isAdmin || isClubRep ? [{ id: 'clubs' as AdminTab, label: 'Clubs', icon: Building2 }] : []),
     ...(isAdmin ? [{ id: 'email' as AdminTab, label: 'Group email', icon: Mail }] : []),
     ...(isAdmin ? [{ id: 'support' as AdminTab, label: 'Support tickets', icon: MessageSquare }] : []),
+    ...(isAdmin ? [{ id: 'announcements' as AdminTab, label: 'Announcements', icon: Megaphone }] : []),
   ]
 
   async function loadAll() {
@@ -1232,6 +1234,11 @@ export function AdminPage() {
                 </Button>
               </div>
             )}
+
+            {tab === 'announcements' && isAdmin && (
+              <AdminAnnouncementPanel />
+            )}
+            
           </>
         )}
       </section>

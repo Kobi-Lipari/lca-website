@@ -29,6 +29,33 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
+function useColumnCount(): number {
+  const [columns, setColumns] = useState(1)
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 640px)')
+    function update() {
+      setColumns(mq.matches ? 3 : 1)
+    }
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  return columns
+}
+
+// Round-robin distribution (post 0 → col 0, post 1 → col 1, post 2 → col 2,
+// post 3 → col 0, ...) rather than letting the browser fill one column
+// top-to-bottom before starting the next. That's what guarantees the top
+// ROW is always the most recent posts, left to right — plain CSS multi-
+// column layout doesn't preserve that, it just dumps everything down
+// column 1 first.
+function distributeRoundRobin<T>(items: T[], columnCount: number): T[][] {
+  const columns: T[][] = Array.from({ length: columnCount }, () => [])
+  items.forEach((item, i) => columns[i % columnCount].push(item))
+  return columns
+}
 function useFacebookPosts(limit: number) {
   const [posts, setPosts] = useState<FacebookFeedPost[] | null>(null)
   const [error, setError] = useState(false)
@@ -61,6 +88,7 @@ interface FacebookFeedProps {
 
 export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, height = 340 }: FacebookFeedProps) {
   const { posts, error } = useFacebookPosts(limit)
+  const columnCount = useColumnCount()
 
   if (variant === 'compact') {
     return (
@@ -132,22 +160,31 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
         ) : posts.length === 0 ? (
           <p className="text-sm text-muted-foreground">No recent posts.</p>
         ) : (
-          <div className="space-y-3">
-            {posts.map((post) => (
-              <a
-                key={post.id}
-                href={post.permalinkUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
-                style={{ borderLeftColor: LCA_GOLD, borderLeftWidth: 3 }}
-              >
-                <p className="text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</p>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#1a2744]">{post.message}</p>
-                {post.imageUrl && (
-                  <img src={post.imageUrl} alt="" className="mt-3 h-40 w-full rounded-lg object-cover" loading="lazy" />
-                )}
-              </a>
+          <div
+            className="grid items-start gap-4"
+            style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
+          >
+            {distributeRoundRobin(posts, columnCount).map((columnPosts, colIdx) => (
+              <div key={colIdx} className="flex flex-col gap-4">
+                {columnPosts.map((post) => (
+                  <a
+                    key={post.id}
+                    href={post.permalinkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md"
+                    style={{ borderLeftColor: LCA_GOLD, borderLeftWidth: 3 }}
+                  >
+                    {post.imageUrl && (
+                      <img src={post.imageUrl} alt="" className="block w-full" loading="lazy" />
+                    )}
+                    <div className="p-4">
+                      <p className="text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</p>
+                      <p className="mt-1.5 text-sm leading-relaxed text-[#1a2744]">{post.message}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
             ))}
           </div>
         )}
