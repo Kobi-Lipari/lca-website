@@ -36,33 +36,31 @@ function firstName(fullName: string): string {
 
 // ── A single officer or representative card ───────────────────────────────────
 // onLocalChange fires on every keystroke (just updates local state so typing
-// feels normal); onSave fires onBlur and is the actual PATCH — same two-phase
-// pattern the original page used, just shared across both card sizes.
+// feels normal); onSave fires onBlur and is the actual PATCH. Officers and
+// regional reps share this exact same card treatment — no size variants.
 
 function MemberCard({
-  m, isAdmin, saving, size, onLocalChange, onSave, onDelete,
+  m, isAdmin, saving, onLocalChange, onSave, onDelete,
 }: {
   m: ApiBoardMember
   isAdmin: boolean
   saving: boolean
-  size: 'large' | 'compact'
   onLocalChange: (id: string, field: EditableField, value: string) => void
   onSave: (id: string, field: EditableField, value: string) => void
   onDelete: (id: string) => void
 }) {
   const isVacant = m.name === 'TBD'
-  const large = size === 'large'
 
   return (
     <div
-      className={large ? 'rounded-xl border bg-card p-5 shadow-sm' : 'rounded-xl border bg-card p-4 shadow-sm'}
-      style={{ borderLeftColor: '#c8a94a', borderLeftWidth: large ? 4 : 3 }}
+      className="rounded-xl border bg-card p-4 shadow-sm"
+      style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
     >
       {isAdmin ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Input
-              className={large ? 'h-7 text-xs font-semibold uppercase tracking-wide text-[#c8a94a]' : 'h-7 text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]'}
+              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]"
               value={m.role}
               disabled={saving}
               onBlur={(e) => onSave(m.id, 'role', e.target.value)}
@@ -73,7 +71,7 @@ function MemberCard({
             </button>
           </div>
           <Input
-            className={large ? 'h-9 text-base font-bold text-[#1a2744]' : 'h-8 font-semibold text-[#1a2744]'}
+            className="h-8 font-semibold text-[#1a2744]"
             value={m.name}
             disabled={saving}
             placeholder="Full name"
@@ -91,12 +89,12 @@ function MemberCard({
         </div>
       ) : (
         <>
-          <p className={large ? 'text-xs font-semibold uppercase tracking-widest text-[#c8a94a]' : 'text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]'}>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]">
             {m.role}
           </p>
           {isVacant ? (
             <div className="mt-1.5">
-              <p className={large ? 'text-base italic text-muted-foreground' : 'text-sm italic text-muted-foreground'}>
+              <p className="text-sm italic text-muted-foreground">
                 This seat is currently open
               </p>
               <Link
@@ -108,18 +106,19 @@ function MemberCard({
             </div>
           ) : (
             <>
-              <p className={large ? 'mt-1 text-lg font-bold text-[#1a2744]' : 'mt-1 font-semibold text-[#1a2744]'}>
+              <p className="mt-1 font-semibold text-[#1a2744]">
                 {m.name}
               </p>
               {m.email && (
                 <a
                   href={`mailto:${m.email}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={cn(
-                    'mt-3 inline-flex items-center gap-1.5 rounded-md border border-[#c8a94a]/40 bg-[#c8a94a]/8 font-medium text-[#7a5c00] transition-colors hover:bg-[#c8a94a]/15',
-                    large ? 'px-3 py-1.5 text-xs' : 'px-2.5 py-1 text-[11px]',
+                    'mt-3 inline-flex items-center gap-1.5 rounded-md border border-[#c8a94a]/40 bg-[#c8a94a]/8 px-2.5 py-1 text-[11px] font-medium text-[#7a5c00] transition-colors hover:bg-[#c8a94a]/15',
                   )}
                 >
-                  <Mail className={large ? 'size-3.5' : 'size-3'} /> Email {firstName(m.name)}
+                  <Mail className="size-3" /> Email {firstName(m.name)}
                 </a>
               )}
             </>
@@ -202,14 +201,13 @@ export function BoardPage() {
                 <h2 className="text-base font-bold text-[#1a2744]">Officers</h2>
                 <span className="text-xs text-muted-foreground">· {officers.length}</span>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {officers.map((m) => (
                   <MemberCard
                     key={m.id}
                     m={m}
                     isAdmin={isAdmin}
                     saving={saving === m.id}
-                    size="large"
                     onLocalChange={handleLocalChange}
                     onSave={handleSave}
                     onDelete={handleDelete}
@@ -233,7 +231,6 @@ export function BoardPage() {
                     m={m}
                     isAdmin={isAdmin}
                     saving={saving === m.id}
-                    size="compact"
                     onLocalChange={handleLocalChange}
                     onSave={handleSave}
                     onDelete={handleDelete}

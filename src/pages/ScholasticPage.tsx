@@ -115,7 +115,7 @@ export function ScholasticPage() {
       {/* ── Hero ── */}
       <PageHero
         title="Chess in Louisiana schools"
-        subtitle="Tournaments, programs, and resources for K-12 players and educators across the state. New players always welcome — no experience required."
+        subtitle="Tournaments, programs, and resources for K-12 players and educators across the state."
       />
 
       {/* ── Two-zone body ── */}
@@ -163,28 +163,6 @@ export function ScholasticPage() {
             </div>
 
             <div className="space-y-4">
-              <div
-                className="rounded-xl border bg-card p-5 shadow-sm"
-                style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
-              >
-                <h3 className="font-semibold text-[#1a2744]">School outreach</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  LCA works with schools across Louisiana to introduce chess in the classroom.
-                  Chess builds critical thinking, patience, and problem-solving skills that
-                  benefit students across all subjects.
-                </p>
-              </div>
-
-              <div
-                className="rounded-xl border bg-card p-5 shadow-sm"
-                style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
-              >
-                <h3 className="font-semibold text-[#1a2744]">Coach & educator resources</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  We provide lesson plans, a tournament guide for coaches, and links to USCF
-                  scholastic resources to help educators bring chess programming to their schools.
-                </p>
-              </div>
 
               <div
                 className="rounded-xl border bg-card p-5 shadow-sm"
@@ -197,6 +175,27 @@ export function ScholasticPage() {
                   age-appropriate competition.
                 </p>
               </div>
+
+              <div
+                className="rounded-xl border bg-card p-5 shadow-sm"
+                style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
+              >
+                <h3 className="font-semibold text-[#1a2744]">National Recognition</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  LCA promotes K-12 players to be able to qualify play in tournaments nationally. Be on the look out for our Tournament of Champions Qualifiers.
+                </p>
+              </div>
+
+              {/*<div
+                className="rounded-xl border bg-card p-5 shadow-sm"
+                style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
+              >
+                <h3 className="font-semibold text-[#1a2744]">Coach & educator resources</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  We provide lesson plans, a tournament guide for coaches, and links to USCF
+                  scholastic resources to help educators bring chess programming to their schools.
+                </p>
+              </div>*/}
 
               <div className="rounded-xl border border-dashed bg-muted/10 p-5">
                 <p className="text-sm text-muted-foreground italic">

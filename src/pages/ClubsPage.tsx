@@ -216,7 +216,7 @@ export function ClubsPage() {
       <PageHero
         size="compact"
         title="Find your chess community"
-        subtitle="Clubs across Louisiana host weekly meetings, lessons, and local tournaments. New players always welcome — no experience required."
+        subtitle="Clubs across Louisiana host weekly meetings, lessons, and local tournaments."
         asideAlign="end"
         aside={
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
