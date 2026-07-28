@@ -550,7 +550,7 @@ export function TournamentsPage() {
         <div className="px-6 py-12 text-center text-sm text-destructive">{error}</div>
       ) : viewMode === 'calendar' ? (
         <div className="mx-auto max-w-6xl px-6 py-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[220px_1fr]">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[260px_1fr_300px]">
             <div className="space-y-4">
               <MiniCalendar
                 year={calYear}
@@ -602,15 +602,16 @@ export function TournamentsPage() {
                 onSelect={t => setSelectedId(`${t.source}-${t.id}`)}
               />
             </div>
-          </div>
-          {selected && (
-            <div className="mt-4 rounded-xl border border-border bg-card">
-              {selected.is_lca === 1
-                ? <LCADetailPane t={selected} />
-                : <ExternalDetailPane t={selected} />
-              }
+            <div className="rounded-xl border border-border bg-card">
+              {selected ? (
+                selected.is_lca === 1
+                  ? <LCADetailPane t={selected} />
+                  : <ExternalDetailPane t={selected} />
+              ) : (
+                <p className="px-3 py-6 text-center text-xs text-muted-foreground">Select a tournament to see details.</p>
+              )}
             </div>
-          )}
+          </div>
         </div>
       ) : (
         <div className="mx-auto max-w-6xl">
