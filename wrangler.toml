@@ -16,3 +16,7 @@ VITE_SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
 VITE_SUPABASE_ANON_KEY = "sb_publishable_f19vYEFtISf2_oBdOWSHLA_h3AY2sT3"
 VITE_GOOGLE_MAPS_API_KEY = "AIzaSyA0sTvidf63X8gWIqYn-NVklp-phgceW1g"
 # SUPABASE_SERVICE_ROLE_KEY is a secret - managed via Cloudflare dashboard only
+
+[[r2_buckets]]
+binding = "CLUB_LOGOS"
+bucket_name = "lca-club-logos"
