@@ -1169,3 +1169,41 @@ export interface ApiCampaignRecipient {
   email: string
   full_name: string
 }
+
+export interface ApiAnnouncement {
+  message: string
+  linkUrl: string | null
+  linkLabel: string | null
+}
+
+export async function getAnnouncement(): Promise<{ announcement: ApiAnnouncement | null }> {
+  const response = await fetch('/api/announcement')
+  return handleResponse(response)
+}
+
+export interface ApiAdminAnnouncement {
+  enabled: number
+  message: string
+  link_url: string | null
+  link_label: string | null
+  updated_at: string
+}
+
+export async function adminGetAnnouncement(): Promise<{ announcement: ApiAdminAnnouncement }> {
+  const response = await fetch('/api/admin/announcement', { headers: await authHeaders() })
+  return handleResponse(response)
+}
+
+export async function adminUpdateAnnouncement(body: {
+  enabled?: boolean
+  message?: string
+  linkUrl?: string | null
+  linkLabel?: string | null
+}): Promise<{ announcement: ApiAdminAnnouncement }> {
+  const response = await fetch('/api/admin/announcement', {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse(response)
+}

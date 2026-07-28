@@ -1,13 +1,17 @@
 // src/pages/NewsPage.tsx
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Building2, ExternalLink } from 'lucide-react'
+import { Building2 } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
 import { FacebookFeed } from '@/components/FacebookFeed'
-import { getNews, type ApiNewsItem } from '@/lib/api'
 import { usePageTitle } from '@/hooks/usePageTitle'
+// Re-add when club news is re-enabled:
+// import { useEffect, useState } from 'react'
+// import { ExternalLink } from 'lucide-react'
+// import { getNews, type ApiNewsItem } from '@/lib/api'
 
-const LCA_GOLD = '#c8a94a'
+// LCA_GOLD and formatDate are only used by the disabled ClubNewsFeed below —
+// uncomment both when club news is re-enabled.
+// const LCA_GOLD = '#c8a94a'
 
 // Pinned LCA announcements — edit this array to update pinned items
 const PINNED: { title: string; summary: string; href: string; date: string }[] = [
@@ -31,14 +35,17 @@ const PINNED: { title: string; summary: string; href: string; date: string }[] =
   },
 ]
 
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr + 'T00:00:00')
-  if (isNaN(d.getTime())) return dateStr
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
+// function formatDate(dateStr: string): string {
+//   const d = new Date(dateStr + 'T00:00:00')
+//   if (isNaN(d.getTime())) return dateStr
+//   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+// }
 
 // ── Club news feed ────────────────────────────────────────────────────────────
-
+// Commented out along with its call site below until club news posting is
+// set up for all clubs — uncomment this whole block plus the imports above
+// to re-enable.
+/*
 function ClubNewsFeed({
   news,
   loading,
@@ -96,21 +103,15 @@ function ClubNewsFeed({
     </div>
   )
 }
+*/
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export function NewsPage() {
   usePageTitle('News')
 
-  const [news, setNews] = useState<ApiNewsItem[]>([])
-  const [newsLoading, setNewsLoading] = useState(true)
-
-  useEffect(() => {
-    getNews()
-      .then(setNews)
-      .catch(() => setNews([]))
-      .finally(() => setNewsLoading(false))
-  }, [])
+  // news/newsLoading state + the getNews() fetch removed along with
+  // ClubNewsFeed above — restore both together when re-enabling.
 
   return (
     <div>
@@ -148,10 +149,15 @@ export function NewsPage() {
           </div>
         </div>
 
-        {/* ── Club news + Facebook, side by side ── */}
+        {/* ── Club news + Facebook ──
+            "From the clubs" is temporarily commented out until club news
+            posting is set up for all clubs (K, July 2026) — re-enable by
+            uncommenting the block below and switching this back to the
+            two-column grid. Facebook feed goes full-width/centered in the
+            meantime so the page doesn't look lopsided with an empty left
+            column next to a long right one. */}
+        {/*
         <div className="grid gap-10 lg:grid-cols-[1fr_minmax(0,520px)]">
-
-          {/* ── From the clubs ── */}
           <div>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
@@ -164,18 +170,18 @@ export function NewsPage() {
             </div>
             <ClubNewsFeed news={news} loading={newsLoading} />
           </div>
-
-          {/* ── Facebook feed ──
-              Pulled server-side via Graph API instead of Facebook's embedded
-              widget — the old Page Plugin (JS SDK div and raw iframe both)
-              always rendered its own name/Follow Page/follower-count chrome
-              inside a cross-origin facebook.com frame we couldn't touch.
-              FacebookFeed fetches from our own /api/facebook-posts and
-              renders fully in our own markup, so it owns its card, header,
-              and footer link below. */}
           <div>
             <FacebookFeed variant="full" limit={8} />
           </div>
+        </div>
+        */}
+
+        <div>
+          <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            <Building2 className="size-4 text-[#c8a94a]" />
+            Latest from Facebook
+          </h2>
+          <FacebookFeed variant="full" limit={8} />
         </div>
       </section>
     </div>

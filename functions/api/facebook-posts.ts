@@ -6,52 +6,54 @@
 // never touches the client — it's read here from a Cloudflare secret
 // and the response is our own clean JSON shape.
 //
-// Required secrets (set via `wrangler pages secret put <name>`):
-//   FACEBOOK_PAGE_TOKEN  - long-lived or System User Page Access Token
-//   FACEBOOK_PAGE_ID     - the LCA Page's numeric ID
+// FALLBACK BEHAVIOR: every successful fetch is saved into the
+// facebook_feed_cache D1 table. If the live Graph API call ever fails —
+// token expired, rate limited, Facebook down, network error — we serve
+// the last known-good cached posts instead of an error, so the feed
+// never goes visibly blank just because of a transient (or token-expiry)
+// hiccup. Only returns an actual error if there's also nothing cached yet.
 
 interface Env {
-  FACEBOOK_PAGE_TOKEN: string;
-  FACEBOOK_PAGE_ID: string;
+  DB: D1Database
+  FACEBOOK_PAGE_TOKEN: string
+  FACEBOOK_PAGE_ID: string
 }
 
 interface GraphPost {
-  id: string;
-  message?: string;
-  created_time: string;
-  permalink_url: string;
-  full_picture?: string;
+  id: string
+  message?: string
+  created_time: string
+  permalink_url: string
+  full_picture?: string
 }
 
 interface GraphPostsResponse {
-  data: GraphPost[];
-  error?: { message: string; code: number };
+  data: GraphPost[]
+  error?: { message: string; code: number }
 }
 
 export interface FacebookFeedPost {
-  id: string;
-  message: string;
-  createdAt: string;
-  permalinkUrl: string;
-  imageUrl: string | null;
+  id: string
+  message: string
+  createdAt: string
+  permalinkUrl: string
+  imageUrl: string | null
 }
 
 const GRAPH_VERSION = "v19.0";
-// Cache the upstream response at Cloudflare's edge so we don't hit
-// Facebook's rate limits on every page load. 30 min is plenty for a
-// feed that updates a few times a week.
+// Edge cache (Cloudflare CDN) — short-lived, just avoids hitting Facebook
+// on every page load under normal conditions.
 const CACHE_MAX_AGE_SECONDS = 1800;
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { env, request } = context;
 
   if (!env.FACEBOOK_PAGE_TOKEN || !env.FACEBOOK_PAGE_ID) {
-    return jsonError("Facebook feed is not configured", 500);
+    return await servedFromCacheOrError(env, "Facebook feed is not configured");
   }
 
   const url = new URL(request.url);
-  const limitParam = url.searchParams.get("limit");
-  const limit = clampLimit(limitParam);
+  const limit = clampLimit(url.searchParams.get("limit"));
 
   const fields = "id,message,created_time,permalink_url,full_picture";
   const graphUrl =
@@ -62,21 +64,21 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
     graphResponse = await fetch(graphUrl);
   } catch (err) {
-    return jsonError("Could not reach Facebook", 502);
+    console.error("facebook-posts: network error reaching Facebook", err);
+    return await servedFromCacheOrError(env, "Could not reach Facebook");
   }
 
   let body: GraphPostsResponse;
   try {
     body = await graphResponse.json();
   } catch {
-    return jsonError("Facebook returned an unexpected response", 502);
+    return await servedFromCacheOrError(env, "Facebook returned an unexpected response");
   }
 
   if (!graphResponse.ok || body.error) {
-    // Don't leak the token or raw Graph error details to the client.
-    // Log server-side only (visible in `wrangler pages deployment tail`).
-    console.error("Facebook Graph API error:", body.error);
-    return jsonError("Could not load Facebook posts", 502);
+    // Covers rate limiting, an expired/invalid token, permission errors, etc.
+    console.error("facebook-posts: Graph API error, falling back to cache:", body.error);
+    return await servedFromCacheOrError(env, "Could not load Facebook posts");
   }
 
   const posts: FacebookFeedPost[] = (body.data || [])
@@ -89,6 +91,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       imageUrl: p.full_picture ?? null,
     }));
 
+  // Live fetch succeeded — persist it as the new fallback for next time.
+  try {
+    await env.DB.prepare(
+      `UPDATE facebook_feed_cache SET posts_json = ?, cached_at = datetime('now') WHERE id = 1`
+    ).bind(JSON.stringify(posts)).run();
+  } catch (err) {
+    // Don't fail the request just because the cache write failed — the
+    // user still gets fresh, correct data this time either way.
+    console.error("facebook-posts: failed to update cache", err);
+  }
+
   return new Response(JSON.stringify({ posts }), {
     status: 200,
     headers: {
@@ -97,6 +110,36 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     },
   });
 };
+
+async function servedFromCacheOrError(env: Env, failureReason: string): Promise<Response> {
+  try {
+    const row = await env.DB.prepare(
+      `SELECT posts_json, cached_at FROM facebook_feed_cache WHERE id = 1`
+    ).first<{ posts_json: string; cached_at: string | null }>();
+
+    if (row && row.cached_at) {
+      const posts = JSON.parse(row.posts_json) as FacebookFeedPost[];
+      if (posts.length > 0) {
+        // Short cache header here — we don't want the CDN holding onto a
+        // stale-fallback response for a full 30 min if the live API
+        // recovers moments later.
+        return new Response(JSON.stringify({ posts, stale: true, cachedAt: row.cached_at }), {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": "public, max-age=60",
+          },
+        });
+      }
+    }
+  } catch (err) {
+    console.error("facebook-posts: cache read failed too", err);
+  }
+
+  // No cache to fall back on (e.g. very first request ever, or the cache
+  // table is genuinely empty) — only now do we actually return an error.
+  return jsonError(failureReason, 502);
+}
 
 function clampLimit(raw: string | null): number {
   const n = raw ? parseInt(raw, 10) : 6;
