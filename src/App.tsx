@@ -6,6 +6,7 @@ import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
 import { HomePage } from '@/pages/HomePage'
+import { AnnouncementBanner } from '@/components/AnnouncementBanner'
 
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
@@ -39,6 +40,7 @@ const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => (
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
+      <AnnouncementBanner />
       <Navbar />
       <main className="flex-1">
         <Suspense fallback={<div className="flex justify-center py-24 text-muted-foreground">Loading…</div>}>
