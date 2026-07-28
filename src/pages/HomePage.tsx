@@ -168,9 +168,15 @@ export function HomePage() {
             </span>
           </div>
           <Button asChild size="sm" className={cn('h-7 shrink-0 text-xs', goldButtonClass)}>
-            <Link to={`/tournaments/${nextTournament.id}`}>
-              {(nextTournament as any).registration_status === 'open' ? 'Register now' : 'View details'}
-            </Link>
+            {nextTournament.source === 'clearinghouse' ? (
+              <a href={nextTournament.link ?? undefined} target="_blank" rel="noopener noreferrer">
+                Register now
+              </a>
+            ) : (
+              <Link to={`/tournaments/${nextTournament.id}`}>
+                {(nextTournament as any).registration_status === 'open' ? 'Register now' : 'View details'}
+              </Link>
+            )}
           </Button>
         </div>
       )}
@@ -196,13 +202,25 @@ export function HomePage() {
                 tournaments.map((t) => {
                   const regStatus = (t as any).registration_status
                   const color = ((t as any).club_color as string | undefined) || LCA_GOLD
-                  return (
-                    <Link key={`${t.source}-${t.id}`} to={`/tournaments/${t.id}`} className="flex items-center justify-between border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30" style={{ backgroundColor: clubColorTint(color, 0.05) }}>
+                  const cardClassName = "flex items-center justify-between border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30"
+                  const cardStyle = { backgroundColor: clubColorTint(color, 0.05) }
+                  const cardContent = (
+                    <>
                       <div className="min-w-0">
                         <p className="truncate text-[13px] font-medium text-foreground">{t.name}</p>
                         <p className="text-[11px] text-muted-foreground">{formatDate(t.start_date)}{t.city ? ` · ${t.city}` : ''}</p>
                       </div>
                       <StatusDot regStatus={regStatus} />
+                    </>
+                  )
+
+                  return t.source === 'clearinghouse' ? (
+                    <a key={`${t.source}-${t.id}`} href={t.link ?? undefined} target="_blank" rel="noopener noreferrer" className={cardClassName} style={cardStyle}>
+                      {cardContent}
+                    </a>
+                  ) : (
+                    <Link key={`${t.source}-${t.id}`} to={`/tournaments/${t.id}`} className={cardClassName} style={cardStyle}>
+                      {cardContent}
                     </Link>
                   )
                 })
