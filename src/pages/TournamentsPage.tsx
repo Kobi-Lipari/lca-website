@@ -10,6 +10,8 @@ import { PageHero } from '@/components/PageHero'
 import { StatusDot } from '@/components/StatusBadge'
 import { FilterDropdown } from '@/components/FilterDropdown'
 import { RegistrationReminderButton } from '@/components/RegistrationReminderButton'
+import { MiniCalendar } from '@/components/tournaments/MiniCalendar'
+import { AgendaList } from '@/components/tournaments/AgendaList'
 import { formatDate, isPastTournament, type UnifiedTournament } from '@/lib/clearinghouse'
 import { isScholasticTournament } from '@/lib/scholastic'
 import { clubColorTint } from '@/lib/clubColors'
@@ -291,120 +293,6 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
     </div>
   )
 }
-
-// ── Calendar (redesigned: full-width event bars in each day cell, Google
-//    Calendar-style, instead of the old bottom-of-cell dots) ─────────────────
-
-const MAX_VISIBLE_PER_DAY = 2
-
-function TournamentCalendar({ tournaments, onSelect }: {
-  tournaments: UnifiedTournament[]
-  onSelect: (t: UnifiedTournament) => void
-}) {
-  const today = new Date()
-  const [year, setYear] = useState(today.getFullYear())
-  const [month, setMonth] = useState(today.getMonth())
-
-  function prev() { if (month === 0) { setMonth(11); setYear(y => y - 1) } else setMonth(m => m - 1) }
-  function next() { if (month === 11) { setMonth(0); setYear(y => y + 1) } else setMonth(m => m + 1) }
-
-  const firstDay = new Date(year, month, 1).getDay()
-  const daysInMonth = new Date(year, month + 1, 0).getDate()
-
-  const dayMap = new Map<string, UnifiedTournament[]>()
-  tournaments.forEach(t => {
-    const start = new Date(t.start_date + 'T00:00:00')
-    if (isNaN(start.getTime())) return
-    const endRaw = t.end_date ? new Date(t.end_date + 'T00:00:00') : start
-    const end = isNaN(endRaw.getTime()) ? start : endRaw
-    const cur = new Date(start)
-    while (cur <= end) {
-      if (cur.getFullYear() === year && cur.getMonth() === month) {
-        const key = cur.getDate().toString()
-        if (!dayMap.has(key)) dayMap.set(key, [])
-        dayMap.get(key)!.push(t)
-      }
-      cur.setDate(cur.getDate() + 1)
-    }
-  })
-
-  const cells: (number | null)[] = [
-    ...Array(firstDay).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-  ]
-
-  return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <button type="button" onClick={prev} className="rounded p-1.5 hover:bg-muted/50" aria-label="Previous month">
-          <ChevronLeft className="size-4 text-muted-foreground" />
-        </button>
-        <h3 className="text-sm font-semibold text-[#1a2744]">{MONTH_NAMES[month]} {year}</h3>
-        <button type="button" onClick={next} className="rounded p-1.5 hover:bg-muted/50" aria-label="Next month">
-          <ChevronRight className="size-4 text-muted-foreground" />
-        </button>
-      </div>
-      <div className="grid grid-cols-7 border-b border-border">
-        {['Su','Mo','Tu','We','Th','Fr','Sa'].map(d => (
-          <div key={d} className="py-1.5 text-center text-[11px] font-medium text-muted-foreground">{d}</div>
-        ))}
-      </div>
-      <div className="grid grid-cols-7">
-        {cells.map((day, i) => {
-          if (!day) return <div key={`e-${i}`} className="min-h-[92px] border-b border-r border-border/40 last:border-r-0" />
-          const ts = dayMap.get(day.toString()) ?? []
-          const isToday = today.getDate() === day && today.getMonth() === month && today.getFullYear() === year
-          const visible = ts.slice(0, MAX_VISIBLE_PER_DAY)
-          const overflow = ts.length - visible.length
-
-          return (
-            <div key={day} className="min-h-[92px] border-b border-r border-border/40 p-1 last:border-r-0">
-              <span
-                className={cn(
-                  'flex size-5 items-center justify-center rounded-full text-[11px]',
-                  isToday ? 'bg-[#1a2744] font-bold text-white' : 'text-foreground',
-                )}
-              >
-                {day}
-              </span>
-              {ts.length > 0 && (
-                <div className="mt-1 space-y-0.5">
-                  {visible.map(t => {
-                    const color = t.is_lca === 1 ? (t.club_color || LCA_GOLD) : '#94a3b8'
-                    return (
-                      <button
-                        key={`${t.source}-${t.id}`}
-                        type="button"
-                        onClick={() => onSelect(t)}
-                        title={t.name}
-                        className="block w-full truncate rounded px-1 py-0.5 text-left text-[10px] font-medium text-[#1a2744] transition-opacity hover:opacity-80"
-                        style={{ backgroundColor: clubColorTint(color, 0.22) }}
-                      >
-                        {t.name}
-                      </button>
-                    )
-                  })}
-                  {overflow > 0 && (
-                    <p className="px-1 text-[10px] text-muted-foreground">+{overflow} more</p>
-                  )}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </div>
-      <div className="flex items-center gap-4 border-t border-border px-4 py-2.5">
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <span className="size-2 rounded-full bg-[#c8a94a]" /> LCA hosted
-        </div>
-        <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <span className="size-2 rounded-full bg-slate-400" /> External
-        </div>
-      </div>
-    </div>
-  )
-}
-
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export function TournamentsPage() {
@@ -424,6 +312,9 @@ export function TournamentsPage() {
   const [rightSelection, setRightSelection] = useState<RightSelection>(null)
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [calYear, setCalYear] = useState(new Date().getFullYear())
+  const [calMonth, setCalMonth] = useState(new Date().getMonth())
+  const [calSelectedDay, setCalSelectedDay] = useState<number | null>(null)
 
   const detailRef = useRef<HTMLDivElement>(null)
 
@@ -659,10 +550,59 @@ export function TournamentsPage() {
         <div className="px-6 py-12 text-center text-sm text-destructive">{error}</div>
       ) : viewMode === 'calendar' ? (
         <div className="mx-auto max-w-6xl px-6 py-8">
-          <TournamentCalendar
-            tournaments={filtered}
-            onSelect={t => setSelectedId(`${t.source}-${t.id}`)}
-          />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[220px_1fr]">
+            <div className="space-y-4">
+              <MiniCalendar
+                year={calYear}
+                month={calMonth}
+                eventDays={new Set(
+                  filtered
+                    .filter(t => {
+                      const d = new Date(t.start_date + 'T00:00:00')
+                      return !isNaN(d.getTime()) && d.getFullYear() === calYear && d.getMonth() === calMonth
+                    })
+                    .map(t => new Date(t.start_date + 'T00:00:00').getDate()),
+                )}
+                selectedDay={calSelectedDay}
+                onPrev={() => {
+                  setCalSelectedDay(null)
+                  if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1) } else setCalMonth(m => m - 1)
+                }}
+                onNext={() => {
+                  setCalSelectedDay(null)
+                  if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1) } else setCalMonth(m => m + 1)
+                }}
+                onSelectDay={(day) => setCalSelectedDay(prev => (prev === day ? null : day))}
+              />
+              <div className="flex items-center gap-3 px-1">
+                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <span className="size-2 rounded-full bg-[#c8a94a]" /> LCA hosted
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <span className="size-2 rounded-full bg-slate-400" /> External
+                </div>
+              </div>
+            </div>
+            <div className="rounded-xl border border-border bg-card">
+              <AgendaList
+                tournaments={
+                  calSelectedDay
+                    ? filtered.filter(t => {
+                        const d = new Date(t.start_date + 'T00:00:00')
+                        return (
+                          !isNaN(d.getTime()) &&
+                          d.getFullYear() === calYear &&
+                          d.getMonth() === calMonth &&
+                          d.getDate() === calSelectedDay
+                        )
+                      })
+                    : filtered
+                }
+                selectedKey={selectedId}
+                onSelect={t => setSelectedId(`${t.source}-${t.id}`)}
+              />
+            </div>
+          </div>
           {selected && (
             <div className="mt-4 rounded-xl border border-border bg-card">
               {selected.is_lca === 1
