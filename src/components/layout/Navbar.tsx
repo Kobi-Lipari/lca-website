@@ -31,6 +31,11 @@ const navLinks: Array<{ label: string; href: string; items?: NavChild[] }> = [
   { label: 'Membership', href: '/membership' },
 ]
 
+// Labels shown inline at the "hybrid" mid-width tier (md-lg). Everything
+// else in navLinks only appears inline at full desktop width (lg+) and
+// otherwise lives in the hamburger drawer.
+const HYBRID_VISIBLE_LABELS = ['Tournaments', 'Clubs']
+
 // Gold tab-style underline for the active top-level item
 const activeUnderline =
   'underline decoration-[#c8a94a] decoration-2 underline-offset-[10px]'
@@ -53,16 +58,12 @@ function DropdownMenu({
   const buttonRef = useRef<HTMLButtonElement>(null)
   const location = useLocation()
 
-  // Active when on the section OR on any child page (e.g. /about lives
-  // under Governance but doesn't share its path prefix)
   const isActive =
     isPathActive(location.pathname, href) ||
     items.some((item) => isPathActive(location.pathname, item.href))
 
-  // Close on route change
   useEffect(() => { setOpen(false) }, [location.pathname])
 
-  // Close on outside click / tap and on Escape (returning focus to the button)
   useEffect(() => {
     if (!open) return
     function onPointerDown(e: MouseEvent | TouchEvent) {
@@ -110,8 +111,6 @@ function DropdownMenu({
         <ChevronDown className={cn('size-3 transition-transform', open && 'rotate-180')} />
       </button>
       {open && (
-        // pt-1 keeps the visual gap but as PADDING inside the hover area,
-        // so the pointer never crosses dead space between button and menu
         <div className="absolute left-0 top-full z-50 pt-1">
           <div
             role="menu"
@@ -163,6 +162,25 @@ function RoleLinks({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () =
   )
 }
 
+function NavLinkItem({ link }: { link: (typeof navLinks)[number] }) {
+  const location = useLocation()
+  return link.items ? (
+    <DropdownMenu label={link.label} href={link.href} items={link.items} />
+  ) : (
+    <Link
+      to={link.href}
+      className={cn(
+        'text-sm font-medium transition-colors',
+        isPathActive(location.pathname, link.href)
+          ? cn('text-[#c8a94a]', activeUnderline)
+          : 'text-white/90 hover:text-[#c8a94a]',
+      )}
+    >
+      {link.label}
+    </Link>
+  )
+}
+
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mobileGovOpen, setMobileGovOpen] = useState(false)
@@ -181,6 +199,9 @@ export function Navbar() {
     navigate('/')
   }
 
+  const hybridLinks = navLinks.filter((link) => HYBRID_VISIBLE_LABELS.includes(link.label))
+  const desktopOnlyLinks = navLinks.filter((link) => !HYBRID_VISIBLE_LABELS.includes(link.label))
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#1a2744] text-white shadow-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -195,34 +216,20 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-5 md:flex">
-          {navLinks.map((link) =>
-            link.items ? (
-              <DropdownMenu key={link.href} label={link.label} href={link.href} items={link.items} />
-            ) : (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={cn(
-                  'text-sm font-medium transition-colors',
-                  isPathActive(location.pathname, link.href)
-                    ? cn('text-[#c8a94a]', activeUnderline)
-                    : 'text-white/90 hover:text-[#c8a94a]',
-                )}
-              >
-                {link.label}
-              </Link>
-            ),
-          )}
-          {!loading && user && <RoleLinks />}
+          {hybridLinks.map((link) => <NavLinkItem key={link.href} link={link} />)}
+          <div className="hidden items-center gap-5 lg:flex">
+            {desktopOnlyLinks.map((link) => <NavLinkItem key={link.href} link={link} />)}
+            {!loading && user && <RoleLinks />}
+          </div>
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <a
-            href="https://www.facebook.com/LouisianaChessAssociation"
+          
+            <a href="https://www.facebook.com/LouisianaChessAssociation"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow LCA on Facebook"
-            className="mr-1 flex h-9 w-9 items-center justify-center rounded-lg border border-transparent text-white/70 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-[#1877F2]"
+            className="mr-1 hidden h-9 w-9 items-center justify-center rounded-lg border border-transparent text-white/70 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-[#1877F2] lg:flex"
           >
             <FacebookIcon className="size-6" />
           </a>
@@ -245,13 +252,13 @@ export function Navbar() {
           )}
         </div>
 
-        <button type="button" className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 md:hidden" aria-expanded={mobileOpen} aria-label={mobileOpen ? 'Close menu' : 'Open menu'} onClick={() => setMobileOpen((o) => !o)}>
+        <button type="button" className="inline-flex items-center justify-center rounded-md p-2 text-white hover:bg-white/10 lg:hidden" aria-expanded={mobileOpen} aria-label={mobileOpen ? 'Close menu' : 'Open menu'} onClick={() => setMobileOpen((o) => !o)}>
           {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
         </button>
       </div>
 
       {mobileOpen && (
-        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-[#1a2744] md:hidden">
+        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-[#1a2744] lg:hidden">
           <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 sm:px-6">
             {navLinks.map((link) =>
               link.items ? (
