@@ -35,9 +35,9 @@ export function AnnouncementBanner() {
         {announcement.linkUrl && announcement.linkLabel && (
           <>
             {' '}
-            <a href={announcement.linkUrl} className="underline underline-offset-2 hover:opacity-80">
-              {announcement.linkLabel}
-            </a>
+            <a href={announcement.linkUrl} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:opacity-80">
+  {announcement.linkLabel}
+</a>
           </>
         )}
       </span>
