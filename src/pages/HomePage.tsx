@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, Calendar, ChevronLeft, ChevronRight, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookFeed } from '@/components/FacebookFeed'
-import { getTournaments, getClubs, type ApiTournamentListItem, type ApiClubListItem } from '@/lib/api'
+import { getClubs, type ApiClubListItem } from '@/lib/api'
+import { formatDate, type UnifiedTournament } from '@/lib/clearinghouse'
 import { clubColorTint, clubAccentStyle } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -131,7 +132,7 @@ const COLUMN_HEIGHT = 340
 export function HomePage() {
   usePageTitle('Home')
   const { member } = useAuth()
-  const [tournaments, setTournaments] = useState<ApiTournamentListItem[]>([])
+  const [tournaments, setTournaments] = useState<UnifiedTournament[]>([])
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [loadingTournaments, setLoadingTournaments] = useState(true)
   const [loadingClubs, setLoadingClubs] = useState(true)
@@ -141,7 +142,11 @@ export function HomePage() {
   )
 
   useEffect(() => {
-    getTournaments().then((data) => setTournaments(data.filter((t) => t.status !== 'completed'))).catch(() => setTournaments([])).finally(() => setLoadingTournaments(false))
+    fetch('/api/clearinghouse?upcoming=true')
+      .then((r) => r.json())
+      .then((d: { tournaments: UnifiedTournament[] }) => setTournaments((d.tournaments ?? []).filter((t) => t.status !== 'completed')))
+      .catch(() => setTournaments([]))
+      .finally(() => setLoadingTournaments(false))
     // Shuffled here (was on ClubsPage) — this preview column is
     // advertisement-only, so a fresh random order per visit is a nice touch.
     // The actual Clubs page sorts A–Z so people can find a specific club.
@@ -158,8 +163,8 @@ export function HomePage() {
             <Calendar className="size-3.5 shrink-0 text-[#c8a94a]" />
             <span className="text-muted-foreground">
               <span className="font-medium text-foreground">{nextTournament.name}</span>
-              {' · '}{nextTournament.date}
-              {' · '}{nextTournament.location}
+              {' · '}{formatDate(nextTournament.start_date)}
+              {' · '}{nextTournament.city ?? ''}
             </span>
           </div>
           <Button asChild size="sm" className={cn('h-7 shrink-0 text-xs', goldButtonClass)}>
@@ -192,10 +197,10 @@ export function HomePage() {
                   const regStatus = (t as any).registration_status
                   const color = ((t as any).club_color as string | undefined) || LCA_GOLD
                   return (
-                    <Link key={t.id} to={`/tournaments/${t.id}`} className="flex items-center justify-between border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30" style={{ backgroundColor: clubColorTint(color, 0.05) }}>
+                    <Link key={`${t.source}-${t.id}`} to={`/tournaments/${t.id}`} className="flex items-center justify-between border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30" style={{ backgroundColor: clubColorTint(color, 0.05) }}>
                       <div className="min-w-0">
                         <p className="truncate text-[13px] font-medium text-foreground">{t.name}</p>
-                        <p className="text-[11px] text-muted-foreground">{t.date} · {t.location}</p>
+                        <p className="text-[11px] text-muted-foreground">{formatDate(t.start_date)}{t.city ? ` · ${t.city}` : ''}</p>
                       </div>
                       <StatusDot regStatus={regStatus} />
                     </Link>
