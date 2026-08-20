@@ -20,6 +20,20 @@ interface CreateNewsBody {
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
+export const onRequestGet: PagesFunction<Env> = async (context) => {
+  const clubId = context.params.id as string
+  const authResult = await requireClubRep(context.request, context.env, clubId)
+  if (isResponse(authResult)) return authResult
+
+  const { results } = await context.env.DB.prepare(
+    `SELECT id, title, news_date, excerpt FROM club_news WHERE club_id = ? ORDER BY news_date DESC`,
+  )
+    .bind(clubId)
+    .all()
+
+  return jsonResponse({ news: results })
+}
+
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
   const authResult = await requireClubRep(context.request, context.env, clubId)

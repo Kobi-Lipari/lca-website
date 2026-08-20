@@ -1217,3 +1217,32 @@ export async function adminUploadClubLogo(clubId: string, blob: Blob): Promise<{
   })
   return handleResponse(response)
 }
+
+export async function adminGetClubNews(clubId: string): Promise<ApiClubNews[]> {
+  const response = await fetch(`/api/admin/clubs/${clubId}/news`, {
+    headers: await authHeaders(),
+  })
+  const data = await handleResponse<{ news: ApiClubNews[] }>(response)
+  return data.news
+}
+
+export async function adminDeleteClubNews(clubId: string, newsId: string): Promise<void> {
+  const response = await fetch(`/api/admin/clubs/${clubId}/news/${newsId}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export interface ApiImpersonateResult {
+  session: { access_token: string; refresh_token: string }
+  member: { id: string; fullName: string; email: string }
+}
+
+export async function adminImpersonateMember(memberId: string): Promise<ApiImpersonateResult> {
+  const response = await fetch(`/api/admin/impersonate/${memberId}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ArrowRight, Building2, Check, Copy,
-  Mail, Megaphone, MessageSquare, Pencil, Plus, Search, Share2, Shield,
+  LogIn, Mail, Megaphone, MessageSquare, Pencil, Plus, Search, Share2, Shield,
   Trash2, Trophy, Users, X,
 } from 'lucide-react'
 
@@ -841,7 +841,7 @@ type MembershipFilter = 'active' | 'all'
 
 function MembersTab({
   members, clubs, isAdmin, savingId,
-  onRoleChange, onClubChange, onMembershipChange, onDelete,
+  onRoleChange, onClubChange, onMembershipChange, onDelete, onImpersonate,
 }: {
   members: ApiAdminMember[]
   clubs: ApiClubListItem[]
@@ -851,6 +851,7 @@ function MembersTab({
   onClubChange: (memberId: string, clubId: string) => void
   onMembershipChange: (memberId: string, field: 'status' | 'expiry', value: string) => void
   onDelete: (m: ApiAdminMember) => void
+  onImpersonate: (m: ApiAdminMember) => void
 }) {
   const [filter, setFilter] = useState<MembershipFilter>('active')
   const [search, setSearch] = useState('')
@@ -925,7 +926,7 @@ function MembersTab({
       </div>
 
       <div className="overflow-x-auto rounded-xl border">
-        <table className="w-full min-w-[760px] text-left text-sm">
+        <table className="w-full min-w-[820px] text-left text-sm">
           <thead>
             <tr className="border-b bg-muted/50">
               <th className="px-3 py-2.5 font-semibold">Name</th>
@@ -935,12 +936,13 @@ function MembersTab({
               {isAdmin && <th className="px-3 py-2.5 font-semibold">Role</th>}
               {isAdmin && <th className="px-3 py-2.5 font-semibold">Club</th>}
               {isAdmin && <th className="w-10 px-3 py-2.5" />}
+              {isAdmin && <th className="w-10 px-3 py-2.5" />}
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={isAdmin ? 7 : 4} className="px-3 py-8 text-center text-muted-foreground">
+                <td colSpan={isAdmin ? 8 : 4} className="px-3 py-8 text-center text-muted-foreground">
                   {query
                     ? <>No members match "{search.trim()}".</>
                     : filter === 'active' ? 'No active members found.' : 'No members found.'}
@@ -1009,6 +1011,19 @@ function MembersTab({
                   )}
                   {isAdmin && (
                     <td className="px-3 py-2.5">
+                      <button
+                        type="button"
+                        onClick={() => onImpersonate(m)}
+                        disabled={m.role === 'lca_admin'}
+                        className="text-muted-foreground transition-colors hover:text-[#1a2744] disabled:cursor-not-allowed disabled:opacity-30"
+                        title={m.role === 'lca_admin' ? "Can't log in as another admin" : 'Log in as this member'}
+                      >
+                        <LogIn className="size-4" />
+                      </button>
+                    </td>
+                  )}
+                  {isAdmin && (
+                    <td className="px-3 py-2.5">
                       <button type="button" onClick={() => onDelete(m)} className="text-muted-foreground transition-colors hover:text-destructive" title="Delete member">
                         <Trash2 className="size-4" />
                       </button>
@@ -1028,7 +1043,8 @@ function MembersTab({
 
 export function AdminPage() {
   usePageTitle('Admin panel')
-  const { role, member, directedTournaments } = useAuth()
+  const { role, member, directedTournaments, startImpersonation } = useAuth()
+  const navigate = useNavigate()
 
   const [members, setMembers] = useState<ApiAdminMember[]>([])
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
@@ -1126,6 +1142,16 @@ export function AdminPage() {
       async () => { await adminDeleteClub(club.id); setClubs((prev) => prev.filter((c) => c.id !== club.id)) })
   }
 
+  async function handleImpersonate(m: ApiAdminMember) {
+    setError(null)
+    try {
+      await startImpersonation(m.id)
+      navigate('/')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to start impersonation')
+    }
+  }
+
   return (
     <div>
       {confirm && <ConfirmDialog message={confirm.message} onConfirm={confirm.onConfirm} onCancel={() => setConfirm(null)} />}
@@ -1172,6 +1198,7 @@ export function AdminPage() {
                 onClubChange={handleClubChange}
                 onMembershipChange={handleMembershipChange}
                 onDelete={handleDeleteMember}
+                onImpersonate={handleImpersonate}
               />
             )}
 
