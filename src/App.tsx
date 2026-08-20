@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
 import { HomePage } from '@/pages/HomePage'
 import { AnnouncementBanner } from '@/components/AnnouncementBanner'
-
+import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
 const AdminEmailPage = lazy(() => import('@/pages/AdminEmailPage').then(m => ({ default: m.AdminEmailPage })))
@@ -36,10 +36,10 @@ const TournamentDetailPage = lazy(() => import('@/pages/TournamentDetailPage').t
 const TournamentManagePage = lazy(() => import('@/pages/TournamentManagePage').then(m => ({ default: m.TournamentManagePage })))
 const TournamentPairingsPage = lazy(() => import('@/pages/TournamentPairingsPage').then(m => ({ default: m.TournamentPairingsPage })))
 const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => ({ default: m.TournamentsPage })))
-
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
+      <ImpersonationBanner />
       <AnnouncementBanner />
       <Navbar />
       <main className="flex-1">
@@ -63,7 +63,6 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/donate/success" element={<DonationSuccessPage />} />
-
             {/* ── Governance ── */}
             <Route path="/about" element={<AboutPage />} />
             <Route path="/governance" element={<GovernancePage />} />
@@ -72,11 +71,9 @@ function App() {
             {/* RulesPage retired — its content merged into /governance/bylaws */}
             <Route path="/governance/rules" element={<Navigate to="/governance/bylaws" replace />} />
             <Route path="/governance/minutes" element={<MinutesPage />} />
-
             {/* ── Protected ── */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/manage/club" element={<RoleProtectedRoute roles={['club_rep']}><ManageClubPage /></RoleProtectedRoute>} />
-
             {/* ── Admin ── */}
             <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']}><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />

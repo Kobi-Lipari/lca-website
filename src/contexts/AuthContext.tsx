@@ -1,3 +1,5 @@
+// src/contexts/AuthContext.tsx
+
 import {
   createContext,
   useCallback,
@@ -10,6 +12,7 @@ import {
 import type { Session, User } from '@supabase/supabase-js'
 
 import {
+  adminImpersonateMember,
   getMe,
   syncMember as apiSyncMember,
   type ApiDirectedTournament,
@@ -17,6 +20,11 @@ import {
 } from '@/lib/api'
 import { resolveRole, type MemberRole } from '@/lib/roles'
 import { supabase } from '@/lib/supabase'
+
+interface ImpersonationTarget {
+  fullName: string
+  email: string
+}
 
 interface AuthContextValue {
   user: User | null
@@ -36,13 +44,28 @@ interface AuthContextValue {
   signOut: () => Promise<void>
   syncMember: () => Promise<void>
   refreshMember: () => Promise<void>
+  impersonating: ImpersonationTarget | null
+  startImpersonation: (memberId: string) => Promise<void>
+  exitImpersonation: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
+const IMPERSONATION_TARGET_KEY = 'lca_impersonation_target'
+const ADMIN_SESSION_STASH_KEY = 'lca_admin_session_stash'
+
 async function loadMemberProfile() {
   const data = await getMe()
   return data
+}
+
+function readStashedTarget(): ImpersonationTarget | null {
+  try {
+    const stashed = sessionStorage.getItem(IMPERSONATION_TARGET_KEY)
+    return stashed ? (JSON.parse(stashed) as ImpersonationTarget) : null
+  } catch {
+    return null
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -54,6 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   >([])
   const [loading, setLoading] = useState(true)
   const [memberLoading, setMemberLoading] = useState(false)
+  const [impersonating, setImpersonating] = useState<ImpersonationTarget | null>(
+    readStashedTarget,
+  )
 
   const refreshMember = useCallback(async () => {
     if (!session) {
@@ -147,8 +173,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     await supabase.auth.signOut()
+    sessionStorage.removeItem(ADMIN_SESSION_STASH_KEY)
+    sessionStorage.removeItem(IMPERSONATION_TARGET_KEY)
+    setImpersonating(null)
     setMember(null)
     setDirectedTournaments([])
+  }, [])
+
+  const startImpersonation = useCallback(async (memberId: string) => {
+    const {
+      data: { session: adminSession },
+    } = await supabase.auth.getSession()
+    if (!adminSession) throw new Error('No active session to impersonate from')
+
+    const result = await adminImpersonateMember(memberId)
+
+    sessionStorage.setItem(
+      ADMIN_SESSION_STASH_KEY,
+      JSON.stringify({
+        access_token: adminSession.access_token,
+        refresh_token: adminSession.refresh_token,
+      }),
+    )
+    sessionStorage.setItem(
+      IMPERSONATION_TARGET_KEY,
+      JSON.stringify(result.member),
+    )
+
+    await supabase.auth.setSession(result.session)
+    setImpersonating(result.member)
+  }, [])
+
+  const exitImpersonation = useCallback(async () => {
+    const stashed = sessionStorage.getItem(ADMIN_SESSION_STASH_KEY)
+    if (!stashed) return
+    const adminTokens = JSON.parse(stashed) as {
+      access_token: string
+      refresh_token: string
+    }
+
+    await supabase.auth.setSession(adminTokens)
+    sessionStorage.removeItem(ADMIN_SESSION_STASH_KEY)
+    sessionStorage.removeItem(IMPERSONATION_TARGET_KEY)
+    setImpersonating(null)
   }, [])
 
   const syncMember = useCallback(async () => {
@@ -182,6 +249,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       syncMember,
       refreshMember,
+      impersonating,
+      startImpersonation,
+      exitImpersonation,
     }),
     [
       user,
@@ -197,6 +267,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       syncMember,
       refreshMember,
+      impersonating,
+      startImpersonation,
+      exitImpersonation,
     ],
   )
 
