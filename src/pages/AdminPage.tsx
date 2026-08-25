@@ -1,8 +1,7 @@
-// src/pages/AdminPage.tsx
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
-  ArrowLeft, ArrowRight, Building2, Check, Copy,
+  ArrowLeft, ArrowRight, Award, Building2, Check, Copy,
   LogIn, Mail, Megaphone, MessageSquare, Pencil, Plus, Search, Share2, Shield,
   Trash2, Trophy, Users, X,
 } from 'lucide-react'
@@ -12,22 +11,29 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import { AdminAnnouncementPanel } from '@/components/AdminAnnouncementPanel'
+import { BoardSeatsPanel } from '@/components/admin/BoardSeatsPanel'
+import { MemberSeatsCell } from '@/components/admin/MemberSeatsCell'
 import {
+  adminAssignBoardSeat,
   adminAssignTournamentDirector,
   adminCreateTournament,
   adminDeleteClub,
   adminDeleteMember,
+  adminGetBoardSeats,
   adminGetClubRoster,
   adminGetMembers,
   adminGetTournamentDirectors,
+  adminRemoveBoardSeatHolder,
   adminRemoveTournamentDirector,
   adminUpdateMemberClub,
   adminUpdateMemberMembership,
   adminUpdateMemberRole,
   getClubs,
   getTournaments,
+  type ApiAdminBoardSeat,
   type ApiAdminMember,
   type ApiClubListItem,
+  type ApiSeatHolder,
   type ApiTournamentDirector,
   type ApiTournamentListItem,
   type ApiTournamentSection,
@@ -47,7 +53,7 @@ const SECTION_PRESETS = [
 const TC_PRESETS = ['G/60+5','G/90+30','G/120+30','G/30+5','G/15+2','G/5+2','G/3+2']
 const ROUND_OPTIONS = [3,4,5,6,7]
 
-type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support' | 'email' | 'announcements'
+type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support' | 'email' | 'announcements' | 'boardseats'
 type WizardStep = 'template' | 'basics' | 'sections' | 'schedule' | 'review'
 
 interface WizardState {
@@ -840,18 +846,23 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clu
 type MembershipFilter = 'active' | 'all'
 
 function MembersTab({
-  members, clubs, isAdmin, savingId,
+  members, clubs, isAdmin, savingId, boardSeats, seatHolders,
   onRoleChange, onClubChange, onMembershipChange, onDelete, onImpersonate,
+  onSeatAdd, onSeatRemove,
 }: {
   members: ApiAdminMember[]
   clubs: ApiClubListItem[]
   isAdmin: boolean
   savingId: string | null
+  boardSeats: ApiAdminBoardSeat[]
+  seatHolders: ApiSeatHolder[]
   onRoleChange: (memberId: string, role: MemberRole) => void
   onClubChange: (memberId: string, clubId: string) => void
   onMembershipChange: (memberId: string, field: 'status' | 'expiry', value: string) => void
   onDelete: (m: ApiAdminMember) => void
   onImpersonate: (m: ApiAdminMember) => void
+  onSeatAdd: (seatId: string, memberId: string) => void
+  onSeatRemove: (seatId: string, memberId: string) => void
 }) {
   const [filter, setFilter] = useState<MembershipFilter>('active')
   const [search, setSearch] = useState('')
@@ -935,6 +946,7 @@ function MembersTab({
               <th className="px-3 py-2.5 font-semibold">Expires</th>
               {isAdmin && <th className="px-3 py-2.5 font-semibold">Role</th>}
               {isAdmin && <th className="px-3 py-2.5 font-semibold">Club</th>}
+              {isAdmin && <th className="px-3 py-2.5 font-semibold">Board seats</th>}
               {isAdmin && <th className="w-10 px-3 py-2.5" />}
               {isAdmin && <th className="w-10 px-3 py-2.5" />}
             </tr>
@@ -942,7 +954,7 @@ function MembersTab({
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={isAdmin ? 8 : 4} className="px-3 py-8 text-center text-muted-foreground">
+                <td colSpan={isAdmin ? 9 : 4} className="px-3 py-8 text-center text-muted-foreground">
                   {query
                     ? <>No members match "{search.trim()}".</>
                     : filter === 'active' ? 'No active members found.' : 'No members found.'}
@@ -1011,6 +1023,18 @@ function MembersTab({
                   )}
                   {isAdmin && (
                     <td className="px-3 py-2.5">
+                      <MemberSeatsCell
+                        member={m}
+                        seats={boardSeats}
+                        holders={seatHolders}
+                        busy={savingId === m.id}
+                        onAdd={onSeatAdd}
+                        onRemove={onSeatRemove}
+                      />
+                    </td>
+                  )}
+                  {isAdmin && (
+                    <td className="px-3 py-2.5">
                       <button
                         type="button"
                         onClick={() => onImpersonate(m)}
@@ -1052,6 +1076,8 @@ export function AdminPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [savingId, setSavingId] = useState<string | null>(null)
+  const [boardSeats, setBoardSeats] = useState<ApiAdminBoardSeat[]>([])
+  const [seatHolders, setSeatHolders] = useState<ApiSeatHolder[]>([])
   const [confirm, setConfirm] = useState<{ message: string; onConfirm: () => void } | null>(null)
 
   const isAdmin = role === 'lca_admin'
@@ -1071,6 +1097,7 @@ export function AdminPage() {
     ...(isAdmin ? [{ id: 'email' as AdminTab, label: 'Group email', icon: Mail }] : []),
     ...(isAdmin ? [{ id: 'support' as AdminTab, label: 'Support tickets', icon: MessageSquare }] : []),
     ...(isAdmin ? [{ id: 'announcements' as AdminTab, label: 'Announcements', icon: Megaphone }] : []),
+    ...(isAdmin ? [{ id: 'boardseats' as AdminTab, label: 'Board seats', icon: Award }] : []),
   ]
 
   async function loadAll() {
@@ -1084,6 +1111,14 @@ export function AdminPage() {
       setTournaments(tournamentList ?? [])
       if (clubList) setClubs(clubList)
       if (memberList) setMembers(memberList)
+      // Awaited separately rather than joined onto the positional array above:
+      // that destructuring assumes a fixed order and already misaligns when a
+      // role skips one of the earlier fetches.
+      if (isAdmin) {
+        const seatData = await adminGetBoardSeats()
+        setBoardSeats(seatData.seats)
+        setSeatHolders(seatData.holders)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load data')
     } finally {
@@ -1092,6 +1127,35 @@ export function AdminPage() {
   }
 
   useEffect(() => { loadAll() }, [])
+
+  // Seat assignment is deliberately NOT a members.role change — a seat is a
+  // time-bounded grant, so holding one never disturbs whether someone is a
+  // club_rep, and losing one never touches their account.
+  async function refreshSeats() {
+    const seatData = await adminGetBoardSeats()
+    setBoardSeats(seatData.seats)
+    setSeatHolders(seatData.holders)
+  }
+
+  async function handleSeatAdd(seatId: string, memberId: string) {
+    setSavingId(memberId)
+    try {
+      await adminAssignBoardSeat(seatId, memberId)
+      await refreshSeats()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to assign seat')
+    } finally { setSavingId(null) }
+  }
+
+  async function handleSeatRemove(seatId: string, memberId: string) {
+    setSavingId(memberId)
+    try {
+      await adminRemoveBoardSeatHolder(seatId, memberId)
+      await refreshSeats()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to remove seat')
+    } finally { setSavingId(null) }
+  }
 
   async function handleRoleChange(memberId: string, newRole: MemberRole) {
     setSavingId(memberId)
@@ -1194,11 +1258,15 @@ export function AdminPage() {
                 clubs={clubs}
                 isAdmin={isAdmin}
                 savingId={savingId}
+                boardSeats={boardSeats}
+                seatHolders={seatHolders}
                 onRoleChange={handleRoleChange}
                 onClubChange={handleClubChange}
                 onMembershipChange={handleMembershipChange}
                 onDelete={handleDeleteMember}
                 onImpersonate={handleImpersonate}
+                onSeatAdd={handleSeatAdd}
+                onSeatRemove={handleSeatRemove}
               />
             )}
 
@@ -1265,7 +1333,9 @@ export function AdminPage() {
             {tab === 'announcements' && isAdmin && (
               <AdminAnnouncementPanel />
             )}
-            
+
+            {tab === 'boardseats' && isAdmin && <BoardSeatsPanel />}
+
           </>
         )}
       </section>

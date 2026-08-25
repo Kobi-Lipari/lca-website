@@ -18,3 +18,4 @@ tsconfig.app.tsbuildinfo
 scripts/provision.sql
 scripts/members.tsv
 .dev.vars
+backup-*.sql

@@ -14,9 +14,11 @@ import type { Session, User } from '@supabase/supabase-js'
 import {
   adminImpersonateMember,
   getMe,
+  getMySeats,
   syncMember as apiSyncMember,
   type ApiDirectedTournament,
   type ApiMember,
+  type ApiMySeat,
 } from '@/lib/api'
 import { resolveRole, type MemberRole } from '@/lib/roles'
 import { supabase } from '@/lib/supabase'
@@ -31,6 +33,15 @@ interface AuthContextValue {
   session: Session | null
   member: ApiMember | null
   role: MemberRole
+  /**
+   * Board seats this member currently holds. Almost always empty.
+   *
+   * This is NOT part of `role` on purpose: a seat is a time-bounded grant on
+   * top of an account, so holding one must never disturb whether someone is a
+   * club_rep or a plain member, and losing one must never touch their account.
+   */
+  seats: ApiMySeat[]
+  isBoardMember: boolean
   directedTournaments: ApiDirectedTournament[]
   directedTournamentIds: string[]
   loading: boolean
@@ -54,9 +65,17 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 const IMPERSONATION_TARGET_KEY = 'lca_impersonation_target'
 const ADMIN_SESSION_STASH_KEY = 'lca_admin_session_stash'
 
+/**
+ * Seats load in parallel with the profile and fail soft: a seat lookup error
+ * shouldn't cost someone their session, it should just hide the board inbox
+ * link until the next load.
+ */
 async function loadMemberProfile() {
-  const data = await getMe()
-  return data
+  const [data, seatData] = await Promise.all([
+    getMe(),
+    getMySeats().catch(() => ({ seats: [] as ApiMySeat[] })),
+  ])
+  return { ...data, seats: seatData.seats }
 }
 
 function readStashedTarget(): ImpersonationTarget | null {
@@ -72,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [member, setMember] = useState<ApiMember | null>(null)
+  const [seats, setSeats] = useState<ApiMySeat[]>([])
   const [directedTournaments, setDirectedTournaments] = useState<
     ApiDirectedTournament[]
   >([])
@@ -84,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshMember = useCallback(async () => {
     if (!session) {
       setMember(null)
+      setSeats([])
       setDirectedTournaments([])
       return
     }
@@ -92,9 +113,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const data = await loadMemberProfile()
       setMember(data.member)
+      setSeats(data.seats)
       setDirectedTournaments(data.directedTournaments ?? [])
     } catch {
       setMember(null)
+      setSeats([])
       setDirectedTournaments([])
     } finally {
       setMemberLoading(false)
@@ -120,13 +143,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await apiSyncMember()
           const data = await loadMemberProfile()
           setMember(data.member)
+          setSeats(data.seats)
           setDirectedTournaments(data.directedTournaments ?? [])
         } catch {
           setMember(null)
+          setSeats([])
           setDirectedTournaments([])
         }
       } else {
         setMember(null)
+        setSeats([])
         setDirectedTournaments([])
       }
     })
@@ -177,6 +203,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     sessionStorage.removeItem(IMPERSONATION_TARGET_KEY)
     setImpersonating(null)
     setMember(null)
+    setSeats([])
     setDirectedTournaments([])
   }, [])
 
@@ -234,12 +261,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [directedTournaments],
   )
 
+  // lca_admin can read every seat's inbox, so the link shows for them too.
+  const isBoardMember = seats.length > 0 || role === 'lca_admin'
+
   const value = useMemo(
     () => ({
       user,
       session,
       member,
       role,
+      seats,
+      isBoardMember,
       directedTournaments,
       directedTournamentIds,
       loading,
@@ -258,6 +290,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       member,
       role,
+      seats,
+      isBoardMember,
       directedTournaments,
       directedTournamentIds,
       loading,

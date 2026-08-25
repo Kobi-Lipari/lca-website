@@ -13,6 +13,7 @@ const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ de
 const AdminEmailPage = lazy(() => import('@/pages/AdminEmailPage').then(m => ({ default: m.AdminEmailPage })))
 const AdminPage = lazy(() => import('@/pages/AdminPage').then(m => ({ default: m.AdminPage })))
 const AdminSupportPage = lazy(() => import('@/pages/AdminSupportPage').then(m => ({ default: m.AdminSupportPage })))
+const BoardInboxPage = lazy(() => import('@/pages/BoardInboxPage').then(m => ({ default: m.BoardInboxPage })))
 const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m.BoardPage })))
 const BylawsPage = lazy(() => import('@/pages/BylawsPage').then(m => ({ default: m.BylawsPage })))
 const ClubDetailPage = lazy(() => import('@/pages/ClubDetailPage').then(m => ({ default: m.ClubDetailPage })))
@@ -74,6 +75,13 @@ function App() {
             {/* ── Protected ── */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/manage/club" element={<RoleProtectedRoute roles={['club_rep']}><ManageClubPage /></RoleProtectedRoute>} />
+            {/*
+              ProtectedRoute, not RoleProtectedRoute: holding a board seat is an
+              assignment, not a role, so there's no role value to gate on. The
+              API enforces seat access and the page renders its own "no board
+              inbox" state for signed-in members who hold none.
+            */}
+            <Route path="/board/inbox" element={<ProtectedRoute><BoardInboxPage /></ProtectedRoute>} />
             {/* ── Admin ── */}
             <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']}><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />

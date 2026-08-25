@@ -1,23 +1,31 @@
 // functions/api/support.ts
 import type { Env } from '../types'
-import { verifySupabaseUser } from '../utils/auth'
+import { optionalAuthedMember, verifySupabaseUser } from '../utils/auth'
 import {
   errorResponse,
   handleOptions,
   jsonResponse,
   parseJsonBody,
 } from '../utils/response'
-import { trySendEmail, supportTicketConfirmationEmail, escapeHtml } from '../utils/email'
+import { createTicket, siteUrlFromRequest } from '../utils/tickets'
 
 interface CreateTicketBody {
   name: string
   email: string
   subject: string
   body: string
+  /** Optional board seat, same as the contact form. */
+  seatRef?: string | null
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
+/**
+ * Ticket creation now lives in utils/tickets.ts, shared with /api/contact.
+ * The inline INSERTs and notification mail that used to be here diverged from
+ * the contact endpoint's copy — one helper means reply-to, seat routing and
+ * holder notification behave identically no matter which form was used.
+ */
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const body = await parseJsonBody<CreateTicketBody>(context.request)
 
@@ -25,58 +33,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse('All fields are required', 400)
   }
 
-  // Try to get user but don't fail if not authenticated
-  let userId: string | null = null
-  try {
-    const user = await verifySupabaseUser(context.request, context.env)
-    userId = user?.id ?? null
-  } catch {
-    userId = null
-  }
+  const authed = await optionalAuthedMember(context.request, context.env)
 
-  const ticketId = `ticket-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-  const messageId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-
-  await context.env.DB.prepare(
-    `INSERT INTO support_tickets (id, member_id, name, email, subject)
-     VALUES (?, ?, ?, ?, ?)`,
-  ).bind(ticketId, userId, body.name, body.email, body.subject).run()
-
-  await context.env.DB.prepare(
-    `INSERT INTO support_messages (id, ticket_id, sender_id, sender_type, body)
-     VALUES (?, ?, ?, ?, ?)`,
-  ).bind(
-    messageId,
-    ticketId,
-    userId,
-    userId ? 'member' : 'guest',
-    body.body,
-  ).run()
-
-  // Send confirmation to member (non-fatal)
-  // Send confirmation to member (non-fatal)
-  const confirmation = supportTicketConfirmationEmail({
+  const { ticketId, seat } = await createTicket(context.env, {
     name: body.name,
-    ticketId,
+    email: body.email,
     subject: body.subject,
-  })
-  await trySendEmail(context.env, { ...confirmation, to: body.email })
-
-  // Notify support email (non-fatal)
-  await trySendEmail(context.env, {
-    to: context.env.SUPPORT_EMAIL,
-    subject: `[Ticket #${ticketId}] ${body.subject}`,
-    html: `
-      <h2>New support ticket</h2>
-      <p><strong>From:</strong> ${escapeHtml(body.name)} (${escapeHtml(body.email)})</p>
-      <p><strong>Ticket ID:</strong> ${ticketId}</p>
-      <p><strong>Subject:</strong> ${escapeHtml(body.subject)}</p>
-      <p><strong>Message:</strong></p>
-      <p>${escapeHtml(body.body).replace(/\n/g, '<br>')}</p>
-    `,
+    body: body.body,
+    memberId: authed?.member.id ?? null,
+    seatRef: body.seatRef ?? null,
+    siteUrl: siteUrlFromRequest(context.request),
   })
 
-  return jsonResponse({ success: true, ticketId }, 201)
+  return jsonResponse(
+    { success: true, ticketId, routedTo: seat?.role ?? null },
+    201,
+  )
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -90,9 +62,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const tickets = await context.env.DB.prepare(
     `SELECT t.*,
+      b.role AS seat_role,
       (SELECT COUNT(*) FROM support_messages m WHERE m.ticket_id = t.id) as message_count,
       (SELECT body FROM support_messages m WHERE m.ticket_id = t.id ORDER BY created_at DESC LIMIT 1) as last_message
      FROM support_tickets t
+     LEFT JOIN board_members b ON b.id = t.seat_id
      WHERE t.member_id = ? OR t.email = ?
      ORDER BY t.updated_at DESC`,
   ).bind(user.id, member?.email ?? '').all()

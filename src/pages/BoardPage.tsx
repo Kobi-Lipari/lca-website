@@ -1,7 +1,7 @@
 // src/pages/BoardPage.tsx
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Mail, Plus, ShieldCheck, MapPin, Trash2 } from 'lucide-react'
+import { Archive, Mail, Plus, ShieldCheck, MapPin } from 'lucide-react'
 import { GovLayout } from '@/components/governance/GovLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,85 +12,123 @@ import {
   adminDeleteBoardMember,
   adminUpdateBoardMember,
   getBoardMembers,
+  getBoardSeats,
   type ApiBoardMember,
+  type ApiBoardSeat,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
-type EditableField = 'role' | 'name' | 'email'
+type EditableField = 'role' | 'name'
 
-/** A role title containing "Representative" is a regional seat; everything
- *  else (President, Vice President, Secretary-Treasurer, Scholastic
- *  Director, Webmaster, etc.) is an executive officer. Simple, but matches
- *  every role name LCA actually uses, and keeps the grouping automatic —
- *  no separate admin toggle to keep in sync. */
+/** Fallback grouping for seats created before migration 0025, or added
+ *  through the POST endpoint before it learned to set `category`. Once every
+ *  row has a category this is dead code — delete it then. */
 function isRegionalRole(role: string): boolean {
   return /representative/i.test(role)
+}
+
+function isRegional(seat: ApiBoardSeat): boolean {
+  return seat.category ? seat.category === 'regional_rep' : isRegionalRole(seat.role)
 }
 
 function firstName(fullName: string): string {
   return fullName.trim().split(/\s+/)[0] || fullName
 }
 
+/**
+ * "Message Adriana" for one holder, "Message the USCF Delegates" for a shared
+ * seat with several. Using first names for a group reads oddly once there are
+ * two, and the role is what the visitor is actually trying to reach.
+ */
+function contactLabel(seat: ApiBoardSeat, displayName: string): string {
+  if (seat.holder_count > 1) return `Message the ${seat.role}s`
+  return `Message ${firstName(displayName)}`
+}
+
 // ── A single officer or representative card ───────────────────────────────────
-// onLocalChange fires on every keystroke (just updates local state so typing
-// feels normal); onSave fires onBlur and is the actual PATCH. Officers and
-// regional reps share this exact same card treatment — no size variants.
+// The public side never shows an address. The contact link opens the contact
+// form pre-routed to this SEAT (?to=<slug>), so the message becomes a ticket
+// attached to the office rather than an email to a person. When the holder
+// changes, old links keep working and the new holder inherits the history.
 
 function MemberCard({
-  m, isAdmin, saving, onLocalChange, onSave, onDelete,
+  seat, member, isAdmin, saving, onLocalChange, onSave, onRetire,
 }: {
-  m: ApiBoardMember
+  seat: ApiBoardSeat
+  member?: ApiBoardMember
   isAdmin: boolean
   saving: boolean
   onLocalChange: (id: string, field: EditableField, value: string) => void
   onSave: (id: string, field: EditableField, value: string) => void
-  onDelete: (id: string) => void
+  onRetire: (id: string) => void
 }) {
-  const isVacant = m.name === 'TBD'
+  const displayName = seat.holder_name ?? ''
+  const isVacant = !displayName || displayName === 'TBD'
+  // A seat with no slug predates 0025 and can't be routed to yet.
+  const contactHref = seat.slug ? `/contact?to=${encodeURIComponent(seat.slug)}` : '/contact'
+  const isLinked = seat.holder_count > 0
 
   return (
     <div
       className="rounded-xl border bg-card p-4 shadow-sm"
       style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
     >
-      {isAdmin ? (
+      {isAdmin && member ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Input
               className="h-7 text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]"
-              value={m.role}
+              value={member.role}
               disabled={saving}
-              onBlur={(e) => onSave(m.id, 'role', e.target.value)}
-              onChange={(e) => onLocalChange(m.id, 'role', e.target.value)}
+              onBlur={(e) => onSave(seat.id, 'role', e.target.value)}
+              onChange={(e) => onLocalChange(seat.id, 'role', e.target.value)}
             />
-            <button type="button" onClick={() => onDelete(m.id)} disabled={saving} className="flex-shrink-0 text-muted-foreground hover:text-destructive">
-              <Trash2 className="size-3.5" />
+            <button
+              type="button"
+              onClick={() => onRetire(seat.id)}
+              disabled={saving}
+              title="Retire this seat — it disappears from the site but its message history is kept"
+              className="flex-shrink-0 text-muted-foreground hover:text-destructive"
+            >
+              <Archive className="size-3.5" />
             </button>
           </div>
-          <Input
-            className="h-8 font-semibold text-[#1a2744]"
-            value={m.name}
-            disabled={saving}
-            placeholder="Full name"
-            onBlur={(e) => onSave(m.id, 'name', e.target.value)}
-            onChange={(e) => onLocalChange(m.id, 'name', e.target.value)}
-          />
-          <Input
-            className="h-7 text-xs text-muted-foreground"
-            value={m.email ?? ''}
-            disabled={saving}
-            placeholder="email@louisianachess.org"
-            onBlur={(e) => onSave(m.id, 'email', e.target.value)}
-            onChange={(e) => onLocalChange(m.id, 'email', e.target.value)}
-          />
+
+          {/* A linked seat takes its name from the member account, so an editable
+              fallback here would let an admin type something the public never
+              sees — which is exactly how the two views drifted apart. */}
+          {isLinked ? (
+            <div className="rounded-md border border-[#c8a94a]/40 bg-[#c8a94a]/8 px-2 py-1.5">
+              <p className="text-sm font-semibold text-[#1a2744]">{seat.holder_name}</p>
+              <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">
+                From {seat.holder_count > 1 ? 'their member accounts' : 'their member account'}.
+                Messages reach {seat.holder_count > 1 ? 'them all' : 'them'} through the site.
+              </p>
+            </div>
+          ) : (
+            <>
+              <Input
+                className="h-8 font-semibold text-[#1a2744]"
+                value={member.name}
+                disabled={saving}
+                placeholder="Full name, or TBD"
+                onBlur={(e) => onSave(seat.id, 'name', e.target.value)}
+                onChange={(e) => onLocalChange(seat.id, 'name', e.target.value)}
+              />
+              <p className="text-[11px] leading-snug text-muted-foreground">
+                No member account linked — messages go to the LCA inbox. Link one in
+                Admin → Board seats.
+              </p>
+            </>
+          )}
         </div>
       ) : (
         <>
           <p className="text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]">
-            {m.role}
+            {seat.role}
           </p>
           {isVacant ? (
             <div className="mt-1.5">
@@ -98,7 +136,7 @@ function MemberCard({
                 This seat is currently open
               </p>
               <Link
-                to="/contact"
+                to={contactHref}
                 className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[#c8a94a] hover:underline"
               >
                 Interested in serving? Contact us →
@@ -106,21 +144,15 @@ function MemberCard({
             </div>
           ) : (
             <>
-              <p className="mt-1 font-semibold text-[#1a2744]">
-                {m.name}
-              </p>
-              {m.email && (
-                <a
-                  href={`mailto:${m.email}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={cn(
-                    'mt-3 inline-flex items-center gap-1.5 rounded-md border border-[#c8a94a]/40 bg-[#c8a94a]/8 px-2.5 py-1 text-[11px] font-medium text-[#7a5c00] transition-colors hover:bg-[#c8a94a]/15',
-                  )}
-                >
-                  <Mail className="size-3" /> Email {firstName(m.name)}
-                </a>
-              )}
+              <p className="mt-1 font-semibold text-[#1a2744]">{displayName}</p>
+              <Link
+                to={contactHref}
+                className={cn(
+                  'mt-3 inline-flex items-center gap-1.5 rounded-md border border-[#c8a94a]/40 bg-[#c8a94a]/8 px-2.5 py-1 text-[11px] font-medium text-[#7a5c00] transition-colors hover:bg-[#c8a94a]/15',
+                )}
+              >
+                <Mail className="size-3" /> {contactLabel(seat, displayName)}
+              </Link>
             </>
           )}
         </>
@@ -134,16 +166,25 @@ export function BoardPage() {
   const { role } = useAuth()
   const isAdmin = role === 'lca_admin'
 
+  // seats drives what's rendered (it knows the slug, the category, and who
+  // currently holds the office). members is only needed for the admin editor,
+  // which still writes through the governance endpoints.
+  const [seats, setSeats] = useState<ApiBoardSeat[]>([])
   const [members, setMembers] = useState<ApiBoardMember[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
-  const [newMember, setNewMember] = useState({ role: '', name: '', email: '' })
+  const [newMember, setNewMember] = useState({ role: '', name: '' })
 
   useEffect(() => {
-    getBoardMembers()
-      .then(setMembers)
-      .catch(() => {})
+    Promise.all([
+      getBoardSeats().catch(() => [] as ApiBoardSeat[]),
+      getBoardMembers().catch(() => [] as ApiBoardMember[]),
+    ])
+      .then(([s, m]) => {
+        setSeats(s)
+        setMembers(m)
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -154,9 +195,23 @@ export function BoardPage() {
   async function handleSave(id: string, field: EditableField, value: string) {
     setSaving(id)
     try {
-      const member = members.find((m) => m.id === id)!
-      const updated = await adminUpdateBoardMember(id, { ...member, [field]: value })
+      // Only the changed field: the PUT uses field-present semantics, so
+      // sending the whole row would push slug/category/is_active at an
+      // endpoint that has no business receiving them.
+      const updated = await adminUpdateBoardMember(id, { [field]: value })
       setMembers((prev) => prev.map((m) => (m.id === id ? updated : m)))
+      // Keep the rendered seat in step with the edit without a full refetch.
+      setSeats((prev) =>
+        prev.map((s) =>
+          s.id === id
+            ? {
+                ...s,
+                role: updated.role,
+                holder_name: s.holder_count > 0 ? s.holder_name : updated.name,
+              }
+            : s,
+        ),
+      )
     } finally {
       setSaving(null)
     }
@@ -166,23 +221,32 @@ export function BoardPage() {
     if (!newMember.role || !newMember.name) return
     setSaving('new')
     try {
-      const created = await adminCreateBoardMember({ ...newMember, sort_order: members.length + 1 })
+      const created = await adminCreateBoardMember({
+        ...newMember,
+        email: null,
+        sort_order: members.length + 1,
+      })
       setMembers((prev) => [...prev, created])
-      setNewMember({ role: '', name: '', email: '' })
+      // Refetch rather than synthesising a seat: slug and category are
+      // assigned server-side, and this page can't route to a seat without them.
+      setSeats(await getBoardSeats().catch(() => seats))
+      setNewMember({ role: '', name: '' })
       setAdding(false)
     } finally { setSaving(null) }
   }
 
-  async function handleDelete(id: string) {
+  // Retires rather than deletes — the seat's tickets and term history survive.
+  async function handleRetire(id: string) {
     setSaving(id)
     try {
       await adminDeleteBoardMember(id)
       setMembers((prev) => prev.filter((m) => m.id !== id))
+      setSeats((prev) => prev.filter((s) => s.id !== id))
     } finally { setSaving(null) }
   }
 
-  const officers = members.filter((m) => !isRegionalRole(m.role))
-  const reps = members.filter((m) => isRegionalRole(m.role))
+  const officers = seats.filter((s) => !isRegional(s))
+  const reps = seats.filter(isRegional)
 
   return (
     <GovLayout
@@ -193,6 +257,12 @@ export function BoardPage() {
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : (
         <div className="space-y-10">
+          {isAdmin && (
+            <p className="rounded-lg border border-dashed bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
+              You're seeing the editable view — the public sees plain cards. Seat
+              titles are edited here; who holds them is set in Admin → Board seats.
+            </p>
+          )}
 
           {officers.length > 0 && (
             <div>
@@ -202,15 +272,16 @@ export function BoardPage() {
                 <span className="text-xs text-muted-foreground">· {officers.length}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {officers.map((m) => (
+                {officers.map((s) => (
                   <MemberCard
-                    key={m.id}
-                    m={m}
+                    key={s.id}
+                    seat={s}
+                    member={members.find((m) => m.id === s.id)}
                     isAdmin={isAdmin}
-                    saving={saving === m.id}
+                    saving={saving === s.id}
                     onLocalChange={handleLocalChange}
                     onSave={handleSave}
-                    onDelete={handleDelete}
+                    onRetire={handleRetire}
                   />
                 ))}
               </div>
@@ -225,15 +296,16 @@ export function BoardPage() {
                 <span className="text-xs text-muted-foreground">· {reps.length}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {reps.map((m) => (
+                {reps.map((s) => (
                   <MemberCard
-                    key={m.id}
-                    m={m}
+                    key={s.id}
+                    seat={s}
+                    member={members.find((m) => m.id === s.id)}
                     isAdmin={isAdmin}
-                    saving={saving === m.id}
+                    saving={saving === s.id}
                     onLocalChange={handleLocalChange}
                     onSave={handleSave}
-                    onDelete={handleDelete}
+                    onRetire={handleRetire}
                   />
                 ))}
               </div>
@@ -244,32 +316,33 @@ export function BoardPage() {
             <div>
               {adding ? (
                 <div className="rounded-xl border bg-card p-4 shadow-sm space-y-3">
-                  <p className="text-sm font-medium text-[#1a2744]">Add board member</p>
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    <div><Label className="text-xs">Role</Label><Input className="mt-1 h-8 text-sm" placeholder="e.g. President, or '... Representative'" value={newMember.role} onChange={(e) => setNewMember((p) => ({ ...p, role: e.target.value }))} /></div>
-                    <div><Label className="text-xs">Name</Label><Input className="mt-1 h-8 text-sm" placeholder="Full name" value={newMember.name} onChange={(e) => setNewMember((p) => ({ ...p, name: e.target.value }))} /></div>
-                    <div><Label className="text-xs">Email</Label><Input className="mt-1 h-8 text-sm" placeholder="Optional" value={newMember.email} onChange={(e) => setNewMember((p) => ({ ...p, email: e.target.value }))} /></div>
+                  <p className="text-sm font-medium text-[#1a2744]">Add a board seat</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div><Label className="text-xs">Role</Label><Input className="mt-1 h-8 text-sm" placeholder="e.g. President, or '… Representative'" value={newMember.role} onChange={(e) => setNewMember((p) => ({ ...p, role: e.target.value }))} /></div>
+                    <div><Label className="text-xs">Name</Label><Input className="mt-1 h-8 text-sm" placeholder="Full name, or TBD" value={newMember.name} onChange={(e) => setNewMember((p) => ({ ...p, name: e.target.value }))} /></div>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Tip: a role containing "Representative" is automatically grouped under Regional representatives.
+                    A role containing "Representative" is grouped under Regional
+                    representatives. The name here is only a placeholder until you
+                    link a member account in Admin → Board seats.
                   </p>
                   <div className="flex gap-2">
-                    <Button type="button" className={GOLD} size="sm" onClick={handleAdd} disabled={saving === 'new'}>Add member</Button>
+                    <Button type="button" className={GOLD} size="sm" onClick={handleAdd} disabled={saving === 'new'}>Add seat</Button>
                     <Button type="button" variant="outline" size="sm" onClick={() => setAdding(false)}>Cancel</Button>
                   </div>
                 </div>
               ) : (
                 <Button type="button" variant="outline" size="sm" onClick={() => setAdding(true)}>
-                  <Plus className="mr-1.5 size-3.5" /> Add board member
+                  <Plus className="mr-1.5 size-3.5" /> Add a board seat
                 </Button>
               )}
             </div>
           )}
 
           <div className="rounded-xl border-[3px] border-[#c8a94a] bg-[#1a2744] p-5 text-white">
-            <h3 className="font-semibold">Want to reach the whole board at once?</h3>
+            <h3 className="font-semibold">Not sure who to ask?</h3>
             <p className="mt-2 text-sm text-white/65">
-              For general inquiries, the contact form reaches the LCA directly and gets routed to the right person.
+              Send it as a general inquiry and we'll route it to the right person. Every message opens a ticket you can follow.
             </p>
             <Button asChild className={cn('mt-4', GOLD)}>
               <Link to="/contact">Contact us</Link>

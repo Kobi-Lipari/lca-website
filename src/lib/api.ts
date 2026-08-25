@@ -820,15 +820,45 @@ export async function createDonationCheckout(amount: number): Promise<{ paymentI
 
 // ── Contact ──────────────────────────────────────────────────────
 
+export interface ApiBoardSeat {
+  id: string
+  slug: string
+  role: string
+  category: 'officer' | 'regional_rep'
+  sort_order: number
+  /** 1 = may be held by several people at once (e.g. USCF Delegate). */
+  is_shared: number
+  /** Holders joined with ' & ', or the seat's fallback name when vacant. */
+  holder_name: string
+  /** 0 when nobody currently holds the seat. */
+  holder_count: number
+}
+ 
+export async function getBoardSeats(): Promise<ApiBoardSeat[]> {
+  const response = await fetch('/api/board/seats')
+  const data = await handleResponse<{ seats: ApiBoardSeat[] }>(response)
+  return data.seats
+}
+ 
+/**
+ * Opens a support ticket, optionally routed to a board seat.
+ *
+ * authHeaders (not bare Content-Type): a logged-in submitter gets their
+ * member_id bound to the ticket, which is what lets them reopen it from
+ * /support later. Guests are unaffected — the Authorization header is only
+ * added when a session exists, and the endpoint accepts anonymous requests.
+ */
 export async function submitContact(data: {
   name: string
   email: string
   subject: string
   body: string
-}): Promise<void> {
+  /** Seat slug, e.g. 'scholastic-director'. Omit for a general inquiry. */
+  seatRef?: string
+}): Promise<{ ticketId: string; routedTo: string | null }> {
   const response = await fetch('/api/contact', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authHeaders(),
     body: JSON.stringify(data),
   })
   return handleResponse(response)
@@ -1031,6 +1061,9 @@ export interface ApiBoardMember {
   email: string | null
   sort_order: number
   created_at: string
+  slug: string
+  category: 'officer' | 'regional_rep'
+  is_active: number
 }
 
 export interface ApiGovernanceDocument {
@@ -1053,13 +1086,23 @@ export async function getBoardMembers(): Promise<ApiBoardMember[]> {
   return d.members
 }
 
-export async function adminCreateBoardMember(body: Omit<ApiBoardMember, 'id' | 'created_at'>): Promise<ApiBoardMember> {
+export async function adminCreateBoardMember(body: {
+  role: string
+  name: string
+  email?: string | null
+  sort_order?: number
+}): Promise<ApiBoardMember> {
   const r = await fetch('/api/governance/board', { method: 'POST', headers: await authHeaders(), body: JSON.stringify(body) })
   const d = await handleResponse<{ member: ApiBoardMember }>(r)
   return d.member
 }
 
-export async function adminUpdateBoardMember(id: string, body: Partial<Omit<ApiBoardMember, 'id' | 'created_at'>>): Promise<ApiBoardMember> {
+export async function adminUpdateBoardMember(id: string, body: {
+  role?: string
+  name?: string
+  email?: string | null
+  sort_order?: number
+}): Promise<ApiBoardMember> {
   const r = await fetch(`/api/governance/board/${id}`, { method: 'PUT', headers: await authHeaders(), body: JSON.stringify(body) })
   const d = await handleResponse<{ member: ApiBoardMember }>(r)
   return d.member
@@ -1243,6 +1286,195 @@ export async function adminImpersonateMember(memberId: string): Promise<ApiImper
   const response = await fetch(`/api/admin/impersonate/${memberId}`, {
     method: 'POST',
     headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+// ── Board seats (admin) ───────────────────────────────────────────────────────
+ 
+export interface ApiAdminBoardSeat {
+  id: string
+  slug: string
+  role: string
+  category: 'officer' | 'regional_rep'
+  is_active: number
+  is_shared: number
+  sort_order: number
+  /** board_members.name — the display fallback for seats with no account linked. */
+  fallback_name: string
+  ticket_count: number
+}
+ 
+export interface ApiSeatAssignment {
+  id: string
+  seat_id: string
+  member_id: string
+  member_name: string | null
+  started_at: string
+  ended_at: string | null
+  note: string | null
+}
+
+/** One current holder. A shared seat yields several rows with the same seat_id. */
+export interface ApiSeatHolder {
+  assignment_id: string
+  seat_id: string
+  member_id: string
+  member_name: string
+  member_email: string
+  started_at: string
+}
+ 
+export async function adminGetBoardSeats(): Promise<{
+  seats: ApiAdminBoardSeat[]
+  holders: ApiSeatHolder[]
+  history: ApiSeatAssignment[]
+}> {
+  const response = await fetch('/api/admin/board-seats', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+ 
+/** memberId null vacates the seat. Either way the sitting term is closed. */
+export async function adminAssignBoardSeat(
+  seatId: string,
+  memberId: string | null,
+  note?: string,
+): Promise<void> {
+  const response = await fetch('/api/admin/board-seats', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({
+      seatId,
+      memberId,
+      vacate: memberId === null,
+      note: note ?? null,
+    }),
+  })
+  return handleResponse(response)
+}
+ 
+// ── Board inbox (seat holders) ────────────────────────────────────────────────
+ 
+export interface ApiBoardTicket {
+  id: string
+  name: string
+  email: string
+  subject: string
+  status: 'open' | 'in_progress' | 'resolved'
+  seat_id: string
+  seat_role: string
+  created_at: string
+  updated_at: string
+  message_count: number
+  last_message: string
+  /**
+   * Sender of the last real message (notes excluded). 'admin' means someone
+   * from LCA answered; 'member' or 'guest' means the visitor is still waiting.
+   */
+  last_sender_type: 'member' | 'admin' | 'guest' | null
+  /** Newest message time, using occurred_at for logged correspondence. */
+  last_activity_at: string | null
+  /** 0 = nobody currently holds this seat, so only admins are seeing it. */
+  seat_holder_count: number
+}
+ 
+export async function getBoardTickets(status?: string): Promise<{
+  tickets: ApiBoardTicket[]
+  seatIds: string[]
+  isAdmin?: boolean
+}> {
+  const url = status
+    ? `/api/board/tickets?status=${encodeURIComponent(status)}`
+    : '/api/board/tickets'
+  const response = await fetch(url, { headers: await authHeaders() })
+  return handleResponse(response)
+}
+ 
+export async function getBoardTicket(id: string): Promise<{
+  ticket: ApiBoardTicket
+  messages: ApiTicketMessage[]
+}> {
+  const response = await fetch(`/api/board/tickets/${id}`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+ 
+export async function replyToBoardTicket(
+  ticketId: string,
+  body: string,
+): Promise<void> {
+  const response = await fetch(`/api/board/tickets/${ticketId}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ body }),
+  })
+  return handleResponse(response)
+}
+ 
+export async function updateBoardTicketStatus(
+  ticketId: string,
+  status: 'open' | 'in_progress' | 'resolved',
+): Promise<void> {
+  const response = await fetch(`/api/board/tickets/${ticketId}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify({ status }),
+  })
+  return handleResponse(response)
+}
+
+export interface ApiMySeat {
+  id: string
+  slug: string
+  role: string
+  category: 'officer' | 'regional_rep'
+  started_at: string
+}
+ 
+export async function getMySeats(): Promise<{ seats: ApiMySeat[] }> {
+  const response = await fetch('/api/board/my-seats', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export interface ApiTicketMessage {
+  id: string
+  ticket_id: string
+  sender_type: 'member' | 'admin' | 'guest'
+  body: string
+  created_at: string
+  /** 1 = logged correspondence pasted in after the fact, not a live message. */
+  is_note: number
+  /** When the correspondence happened. Null falls back to created_at. */
+  occurred_at: string | null
+  logged_by_name: string | null
+}
+
+export async function addBoardTicketNote(
+  ticketId: string,
+  body: string,
+  occurredAt?: string | null,
+): Promise<void> {
+  const response = await fetch(`/api/board/tickets/${ticketId}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ body, kind: 'note', occurredAt: occurredAt ?? null }),
+  })
+  return handleResponse(response)
+}
+
+export async function adminRemoveBoardSeatHolder(
+  seatId: string,
+  memberId: string,
+): Promise<void> {
+  const response = await fetch('/api/admin/board-seats', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ seatId, endMemberId: memberId }),
   })
   return handleResponse(response)
 }

@@ -140,7 +140,7 @@ function DropdownMenu({
 }
 
 function RoleLinks({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
-  const { role } = useAuth()
+  const { role, isBoardMember } = useAuth()
   const linkClass = mobile
     ? 'rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-[#c8a94a]'
     : 'text-sm font-medium text-white/90 transition-colors hover:text-[#c8a94a]'
@@ -149,6 +149,14 @@ function RoleLinks({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () =
 
   if (role === 'lca_admin' || role === 'club_rep' || role === 'tournament_director') {
     items.push({ label: 'Admin panel', href: '/admin' })
+  }
+
+  // Not a role check: isBoardMember comes from a current seat assignment (or
+  // lca_admin, who can read every seat). It appears the moment someone is
+  // given a seat and disappears the moment their term ends, without their
+  // account changing in any other way.
+  if (isBoardMember) {
+    items.push({ label: 'Board inbox', href: '/board/inbox' })
   }
 
   return (
