@@ -14,6 +14,7 @@ export interface Env {
   FROM_EMAIL: string
   CONTACT_EMAIL: string
   SUPPORT_EMAIL: string
+  REPLY_TO_EMAIL?: string
 }
 
 export interface MemberRow {

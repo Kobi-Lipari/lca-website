@@ -67,6 +67,26 @@ export async function requireAuthedMember(
   return { user: userResult, member }
 }
 
+/**
+ * Resolves an optional session without failing the request. Endpoints that
+ * accept both guests and members (contact form, ticket creation) use this so a
+ * logged-in submitter gets their member_id attached to the ticket.
+ */
+export async function optionalAuthedMember(
+  request: Request,
+  env: Env,
+): Promise<AuthedMember | null> {
+  const user = await verifySupabaseUser(request, env)
+  if (!user) return null
+
+  let member = await getMemberById(env.DB, user.id)
+  if (!member) {
+    member = await upsertMemberFromAuth(env.DB, user, env)
+  }
+
+  return { user, member }
+}
+
 export async function requireRole(
   request: Request,
   env: Env,
@@ -128,6 +148,77 @@ export async function requireTournamentManager(
   }
 
   return authed
+}
+
+// ── Board seats ──────────────────────────────────────────────────
+//
+// Board access is a GRANT on top of an account, never an account type. It
+// lives in board_seat_assignments, so members.role — and everything attached
+// to the member's identity — is untouched when a term starts or ends.
+
+/** Seat ids the member currently holds. Empty for almost everyone. */
+export async function getActiveSeatIds(
+  db: D1Database,
+  memberId: string,
+): Promise<string[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT seat_id FROM board_seat_assignments
+        WHERE member_id = ?1 AND ended_at IS NULL`,
+    )
+    .bind(memberId)
+    .all<{ seat_id: string }>()
+
+  return (results ?? []).map((r) => r.seat_id)
+}
+
+export interface SeatAccess extends AuthedMember {
+  isAdmin: boolean
+  /** Seat ids this caller may read. Admins get every active seat. */
+  seatIds: string[]
+}
+
+/**
+ * Passes if the caller is an lca_admin (who can see every seat's tickets, so
+ * they can chase board members who haven't answered), or currently holds the
+ * seat. Access ends the moment the term does — `ended_at IS NULL` is the whole
+ * revocation mechanism, so there is nothing separate to remember to turn off.
+ *
+ * Called with a seatRef it gates one seat. Called without, it returns the
+ * caller's readable seats for an inbox listing.
+ */
+export async function requireSeatAccess(
+  request: Request,
+  env: Env,
+  seatRef?: string,
+): Promise<SeatAccess | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (authed instanceof Response) return authed
+
+  if (authed.member.role === 'lca_admin') {
+    const { results } = await env.DB.prepare(
+      `SELECT id FROM board_members WHERE is_active = 1`,
+    ).all<{ id: string }>()
+    return { ...authed, isAdmin: true, seatIds: (results ?? []).map((r) => r.id) }
+  }
+
+  const seatIds = await getActiveSeatIds(env.DB, authed.member.id)
+  if (seatIds.length === 0) return errorResponse('Forbidden', 403)
+
+  if (seatRef) {
+    const seat = await env.DB.prepare(
+      `SELECT id FROM board_members
+        WHERE is_active = 1 AND (slug = ?1 OR id = ?1)`,
+    )
+      .bind(seatRef)
+      .first<{ id: string }>()
+
+    if (!seat || !seatIds.includes(seat.id)) {
+      return errorResponse('Forbidden', 403)
+    }
+  }
+
+  return { ...authed, isAdmin: false, seatIds }
 }
 
 export function isResponse(value: unknown): value is Response {
