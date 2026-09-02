@@ -1,6 +1,7 @@
 import type { Env } from '../../../../types'
+import { recordAdminAction } from '../../../../utils/audit'
 import { isResponse, requireAdmin } from '../../../../utils/auth'
-import { updateMemberRole } from '../../../../utils/members'
+import { getMemberById, updateMemberRole } from '../../../../utils/members'
 import { isMemberRole } from '../../../../utils/permissions'
 import {
   errorResponse,
@@ -25,6 +26,13 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     return errorResponse('Invalid role', 400)
   }
 
+  // Read the previous role first: after the update it is gone, and "what it
+  // changed from" is the part that matters when reviewing this later.
+  const before = await getMemberById(context.env.DB, memberId)
+  if (!before) {
+    return errorResponse('Member not found', 404)
+  }
+
   const updated = await updateMemberRole(
     context.env.DB,
     context.env,
@@ -33,6 +41,15 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   )
   if (!updated) {
     return errorResponse('Member not found', 404)
+  }
+
+  if (before.role !== updated.role) {
+    await recordAdminAction(context.env.DB, authResult.member, {
+      action: 'role_change',
+      targetMemberId: updated.id,
+      targetLabel: `${updated.full_name} <${updated.email}>`,
+      detail: { from: before.role, to: updated.role },
+    })
   }
 
   return jsonResponse({ member: updated })

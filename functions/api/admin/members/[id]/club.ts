@@ -1,6 +1,7 @@
 import type { Env } from '../../../../types'
+import { recordAdminAction } from '../../../../utils/audit'
 import { isResponse, requireAdmin } from '../../../../utils/auth'
-import { updateMemberClub } from '../../../../utils/members'
+import { getMemberById, updateMemberClub } from '../../../../utils/members'
 import {
   errorResponse,
   handleOptions,
@@ -35,6 +36,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     }
   }
 
+  // Club assignment grants club_rep their scope, so record what it moved from.
+  const before = await getMemberById(context.env.DB, memberId)
+
   const updated = await updateMemberClub(
     context.env.DB,
     context.env,
@@ -43,6 +47,15 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   )
   if (!updated) {
     return errorResponse('Member not found', 404)
+  }
+
+  if (before?.club_id !== updated.club_id) {
+    await recordAdminAction(context.env.DB, authResult.member, {
+      action: 'club_change',
+      targetMemberId: updated.id,
+      targetLabel: `${updated.full_name} <${updated.email}>`,
+      detail: { from: before?.club_id ?? null, to: updated.club_id },
+    })
   }
 
   return jsonResponse({ member: updated })

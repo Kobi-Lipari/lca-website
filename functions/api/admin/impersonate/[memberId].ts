@@ -1,6 +1,7 @@
 // functions/api/admin/impersonate/[memberId].ts
 import { createClient } from '@supabase/supabase-js'
 import type { Env } from '../../../types'
+import { recordAdminAction } from '../../../utils/audit'
 import { isResponse, requireAdmin } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../utils/response'
 
@@ -45,17 +46,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse('Failed to redeem impersonation session', 500)
   }
 
-  await context.env.DB.prepare(
-    `INSERT INTO impersonation_log (id, admin_id, target_member_id, started_at)
-     VALUES (?, ?, ?, ?)`,
-  )
-    .bind(
-      `imp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
-      authResult.member.id,
-      target.id,
-      new Date().toISOString(),
-    )
-    .run()
+  // Recorded in admin_audit_log rather than the old impersonation_log: that
+  // table was never read by anything and its ended_at was never written, so
+  // it could not answer "who acted as whom, and when did it stop".
+  await recordAdminAction(context.env.DB, authResult.member, {
+    action: 'impersonation_start',
+    targetMemberId: target.id,
+    targetLabel: `${target.full_name} <${target.email}>`,
+    detail: { target_role: target.role },
+  })
 
   return jsonResponse({
     session: {
