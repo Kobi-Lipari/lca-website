@@ -44,10 +44,39 @@ async function authHeaders(): Promise<HeadersInit> {
   return headers
 }
 
+/** Carries the HTTP status so callers can tell "your session died" (401)
+ *  apart from "the server broke" (5xx) and react differently. */
+export class ApiError extends Error {
+  readonly status: number
+
+  constructor(message: string, status: number) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+  }
+}
+
 async function handleResponse<T>(response: Response): Promise<T> {
-  const data = (await response.json()) as T & { error?: string }
+  let data: T & { error?: string }
+  try {
+    data = (await response.json()) as T & { error?: string }
+  } catch {
+    // A non-JSON body — an HTML error page from the edge, say. Parsing it
+    // blind surfaces "Unexpected token '<'" to the member, which tells them
+    // nothing; the status is the part that actually matters.
+    throw new ApiError(
+      response.ok
+        ? 'The server returned an unreadable response.'
+        : `Request failed (${response.status})`,
+      response.status,
+    )
+  }
+
   if (!response.ok) {
-    throw new Error(data.error ?? `Request failed (${response.status})`)
+    throw new ApiError(
+      data.error ?? `Request failed (${response.status})`,
+      response.status,
+    )
   }
   return data
 }
