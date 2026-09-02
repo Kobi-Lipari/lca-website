@@ -23,6 +23,7 @@ import {
   type ApiMember,
   type ApiMySeat,
 } from '@/lib/api'
+import { getAssuranceLevel } from '@/lib/mfa'
 import { resolveRole, type MemberRole } from '@/lib/roles'
 import { supabase } from '@/lib/supabase'
 
@@ -47,6 +48,18 @@ interface AuthContextValue {
    */
   seats: ApiMySeat[]
   isBoardMember: boolean
+  /**
+   * Assurance level of the current session: 'aal2' once a second factor has
+   * been verified for it. Null until the first check resolves.
+   */
+  assuranceLevel: string | null
+  /**
+   * lca_admin without a second factor verified for this session. The API
+   * refuses admin endpoints in this state, so the UI routes them to setup
+   * rather than letting them walk into a wall of 403s.
+   */
+  mfaRequired: boolean
+  refreshAssurance: () => Promise<void>
   directedTournaments: ApiDirectedTournament[]
   directedTournamentIds: string[]
   loading: boolean
@@ -122,6 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   >([])
   const [loading, setLoading] = useState(true)
   const [memberLoading, setMemberLoading] = useState(false)
+  const [assuranceLevel, setAssuranceLevel] = useState<string | null>(null)
   const [impersonating, setImpersonating] = useState<ImpersonationTarget | null>(
     readStashedTarget,
   )
@@ -216,6 +230,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     autoFetchedFor.current = session.access_token
     refreshMember()
   }, [session, member, memberLoading, refreshMember])
+
+  const refreshAssurance = useCallback(async () => {
+    if (!session) {
+      setAssuranceLevel(null)
+      return
+    }
+    try {
+      const { current } = await getAssuranceLevel()
+      setAssuranceLevel(current)
+    } catch {
+      // Treated as "not stepped up". The server enforces this regardless, so
+      // guessing high here would only produce a confusing wall of 403s.
+      setAssuranceLevel(null)
+    }
+  }, [session])
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function check() {
+      if (!session) {
+        if (!cancelled) setAssuranceLevel(null)
+        return
+      }
+      try {
+        const { current } = await getAssuranceLevel()
+        if (!cancelled) setAssuranceLevel(current)
+      } catch {
+        if (!cancelled) setAssuranceLevel(null)
+      }
+    }
+
+    check()
+    return () => {
+      cancelled = true
+    }
+  }, [session])
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
@@ -337,6 +388,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // lca_admin can read every seat's inbox, so the link shows for them too.
   const isBoardMember = seats.length > 0 || role === 'lca_admin'
 
+  // Only meaningful once the profile has loaded and the assurance check has
+  // resolved; before that `member` is null and this would flap true.
+  const mfaRequired =
+    !!member && role === 'lca_admin' && assuranceLevel !== null
+      ? assuranceLevel !== 'aal2'
+      : false
+
   const value = useMemo(
     () => ({
       user,
@@ -345,6 +403,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role,
       seats,
       isBoardMember,
+      assuranceLevel,
+      mfaRequired,
+      refreshAssurance,
       directedTournaments,
       directedTournamentIds,
       loading,
@@ -365,6 +426,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role,
       seats,
       isBoardMember,
+      assuranceLevel,
+      mfaRequired,
+      refreshAssurance,
       directedTournaments,
       directedTournamentIds,
       loading,

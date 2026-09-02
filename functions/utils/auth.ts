@@ -4,19 +4,44 @@ import type { User } from '@supabase/supabase-js'
 
 import type { Env, MemberRow } from '../types'
 import { getMemberById, upsertMemberFromAuth } from './members'
-import { errorResponse } from './response'
+import { errorResponse, jsonResponse } from './response'
 import { isMemberRole, type MemberRole } from './permissions'
+
+/**
+ * Authenticator Assurance Level carried by the access token.
+ *
+ * 'aal1' is password-only; 'aal2' means a second factor was also verified
+ * for this session. Read from the token's own claims — Supabase does not
+ * surface it on the user object — and only ever after getUser() has
+ * validated the token, so the claims are trustworthy at that point.
+ */
+export function readTokenAal(token: string): string | null {
+  try {
+    const payload = token.split('.')[1]
+    if (!payload) return null
+    const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
+    const claims = JSON.parse(json) as { aal?: string }
+    return claims.aal ?? null
+  } catch {
+    return null
+  }
+}
+
+function bearerToken(request: Request): string | null {
+  const authHeader = request.headers.get('Authorization')
+  if (!authHeader?.startsWith('Bearer ')) return null
+  return authHeader.slice(7)
+}
 
 export async function verifySupabaseUser(
   request: Request,
   env: Env,
 ): Promise<User | null> {
-  const authHeader = request.headers.get('Authorization')
-  if (!authHeader?.startsWith('Bearer ')) {
+  const token = bearerToken(request)
+  if (!token) {
     return null
   }
 
-  const token = authHeader.slice(7)
   const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
     auth: {
       autoRefreshToken: false,
@@ -103,11 +128,36 @@ export async function requireRole(
   return authed
 }
 
+/**
+ * lca_admin, with a second factor verified for this session.
+ *
+ * The MFA check lives here rather than only in the UI on purpose: a
+ * password-only session can call these endpoints directly with curl, so
+ * enforcing it in the client would be decoration. An admin who has not
+ * enrolled yet gets 403 with mfaRequired, which the frontend turns into a
+ * prompt to enrol — enrolment itself works at aal1, so this cannot lock
+ * anyone out of the step that fixes it.
+ */
 export async function requireAdmin(
   request: Request,
   env: Env,
 ): Promise<AuthedMember | Response> {
-  return requireRole(request, env, 'lca_admin')
+  const authed = await requireRole(request, env, 'lca_admin')
+  if (isResponse(authed)) return authed
+
+  const token = bearerToken(request)
+  if (!token || readTokenAal(token) !== 'aal2') {
+    return jsonResponse(
+      {
+        error:
+          'Two-factor authentication is required for admin access. Set it up in your account security settings.',
+        mfaRequired: true,
+      },
+      403,
+    )
+  }
+
+  return authed
 }
 
 export async function requireClubRep(
