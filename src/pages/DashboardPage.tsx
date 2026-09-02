@@ -70,6 +70,7 @@ export function DashboardPage() {
   const [editing, setEditing] = useState(false)
   const [fullName, setFullName] = useState('')
   const [emailInput, setEmailInput] = useState('')
+  const [emailChangePassword, setEmailChangePassword] = useState('')
   const [uscfPlayer, setUscfPlayer] = useState<UscfPlayerResult | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveNotice, setSaveNotice] = useState<string | null>(null)
@@ -120,12 +121,39 @@ export function DashboardPage() {
     load()
   }, [user?.id])
 
+  /**
+   * Proves the person at the keyboard knows the current password, not just
+   * that a session is open. Changing either the password or the email is
+   * enough to take an account over for good — a new address plus a password
+   * reset locks the real owner out — so both are gated the same way.
+   */
+  async function reauthenticate(password: string): Promise<boolean> {
+    const accountEmail = member?.email || user?.email || ''
+    if (!accountEmail) return false
+    const { error } = await supabase.auth.signInWithPassword({
+      email: accountEmail,
+      password,
+    })
+    return !error
+  }
+
   async function handleProfileSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    const trimmedEmail = emailInput.trim()
+    const changingEmail = !!trimmedEmail && trimmedEmail !== member?.email
+
     setSaving(true)
     setSaveError(null)
     setSaveNotice(null)
     try {
+      // Checked before anything is written, so a wrong password leaves the
+      // profile untouched rather than half-saved.
+      if (changingEmail && !(await reauthenticate(emailChangePassword))) {
+        setSaveError('That password is incorrect, so your email was not changed.')
+        return
+      }
+
       const updated = await updateMe({
         fullName,
         uscfId: uscfPlayer?.uscfId ?? member?.uscf_id ?? null,
@@ -136,9 +164,8 @@ export function DashboardPage() {
       // Email lives on the Supabase auth identity, not the D1 member row —
       // change it separately and let Supabase's confirmation-link flow
       // gate when it actually takes effect.
-      const trimmedEmail = emailInput.trim()
       let emailChangeStarted = false
-      if (trimmedEmail && trimmedEmail !== member?.email) {
+      if (changingEmail) {
         const { error: emailError } = await supabase.auth.updateUser({ email: trimmedEmail })
         if (emailError) {
           // The profile write above has already committed. Saying only that
@@ -154,6 +181,7 @@ export function DashboardPage() {
       }
 
       setEditing(false)
+      setEmailChangePassword('')
       setSaveNotice(
         emailChangeStarted
           ? `Saved. Check ${trimmedEmail} for a link to confirm your new email address — it won't change until you do.`
@@ -179,21 +207,9 @@ export function DashboardPage() {
       setPasswordError('New password must be at least 6 characters.')
       return
     }
-    const accountEmail = member?.email || user?.email || ''
-    if (!accountEmail) {
-      setPasswordError('Could not determine your account email.')
-      return
-    }
-
     setPasswordSaving(true)
     try {
-      // Re-verify identity with the current password before changing it —
-      // an active session alone shouldn't be enough on a shared device.
-      const { error: reauthError } = await supabase.auth.signInWithPassword({
-        email: accountEmail,
-        password: currentPassword,
-      })
-      if (reauthError) {
+      if (!(await reauthenticate(currentPassword))) {
         setPasswordError('Current password is incorrect.')
         return
       }
@@ -355,6 +371,29 @@ export function DashboardPage() {
                       </p>
                     </div>
 
+                    {/* Only asked for when the address actually changed, so
+                        editing a name stays a one-field edit. */}
+                    {emailInput.trim() !== (member?.email ?? '') && (
+                      <div className="space-y-2 rounded-lg border border-[#c8a94a]/40 bg-[#c8a94a]/5 p-3">
+                        <Label htmlFor="emailChangePassword" className="text-xs">
+                          Confirm your password to change your email
+                        </Label>
+                        <Input
+                          id="emailChangePassword"
+                          type="password"
+                          autoComplete="current-password"
+                          value={emailChangePassword}
+                          onChange={(e) => setEmailChangePassword(e.target.value)}
+                          required
+                          disabled={saving}
+                        />
+                        <p className="text-[11px] text-muted-foreground">
+                          Your email address is how you sign in and how you recover the
+                          account, so we check it's really you.
+                        </p>
+                      </div>
+                    )}
+
                     {/* USCF lookup — replaces the old plain text input */}
                     <UscfSearchInput
                       onSelect={(player) => setUscfPlayer(player)}
@@ -385,6 +424,7 @@ export function DashboardPage() {
                           setEditing(false)
                           setFullName(member?.full_name ?? '')
                           setEmailInput(member?.email ?? '')
+                          setEmailChangePassword('')
                           setUscfPlayer(null)
                           setSaveError(null)
                         }}
@@ -554,6 +594,20 @@ export function DashboardPage() {
                   Update the password you use to sign in.
                 </p>
               )}
+
+              <div className="mt-4 border-t pt-4">
+                <p className="text-sm font-medium text-[#1a2744]">
+                  Two-factor authentication
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {role === 'lca_admin'
+                    ? 'Required for admin accounts — the admin panel stays locked until it is set up.'
+                    : 'Add a code from your phone on top of your password.'}
+                </p>
+                <Button asChild variant="outline" size="sm" className="mt-3">
+                  <Link to="/account/security">Manage two-factor</Link>
+                </Button>
+              </div>
             </div>
           </>
         )}

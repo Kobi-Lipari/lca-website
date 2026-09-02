@@ -15,6 +15,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
+import { listTotpFactors, needsChallenge, verifyTotpCode } from '@/lib/mfa'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
@@ -23,16 +24,21 @@ const goldButtonClass =
 
 export function LoginPage() {
   usePageTitle('Log In')
-  const { user, loading, signIn, syncMember } = useAuth()
+  const { user, loading, signIn, syncMember, refreshAssurance } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  /** Set once the password is accepted but a second factor is still owed. */
+  const [challengeFactorId, setChallengeFactorId] = useState<string | null>(null)
+  const [code, setCode] = useState('')
 
   const redirectTo =
     (location.state as { from?: string } | null)?.from ?? '/dashboard'
 
-  if (!loading && user) {
+  // A password-only session already has a `user`, so redirecting on that
+  // alone would skip straight past the code prompt.
+  if (!loading && user && !challengeFactorId) {
     return <Navigate to={redirectTo} replace />
   }
 
@@ -53,13 +59,50 @@ export function LoginPage() {
       return
     }
 
+    // With a verified factor the session is only aal1 until a code is
+    // accepted, so stop and ask rather than landing them somewhere that
+    // will refuse them.
+    try {
+      if (await needsChallenge()) {
+        const verified = (await listTotpFactors()).find(
+          (f) => f.status === 'verified',
+        )
+        if (verified) {
+          setChallengeFactorId(verified.id)
+          setSubmitting(false)
+          return
+        }
+      }
+    } catch {
+      // If the check itself fails, carry on: the server still refuses
+      // anything that genuinely needs aal2.
+    }
+
+    await finishLogin()
+  }
+
+  async function finishLogin() {
     try {
       await syncMember()
     } catch {
       // Continue even if D1 sync fails
     }
-
     navigate(redirectTo, { replace: true })
+  }
+
+  async function handleChallenge(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!challengeFactorId) return
+    setError(null)
+    setSubmitting(true)
+    try {
+      await verifyTotpCode(challengeFactorId, code)
+      await refreshAssurance()
+      await finishLogin()
+    } catch {
+      setError('That code was not accepted. Codes change every 30 seconds — try the current one.')
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -86,13 +129,53 @@ export function LoginPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-xl text-[#1a2744]">
-                Member Login
+                {challengeFactorId ? 'Enter your code' : 'Member Login'}
               </CardTitle>
               <CardDescription>
-                Enter your email and password to sign in to your account.
+                {challengeFactorId
+                  ? 'Open your authenticator app and enter the six-digit code for LCA.'
+                  : 'Enter your email and password to sign in to your account.'}
               </CardDescription>
             </CardHeader>
 
+            {challengeFactorId ? (
+              <form onSubmit={handleChallenge}>
+                <CardContent className="space-y-4">
+                  {error && (
+                    <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                      {error}
+                    </p>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="totp">Six-digit code</Label>
+                    <Input
+                      id="totp"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      placeholder="123456"
+                      autoFocus
+                      required
+                      disabled={submitting}
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col gap-4">
+                  <Button
+                    type="submit"
+                    className={cn('w-full', goldButtonClass)}
+                    disabled={submitting}
+                  >
+                    {submitting ? 'Checking...' : 'Verify'}
+                  </Button>
+                  <p className="text-center text-xs text-muted-foreground">
+                    Lost access to your authenticator? Contact the webmaster to
+                    have it reset.
+                  </p>
+                </CardFooter>
+              </form>
+            ) : (
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
                 {error && (
@@ -156,6 +239,7 @@ export function LoginPage() {
                 </p>
               </CardFooter>
             </form>
+            )}
           </Card>
         </div>
       </section>
