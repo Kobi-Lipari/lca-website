@@ -26,6 +26,7 @@ export function RegisterPage() {
   const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [existingEmail, setExistingEmail] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [uscfIdTyped, setUscfIdTyped] = useState(false)
   const [uscfPlayer, setUscfPlayer] = useState<UscfPlayerResult | null>(null)
@@ -38,6 +39,7 @@ export function RegisterPage() {
     event.preventDefault()
     setError(null)
     setSuccess(null)
+    setExistingEmail(null)
     setSubmitting(true)
 
     const formData = new FormData(event.currentTarget)
@@ -58,17 +60,23 @@ export function RegisterPage() {
       return
     }
 
-    const { error: signUpError, needsEmailConfirmation } = await signUp(
-      email,
-      password,
-      {
+    const { error: signUpError, needsEmailConfirmation, alreadyRegistered } =
+      await signUp(email, password, {
         fullName: name,
         uscfId: uscfPlayer?.uscfId,
-      },
-    )
+      })
 
     if (signUpError) {
       setError(signUpError)
+      setSubmitting(false)
+      return
+    }
+
+    // Checked before needsEmailConfirmation: the already-registered decoy also
+    // comes back without a session, so testing that first would send them off
+    // to wait for a confirmation email that was never sent.
+    if (alreadyRegistered) {
+      setExistingEmail(email)
       setSubmitting(false)
       return
     }
@@ -133,6 +141,26 @@ export function RegisterPage() {
                   <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
                     {success}
                   </p>
+                )}
+                {existingEmail && (
+                  <div className="rounded-lg border border-[#c8a94a]/50 bg-[#c8a94a]/10 px-3 py-3 text-sm">
+                    <p className="font-medium text-[#1a2744]">
+                      You already have an account
+                    </p>
+                    <p className="mt-1 text-muted-foreground">
+                      <strong>{existingEmail}</strong> is already registered, so no
+                      confirmation email was sent. Log in with your existing
+                      password, or reset it if you don't remember it.
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button asChild size="sm" className={goldButtonClass}>
+                        <Link to="/login">Log in</Link>
+                      </Button>
+                      <Button asChild size="sm" variant="outline">
+                        <Link to="/forgot-password">Reset password</Link>
+                      </Button>
+                    </div>
+                  </div>
                 )}
 
                 <div className="space-y-2">
