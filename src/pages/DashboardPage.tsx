@@ -5,6 +5,7 @@ import {
   Building2,
   Calendar,
   CreditCard,
+  KeyRound,
   LayoutDashboard,
   MessageSquare,
   Plus,
@@ -18,6 +19,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import {
+  ApiError,
   getMe,
   getMyTickets,
   updateMe,
@@ -27,6 +29,7 @@ import {
 } from '@/lib/api'
 import { ROLE_LABELS } from '@/lib/roles'
 import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
+import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
@@ -66,9 +69,19 @@ export function DashboardPage() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [editing, setEditing] = useState(false)
   const [fullName, setFullName] = useState('')
+  const [emailInput, setEmailInput] = useState('')
   const [uscfPlayer, setUscfPlayer] = useState<UscfPlayerResult | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [saveNotice, setSaveNotice] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+
+  const [changingPassword, setChangingPassword] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [passwordNotice, setPasswordNotice] = useState<string | null>(null)
+  const [passwordSaving, setPasswordSaving] = useState(false)
 
   usePageTitle('My Dashboard')
 
@@ -79,9 +92,19 @@ export function DashboardPage() {
         setMember(data.member)
         setRegistrations(data.registrations)
         setFullName(data.member.full_name)
+        setEmailInput(data.member.email)
         setLoadError(null)
       } catch (err) {
-        setLoadError(err instanceof Error ? err.message : 'Failed to load profile')
+        // AuthContext signs out on a 401, so ProtectedRoute is about to send
+        // them to /login — say something human in the moment before it does,
+        // rather than flashing a bare "Unauthorized".
+        setLoadError(
+          err instanceof ApiError && err.status === 401
+            ? 'Your session has expired. Taking you back to the login page…'
+            : err instanceof Error
+              ? err.message
+              : 'Failed to load profile',
+        )
       } finally {
         setLoadingData(false)
       }
@@ -101,18 +124,93 @@ export function DashboardPage() {
     event.preventDefault()
     setSaving(true)
     setSaveError(null)
+    setSaveNotice(null)
     try {
       const updated = await updateMe({
         fullName,
         uscfId: uscfPlayer?.uscfId ?? member?.uscf_id ?? null,
       })
       setMember(updated)
-      setEditing(false)
       setUscfPlayer(null)
+
+      // Email lives on the Supabase auth identity, not the D1 member row —
+      // change it separately and let Supabase's confirmation-link flow
+      // gate when it actually takes effect.
+      const trimmedEmail = emailInput.trim()
+      let emailChangeStarted = false
+      if (trimmedEmail && trimmedEmail !== member?.email) {
+        const { error: emailError } = await supabase.auth.updateUser({ email: trimmedEmail })
+        if (emailError) {
+          // The profile write above has already committed. Saying only that
+          // the email failed would read as "nothing saved", so name the part
+          // that did land — and leave the form open so they can correct the
+          // address without retyping everything.
+          setSaveError(
+            `Saved your name and USCF details, but the email address was not changed: ${emailError.message}`,
+          )
+          return
+        }
+        emailChangeStarted = true
+      }
+
+      setEditing(false)
+      setSaveNotice(
+        emailChangeStarted
+          ? `Saved. Check ${trimmedEmail} for a link to confirm your new email address — it won't change until you do.`
+          : null,
+      )
     } catch (err) {
       setSaveError(err instanceof Error ? err.message : 'Failed to save profile')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handlePasswordChange(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setPasswordError(null)
+    setPasswordNotice(null)
+
+    if (newPassword !== confirmNewPassword) {
+      setPasswordError('New passwords do not match.')
+      return
+    }
+    if (newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters.')
+      return
+    }
+    const accountEmail = member?.email || user?.email || ''
+    if (!accountEmail) {
+      setPasswordError('Could not determine your account email.')
+      return
+    }
+
+    setPasswordSaving(true)
+    try {
+      // Re-verify identity with the current password before changing it —
+      // an active session alone shouldn't be enough on a shared device.
+      const { error: reauthError } = await supabase.auth.signInWithPassword({
+        email: accountEmail,
+        password: currentPassword,
+      })
+      if (reauthError) {
+        setPasswordError('Current password is incorrect.')
+        return
+      }
+
+      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
+      if (updateError) {
+        setPasswordError(updateError.message)
+        return
+      }
+
+      setPasswordNotice('Password updated.')
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmNewPassword('')
+      setChangingPassword(false)
+    } finally {
+      setPasswordSaving(false)
     }
   }
 
@@ -219,6 +317,12 @@ export function DashboardPage() {
                   )}
                 </div>
 
+                {saveNotice && !editing && (
+                  <p className="mt-3 rounded-lg border border-[#c8a94a]/30 bg-[#c8a94a]/10 px-3 py-2 text-xs text-[#1a2744]">
+                    {saveNotice}
+                  </p>
+                )}
+
                 {editing ? (
                   <form onSubmit={handleProfileSave} className="mt-4 space-y-4">
                     {saveError && (
@@ -233,6 +337,22 @@ export function DashboardPage() {
                         required
                         disabled={saving}
                       />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={emailInput}
+                        onChange={(e) => setEmailInput(e.target.value)}
+                        required
+                        disabled={saving}
+                      />
+                      <p className="text-[11px] text-muted-foreground">
+                        Changing this sends a confirmation link to the new address — it
+                        won't take effect until you click it.
+                      </p>
                     </div>
 
                     {/* USCF lookup — replaces the old plain text input */}
@@ -264,6 +384,7 @@ export function DashboardPage() {
                         onClick={() => {
                           setEditing(false)
                           setFullName(member?.full_name ?? '')
+                          setEmailInput(member?.email ?? '')
                           setUscfPlayer(null)
                           setSaveError(null)
                         }}
@@ -335,6 +456,104 @@ export function DashboardPage() {
                   <Link to="/membership">Join / Renew Membership</Link>
                 </Button>
               </div>
+            </div>
+
+            <div className="mt-6 rounded-xl border bg-card p-6 shadow-sm">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <KeyRound className="size-5 text-[#c8a94a]" />
+                  <h2 className="text-lg font-bold text-[#1a2744]">Security</h2>
+                </div>
+                {!changingPassword && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setChangingPassword(true)
+                      setPasswordNotice(null)
+                      setPasswordError(null)
+                    }}
+                  >
+                    Change password
+                  </Button>
+                )}
+              </div>
+
+              {passwordNotice && !changingPassword && (
+                <p className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+                  {passwordNotice}
+                </p>
+              )}
+
+              {changingPassword ? (
+                <form onSubmit={handlePasswordChange} className="mt-4 max-w-sm space-y-4">
+                  {passwordError && (
+                    <p className="text-sm text-destructive">{passwordError}</p>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input
+                      id="currentPassword"
+                      type="password"
+                      autoComplete="current-password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      required
+                      disabled={passwordSaving}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      autoComplete="new-password"
+                      minLength={6}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      required
+                      disabled={passwordSaving}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmNewPassword">Confirm New Password</Label>
+                    <Input
+                      id="confirmNewPassword"
+                      type="password"
+                      autoComplete="new-password"
+                      minLength={6}
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      required
+                      disabled={passwordSaving}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button type="submit" className={goldButtonClass} disabled={passwordSaving}>
+                      {passwordSaving ? 'Updating...' : 'Update password'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={passwordSaving}
+                      onClick={() => {
+                        setChangingPassword(false)
+                        setCurrentPassword('')
+                        setNewPassword('')
+                        setConfirmNewPassword('')
+                        setPasswordError(null)
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              ) : (
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Update the password you use to sign in.
+                </p>
+              )}
             </div>
           </>
         )}
