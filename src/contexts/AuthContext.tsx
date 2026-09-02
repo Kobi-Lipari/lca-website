@@ -6,13 +6,15 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
+import type { AuthError, Session, User } from '@supabase/supabase-js'
 
 import {
   adminImpersonateMember,
+  ApiError,
   getMe,
   getMySeats,
   syncMember as apiSyncMember,
@@ -51,7 +53,12 @@ interface AuthContextValue {
     email: string,
     password: string,
     metadata?: { fullName?: string; uscfId?: string },
-  ) => Promise<{ error: string | null; needsEmailConfirmation: boolean }>
+  ) => Promise<{
+    error: string | null
+    needsEmailConfirmation: boolean
+    /** The address already has an account — no mail was sent. */
+    alreadyRegistered: boolean
+  }>
   signOut: () => Promise<void>
   syncMember: () => Promise<void>
   refreshMember: () => Promise<void>
@@ -78,6 +85,21 @@ async function loadMemberProfile() {
   return { ...data, seats: seatData.seats }
 }
 
+/**
+ * Supabase does not always put something readable in `message`. A 5xx from
+ * the auth service (a mail-transport failure, say) has been seen to surface
+ * as the literal string "{}", which is what the member then reads on the
+ * form. Fall back to something they can act on.
+ */
+function authErrorMessage(error: AuthError | null): string | null {
+  if (!error) return null
+  const message = error.message?.trim()
+  if (!message || message === '{}') {
+    return 'Something went wrong on our end. Please try again — if it keeps happening, contact support.'
+  }
+  return message
+}
+
 function readStashedTarget(): ImpersonationTarget | null {
   try {
     const stashed = sessionStorage.getItem(IMPERSONATION_TARGET_KEY)
@@ -100,6 +122,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [impersonating, setImpersonating] = useState<ImpersonationTarget | null>(
     readStashedTarget,
   )
+  /**
+   * Which session we have already auto-fetched the profile for.
+   *
+   * Without this the auto-fetch effect below spins: a failed load leaves
+   * `member` null and `memberLoading` false, which are the effect's own
+   * dependencies, so it fires again immediately and hammers /api/me for as
+   * long as the tab is open. One automatic attempt per session is enough —
+   * an explicit refreshMember() call still re-fetches on demand.
+   */
+  const autoFetchedFor = useRef<string | null>(null)
 
   const refreshMember = useCallback(async () => {
     if (!session) {
@@ -115,10 +147,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setMember(data.member)
       setSeats(data.seats)
       setDirectedTournaments(data.directedTournaments ?? [])
-    } catch {
+    } catch (err) {
       setMember(null)
       setSeats([])
       setDirectedTournaments([])
+
+      // A 401 means the server rejected this token outright — the session is
+      // dead even though the client still holds one. Confirming an email
+      // change is one way to land here. Leaving the stale session in place
+      // strands the member on a page showing a bare "Unauthorized"; dropping
+      // it lets ProtectedRoute send them to /login, which is the only thing
+      // that actually helps.
+      if (err instanceof ApiError && err.status === 401) {
+        await supabase.auth.signOut()
+      }
     } finally {
       setMemberLoading(false)
     }
@@ -161,14 +203,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (session && !member && !memberLoading) {
-      refreshMember()
+    if (!session) {
+      autoFetchedFor.current = null
+      return
     }
+    if (member || memberLoading) return
+    if (autoFetchedFor.current === session.access_token) return
+
+    autoFetchedFor.current = session.access_token
+    refreshMember()
   }, [session, member, memberLoading, refreshMember])
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error: error?.message ?? null }
+    return { error: authErrorMessage(error) }
   }, [])
 
   const signUp = useCallback(
@@ -189,9 +237,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
       })
 
+      // Signing up with an address that already has an account is NOT an
+      // error as far as Supabase is concerned: rather than confirm the
+      // address exists, it returns a decoy user with an empty `identities`
+      // array and no session, and sends no mail. Read as-is that looks
+      // identical to "created, pending confirmation", so the person is told
+      // to go check an inbox that will never receive anything. Detect the
+      // decoy so we can point them at logging in or resetting instead.
+      const alreadyRegistered =
+        !error && !!data.user && (data.user.identities?.length ?? 0) === 0
+
       return {
-        error: error?.message ?? null,
+        error: authErrorMessage(error),
         needsEmailConfirmation: !data.session,
+        alreadyRegistered,
       }
     },
     [],
