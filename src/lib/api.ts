@@ -1351,10 +1351,9 @@ export async function adminGetAuditLog(params?: {
   if (params?.action) query.set('action', params.action)
   if (params?.limit) query.set('limit', String(params.limit))
 
-  const response = await fetch(
-    `/api/admin/audit${query.toString() ? `?${query}` : ''}`,
-    { headers: await authHeaders() },
-  )
+  const response = await fetch(`/api/admin/audit?${query}`, {
+    headers: await authHeaders(),
+  })
   const data = await handleResponse<{ entries: ApiAuditEntry[] }>(response)
   return data.entries
 }
