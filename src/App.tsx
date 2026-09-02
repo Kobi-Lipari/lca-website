@@ -20,6 +20,7 @@ const ClubDetailPage = lazy(() => import('@/pages/ClubDetailPage').then(m => ({ 
 const ClubsPage = lazy(() => import('@/pages/ClubsPage').then(m => ({ default: m.ClubsPage })))
 const ContactPage = lazy(() => import('@/pages/ContactPage').then(m => ({ default: m.ContactPage })))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ default: m.DashboardPage })))
+const AccountSecurityPage = lazy(() => import('@/pages/AccountSecurityPage').then(m => ({ default: m.AccountSecurityPage })))
 const DonationSuccessPage = lazy(() => import('@/pages/DonationSuccessPage').then(m => ({ default: m.DonationSuccessPage })))
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })))
 const GovernancePage = lazy(() => import('@/pages/GovernancePage').then(m => ({ default: m.GovernancePage })))
@@ -74,6 +75,9 @@ function App() {
             <Route path="/governance/minutes" element={<MinutesPage />} />
             {/* ── Protected ── */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            {/* ProtectedRoute, not RoleProtectedRoute: an admin who has not
+                enrolled yet must be able to reach the page that fixes that. */}
+            <Route path="/account/security" element={<ProtectedRoute><AccountSecurityPage /></ProtectedRoute>} />
             <Route path="/manage/club" element={<RoleProtectedRoute roles={['club_rep']}><ManageClubPage /></RoleProtectedRoute>} />
             {/*
               ProtectedRoute, not RoleProtectedRoute: holding a board seat is an

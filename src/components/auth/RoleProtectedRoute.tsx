@@ -30,8 +30,15 @@ export function RoleProtectedRoute({
   requireClubMatch,
   requireTournamentAccess,
 }: RoleProtectedRouteProps) {
-  const { user, role, member, loading, memberLoading, directedTournamentIds } =
-    useAuth()
+  const {
+    user,
+    role,
+    member,
+    loading,
+    memberLoading,
+    directedTournamentIds,
+    mfaRequired,
+  } = useAuth()
   const location = useLocation()
   const { id } = useParams<{ id: string }>()
 
@@ -61,6 +68,12 @@ export function RoleProtectedRoute({
 
   if (roles && !roles.includes(role)) {
     return <Navigate to="/dashboard" replace />
+  }
+
+  // Admin endpoints refuse a password-only session, so send them to set up
+  // their second factor rather than into a page that will only 403.
+  if (mfaRequired) {
+    return <Navigate to="/account/security" replace />
   }
 
   return children

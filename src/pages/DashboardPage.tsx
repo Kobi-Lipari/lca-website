@@ -594,6 +594,20 @@ export function DashboardPage() {
                   Update the password you use to sign in.
                 </p>
               )}
+
+              <div className="mt-4 border-t pt-4">
+                <p className="text-sm font-medium text-[#1a2744]">
+                  Two-factor authentication
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {role === 'lca_admin'
+                    ? 'Required for admin accounts — the admin panel stays locked until it is set up.'
+                    : 'Add a code from your phone on top of your password.'}
+                </p>
+                <Button asChild variant="outline" size="sm" className="mt-3">
+                  <Link to="/account/security">Manage two-factor</Link>
+                </Button>
+              </div>
             </div>
           </>
         )}
