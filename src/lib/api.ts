@@ -1319,6 +1319,46 @@ export async function adminImpersonateMember(memberId: string): Promise<ApiImper
   return handleResponse(response)
 }
 
+/** Closes out the audit entry. Call with the admin's restored session. */
+export async function adminEndImpersonation(
+  targetMemberId: string | null,
+): Promise<{ ok: true }> {
+  const response = await fetch('/api/admin/impersonate/end', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ targetMemberId }),
+  })
+  return handleResponse(response)
+}
+
+export interface ApiAuditEntry {
+  id: string
+  actor_id: string
+  actor_email: string
+  action: string
+  target_member_id: string | null
+  target_label: string | null
+  /** JSON string, shape depends on the action. */
+  detail: string | null
+  created_at: string
+}
+
+export async function adminGetAuditLog(params?: {
+  action?: string
+  limit?: number
+}): Promise<ApiAuditEntry[]> {
+  const query = new URLSearchParams()
+  if (params?.action) query.set('action', params.action)
+  if (params?.limit) query.set('limit', String(params.limit))
+
+  const response = await fetch(
+    `/api/admin/audit${query.toString() ? `?${query}` : ''}`,
+    { headers: await authHeaders() },
+  )
+  const data = await handleResponse<{ entries: ApiAuditEntry[] }>(response)
+  return data.entries
+}
+
 // ── Board seats (admin) ───────────────────────────────────────────────────────
  
 export interface ApiAdminBoardSeat {

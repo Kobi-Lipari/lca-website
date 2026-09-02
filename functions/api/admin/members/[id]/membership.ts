@@ -1,6 +1,7 @@
 // functions/api/admin/members/[id]/membership.ts
-import type { Env } from '../../../../types'
+import type { Env, MemberRow } from '../../../../types'
 import { jsonResponse, errorResponse, handleOptions } from '../../../../utils/response'
+import { recordAdminAction } from '../../../../utils/audit'
 import { requireAdmin, isResponse } from '../../../../utils/auth'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -37,6 +38,13 @@ export const onRequestPatch: PagesFunction<Env> = async (ctx) => {
     status = expiry.slice(0, 10) >= today ? 'active' : 'expired'
   }
 
+  // Captured before the write so the log can show what it changed from.
+  const before = await ctx.env.DB.prepare(
+    'SELECT membership_status, membership_expiry FROM members WHERE id = ?',
+  )
+    .bind(id)
+    .first<Pick<MemberRow, 'membership_status' | 'membership_expiry'>>()
+
   // Build SET clause only from fields actually being written, so PATCHing
   // status alone can never wipe the expiry (and vice versa).
   const sets: string[] = []
@@ -55,8 +63,28 @@ export const onRequestPatch: PagesFunction<Env> = async (ctx) => {
     `UPDATE members SET ${sets.join(', ')} WHERE id = ?`,
   ).bind(...binds).run()
 
-  const member = await ctx.env.DB.prepare('SELECT * FROM members WHERE id = ?').bind(id).first()
+  const member = await ctx.env.DB.prepare('SELECT * FROM members WHERE id = ?')
+    .bind(id)
+    .first<MemberRow>()
   if (!member) return errorResponse('Member not found', 404)
+
+  // Membership status decides who gets member rates and who appears in
+  // member-only sends, so an override is worth being able to attribute.
+  await recordAdminAction(ctx.env.DB, auth.member, {
+    action: 'membership_override',
+    targetMemberId: member.id,
+    targetLabel: `${member.full_name} <${member.email}>`,
+    detail: {
+      from: {
+        status: before?.membership_status ?? null,
+        expiry: before?.membership_expiry ?? null,
+      },
+      to: {
+        status: member.membership_status,
+        expiry: member.membership_expiry,
+      },
+    },
+  })
 
   return jsonResponse({ member })
 }

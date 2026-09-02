@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ArrowRight, Award, Building2, Check, Copy,
   LogIn, Mail, Megaphone, MessageSquare, Pencil, Plus, Search, Share2, Shield,
-  Trash2, Trophy, Users, X,
+  ShieldAlert, Trash2, Trophy, Users, X,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/AuthContext'
 import { AdminAnnouncementPanel } from '@/components/AdminAnnouncementPanel'
+import { AuditLogPanel } from '@/components/admin/AuditLogPanel'
 import { BoardSeatsPanel } from '@/components/admin/BoardSeatsPanel'
 import { MemberSeatsCell } from '@/components/admin/MemberSeatsCell'
 import {
@@ -53,7 +54,7 @@ const SECTION_PRESETS = [
 const TC_PRESETS = ['G/60+5','G/90+30','G/120+30','G/30+5','G/15+2','G/5+2','G/3+2']
 const ROUND_OPTIONS = [3,4,5,6,7]
 
-type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support' | 'email' | 'announcements' | 'boardseats'
+type AdminTab = 'members' | 'tournaments' | 'clubs' | 'support' | 'email' | 'announcements' | 'boardseats' | 'audit'
 type WizardStep = 'template' | 'basics' | 'sections' | 'schedule' | 'review'
 
 interface WizardState {
@@ -1098,6 +1099,7 @@ export function AdminPage() {
     ...(isAdmin ? [{ id: 'support' as AdminTab, label: 'Support tickets', icon: MessageSquare }] : []),
     ...(isAdmin ? [{ id: 'announcements' as AdminTab, label: 'Announcements', icon: Megaphone }] : []),
     ...(isAdmin ? [{ id: 'boardseats' as AdminTab, label: 'Board seats', icon: Award }] : []),
+    ...(isAdmin ? [{ id: 'audit' as AdminTab, label: 'Admin activity', icon: ShieldAlert }] : []),
   ]
 
   async function loadAll() {
@@ -1335,6 +1337,8 @@ export function AdminPage() {
             )}
 
             {tab === 'boardseats' && isAdmin && <BoardSeatsPanel />}
+
+            {tab === 'audit' && isAdmin && <AuditLogPanel />}
 
           </>
         )}

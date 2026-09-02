@@ -13,6 +13,7 @@ import {
 import type { AuthError, Session, User } from '@supabase/supabase-js'
 
 import {
+  adminEndImpersonation,
   adminImpersonateMember,
   ApiError,
   getMe,
@@ -26,6 +27,8 @@ import { resolveRole, type MemberRole } from '@/lib/roles'
 import { supabase } from '@/lib/supabase'
 
 interface ImpersonationTarget {
+  /** Needed to pair the audit log's start and end entries. */
+  id: string
   fullName: string
   email: string
 }
@@ -297,12 +300,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       access_token: string
       refresh_token: string
     }
+    const targetId = impersonating?.id ?? null
 
     await supabase.auth.setSession(adminTokens)
     sessionStorage.removeItem(ADMIN_SESSION_STASH_KEY)
     sessionStorage.removeItem(IMPERSONATION_TARGET_KEY)
     setImpersonating(null)
-  }, [])
+
+    // After setSession, so the entry is attributed to the admin rather than
+    // to the member they were acting as. Best-effort: closing the tab ends
+    // the session without ever reaching here, and an unclosed entry is
+    // better than blocking the exit on a logging call.
+    try {
+      await adminEndImpersonation(targetId)
+    } catch {
+      // Leaves a start with no end, which the log view reports honestly.
+    }
+  }, [impersonating])
 
   const syncMember = useCallback(async () => {
     const synced = await apiSyncMember()
