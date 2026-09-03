@@ -10,8 +10,7 @@ import { formatDate, type UnifiedTournament } from '@/lib/clearinghouse'
 import { isScholasticTournament, sectionName } from '@/lib/scholastic'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-
-const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 function ScholasticCard({ t }: { t: UnifiedTournament }) {
   const isLca = t.is_lca === 1

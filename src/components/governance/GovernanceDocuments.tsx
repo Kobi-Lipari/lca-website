@@ -14,6 +14,7 @@ import {
   type ApiGovernanceDocument,
 } from '@/lib/api'
 import { ACCEPTED_UPLOAD_TYPES, stripDocumentExtension } from '@/lib/documentUpload'
+import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 /**
  * The editor is admin-only, and TipTap is not small.
@@ -42,8 +43,6 @@ function LazyEditor(props: { content: string; onChange: (html: string) => void }
     </Suspense>
   )
 }
-
-const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 const emptyForm = { title: '', content: '', doc_date: '', year: '' }
 
@@ -134,7 +133,7 @@ function DocumentCard({
             <button
               type="button"
               onClick={() => setExpanded((e) => !e)}
-              className="mt-2 text-sm font-medium text-[#1a2744] underline underline-offset-2 hover:text-[#c8a94a]"
+              className="mt-2 text-sm font-medium text-[#1a2744] underline underline-offset-2"
             >
               {expanded ? 'Show less' : 'Read more'}
             </button>

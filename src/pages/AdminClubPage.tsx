@@ -453,7 +453,7 @@ export function AdminClubPage() {
               </div>
               <Link
                 to="/admin"
-                className="flex items-center gap-1 text-sm text-[#c8a94a] hover:underline"
+                className="flex items-center gap-1 text-sm text-[#1a2744] hover:underline"
                 onClick={() => {
                   sessionStorage.setItem('adminTab', 'tournaments')
                 }}

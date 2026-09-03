@@ -178,7 +178,7 @@ export function ResetPasswordPage() {
                   Reset links are single-use and expire after a short time.{' '}
                   <Link
                     to="/forgot-password"
-                    className="font-medium text-[#c8a94a] hover:underline"
+                    className="font-medium text-[#1a2744] hover:underline"
                   >
                     Request a new link
                   </Link>

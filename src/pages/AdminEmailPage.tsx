@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import {
   getClubs,
   getCampaigns,
@@ -24,8 +25,6 @@ import {
   type ApiCampaignRecipient,
   type ApiAdminMember,
 } from '@/lib/api'
-
-const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 const ROLE_OPTIONS = [
   { value: 'member', label: 'Members' },
@@ -311,7 +310,7 @@ export function AdminEmailPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <Label className="text-xs">Message</Label>
-                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-[#c8a94a] hover:underline">
+                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-[#1a2744] hover:underline">
                     {showPreview ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
                     {showPreview ? 'Hide preview' : 'Preview email'}
                   </button>
