@@ -109,7 +109,7 @@ const tierBenefits: Record<string, string[]> = {
 }
 
 const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 function TierButton({
   tierId,
@@ -167,10 +167,10 @@ export function MembershipPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
-            <Users className="size-8 text-[#c8a94a] sm:size-10" />
+            <Users className="size-8 text-lca-gold sm:size-10" />
             <div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
                 LCA Membership
@@ -194,7 +194,7 @@ export function MembershipPage() {
             .{' '}
             <button
               type="button"
-              className="font-medium text-[#1a2744] underline"
+              className="font-medium text-lca-navy underline"
               onClick={() => navigate('/dashboard')}
             >
               View dashboard
@@ -205,7 +205,7 @@ export function MembershipPage() {
 
       <section className="bg-muted/30">
         <div className="mx-auto max-w-6xl px-6 py-8">
-          <h2 className="text-2xl font-bold text-[#1a2744]">
+          <h2 className="text-2xl font-bold text-lca-navy">
             Membership Tiers
           </h2>
           <p className="mt-1 text-muted-foreground">
@@ -219,22 +219,22 @@ export function MembershipPage() {
                 key={tier.id}
                 className={cn(
                   'flex flex-col rounded-xl border bg-card p-6 shadow-sm',
-                  tier.highlighted && 'border-[#c8a94a] ring-2 ring-[#c8a94a]/30',
+                  tier.highlighted && 'border-lca-gold ring-2 ring-lca-gold/30',
                 )}
               >
                 {tier.highlighted && (
-                  <span className="mb-3 w-fit rounded-full bg-[#c8a94a]/20 px-2.5 py-0.5 text-xs font-medium text-[#1a2744]">
+                  <span className="mb-3 w-fit rounded-full bg-lca-gold/20 px-2.5 py-0.5 text-xs font-medium text-lca-navy">
                     Most Popular
                   </span>
                 )}
 
-                <h3 className="text-xl font-bold text-[#1a2744]">{tier.name}</h3>
+                <h3 className="text-xl font-bold text-lca-navy">{tier.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {tier.description}
                 </p>
 
                 <div className="mt-4">
-                  <span className="text-3xl font-bold text-[#1a2744]">
+                  <span className="text-3xl font-bold text-lca-navy">
                     ${tier.price}
                   </span>
                   <span className="ml-1 text-sm text-muted-foreground">
@@ -248,7 +248,7 @@ export function MembershipPage() {
                       key={item}
                       className="flex items-start gap-2 text-sm text-muted-foreground"
                     >
-                      <Check className="mt-0.5 size-4 shrink-0 text-[#c8a94a]" />
+                      <Check className="mt-0.5 size-4 shrink-0 text-lca-gold" />
                       {item}
                     </li>
                   ))}
@@ -262,7 +262,7 @@ export function MembershipPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-8">
-        <h2 className="text-2xl font-bold text-[#1a2744]">Member Benefits</h2>
+        <h2 className="text-2xl font-bold text-lca-navy">Member Benefits</h2>
         <p className="mt-1 text-muted-foreground">
           Every membership tier includes access to the LCA community and
           platform.
@@ -274,9 +274,9 @@ export function MembershipPage() {
               key={benefit.title}
               className="flex gap-4 rounded-xl border bg-card p-5 shadow-sm"
             >
-              <benefit.icon className="size-6 shrink-0 text-[#c8a94a]" />
+              <benefit.icon className="size-6 shrink-0 text-lca-gold" />
               <div>
-                <h3 className="font-semibold text-[#1a2744]">{benefit.title}</h3>
+                <h3 className="font-semibold text-lca-navy">{benefit.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {benefit.description}
                 </p>
@@ -288,12 +288,12 @@ export function MembershipPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-8">
         <div className="rounded-xl border bg-card p-6 sm:p-8">
-          <h2 className="text-xl font-bold text-[#1a2744]">
+          <h2 className="text-xl font-bold text-lca-navy">
             How Membership Works
           </h2>
           <ol className="mt-4 space-y-4 text-sm text-muted-foreground">
             <li className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#1a2744] text-xs font-bold text-white">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-lca-navy text-xs font-bold text-white">
                 1
               </span>
               <span>
@@ -301,7 +301,7 @@ export function MembershipPage() {
               </span>
             </li>
             <li className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#1a2744] text-xs font-bold text-white">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-lca-navy text-xs font-bold text-white">
                 2
               </span>
               <span>
@@ -309,7 +309,7 @@ export function MembershipPage() {
               </span>
             </li>
             <li className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-[#1a2744] text-xs font-bold text-white">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-lca-navy text-xs font-bold text-white">
                 3
               </span>
               <span>
@@ -320,7 +320,7 @@ export function MembershipPage() {
 
           <p className="mt-6 text-sm text-muted-foreground">
             Already a member?{' '}
-            <Link to="/login" className="font-medium text-[#1a2744] hover:underline">
+            <Link to="/login" className="font-medium text-lca-navy hover:underline">
               Log in to renew
             </Link>{' '}
             or manage your account.

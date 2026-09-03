@@ -38,7 +38,7 @@ type MembershipStatus = 'active' | 'expired' | 'pending'
 const statusConfig: Record<MembershipStatus, { label: string; className: string }> = {
   active: { label: 'Active', className: 'bg-emerald-100 text-emerald-800' },
   expired: { label: 'Expired', className: 'bg-destructive/10 text-destructive' },
-  pending: { label: 'Pending', className: 'bg-[#c8a94a]/20 text-[#1a2744]' },
+  pending: { label: 'Pending', className: 'bg-lca-gold/20 text-lca-navy' },
 }
 
 const ticketStatusColors: Record<string, string> = {
@@ -58,7 +58,7 @@ const ticketStatusLabels: Record<string, string> = {
 }
 
 const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 export function DashboardPage() {
   const { user, role, member: authMember, directedTournaments } = useAuth()
@@ -250,10 +250,10 @@ export function DashboardPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
-            <LayoutDashboard className="size-8 text-[#c8a94a] sm:size-10" />
+            <LayoutDashboard className="size-8 text-lca-gold sm:size-10" />
             <div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
                 My Dashboard
@@ -281,7 +281,7 @@ export function DashboardPage() {
           <>
             {(role === 'lca_admin' || role === 'club_rep' || role === 'tournament_director') && (
               <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-[#1a2744]">
+                <h2 className="text-lg font-bold text-lca-navy">
                   {ROLE_LABELS[role]} tools
                 </h2>
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -318,8 +318,8 @@ export function DashboardPage() {
               <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-1">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <User className="size-5 text-[#c8a94a]" />
-                    <h2 className="text-lg font-bold text-[#1a2744]">Profile</h2>
+                    <User className="size-5 text-lca-gold" />
+                    <h2 className="text-lg font-bold text-lca-navy">Profile</h2>
                   </div>
                   {!editing && (
                     <Button
@@ -334,7 +334,7 @@ export function DashboardPage() {
                 </div>
 
                 {saveNotice && !editing && (
-                  <p className="mt-3 rounded-lg border border-[#c8a94a]/30 bg-[#c8a94a]/10 px-3 py-2 text-xs text-[#1a2744]">
+                  <p className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/10 px-3 py-2 text-xs text-lca-navy">
                     {saveNotice}
                   </p>
                 )}
@@ -374,7 +374,7 @@ export function DashboardPage() {
                     {/* Only asked for when the address actually changed, so
                         editing a name stays a one-field edit. */}
                     {emailInput.trim() !== (member?.email ?? '') && (
-                      <div className="space-y-2 rounded-lg border border-[#c8a94a]/40 bg-[#c8a94a]/5 p-3">
+                      <div className="space-y-2 rounded-lg border border-lca-gold/40 bg-lca-gold/5 p-3">
                         <Label htmlFor="emailChangePassword" className="text-xs">
                           Confirm your password to change your email
                         </Label>
@@ -436,22 +436,22 @@ export function DashboardPage() {
                 ) : (
                   <dl className="mt-4 space-y-3 text-sm">
                     <div>
-                      <dt className="font-medium text-[#1a2744]">Name</dt>
+                      <dt className="font-medium text-lca-navy">Name</dt>
                       <dd className="text-muted-foreground">{displayName}</dd>
                     </div>
                     <div>
-                      <dt className="font-medium text-[#1a2744]">Email</dt>
+                      <dt className="font-medium text-lca-navy">Email</dt>
                       <dd className="text-muted-foreground">{email}</dd>
                     </div>
                     {member?.uscf_id && (
                       <div>
-                        <dt className="font-medium text-[#1a2744]">USCF ID</dt>
+                        <dt className="font-medium text-lca-navy">USCF ID</dt>
                         <dd className="text-muted-foreground">{member.uscf_id}</dd>
                       </div>
                     )}
                     {member?.uscf_rating != null && (
                       <div>
-                        <dt className="font-medium text-[#1a2744]">USCF Rating</dt>
+                        <dt className="font-medium text-lca-navy">USCF Rating</dt>
                         <dd className="text-muted-foreground">
                           {member.uscf_rating}
                           {member.uscf_rating_updated_at && (
@@ -470,8 +470,8 @@ export function DashboardPage() {
               <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-2">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex items-center gap-2">
-                    <CreditCard className="size-5 text-[#c8a94a]" />
-                    <h2 className="text-lg font-bold text-[#1a2744]">Membership</h2>
+                    <CreditCard className="size-5 text-lca-gold" />
+                    <h2 className="text-lg font-bold text-lca-navy">Membership</h2>
                   </div>
                   <span
                     className={cn(
@@ -486,7 +486,7 @@ export function DashboardPage() {
                   {membershipStatus === 'active' ? (
                     <>
                       Your LCA membership is valid through{' '}
-                      <span className="font-medium text-[#1a2744]">{membershipExpiry}</span>.
+                      <span className="font-medium text-lca-navy">{membershipExpiry}</span>.
                     </>
                   ) : (
                     <>Membership status: {status.label.toLowerCase()}.</>
@@ -501,8 +501,8 @@ export function DashboardPage() {
             <div className="mt-6 rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <KeyRound className="size-5 text-[#c8a94a]" />
-                  <h2 className="text-lg font-bold text-[#1a2744]">Security</h2>
+                  <KeyRound className="size-5 text-lca-gold" />
+                  <h2 className="text-lg font-bold text-lca-navy">Security</h2>
                 </div>
                 {!changingPassword && (
                   <Button
@@ -596,7 +596,7 @@ export function DashboardPage() {
               )}
 
               <div className="mt-4 border-t pt-4">
-                <p className="text-sm font-medium text-[#1a2744]">
+                <p className="text-sm font-medium text-lca-navy">
                   Two-factor authentication
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -616,8 +616,8 @@ export function DashboardPage() {
       <section className="bg-muted/30">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-2">
-            <Calendar className="size-6 text-[#c8a94a]" />
-            <h2 className="text-2xl font-bold text-[#1a2744]">My Registrations</h2>
+            <Calendar className="size-6 text-lca-gold" />
+            <h2 className="text-2xl font-bold text-lca-navy">My Registrations</h2>
           </div>
           <p className="mt-1 text-muted-foreground">
             Tournaments you are registered for.
@@ -630,7 +630,7 @@ export function DashboardPage() {
                   className="flex flex-col gap-3 rounded-xl border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <h3 className="font-semibold text-[#1a2744]">
+                    <h3 className="font-semibold text-lca-navy">
                       {reg.tournament_name ?? reg.tournament_id}
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -645,7 +645,7 @@ export function DashboardPage() {
                         'rounded-full px-2.5 py-0.5 text-xs font-medium',
                         reg.payment_status === 'paid'
                           ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-[#c8a94a]/20 text-[#1a2744]',
+                          : 'bg-lca-gold/20 text-lca-navy',
                       )}
                     >
                       {reg.payment_status === 'paid' ? 'Paid' : 'Payment pending'}
@@ -660,7 +660,7 @@ export function DashboardPage() {
           ) : (
             <p className="mt-8 text-sm text-muted-foreground">
               No registrations yet.{' '}
-              <Link to="/tournaments" className="text-[#1a2744] hover:underline">
+              <Link to="/tournaments" className="text-lca-navy hover:underline">
                 Browse tournaments
               </Link>
             </p>
@@ -672,10 +672,10 @@ export function DashboardPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <MessageSquare className="size-6 text-[#c8a94a]" />
-              <h2 className="text-2xl font-bold text-[#1a2744]">My Support Tickets</h2>
+              <MessageSquare className="size-6 text-lca-gold" />
+              <h2 className="text-2xl font-bold text-lca-navy">My Support Tickets</h2>
               {openCount > 0 && (
-                <span className="rounded-full bg-[#c8a94a]/20 px-2.5 py-0.5 text-xs font-semibold text-[#1a2744]">
+                <span className="rounded-full bg-lca-gold/20 px-2.5 py-0.5 text-xs font-semibold text-lca-navy">
                   {openCount} open
                 </span>
               )}
@@ -702,7 +702,7 @@ export function DashboardPage() {
                     className="flex flex-col gap-2 rounded-xl border bg-card p-5 shadow-sm transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-[#1a2744]">
+                      <p className="truncate font-semibold text-lca-navy">
                         {ticket.subject}
                       </p>
                       <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
@@ -729,7 +729,7 @@ export function DashboardPage() {
             </ul>
             {tickets.length > recentTickets.length && (
               <p className="mt-4 text-sm">
-                <Link to="/support" className="font-medium text-[#1a2744] hover:underline">
+                <Link to="/support" className="font-medium text-lca-navy hover:underline">
                   View all {tickets.length} tickets →
                 </Link>
               </p>
@@ -738,7 +738,7 @@ export function DashboardPage() {
         ) : (
           <div className="mt-6 rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
             No support tickets yet. If you hit a problem or have a question,{' '}
-            <Link to="/support?new=1" className="font-medium text-[#1a2744] hover:underline">
+            <Link to="/support?new=1" className="font-medium text-lca-navy hover:underline">
               open a ticket
             </Link>{' '}
             and the LCA team will get back to you.

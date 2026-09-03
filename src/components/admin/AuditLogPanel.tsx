@@ -28,7 +28,7 @@ const ACTION_META: Record<
   membership_override: {
     label: 'Membership override',
     icon: CreditCard,
-    className: 'bg-[#c8a94a]/20 text-[#7a5c00]',
+    className: 'bg-lca-gold/20 text-[#7a5c00]',
   },
   club_change: {
     label: 'Club change',
@@ -130,8 +130,8 @@ export function AuditLogPanel() {
   return (
     <div>
       <div className="mb-4 flex items-center gap-2">
-        <ShieldAlert className="size-5 text-[#c8a94a]" />
-        <h2 className="text-xl font-bold text-[#1a2744]">Admin activity</h2>
+        <ShieldAlert className="size-5 text-lca-gold" />
+        <h2 className="text-xl font-bold text-lca-navy">Admin activity</h2>
       </div>
       <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
         Privileged actions, newest first. Role changes matter most here — that is
@@ -146,7 +146,7 @@ export function AuditLogPanel() {
             type="button"
             size="sm"
             variant={filter === f.value ? 'default' : 'outline'}
-            className={cn(filter === f.value && 'bg-[#c8a94a] text-[#1a2744] hover:bg-[#c8a94a]/90')}
+            className={cn(filter === f.value && 'bg-lca-gold text-lca-navy hover:bg-lca-gold/90')}
             onClick={() => setFilter(f.value)}
           >
             {f.label}
@@ -155,7 +155,7 @@ export function AuditLogPanel() {
       </div>
 
       {unclosedImpersonations > 0 && filter === '' && (
-        <p className="mb-4 rounded-lg border border-[#c8a94a]/40 bg-[#c8a94a]/10 px-3 py-2 text-xs text-[#1a2744]">
+        <p className="mb-4 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-lca-navy">
           {unclosedImpersonations} impersonation
           {unclosedImpersonations === 1 ? '' : 's'} with no recorded end. Usually
           means the tab was closed rather than exited — the end time is unknown,
@@ -207,7 +207,7 @@ export function AuditLogPanel() {
                     >
                       <Icon className="size-3" /> {meta.label}
                     </span>
-                    <span className="truncate text-sm text-[#1a2744]">
+                    <span className="truncate text-sm text-lca-navy">
                       {entry.target_label ?? '—'}
                     </span>
                   </div>

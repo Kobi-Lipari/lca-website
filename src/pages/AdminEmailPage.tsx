@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
 import {
   getClubs,
   getCampaigns,
@@ -56,18 +56,18 @@ const SITE_URL_DISPLAY = (
  *  change the backend template's colors/spacing, update this one too. */
 function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml: string }) {
   return (
-    <div className="overflow-hidden rounded-xl border shadow-sm" style={{ background: '#f4f4f0' }}>
+    <div className="overflow-hidden rounded-xl border shadow-sm" style={{ background: LCA.cream }}>
       <div style={{ maxWidth: 480, margin: '0 auto', background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid #e0ddd5' }}>
         {/* Header */}
-        <div style={{ background: '#1a2744', padding: '24px 28px', textAlign: 'center' }}>
+        <div style={{ background: LCA.navy, padding: '24px 28px', textAlign: 'center' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO_URL} alt="Louisiana Chess Association" width={120} style={{ display: 'block', margin: '0 auto', borderRadius: 8 }} />
         </div>
         {/* Gold bar */}
-        <div style={{ background: '#c8a94a', height: 4, fontSize: 0, lineHeight: 0 }}>&nbsp;</div>
+        <div style={{ background: LCA.gold, height: 4, fontSize: 0, lineHeight: 0 }}>&nbsp;</div>
         {/* Body */}
         <div style={{ padding: '24px 28px 20px' }}>
-          <h1 style={{ margin: '0 0 12px', fontSize: 18, color: '#1a2744', fontFamily: 'Georgia, serif' }}>
+          <h1 style={{ margin: '0 0 12px', fontSize: 18, color: LCA.navy, fontFamily: 'Georgia, serif' }}>
             {subject || 'Your subject line will appear here'}
           </h1>
           <div
@@ -79,10 +79,10 @@ function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml:
           />
         </div>
         {/* Footer */}
-        <div style={{ background: '#f4f4f0', borderTop: '1px solid #e0ddd5', padding: '16px 28px', textAlign: 'center' }}>
+        <div style={{ background: LCA.cream, borderTop: '1px solid #e0ddd5', padding: '16px 28px', textAlign: 'center' }}>
           <p style={{ margin: '0 0 3px', fontSize: 11, color: '#999' }}>Louisiana Chess Association</p>
           <p style={{ margin: 0, fontSize: 11 }}>
-            <span style={{ color: '#1a2744' }}>{SITE_URL_DISPLAY}</span> · <span style={{ color: '#1a2744' }}>support@louisianachess.org</span>
+            <span style={{ color: LCA.navy }}>{SITE_URL_DISPLAY}</span> · <span style={{ color: LCA.navy }}>support@louisianachess.org</span>
           </p>
         </div>
       </div>
@@ -91,7 +91,7 @@ function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml:
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; className: string }> = {
-  sending: { label: 'Sending…', icon: Clock, className: 'bg-[#c8a94a]/15 text-[#7a5c00]' },
+  sending: { label: 'Sending…', icon: Clock, className: 'bg-lca-gold/15 text-[#7a5c00]' },
   completed: { label: 'Completed', icon: CheckCircle2, className: 'bg-emerald-100 text-emerald-800' },
   failed: { label: 'Failed', icon: XCircle, className: 'bg-red-100 text-red-700' },
 }
@@ -107,7 +107,7 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-medium text-[#1a2744]">{c.subject}</p>
+          <p className="truncate font-medium text-lca-navy">{c.subject}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {new Date(c.created_at).toLocaleString()} · {c.total_recipients} recipients
           </p>
@@ -118,7 +118,7 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
       </div>
       <div className="mt-3">
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-          <div className="h-full rounded-full bg-[#c8a94a] transition-all" style={{ width: `${pct}%` }} />
+          <div className="h-full rounded-full bg-lca-gold transition-all" style={{ width: `${pct}%` }} />
         </div>
         <p className="mt-1 text-[11px] text-muted-foreground">
           {c.sent_count} sent
@@ -280,8 +280,8 @@ export function AdminEmailPage() {
           {/* ── Compose ── */}
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <Mail className="size-5 text-[#c8a94a]" />
-              <h2 className="text-xl font-bold text-[#1a2744]">Compose</h2>
+              <Mail className="size-5 text-lca-gold" />
+              <h2 className="text-xl font-bold text-lca-navy">Compose</h2>
             </div>
 
             <div className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
@@ -310,7 +310,7 @@ export function AdminEmailPage() {
               <div>
                 <div className="flex items-center justify-between">
                   <Label className="text-xs">Message</Label>
-                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-[#1a2744] hover:underline">
+                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-lca-navy hover:underline">
                     {showPreview ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
                     {showPreview ? 'Hide preview' : 'Preview email'}
                   </button>
@@ -329,7 +329,7 @@ export function AdminEmailPage() {
               {/* ── Test send ── */}
               <div className="rounded-lg border border-dashed p-3">
                 <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                  <FlaskConical className="size-3.5 text-[#c8a94a]" />
+                  <FlaskConical className="size-3.5 text-lca-gold" />
                   Send yourself a test before the real thing
                 </p>
                 <div className="flex gap-2">
@@ -358,9 +358,9 @@ export function AdminEmailPage() {
                   {previewing ? 'Resolving recipients…' : 'Review before sending'}
                 </Button>
               ) : (
-                <div className="rounded-lg border border-[#c8a94a]/50 bg-[#c8a94a]/8 p-4">
-                  <p className="flex items-center gap-2 text-sm font-medium text-[#1a2744]">
-                    <Users className="size-4 text-[#c8a94a]" />
+                <div className="rounded-lg border border-lca-gold/50 bg-lca-gold/8 p-4">
+                  <p className="flex items-center gap-2 text-sm font-medium text-lca-navy">
+                    <Users className="size-4 text-lca-gold" />
                     This will email <span className="font-bold">{finalList.length}</span> {finalList.length === 1 ? 'person' : 'people'}.
                   </p>
 
@@ -378,7 +378,7 @@ export function AdminEmailPage() {
                             <div className="min-w-0">
                               <p className="truncate text-xs font-medium text-foreground">
                                 {r.full_name}
-                                {isManual && <span className="ml-1.5 rounded-full bg-[#c8a94a]/15 px-1.5 py-0.5 text-[9px] font-medium text-[#7a5c00]">Added</span>}
+                                {isManual && <span className="ml-1.5 rounded-full bg-lca-gold/15 px-1.5 py-0.5 text-[9px] font-medium text-[#7a5c00]">Added</span>}
                               </p>
                               <p className="truncate text-[11px] text-muted-foreground">{r.email}</p>
                             </div>
@@ -421,7 +421,7 @@ export function AdminEmailPage() {
                                 <p className="truncate text-xs font-medium">{m.full_name}</p>
                                 <p className="truncate text-[11px] text-muted-foreground">{m.email}</p>
                               </div>
-                              <UserPlus className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+                              <UserPlus className="size-3.5 flex-shrink-0 text-lca-gold" />
                             </button>
                           ))}
                         </div>
@@ -446,7 +446,7 @@ export function AdminEmailPage() {
 
           {/* ── History ── */}
           <div>
-            <h2 className="mb-4 text-xl font-bold text-[#1a2744]">Send history</h2>
+            <h2 className="mb-4 text-xl font-bold text-lca-navy">Send history</h2>
             {loadingHistory ? (
               <p className="text-sm text-muted-foreground">Loading…</p>
             ) : campaigns.length === 0 ? (

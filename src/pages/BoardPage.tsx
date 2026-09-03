@@ -18,7 +18,7 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 type EditableField = 'role' | 'name'
 
@@ -73,13 +73,13 @@ function MemberCard({
   return (
     <div
       className="rounded-xl border bg-card p-4 shadow-sm"
-      style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
+      style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
     >
       {isAdmin && member ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Input
-              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-[#1a2744]"
+              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-lca-navy"
               value={member.role}
               disabled={saving}
               onBlur={(e) => onSave(seat.id, 'role', e.target.value)}
@@ -100,8 +100,8 @@ function MemberCard({
               fallback here would let an admin type something the public never
               sees — which is exactly how the two views drifted apart. */}
           {isLinked ? (
-            <div className="rounded-md border border-[#c8a94a]/40 bg-[#c8a94a]/8 px-2 py-1.5">
-              <p className="text-sm font-semibold text-[#1a2744]">{seat.holder_name}</p>
+            <div className="rounded-md border border-lca-gold/40 bg-lca-gold/8 px-2 py-1.5">
+              <p className="text-sm font-semibold text-lca-navy">{seat.holder_name}</p>
               <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">
                 From {seat.holder_count > 1 ? 'their member accounts' : 'their member account'}.
                 Messages reach {seat.holder_count > 1 ? 'them all' : 'them'} through the site.
@@ -110,7 +110,7 @@ function MemberCard({
           ) : (
             <>
               <Input
-                className="h-8 font-semibold text-[#1a2744]"
+                className="h-8 font-semibold text-lca-navy"
                 value={member.name}
                 disabled={saving}
                 placeholder="Full name, or TBD"
@@ -126,7 +126,7 @@ function MemberCard({
         </div>
       ) : (
         <>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a2744]">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-lca-navy">
             {seat.role}
           </p>
           {isVacant ? (
@@ -136,18 +136,18 @@ function MemberCard({
               </p>
               <Link
                 to={contactHref}
-                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[#1a2744] hover:underline"
+                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-lca-navy hover:underline"
               >
                 Interested in serving? Contact us →
               </Link>
             </div>
           ) : (
             <>
-              <p className="mt-1 font-semibold text-[#1a2744]">{displayName}</p>
+              <p className="mt-1 font-semibold text-lca-navy">{displayName}</p>
               <Link
                 to={contactHref}
                 className={cn(
-                  'mt-3 inline-flex items-center gap-1.5 rounded-md border border-[#c8a94a]/40 bg-[#c8a94a]/8 px-2.5 py-1 text-[11px] font-medium text-[#7a5c00] transition-colors hover:bg-[#c8a94a]/15',
+                  'mt-3 inline-flex items-center gap-1.5 rounded-md border border-lca-gold/40 bg-lca-gold/8 px-2.5 py-1 text-[11px] font-medium text-[#7a5c00] transition-colors hover:bg-lca-gold/15',
                 )}
               >
                 <Mail className="size-3" /> {contactLabel(seat, displayName)}
@@ -266,8 +266,8 @@ export function BoardPage() {
           {officers.length > 0 && (
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <ShieldCheck className="size-5 text-[#c8a94a]" />
-                <h2 className="text-base font-bold text-[#1a2744]">Officers</h2>
+                <ShieldCheck className="size-5 text-lca-gold" />
+                <h2 className="text-base font-bold text-lca-navy">Officers</h2>
                 <span className="text-xs text-muted-foreground">· {officers.length}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -290,8 +290,8 @@ export function BoardPage() {
           {reps.length > 0 && (
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <MapPin className="size-5 text-[#c8a94a]" />
-                <h2 className="text-base font-bold text-[#1a2744]">Regional representatives</h2>
+                <MapPin className="size-5 text-lca-gold" />
+                <h2 className="text-base font-bold text-lca-navy">Regional representatives</h2>
                 <span className="text-xs text-muted-foreground">· {reps.length}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -315,7 +315,7 @@ export function BoardPage() {
             <div>
               {adding ? (
                 <div className="rounded-xl border bg-card p-4 shadow-sm space-y-3">
-                  <p className="text-sm font-medium text-[#1a2744]">Add a board seat</p>
+                  <p className="text-sm font-medium text-lca-navy">Add a board seat</p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div><Label className="text-xs">Role</Label><Input className="mt-1 h-8 text-sm" placeholder="e.g. President, or '… Representative'" value={newMember.role} onChange={(e) => setNewMember((p) => ({ ...p, role: e.target.value }))} /></div>
                     <div><Label className="text-xs">Name</Label><Input className="mt-1 h-8 text-sm" placeholder="Full name, or TBD" value={newMember.name} onChange={(e) => setNewMember((p) => ({ ...p, name: e.target.value }))} /></div>
@@ -338,7 +338,7 @@ export function BoardPage() {
             </div>
           )}
 
-          <div className="rounded-xl border-[3px] border-[#c8a94a] bg-[#1a2744] p-5 text-white">
+          <div className="rounded-xl border-[3px] border-lca-gold bg-lca-navy p-5 text-white">
             <h3 className="font-semibold">Not sure who to ask?</h3>
             <p className="mt-2 text-sm text-white/65">
               Send it as a general inquiry and we'll route it to the right person. Every message opens a ticket you can follow.

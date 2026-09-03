@@ -100,7 +100,7 @@ export function AdminSupportPage() {
     <div className="mx-auto max-w-6xl px-6 py-12">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#1a2744]">Support Tickets</h1>
+          <h1 className="text-3xl font-bold text-lca-navy">Support Tickets</h1>
           <p className="text-muted-foreground mt-1">
             Manage member support requests
           </p>
@@ -118,13 +118,13 @@ export function AdminSupportPage() {
               onClick={() => setTab('new')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 tab === 'new'
-                  ? 'bg-[#1a2744] text-white'
+                  ? 'bg-lca-navy text-white'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
               New
               {newTickets.length > 0 && (
-                <span className="ml-2 bg-[#c8a94a] text-[#1a2744] text-xs px-1.5 py-0.5 rounded-full font-bold">
+                <span className="ml-2 bg-lca-gold text-lca-navy text-xs px-1.5 py-0.5 rounded-full font-bold">
                   {newTickets.length}
                 </span>
               )}
@@ -133,7 +133,7 @@ export function AdminSupportPage() {
               onClick={() => setTab('answered')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 tab === 'answered'
-                  ? 'bg-[#1a2744] text-white'
+                  ? 'bg-lca-navy text-white'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
@@ -161,13 +161,13 @@ export function AdminSupportPage() {
                 onClick={() => openTicket(ticket)}
                 className={`w-full text-left rounded-lg border p-4 transition-colors ${
                   selectedTicket?.ticket.id === ticket.id
-                    ? 'border-[#1a2744] bg-[#1a2744]/5'
+                    ? 'border-lca-navy bg-lca-navy/5'
                     : 'hover:bg-muted/50'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-medium text-[#1a2744] truncate">
+                    <p className="font-medium text-lca-navy truncate">
                       {ticket.subject}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">
@@ -207,7 +207,7 @@ export function AdminSupportPage() {
             <div className="rounded-lg border p-5">
               <div className="flex items-start justify-between gap-3 mb-4 pb-4 border-b">
                 <div>
-                  <h3 className="font-semibold text-[#1a2744]">
+                  <h3 className="font-semibold text-lca-navy">
                     {selectedTicket.ticket.subject}
                   </h3>
                   <p className="text-sm text-muted-foreground mt-0.5">
@@ -229,7 +229,7 @@ export function AdminSupportPage() {
                     key={msg.id}
                     className={`rounded-lg p-3 ${
                       msg.sender_type === 'admin'
-                        ? 'bg-[#1a2744]/5 border border-[#1a2744]/10'
+                        ? 'bg-lca-navy/5 border border-lca-navy/10'
                         : 'bg-muted'
                     }`}
                   >
@@ -256,7 +256,7 @@ export function AdminSupportPage() {
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-[#1a2744] hover:bg-[#1a2744]/90"
+                  className="w-full bg-lca-navy hover:bg-lca-navy/90"
                   disabled={sending}
                 >
                   {sending ? 'Sending…' : 'Send reply & mark answered'}

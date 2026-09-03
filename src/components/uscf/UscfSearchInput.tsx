@@ -63,8 +63,8 @@ function PlayerCard({
       className={cn(
         'w-full text-left px-4 py-3 border rounded-lg transition-colors',
         selected
-          ? 'border-[#1a2744] bg-[#1a2744]/5'
-          : 'border-border hover:border-[#1a2744]/40 hover:bg-muted/40',
+          ? 'border-lca-navy bg-lca-navy/5'
+          : 'border-border hover:border-lca-navy/40 hover:bg-muted/40',
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -267,7 +267,7 @@ export default function UscfSearchInput({
             className={cn(
               'px-2 py-1 rounded transition-colors',
               mode === 'id'
-                ? 'bg-[#1a2744] text-white'
+                ? 'bg-lca-navy text-white'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >
@@ -279,7 +279,7 @@ export default function UscfSearchInput({
             className={cn(
               'px-2 py-1 rounded transition-colors',
               mode === 'name'
-                ? 'bg-[#1a2744] text-white'
+                ? 'bg-lca-navy text-white'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >

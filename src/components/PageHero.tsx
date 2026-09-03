@@ -52,7 +52,7 @@ export function PageHero({
   className,
 }: PageHeroProps) {
   return (
-    <section className={cn('border-b-[3px] border-[#c8a94a] bg-[#1a2744] text-white', className)}>
+    <section className={cn('border-b-[3px] border-lca-gold bg-lca-navy text-white', className)}>
       <div
         className={cn(
           'mx-auto max-w-6xl px-6',
@@ -63,7 +63,7 @@ export function PageHero({
         {backTo && (
           <Link
             to={backTo.to}
-            className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-[#c8a94a]"
+            className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-lca-gold"
           >
             <ArrowLeft className="size-3.5" /> {backTo.label}
           </Link>
@@ -72,7 +72,7 @@ export function PageHero({
         {eyebrow && (
           <div
             className={cn(
-              'inline-block rounded-full border border-[#c8a94a]/50 bg-[#c8a94a]/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]',
+              'inline-block rounded-full border border-lca-gold/50 bg-lca-gold/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]',
               backTo ? 'mt-4 block w-fit' : 'mb-1',
             )}
           >

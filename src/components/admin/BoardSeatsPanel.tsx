@@ -67,10 +67,10 @@ function SeatRow({
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a2744]">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-lca-navy">
             {seat.role}
             {seat.is_shared === 1 && (
-              <span className="ml-2 inline-flex items-center gap-1 rounded bg-[#c8a94a]/15 px-1.5 py-0.5 text-[10px] font-normal text-[#7a5c00]">
+              <span className="ml-2 inline-flex items-center gap-1 rounded bg-lca-gold/15 px-1.5 py-0.5 text-[10px] font-normal text-[#7a5c00]">
                 <Users className="size-2.5" /> shared
               </span>
             )}
@@ -85,7 +85,7 @@ function SeatRow({
             <ul className="mt-1.5 space-y-1">
               {holders.map((h) => (
                 <li key={h.assignment_id} className="flex items-center gap-2 text-sm">
-                  <span className="font-semibold text-[#1a2744]">{h.member_name}</span>
+                  <span className="font-semibold text-lca-navy">{h.member_name}</span>
                   <span className="text-xs text-muted-foreground">
                     since {formatDate(h.started_at)}
                   </span>
@@ -151,7 +151,7 @@ function SeatRow({
                 }}
                 className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm hover:bg-background"
               >
-                <span className="font-medium text-[#1a2744]">{m.full_name}</span>
+                <span className="font-medium text-lca-navy">{m.full_name}</span>
                 <span className="text-xs text-muted-foreground">{m.email}</span>
               </button>
             ))}
@@ -237,7 +237,7 @@ export function BoardSeatsPanel() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-base font-bold text-[#1a2744]">Board seats</h2>
+        <h2 className="text-base font-bold text-lca-navy">Board seats</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Link member accounts to each seat. Messages sent through the board page
           stay with the seat, so whoever holds it next sees the full history.

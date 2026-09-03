@@ -40,7 +40,7 @@ export function MiniCalendar({
         >
           <ChevronLeft className="size-3.5 text-muted-foreground" />
         </button>
-        <h3 className="text-xs font-semibold text-[#1a2744]">
+        <h3 className="text-xs font-semibold text-lca-navy">
           {MONTH_NAMES[month]} {year}
         </h3>
         <button
@@ -72,9 +72,9 @@ export function MiniCalendar({
               className={cn(
                 'mx-auto flex size-6 items-center justify-center rounded-full text-[10px] transition-colors',
                 !hasEvent && 'cursor-default text-muted-foreground/50',
-                hasEvent && !isSelected && 'font-medium text-[#1a2744] bg-[#c8a94a]/25 hover:bg-[#c8a94a]/40',
-                isSelected && 'bg-[#1a2744] font-semibold text-white',
-                isToday && !isSelected && 'ring-1 ring-[#c8a94a]',
+                hasEvent && !isSelected && 'font-medium text-lca-navy bg-lca-gold/25 hover:bg-lca-gold/40',
+                isSelected && 'bg-lca-navy font-semibold text-white',
+                isToday && !isSelected && 'ring-1 ring-lca-gold',
               )}
             >
               {day}

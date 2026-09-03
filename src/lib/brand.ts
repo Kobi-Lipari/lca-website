@@ -9,7 +9,9 @@
 // and the accent rules live in one file instead of seven.
 
 /** Brand colors. Contrast ratios below are against white unless stated. */
-export const LCA = {
+/** Typed as string, not as const: these are a palette, and a literal type
+ *  here silently narrows any state initialised from one. */
+export const LCA: Readonly<Record<'navy' | 'gold' | 'cream', string>> = {
   /** 14.81:1 — body copy, headings, and the navy grounds themselves. */
   navy: '#1a2744',
   /** 2.28:1 — an accent only. See GOLD_BUTTON for the one text pairing
@@ -17,7 +19,7 @@ export const LCA = {
   gold: '#c8a94a',
   /** Section and email grounds. */
   cream: '#f4f4f0',
-} as const
+}
 
 /**
  * The primary action button: navy on gold at 6.51:1, which clears AA.
@@ -26,4 +28,4 @@ export const LCA = {
  * mean finding all six, and one of them drifting was inevitable.
  */
 export const GOLD_BUTTON =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
