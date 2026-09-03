@@ -14,5 +14,5 @@ export const onRequestGet: PagesFunction<Env> = async (ctx) => {
 
   const result = await searchUscfByName(lastName, firstName || undefined)
 
-  return jsonResponse(result, result.scraperDown ? 503 : 200)
+  return jsonResponse(result, result.upstreamUnavailable ? 503 : 200)
 }
