@@ -28,20 +28,83 @@ export function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [sessionReady, setSessionReady] = useState(false)
+  const [phase, setPhase] = useState<'checking' | 'ready' | 'invalid'>('checking')
+  const [linkProblem, setLinkProblem] = useState<string | null>(null)
 
-  // Supabase sends the user back with a token in the URL hash.
-  // We need to wait for the session to be established before allowing reset.
+  /**
+   * Establish the recovery session.
+   *
+   * This used to wait solely for a PASSWORD_RECOVERY event, which loses a
+   * race it cannot win: the Supabase client is created when `lib/supabase`
+   * is imported, and with detectSessionInUrl it consumes the recovery token
+   * out of the URL right then — before React has mounted this page and
+   * subscribed. When that happened the event had already fired, nothing set
+   * the flag, and the member sat on "Verifying your reset link…" forever
+   * with a perfectly valid link.
+   *
+   * So: check for a session that already exists first, keep the listener for
+   * the case where the event genuinely arrives later, and fail with a real
+   * message rather than hanging.
+   */
   useEffect(() => {
+    let cancelled = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+
+    // An expired or already-used link comes back as an error in the hash or
+    // query rather than a session. Previously that also hung forever.
+    const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''))
+    const query = new URLSearchParams(window.location.search)
+    const linkError =
+      hash.get('error_description') ?? hash.get('error') ??
+      query.get('error_description') ?? query.get('error')
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event: string) => {
-        if (event === 'PASSWORD_RECOVERY') {
-          setSessionReady(true)
+      (event, session) => {
+        if (cancelled) return
+        if (event === 'PASSWORD_RECOVERY' || session) {
+          if (timer) clearTimeout(timer)
+          setPhase('ready')
         }
       },
     )
-    return () => subscription.unsubscribe()
-  }, [supabase])
+
+    async function establish() {
+      if (linkError) {
+        setLinkProblem(
+          /expired/i.test(linkError)
+            ? 'That reset link has expired. Request a new one below.'
+            : 'That reset link is no longer valid. Request a new one below.',
+        )
+        setPhase('invalid')
+        return
+      }
+
+      const { data: { session } } = await supabase.auth.getSession()
+      if (cancelled) return
+      if (session) {
+        setPhase('ready')
+        return
+      }
+
+      // No session yet and no error: give the event a moment to arrive, then
+      // stop pretending something is still loading.
+      timer = setTimeout(() => {
+        if (cancelled) return
+        setLinkProblem(
+          "We couldn't verify that reset link. It may have expired or already been used.",
+        )
+        setPhase('invalid')
+      }, 6000)
+    }
+
+    establish()
+
+    return () => {
+      cancelled = true
+      if (timer) clearTimeout(timer)
+      subscription.unsubscribe()
+    }
+  }, [])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -100,18 +163,24 @@ export function ResetPasswordPage() {
               </CardDescription>
             </CardHeader>
 
-            {!sessionReady ? (
+            {phase === 'checking' ? (
               <CardContent>
                 <p className="text-sm text-muted-foreground">
                   Verifying your reset link…
                 </p>
+              </CardContent>
+            ) : phase === 'invalid' ? (
+              <CardContent>
+                <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {linkProblem}
+                </p>
                 <p className="mt-3 text-sm text-muted-foreground">
-                  If this takes too long,{' '}
+                  Reset links are single-use and expire after a short time.{' '}
                   <Link
                     to="/forgot-password"
-                    className="text-[#c8a94a] hover:underline"
+                    className="font-medium text-[#c8a94a] hover:underline"
                   >
-                    request a new link
+                    Request a new link
                   </Link>
                   .
                 </p>
