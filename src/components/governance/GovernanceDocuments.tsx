@@ -1,8 +1,7 @@
 // src/components/governance/GovernanceDocuments.tsx
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Plus, Trash2, Upload, FileText, Pencil, ChevronDown } from 'lucide-react'
 import { DocRow } from '@/components/governance/GovLayout'
-import { RichTextEditor } from '@/components/governance/RichTextEditor'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,7 +13,35 @@ import {
   getGovernanceDocuments,
   type ApiGovernanceDocument,
 } from '@/lib/api'
-import { parseFileToHtml, ACCEPTED_UPLOAD_TYPES } from '@/lib/parseDocumentFile'
+import { ACCEPTED_UPLOAD_TYPES, stripDocumentExtension } from '@/lib/documentUpload'
+
+/**
+ * The editor is admin-only, and TipTap is not small.
+ *
+ * This component renders on /governance/bylaws and /governance/minutes,
+ * which are public pages — a visitor reading the bylaws was downloading the
+ * whole editor to render a read-only list. Loading it with the add/edit form
+ * keeps it off that path entirely.
+ */
+const RichTextEditor = lazy(() =>
+  import('@/components/governance/RichTextEditor').then((m) => ({ default: m.RichTextEditor })),
+)
+
+/** RichTextEditor with its own loading boundary, so the two call sites below
+ *  don't each need to think about one. */
+function LazyEditor(props: { content: string; onChange: (html: string) => void }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="rounded-md border px-3 py-2 text-sm text-muted-foreground">
+          Loading editor…
+        </div>
+      }
+    >
+      <RichTextEditor {...props} />
+    </Suspense>
+  )
+}
 
 const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
@@ -173,11 +200,15 @@ export function GovernanceDocuments({
   async function handleFile(file: File) {
     setParsing(true)
     try {
+      // Loaded here rather than at module scope: the parser is mammoth plus
+      // pdfjs, and nobody who is only reading these pages should pay for it.
+      // "Reading file…" is already showing by the time this resolves.
+      const { parseFileToHtml } = await import('@/lib/parseDocumentFile')
       const html = await parseFileToHtml(file)
       setForm((p) => ({
         ...p,
         content: html,
-        title: p.title || file.name.replace(/\.(docx|pdf)$/i, ''),
+        title: p.title || stripDocumentExtension(file.name),
       }))
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Could not read that file.')
@@ -252,7 +283,7 @@ export function GovernanceDocuments({
             </TabsList>
 
             <TabsContent value="write" className="mt-3">
-              <RichTextEditor content={form.content} onChange={(html) => setForm((p) => ({ ...p, content: html }))} />
+              <LazyEditor content={form.content} onChange={(html) => setForm((p) => ({ ...p, content: html }))} />
             </TabsContent>
 
             <TabsContent value="upload" className="mt-3 space-y-3">
@@ -291,7 +322,7 @@ export function GovernanceDocuments({
                 <div>
                   <Label className="text-xs">Review & edit before saving</Label>
                   <div className="mt-1">
-                    <RichTextEditor content={form.content} onChange={(html) => setForm((p) => ({ ...p, content: html }))} />
+                    <LazyEditor content={form.content} onChange={(html) => setForm((p) => ({ ...p, content: html }))} />
                   </div>
                 </div>
               )}
