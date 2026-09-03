@@ -8,11 +8,17 @@ database_name = "lca-db"
 database_id = "e891b93f-e7fe-48d0-9afc-8570d805ef08"
 
 [vars]
+# Canonical public origin. Every link in outgoing mail is built from this, so
+# moving the site is this line plus the matching one in the Worker config —
+# not a search for hardcoded hostnames. Must match the Supabase Site URL, or
+# auth emails and app emails will disagree about where the site lives.
+SITE_URL = "https://louisianachess.org"
 SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
 FROM_EMAIL = "noreply@louisianachess.org"
 CONTACT_EMAIL = "louisianachess@gmail.com"
 SUPPORT_EMAIL = "louisianachess@gmail.com"
 REPLY_TO_EMAIL = "louisianachess@gmail.com"
+VITE_SITE_URL = "https://louisianachess.org"  # build-time twin of SITE_URL, for the email preview
 VITE_SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
 VITE_SUPABASE_ANON_KEY = "sb_publishable_f19vYEFtISf2_oBdOWSHLA_h3AY2sT3"
 VITE_GOOGLE_MAPS_API_KEY = "AIzaSyA0sTvidf63X8gWIqYn-NVklp-phgceW1g"

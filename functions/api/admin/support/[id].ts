@@ -8,6 +8,7 @@ import {
   parseJsonBody,
 } from '../../../utils/response'
 import { trySendEmail, supportReplyNotificationEmail } from '../../../utils/email'
+import { resolveSiteUrl } from '../../../utils/site'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -83,7 +84,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     ticketId,
     subject: ticket.subject,
     replyBody: body.body,
-    siteUrl: 'https://lca-website.pages.dev',
+    siteUrl: resolveSiteUrl(context.env, context.request),
   })
   await trySendEmail(context.env, { ...notification, to: ticket.email })
 
