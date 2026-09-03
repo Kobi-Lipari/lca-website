@@ -1,8 +1,29 @@
 // functions/utils/uscf.ts
+//
+// Player lookup against the US Chess ratings API.
+//
+// This used to scrape HTML out of www.uschess.org/msa — regex-matching
+// <font> tags for names and ratings. That stopped working when US Chess put
+// Cloudflare bot protection in front of the domain: every request now gets
+// `Cf-Mitigated: challenge` and a "Just a moment..." interstitial instead of
+// the page, which no amount of header tweaking gets past.
+//
+// US Chess has since moved ratings to ratings.uschess.org, backed by a public
+// JSON API that needs no key and answers plain server-side requests. That is
+// what this now uses. Besides being far less brittle, it is better data:
+// first and last name come through as separate fields rather than being
+// guessed by splitting on spaces, and membership expiry and status are
+// included, which the scraper never had.
 
 const RATING_CACHE_MS = 7 * 24 * 60 * 60 * 1000
-const MSA_BASE = 'https://www.uschess.org/msa'
-const PLAYER_SEARCH_URL = 'https://www.uschess.org/datapage/player-search.php'
+const API_BASE = 'https://ratings-api.uschess.org/api/v1'
+
+/** US Chess member IDs are 8 digits. */
+export const USCF_ID_PATTERN = /^\d{8}$/
+
+export function isValidUscfId(value: string | null | undefined): boolean {
+  return !!value && USCF_ID_PATTERN.test(value.trim())
+}
 
 export interface UscfPlayer {
   uscfId: string
@@ -19,13 +40,37 @@ export interface UscfPlayer {
 
 export interface UscfSearchResult {
   players: UscfPlayer[]
-  scraperDown?: boolean
+  /** Upstream was unreachable — distinct from "searched fine, found nobody". */
+  upstreamUnavailable?: boolean
 }
 
 export interface UscfLookupResult {
   uscfId: string
   rating: number | null
   name: string | null
+}
+
+// ── API response shapes ──────────────────────────────────────────────────
+// Only the fields we actually consume. A rating entry omits `rating`
+// entirely when the player is unrated in that system, so it is optional.
+
+interface ApiRating {
+  ratingSystem: string
+  rating?: number
+  isProvisional?: boolean
+  gamesPlayed?: number
+  floor?: number
+}
+
+interface ApiMember {
+  id: string
+  firstName?: string
+  lastName?: string
+  stateRep?: string
+  jurisdiction?: string
+  expirationDate?: string
+  status?: string
+  ratings?: ApiRating[]
 }
 
 export function isRatingCacheStale(updatedAt: string | null): boolean {
@@ -35,178 +80,112 @@ export function isRatingCacheStale(updatedAt: string | null): boolean {
   return Date.now() - updated > RATING_CACHE_MS
 }
 
+/**
+ * The API returns names inconsistently — some records are stored properly
+ * cased ("Kobi"), others shout ("MAGNUS"). Title-case only the shouted ones
+ * so deliberately cased names like "McBride" or "van Wely" survive intact.
+ */
+function normalizeName(value: string | undefined): string {
+  const raw = (value ?? '').trim()
+  if (!raw) return ''
+  if (raw !== raw.toUpperCase()) return raw // already mixed case — leave alone
+  return raw
+    .split(/\s+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(' ')
+}
+
+/** Regular ('R') is the rating that matters for our sections and reports. */
+function regularRating(ratings: ApiRating[] | undefined) {
+  const r = ratings?.find((x) => x.ratingSystem === 'R')
+  return {
+    rating: typeof r?.rating === 'number' ? r.rating : null,
+    isProvisional: r?.isProvisional === true,
+  }
+}
+
+function toPlayer(m: ApiMember): UscfPlayer {
+  const firstName = normalizeName(m.firstName)
+  const lastName = normalizeName(m.lastName)
+  const { rating, isProvisional } = regularRating(m.ratings)
+
+  return {
+    uscfId: m.id,
+    firstName,
+    lastName,
+    fullName: [firstName, lastName].filter(Boolean).join(' '),
+    rating,
+    ratingType: rating === null ? null : 'Regular',
+    isProvisional,
+    expirationDate: m.expirationDate ?? null,
+    state: m.stateRep ?? m.jurisdiction ?? null,
+    status: m.status ?? null,
+  }
+}
+
+async function getJson<T>(url: string, timeoutMs: number): Promise<
+  { ok: true; data: T } | { ok: false; notFound: boolean }
+> {
+  try {
+    const res = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(timeoutMs),
+    })
+    // 404 is a real answer ("no such member"), not an outage.
+    if (res.status === 404) return { ok: false, notFound: true }
+    if (!res.ok) return { ok: false, notFound: false }
+    return { ok: true, data: (await res.json()) as T }
+  } catch {
+    return { ok: false, notFound: false }
+  }
+}
+
 export async function fetchUscfById(
   uscfId: string,
-): Promise<{ player: UscfPlayer | null; scraperDown: boolean }> {
-  const normalizedId = uscfId.trim()
-  if (!/^\d+$/.test(normalizedId)) return { player: null, scraperDown: false }
+): Promise<{ player: UscfPlayer | null; upstreamUnavailable: boolean }> {
+  const id = uscfId.trim()
+  // Reject malformed ids before spending a network call on them.
+  if (!isValidUscfId(id)) return { player: null, upstreamUnavailable: false }
 
-  try {
-    const response = await fetch(
-      `${MSA_BASE}/MbrDtlMain.php?${encodeURIComponent(normalizedId)}`,
-      {
-        headers: { 'User-Agent': 'LouisianaChessAssociation/1.0' },
-        signal: AbortSignal.timeout(8000),
-      },
-    )
+  const result = await getJson<ApiMember>(`${API_BASE}/members/${id}`, 8000)
 
-    if (!response.ok) return { player: null, scraperDown: true }
-
-    const html = await response.text()
-
-    // The ONLY reliable indicator the member exists is this exact pattern:
-    // <font size=+1><b>31334465: KOBI LIPARI</b></font>
-    // If the ID doesn't match, MSA shows a generic page without this line
-    const nameMatch = html.match(
-      new RegExp(`<font size=\\+1><b>${normalizedId}:\\s*([^<]+)<\\/b><\\/font>`, 'i')
-    )
-
-    if (!nameMatch) {
-      // ID not found on MSA — not a valid USCF ID
-      return { player: null, scraperDown: false }
-    }
-
-    let fullName: string | null = nameMatch[1].trim()
-
-    // Capitalize: "KOBI LIPARI" → "Kobi Lipari"
-    fullName = fullName
-      .split(' ')
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ')
-
-    // MSA format is "LAST FIRST" — last word is first name
-    const nameParts = fullName.split(' ')
-    const firstName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : ''
-    const lastName = nameParts.length > 1
-      ? nameParts.slice(0, -1).join(' ')
-      : (nameParts[0] ?? '')
-
-    // Rating — only match after confirmed valid member page
-    const ratingMatch = html.match(/Regular\s+Rating[^0-9]*(\d{3,4})/i)
-    const rating = ratingMatch ? Number(ratingMatch[1]) : null
-    const isProvisional = /provisional/i.test(html)
-
-    // State
-    const stateMatch = html.match(/State Ranking \(([A-Z]{2})\)/)
-    const state = stateMatch ? stateMatch[1] : null
-
-    // Expiration
-    const expiryMatch =
-      html.match(/Membership Expires?:?\s*<[^>]*>\s*([^<]+)/i) ??
-      html.match(/Expir[^:]*:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})/i)
-    const expirationDate = expiryMatch ? expiryMatch[1].trim() : null
-
-    const status = expirationDate
-      ? new Date(expirationDate) >= new Date() ? 'Active' : 'Expired'
-      : null
-
-    return {
-      player: {
-        uscfId: normalizedId,
-        firstName,
-        lastName,
-        fullName,
-        rating,
-        ratingType: rating ? 'Regular' : null,
-        isProvisional,
-        expirationDate,
-        state,
-        status,
-      },
-      scraperDown: false,
-    }
-  } catch {
-    return { player: null, scraperDown: true }
+  if (!result.ok) {
+    // Not found → a definite "this id doesn't exist", so report it as such.
+    return { player: null, upstreamUnavailable: !result.notFound }
   }
+  if (!result.data?.id) {
+    return { player: null, upstreamUnavailable: false }
+  }
+
+  return { player: toPlayer(result.data), upstreamUnavailable: false }
 }
 
 export async function searchUscfByName(
   lastName: string,
   firstName?: string,
 ): Promise<UscfSearchResult> {
-  const query = firstName
-    ? `${lastName.trim()}, ${firstName.trim()}`
-    : lastName.trim()
+  // The API takes one fuzzy string rather than separate name fields.
+  const query = [lastName.trim(), firstName?.trim()].filter(Boolean).join(' ')
+  if (!query) return { players: [] }
 
-  try {
-    const url = `https://www.uschess.org/datapage/player-search.php?name=${encodeURIComponent(query)}&state=&rating=&order=alpha`
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'LouisianaChessAssociation/1.0' },
-      signal: AbortSignal.timeout(10000),
-    })
+  const result = await getJson<{ items?: ApiMember[] }>(
+    `${API_BASE}/members?Fuzzy=${encodeURIComponent(query)}&Offset=0&Size=20`,
+    10000,
+  )
 
-    if (!response.ok) return { players: [], scraperDown: true }
-
-    const html = await response.text()
-
-    if (!html.includes('Player Search Results')) {
-      return { players: [], scraperDown: true }
-    }
-
-    // Parse each data row
-    const rowMatches = html.match(/<tr><td valign=top>[\s\S]*?<\/tr>/gi) ?? []
-
-    const capitalize = (s: string) =>
-      s.split(' ').map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ')
-
-    const players: UscfPlayer[] = []
-
-    for (const row of rowMatches) {
-      const cells = row.match(/<td valign=top>([\s\S]*?)<\/td>/gi) ?? []
-      if (cells.length < 10) continue
-
-      const val = (i: number) =>
-        cells[i].replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '').trim()
-
-      const uscfId = val(0)
-      if (!/^\d+$/.test(uscfId)) continue // skip non-data rows
-
-      const ratingRaw = val(1)
-      const state = val(7)
-      const expirationDate = val(8) === 'Non-Member' ? null : val(8)
-      const rawName = val(9) // "LIPARI, KOBI"
-
-      // Parse rating — strip provisional suffix like "1150/4"
-      const ratingNum = ratingRaw.match(/^(\d+)/)
-      const rating = ratingNum ? Number(ratingNum[1]) : null
-      const isProvisional = ratingRaw.includes('/')
-
-      // Parse name — "LAST, FIRST" or "LAST, FIRST MIDDLE"
-      const commaIdx = rawName.indexOf(',')
-      const last = commaIdx >= 0 ? rawName.slice(0, commaIdx).trim() : rawName
-      const first = commaIdx >= 0 ? rawName.slice(commaIdx + 1).trim() : ''
-
-      const lastName = capitalize(last)
-      const firstName = capitalize(first)
-      const fullName = firstName ? `${firstName} ${lastName}` : lastName
-
-      const status = expirationDate
-        ? new Date(expirationDate) >= new Date() ? 'Active' : 'Expired'
-        : 'Non-Member'
-
-      players.push({
-        uscfId,
-        firstName,
-        lastName,
-        fullName,
-        rating,
-        ratingType: rating ? 'Regular' : null,
-        isProvisional,
-        expirationDate,
-        state,
-        status,
-      })
-
-      if (players.length >= 20) break
-    }
-
-    return { players, scraperDown: false }
-  } catch {
-    return { players: [], scraperDown: true }
+  // A search that legitimately matches nobody comes back 404 from this
+  // endpoint; that is an empty result, not an outage.
+  if (!result.ok) {
+    return result.notFound
+      ? { players: [] }
+      : { players: [], upstreamUnavailable: true }
   }
+
+  const items = Array.isArray(result.data?.items) ? result.data.items : []
+  return { players: items.filter((m) => m?.id).map(toPlayer) }
 }
 
-// Legacy-compatible — keeps existing callers working unchanged
+/** Legacy-compatible wrapper — keeps existing callers working unchanged. */
 export async function fetchUscfRatingFromWeb(
   uscfId: string,
 ): Promise<UscfLookupResult> {
@@ -223,13 +202,18 @@ export async function refreshMemberUscfRating(
   memberId: string,
   uscfId: string,
 ): Promise<number | null> {
-  const lookup = await fetchUscfRatingFromWeb(uscfId)
+  const { player, upstreamUnavailable } = await fetchUscfById(uscfId)
+
+  // Don't overwrite a good stored rating with null just because US Chess was
+  // briefly unreachable — leave the cached value and retry on the next pass.
+  if (upstreamUnavailable) return null
+
   const now = new Date().toISOString()
   await db
     .prepare(
       `UPDATE members SET uscf_rating = ?, uscf_rating_updated_at = ? WHERE id = ?`,
     )
-    .bind(lookup.rating, now, memberId)
+    .bind(player?.rating ?? null, now, memberId)
     .run()
-  return lookup.rating
+  return player?.rating ?? null
 }

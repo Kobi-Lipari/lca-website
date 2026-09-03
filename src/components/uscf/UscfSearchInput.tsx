@@ -20,16 +20,27 @@ export interface UscfPlayerResult {
   status: string | null
 }
 
+/** Shapes returned by /api/uscf/lookup and /api/uscf/search. */
+interface LookupResponse {
+  upstreamUnavailable?: boolean
+  player: UscfPlayerResult | null
+}
+interface SearchResponse {
+  upstreamUnavailable?: boolean
+  players?: UscfPlayerResult[]
+}
+
 interface Props {
   onSelect: (player: UscfPlayerResult | null) => void
-  onScraperDown?: () => void
-  onIdInput?: (hasInput: boolean) => void  // ADD THIS
+  /** Fired when US Chess itself is unreachable, so the parent can degrade. */
+  onUpstreamUnavailable?: () => void
+  onIdInput?: (hasInput: boolean) => void
   initialUscfId?: string
   className?: string
 }
 
 type SearchMode = 'id' | 'name'
-type Status = 'idle' | 'loading' | 'found' | 'not_found' | 'scraper_down' | 'selected'
+type Status = 'idle' | 'loading' | 'found' | 'not_found' | 'upstream_down' | 'selected'
 
 function PlayerCard({
   player,
@@ -122,7 +133,7 @@ function PlayerCard({
 
 export default function UscfSearchInput({
   onSelect,
-  onScraperDown,
+  onUpstreamUnavailable,
   onIdInput,
   initialUscfId,
   className,
@@ -155,10 +166,10 @@ export default function UscfSearchInput({
       setResults([])
       try {
         const res = await fetch(`/api/uscf/lookup?id=${encodeURIComponent(id)}`)
-        const data = await res.json() as any
-        if (data.scraperDown) {
-          setStatus('scraper_down')
-          onScraperDown?.()
+        const data = (await res.json()) as LookupResponse
+        if (data.upstreamUnavailable) {
+          setStatus('upstream_down')
+          onUpstreamUnavailable?.()
           return
         }
         if (data.player) {
@@ -168,8 +179,8 @@ export default function UscfSearchInput({
           setStatus('not_found')
         }
       } catch {
-        setStatus('scraper_down')
-        onScraperDown?.()
+        setStatus('upstream_down')
+        onUpstreamUnavailable?.()
       }
     }, 600)
 
@@ -189,21 +200,22 @@ export default function UscfSearchInput({
       const params = new URLSearchParams({ lastName: last })
       if (firstNameInput.trim()) params.set('firstName', firstNameInput.trim())
       const res = await fetch(`/api/uscf/search?${params}`)
-      const data = await res.json() as any
-      if (data.scraperDown) {
-        setStatus('scraper_down')
-        onScraperDown?.()
+      const data = (await res.json()) as SearchResponse
+      if (data.upstreamUnavailable) {
+        setStatus('upstream_down')
+        onUpstreamUnavailable?.()
         return
       }
-      if (data.players?.length > 0) {
-        setResults(data.players)
+      const players = data.players ?? []
+      if (players.length > 0) {
+        setResults(players)
         setStatus('found')
       } else {
         setStatus('not_found')
       }
     } catch {
-      setStatus('scraper_down')
-      onScraperDown?.()
+      setStatus('upstream_down')
+      onUpstreamUnavailable?.()
     }
   }
 
@@ -334,7 +346,7 @@ export default function UscfSearchInput({
       )}
 
       {/* Scraper down */}
-      {status === 'scraper_down' && (
+      {status === 'upstream_down' && (
         <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 space-y-2">
           <div className="flex items-center gap-2 text-destructive text-sm">
             <AlertCircle className="h-4 w-4 shrink-0" />
