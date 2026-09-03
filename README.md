@@ -72,12 +72,52 @@ developers or reviewers:
 
 ```bash
 npm install
-npm run dev              # Vite dev server (frontend)
-npx wrangler pages dev    # Pages Functions + local D1 (backend)
+cp .env.example .env.local   # then fill in the values
+npm run db:migrate:local     # build the local database
+npm run pages:dev            # frontend + Pages Functions + local D1
 ```
 
-Requires a `.env.local` with Supabase, Stripe, and Resend keys (see
-`.env.example`) — not included in this repo.
+`npm run dev` runs Vite alone, which is fine for pure UI work but serves no
+backend — anything hitting `/api/...` 404s. Use `pages:dev` for the full stack.
+
+### Environment files
+
+Two files, both gitignored, both required for a working local stack:
+
+- **`.env.local`** — frontend values, inlined by Vite at build time. Copy
+  `.env.example` and fill it in. Because they are baked in at build time,
+  changing them means rebuilding, not just reloading.
+- **`.dev.vars`** — backend secrets, read by `wrangler pages dev`. Needs at
+  least `SUPABASE_SERVICE_ROLE_KEY`, from Cloudflare → Workers & Pages →
+  lca-website → Settings → Variables and Secrets. Without it every
+  authenticated endpoint fails with `supabaseKey is required`, which surfaces
+  in the browser as a generic 500 rather than anything that names the cause.
+
+### Database
+
+Migrations are applied through wrangler, which records what it has already
+run in a `d1_migrations` table, so re-running only applies what is pending:
+
+```bash
+npm run db:migrate:local           # apply pending migrations locally
+npm run db:migrate:status          # show applied vs pending (local)
+npm run db:migrate:remote          # production — apply deliberately
+npm run db:migrate:status:remote   # show applied vs pending (production)
+```
+
+A fresh local database needs every migration, which `db:migrate:local`
+handles. Applying a migration by hand with `wrangler d1 execute --file=...`
+works but records nothing, leaving wrangler convinced the migration is still
+pending — `scripts/bootstrap-d1-migrations.sql` repairs that if it happens.
+
+If you belong to more than one Cloudflare account, wrangler cannot work out
+which to use and every command fails with *"More than one account available"*.
+Set `CLOUDFLARE_ACCOUNT_ID` in your environment to fix it.
+
+Set it in the environment rather than adding `account_id` to `wrangler.toml`:
+that key is valid for Workers but the Pages build pipeline rejects the file
+outright, failing the deploy with `unable to read the Wrangler configuration
+file`.
 
 ### Testing
 
