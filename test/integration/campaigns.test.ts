@@ -232,6 +232,25 @@ describe('campaigns: resuming a stalled send', () => {
   })
 })
 
+describe('campaigns: branding', () => {
+  beforeEach(clearCampaigns)
+
+  it('links to the configured site, not the host the request came in on', async () => {
+    const ids = await seedRecipients(1, 'branding')
+    const campaignId = await stageCampaign(ids)
+
+    await processCampaign(env, campaignId)
+
+    // The harness sends requests from lca-website.pages.dev, and the sweep
+    // has no request at all — so both the footer link and the logo have to
+    // come from SITE_URL. Getting this wrong mails people the old domain.
+    const [sent] = emailOutbox
+    expect(sent.html).toContain('https://louisianachess.org/lca-logo.jpg')
+    expect(sent.html).toContain('href="https://louisianachess.org"')
+    expect(sent.html).not.toContain('pages.dev')
+  })
+})
+
 describe('campaigns: no double sends', () => {
   beforeEach(clearCampaigns)
 

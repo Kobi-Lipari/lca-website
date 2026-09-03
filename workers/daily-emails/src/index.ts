@@ -25,14 +25,14 @@ import {
   attendeeReminderEmail,
 } from '../../../functions/utils/email'
 import { sweepPendingCampaigns } from '../../../functions/utils/campaigns'
+import { resolveSiteUrl } from '../../../functions/utils/site'
 
 interface Env {
   DB: D1Database
   RESEND_API_KEY: string
   FROM_EMAIL?: string
+  SITE_URL?: string
 }
-
-const SITE_URL = 'https://lca-website.pages.dev'
 
 async function phase(name: string, fn: () => Promise<void>): Promise<void> {
   try {
@@ -70,6 +70,10 @@ export default {
       await phase('campaign sweep', () => sweepCampaigns(env))
       return
     }
+
+    // No request to derive an origin from out here, so this is config or the
+    // built-in default — never a deployment URL that happened to be in scope.
+    const SITE_URL = resolveSiteUrl(env)
 
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0]

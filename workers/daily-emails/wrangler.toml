@@ -23,8 +23,13 @@ binding = "DB"
 database_name = "lca-db"
 database_id = "e891b93f-e7fe-48d0-9afc-8570d805ef08"
 
+# Links in reminder emails are built from this. Keep it in step with the
+# SITE_URL in the root wrangler.toml — this Worker has no request to derive
+# an origin from, so an unset value falls back to the default in utils/site.
+[vars]
+SITE_URL = "https://louisianachess.org"
+
 # FROM_EMAIL is optional (transport falls back to noreply@louisianachess.org).
-# [vars]
 # FROM_EMAIL = "noreply@louisianachess.org"
 
 # Secrets (set once, from repo root):

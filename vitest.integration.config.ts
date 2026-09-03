@@ -17,6 +17,7 @@ export default defineConfig({
           STRIPE_SECRET_KEY: 'sk_test_harness',
           STRIPE_WEBHOOK_SECRET: 'whsec_test_harness_secret',
           RESEND_API_KEY: 're_test_harness',
+          SITE_URL: 'https://louisianachess.org',
           FROM_EMAIL: 'noreply@louisianachess.org',
           CONTACT_EMAIL: 'contact@louisianachess.org',
           SUPPORT_EMAIL: 'support@louisianachess.org',
