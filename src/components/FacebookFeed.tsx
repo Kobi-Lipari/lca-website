@@ -150,7 +150,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
         {error ? (
           <p className="text-sm text-muted-foreground">
             Couldn't load Facebook posts right now — you can still{' '}
-            <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-[#1877F2] hover:underline">
+            <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-[#1668d8] hover:underline">
               visit the page directly
             </a>
             .
@@ -195,7 +195,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
           href={FACEBOOK_PAGE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-[#1877F2] hover:underline"
+          className="text-sm text-[#1668d8] hover:underline"
         >
           See all posts on Facebook →
         </a>
