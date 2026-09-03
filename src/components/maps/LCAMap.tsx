@@ -1,6 +1,7 @@
 // src/components/maps/LCAMap.tsx
 import { useEffect, useRef, useState } from 'react'
 import { CLUB_MAP_PINS, type ClubMapPin } from '@/lib/clubMapData'
+import { LCA } from '@/lib/brand'
 
 declare global {
   interface Window {
@@ -10,8 +11,10 @@ declare global {
   }
 }
 
-const NAVY = '#1a2744'
-const GOLD = '#c8a94a'
+// Map styling takes the palette as raw hex; Google Maps has no idea what
+// a Tailwind class is.
+const NAVY = LCA.navy
+const GOLD = LCA.gold
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const MAP_STYLES: any[] = [

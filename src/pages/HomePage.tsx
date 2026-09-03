@@ -188,7 +188,7 @@ export function HomePage() {
               <Trophy className="size-3.5 text-[#c8a94a]" />
               <span className="text-[13px] font-semibold text-foreground">Tournaments</span>
             </div>
-            <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-[#c8a94a] hover:underline">
+            <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-[#1a2744] hover:underline">
               View all <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -240,7 +240,7 @@ export function HomePage() {
               <Building2 className="size-3.5 text-[#c8a94a]" />
               <span className="text-[13px] font-semibold text-foreground">Clubs</span>
             </div>
-            <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-[#c8a94a] hover:underline">
+            <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-[#1a2744] hover:underline">
               Find yours <ArrowRight className="size-3" />
             </Link>
           </div>

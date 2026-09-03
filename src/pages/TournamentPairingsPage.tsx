@@ -83,7 +83,7 @@ function RoundAccordion({
             return (
               <div key={section}>
                 <div className="border-b border-border bg-[#c8a94a]/5 px-4 py-1.5">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-[#c8a94a]">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-[#1a2744]">
                     {section}
                   </span>
                 </div>
@@ -166,7 +166,7 @@ function StandingsTable({
               >
                 <td className={cn(
                   'px-4 py-3 font-medium',
-                  idx === 0 ? 'text-[#c8a94a]' : 'text-muted-foreground',
+                  idx === 0 ? 'text-[#1a2744]' : 'text-muted-foreground',
                 )}>
                   {idx + 1}
                 </td>

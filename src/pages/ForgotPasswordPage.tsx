@@ -93,7 +93,7 @@ export function ForgotPasswordPage() {
                 <p className="text-center text-sm text-muted-foreground">
                   <Link
                     to="/login"
-                    className="font-medium text-[#c8a94a] hover:underline"
+                    className="font-medium text-[#1a2744] hover:underline"
                   >
                     Back to log in
                   </Link>
@@ -134,7 +134,7 @@ export function ForgotPasswordPage() {
                     Remember your password?{' '}
                     <Link
                       to="/login"
-                      className="font-medium text-[#c8a94a] hover:underline"
+                      className="font-medium text-[#1a2744] hover:underline"
                     >
                       Log in
                     </Link>

@@ -320,7 +320,7 @@ export function MembershipPage() {
 
           <p className="mt-6 text-sm text-muted-foreground">
             Already a member?{' '}
-            <Link to="/login" className="font-medium text-[#c8a94a] hover:underline">
+            <Link to="/login" className="font-medium text-[#1a2744] hover:underline">
               Log in to renew
             </Link>{' '}
             or manage your account.
