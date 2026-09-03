@@ -1,7 +1,10 @@
 interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL: string
   readonly VITE_SUPABASE_ANON_KEY: string
+  readonly VITE_GOOGLE_MAPS_API_KEY: string
   readonly VITE_FORMSPREE_FORM_ID?: string
+  /** Optional: labels the email preview. See functions/utils/site.ts. */
+  readonly VITE_SITE_URL?: string
 }
 
 interface ImportMeta {
@@ -38,7 +41,4 @@ declare module '*.webp' {
 declare module '*.css' {
   const content: Record<string, string>;
   export default content;
-}
-interface ImportMetaEnv {
-  readonly VITE_GOOGLE_MAPS_API_KEY: string
 }

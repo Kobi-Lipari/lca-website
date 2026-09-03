@@ -10,7 +10,9 @@
 // Resend directly. Paste that file over and I'll swap the fetch() below for
 // your real shared transport instead of running a second ad-hoc client.
 
-interface NotifyEnv {
+import { resolveSiteUrl, type SiteEnv } from './site'
+
+interface NotifyEnv extends SiteEnv {
   DB: D1Database
   RESEND_API_KEY: string
   FROM_EMAIL: string
@@ -61,6 +63,7 @@ async function sendNotifyEmail(
   tournamentId: string,
 ): Promise<void> {
   const greeting = name ? `Hi ${name},` : 'Hi,'
+  const siteUrl = resolveSiteUrl(env)
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto;">
       <div style="background:#1a2744;padding:24px;text-align:center">
@@ -70,10 +73,10 @@ async function sendNotifyEmail(
       <div style="padding:24px">
         <p>${greeting}</p>
         <p>Registration just opened for <strong>${tournamentName}</strong> — you asked to be notified when it did.</p>
-        <p><a href="https://louisianachess.org/tournaments/${tournamentId}" style="color:#1a2744;font-weight:bold">Register now &rarr;</a></p>
+        <p><a href="${siteUrl}/tournaments/${tournamentId}" style="color:#1a2744;font-weight:bold">Register now &rarr;</a></p>
       </div>
       <div style="padding:16px 24px;color:#888888;font-size:12px">
-        louisianachess.org &middot; support@louisianachess.org
+        ${siteUrl.replace(/^https?:\/\//, '')} &middot; support@louisianachess.org
       </div>
     </div>
   `
