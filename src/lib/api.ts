@@ -362,6 +362,19 @@ export async function adminGetMembers(): Promise<ApiAdminMember[]> {
   return data.members
 }
 
+export async function adminUpdateMemberName(
+  memberId: string,
+  fullName: string,
+): Promise<ApiMember> {
+  const response = await fetch(`/api/admin/members/${memberId}/name`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify({ fullName }),
+  })
+  const data = await handleResponse<{ member: ApiMember }>(response)
+  return data.member
+}
+
 export async function adminUpdateMemberRole(
   memberId: string,
   role: string,

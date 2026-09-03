@@ -12,6 +12,7 @@ export type AdminAction =
   | 'role_change'
   | 'membership_override'
   | 'club_change'
+  | 'name_change'
   | 'impersonation_start'
   | 'impersonation_end'
 
