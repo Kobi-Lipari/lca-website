@@ -28,16 +28,52 @@ export const emailOutbox: SentEmail[] = []
 /** Every Stripe Checkout Session "created" during the current test file. */
 export const stripeSessions: CreatedStripeSession[] = []
 
-/** Set false to simulate a Resend outage (sendEmail throws / trySendEmail false). */
-export const emailBehavior = { succeed: true }
+/**
+ * Resend behaviour knobs.
+ *
+ * succeed=false simulates an outage. status picks which kind: 500 is a
+ * transient failure the campaign sender will retry, 422 is a rejection of
+ * that specific address which it must not retry. failFor narrows the outage
+ * to particular recipients, so a test can have one bad address in an
+ * otherwise healthy batch.
+ */
+export const emailBehavior: {
+  succeed: boolean
+  status: number
+  failFor: string[] | null
+} = { succeed: true, status: 500, failFor: null }
 
 /** Set false to simulate Stripe being down (createCheckoutSession throws). */
 export const stripeBehavior = { succeed: true }
 
+/**
+ * Work an endpoint handed to context.waitUntil during the current test.
+ *
+ * The context used to discard these. They did not vanish — a floating
+ * promise still runs — they just ran at a moment no test controlled, which
+ * is how background sends end up interleaved with assertions. Collecting
+ * them makes that work awaitable; see flushWaitUntil.
+ */
+const backgroundWork: Promise<unknown>[] = []
+
+/**
+ * Runs the background work scheduled so far, and anything it schedules in
+ * turn. Call this after invoking an endpoint whose real behaviour continues
+ * past the response.
+ */
+export async function flushWaitUntil(): Promise<void> {
+  while (backgroundWork.length > 0) {
+    await Promise.all(backgroundWork.splice(0))
+  }
+}
+
 export function resetHarness(): void {
+  backgroundWork.length = 0
   emailOutbox.length = 0
   stripeSessions.length = 0
   emailBehavior.succeed = true
+  emailBehavior.status = 500
+  emailBehavior.failFor = null
   stripeBehavior.succeed = true
 }
 
@@ -49,6 +85,41 @@ export function resetHarness(): void {
 
 let installed = false
 let sessionCounter = 0
+
+// ── Access tokens ────────────────────────────────────────────────
+// requireAdmin reads the aal claim straight off the bearer token, so a bare
+// member id is no longer enough to reach an admin route — the harness has to
+// hand out something JWT-shaped. Only the payload segment is ever read (by
+// readTokenAal in functions/utils/auth, and by the interceptor below);
+// nothing verifies the signature, so the third segment is a placeholder.
+
+function base64Url(value: string): string {
+  return btoa(value).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+export type Aal = 'aal1' | 'aal2'
+
+/** Builds the access token for a member. aal2 unless a test says otherwise. */
+export function accessToken(memberId: string, aal: Aal = 'aal2'): string {
+  const header = base64Url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
+  const payload = base64Url(JSON.stringify({ sub: memberId, aal, role: 'authenticated' }))
+  return `${header}.${payload}.harness-not-a-signature`
+}
+
+/** The member id inside a harness token, or the token itself when it is a
+ *  bare string — negative tests still pass things like "invalid-token". */
+function memberIdFromToken(token: string): string | null {
+  const parts = token.split('.')
+  if (parts.length !== 3) return token
+  try {
+    const claims = JSON.parse(
+      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')),
+    ) as { sub?: string }
+    return claims.sub ?? null
+  } catch {
+    return null
+  }
+}
 
 export function installFetchInterceptor(): void {
   if (installed) return
@@ -62,24 +133,26 @@ export function installFetchInterceptor(): void {
     const request = new Request(input as RequestInfo, init)
     const url = new URL(request.url)
 
-    // Supabase auth: token convention is "Bearer <member_id>".
-    // Tokens prefixed "invalid" are rejected, for negative tests.
+    // Supabase auth: the bearer token carries the member id in its sub
+    // claim (see accessToken). Tokens prefixed "invalid" are still rejected,
+    // for negative tests.
     if (url.origin === 'https://test-supabase.local') {
       if (url.pathname === '/auth/v1/user') {
         const auth = request.headers.get('Authorization') ?? ''
         const token = auth.replace(/^Bearer\s+/i, '')
-        if (!token || token.startsWith('invalid')) {
+        const memberId = token ? memberIdFromToken(token) : null
+        if (!memberId || memberId.startsWith('invalid')) {
           return Response.json(
             { message: 'invalid token' },
             { status: 401 },
           )
         }
         return Response.json({
-          id: token,
+          id: memberId,
           aud: 'authenticated',
           role: 'authenticated',
-          email: `${token}@test.lca`,
-          user_metadata: { full_name: `Test User ${token}` },
+          email: `${memberId}@test.lca`,
+          user_metadata: { full_name: `Test User ${memberId}` },
           app_metadata: {},
           created_at: '2026-01-01T00:00:00Z',
         })
@@ -122,21 +195,26 @@ export function installFetchInterceptor(): void {
 
     // Resend: capture the outbox.
     if (url.hostname === 'api.resend.com') {
-      if (!emailBehavior.succeed) {
-        return Response.json(
-          { message: 'harness: simulated Resend outage' },
-          { status: 500 },
-        )
-      }
       const body = (await request.json()) as {
         from: string
-        to: string[]
+        // sendEmail sends an array; the campaign sender sends a bare string.
+        to: string[] | string
         subject: string
         html: string
         text?: string
       }
+      const recipient = Array.isArray(body.to) ? body.to[0] : body.to
+
+      const targeted = emailBehavior.failFor === null
+        || emailBehavior.failFor.includes(recipient)
+      if (!emailBehavior.succeed && targeted) {
+        return Response.json(
+          { message: 'harness: simulated Resend outage' },
+          { status: emailBehavior.status },
+        )
+      }
       emailOutbox.push({
-        to: body.to[0],
+        to: recipient,
         subject: body.subject,
         html: body.html,
         text: body.text,
@@ -163,8 +241,14 @@ export interface InvokeOptions {
   params?: Record<string, string>
   /** JSON body (objects) or raw string body */
   body?: unknown
-  /** member id to act as (becomes "Bearer <id>"); omit for anonymous */
+  /** member id to act as; omit for anonymous */
   as?: string
+  /**
+   * Assurance level baked into the token. Defaults to aal2 because that is
+   * what a real admin session carries — requireAdmin rejects anything less.
+   * Pass aal1 to exercise that rejection.
+   */
+  aal?: Aal
   path?: string
   headers?: Record<string, string>
   /** raw body string overrides `body` — used for webhook signature tests */
@@ -180,13 +264,14 @@ export async function invoke(
     params = {},
     body,
     as,
+    aal = 'aal2',
     path = '/api/test',
     headers = {},
     rawBody,
   } = options
 
   const requestHeaders = new Headers(headers)
-  if (as) requestHeaders.set('Authorization', `Bearer ${as}`)
+  if (as) requestHeaders.set('Authorization', `Bearer ${accessToken(as, aal)}`)
 
   let requestBody: string | undefined
   if (rawBody !== undefined) {
@@ -210,7 +295,7 @@ export async function invoke(
     params,
     data: {},
     functionPath: path,
-    waitUntil: () => {},
+    waitUntil: (work: Promise<unknown>) => { backgroundWork.push(work) },
     passThroughOnException: () => {},
     next: async () => new Response(null, { status: 404 }),
   } as unknown as EventContext<Env, string, unknown>

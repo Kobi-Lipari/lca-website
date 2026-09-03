@@ -1,12 +1,22 @@
 # workers/daily-emails/wrangler.toml
+#
+# Despite the name this is the site scheduled-jobs Worker: it runs the daily
+# tournament emails and the five-minute campaign sweep. The name is kept
+# because renaming a Worker deploys a new one and leaves the old one running
+# its cron — which for this Worker would mean every daily email going out
+# twice until someone noticed and deleted it. Not worth the tidiness.
 name = "lca-daily-emails"
 main = "src/index.ts"
 compatibility_date = "2026-07-01"
 
-# 12:00 UTC = 7:00 AM Central (CDT). Adjust if the board wants a different
-# send time; remember cron is always UTC.
+# Two schedules, dispatched on controller.cron in src/index.ts:
+#   0 12 * * *  daily emails. 12:00 UTC = 7:00 AM Central (CDT). Adjust if
+#               the board wants a different send time; cron is always UTC.
+#   */5 * * * * campaign sweep. Bounds how long a mass email can sit half-sent
+#               after the request that started it was cut off. Cheap when
+#               there is nothing in flight: one indexed count and out.
 [triggers]
-crons = ["0 12 * * *"]
+crons = ["0 12 * * *", "*/5 * * * *"]
 
 [[d1_databases]]
 binding = "DB"

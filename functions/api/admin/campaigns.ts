@@ -1,7 +1,7 @@
 // functions/api/admin/campaigns.ts
 import type { Env } from '../../types'
 import { isResponse, requireAdmin } from '../../utils/auth'
-import { resolveRecipients, processCampaign, type CampaignFilter, type ResolvedRecipient } from '../../utils/campaigns'
+import { resolveRecipients, drainCampaign, type CampaignFilter, type ResolvedRecipient } from '../../utils/campaigns'
 import {
   errorResponse,
   handleOptions,
@@ -103,9 +103,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     )
   }
 
-  // Respond immediately; the actual sending happens in the background so
-  // this request doesn't block on hundreds of sequential Resend calls.
-  context.waitUntil(processCampaign(context.env, campaignId))
+  // Respond immediately; sending happens in the background so this request
+  // does not block on hundreds of sequential Resend calls. drainCampaign
+  // works to a deadline rather than to completion — anything it does not
+  // reach is finished by the cron sweep, which is also what rescues this
+  // campaign if the isolate running the waitUntil is evicted.
+  context.waitUntil(drainCampaign(context.env, campaignId))
 
   return jsonResponse(
     { campaignId, totalRecipients: recipients.length, status: 'sending' },

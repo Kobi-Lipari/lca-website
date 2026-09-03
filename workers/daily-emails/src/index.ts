@@ -1,9 +1,16 @@
 // workers/daily-emails/src/index.ts
 //
-// Daily-emails cron, migrated out of functions/cron/ (Pages Functions never
-// run scheduled handlers — this logic had never executed in production).
+// The site scheduled-jobs Worker. Two crons, dispatched below:
 //
-// Changes from the Pages version, per the migration spec:
+//   0 12 * * *   daily tournament emails
+//   */5 * * * *  campaign sweep
+//
+// The name is historical — it predates the sweep, and see the note in
+// wrangler.toml for why renaming it would be worse than living with it.
+//
+// The daily half was migrated out of functions/cron/ (Pages Functions never
+// run scheduled handlers — that logic had never executed in production).
+// Changes made in that migration:
 //  - sendEmail → trySendEmail: one bad address no longer aborts the loop.
 //  - Sent-flags are only written when the send actually succeeded, so a
 //    failed send retries on the next daily run instead of being lost.
@@ -17,6 +24,7 @@ import {
   weekBeforeReminderEmail,
   attendeeReminderEmail,
 } from '../../../functions/utils/email'
+import { sweepPendingCampaigns } from '../../../functions/utils/campaigns'
 
 interface Env {
   DB: D1Database
@@ -34,8 +42,35 @@ async function phase(name: string, fn: () => Promise<void>): Promise<void> {
   }
 }
 
+/** The cron expression, verbatim from wrangler.toml, that runs the sweep. */
+const SWEEP_CRON = '*/5 * * * *'
+
+/**
+ * Picks up mass-email campaigns that were left half-sent.
+ *
+ * A campaign is sent by the admin request that created it, in waitUntil —
+ * durable enough most of the time, and not durable at all when the isolate
+ * is evicted mid-send. Without this the leftover recipients simply never
+ * receive anything and the campaign shows "sending" forever. Claiming makes
+ * it safe to run while the original send is still going.
+ */
+async function sweepCampaigns(env: Env): Promise<void> {
+  const result = await sweepPendingCampaigns(env)
+  // Silent when there was nothing to do, which is almost every run.
+  if (result.campaignsTouched > 0) {
+    console.log(
+      `campaign sweep: ${result.sent} sent, ${result.failed} failed across ${result.campaignsTouched} campaign(s)`,
+    )
+  }
+}
+
 export default {
-  async scheduled(_controller: ScheduledController, env: Env): Promise<void> {
+  async scheduled(controller: ScheduledController, env: Env): Promise<void> {
+    if (controller.cron === SWEEP_CRON) {
+      await phase('campaign sweep', () => sweepCampaigns(env))
+      return
+    }
+
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0]
     const nowIso = new Date().toISOString()
