@@ -70,7 +70,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
   return (
     <div className="p-4">
       <h3 className="mb-3 text-[15px] font-semibold leading-snug">
-        <Link to={`/tournaments/${t.id}`} className="text-[#1a2744] hover:text-[#c8a94a] hover:underline transition-colors">
+        <Link to={`/tournaments/${t.id}`} className="text-[#1a2744] hover:underline transition-colors">
           {t.name}
         </Link>
       </h3>

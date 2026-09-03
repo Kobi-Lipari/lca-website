@@ -660,7 +660,7 @@ export function DashboardPage() {
           ) : (
             <p className="mt-8 text-sm text-muted-foreground">
               No registrations yet.{' '}
-              <Link to="/tournaments" className="text-[#c8a94a] hover:underline">
+              <Link to="/tournaments" className="text-[#1a2744] hover:underline">
                 Browse tournaments
               </Link>
             </p>
@@ -729,7 +729,7 @@ export function DashboardPage() {
             </ul>
             {tickets.length > recentTickets.length && (
               <p className="mt-4 text-sm">
-                <Link to="/support" className="font-medium text-[#c8a94a] hover:underline">
+                <Link to="/support" className="font-medium text-[#1a2744] hover:underline">
                   View all {tickets.length} tickets →
                 </Link>
               </p>
@@ -738,7 +738,7 @@ export function DashboardPage() {
         ) : (
           <div className="mt-6 rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
             No support tickets yet. If you hit a problem or have a question,{' '}
-            <Link to="/support?new=1" className="font-medium text-[#c8a94a] hover:underline">
+            <Link to="/support?new=1" className="font-medium text-[#1a2744] hover:underline">
               open a ticket
             </Link>{' '}
             and the LCA team will get back to you.

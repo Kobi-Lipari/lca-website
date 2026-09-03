@@ -128,7 +128,7 @@ export function ContactPage() {
                 <Mail className="mt-0.5 size-5 flex-shrink-0 text-[#c8a94a]" />
                 <div>
                   <p className="font-medium text-foreground">Email</p>
-                  <a href={`mailto:${LCA_EMAIL}`} className="text-muted-foreground hover:text-[#c8a94a]">{LCA_EMAIL}</a>
+                  <a href={`mailto:${LCA_EMAIL}`} className="text-muted-foreground hover:underline">{LCA_EMAIL}</a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -142,7 +142,7 @@ export function ContactPage() {
                 <MessageSquare className="mt-0.5 size-5 flex-shrink-0 text-[#c8a94a]" />
                 <div>
                   <p className="font-medium text-foreground">Technical support</p>
-                  <p className="text-muted-foreground">Site problems go to the same place — use the form above, or the <a href="/support" className="text-[#c8a94a] hover:underline">support ticket system</a>.</p>
+                  <p className="text-muted-foreground">Site problems go to the same place — use the form above, or the <a href="/support" className="text-[#1a2744] hover:underline">support ticket system</a>.</p>
                 </div>
               </div>
             </div>

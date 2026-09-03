@@ -43,10 +43,9 @@ import {
 import { MEMBER_ROLES, ROLE_LABELS, type MemberRole } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-
-const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 const SECTION_PRESETS = [
   'Open','U2200','U2000','U1800','U1600','U1400','U1200','U1000',
@@ -407,7 +406,7 @@ function StepTemplate({ w, set, tournaments, onNext }: {
               <span className="text-sm font-semibold">{title}</span>
             </div>
             <p className="pl-10 text-xs text-muted-foreground">{desc}</p>
-            {note && <p className="pl-10 mt-1 text-xs italic text-[#c8a94a]">{note}</p>}
+            {note && <p className="pl-10 mt-1 text-xs italic text-[#1a2744]">{note}</p>}
             {type === 'existing' && w.templateType === 'existing' && (
               <div className="mt-3 pl-10">
                 <select className="w-full rounded-md border bg-background px-3 py-2 text-sm"
