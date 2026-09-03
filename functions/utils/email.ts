@@ -27,6 +27,10 @@ export interface EmailEnv {
   REPLY_TO_EMAIL?: string
 }
 
+/** Sender of record. Every transport falls back to this when FROM_EMAIL
+ *  is unset, which is the normal case for the cron Worker. */
+export const DEFAULT_FROM = 'noreply@louisianachess.org'
+
 /** The association's only working mailbox. */
 export const DEFAULT_REPLY_TO = 'LouisianaChess@gmail.com'
 
@@ -36,7 +40,7 @@ export const DEFAULT_REPLY_TO = 'LouisianaChess@gmail.com'
  * Callers that treat email as best-effort should use trySendEmail instead.
  */
 export async function sendEmail(env: EmailEnv, message: EmailMessage): Promise<void> {
-  const from = env.FROM_EMAIL ?? 'noreply@louisianachess.org'
+  const from = env.FROM_EMAIL ?? DEFAULT_FROM
   const replyTo = message.replyTo ?? env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO
 
   const response = await fetch('https://api.resend.com/emails', {
