@@ -29,6 +29,7 @@ export function AccountSecurityPage() {
   const [loading, setLoading] = useState(true)
   const [enrolling, setEnrolling] = useState<EnrollResult | null>(null)
   const [code, setCode] = useState('')
+  const [stepUpCode, setStepUpCode] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -96,6 +97,34 @@ export function AccountSecurityPage() {
           ? err.message
           : 'That code was not accepted. Codes expire quickly — try the current one.',
       )
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  /**
+   * Steps an already-enrolled session up to aal2.
+   *
+   * Enrolling verifies the session it was performed in, but any later
+   * session starts at aal1 and only the login screen offered a way to
+   * answer the challenge. Someone already signed in when they enrolled — or
+   * signed in through a path that skipped the prompt — had no route back.
+   */
+  async function handleStepUp(event: FormEvent<HTMLFormElement>) {
+    const factorId = verified[0]?.id
+    event.preventDefault()
+    if (!factorId) return
+
+    setBusy(true)
+    setError(null)
+    setNotice(null)
+    try {
+      await verifyTotpCode(factorId, stepUpCode)
+      setStepUpCode('')
+      setNotice('This session is verified. Admin pages are available again.')
+      await refreshAssurance()
+    } catch {
+      setError('That code was not accepted. Codes change every 30 seconds — try the current one.')
     } finally {
       setBusy(false)
     }
@@ -242,6 +271,45 @@ export function AccountSecurityPage() {
               <p className="mt-1 text-xs text-muted-foreground">
                 This session is {assuranceLevel === 'aal2' ? 'verified' : 'not yet verified'}.
               </p>
+
+              {/* A session created before enrolment — or any session that has
+                  not answered a challenge — sits at aal1. Admin pages need
+                  aal2, and RoleProtectedRoute sends people here when they do
+                  not have it, so without this form the page they are sent to
+                  in order to fix the problem offers no way to fix it. */}
+              {assuranceLevel !== 'aal2' && (
+                <form onSubmit={handleStepUp} className="mt-4 rounded-lg border border-[#c8a94a]/50 bg-[#c8a94a]/8 p-4">
+                  <p className="text-sm font-medium text-[#1a2744]">
+                    Verify this session
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {isAdmin
+                      ? 'The admin panel needs a verified session. Enter the current code from your authenticator app.'
+                      : 'Enter the current code from your authenticator app to verify this session.'}
+                  </p>
+                  <div className="mt-3 flex flex-wrap items-end gap-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="stepUpCode" className="text-xs">
+                        Six-digit code
+                      </Label>
+                      <Input
+                        id="stepUpCode"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        placeholder="123456"
+                        className="w-36"
+                        value={stepUpCode}
+                        onChange={(e) => setStepUpCode(e.target.value)}
+                        required
+                        disabled={busy}
+                      />
+                    </div>
+                    <Button type="submit" className={goldButtonClass} disabled={busy}>
+                      {busy ? 'Verifying…' : 'Verify'}
+                    </Button>
+                  </div>
+                </form>
+              )}
 
               <div className="mt-4 space-y-2">
                 {verified.map((f) => (

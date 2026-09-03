@@ -36,9 +36,17 @@ export function LoginPage() {
   const redirectTo =
     (location.state as { from?: string } | null)?.from ?? '/dashboard'
 
+  // Two things have to be true before it is safe to redirect away.
+  //
   // A password-only session already has a `user`, so redirecting on that
-  // alone would skip straight past the code prompt.
-  if (!loading && user && !challengeFactorId) {
+  // alone would skip straight past the code prompt. `submitting` closes a
+  // race that made the prompt unreachable entirely: signInWithPassword
+  // establishes the aal1 session, which fires onAuthStateChange, which sets
+  // `user` and re-renders this page — all while handleSubmit is still
+  // awaiting the challenge check. Without the `submitting` guard that
+  // re-render redirected to the dashboard mid-flight, leaving the member
+  // signed in at aal1 with no way to ever answer the challenge.
+  if (!loading && user && !challengeFactorId && !submitting) {
     return <Navigate to={redirectTo} replace />
   }
 
