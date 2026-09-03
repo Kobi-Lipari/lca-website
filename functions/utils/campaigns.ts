@@ -1,5 +1,18 @@
 // functions/utils/campaigns.ts
-import type { Env } from '../types'
+import { DEFAULT_FROM } from './email'
+
+/**
+ * The bindings the campaign send path needs.
+ *
+ * Same trick as EmailEnv in ./email: both the Pages Functions Env and the
+ * cron Worker Env satisfy this structurally, so the sweep can live here and
+ * be called from either side without the two learning about each other.
+ */
+export interface CampaignEnv {
+  DB: D1Database
+  RESEND_API_KEY: string
+  FROM_EMAIL?: string
+}
 
 export interface CampaignFilter {
   all?: boolean
@@ -145,12 +158,49 @@ function escapeHtmlAttr(s: string): string {
 
 // ── Sending ───────────────────────────────────────────────────────────────────
 
+/**
+ * How many recipients the request path sends before handing off.
+ *
+ * Kept small on purpose. This work runs in waitUntil() on the admin request
+ * that created the campaign, and waitUntil is the least durable place in the
+ * system — the isolate can be evicted out from under it. At the pacing below
+ * a full batch is about 16 seconds, so a modest campaign still finishes
+ * before the admin has looked away, and anything larger is the sweep's.
+ */
+const REQUEST_PATH_BATCH = 40
+
+/**
+ * How many recipients one cron sweep sends.
+ *
+ * Much larger, because a scheduled invocation has real headroom and the
+ * work is almost entirely waiting on Resend rather than burning CPU. At 150
+ * per five-minute run, a stalled send of any size the LCA actually has
+ * finishes on the next sweep rather than trickling out over an hour.
+ */
+const SWEEP_BATCH = 150
+
+/** A claim older than this is assumed to belong to a run that died. */
+const CLAIM_TIMEOUT = '-15 minutes'
+
+/** Transient failures are retried by later sweeps, but not forever. */
+const MAX_ATTEMPTS = 3
+
+/** Pacing between sends — stays comfortably under Resend's rate limit. */
+const SEND_INTERVAL_MS = 400
+
+type SendOutcome =
+  | { ok: true }
+  /** Worth another go later: rate limits, upstream 5xx, network errors. */
+  | { ok: false; retryable: true; error: string }
+  /** Will never succeed: malformed or rejected address, bad payload. */
+  | { ok: false; retryable: false; error: string }
+
 async function sendViaResend(
-  env: Env,
+  env: CampaignEnv,
   to: string,
   subject: string,
   html: string,
-): Promise<{ ok: true } | { ok: false; error: string }> {
+): Promise<SendOutcome> {
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -158,12 +208,24 @@ async function sendViaResend(
         Authorization: `Bearer ${env.RESEND_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ from: `LCA <${env.FROM_EMAIL}>`, to, subject, html }),
+      body: JSON.stringify({ from: `LCA <${env.FROM_EMAIL ?? DEFAULT_FROM}>`, to, subject, html }),
     })
-    if (!res.ok) return { ok: false, error: `Resend ${res.status}: ${await res.text()}` }
-    return { ok: true }
+    if (res.ok) return { ok: true }
+
+    const error = `Resend ${res.status}: ${await res.text()}`
+    // 429 is us sending too fast and 5xx is Resend having a bad moment —
+    // both are worth retrying. Anything else is a rejection of this specific
+    // message (bad address, blocked domain) and will fail identically next
+    // time, so retrying it only delays the campaign.
+    const retryable = res.status === 429 || res.status >= 500
+    return { ok: false, retryable, error }
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : 'Unknown send error' }
+    // A thrown fetch is a network problem, not a verdict on the address.
+    return {
+      ok: false,
+      retryable: true,
+      error: err instanceof Error ? err.message : 'Unknown send error',
+    }
   }
 }
 
@@ -172,76 +234,224 @@ async function sendViaResend(
  *  used by the "send test email" tool so admins can check formatting before
  *  committing to a real send. Not tied to a member; any address works. */
 export async function sendTestEmail(
-  env: Env,
+  env: CampaignEnv,
   to: string,
   subject: string,
   bodyHtml: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const html = wrapBrandedEmail(subject, bodyHtml)
-  return sendViaResend(env, to, subject, html)
+  const result = await sendViaResend(env, to, subject, html)
+  return result.ok ? { ok: true } : { ok: false, error: result.error }
+}
+
+export interface CampaignRunResult {
+  /** Handed to Resend successfully on this run. */
+  sent: number
+  /** Given up on during this run. */
+  failed: number
+  /** Still pending afterwards — non-zero means a sweep should come back. */
+  remaining: number
+  /** True once the campaign has no pending recipients left. */
+  done: boolean
+}
+
+interface ClaimedRecipient {
+  id: string
+  email: string
+  attempts: number
 }
 
 /**
- * Processes every still-pending recipient for a campaign, sending one at a
- * time with a small delay to stay under Resend's rate limit. Safe to call
- * more than once for the same campaign (e.g. a retry, or a periodic sweep) —
- * it only ever touches rows still marked 'pending'.
+ * Atomically takes ownership of up to `limit` pending recipients.
+ *
+ * This is the whole reason a sweep is safe to run alongside the original
+ * send. D1 serializes writes, so the UPDATE either claims a row or finds it
+ * already claimed — two runs can never come away holding the same recipient
+ * and mail somebody twice. Rows whose claim has gone stale are fair game
+ * again, which is what lets a killed run's batch be finished by someone else.
  */
-export async function processCampaign(env: Env, campaignId: string): Promise<void> {
-  const db = env.DB
-  const pending = await db
+async function claimRecipients(
+  db: D1Database,
+  campaignId: string,
+  limit: number,
+): Promise<ClaimedRecipient[]> {
+  const { results } = await db
     .prepare(
-      `SELECT id, email FROM email_campaign_recipients WHERE campaign_id = ? AND status = 'pending'`,
+      `UPDATE email_campaign_recipients
+          SET claimed_at = datetime('now'), attempts = attempts + 1
+        WHERE id IN (
+          SELECT id FROM email_campaign_recipients
+           WHERE campaign_id = ?1
+             AND status = 'pending'
+             AND (claimed_at IS NULL OR claimed_at <= datetime('now', ?2))
+           ORDER BY rowid
+           LIMIT ?3
+        )
+        RETURNING id, email, attempts`,
     )
-    .bind(campaignId)
-    .all<{ id: string; email: string }>()
+    .bind(campaignId, CLAIM_TIMEOUT, limit)
+    .all<ClaimedRecipient>()
+  return results ?? []
+}
+
+/**
+ * Sends the next batch of pending recipients for a campaign.
+ *
+ * Deliberately does *not* try to finish the whole campaign in one call. It
+ * claims a bounded batch, sends it, and reports what is left; the caller
+ * decides whether to come back. Safe to call concurrently with itself — see
+ * claimRecipients — and safe to call on a campaign with nothing outstanding,
+ * which is what makes the cron sweep harmless when there is no work to do.
+ */
+export async function processCampaign(
+  env: CampaignEnv,
+  campaignId: string,
+  limit: number = REQUEST_PATH_BATCH,
+): Promise<CampaignRunResult> {
+  const db = env.DB
 
   const campaign = await db
     .prepare(`SELECT subject, body_html FROM email_campaigns WHERE id = ?`)
     .bind(campaignId)
     .first<{ subject: string; body_html: string }>()
 
-  if (!campaign) return
+  if (!campaign) return { sent: 0, failed: 0, remaining: 0, done: true }
 
   const html = wrapBrandedEmail(campaign.subject, campaign.body_html)
+  const claimed = await claimRecipients(db, campaignId, limit)
 
-  for (const recipient of pending.results ?? []) {
+  let sent = 0
+  let failed = 0
+
+  for (const [index, recipient] of claimed.entries()) {
+    // Pace between sends, not before the first — an idle wait on a
+    // one-recipient batch is pure latency.
+    if (index > 0) await new Promise((r) => setTimeout(r, SEND_INTERVAL_MS))
+
     const result = await sendViaResend(env, recipient.email, campaign.subject, html)
 
     if (result.ok) {
+      sent++
       await db.batch([
         db
-          .prepare(`UPDATE email_campaign_recipients SET status = 'sent', sent_at = datetime('now') WHERE id = ?`)
+          .prepare(`UPDATE email_campaign_recipients SET status = 'sent', sent_at = datetime('now'), error = NULL WHERE id = ?`)
           .bind(recipient.id),
         db
           .prepare(`UPDATE email_campaigns SET sent_count = sent_count + 1 WHERE id = ?`)
           .bind(campaignId),
       ])
-    } else {
-      await db.batch([
-        db
-          .prepare(`UPDATE email_campaign_recipients SET status = 'failed', error = ? WHERE id = ?`)
-          .bind(result.error, recipient.id),
-        db
-          .prepare(`UPDATE email_campaigns SET failed_count = failed_count + 1 WHERE id = ?`)
-          .bind(campaignId),
-      ])
+      continue
     }
-    // Stay comfortably under Resend's rate limit.
-    await new Promise((r) => setTimeout(r, 400))
+
+    if (result.retryable && recipient.attempts < MAX_ATTEMPTS) {
+      // Stays pending and goes back in the pool. The error is recorded so a
+      // campaign that is quietly struggling is visible before it gives up.
+      await db
+        .prepare(`UPDATE email_campaign_recipients SET claimed_at = NULL, error = ? WHERE id = ?`)
+        .bind(result.error, recipient.id)
+        .run()
+      continue
+    }
+
+    failed++
+    await db.batch([
+      db
+        .prepare(`UPDATE email_campaign_recipients SET status = 'failed', error = ? WHERE id = ?`)
+        .bind(result.error, recipient.id),
+      db
+        .prepare(`UPDATE email_campaigns SET failed_count = failed_count + 1 WHERE id = ?`)
+        .bind(campaignId),
+    ])
   }
 
-  const remaining = await db
+  const remainingRow = await db
     .prepare(`SELECT COUNT(*) as count FROM email_campaign_recipients WHERE campaign_id = ? AND status = 'pending'`)
     .bind(campaignId)
     .first<{ count: number }>()
+  const remaining = remainingRow?.count ?? 0
 
-  if ((remaining?.count ?? 0) === 0) {
+  if (remaining === 0) {
+    // A campaign where every single send failed is not "completed" in any
+    // sense the admin cares about, and the schema already has a status for
+    // it. Guarding on status = 'sending' keeps this idempotent, so a sweep
+    // arriving late cannot reopen or relabel a finished campaign.
     await db
       .prepare(
-        `UPDATE email_campaigns SET status = 'completed', completed_at = datetime('now') WHERE id = ?`,
+        `UPDATE email_campaigns
+            SET status = CASE
+                  WHEN sent_count = 0 AND failed_count > 0 THEN 'failed'
+                  ELSE 'completed'
+                END,
+                completed_at = datetime('now')
+          WHERE id = ? AND status = 'sending'`,
       )
       .bind(campaignId)
       .run()
   }
+
+  return { sent, failed, remaining, done: remaining === 0 }
+}
+
+/**
+ * How long the request path keeps working before leaving the rest to cron.
+ */
+const REQUEST_DRAIN_MS = 60_000
+
+/**
+ * Sends as much of a fresh campaign as the request path reasonably can.
+ *
+ * Runs in waitUntil, so this is best-effort by construction: it stops at a
+ * deadline rather than trying to see the campaign through, and whatever is
+ * left is the sweep's problem. That split is the point — the request path
+ * is fast when it works and costs nothing when it is cut off, because no
+ * recipient is ever the responsibility of this run alone.
+ */
+export async function drainCampaign(env: CampaignEnv, campaignId: string): Promise<void> {
+  const deadline = Date.now() + REQUEST_DRAIN_MS
+  while (Date.now() < deadline) {
+    const run = await processCampaign(env, campaignId)
+    if (run.done) return
+    // Nothing claimed: either another run holds every pending row, or the
+    // remainder is waiting out a retry backoff. Either way, not ours.
+    if (run.sent + run.failed === 0) return
+  }
+}
+
+/**
+ * Finishes any campaign that still has work left.
+ *
+ * Called from the cron worker. This is what turns "the send died halfway"
+ * from a dead end into a few minutes of delay: every in-flight campaign gets
+ * revisited until its recipients are all resolved one way or the other.
+ *
+ * Campaigns are taken oldest-first so a stalled send is not starved by newer
+ * ones, and the total is capped per run so one enormous campaign cannot make
+ * the sweep itself run long.
+ */
+export async function sweepPendingCampaigns(
+  env: CampaignEnv,
+  budget: number = SWEEP_BATCH,
+): Promise<{ campaignsTouched: number; sent: number; failed: number }> {
+  const { results } = await env.DB.prepare(
+    `SELECT id FROM email_campaigns WHERE status = 'sending' ORDER BY created_at ASC LIMIT 20`,
+  ).all<{ id: string }>()
+
+  let campaignsTouched = 0
+  let sent = 0
+  let failed = 0
+  let left = budget
+
+  for (const { id } of results ?? []) {
+    if (left <= 0) break
+    const run = await processCampaign(env, id, left)
+    // A campaign with nothing claimable — every pending row held by a live
+    // run — costs nothing and should not count against the budget.
+    if (run.sent === 0 && run.failed === 0) continue
+    campaignsTouched++
+    sent += run.sent
+    failed += run.failed
+    left -= run.sent + run.failed
+  }
+
+  return { campaignsTouched, sent, failed }
 }
