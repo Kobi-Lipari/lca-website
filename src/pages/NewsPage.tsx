@@ -4,6 +4,7 @@ import { Building2 } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
 import { FacebookFeed } from '@/components/FacebookFeed'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { LCA } from '@/lib/brand'
 // Re-add when club news is re-enabled:
 // import { useEffect, useState } from 'react'
 // import { ExternalLink } from 'lucide-react'
@@ -11,7 +12,6 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 
 // LCA_GOLD and formatDate are only used by the disabled ClubNewsFeed below —
 // uncomment both when club news is re-enabled.
-// const LCA_GOLD = '#c8a94a'
 
 // Pinned LCA announcements — edit this array to update pinned items
 const PINNED: { title: string; summary: string; href: string; date: string }[] = [
@@ -61,10 +61,10 @@ function ClubNewsFeed({
     return (
       <div className="rounded-xl border border-dashed bg-muted/10 px-6 py-10 text-center">
         <Building2 className="mx-auto mb-3 size-8 text-muted-foreground" />
-        <p className="font-medium text-[#1a2744]">No club news yet</p>
+        <p className="font-medium text-lca-navy">No club news yet</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Updates posted by clubs will appear here.{' '}
-          <Link to="/clubs" className="text-[#1a2744] hover:underline">
+          <Link to="/clubs" className="text-lca-navy hover:underline">
             Browse clubs →
           </Link>
         </p>
@@ -89,13 +89,13 @@ function ClubNewsFeed({
               />
               <Link
                 to={`/clubs/${item.club_id}`}
-                className="font-medium text-[#1a2744] transition-colors hover:underline"
+                className="font-medium text-lca-navy transition-colors hover:underline"
               >
                 {item.club_name}
               </Link>
               <span className="text-muted-foreground">· {formatDate(item.news_date)}</span>
             </div>
-            <p className="mt-1.5 font-semibold leading-snug text-[#1a2744]">{item.title}</p>
+            <p className="mt-1.5 font-semibold leading-snug text-lca-navy">{item.title}</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{item.excerpt}</p>
           </div>
         )
@@ -133,10 +133,10 @@ export function NewsPage() {
                 key={item.title}
                 to={item.href}
                 className="min-w-[220px] max-w-xs flex-shrink-0 rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
-                style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
+                style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
               >
-                <p className="mb-1 text-[10px] font-medium text-[#1a2744]">{item.date}</p>
-                <p className="font-semibold text-[#1a2744] leading-snug">{item.title}</p>
+                <p className="mb-1 text-[10px] font-medium text-lca-navy">{item.date}</p>
+                <p className="font-semibold text-lca-navy leading-snug">{item.title}</p>
                 <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{item.summary}</p>
               </Link>
             ))}
@@ -161,10 +161,10 @@ export function NewsPage() {
           <div>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                <Building2 className="size-4 text-[#c8a94a]" />
+                <Building2 className="size-4 text-lca-gold" />
                 From the clubs
               </h2>
-              <Link to="/clubs" className="flex items-center gap-1 text-xs text-[#1a2744] hover:underline">
+              <Link to="/clubs" className="flex items-center gap-1 text-xs text-lca-navy hover:underline">
                 All clubs <ExternalLink className="size-3" />
               </Link>
             </div>
@@ -178,7 +178,7 @@ export function NewsPage() {
 
         <div>
           <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            <Building2 className="size-4 text-[#c8a94a]" />
+            <Building2 className="size-4 text-lca-gold" />
             Latest from Facebook
           </h2>
           <FacebookFeed variant="full" limit={8} />

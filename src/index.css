@@ -5,6 +5,25 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * LCA brand palette.
+ *
+ * A separate @theme block from the shadcn tokens above because these are
+ * literal brand values, not aliases of shadcn variables. Tailwind generates
+ * the usual utilities from them — bg-lca-navy, text-lca-gold, border-lca-gold,
+ * and the /NN opacity modifiers — so the colors stop being spelled out in
+ * hundreds of arbitrary-value classes.
+ *
+ * These are the palette, deliberately named for what they are. Semantic
+ * tokens (surface, ink, accent) are what a dark theme will need on top of
+ * them, and naming those is a design decision, not a rename.
+ */
+@theme {
+    --color-lca-navy: #1a2744;
+    --color-lca-gold: #c8a94a;
+    --color-lca-cream: #f4f4f0;
+}
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Geist Variable', sans-serif;

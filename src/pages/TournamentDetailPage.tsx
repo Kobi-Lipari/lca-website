@@ -27,12 +27,12 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const statusConfig: Record<TournamentStatus, { label: string; className: string }> = {
-  upcoming: { label: 'Upcoming', className: 'bg-[#c8a94a]/20 text-[#c8a94a]' },
+  upcoming: { label: 'Upcoming', className: 'bg-lca-gold/20 text-lca-gold' },
   active:   { label: 'Active',   className: 'bg-emerald-500/20 text-emerald-300' },
   completed:{ label: 'Completed',className: 'bg-white/10 text-white/60' },
 }
 
-const goldBtn = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+const goldBtn = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 // ── Registration confirmation modal ─────────────────────────────────────────
 
@@ -57,7 +57,7 @@ function RegistrationModal({
     >
       <div className="mx-4 w-full max-w-md rounded-xl border bg-background p-6 shadow-lg">
         <div className="mb-4 flex items-start justify-between">
-          <h3 className="text-lg font-bold text-[#1a2744]">Confirm registration</h3>
+          <h3 className="text-lg font-bold text-lca-navy">Confirm registration</h3>
           <button type="button" onClick={onCancel} className="text-muted-foreground hover:text-foreground">
             <X className="size-5" />
           </button>
@@ -165,10 +165,10 @@ function ByeRoundsEditor({
               className={cn(
                 'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                 isSel
-                  ? 'border-[#1a2744] bg-[#1a2744] text-white'
+                  ? 'border-lca-navy bg-lca-navy text-white'
                   : wouldExceed
                   ? 'cursor-not-allowed border-border text-muted-foreground/40'
-                  : 'border-border text-muted-foreground hover:border-[#1a2744]/40',
+                  : 'border-border text-muted-foreground hover:border-lca-navy/40',
               )}
             >
               Round {round}
@@ -336,7 +336,7 @@ export function TournamentDetailPage() {
   if (notFound || !tournament) return (
     <div className="mx-auto max-w-6xl px-6 py-12 text-center">
       <Trophy className="mx-auto size-12 text-muted-foreground" />
-      <h1 className="mt-4 text-2xl font-bold text-[#1a2744]">Tournament not found</h1>
+      <h1 className="mt-4 text-2xl font-bold text-lca-navy">Tournament not found</h1>
       <Button asChild className="mt-6" variant="outline">
         <Link to="/tournaments"><ArrowLeft className="size-4" /> Back to tournaments</Link>
       </Button>
@@ -390,11 +390,11 @@ export function TournamentDetailPage() {
       )}
 
       {/* ── Hero ── */}
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <Link
             to="/tournaments"
-            className="inline-flex items-center gap-1.5 text-sm text-white/55 hover:text-[#c8a94a] transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-white/55 hover:text-lca-gold transition-colors"
           >
             <ArrowLeft className="size-3.5" /> All tournaments
           </Link>
@@ -423,20 +423,20 @@ export function TournamentDetailPage() {
 
               <div className="flex flex-col gap-2 text-sm text-white/70 sm:flex-row sm:flex-wrap sm:gap-x-6">
                 <span className="inline-flex items-center gap-1.5">
-                  <Calendar className="size-4 flex-shrink-0 text-[#c8a94a]" />
+                  <Calendar className="size-4 flex-shrink-0 text-lca-gold" />
                   {tournament.date}
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <MapPin className="size-4 flex-shrink-0 text-[#c8a94a]" />
+                  <MapPin className="size-4 flex-shrink-0 text-lca-gold" />
                   {tournament.location}
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <Clock className="size-4 flex-shrink-0 text-[#c8a94a]" />
+                  <Clock className="size-4 flex-shrink-0 text-lca-gold" />
                   {tournament.rounds} rounds
                   {tournament.time_control && ` · ${tournament.time_control}`}
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <Users className="size-4 flex-shrink-0 text-[#c8a94a]" />
+                  <Users className="size-4 flex-shrink-0 text-lca-gold" />
                   {activeRoster.length} / {maxPlayers} registered
                 </span>
               </div>
@@ -448,7 +448,7 @@ export function TournamentDetailPage() {
                 <Button
                   asChild
                   size="sm"
-                  className="border-[#c8a94a]/50 bg-[#c8a94a]/15 text-[#1a2744] hover:bg-[#c8a94a]/25"
+                  className="border-lca-gold/50 bg-lca-gold/15 text-lca-navy hover:bg-lca-gold/25"
                   variant="outline"
                 >
                   <Link to={`/tournaments/${id}/pairings`}>
@@ -485,13 +485,13 @@ export function TournamentDetailPage() {
             {/* About */}
             {(tournament.description || tournament.venue) && (
               <div>
-                <h2 className="text-xl font-bold text-[#1a2744]">About</h2>
+                <h2 className="text-xl font-bold text-lca-navy">About</h2>
                 {tournament.description && (
                   <p className="mt-3 text-muted-foreground">{tournament.description}</p>
                 )}
                 {tournament.venue && (
                   <p className="mt-2 text-sm text-muted-foreground">
-                    <span className="font-medium text-[#1a2744]">Venue:</span> {tournament.venue}
+                    <span className="font-medium text-lca-navy">Venue:</span> {tournament.venue}
                   </p>
                 )}
               </div>
@@ -500,14 +500,14 @@ export function TournamentDetailPage() {
             {/* Round schedule */}
             {roundSchedule.length > 0 && (
               <div>
-                <h2 className="text-xl font-bold text-[#1a2744]">Round schedule</h2>
+                <h2 className="text-xl font-bold text-lca-navy">Round schedule</h2>
                 <div className="mt-4 overflow-x-auto rounded-xl border">
                   <table className="w-full text-left text-sm">
                     <thead>
                       <tr className="border-b bg-muted/50">
-                        <th className="px-4 py-3 font-semibold text-[#1a2744]">Round</th>
-                        <th className="px-4 py-3 font-semibold text-[#1a2744]">Date</th>
-                        <th className="px-4 py-3 font-semibold text-[#1a2744]">Time</th>
+                        <th className="px-4 py-3 font-semibold text-lca-navy">Round</th>
+                        <th className="px-4 py-3 font-semibold text-lca-navy">Date</th>
+                        <th className="px-4 py-3 font-semibold text-lca-navy">Time</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -526,14 +526,14 @@ export function TournamentDetailPage() {
 
             {/* Sections */}
             <div>
-              <h2 className="text-xl font-bold text-[#1a2744]">Sections</h2>
+              <h2 className="text-xl font-bold text-lca-navy">Sections</h2>
               <div className="mt-4 overflow-x-auto rounded-xl border">
                 <table className="w-full min-w-[360px] text-left text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="px-4 py-3 font-semibold text-[#1a2744]">Section</th>
-                      <th className="px-4 py-3 font-semibold text-[#1a2744]">Entry fee</th>
-                      <th className="px-4 py-3 font-semibold text-[#1a2744]">Prize fund</th>
+                      <th className="px-4 py-3 font-semibold text-lca-navy">Section</th>
+                      <th className="px-4 py-3 font-semibold text-lca-navy">Entry fee</th>
+                      <th className="px-4 py-3 font-semibold text-lca-navy">Prize fund</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -553,20 +553,20 @@ export function TournamentDetailPage() {
 
             {/* My registration — bye rounds */}
             {myRegistration && (
-              <div className="rounded-xl border border-[#1a2744]/20 bg-[#1a2744]/5 p-6">
-                <h2 className="text-lg font-bold text-[#1a2744]">Your registration</h2>
+              <div className="rounded-xl border border-lca-navy/20 bg-lca-navy/5 p-6">
+                <h2 className="text-lg font-bold text-lca-navy">Your registration</h2>
                 <dl className="mt-3 space-y-2 text-sm">
                   <div className="flex gap-4">
-                    <dt className="font-medium text-[#1a2744]">Section</dt>
+                    <dt className="font-medium text-lca-navy">Section</dt>
                     <dd className="text-muted-foreground">{myRegistration.section}</dd>
                   </div>
                   <div className="flex gap-4">
-                    <dt className="font-medium text-[#1a2744]">Payment</dt>
+                    <dt className="font-medium text-lca-navy">Payment</dt>
                     <dd className="text-muted-foreground">{myRegistration.payment_status}</dd>
                   </div>
                 </dl>
                 <div className="mt-4">
-                  <p className="mb-2 text-sm font-medium text-[#1a2744]">Bye rounds</p>
+                  <p className="mb-2 text-sm font-medium text-lca-navy">Bye rounds</p>
                   <ByeRoundsEditor
                     registration={myRegistration}
                     totalRounds={tournament.rounds}
@@ -578,7 +578,7 @@ export function TournamentDetailPage() {
 
             {/* Registered players — by section, sorted by name */}
             <div>
-              <h2 className="text-xl font-bold text-[#1a2744]">
+              <h2 className="text-xl font-bold text-lca-navy">
                 Registered players
                 {activeRoster.length > 0 && (
                   <span className="ml-2 text-base font-normal text-muted-foreground">
@@ -594,8 +594,8 @@ export function TournamentDetailPage() {
                     const players = rosterBySectionMap.get(sectionName) ?? []
                     return (
                       <div key={sectionName}>
-                        <div className="border-b bg-[#c8a94a]/8 px-4 py-2">
-                          <span className="text-xs font-semibold uppercase tracking-wide text-[#1a2744]">
+                        <div className="border-b bg-lca-gold/8 px-4 py-2">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-lca-navy">
                             {sectionName}
                           </span>
                           <span className="ml-2 text-xs text-muted-foreground">
@@ -609,7 +609,7 @@ export function TournamentDetailPage() {
                               className="flex items-center justify-between px-4 py-2.5"
                             >
                               <div>
-                                <p className="text-sm font-medium text-[#1a2744]">
+                                <p className="text-sm font-medium text-lca-navy">
                                   {player.full_name}
                                 </p>
                                 {player.uscf_id && (
@@ -638,7 +638,7 @@ export function TournamentDetailPage() {
               <div className="space-y-6">
                 {customDetails.map((cd, i) => (
                   <div key={i}>
-                    <h2 className="text-xl font-bold text-[#1a2744]">{cd.title}</h2>
+                    <h2 className="text-xl font-bold text-lca-navy">{cd.title}</h2>
                     <p className="mt-2 whitespace-pre-wrap text-muted-foreground">{cd.body}</p>
                   </div>
                 ))}
@@ -651,7 +651,7 @@ export function TournamentDetailPage() {
 
             {/* Registration card */}
             <div className="overflow-hidden rounded-xl border shadow-sm">
-              <div className="bg-[#1a2744] px-5 py-4">
+              <div className="bg-lca-navy px-5 py-4">
                 <h2 className="font-semibold text-white">
                   {myRegistration ? 'Your registration' : 'Register'}
                 </h2>
@@ -701,7 +701,7 @@ export function TournamentDetailPage() {
                       'flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium',
                       myRegistration.payment_status === 'paid'
                         ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                        : 'border-[#c8a94a]/40 bg-[#c8a94a]/10 text-[#1a2744]',
+                        : 'border-lca-gold/40 bg-lca-gold/10 text-lca-navy',
                     )}>
                       <CheckCircle2 className="size-4" />
                       Registered · {myRegistration.section}
@@ -721,7 +721,7 @@ export function TournamentDetailPage() {
                       </Button>
                     )}
                     <div>
-                      <p className="mb-2 text-xs font-medium text-[#1a2744]">Bye rounds</p>
+                      <p className="mb-2 text-xs font-medium text-lca-navy">Bye rounds</p>
                       <ByeRoundsEditor
                         registration={myRegistration}
                         totalRounds={tournament.rounds}
@@ -804,10 +804,10 @@ export function TournamentDetailPage() {
                                   className={cn(
                                     'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
                                     isSel
-                                      ? 'border-[#1a2744] bg-[#1a2744] text-white'
+                                      ? 'border-lca-navy bg-lca-navy text-white'
                                       : wouldExceed
                                       ? 'cursor-not-allowed border-border text-muted-foreground/40'
-                                      : 'border-border text-muted-foreground hover:border-[#1a2744]/40',
+                                      : 'border-border text-muted-foreground hover:border-lca-navy/40',
                                   )}
                                 >
                                   Rd {round}
@@ -880,7 +880,7 @@ export function TournamentDetailPage() {
             {/* LCA membership note */}
             <p className="text-xs text-muted-foreground">
               LCA members receive discounted entry fees.{' '}
-              <Link to="/membership" className="text-[#1a2744] hover:underline">
+              <Link to="/membership" className="text-lca-navy hover:underline">
                 Join LCA
               </Link>
             </p>

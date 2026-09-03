@@ -45,7 +45,7 @@ const footerSections = [
 export function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer className="border-t-[3px] border-[#c8a94a] bg-[#1a2744] text-white">
+    <footer className="border-t-[3px] border-lca-gold bg-lca-navy text-white">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr] lg:gap-16">
           {/* Brand column — identity, social, and actions as one anchored block */}
@@ -77,8 +77,8 @@ export function Footer() {
             </a>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link to="/tournaments" className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/80 transition-colors hover:border-[#c8a94a] hover:text-[#c8a94a]">Find a tournament</Link>
-              <Link to="/membership" className="rounded-lg bg-[#c8a94a] px-4 py-2 text-sm font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90">Join LCA</Link>
+              <Link to="/tournaments" className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/80 transition-colors hover:border-lca-gold hover:text-lca-gold">Find a tournament</Link>
+              <Link to="/membership" className="rounded-lg bg-lca-gold px-4 py-2 text-sm font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90">Join LCA</Link>
             </div>
           </div>
 
@@ -87,13 +87,13 @@ export function Footer() {
           <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
             {footerSections.map((section) => (
               <div key={section.title}>
-                <p className="text-sm font-bold uppercase tracking-widest text-[#c8a94a]">
+                <p className="text-sm font-bold uppercase tracking-widest text-lca-gold">
                   {section.title}
                 </p>
                 <ul className="mt-4 space-y-2.5">
                   {section.links.map((link) => (
                     <li key={link.label}>
-                      <Link to={link.href} className="text-sm text-white/60 transition-colors hover:text-[#c8a94a]">{link.label}</Link>
+                      <Link to={link.href} className="text-sm text-white/60 transition-colors hover:text-lca-gold">{link.label}</Link>
                     </li>
                   ))}
                 </ul>

@@ -17,9 +17,10 @@ import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/components/maps/LCAMap'
+import { LCA } from '@/lib/brand'
 
-const LCA_GOLD = '#c8a94a'
-const NAVY = '#1a2744'
+const LCA_GOLD = LCA.gold
+const NAVY = LCA.navy
 
 function formatOfficerRole(role: string): string {
   return role.replace(/\b\w/g, (c) => c.toUpperCase())
@@ -39,7 +40,7 @@ function readableTextOn(hex: string): string {
 }
 
 const statusBadge: Record<string, { label: string; className: string }> = {
-  upcoming: { label: 'Upcoming', className: 'bg-[#c8a94a]/15 text-[#8a6d1f]' },
+  upcoming: { label: 'Upcoming', className: 'bg-lca-gold/15 text-[#8a6d1f]' },
   active: { label: 'In progress', className: 'bg-emerald-100 text-emerald-800' },
   completed: { label: 'Completed', className: 'bg-muted text-muted-foreground' },
 }
@@ -53,7 +54,7 @@ function TournamentRow({ t, color }: { t: ApiClubTournament; color: string }) {
     >
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <p className="font-medium text-[#1a2744]">{t.name}</p>
+          <p className="font-medium text-lca-navy">{t.name}</p>
           <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-medium', badge.className)}>
             {badge.label}
           </span>
@@ -116,7 +117,7 @@ export function ClubDetailPage() {
   if (notFound || !club) return (
     <div className="mx-auto max-w-6xl px-6 py-12 text-center">
       <Users className="mx-auto size-12 text-muted-foreground" />
-      <h1 className="mt-4 text-2xl font-bold text-[#1a2744]">Club not found</h1>
+      <h1 className="mt-4 text-2xl font-bold text-lca-navy">Club not found</h1>
       <Button asChild className="mt-6" variant="outline">
         <Link to="/clubs"><ArrowLeft className="size-4" /> Back to clubs</Link>
       </Button>
@@ -135,12 +136,12 @@ export function ClubDetailPage() {
       {/* ── Hero ── */}
 <section
   className="border-b-[3px] text-white"
-  style={{ backgroundColor: '#1a2744', borderBottomColor: color }}
+  style={{ backgroundColor: LCA.navy, borderBottomColor: color }}
 >
   <div className="mx-auto max-w-6xl px-6 py-10">
     <Link
       to="/clubs"
-      className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-[#c8a94a]"
+      className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-lca-gold"
     >
       <ArrowLeft className="size-3.5" /> All clubs
     </Link>
@@ -166,18 +167,18 @@ export function ClubDetailPage() {
         </div>
         <div className="flex flex-col gap-2 text-sm text-white/70 sm:flex-row sm:flex-wrap sm:gap-x-5">
           <span className="inline-flex items-center gap-1.5">
-            <MapPin className="size-4 flex-shrink-0 text-[#c8a94a]" />
+            <MapPin className="size-4 flex-shrink-0 text-lca-gold" />
             {club.city}, LA
           </span>
           {club.meeting_schedule && (
             <span className="inline-flex items-center gap-1.5">
-              <Calendar className="size-4 flex-shrink-0 text-[#c8a94a]" />
+              <Calendar className="size-4 flex-shrink-0 text-lca-gold" />
               {club.meeting_schedule}
             </span>
           )}
           {club.contact_email && (
             <span className="inline-flex items-center gap-1.5">
-              <Mail className="size-4 flex-shrink-0 text-[#c8a94a]" />
+              <Mail className="size-4 flex-shrink-0 text-lca-gold" />
               {club.contact_email}
             </span>
           )}
@@ -197,13 +198,13 @@ export function ClubDetailPage() {
             {/* About */}
             {(club.description || club.location) && (
               <div>
-                <h2 className="text-xl font-bold text-[#1a2744]">About</h2>
+                <h2 className="text-xl font-bold text-lca-navy">About</h2>
                 {club.description && (
                   <p className="mt-3 text-muted-foreground">{club.description}</p>
                 )}
                 {club.location && (
                   <p className="mt-2 text-sm text-muted-foreground">
-                    <span className="font-medium text-[#1a2744]">Meeting location:</span>{' '}
+                    <span className="font-medium text-lca-navy">Meeting location:</span>{' '}
                     {club.location}
                   </p>
                 )}
@@ -214,8 +215,8 @@ export function ClubDetailPage() {
             {officers.length > 0 && (
               <div>
                 <div className="flex items-center gap-2">
-                  <User className="size-5 text-[#c8a94a]" />
-                  <h2 className="text-xl font-bold text-[#1a2744]">Officers</h2>
+                  <User className="size-5 text-lca-gold" />
+                  <h2 className="text-xl font-bold text-lca-navy">Officers</h2>
                 </div>
                 <ul className="mt-4 grid gap-3 sm:grid-cols-2">
                   {officers.map((officer) => (
@@ -225,7 +226,7 @@ export function ClubDetailPage() {
                       style={{ borderLeftColor: color, borderLeftWidth: 3 }}
                     >
                       <div className="px-4 py-3">
-                        <p className="font-medium text-[#1a2744]">{officer.full_name}</p>
+                        <p className="font-medium text-lca-navy">{officer.full_name}</p>
                         <p className="text-sm" style={{ color }}>
                           {formatOfficerRole(officer.role)}
                         </p>
@@ -239,8 +240,8 @@ export function ClubDetailPage() {
             {/* Upcoming tournaments */}
             <div>
               <div className="flex items-center gap-2">
-                <Trophy className="size-5 text-[#c8a94a]" />
-                <h2 className="text-xl font-bold text-[#1a2744]">Upcoming tournaments</h2>
+                <Trophy className="size-5 text-lca-gold" />
+                <h2 className="text-xl font-bold text-lca-navy">Upcoming tournaments</h2>
               </div>
               {upcoming.length > 0 ? (
                 <ul className="mt-4 space-y-3">
@@ -258,7 +259,7 @@ export function ClubDetailPage() {
             {/* Recent results */}
             {recent.length > 0 && (
               <div>
-                <h2 className="text-xl font-bold text-[#1a2744]">Recent tournaments</h2>
+                <h2 className="text-xl font-bold text-lca-navy">Recent tournaments</h2>
                 <ul className="mt-4 space-y-3">
                   {recent.map((t) => (
                     <TournamentRow key={t.id} t={t} color={color} />
@@ -271,8 +272,8 @@ export function ClubDetailPage() {
             {news.length > 0 && (
               <div>
                 <div className="flex items-center gap-2">
-                  <Newspaper className="size-5 text-[#c8a94a]" />
-                  <h2 className="text-xl font-bold text-[#1a2744]">Club news</h2>
+                  <Newspaper className="size-5 text-lca-gold" />
+                  <h2 className="text-xl font-bold text-lca-navy">Club news</h2>
                 </div>
                 <ul className="mt-4 space-y-4">
                   {news.map((item) => (
@@ -283,7 +284,7 @@ export function ClubDetailPage() {
                       <p className="text-xs font-medium" style={{ color }}>
                         {item.news_date}
                       </p>
-                      <h3 className="mt-1 font-semibold text-[#1a2744]">{item.title}</h3>
+                      <h3 className="mt-1 font-semibold text-lca-navy">{item.title}</h3>
                       <p className="mt-2 text-sm text-muted-foreground">{item.excerpt}</p>
                     </li>
                   ))}
@@ -305,19 +306,19 @@ export function ClubDetailPage() {
                 <dl className="space-y-3 text-sm">
                   {club.meeting_schedule && (
                     <div>
-                      <dt className="font-medium text-[#1a2744]">When</dt>
+                      <dt className="font-medium text-lca-navy">When</dt>
                       <dd className="text-muted-foreground">{club.meeting_schedule}</dd>
                     </div>
                   )}
                   {club.location && (
                     <div>
-                      <dt className="font-medium text-[#1a2744]">Where</dt>
+                      <dt className="font-medium text-lca-navy">Where</dt>
                       <dd className="text-muted-foreground">{club.location}</dd>
                     </div>
                   )}
                   {club.contact_email && (
                     <div>
-                      <dt className="font-medium text-[#1a2744]">Contact</dt>
+                      <dt className="font-medium text-lca-navy">Contact</dt>
                       <dd>
                         <a
                           href={`mailto:${club.contact_email}`}

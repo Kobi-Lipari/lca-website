@@ -19,7 +19,7 @@ import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSe
 import { cn } from '@/lib/utils'
 
 const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 export function RegisterPage() {
   const { user, loading, signUp, syncMember } = useAuth()
@@ -100,10 +100,10 @@ export function RegisterPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
-            <UserPlus className="size-8 text-[#c8a94a] sm:size-10" />
+            <UserPlus className="size-8 text-lca-gold sm:size-10" />
             <div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
                 Create Account
@@ -121,7 +121,7 @@ export function RegisterPage() {
         <div className="mx-auto max-w-md">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-[#1a2744]">
+              <CardTitle className="text-xl text-lca-navy">
                 Member Registration
               </CardTitle>
               <CardDescription>
@@ -143,8 +143,8 @@ export function RegisterPage() {
                   </p>
                 )}
                 {existingEmail && (
-                  <div className="rounded-lg border border-[#c8a94a]/50 bg-[#c8a94a]/10 px-3 py-3 text-sm">
-                    <p className="font-medium text-[#1a2744]">
+                  <div className="rounded-lg border border-lca-gold/50 bg-lca-gold/10 px-3 py-3 text-sm">
+                    <p className="font-medium text-lca-navy">
                       You already have an account
                     </p>
                     <p className="mt-1 text-muted-foreground">
@@ -244,7 +244,7 @@ export function RegisterPage() {
                   Already have an account?{' '}
                   <Link
                     to="/login"
-                    className="font-medium text-[#1a2744] hover:underline"
+                    className="font-medium text-lca-navy hover:underline"
                   >
                     Log in
                   </Link>

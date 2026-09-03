@@ -10,7 +10,7 @@ import { formatDate, type UnifiedTournament } from '@/lib/clearinghouse'
 import { isScholasticTournament, sectionName } from '@/lib/scholastic'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 function ScholasticCard({ t }: { t: UnifiedTournament }) {
   const isLca = t.is_lca === 1
@@ -22,7 +22,7 @@ function ScholasticCard({ t }: { t: UnifiedTournament }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
-            <p className="font-semibold text-[#1a2744]">{t.name}</p>
+            <p className="font-semibold text-lca-navy">{t.name}</p>
             {!isLca && (
               <span className="flex-shrink-0 rounded border border-border px-1 py-px text-[10px] text-muted-foreground">
                 External{t.state && t.state !== 'LA' ? ` · ${t.state}` : ''}
@@ -31,18 +31,18 @@ function ScholasticCard({ t }: { t: UnifiedTournament }) {
           </div>
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Calendar className="size-3.5 text-[#c8a94a]" />
+              <Calendar className="size-3.5 text-lca-gold" />
               {formatDate(t.start_date)}
             </span>
             {(t.city || t.venue) && (
               <span className="flex items-center gap-1">
-                <MapPin className="size-3.5 text-[#c8a94a]" />
+                <MapPin className="size-3.5 text-lca-gold" />
                 {t.city ?? t.venue}
               </span>
             )}
             {!isLca && t.organizer && (
               <span className="flex items-center gap-1">
-                <Users className="size-3.5 text-[#c8a94a]" />
+                <Users className="size-3.5 text-lca-gold" />
                 {t.organizer}
               </span>
             )}
@@ -54,7 +54,7 @@ function ScholasticCard({ t }: { t: UnifiedTournament }) {
                 return (
                   <span
                     key={name}
-                    className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-2 py-0.5 text-[10px] font-medium text-[#1a2744]"
+                    className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-2 py-0.5 text-[10px] font-medium text-lca-navy"
                   >
                     {name}
                   </span>
@@ -124,8 +124,8 @@ export function ScholasticPage() {
           {/* ── Left: Tournaments ── */}
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <Trophy className="size-5 text-[#c8a94a]" />
-              <h2 className="text-xl font-bold text-[#1a2744]">Scholastic tournaments</h2>
+              <Trophy className="size-5 text-lca-gold" />
+              <h2 className="text-xl font-bold text-lca-navy">Scholastic tournaments</h2>
             </div>
             <p className="-mt-2 mb-4 text-xs text-muted-foreground">
               LCA events listed first, then regional youth tournaments from the Gulf South clearinghouse.
@@ -136,7 +136,7 @@ export function ScholasticPage() {
             ) : tournaments.length === 0 ? (
               <div className="rounded-xl border border-dashed px-6 py-10 text-center">
                 <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
-                <p className="font-medium text-[#1a2744]">No upcoming scholastic tournaments</p>
+                <p className="font-medium text-lca-navy">No upcoming scholastic tournaments</p>
                 <p className="mt-1 text-sm text-muted-foreground">Check back soon — events are added regularly.</p>
               </div>
             ) : (
@@ -157,17 +157,17 @@ export function ScholasticPage() {
           {/* ── Right: Programs ── */}
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <Users className="size-5 text-[#c8a94a]" />
-              <h2 className="text-xl font-bold text-[#1a2744]">Scholastic programs</h2>
+              <Users className="size-5 text-lca-gold" />
+              <h2 className="text-xl font-bold text-lca-navy">Scholastic programs</h2>
             </div>
 
             <div className="space-y-4">
 
               <div
                 className="rounded-xl border bg-card p-5 shadow-sm"
-                style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
+                style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
               >
-                <h3 className="font-semibold text-[#1a2744]">K-12 rated play</h3>
+                <h3 className="font-semibold text-lca-navy">K-12 rated play</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                   LCA-sanctioned scholastic tournaments are USCF-rated and open to players
                   in grades K–12. Sections are organized by grade level to ensure fair,
@@ -177,9 +177,9 @@ export function ScholasticPage() {
 
               <div
                 className="rounded-xl border bg-card p-5 shadow-sm"
-                style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
+                style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
               >
-                <h3 className="font-semibold text-[#1a2744]">National Recognition</h3>
+                <h3 className="font-semibold text-lca-navy">National Recognition</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                   LCA promotes K-12 players to be able to qualify play in tournaments nationally. Be on the look out for our Tournament of Champions Qualifiers.
                 </p>
@@ -187,9 +187,9 @@ export function ScholasticPage() {
 
               {/*<div
                 className="rounded-xl border bg-card p-5 shadow-sm"
-                style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
+                style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
               >
-                <h3 className="font-semibold text-[#1a2744]">Coach & educator resources</h3>
+                <h3 className="font-semibold text-lca-navy">Coach & educator resources</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                   We provide lesson plans, a tournament guide for coaches, and links to USCF
                   scholastic resources to help educators bring chess programming to their schools.
@@ -204,7 +204,7 @@ export function ScholasticPage() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-xl border-[3px] border-[#c8a94a] bg-[#1a2744] p-5 text-white">
+            <div className="mt-6 rounded-xl border-[3px] border-lca-gold bg-lca-navy p-5 text-white">
               <h3 className="font-semibold">Get involved</h3>
               <p className="mt-2 text-sm text-white/65 leading-relaxed">
                 Interested in bringing chess to your school, starting a scholastic club,

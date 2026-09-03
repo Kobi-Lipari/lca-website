@@ -1,3 +1,4 @@
+import { LCA } from '@/lib/brand'
 // src/lib/clubColors.ts
 
 // Returns a CSS rgba string at the given opacity from a hex color
@@ -12,7 +13,7 @@ export function clubColorTint(hex: string, opacity = 0.1): string {
 
 // Returns inline style object for club-tinted card backgrounds
 export function clubCardStyle(color?: string | null): React.CSSProperties {
-  const hex = color || '#c8a94a'
+  const hex = color || LCA.gold
   return {
     backgroundColor: clubColorTint(hex, 0.08),
     borderColor: clubColorTint(hex, 0.3),
@@ -21,5 +22,5 @@ export function clubCardStyle(color?: string | null): React.CSSProperties {
 
 // Returns inline style for accent dot/border
 export function clubAccentStyle(color?: string | null): React.CSSProperties {
-  return { backgroundColor: color || '#c8a94a' }
+  return { backgroundColor: color || LCA.gold }
 }

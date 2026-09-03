@@ -64,7 +64,7 @@ export function RegistrationReminderButton({ tournamentId }: RegistrationReminde
   if (!user) {
     return (
       <p className="text-xs text-muted-foreground">
-        <a href="/login" className="text-[#1a2744] hover:underline">
+        <a href="/login" className="text-lca-navy hover:underline">
           Log in
         </a>{' '}
         to get notified when registration opens.
@@ -80,7 +80,7 @@ export function RegistrationReminderButton({ tournamentId }: RegistrationReminde
       onClick={toggle}
       className="h-7 gap-1.5 text-xs"
     >
-      {optedIn ? <BellOff className="size-3.5" /> : <Bell className="size-3.5 text-[#c8a94a]" />}
+      {optedIn ? <BellOff className="size-3.5" /> : <Bell className="size-3.5 text-lca-gold" />}
       {optedIn ? 'Remove notification' : 'Notify me when it opens'}
     </Button>
   )

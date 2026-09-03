@@ -36,7 +36,7 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
-const goldButtonClass = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 const RESULT_OPTIONS = [
   { value: 'pending', label: 'pending' },
@@ -794,14 +794,14 @@ export function TournamentManagePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
-          <Link to="/admin/tournaments" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-[#c8a94a]">
+          <Link to="/admin/tournaments" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
             <ArrowLeft className="size-4" />All Tournaments
           </Link>
           <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
-              <Trophy className="size-8 text-[#c8a94a]" />
+              <Trophy className="size-8 text-lca-gold" />
               <div>
                 <h1 className="text-3xl font-bold">{tournament.name}</h1>
                 <div className="mt-1 flex items-center gap-2 flex-wrap">
@@ -830,15 +830,15 @@ export function TournamentManagePage() {
             {/* Stat strip */}
             <div className="flex gap-6 text-sm">
               <div>
-                <p className="text-2xl font-bold text-[#c8a94a]">{activeRoster.length}</p>
+                <p className="text-2xl font-bold text-lca-gold">{activeRoster.length}</p>
                 <p className="text-white/60">registered</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#c8a94a]">{checkedInCount}</p>
+                <p className="text-2xl font-bold text-lca-gold">{checkedInCount}</p>
                 <p className="text-white/60">checked in</p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#c8a94a]">{roundsPaired}<span className="text-base font-normal text-white/60">/{roundsCount}</span></p>
+                <p className="text-2xl font-bold text-lca-gold">{roundsPaired}<span className="text-base font-normal text-white/60">/{roundsCount}</span></p>
                 <p className="text-white/60">rounds paired</p>
               </div>
             </div>
@@ -857,14 +857,14 @@ export function TournamentManagePage() {
               className={cn(
                 'relative whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors',
                 activeTab === t.id
-                  ? 'border-[#c8a94a] text-[#1a2744] font-semibold'
-                  : 'border-transparent text-muted-foreground hover:text-[#1a2744]',
+                  ? 'border-lca-gold text-lca-navy font-semibold'
+                  : 'border-transparent text-muted-foreground hover:text-lca-navy',
               )}
             >
               {t.label}
               {dirtyByTab[t.id] && (
                 <span
-                  className="ml-1.5 inline-block size-1.5 rounded-full bg-[#c8a94a] align-middle"
+                  className="ml-1.5 inline-block size-1.5 rounded-full bg-lca-gold align-middle"
                   title="Unsaved changes"
                 />
               )}
@@ -885,7 +885,7 @@ export function TournamentManagePage() {
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-8">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <h2 className="text-lg font-bold text-[#1a2744]">Tournament details</h2>
+                <h2 className="text-lg font-bold text-lca-navy">Tournament details</h2>
                 {detailsDirty && (
                   <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
                 )}
@@ -929,12 +929,12 @@ export function TournamentManagePage() {
                     <button type="button"
                       onClick={() => setIsRated(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        isRated ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground')}
+                        isRated ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}
                     >USCF Rated</button>
                     <button type="button"
                       onClick={() => setIsRated(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !isRated ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground')}
+                        !isRated ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}
                     >Unrated</button>
                   </div>
                 </div>
@@ -962,8 +962,8 @@ export function TournamentManagePage() {
                       className={cn(
                         'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                         timeControl === tc
-                          ? 'border-[#1a2744] bg-[#1a2744] text-white'
-                          : 'border-border text-muted-foreground hover:border-[#c8a94a] hover:text-[#1a2744]',
+                          ? 'border-lca-navy bg-lca-navy text-white'
+                          : 'border-border text-muted-foreground hover:border-lca-gold hover:text-lca-navy',
                       )}
                     >
                       {tc}
@@ -1000,8 +1000,8 @@ export function TournamentManagePage() {
                       className={cn(
                         'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                         sections.some((s) => s.name === presetName)
-                          ? 'border-[#1a2744] bg-[#1a2744] text-white cursor-default'
-                          : 'border-border text-muted-foreground hover:border-[#c8a94a] hover:text-[#1a2744]',
+                          ? 'border-lca-navy bg-lca-navy text-white cursor-default'
+                          : 'border-border text-muted-foreground hover:border-lca-gold hover:text-lca-navy',
                       )}
                     >
                       {presetName}
@@ -1172,7 +1172,7 @@ export function TournamentManagePage() {
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-6">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <h2 className="text-lg font-bold text-[#1a2744]">Visibility &amp; registration</h2>
+                <h2 className="text-lg font-bold text-lca-navy">Visibility &amp; registration</h2>
                 {registrationDirty && (
                   <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
                 )}
@@ -1184,12 +1184,12 @@ export function TournamentManagePage() {
                     <button type="button"
                       onClick={() => setIsVisible(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        isVisible ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground hover:border-[#1a2744]/40')}
+                        isVisible ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}
                     >Visible to public</button>
                     <button type="button"
                       onClick={() => setIsVisible(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !isVisible ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground hover:border-[#1a2744]/40')}
+                        !isVisible ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}
                     >Hidden (draft)</button>
                   </div>
                 </div>
@@ -1228,7 +1228,7 @@ export function TournamentManagePage() {
 
             {/* Roster: check-in, editing, withdrawal */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
-              <h2 className="text-lg font-bold text-[#1a2744]">
+              <h2 className="text-lg font-bold text-lca-navy">
                 Registered players ({activeRoster.length})
                 <span className="ml-2 text-sm font-normal text-muted-foreground">
                   · {checkedInCount} checked in
@@ -1309,7 +1309,7 @@ export function TournamentManagePage() {
                                   'rounded-md border px-2 py-1 text-xs font-medium',
                                   player.payment_status === 'paid'
                                     ? 'bg-emerald-100 text-emerald-800'
-                                    : 'bg-[#c8a94a]/20 text-[#1a2744]',
+                                    : 'bg-lca-gold/20 text-lca-navy',
                                 )}
                                 value={player.payment_status}
                                 disabled={busy || withdrawn}
@@ -1344,8 +1344,8 @@ export function TournamentManagePage() {
                                       className={cn(
                                         'size-6 rounded-full border text-[11px] font-medium transition-colors',
                                         isSel
-                                          ? 'border-[#1a2744] bg-[#1a2744] text-white'
-                                          : 'border-border text-muted-foreground hover:border-[#1a2744]/40',
+                                          ? 'border-lca-navy bg-lca-navy text-white'
+                                          : 'border-border text-muted-foreground hover:border-lca-navy/40',
                                       )}
                                     >
                                       {round}
@@ -1377,8 +1377,8 @@ export function TournamentManagePage() {
             {/* Add walk-in */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-2">
-                <UserPlus className="size-5 text-[#c8a94a]" />
-                <h2 className="text-lg font-bold text-[#1a2744]">Add walk-in player</h2>
+                <UserPlus className="size-5 text-lca-gold" />
+                <h2 className="text-lg font-bold text-lca-navy">Add walk-in player</h2>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 Registers a player without a site account. Collect payment at the door.
@@ -1427,12 +1427,12 @@ export function TournamentManagePage() {
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setWalkInMarkPaid(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        walkInMarkPaid ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground')}>
+                        walkInMarkPaid ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}>
                       Paid (cash/check)
                     </button>
                     <button type="button" onClick={() => setWalkInMarkPaid(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !walkInMarkPaid ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground')}>
+                        !walkInMarkPaid ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}>
                       Pending
                     </button>
                   </div>
@@ -1453,7 +1453,7 @@ export function TournamentManagePage() {
             {/* Rounds count + schedule */}
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <h2 className="text-lg font-bold text-[#1a2744]">Rounds &amp; schedule</h2>
+                <h2 className="text-lg font-bold text-lca-navy">Rounds &amp; schedule</h2>
                 {scheduleDirty && (
                   <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
                 )}
@@ -1501,7 +1501,7 @@ export function TournamentManagePage() {
               <div className="space-y-2">
                 {roundSchedule.map((rs, i) => (
                   <div key={rs.round} className="grid grid-cols-3 gap-2 items-center">
-                    <span className="text-sm font-medium text-[#1a2744]">Round {rs.round}</span>
+                    <span className="text-sm font-medium text-lca-navy">Round {rs.round}</span>
                     <Input
                       type="date"
                       value={rs.date}
@@ -1533,8 +1533,8 @@ export function TournamentManagePage() {
             {/* Generate pairings */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-2">
-                <Sparkles className="size-5 text-[#c8a94a]" />
-                <h2 className="text-lg font-bold text-[#1a2744]">Generate pairings (FIDE Dutch)</h2>
+                <Sparkles className="size-5 text-lca-gold" />
+                <h2 className="text-lg font-bold text-lca-navy">Generate pairings (FIDE Dutch)</h2>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 Pair players using the FIDE Dutch system. Requested byes are applied as
@@ -1595,7 +1595,7 @@ export function TournamentManagePage() {
 
             {/* Manual pairing */}
             <details className="rounded-xl border bg-card p-6 shadow-sm">
-              <summary className="cursor-pointer text-lg font-bold text-[#1a2744]">
+              <summary className="cursor-pointer text-lg font-bold text-lca-navy">
                 Manual pairing override
               </summary>
               <form onSubmit={handleAddPairing} className="mt-4">
@@ -1660,7 +1660,7 @@ export function TournamentManagePage() {
             {/* Pairings & results */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-lg font-bold text-[#1a2744]">Pairings &amp; results</h2>
+                <h2 className="text-lg font-bold text-lca-navy">Pairings &amp; results</h2>
                 {sectionsInGames.length > 0 && (
                   <div className="flex items-center gap-2">
                     <select
@@ -1735,7 +1735,7 @@ export function TournamentManagePage() {
         {activeTab === 'standings' && (
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm">
-              <h2 className="text-lg font-bold text-[#1a2744]">Standings</h2>
+              <h2 className="text-lg font-bold text-lca-navy">Standings</h2>
               {standings.length === 0 ? (
                 <p className="mt-4 text-sm text-muted-foreground">Standings appear once results are recorded.</p>
               ) : (
@@ -1769,8 +1769,8 @@ export function TournamentManagePage() {
               <div className="rounded-xl border bg-card p-6 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <FileText className="size-5 text-[#c8a94a]" />
-                    <h2 className="text-lg font-bold text-[#1a2744]">USCF rating report</h2>
+                    <FileText className="size-5 text-lca-gold" />
+                    <h2 className="text-lg font-bold text-lca-navy">USCF rating report</h2>
                   </div>
                   <div className="flex gap-2">
                     <Button type="button" variant="outline" size="sm" disabled={reportLoading} onClick={handleLoadReport}>
@@ -1801,7 +1801,7 @@ export function TournamentManagePage() {
                     )}
                     {report.sections.map((section) => (
                       <div key={section.name}>
-                        <h3 className="mb-2 text-base font-semibold text-[#1a2744]">{section.name}</h3>
+                        <h3 className="mb-2 text-base font-semibold text-lca-navy">{section.name}</h3>
                         <div className="overflow-x-auto rounded-lg border">
                           <table className="w-full text-left text-sm">
                             <thead>
@@ -1856,8 +1856,8 @@ export function TournamentManagePage() {
         {activeTab === 'email' && (
           <div className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="flex items-center gap-2">
-              <Mail className="size-5 text-[#c8a94a]" />
-              <h2 className="text-lg font-bold text-[#1a2744]">Email all entrants</h2>
+              <Mail className="size-5 text-lca-gold" />
+              <h2 className="text-lg font-bold text-lca-navy">Email all entrants</h2>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
               Will send to {roster.filter((p) => !p.withdrawn_at && !p.member_id.startsWith('guest-')).length} active

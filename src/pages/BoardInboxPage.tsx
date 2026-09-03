@@ -159,7 +159,7 @@ export function BoardInboxPage() {
   if (denied) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-        <h1 className="text-xl font-bold text-[#1a2744]">No board inbox</h1>
+        <h1 className="text-xl font-bold text-lca-navy">No board inbox</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           This page is for members currently holding a board seat.
         </p>
@@ -169,7 +169,7 @@ export function BoardInboxPage() {
 
   return (
     <div>
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744]">
+      <section className="border-b-[3px] border-lca-gold bg-lca-navy">
         <div className="mx-auto max-w-6xl px-6 py-8">
           <h1 className="text-2xl font-bold tracking-tight text-white">Board inbox</h1>
           <p className="mt-1 text-sm text-white/60">
@@ -188,7 +188,7 @@ export function BoardInboxPage() {
         )}
 
         {isAdmin && vacantCount > 0 && (
-          <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-[#c8a94a]/50 bg-[#c8a94a]/10 px-4 py-3">
+          <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-lca-gold/50 bg-lca-gold/10 px-4 py-3">
             <UserX className="mt-0.5 size-4 flex-shrink-0 text-[#7a5c00]" />
             <p className="text-sm text-[#7a5c00]">
               {vacantCount} unanswered {vacantCount === 1 ? 'message is' : 'messages are'} on
@@ -202,7 +202,7 @@ export function BoardInboxPage() {
         {tickets.length === 0 ? (
           <div className="rounded-xl border bg-card p-10 text-center">
             <Inbox className="mx-auto size-6 text-muted-foreground" />
-            <p className="mt-3 text-sm font-medium text-[#1a2744]">Nothing here yet</p>
+            <p className="mt-3 text-sm font-medium text-lca-navy">Nothing here yet</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Messages sent through the board page will appear here.
             </p>
@@ -229,7 +229,7 @@ export function BoardInboxPage() {
                 className={cn(
                   'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
                   onlyUnanswered
-                    ? 'border-[#1a2744] bg-[#1a2744] text-white'
+                    ? 'border-lca-navy bg-lca-navy text-white'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >
@@ -254,18 +254,18 @@ export function BoardInboxPage() {
                       onClick={() => openTicket(t)}
                       className={cn(
                         'w-full rounded-lg border p-3 text-left transition-colors hover:bg-muted/40',
-                        selected?.id === t.id ? 'border-[#c8a94a] bg-[#c8a94a]/8' : 'bg-card',
+                        selected?.id === t.id ? 'border-lca-gold bg-lca-gold/8' : 'bg-card',
                       )}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-[#1a2744]">
+                        <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-lca-navy">
                           {t.seat_role}
                         </span>
                         <span className="flex-shrink-0 text-[10px] text-muted-foreground">
                           {STATUS_LABEL[t.status] ?? t.status}
                         </span>
                       </div>
-                      <p className="mt-1 truncate text-sm font-medium text-[#1a2744]">{t.subject}</p>
+                      <p className="mt-1 truncate text-sm font-medium text-lca-navy">{t.subject}</p>
                       <p className="truncate text-xs text-muted-foreground">{t.name}</p>
                       {(waiting || t.seat_holder_count === 0) && (
                         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -292,10 +292,10 @@ export function BoardInboxPage() {
                   <div className="rounded-xl border bg-card p-5 shadow-sm">
                     <div className="flex flex-wrap items-start justify-between gap-3 border-b pb-3">
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a2744]">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-lca-navy">
                           {selected.seat_role}
                         </p>
-                        <h2 className="mt-0.5 font-bold text-[#1a2744]">{selected.subject}</h2>
+                        <h2 className="mt-0.5 font-bold text-lca-navy">{selected.subject}</h2>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           {selected.name} · {selected.email}
                         </p>
@@ -311,7 +311,7 @@ export function BoardInboxPage() {
                         m.is_note ? (
                           <div
                             key={m.id}
-                            className="rounded-lg border border-dashed border-[#c8a94a]/50 bg-[#c8a94a]/5 p-3"
+                            className="rounded-lg border border-dashed border-lca-gold/50 bg-lca-gold/5 p-3"
                           >
                             <p className="text-[11px] font-medium text-[#7a5c00]">
                               Logged by {m.logged_by_name ?? 'a board member'}
@@ -338,7 +338,7 @@ export function BoardInboxPage() {
                           onClick={() => setMode('reply')}
                           className={cn(
                             'rounded-md px-3 py-1 text-xs font-medium',
-                            mode === 'reply' ? 'bg-[#1a2744] text-white' : 'text-muted-foreground',
+                            mode === 'reply' ? 'bg-lca-navy text-white' : 'text-muted-foreground',
                           )}
                         >
                           Reply
@@ -348,7 +348,7 @@ export function BoardInboxPage() {
                           onClick={() => setMode('note')}
                           className={cn(
                             'rounded-md px-3 py-1 text-xs font-medium',
-                            mode === 'note' ? 'bg-[#1a2744] text-white' : 'text-muted-foreground',
+                            mode === 'note' ? 'bg-lca-navy text-white' : 'text-muted-foreground',
                           )}
                         >
                           Log an email

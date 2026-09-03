@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 export function LoginPage() {
   usePageTitle('Log In')
@@ -115,10 +115,10 @@ export function LoginPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
-            <LogIn className="size-8 text-[#c8a94a] sm:size-10" />
+            <LogIn className="size-8 text-lca-gold sm:size-10" />
             <div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
                 Log In
@@ -136,7 +136,7 @@ export function LoginPage() {
         <div className="mx-auto max-w-md">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-[#1a2744]">
+              <CardTitle className="text-xl text-lca-navy">
                 {challengeFactorId ? 'Enter your code' : 'Member Login'}
               </CardTitle>
               <CardDescription>
@@ -210,7 +210,7 @@ export function LoginPage() {
                     <Label htmlFor="password">Password</Label>
                     <Link
                       to="/forgot-password"
-                      className="text-xs text-[#1a2744] hover:underline"
+                      className="text-xs text-lca-navy hover:underline"
                     >
                       Forgot password?
                     </Link>
@@ -240,7 +240,7 @@ export function LoginPage() {
                   Don&apos;t have an account?{' '}
                   <Link
                     to="/register"
-                    className="font-medium text-[#1a2744] hover:underline"
+                    className="font-medium text-lca-navy hover:underline"
                   >
                     Create one
                   </Link>

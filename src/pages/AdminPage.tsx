@@ -194,7 +194,7 @@ function ShareModal({ tournament, onClose, isAdmin, clubId }: {
       <div className="w-full max-w-md rounded-t-2xl border bg-background p-6 shadow-lg sm:rounded-xl">
         <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-border sm:hidden" />
         <div className="mb-1 flex items-start justify-between">
-          <h3 className="text-base font-semibold text-[#1a2744]">Tournament directors</h3>
+          <h3 className="text-base font-semibold text-lca-navy">Tournament directors</h3>
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
         </div>
         <p className="mb-5 text-sm text-muted-foreground">
@@ -300,11 +300,11 @@ function StepBar({ current }: { current: WizardStep }) {
         <div key={step.key} className="flex flex-shrink-0 items-center">
           <div className={cn('flex items-center gap-1.5 border-b-2 py-2.5 pr-3 text-[11px] font-medium transition-colors',
             idx < currentIdx ? 'border-transparent text-muted-foreground'
-            : idx === currentIdx ? 'border-[#c8a94a] text-[#1a2744]'
+            : idx === currentIdx ? 'border-lca-gold text-lca-navy'
             : 'border-transparent text-muted-foreground/50')}>
             <span className={cn('flex size-4 flex-shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold',
-              idx < currentIdx ? 'border-[#c8a94a] bg-[#c8a94a] text-[#1a2744]'
-              : idx === currentIdx ? 'border-[#1a2744] bg-[#1a2744] text-white'
+              idx < currentIdx ? 'border-lca-gold bg-lca-gold text-lca-navy'
+              : idx === currentIdx ? 'border-lca-navy bg-lca-navy text-white'
               : 'border-border text-muted-foreground')}>
               {idx < currentIdx ? <Check className="size-2.5" /> : idx + 1}
             </span>
@@ -322,8 +322,8 @@ function StepBar({ current }: { current: WizardStep }) {
 function PreviewBanner({ w }: { w: WizardState }) {
   if (!w.name && !w.startDate) return null
   return (
-    <div className="mb-4 rounded-lg border border-[#c8a94a]/30 bg-[#c8a94a]/8 p-3">
-      <p className="text-sm font-semibold text-[#1a2744]">{w.name || 'New tournament'}</p>
+    <div className="mb-4 rounded-lg border border-lca-gold/30 bg-lca-gold/8 p-3">
+      <p className="text-sm font-semibold text-lca-navy">{w.name || 'New tournament'}</p>
       {(w.startDate || w.location) && (
         <p className="mt-0.5 text-xs text-muted-foreground">
           {w.startDate}{w.location ? ` · ${w.location}` : ''}
@@ -335,7 +335,7 @@ function PreviewBanner({ w }: { w: WizardState }) {
       {w.sections.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-1">
           {w.sections.map((s) => (
-            <span key={s.name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-2 py-0.5 text-[10px] font-medium text-[#1a2744]">{s.name}</span>
+            <span key={s.name} className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-2 py-0.5 text-[10px] font-medium text-lca-navy">{s.name}</span>
           ))}
         </div>
       )}
@@ -350,7 +350,7 @@ function PreviewSidebar({ w }: { w: WizardState }) {
     <div className="hidden lg:block lg:w-52 lg:flex-shrink-0">
       <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Preview</p>
       <div className="overflow-hidden rounded-xl border">
-        <div className="bg-[#1a2744] px-3 py-2.5">
+        <div className="bg-lca-navy px-3 py-2.5">
           <p className="text-sm font-semibold text-white">{w.name || 'New tournament'}</p>
         </div>
         <div className="space-y-1.5 p-3 text-xs text-muted-foreground">
@@ -360,7 +360,7 @@ function PreviewSidebar({ w }: { w: WizardState }) {
           {w.sections.length > 0 && (
             <div className="flex flex-wrap gap-1 pt-1">
               {w.sections.map((s) => (
-                <span key={s.name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-2 py-0.5 text-[10px] font-medium text-[#1a2744]">{s.name}</span>
+                <span key={s.name} className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-2 py-0.5 text-[10px] font-medium text-lca-navy">{s.name}</span>
               ))}
             </div>
           )}
@@ -398,15 +398,15 @@ function StepTemplate({ w, set, tournaments, onNext }: {
         ] as { type: 'existing' | 'scratch'; icon: any; title: string; desc: string; note?: string }[]).map(({ type, icon: Icon, title, desc, note }) => (
           <button key={type} type="button" onClick={() => set({ templateType: type })}
             className={cn('w-full rounded-xl border p-4 text-left transition-colors',
-              w.templateType === type ? 'border-[2px] border-[#c8a94a] bg-[#c8a94a]/4' : 'border-border hover:border-border-strong')}>
+              w.templateType === type ? 'border-[2px] border-lca-gold bg-lca-gold/4' : 'border-border hover:border-border-strong')}>
             <div className="mb-1.5 flex items-center gap-3">
-              <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#1a2744]/8">
-                <Icon className="size-3.5 text-[#1a2744]" />
+              <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-lg bg-lca-navy/8">
+                <Icon className="size-3.5 text-lca-navy" />
               </div>
               <span className="text-sm font-semibold">{title}</span>
             </div>
             <p className="pl-10 text-xs text-muted-foreground">{desc}</p>
-            {note && <p className="pl-10 mt-1 text-xs italic text-[#1a2744]">{note}</p>}
+            {note && <p className="pl-10 mt-1 text-xs italic text-lca-navy">{note}</p>}
             {type === 'existing' && w.templateType === 'existing' && (
               <div className="mt-3 pl-10">
                 <select className="w-full rounded-md border bg-background px-3 py-2 text-sm"
@@ -417,7 +417,7 @@ function StepTemplate({ w, set, tournaments, onNext }: {
                 </select>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {['Sections','Time control','Rounds','Custom details'].map((p) => (
-                    <span key={p} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-2 py-0.5 text-[10px] font-medium text-[#1a2744]">{p}</span>
+                    <span key={p} className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-2 py-0.5 text-[10px] font-medium text-lca-navy">{p}</span>
                   ))}
                   {['Name','Date','Round times'].map((p) => (
                     <span key={p} className="rounded-full border border-border bg-muted/30 px-2 py-0.5 text-[10px] text-muted-foreground line-through">{p}</span>
@@ -463,7 +463,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft }: {
             {ROUND_OPTIONS.map((n) => (
               <button key={n} type="button" onClick={() => set({ rounds: n })}
                 className={cn('rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
-                  w.rounds === n ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground hover:border-[#1a2744]/40')}>
+                  w.rounds === n ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}>
                 {n}
               </button>
             ))}
@@ -478,7 +478,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft }: {
             {TC_PRESETS.map((tc) => (
               <button key={tc} type="button" onClick={() => set({ timeControl: tc, customTimeControl: '' })}
                 className={cn('rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                  w.timeControl === tc ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground hover:border-[#c8a94a]')}>
+                  w.timeControl === tc ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground hover:border-lca-gold')}>
                 {tc}
               </button>
             ))}
@@ -494,7 +494,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft }: {
               {[{ val: true, label: 'USCF Rated' }, { val: false, label: 'Unrated' }].map(({ val, label }) => (
                 <button key={label} type="button" onClick={() => set({ isRated: val })}
                   className={cn('flex-1 rounded-lg border py-2 text-sm font-medium transition-colors',
-                    w.isRated === val ? 'border-[#1a2744] bg-[#1a2744] text-white' : 'border-border text-muted-foreground')}>
+                    w.isRated === val ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}>
                   {label}
                 </button>
               ))}
@@ -547,8 +547,8 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
       <div className="flex-1 min-w-0">
         <PreviewBanner w={w} />
         {copiedFrom && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-[#c8a94a]/30 bg-[#c8a94a]/8 px-3 py-2 text-xs text-[#7a5c00]">
-            <Copy className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+          <div className="mb-4 flex items-center gap-2 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-3 py-2 text-xs text-[#7a5c00]">
+            <Copy className="size-3.5 flex-shrink-0 text-lca-gold" />
             Pre-filled from {copiedFrom} · edit freely — the original is unchanged.
           </div>
         )}
@@ -559,8 +559,8 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
               <button key={name} type="button" onClick={() => addPreset(name)}
                 className={cn('rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   w.sections.some((s) => s.name === name)
-                    ? 'border-[#1a2744] bg-[#1a2744] text-white cursor-default'
-                    : 'border-border text-muted-foreground hover:border-[#c8a94a]')}>
+                    ? 'border-lca-navy bg-lca-navy text-white cursor-default'
+                    : 'border-border text-muted-foreground hover:border-lca-gold')}>
                 {name}
               </button>
             ))}
@@ -624,8 +624,8 @@ function StepSchedule({ w, onBack, onNext, onDraft }: {
       <div className="flex-1 min-w-0">
         <PreviewBanner w={w} />
         <div className="rounded-xl border bg-muted/20 p-6 text-center">
-          <Trophy className="mx-auto mb-3 size-8 text-[#c8a94a]" />
-          <h3 className="text-base font-semibold text-[#1a2744]">Round schedule</h3>
+          <Trophy className="mx-auto mb-3 size-8 text-lca-gold" />
+          <h3 className="text-base font-semibold text-lca-navy">Round schedule</h3>
           <p className="mt-2 text-sm text-muted-foreground">
             Round-by-round dates and times are configured in the tournament management page after creation.
             The auto-fill tool lets you set round 1 and fill the rest automatically.
@@ -651,7 +651,7 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
     <div className="flex gap-6 p-5">
       <div className="flex-1 min-w-0">
         <div className="space-y-4 rounded-xl border bg-card p-5">
-          <h3 className="text-base font-semibold text-[#1a2744]">{w.name}</h3>
+          <h3 className="text-base font-semibold text-lca-navy">{w.name}</h3>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
             <div><dt className="text-muted-foreground">Date</dt><dd className="font-medium">{w.startDate}{w.endDate ? ` – ${w.endDate}` : ''}</dd></div>
             <div><dt className="text-muted-foreground">Location</dt><dd className="font-medium">{w.location}</dd></div>
@@ -664,7 +664,7 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
             <p className="mb-2 text-sm text-muted-foreground">Sections</p>
             <div className="flex flex-wrap gap-2">
               {w.sections.map((s) => (
-                <span key={s.name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/7 px-3 py-1 text-xs font-medium text-[#1a2744]">
+                <span key={s.name} className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-3 py-1 text-xs font-medium text-lca-navy">
                   {s.name}{s.entryFee > 0 ? ` · $${s.entryFee}` : ''}
                 </span>
               ))}
@@ -672,7 +672,7 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
           </div>
           {w.description && <div><p className="mb-1 text-sm text-muted-foreground">Description</p><p className="text-sm">{w.description}</p></div>}
         </div>
-        <div className="mt-3 rounded-lg border border-[#c8a94a]/30 bg-[#c8a94a]/8 px-4 py-3 text-xs text-[#7a5c00]">
+        <div className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-4 py-3 text-xs text-[#7a5c00]">
           Tournament will be created as a <strong>draft</strong> — hidden from the public until you make it visible in the management page.
         </div>
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
@@ -748,7 +748,7 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clu
   }
 
   const statusConfig: Record<string, { label: string; className: string }> = {
-    upcoming: { label: 'Upcoming', className: 'bg-[#c8a94a]/15 text-[#7a5c00] border border-[#c8a94a]/40' },
+    upcoming: { label: 'Upcoming', className: 'bg-lca-gold/15 text-[#7a5c00] border border-lca-gold/40' },
     active:   { label: 'Active',   className: 'bg-emerald-100 text-emerald-800' },
     completed:{ label: 'Done',     className: 'bg-muted text-muted-foreground border border-border' },
   }
@@ -778,7 +778,7 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clu
       {showCreate ? (
         <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
           <div className="flex items-center justify-between border-b border-border bg-muted/20 px-5 py-3">
-            <p className="text-sm font-semibold text-[#1a2744]">
+            <p className="text-sm font-semibold text-lca-navy">
               {step === 'template' ? 'Choose a starting point' : WIZARD_STEPS.find((s) => s.key === step)?.label}
             </p>
             <button type="button" onClick={() => setShowCreate(false)} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
@@ -793,7 +793,7 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clu
       ) : visibleTournaments.length === 0 ? (
         <div className="rounded-xl border border-dashed px-6 py-12 text-center">
           <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
-          <p className="font-medium text-[#1a2744]">No tournaments yet</p>
+          <p className="font-medium text-lca-navy">No tournaments yet</p>
           <p className="mt-1 text-sm text-muted-foreground">Create your first tournament to get started.</p>
           <Button type="button" className={cn('mt-4', GOLD)} size="sm" onClick={() => { setWizard(defaultWizard()); setStep('template'); setShowCreate(true) }}>
             <Plus className="mr-1.5 size-4" /> New tournament
@@ -807,7 +807,7 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clu
               <div key={t.id} className="overflow-hidden rounded-xl border bg-card shadow-sm">
                 <div className="flex items-start justify-between gap-4 px-5 py-4">
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-[#1a2744]">{t.name}</p>
+                    <p className="truncate font-semibold text-lca-navy">{t.name}</p>
                     <p className="mt-0.5 text-sm text-muted-foreground">
                       {t.date} · {t.location}{t.rounds ? ` · ${t.rounds} rounds` : ''}
                     </p>
@@ -953,7 +953,7 @@ function MembersTab({
     const map: Record<string, string> = {
       active: 'bg-emerald-100 text-emerald-800',
       expired: 'bg-destructive/10 text-destructive',
-      pending: 'bg-[#c8a94a]/15 text-[#7a5c00]',
+      pending: 'bg-lca-gold/15 text-[#7a5c00]',
     }
     return map[status] ?? 'bg-muted text-muted-foreground'
   }
@@ -987,7 +987,7 @@ function MembersTab({
                 disabled={!!query}
                 className={cn(
                   'rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors',
-                  filter === f ? 'bg-[#1a2744] text-white' : 'text-muted-foreground hover:text-foreground',
+                  filter === f ? 'bg-lca-navy text-white' : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 {f === 'active' ? 'Active only' : 'All members'}
@@ -1110,7 +1110,7 @@ function MembersTab({
                         type="button"
                         onClick={() => onImpersonate(m)}
                         disabled={m.role === 'lca_admin'}
-                        className="text-muted-foreground transition-colors hover:text-[#1a2744] disabled:cursor-not-allowed disabled:opacity-30"
+                        className="text-muted-foreground transition-colors hover:text-lca-navy disabled:cursor-not-allowed disabled:opacity-30"
                         title={m.role === 'lca_admin' ? "Can't log in as another admin" : 'Log in as this member'}
                       >
                         <LogIn className="size-4" />
@@ -1306,10 +1306,10 @@ export function AdminPage() {
     <div>
       {confirm && <ConfirmDialog message={confirm.message} onConfirm={confirm.onConfirm} onCancel={() => setConfirm(null)} />}
 
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="flex items-center gap-3">
-            <Shield className="size-7 text-[#c8a94a]" />
+            <Shield className="size-7 text-lca-gold" />
             <div>
               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Admin panel</h1>
               <p className="mt-1 text-sm text-white/60">
@@ -1374,7 +1374,7 @@ export function AdminPage() {
                   <li key={club.id} className="rounded-xl border bg-card p-5 shadow-sm">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h3 className="font-semibold text-[#1a2744]">{club.name}</h3>
+                        <h3 className="font-semibold text-lca-navy">{club.name}</h3>
                         <p className="mt-1 text-sm text-muted-foreground">
                           {club.city}, LA{club.meeting_schedule ? ` · ${club.meeting_schedule}` : ''}
                         </p>
@@ -1396,7 +1396,7 @@ export function AdminPage() {
             {tab === 'email' && isAdmin && (
               <div className="py-8 text-center">
                 <Mail className="mx-auto mb-3 size-8 text-muted-foreground" />
-                <p className="font-medium text-[#1a2744]">Group email</p>
+                <p className="font-medium text-lca-navy">Group email</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Send an email to members — everyone, or a targeted group by role, club, or membership status.
                 </p>
@@ -1409,7 +1409,7 @@ export function AdminPage() {
             {tab === 'support' && isAdmin && (
               <div className="py-8 text-center">
                 <MessageSquare className="mx-auto mb-3 size-8 text-muted-foreground" />
-                <p className="font-medium text-[#1a2744]">Support tickets</p>
+                <p className="font-medium text-lca-navy">Support tickets</p>
                 <p className="mt-1 text-sm text-muted-foreground">View and respond to member support requests.</p>
                 <Button asChild className={cn('mt-4', GOLD)}>
                   <Link to="/admin/support">Open support tickets</Link>

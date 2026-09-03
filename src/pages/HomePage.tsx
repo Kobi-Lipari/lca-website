@@ -16,9 +16,10 @@ import slide2 from '@/assets/LCA_Slide_2.jpg'
 import slide3 from '@/assets/LCA_Slide_3.jpg'
 import slide4 from '@/assets/LCA_Slide_4.jpg'
 import slide5 from '@/assets/LCA_Slide_5.jpg'
+import { LCA } from '@/lib/brand'
 
-const goldButtonClass = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
-const LCA_GOLD = '#c8a94a'
+const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+const LCA_GOLD = LCA.gold
 
 const heroSlides = [
   { label: 'Louisiana Chess Community', src: slide1 },
@@ -72,7 +73,7 @@ function HeroSlideshow() {
               }}
             />
             {/* Navy brand tint, ties the photo into the site palette instead of a raw photo look */}
-            <div className="absolute inset-0 bg-[#1a2744]/55 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-lca-navy/55 mix-blend-multiply" />
             {/* Existing gradient for text legibility at the bottom */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
             <div className="absolute right-4 top-4 rounded-full bg-black/30 px-3 py-1 text-xs text-white/70 backdrop-blur-sm">
@@ -82,7 +83,7 @@ function HeroSlideshow() {
         ))}
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 px-6 text-center text-white">
-        <div className="mb-2 inline-block rounded-full border border-[#c8a94a]/50 bg-[#c8a94a]/20 px-3 py-1 text-xs text-[#f0d07a] backdrop-blur-sm">
+        <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/20 px-3 py-1 text-xs text-[#f0d07a] backdrop-blur-sm">
           Louisiana's chess community since 1915
         </div>
         <h1 className="mt-2 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">Play. Compete. Connect.</h1>
@@ -111,7 +112,7 @@ function HeroSlideshow() {
           <ChevronLeft className="size-3.5 text-white" />
         </button>
         {heroSlides.map((_, i) => (
-          <button key={i} type="button" onClick={() => handleNav(i)} aria-label={`Slide ${i + 1}`} className={cn('h-1.5 rounded-full transition-all duration-300', i === current ? 'w-5 bg-[#c8a94a]' : 'w-1.5 bg-white/40 hover:bg-white/60')} />
+          <button key={i} type="button" onClick={() => handleNav(i)} aria-label={`Slide ${i + 1}`} className={cn('h-1.5 rounded-full transition-all duration-300', i === current ? 'w-5 bg-lca-gold' : 'w-1.5 bg-white/40 hover:bg-white/60')} />
         ))}
         <button type="button" onClick={() => handleNav(current + 1)} aria-label="Next slide" className="flex h-6 w-6 items-center justify-center rounded bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors">
           <ChevronRight className="size-3.5 text-white" />
@@ -123,7 +124,7 @@ function HeroSlideshow() {
 
 function StatusDot({ regStatus }: { regStatus?: string }) {
   if (regStatus === 'open') return <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" title="Registration open" />
-  if (regStatus === 'draft') return <span className="h-2 w-2 shrink-0 rounded-full bg-[#c8a94a]" title="Opening soon" />
+  if (regStatus === 'draft') return <span className="h-2 w-2 shrink-0 rounded-full bg-lca-gold" title="Opening soon" />
   return <span className="h-2 w-2 shrink-0 rounded-full bg-border" title="Coming soon" />
 }
 
@@ -158,9 +159,9 @@ export function HomePage() {
       <HeroSlideshow />
 
       {nextTournament && (
-        <div className="flex items-center justify-between border-b border-[#c8a94a]/30 bg-[#c8a94a]/10 px-4 py-2 sm:px-6">
+        <div className="flex items-center justify-between border-b border-lca-gold/30 bg-lca-gold/10 px-4 py-2 sm:px-6">
           <div className="flex items-center gap-2 text-sm">
-            <Calendar className="size-3.5 shrink-0 text-[#c8a94a]" />
+            <Calendar className="size-3.5 shrink-0 text-lca-gold" />
             <span className="text-muted-foreground">
               <span className="font-medium text-foreground">{nextTournament.name}</span>
               {' · '}{formatDate(nextTournament.start_date)}
@@ -185,10 +186,10 @@ export function HomePage() {
         <div className="flex flex-col border-b border-border sm:border-b-0 sm:border-r">
           <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
             <div className="flex items-center gap-2">
-              <Trophy className="size-3.5 text-[#c8a94a]" />
+              <Trophy className="size-3.5 text-lca-gold" />
               <span className="text-[13px] font-semibold text-foreground">Tournaments</span>
             </div>
-            <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-[#1a2744] hover:underline">
+            <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-lca-navy hover:underline">
               View all <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -237,10 +238,10 @@ export function HomePage() {
         <div className="flex flex-col">
           <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
             <div className="flex items-center gap-2">
-              <Building2 className="size-3.5 text-[#c8a94a]" />
+              <Building2 className="size-3.5 text-lca-gold" />
               <span className="text-[13px] font-semibold text-foreground">Clubs</span>
             </div>
-            <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-[#1a2744] hover:underline">
+            <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-lca-navy hover:underline">
               Find yours <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -271,10 +272,10 @@ export function HomePage() {
       </div>
 
       {member?.membership_status !== 'active' && (
-      <div className="border-t-[3px] border-[#c8a94a] bg-[#1a2744] px-6 py-10 text-center text-white">
+      <div className="border-t-[3px] border-lca-gold bg-lca-navy px-6 py-10 text-center text-white">
         <div className="mx-auto max-w-lg">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#c8a94a]">
-            <Trophy className="size-6 text-[#1a2744]" />
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-lca-gold">
+            <Trophy className="size-6 text-lca-navy" />
           </div>
           <h2 className="text-2xl font-bold sm:text-3xl">Become an LCA member</h2>
           <p className="mt-3 text-sm leading-relaxed text-white/70">
