@@ -18,8 +18,7 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-
-const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 type EditableField = 'role' | 'name'
 
@@ -80,7 +79,7 @@ function MemberCard({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Input
-              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]"
+              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-[#1a2744]"
               value={member.role}
               disabled={saving}
               onBlur={(e) => onSave(seat.id, 'role', e.target.value)}
@@ -127,7 +126,7 @@ function MemberCard({
         </div>
       ) : (
         <>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a2744]">
             {seat.role}
           </p>
           {isVacant ? (
@@ -137,7 +136,7 @@ function MemberCard({
               </p>
               <Link
                 to={contactHref}
-                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[#c8a94a] hover:underline"
+                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-[#1a2744] hover:underline"
               >
                 Interested in serving? Contact us →
               </Link>

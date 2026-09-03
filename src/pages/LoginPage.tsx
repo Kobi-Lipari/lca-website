@@ -210,7 +210,7 @@ export function LoginPage() {
                     <Label htmlFor="password">Password</Label>
                     <Link
                       to="/forgot-password"
-                      className="text-xs text-[#c8a94a] hover:underline"
+                      className="text-xs text-[#1a2744] hover:underline"
                     >
                       Forgot password?
                     </Link>
@@ -240,7 +240,7 @@ export function LoginPage() {
                   Don&apos;t have an account?{' '}
                   <Link
                     to="/register"
-                    className="font-medium text-[#c8a94a] hover:underline"
+                    className="font-medium text-[#1a2744] hover:underline"
                   >
                     Create one
                   </Link>

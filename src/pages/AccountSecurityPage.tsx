@@ -357,7 +357,7 @@ export function AccountSecurityPage() {
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          <Link to="/dashboard" className="text-[#c8a94a] hover:underline">
+          <Link to="/dashboard" className="text-[#1a2744] hover:underline">
             ← Back to dashboard
           </Link>
         </p>

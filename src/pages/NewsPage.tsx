@@ -64,7 +64,7 @@ function ClubNewsFeed({
         <p className="font-medium text-[#1a2744]">No club news yet</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Updates posted by clubs will appear here.{' '}
-          <Link to="/clubs" className="text-[#c8a94a] hover:underline">
+          <Link to="/clubs" className="text-[#1a2744] hover:underline">
             Browse clubs →
           </Link>
         </p>
@@ -89,7 +89,7 @@ function ClubNewsFeed({
               />
               <Link
                 to={`/clubs/${item.club_id}`}
-                className="font-medium text-[#1a2744] transition-colors hover:text-[#c8a94a] hover:underline"
+                className="font-medium text-[#1a2744] transition-colors hover:underline"
               >
                 {item.club_name}
               </Link>
@@ -135,7 +135,7 @@ export function NewsPage() {
                 className="min-w-[220px] max-w-xs flex-shrink-0 rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
                 style={{ borderLeftColor: '#c8a94a', borderLeftWidth: 3 }}
               >
-                <p className="mb-1 text-[10px] font-medium text-[#c8a94a]">{item.date}</p>
+                <p className="mb-1 text-[10px] font-medium text-[#1a2744]">{item.date}</p>
                 <p className="font-semibold text-[#1a2744] leading-snug">{item.title}</p>
                 <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{item.summary}</p>
               </Link>
@@ -164,7 +164,7 @@ export function NewsPage() {
                 <Building2 className="size-4 text-[#c8a94a]" />
                 From the clubs
               </h2>
-              <Link to="/clubs" className="flex items-center gap-1 text-xs text-[#c8a94a] hover:underline">
+              <Link to="/clubs" className="flex items-center gap-1 text-xs text-[#1a2744] hover:underline">
                 All clubs <ExternalLink className="size-3" />
               </Link>
             </div>

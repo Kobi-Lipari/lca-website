@@ -448,7 +448,7 @@ export function TournamentDetailPage() {
                 <Button
                   asChild
                   size="sm"
-                  className="border-[#c8a94a]/50 bg-[#c8a94a]/15 text-[#c8a94a] hover:bg-[#c8a94a]/25"
+                  className="border-[#c8a94a]/50 bg-[#c8a94a]/15 text-[#1a2744] hover:bg-[#c8a94a]/25"
                   variant="outline"
                 >
                   <Link to={`/tournaments/${id}/pairings`}>
@@ -595,7 +595,7 @@ export function TournamentDetailPage() {
                     return (
                       <div key={sectionName}>
                         <div className="border-b bg-[#c8a94a]/8 px-4 py-2">
-                          <span className="text-xs font-semibold uppercase tracking-wide text-[#c8a94a]">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-[#1a2744]">
                             {sectionName}
                           </span>
                           <span className="ml-2 text-xs text-muted-foreground">
@@ -880,7 +880,7 @@ export function TournamentDetailPage() {
             {/* LCA membership note */}
             <p className="text-xs text-muted-foreground">
               LCA members receive discounted entry fees.{' '}
-              <Link to="/membership" className="text-[#c8a94a] hover:underline">
+              <Link to="/membership" className="text-[#1a2744] hover:underline">
                 Join LCA
               </Link>
             </p>

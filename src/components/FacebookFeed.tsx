@@ -102,7 +102,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
             href={FACEBOOK_PAGE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-0.5 text-xs text-[#c8a94a] hover:underline"
+            className="flex items-center gap-0.5 text-xs text-[#1a2744] hover:underline"
           >
             Follow us <ArrowRight className="size-3" />
           </a>
@@ -112,7 +112,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
             {error ? (
               <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
                 <p className="text-xs text-muted-foreground">Couldn't load posts right now.</p>
-                <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-xs text-[#c8a94a] hover:underline">
+                <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-xs text-[#1a2744] hover:underline">
                   Visit our Facebook page
                 </a>
               </div>
@@ -150,7 +150,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
         {error ? (
           <p className="text-sm text-muted-foreground">
             Couldn't load Facebook posts right now — you can still{' '}
-            <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-[#1877F2] hover:underline">
+            <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-[#1668d8] hover:underline">
               visit the page directly
             </a>
             .
@@ -195,7 +195,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
           href={FACEBOOK_PAGE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-[#1877F2] hover:underline"
+          className="text-sm text-[#1668d8] hover:underline"
         >
           See all posts on Facebook →
         </a>

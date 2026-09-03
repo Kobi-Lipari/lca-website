@@ -67,7 +67,7 @@ function SeatRow({
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a2744]">
             {seat.role}
             {seat.is_shared === 1 && (
               <span className="ml-2 inline-flex items-center gap-1 rounded bg-[#c8a94a]/15 px-1.5 py-0.5 text-[10px] font-normal text-[#7a5c00]">

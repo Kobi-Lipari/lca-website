@@ -27,7 +27,7 @@ export function GovernancePage() {
                 <Icon className="size-5 text-[#c8a94a]" />
               </div>
               <div>
-                <p className="font-semibold text-[#1a2744] group-hover:text-[#c8a94a] transition-colors">{label}</p>
+                <p className="font-semibold text-[#1a2744] group-hover:underline transition-colors">{label}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{sub}</p>
               </div>
             </Link>

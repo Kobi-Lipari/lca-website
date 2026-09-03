@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import {
   addBoardTicketNote,
   getBoardTicket,
@@ -23,8 +24,6 @@ import {
   type ApiBoardTicket,
   type ApiTicketMessage,
 } from '@/lib/api'
-
-const GOLD = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
 
 const STATUS_LABEL: Record<string, string> = {
   open: 'New',
@@ -259,7 +258,7 @@ export function BoardInboxPage() {
                       )}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-[#c8a94a]">
+                        <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-[#1a2744]">
                           {t.seat_role}
                         </span>
                         <span className="flex-shrink-0 text-[10px] text-muted-foreground">
@@ -293,7 +292,7 @@ export function BoardInboxPage() {
                   <div className="rounded-xl border bg-card p-5 shadow-sm">
                     <div className="flex flex-wrap items-start justify-between gap-3 border-b pb-3">
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#c8a94a]">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-[#1a2744]">
                           {selected.seat_role}
                         </p>
                         <h2 className="mt-0.5 font-bold text-[#1a2744]">{selected.subject}</h2>

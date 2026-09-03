@@ -231,7 +231,7 @@ export function ClubsPage() {
                 className="rounded-lg border border-white/10 bg-white/6 px-3 py-2 text-center"
               >
                 <div className="text-base font-semibold text-[#c8a94a]">{s.n}</div>
-                <div className="mt-0.5 text-[9px] text-white/45">{s.l}</div>
+                <div className="mt-0.5 text-[9px] text-white/60">{s.l}</div>
               </div>
             ))}
           </div>
