@@ -8,6 +8,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { HomePage } from '@/pages/HomePage'
 import { AnnouncementBanner } from '@/components/AnnouncementBanner'
 import { ImpersonationBanner } from '@/components/ImpersonationBanner'
+import { PasswordRecoveryRedirect } from '@/components/auth/PasswordRecoveryRedirect'
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
 const AdminEmailPage = lazy(() => import('@/pages/AdminEmailPage').then(m => ({ default: m.AdminEmailPage })))
@@ -41,6 +42,7 @@ const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => (
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
+      <PasswordRecoveryRedirect />
       <ImpersonationBanner />
       <AnnouncementBanner />
       <Navbar />
