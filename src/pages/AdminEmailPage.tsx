@@ -39,8 +39,18 @@ const STATUS_OPTIONS = [
   { value: 'expired', label: 'Expired' },
 ]
 
-const SITE_URL_DISPLAY = 'louisianachess.org'
-const LOGO_URL = 'https://lca-website.pages.dev/lca-logo.jpg' // same asset the real emails use
+// Relative: the preview is served from the same origin as the logo, so this
+// is correct wherever the site is deployed — including the dev server, where
+// an absolute production URL was the one asset that had to reach the
+// internet to render.
+const LOGO_URL = '/lca-logo.jpg'
+
+// The footer shows what RECIPIENTS will see, which is the server's SITE_URL,
+// not whatever host an admin happens to be previewing from. Falls back to the
+// same default functions/utils/site.ts uses.
+const SITE_URL_DISPLAY = (
+  import.meta.env.VITE_SITE_URL ?? 'https://louisianachess.org'
+).replace(/^https?:\/\//, '')
 
 /** Visual mirror of functions/utils/campaigns.ts → wrapBrandedEmail().
  *  Preview only — the actual email HTML is generated server-side. If you

@@ -1,5 +1,6 @@
 // functions/utils/campaigns.ts
 import { DEFAULT_FROM } from './email'
+import { emailLogoUrl, resolveSiteUrl, type SiteEnv } from './site'
 
 /**
  * The bindings the campaign send path needs.
@@ -8,7 +9,7 @@ import { DEFAULT_FROM } from './email'
  * cron Worker Env satisfy this structurally, so the sweep can live here and
  * be called from either side without the two learning about each other.
  */
-export interface CampaignEnv {
+export interface CampaignEnv extends SiteEnv {
   DB: D1Database
   RESEND_API_KEY: string
   FROM_EMAIL?: string
@@ -87,11 +88,14 @@ export async function resolveRecipients(
 // a deliberate tradeoff, not an oversight; worth retesting placement after
 // this change since bulk sending pattern matters as much as content style.
 
-const SITE_URL = 'https://louisianachess.org' // matches K's existing Supabase auth templates
-const LOGO_URL = 'https://lca-website.pages.dev/lca-logo.jpg' // same asset path as those templates
-
-export function wrapBrandedEmail(subject: string, bodyHtml: string): string {
+export function wrapBrandedEmail(
+  env: SiteEnv,
+  subject: string,
+  bodyHtml: string,
+): string {
   const safeSubject = escapeHtmlAttr(subject)
+  const siteUrl = resolveSiteUrl(env)
+  const logoUrl = emailLogoUrl(env)
   return `<!DOCTYPE html>
 <html>
 <head>
@@ -113,7 +117,7 @@ export function wrapBrandedEmail(subject: string, bodyHtml: string): string {
           <!-- Header -->
           <tr>
             <td style="background-color:#1a2744;padding:32px 40px;text-align:center;">
-              <img src="${LOGO_URL}" alt="Louisiana Chess Association" width="160" style="display:block;margin:0 auto;border-radius:8px;">
+              <img src="${logoUrl}" alt="Louisiana Chess Association" width="160" style="display:block;margin:0 auto;border-radius:8px;">
             </td>
           </tr>
 
@@ -137,7 +141,7 @@ export function wrapBrandedEmail(subject: string, bodyHtml: string): string {
             <td style="background-color:#f4f4f0;border-top:1px solid #e0ddd5;padding:24px 40px;text-align:center;">
               <p style="margin:0 0 4px;font-size:12px;color:#999;font-family:Arial,sans-serif;">Louisiana Chess Association</p>
               <p style="margin:0;font-size:12px;font-family:Arial,sans-serif;">
-                <a href="${SITE_URL}" style="color:#1a2744;text-decoration:none;">louisianachess.org</a>
+                <a href="${siteUrl}" style="color:#1a2744;text-decoration:none;">${siteLabel(siteUrl)}</a>
                 &nbsp;·&nbsp;
                 <a href="mailto:support@louisianachess.org" style="color:#1a2744;text-decoration:none;">support@louisianachess.org</a>
               </p>
@@ -150,6 +154,11 @@ export function wrapBrandedEmail(subject: string, bodyHtml: string): string {
   </table>
 </body>
 </html>`
+}
+
+/** "https://louisianachess.org" → "louisianachess.org", for link text. */
+function siteLabel(url: string): string {
+  return url.replace(/^https?:\/\//, '')
 }
 
 function escapeHtmlAttr(s: string): string {
@@ -239,7 +248,7 @@ export async function sendTestEmail(
   subject: string,
   bodyHtml: string,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
-  const html = wrapBrandedEmail(subject, bodyHtml)
+  const html = wrapBrandedEmail(env, subject, bodyHtml)
   const result = await sendViaResend(env, to, subject, html)
   return result.ok ? { ok: true } : { ok: false, error: result.error }
 }
@@ -317,7 +326,7 @@ export async function processCampaign(
 
   if (!campaign) return { sent: 0, failed: 0, remaining: 0, done: true }
 
-  const html = wrapBrandedEmail(campaign.subject, campaign.body_html)
+  const html = wrapBrandedEmail(env, campaign.subject, campaign.body_html)
   const claimed = await claimRecipients(db, campaignId, limit)
 
   let sent = 0

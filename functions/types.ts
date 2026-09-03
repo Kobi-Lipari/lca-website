@@ -15,6 +15,8 @@ export interface Env {
   CONTACT_EMAIL: string
   SUPPORT_EMAIL: string
   REPLY_TO_EMAIL?: string
+  /** Canonical public origin for links in outgoing mail. See utils/site. */
+  SITE_URL?: string
 }
 
 export interface MemberRow {
