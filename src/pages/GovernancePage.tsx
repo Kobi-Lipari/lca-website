@@ -23,11 +23,11 @@ export function GovernancePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {sections.map(({ icon: Icon, label, sub, href }) => (
             <Link key={href} to={href} className="group flex items-start gap-4 rounded-xl border bg-card p-5 shadow-sm transition-shadow hover:shadow-md">
-              <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-lg bg-[#c8a94a]/10">
-                <Icon className="size-5 text-[#c8a94a]" />
+              <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-lg bg-lca-gold/10">
+                <Icon className="size-5 text-lca-gold" />
               </div>
               <div>
-                <p className="font-semibold text-[#1a2744] group-hover:underline transition-colors">{label}</p>
+                <p className="font-semibold text-lca-navy group-hover:underline transition-colors">{label}</p>
                 <p className="mt-1 text-sm text-muted-foreground">{sub}</p>
               </div>
             </Link>

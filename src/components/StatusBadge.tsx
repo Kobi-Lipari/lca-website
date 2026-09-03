@@ -25,14 +25,14 @@ export type BadgeSurface = 'navy' | 'light'
 
 const TONE_CLASSES: Record<BadgeSurface, Record<BadgeTone, string>> = {
   navy: {
-    gold: 'bg-[#c8a94a]/20 text-[#c8a94a]',
+    gold: 'bg-lca-gold/20 text-lca-gold',
     emerald: 'bg-emerald-500/20 text-emerald-300',
     red: 'bg-red-500/20 text-red-300',
     blue: 'bg-blue-500/20 text-blue-200',
     muted: 'bg-white/10 text-white/60',
   },
   light: {
-    gold: 'bg-[#c8a94a]/20 text-[#7a5c00]',
+    gold: 'bg-lca-gold/20 text-[#7a5c00]',
     emerald: 'bg-emerald-100 text-emerald-800',
     red: 'bg-red-100 text-red-700',
     blue: 'border border-blue-200 bg-blue-50 text-blue-800',
@@ -90,7 +90,7 @@ export function StatusDot({
   if (regStatus === 'draft') {
     return (
       <span
-        className={cn('size-1.5 flex-shrink-0 rounded-full bg-[#c8a94a]', className)}
+        className={cn('size-1.5 flex-shrink-0 rounded-full bg-lca-gold', className)}
         title="Opening soon"
       />
     )

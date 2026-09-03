@@ -21,8 +21,9 @@ import {
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { LCA } from '@/lib/brand'
 
-const goldButtonClass = 'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 type ClubTab = 'details' | 'news' | 'roster' | 'tournaments'
 
@@ -49,7 +50,7 @@ export function AdminClubPage() {
     description: '',
     meetingSchedule: '',
     contactEmail: '',
-    color: '#c8a94a',
+    color: LCA.gold,
     imageUrl: '',
     region: '',
   })
@@ -80,7 +81,7 @@ export function AdminClubPage() {
           description: c.description ?? '',
           meetingSchedule: c.meeting_schedule ?? '',
           contactEmail: c.contact_email ?? '',
-          color: (c as any).color ?? '#c8a94a',
+          color: (c as any).color ?? LCA.gold,
           imageUrl: (c as any).image_url ?? '',
           region: (c as any).region ?? '',
         })
@@ -170,7 +171,7 @@ export function AdminClubPage() {
     </div>
   )
 
-  const color = form.color || '#c8a94a'
+  const color = form.color || LCA.gold
 
   const tabs: { id: ClubTab; label: string; icon: typeof Users }[] = [
     { id: 'details',     label: 'Club details',  icon: Building2  },
@@ -184,12 +185,12 @@ export function AdminClubPage() {
       {/* ── Hero ── */}
       <section
         className="border-b-[3px] text-white"
-        style={{ backgroundColor: '#1a2744', borderBottomColor: color }}
+        style={{ backgroundColor: LCA.navy, borderBottomColor: color }}
       >
         <div className="mx-auto max-w-6xl px-6 py-8">
           <Link
             to="/admin"
-            className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-[#c8a94a]"
+            className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-lca-gold"
           >
             <ArrowLeft className="size-3.5" /> Admin panel
           </Link>
@@ -216,7 +217,7 @@ export function AdminClubPage() {
                 className={cn(
                   'flex items-center gap-1.5 border-b-2 px-3 py-2 text-[11px] font-medium transition-colors',
                   tab === tid
-                    ? 'border-[#c8a94a] text-[#c8a94a]'
+                    ? 'border-lca-gold text-lca-gold'
                     : 'border-transparent text-white/45 hover:text-white/70',
                 )}
               >
@@ -240,7 +241,7 @@ export function AdminClubPage() {
         {tab === 'details' && (
           <form onSubmit={handleSaveClub} className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
-              <h2 className="mb-4 text-base font-semibold text-[#1a2744]">Basic information</h2>
+              <h2 className="mb-4 text-base font-semibold text-lca-navy">Basic information</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="name">Club name</Label>
@@ -301,7 +302,7 @@ export function AdminClubPage() {
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
                 <Palette className="size-4 text-muted-foreground" />
-                <h2 className="text-base font-semibold text-[#1a2744]">Club color</h2>
+                <h2 className="text-base font-semibold text-lca-navy">Club color</h2>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <input
@@ -338,7 +339,7 @@ export function AdminClubPage() {
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
                 <Upload className="size-4 text-muted-foreground" />
-                <h2 className="text-base font-semibold text-[#1a2744]">Club image</h2>
+                <h2 className="text-base font-semibold text-lca-navy">Club image</h2>
               </div>
               <p className="mb-3 text-sm text-muted-foreground">
                 Upload a logo or promotional photo. This appears at the top of your club's card in the carousel and in the hero of your club detail page. It's automatically resized and cropped — no need to prepare an exact size yourself.
@@ -387,8 +388,8 @@ export function AdminClubPage() {
         {tab === 'news' && (
           <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
-              <Newspaper className="size-5 text-[#c8a94a]" />
-              <h2 className="text-base font-semibold text-[#1a2744]">Post club news</h2>
+              <Newspaper className="size-5 text-lca-gold" />
+              <h2 className="text-base font-semibold text-lca-navy">Post club news</h2>
             </div>
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -420,8 +421,8 @@ export function AdminClubPage() {
         {tab === 'roster' && (
           <div className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
-              <Users className="size-5 text-[#c8a94a]" />
-              <h2 className="text-base font-semibold text-[#1a2744]">Club roster · {roster.length} members</h2>
+              <Users className="size-5 text-lca-gold" />
+              <h2 className="text-base font-semibold text-lca-navy">Club roster · {roster.length} members</h2>
             </div>
             {roster.length === 0 ? (
               <p className="text-sm text-muted-foreground">No members assigned to this club yet.</p>
@@ -448,12 +449,12 @@ export function AdminClubPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Trophy className="size-5 text-[#c8a94a]" />
-                <h2 className="text-base font-semibold text-[#1a2744]">Club tournaments</h2>
+                <Trophy className="size-5 text-lca-gold" />
+                <h2 className="text-base font-semibold text-lca-navy">Club tournaments</h2>
               </div>
               <Link
                 to="/admin"
-                className="flex items-center gap-1 text-sm text-[#1a2744] hover:underline"
+                className="flex items-center gap-1 text-sm text-lca-navy hover:underline"
                 onClick={() => {
                   sessionStorage.setItem('adminTab', 'tournaments')
                 }}
@@ -465,7 +466,7 @@ export function AdminClubPage() {
             {tournaments.length === 0 ? (
               <div className="rounded-xl border border-dashed px-6 py-10 text-center">
                 <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
-                <p className="font-medium text-[#1a2744]">No tournaments yet</p>
+                <p className="font-medium text-lca-navy">No tournaments yet</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Create a tournament for this club from the Admin panel.
                 </p>
@@ -481,7 +482,7 @@ export function AdminClubPage() {
                     className="flex items-center justify-between rounded-xl border bg-card p-4 shadow-sm"
                   >
                     <div>
-                      <p className="font-medium text-[#1a2744]">{t.name}</p>
+                      <p className="font-medium text-lca-navy">{t.name}</p>
                       <p className="text-sm text-muted-foreground">{t.date} · {t.status}</p>
                     </div>
                     <Button asChild size="sm" className={goldButtonClass}>

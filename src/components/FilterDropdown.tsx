@@ -44,11 +44,11 @@ export function FilterDropdown<T extends string>({
   const triggerClass =
     on === 'navy'
       ? isActive
-        ? 'border-[#c8a94a]/50 bg-[#c8a94a]/15 text-[#f0d07a]'
+        ? 'border-lca-gold/50 bg-lca-gold/15 text-[#f0d07a]'
         : 'border-white/15 bg-white/6 text-white/60 hover:border-white/25 hover:text-white/80'
       : isActive
-      ? 'border-[#c8a94a]/60 bg-[#c8a94a]/10 text-[#7a5c00]'
-      : 'border-border bg-background text-muted-foreground hover:border-[#1a2744]/40 hover:text-foreground'
+      ? 'border-lca-gold/60 bg-lca-gold/10 text-[#7a5c00]'
+      : 'border-border bg-background text-muted-foreground hover:border-lca-navy/40 hover:text-foreground'
 
   return (
     <div ref={ref} className={cn('relative', className)}>
@@ -72,12 +72,12 @@ export function FilterDropdown<T extends string>({
               onClick={() => { onChange(opt.value); setOpen(false) }}
               className={cn(
                 'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50',
-                opt.value === value ? 'bg-[#c8a94a]/8 font-medium text-[#1a2744]' : 'text-muted-foreground',
+                opt.value === value ? 'bg-lca-gold/8 font-medium text-lca-navy' : 'text-muted-foreground',
               )}
             >
               <span className={cn(
                 'size-3 flex-shrink-0 rounded-full border',
-                opt.value === value ? 'border-[#c8a94a] bg-[#c8a94a]' : 'border-border',
+                opt.value === value ? 'border-lca-gold bg-lca-gold' : 'border-border',
               )} />
               {opt.label}
             </button>

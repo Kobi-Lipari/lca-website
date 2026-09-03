@@ -9,7 +9,7 @@ import { confirmMembership } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
 const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 function MembershipSuccessContent() {
   const [searchParams] = useSearchParams()
@@ -75,8 +75,8 @@ function MembershipSuccessContent() {
 
       {!loading && !error && status === 'pending' && (
         <>
-          <Clock className="mx-auto size-12 text-[#c8a94a]" />
-          <h1 className="mt-4 text-2xl font-bold text-[#1a2744]">
+          <Clock className="mx-auto size-12 text-lca-gold" />
+          <h1 className="mt-4 text-2xl font-bold text-lca-navy">
             Payment received — activating your membership
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -93,7 +93,7 @@ function MembershipSuccessContent() {
       {!loading && !error && status === 'active' && (
         <>
           <CheckCircle2 className="mx-auto size-12 text-emerald-600" />
-          <h1 className="mt-4 text-2xl font-bold text-[#1a2744]">
+          <h1 className="mt-4 text-2xl font-bold text-lca-navy">
             Membership confirmed
           </h1>
           <p className="mt-2 text-muted-foreground">

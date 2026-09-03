@@ -74,7 +74,7 @@ export function DonateButton() {
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button
             type="button"
-            className="w-full bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90"
+            className="w-full bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90"
             disabled={loading}
             onClick={handleDonate}
           >

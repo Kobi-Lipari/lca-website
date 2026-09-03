@@ -29,7 +29,7 @@ export class ErrorBoundary extends Component<Props, State> {
           className="mx-auto flex max-w-lg flex-col items-center px-6 py-24 text-center"
           role="alert"
         >
-          <h1 className="text-2xl font-bold text-[#1a2744]">
+          <h1 className="text-2xl font-bold text-lca-navy">
             Something went wrong
           </h1>
           <p className="mt-2 text-muted-foreground">

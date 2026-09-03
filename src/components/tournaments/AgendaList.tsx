@@ -1,8 +1,9 @@
 import { Fragment } from 'react'
 import { cn } from '@/lib/utils'
 import type { UnifiedTournament } from '@/lib/clearinghouse'
+import { LCA } from '@/lib/brand'
 
-const LCA_GOLD = '#c8a94a'
+const LCA_GOLD = LCA.gold
 
 const MONTH_NAMES = [
   'January','February','March','April','May','June',
@@ -55,11 +56,11 @@ export function AgendaList({ tournaments, selectedKey, onSelect }: AgendaListPro
               onClick={() => onSelect(t)}
               className={cn(
                 'flex w-full items-start gap-3 border-b border-border px-3 py-2.5 text-left transition-colors last:border-b-0 hover:bg-muted/30',
-                isSelected && 'border-l-2 border-l-[#c8a94a] bg-[#c8a94a]/5 pl-[10px]',
+                isSelected && 'border-l-2 border-l-lca-gold bg-lca-gold/5 pl-[10px]',
               )}
             >
               <div className="w-9 flex-shrink-0 text-center">
-                <div className="text-base font-semibold leading-none text-[#1a2744]">{dayNum}</div>
+                <div className="text-base font-semibold leading-none text-lca-navy">{dayNum}</div>
                 <div className="mt-0.5 text-[9px] uppercase text-muted-foreground">{dayName}</div>
               </div>
               <div className="min-w-0 flex-1">

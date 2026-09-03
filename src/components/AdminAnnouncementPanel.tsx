@@ -49,13 +49,13 @@ export function AdminAnnouncementPanel() {
   return (
     <div className="max-w-xl space-y-4 rounded-xl border bg-card p-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-[#1a2744]">Site announcement banner</h2>
+        <h2 className="text-lg font-bold text-lca-navy">Site announcement banner</h2>
         <button
           type="button"
           role="switch"
           aria-checked={enabled}
           onClick={() => { setEnabled((v) => !v); setSaved(false) }}
-          className={`relative h-6 w-11 rounded-full transition-colors ${enabled ? 'bg-[#c8a94a]' : 'bg-muted'}`}
+          className={`relative h-6 w-11 rounded-full transition-colors ${enabled ? 'bg-lca-gold' : 'bg-muted'}`}
         >
           <span className={`absolute top-0.5 size-5 rounded-full bg-white shadow transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0.5'}`} />
         </button>
@@ -98,7 +98,7 @@ export function AdminAnnouncementPanel() {
 
       {error && <p className="text-sm text-destructive">{error}</p>}
 
-      <Button onClick={handleSave} disabled={saving} className="bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
+      <Button onClick={handleSave} disabled={saving} className="bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">
         {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save changes'}
       </Button>
 

@@ -29,7 +29,7 @@ export function AnnouncementBanner() {
   }
 
   return (
-    <div className="flex items-center justify-center gap-3 bg-[#c8a94a] px-4 py-2 text-center text-sm font-medium text-[#1a2744]">
+    <div className="flex items-center justify-center gap-3 bg-lca-gold px-4 py-2 text-center text-sm font-medium text-lca-navy">
       <span>
         {announcement.message}
         {announcement.linkUrl && announcement.linkLabel && (

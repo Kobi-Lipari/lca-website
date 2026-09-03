@@ -17,6 +17,7 @@ import { isScholasticTournament } from '@/lib/scholastic'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { LCA } from '@/lib/brand'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -34,7 +35,7 @@ type RightSelection =
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const LCA_GOLD = '#c8a94a'
+const LCA_GOLD = LCA.gold
 
 const STATE_PILLS: { value: StateFilter; label: string }[] = [
   { value: 'LA', label: 'Louisiana' },
@@ -70,29 +71,29 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
   return (
     <div className="p-4">
       <h3 className="mb-3 text-[15px] font-semibold leading-snug">
-        <Link to={`/tournaments/${t.id}`} className="text-[#1a2744] hover:underline transition-colors">
+        <Link to={`/tournaments/${t.id}`} className="text-lca-navy hover:underline transition-colors">
           {t.name}
         </Link>
       </h3>
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Calendar className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+          <Calendar className="size-3.5 flex-shrink-0 text-lca-gold" />
           {formatDate(t.start_date)}
         </div>
         {t.city && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <MapPin className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+            <MapPin className="size-3.5 flex-shrink-0 text-lca-gold" />
             {t.city}
           </div>
         )}
         {t.time_control && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Clock className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+            <Clock className="size-3.5 flex-shrink-0 text-lca-gold" />
             {t.time_control}
           </div>
         )}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Building2 className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+          <Building2 className="size-3.5 flex-shrink-0 text-lca-gold" />
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full" style={{ backgroundColor: color }} />
             {t.club_name ?? 'LCA event'}
@@ -104,7 +105,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
           {sections.map(s => {
             const name = typeof s === 'string' ? s : s.name
             return (
-              <span key={name} className="rounded-full border border-[#1a2744]/20 bg-[#1a2744]/8 px-2 py-0.5 text-[11px] font-medium text-[#1a2744]">
+              <span key={name} className="rounded-full border border-lca-navy/20 bg-lca-navy/8 px-2 py-0.5 text-[11px] font-medium text-lca-navy">
                 {name}
               </span>
             )
@@ -122,7 +123,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
       {regOpen && !isPast && <p className="mt-0.5 text-xs font-medium text-emerald-600">Registration open</p>}
       <div className="mt-3.5 flex flex-wrap items-center gap-2">
         {regOpen && !isPast && (
-          <Button asChild size="sm" className="h-7 bg-[#c8a94a] text-xs font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
+          <Button asChild size="sm" className="h-7 bg-lca-gold text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
             <Link to={`/tournaments/${t.id}`}>Register</Link>
           </Button>
         )}
@@ -148,42 +149,42 @@ function ExternalDetailPane({ t }: { t: UnifiedTournament }) {
           <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">{t.state}</span>
         )}
       </div>
-      <h3 className="mb-3 text-[15px] font-semibold leading-snug text-[#1a2744]">{t.name}</h3>
+      <h3 className="mb-3 text-[15px] font-semibold leading-snug text-lca-navy">{t.name}</h3>
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Calendar className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+          <Calendar className="size-3.5 flex-shrink-0 text-lca-gold" />
           {formatDate(t.start_date)}
           {t.end_date && t.end_date !== t.start_date ? ` – ${formatDate(t.end_date)}` : ''}
         </div>
         {(t.venue || t.city) && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <MapPin className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+            <MapPin className="size-3.5 flex-shrink-0 text-lca-gold" />
             {t.venue ?? t.city}{t.state ? `, ${t.state}` : ''}
           </div>
         )}
         {t.organizer && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Users className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+            <Users className="size-3.5 flex-shrink-0 text-lca-gold" />
             {t.organizer}
           </div>
         )}
         {t.rating_system && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Trophy className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
+            <Trophy className="size-3.5 flex-shrink-0 text-lca-gold" />
             {t.rating_system}
             {t.eligibility && t.eligibility !== 'All ages' ? ` · ${t.eligibility}` : ''}
           </div>
         )}
         {t.contact && (
           <div className="flex items-start gap-2 text-xs text-muted-foreground">
-            <Globe className="mt-0.5 size-3.5 flex-shrink-0 text-[#c8a94a]" />
+            <Globe className="mt-0.5 size-3.5 flex-shrink-0 text-lca-gold" />
             <span className="break-all">{t.contact}</span>
           </div>
         )}
       </div>
       {t.link && (
         <div className="mt-3.5">
-          <Button asChild size="sm" className="h-7 bg-[#c8a94a] text-xs font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
+          <Button asChild size="sm" className="h-7 bg-lca-gold text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
             <a href={t.link} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-1.5 size-3" />
               Register / Details
@@ -220,14 +221,14 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
 
   const rowClass = (s: RightSelection) => cn(
     'flex w-full items-center gap-2.5 border-b border-border px-3 py-3 text-left transition-colors last:border-b-0 hover:bg-muted/30',
-    isSelected(s) && 'border-l-2 border-l-[#c8a94a] bg-[#c8a94a]/5 pl-[10px]',
+    isSelected(s) && 'border-l-2 border-l-lca-gold bg-lca-gold/5 pl-[10px]',
   )
 
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-between border-b border-border bg-muted/20 px-3 py-2">
         <div className="flex items-center gap-1.5">
-          <Building2 className="size-3.5 text-[#c8a94a]" />
+          <Building2 className="size-3.5 text-lca-gold" />
           <span className="text-xs font-semibold text-foreground">By organizer</span>
         </div>
         <span className="text-[11px] text-muted-foreground">click to filter</span>
@@ -459,7 +460,7 @@ export function TournamentsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search tournaments…"
-                className="h-8 w-44 rounded-full border border-white/20 bg-white/10 pl-8 pr-7 text-xs text-white placeholder:text-white/40 outline-none transition-colors focus:border-[#c8a94a]/70 sm:w-60"
+                className="h-8 w-44 rounded-full border border-white/20 bg-white/10 pl-8 pr-7 text-xs text-white placeholder:text-white/40 outline-none transition-colors focus:border-lca-gold/70 sm:w-60"
               />
               {search && (
                 <button
@@ -498,13 +499,13 @@ export function TournamentsPage() {
           {/* View switcher — kept as one bold, full-word control rather than
               an icon-only pill, so it reads as "how you're viewing this"
               rather than blending in as a third filter dropdown. */}
-          <div className="flex h-9 rounded-lg border border-[#c8a94a]/70 p-0.5">
+          <div className="flex h-9 rounded-lg border border-lca-gold/70 p-0.5">
             <button
               type="button"
               onClick={() => setViewMode('list')}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors',
-                viewMode === 'list' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/70 hover:text-white',
+                viewMode === 'list' ? 'bg-lca-gold text-lca-navy' : 'text-white/70 hover:text-white',
               )}
             >
               <Trophy className="size-3.5" /> List
@@ -514,7 +515,7 @@ export function TournamentsPage() {
               onClick={() => setViewMode('calendar')}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors',
-                viewMode === 'calendar' ? 'bg-[#c8a94a] text-[#1a2744]' : 'text-white/70 hover:text-white',
+                viewMode === 'calendar' ? 'bg-lca-gold text-lca-navy' : 'text-white/70 hover:text-white',
               )}
             >
               <Calendar className="size-3.5" /> Calendar
@@ -525,17 +526,17 @@ export function TournamentsPage() {
 
       {/* ── Banner ── */}
       {banner && timeTab === 'upcoming' && (
-        <div className="flex items-center justify-between border-b border-[#c8a94a]/30 bg-[#c8a94a]/10 px-4 py-2 sm:px-6">
+        <div className="flex items-center justify-between border-b border-lca-gold/30 bg-lca-gold/10 px-4 py-2 sm:px-6">
           <div className="flex min-w-0 items-center gap-2 text-sm">
-            <Calendar className="size-3.5 flex-shrink-0 text-[#c8a94a]" />
-            <span className="rounded-full border border-[#c8a94a]/40 bg-[#c8a94a]/18 px-1.5 py-px text-[10px] font-medium text-[#7a5c00]">LCA</span>
+            <Calendar className="size-3.5 flex-shrink-0 text-lca-gold" />
+            <span className="rounded-full border border-lca-gold/40 bg-lca-gold/18 px-1.5 py-px text-[10px] font-medium text-[#7a5c00]">LCA</span>
             <span className="truncate text-muted-foreground">
               <span className="font-medium text-foreground">{banner.name}</span>
               {' · '}{formatDate(banner.start_date)}
               {banner.city ? ` · ${banner.city}` : ''}
             </span>
           </div>
-          <Button asChild size="sm" className="ml-3 h-7 flex-shrink-0 bg-[#c8a94a] text-xs font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
+          <Button asChild size="sm" className="ml-3 h-7 flex-shrink-0 bg-lca-gold text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
             <Link to={`/tournaments/${banner.id}`}>
               {banner.registration_status === 'open' ? 'Register now' : 'View details'}
             </Link>
@@ -576,7 +577,7 @@ export function TournamentsPage() {
               />
               <div className="flex items-center gap-3 px-1">
                 <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                  <span className="size-2 rounded-full bg-[#c8a94a]" /> LCA hosted
+                  <span className="size-2 rounded-full bg-lca-gold" /> LCA hosted
                 </div>
                 <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                   <span className="size-2 rounded-full bg-slate-400" /> External
@@ -629,7 +630,7 @@ export function TournamentsPage() {
                       className={cn(
                         'rounded-md px-2 py-0.5 text-xs font-semibold capitalize transition-colors',
                         timeTab === tab
-                          ? 'bg-[#1a2744] text-white'
+                          ? 'bg-lca-navy text-white'
                           : 'text-muted-foreground hover:text-foreground',
                       )}
                     >
@@ -665,7 +666,7 @@ export function TournamentsPage() {
                         onClick={() => handleRowClick(key)}
                         className={cn(
                           'flex w-full items-center justify-between border-b border-border px-3 py-3 text-left transition-colors last:border-b-0 hover:bg-muted/30',
-                          isSel && 'border-l-2 border-l-[#c8a94a] pl-[10px]',
+                          isSel && 'border-l-2 border-l-lca-gold pl-[10px]',
                         )}
                         style={{ backgroundColor: isSel ? clubColorTint(color, 0.05) : undefined }}
                       >

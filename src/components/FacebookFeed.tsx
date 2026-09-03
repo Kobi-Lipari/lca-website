@@ -13,9 +13,10 @@
 import { useEffect, useState } from 'react'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { ArrowRight } from 'lucide-react'
+import { LCA } from '@/lib/brand'
 
 const FACEBOOK_PAGE_URL = 'https://www.facebook.com/LouisianaChessAssociation'
-const LCA_GOLD = '#c8a94a'
+const LCA_GOLD = LCA.gold
 
 interface FacebookFeedPost {
   id: string
@@ -102,7 +103,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
             href={FACEBOOK_PAGE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-0.5 text-xs text-[#1a2744] hover:underline"
+            className="flex items-center gap-0.5 text-xs text-lca-navy hover:underline"
           >
             Follow us <ArrowRight className="size-3" />
           </a>
@@ -112,7 +113,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
             {error ? (
               <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
                 <p className="text-xs text-muted-foreground">Couldn't load posts right now.</p>
-                <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-xs text-[#1a2744] hover:underline">
+                <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-xs text-lca-navy hover:underline">
                   Visit our Facebook page
                 </a>
               </div>
@@ -180,7 +181,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
                     )}
                     <div className="p-4">
                       <p className="text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</p>
-                      <p className="mt-1.5 text-sm leading-relaxed text-[#1a2744]">{post.message}</p>
+                      <p className="mt-1.5 text-sm leading-relaxed text-lca-navy">{post.message}</p>
                     </div>
                   </a>
                 ))}
