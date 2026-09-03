@@ -28,6 +28,7 @@ import {
   adminRemoveTournamentDirector,
   adminUpdateMemberClub,
   adminUpdateMemberMembership,
+  adminUpdateMemberName,
   adminUpdateMemberRole,
   getClubs,
   getTournaments,
@@ -846,9 +847,68 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clu
 
 type MembershipFilter = 'active' | 'all'
 
+/**
+ * Inline name editor for the members table.
+ *
+ * Commits on blur or Enter rather than on every keystroke — the other cells
+ * here are selects and date pickers where a change event is a whole edit, but
+ * a text field would otherwise fire a request per character. Escape abandons
+ * the edit and restores what was there.
+ */
+function NameCell({
+  value,
+  disabled,
+  onSave,
+}: {
+  value: string
+  disabled: boolean
+  onSave: (next: string) => Promise<boolean>
+}) {
+  const [draft, setDraft] = useState(value)
+  const [lastSaved, setLastSaved] = useState(value)
+
+  // Follow the row when the stored name changes underneath us, e.g. after the
+  // member list is refetched. Adjusting during render rather than in an effect
+  // avoids a frame showing the stale draft.
+  if (value !== lastSaved) {
+    setLastSaved(value)
+    setDraft(value)
+  }
+
+  const commit = async () => {
+    const next = draft.trim()
+    if (!next || next === value) {
+      setDraft(value)
+      return
+    }
+    const saved = await onSave(next)
+    if (!saved) setDraft(value)
+  }
+
+  return (
+    <Input
+      className="h-8 w-[200px] text-sm"
+      value={draft}
+      disabled={disabled}
+      aria-label={`Name for ${value}`}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault()
+          e.currentTarget.blur()
+        } else if (e.key === 'Escape') {
+          setDraft(value)
+          e.currentTarget.blur()
+        }
+      }}
+    />
+  )
+}
+
 function MembersTab({
   members, clubs, isAdmin, savingId, boardSeats, seatHolders,
-  onRoleChange, onClubChange, onMembershipChange, onDelete, onImpersonate,
+  onRoleChange, onClubChange, onMembershipChange, onNameChange, onDelete, onImpersonate,
   onSeatAdd, onSeatRemove,
 }: {
   members: ApiAdminMember[]
@@ -860,6 +920,7 @@ function MembersTab({
   onRoleChange: (memberId: string, role: MemberRole) => void
   onClubChange: (memberId: string, clubId: string) => void
   onMembershipChange: (memberId: string, field: 'status' | 'expiry', value: string) => void
+  onNameChange: (memberId: string, fullName: string) => Promise<boolean>
   onDelete: (m: ApiAdminMember) => void
   onImpersonate: (m: ApiAdminMember) => void
   onSeatAdd: (seatId: string, memberId: string) => void
@@ -964,7 +1025,17 @@ function MembersTab({
             ) : (
               filtered.map((m) => (
                 <tr key={m.id} className="border-b last:border-0">
-                  <td className="px-3 py-2.5 font-medium">{m.full_name}</td>
+                  <td className="px-3 py-2.5 font-medium">
+                    {isAdmin ? (
+                      <NameCell
+                        value={m.full_name}
+                        disabled={savingId === m.id}
+                        onSave={(next) => onNameChange(m.id, next)}
+                      />
+                    ) : (
+                      m.full_name
+                    )}
+                  </td>
                   <td className="px-3 py-2.5 text-muted-foreground">{m.email}</td>
                   <td className="px-3 py-2.5">
                     {isAdmin ? (
@@ -1194,6 +1265,20 @@ export function AdminPage() {
     } finally { setSavingId(null) }
   }
 
+  /** Returns false when the save failed, so the cell can restore what was stored. */
+  async function handleNameChange(memberId: string, fullName: string): Promise<boolean> {
+    setSavingId(memberId)
+    try {
+      const updated = await adminUpdateMemberName(memberId, fullName)
+      setMembers((prev) => prev.map((m) =>
+        m.id === memberId ? { ...m, full_name: updated.full_name } : m))
+      return true
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update name')
+      return false
+    } finally { setSavingId(null) }
+  }
+
   function confirmDelete(message: string, action: () => Promise<void>) {
     setConfirm({ message, onConfirm: async () => { setConfirm(null); try { await action() } catch (err) { setError(err instanceof Error ? err.message : 'Delete failed') } } })
   }
@@ -1265,6 +1350,7 @@ export function AdminPage() {
                 onRoleChange={handleRoleChange}
                 onClubChange={handleClubChange}
                 onMembershipChange={handleMembershipChange}
+                onNameChange={handleNameChange}
                 onDelete={handleDeleteMember}
                 onImpersonate={handleImpersonate}
                 onSeatAdd={handleSeatAdd}
