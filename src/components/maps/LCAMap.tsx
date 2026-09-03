@@ -13,6 +13,9 @@ declare global {
 
 // Map styling takes the palette as raw hex; Google Maps has no idea what
 // a Tailwind class is.
+/** Gold is 2.28:1 on the white info window, so map links use a darker one.
+ *  4.86:1 — the info window is Google's markup, outside the Tailwind theme. */
+const GOLD_ON_LIGHT = '#8a6d1f'
 const NAVY = LCA.navy
 const GOLD = LCA.gold
 
@@ -26,11 +29,11 @@ const MAP_STYLES: any[] = [
   { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
   { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#e8e8e0' }] },
   { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#ddd8c4' }] },
-  { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#c8a94a', lightness: 40 }] },
+  { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: LCA.gold, lightness: 40 }] },
   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
   { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#1a2744' }] },
-  { featureType: 'administrative.province', elementType: 'geometry.stroke', stylers: [{ color: '#1a2744' }] },
+  { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: LCA.navy }] },
+  { featureType: 'administrative.province', elementType: 'geometry.stroke', stylers: [{ color: LCA.navy }] },
   { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f0ede4' }] },
 ]
 
@@ -232,7 +235,7 @@ export function LCAMap(props: Props) {
             : ''
           const dirLink =
             `<a href="${directionsUrl(pin)}" target="_blank" rel="noopener noreferrer" ` +
-            `style="font-size:12px;font-weight:600;color:${GOLD.replace('#c8a94a', '#8a6d1f')};text-decoration:underline;">Directions ↗</a>`
+            `style="font-size:12px;font-weight:600;color:${GOLD_ON_LIGHT};text-decoration:underline;">Directions ↗</a>`
           infoWindow.setContent(
             `<div style="font-family:system-ui;max-width:240px;padding:4px 2px">` +
             `<p style="font-weight:600;color:${NAVY};margin:0 0 6px">${pin.name}</p>` +
@@ -282,7 +285,7 @@ export function LCAMap(props: Props) {
           href={directionsUrl(singlePin)}
           target="_blank"
           rel="noopener noreferrer"
-          className="absolute bottom-2.5 right-2.5 z-10 rounded-md bg-[#1a2744] px-2.5 py-1.5 text-xs font-semibold text-white shadow-md transition-colors hover:bg-[#1a2744]/90"
+          className="absolute bottom-2.5 right-2.5 z-10 rounded-md bg-lca-navy px-2.5 py-1.5 text-xs font-semibold text-white shadow-md transition-colors hover:bg-lca-navy/90"
         >
           Get directions ↗
         </a>

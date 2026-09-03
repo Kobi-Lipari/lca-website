@@ -55,16 +55,16 @@ function RoundAccordion({
         onClick={() => setOpen((o) => !o)}
         className={cn(
           'flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-muted/30',
-          open && 'border-b border-border bg-[#c8a94a]/5',
+          open && 'border-b border-border bg-lca-gold/5',
         )}
       >
         <div className="flex items-center gap-2">
           {open ? (
-            <ChevronDown className="size-4 text-[#c8a94a]" />
+            <ChevronDown className="size-4 text-lca-gold" />
           ) : (
             <ChevronRight className="size-4 text-muted-foreground" />
           )}
-          <span className="font-semibold text-[#1a2744]">Round {round}</span>
+          <span className="font-semibold text-lca-navy">Round {round}</span>
           {schedule && (
             <span className="text-xs text-muted-foreground">
               · {schedule.date}{schedule.time ? ` · ${schedule.time}` : ''}
@@ -82,8 +82,8 @@ function RoundAccordion({
             const games = pairings.filter((p) => p.section === section)
             return (
               <div key={section}>
-                <div className="border-b border-border bg-[#c8a94a]/5 px-4 py-1.5">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-[#1a2744]">
+                <div className="border-b border-border bg-lca-gold/5 px-4 py-1.5">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-lca-navy">
                     {section}
                   </span>
                 </div>
@@ -111,7 +111,7 @@ function RoundAccordion({
                           </span>
                         )}
                       </span>
-                      <span className="w-16 flex-shrink-0 text-right font-medium text-[#1a2744]">
+                      <span className="w-16 flex-shrink-0 text-right font-medium text-lca-navy">
                         {formatResult(game.result)}
                       </span>
                     </li>
@@ -142,17 +142,17 @@ function StandingsTable({
 
   return (
     <div className="mb-6">
-      <h3 className="mb-3 text-base font-semibold text-[#1a2744]">{sectionName}</h3>
+      <h3 className="mb-3 text-base font-semibold text-lca-navy">{sectionName}</h3>
       <div className="overflow-x-auto rounded-xl border">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="px-4 py-3 font-semibold text-[#1a2744]">#</th>
-              <th className="px-4 py-3 font-semibold text-[#1a2744]">Player</th>
-              <th className="px-4 py-3 text-center font-semibold text-[#1a2744]">Pts</th>
-              <th className="px-4 py-3 text-center font-semibold text-[#1a2744]">W</th>
-              <th className="px-4 py-3 text-center font-semibold text-[#1a2744]">D</th>
-              <th className="px-4 py-3 text-center font-semibold text-[#1a2744]">L</th>
+              <th className="px-4 py-3 font-semibold text-lca-navy">#</th>
+              <th className="px-4 py-3 font-semibold text-lca-navy">Player</th>
+              <th className="px-4 py-3 text-center font-semibold text-lca-navy">Pts</th>
+              <th className="px-4 py-3 text-center font-semibold text-lca-navy">W</th>
+              <th className="px-4 py-3 text-center font-semibold text-lca-navy">D</th>
+              <th className="px-4 py-3 text-center font-semibold text-lca-navy">L</th>
             </tr>
           </thead>
           <tbody>
@@ -161,17 +161,17 @@ function StandingsTable({
                 key={player.member_id}
                 className={cn(
                   'border-b last:border-0',
-                  idx === 0 && 'bg-[#c8a94a]/5',
+                  idx === 0 && 'bg-lca-gold/5',
                 )}
               >
                 <td className={cn(
                   'px-4 py-3 font-medium',
-                  idx === 0 ? 'text-[#1a2744]' : 'text-muted-foreground',
+                  idx === 0 ? 'text-lca-navy' : 'text-muted-foreground',
                 )}>
                   {idx + 1}
                 </td>
-                <td className="px-4 py-3 font-medium text-[#1a2744]">{player.full_name}</td>
-                <td className="px-4 py-3 text-center font-semibold text-[#1a2744]">
+                <td className="px-4 py-3 font-medium text-lca-navy">{player.full_name}</td>
+                <td className="px-4 py-3 text-center font-semibold text-lca-navy">
                   {player.score % 1 === 0 ? player.score : player.score.toFixed(1)}
                 </td>
                 <td className="px-4 py-3 text-center text-muted-foreground">{player.wins}</td>
@@ -234,7 +234,7 @@ export function TournamentPairingsPage() {
   if (notFound || !tournament) return (
     <div className="mx-auto max-w-4xl px-6 py-12 text-center">
       <Trophy className="mx-auto size-12 text-muted-foreground" />
-      <h1 className="mt-4 text-2xl font-bold text-[#1a2744]">Tournament not found</h1>
+      <h1 className="mt-4 text-2xl font-bold text-lca-navy">Tournament not found</h1>
       <Button asChild className="mt-6" variant="outline">
         <Link to="/tournaments"><ArrowLeft className="size-4" /> Back to tournaments</Link>
       </Button>
@@ -253,11 +253,11 @@ export function TournamentPairingsPage() {
 
   if (pairings.length === 0) return (
     <div>
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-4xl px-6 py-10">
           <Link
             to={`/tournaments/${id}`}
-            className="inline-flex items-center gap-1.5 text-sm text-white/55 hover:text-[#c8a94a] transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-white/55 hover:text-lca-gold transition-colors"
           >
             <ArrowLeft className="size-3.5" /> Back to {tournament.name}
           </Link>
@@ -269,7 +269,7 @@ export function TournamentPairingsPage() {
       </section>
       <div className="mx-auto max-w-4xl px-6 py-16 text-center">
         <Trophy className="mx-auto size-10 text-muted-foreground" />
-        <p className="mt-4 text-lg font-medium text-[#1a2744]">No pairings published yet</p>
+        <p className="mt-4 text-lg font-medium text-lca-navy">No pairings published yet</p>
         <p className="mt-2 text-sm text-muted-foreground">
           Check back once the tournament director posts round pairings.
         </p>
@@ -283,11 +283,11 @@ export function TournamentPairingsPage() {
   return (
     <div>
       {/* ── Hero ── */}
-      <section className="border-b-[3px] border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-4xl px-6 py-10">
           <Link
             to={`/tournaments/${id}`}
-            className="inline-flex items-center gap-1.5 text-sm text-white/55 hover:text-[#c8a94a] transition-colors"
+            className="inline-flex items-center gap-1.5 text-sm text-white/55 hover:text-lca-gold transition-colors"
           >
             <ArrowLeft className="size-3.5" /> Back to {tournament.name}
           </Link>
@@ -306,7 +306,7 @@ export function TournamentPairingsPage() {
         {/* Standings — live during the event, final after */}
         {hasScores && (
           <div>
-            <h2 className="mb-6 text-2xl font-bold text-[#1a2744]">
+            <h2 className="mb-6 text-2xl font-bold text-lca-navy">
               {isCompleted ? 'Final standings' : 'Current standings'}
             </h2>
             {sectionOrder.map((sec) => (
@@ -317,7 +317,7 @@ export function TournamentPairingsPage() {
 
         {/* Pairings by round */}
         <div>
-          <h2 className="mb-4 text-2xl font-bold text-[#1a2744]">
+          <h2 className="mb-4 text-2xl font-bold text-lca-navy">
             {isCompleted ? 'Pairings' : 'Round pairings'}
           </h2>
           <div className="space-y-3">

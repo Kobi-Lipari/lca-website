@@ -54,7 +54,7 @@ export function MemberSeatsCell({
           return (
             <span
               key={h.assignment_id}
-              className="inline-flex items-center gap-1 rounded-full border border-[#c8a94a]/40 bg-[#c8a94a]/10 px-2 py-0.5 text-[10px] font-medium text-[#7a5c00]"
+              className="inline-flex items-center gap-1 rounded-full border border-lca-gold/40 bg-lca-gold/10 px-2 py-0.5 text-[10px] font-medium text-[#7a5c00]"
             >
               {seat?.role ?? 'Seat'}
               <button
@@ -75,7 +75,7 @@ export function MemberSeatsCell({
           disabled={busy}
           onClick={() => { setOpen((o) => !o); setConfirming(null) }}
           className={cn(
-            'inline-flex items-center gap-0.5 rounded-full border border-dashed px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:border-[#c8a94a] hover:text-[#7a5c00]',
+            'inline-flex items-center gap-0.5 rounded-full border border-dashed px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:border-lca-gold hover:text-[#7a5c00]',
             held.length === 0 && 'border-solid',
           )}
         >
@@ -97,7 +97,7 @@ export function MemberSeatsCell({
                 <div className="mt-2 flex gap-2">
                   <button
                     type="button"
-                    className="flex-1 rounded-md bg-[#1a2744] px-2 py-1 text-[11px] font-medium text-white"
+                    className="flex-1 rounded-md bg-lca-navy px-2 py-1 text-[11px] font-medium text-white"
                     onClick={() => {
                       onAdd(confirming.id, member.id)
                       setConfirming(null)
@@ -129,7 +129,7 @@ export function MemberSeatsCell({
                     onClick={() => pick(seat)}
                     className="block w-full rounded-md px-2 py-1.5 text-left text-xs hover:bg-muted"
                   >
-                    <span className="font-medium text-[#1a2744]">{seat.role}</span>
+                    <span className="font-medium text-lca-navy">{seat.role}</span>
                     {seat.is_shared === 1 ? (
                       <span className="ml-1 text-[10px] text-muted-foreground">· shared</span>
                     ) : occupant ? (

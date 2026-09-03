@@ -9,10 +9,11 @@ import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/components/maps/LCAMap'
+import { LCA } from '@/lib/brand'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const LCA_GOLD = '#c8a94a'
+const LCA_GOLD = LCA.gold
 
 const REGIONS = [
   'North Louisiana',
@@ -93,12 +94,12 @@ function ClubCard({ club }: { club: ApiClubListItem }) {
         </div>
         <div className="space-y-1 text-[11px] text-muted-foreground">
           <p className="flex items-center gap-1.5">
-            <MapPin className="size-3 flex-shrink-0 text-[#c8a94a]" />
+            <MapPin className="size-3 flex-shrink-0 text-lca-gold" />
             <span className="truncate">{club.city}, LA</span>
           </p>
           {club.meeting_schedule && (
             <p className="flex items-center gap-1.5">
-              <Calendar className="size-3 flex-shrink-0 text-[#c8a94a]" />
+              <Calendar className="size-3 flex-shrink-0 text-lca-gold" />
               <span className="truncate">{club.meeting_schedule}</span>
             </p>
           )}
@@ -106,7 +107,7 @@ function ClubCard({ club }: { club: ApiClubListItem }) {
         <div className="mt-auto pt-3">
           <Link
             to={`/clubs/${club.id}`}
-            className="block w-full rounded-md bg-[#c8a94a] py-1.5 text-center text-[11px] font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90"
+            className="block w-full rounded-md bg-lca-gold py-1.5 text-center text-[11px] font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90"
           >
             Visit club
           </Link>
@@ -149,7 +150,7 @@ function ClubCarousel({
           <button
             type="button"
             onClick={() => scroll('left')}
-            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-[#1a2744]/40 hover:text-foreground"
+            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-lca-navy/40 hover:text-foreground"
             aria-label="Scroll left"
           >
             <ChevronLeft className="size-4" />
@@ -157,7 +158,7 @@ function ClubCarousel({
           <button
             type="button"
             onClick={() => scroll('right')}
-            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-[#1a2744]/40 hover:text-foreground"
+            className="flex size-7 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:border-lca-navy/40 hover:text-foreground"
             aria-label="Scroll right"
           >
             <ChevronRight className="size-4" />
@@ -230,7 +231,7 @@ export function ClubsPage() {
                 key={s.l}
                 className="rounded-lg border border-white/10 bg-white/6 px-3 py-2 text-center"
               >
-                <div className="text-base font-semibold text-[#c8a94a]">{s.n}</div>
+                <div className="text-base font-semibold text-lca-gold">{s.n}</div>
                 <div className="mt-0.5 text-[9px] text-white/60">{s.l}</div>
               </div>
             ))}
@@ -254,8 +255,8 @@ export function ClubsPage() {
                   className={cn(
                     'flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                     activeRegion === r
-                      ? 'border-[#1a2744] bg-[#1a2744] text-white'
-                      : 'border-border bg-card text-muted-foreground hover:border-[#c8a94a]/60 hover:text-foreground',
+                      ? 'border-lca-navy bg-lca-navy text-white'
+                      : 'border-border bg-card text-muted-foreground hover:border-lca-gold/60 hover:text-foreground',
                   )}
                 >
                   {abbreviateRegion(r)}
@@ -269,7 +270,7 @@ export function ClubsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search clubs…"
-                className="h-8 w-40 rounded-full border border-border bg-background pl-8 pr-7 text-xs outline-none transition-colors focus:border-[#c8a94a] sm:w-56"
+                className="h-8 w-40 rounded-full border border-border bg-background pl-8 pr-7 text-xs outline-none transition-colors focus:border-lca-gold sm:w-56"
               />
               {search && (
                 <button
@@ -294,7 +295,7 @@ export function ClubsPage() {
           <p className="text-sm text-destructive">{error}</p>
         ) : displayedClubs.length === 0 ? (
           <div className="rounded-xl border border-dashed px-6 py-10 text-center">
-            <p className="font-medium text-[#1a2744]">
+            <p className="font-medium text-lca-navy">
               {isSearching ? 'No clubs match your search' : 'No clubs in this region yet'}
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -312,7 +313,7 @@ export function ClubsPage() {
       <section className="border-t border-border">
         <div className="mx-auto max-w-6xl px-6 py-8">
           <div className="mb-4">
-            <h2 className="text-xl font-bold text-[#1a2744]">
+            <h2 className="text-xl font-bold text-lca-navy">
               Club locations
               {isFiltered && (
                 <span className="ml-2 text-base font-normal text-muted-foreground">
@@ -329,7 +330,7 @@ export function ClubsPage() {
       </section>
 
       {/* ── Footer CTA ── */}
-      <section className="border-t border-border bg-[#1a2744]">
+      <section className="border-t border-border bg-lca-navy">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -344,7 +345,7 @@ export function ClubsPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-shrink-0">
               <Link
                 to="/contact"
-                className="rounded-lg bg-[#c8a94a] px-5 py-2.5 text-center text-sm font-semibold text-[#1a2744] transition-colors hover:bg-[#c8a94a]/90"
+                className="rounded-lg bg-lca-gold px-5 py-2.5 text-center text-sm font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90"
               >
                 Contact LCA
               </Link>

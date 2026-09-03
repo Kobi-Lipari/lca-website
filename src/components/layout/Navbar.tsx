@@ -38,7 +38,7 @@ const HYBRID_VISIBLE_LABELS = ['Tournaments', 'Clubs']
 
 // Gold tab-style underline for the active top-level item
 const activeUnderline =
-  'underline decoration-[#c8a94a] decoration-2 underline-offset-[10px]'
+  'underline decoration-lca-gold decoration-2 underline-offset-[10px]'
 
 function isPathActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + '/')
@@ -103,8 +103,8 @@ function DropdownMenu({
         className={cn(
           'flex items-center gap-1 text-sm font-medium transition-colors',
           isActive
-            ? cn('text-[#c8a94a]', activeUnderline)
-            : 'text-white/90 hover:text-[#c8a94a]',
+            ? cn('text-lca-gold', activeUnderline)
+            : 'text-white/90 hover:text-lca-gold',
         )}
       >
         {label}
@@ -114,7 +114,7 @@ function DropdownMenu({
         <div className="absolute left-0 top-full z-50 pt-1">
           <div
             role="menu"
-            className="min-w-[180px] rounded-lg border border-white/10 bg-[#1a2744] py-1 shadow-xl"
+            className="min-w-[180px] rounded-lg border border-white/10 bg-lca-navy py-1 shadow-xl"
           >
             {items.map((child) => (
               <Link
@@ -122,9 +122,9 @@ function DropdownMenu({
                 role="menuitem"
                 to={child.href}
                 className={cn(
-                  'block px-4 py-2 text-sm hover:bg-white/10 hover:text-[#c8a94a]',
+                  'block px-4 py-2 text-sm hover:bg-white/10 hover:text-lca-gold',
                   isPathActive(location.pathname, child.href)
-                    ? 'text-[#c8a94a]'
+                    ? 'text-lca-gold'
                     : 'text-white/80',
                 )}
                 onClick={() => setOpen(false)}
@@ -142,8 +142,8 @@ function DropdownMenu({
 function RoleLinks({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
   const { role, isBoardMember } = useAuth()
   const linkClass = mobile
-    ? 'rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-[#c8a94a]'
-    : 'text-sm font-medium text-white/90 transition-colors hover:text-[#c8a94a]'
+    ? 'rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold'
+    : 'text-sm font-medium text-white/90 transition-colors hover:text-lca-gold'
 
   const items: { label: string; href: string }[] = []
 
@@ -180,8 +180,8 @@ function NavLinkItem({ link }: { link: (typeof navLinks)[number] }) {
       className={cn(
         'text-sm font-medium transition-colors',
         isPathActive(location.pathname, link.href)
-          ? cn('text-[#c8a94a]', activeUnderline)
-          : 'text-white/90 hover:text-[#c8a94a]',
+          ? cn('text-lca-gold', activeUnderline)
+          : 'text-white/90 hover:text-lca-gold',
       )}
     >
       {link.label}
@@ -211,13 +211,13 @@ export function Navbar() {
   const desktopOnlyLinks = navLinks.filter((link) => !HYBRID_VISIBLE_LABELS.includes(link.label))
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#1a2744] text-white shadow-md">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-lca-navy text-white shadow-md">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-90" onClick={closeMobile}>
           <img src={lcaLogo} alt="Louisiana Chess Association" className="h-11 w-11 rounded-lg object-contain" />
           <div>
             <div className="text-base font-bold leading-tight text-white">Louisiana Chess</div>
-            <div className="text-[10px] font-semibold uppercase leading-tight tracking-[0.18em] text-[#c8a94a]/90">
+            <div className="text-[10px] font-semibold uppercase leading-tight tracking-[0.18em] text-lca-gold/90">
               Association
             </div>
           </div>
@@ -246,14 +246,14 @@ export function Navbar() {
               <Button asChild variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
                 <Link to="/dashboard">Dashboard</Link>
               </Button>
-              <Button type="button" size="sm" onClick={handleSignOut} className="bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">Log out</Button>
+              <Button type="button" size="sm" onClick={handleSignOut} className="bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">Log out</Button>
             </>
           ) : (
             <>
               <Button asChild variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
                 <Link to="/login">Log in</Link>
               </Button>
-              <Button asChild size="sm" className="bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
+              <Button asChild size="sm" className="bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">
                 <Link to="/membership">Join LCA</Link>
               </Button>
             </>
@@ -266,7 +266,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-[#1a2744] lg:hidden">
+        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-lca-navy lg:hidden">
           <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 sm:px-6">
             {navLinks.map((link) =>
               link.items ? (
@@ -274,7 +274,7 @@ export function Navbar() {
                   <button
                     type="button"
                     aria-expanded={mobileGovOpen}
-                    className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-[#c8a94a]"
+                    className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold"
                     onClick={() => setMobileGovOpen((o) => !o)}
                   >
                     {link.label}
@@ -283,7 +283,7 @@ export function Navbar() {
                   {mobileGovOpen && (
                     <div className="ml-4 mt-1 flex flex-col gap-1 border-l border-white/10 pl-3">
                       {link.items.map((child) => (
-                        <Link key={child.href} to={child.href} className="rounded-md px-3 py-1.5 text-sm text-white/80 hover:bg-white/10 hover:text-[#c8a94a]" onClick={closeMobile}>
+                        <Link key={child.href} to={child.href} className="rounded-md px-3 py-1.5 text-sm text-white/80 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>
                           {child.label}
                         </Link>
                       ))}
@@ -291,7 +291,7 @@ export function Navbar() {
                   )}
                 </div>
               ) : (
-                <Link key={link.href} to={link.href} className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-[#c8a94a]" onClick={closeMobile}>
+                <Link key={link.href} to={link.href} className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>
                   {link.label}
                 </Link>
               ),
@@ -304,15 +304,15 @@ export function Navbar() {
               </a>
               {!loading && user ? (
                 <>
-                  <Link to="/dashboard" className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-[#c8a94a]" onClick={closeMobile}>Dashboard</Link>
-                  <Button type="button" onClick={handleSignOut} className="w-full bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">Log out</Button>
+                  <Link to="/dashboard" className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>Dashboard</Link>
+                  <Button type="button" onClick={handleSignOut} className="w-full bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">Log out</Button>
                 </>
               ) : (
                 <>
                   <Button asChild variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
                     <Link to="/login" onClick={closeMobile}>Log in</Link>
                   </Button>
-                  <Button asChild className="w-full bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90">
+                  <Button asChild className="w-full bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">
                     <Link to="/membership" onClick={closeMobile}>Join LCA</Link>
                   </Button>
                 </>

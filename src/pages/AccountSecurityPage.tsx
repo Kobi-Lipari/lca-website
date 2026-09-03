@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass =
-  'bg-[#c8a94a] font-semibold text-[#1a2744] hover:bg-[#c8a94a]/90'
+  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 export function AccountSecurityPage() {
   usePageTitle('Account Security')
@@ -147,10 +147,10 @@ export function AccountSecurityPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-[#c8a94a] bg-[#1a2744] text-white">
+      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
-            <ShieldCheck className="size-8 text-[#c8a94a] sm:size-10" />
+            <ShieldCheck className="size-8 text-lca-gold sm:size-10" />
             <div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
                 Account Security
@@ -200,8 +200,8 @@ export function AccountSecurityPage() {
 
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2">
-            <KeyRound className="size-5 text-[#c8a94a]" />
-            <h2 className="text-lg font-bold text-[#1a2744]">
+            <KeyRound className="size-5 text-lca-gold" />
+            <h2 className="text-lg font-bold text-lca-navy">
               Authenticator app
             </h2>
           </div>
@@ -278,8 +278,8 @@ export function AccountSecurityPage() {
                   not have it, so without this form the page they are sent to
                   in order to fix the problem offers no way to fix it. */}
               {assuranceLevel !== 'aal2' && (
-                <form onSubmit={handleStepUp} className="mt-4 rounded-lg border border-[#c8a94a]/50 bg-[#c8a94a]/8 p-4">
-                  <p className="text-sm font-medium text-[#1a2744]">
+                <form onSubmit={handleStepUp} className="mt-4 rounded-lg border border-lca-gold/50 bg-lca-gold/8 p-4">
+                  <p className="text-sm font-medium text-lca-navy">
                     Verify this session
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
@@ -357,7 +357,7 @@ export function AccountSecurityPage() {
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          <Link to="/dashboard" className="text-[#1a2744] hover:underline">
+          <Link to="/dashboard" className="text-lca-navy hover:underline">
             ← Back to dashboard
           </Link>
         </p>

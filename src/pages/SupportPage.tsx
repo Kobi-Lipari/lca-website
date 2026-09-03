@@ -165,14 +165,14 @@ export function SupportPage() {
     <div className="mx-auto max-w-4xl px-6 py-12">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#1a2744]">Support</h1>
+          <h1 className="text-3xl font-bold text-lca-navy">Support</h1>
           <p className="text-muted-foreground mt-1">
             Get help from the LCA team
           </p>
         </div>
         {view === 'list' && (
           <Button
-            className="bg-[#c8a94a] text-[#1a2744] hover:bg-[#c8a94a]/90 font-semibold"
+            className="bg-lca-gold text-lca-navy hover:bg-lca-gold/90 font-semibold"
             onClick={() => { setView('new'); setSubmitStatus('idle') }}
           >
             <Plus className="size-4 mr-2" />
@@ -196,7 +196,7 @@ export function SupportPage() {
         <div className="space-y-8">
           {!user && (
             <div className="rounded-lg border p-6 text-center text-muted-foreground">
-              <MessageSquare className="size-8 mx-auto mb-3 text-[#c8a94a]" />
+              <MessageSquare className="size-8 mx-auto mb-3 text-lca-gold" />
               <p className="font-medium text-foreground mb-1">
                 Sign in to view your tickets
               </p>
@@ -209,7 +209,7 @@ export function SupportPage() {
                   <Link to="/login">Sign in</Link>
                 </Button>
                 <Button
-                  className="bg-[#c8a94a] text-[#1a2744] font-semibold"
+                  className="bg-lca-gold text-lca-navy font-semibold"
                   onClick={() => setView('new')}
                 >
                   Continue as guest
@@ -233,7 +233,7 @@ export function SupportPage() {
 
           {user && !loading && newTickets.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-[#1a2744] mb-3">
+              <h2 className="text-lg font-semibold text-lca-navy mb-3">
                 New tickets
               </h2>
               <div className="space-y-3">
@@ -250,7 +250,7 @@ export function SupportPage() {
 
           {user && !loading && answeredTickets.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-[#1a2744] mb-3">
+              <h2 className="text-lg font-semibold text-lca-navy mb-3">
                 Answered tickets
               </h2>
               <div className="space-y-3">
@@ -358,7 +358,7 @@ export function SupportPage() {
               </div>
               <Button
                 type="submit"
-                className="w-full bg-[#1a2744] hover:bg-[#1a2744]/90"
+                className="w-full bg-lca-navy hover:bg-lca-navy/90"
                 disabled={sending}
               >
                 {sending ? 'Creating ticket…' : 'Create ticket'}
@@ -371,7 +371,7 @@ export function SupportPage() {
       {view === 'ticket' && selectedTicket && (
         <div>
           <div className="flex items-center gap-3 mb-6">
-            <h2 className="text-xl font-semibold text-[#1a2744]">
+            <h2 className="text-xl font-semibold text-lca-navy">
               {selectedTicket.ticket.subject}
             </h2>
             <span
@@ -387,7 +387,7 @@ export function SupportPage() {
                 key={msg.id}
                 className={`rounded-lg p-4 ${
                   msg.sender_type === 'admin'
-                    ? 'bg-[#1a2744]/5 border border-[#1a2744]/10'
+                    ? 'bg-lca-navy/5 border border-lca-navy/10'
                     : 'bg-muted'
                 }`}
               >
@@ -417,7 +417,7 @@ export function SupportPage() {
             />
             <Button
               type="submit"
-              className="bg-[#1a2744] hover:bg-[#1a2744]/90"
+              className="bg-lca-navy hover:bg-lca-navy/90"
               disabled={sending}
             >
               {sending ? 'Sending…' : 'Send reply'}
@@ -443,7 +443,7 @@ function TicketRow({
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-medium text-[#1a2744]">{ticket.subject}</p>
+          <p className="font-medium text-lca-navy">{ticket.subject}</p>
           <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
             {ticket.last_message}
           </p>
