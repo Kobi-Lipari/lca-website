@@ -111,6 +111,25 @@ export async function updateMemberClub(
   return updated
 }
 
+/** Long enough for any real name, short enough to keep tables and emails sane. */
+export const MAX_NAME_LENGTH = 100
+
+/**
+ * Validates a display name. Returns an error message, or null when it is fine.
+ *
+ * Shared by the admin endpoint and the member-facing one. They used to differ:
+ * the admin route checked emptiness and length, and PATCH /api/me — the one
+ * members actually use — checked nothing at all, so a blank or 10,000-character
+ * name went straight into the table and from there into every email.
+ */
+export function validateFullName(value: string): string | null {
+  if (!value.trim()) return 'A name is required'
+  if (value.trim().length > MAX_NAME_LENGTH) {
+    return `Name must be ${MAX_NAME_LENGTH} characters or fewer`
+  }
+  return null
+}
+
 export async function updateMemberProfile(
   db: D1Database,
   id: string,

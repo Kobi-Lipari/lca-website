@@ -104,6 +104,109 @@ describe('payment flow', () => {
 
 // ── walk-ins ─────────────────────────────────────────────────────
 
+describe('membership renewal', () => {
+  /** Seeds a member with a paid-but-pending membership payment. */
+  async function pendingMembership(expiry: string | null) {
+    const memberId = await seedMember({ membershipStatus: expiry ? 'active' : 'pending' })
+    if (expiry) {
+      await env.DB.prepare('UPDATE members SET membership_expiry = ? WHERE id = ?')
+        .bind(expiry, memberId).run()
+    }
+    const paymentId = `pay-${memberId}`
+    await env.DB.prepare(
+      `INSERT INTO payments (id, member_id, amount, type, reference_id, status)
+       VALUES (?, ?, ?, 'membership', ?, 'pending')`,
+    ).bind(paymentId, memberId, 25, memberId).run()
+    return { memberId, paymentId }
+  }
+
+  const expiryOf = (memberId: string) =>
+    env.DB.prepare('SELECT membership_status, membership_expiry FROM members WHERE id = ?')
+      .bind(memberId).first<{ membership_status: string; membership_expiry: string | null }>()
+
+  const plusYears = (iso: string, n: number) => {
+    const d = new Date(`${iso}T00:00:00Z`)
+    d.setUTCFullYear(d.getUTCFullYear() + n)
+    return d.toISOString().slice(0, 10)
+  }
+  const todayIso = () => new Date().toISOString().slice(0, 10)
+
+  it('renewing early adds a year to the existing expiry instead of discarding it', async () => {
+    // The bug: this used to return one year from today, so a member renewing
+    // with ten months left paid for a year and lost those ten months.
+    const future = plusYears(todayIso(), 1)
+    const { memberId, paymentId } = await pendingMembership(future)
+
+    const res = await sendWebhook(checkoutCompletedEvent({
+      type: 'membership', payment_id: paymentId, member_id: memberId,
+    }))
+    expect(res.status).toBe(200)
+
+    const row = await expiryOf(memberId)
+    expect(row?.membership_status).toBe('active')
+    expect(row?.membership_expiry).toBe(plusYears(future, 1))
+  })
+
+  it('a lapsed member starts a fresh year from today', async () => {
+    const past = plusYears(todayIso(), -2)
+    const { memberId, paymentId } = await pendingMembership(past)
+
+    await sendWebhook(checkoutCompletedEvent({
+      type: 'membership', payment_id: paymentId, member_id: memberId,
+    }))
+
+    const row = await expiryOf(memberId)
+    expect(row?.membership_expiry).toBe(plusYears(todayIso(), 1))
+  })
+
+  it('a first-time member gets a year from today', async () => {
+    const { memberId, paymentId } = await pendingMembership(null)
+
+    await sendWebhook(checkoutCompletedEvent({
+      type: 'membership', payment_id: paymentId, member_id: memberId,
+    }))
+
+    const row = await expiryOf(memberId)
+    expect(row?.membership_status).toBe('active')
+    expect(row?.membership_expiry).toBe(plusYears(todayIso(), 1))
+  })
+
+  it('a retried delivery does not grant a second year', async () => {
+    // Stripe retries on any non-2xx, and the idempotency guard is the only
+    // thing between that and members accumulating free years.
+    const future = plusYears(todayIso(), 1)
+    const { memberId, paymentId } = await pendingMembership(future)
+    const event = checkoutCompletedEvent({
+      type: 'membership', payment_id: paymentId, member_id: memberId,
+    })
+
+    await sendWebhook(event)
+    const afterFirst = await expiryOf(memberId)
+    await sendWebhook(event)
+    const afterSecond = await expiryOf(memberId)
+
+    expect(afterSecond?.membership_expiry).toBe(afterFirst?.membership_expiry)
+  })
+
+  it('rejects a replayed signature, however valid its HMAC', async () => {
+    // Signed six minutes ago with the real secret. Before the tolerance
+    // existed this was indistinguishable from a live delivery.
+    const { memberId, paymentId } = await pendingMembership(null)
+    const rawBody = JSON.stringify(checkoutCompletedEvent({
+      type: 'membership', payment_id: paymentId, member_id: memberId,
+    }))
+    const stale = await signStripePayload(rawBody, Math.floor(Date.now() / 1000) - 360)
+
+    const res = await invoke(webhookPost, {
+      method: 'POST', rawBody, headers: { 'stripe-signature': stale },
+    })
+
+    expect(res.status).toBe(400)
+    const row = await expiryOf(memberId)
+    expect(row?.membership_expiry).toBeNull()
+  })
+})
+
 describe('walk-ins', () => {
   it('rated tournament requires a USCF ID; success creates guest + cash payment; duplicate USCF ID is 409', async () => {
     const admin = await seedAdmin()
