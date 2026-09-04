@@ -1,11 +1,20 @@
 // functions/api/donations/checkout.ts
 import type { Env } from '../../types'
+import { optionalAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 import { createCheckoutSession } from '../../utils/stripe'
 
+/**
+ * Only the amount comes from the body.
+ *
+ * memberId used to be accepted here and written straight into
+ * payments.member_id. This endpoint is unauthenticated, so anyone could
+ * attribute a donation to any member id they cared to name. Nothing ever
+ * sent it — the donate button only posts an amount — so it was pure attack
+ * surface, and signed-in donors were recorded as anonymous either way.
+ */
 interface DonateBody {
   amount?: number
-  memberId?: string | null
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -13,6 +22,12 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const body = await parseJsonBody<DonateBody>(context.request)
   const amount = body?.amount
+
+  // Donations stay open to anyone, signed in or not. When there is a session
+  // we take the member from it, never from the request — which also means a
+  // signed-in donor finally gets credited, which they previously did not.
+  const authed = await optionalAuthedMember(context.request, context.env)
+  const memberId = authed?.member.id ?? null
 
   if (!amount || typeof amount !== 'number' || amount < 1) {
     return errorResponse('Donation amount must be at least $1', 400)
@@ -35,7 +50,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       metadata: {
         payment_id: paymentId,
         type: 'donation',
-        member_id: body?.memberId ?? '',
+        member_id: memberId ?? '',
       },
     })
   } catch (err) {
@@ -46,7 +61,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   await context.env.DB.prepare(
     `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
      VALUES (?, ?, ?, 'donation', 'donation', 'pending', ?)`,
-  ).bind(paymentId, body?.memberId ?? null, amount, session.id).run()
+  ).bind(paymentId, memberId, amount, session.id).run()
 
   return jsonResponse({ paymentId, paymentUrl: session.url })
 }
