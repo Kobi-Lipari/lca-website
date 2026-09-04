@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
-  ArrowLeft, Building2, Newspaper, Palette, Trophy, Upload, Users,
+  ArrowLeft, Building2, Newspaper, Palette, Trash2, Trophy, Upload, Users,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -10,12 +10,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   adminCreateClubNews,
+  adminDeleteClubNews,
+  adminGetClubNews,
   adminGetClubRoster,
   adminUpdateClub,
   adminUploadClubLogo,
   getClub,
   type ApiAdminMember,
   type ApiClubDetail,
+  type ApiClubNews,
   type ApiClubTournament,
 } from '@/lib/api'
 import { resizeImageToFit } from '@/lib/resizeImage'
@@ -61,15 +64,19 @@ export function AdminClubPage() {
     excerpt: '',
   })
 
+  const [news, setNews] = useState<ApiClubNews[]>([])
+  const [newsDeletingId, setNewsDeletingId] = useState<string | null>(null)
+
   usePageTitle(club ? `Manage ${club.name}` : 'Manage Club')
 
   useEffect(() => {
     if (!id) return
     async function load() {
       try {
-        const [clubData, rosterData] = await Promise.all([
+        const [clubData, rosterData, newsData] = await Promise.all([
           getClub(id!),
           adminGetClubRoster(id!),
+          adminGetClubNews(id!),
         ])
         const c = clubData.club
         setClub(c)
@@ -86,6 +93,7 @@ export function AdminClubPage() {
           region: (c as any).region ?? '',
         })
         setRoster(rosterData)
+        setNews(newsData)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load club')
       } finally {
@@ -141,6 +149,21 @@ export function AdminClubPage() {
     }
   }
 
+  async function handleDeleteNews(item: ApiClubNews) {
+    if (!id) return
+    if (!confirm(`Delete "${item.title}"? This cannot be undone.`)) return
+    setNewsDeletingId(item.id)
+    setError(null)
+    try {
+      await adminDeleteClubNews(id, item.id)
+      setNews((prev) => prev.filter((n) => n.id !== item.id))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete news')
+    } finally {
+      setNewsDeletingId(null)
+    }
+  }
+
   async function handlePostNews(e: FormEvent) {
     e.preventDefault()
     if (!id) return
@@ -149,6 +172,7 @@ export function AdminClubPage() {
     try {
       await adminCreateClubNews(id, newsForm)
       setNewsForm({ title: '', newsDate: '', excerpt: '' })
+      setNews(await adminGetClubNews(id))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to post news')
     } finally {
@@ -386,6 +410,49 @@ export function AdminClubPage() {
 
         {/* ── News tab ── */}
         {tab === 'news' && (
+          <div className="space-y-4">
+            {/*
+              Posted news was previously invisible here — the tab only offered a
+              form, so anything already published could not be reviewed or
+              removed from the admin panel at all.
+            */}
+            <div className="rounded-xl border bg-card p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-2">
+                <Newspaper className="size-5 text-lca-gold" />
+                <h2 className="text-base font-semibold text-lca-navy">
+                  Posted news · {news.length}
+                </h2>
+              </div>
+              {news.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  Nothing posted yet. Anything you publish below appears on the club's public page.
+                </p>
+              ) : (
+                <ul className="divide-y">
+                  {news.map((item) => (
+                    <li key={item.id} className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0">
+                      <div className="min-w-0">
+                        <p className="font-medium text-lca-navy">{item.title}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">{item.news_date}</p>
+                        <p className="mt-1 text-sm text-muted-foreground">{item.excerpt}</p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="flex-shrink-0 text-red-600 hover:bg-red-50"
+                        disabled={newsDeletingId === item.id}
+                        onClick={() => handleDeleteNews(item)}
+                      >
+                        <Trash2 className="mr-1.5 size-3.5" />
+                        {newsDeletingId === item.id ? 'Deleting…' : 'Delete'}
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
           <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
               <Newspaper className="size-5 text-lca-gold" />
@@ -415,6 +482,7 @@ export function AdminClubPage() {
               {newsSaving ? 'Posting…' : 'Post news'}
             </Button>
           </form>
+          </div>
         )}
 
         {/* ── Roster tab ── */}
