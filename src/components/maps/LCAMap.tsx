@@ -1,4 +1,9 @@
 // src/components/maps/LCAMap.tsx
+/// <reference types="google.maps" />
+// TypeScript 6 dropped the automatic inclusion of every @types package, so
+// this reference is what makes @types/google.maps load at all — without it
+// the dependency sits in package.json doing nothing and every handle below
+// falls back to `any`.
 import { useEffect, useRef, useState } from 'react'
 import { CLUB_MAP_PINS, type ClubMapPin } from '@/lib/clubMapData'
 import { LCA } from '@/lib/brand'
@@ -6,8 +11,8 @@ import { LCA } from '@/lib/brand'
 declare global {
   interface Window {
     initLCAMap: () => void
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    google: any
+    /** Present only once the Maps script has run; the guard below needs it. */
+    google?: typeof google
   }
 }
 
@@ -19,8 +24,7 @@ const GOLD_ON_LIGHT = '#8a6d1f'
 const NAVY = LCA.navy
 const GOLD = LCA.gold
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const MAP_STYLES: any[] = [
+const MAP_STYLES: google.maps.MapTypeStyle[] = [
   { elementType: 'geometry', stylers: [{ color: '#f5f5f0' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#333333' }] },
   { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
@@ -74,7 +78,8 @@ function loadMapsScript(apiKey: string, onLoad: () => void) {
   }
   window.initLCAMap = onLoad
   const script = document.createElement('script')
-  script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initLCAMap`
+  script.src =
+    `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initLCAMap&loading=async`
   script.async = true
   script.defer = true
   script.dataset.lcaMaps = '1'
@@ -112,12 +117,9 @@ function findDbClub(pinName: string, clubs: DbClub[]): DbClub | undefined {
 
 export function LCAMap(props: Props) {
   const mapRef = useRef<HTMLDivElement>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mapObj = useRef<any>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const infoRef = useRef<any>(null)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const markersRef = useRef<any[]>([])
+  const mapObj = useRef<google.maps.Map | null>(null)
+  const infoRef = useRef<google.maps.InfoWindow | null>(null)
+  const markersRef = useRef<google.maps.Marker[]>([])
   const [loaded, setLoaded] = useState(false)
 
   const height = props.height ?? (props.mode === 'all' ? 480 : 240)
@@ -137,7 +139,7 @@ export function LCAMap(props: Props) {
   // Create the map ONCE per mount.
   useEffect(() => {
     if (!loaded || !mapRef.current || mapObj.current) return
-    const g = window.google.maps
+    const g = google.maps
     const center =
       props.mode === 'single' && singlePin
         ? { lat: singlePin.lat, lng: singlePin.lng }
@@ -162,7 +164,7 @@ export function LCAMap(props: Props) {
   // Sync markers whenever the club set changes.
   useEffect(() => {
     if (!loaded || !mapObj.current) return
-    const g = window.google.maps
+    const g = google.maps
     const map = mapObj.current
     const infoWindow = infoRef.current
 
@@ -182,6 +184,11 @@ export function LCAMap(props: Props) {
     }
 
     pins.forEach((pin) => {
+      // Deprecated in favour of AdvancedMarkerElement, which requires a mapId
+      // on the Map — and a mapId makes Google ignore the inline MAP_STYLES
+      // above in favour of Cloud Console styling. Migrating means rebuilding
+      // the brand palette by hand over there, so it is a decision, not a
+      // cleanup. Google has committed to 12 months' notice before removal.
       const marker = new g.Marker({
         position: { lat: pin.lat, lng: pin.lng },
         map,
