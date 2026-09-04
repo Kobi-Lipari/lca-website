@@ -158,7 +158,11 @@ export function AnnualMeetingPage() {
               </p>
             </div>
 
-            <div className="space-y-3">
+            {/* Centred within its column: the two neighbours are prose that
+                fills its width, while these are short numbers that would
+                otherwise sit hard against the left and leave all the gap on
+                one side. Left-aligned once stacked, to match the rest. */}
+            <div className="space-y-3 sm:text-center">
               <div>
                 <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   Meeting ID
