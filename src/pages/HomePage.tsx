@@ -122,7 +122,7 @@ function HeroSlideshow() {
   )
 }
 
-function StatusDot({ regStatus }: { regStatus?: string }) {
+function StatusDot({ regStatus }: { regStatus?: string | null }) {
   if (regStatus === 'open') return <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" title="Registration open" />
   if (regStatus === 'draft') return <span className="h-2 w-2 shrink-0 rounded-full bg-lca-gold" title="Opening soon" />
   return <span className="h-2 w-2 shrink-0 rounded-full bg-border" title="Coming soon" />
@@ -139,7 +139,7 @@ export function HomePage() {
   const [loadingClubs, setLoadingClubs] = useState(true)
 
   const nextTournament = tournaments.find(
-    (t) => (t as any).registration_status === 'open' || t.status === 'upcoming',
+    (t) => t.registration_status === 'open' || t.status === 'upcoming',
   )
 
   useEffect(() => {
@@ -175,7 +175,7 @@ export function HomePage() {
               </a>
             ) : (
               <Link to={`/tournaments/${nextTournament.id}`}>
-                {(nextTournament as any).registration_status === 'open' ? 'Register now' : 'View details'}
+                {nextTournament.registration_status === 'open' ? 'Register now' : 'View details'}
               </Link>
             )}
           </Button>
@@ -201,8 +201,8 @@ export function HomePage() {
                 <div className="px-4 py-6 text-xs text-muted-foreground">No upcoming tournaments.</div>
               ) : (
                 tournaments.map((t) => {
-                  const regStatus = (t as any).registration_status
-                  const color = ((t as any).club_color as string | undefined) || LCA_GOLD
+                  const regStatus = t.registration_status
+                  const color = t.club_color || LCA_GOLD
                   const cardClassName = "flex items-center justify-between border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30"
                   const cardStyle = { backgroundColor: clubColorTint(color, 0.05) }
                   const cardContent = (
