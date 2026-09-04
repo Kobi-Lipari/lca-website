@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Megaphone, Plus, Trash2 } from 'lucide-react'
+import { Megaphone, Pencil, Plus, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -32,12 +32,22 @@ const SIZES: { value: AnnouncementSize; label: string }[] = [
   { value: 'compact', label: 'Compact' },
 ]
 
-const blank = {
+interface Draft {
+  message: string
+  linkUrl: string
+  linkLabel: string
+  tone: AnnouncementTone
+  size: AnnouncementSize
+  startsAt: string
+  endsAt: string
+}
+
+const blank: Draft = {
   message: '',
   linkUrl: '',
   linkLabel: '',
-  tone: 'gold' as AnnouncementTone,
-  size: 'default' as AnnouncementSize,
+  tone: 'gold',
+  size: 'default',
   startsAt: '',
   endsAt: '',
 }
@@ -46,6 +56,122 @@ const blank = {
  *  strings against datetime('now'), which is "2026-09-06 16:30:00". */
 const toSql = (v: string) => (v ? v.replace('T', ' ') + ':00' : null)
 
+/** And back again, so an existing banner opens with its dates filled in. */
+const toLocalInput = (v: string | null) => (v ? v.replace(' ', 'T').slice(0, 16) : '')
+
+const draftFrom = (a: ApiAdminAnnouncement): Draft => ({
+  message: a.message ?? '',
+  linkUrl: a.link_url ?? '',
+  linkLabel: a.link_label ?? '',
+  tone: a.tone,
+  size: a.size,
+  startsAt: toLocalInput(a.starts_at),
+  endsAt: toLocalInput(a.ends_at),
+})
+
+/**
+ * The same fields for creating and for editing. They were only ever written
+ * once, for the create form, which is why changing a live banner meant
+ * deleting it and typing the whole thing again — losing its place in the
+ * stack on the way.
+ */
+function BannerFields({
+  idPrefix,
+  value,
+  onChange,
+}: {
+  idPrefix: string
+  value: Draft
+  onChange: (next: Draft) => void
+}) {
+  const set = <K extends keyof Draft>(key: K, v: Draft[K]) => onChange({ ...value, [key]: v })
+
+  return (
+    <>
+      <div className="space-y-1.5">
+        <Label htmlFor={`${idPrefix}-message`}>Message</Label>
+        <Input
+          id={`${idPrefix}-message`}
+          value={value.message}
+          onChange={(e) => set('message', e.target.value)}
+          placeholder="Annual business meeting — Sunday, Sept 6, 4:30 PM Central."
+        />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor={`${idPrefix}-link-label`}>Link text (optional)</Label>
+          <Input
+            id={`${idPrefix}-link-label`}
+            value={value.linkLabel}
+            onChange={(e) => set('linkLabel', e.target.value)}
+            placeholder="Details and join link →"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor={`${idPrefix}-link-url`}>Link URL (optional)</Label>
+          <Input
+            id={`${idPrefix}-link-url`}
+            value={value.linkUrl}
+            onChange={(e) => set('linkUrl', e.target.value)}
+            placeholder="/meeting"
+          />
+        </div>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor={`${idPrefix}-starts`}>Starts (optional)</Label>
+          <Input
+            id={`${idPrefix}-starts`}
+            type="datetime-local"
+            value={value.startsAt}
+            onChange={(e) => set('startsAt', e.target.value)}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor={`${idPrefix}-ends`}>Ends (optional)</Label>
+          <Input
+            id={`${idPrefix}-ends`}
+            type="datetime-local"
+            value={value.endsAt}
+            onChange={(e) => set('endsAt', e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <Label>Colour</Label>
+        <div className="flex flex-wrap gap-2">
+          {TONES.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => set('tone', t.value)}
+              aria-pressed={value.tone === t.value}
+              className={cn(
+                'rounded-md px-3 py-1 text-xs font-medium ring-offset-2',
+                t.swatch,
+                value.tone === t.value && 'ring-2 ring-lca-navy',
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor={`${idPrefix}-size`}>Size</Label>
+        <select
+          id={`${idPrefix}-size`}
+          className="h-8 rounded-md border bg-background px-2 text-sm"
+          value={value.size}
+          onChange={(e) => set('size', e.target.value as AnnouncementSize)}
+        >
+          {SIZES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+        </select>
+      </div>
+    </>
+  )
+}
+
 export function AdminAnnouncementPanel() {
   const [list, setList] = useState<ApiAdminAnnouncement[]>([])
   const [loading, setLoading] = useState(true)
@@ -53,6 +179,8 @@ export function AdminAnnouncementPanel() {
   const [savingId, setSavingId] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
   const [form, setForm] = useState(blank)
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editForm, setEditForm] = useState(blank)
 
   async function load() {
     try {
@@ -82,11 +210,37 @@ export function AdminAnnouncementPanel() {
     try {
       const { announcement } = await adminUpdateAnnouncement(id, body)
       setList((prev) => prev.map((a) => (a.id === id ? announcement : a)))
+      return true
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save')
+      return false
     } finally {
       setSavingId(null)
     }
+  }
+
+  function startEdit(a: ApiAdminAnnouncement) {
+    setError(null)
+    setAdding(false)
+    setEditingId(a.id)
+    setEditForm(draftFrom(a))
+  }
+
+  async function handleEditSave(e: FormEvent) {
+    e.preventDefault()
+    if (!editingId) return
+    const ok = await patch(editingId, {
+      message: editForm.message,
+      linkUrl: editForm.linkUrl || null,
+      linkLabel: editForm.linkLabel || null,
+      tone: editForm.tone,
+      size: editForm.size,
+      startsAt: toSql(editForm.startsAt),
+      endsAt: toSql(editForm.endsAt),
+    })
+    // A rejected edit stays open with what was typed still in it, so fixing
+    // it is one keystroke rather than a retype.
+    if (ok) setEditingId(null)
   }
 
   async function handleCreate(e: FormEvent) {
@@ -117,6 +271,7 @@ export function AdminAnnouncementPanel() {
     try {
       await adminDeleteAnnouncement(a.id)
       setList((prev) => prev.filter((x) => x.id !== a.id))
+      if (editingId === a.id) setEditingId(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete')
     } finally {
@@ -145,7 +300,12 @@ export function AdminAnnouncementPanel() {
           </h2>
         </div>
         {!adding && (
-          <Button type="button" variant="outline" size="sm" onClick={() => setAdding(true)}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => { setEditingId(null); setAdding(true) }}
+          >
             <Plus className="mr-1.5 size-3.5" /> Add banner
           </Button>
         )}
@@ -160,88 +320,15 @@ export function AdminAnnouncementPanel() {
 
       {adding && (
         <form onSubmit={handleCreate} className="mb-5 space-y-3 rounded-lg border bg-muted/30 p-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="ann-message">Message</Label>
-            <Input
-              id="ann-message"
-              value={form.message}
-              onChange={(e) => setForm((p) => ({ ...p, message: e.target.value }))}
-              placeholder="Annual business meeting — Sunday, Sept 6, 4:30 PM Central."
-            />
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="ann-link-label">Link text (optional)</Label>
-              <Input
-                id="ann-link-label"
-                value={form.linkLabel}
-                onChange={(e) => setForm((p) => ({ ...p, linkLabel: e.target.value }))}
-                placeholder="Details and join link →"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ann-link-url">Link URL (optional)</Label>
-              <Input
-                id="ann-link-url"
-                value={form.linkUrl}
-                onChange={(e) => setForm((p) => ({ ...p, linkUrl: e.target.value }))}
-                placeholder="/meeting"
-              />
-            </div>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="ann-starts">Starts (optional)</Label>
-              <Input
-                id="ann-starts"
-                type="datetime-local"
-                value={form.startsAt}
-                onChange={(e) => setForm((p) => ({ ...p, startsAt: e.target.value }))}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="ann-ends">Ends (optional)</Label>
-              <Input
-                id="ann-ends"
-                type="datetime-local"
-                value={form.endsAt}
-                onChange={(e) => setForm((p) => ({ ...p, endsAt: e.target.value }))}
-              />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label>Colour</Label>
-            <div className="flex flex-wrap gap-2">
-              {TONES.map((t) => (
-                <button
-                  key={t.value}
-                  type="button"
-                  onClick={() => setForm((p) => ({ ...p, tone: t.value }))}
-                  className={cn(
-                    'rounded-md px-3 py-1 text-xs font-medium ring-offset-2',
-                    t.swatch,
-                    form.tone === t.value && 'ring-2 ring-lca-navy',
-                  )}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="ann-size">Size</Label>
-            <select
-              id="ann-size"
-              className="h-8 rounded-md border bg-background px-2 text-sm"
-              value={form.size}
-              onChange={(e) => setForm((p) => ({ ...p, size: e.target.value as AnnouncementSize }))}
-            >
-              {SIZES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-            </select>
-          </div>
+          <BannerFields idPrefix="ann-new" value={form} onChange={setForm} />
           <div className="flex gap-2 pt-1">
             <Button type="submit" size="sm" className={GOLD_BUTTON}>Add banner</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => { setAdding(false); setForm(blank) }}>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => { setAdding(false); setForm(blank) }}
+            >
               Cancel
             </Button>
           </div>
@@ -254,6 +341,25 @@ export function AdminAnnouncementPanel() {
         <ul className="divide-y">
           {list.map((a, i) => {
             const st = status(a)
+
+            if (editingId === a.id) {
+              return (
+                <li key={a.id} className="py-3 first:pt-0 last:pb-0">
+                  <form onSubmit={handleEditSave} className="space-y-3 rounded-lg border bg-muted/30 p-4">
+                    <BannerFields idPrefix={`ann-${a.id}`} value={editForm} onChange={setEditForm} />
+                    <div className="flex gap-2 pt-1">
+                      <Button type="submit" size="sm" className={GOLD_BUTTON} disabled={savingId === a.id}>
+                        {savingId === a.id ? 'Saving…' : 'Save changes'}
+                      </Button>
+                      <Button type="button" size="sm" variant="outline" onClick={() => setEditingId(null)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </li>
+              )
+            }
+
             return (
               <li key={a.id} className="py-3 first:pt-0 last:pb-0">
                 <div className="flex items-start justify-between gap-3">
@@ -281,6 +387,14 @@ export function AdminAnnouncementPanel() {
                     )}
                   </div>
                   <div className="flex flex-shrink-0 items-center gap-1">
+                    <Button
+                      type="button" variant="outline" size="sm"
+                      disabled={savingId === a.id}
+                      onClick={() => startEdit(a)}
+                      aria-label="Edit banner"
+                    >
+                      <Pencil className="size-3.5" />
+                    </Button>
                     <Button
                       type="button" variant="outline" size="sm"
                       disabled={savingId === a.id}
