@@ -18,10 +18,9 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
 
   if (!existing) return errorResponse('Member not found', 404)
 
-  // Every table that references this member. board_seat_assignments,
-  // email_campaign_recipients and impersonation_log were missing, so a deleted
-  // member could keep an officer seat and stay on an in-flight campaign's
-  // recipient list.
+  // Every table that references this member. board_seat_assignments and
+  // email_campaign_recipients were missing, so a deleted member could keep an
+  // officer seat and stay on an in-flight campaign's recipient list.
   await context.env.DB.prepare('DELETE FROM registrations WHERE member_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM payments WHERE member_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM club_officers WHERE member_id = ?').bind(memberId).run()
@@ -32,7 +31,6 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   await context.env.DB.prepare('DELETE FROM support_tickets WHERE member_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM board_seat_assignments WHERE member_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM email_campaign_recipients WHERE member_id = ?').bind(memberId).run()
-  await context.env.DB.prepare('DELETE FROM impersonation_log WHERE target_member_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM members WHERE id = ?').bind(memberId).run()
 
   // The auth user last, so a failure here leaves an orphaned login rather than
