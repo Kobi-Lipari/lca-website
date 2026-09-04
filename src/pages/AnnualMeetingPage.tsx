@@ -31,16 +31,25 @@ const ZOOM_URL =
 const MEETING_ID = '837 5887 3734'
 
 /**
- * Numeric passcode Zoom prompts for when joining by ID.
+ * Numeric passcode Zoom prompts for when joining by Meeting ID.
  *
- * Not derivable from the join link — the pwd parameter there is an encoded
- * token, not this. Until it is filled in, the page says so plainly rather
- * than implying the manual path works.
+ * Not derivable from the join link: the pwd parameter there is an encoded
+ * token that satisfies the passcode automatically, which is why clicking
+ * the link never asks for one. Typing the ID in by hand does.
  */
-const MEETING_PASSCODE: string | null = null
+const MEETING_PASSCODE = '778091'
 
 /** Zoom's US dial-in. The caller is prompted for the ID, then the passcode. */
 const DIAL_IN = { display: '+1 301 715 8592', tel: '+13017158592' }
+
+/**
+ * One-tap: dials, then keys in the meeting ID and passcode as DTMF tones.
+ *
+ * The commas are pauses and the hashes are literal keypresses — so they
+ * must be percent-encoded, because a bare # in a URL starts a fragment and
+ * everything after it would never reach the dialler.
+ */
+const ONE_TAP = `tel:${DIAL_IN.tel},,${MEETING_ID.replace(/ /g, '')}%23,,,,*${MEETING_PASSCODE}%23`
 
 /** Agenda items, once published. Empty renders the "coming soon" state. */
 const AGENDA: string[] = []
@@ -153,24 +162,17 @@ export function AnnualMeetingPage() {
                   {MEETING_ID}
                 </dd>
               </div>
-              {MEETING_PASSCODE && (
-                <div className="flex flex-wrap items-baseline gap-x-3">
-                  <dt className="text-muted-foreground">Passcode</dt>
-                  <dd className="font-mono text-base font-medium text-lca-navy select-all">
-                    {MEETING_PASSCODE}
-                  </dd>
-                </div>
-              )}
+              <div className="flex flex-wrap items-baseline gap-x-3">
+                <dt className="text-muted-foreground">Passcode</dt>
+                <dd className="font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                  {MEETING_PASSCODE}
+                </dd>
+              </div>
             </dl>
-            {!MEETING_PASSCODE && (
-              <p className="mt-3 text-sm text-muted-foreground">
-                This meeting also has a passcode. Use the{' '}
-                <a href={ZOOM_URL} target="_blank" rel="noopener noreferrer" className="font-medium text-lca-navy hover:underline">
-                  join link
-                </a>{' '}
-                above, which carries it for you.
-              </p>
-            )}
+            <p className="mt-3 text-sm text-muted-foreground">
+              The join link above carries the passcode for you — that is why it
+              never asks. Typing the ID in by hand does.
+            </p>
           </div>
 
           {/* ── Phone ── */}
@@ -184,15 +186,25 @@ export function AnnualMeetingPage() {
             <p className="mt-2 text-sm text-muted-foreground">
               Audio only — useful if you&apos;re driving or short on data.
             </p>
+            {/* One tap enters the ID and passcode itself — the reliable
+                route on a phone, where keying in eleven digits mid-call is
+                where people give up. */}
+            <Button asChild variant="outline" size="lg" className="mt-3 sm:hidden">
+              <a href={ONE_TAP}>
+                <Phone className="mr-2 size-4" />
+                Tap to call and join
+              </a>
+            </Button>
             <a
               href={`tel:${DIAL_IN.tel}`}
-              className="mt-2 inline-block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all"
+              className="mt-3 block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all sm:mt-2"
             >
               {DIAL_IN.display}
             </a>
             <p className="mt-1 text-sm text-muted-foreground">
-              You&apos;ll be asked for the meeting ID{' '}
-              <span className="font-mono tabular-nums">{MEETING_ID}</span>, then the passcode.
+              Dialling manually, you&apos;ll be asked for the meeting ID{' '}
+              <span className="font-mono tabular-nums">{MEETING_ID}</span>, then the
+              passcode <span className="font-mono tabular-nums">{MEETING_PASSCODE}</span>.
             </p>
           </div>
         </div>
