@@ -128,7 +128,21 @@ function StatusDot({ regStatus }: { regStatus?: string | null }) {
   return <span className="h-2 w-2 shrink-0 rounded-full bg-border" title="Coming soon" />
 }
 
-const COLUMN_HEIGHT = 340
+/**
+ * How many rows each preview column shows.
+ *
+ * These columns used to render the WHOLE list into a 340px scroll box — 25
+ * clubs and every upcoming tournament, about 1,500px of content each. Two
+ * problems came out of that. The page scroll was swallowed: a visitor
+ * scrolling down the homepage with the cursor anywhere over the band scrolled
+ * a nested list instead of the page, and had to get through ~1,200px of it
+ * before the page moved at all. And the content past the fold was
+ * undiscoverable anyway, which is what the "View all" links are for.
+ *
+ * Five rows is roughly what the 340px window showed, so the band looks almost
+ * unchanged — it just stops fighting the page.
+ */
+const PREVIEW_COUNT = 5
 
 export function HomePage() {
   usePageTitle('Home')
@@ -193,14 +207,14 @@ export function HomePage() {
               View all <ArrowRight className="size-3" />
             </Link>
           </div>
-          <div className="relative">
-            <div className="overflow-y-auto" style={{ maxHeight: COLUMN_HEIGHT }}>
+          <div>
+            <div>
               {loadingTournaments ? (
                 <div className="px-4 py-6 text-xs text-muted-foreground">Loading…</div>
               ) : tournaments.length === 0 ? (
                 <div className="px-4 py-6 text-xs text-muted-foreground">No upcoming tournaments.</div>
               ) : (
-                tournaments.map((t) => {
+                tournaments.slice(0, PREVIEW_COUNT).map((t) => {
                   const regStatus = t.registration_status
                   const color = t.club_color || LCA_GOLD
                   const cardClassName = "flex items-center justify-between border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30"
@@ -227,12 +241,11 @@ export function HomePage() {
                 })
               )}
             </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-background to-transparent" />
           </div>
         </div>
 
         <div className="flex flex-col border-b border-border sm:border-b-0 sm:border-r">
-          <FacebookFeed variant="compact" limit={5} height={COLUMN_HEIGHT} />
+          <FacebookFeed variant="compact" limit={5} />
         </div>
 
         <div className="flex flex-col">
@@ -245,14 +258,14 @@ export function HomePage() {
               Find yours <ArrowRight className="size-3" />
             </Link>
           </div>
-          <div className="relative">
-            <div className="overflow-y-auto" style={{ maxHeight: COLUMN_HEIGHT }}>
+          <div>
+            <div>
               {loadingClubs ? (
                 <div className="px-4 py-6 text-xs text-muted-foreground">Loading…</div>
               ) : clubs.length === 0 ? (
                 <div className="px-4 py-6 text-xs text-muted-foreground">No clubs listed yet.</div>
               ) : (
-                clubs.map((club) => {
+                clubs.slice(0, PREVIEW_COUNT).map((club) => {
                   const color = club.color || LCA_GOLD
                   return (
                     <Link key={club.id} to={`/clubs/${club.id}`} className="flex items-center gap-3 border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30" style={{ backgroundColor: clubColorTint(color, 0.05) }}>
@@ -266,7 +279,6 @@ export function HomePage() {
                 })
               )}
             </div>
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-background to-transparent" />
           </div>
         </div>
       </div>

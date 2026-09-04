@@ -38,6 +38,24 @@ const HERO_STATS = [
 
 // ── Club card image area ──────────────────────────────────────────────────────
 
+/**
+ * Initials for a club with no image. "Chess", "Club" and friends are in
+ * almost every name, so including them would make most cards read "CC" —
+ * dropping them leaves the part that actually identifies the club: Baton
+ * Rouge Chess Club becomes BR, Strategic Thoughts NOLA becomes ST.
+ */
+const FILLER = /^(chess|club|the|of|a|and|association|academy|society|center|centre)$/i
+
+function clubInitials(name: string): string {
+  const words = name.split(/[^A-Za-z0-9]+/).filter((w) => w && !FILLER.test(w))
+  const source = words.length ? words : name.split(/[^A-Za-z0-9]+/).filter(Boolean)
+  if (!source.length) return '?'
+  // One significant word takes two letters of itself rather than one, so
+  // Bluebonnet and Bunkie do not both come out as "B".
+  const letters = source.length === 1 ? source[0].slice(0, 2) : source.slice(0, 2).map((w) => w[0]).join('')
+  return letters.toUpperCase()
+}
+
 function ClubCardImage({ club }: { club: ApiClubListItem }) {
   const color = club.color || LCA_GOLD
 
@@ -57,15 +75,13 @@ function ClubCardImage({ club }: { club: ApiClubListItem }) {
       className="flex h-36 w-full flex-shrink-0 items-center justify-center border-b border-border"
       style={{ backgroundColor: clubColorTint(color, 0.1) }}
     >
-      <svg
-        viewBox="0 0 24 24"
-        className="size-10 opacity-30"
-        fill="none"
-        stroke={color}
-        strokeWidth={1.5}
+      <span
+        aria-hidden="true"
+        className="select-none text-3xl font-bold tracking-tight opacity-40"
+        style={{ color }}
       >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-      </svg>
+        {clubInitials(club.name)}
+      </span>
     </div>
   )
 }

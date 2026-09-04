@@ -84,10 +84,9 @@ function useFacebookPosts(limit: number) {
 interface FacebookFeedProps {
   variant: 'compact' | 'full'
   limit?: number
-  height?: number
 }
 
-export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, height = 340 }: FacebookFeedProps) {
+export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }: FacebookFeedProps) {
   const { posts, error } = useFacebookPosts(limit)
   const columnCount = useColumnCount()
 
@@ -108,8 +107,8 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
             Follow us <ArrowRight className="size-3" />
           </a>
         </div>
-        <div className="relative">
-          <div className="overflow-y-auto" style={{ maxHeight: height }}>
+        <div>
+          <div>
             {error ? (
               <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
                 <p className="text-xs text-muted-foreground">Couldn't load posts right now.</p>
@@ -138,7 +137,6 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6, h
               ))
             )}
           </div>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-background to-transparent" />
         </div>
       </>
     )
