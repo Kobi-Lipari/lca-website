@@ -40,11 +40,37 @@ export async function createCheckoutSession(
   return res.json()
 }
 
+/**
+ * How old a signed payload may be, matching Stripe's own default tolerance.
+ *
+ * Without this the signature alone proves the body was signed at some point,
+ * not that it was signed recently — so anyone who captures one delivery can
+ * replay it forever, and every replay of a membership payment is another year
+ * granted for free.
+ */
+const SIGNATURE_TOLERANCE_SECONDS = 300
+
+/**
+ * Compares two hex digests without leaking where they diverge.
+ *
+ * A plain `===` returns as soon as it finds a differing byte, so the time it
+ * takes is a measurement of how much of the prefix was right — enough, over
+ * many attempts, to reconstruct a valid signature a byte at a time. This
+ * always walks the full length and folds every difference into one accumulator.
+ */
+function timingSafeEqualHex(a: string, b: string): boolean {
+  if (a.length !== b.length) return false
+  let diff = 0
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  return diff === 0
+}
+
 // Verifies the `Stripe-Signature` header using Web Crypto (no Node crypto needed)
 export async function verifyStripeSignature(
   payload: string,
   signatureHeader: string,
-  webhookSecret: string
+  webhookSecret: string,
+  nowSeconds: number = Math.floor(Date.now() / 1000)
 ): Promise<boolean> {
   const parts = Object.fromEntries(
     signatureHeader.split(',').map((part) => part.split('=') as [string, string])
@@ -52,6 +78,12 @@ export async function verifyStripeSignature(
   const timestamp = parts['t']
   const signature = parts['v1']
   if (!timestamp || !signature) return false
+
+  // Reject stale and implausibly-future timestamps before spending a HMAC on
+  // them. Math.abs covers clock skew in both directions.
+  const signedAt = Number(timestamp)
+  if (!Number.isFinite(signedAt)) return false
+  if (Math.abs(nowSeconds - signedAt) > SIGNATURE_TOLERANCE_SECONDS) return false
 
   const signedPayload = `${timestamp}.${payload}`
   const key = await crypto.subtle.importKey(
@@ -64,5 +96,5 @@ export async function verifyStripeSignature(
   const sigBuffer = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload))
   const expectedHex = [...new Uint8Array(sigBuffer)].map((b) => b.toString(16).padStart(2, '0')).join('')
 
-  return expectedHex === signature
+  return timingSafeEqualHex(expectedHex, signature)
 }
