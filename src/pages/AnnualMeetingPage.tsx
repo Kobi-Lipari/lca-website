@@ -117,9 +117,9 @@ export function AnnualMeetingPage() {
         }
       />
 
-      <section className="mx-auto max-w-3xl px-6 py-10">
+      <section className="mx-auto max-w-3xl px-6 py-8">
         {/* ── Join ── */}
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
+        <div className="rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
             <Video className="size-5 text-lca-gold" />
             <h2 className="text-lg font-semibold text-lca-navy">Join the meeting</h2>
@@ -133,7 +133,7 @@ export function AnnualMeetingPage() {
                 : 'The room opens a few minutes before the start. No account is needed to join.'}
           </p>
 
-          <Button asChild className={`mt-4 ${GOLD_BUTTON}`} size="lg">
+          <Button asChild className={`mt-3 ${GOLD_BUTTON}`} size="lg">
             <a href={ZOOM_URL} target="_blank" rel="noopener noreferrer">
               Join on Zoom
               <ExternalLink className="ml-2 size-4" />
@@ -141,30 +141,39 @@ export function AnnualMeetingPage() {
           </Button>
 
           {/*
-            Side by side once there is room, so the agenda sits higher on the
-            page rather than below two stacked blocks. They are both fallbacks
-            for the same thing — getting in without the link — so reading them
-            as a pair is truer than presenting them as sequential steps.
+            Three parts, because there are three things: how to get in without
+            the link, the credentials both routes need, and the phone route.
+            The credentials sit in the middle rather than being repeated in
+            each — they were printed twice before, which is one more place to
+            get them wrong if the meeting ever changes.
           */}
-          <div className="mt-6 grid gap-6 border-t pt-5 sm:grid-cols-2 sm:gap-8">
-            {/* Everything needed to get in without the link. */}
+          <div className="mt-5 grid gap-5 border-t pt-5 md:grid-cols-3 md:gap-6">
             <div>
               <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 If the link doesn&apos;t open
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                Open the Zoom app and choose <strong className="text-lca-navy">Join a Meeting</strong>,
-                then enter:
+                Open the Zoom app and choose{' '}
+                <strong className="text-lca-navy">Join a Meeting</strong>, then enter the
+                details alongside.
               </p>
-              <dl className="mt-3 space-y-2 text-sm">
-                <div className="flex flex-wrap items-baseline gap-x-3">
-                  <dt className="text-muted-foreground">Meeting ID</dt>
+            </div>
+
+            {/* The one thing both routes need, given once. */}
+            <div className="rounded-lg bg-muted/40 px-4 py-3">
+              <dl className="space-y-1.5 text-sm">
+                <div>
+                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Meeting ID
+                  </dt>
                   <dd className="font-mono text-base font-medium tabular-nums text-lca-navy select-all">
                     {MEETING_ID}
                   </dd>
                 </div>
-                <div className="flex flex-wrap items-baseline gap-x-3">
-                  <dt className="text-muted-foreground">Passcode</dt>
+                <div>
+                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    Passcode
+                  </dt>
                   <dd className="font-mono text-base font-medium tabular-nums text-lca-navy select-all">
                     {MEETING_PASSCODE}
                   </dd>
@@ -172,8 +181,7 @@ export function AnnualMeetingPage() {
               </dl>
             </div>
 
-            {/* Divider becomes vertical once the columns sit side by side. */}
-            <div className="border-t pt-6 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0">
+            <div>
               <div className="flex items-center gap-2">
                 <Phone className="size-4 text-lca-gold" />
                 <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
@@ -182,9 +190,9 @@ export function AnnualMeetingPage() {
               </div>
               {/* One tap enters the ID and passcode itself — the reliable route
                   on a phone, where keying eleven digits into a live call is
-                  where people give up. Hidden once there is room for two
-                  columns, since a tel: link does little on a desktop. */}
-              <Button asChild variant="outline" size="lg" className="mt-3 sm:hidden">
+                  where people give up. Hidden on wider screens, where a tel:
+                  link does little. */}
+              <Button asChild variant="outline" size="lg" className="mt-2 md:hidden">
                 <a href={ONE_TAP}>
                   <Phone className="mr-2 size-4" />
                   Tap to call and join
@@ -192,22 +200,17 @@ export function AnnualMeetingPage() {
               </Button>
               <a
                 href={`tel:${DIAL_IN.tel}`}
-                className="mt-3 block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all sm:mt-2"
+                className="mt-2 block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all"
               >
                 {DIAL_IN.display}
               </a>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Dialling manually, you&apos;ll be asked for the meeting ID{' '}
-                <span className="font-mono tabular-nums">{MEETING_ID}</span>, then the
-                passcode <span className="font-mono tabular-nums">{MEETING_PASSCODE}</span>.
-              </p>
             </div>
           </div>
         </div>
 
 
         {/* ── Agenda ── */}
-        <div className="mt-8 rounded-xl border bg-card p-6 shadow-sm">
+        <div className="mt-5 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
             <FileText className="size-5 text-lca-gold" />
             <h2 className="text-lg font-semibold text-lca-navy">Agenda</h2>
