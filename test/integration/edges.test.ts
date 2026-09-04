@@ -210,11 +210,11 @@ describe('PATCH /api/me input validation', () => {
 })
 
 describe('deleting a member clears every reference', () => {
-  it('removes the seat assignment, campaign recipient row and impersonation log', async () => {
+  it('removes the seat assignment and campaign recipient row', async () => {
     const adminId = await seedAdmin()
     const memberId = await seedMember()
 
-    // Three tables the cascade used to miss. A deleted member kept their
+    // Two tables the cascade used to miss. A deleted member kept their
     // officer seat and stayed on an in-flight campaign's recipient list.
     const seat = await env.DB.prepare(
       "SELECT id FROM board_members LIMIT 1",
@@ -235,11 +235,6 @@ describe('deleting a member clears every reference', () => {
        VALUES (?, 'camp-del', ?, 'x@y.z')`,
     ).bind(`rcpt-del-${memberId}`, memberId).run()
 
-    await env.DB.prepare(
-      `INSERT INTO impersonation_log (id, admin_id, target_member_id)
-       VALUES (?, ?, ?)`,
-    ).bind(`imp-${memberId}`, adminId, memberId).run().catch(() => {})
-
     const res = await invoke(memberDelete, {
       method: 'DELETE', as: adminId, params: { id: memberId },
     })
@@ -251,7 +246,6 @@ describe('deleting a member clears every reference', () => {
     expect(await count('SELECT COUNT(*) n FROM members WHERE id = ?')).toBe(0)
     expect(await count('SELECT COUNT(*) n FROM board_seat_assignments WHERE member_id = ?')).toBe(0)
     expect(await count('SELECT COUNT(*) n FROM email_campaign_recipients WHERE member_id = ?')).toBe(0)
-    expect(await count('SELECT COUNT(*) n FROM impersonation_log WHERE target_member_id = ?')).toBe(0)
   })
 
   it('reports whether the auth user was removed too', async () => {

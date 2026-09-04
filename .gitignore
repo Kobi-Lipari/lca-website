@@ -23,3 +23,9 @@ scripts/provision.sql
 scripts/members.tsv
 .dev.vars
 backup-*.sql
+
+# Claude Code keeps per-machine state here (settings.local.json, session
+# scratch). launch.json is the shared dev-server config and is meant to be
+# committed, so it is excepted rather than the whole directory ignored.
+.claude/*
+!.claude/launch.json
