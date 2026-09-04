@@ -309,6 +309,20 @@ export function TournamentsPage() {
   const [rightSelection, setRightSelection] = useState<RightSelection>(null)
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  // Whether anything is narrowing the list right now. stateFilter counts:
+  // 'LA' is its default, but a visitor can pill their way to a state with
+  // nothing in it and needs the same way back.
+  const hasActiveFilters =
+    search.trim() !== '' || typeFilter !== 'all' || rightSelection !== null || stateFilter !== 'LA'
+
+  function clearFilters() {
+    setSearch('')
+    setTypeFilter('all')
+    setRightSelection(null)
+    setStateFilter('LA')
+    setSelectedId(null)
+  }
   const [calYear, setCalYear] = useState(new Date().getFullYear())
   const [calMonth, setCalMonth] = useState(new Date().getMonth())
   const [calSelectedDay, setCalSelectedDay] = useState<number | null>(null)
@@ -612,7 +626,7 @@ export function TournamentsPage() {
         </div>
       ) : (
         <div className="mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 border-b border-border sm:grid-cols-[1fr_1.55fr_1fr]">
+          <div className="grid min-h-[420px] grid-cols-1 border-b border-border sm:grid-cols-[1fr_1.55fr_1fr]">
 
             {/* ── Left: list ── */}
             <div className="border-b border-border sm:border-b-0 sm:border-r">
@@ -647,9 +661,23 @@ export function TournamentsPage() {
               </div>
               <div className="max-h-[300px] overflow-y-auto sm:max-h-[420px]">
                 {filtered.length === 0 ? (
-                  <p className="px-3 py-6 text-center text-xs text-muted-foreground">
-                    {timeTab === 'past' ? 'No past tournaments yet.' : 'No tournaments match the current filters.'}
-                  </p>
+                  <div className="flex flex-col items-center gap-2 px-3 py-10 text-center">
+                    <Search className="size-5 text-muted-foreground/40" aria-hidden="true" />
+                    <p className="text-xs text-muted-foreground">
+                      {timeTab === 'past' ? 'No past tournaments yet.' : 'No tournaments match the current filters.'}
+                    </p>
+                    {hasActiveFilters && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-1 h-7 text-xs"
+                        onClick={clearFilters}
+                      >
+                        Clear filters
+                      </Button>
+                    )}
+                  </div>
                 ) : (
                   filtered.map(t => {
                     const key = `${t.source}-${t.id}`
@@ -699,7 +727,11 @@ export function TournamentsPage() {
                     ? <LCADetailPane t={selected} />
                     : <ExternalDetailPane t={selected} />
                 ) : (
-                  <p className="px-3 py-6 text-center text-xs text-muted-foreground">Select a tournament from the list.</p>
+                  <p className="px-3 py-6 text-center text-xs text-muted-foreground">
+                    {filtered.length === 0
+                      ? 'Nothing to show yet.'
+                      : 'Select a tournament from the list.'}
+                  </p>
                 )}
               </div>
             </div>
