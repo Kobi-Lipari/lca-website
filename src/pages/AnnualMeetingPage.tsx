@@ -56,12 +56,6 @@ const AGENDA: string[] = []
 
 // ─────────────────────────────────────────────────────────────────────────
 
-const inZone = (tz: string) =>
-  MEETING_START.toLocaleTimeString('en-US', {
-    timeZone: tz,
-    hour: 'numeric',
-    minute: '2-digit',
-  })
 
 const LONG_DATE = MEETING_START.toLocaleDateString('en-US', {
   timeZone: 'America/Chicago',
@@ -169,10 +163,6 @@ export function AnnualMeetingPage() {
                 </dd>
               </div>
             </dl>
-            <p className="mt-3 text-sm text-muted-foreground">
-              The join link above carries the passcode for you — that is why it
-              never asks. Typing the ID in by hand does.
-            </p>
           </div>
 
           {/* ── Phone ── */}
@@ -183,9 +173,6 @@ export function AnnualMeetingPage() {
                 Join by phone
               </h3>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Audio only — useful if you&apos;re driving or short on data.
-            </p>
             {/* One tap enters the ID and passcode itself — the reliable
                 route on a phone, where keying in eleven digits mid-call is
                 where people give up. */}
@@ -209,14 +196,6 @@ export function AnnualMeetingPage() {
           </div>
         </div>
 
-        {/* ── Times elsewhere: the LCA has members outside Central. ── */}
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 rounded-xl border bg-muted/30 px-5 py-3 text-sm">
-          <span className="text-muted-foreground">Starts at</span>
-          <span><strong className="text-lca-navy">{inZone('America/Chicago')}</strong> Central</span>
-          <span><strong className="text-lca-navy">{inZone('America/New_York')}</strong> Eastern</span>
-          <span><strong className="text-lca-navy">{inZone('America/Denver')}</strong> Mountain</span>
-          <span><strong className="text-lca-navy">{inZone('America/Los_Angeles')}</strong> Pacific</span>
-        </div>
 
         {/* ── Agenda ── */}
         <div className="mt-8 rounded-xl border bg-card p-6 shadow-sm">
