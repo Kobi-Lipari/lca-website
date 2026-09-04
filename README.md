@@ -6,7 +6,7 @@ patchwork of a Google Sites page and a third-party registration tool
 (KingRegistration.com) with a single system for tournament registration, USCF
 rating reporting, club management, membership, and governance.
 
-**Live site:** [louisianachess.org](https://louisianachess.org)
+**Live site:** [louisianachess.org](https://www.louisianachess.org) — the apex redirects here.
 *(custom domain pending: louisianachess.org)*
 
 ---

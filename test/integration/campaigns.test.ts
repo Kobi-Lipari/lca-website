@@ -245,8 +245,8 @@ describe('campaigns: branding', () => {
     // has no request at all — so both the footer link and the logo have to
     // come from SITE_URL. Getting this wrong mails people the old domain.
     const [sent] = emailOutbox
-    expect(sent.html).toContain('https://louisianachess.org/lca-logo.jpg')
-    expect(sent.html).toContain('href="https://louisianachess.org"')
+    expect(sent.html).toContain('https://www.louisianachess.org/lca-logo.jpg')
+    expect(sent.html).toContain('href="https://www.louisianachess.org"')
     expect(sent.html).not.toContain('pages.dev')
   })
 })

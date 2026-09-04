@@ -7,8 +7,14 @@
 // email logo all pointed at the old deployment domain after the move to
 // louisianachess.org.
 
-/** Where the site lives when nothing says otherwise. */
-export const DEFAULT_SITE_URL = 'https://louisianachess.org'
+/**
+ * Where the site lives when nothing says otherwise.
+ *
+ * The www form is canonical: a Cloudflare rule redirects the apex to it, so
+ * the apex never serves a page. A default pointing at the apex still worked,
+ * but only by way of that redirect.
+ */
+export const DEFAULT_SITE_URL = 'https://www.louisianachess.org'
 
 /** Every binding shape that carries a site URL. Kept structural so the cron
  *  Worker, whose Env is its own, can call in without importing Pages types. */
