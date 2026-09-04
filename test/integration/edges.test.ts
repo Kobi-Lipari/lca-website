@@ -97,6 +97,51 @@ describe('membership PATCH regression (expiry-wipe fix)', () => {
   })
 })
 
+describe('donation attribution', () => {
+  const donate = (body: unknown, as?: string) =>
+    invoke(donationPost, { method: 'POST', body, ...(as ? { as } : {}) })
+
+  const paymentFor = (paymentId: string) =>
+    env.DB.prepare('SELECT member_id FROM payments WHERE id = ?')
+      .bind(paymentId).first<{ member_id: string | null }>()
+
+  it('ignores a member id supplied in the body', async () => {
+    // The endpoint is unauthenticated by design — anyone may donate — so a
+    // member id from the request is unverifiable and used to be trusted.
+    const victim = await seedMember()
+    const res = await donate({ amount: 25, memberId: victim })
+    expect(res.status).toBe(200)
+
+    const { paymentId } = await res.json()
+    expect((await paymentFor(paymentId))?.member_id).toBeNull()
+  })
+
+  it('attributes to the signed-in member when there is a session', async () => {
+    const donor = await seedMember()
+    const res = await donate({ amount: 25 }, donor)
+    expect(res.status).toBe(200)
+
+    const { paymentId } = await res.json()
+    expect((await paymentFor(paymentId))?.member_id).toBe(donor)
+  })
+
+  it('a session wins over a conflicting body value', async () => {
+    const donor = await seedMember()
+    const victim = await seedMember()
+    const res = await donate({ amount: 25, memberId: victim }, donor)
+
+    const { paymentId } = await res.json()
+    expect((await paymentFor(paymentId))?.member_id).toBe(donor)
+  })
+
+  it('still accepts an anonymous donation', async () => {
+    const res = await donate({ amount: 10 })
+    expect(res.status).toBe(200)
+    const { paymentId } = await res.json()
+    expect((await paymentFor(paymentId))?.member_id).toBeNull()
+  })
+})
+
 describe('PATCH /api/me input validation', () => {
   const patch = (as: string, body: unknown) =>
     invoke(mePatch, { method: 'PATCH', as, body })
