@@ -124,7 +124,6 @@ function memberIdFromToken(token: string): string | null {
 export function installFetchInterceptor(): void {
   if (installed) return
   installed = true
-  const realFetch = globalThis.fetch.bind(globalThis)
 
   globalThis.fetch = (async (
     input: RequestInfo | URL,
@@ -310,8 +309,12 @@ export async function invoke(
 
 // ── Stripe webhook signing (REAL HMAC — exercises verifyStripeSignature) ──
 
-export async function signStripePayload(payload: string): Promise<string> {
-  const timestamp = Math.floor(Date.now() / 1000)
+/** Signs like Stripe does. The timestamp is injectable so a test can
+ *  produce a stale-but-genuine signature — the replay case. */
+export async function signStripePayload(
+  payload: string,
+  timestamp: number = Math.floor(Date.now() / 1000),
+): Promise<string> {
   const encoder = new TextEncoder()
   const key = await crypto.subtle.importKey(
     'raw',

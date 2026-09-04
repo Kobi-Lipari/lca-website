@@ -103,6 +103,7 @@ export function SupportPage() {
         setTickets(data.tickets)
       }
     } catch {
+      // Keep the current list rather than blanking it on a transient failure.
     } finally {
       setSending(false)
     }

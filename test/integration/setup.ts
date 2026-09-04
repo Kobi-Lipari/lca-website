@@ -75,9 +75,8 @@ export async function applyAllMigrations(db: D1Database): Promise<void> {
         await db.prepare(stmt).run()
       } catch (err) {
         throw new Error(
-          `Migration ${path} failed on statement:\n${stmt.slice(0, 300)}\n→ ${
-            err instanceof Error ? err.message : String(err)
-          }`,
+          `Migration ${path} failed on statement:\n${stmt.slice(0, 300)}`,
+          { cause: err },
         )
       }
     }

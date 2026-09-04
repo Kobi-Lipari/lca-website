@@ -690,13 +690,12 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
 
 // ── Tournaments tab content ───────────────────────────────────────────────────
 
-function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clubId, onRefresh }: {
+function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clubId }: {
   tournaments: ApiTournamentListItem[]
   role: string
   directedTournamentIds: string[]
   isAdmin: boolean
   clubId: string | null
-  onRefresh: () => void
 }) {
   const navigate = useNavigate()
   const [shareTarget, setShareTarget] = useState<ApiTournamentListItem | null>(null)
@@ -1364,7 +1363,6 @@ export function AdminPage() {
                 directedTournamentIds={directedIds}
                 isAdmin={isAdmin}
                 clubId={member?.club_id ?? null}
-                onRefresh={loadAll}
               />
             )}
 

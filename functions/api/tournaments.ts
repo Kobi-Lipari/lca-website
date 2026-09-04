@@ -2,6 +2,7 @@
 import type { Env } from '../types'
 import { handleOptions, jsonResponse } from '../utils/response'
 import { requireAuthedMember, isResponse } from '../utils/auth'
+import { parseJsonArray } from '../utils/json'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -32,12 +33,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { results } = await context.env.DB.prepare(query).all<Record<string, unknown>>()
 
   const tournaments = (results ?? []).map((t) => {
-    let sections: unknown[] = []
-    try {
-      sections = JSON.parse(t.sections as string)
-    } catch {
-      sections = []
-    }
+    const sections = parseJsonArray(t.sections as string)
     return { ...t, sections }
   })
 

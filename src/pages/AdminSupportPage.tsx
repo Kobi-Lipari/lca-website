@@ -50,6 +50,8 @@ export function AdminSupportPage() {
       const data = await adminGetTickets()
       setTickets(data.tickets as AdminApiSupportTicket[])
     } catch {
+      // Keep whatever is already on screen; a transient failure should not
+      // blank the list out from under someone mid-read.
     } finally {
       setLoading(false)
     }
@@ -83,6 +85,8 @@ export function AdminSupportPage() {
       setReplyBody('')
       await loadTickets()
     } catch {
+      // Keep whatever is already on screen; a transient failure should not
+      // blank the list out from under someone mid-read.
     } finally {
       setSending(false)
     }

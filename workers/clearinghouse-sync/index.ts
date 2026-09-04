@@ -49,7 +49,7 @@ export default {
     })
   },
 
-  async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
+  async scheduled(_event: ScheduledEvent, env: Env): Promise<void> {
     await runSync(env)
   },
 }

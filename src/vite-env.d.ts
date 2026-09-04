@@ -12,7 +12,7 @@ interface ImportMeta {
 }
 
 declare module '*.svg' {
-  import React = require('react');
+  import type React from 'react'
   export const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   const src: string;
   export default src;
