@@ -2,7 +2,7 @@
 import type { Env } from '../../../../types'
 import { recordAdminAction } from '../../../../utils/audit'
 import { isResponse, requireAdmin } from '../../../../utils/auth'
-import { getMemberById } from '../../../../utils/members'
+import { getMemberById, validateFullName } from '../../../../utils/members'
 import { syncSupabaseUserFullName } from '../../../../utils/supabase'
 import {
   errorResponse,
@@ -14,9 +14,6 @@ import {
 interface NameBody {
   fullName?: string
 }
-
-/** Long enough for any real name, short enough to keep tables and emails sane. */
-const MAX_NAME_LENGTH = 100
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -38,13 +35,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const memberId = context.params.id as string
   const body = await parseJsonBody<NameBody>(context.request)
 
-  const fullName = body?.fullName?.trim()
-  if (!fullName) {
-    return errorResponse('A name is required', 400)
-  }
-  if (fullName.length > MAX_NAME_LENGTH) {
-    return errorResponse(`Name must be ${MAX_NAME_LENGTH} characters or fewer`, 400)
-  }
+  const problem = validateFullName(body?.fullName ?? '')
+  if (problem) return errorResponse(problem, 400)
+  const fullName = body!.fullName!.trim()
 
   const before = await getMemberById(context.env.DB, memberId)
   if (!before) {

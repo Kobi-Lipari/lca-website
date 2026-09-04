@@ -4,7 +4,9 @@ import {
   getMemberById,
   updateMemberProfile,
   upsertMemberFromAuth,
+  validateFullName,
 } from '../utils/members'
+import { isValidUscfId } from '../utils/uscf'
 import { getDirectedTournamentIds } from '../utils/permissions'
 import {
   errorResponse,
@@ -79,14 +81,35 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     return errorResponse('Invalid JSON body', 400)
   }
 
-  let member = await getMemberById(context.env.DB, authResult.id)
-  if (!member) {
-    member = await upsertMemberFromAuth(context.env.DB, authResult, context.env)
+  // Validate before touching the row. Absent fields are left alone; the
+  // difference between "not sent" and "sent empty" is the whole contract of
+  // a PATCH, and only the latter is an error.
+  if (body.fullName !== undefined) {
+    const problem = validateFullName(body.fullName)
+    if (problem) return errorResponse(problem, 400)
+  }
+
+  // null clears the ID deliberately. Anything else has to be a real one —
+  // a malformed value here silently breaks the ratings lookup later, where
+  // it is much harder to trace back to the profile form.
+  if (body.uscfId !== undefined && body.uscfId !== null && body.uscfId !== '') {
+    if (!isValidUscfId(body.uscfId)) {
+      return errorResponse('A USCF ID is 8 digits', 400)
+    }
+  }
+
+  // Make sure the row exists before updating it — someone who registered but
+  // has never loaded their dashboard has a Supabase user and no members row.
+  // The value was never read here; only this side effect matters.
+  if (!(await getMemberById(context.env.DB, authResult.id))) {
+    await upsertMemberFromAuth(context.env.DB, authResult, context.env)
   }
 
   const updated = await updateMemberProfile(context.env.DB, authResult.id, {
-    fullName: body.fullName,
-    uscfId: body.uscfId,
+    fullName: body.fullName?.trim(),
+    // An empty string means "remove it", same as null — the form sends one
+    // or the other depending on whether the field was cleared or never set.
+    uscfId: body.uscfId === '' ? null : body.uscfId?.trim() ?? body.uscfId,
   })
 
   if (!updated) {

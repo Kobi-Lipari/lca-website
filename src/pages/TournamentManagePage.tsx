@@ -185,7 +185,11 @@ export function TournamentManagePage() {
   const [roundSchedule, setRoundSchedule] = useState<ApiRoundScheduleItem[]>([])
   const [autoFillGap, setAutoFillGap] = useState(120)
 
-  const snapshotRef = useRef<FormSnapshot | null>(null)
+  // State, not a ref: the dirty-state markers below are derived from this
+  // during render, so React has to know when it changes. As a ref, saving a
+  // tab left its "unsaved" dot showing until some unrelated state happened
+  // to trigger the next render.
+  const [snapshot, setSnapshot] = useState<FormSnapshot | null>(null)
   const appliedDefaultTab = useRef(false)
 
   const [generateForm, setGenerateForm] = useState({ round: '1', section: 'Open' })
@@ -277,7 +281,7 @@ export function TournamentManagePage() {
       setRounds(nRounds)
       setRoundSchedule(nRoundSchedule)
 
-      snapshotRef.current = {
+      setSnapshot({
         name: nName,
         date: nDate,
         endDate: nEndDate,
@@ -294,7 +298,7 @@ export function TournamentManagePage() {
         registrationClosesAt: nRegistrationClosesAt,
         rounds: nRounds,
         roundSchedule: JSON.stringify(nRoundSchedule),
-      }
+      })
 
       const defaultSection = nSections[0]?.name ?? 'Open'
       setGenerateForm((p) => ({ ...p, section: defaultSection }))
@@ -357,7 +361,7 @@ export function TournamentManagePage() {
     }, { replace: true })
   }, [loading, tournament]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const snap = snapshotRef.current
+  const snap = snapshot
   const detailsDirty = !!snap && (
     name !== snap.name ||
     date !== snap.date ||
@@ -387,7 +391,7 @@ export function TournamentManagePage() {
   }
 
   function resetFormsFromSnapshot() {
-    const s = snapshotRef.current
+    const s = snapshot
     if (!s) return
     setName(s.name)
     setDate(s.date)
@@ -427,7 +431,7 @@ export function TournamentManagePage() {
   // ── Save handlers (dirty-diff: only changed keys go on the wire) ──
 
   async function handleSaveDetails() {
-    const s = snapshotRef.current
+    const s = snapshot
     if (!id || !s) return
     if (!name.trim() || !date || !location.trim()) {
       setError('Name, start date, and location are required.')
@@ -460,7 +464,7 @@ export function TournamentManagePage() {
   }
 
   async function handleSaveRegistrationSettings() {
-    const s = snapshotRef.current
+    const s = snapshot
     if (!id || !s) return
     const body: Parameters<typeof adminUpdateTournament>[1] = {}
     if (isVisible !== s.isVisible) body.isVisible = isVisible
@@ -491,7 +495,7 @@ export function TournamentManagePage() {
   }
 
   async function handleSaveSchedule() {
-    const s = snapshotRef.current
+    const s = snapshot
     if (!id || !s) return
     const body: Parameters<typeof adminUpdateTournament>[1] = {}
     if (rounds !== s.rounds) body.rounds = Number(rounds)

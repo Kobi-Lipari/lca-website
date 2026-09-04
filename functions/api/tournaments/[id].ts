@@ -3,6 +3,7 @@ import type { Env } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { requireAuthedMember, isResponse } from '../../utils/auth'
 import { computeStandings } from '../../utils/tournament-manage'
+import { parseJsonArray } from '../../utils/json'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -30,14 +31,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (!isPrivileged) return errorResponse('Tournament not found', 404)
   }
 
-  let sections: unknown[] = []
-  try { sections = JSON.parse(tournament.sections as string) } catch { sections = [] }
+  const sections = parseJsonArray(tournament.sections as string)
 
-  let roundSchedule: unknown[] = []
-  try { roundSchedule = JSON.parse(tournament.round_schedule as string) } catch { roundSchedule = [] }
+  const roundSchedule = parseJsonArray(tournament.round_schedule as string)
 
-  let customDetails: unknown[] = []
-  try { customDetails = JSON.parse(tournament.custom_details as string) } catch { customDetails = [] }
+  const customDetails = parseJsonArray(tournament.custom_details as string)
 
   let myRegistration: Record<string, unknown> | null = null
   try {

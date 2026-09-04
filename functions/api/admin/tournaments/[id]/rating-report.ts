@@ -2,6 +2,7 @@
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
+import { parseJsonArray } from '../../../../utils/json'
 
 interface GameRow {
   round: number
@@ -72,11 +73,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (g.black_member_id) participated.add(g.black_member_id)
   }
 
-  let sectionNames: string[] = []
-  try {
-    sectionNames = (JSON.parse(tournament.sections) as Array<{ name: string } | string>)
-      .map((s) => (typeof s === 'string' ? s : s.name))
-  } catch { sectionNames = [] }
+  const sectionNames = (parseJsonArray(tournament.sections) as Array<{ name: string } | string>)
+    .map((s) => (typeof s === 'string' ? s : s.name))
 
   const validationErrors: string[] = []
 

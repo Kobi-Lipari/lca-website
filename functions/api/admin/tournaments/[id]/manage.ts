@@ -3,6 +3,7 @@ import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
 import { computeStandings } from '../../../../utils/tournament-manage'
+import { parseJsonArray } from '../../../../utils/json'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -17,14 +18,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   if (!tournament) return errorResponse('Tournament not found', 404)
 
-  let sections: unknown[] = []
-  try { sections = JSON.parse(tournament.sections as string) } catch { sections = [] }
+  const sections = parseJsonArray(tournament.sections as string)
 
-  let roundSchedule: unknown[] = []
-  try { roundSchedule = JSON.parse(tournament.round_schedule as string) } catch { roundSchedule = [] }
+  const roundSchedule = parseJsonArray(tournament.round_schedule as string)
 
-  let customDetails: unknown[] = []
-  try { customDetails = JSON.parse(tournament.custom_details as string) } catch { customDetails = [] }
+  const customDetails = parseJsonArray(tournament.custom_details as string)
 
   const rosterRaw = await context.env.DB.prepare(
     `SELECT r.id as registration_id, r.member_id, r.section, r.payment_status,
