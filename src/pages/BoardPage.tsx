@@ -33,20 +33,6 @@ function isRegional(seat: ApiBoardSeat): boolean {
   return seat.category ? seat.category === 'regional_rep' : isRegionalRole(seat.role)
 }
 
-function firstName(fullName: string): string {
-  return fullName.trim().split(/\s+/)[0] || fullName
-}
-
-/**
- * "Message Adriana" for one holder, "Message the USCF Delegates" for a shared
- * seat with several. Using first names for a group reads oddly once there are
- * two, and the role is what the visitor is actually trying to reach.
- */
-function contactLabel(seat: ApiBoardSeat, displayName: string): string {
-  if (seat.holder_count > 1) return `Message the ${seat.role}s`
-  return `Message ${firstName(displayName)}`
-}
-
 // ── A single officer or representative card ───────────────────────────────────
 // The public side never shows an address. The contact link opens the contact
 // form pre-routed to this SEAT (?to=<slug>), so the message becomes a ticket
@@ -146,11 +132,12 @@ function MemberCard({
               <p className="mt-1 font-semibold text-lca-navy">{displayName}</p>
               <Link
                 to={contactHref}
+                aria-label={`Message the ${seat.role}`}
                 className={cn(
                   'mt-3 inline-flex items-center gap-1.5 rounded-md border border-lca-gold/40 bg-lca-gold/8 px-2.5 py-1 text-[11px] font-medium text-[#7a5c00] transition-colors hover:bg-lca-gold/15',
                 )}
               >
-                <Mail className="size-3" /> {contactLabel(seat, displayName)}
+                <Mail className="size-3" /> Message
               </Link>
             </>
           )}
