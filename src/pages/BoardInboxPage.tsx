@@ -72,9 +72,16 @@ export function BoardInboxPage() {
   }
 
   useEffect(() => {
-    loadList()
-      .catch(() => setDenied(true))
-      .finally(() => setLoading(false))
+    let cancelled = false
+    getBoardTickets()
+      .then((data) => {
+        if (cancelled) return
+        setTickets(data.tickets)
+        setIsAdmin(!!data.isAdmin)
+      })
+      .catch(() => { if (!cancelled) setDenied(true) })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [])
 
   // Built from the tickets themselves rather than the seat list: a seat with

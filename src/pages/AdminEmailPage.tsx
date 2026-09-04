@@ -169,9 +169,14 @@ export function AdminEmailPage() {
   }
 
   useEffect(() => {
-    getClubs().then(setClubs).catch(() => {})
-    adminGetMembers().then(setMemberPool).catch(() => {})
-    loadHistory().finally(() => setLoadingHistory(false))
+    let cancelled = false
+    getClubs().then((c) => { if (!cancelled) setClubs(c) }).catch(() => {})
+    adminGetMembers().then((m) => { if (!cancelled) setMemberPool(m) }).catch(() => {})
+    getCampaigns()
+      .then((c) => { if (!cancelled) setCampaigns(c) })
+      .catch(() => { /* keep prior list on transient failure */ })
+      .finally(() => { if (!cancelled) setLoadingHistory(false) })
+    return () => { cancelled = true }
   }, [])
 
   // Poll while any campaign is still sending.

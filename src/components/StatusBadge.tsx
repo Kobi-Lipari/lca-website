@@ -65,11 +65,6 @@ export function StatusBadge({
 }
 
 /** Tournament lifecycle status → label + tone. */
-export const TOURNAMENT_STATUS: Record<string, { label: string; tone: BadgeTone }> = {
-  upcoming: { label: 'Upcoming', tone: 'gold' },
-  active: { label: 'Active', tone: 'emerald' },
-  completed: { label: 'Completed', tone: 'muted' },
-}
 
 /** Registration-status dot: open→green, draft→gold, else→gray. */
 export function StatusDot({

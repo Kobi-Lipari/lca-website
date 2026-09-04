@@ -2,7 +2,7 @@
 
 import { Navigate } from 'react-router-dom'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 
 export function ManageClubPage() {
   const { member, memberLoading, role } = useAuth()

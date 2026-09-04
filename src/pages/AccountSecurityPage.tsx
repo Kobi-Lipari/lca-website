@@ -6,7 +6,7 @@ import { ShieldCheck, ShieldAlert, KeyRound } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import {
   listTotpFactors,
   removeFactor,

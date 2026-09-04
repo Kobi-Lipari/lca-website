@@ -1,7 +1,7 @@
 // src/pages/BylawsPage.tsx
 import { GovLayout } from '@/components/governance/GovLayout'
 import { GovernanceDocuments } from '@/components/governance/GovernanceDocuments'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 export function BylawsPage() {

@@ -8,7 +8,7 @@ import {
 
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import {
   createRegistration,
   getTournament,
@@ -196,8 +196,10 @@ export function TournamentDetailPage() {
   const [roster, setRoster] = useState<ApiRosterPlayer[]>([])
   const [pairings, setPairings] = useState<ApiTournamentPairing[]>([])
   const [myRegistration, setMyRegistration] = useState<ApiMyRegistration | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [notFound, setNotFound] = useState(false)
+  // The route param is known at first render, so a missing id is the state we
+  // start in rather than something an effect corrects a render later.
+  const [loading, setLoading] = useState(!!id)
+  const [notFound, setNotFound] = useState(!id)
   const [error, setError] = useState<string | null>(null)
 
   const [selectedSection, setSelectedSection] = useState('')
@@ -216,7 +218,7 @@ export function TournamentDetailPage() {
   usePageTitle(tournament?.name ?? 'Tournament')
 
   useEffect(() => {
-    if (!id) { setNotFound(true); setLoading(false); return }
+    if (!id) return
     async function load() {
       try {
         const data = await getTournament(id!)
