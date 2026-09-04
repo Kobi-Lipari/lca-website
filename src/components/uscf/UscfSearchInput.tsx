@@ -169,7 +169,9 @@ export default function UscfSearchInput({
   useEffect(() => {
     if (mode !== 'id') return
     const id = idInput.trim()
-    if (!id || !/^\d{4,}$/.test(id)) { reset(); return }
+    // Clearing is handled by the change handler, where the typing actually
+    // happens; here we only decline to look anything up.
+    if (!id || !/^\d{4,}$/.test(id)) return
 
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(async () => {
@@ -312,10 +314,15 @@ export default function UscfSearchInput({
             placeholder="Enter your 8-digit USCF ID…"
             value={idInput}
             onChange={(e) => {
-              setIdInput(e.target.value)
+              const next = e.target.value
+              setIdInput(next)
               setSelectedPlayer(null)
-              onIdInput?.(e.target.value.trim().length > 0)
-              onIdChange?.(e.target.value)
+              onIdInput?.(next.trim().length > 0)
+              onIdChange?.(next)
+              // Drop a stale result the moment the id stops being a plausible
+              // one, rather than leaving a green confirmation under a field
+              // that no longer matches it.
+              if (!/^\d{4,}$/.test(next.trim())) reset()
             }}
             className={cn(
               status === 'selected' && 'border-green-500',

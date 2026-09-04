@@ -4,7 +4,7 @@ import { CheckCircle2, Clock } from 'lucide-react'
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import { confirmMembership } from '@/lib/api'
 import { cn } from '@/lib/utils'
 
@@ -14,20 +14,20 @@ const goldButtonClass =
 function MembershipSuccessContent() {
   const [searchParams] = useSearchParams()
   const { refreshMember } = useAuth()
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [status, setStatus] = useState<'active' | 'pending' | null>(null)
-  const [tier, setTier] = useState<string | null>(null)
-
   const paymentId =
     searchParams.get('paymentId') ?? sessionStorage.getItem('lca_pending_payment_id')
 
+  // Nothing to wait for without a payment id, so the missing-id state is the
+  // first render rather than something an effect corrects afterwards.
+  const [loading, setLoading] = useState(!!paymentId)
+  const [error, setError] = useState<string | null>(
+    paymentId ? null : 'No payment ID found. Complete checkout from the membership page first.',
+  )
+  const [status, setStatus] = useState<'active' | 'pending' | null>(null)
+  const [tier, setTier] = useState<string | null>(null)
+
   async function checkStatus() {
-    if (!paymentId) {
-      setError('No payment ID found. Complete checkout from the membership page first.')
-      setLoading(false)
-      return
-    }
+    if (!paymentId) return
 
     try {
       const result = await confirmMembership(paymentId)
@@ -48,7 +48,27 @@ function MembershipSuccessContent() {
   }
 
   useEffect(() => {
-    checkStatus()
+    if (!paymentId) return
+    let cancelled = false
+    confirmMembership(paymentId)
+      .then(async (result) => {
+        if (cancelled) return
+        setTier(result.tier ?? null)
+        if (result.alreadyConfirmed) {
+          sessionStorage.removeItem('lca_pending_payment_id')
+          await refreshMember()
+          if (!cancelled) setStatus('active')
+        } else {
+          // The webhook has not landed yet — expected, and usually resolves
+          // within a few seconds.
+          setStatus('pending')
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Could not check payment status')
+      })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

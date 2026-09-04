@@ -298,7 +298,7 @@ export function TournamentsPage() {
   const [tournaments, setTournaments] = useState<UnifiedTournament[]>([])
   const [pastTournaments, setPastTournaments] = useState<UnifiedTournament[]>([])
   const [pastLoaded, setPastLoaded] = useState(false)
-  const [pastLoading, setPastLoading] = useState(false)
+  const pastFetchStarted = useRef(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -339,8 +339,8 @@ export function TournamentsPage() {
 
   // Lazy-load past tournaments the first time the Past tab is opened
   useEffect(() => {
-    if (timeTab !== 'past' || pastLoaded || pastLoading) return
-    setPastLoading(true)
+    if (timeTab !== 'past' || pastFetchStarted.current) return
+    pastFetchStarted.current = true
     fetch('/api/clearinghouse?upcoming=false')
       .then(r => r.json())
       .then((d: { tournaments: UnifiedTournament[] }) => {
@@ -350,9 +350,8 @@ export function TournamentsPage() {
         setPastTournaments(past)
         setPastLoaded(true)
       })
-      .catch(() => setPastTournaments([]))
-      .finally(() => setPastLoading(false))
-  }, [timeTab, pastLoaded, pastLoading])
+      .catch(() => { setPastTournaments([]); setPastLoaded(true) })
+  }, [timeTab])
 
   // ── Sync state pill ↔ right column ────────────────────────────────────────
 
@@ -394,7 +393,7 @@ export function TournamentsPage() {
   // ── Derived ───────────────────────────────────────────────────────────────
 
   const activeSet = timeTab === 'past' ? pastTournaments : tournaments
-  const activeLoading = timeTab === 'past' ? pastLoading : loading
+  const activeLoading = timeTab === 'past' ? !pastLoaded : loading
 
   const stateFiltered = activeSet.filter(t => stateMatchesPill(t.state, stateFilter))
 
@@ -434,16 +433,12 @@ export function TournamentsPage() {
     return true
   })
 
-  const selected = selectedId
-    ? filtered.find(t => `${t.source}-${t.id}` === selectedId) ?? filtered[0] ?? null
-    : filtered[0] ?? null
-
-  useEffect(() => {
-    if (filtered.length > 0 && (!selectedId || !filtered.find(t => `${t.source}-${t.id}` === selectedId))) {
-      setSelectedId(`${filtered[0].source}-${filtered[0].id}`)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateFilter, typeFilter, rightSelection, timeTab, search])
+  const keyOf = (t: UnifiedTournament) => `${t.source}-${t.id}`
+  const selectedKey =
+    selectedId && filtered.some(t => keyOf(t) === selectedId)
+      ? selectedId
+      : filtered[0] ? keyOf(filtered[0]) : null
+  const selected = filtered.find(t => keyOf(t) === selectedKey) ?? null
 
   const banner = tournaments.find(t => t.is_lca === 1 && t.state === 'LA')
 
@@ -681,7 +676,7 @@ export function TournamentsPage() {
                 ) : (
                   filtered.map(t => {
                     const key = `${t.source}-${t.id}`
-                    const isSel = key === selectedId || (!selectedId && t === filtered[0])
+                    const isSel = key === selectedKey
                     const color = t.is_lca === 1 ? (t.club_color || LCA_GOLD) : '#94a3b8'
                     return (
                       <button

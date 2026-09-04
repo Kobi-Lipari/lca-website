@@ -76,14 +76,16 @@ export function ClubDetailPage() {
   const [officers, setOfficers] = useState<ApiClubOfficer[]>([])
   const [tournaments, setTournaments] = useState<ApiClubTournament[]>([])
   const [news, setNews] = useState<ApiClubNews[]>([])
-  const [loading, setLoading] = useState(true)
-  const [notFound, setNotFound] = useState(false)
+  // The route param is known at first render, so a missing id is the state we
+  // start in rather than something an effect corrects a render later.
+  const [loading, setLoading] = useState(!!id)
+  const [notFound, setNotFound] = useState(!id)
   const [error, setError] = useState<string | null>(null)
 
   usePageTitle(club?.name ?? 'Club')
 
   useEffect(() => {
-    if (!id) { setNotFound(true); setLoading(false); return }
+    if (!id) return
     getClub(id)
       .then((data) => {
         setClub(data.club)

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import {
   createSupportTicket,
   getMyTickets,
@@ -41,12 +41,21 @@ export function SupportPage() {
     ticket: ApiSupportTicket
     messages: ApiSupportMessage[]
   } | null>(null)
-  const [loading, setLoading] = useState(false)
+  // Which user's tickets are on screen. loading was a separate flag set at
+  // the top of an effect; this says the same thing without the extra write,
+  // and it stays correct if the signed-in user changes.
+  const [ticketsFor, setTicketsFor] = useState<string | null>(null)
   const [ticketError, setTicketError] = useState<string | null>(null)
   const [replyBody, setReplyBody] = useState('')
   const [sending, setSending] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success'>('idle')
   const [submittedTicketId, setSubmittedTicketId] = useState<string | null>(null)
+
+  const loading = !!user && ticketsFor !== user.id
+
+  const suggestedName =
+    member?.full_name ?? (user?.user_metadata?.full_name as string | undefined) ?? ''
+  const accountEmail = user?.email ?? ''
 
   const [form, setForm] = useState({
     name: member?.full_name ?? user?.user_metadata?.full_name ?? '',
@@ -55,40 +64,57 @@ export function SupportPage() {
     body: '',
   })
 
-  // Update form when user loads
-  useEffect(() => {
-    if (user) {
-      setForm(f => ({
-        ...f,
-        name: f.name || member?.full_name || user.user_metadata?.full_name || '',
-        email: user.email ?? '',
-      }))
-    }
-  }, [user, member])
+  // Fill the form once the profile arrives. A name already typed wins; the
+  // email always tracks the account, since that is what replies go to.
+  const [lastIdentity, setLastIdentity] = useState(suggestedName + '|' + accountEmail)
+  if (user && suggestedName + '|' + accountEmail !== lastIdentity) {
+    setLastIdentity(suggestedName + '|' + accountEmail)
+    setForm(f => ({ ...f, name: f.name || suggestedName, email: accountEmail }))
+  }
 
   useEffect(() => {
-    if (user) {
-      setLoading(true)
-      getMyTickets()
-        .then(d => setTickets(d.tickets))
-        .catch(() => {})
-        .finally(() => setLoading(false))
-    }
+    if (!user) return
+    const uid = user.id
+    let cancelled = false
+    getMyTickets()
+      .then(d => { if (!cancelled) setTickets(d.tickets) })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setTicketsFor(uid) })
+    return () => { cancelled = true }
   }, [user])
 
   // Deep links: /support?ticket=<id> opens a ticket directly (used by the
   // dashboard's ticket list); /support?new=1 opens the new-ticket form.
-  useEffect(() => {
-    const ticketId = searchParams.get('ticket')
-    if (ticketId && user) {
-      openTicketById(ticketId)
-      return
-    }
-    if (searchParams.get('new')) {
+  const searchKey = searchParams.toString()
+  const [lastSearchKey, setLastSearchKey] = useState<string | null>(null)
+  if (searchKey !== lastSearchKey) {
+    setLastSearchKey(searchKey)
+    if (!searchParams.get('ticket') && searchParams.get('new')) {
       setView('new')
       setSubmitStatus('idle')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }
+
+  useEffect(() => {
+    const ticketId = searchParams.get('ticket')
+    if (!ticketId || !user) return
+    let cancelled = false
+    getTicket(ticketId)
+      .then((data) => {
+        if (cancelled) return
+        // Cleared here rather than before the fetch: an earlier failure stays
+        // on screen until there is something to replace it with.
+        setTicketError(null)
+        setSelectedTicket(data)
+        setView('ticket')
+      })
+      .catch((err) => {
+        if (cancelled) return
+        // Never fail silently: surface why the ticket didn't open.
+        setTicketError(err instanceof Error ? err.message : 'Could not open this ticket.')
+        setView('list')
+      })
+    return () => { cancelled = true }
   }, [searchParams, user])
 
   async function handleCreateTicket(e: React.FormEvent) {

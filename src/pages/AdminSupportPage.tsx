@@ -58,7 +58,14 @@ export function AdminSupportPage() {
   }
 
   useEffect(() => {
-    loadTickets()
+    let cancelled = false
+    adminGetTickets()
+      .then((data) => { if (!cancelled) setTickets(data.tickets as AdminApiSupportTicket[]) })
+      // Keep whatever is already on screen; a transient failure should not
+      // blank the list out from under someone mid-read.
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [])
 
   async function openTicket(ticket: AdminApiSupportTicket) {

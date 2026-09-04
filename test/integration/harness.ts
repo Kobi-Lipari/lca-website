@@ -266,7 +266,11 @@ export interface InvokeOptions {
 export async function invoke(
   handler: Handler,
   options: InvokeOptions = {},
-): Promise<{ status: number; json: () => Promise<any>; response: Response }> {
+): Promise<{
+  status: number
+  json: <T = Record<string, unknown>>() => Promise<T>
+  response: Response
+}> {
   const {
     method = 'GET',
     params = {},

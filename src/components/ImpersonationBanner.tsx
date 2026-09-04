@@ -1,5 +1,5 @@
 // src/components/ImpersonationBanner.tsx
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 
 export function ImpersonationBanner() {
   const { impersonating, exitImpersonation } = useAuth()
