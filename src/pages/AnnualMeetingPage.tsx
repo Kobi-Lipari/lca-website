@@ -141,41 +141,40 @@ export function AnnualMeetingPage() {
           </Button>
 
           {/*
-            The credentials are a horizontal band, not a third column. Both
-            routes below need the same two numbers, so they belong above both
-            rather than beside one — and two short values read better across
-            than stacked. That also leaves two columns of equal weight instead
-            of a phone column with a single line rattling around in it.
+            Three columns, with the credentials in the middle: both routes
+            either side need the same two values, so they sit between rather
+            than being repeated in each. Same label treatment throughout —
+            uppercase caption over content — so the three read as one row and
+            not as three different kinds of block.
           */}
-          <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-2 rounded-lg bg-muted/40 px-4 py-3">
-            <div>
-              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                Meeting ID
-              </dt>
-              <dd className="mt-0.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
-                {MEETING_ID}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                Passcode
-              </dt>
-              <dd className="mt-0.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
-                {MEETING_PASSCODE}
-              </dd>
-            </div>
-          </dl>
-
-          <div className="mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2 sm:gap-8">
+          <div className="mt-4 grid gap-5 border-t pt-4 sm:grid-cols-3 sm:gap-6">
             <div>
               <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 If the link doesn&apos;t open
               </h3>
               <p className="mt-1.5 text-sm text-muted-foreground">
-                Open the Zoom app, choose{' '}
-                <strong className="text-lca-navy">Join a Meeting</strong>, and enter the ID
-                and passcode above.
+                Open the Zoom app and choose{' '}
+                <strong className="text-lca-navy">Join a Meeting</strong>.
               </p>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Meeting ID
+                </h3>
+                <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                  {MEETING_ID}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Passcode
+                </h3>
+                <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                  {MEETING_PASSCODE}
+                </p>
+              </div>
             </div>
 
             <div>
@@ -189,9 +188,6 @@ export function AnnualMeetingPage() {
               >
                 {DIAL_IN.display}
               </a>
-              <p className="mt-1 text-sm text-muted-foreground">
-                You&apos;ll be asked for the same ID and passcode.
-              </p>
               {/* One tap enters both itself — the reliable route on a phone,
                   where keying eleven digits into a live call is where people
                   give up. Hidden on wider screens, where tel: does little. */}
