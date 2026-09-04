@@ -48,7 +48,7 @@ const LOGO_URL = '/lca-logo.jpg'
 // not whatever host an admin happens to be previewing from. Falls back to the
 // same default functions/utils/site.ts uses.
 const SITE_URL_DISPLAY = (
-  import.meta.env.VITE_SITE_URL ?? 'https://louisianachess.org'
+  import.meta.env.VITE_SITE_URL ?? 'https://www.louisianachess.org'
 ).replace(/^https?:\/\//, '')
 
 /** Visual mirror of functions/utils/campaigns.ts → wrapBrandedEmail().
