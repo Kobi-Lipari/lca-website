@@ -141,69 +141,66 @@ export function AnnualMeetingPage() {
           </Button>
 
           {/*
-            Three parts, because there are three things: how to get in without
-            the link, the credentials both routes need, and the phone route.
-            The credentials sit in the middle rather than being repeated in
-            each — they were printed twice before, which is one more place to
-            get them wrong if the meeting ever changes.
+            The credentials are a horizontal band, not a third column. Both
+            routes below need the same two numbers, so they belong above both
+            rather than beside one — and two short values read better across
+            than stacked. That also leaves two columns of equal weight instead
+            of a phone column with a single line rattling around in it.
           */}
-          <div className="mt-5 grid gap-5 border-t pt-5 md:grid-cols-3 md:gap-6">
+          <dl className="mt-4 flex flex-wrap gap-x-10 gap-y-2 rounded-lg bg-muted/40 px-4 py-3">
+            <div>
+              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Meeting ID
+              </dt>
+              <dd className="mt-0.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                {MEETING_ID}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Passcode
+              </dt>
+              <dd className="mt-0.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                {MEETING_PASSCODE}
+              </dd>
+            </div>
+          </dl>
+
+          <div className="mt-4 grid gap-4 border-t pt-4 sm:grid-cols-2 sm:gap-8">
             <div>
               <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 If the link doesn&apos;t open
               </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Open the Zoom app and choose{' '}
-                <strong className="text-lca-navy">Join a Meeting</strong>, then enter the
-                details alongside.
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                Open the Zoom app, choose{' '}
+                <strong className="text-lca-navy">Join a Meeting</strong>, and enter the ID
+                and passcode above.
               </p>
             </div>
 
-            {/* The one thing both routes need, given once. */}
-            <div className="rounded-lg bg-muted/40 px-4 py-3">
-              <dl className="space-y-1.5 text-sm">
-                <div>
-                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                    Meeting ID
-                  </dt>
-                  <dd className="font-mono text-base font-medium tabular-nums text-lca-navy select-all">
-                    {MEETING_ID}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                    Passcode
-                  </dt>
-                  <dd className="font-mono text-base font-medium tabular-nums text-lca-navy select-all">
-                    {MEETING_PASSCODE}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-
             <div>
-              <div className="flex items-center gap-2">
-                <Phone className="size-4 text-lca-gold" />
-                <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  Join by phone
-                </h3>
-              </div>
-              {/* One tap enters the ID and passcode itself — the reliable route
-                  on a phone, where keying eleven digits into a live call is
-                  where people give up. Hidden on wider screens, where a tel:
-                  link does little. */}
-              <Button asChild variant="outline" size="lg" className="mt-2 md:hidden">
-                <a href={ONE_TAP}>
-                  <Phone className="mr-2 size-4" />
-                  Tap to call and join
-                </a>
-              </Button>
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <Phone className="size-3.5 text-lca-gold" />
+                Join by phone
+              </h3>
               <a
                 href={`tel:${DIAL_IN.tel}`}
-                className="mt-2 block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all"
+                className="mt-1.5 block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all"
               >
                 {DIAL_IN.display}
               </a>
+              <p className="mt-1 text-sm text-muted-foreground">
+                You&apos;ll be asked for the same ID and passcode.
+              </p>
+              {/* One tap enters both itself — the reliable route on a phone,
+                  where keying eleven digits into a live call is where people
+                  give up. Hidden on wider screens, where tel: does little. */}
+              <Button asChild variant="outline" size="sm" className="mt-2 sm:hidden">
+                <a href={ONE_TAP}>
+                  <Phone className="mr-1.5 size-3.5" />
+                  Tap to call and join
+                </a>
+              </Button>
             </div>
           </div>
         </div>
