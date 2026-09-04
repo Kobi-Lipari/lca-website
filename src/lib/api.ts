@@ -852,9 +852,12 @@ export async function confirmMembership(paymentId: string): Promise<{
 }
 
 export async function createDonationCheckout(amount: number): Promise<{ paymentId: string; paymentUrl: string }> {
+  // Anyone may donate, but sending the session lets the server attribute the
+  // payment to a signed-in member. The client no longer states who it is —
+  // the server reads that from the token.
   const response = await fetch('/api/donations/checkout', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authHeaders(),
     body: JSON.stringify({ amount }),
   })
   return handleResponse(response)
