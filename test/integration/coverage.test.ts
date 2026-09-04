@@ -175,8 +175,13 @@ describe('support', () => {
       },
     })
     expect(res.status).toBe(201)
+
+    // Two emails with no board seat involved: the staff notification and the
+    // submitter's confirmation. Staff mail goes to CONTACT_EMAIL — createTicket
+    // uses that for every new ticket, whichever endpoint opened it.
     expect(emailOutbox).toHaveLength(2)
-    const notification = emailOutbox.find((e) => e.to === 'support@louisianachess.org')
+    const notification = emailOutbox.find((e) => e.to === 'contact@louisianachess.org')
+    expect(notification, 'staff notification was not sent').toBeDefined()
     expect(notification?.html).not.toContain('<img src=x')
     expect(notification?.html).toContain('&lt;img')
   })
