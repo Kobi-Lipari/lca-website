@@ -47,6 +47,14 @@ export const emailBehavior: {
 export const stripeBehavior = { succeed: true }
 
 /**
+ * Extra user_metadata for the stubbed Supabase user. Real accounts carry a
+ * signup snapshot here — 202 of 205 production users have a full_name and a
+ * few have a uscf_id — and that snapshot is never updated afterwards, so
+ * tests need to be able to reproduce a stale one.
+ */
+export const authBehavior: { extraMetadata: Record<string, unknown> } = { extraMetadata: {} }
+
+/**
  * Work an endpoint handed to context.waitUntil during the current test.
  *
  * The context used to discard these. They did not vanish — a floating
@@ -75,6 +83,7 @@ export function resetHarness(): void {
   emailBehavior.status = 500
   emailBehavior.failFor = null
   stripeBehavior.succeed = true
+  authBehavior.extraMetadata = {}
 }
 
 // ── Fetch interceptor ────────────────────────────────────────────
@@ -151,7 +160,7 @@ export function installFetchInterceptor(): void {
           aud: 'authenticated',
           role: 'authenticated',
           email: `${memberId}@test.lca`,
-          user_metadata: { full_name: `Test User ${memberId}` },
+          user_metadata: { full_name: `Test User ${memberId}`, ...authBehavior.extraMetadata },
           app_metadata: {},
           created_at: '2026-01-01T00:00:00Z',
         })
