@@ -160,6 +160,34 @@ export async function requireAdmin(
   return authed
 }
 
+/**
+ * Read access to the member directory.
+ *
+ * lca_admin keeps the full requireAdmin treatment, MFA included. A
+ * tournament_director gets the list too, because checking whether the person
+ * at the registration desk is a current member is the job — but read-only,
+ * and narrowed: see the projection in api/admin/members.ts.
+ *
+ * MFA is deliberately NOT required of a TD. It guards the admin endpoints
+ * because those change roles, delete accounts and send mail to every member;
+ * this one returns a read-only slice, and requiring every volunteer TD to
+ * enrol in TOTP before they can look someone up would cost more than it buys.
+ * Every write to a member still goes through requireAdmin.
+ */
+export async function requireMemberDirectory(
+  request: Request,
+  env: Env,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (authed instanceof Response) return authed
+
+  // Admins go the long way round so the MFA requirement still applies to them.
+  if (authed.member.role === 'lca_admin') return requireAdmin(request, env)
+  if (authed.member.role === 'tournament_director') return authed
+
+  return errorResponse('Forbidden', 403)
+}
+
 export async function requireClubRep(
   request: Request,
   env: Env,

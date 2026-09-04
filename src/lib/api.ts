@@ -108,8 +108,20 @@ export interface ApiDirectedTournament {
   status: string
 }
 
-export interface ApiAdminMember extends ApiMember {
+/**
+ * What GET /api/admin/members returns. A tournament_director receives only
+ * the fields their read-only view renders — id, name, email, USCF id,
+ * membership status and expiry — so everything an admin alone can see is
+ * optional here, and the members table reads those only under isAdmin.
+ */
+export interface ApiAdminMember
+  extends Pick<ApiMember, 'id' | 'email' | 'full_name' | 'uscf_id' | 'membership_status' | 'membership_expiry'> {
+  role?: string
+  club_id?: string | null
   club_name?: string | null
+  uscf_rating?: number | null
+  uscf_rating_updated_at?: string | null
+  created_at?: string
 }
 
 export async function updateMe(body: {
