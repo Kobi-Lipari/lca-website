@@ -56,12 +56,6 @@ const AGENDA: string[] = []
 
 // ─────────────────────────────────────────────────────────────────────────
 
-const inZone = (tz: string) =>
-  MEETING_START.toLocaleTimeString('en-US', {
-    timeZone: tz,
-    hour: 'numeric',
-    minute: '2-digit',
-  })
 
 const LONG_DATE = MEETING_START.toLocaleDateString('en-US', {
   timeZone: 'America/Chicago',
@@ -123,9 +117,9 @@ export function AnnualMeetingPage() {
         }
       />
 
-      <section className="mx-auto max-w-3xl px-6 py-10">
+      <section className="mx-auto max-w-3xl px-6 py-8">
         {/* ── Join ── */}
-        <div className="rounded-xl border bg-card p-6 shadow-sm">
+        <div className="rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
             <Video className="size-5 text-lca-gold" />
             <h2 className="text-lg font-semibold text-lca-navy">Join the meeting</h2>
@@ -139,87 +133,81 @@ export function AnnualMeetingPage() {
                 : 'The room opens a few minutes before the start. No account is needed to join.'}
           </p>
 
-          <Button asChild className={`mt-4 ${GOLD_BUTTON}`} size="lg">
+          <Button asChild className={`mt-3 ${GOLD_BUTTON}`} size="lg">
             <a href={ZOOM_URL} target="_blank" rel="noopener noreferrer">
               Join on Zoom
               <ExternalLink className="ml-2 size-4" />
             </a>
           </Button>
 
-          {/* The point of the page: everything needed to get in without the link. */}
-          <div className="mt-6 border-t pt-5">
-            <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              If the link doesn&apos;t open
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Open the Zoom app and choose <strong className="text-lca-navy">Join a Meeting</strong>,
-              then enter:
-            </p>
-            <dl className="mt-3 space-y-2 text-sm">
-              <div className="flex flex-wrap items-baseline gap-x-3">
-                <dt className="text-muted-foreground">Meeting ID</dt>
-                <dd className="font-mono text-base font-medium tabular-nums text-lca-navy select-all">
-                  {MEETING_ID}
-                </dd>
-              </div>
-              <div className="flex flex-wrap items-baseline gap-x-3">
-                <dt className="text-muted-foreground">Passcode</dt>
-                <dd className="font-mono text-base font-medium tabular-nums text-lca-navy select-all">
-                  {MEETING_PASSCODE}
-                </dd>
-              </div>
-            </dl>
-            <p className="mt-3 text-sm text-muted-foreground">
-              The join link above carries the passcode for you — that is why it
-              never asks. Typing the ID in by hand does.
-            </p>
-          </div>
-
-          {/* ── Phone ── */}
-          <div className="mt-6 border-t pt-5">
-            <div className="flex items-center gap-2">
-              <Phone className="size-4 text-lca-gold" />
+          {/*
+            Three columns, with the credentials in the middle: both routes
+            either side need the same two values, so they sit between rather
+            than being repeated in each. Same label treatment throughout —
+            uppercase caption over content — so the three read as one row and
+            not as three different kinds of block.
+          */}
+          <div className="mt-4 grid gap-5 border-t pt-4 sm:grid-cols-3 sm:gap-6">
+            <div>
               <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                If the link doesn&apos;t open
+              </h3>
+              <p className="mt-1.5 text-sm text-muted-foreground">
+                Open the Zoom app and choose{' '}
+                <strong className="text-lca-navy">Join a Meeting</strong>.
+              </p>
+            </div>
+
+            {/* Centred within its column: the two neighbours are prose that
+                fills its width, while these are short numbers that would
+                otherwise sit hard against the left and leave all the gap on
+                one side. Left-aligned once stacked, to match the rest. */}
+            <div className="space-y-3 sm:text-center">
+              <div>
+                <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Meeting ID
+                </h3>
+                <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                  {MEETING_ID}
+                </p>
+              </div>
+              <div>
+                <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  Passcode
+                </h3>
+                <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                  {MEETING_PASSCODE}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <Phone className="size-3.5 text-lca-gold" />
                 Join by phone
               </h3>
-            </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Audio only — useful if you&apos;re driving or short on data.
-            </p>
-            {/* One tap enters the ID and passcode itself — the reliable
-                route on a phone, where keying in eleven digits mid-call is
-                where people give up. */}
-            <Button asChild variant="outline" size="lg" className="mt-3 sm:hidden">
-              <a href={ONE_TAP}>
-                <Phone className="mr-2 size-4" />
-                Tap to call and join
+              <a
+                href={`tel:${DIAL_IN.tel}`}
+                className="mt-1.5 block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all"
+              >
+                {DIAL_IN.display}
               </a>
-            </Button>
-            <a
-              href={`tel:${DIAL_IN.tel}`}
-              className="mt-3 block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all sm:mt-2"
-            >
-              {DIAL_IN.display}
-            </a>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Dialling manually, you&apos;ll be asked for the meeting ID{' '}
-              <span className="font-mono tabular-nums">{MEETING_ID}</span>, then the
-              passcode <span className="font-mono tabular-nums">{MEETING_PASSCODE}</span>.
-            </p>
+              {/* One tap enters both itself — the reliable route on a phone,
+                  where keying eleven digits into a live call is where people
+                  give up. Hidden on wider screens, where tel: does little. */}
+              <Button asChild variant="outline" size="sm" className="mt-2 sm:hidden">
+                <a href={ONE_TAP}>
+                  <Phone className="mr-1.5 size-3.5" />
+                  Tap to call and join
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* ── Times elsewhere: the LCA has members outside Central. ── */}
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 rounded-xl border bg-muted/30 px-5 py-3 text-sm">
-          <span className="text-muted-foreground">Starts at</span>
-          <span><strong className="text-lca-navy">{inZone('America/Chicago')}</strong> Central</span>
-          <span><strong className="text-lca-navy">{inZone('America/New_York')}</strong> Eastern</span>
-          <span><strong className="text-lca-navy">{inZone('America/Denver')}</strong> Mountain</span>
-          <span><strong className="text-lca-navy">{inZone('America/Los_Angeles')}</strong> Pacific</span>
-        </div>
 
         {/* ── Agenda ── */}
-        <div className="mt-8 rounded-xl border bg-card p-6 shadow-sm">
+        <div className="mt-5 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
             <FileText className="size-5 text-lca-gold" />
             <h2 className="text-lg font-semibold text-lca-navy">Agenda</h2>
