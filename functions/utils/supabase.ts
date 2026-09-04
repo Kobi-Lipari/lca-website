@@ -69,18 +69,27 @@ export async function syncSupabaseUserFullName(
 ): Promise<void> {
   const supabase = getSupabaseAdmin(env)
 
-  const { data: existing, error: readError } =
-    await supabase.auth.admin.getUserById(userId)
-  if (readError) {
-    console.warn(`Could not read Supabase user ${userId}: ${readError.message}`)
-    return
-  }
+  try {
+    const { data: existing, error: readError } =
+      await supabase.auth.admin.getUserById(userId)
+    if (readError) {
+      console.warn(`Could not read Supabase user ${userId}: ${readError.message}`)
+      return
+    }
 
-  const { error } = await supabase.auth.admin.updateUserById(userId, {
-    user_metadata: { ...(existing.user?.user_metadata ?? {}), full_name: fullName },
-  })
-  if (error) {
-    console.warn(`Could not sync name for ${userId}: ${error.message}`)
+    const { error } = await supabase.auth.admin.updateUserById(userId, {
+      user_metadata: { ...(existing.user?.user_metadata ?? {}), full_name: fullName },
+    })
+    if (error) {
+      console.warn(`Could not sync name for ${userId}: ${error.message}`)
+    }
+  } catch (err) {
+    // The client throws rather than returning { error } for a malformed id,
+    // so the check above never sees it. Keeping the name in D1 is the part
+    // that matters; the auth copy is a convenience.
+    console.warn(
+      `Could not sync name for ${userId}: ${err instanceof Error ? err.message : String(err)}`,
+    )
   }
 }
 
@@ -90,14 +99,26 @@ export async function syncSupabaseUserMetadata(
   metadata: { role: string; club_id?: string | null },
 ): Promise<void> {
   const supabase = getSupabaseAdmin(env)
-  const { error } = await supabase.auth.admin.updateUserById(userId, {
-    user_metadata: {
-      role: metadata.role,
-      club_id: metadata.club_id ?? null,
-    },
-  })
-  if (error) {
-    // Log warning but don't fail — seed/test members may not exist in Supabase
-    console.warn(`Could not sync Supabase metadata for ${userId}: ${error.message}`)
+  try {
+    const { error } = await supabase.auth.admin.updateUserById(userId, {
+      user_metadata: {
+        role: metadata.role,
+        club_id: metadata.club_id ?? null,
+      },
+    })
+    if (error) {
+      // Warn but don't fail — a seeded member may not exist in Supabase.
+      console.warn(`Could not sync Supabase metadata for ${userId}: ${error.message}`)
+    }
+  } catch (err) {
+    // Same as above: a malformed id makes the client throw before it can
+    // return an error, and this runs inside upsertMemberFromAuth — which
+    // POST /api/me calls on every auth state change. A throw here turned an
+    // ordinary page load into a 500.
+    console.warn(
+      `Could not sync Supabase metadata for ${userId}: ${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    )
   }
 }

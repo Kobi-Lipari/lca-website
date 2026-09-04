@@ -17,25 +17,27 @@ export async function upsertMemberFromAuth(
   env?: Env,
 ): Promise<MemberRow> {
   const existing = await getMemberById(db, user.id)
-  const fullName =
-    (user.user_metadata?.full_name as string | undefined) ||
-    existing?.full_name ||
-    user.email?.split('@')[0] ||
-    'Member'
-  const uscfId =
-    (user.user_metadata?.uscf_id as string | undefined) ||
-    existing?.uscf_id ||
-    null
   const email = user.email ?? existing?.email ?? ''
 
   if (existing) {
+    // Only the email. user_metadata is a snapshot taken at signup that
+    // nothing ever writes back to — not the profile form, not the admin
+    // panel, both of which write to D1. Letting it win here meant every
+    // auth state change silently reverted a member's own edits, and
+    // AuthContext fires POST /api/me on each one, so a page load was
+    // enough. Email is the exception: it changes through Supabase's own
+    // confirmation flow, so the auth record is genuinely ahead of D1.
     await db
-      .prepare(
-        `UPDATE members SET email = ?, full_name = ?, uscf_id = COALESCE(?, uscf_id) WHERE id = ?`,
-      )
-      .bind(email, fullName, uscfId, user.id)
+      .prepare(`UPDATE members SET email = ? WHERE id = ?`)
+      .bind(email, user.id)
       .run()
   } else {
+    // No row yet, so metadata is all there is to seed one from.
+    const fullName =
+      (user.user_metadata?.full_name as string | undefined) ||
+      user.email?.split('@')[0] ||
+      'Member'
+    const uscfId = (user.user_metadata?.uscf_id as string | undefined) ?? null
     await db
       .prepare(
         `INSERT INTO members (id, email, full_name, uscf_id, membership_status, role)
