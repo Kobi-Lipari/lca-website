@@ -2,6 +2,7 @@
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
+  authBehavior,
   emailBehavior,
   emailOutbox,
   invoke,
@@ -13,7 +14,7 @@ import { seedAdmin, seedMember, seedRegistration, seedTournament } from './facto
 
 import { onRequestPost as registrationsPost } from '../../functions/api/registrations'
 import { onRequestPatch as membershipPatch } from '../../functions/api/admin/members/[id]/membership'
-import { onRequestPatch as mePatch } from '../../functions/api/me'
+import { onRequestPatch as mePatch, onRequestPost as mePost } from '../../functions/api/me'
 import { onRequestDelete as memberDelete } from '../../functions/api/admin/members/[id]'
 import { onRequestGet as contactGet, onRequestPost as contactPost } from '../../functions/api/contact'
 import { onRequestPost as donationPost } from '../../functions/api/donations/checkout'
@@ -206,6 +207,65 @@ describe('PATCH /api/me input validation', () => {
     const row = await nameOf(id)
     expect(row?.full_name).toBe('Keep Me')
     expect(row?.uscf_id).toBe('12345678')
+  })
+})
+
+describe('a profile edit survives the next sign-in', () => {
+  // AuthContext calls POST /api/me on every auth state change, so this runs
+  // on a plain page load. upsertMemberFromAuth used to prefer Supabase
+  // user_metadata over the D1 row, and nothing ever writes an edit back to
+  // that metadata — so the sync quietly restored the signup snapshot and the
+  // member's change vanished on refresh.
+  const rowOf = (id: string) =>
+    env.DB.prepare('SELECT full_name, uscf_id, email FROM members WHERE id = ?')
+      .bind(id).first<{ full_name: string; uscf_id: string | null; email: string }>()
+
+  it('keeps a renamed member renamed', async () => {
+    const id = await seedMember({ fullName: 'Old Name' })
+    // The harness always stubs a full_name, exactly as 202 of the 205 real
+    // accounts do.
+    expect((await invoke(mePatch, { method: 'PATCH', as: id, body: { fullName: 'New Name' } })).status).toBe(200)
+    expect((await rowOf(id))?.full_name).toBe('New Name')
+
+    expect((await invoke(mePost, { method: 'POST', as: id })).status).toBe(201)
+    expect((await rowOf(id))?.full_name).toBe('New Name')
+  })
+
+  it('keeps an edited USCF ID edited', async () => {
+    authBehavior.extraMetadata = { uscf_id: '12345677' }
+    const id = await seedMember({ uscfId: '12345677' })
+
+    expect((await invoke(mePatch, { method: 'PATCH', as: id, body: { uscfId: '87654321' } })).status).toBe(200)
+    expect((await rowOf(id))?.uscf_id).toBe('87654321')
+
+    expect((await invoke(mePost, { method: 'POST', as: id })).status).toBe(201)
+    expect((await rowOf(id))?.uscf_id).toBe('87654321')
+  })
+
+  it('keeps a cleared USCF ID cleared', async () => {
+    authBehavior.extraMetadata = { uscf_id: '12345677' }
+    const id = await seedMember({ uscfId: '12345677' })
+
+    expect((await invoke(mePatch, { method: 'PATCH', as: id, body: { uscfId: null } })).status).toBe(200)
+    expect((await invoke(mePost, { method: 'POST', as: id })).status).toBe(201)
+    expect((await rowOf(id))?.uscf_id).toBeNull()
+  })
+
+  it('still seeds a brand-new row from metadata', async () => {
+    // The one case where metadata is all there is: no row exists yet.
+    const id = '11111111-2222-4333-8444-555555555555'
+    authBehavior.extraMetadata = { uscf_id: '55554444' }
+    expect((await invoke(mePost, { method: 'POST', as: id })).status).toBe(201)
+    const row = await rowOf(id)
+    expect(row?.full_name).toBe(`Test User ${id}`)
+    expect(row?.uscf_id).toBe('55554444')
+  })
+
+  it('still tracks an email change made through auth', async () => {
+    // Email is the field auth genuinely owns, so the sync must keep it.
+    const id = await seedMember()
+    await invoke(mePost, { method: 'POST', as: id })
+    expect((await rowOf(id))?.email).toBe(`${id}@test.lca`)
   })
 })
 

@@ -146,7 +146,10 @@ export default function UscfSearchInput({
   initialUscfId,
   className,
 }: Props) {
-  const [mode, setMode] = useState<SearchMode>('id')
+  // Name search by default: hardly anyone knows their USCF ID by heart.
+  // Someone who already has one on file starts on the ID tab instead, so
+  // the value they came to edit is the one they are shown.
+  const [mode, setMode] = useState<SearchMode>(initialUscfId ? 'id' : 'name')
   const [idInput, setIdInput] = useState(initialUscfId ?? '')
   const [lastNameInput, setLastNameInput] = useState('')
   const [firstNameInput, setFirstNameInput] = useState('')
