@@ -124,7 +124,6 @@ function memberIdFromToken(token: string): string | null {
 export function installFetchInterceptor(): void {
   if (installed) return
   installed = true
-  const realFetch = globalThis.fetch.bind(globalThis)
 
   globalThis.fetch = (async (
     input: RequestInfo | URL,

@@ -5,6 +5,12 @@ import { LCA } from '@/lib/brand'
 
 const LCA_GOLD = LCA.gold
 
+/** "March 2027", or '' for an unparseable date. */
+function monthKeyOf(startDate: string): string {
+  const d = new Date(startDate + 'T00:00:00')
+  return isNaN(d.getTime()) ? '' : `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`
+}
+
 const MONTH_NAMES = [
   'January','February','March','April','May','June',
   'July','August','September','October','November','December',
@@ -29,15 +35,16 @@ export function AgendaList({ tournaments, selectedKey, onSelect }: AgendaListPro
     (a.start_date ?? '').localeCompare(b.start_date ?? ''),
   )
 
-  let lastMonthKey = ''
 
   return (
     <div className="max-h-[420px] overflow-y-auto">
-      {sorted.map(t => {
+      {sorted.map((t, i) => {
         const start = new Date(t.start_date + 'T00:00:00')
-        const monthKey = isNaN(start.getTime()) ? '' : `${MONTH_NAMES[start.getMonth()]} ${start.getFullYear()}`
-        const showMonthHeader = monthKey !== lastMonthKey
-        lastMonthKey = monthKey
+        const monthKey = monthKeyOf(t.start_date)
+        // Compared with the previous row rather than a variable mutated as the
+        // map runs: React can abandon and replay a render, and an accumulator
+        // carried across that puts month headers in the wrong places.
+        const showMonthHeader = i === 0 || monthKey !== monthKeyOf(sorted[i - 1].start_date)
         const key = `${t.source}-${t.id}`
         const isSelected = key === selectedKey
         const color = t.is_lca === 1 ? (t.club_color || LCA_GOLD) : '#94a3b8'

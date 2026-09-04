@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Calendar, ChevronLeft, ChevronRight,
+  Calendar,
   MapPin, Trophy, Clock, Building2, ExternalLink, Globe, Search, Users, X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -47,10 +47,6 @@ const STATE_PILLS: { value: StateFilter; label: string }[] = [
   { value: 'all', label: 'All' },
 ]
 
-const MONTH_NAMES = [
-  'January','February','March','April','May','June',
-  'July','August','September','October','November','December',
-]
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
