@@ -1288,42 +1288,85 @@ export interface ApiCampaignRecipient {
   full_name: string
 }
 
+export type AnnouncementTone = 'gold' | 'navy' | 'urgent' | 'info'
+export type AnnouncementSize = 'default' | 'compact'
+
 export interface ApiAnnouncement {
+  id: string
   message: string
   linkUrl: string | null
   linkLabel: string | null
+  tone: AnnouncementTone
+  size: AnnouncementSize
 }
 
-export async function getAnnouncement(): Promise<{ announcement: ApiAnnouncement | null }> {
+/** Every banner that should be on screen now, in display order. */
+export async function getAnnouncements(): Promise<{ announcements: ApiAnnouncement[] }> {
   const response = await fetch('/api/announcement')
   return handleResponse(response)
 }
 
 export interface ApiAdminAnnouncement {
+  id: string
   enabled: number
   message: string
   link_url: string | null
   link_label: string | null
+  tone: AnnouncementTone
+  size: AnnouncementSize
+  sort_order: number
+  /** Both null means "on until switched off", which is how it used to work. */
+  starts_at: string | null
+  ends_at: string | null
   updated_at: string
 }
 
-export async function adminGetAnnouncement(): Promise<{ announcement: ApiAdminAnnouncement }> {
-  const response = await fetch('/api/admin/announcement', { headers: await authHeaders() })
-  return handleResponse(response)
-}
-
-export async function adminUpdateAnnouncement(body: {
+export interface AnnouncementInput {
   enabled?: boolean
   message?: string
   linkUrl?: string | null
   linkLabel?: string | null
-}): Promise<{ announcement: ApiAdminAnnouncement }> {
+  tone?: AnnouncementTone
+  size?: AnnouncementSize
+  sortOrder?: number
+  startsAt?: string | null
+  endsAt?: string | null
+}
+
+export async function adminGetAnnouncements(): Promise<{ announcements: ApiAdminAnnouncement[] }> {
+  const response = await fetch('/api/admin/announcement', { headers: await authHeaders() })
+  return handleResponse(response)
+}
+
+export async function adminCreateAnnouncement(
+  body: AnnouncementInput,
+): Promise<{ announcement: ApiAdminAnnouncement }> {
   const response = await fetch('/api/admin/announcement', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  return handleResponse(response)
+}
+
+export async function adminUpdateAnnouncement(
+  id: string,
+  body: AnnouncementInput,
+): Promise<{ announcement: ApiAdminAnnouncement }> {
+  const response = await fetch(`/api/admin/announcement/${id}`, {
     method: 'PATCH',
     headers: await authHeaders(),
     body: JSON.stringify(body),
   })
   return handleResponse(response)
+}
+
+export async function adminDeleteAnnouncement(id: string): Promise<void> {
+  const response = await fetch(`/api/admin/announcement/${id}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  await handleResponse(response)
 }
 
 export async function adminUploadClubLogo(clubId: string, blob: Blob): Promise<{ imageUrl: string }> {
