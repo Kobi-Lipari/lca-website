@@ -1,24 +1,58 @@
 name: CI
 
+# One workflow, no path filters, every pull request.
+#
+# There used to be two. This one only ran `npm run build`, and the other —
+# which ran the actual tests — was named integration-tests.yel, so GitHub
+# never picked it up and not one test had ever run in CI. Fifteen broken
+# integration tests sat unnoticed as a result.
+#
+# The other workflow also filtered on paths (functions/**, test/**, and a
+# few more), which would have skipped a change touching only src/ — exactly
+# the shape of the contrast and design-token work. Both problems go away by
+# running everything on every PR: the whole suite takes a couple of minutes,
+# which is cheaper than one more silent gap.
+
 on:
   pull_request:
-    branches: [dev, main]
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A new push to the same PR makes the previous run irrelevant.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
+  check:
+    name: Build and test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm ci
 
+      # Typechecks the app and builds it. Note this catches things bare
+      # `tsc --noEmit` does not — a literal type narrowing a useState slipped
+      # through the latter and was caught here.
       - name: Build
         run: npm run build
+
+      - name: Typecheck Workers functions
+        run: npm run typecheck:functions
+
+      - name: Unit tests
+        run: npm test
+
+      # Runs in the real Workers runtime with a D1 database built from the
+      # migrations, so a broken migration fails here rather than on deploy.
+      - name: Integration tests
+        run: npm run test:integration
