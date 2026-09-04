@@ -81,9 +81,9 @@ export function AdminClubPage() {
           description: c.description ?? '',
           meetingSchedule: c.meeting_schedule ?? '',
           contactEmail: c.contact_email ?? '',
-          color: (c as any).color ?? LCA.gold,
-          imageUrl: (c as any).image_url ?? '',
-          region: (c as any).region ?? '',
+          color: c.color ?? LCA.gold,
+          imageUrl: c.image_url ?? '',
+          region: c.region ?? '',
         })
         setRoster(rosterData)
       } catch (err) {
@@ -109,7 +109,7 @@ export function AdminClubPage() {
         meetingSchedule: form.meetingSchedule || null,
         contactEmail: form.contactEmail || null,
         color: form.color || null,
-      } as any)
+      })
       setClub(updated)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save club')
