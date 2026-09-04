@@ -16,6 +16,8 @@ import { onRequestPost as registrationsPost } from '../../functions/api/registra
 import { onRequestPatch as membershipPatch } from '../../functions/api/admin/members/[id]/membership'
 import { onRequestPatch as mePatch, onRequestPost as mePost } from '../../functions/api/me'
 import { onRequestDelete as memberDelete } from '../../functions/api/admin/members/[id]'
+import { onRequestGet as membersGet } from '../../functions/api/admin/members'
+import { onRequestPatch as memberRolePatch } from '../../functions/api/admin/members/[id]/role'
 import { onRequestGet as contactGet, onRequestPost as contactPost } from '../../functions/api/contact'
 import { onRequestPost as donationPost } from '../../functions/api/donations/checkout'
 import { onRequestPost as membershipCheckoutPost } from '../../functions/api/membership/checkout'
@@ -241,6 +243,76 @@ describe('Stripe addresses its receipt to the account holder', () => {
     const res = await invoke(donationPost, { method: 'POST', body: { amount: 25 } })
     expect(res.status).toBe(200)
     expect(stripeSessions[0].customerEmail).toBeNull()
+  })
+})
+
+describe('the member directory is readable by tournament directors', () => {
+  // TDs verify membership at the registration desk, so they need the list —
+  // read-only, and without the columns that are none of their business.
+  const ADMIN_ONLY = ['role', 'club_id', 'club_name', 'uscf_rating', 'created_at']
+  const VISIBLE = ['id', 'full_name', 'email', 'uscf_id', 'membership_status', 'membership_expiry']
+
+  it('gives a tournament director the list, narrowed', async () => {
+    await seedMember({ fullName: 'Verified Player', uscfId: '11112222' })
+    const td = await seedMember({ role: 'tournament_director' })
+
+    const res = await invoke(membersGet, { as: td })
+    expect(res.status).toBe(200)
+
+    const { members } = await res.json<{ members: Record<string, unknown>[] }>()
+    expect(members.length).toBeGreaterThan(0)
+    for (const key of VISIBLE) expect(Object.keys(members[0])).toContain(key)
+    for (const key of ADMIN_ONLY) expect(Object.keys(members[0])).not.toContain(key)
+  })
+
+  it('still gives an admin the whole row', async () => {
+    await seedMember({ fullName: 'Verified Player' })
+    const admin = await seedAdmin()
+
+    const res = await invoke(membersGet, { as: admin })
+    expect(res.status).toBe(200)
+    const { members } = await res.json<{ members: Record<string, unknown>[] }>()
+    for (const key of [...VISIBLE, 'role', 'club_id', 'club_name']) {
+      expect(Object.keys(members[0])).toContain(key)
+    }
+  })
+
+  it('refuses an ordinary member', async () => {
+    const id = await seedMember()
+    expect((await invoke(membersGet, { as: id })).status).toBe(403)
+  })
+
+  it('refuses a club rep', async () => {
+    // Club reps manage one club's roster through their own screens; the
+    // association-wide directory is not part of that.
+    const id = await seedMember({ role: 'club_rep' })
+    expect((await invoke(membersGet, { as: id })).status).toBe(403)
+  })
+
+  it('does not let a tournament director change anything', async () => {
+    const target = await seedMember({ fullName: 'Leave Me Alone' })
+    const td = await seedMember({ role: 'tournament_director' })
+
+    const promote = await invoke(memberRolePatch, {
+      method: 'PATCH', as: td, params: { id: target }, body: { role: 'lca_admin' },
+    })
+    expect(promote.status).toBe(403)
+
+    const remove = await invoke(memberDelete, {
+      method: 'DELETE', as: td, params: { id: target },
+    })
+    expect(remove.status).toBe(403)
+
+    const row = await env.DB.prepare('SELECT role FROM members WHERE id = ?')
+      .bind(target).first<{ role: string }>()
+    expect(row?.role).toBe('member')
+  })
+
+  it('still requires a second factor from an admin', async () => {
+    // Relaxing the guard for TDs must not have relaxed it for admins.
+    const admin = await seedAdmin()
+    const res = await invoke(membersGet, { as: admin, aal: 'aal1' })
+    expect(res.status).toBe(403)
   })
 })
 

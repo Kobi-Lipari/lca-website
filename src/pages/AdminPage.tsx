@@ -936,7 +936,7 @@ function MembersTab({
   const query = search.trim().toLowerCase()
   const matches = (m: ApiAdminMember) => {
     if (!query) return true
-    const uscf = (m as unknown as { uscf_id?: string | null }).uscf_id ?? ''
+    const uscf = m.uscf_id ?? ''
     return (
       m.full_name.toLowerCase().includes(query) ||
       m.email.toLowerCase().includes(query) ||
