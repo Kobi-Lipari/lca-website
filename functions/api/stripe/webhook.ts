@@ -3,10 +3,34 @@ import type { Env } from '../../types'
 import { jsonResponse, errorResponse } from '../../utils/response'
 import { verifyStripeSignature } from '../../utils/stripe'
 
-function oneYearFromNow(): string {
-  const date = new Date()
-  date.setFullYear(date.getFullYear() + 1)
-  return date.toISOString().slice(0, 10)
+/**
+ * A year on from whichever is later: today, or the membership already held.
+ *
+ * Renewing used to always set expiry to twelve months from the day the payment
+ * cleared, so anyone who renewed before lapsing paid a full year and forfeited
+ * whatever they had left. Extending from the existing expiry is what "renew"
+ * means everywhere else.
+ *
+ * Falls back to today when there is no current expiry, or when the stored one
+ * is in the past — a lapsed member starts their year now, not from the date
+ * they let it slide.
+ */
+export function renewalExpiry(
+  currentExpiry: string | null | undefined,
+  today: Date = new Date(),
+): string {
+  const from = new Date(`${today.toISOString().slice(0, 10)}T00:00:00Z`)
+
+  if (currentExpiry) {
+    const existing = new Date(`${currentExpiry}T00:00:00Z`)
+    if (!Number.isNaN(existing.getTime()) && existing > from) {
+      existing.setUTCFullYear(existing.getUTCFullYear() + 1)
+      return existing.toISOString().slice(0, 10)
+    }
+  }
+
+  from.setUTCFullYear(from.getUTCFullYear() + 1)
+  return from.toISOString().slice(0, 10)
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -72,7 +96,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
       // Idempotency guard: Stripe can retry webhook delivery
       if (payment && payment.status !== 'completed') {
-        const expiry = oneYearFromNow()
+        const member = await context.env.DB.prepare(
+          `SELECT membership_expiry FROM members WHERE id = ?`
+        ).bind(memberId).first<{ membership_expiry: string | null }>()
+
+        const expiry = renewalExpiry(member?.membership_expiry)
         await context.env.DB.batch([
           context.env.DB.prepare(
             `UPDATE payments SET status = 'completed', stripe_payment_intent = ? WHERE id = ?`
