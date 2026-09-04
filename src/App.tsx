@@ -1,5 +1,6 @@
 // src/App.tsx
 import { lazy, Suspense } from 'react'
+import { Loader2 } from 'lucide-react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute'
@@ -48,7 +49,18 @@ function App() {
       <AnnouncementBanner />
       <Navbar />
       <main className="flex-1">
-        <Suspense fallback={<div className="flex justify-center py-24 text-muted-foreground">Loading…</div>}>
+        <Suspense
+          fallback={
+            <div
+              role="status"
+              aria-live="polite"
+              className="flex items-center justify-center gap-2 py-24 text-muted-foreground"
+            >
+              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+              <span className="text-sm">Loading…</span>
+            </div>
+          }
+        >
           <Routes>
             {/* ── Public ── */}
             <Route path="/" element={<HomePage />} />

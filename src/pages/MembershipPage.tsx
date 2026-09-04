@@ -53,14 +53,7 @@ const tiers: MembershipTier[] = [
     price: 10,
     period: 'per year',
     description: 'For members 65 and up. Full membership benefits at a reduced rate.',
-  },/*
-  {
-    id: 'test',
-    name: 'Test Membership',
-    price: 0.50,
-    period: 'demo only — remove before launch',
-    description: 'Confirms the full Stripe checkout, webhook, and activation flow with a real transaction.',
-  },*/
+  },
 ]
 
 const benefits: MembershipBenefit[] = [
