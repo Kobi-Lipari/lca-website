@@ -137,6 +137,7 @@ export interface ApiClubDetail {
   created_at: string
   color: string
   image_url: string | null
+  region: string | null
 }
 
 export interface ApiClubOfficer {
@@ -167,15 +168,44 @@ export interface ApiTournamentSection {
   prizeFund?: string
 }
 
+/**
+ * A tournament as the list endpoints return it.
+ *
+ * /api/tournaments selects t.* plus the joined club colour and name, so the
+ * response has always carried far more than the eight fields this used to
+ * declare. Pages needing registration_status or club_color reached for a
+ * cast to any to get at them, which is how a type that under-declares its
+ * own response spreads casts through every caller.
+ *
+ * Optional fields are the ones a row may genuinely leave null, not fields
+ * whose presence is uncertain.
+ */
 export interface ApiTournamentListItem {
   id: string
   name: string
   date: string
+  end_date?: string | null
   location: string
+  venue?: string | null
   entry_fee: number
   sections: Array<string | { name: string; entryFee: number }>
   rounds: number
   status: TournamentStatus
+  registration_status?: string | null
+  registration_opens_at?: string | null
+  registration_closes_at?: string | null
+  registration_url?: string | null
+  max_players?: number | null
+  description?: string | null
+  eligibility?: string | null
+  organizer?: string | null
+  time_control?: string | null
+  is_rated?: number
+  is_visible?: number
+  club_id?: string | null
+  /** Joined from clubs, not a column on tournaments. */
+  club_name?: string | null
+  club_color?: string | null
 }
 
 export interface ApiRoundScheduleItem {
@@ -852,9 +882,12 @@ export async function confirmMembership(paymentId: string): Promise<{
 }
 
 export async function createDonationCheckout(amount: number): Promise<{ paymentId: string; paymentUrl: string }> {
+  // Anyone may donate, but sending the session lets the server attribute the
+  // payment to a signed-in member. The client no longer states who it is —
+  // the server reads that from the token.
   const response = await fetch('/api/donations/checkout', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: await authHeaders(),
     body: JSON.stringify({ amount }),
   })
   return handleResponse(response)

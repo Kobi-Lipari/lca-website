@@ -2,11 +2,24 @@ import type { Env } from '../../../types'
 import { jsonResponse } from '../../../utils/response'
 import { requireAdmin, isResponse } from '../../../utils/auth'
 
+interface GovernanceDocumentBody {
+  category?: string
+  title?: string
+  content?: string | null
+  filename?: string | null
+  file_url?: string | null
+  doc_date?: string | null
+  year?: number | null
+}
+
 export const onRequestPut: PagesFunction<Env> = async (ctx) => {
   const auth = await requireAdmin(ctx.request, ctx.env)
   if (isResponse(auth)) return auth
   const { id } = ctx.params as { id: string }
-  const body = await ctx.request.json() as any
+  const body = (await ctx.request.json()) as GovernanceDocumentBody
+  if (!body?.category?.trim() || !body?.title?.trim()) {
+    return jsonResponse({ error: 'category and title are required' }, 400)
+  }
   await ctx.env.DB.prepare(
     'UPDATE governance_documents SET category = ?, title = ?, content = ?, filename = ?, file_url = ?, doc_date = ?, year = ? WHERE id = ?'
   ).bind(body.category, body.title, body.content || null, body.filename || null, body.file_url || null, body.doc_date || null, body.year || null, id).run()
