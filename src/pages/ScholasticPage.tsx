@@ -185,23 +185,6 @@ export function ScholasticPage() {
                 </p>
               </div>
 
-              {/*<div
-                className="rounded-xl border bg-card p-5 shadow-sm"
-                style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
-              >
-                <h3 className="font-semibold text-lca-navy">Coach & educator resources</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  We provide lesson plans, a tournament guide for coaches, and links to USCF
-                  scholastic resources to help educators bring chess programming to their schools.
-                </p>
-              </div>*/}
-
-              <div className="rounded-xl border border-dashed bg-muted/10 p-5">
-                <p className="text-sm text-muted-foreground italic">
-                  More programs and resources coming soon. We're working with the LCA board
-                  to expand scholastic chess across Louisiana.
-                </p>
-              </div>
             </div>
 
             <div className="mt-6 rounded-xl border-[3px] border-lca-gold bg-lca-navy p-5 text-white">
