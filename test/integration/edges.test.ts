@@ -125,8 +125,16 @@ describe('contact endpoint (PII-leak fix + resilience)', () => {
       body: { name: 'A', email: 'a@b.c', subject: 'S', body: 'B' },
     })
     expect(res.status).toBe(201)
-    const saved = await env.DB.prepare('SELECT COUNT(*) as c FROM contact_messages').first<{ c: number }>()
-    expect(saved!.c).toBeGreaterThan(0)
+
+    // The ticket is written before any mail is attempted, which is the whole
+    // point: an outage at Resend must not lose someone's message. Asserted on
+    // the id this request returned rather than a row count, so a ticket left
+    // behind by another test cannot make this pass.
+    const { ticketId } = await res.json()
+    const saved = await env.DB.prepare(
+      'SELECT id FROM support_tickets WHERE id = ?',
+    ).bind(ticketId).first<{ id: string }>()
+    expect(saved?.id).toBe(ticketId)
   })
 })
 

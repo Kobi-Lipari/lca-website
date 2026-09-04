@@ -17,6 +17,12 @@ export interface Env {
   REPLY_TO_EMAIL?: string
   /** Canonical public origin for links in outgoing mail. See utils/site. */
   SITE_URL?: string
+  /**
+   * R2 bucket holding club logos. Bound in wrangler.toml as CLUB_LOGOS — it
+   * has always existed at runtime, it was just missing from this type, which
+   * is why typecheck:functions failed on the two logo routes.
+   */
+  CLUB_LOGOS: R2Bucket
 }
 
 export interface MemberRow {
