@@ -72,6 +72,10 @@ export function DashboardPage() {
   const [emailInput, setEmailInput] = useState('')
   const [emailChangePassword, setEmailChangePassword] = useState('')
   const [uscfPlayer, setUscfPlayer] = useState<UscfPlayerResult | null>(null)
+  // What is actually in the ID box. uscfPlayer only exists once US Chess has
+  // confirmed a record, and a save must still honour an unconfirmed ID or a
+  // cleared field — both of which leave uscfPlayer null.
+  const [uscfIdDraft, setUscfIdDraft] = useState('')
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveNotice, setSaveNotice] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -94,6 +98,7 @@ export function DashboardPage() {
         setRegistrations(data.registrations)
         setFullName(data.member.full_name)
         setEmailInput(data.member.email)
+        setUscfIdDraft(data.member.uscf_id ?? '')
         setLoadError(null)
       } catch (err) {
         // AuthContext signs out on a 401, so ProtectedRoute is about to send
@@ -156,10 +161,11 @@ export function DashboardPage() {
 
       const updated = await updateMe({
         fullName,
-        uscfId: uscfPlayer?.uscfId ?? member?.uscf_id ?? null,
+        uscfId: uscfPlayer?.uscfId ?? (uscfIdDraft.trim() || null),
       })
       setMember(updated)
       setUscfPlayer(null)
+      setUscfIdDraft(updated.uscf_id ?? '')
 
       // Email lives on the Supabase auth identity, not the D1 member row —
       // change it separately and let Supabase's confirmation-link flow
@@ -397,6 +403,7 @@ export function DashboardPage() {
                     {/* USCF lookup — replaces the old plain text input */}
                     <UscfSearchInput
                       onSelect={(player) => setUscfPlayer(player)}
+                      onIdChange={setUscfIdDraft}
                       initialUscfId={member?.uscf_id ?? ''}
                     />
 
@@ -426,6 +433,7 @@ export function DashboardPage() {
                           setEmailInput(member?.email ?? '')
                           setEmailChangePassword('')
                           setUscfPlayer(null)
+                          setUscfIdDraft(member?.uscf_id ?? '')
                           setSaveError(null)
                         }}
                       >
