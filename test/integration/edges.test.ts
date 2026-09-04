@@ -13,6 +13,7 @@ import { seedAdmin, seedMember, seedRegistration, seedTournament } from './facto
 
 import { onRequestPost as registrationsPost } from '../../functions/api/registrations'
 import { onRequestPatch as membershipPatch } from '../../functions/api/admin/members/[id]/membership'
+import { onRequestPatch as mePatch } from '../../functions/api/me'
 import { onRequestGet as contactGet, onRequestPost as contactPost } from '../../functions/api/contact'
 import { onRequestPost as donationPost } from '../../functions/api/donations/checkout'
 import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook'
@@ -93,6 +94,72 @@ describe('membership PATCH regression (expiry-wipe fix)', () => {
     const row = await env.DB.prepare('SELECT membership_expiry FROM members WHERE id = ?')
       .bind(member).first<{ membership_expiry: string | null }>()
     expect(row?.membership_expiry).toBe('2027-06-30')
+  })
+})
+
+describe('PATCH /api/me input validation', () => {
+  const patch = (as: string, body: unknown) =>
+    invoke(mePatch, { method: 'PATCH', as, body })
+
+  const nameOf = (id: string) =>
+    env.DB.prepare('SELECT full_name, uscf_id FROM members WHERE id = ?')
+      .bind(id).first<{ full_name: string; uscf_id: string | null }>()
+
+  it('rejects a blank name instead of storing it', async () => {
+    // This is the one that mattered: the admin route validated, and the
+    // member-facing route that people actually use validated nothing.
+    const id = await seedMember({ fullName: 'Real Name' })
+    for (const fullName of ['', '   ']) {
+      const res = await patch(id, { fullName })
+      expect(res.status).toBe(400)
+    }
+    expect((await nameOf(id))?.full_name).toBe('Real Name')
+  })
+
+  it('rejects a name past the length cap', async () => {
+    const id = await seedMember({ fullName: 'Real Name' })
+    const res = await patch(id, { fullName: 'x'.repeat(101) })
+    expect(res.status).toBe(400)
+    expect((await nameOf(id))?.full_name).toBe('Real Name')
+  })
+
+  it('accepts a name at the cap, and trims it', async () => {
+    const id = await seedMember()
+    expect((await patch(id, { fullName: 'x'.repeat(100) })).status).toBe(200)
+    await patch(id, { fullName: '  Campbell, Richard  ' })
+    expect((await nameOf(id))?.full_name).toBe('Campbell, Richard')
+  })
+
+  it('rejects a USCF ID that is not eight digits', async () => {
+    const id = await seedMember({ uscfId: '12345678' })
+    for (const uscfId of ['123', '1234567890', 'abcdefgh', '1234-567']) {
+      expect((await patch(id, { uscfId })).status).toBe(400)
+    }
+    expect((await nameOf(id))?.uscf_id).toBe('12345678')
+  })
+
+  it('accepts a real USCF ID', async () => {
+    const id = await seedMember()
+    expect((await patch(id, { uscfId: '87654321' })).status).toBe(200)
+    expect((await nameOf(id))?.uscf_id).toBe('87654321')
+  })
+
+  it('treats null and empty string as clearing the ID', async () => {
+    for (const clear of [null, '']) {
+      const id = await seedMember({ uscfId: '12345678' })
+      expect((await patch(id, { uscfId: clear })).status).toBe(200)
+      expect((await nameOf(id))?.uscf_id).toBeNull()
+    }
+  })
+
+  it('leaves a field alone when it is not sent at all', async () => {
+    // The PATCH contract: absent means untouched, which is different from
+    // sent-and-empty. Only the latter is an error.
+    const id = await seedMember({ fullName: 'Keep Me', uscfId: '12345678' })
+    expect((await patch(id, {})).status).toBe(200)
+    const row = await nameOf(id)
+    expect(row?.full_name).toBe('Keep Me')
+    expect(row?.uscf_id).toBe('12345678')
   })
 })
 

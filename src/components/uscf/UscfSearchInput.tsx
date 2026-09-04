@@ -245,7 +245,10 @@ export default function UscfSearchInput({
           email: 'unknown@unknown.com',
         }),
       })
-    } catch {}
+    } catch {
+      // Best effort: filing the ticket is a courtesy, and failing to file one
+      // must not stop the person finishing what they were doing.
+    }
     alert(
       'The LCA support team has been notified. You can continue without a USCF ID for now.',
     )

@@ -60,7 +60,6 @@ function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml:
       <div style={{ maxWidth: 480, margin: '0 auto', background: '#fff', borderRadius: 12, overflow: 'hidden', border: '1px solid #e0ddd5' }}>
         {/* Header */}
         <div style={{ background: LCA.navy, padding: '24px 28px', textAlign: 'center' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO_URL} alt="Louisiana Chess Association" width={120} style={{ display: 'block', margin: '0 auto', borderRadius: 8 }} />
         </div>
         {/* Gold bar */}

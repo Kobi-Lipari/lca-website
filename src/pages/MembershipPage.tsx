@@ -209,8 +209,10 @@ export function MembershipPage() {
             Membership Tiers
           </h2>
           <p className="mt-1 text-muted-foreground">
-            Pay securely via Stripe. Placeholder payment links until live
-            Stripe products are configured.
+            Pay securely via Stripe. Your membership activates as soon as the
+            payment clears, and renewing early adds a year to your current
+            expiry rather than restarting it — you never lose time you've
+            already paid for.
           </p>
 
           <ul className="mt-8 grid gap-3 lg:grid-cols-4">

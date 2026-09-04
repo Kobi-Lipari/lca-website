@@ -2,6 +2,7 @@
 import type { Env } from '../../../types'
 import { isResponse, requireTournamentManager, requireAdmin } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
+import { parseJsonArray } from '../../../utils/json'
 
 interface UpdateTournamentBody {
   name?: string
@@ -112,14 +113,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     'SELECT * FROM tournaments WHERE id = ?',
   ).bind(tournamentId).first()
 
-  let parsedSections: unknown[] = []
-  try {
-    parsedSections = JSON.parse(
-      (tournament as Record<string, unknown>).sections as string,
-    ) as unknown[]
-  } catch {
-    parsedSections = []
-  }
+  const parsedSections = parseJsonArray(
+    (tournament as Record<string, unknown>).sections,
+  )
 
   return jsonResponse({
     tournament: { ...(tournament as object), sections: parsedSections },
