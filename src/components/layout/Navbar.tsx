@@ -193,7 +193,6 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mobileGovOpen, setMobileGovOpen] = useState(false)
   const { user, loading, signOut } = useAuth()
-  const location = useLocation()
   const navigate = useNavigate()
 
   function closeMobile() {
