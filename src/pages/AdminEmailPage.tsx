@@ -353,9 +353,20 @@ export function AdminEmailPage() {
               {error && <p className="text-sm text-destructive">{error}</p>}
 
               {!confirming ? (
-                <Button type="button" className={cn('w-full', GOLD)} disabled={!canPreview || previewing} onClick={handlePreview}>
-                  {previewing ? 'Resolving recipients…' : 'Review before sending'}
-                </Button>
+                <div className="space-y-1.5">
+                  <Button
+                    type="button"
+                    className={cn('w-full', GOLD)}
+                    disabled={previewing}
+                    onClick={handlePreview}
+                  >
+                    {previewing ? 'Resolving recipients…' : 'Review recipients'}
+                  </Button>
+                  <p className="text-[10px] text-muted-foreground">
+                    Shows exactly who the filters match, so you can remove anyone before sending.
+                    Nothing is sent from this step.
+                  </p>
+                </div>
               ) : (
                 <div className="rounded-lg border border-lca-gold/50 bg-lca-gold/8 p-4">
                   <p className="flex items-center gap-2 text-sm font-medium text-lca-navy">
@@ -431,13 +442,23 @@ export function AdminEmailPage() {
                   </div>
 
                   <div className="mt-4 flex gap-2">
-                    <Button type="button" className={GOLD} onClick={handleSend} disabled={sending || finalList.length === 0}>
+                    <Button
+                      type="button"
+                      className={GOLD}
+                      onClick={handleSend}
+                      disabled={sending || finalList.length === 0 || !canPreview}
+                    >
                       <Send className="mr-1.5 size-3.5" /> {sending ? 'Sending…' : 'Confirm & send'}
                     </Button>
                     <Button type="button" variant="outline" onClick={() => setConfirming(false)} disabled={sending}>
                       Back to edit
                     </Button>
                   </div>
+                  {!canPreview && (
+                    <p className="mt-2 text-[11px] text-muted-foreground">
+                      Add {!subject.trim() && !body.trim() ? 'a subject and a message' : !subject.trim() ? 'a subject' : 'a message'} before sending.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
