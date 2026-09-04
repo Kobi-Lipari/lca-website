@@ -33,6 +33,28 @@ export function renewalExpiry(
   return from.toISOString().slice(0, 10)
 }
 
+/**
+ * The part of a Stripe event this handler reads.
+ *
+ * Deliberately narrow rather than a full Stripe type: everything here is
+ * optional because it arrives from the network, and writing it out is what
+ * forces the metadata lookups below to be guarded instead of assumed.
+ */
+interface StripeWebhookEvent {
+  type?: string
+  data?: {
+    object?: {
+      payment_intent?: string | null
+      metadata?: {
+        payment_id?: string
+        type?: string
+        member_id?: string
+        registration_id?: string
+      }
+    }
+  }
+}
+
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const signature = context.request.headers.get('stripe-signature')
   const rawBody = await context.request.text()
@@ -41,10 +63,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse('Invalid signature', 400)
   }
 
-  const event = JSON.parse(rawBody) as any
+  const event = JSON.parse(rawBody) as StripeWebhookEvent
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object
+    const session = event.data?.object
+    // A completed-checkout event with no session object is not something we
+    // can act on. Acknowledge it so Stripe stops retrying rather than
+    // throwing and inviting the same malformed delivery back.
+    if (!session) return jsonResponse({ received: true })
     const paymentId = session.metadata?.payment_id
     const type = session.metadata?.type
 
