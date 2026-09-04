@@ -35,6 +35,13 @@ interface Props {
   /** Fired when US Chess itself is unreachable, so the parent can degrade. */
   onUpstreamUnavailable?: () => void
   onIdInput?: (hasInput: boolean) => void
+  /**
+   * The raw contents of the ID box, on every keystroke. A parent that saves
+   * a profile needs this as well as onSelect: someone can type a perfectly
+   * good ID that US Chess cannot confirm right now, and clearing the box is
+   * an edit too — neither reaches onSelect.
+   */
+  onIdChange?: (id: string) => void
   initialUscfId?: string
   className?: string
 }
@@ -135,6 +142,7 @@ export default function UscfSearchInput({
   onSelect,
   onUpstreamUnavailable,
   onIdInput,
+  onIdChange,
   initialUscfId,
   className,
 }: Props) {
@@ -174,7 +182,9 @@ export default function UscfSearchInput({
         }
         if (data.player) {
           setResults([data.player])
-          setStatus('found')
+          setSelectedPlayer(data.player)
+          setStatus('selected')
+          onSelect(data.player)
         } else {
           setStatus('not_found')
         }
@@ -230,6 +240,7 @@ export default function UscfSearchInput({
     setIdInput('')
     onSelect(null)
     onIdInput?.(false)
+    onIdChange?.('')
     reset()
   }
 
@@ -301,6 +312,7 @@ export default function UscfSearchInput({
               setIdInput(e.target.value)
               setSelectedPlayer(null)
               onIdInput?.(e.target.value.trim().length > 0)
+              onIdChange?.(e.target.value)
             }}
             className={cn(
               status === 'selected' && 'border-green-500',
