@@ -14,6 +14,7 @@ import { seedAdmin, seedMember, seedRegistration, seedTournament } from './facto
 import { onRequestPost as registrationsPost } from '../../functions/api/registrations'
 import { onRequestPatch as membershipPatch } from '../../functions/api/admin/members/[id]/membership'
 import { onRequestPatch as mePatch } from '../../functions/api/me'
+import { onRequestDelete as memberDelete } from '../../functions/api/admin/members/[id]'
 import { onRequestGet as contactGet, onRequestPost as contactPost } from '../../functions/api/contact'
 import { onRequestPost as donationPost } from '../../functions/api/donations/checkout'
 import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook'
@@ -205,6 +206,66 @@ describe('PATCH /api/me input validation', () => {
     const row = await nameOf(id)
     expect(row?.full_name).toBe('Keep Me')
     expect(row?.uscf_id).toBe('12345678')
+  })
+})
+
+describe('deleting a member clears every reference', () => {
+  it('removes the seat assignment, campaign recipient row and impersonation log', async () => {
+    const adminId = await seedAdmin()
+    const memberId = await seedMember()
+
+    // Three tables the cascade used to miss. A deleted member kept their
+    // officer seat and stayed on an in-flight campaign's recipient list.
+    const seat = await env.DB.prepare(
+      "SELECT id FROM board_members LIMIT 1",
+    ).first<{ id: string }>()
+    if (seat) {
+      await env.DB.prepare(
+        `INSERT INTO board_seat_assignments (id, seat_id, member_id, started_at)
+         VALUES (?, ?, ?, date('now'))`,
+      ).bind(`bsa-${memberId}`, seat.id, memberId).run()
+    }
+
+    await env.DB.prepare(
+      `INSERT INTO email_campaigns (id, subject, body_html, filter_json, total_recipients)
+       VALUES ('camp-del', 's', '<p>b</p>', '{}', 1)`,
+    ).run()
+    await env.DB.prepare(
+      `INSERT INTO email_campaign_recipients (id, campaign_id, member_id, email)
+       VALUES (?, 'camp-del', ?, 'x@y.z')`,
+    ).bind(`rcpt-del-${memberId}`, memberId).run()
+
+    await env.DB.prepare(
+      `INSERT INTO impersonation_log (id, admin_id, target_member_id)
+       VALUES (?, ?, ?)`,
+    ).bind(`imp-${memberId}`, adminId, memberId).run().catch(() => {})
+
+    const res = await invoke(memberDelete, {
+      method: 'DELETE', as: adminId, params: { id: memberId },
+    })
+    expect(res.status).toBe(200)
+
+    const count = async (sql: string) =>
+      (await env.DB.prepare(sql).bind(memberId).first<{ n: number }>())?.n ?? 0
+
+    expect(await count('SELECT COUNT(*) n FROM members WHERE id = ?')).toBe(0)
+    expect(await count('SELECT COUNT(*) n FROM board_seat_assignments WHERE member_id = ?')).toBe(0)
+    expect(await count('SELECT COUNT(*) n FROM email_campaign_recipients WHERE member_id = ?')).toBe(0)
+    expect(await count('SELECT COUNT(*) n FROM impersonation_log WHERE target_member_id = ?')).toBe(0)
+  })
+
+  it('reports whether the auth user was removed too', async () => {
+    // The response now carries authDeleted, so an admin can tell the
+    // difference between a full removal and one that left a login behind.
+    const adminId = await seedAdmin()
+    const memberId = await seedMember()
+
+    const res = await invoke(memberDelete, {
+      method: 'DELETE', as: adminId, params: { id: memberId },
+    })
+    const body = await res.json()
+    expect(body.success).toBe(true)
+    expect(body).toHaveProperty('authDeleted')
   })
 })
 
