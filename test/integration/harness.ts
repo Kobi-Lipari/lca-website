@@ -20,6 +20,8 @@ export interface CreatedStripeSession {
   amountCents: number
   productName: string
   clientReferenceId: string | null
+  /** Whose address Stripe will put its receipt against. */
+  customerEmail: string | null
 }
 
 /** Every email "sent" via Resend during the current test file. */
@@ -194,6 +196,7 @@ export function installFetchInterceptor(): void {
           productName:
             form.get('line_items[0][price_data][product_data][name]') ?? '',
           clientReferenceId: form.get('client_reference_id'),
+          customerEmail: form.get('customer_email'),
         }
         stripeSessions.push(session)
         return Response.json({ id: session.id, url: session.url })
