@@ -282,6 +282,50 @@ describe('the member directory is readable by tournament directors', () => {
     expect((await invoke(membersGet, { as: id })).status).toBe(403)
   })
 
+  it('gives an LCA auditor the same narrowed list', async () => {
+    // The role exists for this and nothing else.
+    await seedMember({ fullName: 'Verified Player', uscfId: '11112222' })
+    const auditor = await seedMember({ role: 'lca_auditor' })
+
+    const res = await invoke(membersGet, { as: auditor })
+    expect(res.status).toBe(200)
+    const { members } = await res.json<{ members: Record<string, unknown>[] }>()
+    for (const key of VISIBLE) expect(Object.keys(members[0])).toContain(key)
+    for (const key of ADMIN_ONLY) expect(Object.keys(members[0])).not.toContain(key)
+  })
+
+  it('does not let an auditor change anything either', async () => {
+    const target = await seedMember({ fullName: 'Leave Me Alone' })
+    const auditor = await seedMember({ role: 'lca_auditor' })
+
+    expect((await invoke(memberRolePatch, {
+      method: 'PATCH', as: auditor, params: { id: target }, body: { role: 'lca_admin' },
+    })).status).toBe(403)
+    expect((await invoke(memberDelete, {
+      method: 'DELETE', as: auditor, params: { id: target },
+    })).status).toBe(403)
+
+    const row = await env.DB.prepare('SELECT role FROM members WHERE id = ?')
+      .bind(target).first<{ role: string }>()
+    expect(row?.role).toBe('member')
+  })
+
+  it('accepts lca_auditor as a role an admin can grant', async () => {
+    // The CHECK constraint on members.role had to be widened for this, so a
+    // failure here means migration 0033 did not apply.
+    const admin = await seedAdmin()
+    const target = await seedMember()
+
+    const res = await invoke(memberRolePatch, {
+      method: 'PATCH', as: admin, params: { id: target }, body: { role: 'lca_auditor' },
+    })
+    expect(res.status).toBe(200)
+
+    const row = await env.DB.prepare('SELECT role FROM members WHERE id = ?')
+      .bind(target).first<{ role: string }>()
+    expect(row?.role).toBe('lca_auditor')
+  })
+
   it('refuses a club rep', async () => {
     // Club reps manage one club's roster through their own screens; the
     // association-wide directory is not part of that.

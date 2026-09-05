@@ -103,7 +103,7 @@ function App() {
             */}
             <Route path="/board/inbox" element={<ProtectedRoute><BoardInboxPage /></ProtectedRoute>} />
             {/* ── Admin ── */}
-            <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']}><AdminPage /></RoleProtectedRoute>} />
+            <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director', 'lca_auditor']}><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
             <Route path="/admin/email" element={<RoleProtectedRoute roles={['lca_admin']}><AdminEmailPage /></RoleProtectedRoute>} />
             <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']} requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />

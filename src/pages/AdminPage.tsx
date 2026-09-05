@@ -1154,16 +1154,23 @@ export function AdminPage() {
   const isAdmin = role === 'lca_admin'
   const isClubRep = role === 'club_rep'
   const isTD = role === 'tournament_director'
+  const isAuditor = role === 'lca_auditor'
+  // Auditor is the lowest rung that can read the directory, and every role
+  // above it keeps that — raising someone’s role never takes it away.
+  const canReadMembers = isAdmin || isTD || isAuditor
   const directedIds = directedTournaments?.map((t) => t.id) ?? []
 
-  // Default tab based on role — members tab is view-only for TDs, fully editable for admins
-  const defaultTab: AdminTab = (isAdmin || isTD) ? 'members' : 'tournaments'
+  // The members tab is fully editable for admins and read-only for everyone
+  // else who can see it, so it is the sensible landing tab for all of them.
+  const defaultTab: AdminTab = canReadMembers ? 'members' : 'tournaments'
   const [tab, setTab] = useState<AdminTab>(defaultTab)
 
   // Tabs visible per role
   const visibleTabs: { id: AdminTab; label: string; icon: typeof Users }[] = [
-    ...(isAdmin || isTD ? [{ id: 'members' as AdminTab, label: 'Members', icon: Users }] : []),
-    { id: 'tournaments' as AdminTab, label: 'Tournaments', icon: Trophy },
+    ...(canReadMembers ? [{ id: 'members' as AdminTab, label: 'Members', icon: Users }] : []),
+    // An auditor directs nothing, so a Tournaments tab would only ever show
+    // them an empty list.
+    ...(isAuditor ? [] : [{ id: 'tournaments' as AdminTab, label: 'Tournaments', icon: Trophy }]),
     ...(isAdmin || isClubRep ? [{ id: 'clubs' as AdminTab, label: 'Clubs', icon: Building2 }] : []),
     ...(isAdmin ? [{ id: 'email' as AdminTab, label: 'Group email', icon: Mail }] : []),
     ...(isAdmin ? [{ id: 'support' as AdminTab, label: 'Support tickets', icon: MessageSquare }] : []),
@@ -1179,7 +1186,7 @@ export function AdminPage() {
     Promise.all([
       getTournaments(),
       isAdmin || isClubRep ? getClubs() : null,
-      isAdmin || isTD ? adminGetMembers() : null,
+      canReadMembers ? adminGetMembers() : null,
     ])
       .then(async ([tournamentList, clubList, memberList]) => {
         if (cancelled) return
@@ -1314,7 +1321,11 @@ export function AdminPage() {
             <div>
               <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Admin panel</h1>
               <p className="mt-1 text-sm text-white/60">
-                {isAdmin ? 'Manage members, clubs, and tournaments across the LCA.' : 'Manage your tournaments and club.'}
+                {isAdmin
+                  ? 'Manage members, clubs, and tournaments across the LCA.'
+                  : isAuditor
+                    ? 'Look up a member to check their membership status.'
+                    : 'Manage your tournaments and club.'}
               </p>
             </div>
           </div>
@@ -1339,7 +1350,7 @@ export function AdminPage() {
           <p className="text-muted-foreground">Loading…</p>
         ) : (
           <>
-            {tab === 'members' && (isAdmin || isTD) && (
+            {tab === 'members' && canReadMembers && (
               <MembersTab
                 members={members}
                 clubs={clubs}

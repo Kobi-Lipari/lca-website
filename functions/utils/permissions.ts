@@ -1,14 +1,22 @@
 // functions/utils/permissions.ts
 import type { MemberRow } from '../types'
 
+/**
+ * Ordered least to most privileged, which is also the order they are offered
+ * in the admin panel. lca_auditor reads the member directory and nothing
+ * else; every role above it can do that too, so raising someone's role never
+ * takes the directory away.
+ */
 export type MemberRole =
   | 'member'
+  | 'lca_auditor'
   | 'club_rep'
   | 'tournament_director'
   | 'lca_admin'
 
 export const MEMBER_ROLES: MemberRole[] = [
   'member',
+  'lca_auditor',
   'club_rep',
   'tournament_director',
   'lca_admin',
