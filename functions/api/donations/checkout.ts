@@ -44,6 +44,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     session = await createCheckoutSession(context.env.STRIPE_SECRET_KEY, {
       productName: 'Donation to Louisiana Chess Association',
       amountUsd: amount,
+      customerEmail: authed?.member.email,
       successUrl: `${origin}/donate/success?paymentId=${paymentId}`,
       cancelUrl: `${origin}/`,
       clientReferenceId: paymentId,
