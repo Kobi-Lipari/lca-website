@@ -160,6 +160,39 @@ export async function requireAdmin(
   return authed
 }
 
+/** Roles that may read the member directory, besides lca_admin. */
+const DIRECTORY_ROLES: MemberRole[] = ['lca_auditor', 'tournament_director']
+
+/**
+ * Read access to the member directory.
+ *
+ * lca_auditor exists for exactly this and nothing else: checking whether the
+ * person at the registration desk is a current member. tournament_director is
+ * included because it sits above auditor — raising someone's role must never
+ * take away something the lower role could do.
+ *
+ * lca_admin keeps the full requireAdmin treatment, MFA included.
+ *
+ * MFA is deliberately NOT required of the other two. It guards the admin
+ * endpoints because those change roles, delete accounts and send mail to
+ * every member; this one returns a read-only slice, and requiring every
+ * volunteer to enrol in TOTP before they can look someone up would cost more
+ * than it buys. Every write to a member still goes through requireAdmin.
+ */
+export async function requireMemberDirectory(
+  request: Request,
+  env: Env,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (authed instanceof Response) return authed
+
+  // Admins go the long way round so the MFA requirement still applies to them.
+  if (authed.member.role === 'lca_admin') return requireAdmin(request, env)
+  if (DIRECTORY_ROLES.includes(authed.member.role as MemberRole)) return authed
+
+  return errorResponse('Forbidden', 403)
+}
+
 export async function requireClubRep(
   request: Request,
   env: Env,
