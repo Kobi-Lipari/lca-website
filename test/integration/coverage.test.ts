@@ -1,7 +1,7 @@
 // test/integration/coverage.test.ts — clubs, governance, support, membership.
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { emailOutbox, invoke, resetHarness, stripeSessions } from './harness'
+import { emailOutbox, invoke, resetHarness, stripeBehavior, stripeSessions } from './harness'
 import { seedAdmin, seedClub, seedMember, seedTournament } from './factories'
 
 import { onRequestGet as clubsGet } from '../../functions/api/clubs'
@@ -209,7 +209,12 @@ describe('membership', () => {
     expect(pay?.type).toBe('membership')
   })
 
-  it('confirm reports pending before the webhook and completed after', async () => {
+  it('confirm reports pending while Stripe says the checkout is unpaid', async () => {
+    // Rewritten: confirm used to read only D1, so it answered "pending" for
+    // anything the webhook had not completed — including payments that had
+    // very much cleared. It asks Stripe now, so the pending case is the one
+    // where Stripe itself says the money has not moved.
+    stripeBehavior.sessionPaymentStatus = 'unpaid'
     const member = await seedMember()
     const res = await invoke(membershipCheckout, {
       method: 'POST', as: member, body: { tier: 'senior' },
@@ -220,6 +225,18 @@ describe('membership', () => {
       method: 'POST', as: member, body: { paymentId },
     })
     expect((await before.json()).pending).toBe(true)
+
+    const row = await env.DB.prepare('SELECT status FROM payments WHERE id = ?')
+      .bind(paymentId).first<{ status: string }>()
+    expect(row?.status).toBe('pending')
+  })
+
+  it('confirm reports completed once the payment is completed', async () => {
+    const member = await seedMember()
+    const res = await invoke(membershipCheckout, {
+      method: 'POST', as: member, body: { tier: 'senior' },
+    })
+    const { paymentId } = await res.json()
 
     await env.DB.prepare(`UPDATE payments SET status = 'completed' WHERE id = ?`)
       .bind(paymentId).run()

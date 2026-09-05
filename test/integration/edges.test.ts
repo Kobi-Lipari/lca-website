@@ -5,6 +5,7 @@ import {
   authBehavior,
   emailBehavior,
   emailOutbox,
+  stripeBehavior,
   invoke,
   resetHarness,
   signStripePayload,
@@ -20,6 +21,8 @@ import { onRequestGet as contactGet, onRequestPost as contactPost } from '../../
 import { onRequestPost as donationPost } from '../../functions/api/donations/checkout'
 import { onRequestPost as membershipCheckoutPost } from '../../functions/api/membership/checkout'
 import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook'
+import { onRequestPost as membershipCheckout } from '../../functions/api/membership/checkout'
+import { onRequestPost as membershipConfirm } from '../../functions/api/membership/confirm'
 import {
   onRequestDelete as remindDelete,
   onRequestGet as remindGet,
@@ -300,6 +303,102 @@ describe('a profile edit survives the next sign-in', () => {
     const id = await seedMember()
     await invoke(mePost, { method: 'POST', as: id })
     expect((await rowOf(id))?.email).toBe(`${id}@test.lca`)
+  })
+})
+
+describe('a membership activates even when the webhook never arrives', () => {
+  // Members were being left on 'pending' and activated by hand. Activation
+  // lived only in the webhook, and confirm only read D1 — so a delivery that
+  // never landed meant nothing in the product could tell the difference
+  // between "not paid" and "we were never told", forever.
+  async function buy(memberId: string, tier = 'adult') {
+    const res = await invoke(membershipCheckout, {
+      method: 'POST', as: memberId, body: { tier },
+    })
+    expect(res.status).toBe(200)
+    const { paymentId } = await res.json<{ paymentId: string }>()
+    return paymentId
+  }
+
+  const statusOf = async (memberId: string, paymentId: string) => ({
+    member: (await env.DB.prepare(
+      'SELECT membership_status, membership_expiry FROM members WHERE id = ?',
+    ).bind(memberId).first<{ membership_status: string; membership_expiry: string | null }>()),
+    payment: (await env.DB.prepare('SELECT status FROM payments WHERE id = ?')
+      .bind(paymentId).first<{ status: string }>()),
+  })
+
+  it('activates from the success page when Stripe says the checkout was paid', async () => {
+    const id = await seedMember({ membershipStatus: 'pending' })
+    const paymentId = await buy(id)
+
+    // No webhook at all — this is the broken case, reproduced.
+    const res = await invoke(membershipConfirm, {
+      method: 'POST', as: id, body: { paymentId },
+    })
+    expect(res.status).toBe(200)
+    expect((await res.json<{ alreadyConfirmed?: boolean }>()).alreadyConfirmed).toBe(true)
+
+    const after = await statusOf(id, paymentId)
+    expect(after.payment?.status).toBe('completed')
+    expect(after.member?.membership_status).toBe('active')
+    expect(after.member?.membership_expiry).toBeTruthy()
+  })
+
+  it('leaves an unpaid checkout alone', async () => {
+    stripeBehavior.sessionPaymentStatus = 'unpaid'
+    const id = await seedMember({ membershipStatus: 'pending' })
+    const paymentId = await buy(id)
+
+    await invoke(membershipConfirm, { method: 'POST', as: id, body: { paymentId } })
+
+    const after = await statusOf(id, paymentId)
+    expect(after.payment?.status).toBe('pending')
+    expect(after.member?.membership_status).toBe('pending')
+  })
+
+  it('does not extend the membership twice when both paths run', async () => {
+    // The webhook and the success page can now both activate, in any order.
+    // Reading the status and then writing it would let both win, and both
+    // would add a year.
+    const id = await seedMember({ membershipStatus: 'pending' })
+    const paymentId = await buy(id)
+
+    const rawBody = JSON.stringify({
+      type: 'checkout.session.completed',
+      data: {
+        object: {
+          payment_intent: 'pi_hook',
+          metadata: { type: 'membership', payment_id: paymentId, member_id: id },
+        },
+      },
+    })
+    await invoke(webhookPost, {
+      method: 'POST', rawBody,
+      headers: { 'stripe-signature': await signStripePayload(rawBody) },
+    })
+    const afterHook = await statusOf(id, paymentId)
+    expect(afterHook.member?.membership_status).toBe('active')
+
+    await invoke(membershipConfirm, { method: 'POST', as: id, body: { paymentId } })
+
+    const afterBoth = await statusOf(id, paymentId)
+    expect(afterBoth.member?.membership_expiry).toBe(afterHook.member?.membership_expiry)
+  })
+
+  it('is still pending when the payment has no Stripe session to check', async () => {
+    // A cash walk-in, or a row from before sessions were recorded: there is
+    // nothing to ask Stripe about, so nothing is assumed.
+    const id = await seedMember({ membershipStatus: 'pending' })
+    await env.DB.prepare(
+      `INSERT INTO payments (id, member_id, amount, type, reference_id, status)
+       VALUES ('p-nosession', ?, 15, 'membership', 'adult', 'pending')`,
+    ).bind(id).run()
+
+    const res = await invoke(membershipConfirm, {
+      method: 'POST', as: id, body: { paymentId: 'p-nosession' },
+    })
+    expect((await res.json<{ pending?: boolean }>()).pending).toBe(true)
   })
 })
 
