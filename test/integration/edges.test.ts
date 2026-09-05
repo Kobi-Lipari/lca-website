@@ -18,6 +18,7 @@ import { onRequestPatch as mePatch, onRequestPost as mePost } from '../../functi
 import { onRequestDelete as memberDelete } from '../../functions/api/admin/members/[id]'
 import { onRequestGet as contactGet, onRequestPost as contactPost } from '../../functions/api/contact'
 import { onRequestPost as donationPost } from '../../functions/api/donations/checkout'
+import { onRequestPost as membershipCheckoutPost } from '../../functions/api/membership/checkout'
 import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook'
 import {
   onRequestDelete as remindDelete,
@@ -207,6 +208,39 @@ describe('PATCH /api/me input validation', () => {
     const row = await nameOf(id)
     expect(row?.full_name).toBe('Keep Me')
     expect(row?.uscf_id).toBe('12345678')
+  })
+})
+
+describe('Stripe addresses its receipt to the account holder', () => {
+  // Checkout asks for an email whether or not we send one, so a receipt was
+  // always going to reach somebody. Sending it means Stripe's receipt goes to
+  // the address on the LCA account rather than whatever was typed at the till,
+  // and the field arrives prefilled.
+  it('sends the member email with a membership checkout', async () => {
+    const id = await seedMember({ email: 'player@example.org' })
+    const res = await invoke(membershipCheckoutPost, {
+      method: 'POST', as: id, body: { tier: 'adult' },
+    })
+    expect(res.status).toBe(200)
+    expect(stripeSessions).toHaveLength(1)
+    expect(stripeSessions[0].customerEmail).toBe('player@example.org')
+  })
+
+  it('sends it with a donation from a signed-in member too', async () => {
+    const id = await seedMember({ email: 'donor@example.org' })
+    const res = await invoke(donationPost, {
+      method: 'POST', as: id, body: { amount: 25 },
+    })
+    expect(res.status).toBe(200)
+    expect(stripeSessions[0].customerEmail).toBe('donor@example.org')
+  })
+
+  it('leaves it unset for an anonymous donation', async () => {
+    // Nobody is signed in, so there is no account address to pin it to and
+    // Checkout collects one itself.
+    const res = await invoke(donationPost, { method: 'POST', body: { amount: 25 } })
+    expect(res.status).toBe(200)
+    expect(stripeSessions[0].customerEmail).toBeNull()
   })
 })
 
