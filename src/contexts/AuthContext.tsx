@@ -1,9 +1,7 @@
 // src/contexts/AuthContext.tsx
 
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useRef,
@@ -11,6 +9,8 @@ import {
   type ReactNode,
 } from 'react'
 import type { AuthError, Session, User } from '@supabase/supabase-js'
+
+import { AuthContext } from './auth-context'
 
 import {
   adminEndImpersonation,
@@ -34,7 +34,7 @@ interface ImpersonationTarget {
   email: string
 }
 
-interface AuthContextValue {
+export interface AuthContextValue {
   user: User | null
   session: Session | null
   member: ApiMember | null
@@ -83,7 +83,6 @@ interface AuthContextValue {
   exitImpersonation: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextValue | null>(null)
 
 const IMPERSONATION_TARGET_KEY = 'lca_impersonation_target'
 const ADMIN_SESSION_STASH_KEY = 'lca_admin_session_stash'
@@ -445,12 +444,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
-  }
-  return context
 }

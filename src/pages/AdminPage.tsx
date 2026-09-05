@@ -4,12 +4,13 @@ import {
   ArrowLeft, ArrowRight, Award, Building2, Check, Copy,
   LogIn, Mail, Megaphone, MessageSquare, Pencil, Plus, Search, Share2, Shield,
   ShieldAlert, Trash2, Trophy, Users, X,
+  type LucideIcon,
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import { AdminAnnouncementPanel } from '@/components/AdminAnnouncementPanel'
 import { AuditLogPanel } from '@/components/admin/AuditLogPanel'
 import { BoardSeatsPanel } from '@/components/admin/BoardSeatsPanel'
@@ -395,7 +396,7 @@ function StepTemplate({ w, set, tournaments, onNext }: {
         {([
           { type: 'existing' as const, icon: Copy, title: 'From an existing tournament', desc: 'Copy sections, time control, and rounds from a past tournament.', note: 'Name, date, and round times are not copied.' },
           { type: 'scratch' as const, icon: Pencil, title: 'From scratch', desc: 'Step-by-step wizard. Start with a blank slate.', note: undefined },
-        ] as { type: 'existing' | 'scratch'; icon: any; title: string; desc: string; note?: string }[]).map(({ type, icon: Icon, title, desc, note }) => (
+        ] as { type: 'existing' | 'scratch'; icon: LucideIcon; title: string; desc: string; note?: string }[]).map(({ type, icon: Icon, title, desc, note }) => (
           <button key={type} type="button" onClick={() => set({ templateType: type })}
             className={cn('w-full rounded-xl border p-4 text-left transition-colors',
               w.templateType === type ? 'border-[2px] border-lca-gold bg-lca-gold/4' : 'border-border hover:border-border-strong')}>
@@ -737,8 +738,8 @@ function TournamentsTab({ tournaments, role, directedTournamentIds, isAdmin, clu
         description: wizard.description || null,
         isRated: wizard.isRated,
         status: 'upcoming' as const,
-      } as any)
-      const newId = (result as any).id
+      })
+      const newId = result.id
       navigate(`/admin/tournaments/${newId}`)
     } catch (err) {
       setCreateError(err instanceof Error ? err.message : 'Failed to create tournament')
@@ -1153,7 +1154,7 @@ export function AdminPage() {
   const isAdmin = role === 'lca_admin'
   const isClubRep = role === 'club_rep'
   const isTD = role === 'tournament_director'
-  const directedIds = directedTournaments?.map((t: any) => t.id) ?? []
+  const directedIds = directedTournaments?.map((t) => t.id) ?? []
 
   // Default tab based on role — members tab is view-only for TDs, fully editable for admins
   const defaultTab: AdminTab = (isAdmin || isTD) ? 'members' : 'tournaments'
@@ -1171,33 +1172,34 @@ export function AdminPage() {
     ...(isAdmin ? [{ id: 'audit' as AdminTab, label: 'Admin activity', icon: ShieldAlert }] : []),
   ]
 
-  async function loadAll() {
-    setLoading(true)
-    setError(null)
-    try {
-      const promises: Promise<any>[] = [getTournaments()]
-      if (isAdmin || isClubRep) promises.push(getClubs())
-      if (isAdmin || isTD) promises.push(adminGetMembers())
-      const [tournamentList, clubList, memberList] = await Promise.all(promises)
-      setTournaments(tournamentList ?? [])
-      if (clubList) setClubs(clubList)
-      if (memberList) setMembers(memberList)
-      // Awaited separately rather than joined onto the positional array above:
-      // that destructuring assumes a fixed order and already misaligns when a
-      // role skips one of the earlier fetches.
-      if (isAdmin) {
-        const seatData = await adminGetBoardSeats()
-        setBoardSeats(seatData.seats)
-        setSeatHolders(seatData.holders)
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load data')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => { loadAll() }, [])
+  useEffect(() => {
+    let cancelled = false
+    // Board seats are fetched only for admins and only after the rest, so the
+    // main three resolve together and a non-admin never requests them.
+    Promise.all([
+      getTournaments(),
+      isAdmin || isClubRep ? getClubs() : null,
+      isAdmin || isTD ? adminGetMembers() : null,
+    ])
+      .then(async ([tournamentList, clubList, memberList]) => {
+        if (cancelled) return
+        setTournaments(tournamentList ?? [])
+        if (clubList) setClubs(clubList)
+        if (memberList) setMembers(memberList)
+        if (isAdmin) {
+          const seatData = await adminGetBoardSeats()
+          if (cancelled) return
+          setBoardSeats(seatData.seats)
+          setSeatHolders(seatData.holders)
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load data')
+      })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Seat assignment is deliberately NOT a members.role change — a seat is a
   // time-bounded grant, so holding one never disturbs whether someone is a

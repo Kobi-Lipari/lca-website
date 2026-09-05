@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Check, CreditCard, Shield, Trophy, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import { createMembershipCheckout } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'

@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react'
 import { Bell, BellOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import {
   getTournamentReminderStatus,
   optInTournamentReminder,
@@ -22,21 +22,21 @@ interface RegistrationReminderButtonProps {
 
 export function RegistrationReminderButton({ tournamentId }: RegistrationReminderButtonProps) {
   const { user } = useAuth()
-  const [optedIn, setOptedIn] = useState<boolean | null>(null)
+  // Signed out is always opted out, so it is derived rather than written
+  // into state by an effect. fetched holds only what the server said.
+  const [fetched, setFetched] = useState<boolean | null>(null)
+  const optedIn = user ? fetched : false
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    if (!user) {
-      setOptedIn(false)
-      return
-    }
+    if (!user) return
     let cancelled = false
     getTournamentReminderStatus(tournamentId)
       .then((s) => {
-        if (!cancelled) setOptedIn(s.opted_in)
+        if (!cancelled) setFetched(s.opted_in)
       })
       .catch(() => {
-        if (!cancelled) setOptedIn(false)
+        if (!cancelled) setFetched(false)
       })
     return () => {
       cancelled = true
@@ -49,10 +49,10 @@ export function RegistrationReminderButton({ tournamentId }: RegistrationReminde
     try {
       if (optedIn) {
         await optOutTournamentReminder(tournamentId)
-        setOptedIn(false)
+        setFetched(false)
       } else {
         await optInTournamentReminder(tournamentId)
-        setOptedIn(true)
+        setFetched(true)
       }
     } catch {
       // matches TournamentDetailPage's existing silent-fail behavior
