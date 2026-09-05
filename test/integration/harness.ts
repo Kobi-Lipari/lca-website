@@ -45,8 +45,16 @@ export const emailBehavior: {
   failFor: string[] | null
 } = { succeed: true, status: 500, failFor: null }
 
-/** Set false to simulate Stripe being down (createCheckoutSession throws). */
-export const stripeBehavior = { succeed: true }
+/**
+ * Set succeed=false to simulate Stripe being down (createCheckoutSession
+ * throws). sessionPaymentStatus is what a retrieved Checkout Session reports,
+ * which is how the success page finds out a payment cleared when the webhook
+ * never arrived.
+ */
+export const stripeBehavior: {
+  succeed: boolean
+  sessionPaymentStatus: 'paid' | 'unpaid' | 'no_payment_required'
+} = { succeed: true, sessionPaymentStatus: 'paid' }
 
 /**
  * Extra user_metadata for the stubbed Supabase user. Real accounts carry a
@@ -85,6 +93,7 @@ export function resetHarness(): void {
   emailBehavior.status = 500
   emailBehavior.failFor = null
   stripeBehavior.succeed = true
+  stripeBehavior.sessionPaymentStatus = 'paid'
   authBehavior.extraMetadata = {}
 }
 
@@ -178,6 +187,16 @@ export function installFetchInterceptor(): void {
           { status: 500 },
         )
       }
+      // Retrieving one session: GET /v1/checkout/sessions/{id}
+      const PREFIX = '/v1/checkout/sessions/'
+      if (request.method === 'GET' && url.pathname.startsWith(PREFIX)) {
+        return Response.json({
+          id: url.pathname.slice(PREFIX.length),
+          payment_status: stripeBehavior.sessionPaymentStatus,
+          payment_intent: 'pi_from_retrieve',
+        })
+      }
+
       if (url.pathname === '/v1/checkout/sessions' && request.method === 'POST') {
         const form = new URLSearchParams(await request.text())
         const metadata: Record<string, string> = {}
