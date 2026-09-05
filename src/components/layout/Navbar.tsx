@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import { cn } from '@/lib/utils'
 import lcaLogo from '@/assets/lca-logo.webp'
 
@@ -62,7 +62,14 @@ function DropdownMenu({
     isPathActive(location.pathname, href) ||
     items.some((item) => isPathActive(location.pathname, item.href))
 
-  useEffect(() => { setOpen(false) }, [location.pathname])
+  // Adjusting state during render is what React recommends for resetting on
+  // a changed value: the menu is shut before the new page paints, instead of
+  // flashing open for one frame and being closed by an effect afterwards.
+  const [lastPath, setLastPath] = useState(location.pathname)
+  if (location.pathname !== lastPath) {
+    setLastPath(location.pathname)
+    setOpen(false)
+  }
 
   useEffect(() => {
     if (!open) return

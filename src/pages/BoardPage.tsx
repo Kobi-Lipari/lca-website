@@ -6,7 +6,7 @@ import { GovLayout } from '@/components/governance/GovLayout'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import {
   adminCreateBoardMember,
   adminDeleteBoardMember,

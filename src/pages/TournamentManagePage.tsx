@@ -230,81 +230,93 @@ export function TournamentManagePage() {
 
   usePageTitle(tournament ? `Manage ${tournament.name}` : 'Manage Tournament')
 
+  type ManageData = Awaited<ReturnType<typeof adminGetTournamentManage>>
+
+  /**
+   * Everything a fetch result puts on screen, split out from the fetch
+   * itself. The mount effect can then apply it from a promise callback —
+   * a mount effect must not call something that sets state synchronously —
+   * while the nine mutation handlers below still get one loadManage() to
+   * await after they change something.
+   */
+  function applyManage(data: ManageData) {
+    const t = data.tournament
+    setTournament(t)
+    setRoster(data.roster ?? [])
+    setGames(data.games)
+    setStandings(data.standings)
+
+    // Normalize once so form state, the rounds→schedule sync effect, and the
+    // snapshot all agree — no false "unsaved changes" straight after load.
+    const nName = t.name ?? ''
+    const nDate = (t.date ?? '').slice(0, 10)
+    const nEndDate = (t.end_date ?? '').slice(0, 10)
+    const nLocation = t.location ?? ''
+    const nVenue = t.venue ?? ''
+    const nDescription = t.description ?? ''
+    const nMaxPlayers = t.max_players != null ? String(t.max_players) : ''
+    const nIsRated = t.is_rated !== 0
+    const nTimeControl = t.time_control ?? ''
+    const nSections = t.sections ?? []
+    const nCustomDetails = t.custom_details ?? []
+    const nIsVisible = t.is_visible !== 0
+    const nRegistrationStatus = t.registration_status ?? 'draft'
+    const nRegistrationClosesAt = (t.registration_closes_at ?? '').slice(0, 16)
+    const nRounds = String(t.rounds ?? 5)
+    const nRoundSchedule = normalizeSchedule(t.round_schedule ?? [], Number(nRounds))
+
+    setName(nName)
+    setDate(nDate)
+    setEndDate(nEndDate)
+    setLocation(nLocation)
+    setVenue(nVenue)
+    setDescription(nDescription)
+    setMaxPlayers(nMaxPlayers)
+    setIsRated(nIsRated)
+    setTimeControl(nTimeControl)
+    setCustomTimeControl(
+      nTimeControl && !TIME_CONTROL_PRESETS.includes(nTimeControl) ? nTimeControl : '',
+    )
+    setSections(nSections)
+    setCustomDetails(nCustomDetails)
+    setIsVisible(nIsVisible)
+    setRegistrationStatus(nRegistrationStatus)
+    setRegistrationClosesAt(nRegistrationClosesAt)
+    setRounds(nRounds)
+    setRoundSchedule(nRoundSchedule)
+
+    setSnapshot({
+      name: nName,
+      date: nDate,
+      endDate: nEndDate,
+      location: nLocation,
+      venue: nVenue,
+      description: nDescription,
+      maxPlayers: nMaxPlayers,
+      isRated: nIsRated,
+      timeControl: nTimeControl,
+      sections: JSON.stringify(nSections),
+      customDetails: JSON.stringify(nCustomDetails),
+      isVisible: nIsVisible,
+      registrationStatus: nRegistrationStatus,
+      registrationClosesAt: nRegistrationClosesAt,
+      rounds: nRounds,
+      roundSchedule: JSON.stringify(nRoundSchedule),
+    })
+
+    const defaultSection = nSections[0]?.name ?? 'Open'
+    setGenerateForm((p) => ({ ...p, section: defaultSection }))
+    setPairingForm((p) => ({ ...p, section: defaultSection }))
+    setWalkIn((p) => ({ ...p, section: p.section || defaultSection }))
+    setDeleteSection((p) => p || defaultSection)
+  }
+
   async function loadManage() {
     if (!id) return
     setLoading(true)
     setError(null)
     try {
-      const data = await adminGetTournamentManage(id)
-      const t = data.tournament
-      setTournament(t)
-      setRoster(data.roster ?? [])
-      setGames(data.games)
-      setStandings(data.standings)
-
-      // Normalize once so form state, the rounds→schedule sync effect, and the
-      // snapshot all agree — no false "unsaved changes" straight after load.
-      const nName = t.name ?? ''
-      const nDate = (t.date ?? '').slice(0, 10)
-      const nEndDate = (t.end_date ?? '').slice(0, 10)
-      const nLocation = t.location ?? ''
-      const nVenue = t.venue ?? ''
-      const nDescription = t.description ?? ''
-      const nMaxPlayers = t.max_players != null ? String(t.max_players) : ''
-      const nIsRated = t.is_rated !== 0
-      const nTimeControl = t.time_control ?? ''
-      const nSections = t.sections ?? []
-      const nCustomDetails = t.custom_details ?? []
-      const nIsVisible = t.is_visible !== 0
-      const nRegistrationStatus = t.registration_status ?? 'draft'
-      const nRegistrationClosesAt = (t.registration_closes_at ?? '').slice(0, 16)
-      const nRounds = String(t.rounds ?? 5)
-      const nRoundSchedule = normalizeSchedule(t.round_schedule ?? [], Number(nRounds))
-
-      setName(nName)
-      setDate(nDate)
-      setEndDate(nEndDate)
-      setLocation(nLocation)
-      setVenue(nVenue)
-      setDescription(nDescription)
-      setMaxPlayers(nMaxPlayers)
-      setIsRated(nIsRated)
-      setTimeControl(nTimeControl)
-      setCustomTimeControl(
-        nTimeControl && !TIME_CONTROL_PRESETS.includes(nTimeControl) ? nTimeControl : '',
-      )
-      setSections(nSections)
-      setCustomDetails(nCustomDetails)
-      setIsVisible(nIsVisible)
-      setRegistrationStatus(nRegistrationStatus)
-      setRegistrationClosesAt(nRegistrationClosesAt)
-      setRounds(nRounds)
-      setRoundSchedule(nRoundSchedule)
-
-      setSnapshot({
-        name: nName,
-        date: nDate,
-        endDate: nEndDate,
-        location: nLocation,
-        venue: nVenue,
-        description: nDescription,
-        maxPlayers: nMaxPlayers,
-        isRated: nIsRated,
-        timeControl: nTimeControl,
-        sections: JSON.stringify(nSections),
-        customDetails: JSON.stringify(nCustomDetails),
-        isVisible: nIsVisible,
-        registrationStatus: nRegistrationStatus,
-        registrationClosesAt: nRegistrationClosesAt,
-        rounds: nRounds,
-        roundSchedule: JSON.stringify(nRoundSchedule),
-      })
-
-      const defaultSection = nSections[0]?.name ?? 'Open'
-      setGenerateForm((p) => ({ ...p, section: defaultSection }))
-      setPairingForm((p) => ({ ...p, section: defaultSection }))
-      setWalkIn((p) => ({ ...p, section: p.section || defaultSection }))
-      setDeleteSection((p) => p || defaultSection)
+      applyManage(await adminGetTournamentManage(id))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load tournament')
     } finally {
@@ -312,7 +324,18 @@ export function TournamentManagePage() {
     }
   }
 
-  useEffect(() => { loadManage() }, [id])
+  useEffect(() => {
+    if (!id) return
+    let cancelled = false
+    adminGetTournamentManage(id)
+      .then((data) => { if (!cancelled) applyManage(data) })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load tournament')
+      })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
 
   useEffect(() => {
     getMe()
@@ -328,12 +351,16 @@ export function TournamentManagePage() {
     }
   }, [roster])
 
-  // Sync round schedule rows when rounds count changes
-  useEffect(() => {
+  // Sync round schedule rows when the rounds count changes. Adjusting state
+  // during render is React's own answer to resetting on a changed value, and
+  // it keeps the times a user has already typed, which is why this cannot
+  // just be computed fresh each render.
+  const [lastRounds, setLastRounds] = useState(rounds)
+  if (rounds !== lastRounds) {
+    setLastRounds(rounds)
     const n = Number(rounds)
-    if (!n || n < 1) return
-    setRoundSchedule((prev) => normalizeSchedule(prev, n))
-  }, [rounds])
+    if (n && n >= 1) setRoundSchedule((prev) => normalizeSchedule(prev, n))
+  }
 
   // ── Tabs ──
 

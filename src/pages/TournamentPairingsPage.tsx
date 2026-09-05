@@ -194,14 +194,16 @@ export function TournamentPairingsPage() {
   const [tournament, setTournament] = useState<ApiTournamentDetail | null>(null)
   const [pairings, setPairings] = useState<ApiTournamentPairing[]>([])
   const [standings, setStandings] = useState<ApiStanding[]>([])
-  const [loading, setLoading] = useState(true)
+  // The route param is known at first render, so a missing id is the state we
+  // start in rather than something an effect corrects a render later.
+  const [loading, setLoading] = useState(!!id)
   const [error, setError] = useState<string | null>(null)
-  const [notFound, setNotFound] = useState(false)
+  const [notFound, setNotFound] = useState(!id)
 
   usePageTitle(tournament ? `${tournament.name} — Pairings` : 'Pairings')
 
   useEffect(() => {
-    if (!id) { setNotFound(true); setLoading(false); return }
+    if (!id) return
     getTournament(id)
       .then((data) => {
         setTournament(data.tournament)

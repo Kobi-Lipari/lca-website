@@ -214,9 +214,18 @@ export function BoardSeatsPanel() {
   }
 
   useEffect(() => {
-    load()
-      .catch(() => setError('Could not load board seats. Reload to try again.'))
-      .finally(() => setLoading(false))
+    let cancelled = false
+    Promise.all([adminGetBoardSeats(), adminGetMembers()])
+      .then(([seatData, memberList]) => {
+        if (cancelled) return
+        setSeats(seatData.seats)
+        setHolders(seatData.holders)
+        setHistory(seatData.history)
+        setMembers(memberList)
+      })
+      .catch(() => { if (!cancelled) setError('Could not load board seats. Reload to try again.') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [])
 
   async function run(action: () => Promise<void>, failure: string) {

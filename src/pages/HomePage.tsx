@@ -9,7 +9,7 @@ import { formatDate, type UnifiedTournament } from '@/lib/clearinghouse'
 import { clubColorTint, clubAccentStyle } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 
 import slide1 from '@/assets/LCA_Slide_1.jpg'
 import slide2 from '@/assets/LCA_Slide_2.jpg'
