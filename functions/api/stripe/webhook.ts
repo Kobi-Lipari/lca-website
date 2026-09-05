@@ -2,36 +2,11 @@
 import type { Env } from '../../types'
 import { jsonResponse, errorResponse } from '../../utils/response'
 import { verifyStripeSignature } from '../../utils/stripe'
+import { activateMembershipPayment } from '../../utils/membershipActivation'
 
-/**
- * A year on from whichever is later: today, or the membership already held.
- *
- * Renewing used to always set expiry to twelve months from the day the payment
- * cleared, so anyone who renewed before lapsing paid a full year and forfeited
- * whatever they had left. Extending from the existing expiry is what "renew"
- * means everywhere else.
- *
- * Falls back to today when there is no current expiry, or when the stored one
- * is in the past — a lapsed member starts their year now, not from the date
- * they let it slide.
- */
-export function renewalExpiry(
-  currentExpiry: string | null | undefined,
-  today: Date = new Date(),
-): string {
-  const from = new Date(`${today.toISOString().slice(0, 10)}T00:00:00Z`)
-
-  if (currentExpiry) {
-    const existing = new Date(`${currentExpiry}T00:00:00Z`)
-    if (!Number.isNaN(existing.getTime()) && existing > from) {
-      existing.setUTCFullYear(existing.getUTCFullYear() + 1)
-      return existing.toISOString().slice(0, 10)
-    }
-  }
-
-  from.setUTCFullYear(from.getUTCFullYear() + 1)
-  return from.toISOString().slice(0, 10)
-}
+/** Re-exported so the route keeps its published surface; the implementation
+ *  now lives with the activation logic that uses it. */
+export { renewalExpiry } from '../../utils/membershipActivation'
 
 /**
  * The part of a Stripe event this handler reads.
@@ -116,26 +91,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         return jsonResponse({ received: true })
       }
 
-      const payment = await context.env.DB.prepare(
-        `SELECT status FROM payments WHERE id = ?`
-      ).bind(paymentId).first<{ status: string }>()
-
-      // Idempotency guard: Stripe can retry webhook delivery
-      if (payment && payment.status !== 'completed') {
-        const member = await context.env.DB.prepare(
-          `SELECT membership_expiry FROM members WHERE id = ?`
-        ).bind(memberId).first<{ membership_expiry: string | null }>()
-
-        const expiry = renewalExpiry(member?.membership_expiry)
-        await context.env.DB.batch([
-          context.env.DB.prepare(
-            `UPDATE payments SET status = 'completed', stripe_payment_intent = ? WHERE id = ?`
-          ).bind(session.payment_intent ?? null, paymentId),
-          context.env.DB.prepare(
-            `UPDATE members SET membership_status = 'active', membership_expiry = ? WHERE id = ?`
-          ).bind(expiry, memberId),
-        ])
-      }
+      // Idempotency, and the race against the success page, are both
+      // handled by the conditional claim inside this.
+      await activateMembershipPayment(context.env.DB, {
+        paymentId,
+        memberId,
+        paymentIntent: session.payment_intent ?? null,
+      })
     }
   }
 

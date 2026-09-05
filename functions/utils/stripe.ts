@@ -66,6 +66,41 @@ function timingSafeEqualHex(a: string, b: string): boolean {
 }
 
 // Verifies the `Stripe-Signature` header using Web Crypto (no Node crypto needed)
+export interface RetrievedCheckoutSession {
+  payment_status: 'paid' | 'unpaid' | 'no_payment_required'
+  payment_intent: string | null
+}
+
+/**
+ * The source of truth for whether a checkout was actually paid.
+ *
+ * Everything else in this codebase learns that from a webhook, which is fine
+ * until the webhook does not arrive — at which point nothing in the product
+ * can tell the difference between "not paid" and "we were never told". This
+ * asks.
+ */
+export async function retrieveCheckoutSession(
+  secretKey: string,
+  sessionId: string,
+): Promise<RetrievedCheckoutSession | null> {
+  const res = await fetch(
+    `https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`,
+    { headers: { Authorization: `Bearer ${secretKey}` } },
+  )
+  if (!res.ok) return null
+
+  const session = await res.json<{
+    payment_status?: string
+    payment_intent?: string | { id?: string } | null
+  }>()
+
+  const intent = session.payment_intent
+  return {
+    payment_status: (session.payment_status ?? 'unpaid') as RetrievedCheckoutSession['payment_status'],
+    payment_intent: typeof intent === 'string' ? intent : intent?.id ?? null,
+  }
+}
+
 export async function verifyStripeSignature(
   payload: string,
   signatureHeader: string,
