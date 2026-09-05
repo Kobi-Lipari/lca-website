@@ -7,6 +7,14 @@ export async function createCheckoutSession(
     cancelUrl: string
     clientReferenceId: string
     metadata: Record<string, string>
+    /**
+     * Prefills the email field at checkout, and — because Stripe addresses
+     * its receipt to whatever ends up on the charge — pins that receipt to
+     * the address on the member's LCA account. Without it Checkout still
+     * asks for an email, so a receipt is still sent; it just goes wherever
+     * the payer typed, which may not be the account they hold.
+     */
+    customerEmail?: string
   }
 ): Promise<{ id: string; url: string }> {
   const body = new URLSearchParams()
@@ -14,6 +22,7 @@ export async function createCheckoutSession(
   body.set('success_url', params.successUrl)
   body.set('cancel_url', params.cancelUrl)
   body.set('client_reference_id', params.clientReferenceId)
+  if (params.customerEmail) body.set('customer_email', params.customerEmail)
   body.set('line_items[0][price_data][currency]', 'usd')
   body.set('line_items[0][price_data][product_data][name]', params.productName)
   body.set('line_items[0][price_data][unit_amount]', String(Math.round(params.amountUsd * 100)))

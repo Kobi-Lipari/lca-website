@@ -46,6 +46,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     session = await createCheckoutSession(context.env.STRIPE_SECRET_KEY, {
       productName: TIER_LABELS[tier],
       amountUsd: amount,
+      customerEmail: authed.member.email,
       successUrl: `${origin}/membership/success?paymentId=${paymentId}`,
       cancelUrl: `${origin}/membership`,
       clientReferenceId: paymentId,
