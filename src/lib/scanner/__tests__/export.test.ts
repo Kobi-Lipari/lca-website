@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { gameToPgn, lichessAnalysisUrl, pgnHeaders } from '../export';
+import { emailGameLink, gameToPgn, lichessAnalysisUrl, pgnFilename, pgnHeaders } from '../export';
 import { decodeScan } from '../decoder';
 import { renderScan } from '../synthetic';
 
@@ -57,4 +57,48 @@ describe('lichessAnalysisUrl', () => {
       'https://lichess.org/analysis/pgn/e4_e5_Qh5_Nc6_Bc4_Nf6_Qxf7%23',
     );
   });
+});
+
+describe('pgnFilename', () => {
+  const day = new Date(2026, 8, 14);
+
+  it('uses the players\' surnames and the date', () => {
+    expect(pgnFilename({ legibility: 'clear', whiteName: 'Kobi Lipari', blackName: 'Ana Smith' }, day)).toBe(
+      'Lipari-vs-Smith-2026-09-14.pgn',
+    );
+  });
+
+  it('strips accents and anything a file system might reject', () => {
+    expect(pgnFilename({ legibility: 'clear', whiteName: 'José Núñez', blackName: "O'Brien/Jr" }, day)).toBe(
+      'Nunez-vs-O-Brien-Jr-2026-09-14.pgn',
+    );
+  });
+
+  it('falls back to a generic name when a player is missing', () => {
+    expect(pgnFilename({ legibility: 'clear', whiteName: 'Paul' }, day)).toBe('scanned-game-2026-09-14.pgn');
+  });
+});
+
+describe('emailGameLink', () => {
+  it('fills in the subject, the lichess link and the PGN for a short game', () => {
+    const { scan, game } = scholarsMate();
+    const link = emailGameLink(game, scan.header);
+    const params = new URLSearchParams(link.slice('mailto:?'.length));
+    expect(params.get('subject')).toBe('Chess game: Paul vs Ana');
+    expect(params.get('body')).toContain(lichessAnalysisUrl(game));
+    expect(params.get('body')).toContain('4. Qxf7# 1-0');
+  });
+
+  it('leaves the PGN out when it would make the link too long, but keeps the lichess link', () => {
+    // 60 moves of knights going out and back: legal, and long enough that
+    // the PGN no longer fits in an email link. (A 45-move game still fits.)
+    const shuffle = Array.from({ length: 30 }, () => ['Nf3', 'Nf6', 'Ng1', 'Ng8']).flat();
+    const scan = renderScan(shuffle, '1/2-1/2');
+    const game = decodeScan(scan);
+    const link = emailGameLink(game, scan.header);
+    const body = new URLSearchParams(link.slice('mailto:?'.length)).get('body') ?? '';
+    expect(body).toContain(lichessAnalysisUrl(game));
+    expect(body).toContain('Save PGN');
+    expect(body).not.toContain('PGN:\n[');
+  }, 30_000);
 });

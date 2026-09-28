@@ -16,14 +16,17 @@ import {
   Camera,
   Check,
   Copy,
+  Download,
   ExternalLink,
   ImagePlus,
   Loader2,
   LogIn,
+  Mail,
   RotateCcw,
-  Undo2,
+  Share2,
   ShieldCheck,
   TriangleAlert,
+  Undo2,
 } from 'lucide-react'
 
 import { PageHero } from '@/components/PageHero'
@@ -37,7 +40,7 @@ import { GOLD_BUTTON } from '@/lib/brand'
 import { downscaleImage } from '@/lib/resizeImage'
 import { decodeInBackground } from '@/lib/scanner/decodeInBackground'
 import { legalMovesAt } from '@/lib/scanner/chessAdapter'
-import { gameToPgn, lichessAnalysisUrl } from '@/lib/scanner/export'
+import { emailGameLink, gameToPgn, lichessAnalysisUrl, pgnFilename } from '@/lib/scanner/export'
 import type { DecodedGame, DecodedMove, RawScan } from '@/lib/scanner/types'
 import { cn } from '@/lib/utils'
 
@@ -104,7 +107,7 @@ function HowItWorks() {
     ['Photograph the sheet', 'Flat, well lit, with the whole move grid in the frame.'],
     ['We read the handwriting', 'Exactly as written, mistakes included.'],
     ['Chess rules check every move', 'Unclear moves are worked out from the position and flagged for you.'],
-    ['Review and analyze', 'Open the game on lichess or chess.com, or copy the PGN.'],
+    ['Review and keep it', 'Fix any flagged moves, then analyze on lichess or chess.com, or save and share the PGN.'],
   ]
   return (
     <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
@@ -442,8 +445,50 @@ function Results({
     setHistory((h) => h.slice(0, -1))
     setCurrent(previous)
   }
+  // Only where the device has a share sheet (phones, Safari, some desktop
+  // browsers); elsewhere Save PGN covers the same need.
+  const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function'
   const white = scan.header.whiteName ?? 'White'
   const black = scan.header.blackName ?? 'Black'
+
+  /** The PGN as a file, for saving and for the share sheet. */
+  function pgnFile(): File {
+    return new File([gameToPgn(game, scan.header)], pgnFilename(scan.header), {
+      type: 'application/x-chess-pgn',
+    })
+  }
+
+  function savePgn() {
+    const file = pgnFile()
+    const url = URL.createObjectURL(file)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = file.name
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    // Revoked on the next tick: some browsers start the download
+    // asynchronously and would find the URL already gone.
+    setTimeout(() => URL.revokeObjectURL(url), 0)
+  }
+
+  async function share() {
+    const title = `${white} vs ${black}`
+    const text = `${title}: open the game on lichess ${lichessAnalysisUrl(game)}`
+    const file = pgnFile()
+    try {
+      // The PGN file where the device can share files (most phones), so it
+      // lands as an attachment any chess app opens. The link goes with it
+      // either way, for whoever just wants to look at the game.
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ title, text, files: [file] })
+      } else {
+        await navigator.share({ title, text })
+      }
+    } catch {
+      // AbortError when the member closes the share sheet; nothing to do.
+    }
+  }
 
   async function copyPgn() {
     try {
@@ -513,7 +558,8 @@ function Results({
           </Notice>
         )}
 
-        <div className="mt-5 flex flex-wrap gap-3">
+        <p className="mt-5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Analyze</p>
+        <div className="mt-2 flex flex-wrap gap-3">
           <Button asChild className={GOLD_BUTTON}>
             <a href={lichessAnalysisUrl(game)} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="size-4" aria-hidden="true" /> Open in lichess
@@ -524,11 +570,32 @@ function Results({
               <ExternalLink className="size-4" aria-hidden="true" /> Copy &amp; open chess.com
             </a>
           </Button>
+        </div>
+
+        <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Keep</p>
+        <div className="mt-2 flex flex-wrap gap-3">
+          {canShare ? (
+            <Button type="button" variant="outline" onClick={share}>
+              <Share2 className="size-4" aria-hidden="true" /> Share
+            </Button>
+          ) : (
+            // No share sheet (most desktop browsers): open their own email
+            // program instead. A mailto link can't attach the file, so it
+            // carries the lichess link and, when it fits, the PGN text.
+            <Button asChild variant="outline">
+              <a href={emailGameLink(game, scan.header)}>
+                <Mail className="size-4" aria-hidden="true" /> Email
+              </a>
+            </Button>
+          )}
+          <Button type="button" variant="outline" onClick={savePgn}>
+            <Download className="size-4" aria-hidden="true" /> Save PGN
+          </Button>
           <Button type="button" variant="outline" onClick={copyPgn}>
             {copied ? <Check className="size-4" aria-hidden="true" /> : <Copy className="size-4" aria-hidden="true" />}
             {copied ? 'Copied' : 'Copy PGN'}
           </Button>
-          <Button type="button" variant="outline" onClick={onScanAnother}>
+          <Button type="button" variant="ghost" onClick={onScanAnother}>
             <RotateCcw className="size-4" aria-hidden="true" /> Scan another
           </Button>
         </div>
