@@ -1,5 +1,5 @@
 // src/pages/TournamentsPage.tsx
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Calendar,
@@ -12,7 +12,7 @@ import { FilterDropdown } from '@/components/FilterDropdown'
 import { RegistrationReminderButton } from '@/components/RegistrationReminderButton'
 import { MiniCalendar } from '@/components/tournaments/MiniCalendar'
 import { AgendaList } from '@/components/tournaments/AgendaList'
-import { formatDate, isPastTournament, type UnifiedTournament } from '@/lib/clearinghouse'
+import { formatDate, isPastTournament, registrationSummary, type UnifiedTournament } from '@/lib/clearinghouse'
 import { isScholasticTournament } from '@/lib/scholastic'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
@@ -25,6 +25,7 @@ type StateFilter = 'LA' | 'MS' | 'AL' | 'TX' | 'FL' | 'out-of-state' | 'all'
 type ViewMode = 'list' | 'calendar'
 type TypeFilter = 'all' | 'open' | 'scholastic'
 type TimeTab = 'upcoming' | 'past'
+type WhenChip = 'weekend' | 'month' | null
 
 type RightSelection =
   | { kind: 'lca' }
@@ -54,6 +55,59 @@ function stateMatchesPill(state: string | null, pill: StateFilter): boolean {
   if (pill === 'all') return true
   if (pill === 'out-of-state') return state !== 'LA'
   return state === pill
+}
+
+function localDate(iso: string): Date {
+  return new Date(iso + 'T00:00:00')
+}
+
+/** Friday–Sunday of this weekend (or the one that's already under way). */
+function weekendRange(now = new Date()): [Date, Date] {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const day = today.getDay() // 0 Sun … 6 Sat
+  const start = new Date(today)
+  if (day === 0) start.setDate(today.getDate() - 2)
+  else if (day === 6) start.setDate(today.getDate() - 1)
+  else start.setDate(today.getDate() + (5 - day))
+  const end = new Date(start)
+  end.setDate(start.getDate() + 2)
+  return [start, end]
+}
+
+/** Does the event run on any day inside [from, to]? */
+function overlaps(t: UnifiedTournament, from: Date, to: Date): boolean {
+  const start = localDate(t.start_date)
+  const end = localDate(t.end_date ?? t.start_date)
+  if (isNaN(start.getTime())) return false
+  return start <= to && (isNaN(end.getTime()) ? start : end) >= from
+}
+
+function isUscfRated(t: UnifiedTournament): boolean {
+  if (t.is_lca === 1) return t.is_rated === 1
+  return /uscf|us chess/i.test(t.rating_system ?? '')
+}
+
+/** Registration is taken on this site (LCA event with registration open). */
+function registersHere(t: UnifiedTournament): boolean {
+  return t.is_lca === 1 && t.registration_status === 'open' && t.status !== 'completed'
+}
+
+function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={cn(
+        'flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
+        active
+          ? 'border-lca-navy bg-lca-navy text-white'
+          : 'border-border bg-background text-muted-foreground hover:border-lca-navy/40 hover:text-foreground',
+      )}
+    >
+      {children}
+    </button>
+  )
 }
 
 // ── LCA Detail pane ───────────────────────────────────────────────────────────
@@ -117,6 +171,11 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
         <p className="mt-3 text-xs text-muted-foreground">${t.entry_fee} entry</p>
       )}
       {regOpen && !isPast && <p className="mt-0.5 text-xs font-medium text-emerald-600">Registration open</p>}
+      {registrationSummary(t) && (
+        <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Users className="size-3.5 text-lca-gold" /> {registrationSummary(t)}
+        </p>
+      )}
       <div className="mt-3.5 flex flex-wrap items-center gap-2">
         {regOpen && !isPast && (
           <Button asChild size="sm" className="h-7 bg-lca-gold text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
@@ -230,7 +289,7 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
         <span className="text-[11px] text-muted-foreground">click to filter</span>
       </div>
 
-      <div className="max-h-[320px] flex-1 overflow-y-auto sm:max-h-none">
+      <div className="flex-1">
         {(lcaClubs.size > 0 || lcaDirectCount > 0) && (
           <>
             <div className="bg-muted/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
@@ -309,12 +368,16 @@ export function TournamentsPage() {
   const [rightSelection, setRightSelection] = useState<RightSelection>(null)
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [whenChip, setWhenChip] = useState<WhenChip>(null)
+  const [ratedOnly, setRatedOnly] = useState(false)
+  const [registerHereOnly, setRegisterHereOnly] = useState(false)
 
   // Whether anything is narrowing the list right now. stateFilter counts:
   // 'LA' is its default, but a visitor can pill their way to a state with
   // nothing in it and needs the same way back.
   const hasActiveFilters =
-    search.trim() !== '' || typeFilter !== 'all' || rightSelection !== null || stateFilter !== 'LA'
+    search.trim() !== '' || typeFilter !== 'all' || rightSelection !== null || stateFilter !== 'LA' ||
+    whenChip !== null || ratedOnly || registerHereOnly
 
   function clearFilters() {
     setSearch('')
@@ -322,6 +385,9 @@ export function TournamentsPage() {
     setRightSelection(null)
     setStateFilter('LA')
     setSelectedId(null)
+    setWhenChip(null)
+    setRatedOnly(false)
+    setRegisterHereOnly(false)
   }
   const [calYear, setCalYear] = useState(new Date().getFullYear())
   const [calMonth, setCalMonth] = useState(new Date().getMonth())
@@ -383,7 +449,7 @@ export function TournamentsPage() {
   function handleRowClick(key: string) {
     setSelectedId(key)
     // On mobile, the detail pane stacks below the fold — bring it into view
-    if (window.innerWidth < 640) {
+    if (window.innerWidth < 768) {
       setTimeout(() => {
         detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }, 60)
@@ -412,7 +478,18 @@ export function TournamentsPage() {
   const outOfStateCount = stateFiltered.filter(t => t.state !== 'LA').length
 
   const query = search.trim().toLowerCase()
+  const now = new Date()
+  const [weekendStart, weekendEnd] = weekendRange(now)
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const in30 = new Date(today)
+  in30.setDate(today.getDate() + 30)
   const filtered = stateFiltered.filter(t => {
+    if (timeTab === 'upcoming') {
+      if (whenChip === 'weekend' && !overlaps(t, weekendStart, weekendEnd)) return false
+      if (whenChip === 'month' && !overlaps(t, today, in30)) return false
+    }
+    if (ratedOnly && !isUscfRated(t)) return false
+    if (registerHereOnly && !registersHere(t)) return false
     if (query && !(
       t.name.toLowerCase().includes(query) ||
       (t.city ?? '').toLowerCase().includes(query)
@@ -441,12 +518,6 @@ export function TournamentsPage() {
   const selected = filtered.find(t => keyOf(t) === selectedKey) ?? null
 
   const banner = tournaments.find(t => t.is_lca === 1 && t.state === 'LA')
-
-  const typeOptions: { value: TypeFilter; label: string }[] = [
-    { value: 'all', label: 'All types' },
-    { value: 'open', label: 'Open' },
-    { value: 'scholastic', label: 'Scholastic' },
-  ]
 
   return (
     <div>
@@ -493,12 +564,6 @@ export function TournamentsPage() {
                 })`,
               }))}
             />
-            <FilterDropdown
-              on="navy"
-              value={typeFilter}
-              onChange={setTypeFilter}
-              options={typeOptions}
-            />
           </div>
 
           {/* View switcher — kept as one bold, full-word control rather than
@@ -529,6 +594,40 @@ export function TournamentsPage() {
         </div>
       </PageHero>
 
+      {/* ── Quick filters ── */}
+      <div className="border-b border-border bg-background">
+        <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-6 [&::-webkit-scrollbar]:hidden">
+          {timeTab === 'upcoming' && (
+            <>
+              <Chip active={whenChip === 'weekend'} onClick={() => { setWhenChip(w => (w === 'weekend' ? null : 'weekend')); setSelectedId(null) }}>
+                This weekend
+              </Chip>
+              <Chip active={whenChip === 'month'} onClick={() => { setWhenChip(w => (w === 'month' ? null : 'month')); setSelectedId(null) }}>
+                Next 30 days
+              </Chip>
+              <span className="mx-1 h-4 w-px flex-shrink-0 bg-border" aria-hidden="true" />
+            </>
+          )}
+          <Chip active={typeFilter === 'scholastic'} onClick={() => { setTypeFilter(f => (f === 'scholastic' ? 'all' : 'scholastic')); setSelectedId(null) }}>
+            Scholastic
+          </Chip>
+          <Chip active={typeFilter === 'open'} onClick={() => { setTypeFilter(f => (f === 'open' ? 'all' : 'open')); setSelectedId(null) }}>
+            Open / adult
+          </Chip>
+          <Chip active={ratedOnly} onClick={() => { setRatedOnly(v => !v); setSelectedId(null) }}>
+            USCF rated
+          </Chip>
+          <Chip active={registerHereOnly} onClick={() => { setRegisterHereOnly(v => !v); setSelectedId(null) }}>
+            Register on this site
+          </Chip>
+          {hasActiveFilters && (
+            <button type="button" onClick={clearFilters} className="ml-auto flex-shrink-0 pl-2 text-xs text-muted-foreground hover:text-foreground">
+              Clear all
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* ── Banner ── */}
       {banner && timeTab === 'upcoming' && (
         <div className="flex items-center justify-between border-b border-lca-gold/30 bg-lca-gold/10 px-4 py-2 sm:px-6">
@@ -556,7 +655,7 @@ export function TournamentsPage() {
         <div className="px-6 py-12 text-center text-sm text-destructive">{error}</div>
       ) : viewMode === 'calendar' ? (
         <div className="mx-auto max-w-6xl px-6 py-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-[260px_1fr_300px]">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[240px_1fr] lg:grid-cols-[260px_1fr_300px]">
             <div className="space-y-4">
               <MiniCalendar
                 year={calYear}
@@ -608,7 +707,7 @@ export function TournamentsPage() {
                 onSelect={t => setSelectedId(`${t.source}-${t.id}`)}
               />
             </div>
-            <div className="rounded-xl border border-border bg-card">
+            <div className="rounded-xl border border-border bg-card md:col-span-2 lg:col-span-1">
               {selected ? (
                 selected.is_lca === 1
                   ? <LCADetailPane t={selected} />
@@ -621,10 +720,10 @@ export function TournamentsPage() {
         </div>
       ) : (
         <div className="mx-auto max-w-6xl">
-          <div className="grid min-h-[420px] grid-cols-1 border-b border-border sm:grid-cols-[1fr_1.55fr_1fr]">
+          <div className="grid min-h-[420px] grid-cols-1 border-b border-border md:grid-cols-[1fr_1.3fr] lg:grid-cols-[1fr_1.55fr_1fr]">
 
             {/* ── Left: list ── */}
-            <div className="border-b border-border sm:border-b-0 sm:border-r">
+            <div className="border-b border-border md:border-b-0 md:border-r">
               <div className="flex items-center justify-between border-b border-border bg-muted/20 px-3 py-2">
                 <div className="flex items-center gap-1">
                   {(['upcoming', 'past'] as TimeTab[]).map(tab => (
@@ -654,7 +753,7 @@ export function TournamentsPage() {
                   </button>
                 )}
               </div>
-              <div className="max-h-[300px] overflow-y-auto sm:max-h-[420px]">
+              <div className="lg:max-h-[520px] lg:overflow-y-auto">
                 {filtered.length === 0 ? (
                   <div className="flex flex-col items-center gap-2 px-3 py-10 text-center">
                     <Search className="size-5 text-muted-foreground/40" aria-hidden="true" />
@@ -699,6 +798,8 @@ export function TournamentsPage() {
                           <p className="text-[11px] text-muted-foreground">
                             {formatDate(t.start_date)}
                             {t.city ? ` · ${t.city}` : ''}
+                            {t.state && t.state !== 'LA' ? `, ${t.state}` : ''}
+                            {registrationSummary(t) ? ` · ${registrationSummary(t)}` : ''}
                           </p>
                         </div>
                         {t.is_lca === 1 && t.status === 'upcoming' && (
@@ -712,11 +813,11 @@ export function TournamentsPage() {
             </div>
 
             {/* ── Middle: detail ── */}
-            <div ref={detailRef} className="scroll-mt-16 border-b border-border sm:border-b-0 sm:border-r">
+            <div ref={detailRef} className="scroll-mt-16 border-b border-border md:border-b-0 lg:border-r">
               <div className="flex items-center border-b border-border bg-muted/20 px-3 py-2">
                 <span className="text-xs font-semibold text-foreground">Selected tournament</span>
               </div>
-              <div className="max-h-[340px] overflow-y-auto sm:max-h-[420px]">
+              <div className="md:sticky md:top-16">
                 {selected ? (
                   selected.is_lca === 1
                     ? <LCADetailPane t={selected} />
@@ -731,7 +832,8 @@ export function TournamentsPage() {
               </div>
             </div>
 
-            {/* ── Right: organizer ── */}
+            {/* ── Right: organizer (full width below on tablets) ── */}
+            <div className="border-t border-border md:col-span-2 lg:col-span-1 lg:border-t-0">
             <RightColumn
               lcaClubs={lcaClubs}
               lcaDirectCount={lcaDirectCount}
@@ -740,6 +842,7 @@ export function TournamentsPage() {
               otherLaCount={otherLaCount}
               outOfStateCount={outOfStateCount}
             />
+            </div>
           </div>
         </div>
       )}
