@@ -129,8 +129,12 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
   )
 }
 
-export function AdminEmailPage() {
-  usePageTitle('Group Email')
+/**
+ * `embedded` renders it as a section of the admin panel: no page hero or
+ * outer page padding, and the panel sets the tab title.
+ */
+export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}) {
+  usePageTitle(embedded ? 'Admin · Group email' : 'Group Email')
 
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [campaigns, setCampaigns] = useState<ApiCampaign[]>([])
@@ -273,13 +277,22 @@ export function AdminEmailPage() {
 
   return (
     <div>
-      <PageHero
-        title="Group email"
-        subtitle="Send an email to members — everyone, or a targeted group by role, club, or membership status."
-      />
+      {embedded ? (
+        <div className="mb-5">
+          <h2 className="text-xl font-bold text-lca-navy">Group email</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            Send an email to members — everyone, or a targeted group by role, club, or membership status.
+          </p>
+        </div>
+      ) : (
+        <PageHero
+          title="Group email"
+          subtitle="Send an email to members — everyone, or a targeted group by role, club, or membership status."
+        />
+      )}
 
-      <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr]">
+      <section className={embedded ? '' : 'mx-auto max-w-6xl px-6 py-10'}>
+        <div className={cn('grid gap-10', embedded ? 'xl:grid-cols-[1.3fr_1fr]' : 'lg:grid-cols-[1.3fr_1fr]')}>
 
           {/* ── Compose ── */}
           <div>

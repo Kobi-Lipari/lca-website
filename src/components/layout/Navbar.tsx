@@ -5,6 +5,7 @@ import { ChevronDown, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
+import { WORKSPACE_ROLES } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import lcaLogo from '@/assets/lca-logo.webp'
 
@@ -60,8 +61,10 @@ function useAccountLinks(): NavLink[] {
   if (loading || !user) return []
 
   const links: NavLink[] = []
-  if (role === 'lca_admin' || role === 'club_rep' || role === 'tournament_director') {
+  if (role === 'lca_admin') {
     links.push({ label: 'Admin panel', href: '/admin' })
+  } else if (WORKSPACE_ROLES.includes(role)) {
+    links.push({ label: 'Workspace', href: '/workspace' })
   }
   // Not a role check: isBoardMember comes from a current seat assignment (or
   // lca_admin, who can read every seat). It appears the moment someone is

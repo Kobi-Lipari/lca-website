@@ -7,30 +7,43 @@ import { parseJsonArray } from '../utils/json'
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  let isPrivileged = false
+  // Hidden drafts are visible only to the people who can manage them: admins
+  // see every draft, a club rep sees their own club's, and anyone assigned as
+  // a director sees the events they direct. Everyone else gets the public list.
+  let viewer: { role: string; id: string; clubId: string | null } | null = null
   try {
     const authed = await requireAuthedMember(context.request, context.env)
     if (!isResponse(authed)) {
-      isPrivileged = ['lca_admin', 'club_rep', 'tournament_director'].includes(
-        authed.member.role,
-      )
+      viewer = {
+        role: authed.member.role,
+        id: authed.member.id,
+        clubId: authed.member.club_id ?? null,
+      }
     }
   } catch {
     // Not logged in — public view only
   }
 
-  const query = isPrivileged
-    ? `SELECT t.*, c.color AS club_color, c.name AS club_name
+  const base = `SELECT t.*, c.color AS club_color, c.name AS club_name
        FROM tournaments t
-       LEFT JOIN clubs c ON t.club_id = c.id
-       ORDER BY t.date ASC`
-    : `SELECT t.*, c.color AS club_color, c.name AS club_name
-       FROM tournaments t
-       LEFT JOIN clubs c ON t.club_id = c.id
-       WHERE t.is_visible = 1
-       ORDER BY t.date ASC`
+       LEFT JOIN clubs c ON t.club_id = c.id`
 
-  const { results } = await context.env.DB.prepare(query).all<Record<string, unknown>>()
+  let statement: D1PreparedStatement
+  if (viewer?.role === 'lca_admin') {
+    statement = context.env.DB.prepare(`${base} ORDER BY t.date ASC`)
+  } else if (viewer && ['club_rep', 'tournament_director'].includes(viewer.role)) {
+    statement = context.env.DB.prepare(
+      `${base}
+       WHERE t.is_visible = 1
+          OR (?1 IS NOT NULL AND t.club_id = ?1 AND ?2 = 'club_rep')
+          OR t.id IN (SELECT tournament_id FROM tournament_directors WHERE member_id = ?3)
+       ORDER BY t.date ASC`,
+    ).bind(viewer.clubId, viewer.role, viewer.id)
+  } else {
+    statement = context.env.DB.prepare(`${base} WHERE t.is_visible = 1 ORDER BY t.date ASC`)
+  }
+
+  const { results } = await statement.all<Record<string, unknown>>()
 
   const tournaments = (results ?? []).map((t) => {
     const sections = parseJsonArray(t.sections as string)

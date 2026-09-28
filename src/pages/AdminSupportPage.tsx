@@ -33,7 +33,8 @@ interface AdminApiSupportTicket extends ApiSupportTicket {
   email: string
 }
 
-export function AdminSupportPage() {
+/** `embedded`: rendered as a section of the admin panel (no outer page padding). */
+export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = {}) {
   const [tab, setTab] = useState<'new' | 'answered'>('new')
   const [tickets, setTickets] = useState<AdminApiSupportTicket[]>([])
   const [loading, setLoading] = useState(true)
@@ -108,10 +109,12 @@ export function AdminSupportPage() {
   const displayTickets = tab === 'new' ? newTickets : answeredTickets
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-12">
-      <div className="flex items-center justify-between mb-8">
+    <div className={embedded ? '' : 'mx-auto max-w-6xl px-6 py-12'}>
+      <div className={embedded ? 'mb-5 flex items-center justify-between gap-3' : 'flex items-center justify-between mb-8'}>
         <div>
-          <h1 className="text-3xl font-bold text-lca-navy">Support Tickets</h1>
+          {embedded
+            ? <h2 className="text-xl font-bold text-lca-navy">Support tickets</h2>
+            : <h1 className="text-3xl font-bold text-lca-navy">Support Tickets</h1>}
           <p className="text-muted-foreground mt-1">
             Manage member support requests
           </p>

@@ -47,3 +47,17 @@ export function canManageClub(
   if (role === 'lca_admin') return true
   return role === 'club_rep' && memberClubId === clubId
 }
+
+/** Roles that get the club/event workspace rather than the admin panel. */
+export const WORKSPACE_ROLES: MemberRole[] = ['lca_auditor', 'club_rep', 'tournament_director']
+
+/**
+ * Where "back to my tools" should go for this role: admins have the admin
+ * panel, reps/directors/auditors have the workspace, everyone else the
+ * dashboard. `section` picks the tournaments view in either.
+ */
+export function toolsHomeFor(role: MemberRole, section?: 'tournaments'): string {
+  if (role === 'lca_admin') return section ? `/admin/${section}` : '/admin'
+  if (WORKSPACE_ROLES.includes(role)) return section ? '/workspace?tab=events' : '/workspace'
+  return '/dashboard'
+}

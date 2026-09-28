@@ -2,13 +2,18 @@ import type { ReactNode } from 'react'
 import { Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { useAuth } from '@/contexts/auth-context'
-import { canManageClub, type MemberRole } from '@/lib/roles'
+import { canManageClub, toolsHomeFor, type MemberRole } from '@/lib/roles'
 
 interface RoleProtectedRouteProps {
   children: ReactNode
   roles?: MemberRole[]
   requireClubMatch?: boolean
   requireTournamentAccess?: boolean
+  /**
+   * On a role mismatch, send the person to their own tools page (workspace
+   * for reps/directors/auditors) rather than the dashboard.
+   */
+  fallbackToToolsHome?: boolean
 }
 
 function canAccessTournament(
@@ -29,6 +34,7 @@ export function RoleProtectedRoute({
   roles,
   requireClubMatch,
   requireTournamentAccess,
+  fallbackToToolsHome,
 }: RoleProtectedRouteProps) {
   const {
     user,
@@ -67,7 +73,7 @@ export function RoleProtectedRoute({
   }
 
   if (roles && !roles.includes(role)) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to={fallbackToToolsHome ? toolsHomeFor(role) : '/dashboard'} replace />
   }
 
   // Admin endpoints refuse a password-only session, so send them to set up

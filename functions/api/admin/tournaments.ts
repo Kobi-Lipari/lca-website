@@ -19,6 +19,9 @@ interface CreateTournamentBody {
   registrationDeadline?: string | null
   clubId?: string | null
   isRated?: boolean
+  timeControl?: string | null
+  registrationClosesAt?: string | null
+  customDetails?: Array<{ title: string; body: string }>
 }
 
 function slugify(value: string): string {
@@ -40,15 +43,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const isAdmin = member.role === 'lca_admin'
   const isClubRep = member.role === 'club_rep'
 
-  // LAUNCH LOCKDOWN: tournament creation is lca_admin-only while the site is
-  // being tested with real member accounts. The club_rep path below is kept
-  // intact — to re-enable it, delete this guard and the pinning test
-  // 'club_rep cannot create tournaments during launch lockdown' will fail,
-  // reminding you the policy change is deliberate.
-  if (!isAdmin) {
-    return errorResponse('Tournament creation is limited to LCA admins during launch testing', 403)
-  }
-
   if (!isAdmin && !isClubRep) {
     return errorResponse('Forbidden', 403)
   }
@@ -58,10 +52,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse('name, location, date, and entryFee are required', 400)
   }
 
-  const clubId = body.clubId ?? (isClubRep ? member.club_id : null)
-  if (isClubRep && clubId !== member.club_id) {
+  // A club rep always creates for their own club. A rep with no club would
+  // create an event nobody but an admin could ever manage, so refuse instead.
+  if (isClubRep && !member.club_id) {
+    return errorResponse('Your account is not linked to a club yet. Ask an LCA admin to assign you one.', 403)
+  }
+  if (isClubRep && body.clubId && body.clubId !== member.club_id) {
     return errorResponse('Club reps can only create tournaments for their club', 403)
   }
+  const clubId = isClubRep ? member.club_id : (body.clubId ?? null)
 
   if (clubId) {
     const club = await context.env.DB.prepare('SELECT id FROM clubs WHERE id = ?')
@@ -74,7 +73,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     ? body.sections
     : [{ name: 'Open', entryFee: body.entryFee }]
 
-  const id = body.id?.trim() || `${slugify(body.name)}-${Date.now().toString(36)}`
+  const id = (isAdmin && body.id?.trim()) || `${slugify(body.name)}-${Date.now().toString(36)}`
+  const taken = await context.env.DB.prepare('SELECT 1 FROM tournaments WHERE id = ?').bind(id).first()
+  if (taken) return errorResponse('A tournament with that id already exists', 409)
   const status = body.status ?? 'upcoming'
   if (!['upcoming', 'active', 'completed'].includes(status)) {
     return errorResponse('Invalid status', 400)
@@ -89,8 +90,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     `INSERT INTO tournaments (
       id, name, location, venue, date, end_date, entry_fee, sections,
       rounds, max_players, status, description, registration_deadline,
-      club_id, created_by, is_rated, is_visible
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0)`,
+      club_id, created_by, is_rated, is_visible,
+      time_control, registration_closes_at, custom_details
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?, ?)`,
   )
     .bind(
       id,
@@ -109,6 +111,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       clubId,
       member.id,
       isRated,
+      body.timeControl ?? null,
+      body.registrationClosesAt ?? null,
+      body.customDetails?.length ? JSON.stringify(body.customDetails) : null,
     )
     .run()
 

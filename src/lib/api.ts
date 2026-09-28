@@ -213,6 +213,8 @@ export interface ApiTournamentListItem {
   eligibility?: string | null
   organizer?: string | null
   time_control?: string | null
+  /** Raw stored JSON string on the list endpoint (not parsed there). */
+  custom_details?: unknown
   is_rated?: number
   is_visible?: number
   club_id?: string | null
@@ -472,6 +474,9 @@ export async function adminCreateTournament(body: {
   registrationDeadline?: string | null
   clubId?: string | null
   isRated?: boolean
+  timeControl?: string | null
+  registrationClosesAt?: string | null
+  customDetails?: ApiCustomDetail[]
 }): Promise<Record<string, unknown>> {
   const response = await fetch('/api/admin/tournaments', {
     method: 'POST',
@@ -514,6 +519,8 @@ export async function adminUpdateTournament(
     registrationClosesAt?: string | null
     customDetails?: ApiCustomDetail[]
     timeControl?: string | null
+    /** lca_admin only; null detaches the event from its club. */
+    clubId?: string | null
   },
 ): Promise<Record<string, unknown>> {
   const response = await fetch(`/api/admin/tournaments/${id}`, {
@@ -548,6 +555,71 @@ export async function adminUpdateClub(
   })
   const data = await handleResponse<{ club: ApiClubDetail }>(response)
   return data.club
+}
+
+/** An officer as the manage page sees it — member_id lets the UI match the roster. */
+export interface ApiAdminClubOfficer {
+  id: string
+  member_id: string
+  role: string
+  full_name: string
+  email: string
+}
+
+/** A club tournament including hidden drafts, for the people who manage them. */
+export interface ApiAdminClubTournament extends ApiClubTournament {
+  end_date: string | null
+  is_visible: number
+  registration_status: string | null
+}
+
+/** GET /api/admin/clubs/:id — club reps (own club) and admins. */
+export async function adminGetClub(id: string): Promise<{
+  club: ApiClubDetail
+  officers: ApiAdminClubOfficer[]
+  roster: ApiAdminMember[]
+  tournaments: ApiAdminClubTournament[]
+}> {
+  const response = await fetch(`/api/admin/clubs/${id}`, {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+export async function adminCreateClub(body: {
+  name: string
+  city: string
+  region?: string | null
+  contactEmail?: string | null
+}): Promise<ApiClubDetail> {
+  const response = await fetch('/api/admin/clubs', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ club: ApiClubDetail }>(response)
+  return data.club
+}
+
+export async function adminAddClubOfficer(
+  clubId: string,
+  body: { memberId: string; title: string },
+): Promise<ApiAdminClubOfficer[]> {
+  const response = await fetch(`/api/admin/clubs/${clubId}/officers`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ officers: ApiAdminClubOfficer[] }>(response)
+  return data.officers
+}
+
+export async function adminRemoveClubOfficer(clubId: string, officerId: string): Promise<void> {
+  const response = await fetch(`/api/admin/clubs/${clubId}/officers/${officerId}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  await handleResponse(response)
 }
 
 export async function adminCreateClubNews(
