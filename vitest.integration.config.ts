@@ -21,6 +21,7 @@ export default defineConfig({
           FROM_EMAIL: 'noreply@louisianachess.org',
           CONTACT_EMAIL: 'contact@louisianachess.org',
           SUPPORT_EMAIL: 'support@louisianachess.org',
+          ANTHROPIC_API_KEY: 'sk-ant-test-harness',
         },
       },
     }),

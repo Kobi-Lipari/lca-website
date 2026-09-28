@@ -51,8 +51,39 @@ npm run offline -- sandbox/verify_s3.ts
 - **Flag precision (46%)** is low: too many correct moves are flagged for review. Tune after real scans are available, since the synthetic noise model is the main guess here.
 - The confusion matrix is hand-built. Replace it with counts from real transcriptions once there are some.
 
-## Next: Week 2
+## Week 2
 
-1. **S1: `POST /api/scan`.** Pages Function that takes a resized image, sends it to the vision model with the verbatim-transcription prompt, and returns the raw cells. Follow the patterns in `functions/utils/response.ts`, `functions/utils/auth.ts` and the club-logo endpoints; resize client-side with `src/lib/resizeImage.ts`. Integration test with the external API mocked, like the existing ones.
-2. **S2:** run the decoder in the browser on the returned cells.
-3. **S3:** review screen for flagged moves, then PGN export and lichess import.
+### S1: `POST /api/scan` (written, waiting on K's test run)
+
+- `functions/api/scan/index.ts`: members only (`requireAuthedMember`), takes the photo as the raw request body (JPEG, PNG or WebP, max 3.5MB, same style as the club-logo upload), returns `{ scan: RawScan, scansLeftToday }`. Photo is never stored.
+- `functions/utils/scan/extract.ts`: the model call and the extraction prompt (verbatim rule stated twice, per §6.2). Model is the `SCAN_MODEL` constant, currently `claude-sonnet-5`, temperature 0.
+- `functions/utils/scan/rawScan.ts`: turns the model's reply into a `RawScan`. Forgiving about shape (fences, chatter, numbers where strings belong, bare-string cells), strict only about having rows. Never touches the move text.
+- Daily limit: 20 scans per member per UTC day, in D1 (`migrations/0035_scan_usage.sql`). Claimed with one upsert so parallel scans can't slip past it; handed back when the model fails or answers with junk.
+- Errors: 401 anonymous, 415 wrong type, 400 empty, 413 too big, 429 over the limit, 502 model failed or unreadable reply, 503 model busy or key not set.
+- Client: `downscaleImage()` in `src/lib/resizeImage.ts` (1568px long edge, JPEG 0.8, honours phone rotation) and `scanScoresheet()` in `src/lib/api.ts`.
+- Tests: `test/unit/scan-raw.test.ts` (23 cases; passed here with a stand-in runner) and `test/integration/scan.test.ts` (auth, input checks, prompt contents, recovery, refunds, limit). The harness now mocks `api.anthropic.com`.
+
+**K to run** (the real vitest and Workers runtime can't be installed in Claude's workspace):
+
+```
+npm test && npm run test:integration && npm run typecheck:functions && npm run build
+```
+
+**Before it works live:**
+
+1. `npm run db:migrate:remote` for the new `scan_usage` table.
+2. Add `ANTHROPIC_API_KEY` as a secret in the Cloudflare Pages dashboard (production), and in `.dev.vars` for local dev (already gitignored).
+
+Until both are done, `/api/scan` answers 503; nothing else on the site is affected.
+
+### Decisions made (defaults from the spec, change if K prefers)
+
+- Rate limit lives in D1, not KV: one tiny table, no new binding.
+- Limit resets at midnight UTC (7pm Central in winter, 6pm in summer).
+- The `RawScan` type is written out in three places for now (scanner, functions, api.ts). One shared definition once the scanner moves into `src/`.
+
+### Next
+
+- **S2:** run the decoder in the browser on the returned scan.
+- **S3:** review screen for flagged moves, then PGN export and lichess import (`POST /api/scan/lichess`).
+- Week 3 S1 needs `App.tsx` routes, `Navbar.tsx` and a `PageHero` usage example, plus K's call on the route (`/scanner`?) and nav placement.

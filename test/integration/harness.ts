@@ -79,6 +79,39 @@ export const uscfBehavior: {
 } = { reachable: true, members: {} }
 
 /**
+ * The Anthropic Messages API, as the scoresheet scanner sees it.
+ *
+ * reply is the text the model "answers" with; null means a small, valid
+ * two-row scan. status other than 200 simulates the service failing, and
+ * throws=true a network failure before any status. Every request is kept in
+ * anthropicRequests so a test can check what was sent: the model, the
+ * prompt, and that the image went through untouched.
+ */
+export interface AnthropicRequest {
+  apiKey: string | null
+  model: string
+  mediaType: string
+  imageBase64: string
+  prompt: string
+}
+
+export const anthropicBehavior: {
+  reply: string | null
+  status: number
+  throws: boolean
+} = { reply: null, status: 200, throws: false }
+
+export const anthropicRequests: AnthropicRequest[] = []
+
+export const DEFAULT_SCAN_REPLY = JSON.stringify({
+  header: { whiteName: 'White Player', blackName: 'Black Player', result: '1-0', legibility: 'clear' },
+  rows: [
+    { n: 1, white: { raw: 'e4', confidence: 'high' }, black: { raw: 'e5', confidence: 'high' } },
+    { n: 2, white: { raw: 'Nf3', alts: ['Nf5'], confidence: 'medium' }, black: null },
+  ],
+})
+
+/**
  * Work an endpoint handed to context.waitUntil during the current test.
  *
  * The context used to discard these. They did not vanish — a floating
@@ -111,10 +144,14 @@ export function resetHarness(): void {
   authBehavior.extraMetadata = {}
   uscfBehavior.reachable = true
   uscfBehavior.members = {}
+  anthropicBehavior.reply = null
+  anthropicBehavior.status = 200
+  anthropicBehavior.throws = false
+  anthropicRequests.length = 0
 }
 
 // ── Fetch interceptor ────────────────────────────────────────────
-// One interceptor, three services. Everything else about the code under
+// One interceptor for every external service. Everything else about the code under
 // test runs for real: supabase-js builds a real /auth/v1/user request,
 // createCheckoutSession builds a real Stripe form body, sendEmail builds
 // a real Resend JSON body. We answer at the network edge only.
@@ -288,6 +325,48 @@ export function installFetchInterceptor(): void {
         from: body.from,
       })
       return Response.json({ id: `email_${emailOutbox.length}` })
+    }
+
+    // Anthropic: the scanner's vision model.
+    if (url.hostname === 'api.anthropic.com' && url.pathname === '/v1/messages') {
+      const body = (await request.json()) as {
+        model: string
+        messages: Array<{
+          content: Array<
+            | { type: 'image'; source: { media_type: string; data: string } }
+            | { type: 'text'; text: string }
+          >
+        }>
+      }
+      const parts = body.messages[0]?.content ?? []
+      const image = parts.find((p) => p.type === 'image') as
+        | { source: { media_type: string; data: string } }
+        | undefined
+      const text = parts.find((p) => p.type === 'text') as { text: string } | undefined
+      anthropicRequests.push({
+        apiKey: request.headers.get('x-api-key'),
+        model: body.model,
+        mediaType: image?.source.media_type ?? '',
+        imageBase64: image?.source.data ?? '',
+        prompt: text?.text ?? '',
+      })
+
+      if (anthropicBehavior.throws) {
+        return Promise.reject(new Error('harness: simulated network failure'))
+      }
+      if (anthropicBehavior.status !== 200) {
+        return Response.json(
+          { type: 'error', error: { type: 'harness', message: 'simulated failure' } },
+          { status: anthropicBehavior.status },
+        )
+      }
+      return Response.json({
+        id: `msg_${anthropicRequests.length}`,
+        type: 'message',
+        role: 'assistant',
+        content: [{ type: 'text', text: anthropicBehavior.reply ?? DEFAULT_SCAN_REPLY }],
+        usage: { input_tokens: 1500, output_tokens: 300 },
+      })
     }
 
     // Anything else (USCF lookups etc.): fail loudly so no test
