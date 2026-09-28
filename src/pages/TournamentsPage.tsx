@@ -596,7 +596,7 @@ export function TournamentsPage() {
 
       {/* ── Quick filters ── */}
       <div className="border-b border-border bg-background">
-        <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2.5 sm:px-6">
+        <div className="mx-auto flex max-w-6xl items-center gap-2 overflow-x-auto px-4 py-2.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-6 [&::-webkit-scrollbar]:hidden">
           {timeTab === 'upcoming' && (
             <>
               <Chip active={whenChip === 'weekend'} onClick={() => { setWhenChip(w => (w === 'weekend' ? null : 'weekend')); setSelectedId(null) }}>
