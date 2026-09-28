@@ -119,7 +119,12 @@ Run the migration first. Without the key, `/api/scan` answers 503; with the key 
 
 - Results actions grouped as **Analyze** (lichess, chess.com) and **Keep**: **Share** (device share sheet with the PGN file attached and the lichess link; only shown where `navigator.share` exists), or **Email** where there's no share sheet (`mailto:` with the lichess link, plus the PGN text when the link stays under ~1,900 characters; browsers can't attach files to mailto), **Save PGN** (download named `White-vs-Black-YYYY-MM-DD.pgn` from surnames, falling back to `scanned-game-<date>.pgn`), **Copy PGN**, Scan another. All use the corrected game.
 
+### S4: games on more than one page (this branch)
+
+- Up to 3 pages per game (front, back, continuation sheet), added in order on the preview screen, each removable. Pages are scanned in parallel (one daily scan each) and joined by `src/lib/scanner/mergePages.ts` before decoding.
+- Joining rules: where printed move numbers overlap, the earlier page wins and a later page only fills its blanks (§3.1); a later page that restarts at 1 after moves were already written is renumbered to follow on (continuation sheets restart their printed numbers). Header from page 1, gaps filled from later pages, worst legibility reported.
+- Tests: seven cases, including a game split across a sheet and a renumbered continuation sheet decoding exactly as the one-page original.
+
 ### Next
 
-- Front-and-back / two-sheet games (§3.1 concatenation).
 - Real-sheet evaluation (§6.3): 20–40 real scoresheets, dev/holdout split.
