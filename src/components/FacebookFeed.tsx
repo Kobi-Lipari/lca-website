@@ -45,10 +45,24 @@ function hostOf(url: string | null | undefined): string | null {
  * dropped from the text; if nothing is left, the shared link's title is
  * used, and failing that a plain "Shared a link from youtube.com".
  */
+const UNAVAILABLE_TITLE = /^(this )?content (isn.t|is not|not) available/i
+
+/**
+ * Posts Facebook won't show to apps (shares of personal or group posts).
+ * The server skips these now; this also drops any still sitting in the
+ * fallback cache from before that change.
+ */
+export function isUsablePost(post: FacebookFeedPost): boolean {
+  const text = post.message.replace(URL_RE, '').trim()
+  const title = post.linkTitle && !UNAVAILABLE_TITLE.test(post.linkTitle) ? post.linkTitle : null
+  return !!(text || title || post.linkUrl || post.imageUrl)
+}
+
 function postText(post: FacebookFeedPost): string {
   const text = post.message.replace(URL_RE, '').replace(/\s+/g, ' ').trim()
   if (text) return text
-  if (post.linkTitle) return post.linkTitle
+  if (post.linkTitle && !UNAVAILABLE_TITLE.test(post.linkTitle)) return post.linkTitle
+  if (post.imageUrl && !post.linkUrl && !/https?:\/\//.test(post.message)) return 'Shared a photo'
   const host = hostOf(post.linkUrl) ?? hostOf(post.message.match(URL_RE)?.[0])
   if (host === 'youtube.com' || host === 'youtu.be') return 'Shared a video on YouTube'
   return host ? `Shared a link from ${host}` : 'Shared a link'
@@ -96,7 +110,7 @@ function useFacebookPosts(limit: number) {
         const data = await res.json()
         if (cancelled) return
         if (!res.ok) throw new Error(data.error)
-        setPosts(data.posts)
+        setPosts((data.posts as FacebookFeedPost[]).filter(isUsablePost).slice(0, limit))
       })
       .catch(() => {
         if (!cancelled) setError(true)

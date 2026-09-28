@@ -47,6 +47,17 @@ export interface FacebookFeedPost {
 }
 
 const GRAPH_VERSION = "v19.0";
+
+/**
+ * The title Facebook gives a shared post it will not show to apps — a share
+ * of a personal profile's post, a group post, or something since deleted.
+ * Such a post has no text or picture we can use, only this placeholder.
+ */
+const UNAVAILABLE_TITLE = /^(this )?content (isn.t|is not|not) available/i;
+const URL_RE = /https?:\/\/\S+/g;
+
+/** Asked for extra so that skipping unusable posts still fills the feed. */
+const OVERFETCH = 3;
 // Edge cache (Cloudflare CDN) — short-lived, just avoids hitting Facebook
 // on every page load under normal conditions.
 const CACHE_MAX_AGE_SECONDS = 1800;
@@ -68,7 +79,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const baseFields = "id,message,created_time,permalink_url,full_picture";
   const graphUrl = (fields: string) =>
     `https://graph.facebook.com/${GRAPH_VERSION}/${env.FACEBOOK_PAGE_ID}/posts` +
-    `?fields=${fields}&limit=${limit}&access_token=${env.FACEBOOK_PAGE_TOKEN}`;
+    `?fields=${fields}&limit=${Math.min(limit * OVERFETCH, 100)}&access_token=${env.FACEBOOK_PAGE_TOKEN}`;
 
   let graphResponse: Response;
   let body: GraphPostsResponse;
@@ -92,7 +103,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const posts: FacebookFeedPost[] = (body.data || [])
     .map((p) => {
-      const link = p.attachments?.data?.find((a) => a.title || a.unshimmed_url || a.url)
+      const link = p.attachments?.data?.find(
+        (a) => (a.title && !UNAVAILABLE_TITLE.test(a.title)) || a.unshimmed_url || a.url,
+      )
       return {
         id: p.id,
         message: p.message ?? "",
@@ -103,9 +116,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         linkUrl: link?.unshimmed_url ?? link?.url ?? null,
       }
     })
-    // Skip posts with nothing to show in a text list (e.g. a bare photo
-    // with no caption and no shared link).
-    .filter((p) => p.message || p.linkTitle);
+    // Skip posts with nothing to show: a share Facebook won't reveal has no
+    // text, no picture and only a placeholder title. Photo posts (with or
+    // without a caption) and shared links we can name all stay.
+    .filter((p) => p.message.replace(URL_RE, "").trim() || p.linkTitle || p.linkUrl || p.imageUrl)
+    .slice(0, limit);
 
   // Live fetch succeeded — persist it as the new fallback for next time.
   try {
