@@ -100,7 +100,7 @@ function HowItWorks() {
     ['Photograph the sheet', 'Flat, well lit, with the whole move grid in the frame.'],
     ['We read the handwriting', 'Exactly as written, mistakes included.'],
     ['Chess rules check every move', 'Unclear moves are worked out from the position and flagged for you.'],
-    ['Review and analyze', 'Open the game on lichess or copy the PGN.'],
+    ['Review and analyze', 'Open the game on lichess or chess.com, or copy the PGN.'],
   ]
   return (
     <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
@@ -378,6 +378,7 @@ function Results({
   onScanAnother: () => void
 }) {
   const [copied, setCopied] = useState(false)
+  const [sentToChessCom, setSentToChessCom] = useState(false)
   const needsLook = game.moves.filter((m) => NEEDS_LOOK.includes(m.status)).length
   const white = scan.header.whiteName ?? 'White'
   const black = scan.header.blackName ?? 'Black'
@@ -391,6 +392,18 @@ function Results({
       // Clipboard can be blocked (permissions, http). Nothing sensible to
       // fall back to here; the lichess link carries the same moves.
     }
+  }
+
+  // chess.com has no way to open its analysis board with a game in the link
+  // (its public API is read-only), so the next best thing: copy the PGN as
+  // the link opens, and tell the member to paste it. The copy is started in
+  // the click handler, while this page still has focus; the link's own
+  // default action then opens the new tab.
+  function sendToChessCom() {
+    navigator.clipboard
+      .writeText(gameToPgn(game, scan.header))
+      .then(() => setSentToChessCom(true))
+      .catch(() => setSentToChessCom(false))
   }
 
   if (game.moves.length === 0) {
@@ -444,6 +457,11 @@ function Results({
               <ExternalLink className="size-4" aria-hidden="true" /> Open in lichess
             </a>
           </Button>
+          <Button asChild variant="outline">
+            <a href="https://www.chess.com/analysis" target="_blank" rel="noopener noreferrer" onClick={sendToChessCom}>
+              <ExternalLink className="size-4" aria-hidden="true" /> Copy &amp; open chess.com
+            </a>
+          </Button>
           <Button type="button" variant="outline" onClick={copyPgn}>
             {copied ? <Check className="size-4" aria-hidden="true" /> : <Copy className="size-4" aria-hidden="true" />}
             {copied ? 'Copied' : 'Copy PGN'}
@@ -452,6 +470,12 @@ function Results({
             <RotateCcw className="size-4" aria-hidden="true" /> Scan another
           </Button>
         </div>
+        {sentToChessCom && (
+          <p className="mt-3 text-sm text-foreground">
+            The game is copied. On chess.com's analysis board, paste it into the <span className="font-medium">PGN</span> box
+            to load it.
+          </p>
+        )}
         <ScansLeft count={scansLeft} />
       </Panel>
 

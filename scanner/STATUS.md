@@ -99,13 +99,14 @@ Run the migration first. Without the key, `/api/scan` answers 503; with the key 
 
 - `src/pages/ScannerPage.tsx`, public route `/scanner`, in the navbar (after News) and the footer's Play column. K's call: visible to everyone; signed-out visitors get a "Log in to scan" prompt that returns them to the page after login.
 - Flow: take or choose a photo → preview → "Reading the handwriting…" (`/api/scan`) → "Checking the moves…" (Web Worker) → results. Unreadable sheets, daily limit, expired session and network failures each get their own message.
-- Results: players, result, move count, and how many moves need a look; move table with flagged/guessed moves in amber (what was written, and the next-best readings) and fuzzy-corrected moves outlined; "Open in lichess" (analysis board via `lichess.org/analysis/pgn/<moves>`, no API call), "Copy PGN", "Scan another"; scans left today.
+- Results: players, result, move count, and how many moves need a look; move table with flagged/guessed moves in amber (what was written, and the next-best readings) and fuzzy-corrected moves outlined; "Open in lichess" (analysis board via `lichess.org/analysis/pgn/<moves>`, no API call), "Copy & open chess.com", "Copy PGN", "Scan another"; scans left today.
 - `src/lib/scanner/export.ts`: PGN headers from the scan (dates and ratings only when PGN-valid) and the lichess link. Tested.
-- Same branch, K's navbar requests: order is Tournaments, Scholastic, Clubs, News, Scanner, Governance, Membership. Governance is a plain link that opens Board members; the old `/governance` landing page redirects there, and governance pages now show their section links as tabs on phones (the sidebar only shows on wide screens).
+- Same branch, K's navbar requests: player links inline (Tournaments, Scholastic, Clubs, News, Scanner); a "More" menu holds Governance and Membership, plus Admin panel / Board inbox for the accounts that get them. Governance is a plain link that opens Board members; the old `/governance` landing page redirects there, and governance pages now show their section links as tabs on phones (the sidebar only shows on wide screens).
 
 ### Decisions made
 
 - lichess analysis link instead of the import API (§8): no server call, no rate limit, and the member can fix moves on the board. The import API (permanent game URL) can come later if wanted.
+- chess.com: no link format or API can open a game there (its Published-Data API is read-only), so "Copy & open chess.com" copies the PGN and opens its analysis board for the member to paste. Worth re-checking if chess.com ever documents a PGN-in-URL option.
 - No in-page move editing yet: flagged moves are shown with their alternatives, and fixes happen on lichess.
 
 ### Next

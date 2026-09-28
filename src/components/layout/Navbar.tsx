@@ -1,7 +1,7 @@
 // src/components/layout/Navbar.tsx
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { ChevronDown, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
@@ -15,12 +15,18 @@ interface NavLink {
   activeFor?: string[]
 }
 
-const navLinks: NavLink[] = [
+// What players come for, always inline on desktop.
+const primaryLinks: NavLink[] = [
   { label: 'Tournaments', href: '/tournaments' },
   { label: 'Scholastic', href: '/scholastic' },
   { label: 'Clubs', href: '/clubs' },
   { label: 'News', href: '/news' },
   { label: 'Scanner', href: '/scanner' },
+]
+
+// The association's own pages, under "More". Membership is also reachable
+// from the Join LCA button and the dashboard, so it loses little here.
+const moreLinks: NavLink[] = [
   // Opens straight on Board members; the governance pages carry their own
   // navigation (GovLayout) to About, Bylaws and Minutes from there.
   { label: 'Governance', href: '/governance/board', activeFor: ['/governance', '/about'] },
@@ -28,8 +34,8 @@ const navLinks: NavLink[] = [
 ]
 
 // Labels shown inline at the "hybrid" mid-width tier (md-lg). Everything
-// else in navLinks only appears inline at full desktop width (lg+) and
-// otherwise lives in the hamburger drawer.
+// else only appears inline at full desktop width (lg+) and otherwise lives
+// in the hamburger drawer.
 const HYBRID_VISIBLE_LABELS = ['Tournaments', 'Clubs']
 
 // Gold tab-style underline for the active top-level item
@@ -40,39 +46,122 @@ function isPathActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + '/')
 }
 
-function RoleLinks({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
-  const { role, isBoardMember } = useAuth()
-  const linkClass = mobile
-    ? 'rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold'
-    : 'text-sm font-medium text-white/90 transition-colors hover:text-lca-gold'
+function isLinkActive(pathname: string, link: NavLink): boolean {
+  return [link.href, ...(link.activeFor ?? [])].some((href) => isPathActive(pathname, href))
+}
 
-  const items: { label: string; href: string }[] = []
+/**
+ * Links only some signed-in accounts get. They go under "More" with the
+ * association pages rather than inline, so the bar reads the same for
+ * everyone and an admin's bar is no wider than a player's.
+ */
+function useAccountLinks(): NavLink[] {
+  const { user, loading, role, isBoardMember } = useAuth()
+  if (loading || !user) return []
 
+  const links: NavLink[] = []
   if (role === 'lca_admin' || role === 'club_rep' || role === 'tournament_director') {
-    items.push({ label: 'Admin panel', href: '/admin' })
+    links.push({ label: 'Admin panel', href: '/admin' })
   }
-
   // Not a role check: isBoardMember comes from a current seat assignment (or
   // lca_admin, who can read every seat). It appears the moment someone is
   // given a seat and disappears the moment their term ends, without their
   // account changing in any other way.
   if (isBoardMember) {
-    items.push({ label: 'Board inbox', href: '/board/inbox' })
+    links.push({ label: 'Board inbox', href: '/board/inbox' })
   }
-
-  return (
-    <>
-      {items.map((item) => (
-        <Link key={item.href} to={item.href} className={linkClass} onClick={onNavigate}>
-          {item.label}
-        </Link>
-      ))}
-    </>
-  )
+  return links
 }
 
-function isLinkActive(pathname: string, link: NavLink): boolean {
-  return [link.href, ...(link.activeFor ?? [])].some((href) => isPathActive(pathname, href))
+function MoreMenu({ groups }: { groups: NavLink[][] }) {
+  const [open, setOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
+  const location = useLocation()
+  const visibleGroups = groups.filter((group) => group.length > 0)
+  const isActive = visibleGroups.some((group) =>
+    group.some((link) => isLinkActive(location.pathname, link)),
+  )
+
+  // Adjusting state during render is what React recommends for resetting on
+  // a changed value: the menu is shut before the new page paints, instead of
+  // flashing open for one frame and being closed by an effect afterwards.
+  const [lastPath, setLastPath] = useState(location.pathname)
+  if (location.pathname !== lastPath) {
+    setLastPath(location.pathname)
+    setOpen(false)
+  }
+
+  useEffect(() => {
+    if (!open) return
+    function onPointerDown(e: MouseEvent | TouchEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        buttonRef.current?.focus()
+      }
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('touchstart', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('touchstart', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open])
+
+  return (
+    <div
+      ref={wrapperRef}
+      className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}
+    >
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-haspopup="menu"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+        className={cn(
+          'flex items-center gap-1 text-sm font-medium transition-colors',
+          isActive ? cn('text-lca-gold', activeUnderline) : 'text-white/90 hover:text-lca-gold',
+        )}
+      >
+        More
+        <ChevronDown className={cn('size-3 transition-transform', open && 'rotate-180')} aria-hidden="true" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-50 pt-1">
+          <div role="menu" className="min-w-[180px] rounded-lg border border-white/10 bg-lca-navy py-1 shadow-xl">
+            {visibleGroups.map((group, i) => (
+              <div key={group[0]!.href} className={cn(i > 0 && 'mt-1 border-t border-white/10 pt-1')}>
+                {group.map((link) => (
+                  <Link
+                    key={link.href}
+                    role="menuitem"
+                    to={link.href}
+                    className={cn(
+                      'block px-4 py-2 text-sm hover:bg-white/10 hover:text-lca-gold',
+                      isLinkActive(location.pathname, link) ? 'text-lca-gold' : 'text-white/80',
+                    )}
+                    onClick={() => setOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function NavLinkItem({ link }: { link: NavLink }) {
@@ -92,11 +181,27 @@ function NavLinkItem({ link }: { link: NavLink }) {
   )
 }
 
+function DrawerLink({ link, onNavigate }: { link: NavLink; onNavigate: () => void }) {
+  const location = useLocation()
+  return (
+    <Link
+      to={link.href}
+      className={cn(
+        'rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-lca-gold',
+        isLinkActive(location.pathname, link) ? 'text-lca-gold' : 'text-white/90',
+      )}
+      onClick={onNavigate}
+    >
+      {link.label}
+    </Link>
+  )
+}
+
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { user, loading, signOut } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
+  const accountLinks = useAccountLinks()
 
   function closeMobile() {
     setMobileOpen(false)
@@ -108,8 +213,8 @@ export function Navbar() {
     navigate('/')
   }
 
-  const hybridLinks = navLinks.filter((link) => HYBRID_VISIBLE_LABELS.includes(link.label))
-  const desktopOnlyLinks = navLinks.filter((link) => !HYBRID_VISIBLE_LABELS.includes(link.label))
+  const hybridLinks = primaryLinks.filter((link) => HYBRID_VISIBLE_LABELS.includes(link.label))
+  const desktopOnlyLinks = primaryLinks.filter((link) => !HYBRID_VISIBLE_LABELS.includes(link.label))
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-lca-navy text-white shadow-md">
@@ -128,7 +233,7 @@ export function Navbar() {
           {hybridLinks.map((link) => <NavLinkItem key={link.href} link={link} />)}
           <div className="hidden items-center gap-5 lg:flex">
             {desktopOnlyLinks.map((link) => <NavLinkItem key={link.href} link={link} />)}
-            {!loading && user && <RoleLinks />}
+            <MoreMenu groups={[moreLinks, accountLinks]} />
           </div>
         </nav>
 
@@ -169,20 +274,13 @@ export function Navbar() {
       {mobileOpen && (
         <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-lca-navy lg:hidden">
           <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 sm:px-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={cn(
-                  'rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-lca-gold',
-                  isLinkActive(location.pathname, link) ? 'text-lca-gold' : 'text-white/90',
-                )}
-                onClick={closeMobile}
-              >
-                {link.label}
-              </Link>
+            {primaryLinks.map((link) => (
+              <DrawerLink key={link.href} link={link} onNavigate={closeMobile} />
             ))}
-            {!loading && user && <RoleLinks mobile onNavigate={closeMobile} />}
+            <p className="mt-3 px-3 text-[10px] font-semibold uppercase tracking-widest text-white/45">More</p>
+            {[...moreLinks, ...accountLinks].map((link) => (
+              <DrawerLink key={link.href} link={link} onNavigate={closeMobile} />
+            ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
               <a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-white/80 hover:bg-white/10" onClick={closeMobile}>
                 <FacebookIcon className="size-7 text-[#1877F2]" />
