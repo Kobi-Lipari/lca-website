@@ -45,3 +45,37 @@ export function lichessAnalysisUrl(game: DecodedGame): string {
   const path = game.moves.map((m) => encodeURIComponent(m.san)).join('_');
   return `https://lichess.org/analysis/pgn/${path}`;
 }
+
+/** A name safe for any file system: letters, digits and hyphens only. */
+function fileSafe(text: string): string {
+  return text
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^A-Za-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 30);
+}
+
+/** Surname if the name has several words: "Kobi Lipari" → "Lipari". */
+function surname(name: string | undefined): string {
+  const words = (name ?? '').trim().split(/\s+/).filter(Boolean);
+  return fileSafe(words[words.length - 1] ?? '');
+}
+
+/**
+ * "Lipari-vs-Smith-2026-09-14.pgn", falling back to "scanned-game-<date>"
+ * when the sheet has no names. The date is the day it was scanned; the
+ * sheet's own date is too often unreadable or in an odd format to trust in
+ * a file name.
+ */
+export function pgnFilename(header: RawScan['header'], today: Date = new Date()): string {
+  const date = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-');
+  const white = surname(header.whiteName);
+  const black = surname(header.blackName);
+  const players = white && black ? `${white}-vs-${black}` : 'scanned-game';
+  return `${players}-${date}.pgn`;
+}

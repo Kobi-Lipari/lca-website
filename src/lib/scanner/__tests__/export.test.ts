@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { gameToPgn, lichessAnalysisUrl, pgnHeaders } from '../export';
+import { gameToPgn, lichessAnalysisUrl, pgnFilename, pgnHeaders } from '../export';
 import { decodeScan } from '../decoder';
 import { renderScan } from '../synthetic';
 
@@ -56,5 +56,25 @@ describe('lichessAnalysisUrl', () => {
     expect(lichessAnalysisUrl(game)).toBe(
       'https://lichess.org/analysis/pgn/e4_e5_Qh5_Nc6_Bc4_Nf6_Qxf7%23',
     );
+  });
+});
+
+describe('pgnFilename', () => {
+  const day = new Date(2026, 8, 14);
+
+  it('uses the players\' surnames and the date', () => {
+    expect(pgnFilename({ legibility: 'clear', whiteName: 'Kobi Lipari', blackName: 'Ana Smith' }, day)).toBe(
+      'Lipari-vs-Smith-2026-09-14.pgn',
+    );
+  });
+
+  it('strips accents and anything a file system might reject', () => {
+    expect(pgnFilename({ legibility: 'clear', whiteName: 'José Núñez', blackName: "O'Brien/Jr" }, day)).toBe(
+      'Nunez-vs-O-Brien-Jr-2026-09-14.pgn',
+    );
+  });
+
+  it('falls back to a generic name when a player is missing', () => {
+    expect(pgnFilename({ legibility: 'clear', whiteName: 'Paul' }, day)).toBe('scanned-game-2026-09-14.pgn');
   });
 });

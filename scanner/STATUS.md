@@ -115,6 +115,10 @@ Run the migration first. Without the key, `/api/scan` answers 503; with the key 
 - Decoder output is unchanged when nothing is forced (snapshot hash identical). Tests: a forced move is played and the prefix kept; forcing the true move after a legal misread (Nc3 for Nf3) makes the whole rest of the game decode exactly.
 - The "Noticed on the sheet" notes under the results were removed at K's request (they still explain an unreadable sheet).
 
+### S3: save and share (this branch)
+
+- Results actions grouped as **Analyze** (lichess, chess.com) and **Keep**: **Share** (device share sheet with the PGN file attached and the lichess link; only shown where `navigator.share` exists), **Save PGN** (download named `White-vs-Black-YYYY-MM-DD.pgn` from surnames, falling back to `scanned-game-<date>.pgn`), **Copy PGN**, Scan another. All use the corrected game.
+
 ### Next
 
 - Front-and-back / two-sheet games (§3.1 concatenation).
