@@ -239,3 +239,35 @@ describe('result normalization (§4.2)', () => {
     expect(normalizeResult('res.')).toBeNull();
   });
 });
+
+describe('decoder - forced moves (fix-up UI)', () => {
+  const sans = parsePgnMoves(CORPUS[0]!.pgn).sans.slice(0, 16);
+
+  it('plays a forced move and keeps everything before it', () => {
+    const scan = renderScan(sans, '1-0');
+    const plain = decodeScan(scan);
+    const legalAlternative = 'Nc3'; // instead of 2. Nf3
+    const decoded = decodeScan(scan, { forcedSans: [...sans.slice(0, 2), legalAlternative] });
+    expect(decoded.moves.slice(0, 2).map((m) => m.san)).toEqual(plain.moves.slice(0, 2).map((m) => m.san));
+    expect(decoded.moves[2]!.san).toBe(legalAlternative);
+  });
+
+  it('fixing one misread move lets the rest of the game decode correctly', () => {
+    const scan = renderScan(sans, '1-0');
+    // The sheet says Nc3 where the game had Nf3: legal, so it reads as an
+    // exact match, and the moves after it stop fitting.
+    scan.rows[1]!.white = { raw: 'Nc3', confidence: 'high' };
+    const misread = decodeScan(scan);
+    expect(misread.moves[2]!.san).toBe('Nc3');
+
+    const fixed = decodeScan(scan, { forcedSans: sans.slice(0, 3) });
+    expect(fixed.moves.map((m) => m.san)).toEqual(sans);
+  });
+
+  it('changes nothing when the forced moves are the ones it would pick anyway', () => {
+    const scan = renderScan(sans, '1-0');
+    const plain = decodeScan(scan);
+    const forced = decodeScan(scan, { forcedSans: sans.slice(0, 6) });
+    expect(forced.moves.map((m) => m.san)).toEqual(plain.moves.map((m) => m.san));
+  });
+});

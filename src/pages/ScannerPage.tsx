@@ -10,7 +10,7 @@
 // Nothing is stored: the photo lives in this tab's memory until the member
 // leaves or scans another.
 
-import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Camera,
@@ -21,18 +21,22 @@ import {
   Loader2,
   LogIn,
   RotateCcw,
+  Undo2,
   ShieldCheck,
   TriangleAlert,
 } from 'lucide-react'
 
 import { PageHero } from '@/components/PageHero'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
 import { useAuth } from '@/contexts/auth-context'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { ApiError, scanScoresheet } from '@/lib/api'
 import { GOLD_BUTTON } from '@/lib/brand'
 import { downscaleImage } from '@/lib/resizeImage'
 import { decodeInBackground } from '@/lib/scanner/decodeInBackground'
+import { legalMovesAt } from '@/lib/scanner/chessAdapter'
 import { gameToPgn, lichessAnalysisUrl } from '@/lib/scanner/export'
 import type { DecodedGame, DecodedMove, RawScan } from '@/lib/scanner/types'
 import { cn } from '@/lib/utils'
@@ -267,6 +271,8 @@ function ScannerTool() {
 
       {stage.kind === 'done' && (
         <Results
+          // A fresh scan starts a fresh set of corrections.
+          key={stage.scansLeft}
           scan={stage.scan}
           game={stage.game}
           scansLeft={stage.scansLeft}
@@ -364,9 +370,16 @@ function PhotoPreview({ url, dimmed }: { url: string; dimmed?: boolean }) {
 
 const NEEDS_LOOK: DecodedMove['status'][] = ['flagged', 'guessed']
 
+/** The game as the member has corrected it so far. */
+interface Edited {
+  game: DecodedGame
+  /** Plies the member picked or confirmed themselves. */
+  fixed: ReadonlySet<number>
+}
+
 function Results({
   scan,
-  game,
+  game: decoded,
   scansLeft,
   previewUrl,
   onScanAnother,
@@ -379,7 +392,56 @@ function Results({
 }) {
   const [copied, setCopied] = useState(false)
   const [sentToChessCom, setSentToChessCom] = useState(false)
-  const needsLook = game.moves.filter((m) => NEEDS_LOOK.includes(m.status)).length
+  const [current, setCurrent] = useState<Edited>({ game: decoded, fixed: new Set() })
+  const [history, setHistory] = useState<Edited[]>([])
+  const [editing, setEditing] = useState<DecodedMove | null>(null)
+  const [updating, setUpdating] = useState(false)
+  const [updateError, setUpdateError] = useState<string | null>(null)
+
+  const game = current.game
+  const needsLook = game.moves.filter(
+    (m) => NEEDS_LOOK.includes(m.status) && !current.fixed.has(m.ply),
+  ).length
+
+  /**
+   * Settle one move and work the rest of the game out again from there.
+   * Everything before it is kept as it is; fixes the member made after it
+   * are dropped, because the position they were made in may no longer
+   * arise.
+   */
+  async function fixMove(ply: number, san: string) {
+    setEditing(null)
+    setUpdateError(null)
+    const fixed = new Set([...current.fixed].filter((p) => p < ply))
+    fixed.add(ply)
+
+    // Confirming the move that is already there changes nothing downstream:
+    // the decoder's own best line already agrees with it.
+    if (game.moves[ply - 1]?.san === san) {
+      setHistory((h) => [...h, current])
+      setCurrent({ game, fixed })
+      return
+    }
+
+    setUpdating(true)
+    try {
+      const forced = [...game.moves.slice(0, ply - 1).map((m) => m.san), san]
+      const next = await decodeInBackground(scan, forced)
+      setHistory((h) => [...h, current])
+      setCurrent({ game: next, fixed })
+    } catch {
+      setUpdateError("Couldn't update the game. Please try that move again.")
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  function undo() {
+    const previous = history[history.length - 1]
+    if (!previous) return
+    setHistory((h) => h.slice(0, -1))
+    setCurrent(previous)
+  }
   const white = scan.header.whiteName ?? 'White'
   const black = scan.header.blackName ?? 'Black'
 
@@ -479,18 +541,42 @@ function Results({
         <ScansLeft count={scansLeft} />
       </Panel>
 
-      <MoveList game={game} />
+      <MoveList
+        game={game}
+        fixed={current.fixed}
+        updating={updating}
+        updateError={updateError}
+        canUndo={history.length > 0}
+        onUndo={undo}
+        onEdit={setEditing}
+      />
 
-      {scan.sheetNotes && scan.sheetNotes.length > 0 && (
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          <span className="font-medium text-foreground">Noticed on the sheet:</span> {scan.sheetNotes.join(' · ')}
-        </p>
-      )}
+      <MoveEditor
+        move={editing}
+        onPick={(san) => editing && fixMove(editing.ply, san)}
+        onClose={() => setEditing(null)}
+      />
     </>
   )
 }
 
-function MoveList({ game }: { game: DecodedGame }) {
+function MoveList({
+  game,
+  fixed,
+  updating,
+  updateError,
+  canUndo,
+  onUndo,
+  onEdit,
+}: {
+  game: DecodedGame
+  fixed: ReadonlySet<number>
+  updating: boolean
+  updateError: string | null
+  canUndo: boolean
+  onUndo: () => void
+  onEdit: (move: DecodedMove) => void
+}) {
   const rows: Array<{ n: number; white?: DecodedMove; black?: DecodedMove }> = []
   for (const move of game.moves) {
     const n = Math.ceil(move.ply / 2)
@@ -501,18 +587,46 @@ function MoveList({ game }: { game: DecodedGame }) {
 
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
-        <h2 className="text-sm font-semibold text-lca-navy">Moves</h2>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+      <div className="border-b px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-lca-navy">Moves</h2>
+          {canUndo && (
+            <Button type="button" variant="ghost" size="sm" onClick={onUndo} disabled={updating}>
+              <Undo2 className="size-3.5" aria-hidden="true" /> Undo last change
+            </Button>
+          )}
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Tap a move to change it. Everything after it is worked out again from your correction.
+        </p>
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-sm bg-amber-200" aria-hidden="true" /> Check this move
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-2.5 rounded-sm border border-dashed border-lca-navy/40" aria-hidden="true" /> Read differently from the sheet
           </span>
+          <span className="flex items-center gap-1.5">
+            <span className="size-2.5 rounded-sm bg-emerald-200" aria-hidden="true" /> Fixed by you
+          </span>
         </div>
       </div>
-      <table className="w-full text-sm">
+
+      {(updating || updateError) && (
+        <div
+          role="status"
+          aria-live="polite"
+          className={cn(
+            'flex items-center gap-2 border-b px-4 py-2 text-xs',
+            updateError ? 'bg-red-50 text-red-900' : 'bg-muted/40 text-muted-foreground',
+          )}
+        >
+          {updating && <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />}
+          {updating ? 'Updating the rest of the game…' : updateError}
+        </div>
+      )}
+
+      <table className={cn('w-full text-sm transition-opacity', updating && 'pointer-events-none opacity-60')}>
         <thead className="sr-only">
           <tr>
             <th scope="col">Move</th>
@@ -526,38 +640,56 @@ function MoveList({ game }: { game: DecodedGame }) {
               <th scope="row" className="w-12 py-1.5 pl-4 text-left align-top font-normal tabular-nums text-muted-foreground">
                 {row.n}.
               </th>
-              <MoveCell move={row.white} />
-              <MoveCell move={row.black} />
+              <MoveCell move={row.white} fixed={!!row.white && fixed.has(row.white.ply)} onEdit={onEdit} />
+              <MoveCell move={row.black} fixed={!!row.black && fixed.has(row.black.ply)} onEdit={onEdit} />
             </tr>
           ))}
         </tbody>
       </table>
       {game.truncatedAtPly !== undefined && (
         <p className="border-t bg-amber-50 px-4 py-2.5 text-xs text-amber-900">
-          The rest of the sheet couldn't be matched to legal moves, so the game stops here.
+          The rest of the sheet couldn't be matched to legal moves, so the game stops here. Fixing the last
+          moves above can often get it going again.
         </p>
       )}
     </div>
   )
 }
 
-function MoveCell({ move }: { move?: DecodedMove }) {
+function moveLabel(move: DecodedMove): string {
+  const n = Math.ceil(move.ply / 2)
+  return move.ply % 2 === 1 ? `${n}. ${move.san}` : `${n}… ${move.san}`
+}
+
+function MoveCell({
+  move,
+  fixed,
+  onEdit,
+}: {
+  move?: DecodedMove
+  fixed: boolean
+  onEdit: (move: DecodedMove) => void
+}) {
   if (!move) return <td className="py-1.5 pr-2" />
-  const needsLook = NEEDS_LOOK.includes(move.status)
-  const readDifferently = move.status === 'corrected'
+  const needsLook = !fixed && NEEDS_LOOK.includes(move.status)
+  const readDifferently = !fixed && move.status === 'corrected'
   const others = move.alternatives.filter((a) => a.san !== move.san).slice(0, 2)
 
   return (
-    <td className="py-1.5 pr-2 align-top">
-      <span
+    <td className="py-1 pr-2 align-top">
+      <button
+        type="button"
+        onClick={() => onEdit(move)}
+        aria-label={`${moveLabel(move)}${needsLook ? ', needs a look' : ''}${fixed ? ', fixed by you' : ''}. Change this move`}
         className={cn(
-          'inline-block rounded px-1.5 py-0.5 font-medium',
+          'inline-block rounded px-1.5 py-0.5 text-left font-medium transition-colors hover:ring-2 hover:ring-lca-gold/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lca-gold',
           needsLook && 'bg-amber-200 text-amber-950',
           readDifferently && 'border border-dashed border-lca-navy/40',
+          fixed && 'bg-emerald-200 text-emerald-950',
         )}
       >
         {move.san}
-      </span>
+      </button>
       {(needsLook || readDifferently) && (
         <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground">
           {move.sourceRaw === null ? 'blank on the sheet' : `written “${move.sourceRaw}”`}
@@ -565,6 +697,126 @@ function MoveCell({ move }: { move?: DecodedMove }) {
         </span>
       )}
     </td>
+  )
+}
+
+/** Stripped for matching what the member types: no check or capture marks,
+ *  zeros for castling Os, any case. "nf3" finds Nxf3+. */
+function looseSan(san: string): string {
+  return san.replace(/[+#!?x:]/g, '').replace(/0/g, 'O').toLowerCase()
+}
+
+function MoveEditor({
+  move,
+  onPick,
+  onClose,
+}: {
+  move: DecodedMove | null
+  onPick: (san: string) => void
+  onClose: () => void
+}) {
+  const [query, setQuery] = useState('')
+  const legal = move ? legalMovesAt(move.fenBefore) : []
+  const suggestions = move
+    ? [...new Set([move.san, ...move.alternatives.map((a) => a.san)])].filter((san) => legal.includes(san)).slice(0, 5)
+    : []
+  const filtered = query
+    ? legal.filter((san) => looseSan(san).startsWith(looseSan(query)))
+    : legal
+
+  function pick(san: string) {
+    setQuery('')
+    onPick(san)
+  }
+
+  function submitTyped(e: FormEvent) {
+    e.preventDefault()
+    const exact = legal.find((san) => looseSan(san) === looseSan(query))
+    const only = filtered.length === 1 ? filtered[0] : undefined
+    const choice = exact ?? only
+    if (choice) pick(choice)
+  }
+
+  return (
+    <Dialog
+      open={move !== null}
+      onOpenChange={(open: boolean) => {
+        if (!open) {
+          setQuery('')
+          onClose()
+        }
+      }}
+    >
+      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-md">
+        {move && (
+          <>
+            <DialogHeader>
+              <DialogTitle>
+                Move {Math.ceil(move.ply / 2)}, {move.ply % 2 === 1 ? 'White' : 'Black'}
+              </DialogTitle>
+              <DialogDescription>
+                {move.sourceRaw === null
+                  ? 'This move was blank on the sheet and worked out from the position.'
+                  : `Written on the sheet as “${move.sourceRaw}”.`}{' '}
+                Pick the move that was played.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Most likely</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {suggestions.map((san) => (
+                  <Button
+                    key={san}
+                    type="button"
+                    variant={san === move.san ? 'default' : 'outline'}
+                    className={cn(san === move.san && GOLD_BUTTON)}
+                    onClick={() => pick(san)}
+                  >
+                    {san === move.san ? `Keep ${san}` : san}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <form onSubmit={submitTyped}>
+              <label htmlFor="move-search" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Or find it
+              </label>
+              <Input
+                id="move-search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Type a move, e.g. Nf3"
+                autoComplete="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                className="mt-2"
+              />
+            </form>
+
+            <div className="flex flex-wrap gap-1.5">
+              {filtered.map((san) => (
+                <button
+                  key={san}
+                  type="button"
+                  onClick={() => pick(san)}
+                  className={cn(
+                    'rounded-md border px-2 py-1 text-sm transition-colors hover:border-lca-gold hover:bg-lca-gold/10',
+                    san === move.san && 'border-lca-navy font-semibold',
+                  )}
+                >
+                  {san}
+                </button>
+              ))}
+              {filtered.length === 0 && (
+                <p className="text-sm text-muted-foreground">No legal move matches “{query}”.</p>
+              )}
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }
 

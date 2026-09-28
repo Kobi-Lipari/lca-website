@@ -16,9 +16,15 @@ import type { DecodedGame, RawScan } from './types';
 
 let nextId = 1;
 
-export function decodeInBackground(scan: RawScan): Promise<DecodedGame> {
+/**
+ * forcedSans: moves the member has fixed, from the start of the game (see
+ * DecodeOptions.forcedSans). Omit for a first decode.
+ */
+export function decodeInBackground(scan: RawScan, forcedSans?: string[]): Promise<DecodedGame> {
   if (typeof Worker === 'undefined') {
-    return import('./decoder').then(({ decodeScan }) => decodeScan(scan));
+    return import('./decoder').then(({ decodeScan }) =>
+      decodeScan(scan, forcedSans ? { forcedSans } : {}),
+    );
   }
 
   return new Promise((resolve, reject) => {
@@ -39,7 +45,7 @@ export function decodeInBackground(scan: RawScan): Promise<DecodedGame> {
       reject(new Error(event.message || 'The decoder failed to start.'));
     };
 
-    const request: DecodeRequest = { id, scan };
+    const request: DecodeRequest = { id, scan, forcedSans };
     worker.postMessage(request);
   });
 }

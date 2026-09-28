@@ -79,6 +79,21 @@ export function createChessCache(): ChessCache {
 }
 
 /**
+ * Every legal move in a position, for the fix-up picker. Ordered the way a
+ * player scans for a move: king, queen, rooks, bishops, knights, castling,
+ * then pawns, alphabetically within each.
+ */
+export function legalMovesAt(fen: string): string[] {
+  const order = (san: string): number => {
+    const i = 'KQRBNO'.indexOf(san[0]!);
+    return i === -1 ? 6 : i;
+  };
+  return (new Chess(fen).moves() as string[]).sort(
+    (a, b) => order(a) - order(b) || a.localeCompare(b),
+  );
+}
+
+/**
  * Build a PGN from a decoded move list plus header fields.
  *
  * §8 requires the PGN carry a `Result` tag AND a movetext result token or
