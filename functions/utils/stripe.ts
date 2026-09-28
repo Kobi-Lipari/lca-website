@@ -15,6 +15,12 @@ export async function createCheckoutSession(
      * the payer typed, which may not be the account they hold.
      */
     customerEmail?: string
+    /**
+     * Several items in one checkout (a family registering together). When
+     * given, productName/amountUsd are ignored and each item is its own
+     * line on the Stripe page and the receipt.
+     */
+    lineItems?: Array<{ name: string; amountUsd: number }>
   }
 ): Promise<{ id: string; url: string }> {
   const body = new URLSearchParams()
@@ -23,10 +29,15 @@ export async function createCheckoutSession(
   body.set('cancel_url', params.cancelUrl)
   body.set('client_reference_id', params.clientReferenceId)
   if (params.customerEmail) body.set('customer_email', params.customerEmail)
-  body.set('line_items[0][price_data][currency]', 'usd')
-  body.set('line_items[0][price_data][product_data][name]', params.productName)
-  body.set('line_items[0][price_data][unit_amount]', String(Math.round(params.amountUsd * 100)))
-  body.set('line_items[0][quantity]', '1')
+  const items = params.lineItems?.length
+    ? params.lineItems
+    : [{ name: params.productName, amountUsd: params.amountUsd }]
+  items.forEach((item, i) => {
+    body.set(`line_items[${i}][price_data][currency]`, 'usd')
+    body.set(`line_items[${i}][price_data][product_data][name]`, item.name)
+    body.set(`line_items[${i}][price_data][unit_amount]`, String(Math.round(item.amountUsd * 100)))
+    body.set(`line_items[${i}][quantity]`, '1')
+  })
 
   for (const [key, value] of Object.entries(params.metadata)) {
     body.set(`metadata[${key}]`, value)

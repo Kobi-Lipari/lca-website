@@ -31,6 +31,9 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   await context.env.DB.prepare('DELETE FROM support_tickets WHERE member_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM board_seat_assignments WHERE member_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM email_campaign_recipients WHERE member_id = ?').bind(memberId).run()
+  // Children managed by this account keep their own history (games, ratings)
+  // and simply stop having a parent attached; an admin can reattach them.
+  await context.env.DB.prepare('UPDATE members SET guardian_id = NULL WHERE guardian_id = ?').bind(memberId).run()
   await context.env.DB.prepare('DELETE FROM members WHERE id = ?').bind(memberId).run()
 
   // The auth user last, so a failure here leaves an orphaned login rather than

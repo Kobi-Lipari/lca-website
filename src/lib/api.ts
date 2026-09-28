@@ -27,6 +27,28 @@ export interface ApiRegistration {
   tournament_name?: string
   tournament_date?: string
   tournament_location?: string
+  /** Who the entry is for — set when it may be one of the member's children. */
+  player_name?: string
+  is_child_entry?: number
+}
+
+/** A child on a family account: a profile the parent manages, no login. */
+export interface ApiChild {
+  id: string
+  full_name: string
+  uscf_id: string | null
+  uscf_rating: number | null
+  membership_status: 'active' | 'expired' | 'pending'
+  membership_expiry: string | null
+  membership_type: string | null
+  created_at: string
+  /** Present when listed for a specific tournament (?tournamentId=). */
+  registration?: {
+    id: string
+    section: string
+    payment_status: string
+    withdrawn_at: string | null
+  } | null
 }
 
 async function authHeaders(): Promise<HeadersInit> {
@@ -95,6 +117,7 @@ export async function getMe(): Promise<{
   member: ApiMember
   registrations: ApiRegistration[]
   directedTournaments: ApiDirectedTournament[]
+  children?: ApiChild[]
 }> {
   const response = await fetch('/api/me', {
     headers: await authHeaders(),
@@ -752,6 +775,68 @@ export async function createRegistration(
     method: 'POST',
     headers: await authHeaders(),
     body: JSON.stringify({ tournamentId, section, byeRounds }),
+  })
+  return handleResponse(response)
+}
+
+// ── Family accounts ─────────────────────────────────────────────────────────
+
+export async function getMyChildren(tournamentId?: string): Promise<ApiChild[]> {
+  // An empty tournamentId means "just the list" — kept in one literal so the
+  // route audit can see which endpoint this calls.
+  const response = await fetch(`/api/me/children?tournamentId=${encodeURIComponent(tournamentId ?? '')}`, {
+    headers: await authHeaders(),
+  })
+  const data = await handleResponse<{ children: ApiChild[] }>(response)
+  return data.children
+}
+
+export async function addChild(body: { fullName: string; uscfId?: string | null }): Promise<ApiChild[]> {
+  const response = await fetch('/api/me/children', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ children: ApiChild[] }>(response)
+  return data.children
+}
+
+export async function updateChild(
+  childId: string,
+  body: { fullName?: string; uscfId?: string | null },
+): Promise<ApiChild[]> {
+  const response = await fetch(`/api/me/children/${childId}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ children: ApiChild[] }>(response)
+  return data.children
+}
+
+export async function removeChild(childId: string): Promise<ApiChild[]> {
+  const response = await fetch(`/api/me/children/${childId}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  const data = await handleResponse<{ children: ApiChild[] }>(response)
+  return data.children
+}
+
+/** Register several players (you and/or your children) in one checkout. */
+export async function createBatchRegistration(
+  tournamentId: string,
+  entries: Array<{ memberId?: string; section: string; byeRounds?: number[] }>,
+): Promise<{
+  registrations: Array<{ id: string; memberId: string; section: string; amount: number; paymentStatus: string }>
+  total: number
+  paymentUrl: string | null
+  message: string
+}> {
+  const response = await fetch('/api/registrations/batch', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ tournamentId, entries }),
   })
   return handleResponse(response)
 }

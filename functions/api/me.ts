@@ -8,6 +8,7 @@ import {
 } from '../utils/members'
 import { isValidUscfId } from '../utils/uscf'
 import { getDirectedTournamentIds } from '../utils/permissions'
+import { listChildren } from '../utils/family'
 import {
   errorResponse,
   handleOptions,
@@ -31,15 +32,21 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     member = await upsertMemberFromAuth(context.env.DB, authResult, context.env)
   }
 
+  // The member's own entries plus their children's (family accounts), with
+  // the player's name so the dashboard can say who each entry is for.
   const registrations = await context.env.DB.prepare(
-    `SELECT r.*, t.name as tournament_name, t.date as tournament_date, t.location as tournament_location
+    `SELECT r.*, t.name as tournament_name, t.date as tournament_date, t.location as tournament_location,
+            p.full_name AS player_name, (r.member_id != ?1) AS is_child_entry
      FROM registrations r
      JOIN tournaments t ON t.id = r.tournament_id
-     WHERE r.member_id = ?
+     JOIN members p ON p.id = r.member_id
+     WHERE r.member_id = ?1 OR p.guardian_id = ?1
      ORDER BY r.registered_at DESC`,
   )
     .bind(authResult.id)
     .all()
+
+  const children = await listChildren(context.env.DB, authResult.id)
 
   const directedTournamentIds = await getDirectedTournamentIds(
     context.env.DB,
@@ -61,6 +68,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     member,
     registrations: registrations.results ?? [],
     directedTournaments,
+    children,
   })
 }
 

@@ -5,6 +5,7 @@ import {
   requireAuthedMember,
   requireTournamentManager,
 } from '../../utils/auth'
+import { canActFor } from '../../utils/family'
 import {
   errorResponse,
   handleOptions,
@@ -80,7 +81,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   // manager rights (admin / director of THIS tournament), not a global role check.
   // The manager check runs even for owners so an owner-who-is-also-TD can set
   // payment status on their own row.
-  const isOwner = registration.member_id === authed.member.id
+  // A parent acts for their children's entries as if they were their own.
+  const isOwner = await canActFor(context.env.DB, authed.member.id, registration.member_id)
   const managerResult = await requireTournamentManager(
     context.request,
     context.env,

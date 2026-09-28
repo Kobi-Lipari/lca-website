@@ -12,6 +12,8 @@
 // Both the webhook and the success page now call this, so a membership
 // activates on whichever arrives first.
 
+import { syncFamilyCoverage } from './family'
+
 /**
  * A year on from whichever is later: today, or the membership already held.
  *
@@ -41,6 +43,8 @@ export function renewalExpiry(
   from.setUTCFullYear(from.getUTCFullYear() + 1)
   return from.toISOString().slice(0, 10)
 }
+
+const KNOWN_TIERS = new Set(['adult', 'scholastic', 'family', 'senior'])
 
 export type ActivationResult = 'activated' | 'already-completed' | 'no-member'
 
@@ -77,14 +81,25 @@ export async function activateMembershipPayment(
 
   if (!member) return 'no-member'
 
+  // The tier bought is stored on the payment (reference_id). Recording it on
+  // the member is what lets a family membership extend to the children.
+  const payment = await db
+    .prepare('SELECT reference_id FROM payments WHERE id = ?')
+    .bind(params.paymentId)
+    .first<{ reference_id: string | null }>()
+  const tier = payment?.reference_id && KNOWN_TIERS.has(payment.reference_id) ? payment.reference_id : null
+
   await db
     .prepare(
       `UPDATE members
-          SET membership_status = 'active', membership_expiry = ?
+          SET membership_status = 'active', membership_expiry = ?,
+              membership_type = COALESCE(?, membership_type)
         WHERE id = ?`,
     )
-    .bind(renewalExpiry(member.membership_expiry), params.memberId)
+    .bind(renewalExpiry(member.membership_expiry), tier, params.memberId)
     .run()
+
+  if (tier === 'family') await syncFamilyCoverage(db, params.memberId)
 
   return 'activated'
 }
