@@ -95,11 +95,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     await releaseScan(env.DB, memberId, day)
 
     if (result.kind === 'malformed') {
-      console.error('scan: unusable model reply:', result.reason)
+      console.error('scan: unusable model reply:', result.reason, '| starts:', JSON.stringify(result.sample))
       return errorResponse("The scan didn't come back readable. Please try again.", 502)
     }
 
-    console.error('scan: model service returned', result.status)
+    console.error('scan: model service returned', result.status, '|', result.detail)
     // 429 and 529 are the model service being busy, not broken; worth a retry.
     if (result.status === 429 || result.status === 529) {
       return errorResponse('The scanner is busy. Please try again in a minute.', 503)

@@ -65,9 +65,9 @@ Reply with one JSON object and nothing else: no markdown, no code fences, no com
 export type ExtractResult =
   | { kind: 'ok'; scan: RawScan; usage: { inputTokens: number; outputTokens: number } }
   /** The model service refused or failed; status is what it returned. */
-  | { kind: 'upstream'; status: number }
+  | { kind: 'upstream'; status: number; detail: string }
   /** The model answered, but not with anything that parses as a scan. */
-  | { kind: 'malformed'; reason: string }
+  | { kind: 'malformed'; reason: string; sample: string }
 
 /** Base64 without blowing the stack on a multi-megabyte image. */
 export function toBase64(bytes: ArrayBuffer): string {
@@ -81,8 +81,25 @@ export function toBase64(bytes: ArrayBuffer): string {
 }
 
 interface MessagesResponse {
+  stop_reason?: string
   content?: Array<{ type: string; text?: string }>
   usage?: { input_tokens?: number; output_tokens?: number }
+}
+
+/**
+ * The model service's own explanation of a refusal ("credit balance too
+ * low", "model not found", an invalid parameter). Without it the logs only
+ * say "400", which could be any of a dozen causes. Never contains the key:
+ * the service does not echo request headers back.
+ */
+async function errorDetail(response: Response): Promise<string> {
+  try {
+    const body = (await response.json()) as { error?: { type?: string; message?: string } }
+    const { type, message } = body.error ?? {}
+    return [type, message].filter(Boolean).join(': ').slice(0, 500) || 'no error message'
+  } catch {
+    return 'non-JSON error response'
+  }
 }
 
 export async function extractRawScan(
@@ -121,16 +138,18 @@ export async function extractRawScan(
     })
   } catch {
     // Network failure before any status came back.
-    return { kind: 'upstream', status: 0 }
+    return { kind: 'upstream', status: 0, detail: 'network error before any response' }
   }
 
-  if (!response.ok) return { kind: 'upstream', status: response.status }
+  if (!response.ok) {
+    return { kind: 'upstream', status: response.status, detail: await errorDetail(response) }
+  }
 
   let body: MessagesResponse
   try {
     body = (await response.json()) as MessagesResponse
   } catch {
-    return { kind: 'malformed', reason: 'model service returned non-JSON' }
+    return { kind: 'malformed', reason: 'model service returned non-JSON', sample: '' }
   }
 
   const reply = (body.content ?? [])
@@ -139,7 +158,13 @@ export async function extractRawScan(
     .join('')
 
   const parsed = parseModelReply(reply)
-  if (!parsed.ok) return { kind: 'malformed', reason: parsed.reason }
+  if (!parsed.ok) {
+    return {
+      kind: 'malformed',
+      reason: `${parsed.reason} (stop_reason: ${body.stop_reason ?? 'unknown'}, ${reply.length} chars)`,
+      sample: reply.slice(0, 300),
+    }
+  }
 
   return {
     kind: 'ok',
