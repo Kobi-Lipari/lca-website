@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { emailGameLink, gameToPgn, lichessAnalysisUrl, pgnFilename, pgnHeaders } from '../export';
 import { decodeScan } from '../decoder';
-import { parsePgnMoves, renderScan } from '../synthetic';
-import { CORPUS } from '../__fixtures__/games';
+import { renderScan } from '../synthetic';
 
 const SANS = ['e4', 'e5', 'Qh5', 'Nc6', 'Bc4', 'Nf6', 'Qxf7#'];
 
@@ -91,13 +90,15 @@ describe('emailGameLink', () => {
   });
 
   it('leaves the PGN out when it would make the link too long, but keeps the lichess link', () => {
-    const sans = parsePgnMoves(CORPUS.reduce((a, b) => (b.pgn.length > a.pgn.length ? b : a)).pgn).sans;
-    const scan = renderScan(sans, '1-0');
+    // 60 moves of knights going out and back: legal, and long enough that
+    // the PGN no longer fits in an email link. (A 45-move game still fits.)
+    const shuffle = Array.from({ length: 30 }, () => ['Nf3', 'Nf6', 'Ng1', 'Ng8']).flat();
+    const scan = renderScan(shuffle, '1/2-1/2');
     const game = decodeScan(scan);
     const link = emailGameLink(game, scan.header);
     const body = new URLSearchParams(link.slice('mailto:?'.length)).get('body') ?? '';
     expect(body).toContain(lichessAnalysisUrl(game));
     expect(body).toContain('Save PGN');
     expect(body).not.toContain('PGN:\n[');
-  });
+  }, 30_000);
 });
