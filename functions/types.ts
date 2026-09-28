@@ -18,6 +18,13 @@ export interface Env {
    * is why typecheck:functions failed on the two logo routes.
    */
   CLUB_LOGOS: R2Bucket
+  /**
+   * Key for the vision model behind the scoresheet scanner. A Cloudflare
+   * secret in production and a line in .dev.vars locally. Optional so a
+   * deployment without it serves a clear 503 from /api/scan instead of
+   * failing at the model call.
+   */
+  ANTHROPIC_API_KEY?: string
 }
 
 export interface MemberRow {

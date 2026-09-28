@@ -1,0 +1,25 @@
+{
+  "name": "lca-scoresheet-scanner",
+  "private": true,
+  "version": "0.1.0",
+  "description": "USCF scoresheet scanner: decoder core (pure TypeScript)",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "perft": "tsx sandbox/perft.ts",
+    "check:s3": "tsx sandbox/verify_s3.ts",
+    "check:s5": "tsx sandbox/verify_s5.ts",
+    "metrics": "tsx sandbox/runProfile.ts clean && tsx sandbox/runProfile.ts typical && tsx sandbox/runProfile.ts timepressure && tsx sandbox/printTable.ts",
+    "offline": "CHESS_SHIM=1 node --no-warnings --experimental-strip-types --import ./sandbox/register.mjs"
+  },
+  "dependencies": {
+    "chess.js": "^1.0.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}
