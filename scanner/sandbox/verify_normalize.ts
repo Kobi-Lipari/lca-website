@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { normalizeToken, isResultToken } from '../src/lib/scanner/normalize';
+import { normalizeToken, isResultToken } from '../../src/lib/scanner/normalize';
 
 let passed = 0;
 let failed = 0;

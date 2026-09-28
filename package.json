@@ -18,7 +18,12 @@
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:integration:watch": "vitest --config vitest.integration.config.ts",
     "test:all": "npm run test && npm run test:integration",
-    "typecheck:functions": "tsc -p tsconfig.functions.json"
+    "typecheck:functions": "tsc -p tsconfig.functions.json",
+    "scanner:check": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/verify_s3.ts && node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/verify_s5.ts",
+    "scanner:metrics": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/runProfile.ts clean && node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/runProfile.ts typical && node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/runProfile.ts timepressure && node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/printTable.ts",
+    "scanner:bench": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/bench.ts",
+    "scanner:snapshot": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/snapshot.ts",
+    "scanner:perft": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/perft.ts"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.2.9",
@@ -28,6 +33,7 @@
     "@tiptap/extension-link": "^3.27.3",
     "@tiptap/react": "^3.27.3",
     "@tiptap/starter-kit": "^3.27.3",
+    "chess.js": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.17.0",

@@ -2,9 +2,9 @@
  * SANDBOX-ONLY runner. Prints the §5.8 metrics table across all profiles.
  * "Every Week-1 session ends with these numbers printed."
  */
-import { CORPUS } from '../src/lib/scanner/__fixtures__/games';
-import { runProfile, formatMetricsTable, type ProfileMetrics } from '../src/lib/scanner/metrics';
-import type { ProfileName } from '../src/lib/scanner/synthetic';
+import { CORPUS } from '../../src/lib/scanner/__fixtures__/games';
+import { runProfile, formatMetricsTable, type ProfileMetrics } from '../../src/lib/scanner/metrics';
+import type { ProfileName } from '../../src/lib/scanner/synthetic';
 
 const profiles: ProfileName[] = ['clean', 'typical', 'timepressure'];
 const rows: ProfileMetrics[] = [];

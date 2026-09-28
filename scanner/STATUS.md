@@ -1,10 +1,10 @@
 # Scoresheet scanner: status
 
-Last updated: 2026-09-27
+Last updated: 2026-09-28
 
 ## Where things stand
 
-Week 1 (the decoder core) is complete and was recovered from the August work sessions into this `scanner/` workspace. Every check was re-run after the recovery, and the numbers match the originals exactly.
+Week 1 (the decoder core) is complete and was recovered from the August work sessions and now lives in `src/lib/scanner/`. Every check was re-run after the recovery, and the numbers match the originals exactly.
 
 | Check | Result |
 |---|---|
@@ -14,36 +14,43 @@ Week 1 (the decoder core) is complete and was recovered from the August work ses
 | S3 decoder scenarios | 10/10 |
 | Metrics: clean sheets | 100% game accuracy |
 | Metrics: typical noise | 87.2% (1st-divergence recall 95.0%, flag recall 71.0%, flag precision 46.0%) |
-| Metrics: time pressure | 52.1% |
+| Metrics: time pressure | 52.0% (52.1% before the prune tie-break change) |
 | S5: skipped move pair | 0/60 recovered (40.0% flagged; was 26.7% before the tail-truncation fix below) |
 | S5: half-move shift | 6/60 recovered |
 
 ## Layout
 
-- `src/lib/scanner/`: types, confusion matrix, SAN normalization, candidate generation, chess.js adapter, beam-search decoder, synthetic sheet generator, metrics, unit tests, fixtures.
-- `sandbox/`: offline scripts (perft, fixture generator, S3/S5 checks, metrics, profiling) plus a small perft-validated move generator (`chess-shim`) used only when the real chess.js isn't installed.
-- `SCANNER_SPEC.md`: the full design spec.
-
-This lives in its own workspace so it doesn't touch the site's build (`tsconfig.app.json` only includes `src/`). It will move into the app when the upload UI is built.
+- `src/lib/scanner/`: the decoder, now part of the app. Types, confusion matrix, SAN normalization, candidate generation, chess.js adapter, beam-search decoder, synthetic sheet generator, metrics, unit tests, fixtures.
+  - `decodeInBackground.ts` + `decode.worker.ts`: how the app runs it, in a Web Worker so the page stays responsive.
+- `scanner/sandbox/`: offline scripts (perft, fixture generator, S3/S5 checks, metrics, benchmark, output snapshot) plus a small perft-validated move generator (`chess-shim`) used only when chess.js isn't installed.
+- `scanner/SCANNER_SPEC.md`: the full design spec.
+- The `RawScan` type is defined once, in `src/lib/scanner/types.ts`, and imported by the API client and by `functions/utils/scan/rawScan.ts`.
 
 ## Running it
 
-With dependencies installed (the normal way):
+From the repo root:
 
 ```
-cd scanner
-npm install
-npm test
-npm run typecheck
-npm run check:s3
-npm run metrics
+npm test                 # includes the scanner's unit tests
+npm run scanner:check    # S3 and S5 decoder checks
+npm run scanner:metrics  # accuracy table across noise profiles
+npm run scanner:bench    # decode time per game (real chess.js)
+npm run scanner:snapshot # hash of 60 decodes; must not change on a pure refactor/speed-up
 ```
 
-Without installing anything (Node 22+, uses the shim instead of chess.js):
+In a workspace without chess.js installed, prefix with `CHESS_SHIM=1` to use the sandbox move generator. Shim timings are meaningless for the browser.
 
-```
-npm run offline -- sandbox/verify_s3.ts
-```
+## Speed
+
+Measured with the real chess.js 1.4, per game (desktop, Node 22):
+
+| profile | before | after |
+|---|---|---|
+| clean | 5.7s | 0.7s |
+| typical | 6.8s | 0.75s |
+| time pressure | 18.4s | 1.1s |
+
+Three changes, output identical (snapshot hash) apart from one tie in 60 sheets: plain `moves()` instead of verbose (16x cheaper per position); inserted-ply lookahead skipped when its lower-bound cost can't survive the prune; prune ties broken by the survivor's own position. Remaining time is split between chess.js move generation/application and edit-distance scoring. If phones turn out too slow, next idea: key beam deduplication on parent FEN + SAN so a move's resulting FEN is only computed for survivors (applyMove is ~45% of the rest).
 
 ## Fixed since recovery
 
@@ -57,7 +64,7 @@ npm run offline -- sandbox/verify_s3.ts
 
 ## Week 2
 
-### S1: `POST /api/scan` (written, waiting on K's test run)
+### S1: `POST /api/scan` (done, merged in #56)
 
 - `functions/api/scan/index.ts`: members only (`requireAuthedMember`), takes the photo as the raw request body (JPEG, PNG or WebP, max 3.5MB, same style as the club-logo upload), returns `{ scan: RawScan, scansLeftToday }`. Photo is never stored.
 - `functions/utils/scan/extract.ts`: the model call and the extraction prompt (verbatim rule stated twice, per §6.2). Model is the `SCAN_MODEL` constant, currently `claude-sonnet-5`, temperature 0.
@@ -66,12 +73,6 @@ npm run offline -- sandbox/verify_s3.ts
 - Errors: 401 anonymous, 415 wrong type, 400 empty, 413 too big, 429 over the limit, 502 model failed or unreadable reply, 503 model busy or key not set.
 - Client: `downscaleImage()` in `src/lib/resizeImage.ts` (1568px long edge, JPEG 0.8, honours phone rotation) and `scanScoresheet()` in `src/lib/api.ts`.
 - Tests: `test/unit/scan-raw.test.ts` (23 cases; passed here with a stand-in runner) and `test/integration/scan.test.ts` (auth, input checks, prompt contents, recovery, refunds, limit). The harness now mocks `api.anthropic.com`.
-
-**K to run** (the real vitest and Workers runtime can't be installed in Claude's workspace):
-
-```
-npm test && npm run test:integration && npm run typecheck:functions && npm run build
-```
 
 **Before it works live:**
 
@@ -84,10 +85,17 @@ Run the migration first. Without the key, `/api/scan` answers 503; with the key 
 
 - Rate limit lives in D1, not KV: one tiny table, no new binding.
 - Limit resets at midnight UTC (7pm Central in winter, 6pm in summer).
-- The `RawScan` type is written out in three places for now (scanner, functions, api.ts). One shared definition once the scanner moves into `src/`.
+- The `RawScan` type lives in `src/lib/scanner/types.ts`; the Functions side imports it type-only.
+
+### S2: decoder in the browser (this branch)
+
+- Decoder moved from the `scanner/` workspace into `src/lib/scanner/`; `chess.js ^1.4.0` added to the app's dependencies.
+- `decodeInBackground(scan)` runs it in a Web Worker (fresh per decode), falling back to the main thread where workers don't exist.
+- Decoder made 8-16x faster (see Speed).
+
+**K:** run `npm install` once on this branch and commit the updated `package-lock.json` (Claude's workspace can't reach the npm registry). Without it, Cloudflare's install step fails on merge.
 
 ### Next
 
-- **S2:** run the decoder in the browser on the returned scan.
 - **S3:** review screen for flagged moves, then PGN export and lichess import (`POST /api/scan/lichess`).
-- Week 3 S1 needs `App.tsx` routes, `Navbar.tsx` and a `PageHero` usage example, plus K's call on the route (`/scanner`?) and nav placement.
+- Week 3 S1: the `/scanner` page. Needs K's call on the route and nav placement.

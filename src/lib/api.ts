@@ -1,6 +1,7 @@
 // src/lib/api.ts
 
 import { supabase } from '@/lib/supabase'
+import type { RawScan } from '@/lib/scanner/types'
 
 export interface ApiMember {
   id: string
@@ -1663,39 +1664,10 @@ export async function adminRemoveBoardSeatHolder(
 
 // ── Scoresheet scanner ─────────────────────────────────────────────
 
-export type ScanConfidence = 'high' | 'medium' | 'low'
-
-export interface ApiRawCell {
-  raw: string
-  alts?: string[]
-  confidence: ScanConfidence
-  struck?: boolean
-}
-
-/** A verbatim transcription of one scoresheet photo. No chess rules have
- *  been applied yet; the decoder does that in the browser. */
-export interface ApiRawScan {
-  header: {
-    event?: string
-    date?: string
-    round?: string
-    board?: string
-    whiteName?: string
-    blackName?: string
-    whiteRating?: string
-    blackRating?: string
-    result?: string
-    timeControl?: string
-    legibility: 'clear' | 'partial' | 'unreadable'
-  }
-  rows: Array<{ n: number; white: ApiRawCell | null; black: ApiRawCell | null }>
-  sheetNotes?: string[]
-}
-
 /** Send a photo already shrunk with downscaleImage (resizeImage.ts). */
 export async function scanScoresheet(
   photo: Blob,
-): Promise<{ scan: ApiRawScan; scansLeftToday: number }> {
+): Promise<{ scan: RawScan; scansLeftToday: number }> {
   const headers = await authHeaders()
   const response = await fetch('/api/scan', {
     method: 'POST',

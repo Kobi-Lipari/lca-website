@@ -7,9 +7,9 @@
  * legibility. Each game is corrupted with ONLY a skipped move pair (or
  * only a half-shift) on an otherwise clean sheet.
  */
-import { CORPUS } from '../src/lib/scanner/__fixtures__/games';
-import { parsePgnMoves, renderScan } from '../src/lib/scanner/synthetic';
-import { decodeScan } from '../src/lib/scanner/decoder';
+import { CORPUS } from '../../src/lib/scanner/__fixtures__/games';
+import { parsePgnMoves, renderScan } from '../../src/lib/scanner/synthetic';
+import { decodeScan } from '../../src/lib/scanner/decoder';
 
 function measure(label: string, drop: number) {
   let recovered = 0, flaggedFirstDiv = 0, considered = 0;

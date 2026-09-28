@@ -239,7 +239,7 @@ export const CORPUS: CorpusGame[] = ${JSON.stringify(
 `;
 
 writeFileSync(
-  new URL('../src/lib/scanner/__fixtures__/games.ts', import.meta.url),
+  new URL('../../src/lib/scanner/__fixtures__/games.ts', import.meta.url),
   out,
 );
 console.log('\nwrote src/lib/scanner/__fixtures__/games.ts');
