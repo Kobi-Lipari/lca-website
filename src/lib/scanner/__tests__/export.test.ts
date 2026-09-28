@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { gameToPgn, lichessAnalysisUrl, pgnFilename, pgnHeaders } from '../export';
+import { emailGameLink, gameToPgn, lichessAnalysisUrl, pgnFilename, pgnHeaders } from '../export';
 import { decodeScan } from '../decoder';
-import { renderScan } from '../synthetic';
+import { parsePgnMoves, renderScan } from '../synthetic';
+import { CORPUS } from '../__fixtures__/games';
 
 const SANS = ['e4', 'e5', 'Qh5', 'Nc6', 'Bc4', 'Nf6', 'Qxf7#'];
 
@@ -76,5 +77,27 @@ describe('pgnFilename', () => {
 
   it('falls back to a generic name when a player is missing', () => {
     expect(pgnFilename({ legibility: 'clear', whiteName: 'Paul' }, day)).toBe('scanned-game-2026-09-14.pgn');
+  });
+});
+
+describe('emailGameLink', () => {
+  it('fills in the subject, the lichess link and the PGN for a short game', () => {
+    const { scan, game } = scholarsMate();
+    const link = emailGameLink(game, scan.header);
+    const params = new URLSearchParams(link.slice('mailto:?'.length));
+    expect(params.get('subject')).toBe('Chess game: Paul vs Ana');
+    expect(params.get('body')).toContain(lichessAnalysisUrl(game));
+    expect(params.get('body')).toContain('4. Qxf7# 1-0');
+  });
+
+  it('leaves the PGN out when it would make the link too long, but keeps the lichess link', () => {
+    const sans = parsePgnMoves(CORPUS.reduce((a, b) => (b.pgn.length > a.pgn.length ? b : a)).pgn).sans;
+    const scan = renderScan(sans, '1-0');
+    const game = decodeScan(scan);
+    const link = emailGameLink(game, scan.header);
+    const body = new URLSearchParams(link.slice('mailto:?'.length)).get('body') ?? '';
+    expect(body).toContain(lichessAnalysisUrl(game));
+    expect(body).toContain('Save PGN');
+    expect(body).not.toContain('PGN:\n[');
   });
 });

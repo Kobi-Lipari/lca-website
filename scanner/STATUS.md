@@ -117,7 +117,7 @@ Run the migration first. Without the key, `/api/scan` answers 503; with the key 
 
 ### S3: save and share (this branch)
 
-- Results actions grouped as **Analyze** (lichess, chess.com) and **Keep**: **Share** (device share sheet with the PGN file attached and the lichess link; only shown where `navigator.share` exists), **Save PGN** (download named `White-vs-Black-YYYY-MM-DD.pgn` from surnames, falling back to `scanned-game-<date>.pgn`), **Copy PGN**, Scan another. All use the corrected game.
+- Results actions grouped as **Analyze** (lichess, chess.com) and **Keep**: **Share** (device share sheet with the PGN file attached and the lichess link; only shown where `navigator.share` exists), or **Email** where there's no share sheet (`mailto:` with the lichess link, plus the PGN text when the link stays under ~1,900 characters; browsers can't attach files to mailto), **Save PGN** (download named `White-vs-Black-YYYY-MM-DD.pgn` from surnames, falling back to `scanned-game-<date>.pgn`), **Copy PGN**, Scan another. All use the corrected game.
 
 ### Next
 

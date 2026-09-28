@@ -21,6 +21,7 @@ import {
   ImagePlus,
   Loader2,
   LogIn,
+  Mail,
   RotateCcw,
   Share2,
   ShieldCheck,
@@ -39,7 +40,7 @@ import { GOLD_BUTTON } from '@/lib/brand'
 import { downscaleImage } from '@/lib/resizeImage'
 import { decodeInBackground } from '@/lib/scanner/decodeInBackground'
 import { legalMovesAt } from '@/lib/scanner/chessAdapter'
-import { gameToPgn, lichessAnalysisUrl, pgnFilename } from '@/lib/scanner/export'
+import { emailGameLink, gameToPgn, lichessAnalysisUrl, pgnFilename } from '@/lib/scanner/export'
 import type { DecodedGame, DecodedMove, RawScan } from '@/lib/scanner/types'
 import { cn } from '@/lib/utils'
 
@@ -573,9 +574,18 @@ function Results({
 
         <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Keep</p>
         <div className="mt-2 flex flex-wrap gap-3">
-          {canShare && (
+          {canShare ? (
             <Button type="button" variant="outline" onClick={share}>
               <Share2 className="size-4" aria-hidden="true" /> Share
+            </Button>
+          ) : (
+            // No share sheet (most desktop browsers): open their own email
+            // program instead. A mailto link can't attach the file, so it
+            // carries the lichess link and, when it fits, the PGN text.
+            <Button asChild variant="outline">
+              <a href={emailGameLink(game, scan.header)}>
+                <Mail className="size-4" aria-hidden="true" /> Email
+              </a>
             </Button>
           )}
           <Button type="button" variant="outline" onClick={savePgn}>

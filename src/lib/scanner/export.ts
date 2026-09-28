@@ -79,3 +79,29 @@ export function pgnFilename(header: RawScan['header'], today: Date = new Date())
   const players = white && black ? `${white}-vs-${black}` : 'scanned-game';
   return `${players}-${date}.pgn`;
 }
+
+/**
+ * Some email programs (older Outlook in particular) ignore or cut off a
+ * mailto link much past 2,000 characters, so the PGN goes in the body only
+ * when the whole link stays under this. The lichess link always fits.
+ */
+const MAILTO_LIMIT = 1900;
+
+/**
+ * A mailto: link that opens the member's own email program with the game
+ * filled in. It can't attach a file (browsers don't allow it), so the body
+ * carries the lichess link, and the PGN text when it fits.
+ */
+export function emailGameLink(game: DecodedGame, header: RawScan['header']): string {
+  const white = header.whiteName ?? 'White';
+  const black = header.blackName ?? 'Black';
+  const subject = `Chess game: ${white} vs ${black}`;
+  const link = lichessAnalysisUrl(game);
+  const intro = `${white} vs ${black}, scanned from the scoresheet.\n\nReplay it on lichess:\n${link}`;
+  const build = (body: string) =>
+    `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+  const withPgn = build(`${intro}\n\nPGN:\n${gameToPgn(game, header)}\n`);
+  if (withPgn.length <= MAILTO_LIMIT) return withPgn;
+  return build(`${intro}\n\n(The full PGN is too long for an email link. Use Save PGN on the scanner page and attach the file.)\n`);
+}
