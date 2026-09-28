@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { rankCandidates, type CellReading } from '../src/lib/scanner/candidates';
+import { rankCandidates, type CellReading } from '../../src/lib/scanner/candidates';
 
 let passed = 0;
 let failed = 0;

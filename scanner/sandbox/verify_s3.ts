@@ -2,10 +2,10 @@
  * SANDBOX-ONLY runner for the Week 1 S3 DoD:
  * "10 clean synthetic games decode to exact PGN match."
  */
-import { CORPUS } from '../src/lib/scanner/__fixtures__/games';
-import { corrupt } from '../src/lib/scanner/synthetic';
-import { decodeScan } from '../src/lib/scanner/decoder';
-import { buildPgn } from '../src/lib/scanner/chessAdapter';
+import { CORPUS } from '../../src/lib/scanner/__fixtures__/games';
+import { corrupt } from '../../src/lib/scanner/synthetic';
+import { decodeScan } from '../../src/lib/scanner/decoder';
+import { buildPgn } from '../../src/lib/scanner/chessAdapter';
 
 const games = CORPUS.slice(0, 10);
 let failures = 0;

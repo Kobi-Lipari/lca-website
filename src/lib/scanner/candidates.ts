@@ -2,14 +2,9 @@
  * Candidate generation per cell. Spec: SCANNER_SPEC.md §5.3, Week 1 S2.
  *
  * Deliberately takes `legalMoves: string[]` (SAN strings) as a plain input
- * rather than importing chess.js and calling `chess.moves({verbose:true})`
- * itself. This keeps the scoring logic here pure and unit-testable without
- * a live chess.js dependency wired in (this sandbox has no network access
- * to install it - see STATUS.md). When this gets wired into the real beam
- * search (Week 1 S3), a thin adapter converts
- * `chess.moves({verbose:true}).map(m => m.san)` into this function's input;
- * that adapter is a couple of lines and doesn't need its own tests beyond
- * the integration/beam-search suite.
+ * rather than calling chess.js itself. This keeps the scoring logic pure
+ * and unit-testable with no chess engine involved; chessAdapter.ts is the
+ * only file that talks to chess.js.
  */
 
 import { cleanToken, stripCheckMateDecoration } from './normalize';

@@ -10,50 +10,16 @@
 // this parser is forgiving about shape and strict only about the one thing
 // that makes a scan useless: no rows to decode.
 //
-// The types mirror scanner/src/lib/scanner/types.ts (SCANNER_SPEC §3.1). They
-// are repeated here rather than imported because functions/ is typechecked on
-// its own and the scanner is still in its own workspace; when the scanner
-// moves into src/, both sides should import one shared definition.
+// The contract itself (SCANNER_SPEC §3.1) is defined once, in the decoder's
+// types, and shared by this parser, the API client and the decoder. Only
+// types cross over, so nothing from src/ ends up in the Functions bundle.
 
-export type Confidence = 'high' | 'medium' | 'low'
-export type Legibility = 'clear' | 'partial' | 'unreadable'
+import type { RawCell, RawScan } from '../../../src/lib/scanner/types'
 
-export interface RawCell {
-  /** best-effort verbatim transcription, e.g. "Nf3", "R1e2", "0-0", "e8=Q" */
-  raw: string
-  /** plausible alternative readings, whole-token */
-  alts?: string[]
-  confidence: Confidence
-  /** move appears crossed out / rewritten */
-  struck?: boolean
-}
-
-export interface RawRow {
-  /** printed move number on the sheet */
-  n: number
-  /** null = the cell is blank */
-  white: RawCell | null
-  black: RawCell | null
-}
-
-export interface RawScan {
-  header: {
-    event?: string
-    date?: string
-    round?: string
-    board?: string
-    whiteName?: string
-    blackName?: string
-    whiteRating?: string
-    blackRating?: string
-    /** verbatim, e.g. "1-0", "½-½", "1/2-1/2", "0-1" */
-    result?: string
-    timeControl?: string
-    legibility: Legibility
-  }
-  rows: RawRow[]
-  sheetNotes?: string[]
-}
+export type { RawCell, RawScan }
+export type Confidence = RawCell['confidence']
+export type Legibility = RawScan['header']['legibility']
+export type RawRow = RawScan['rows'][number]
 
 export type ParseResult =
   | { ok: true; scan: RawScan }

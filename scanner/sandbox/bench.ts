@@ -4,9 +4,9 @@
  * Run against the real chess.js, not the shim: the shim's move generator is
  * several times faster, so shim timings say nothing about the browser.
  */
-import { CORPUS } from '../src/lib/scanner/__fixtures__/games';
-import { corrupt } from '../src/lib/scanner/synthetic';
-import { decodeScan } from '../src/lib/scanner/decoder';
+import { CORPUS } from '../../src/lib/scanner/__fixtures__/games';
+import { corrupt } from '../../src/lib/scanner/synthetic';
+import { decodeScan } from '../../src/lib/scanner/decoder';
 for (const profile of ['clean', 'typical', 'timepressure'] as const) {
   const times: number[] = [];
   for (const g of CORPUS.slice(0, 8)) {
