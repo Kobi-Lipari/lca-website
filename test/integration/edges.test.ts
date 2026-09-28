@@ -334,11 +334,18 @@ describe('the member directory is readable by tournament directors', () => {
     expect(row?.role).toBe('lca_auditor')
   })
 
-  it('refuses a club rep', async () => {
-    // Club reps manage one club's roster through their own screens; the
-    // association-wide directory is not part of that.
-    const id = await seedMember({ role: 'club_rep' })
-    expect((await invoke(membersGet, { as: id })).status).toBe(403)
+  it('gives a club rep the same narrowed list', async () => {
+    // Reps run their club's tournaments, so they check membership at the
+    // registration desk too. club_rep sits above lca_auditor, and raising a
+    // role must never take away what the lower role could do.
+    await seedMember({ fullName: 'Verified Player', uscfId: '11112222' })
+    const rep = await seedMember({ role: 'club_rep' })
+
+    const res = await invoke(membersGet, { as: rep })
+    expect(res.status).toBe(200)
+    const { members } = await res.json<{ members: Record<string, unknown>[] }>()
+    for (const key of VISIBLE) expect(Object.keys(members[0])).toContain(key)
+    for (const key of ADMIN_ONLY) expect(Object.keys(members[0])).not.toContain(key)
   })
 
   it('does not let a tournament director change anything', async () => {

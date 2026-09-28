@@ -161,19 +161,20 @@ export async function requireAdmin(
 }
 
 /** Roles that may read the member directory, besides lca_admin. */
-const DIRECTORY_ROLES: MemberRole[] = ['lca_auditor', 'tournament_director']
+const DIRECTORY_ROLES: MemberRole[] = ['lca_auditor', 'club_rep', 'tournament_director']
 
 /**
  * Read access to the member directory.
  *
  * lca_auditor exists for exactly this and nothing else: checking whether the
- * person at the registration desk is a current member. tournament_director is
- * included because it sits above auditor — raising someone's role must never
- * take away something the lower role could do.
+ * person at the registration desk is a current member. club_rep and
+ * tournament_director are included because they sit above auditor —
+ * raising someone's role must never take away something the lower role
+ * could do.
  *
  * lca_admin keeps the full requireAdmin treatment, MFA included.
  *
- * MFA is deliberately NOT required of the other two. It guards the admin
+ * MFA is deliberately NOT required of the other roles. It guards the admin
  * endpoints because those change roles, delete accounts and send mail to
  * every member; this one returns a read-only slice, and requiring every
  * volunteer to enrol in TOTP before they can look someone up would cost more

@@ -35,6 +35,8 @@ import {
   type ApiTournamentSection,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/contexts/auth-context'
+import { toolsHomeFor } from '@/lib/roles'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
@@ -159,6 +161,9 @@ export function TournamentManagePage() {
   // NOTE: sourced via getMe() to avoid depending on an auth context this file
   // can't see; if the app has a useAuth() hook exposing member.role, swap it in.
   const [myRole, setMyRole] = useState<string | null>(null)
+  // Back links go to the admin panel for admins, the workspace for reps/directors.
+  const { role: authRole } = useAuth()
+  const backHref = toolsHomeFor(authRole, 'tournaments')
 
   // ── Details tab form state ──
   const [name, setName] = useState('')
@@ -804,7 +809,7 @@ export function TournamentManagePage() {
       <div className="mx-auto max-w-6xl px-6 py-12 text-center">
         <p className="text-destructive">{error ?? 'Tournament not found'}</p>
         <Button asChild className="mt-4" variant="outline">
-          <Link to="/admin/tournaments">Back to tournaments</Link>
+          <Link to={backHref}>Back to tournaments</Link>
         </Button>
       </div>
     )
@@ -827,7 +832,7 @@ export function TournamentManagePage() {
       {/* Hero */}
       <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
-          <Link to="/admin/tournaments" className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
+          <Link to={backHref} className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
             <ArrowLeft className="size-4" />All Tournaments
           </Link>
           <div className="mt-4 flex items-start justify-between gap-4 flex-wrap">

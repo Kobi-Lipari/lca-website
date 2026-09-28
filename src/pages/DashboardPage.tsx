@@ -285,29 +285,36 @@ export function DashboardPage() {
 
         {!loadingData && !loadError && (
           <>
-            {(role === 'lca_admin' || role === 'club_rep' || role === 'tournament_director') && (
+            {(role === 'lca_admin' || role === 'club_rep' || role === 'tournament_director' || role === 'lca_auditor') && (
               <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
                 <h2 className="text-lg font-bold text-lca-navy">
                   {ROLE_LABELS[role]} tools
                 </h2>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  {role === 'lca_admin' && (
+                  {role === 'lca_admin' ? (
                     <Button asChild className={goldButtonClass}>
                       <Link to="/admin">
                         <Shield className="size-4" />
                         Admin Panel
                       </Link>
                     </Button>
-                  )}
-                  {role === 'club_rep' && authMember?.club_id && (
+                  ) : (
                     <Button asChild className={goldButtonClass}>
-                      <Link to="/manage/club">
-                        <Building2 className="size-4" />
-                        Manage Club
+                      <Link to="/workspace">
+                        <Shield className="size-4" />
+                        Open workspace
                       </Link>
                     </Button>
                   )}
-                  {role === 'tournament_director' &&
+                  {role === 'club_rep' && authMember?.club_id && (
+                    <Button asChild variant="outline">
+                      <Link to={`/admin/clubs/${authMember.club_id}`}>
+                        <Building2 className="size-4" />
+                        Edit club page
+                      </Link>
+                    </Button>
+                  )}
+                  {role !== 'lca_admin' &&
                     directedTournaments.map((t) => (
                       <Button key={t.id} asChild variant="outline">
                         <Link to={`/admin/tournaments/${t.id}`}>

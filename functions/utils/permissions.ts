@@ -67,7 +67,10 @@ export async function canManageTournament(
     return true
   }
 
-  if (member.role === 'tournament_director') {
+  // Director assignments count for anyone who holds one, not just members
+  // whose role is tournament_director — a club rep asked to direct another
+  // club's event must be able to run it.
+  if (member.role === 'tournament_director' || member.role === 'club_rep') {
     return isTournamentDirector(db, member.id, tournamentId)
   }
 

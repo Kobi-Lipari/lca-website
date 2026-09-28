@@ -11,7 +11,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const isAdmin = authResult.member.role === 'lca_admin'
 
-  // A tournament director gets exactly the columns their view renders, plus
+  // Non-admins (auditor, club rep, director) get exactly the columns their view renders, plus
   // the USCF id the search box matches on. Hiding a column in the UI is not
   // hiding it — anyone can open the network tab — so role, club and the rest
   // are left out of the response rather than out of the table.

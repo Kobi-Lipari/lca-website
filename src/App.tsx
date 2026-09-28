@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute'
+import { WORKSPACE_ROLES } from '@/lib/roles'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
 import { HomePage } from '@/pages/HomePage'
@@ -13,9 +14,7 @@ import { PasswordRecoveryRedirect } from '@/components/auth/PasswordRecoveryRedi
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AnnualMeetingPage = lazy(() => import('@/pages/AnnualMeetingPage').then(m => ({ default: m.AnnualMeetingPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
-const AdminEmailPage = lazy(() => import('@/pages/AdminEmailPage').then(m => ({ default: m.AdminEmailPage })))
 const AdminPage = lazy(() => import('@/pages/AdminPage').then(m => ({ default: m.AdminPage })))
-const AdminSupportPage = lazy(() => import('@/pages/AdminSupportPage').then(m => ({ default: m.AdminSupportPage })))
 const BoardInboxPage = lazy(() => import('@/pages/BoardInboxPage').then(m => ({ default: m.BoardInboxPage })))
 const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m.BoardPage })))
 const BylawsPage = lazy(() => import('@/pages/BylawsPage').then(m => ({ default: m.BylawsPage })))
@@ -40,6 +39,7 @@ const SupportPage = lazy(() => import('@/pages/SupportPage').then(m => ({ defaul
 const TournamentDetailPage = lazy(() => import('@/pages/TournamentDetailPage').then(m => ({ default: m.TournamentDetailPage })))
 const TournamentManagePage = lazy(() => import('@/pages/TournamentManagePage').then(m => ({ default: m.TournamentManagePage })))
 const TournamentPairingsPage = lazy(() => import('@/pages/TournamentPairingsPage').then(m => ({ default: m.TournamentPairingsPage })))
+const WorkspacePage = lazy(() => import('@/pages/WorkspacePage').then(m => ({ default: m.WorkspacePage })))
 const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => ({ default: m.TournamentsPage })))
 function App() {
   return (
@@ -108,12 +108,15 @@ function App() {
               inbox" state for signed-in members who hold none.
             */}
             <Route path="/board/inbox" element={<ProtectedRoute><BoardInboxPage /></ProtectedRoute>} />
+            {/* ── Club reps, directors, auditors ── */}
+            <Route path="/workspace" element={<RoleProtectedRoute roles={WORKSPACE_ROLES}><WorkspacePage /></RoleProtectedRoute>} />
             {/* ── Admin ── */}
-            <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director', 'lca_auditor']}><AdminPage /></RoleProtectedRoute>} />
+            {/* Admin-only. Anyone else who follows an old /admin link lands in
+                their workspace (or the dashboard) instead of an empty panel. */}
+            <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin']} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
+            <Route path="/admin/:section" element={<RoleProtectedRoute roles={['lca_admin']} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
-            <Route path="/admin/email" element={<RoleProtectedRoute roles={['lca_admin']}><AdminEmailPage /></RoleProtectedRoute>} />
             <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']} requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
-            <Route path="/admin/support" element={<RoleProtectedRoute roles={['lca_admin']}><AdminSupportPage /></RoleProtectedRoute>} />
           </Routes>
         </Suspense>
       </main>

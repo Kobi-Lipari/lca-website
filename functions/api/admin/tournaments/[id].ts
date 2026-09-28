@@ -23,6 +23,8 @@ interface UpdateTournamentBody {
   registrationClosesAt?: string | null
   customDetails?: Array<{ title: string; body: string }>
   timeControl?: string | null
+  /** lca_admin only — which club organizes the event. null detaches it. */
+  clubId?: string | null
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -49,6 +51,22 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   if (body.status && !['upcoming', 'active', 'completed'].includes(body.status)) {
     return errorResponse('Invalid status', 400)
+  }
+
+  // Reassigning the organizing club moves the event between reps' scopes, so
+  // only an admin may do it. Checked before any write happens.
+  let clubId = existing.club_id as string | null
+  if (body.clubId !== undefined) {
+    if (authResult.member.role !== 'lca_admin') {
+      return errorResponse('Only LCA admins can change the organizing club', 403)
+    }
+    if (body.clubId) {
+      const club = await context.env.DB.prepare('SELECT id FROM clubs WHERE id = ?')
+        .bind(body.clubId)
+        .first()
+      if (!club) return errorResponse('Club not found', 404)
+    }
+    clubId = body.clubId || null
   }
 
   const sections = body.sections != null
@@ -85,7 +103,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       entry_fee = ?, sections = ?, rounds = ?, max_players = ?,
       status = ?, description = ?, registration_deadline = ?,
       is_rated = ?, is_visible = ?, round_schedule = ?,
-      registration_closes_at = ?, custom_details = ?, time_control = ?
+      registration_closes_at = ?, custom_details = ?, time_control = ?,
+      club_id = ?
      WHERE id = ?`,
   ).bind(
     body.name ?? existing.name,
@@ -106,6 +125,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     registrationClosesAt ?? null,
     customDetails ?? null,
     timeControl ?? null,
+    clubId,
     tournamentId,
   ).run()
 

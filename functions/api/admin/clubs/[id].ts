@@ -37,18 +37,30 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (!club) return errorResponse('Club not found', 404)
 
   const officers = await context.env.DB.prepare(
-    `SELECT co.id, co.role, m.full_name, m.email
+    `SELECT co.id, co.member_id, co.role, m.full_name, m.email
      FROM club_officers co
      JOIN members m ON co.member_id = m.id
-     WHERE co.club_id = ? ORDER BY co.role`,
+     WHERE co.club_id = ? ORDER BY co.created_at`,
   ).bind(clubId).all()
 
   const roster = await context.env.DB.prepare(
-    `SELECT m.id, m.full_name, m.email, m.uscf_id, m.membership_status
-     FROM members m WHERE m.club_id = ? ORDER BY m.full_name`,
+    `SELECT m.id, m.full_name, m.email, m.uscf_id, m.uscf_rating, m.membership_status
+     FROM members m WHERE m.club_id = ? AND m.role != 'guest' ORDER BY m.full_name`,
   ).bind(clubId).all()
 
-  return jsonResponse({ club, officers: officers.results, roster: roster.results })
+  // Unlike the public club endpoint, this includes hidden drafts: the people
+  // allowed here are exactly the people who manage those drafts.
+  const tournaments = await context.env.DB.prepare(
+    `SELECT id, name, date, end_date, status, is_visible, registration_status
+     FROM tournaments WHERE club_id = ? ORDER BY date DESC`,
+  ).bind(clubId).all()
+
+  return jsonResponse({
+    club,
+    officers: officers.results,
+    roster: roster.results,
+    tournaments: tournaments.results,
+  })
 }
 
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
@@ -65,6 +77,34 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const body = await parseJsonBody<UpdateClubBody>(context.request)
   if (!body) return errorResponse('Invalid JSON body', 400)
 
+  // A club's name and region decide how it is listed and filtered site-wide,
+  // so those stay with LCA admins. Sending the unchanged value is fine — the
+  // edit form always sends the whole record.
+  const isAdmin = authResult.member.role === 'lca_admin'
+  if (!isAdmin) {
+    if (body.name !== undefined && body.name !== existing.name) {
+      return errorResponse('Only LCA admins can rename a club', 403)
+    }
+    if (body.region !== undefined && (body.region || null) !== (existing.region || null)) {
+      return errorResponse('Only LCA admins can change a club\'s region', 403)
+    }
+    // Logos go through the upload endpoint, which stores them on our own
+    // storage; a rep pointing image_url at an arbitrary site is not needed.
+    if (body.imageUrl !== undefined && body.imageUrl !== existing.image_url) {
+      return errorResponse('Upload a new image instead of setting its URL', 403)
+    }
+  }
+
+  if (body.name !== undefined && !body.name.trim()) {
+    return errorResponse('Club name cannot be empty', 400)
+  }
+  if (body.city !== undefined && !body.city.trim()) {
+    return errorResponse('City cannot be empty', 400)
+  }
+  if (body.contactEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.contactEmail)) {
+    return errorResponse('Contact email is not a valid address', 400)
+  }
+
   // Hex-validate color when provided; explicit null clears it, an invalid
   // string is ignored in favor of the existing value.
   const color = body.color !== undefined
@@ -80,15 +120,15 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       color = ?, image_url = ?, region = ?
      WHERE id = ?`,
   ).bind(
-    body.name ?? existing.name,
-    body.city ?? existing.city,
+    body.name?.trim() ?? existing.name,
+    body.city?.trim() ?? existing.city,
     body.location !== undefined ? body.location : existing.location,
     body.description !== undefined ? body.description : existing.description,
     body.meetingSchedule !== undefined ? body.meetingSchedule : existing.meeting_schedule,
     body.contactEmail !== undefined ? body.contactEmail : existing.contact_email,
     color,
     body.imageUrl !== undefined ? body.imageUrl : existing.image_url,
-    body.region !== undefined ? body.region : existing.region,
+    body.region !== undefined ? (body.region || null) : existing.region,
     clubId,
   ).run()
 
