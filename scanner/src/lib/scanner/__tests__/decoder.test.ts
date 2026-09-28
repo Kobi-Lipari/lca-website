@@ -162,11 +162,37 @@ describe('decoder - truncation is a feature (§1.2, §5.5)', () => {
       scan.rows[i]!.black = { raw: 'qqq7', confidence: 'low' };
     }
     const decoded = decodeScan(scan);
+    // Either the decoder stops and says so, or whatever it put after the
+    // readable part is visibly unsure. What it must not do is return a game
+    // that looks complete and confident. (An empty tail with no truncation
+    // is exactly that failure, and every() on an empty list is true, so the
+    // two cases are checked separately.)
     const trailing = decoded.moves.slice(6);
     const allConfident = trailing.every(
       (m) => m.status === 'matched' && m.confidence > 0.8,
     );
-    expect(allConfident).toBe(false);
+    const honest =
+      decoded.truncatedAtPly !== undefined || (trailing.length > 0 && !allConfident);
+    expect(honest).toBe(true);
+  });
+
+  it('reports truncation when the last written cells are skipped as noise', () => {
+    const sans = parsePgnMoves(CORPUS[0]!.pgn).sans.slice(0, 10);
+    const scan = renderScan(sans, '1-0');
+    for (let i = 3; i < scan.rows.length; i++) {
+      scan.rows[i]!.white = { raw: 'zzz9', confidence: 'low' };
+      scan.rows[i]!.black = { raw: 'qqq7', confidence: 'low' };
+    }
+    const decoded = decodeScan(scan);
+    expect(decoded.truncatedAtPly).toBe(decoded.moves.length);
+    expect(decoded.warnings.some((w) => /could not decode past/i.test(w))).toBe(true);
+  });
+
+  it('does not report truncation for a sheet that simply ends', () => {
+    const sans = parsePgnMoves(CORPUS[0]!.pgn).sans.slice(0, 10);
+    const decoded = decodeScan(renderScan(sans, '1-0'));
+    expect(decoded.truncatedAtPly).toBeUndefined();
+    expect(decoded.moves.map((m) => m.san)).toEqual(sans);
   });
 });
 

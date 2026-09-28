@@ -352,7 +352,9 @@ export function installFetchInterceptor(): void {
       })
 
       if (anthropicBehavior.throws) {
-        return Promise.reject(new Error('harness: simulated network failure'))
+        // throw, not return Promise.reject(): the Workers runtime reports a
+        // returned rejection as unhandled before the caller's catch adopts it.
+        throw new Error('harness: simulated network failure')
       }
       if (anthropicBehavior.status !== 200) {
         return Response.json(
@@ -371,9 +373,7 @@ export function installFetchInterceptor(): void {
 
     // Anything else (USCF lookups etc.): fail loudly so no test
     // silently depends on the live internet.
-    return Promise.reject(
-      new Error(`Unmocked external fetch in test: ${request.method} ${request.url}`),
-    )
+    throw new Error(`Unmocked external fetch in test: ${request.method} ${request.url}`)
   }) as typeof fetch
 }
 

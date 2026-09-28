@@ -83,6 +83,8 @@ interface Beam {
   warnings: string[];
   /** rolling per-cell match costs, for the hopeless-beam check */
   recentCosts: number[];
+  /** written cells skipped since the last move was placed */
+  trailingSkips: number;
 }
 
 export function decodeScan(
@@ -125,6 +127,7 @@ export function decodeScan(
       finishedResult: null,
       warnings: [],
       recentCosts: [],
+      trailingSkips: 0,
     },
   ];
 
@@ -172,6 +175,18 @@ export function decodeScan(
     normalizeResult(winner.finishedResult) ??
     normalizeResult(scan.header.result) ??
     '*';
+
+  // A beam that skipped its way through the last written cells reaches the
+  // end without dying, so the loop above never calls it truncation. But it
+  // is: the sheet has writing after the last move we placed, and a shorter
+  // game with no warning reads as complete. Report it the same way.
+  if (truncatedAtPly === undefined && winner.trailingSkips > 0) {
+    truncatedAtPly = winner.moves.length;
+    warnings.push(
+      `Could not decode past move ${plyToMoveLabel(truncatedAtPly + 1)}; ` +
+        `the remaining moves were left out.`,
+    );
+  }
 
   const moves = winner.moves.map((m) => applyConfidenceFloor(m, options.confidenceFloor));
 
@@ -331,6 +346,7 @@ function extendWithMatch(
     fen: nextFen,
     slotIndex: beam.slotIndex + 1,
     moves: [...beam.moves, move],
+    trailingSkips: 0,
     cost: beam.cost + candidate.cost + extraCost,
     resyncRemaining,
     resyncCosts: resyncRemaining === 0 ? [] : resyncCosts,
@@ -349,6 +365,7 @@ function skipCell(beam: Beam): Beam {
   return {
     ...beam,
     slotIndex: beam.slotIndex + 1,
+    trailingSkips: beam.trailingSkips + 1,
     cost: beam.cost + SKIP_CELL_COST,
     resyncRemaining: RESYNC_CELLS,
     resyncCosts: [],
@@ -419,6 +436,7 @@ function insertGuessedPlies(
           ...state,
           fen: cache.applyMove(state.fen, san),
           moves: [...state.moves, move],
+          trailingSkips: 0,
           cost: state.cost + INSERT_PLY_COST,
           lastMoveTo: squareOf(san),
           resyncRemaining: RESYNC_CELLS,

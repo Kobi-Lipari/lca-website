@@ -15,7 +15,7 @@ Week 1 (the decoder core) is complete and was recovered from the August work ses
 | Metrics: clean sheets | 100% game accuracy |
 | Metrics: typical noise | 87.2% (1st-divergence recall 95.0%, flag recall 71.0%, flag precision 46.0%) |
 | Metrics: time pressure | 52.1% |
-| S5: skipped move pair | 0/60 recovered (26.7% flagged) |
+| S5: skipped move pair | 0/60 recovered (40.0% flagged; was 26.7% before the tail-truncation fix below) |
 | S5: half-move shift | 6/60 recovered |
 
 ## Layout
@@ -44,6 +44,10 @@ Without installing anything (Node 22+, uses the shim instead of chess.js):
 ```
 npm run offline -- sandbox/verify_s3.ts
 ```
+
+## Fixed since recovery
+
+- **Silent tail truncation (2026-09-27).** When the last written cells were unreadable, the decoder skipped them and returned a shorter game with no warning and no `truncatedAtPly`, so it looked complete. It now reports truncation there. Found because the real vitest run failed `truncates rather than inventing moves`: that test had never run under vitest before (the August checks used the sandbox scripts), and it passed vacuously on an empty tail. Accuracy numbers are unchanged.
 
 ## Known gaps
 
