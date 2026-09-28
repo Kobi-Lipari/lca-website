@@ -26,5 +26,7 @@ CREATE TABLE IF NOT EXISTS scan_games (
 -- The allowance check: games per member per day.
 CREATE INDEX IF NOT EXISTS idx_scan_games_member_day ON scan_games(member_id, day);
 
--- Replaced by scan_games. It only ever held per-day photo counts.
-DROP TABLE IF EXISTS scan_usage;
+-- scan_usage (0035) is replaced by this table but deliberately not dropped
+-- here: the code running when this migration is applied still writes to
+-- it, and dropping it first would break scanning until the new code
+-- deployed. It can go in a later migration.
