@@ -119,9 +119,9 @@ export async function extractRawScan(
       body: JSON.stringify({
         model: SCAN_MODEL,
         max_tokens: MAX_OUTPUT_TOKENS,
-        // Transcription, not creativity. Zero keeps repeat scans of the same
-        // photo as close to identical as the model allows.
-        temperature: 0,
+        // No temperature: current models reject it (400 "temperature is
+        // deprecated for this model"). The verbatim instructions in the
+        // prompt are what keep transcription literal.
         messages: [
           {
             role: 'user',
