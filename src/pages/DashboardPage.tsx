@@ -32,6 +32,7 @@ import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSe
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { FamilyCard } from '@/components/family/FamilyCard'
 
 type MembershipStatus = 'active' | 'expired' | 'pending'
 
@@ -513,6 +514,10 @@ export function DashboardPage() {
               </div>
             </div>
 
+            <div className="mt-6">
+              <FamilyCard />
+            </div>
+
             <div className="mt-6 rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
@@ -635,7 +640,7 @@ export function DashboardPage() {
             <h2 className="text-2xl font-bold text-lca-navy">My Registrations</h2>
           </div>
           <p className="mt-1 text-muted-foreground">
-            Tournaments you are registered for.
+            Tournaments you and your children are registered for.
           </p>
           {upcomingRegistrations.length > 0 ? (
             <ul className="mt-8 space-y-4">
@@ -648,6 +653,9 @@ export function DashboardPage() {
                     <h3 className="font-semibold text-lca-navy">
                       {reg.tournament_name ?? reg.tournament_id}
                     </h3>
+                    {reg.is_child_entry === 1 && reg.player_name && (
+                      <p className="text-sm font-medium text-lca-navy/80">For {reg.player_name}</p>
+                    )}
                     <p className="mt-1 text-sm text-muted-foreground">
                       {reg.tournament_date ?? ''}{' '}
                       {reg.tournament_location ? `· ${reg.tournament_location}` : ''}{' '}

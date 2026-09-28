@@ -14,13 +14,28 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const targetMemberId = context.params.memberId as string
 
   const target = await context.env.DB.prepare(
-    'SELECT id, email, full_name, role FROM members WHERE id = ?',
+    'SELECT id, email, full_name, role, guardian_id FROM members WHERE id = ?',
   )
     .bind(targetMemberId)
-    .first<{ id: string; email: string; full_name: string; role: string }>()
+    .first<{ id: string; email: string; full_name: string; role: string; guardian_id: string | null }>()
 
   if (!target) return errorResponse('Member not found', 404)
   if (target.role === 'lca_admin') {
+    return errorResponse('Cannot impersonate another admin', 403)
+  }
+  // The session below is looked up by email. A child's profile carries its
+  // parent's email and has no login of its own, so "logging in as" a child
+  // would really sign in as the parent — who may be an admin. Log in as the
+  // parent instead; they see the child on their dashboard.
+  if (target.guardian_id || target.role === 'guest') {
+    return errorResponse('This profile has no login of its own. Log in as the parent account instead.', 400)
+  }
+  // Belt and braces: never mint a session for an address an admin holds,
+  // whichever row it was reached through.
+  const adminWithEmail = await context.env.DB.prepare(
+    `SELECT 1 FROM members WHERE email = ? AND role = 'lca_admin' LIMIT 1`,
+  ).bind(target.email).first()
+  if (adminWithEmail) {
     return errorResponse('Cannot impersonate another admin', 403)
   }
 

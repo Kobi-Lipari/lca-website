@@ -37,6 +37,8 @@ export interface MemberRow {
   role: string
   club_id: string | null
   created_at: string
+  /** Set on a child's profile: the parent who manages it (family accounts). */
+  guardian_id?: string | null
 }
 
 export interface ClubRow {

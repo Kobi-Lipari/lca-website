@@ -45,7 +45,7 @@ const tiers: MembershipTier[] = [
     name: 'LCA Family Membership',
     price: 25,
     period: 'per year',
-    description: 'Covers 1 adult and up to 3 dependents. The best value for households with multiple players.',
+    description: 'Covers you and up to 3 children. Add your children on your dashboard and they are covered automatically.',
   },
   {
     id: 'senior',

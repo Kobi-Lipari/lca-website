@@ -19,6 +19,8 @@ interface StripeWebhookEvent {
   type?: string
   data?: {
     object?: {
+      /** The Checkout Session id (cs_…). */
+      id?: string
       payment_intent?: string | null
       metadata?: {
         payment_id?: string
@@ -79,6 +81,26 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
             ).bind(registrationId),
           ])
         }
+      }
+      return jsonResponse({ received: true })
+    }
+
+    // Family / group entries: one checkout paid for several registrations.
+    // Every payment row from that checkout carries the session id; settle
+    // the ones not yet completed (Stripe retries, so this must be idempotent).
+    if (type === 'tournament_batch') {
+      if (session.id) {
+        await context.env.DB.batch([
+          context.env.DB.prepare(
+            `UPDATE registrations SET payment_status = 'paid'
+              WHERE id IN (SELECT reference_id FROM payments
+                            WHERE stripe_session_id = ? AND type = 'tournament' AND status != 'completed')`
+          ).bind(session.id),
+          context.env.DB.prepare(
+            `UPDATE payments SET status = 'completed', stripe_payment_intent = ?
+              WHERE stripe_session_id = ? AND type = 'tournament' AND status != 'completed'`
+          ).bind(session.payment_intent ?? null, session.id),
+        ])
       }
       return jsonResponse({ received: true })
     }

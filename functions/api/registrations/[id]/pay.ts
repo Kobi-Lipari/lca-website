@@ -5,6 +5,7 @@ import {
   requireAuthedMember,
   requireTournamentManager,
 } from '../../../utils/auth'
+import { canActFor } from '../../../utils/family'
 import { createCheckoutSession } from '../../../utils/stripe'
 import { errorResponse, handleOptions, jsonResponse } from '../../../utils/response'
 
@@ -28,7 +29,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   if (!registration) return errorResponse('Registration not found', 404)
 
-  const isOwner = registration.member_id === authed.member.id
+  // A parent acts for their children's entries as if they were their own.
+  const isOwner = await canActFor(context.env.DB, authed.member.id, registration.member_id)
   if (!isOwner) {
     const managerResult = await requireTournamentManager(
       context.request,

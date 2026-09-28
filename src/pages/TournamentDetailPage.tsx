@@ -25,6 +25,7 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { FamilyRegistrationPanel } from '@/components/family/FamilyRegistrationPanel'
 
 const statusConfig: Record<TournamentStatus, { label: string; className: string }> = {
   upcoming: { label: 'Upcoming', className: 'bg-lca-gold/20 text-lca-gold' },
@@ -837,6 +838,16 @@ export function TournamentDetailPage() {
                       )}
                     </form>
                   )
+                )}
+
+                {/* Family registration: only renders for members with children */}
+                {user && authMember && regStatus === 'open' && tournament.status === 'upcoming' && (
+                  <FamilyRegistrationPanel
+                    tournament={tournament}
+                    selfName={authMember.full_name}
+                    selfUscfId={authMember.uscf_id ?? null}
+                    selfRegistered={!!myRegistration || !!confirmation}
+                  />
                 )}
 
                 {/* Registration not open */}

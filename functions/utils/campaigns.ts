@@ -28,10 +28,10 @@ export interface ResolvedRecipient {
   full_name: string
 }
 
-async function getAllMembers(db: D1Database): Promise<ResolvedRecipient[]> {
+async function getAllMembers(db: D1Database): Promise<Array<ResolvedRecipient & { guardian_id: string | null }>> {
   const { results } = await db
-    .prepare(`SELECT id, email, full_name FROM members ORDER BY full_name ASC`)
-    .all<ResolvedRecipient>()
+    .prepare(`SELECT id, email, full_name, guardian_id FROM members ORDER BY full_name ASC`)
+    .all<ResolvedRecipient & { guardian_id: string | null }>()
   return results ?? []
 }
 
@@ -45,10 +45,36 @@ async function getAllMembers(db: D1Database): Promise<ResolvedRecipient[]> {
  * override for callers that want to say so directly, but the two paths
  * converge on the same result.
  */
+/**
+ * One email per address. A child's profile (family accounts) carries its
+ * parent's email, so a family of four would otherwise get four copies.
+ * Keeps the first row for each address — ordering is by name, and the
+ * parent's own row wins when both match.
+ */
+function onePerAddress(rows: Array<ResolvedRecipient & { guardian_id?: string | null }>): ResolvedRecipient[] {
+  const sorted = [...rows].sort((a, b) => Number(!!a.guardian_id) - Number(!!b.guardian_id))
+  const seen = new Set<string>()
+  const kept = new Set<string>()
+  for (const r of sorted) {
+    const key = r.email.trim().toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    kept.add(r.id)
+  }
+  return rows.filter((r) => kept.has(r.id)).map(({ id, email, full_name }) => ({ id, email, full_name }))
+}
+
 export async function resolveRecipients(
   db: D1Database,
   filter: CampaignFilter,
 ): Promise<ResolvedRecipient[]> {
+  return onePerAddress(await resolveRecipientRows(db, filter))
+}
+
+async function resolveRecipientRows(
+  db: D1Database,
+  filter: CampaignFilter,
+): Promise<Array<ResolvedRecipient & { guardian_id?: string | null }>> {
   if (filter.all) return getAllMembers(db)
 
   const clauses: string[] = []
@@ -72,8 +98,8 @@ export async function resolveRecipients(
   // filter dropdowns behave when left untouched.
   if (clauses.length === 0) return getAllMembers(db)
 
-  const sql = `SELECT id, email, full_name FROM members WHERE ${clauses.join(' AND ')} ORDER BY full_name ASC`
-  const { results } = await db.prepare(sql).bind(...binds).all<ResolvedRecipient>()
+  const sql = `SELECT id, email, full_name, guardian_id FROM members WHERE ${clauses.join(' AND ')} ORDER BY full_name ASC`
+  const { results } = await db.prepare(sql).bind(...binds).all<ResolvedRecipient & { guardian_id: string | null }>()
   return results ?? []
 }
 
