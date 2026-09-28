@@ -31,6 +31,7 @@ const MembershipPage = lazy(() => import('@/pages/MembershipPage').then(m => ({ 
 const MembershipSuccessPage = lazy(() => import('@/pages/MembershipSuccessPage').then(m => ({ default: m.MembershipSuccessPage })))
 const MinutesPage = lazy(() => import('@/pages/MinutesPage').then(m => ({ default: m.MinutesPage })))
 const NewsPage = lazy(() => import('@/pages/NewsPage').then(m => ({ default: m.NewsPage })))
+const NewsPostPage = lazy(() => import('@/pages/NewsPostPage').then(m => ({ default: m.NewsPostPage })))
 const ScannerPage = lazy(() => import('@/pages/ScannerPage').then(m => ({ default: m.ScannerPage })))
 const RegisterPage = lazy(() => import('@/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
 const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })))
@@ -71,6 +72,7 @@ function App() {
             <Route path="/clubs" element={<ClubsPage />} />
             <Route path="/clubs/:id" element={<ClubDetailPage />} />
             <Route path="/news" element={<NewsPage />} />
+            <Route path="/news/:slug" element={<NewsPostPage />} />
             {/* Public on purpose: signed-out visitors see what it does and a
                 prompt to log in. Scanning itself is members-only (the API
                 checks), because each scan is a paid model call. */}

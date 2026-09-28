@@ -9,7 +9,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import {
-  Award, Building2, Mail, Megaphone, MessageSquare, Plus, ShieldAlert, Trash2, Trophy, Users,
+  Award, Building2, Mail, Megaphone, MessageSquare, Newspaper, Plus, ShieldAlert, Trash2, Trophy, Users,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -23,6 +23,7 @@ import { AuditLogPanel } from '@/components/admin/AuditLogPanel'
 import { BoardSeatsPanel } from '@/components/admin/BoardSeatsPanel'
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog'
 import { MembersTable } from '@/components/admin/MembersTable'
+import { PostsPanel } from '@/components/admin/PostsPanel'
 import { TournamentList } from '@/components/admin/TournamentList'
 import { AdminEmailPage } from '@/pages/AdminEmailPage'
 import { AdminSupportPage } from '@/pages/AdminSupportPage'
@@ -57,7 +58,7 @@ import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 type AdminSection =
   | 'members' | 'board-seats'
   | 'tournaments' | 'clubs'
-  | 'email' | 'announcements' | 'support'
+  | 'news' | 'email' | 'announcements' | 'support'
   | 'activity'
 
 const GROUPS: { label: string; items: { id: AdminSection; label: string; icon: LucideIcon }[] }[] = [
@@ -70,8 +71,9 @@ const GROUPS: { label: string; items: { id: AdminSection; label: string; icon: L
     { id: 'clubs', label: 'Clubs', icon: Building2 },
   ] },
   { label: 'Communications', items: [
+    { id: 'news', label: 'News posts', icon: Newspaper },
     { id: 'email', label: 'Group email', icon: Mail },
-    { id: 'announcements', label: 'Announcements', icon: Megaphone },
+    { id: 'announcements', label: 'Site banners', icon: Megaphone },
     { id: 'support', label: 'Support tickets', icon: MessageSquare },
   ] },
   { label: 'System', items: [
@@ -179,8 +181,9 @@ function AdminSectionView({ section }: { section: AdminSection }) {
     case 'board-seats': return <><SectionHeading title="Board seats" description="Who holds each board seat, and for how long." /><BoardSeatsPanel /></>
     case 'tournaments': return <TournamentsSection key="tournaments" />
     case 'clubs': return <ClubsSection key="clubs" />
+    case 'news': return <PostsPanel />
     case 'email': return <AdminEmailPage embedded />
-    case 'announcements': return <><SectionHeading title="Announcements" description="Site-wide banners shown above the navigation." /><AdminAnnouncementPanel /></>
+    case 'announcements': return <><SectionHeading title="Site banners" description="Short notices shown across the top of every page. For full announcements, use News posts." /><AdminAnnouncementPanel /></>
     case 'support': return <AdminSupportPage embedded />
     case 'activity': return <><SectionHeading title="Admin activity" description="Role changes, membership overrides, club changes and impersonation." /><AuditLogPanel /></>
   }

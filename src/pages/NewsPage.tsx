@@ -1,39 +1,19 @@
 // src/pages/NewsPage.tsx
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Building2 } from 'lucide-react'
+import { Building2, Megaphone, Pin } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
 import { FacebookFeed } from '@/components/FacebookFeed'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
+import { getPosts, type ApiPost } from '@/lib/api'
+import { formatPostDate } from '@/lib/posts'
 // Re-add when club news is re-enabled:
-// import { useEffect, useState } from 'react'
 // import { ExternalLink } from 'lucide-react'
 // import { getNews, type ApiNewsItem } from '@/lib/api'
 
 // LCA_GOLD and formatDate are only used by the disabled ClubNewsFeed below —
 // uncomment both when club news is re-enabled.
-
-// Pinned LCA announcements — edit this array to update pinned items
-const PINNED: { title: string; summary: string; href: string; date: string }[] = [
-  {
-    title: '2025–26 tournament calendar published',
-    summary: 'The full calendar of LCA-sanctioned events is now available on the tournaments page.',
-    href: '/tournaments',
-    date: 'July 14, 2025',
-  },
-  {
-    title: 'New board members elected at annual meeting',
-    summary: 'The LCA held its annual meeting on June 28. See governance for the updated board listing.',
-    href: '/governance/board',
-    date: 'Dec 1, 2025',
-  },
-  {
-    title: 'LCA website now live at louisianachess.org',
-    summary: 'Our new site is up. Member registration, tournament registration, and club info are all available online.',
-    href: '/',
-    date: 'July 1, 2026',
-  },
-]
 
 // function formatDate(dateStr: string): string {
 //   const d = new Date(dateStr + 'T00:00:00')
@@ -113,6 +93,15 @@ export function NewsPage() {
   // news/newsLoading state + the getNews() fetch removed along with
   // ClubNewsFeed above — restore both together when re-enabling.
 
+  const [posts, setPosts] = useState<ApiPost[] | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    getPosts(24)
+      .then((list) => { if (!cancelled) setPosts(list) })
+      .catch(() => { if (!cancelled) setPosts([]) })
+    return () => { cancelled = true }
+  }, [])
+
   return (
     <div>
       {/* ── Hero ── */}
@@ -122,31 +111,44 @@ export function NewsPage() {
       />
 
       <section className="mx-auto max-w-6xl px-6 py-10">
-        {/* ── Pinned announcements ── */}
-        <div className="mb-10">
-          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        {/* ── LCA posts (written in the admin panel → News posts) ── */}
+        <div className="mb-12">
+          <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            <Megaphone className="size-4 text-lca-gold" />
             LCA announcements
           </h2>
-          <div className="flex gap-4 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
-            {PINNED.map((item) => (
-              <Link
-                key={item.title}
-                to={item.href}
-                className="min-w-[220px] max-w-xs flex-shrink-0 rounded-xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
-                style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
-              >
-                <p className="mb-1 text-[10px] font-medium text-lca-navy">{item.date}</p>
-                <p className="font-semibold text-lca-navy leading-snug">{item.title}</p>
-                <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{item.summary}</p>
-              </Link>
-            ))}
-            {/* Future native posts placeholder */}
-            <div className="min-w-[200px] flex-shrink-0 rounded-xl border border-dashed bg-muted/10 p-4 flex items-center justify-center">
-              <p className="text-center text-xs text-muted-foreground italic leading-relaxed">
-                More LCA posts will appear here as they are published.
-              </p>
+          {posts === null ? (
+            <p className="text-sm text-muted-foreground" role="status">Loading…</p>
+          ) : posts.length === 0 ? (
+            <p className="rounded-xl border border-dashed px-6 py-8 text-center text-sm text-muted-foreground">
+              No announcements yet.
+            </p>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {posts.map((post) => (
+                <Link
+                  key={post.id}
+                  to={`/news/${post.slug}`}
+                  className="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md"
+                  style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
+                >
+                  {post.image_url && (
+                    <img src={post.image_url} alt="" loading="lazy" className="aspect-[1.91/1] w-full object-cover" />
+                  )}
+                  <div className="flex flex-1 flex-col p-4">
+                    <p className="mb-1 flex items-center gap-2 text-[11px] font-medium text-lca-navy/80">
+                      {post.pinned === 1 && <Pin className="size-3 text-lca-gold" aria-label="Pinned" />}
+                      {formatPostDate(post.published_at)}
+                    </p>
+                    <p className="font-semibold leading-snug text-lca-navy group-hover:underline">{post.title}</p>
+                    {post.summary && (
+                      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{post.summary}</p>
+                    )}
+                  </div>
+                </Link>
+              ))}
             </div>
-          </div>
+          )}
         </div>
 
         {/* ── Club news + Facebook ──

@@ -11,6 +11,7 @@ export default defineConfig({
         compatibilityDate: '2024-08-01',
         compatibilityFlags: ['nodejs_compat'],
         d1Databases: ['DB'],
+        r2Buckets: ['CLUB_LOGOS'],
         bindings: {
           SUPABASE_URL: 'https://test-supabase.local',
           SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
