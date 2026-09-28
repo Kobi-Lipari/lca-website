@@ -5,7 +5,7 @@ import { ArrowRight, Building2, Calendar, ChevronLeft, ChevronRight, Trophy } fr
 import { Button } from '@/components/ui/button'
 import { FacebookFeed } from '@/components/FacebookFeed'
 import { getClubs, type ApiClubListItem } from '@/lib/api'
-import { formatDate, type UnifiedTournament } from '@/lib/clearinghouse'
+import { formatDate, louisianaFirst, registrationSummary, type UnifiedTournament } from '@/lib/clearinghouse'
 import { clubColorTint, clubAccentStyle } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -152,14 +152,16 @@ export function HomePage() {
   const [loadingTournaments, setLoadingTournaments] = useState(true)
   const [loadingClubs, setLoadingClubs] = useState(true)
 
-  const nextTournament = tournaments.find(
-    (t) => t.registration_status === 'open' || t.status === 'upcoming',
-  )
+  // The featured banner favours an LCA event people can register for on this
+  // site; failing that, the next Louisiana event of any kind.
+  const nextTournament =
+    tournaments.find((t) => t.source === 'lca' && t.registration_status === 'open') ??
+    tournaments.find((t) => t.state === 'LA')
 
   useEffect(() => {
     fetch('/api/clearinghouse?upcoming=true')
       .then((r) => r.json())
-      .then((d: { tournaments: UnifiedTournament[] }) => setTournaments((d.tournaments ?? []).filter((t) => t.status !== 'completed')))
+      .then((d: { tournaments: UnifiedTournament[] }) => setTournaments(louisianaFirst((d.tournaments ?? []).filter((t) => t.status !== 'completed'))))
       .catch(() => setTournaments([]))
       .finally(() => setLoadingTournaments(false))
     // Shuffled here (was on ClubsPage) — this preview column is
@@ -223,7 +225,11 @@ export function HomePage() {
                     <>
                       <div className="min-w-0">
                         <p className="truncate text-[13px] font-medium text-foreground">{t.name}</p>
-                        <p className="text-[11px] text-muted-foreground">{formatDate(t.start_date)}{t.city ? ` · ${t.city}` : ''}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {formatDate(t.start_date)}{t.city ? ` · ${t.city}` : ''}
+                          {t.state && t.state !== 'LA' ? `, ${t.state}` : ''}
+                          {registrationSummary(t) ? ` · ${registrationSummary(t)}` : ''}
+                        </p>
                       </div>
                       <StatusDot regStatus={regStatus} />
                     </>

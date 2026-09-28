@@ -11,13 +11,22 @@
     <meta name="theme-color" content="#1a2744" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)" />
     <title>Louisiana Chess Association</title>
+    <!--
+      Link previews (Facebook, iMessage, Slack…). These are the site-wide
+      defaults; tournament and club pages get their own title, description
+      and image, injected server-side by functions/tournaments/[id].ts and
+      functions/clubs/[id].ts, because link crawlers do not run JavaScript.
+    -->
+    <meta property="og:site_name" content="Louisiana Chess Association" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Louisiana Chess Association" />
+    <meta property="og:description" content="Tournaments, scholastic programs, and chess clubs across Louisiana since 1915." />
+    <meta property="og:image" content="https://www.louisianachess.org/og-default.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
-        <!-- Facebook SDK for Page Plugin -->
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous"
-      src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v19.0">
-    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

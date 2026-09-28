@@ -29,6 +29,9 @@ export interface UnifiedTournament {
   club_color?: string | null
   club_name?: string | null
   time_control?: string | null
+  /** LCA events only: player cap, and how many are registered (withdrawals excluded). */
+  max_players?: number | null
+  registered_count?: number | null
 }
 
 export function formatDate(dateStr: string): string {
@@ -44,4 +47,22 @@ export function isPastTournament(t: UnifiedTournament): boolean {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   return end < today
+}
+/**
+ * Louisiana events first, then everything else — each group by date. The
+ * feed also carries Gulf South events (Mississippi, Alabama…), which are
+ * worth listing but shouldn't crowd out what's happening in-state.
+ */
+export function louisianaFirst(list: UnifiedTournament[]): UnifiedTournament[] {
+  const byDate = (a: UnifiedTournament, b: UnifiedTournament) => a.start_date.localeCompare(b.start_date)
+  const inState = list.filter((t) => t.state === 'LA').sort(byDate)
+  const outOfState = list.filter((t) => t.state !== 'LA').sort(byDate)
+  return [...inState, ...outOfState]
+}
+
+/** "12 of 40 spots filled" / "12 registered" for LCA events; null otherwise. */
+export function registrationSummary(t: UnifiedTournament): string | null {
+  if (t.source !== 'lca' || t.registered_count == null) return null
+  if (t.max_players) return `${t.registered_count} of ${t.max_players} spots filled`
+  return t.registered_count > 0 ? `${t.registered_count} registered` : null
 }

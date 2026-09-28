@@ -1,6 +1,5 @@
 import type { Env } from '../types'
 import { handleOptions, jsonResponse } from '../utils/response'
-import { requireAuthedMember, isResponse } from '../utils/auth'
 import { parseJsonArray } from '../utils/json'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -10,22 +9,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const state = url.searchParams.get('state') ?? null
   const upcoming = url.searchParams.get('upcoming') ?? 'true'
 
-  let isPrivileged = false
-  try {
-    const authed = await requireAuthedMember(context.request, context.env)
-    if (!isResponse(authed)) {
-      isPrivileged = ['lca_admin', 'club_rep', 'tournament_director'].includes(authed.member.role)
-    }
-  } catch { /* not logged in */ }
-
   // 1. Fetch LCA tournaments
-  const lcaVisibility = isPrivileged ? '' : 'WHERE t.is_visible = 1'
+  //
+  // Public feed only: hidden drafts never appear here, even for admins and
+  // club reps. This feed backs the homepage, Tournaments and Scholastic
+  // pages, where a draft would look like a real published event — people
+  // who manage drafts see them in the admin panel or workspace instead.
   const lcaRows = await context.env.DB.prepare(`
     SELECT
       t.id,
       t.name,
       t.date AS start_date,
-      t.date AS end_date,
+      COALESCE(t.end_date, t.date) AS end_date,
       COALESCE(c.name, 'Louisiana Chess Association') AS organizer,
       t.location AS city,
       'LA' AS state,
@@ -41,12 +36,16 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       t.rounds,
       t.status,
       t.is_rated,
+      t.time_control,
+      t.max_players,
+      (SELECT COUNT(*) FROM registrations r
+        WHERE r.tournament_id = t.id AND r.withdrawn_at IS NULL) AS registered_count,
       t.club_id,
       c.color AS club_color,
       c.name AS club_name
     FROM tournaments t
     LEFT JOIN clubs c ON t.club_id = c.id
-    ${lcaVisibility}
+    WHERE t.is_visible = 1
   `).all<Record<string, unknown>>()
 
   // 2. Fetch external clearinghouse tournaments

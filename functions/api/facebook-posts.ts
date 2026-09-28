@@ -25,6 +25,8 @@ interface GraphPost {
   created_time: string
   permalink_url: string
   full_picture?: string
+  /** A shared link / video: its title and where it points. */
+  attachments?: { data?: Array<{ title?: string; url?: string; unshimmed_url?: string; type?: string }> }
 }
 
 interface GraphPostsResponse {
@@ -38,6 +40,10 @@ export interface FacebookFeedPost {
   createdAt: string
   permalinkUrl: string
   imageUrl: string | null
+  /** Title of the shared link or video, when the post shares one. */
+  linkTitle?: string | null
+  /** Where the shared link points (not the Facebook permalink). */
+  linkUrl?: string | null
 }
 
 const GRAPH_VERSION = "v19.0";
@@ -55,24 +61,27 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const url = new URL(request.url);
   const limit = clampLimit(url.searchParams.get("limit"));
 
-  const fields = "id,message,created_time,permalink_url,full_picture";
-  const graphUrl =
+  // attachments gives a shared link's title, so a post that is only a URL
+  // can show "Watch: <video title>" instead of the raw URL. If Facebook ever
+  // refuses that field, the request is retried without it rather than
+  // losing the whole feed.
+  const baseFields = "id,message,created_time,permalink_url,full_picture";
+  const graphUrl = (fields: string) =>
     `https://graph.facebook.com/${GRAPH_VERSION}/${env.FACEBOOK_PAGE_ID}/posts` +
     `?fields=${fields}&limit=${limit}&access_token=${env.FACEBOOK_PAGE_TOKEN}`;
 
   let graphResponse: Response;
-  try {
-    graphResponse = await fetch(graphUrl);
-  } catch (err) {
-    console.error("facebook-posts: network error reaching Facebook", err);
-    return await servedFromCacheOrError(env, "Could not reach Facebook");
-  }
-
   let body: GraphPostsResponse;
   try {
+    graphResponse = await fetch(graphUrl(`${baseFields},attachments{title,url,unshimmed_url,type}`));
     body = await graphResponse.json();
-  } catch {
-    return await servedFromCacheOrError(env, "Facebook returned an unexpected response");
+    if (!graphResponse.ok || body.error) {
+      graphResponse = await fetch(graphUrl(baseFields));
+      body = await graphResponse.json();
+    }
+  } catch (err) {
+    console.error("facebook-posts: could not read a response from Facebook", err);
+    return await servedFromCacheOrError(env, "Could not reach Facebook");
   }
 
   if (!graphResponse.ok || body.error) {
@@ -82,14 +91,21 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const posts: FacebookFeedPost[] = (body.data || [])
-    .filter((p) => p.message) // skip posts with no text (pure photo posts, etc.)
-    .map((p) => ({
-      id: p.id,
-      message: p.message ?? "",
-      createdAt: p.created_time,
-      permalinkUrl: p.permalink_url,
-      imageUrl: p.full_picture ?? null,
-    }));
+    .map((p) => {
+      const link = p.attachments?.data?.find((a) => a.title || a.unshimmed_url || a.url)
+      return {
+        id: p.id,
+        message: p.message ?? "",
+        createdAt: p.created_time,
+        permalinkUrl: p.permalink_url,
+        imageUrl: p.full_picture ?? null,
+        linkTitle: link?.title ?? null,
+        linkUrl: link?.unshimmed_url ?? link?.url ?? null,
+      }
+    })
+    // Skip posts with nothing to show in a text list (e.g. a bare photo
+    // with no caption and no shared link).
+    .filter((p) => p.message || p.linkTitle);
 
   // Live fetch succeeded — persist it as the new fallback for next time.
   try {

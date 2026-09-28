@@ -285,7 +285,7 @@ export function MembershipPage() {
                 1
               </span>
               <span>
-                Create an account and select your membership tier.
+                Create a free account (or log in) and pick the membership that fits you.
               </span>
             </li>
             <li className="flex gap-3">
@@ -293,7 +293,7 @@ export function MembershipPage() {
                 2
               </span>
               <span>
-                Pay annual dues. A pending payment record is created in your account.
+                Pay your annual dues securely by card. A membership lasts one year, and renewing early adds the year on top of the time you have left.
               </span>
             </li>
             <li className="flex gap-3">
@@ -301,7 +301,7 @@ export function MembershipPage() {
                 3
               </span>
               <span>
-                Shortly after payment, you should be able to see your membership active in your dashboard.
+                Your membership is active as soon as payment goes through, and you'll see it on your dashboard. If it doesn't show within a few minutes, contact us and we'll sort it out.
               </span>
             </li>
           </ol>

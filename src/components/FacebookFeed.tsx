@@ -24,6 +24,34 @@ interface FacebookFeedPost {
   createdAt: string
   permalinkUrl: string
   imageUrl: string | null
+  linkTitle?: string | null
+  linkUrl?: string | null
+}
+
+const URL_RE = /https?:\/\/\S+/g
+
+function hostOf(url: string | null | undefined): string | null {
+  if (!url) return null
+  try {
+    return new URL(url).hostname.replace(/^(www|m)\./, '')
+  } catch {
+    return null
+  }
+}
+
+/**
+ * What to show as a post's text. Posts that are only a pasted link used to
+ * render the raw URL (e.g. a long youtube.com/shorts/… string). URLs are
+ * dropped from the text; if nothing is left, the shared link's title is
+ * used, and failing that a plain "Shared a link from youtube.com".
+ */
+function postText(post: FacebookFeedPost): string {
+  const text = post.message.replace(URL_RE, '').replace(/\s+/g, ' ').trim()
+  if (text) return text
+  if (post.linkTitle) return post.linkTitle
+  const host = hostOf(post.linkUrl) ?? hostOf(post.message.match(URL_RE)?.[0])
+  if (host === 'youtube.com' || host === 'youtu.be') return 'Shared a video on YouTube'
+  return host ? `Shared a link from ${host}` : 'Shared a link'
 }
 
 function formatDate(iso: string): string {
@@ -130,7 +158,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }:
                   className="flex items-start justify-between gap-2 border-b border-border px-4 py-3 transition-colors last:border-b-0 hover:bg-muted/30"
                 >
                   <div className="min-w-0">
-                    <p className="line-clamp-2 text-[13px] font-medium text-foreground">{post.message}</p>
+                    <p className="line-clamp-2 text-[13px] font-medium text-foreground">{postText(post)}</p>
                     <p className="text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</p>
                   </div>
                 </a>
@@ -179,7 +207,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }:
                     )}
                     <div className="p-4">
                       <p className="text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</p>
-                      <p className="mt-1.5 text-sm leading-relaxed text-lca-navy">{post.message}</p>
+                      <p className="mt-1.5 text-sm leading-relaxed text-lca-navy">{postText(post)}</p>
                     </div>
                   </a>
                 ))}

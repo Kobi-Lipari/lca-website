@@ -352,7 +352,6 @@ export function TournamentDetailPage() {
   const regStatus = tournament.registration_status ?? 'draft'
   const roundSchedule = tournament.round_schedule ?? []
   const customDetails = tournament.custom_details ?? []
-  const maxPlayers = tournament.max_players ?? '—'
   const maxByes = tournament.rounds - 1
   const hasPairings = pairings.length > 0
 
@@ -439,7 +438,9 @@ export function TournamentDetailPage() {
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <Users className="size-4 flex-shrink-0 text-lca-gold" />
-                  {activeRoster.length} / {maxPlayers} registered
+                  {tournament.max_players
+                    ? `${activeRoster.length} of ${tournament.max_players} spots filled`
+                    : `${activeRoster.length} registered`}
                 </span>
               </div>
             </div>
@@ -667,8 +668,10 @@ export function TournamentDetailPage() {
               <div className="bg-card p-5">
                 <dl className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <dt className="text-muted-foreground">Spots</dt>
-                    <dd className="font-medium">{activeRoster.length} / {maxPlayers}</dd>
+                    <dt className="text-muted-foreground">{tournament.max_players ? 'Spots filled' : 'Registered'}</dt>
+                    <dd className="font-medium">
+                      {tournament.max_players ? `${activeRoster.length} of ${tournament.max_players}` : activeRoster.length}
+                    </dd>
                   </div>
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">Format</dt>
