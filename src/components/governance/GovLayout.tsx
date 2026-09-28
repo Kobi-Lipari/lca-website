@@ -39,6 +39,36 @@ export function GovSidebar() {
   )
 }
 
+/**
+ * The same links as GovSidebar, as a row of tabs for screens where the
+ * sidebar is hidden. The navbar opens governance straight on Board members,
+ * so without this a phone had no way on to About, Bylaws or Minutes.
+ */
+function GovTabs() {
+  const { pathname } = useLocation()
+  return (
+    <nav aria-label="Governance" className="-mx-6 mb-6 overflow-x-auto px-6 lg:hidden">
+      <div className="flex w-max gap-2">
+        {GOV_LINKS.map((link) => (
+          <Link
+            key={link.href}
+            to={link.href}
+            aria-current={pathname === link.href ? 'page' : undefined}
+            className={cn(
+              'whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition-colors',
+              pathname === link.href
+                ? 'border-lca-navy bg-lca-navy font-medium text-white'
+                : 'border-border bg-card text-muted-foreground hover:border-lca-navy/40 hover:text-foreground',
+            )}
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </nav>
+  )
+}
+
 export function GovLayout({
   title,
   subtitle,
@@ -54,7 +84,10 @@ export function GovLayout({
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="flex gap-8">
           <GovSidebar />
-          <main className="min-w-0 flex-1">{children}</main>
+          <main className="min-w-0 flex-1">
+            <GovTabs />
+            {children}
+          </main>
         </div>
       </section>
     </div>

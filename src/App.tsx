@@ -26,13 +26,13 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage').then(m => ({ de
 const AccountSecurityPage = lazy(() => import('@/pages/AccountSecurityPage').then(m => ({ default: m.AccountSecurityPage })))
 const DonationSuccessPage = lazy(() => import('@/pages/DonationSuccessPage').then(m => ({ default: m.DonationSuccessPage })))
 const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage').then(m => ({ default: m.ForgotPasswordPage })))
-const GovernancePage = lazy(() => import('@/pages/GovernancePage').then(m => ({ default: m.GovernancePage })))
 const LoginPage = lazy(() => import('@/pages/LoginPage').then(m => ({ default: m.LoginPage })))
 const ManageClubPage = lazy(() => import('@/pages/ManageClubPage').then(m => ({ default: m.ManageClubPage })))
 const MembershipPage = lazy(() => import('@/pages/MembershipPage').then(m => ({ default: m.MembershipPage })))
 const MembershipSuccessPage = lazy(() => import('@/pages/MembershipSuccessPage').then(m => ({ default: m.MembershipSuccessPage })))
 const MinutesPage = lazy(() => import('@/pages/MinutesPage').then(m => ({ default: m.MinutesPage })))
 const NewsPage = lazy(() => import('@/pages/NewsPage').then(m => ({ default: m.NewsPage })))
+const ScannerPage = lazy(() => import('@/pages/ScannerPage').then(m => ({ default: m.ScannerPage })))
 const RegisterPage = lazy(() => import('@/pages/RegisterPage').then(m => ({ default: m.RegisterPage })))
 const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })))
 const ScholasticPage = lazy(() => import('@/pages/ScholasticPage').then(m => ({ default: m.ScholasticPage })))
@@ -71,6 +71,10 @@ function App() {
             <Route path="/clubs" element={<ClubsPage />} />
             <Route path="/clubs/:id" element={<ClubDetailPage />} />
             <Route path="/news" element={<NewsPage />} />
+            {/* Public on purpose: signed-out visitors see what it does and a
+                prompt to log in. Scanning itself is members-only (the API
+                checks), because each scan is a paid model call. */}
+            <Route path="/scanner" element={<ScannerPage />} />
             <Route path="/membership" element={<MembershipPage />} />
             <Route path="/membership/success" element={<MembershipSuccessPage />} />
             <Route path="/contact" element={<ContactPage />} />
@@ -83,7 +87,9 @@ function App() {
             {/* ── Governance ── */}
             <Route path="/meeting" element={<AnnualMeetingPage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/governance" element={<GovernancePage />} />
+            {/* The old governance landing page is retired: the navbar opens on
+                Board members, and GovLayout links to the rest from there. */}
+            <Route path="/governance" element={<Navigate to="/governance/board" replace />} />
             <Route path="/governance/board" element={<BoardPage />} />
             <Route path="/governance/bylaws" element={<BylawsPage />} />
             {/* RulesPage retired — its content merged into /governance/bylaws */}

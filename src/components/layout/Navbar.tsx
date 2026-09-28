@@ -1,33 +1,29 @@
 // src/components/layout/Navbar.tsx
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Menu, X } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
 import { cn } from '@/lib/utils'
 import lcaLogo from '@/assets/lca-logo.webp'
 
-interface NavChild {
+interface NavLink {
   label: string
   href: string
+  /** Other path prefixes that should light this item up as active. */
+  activeFor?: string[]
 }
 
-const navLinks: Array<{ label: string; href: string; items?: NavChild[] }> = [
+const navLinks: NavLink[] = [
   { label: 'Tournaments', href: '/tournaments' },
   { label: 'Scholastic', href: '/scholastic' },
   { label: 'Clubs', href: '/clubs' },
-  {
-    label: 'Governance',
-    href: '/governance',
-    items: [
-      { label: 'About LCA', href: '/about' },
-      { label: 'Board members', href: '/governance/board' },
-      { label: 'Bylaws & rules', href: '/governance/bylaws' },
-      { label: 'Meeting minutes', href: '/governance/minutes' },
-    ],
-  },
   { label: 'News', href: '/news' },
+  { label: 'Scanner', href: '/scanner' },
+  // Opens straight on Board members; the governance pages carry their own
+  // navigation (GovLayout) to About, Bylaws and Minutes from there.
+  { label: 'Governance', href: '/governance/board', activeFor: ['/governance', '/about'] },
   { label: 'Membership', href: '/membership' },
 ]
 
@@ -42,108 +38,6 @@ const activeUnderline =
 
 function isPathActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + '/')
-}
-
-function DropdownMenu({
-  label,
-  href,
-  items,
-}: {
-  label: string
-  href: string
-  items: NavChild[]
-}) {
-  const [open, setOpen] = useState(false)
-  const wrapperRef = useRef<HTMLDivElement>(null)
-  const buttonRef = useRef<HTMLButtonElement>(null)
-  const location = useLocation()
-
-  const isActive =
-    isPathActive(location.pathname, href) ||
-    items.some((item) => isPathActive(location.pathname, item.href))
-
-  // Adjusting state during render is what React recommends for resetting on
-  // a changed value: the menu is shut before the new page paints, instead of
-  // flashing open for one frame and being closed by an effect afterwards.
-  const [lastPath, setLastPath] = useState(location.pathname)
-  if (location.pathname !== lastPath) {
-    setLastPath(location.pathname)
-    setOpen(false)
-  }
-
-  useEffect(() => {
-    if (!open) return
-    function onPointerDown(e: MouseEvent | TouchEvent) {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
-        setOpen(false)
-      }
-    }
-    function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setOpen(false)
-        buttonRef.current?.focus()
-      }
-    }
-    document.addEventListener('mousedown', onPointerDown)
-    document.addEventListener('touchstart', onPointerDown)
-    document.addEventListener('keydown', onKeyDown)
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown)
-      document.removeEventListener('touchstart', onPointerDown)
-      document.removeEventListener('keydown', onKeyDown)
-    }
-  }, [open])
-
-  return (
-    <div
-      ref={wrapperRef}
-      className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
-      <button
-        ref={buttonRef}
-        type="button"
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-        className={cn(
-          'flex items-center gap-1 text-sm font-medium transition-colors',
-          isActive
-            ? cn('text-lca-gold', activeUnderline)
-            : 'text-white/90 hover:text-lca-gold',
-        )}
-      >
-        {label}
-        <ChevronDown className={cn('size-3 transition-transform', open && 'rotate-180')} />
-      </button>
-      {open && (
-        <div className="absolute left-0 top-full z-50 pt-1">
-          <div
-            role="menu"
-            className="min-w-[180px] rounded-lg border border-white/10 bg-lca-navy py-1 shadow-xl"
-          >
-            {items.map((child) => (
-              <Link
-                key={child.href}
-                role="menuitem"
-                to={child.href}
-                className={cn(
-                  'block px-4 py-2 text-sm hover:bg-white/10 hover:text-lca-gold',
-                  isPathActive(location.pathname, child.href)
-                    ? 'text-lca-gold'
-                    : 'text-white/80',
-                )}
-                onClick={() => setOpen(false)}
-              >
-                {child.label}
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  )
 }
 
 function RoleLinks({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
@@ -177,16 +71,18 @@ function RoleLinks({ mobile, onNavigate }: { mobile?: boolean; onNavigate?: () =
   )
 }
 
-function NavLinkItem({ link }: { link: (typeof navLinks)[number] }) {
+function isLinkActive(pathname: string, link: NavLink): boolean {
+  return [link.href, ...(link.activeFor ?? [])].some((href) => isPathActive(pathname, href))
+}
+
+function NavLinkItem({ link }: { link: NavLink }) {
   const location = useLocation()
-  return link.items ? (
-    <DropdownMenu label={link.label} href={link.href} items={link.items} />
-  ) : (
+  return (
     <Link
       to={link.href}
       className={cn(
         'text-sm font-medium transition-colors',
-        isPathActive(location.pathname, link.href)
+        isLinkActive(location.pathname, link)
           ? cn('text-lca-gold', activeUnderline)
           : 'text-white/90 hover:text-lca-gold',
       )}
@@ -198,13 +94,12 @@ function NavLinkItem({ link }: { link: (typeof navLinks)[number] }) {
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [mobileGovOpen, setMobileGovOpen] = useState(false)
   const { user, loading, signOut } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   function closeMobile() {
     setMobileOpen(false)
-    setMobileGovOpen(false)
   }
 
   async function handleSignOut() {
@@ -274,34 +169,19 @@ export function Navbar() {
       {mobileOpen && (
         <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-lca-navy lg:hidden">
           <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 sm:px-6">
-            {navLinks.map((link) =>
-              link.items ? (
-                <div key={link.href}>
-                  <button
-                    type="button"
-                    aria-expanded={mobileGovOpen}
-                    className="flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold"
-                    onClick={() => setMobileGovOpen((o) => !o)}
-                  >
-                    {link.label}
-                    <ChevronDown className={cn('size-4 transition-transform', mobileGovOpen && 'rotate-180')} />
-                  </button>
-                  {mobileGovOpen && (
-                    <div className="ml-4 mt-1 flex flex-col gap-1 border-l border-white/10 pl-3">
-                      {link.items.map((child) => (
-                        <Link key={child.href} to={child.href} className="rounded-md px-3 py-1.5 text-sm text-white/80 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>
-                          {child.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link key={link.href} to={link.href} className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>
-                  {link.label}
-                </Link>
-              ),
-            )}
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={cn(
+                  'rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-lca-gold',
+                  isLinkActive(location.pathname, link) ? 'text-lca-gold' : 'text-white/90',
+                )}
+                onClick={closeMobile}
+              >
+                {link.label}
+              </Link>
+            ))}
             {!loading && user && <RoleLinks mobile onNavigate={closeMobile} />}
             <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
               <a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-white/80 hover:bg-white/10" onClick={closeMobile}>
