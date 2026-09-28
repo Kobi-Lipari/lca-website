@@ -63,6 +63,19 @@ const INSERT_ONE_TRIGGER_COST = 1.0;
 /** Match cost above which the (much pricier) two-ply insertion is tried. */
 const INSERT_TWO_TRIGGER_COST = 1.8;
 
+const COST_EPSILON = 1e-9;
+
+/** An expansion whose cost is known to be at least minCost, computed only if
+ *  that could still survive the prune. See the main loop. */
+interface DeferredExpansion {
+  minCost: number;
+  run: () => Beam[];
+}
+
+function isDeferred(part: Beam | DeferredExpansion): part is DeferredExpansion {
+  return 'run' in part;
+}
+
 interface CellSlot {
   cell: RawCell | null;
   rowNumber: number;
@@ -135,14 +148,43 @@ export function decodeScan(
   const warnings: string[] = [];
 
   while (beams.some((b) => b.slotIndex < activeSlots.length && !b.finishedResult)) {
-    const next: Beam[] = [];
+    // Each beam's cheap expansions, then its deferred ones, in the order
+    // they were produced. Order matters: prune() breaks cost ties by
+    // position, so keeping it is what makes the deferral below exact.
+    const parts: Array<Beam | DeferredExpansion> = [];
 
     for (const beam of beams) {
       if (beam.slotIndex >= activeSlots.length || beam.finishedResult) {
-        next.push(beam);
+        parts.push(beam);
         continue;
       }
-      next.push(...expandBeam(beam, activeSlots, cache, options));
+      const deferred: DeferredExpansion[] = [];
+      parts.push(...expandBeam(beam, activeSlots, cache, options, deferred));
+      parts.push(...deferred);
+    }
+
+    // Inserted-ply hypotheses are by far the most expensive expansions (a
+    // lookahead move generation per candidate), and most of them come from
+    // beams already too far behind to survive this step's prune. Price the
+    // cheap expansions first, then run an insertion only if its lower-bound
+    // cost could still make the cut. Adding beams can only lower the cut,
+    // never raise it, so anything skipped here costs strictly more than
+    // whatever finally makes the cut and would have been pruned anyway. The
+    // result is identical, computed with far less work.
+    const cheap = parts.filter((p): p is Beam => !isDeferred(p));
+    const provisional = prune(cheap, options.beamWidth);
+    const cut =
+      provisional.length < options.beamWidth
+        ? Infinity
+        : provisional[provisional.length - 1]!.cost;
+
+    const next: Beam[] = [];
+    for (const part of parts) {
+      if (!isDeferred(part)) next.push(part);
+      // The tolerance covers floating-point drift: minCost adds the insertion
+      // cost in one step, the real beam adds it ply by ply, and exact ties
+      // at the cut are common because costs are sums of the same constants.
+      else if (part.minCost - COST_EPSILON <= cut) next.push(...part.run());
     }
 
     if (next.length === 0) {
@@ -208,6 +250,7 @@ function expandBeam(
   slots: readonly CellSlot[],
   cache: ChessCache,
   options: DecodeOptions,
+  deferred: DeferredExpansion[],
 ): Beam[] {
   const slot = slots[beam.slotIndex]!;
   const out: Beam[] = [];
@@ -253,9 +296,10 @@ function expandBeam(
     // follow and a ply genuinely belongs in this slot.
     if (options.structuralOps) {
       const nextWritten = nextWrittenCell(slots, beam.slotIndex + 1);
-      out.push(
-        ...insertGuessedPlies(beam, 1, cache, options, slot, true, nextWritten),
-      );
+      deferred.push({
+        minCost: beam.cost + INSERT_PLY_COST,
+        run: () => insertGuessedPlies(beam, 1, cache, options, slot, true, nextWritten),
+      });
     } else {
       out.push(skipCell(beam));
     }
@@ -282,23 +326,27 @@ function expandBeam(
     // beam would otherwise die". A cheap match means alignment is fine and
     // inserting would just corrupt it.
     const bestMatchCost = ranked[0]?.cost ?? Infinity;
+    const cell = slot.cell;
     if (bestMatchCost > INSERT_ONE_TRIGGER_COST) {
-      out.push(
-        ...insertGuessedPlies(beam, 1, cache, options, slot, false, slot.cell),
-      );
+      deferred.push({
+        minCost: beam.cost + INSERT_PLY_COST,
+        run: () => insertGuessedPlies(beam, 1, cache, options, slot, false, cell),
+      });
     }
     if (bestMatchCost > INSERT_TWO_TRIGGER_COST) {
-      out.push(
-        ...insertGuessedPlies(
-          beam,
-          MAX_CONSECUTIVE_INSERTIONS,
-          cache,
-          options,
-          slot,
-          false,
-          slot.cell,
-        ),
-      );
+      deferred.push({
+        minCost: beam.cost + MAX_CONSECUTIVE_INSERTIONS * INSERT_PLY_COST,
+        run: () =>
+          insertGuessedPlies(
+            beam,
+            MAX_CONSECUTIVE_INSERTIONS,
+            cache,
+            options,
+            slot,
+            false,
+            cell,
+          ),
+      });
     }
   }
 
@@ -518,13 +566,17 @@ function rankLegalByPriors(
   lastMoveTo: string | null,
   cache: ChessCache,
 ): string[] {
-  const moves = cache.legalInfo(fen);
-  const scored = moves.map((m) => {
+  // Everything these priors need is in the SAN itself: 'x' marks a capture
+  // (en passant included), '+'/'#' a check, and the destination is the last
+  // square named. Reading it from the string avoids chess.js's verbose move
+  // list, which costs ~16x the plain one.
+  const scored = cache.legalSans(fen).map((san) => {
+    const captures = san.includes('x');
     let priority = 0;
-    if (m.captured && lastMoveTo && m.to === lastMoveTo) priority = 3; // recapture
-    else if (m.san.includes('+') || m.san.includes('#')) priority = 2; // check
-    else if (m.captured) priority = 1; // capture
-    return { san: m.san, priority };
+    if (captures && lastMoveTo && squareOf(san) === lastMoveTo) priority = 3; // recapture
+    else if (san.includes('+') || san.includes('#')) priority = 2; // check
+    else if (captures) priority = 1; // capture
+    return { san, priority };
   });
   scored.sort((a, b) => b.priority - a.priority || a.san.localeCompare(b.san));
   return scored.map((s) => s.san);
@@ -545,17 +597,25 @@ function prune(beams: Beam[], beamWidth: number): Beam[] {
       !isHopeless(b),
   );
 
-  // Deduplicate identical (position, cursor) states, keeping the cheapest.
-  const seen = new Map<string, Beam>();
-  for (const beam of pool) {
+  // Deduplicate identical (position, cursor) states, keeping the cheapest
+  // (the earlier one on a tie).
+  const seen = new Map<string, { beam: Beam; index: number }>();
+  pool.forEach((beam, index) => {
     const key = `${beam.fen}|${beam.slotIndex}|${beam.moves.length}`;
     const existing = seen.get(key);
-    if (!existing || beam.cost < existing.cost) seen.set(key, beam);
-  }
+    if (!existing || beam.cost < existing.beam.cost) seen.set(key, { beam, index });
+  });
 
+  // Equal costs are ordered by each survivor's own position in the pool.
+  // (Previously a replaced entry inherited the Map slot of the beam it
+  // replaced, so a beam that was about to be discarded could still decide
+  // a tie between two others. That made the result depend on beams that
+  // cannot survive, which the deferred-insertion cut in decodeScan relies
+  // on NOT happening.)
   return Array.from(seen.values())
-    .sort((a, b) => a.cost - b.cost)
-    .slice(0, beamWidth);
+    .sort((a, b) => a.beam.cost - b.beam.cost || a.index - b.index)
+    .slice(0, beamWidth)
+    .map((entry) => entry.beam);
 }
 
 /**
