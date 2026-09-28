@@ -107,10 +107,15 @@ Run the migration first. Without the key, `/api/scan` answers 503; with the key 
 
 - lichess analysis link instead of the import API (§8): no server call, no rate limit, and the member can fix moves on the board. The import API (permanent game URL) can come later if wanted.
 - chess.com: no link format or API can open a game there (its Published-Data API is read-only), so "Copy & open chess.com" copies the PGN and opens its analysis board for the member to paste. Worth re-checking if chess.com ever documents a PGN-in-URL option.
-- No in-page move editing yet: flagged moves are shown with their alternatives, and fixes happen on lichess.
+
+### S2: fixing moves on the page (this branch)
+
+- Tap any move → picker with what was written, the likeliest readings ("Keep X" confirms the current one), every legal move in that position, and a search box ("nf3" finds Nxf3+).
+- Picking a move re-decodes the rest of the game with every move up to and including it forced (`DecodeOptions.forcedSans`, respected by matches and inserted plies alike, so a forced move can still align with a blank cell). Moves the member fixed show green and stop counting as needing a look; fixes after the changed move are dropped, since their position may no longer arise. Undo steps back one change.
+- Decoder output is unchanged when nothing is forced (snapshot hash identical). Tests: a forced move is played and the prefix kept; forcing the true move after a legal misread (Nc3 for Nf3) makes the whole rest of the game decode exactly.
+- The "Noticed on the sheet" notes under the results were removed at K's request (they still explain an unreadable sheet).
 
 ### Next
 
-- In-page fix-up: tap a flagged move, pick an alternative, re-decode from there.
 - Front-and-back / two-sheet games (§3.1 concatenation).
 - Real-sheet evaluation (§6.3): 20–40 real scoresheets, dev/holdout split.

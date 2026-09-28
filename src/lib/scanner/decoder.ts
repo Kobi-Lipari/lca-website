@@ -35,6 +35,14 @@ export interface DecodeOptions {
   structuralOps: boolean;
   /** How many alternatives to surface per move for the fix-up UI (§3.2). */
   maxAlternatives: number;
+  /**
+   * Moves the member has settled, from the start of the game: forcedSans[i]
+   * must be ply i+1. The search still aligns the sheet around them (a
+   * forced move can match its cell, or be an inserted ply for a cell left
+   * blank), it just may not choose anything else. Used by the fix-up UI:
+   * correct one move and everything after it is decoded again.
+   */
+  forcedSans?: readonly string[];
 }
 
 export const DEFAULT_DECODE_OPTIONS: DecodeOptions = {
@@ -45,6 +53,22 @@ export const DEFAULT_DECODE_OPTIONS: DecodeOptions = {
   structuralOps: true,
   maxAlternatives: 5,
 };
+
+/** The move the member has fixed for the next ply of this beam, if any. */
+function forcedNext(beam: Beam, options: DecodeOptions): string | undefined {
+  return options.forcedSans?.[beam.moves.length];
+}
+
+/** Whether a beam's moves agree with every forced move it has reached. */
+function honoursForced(beam: Beam, options: DecodeOptions): boolean {
+  const forced = options.forcedSans;
+  if (!forced) return true;
+  const upTo = Math.min(forced.length, beam.moves.length);
+  for (let i = 0; i < upTo; i++) {
+    if (beam.moves[i]!.san !== forced[i]) return false;
+  }
+  return true;
+}
 
 /** §5.5 op costs. */
 const SKIP_CELL_COST = 1.5;
@@ -171,7 +195,10 @@ export function decodeScan(
     // never raise it, so anything skipped here costs strictly more than
     // whatever finally makes the cut and would have been pruned anyway. The
     // result is identical, computed with far less work.
-    const cheap = parts.filter((p): p is Beam => !isDeferred(p));
+    // Every expansion already respects forced moves by construction; this
+    // is the backstop, applied before the cut so the cut is computed only
+    // from beams that can actually survive.
+    const cheap = parts.filter((p): p is Beam => !isDeferred(p) && honoursForced(p, options));
     const provisional = prune(cheap, options.beamWidth);
     const cut =
       provisional.length < options.beamWidth
@@ -180,11 +207,15 @@ export function decodeScan(
 
     const next: Beam[] = [];
     for (const part of parts) {
-      if (!isDeferred(part)) next.push(part);
+      if (!isDeferred(part)) {
+        if (honoursForced(part, options)) next.push(part);
+      }
       // The tolerance covers floating-point drift: minCost adds the insertion
       // cost in one step, the real beam adds it ply by ply, and exact ties
       // at the cut are common because costs are sums of the same constants.
-      else if (part.minCost - COST_EPSILON <= cut) next.push(...part.run());
+      else if (part.minCost - COST_EPSILON <= cut) {
+        next.push(...part.run().filter((b) => honoursForced(b, options)));
+      }
     }
 
     if (next.length === 0) {
@@ -309,7 +340,10 @@ function expandBeam(
   // --- MATCH: the normal path ---
   const ranked = rankCandidates(legal, slot.cell);
   const { candidates } = selectCandidates(ranked, options.candidateThreshold);
-  const branches = candidates.slice(0, options.branchesPerCell);
+  const forced = forcedNext(beam, options);
+  const branches = forced
+    ? ranked.filter((c) => c.san === forced)
+    : candidates.slice(0, options.branchesPerCell);
 
   for (const candidate of branches) {
     out.push(
@@ -464,8 +498,10 @@ function insertGuessedPlies(
       // lookahead idea §5.5 already relies on for re-synchronization,
       // applied one step earlier - to choosing the hypothesis rather than
       // only to validating it.
-      const ranked =
-        isFinalInsertion && lookaheadCell
+      const forced = forcedNext(state, options);
+      const ranked = forced
+        ? (legal.includes(forced) ? [forced] : [])
+        : isFinalInsertion && lookaheadCell
           ? rankLegalByLookahead(state.fen, lookaheadCell, cache, state.lastMoveTo)
           : rankLegalByPriors(state.fen, state.lastMoveTo, cache);
       for (const san of ranked.slice(0, INSERT_PLY_TOP_K)) {
@@ -505,7 +541,8 @@ function insertGuessedPlies(
       const legal = cache.legalSans(state.fen);
       if (legal.length === 0) continue;
       const ranked = rankCandidates(legal, slot.cell);
-      const best = ranked[0];
+      const forced = forcedNext(state, options);
+      const best = forced ? ranked.find((c) => c.san === forced) : ranked[0];
       if (!best) continue;
       matched.push(extendWithMatch(state, slot, best, ranked, cache, options, 0));
     }

@@ -14,6 +14,8 @@ import type { DecodedGame, RawScan } from './types';
 export interface DecodeRequest {
   id: number;
   scan: RawScan;
+  /** Moves the member has fixed, from the start of the game. */
+  forcedSans?: string[];
 }
 
 export type DecodeResponse =
@@ -28,10 +30,10 @@ const scope = self as unknown as {
 };
 
 scope.onmessage = (event) => {
-  const { id, scan } = event.data;
+  const { id, scan, forcedSans } = event.data;
   let response: DecodeResponse;
   try {
-    response = { id, ok: true, game: decodeScan(scan) };
+    response = { id, ok: true, game: decodeScan(scan, forcedSans ? { forcedSans } : {}) };
   } catch (err) {
     response = { id, ok: false, error: err instanceof Error ? err.message : String(err) };
   }
