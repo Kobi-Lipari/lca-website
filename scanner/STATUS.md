@@ -69,7 +69,7 @@ Three changes, output identical (snapshot hash) apart from one tie in 60 sheets:
 - `functions/api/scan/index.ts`: members only (`requireAuthedMember`), takes the photo as the raw request body (JPEG, PNG or WebP, max 3.5MB, same style as the club-logo upload), returns `{ scan: RawScan, scansLeftToday }`. Photo is never stored.
 - `functions/utils/scan/extract.ts`: the model call and the extraction prompt (verbatim rule stated twice, per §6.2). Model is the `SCAN_MODEL` constant, currently `claude-sonnet-5`. No `temperature` parameter: the model rejects it (found on the first live scan).
 - `functions/utils/scan/rawScan.ts`: turns the model's reply into a `RawScan`. Forgiving about shape (fences, chatter, numbers where strings belong, bare-string cells), strict only about having rows. Never touches the move text.
-- Daily limit: 20 scans per member per UTC day, in D1 (`migrations/0035_scan_usage.sql`). Claimed with one upsert so parallel scans can't slip past it; handed back when the model fails or answers with junk.
+- Daily limit: now 5 **games** per member per day (Central time), up to 3 pages each; see Week 3 S5. Originally 20 photos per UTC day in `scan_usage` (0035), replaced by `scan_games` (0036).
 - Errors: 401 anonymous, 415 wrong type, 400 empty, 413 too big, 429 over the limit, 502 model failed or unreadable reply, 503 model busy or key not set.
 - Client: `downscaleImage()` in `src/lib/resizeImage.ts` (1568px long edge, JPEG 0.8, honours phone rotation) and `scanScoresheet()` in `src/lib/api.ts`.
 - Tests: `test/unit/scan-raw.test.ts` (23 cases; passed here with a stand-in runner) and `test/integration/scan.test.ts` (auth, input checks, prompt contents, recovery, refunds, limit). The harness now mocks `api.anthropic.com`.
@@ -84,7 +84,7 @@ Run the migration first. Without the key, `/api/scan` answers 503; with the key 
 ### Decisions made (defaults from the spec, change if K prefers)
 
 - Rate limit lives in D1, not KV: one tiny table, no new binding.
-- Limit resets at midnight UTC (7pm Central in winter, 6pm in summer).
+- Limit resets at midnight Central (was midnight UTC, i.e. 7pm CDT / 6pm CST, until Week 3 S5).
 - The `RawScan` type lives in `src/lib/scanner/types.ts`; the Functions side imports it type-only.
 
 ### S2: decoder in the browser (done, merged in #57)
@@ -124,6 +124,13 @@ Run the migration first. Without the key, `/api/scan` answers 503; with the key 
 - Up to 3 pages per game (front, back, continuation sheet), added in order on the preview screen, each removable. Pages are scanned in parallel (one daily scan each) and joined by `src/lib/scanner/mergePages.ts` before decoding.
 - Joining rules: where printed move numbers overlap, the earlier page wins and a later page only fills its blanks (§3.1); a later page that restarts at 1 after moves were already written is renumbered to follow on (continuation sheets restart their printed numbers). Header from page 1, gaps filled from later pages, worst legibility reported.
 - Tests: seven cases, including a game split across a sheet and a renumbered continuation sheet decoding exactly as the one-page original.
+
+### S5: limit by games, not photos (this branch)
+
+- K's call: 5 games per member per day, each up to 3 pages. `migrations/0036_scan_games.sql` replaces `scan_usage` with `scan_games(member_id, game_id, day, pages)`; the page sends one `X-Scan-Game` id (a random UUID) with every page of a game.
+- One SQL statement claims a page: a new game needs a free slot today, a started game just takes another page (the `OR EXISTS` lets the last game of the day finish its pages), and pages are capped at 3. Tested against SQLite directly and in the integration suite. A failed page is handed back; a game with no successful page is deleted so it doesn't count.
+- The day is the America/Chicago date (`functions/utils/scan/day.ts`), so the allowance resets at local midnight.
+- `GET /api/scan` returns `{ gamesLeftToday, dailyGameLimit, maxPagesPerGame }`; the page shows games left before a scan and hides the picker at 0. "Try again" re-sends only the pages that failed.
 
 ### Next
 

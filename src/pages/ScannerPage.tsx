@@ -36,7 +36,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/contexts/auth-context'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { ApiError, scanScoresheet } from '@/lib/api'
+import { ApiError, getScanAllowance, scanScoresheet } from '@/lib/api'
 import { GOLD_BUTTON } from '@/lib/brand'
 import { downscaleImage } from '@/lib/resizeImage'
 import { decodeInBackground } from '@/lib/scanner/decodeInBackground'
@@ -133,7 +133,7 @@ function HowItWorks() {
       </div>
       <p className="flex gap-2 px-1 text-xs leading-relaxed text-muted-foreground">
         <ShieldCheck className="mt-0.5 size-3.5 flex-shrink-0 text-lca-gold" aria-hidden="true" />
-        Photos are read once and never stored. Up to 20 scans per day.
+        Photos are read once and never stored. Up to 5 games a day, each up to 3 pages.
       </p>
     </aside>
   )
@@ -145,17 +145,44 @@ type Stage =
   | { kind: 'pick' }
   | { kind: 'preview' }
   | { kind: 'working'; step: 'reading' | 'decoding' }
-  | { kind: 'done'; scan: RawScan; game: DecodedGame; scansLeft: number }
-  | { kind: 'unreadable'; notes: string[]; scansLeft: number }
+  | { kind: 'done'; scan: RawScan; game: DecodedGame }
+  | { kind: 'unreadable'; notes: string[] }
   | { kind: 'error'; message: string; canRetry: boolean }
 
 /** Front, back, and a continuation sheet covers any game a club player writes. */
 const MAX_PAGES = 3
 
+/** An id shared by every page of one game; the daily limit counts these. */
+function newGameId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `g-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+}
+
 function ScannerTool() {
   const [stage, setStage] = useState<Stage>({ kind: 'pick' })
   const [pages, setPages] = useState<File[]>([])
   const pageUrls = useObjectUrls(pages)
+  const [gameId, setGameId] = useState(newGameId)
+  // Pages already read for this game, by position. "Try again" sends only
+  // the ones still missing, so a page that worked is never paid for twice.
+  const [readPages, setReadPages] = useState<Array<RawScan | undefined>>([])
+  const [gamesLeft, setGamesLeft] = useState<number | null>(null)
+  const [scanCount, setScanCount] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+    getScanAllowance()
+      .then((allowance) => {
+        if (!cancelled) setGamesLeft(allowance.gamesLeftToday)
+      })
+      .catch(() => {
+        // Not knowing just means no counter shown; the server still enforces the limit.
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   function addPage(chosen: File) {
     setPages((current) => [...current, chosen].slice(0, MAX_PAGES))
@@ -165,22 +192,27 @@ function ScannerTool() {
   function removePage(index: number) {
     const remaining = pages.filter((_, i) => i !== index)
     setPages(remaining)
+    setReadPages((read) => read.filter((_, i) => i !== index))
     if (remaining.length === 0) setStage({ kind: 'pick' })
   }
 
   function startOver() {
     setPages([])
+    setReadPages([])
+    setGameId(newGameId())
     setStage({ kind: 'pick' })
   }
 
   async function scan(photos: File[]) {
     setStage({ kind: 'working', step: 'reading' })
     const label = (i: number) => (photos.length > 1 ? `Page ${i + 1}: ` : '')
+    const read: Array<RawScan | undefined> = photos.map((_, i) => readPages[i])
+    const missing = photos.map((_, i) => i).filter((i) => !read[i])
 
-    const uploads: Blob[] = []
-    for (const [i, photo] of photos.entries()) {
+    const uploads = new Map<number, Blob>()
+    for (const i of missing) {
       try {
-        uploads.push(await downscaleImage(photo))
+        uploads.set(i, await downscaleImage(photos[i]!))
       } catch {
         setStage({
           kind: 'error',
@@ -191,36 +223,49 @@ function ScannerTool() {
       }
     }
 
-    // Pages are read at the same time; each is its own scan.
-    const results = await Promise.allSettled(uploads.map((upload) => scanScoresheet(upload)))
-    const failed = results.findIndex((r) => r.status === 'rejected')
-    if (failed !== -1) {
-      const error = scanError((results[failed] as PromiseRejectedResult).reason)
-      setStage(error.kind === 'error' ? { ...error, message: label(failed) + error.message } : error)
+    // Pages are read at the same time. They share one game id, so together
+    // they count as a single game against the daily limit.
+    const results = await Promise.allSettled(missing.map((i) => scanScoresheet(uploads.get(i)!, gameId)))
+    let firstFailure: { index: number; reason: unknown } | null = null
+    results.forEach((result, k) => {
+      const i = missing[k]!
+      if (result.status === 'fulfilled') {
+        read[i] = result.value.scan
+        setGamesLeft(result.value.gamesLeftToday)
+      } else if (!firstFailure) {
+        firstFailure = { index: i, reason: result.reason }
+      }
+    })
+    setReadPages([...read])
+
+    if (firstFailure) {
+      const { index, reason } = firstFailure as { index: number; reason: unknown }
+      if (reason instanceof ApiError && reason.status === 429 && /games today/.test(reason.message)) {
+        setGamesLeft(0)
+      }
+      const error = scanError(reason)
+      setStage(error.kind === 'error' ? { ...error, message: label(index) + error.message } : error)
       return
     }
-    const scanned = results.map((r) => (r as PromiseFulfilledResult<{ scan: RawScan; scansLeftToday: number }>).value)
-    const scansLeft = Math.min(...scanned.map((r) => r.scansLeftToday))
 
-    const unreadable = scanned.findIndex(
-      (r) => r.scan.header.legibility === 'unreadable' || r.scan.rows.length === 0,
-    )
+    const scanned = read as RawScan[]
+    const unreadable = scanned.findIndex((page) => page.header.legibility === 'unreadable' || page.rows.length === 0)
     if (unreadable !== -1) {
-      const notes = scanned[unreadable]!.scan.sheetNotes ?? []
+      const notes = scanned[unreadable]!.sheetNotes ?? []
       setStage({
         kind: 'unreadable',
         notes: photos.length > 1 ? [`Page ${unreadable + 1} couldn't be read.`, ...notes] : notes,
-        scansLeft,
       })
       return
     }
 
-    const raw = mergePages(scanned.map((r) => r.scan))
+    const raw = mergePages(scanned)
 
     setStage({ kind: 'working', step: 'decoding' })
     try {
       const game = await decodeInBackground(raw)
-      setStage({ kind: 'done', scan: raw, game, scansLeft })
+      setScanCount((n) => n + 1)
+      setStage({ kind: 'done', scan: raw, game })
     } catch {
       setStage({
         kind: 'error',
@@ -230,11 +275,28 @@ function ScannerTool() {
     }
   }
 
+  // A game already under way (some pages read) can always finish, even if
+  // it used the last slot of the day.
+  const gameStarted = readPages.some(Boolean)
+  const outOfGames = gamesLeft === 0 && !gameStarted
+
   const pageCount = pages.length
 
   return (
     <div className="space-y-6">
-      {stage.kind === 'pick' && <PhotoPicker onChoose={addPage} />}
+      {stage.kind === 'pick' &&
+        (outOfGames ? (
+          <Panel>
+            <Notice tone="warn" title="You've scanned 5 games today">
+              That's the daily limit. It resets at midnight Central time.
+            </Notice>
+          </Panel>
+        ) : (
+          <>
+            <PhotoPicker onChoose={addPage} />
+            <GamesLeft count={gamesLeft} />
+          </>
+        ))}
 
       {stage.kind === 'preview' && pageCount > 0 && (
         <Panel>
@@ -251,16 +313,18 @@ function ScannerTool() {
           )}
 
           <div className="mt-5 flex flex-wrap items-center gap-3">
-            <Button type="button" className={GOLD_BUTTON} onClick={() => scan(pages)}>
+            <Button type="button" className={GOLD_BUTTON} onClick={() => scan(pages)} disabled={outOfGames}>
               {pageCount === 1 ? 'Scan this sheet' : `Scan ${pageCount} pages`}
             </Button>
             <Button type="button" variant="outline" onClick={startOver}>
               Start over
             </Button>
-            {pageCount > 1 && (
-              <p className="text-xs text-muted-foreground">Each page counts as one of your daily scans.</p>
-            )}
           </div>
+          {outOfGames ? (
+            <p className="mt-3 text-sm text-amber-800">You've scanned 5 games today. It resets at midnight Central time.</p>
+          ) : (
+            <GamesLeft count={gamesLeft} note="All pages of one game count as one." />
+          )}
         </Panel>
       )}
 
@@ -293,7 +357,7 @@ function ScannerTool() {
             {stage.notes.length > 0 ? stage.notes.join(' ') : 'The photo may be too dark, blurry, or cropped.'}{' '}
             Try again in better light with the whole grid in the frame.
           </Notice>
-          <ScansLeft count={stage.scansLeft} />
+          <GamesLeft count={gamesLeft} />
           <Button type="button" variant="outline" className="mt-4" onClick={startOver}>
             <RotateCcw className="size-4" aria-hidden="true" /> Try another photo
           </Button>
@@ -321,10 +385,10 @@ function ScannerTool() {
       {stage.kind === 'done' && (
         <Results
           // A fresh scan starts a fresh set of corrections.
-          key={stage.scansLeft}
+          key={scanCount}
           scan={stage.scan}
           game={stage.game}
-          scansLeft={stage.scansLeft}
+          gamesLeft={gamesLeft}
           previewUrl={pageUrls[0] ?? null}
           onScanAnother={startOver}
         />
@@ -483,13 +547,13 @@ interface Edited {
 function Results({
   scan,
   game: decoded,
-  scansLeft,
+  gamesLeft,
   previewUrl,
   onScanAnother,
 }: {
   scan: RawScan
   game: DecodedGame
-  scansLeft: number
+  gamesLeft: number | null
   previewUrl: string | null
   onScanAnother: () => void
 }) {
@@ -619,7 +683,7 @@ function Results({
         <Notice tone="warn" title="No moves could be worked out">
           {game.warnings.join(' ') || 'The handwriting was read, but no legal game fit it.'}
         </Notice>
-        <ScansLeft count={scansLeft} />
+        <GamesLeft count={gamesLeft} />
         <Button type="button" variant="outline" className="mt-4" onClick={onScanAnother}>
           <RotateCcw className="size-4" aria-hidden="true" /> Scan another sheet
         </Button>
@@ -705,7 +769,7 @@ function Results({
             to load it.
           </p>
         )}
-        <ScansLeft count={scansLeft} />
+        <GamesLeft count={gamesLeft} />
       </Panel>
 
       <MoveList
@@ -1022,10 +1086,16 @@ function Notice({
   )
 }
 
-function ScansLeft({ count }: { count: number }) {
+function GamesLeft({ count, note }: { count: number | null; note?: string }) {
+  if (count === null) return null
+  const text =
+    count === 0
+      ? "That was your last game for today. It resets at midnight Central time."
+      : `${count} ${count === 1 ? 'game' : 'games'} left to scan today.`
   return (
     <p className="mt-4 text-xs text-muted-foreground">
-      {count === 0 ? 'That was your last scan for today.' : `${count} ${count === 1 ? 'scan' : 'scans'} left today.`}
+      {text}
+      {note && count > 0 ? ` ${note}` : ''}
     </p>
   )
 }

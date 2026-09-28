@@ -1664,14 +1664,29 @@ export async function adminRemoveBoardSeatHolder(
 
 // ── Scoresheet scanner ─────────────────────────────────────────────
 
-/** Send a photo already shrunk with downscaleImage (resizeImage.ts). */
+/** How many games a member can still scan today, and the page cap per game. */
+export async function getScanAllowance(): Promise<{
+  gamesLeftToday: number
+  dailyGameLimit: number
+  maxPagesPerGame: number
+}> {
+  const response = await fetch('/api/scan', { headers: await authHeaders() })
+  return handleResponse(response)
+}
+
+/**
+ * Send one page, already shrunk with downscaleImage (resizeImage.ts).
+ * Every page of the same game passes the same gameId: the daily limit
+ * counts games, not photos.
+ */
 export async function scanScoresheet(
   photo: Blob,
-): Promise<{ scan: RawScan; scansLeftToday: number }> {
+  gameId: string,
+): Promise<{ scan: RawScan; gamesLeftToday: number }> {
   const headers = await authHeaders()
   const response = await fetch('/api/scan', {
     method: 'POST',
-    headers: { ...headers, 'Content-Type': photo.type || 'image/jpeg' },
+    headers: { ...headers, 'Content-Type': photo.type || 'image/jpeg', 'X-Scan-Game': gameId },
     body: photo,
   })
   return handleResponse(response)

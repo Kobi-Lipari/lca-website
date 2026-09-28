@@ -1,4 +1,4 @@
-// test/integration/scan.test.ts — POST /api/scan, the scoresheet photo endpoint.
+// test/integration/scan.test.ts — /api/scan, the scoresheet photo endpoint.
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
@@ -10,10 +10,13 @@ import {
 import { seedMember } from './factories'
 
 import {
-  DAILY_SCAN_LIMIT,
+  DAILY_GAME_LIMIT,
+  MAX_PAGES_PER_GAME,
   MAX_SCAN_BYTES,
+  onRequestGet as scanGet,
   onRequestPost as scanPost,
 } from '../../functions/api/scan'
+import { scanDay } from '../../functions/utils/scan/day'
 import { SCAN_MODEL } from '../../functions/utils/scan/extract'
 import type { RawScan } from '../../functions/utils/scan/rawScan'
 
@@ -21,22 +24,43 @@ import type { RawScan } from '../../functions/utils/scan/rawScan'
 // forwards it, so any bytes do; ASCII keeps the base64 check simple.
 const PHOTO = 'not-really-a-jpeg-but-close-enough'
 
-function scan(as: string | undefined, options: { body?: string; type?: string } = {}) {
+let gameCounter = 0
+/** A fresh game id, as the page makes one per game. */
+function newGame(): string {
+  return `test-game-${++gameCounter}`
+}
+
+function scan(
+  as: string | undefined,
+  options: { body?: string; type?: string; game?: string | null } = {},
+) {
+  const headers: Record<string, string> = { 'Content-Type': options.type ?? 'image/jpeg' }
+  const game = options.game === undefined ? newGame() : options.game
+  if (game !== null) headers['X-Scan-Game'] = game
   return invoke(scanPost, {
     method: 'POST',
     path: '/api/scan',
     as,
     rawBody: options.body ?? PHOTO,
-    headers: { 'Content-Type': options.type ?? 'image/jpeg' },
+    headers,
   })
 }
 
-async function usageToday(memberId: string): Promise<number> {
-  const day = new Date().toISOString().slice(0, 10)
-  const row = await env.DB.prepare('SELECT count FROM scan_usage WHERE member_id = ? AND day = ?')
-    .bind(memberId, day)
-    .first<{ count: number }>()
-  return row?.count ?? 0
+/** Games the member has started today, as the limit counts them. */
+async function gamesToday(memberId: string): Promise<number> {
+  const row = await env.DB.prepare('SELECT COUNT(*) AS games FROM scan_games WHERE member_id = ? AND day = ?')
+    .bind(memberId, scanDay())
+    .first<{ games: number }>()
+  return row?.games ?? 0
+}
+
+/** Pretend the member already scanned `count` games today. */
+async function useUpGames(memberId: string, count: number): Promise<void> {
+  for (let i = 0; i < count; i++) {
+    await env.DB.prepare('INSERT INTO scan_games (member_id, game_id, day, pages) VALUES (?, ?, ?, 1)')
+      .bind(memberId, `earlier-${i}`, scanDay())
+      .run()
+  }
 }
 
 beforeEach(resetHarness)
@@ -64,7 +88,7 @@ describe('POST /api/scan: access and input', () => {
     const res = await scan(member, { body: 'x'.repeat(MAX_SCAN_BYTES + 1) })
     expect(res.status).toBe(413)
     expect(anthropicRequests).toHaveLength(0)
-    expect(await usageToday(member)).toBe(0)
+    expect(await gamesToday(member)).toBe(0)
   })
 
   it('accepts a content type with parameters', async () => {
@@ -90,7 +114,7 @@ describe('POST /api/scan: the model call', () => {
     expect(sent.prompt).toMatch(/verbatim/i)
     expect(sent.prompt).toMatch(/do not correct/i)
 
-    const body = await res.json<{ scan: RawScan; scansLeftToday: number }>()
+    const body = await res.json<{ scan: RawScan; gamesLeftToday: number }>()
     expect(body.scan.header.legibility).toBe('clear')
     expect(body.scan.rows).toHaveLength(2)
     expect(body.scan.rows[1]).toEqual({
@@ -98,7 +122,7 @@ describe('POST /api/scan: the model call', () => {
       white: { raw: 'Nf3', alts: ['Nf5'], confidence: 'medium' },
       black: null,
     })
-    expect(body.scansLeftToday).toBe(DAILY_SCAN_LIMIT - 1)
+    expect(body.gamesLeftToday).toBe(DAILY_GAME_LIMIT - 1)
   })
 
   it('recovers a reply wrapped in code fences and chatter', async () => {
@@ -134,7 +158,7 @@ describe('POST /api/scan: the model call', () => {
     anthropicBehavior.reply = 'I am unable to help with that.'
     const res = await scan(member)
     expect(res.status).toBe(502)
-    expect(await usageToday(member)).toBe(0)
+    expect(await gamesToday(member)).toBe(0)
   })
 
   it('returns 502 when the model service fails, and gives the scan back', async () => {
@@ -142,7 +166,7 @@ describe('POST /api/scan: the model call', () => {
     anthropicBehavior.status = 500
     const res = await scan(member)
     expect(res.status).toBe(502)
-    expect(await usageToday(member)).toBe(0)
+    expect(await gamesToday(member)).toBe(0)
   })
 
   it('returns 502 on a network failure, and gives the scan back', async () => {
@@ -150,7 +174,7 @@ describe('POST /api/scan: the model call', () => {
     anthropicBehavior.throws = true
     const res = await scan(member)
     expect(res.status).toBe(502)
-    expect(await usageToday(member)).toBe(0)
+    expect(await gamesToday(member)).toBe(0)
   })
 
   it('returns 503 when the model service is busy', async () => {
@@ -160,49 +184,110 @@ describe('POST /api/scan: the model call', () => {
   })
 })
 
-describe('POST /api/scan: daily limit', () => {
-  it('counts each successful scan', async () => {
-    const member = await seedMember()
-    await scan(member)
-    await scan(member)
-    expect(await usageToday(member)).toBe(2)
+describe('POST /api/scan: the daily limit counts games, not photos', () => {
+  it('refuses a page without a game id', async () => {
+    const res = await scan(await seedMember(), { game: null })
+    expect(res.status).toBe(400)
+    expect(anthropicRequests).toHaveLength(0)
   })
 
-  it('refuses the scan past the limit without calling the model', async () => {
+  it('counts every page of one game as a single game', async () => {
     const member = await seedMember()
-    const day = new Date().toISOString().slice(0, 10)
-    await env.DB.prepare('INSERT INTO scan_usage (member_id, day, count) VALUES (?, ?, ?)')
-      .bind(member, day, DAILY_SCAN_LIMIT)
-      .run()
+    const game = newGame()
+    for (let page = 0; page < MAX_PAGES_PER_GAME; page++) {
+      const res = await scan(member, { game })
+      expect(res.status).toBe(200)
+    }
+    expect(await gamesToday(member)).toBe(1)
+  })
+
+  it('refuses a page beyond the per-game cap, without calling the model', async () => {
+    const member = await seedMember()
+    const game = newGame()
+    for (let page = 0; page < MAX_PAGES_PER_GAME; page++) await scan(member, { game })
+    anthropicRequests.length = 0
+
+    const res = await scan(member, { game })
+    expect(res.status).toBe(429)
+    expect((await res.json<{ error: string }>()).error).toMatch(/at most/)
+    expect(anthropicRequests).toHaveLength(0)
+  })
+
+  it('refuses a new game once the day\'s games are used, without calling the model', async () => {
+    const member = await seedMember()
+    await useUpGames(member, DAILY_GAME_LIMIT)
 
     const res = await scan(member)
     expect(res.status).toBe(429)
-    expect((await res.json<{ scansLeftToday: number }>()).scansLeftToday).toBe(0)
+    expect((await res.json<{ gamesLeftToday: number }>()).gamesLeftToday).toBe(0)
     expect(anthropicRequests).toHaveLength(0)
-    // The refused attempt is not counted.
-    expect(await usageToday(member)).toBe(DAILY_SCAN_LIMIT)
+    expect(await gamesToday(member)).toBe(DAILY_GAME_LIMIT)
   })
 
-  it('allows the last scan of the day', async () => {
+  it('lets the last game of the day finish all its pages', async () => {
     const member = await seedMember()
-    const day = new Date().toISOString().slice(0, 10)
-    await env.DB.prepare('INSERT INTO scan_usage (member_id, day, count) VALUES (?, ?, ?)')
-      .bind(member, day, DAILY_SCAN_LIMIT - 1)
-      .run()
+    await useUpGames(member, DAILY_GAME_LIMIT - 1)
+    const game = newGame()
 
-    const res = await scan(member)
-    expect(res.status).toBe(200)
-    expect((await res.json<{ scansLeftToday: number }>()).scansLeftToday).toBe(0)
+    const first = await scan(member, { game })
+    expect(first.status).toBe(200)
+    expect((await first.json<{ gamesLeftToday: number }>()).gamesLeftToday).toBe(0)
+    // The allowance is spent, but this game is already under way.
+    const second = await scan(member, { game })
+    expect(second.status).toBe(200)
+  })
+
+  it('does not count a game whose only page failed', async () => {
+    const member = await seedMember()
+    anthropicBehavior.status = 500
+    await scan(member)
+    expect(await gamesToday(member)).toBe(0)
+  })
+
+  it('keeps a game counted when a later page fails', async () => {
+    const member = await seedMember()
+    const game = newGame()
+    await scan(member, { game })
+    anthropicBehavior.status = 500
+    await scan(member, { game })
+    expect(await gamesToday(member)).toBe(1)
+    const row = await env.DB.prepare('SELECT pages FROM scan_games WHERE member_id = ? AND game_id = ?')
+      .bind(member, game)
+      .first<{ pages: number }>()
+    expect(row?.pages).toBe(1)
   })
 
   it("keeps each member's allowance separate", async () => {
     const heavy = await seedMember()
-    const day = new Date().toISOString().slice(0, 10)
-    await env.DB.prepare('INSERT INTO scan_usage (member_id, day, count) VALUES (?, ?, ?)')
-      .bind(heavy, day, DAILY_SCAN_LIMIT)
-      .run()
-
+    await useUpGames(heavy, DAILY_GAME_LIMIT)
     const res = await scan(await seedMember())
     expect(res.status).toBe(200)
+  })
+})
+
+describe('GET /api/scan: the allowance', () => {
+  it('refuses anonymous callers', async () => {
+    const res = await invoke(scanGet, { path: '/api/scan' })
+    expect(res.status).toBe(401)
+  })
+
+  it('reports a full allowance for a member who has not scanned today', async () => {
+    const res = await invoke(scanGet, { path: '/api/scan', as: await seedMember() })
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({
+      gamesLeftToday: DAILY_GAME_LIMIT,
+      dailyGameLimit: DAILY_GAME_LIMIT,
+      maxPagesPerGame: MAX_PAGES_PER_GAME,
+    })
+  })
+
+  it('counts down by games, not pages', async () => {
+    const member = await seedMember()
+    const game = newGame()
+    await scan(member, { game })
+    await scan(member, { game })
+    await scan(member)
+    const res = await invoke(scanGet, { path: '/api/scan', as: member })
+    expect((await res.json<{ gamesLeftToday: number }>()).gamesLeftToday).toBe(DAILY_GAME_LIMIT - 2)
   })
 })
