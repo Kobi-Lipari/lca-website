@@ -34,7 +34,9 @@ describe('decoder - S3 happy path: clean games decode to exact PGN match', () =>
       );
       expect(flagged).toHaveLength(0);
     }
-  });
+    // Ten full games in one test: about 5s on a Codespace, right at vitest's
+    // default limit, so it failed on timing alone when the machine was busy.
+  }, 30_000);
 
   it('populates fenBefore and alternatives for the fix-up UI (§3.2)', () => {
     const { scan } = corrupt(CORPUS[0]!.pgn, 1, 'clean');
