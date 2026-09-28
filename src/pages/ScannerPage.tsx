@@ -27,6 +27,7 @@ import {
   ShieldCheck,
   TriangleAlert,
   Undo2,
+  X,
 } from 'lucide-react'
 
 import { PageHero } from '@/components/PageHero'
@@ -40,6 +41,7 @@ import { GOLD_BUTTON } from '@/lib/brand'
 import { downscaleImage } from '@/lib/resizeImage'
 import { decodeInBackground } from '@/lib/scanner/decodeInBackground'
 import { legalMovesAt } from '@/lib/scanner/chessAdapter'
+import { mergePages } from '@/lib/scanner/mergePages'
 import { emailGameLink, gameToPgn, lichessAnalysisUrl, pgnFilename } from '@/lib/scanner/export'
 import type { DecodedGame, DecodedMove, RawScan } from '@/lib/scanner/types'
 import { cn } from '@/lib/utils'
@@ -141,60 +143,84 @@ function HowItWorks() {
 
 type Stage =
   | { kind: 'pick' }
-  | { kind: 'preview'; file: File }
+  | { kind: 'preview' }
   | { kind: 'working'; step: 'reading' | 'decoding' }
   | { kind: 'done'; scan: RawScan; game: DecodedGame; scansLeft: number }
   | { kind: 'unreadable'; notes: string[]; scansLeft: number }
   | { kind: 'error'; message: string; canRetry: boolean }
 
+/** Front, back, and a continuation sheet covers any game a club player writes. */
+const MAX_PAGES = 3
+
 function ScannerTool() {
   const [stage, setStage] = useState<Stage>({ kind: 'pick' })
-  const [file, setFile] = useState<File | null>(null)
-  const previewUrl = useObjectUrl(file)
+  const [pages, setPages] = useState<File[]>([])
+  const pageUrls = useObjectUrls(pages)
 
-  function choose(chosen: File) {
-    setFile(chosen)
-    setStage({ kind: 'preview', file: chosen })
+  function addPage(chosen: File) {
+    setPages((current) => [...current, chosen].slice(0, MAX_PAGES))
+    setStage({ kind: 'preview' })
+  }
+
+  function removePage(index: number) {
+    const remaining = pages.filter((_, i) => i !== index)
+    setPages(remaining)
+    if (remaining.length === 0) setStage({ kind: 'pick' })
   }
 
   function startOver() {
-    setFile(null)
+    setPages([])
     setStage({ kind: 'pick' })
   }
 
-  async function scan(photo: File) {
+  async function scan(photos: File[]) {
     setStage({ kind: 'working', step: 'reading' })
+    const label = (i: number) => (photos.length > 1 ? `Page ${i + 1}: ` : '')
 
-    let upload: Blob
-    try {
-      upload = await downscaleImage(photo)
-    } catch {
+    const uploads: Blob[] = []
+    for (const [i, photo] of photos.entries()) {
+      try {
+        uploads.push(await downscaleImage(photo))
+      } catch {
+        setStage({
+          kind: 'error',
+          message: `${label(i)}That file couldn't be opened as a photo. Try a JPEG or PNG.`,
+          canRetry: false,
+        })
+        return
+      }
+    }
+
+    // Pages are read at the same time; each is its own scan.
+    const results = await Promise.allSettled(uploads.map((upload) => scanScoresheet(upload)))
+    const failed = results.findIndex((r) => r.status === 'rejected')
+    if (failed !== -1) {
+      const error = scanError((results[failed] as PromiseRejectedResult).reason)
+      setStage(error.kind === 'error' ? { ...error, message: label(failed) + error.message } : error)
+      return
+    }
+    const scanned = results.map((r) => (r as PromiseFulfilledResult<{ scan: RawScan; scansLeftToday: number }>).value)
+    const scansLeft = Math.min(...scanned.map((r) => r.scansLeftToday))
+
+    const unreadable = scanned.findIndex(
+      (r) => r.scan.header.legibility === 'unreadable' || r.scan.rows.length === 0,
+    )
+    if (unreadable !== -1) {
+      const notes = scanned[unreadable]!.scan.sheetNotes ?? []
       setStage({
-        kind: 'error',
-        message: "That file couldn't be opened as a photo. Try a JPEG or PNG.",
-        canRetry: false,
+        kind: 'unreadable',
+        notes: photos.length > 1 ? [`Page ${unreadable + 1} couldn't be read.`, ...notes] : notes,
+        scansLeft,
       })
       return
     }
 
-    let result: { scan: RawScan; scansLeftToday: number }
-    try {
-      result = await scanScoresheet(upload)
-    } catch (err) {
-      setStage(scanError(err))
-      return
-    }
-
-    const { scan: raw, scansLeftToday } = result
-    if (raw.header.legibility === 'unreadable' || raw.rows.length === 0) {
-      setStage({ kind: 'unreadable', notes: raw.sheetNotes ?? [], scansLeft: scansLeftToday })
-      return
-    }
+    const raw = mergePages(scanned.map((r) => r.scan))
 
     setStage({ kind: 'working', step: 'decoding' })
     try {
       const game = await decodeInBackground(raw)
-      setStage({ kind: 'done', scan: raw, game, scansLeft: scansLeftToday })
+      setStage({ kind: 'done', scan: raw, game, scansLeft })
     } catch {
       setStage({
         kind: 'error',
@@ -204,32 +230,52 @@ function ScannerTool() {
     }
   }
 
+  const pageCount = pages.length
+
   return (
     <div className="space-y-6">
-      {stage.kind === 'pick' && <PhotoPicker onChoose={choose} />}
+      {stage.kind === 'pick' && <PhotoPicker onChoose={addPage} />}
 
-      {stage.kind === 'preview' && previewUrl && (
+      {stage.kind === 'preview' && pageCount > 0 && (
         <Panel>
-          <PhotoPreview url={previewUrl} />
-          <div className="mt-5 flex flex-wrap gap-3">
-            <Button type="button" className={GOLD_BUTTON} onClick={() => scan(stage.file)}>
-              Scan this sheet
+          <PageStrip urls={pageUrls} onRemove={removePage} />
+
+          {pageCount < MAX_PAGES && (
+            <div className="mt-5 rounded-lg border border-dashed border-lca-navy/15 p-4">
+              <p className="text-sm font-medium text-foreground">Does the game continue on the back or another sheet?</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Add the next page, in order. Pages are joined into one game before the moves are checked.
+              </p>
+              <PhotoButtons onChoose={addPage} cameraLabel="Photograph next page" libraryLabel="Choose next page" className="mt-3" />
+            </div>
+          )}
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <Button type="button" className={GOLD_BUTTON} onClick={() => scan(pages)}>
+              {pageCount === 1 ? 'Scan this sheet' : `Scan ${pageCount} pages`}
             </Button>
             <Button type="button" variant="outline" onClick={startOver}>
-              Choose a different photo
+              Start over
             </Button>
+            {pageCount > 1 && (
+              <p className="text-xs text-muted-foreground">Each page counts as one of your daily scans.</p>
+            )}
           </div>
         </Panel>
       )}
 
       {stage.kind === 'working' && (
         <Panel>
-          {previewUrl && <PhotoPreview url={previewUrl} dimmed />}
+          <PageStrip urls={pageUrls} dimmed />
           <div role="status" aria-live="polite" className="mt-5 flex items-center gap-3">
             <Loader2 className="size-5 animate-spin text-lca-gold" aria-hidden="true" />
             <div>
               <p className="text-sm font-medium text-foreground">
-                {stage.step === 'reading' ? 'Reading the handwriting…' : 'Checking the moves…'}
+                {stage.step === 'reading'
+                  ? pageCount > 1
+                    ? `Reading ${pageCount} pages of handwriting…`
+                    : 'Reading the handwriting…'
+                  : 'Checking the moves…'}
               </p>
               <p className="text-xs text-muted-foreground">
                 {stage.step === 'reading'
@@ -260,8 +306,8 @@ function ScannerTool() {
             {stage.message}
           </Notice>
           <div className="mt-4 flex flex-wrap gap-3">
-            {stage.canRetry && file && (
-              <Button type="button" className={GOLD_BUTTON} onClick={() => scan(file)}>
+            {stage.canRetry && pageCount > 0 && (
+              <Button type="button" className={GOLD_BUTTON} onClick={() => scan(pages)}>
                 Try again
               </Button>
             )}
@@ -279,7 +325,7 @@ function ScannerTool() {
           scan={stage.scan}
           game={stage.game}
           scansLeft={stage.scansLeft}
-          previewUrl={previewUrl}
+          previewUrl={pageUrls[0] ?? null}
           onScanAnother={startOver}
         />
       )}
@@ -304,24 +350,50 @@ function scanError(err: unknown): Stage {
   }
 }
 
-/** An object URL for the chosen photo, released when it changes or the page closes. */
-function useObjectUrl(file: File | null): string | null {
-  const [url, setUrl] = useState<string | null>(null)
+/** Object URLs for the chosen photos, released when they change or the page closes. */
+function useObjectUrls(files: File[]): string[] {
+  const [urls, setUrls] = useState<string[]>([])
   useEffect(() => {
-    if (!file) {
-      setUrl(null)
-      return
-    }
-    const next = URL.createObjectURL(file)
-    setUrl(next)
-    return () => URL.revokeObjectURL(next)
-  }, [file])
-  return url
+    const next = files.map((file) => URL.createObjectURL(file))
+    setUrls(next)
+    return () => next.forEach((url) => URL.revokeObjectURL(url))
+  }, [files])
+  return urls
 }
 
 // ── Picking a photo ──────────────────────────────────────────────────
 
 function PhotoPicker({ onChoose }: { onChoose: (file: File) => void }) {
+  return (
+    <div className="rounded-xl border-2 border-dashed border-lca-navy/15 bg-card p-6 text-center sm:p-10">
+      <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-lca-gold/10">
+        <Camera className="size-6 text-lca-gold" aria-hidden="true" />
+      </div>
+      <h2 className="mt-4 text-lg font-semibold text-lca-navy">Add a photo of your scoresheet</h2>
+      <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+        One sheet per photo, taken from straight above, with every row visible. If the game runs onto
+        the back or another sheet, you can add those pages next.
+      </p>
+      <PhotoButtons onChoose={onChoose} className="mt-6 justify-center" />
+    </div>
+  )
+}
+
+/**
+ * Two ways in: the camera (capture opens it directly on phones; desktops
+ * ignore it and show the file picker) and the photo library.
+ */
+function PhotoButtons({
+  onChoose,
+  cameraLabel = 'Take a photo',
+  libraryLabel = 'Choose a photo',
+  className,
+}: {
+  onChoose: (file: File) => void
+  cameraLabel?: string
+  libraryLabel?: string
+  className?: string
+}) {
   const cameraRef = useRef<HTMLInputElement>(null)
   const libraryRef = useRef<HTMLInputElement>(null)
 
@@ -332,27 +404,55 @@ function PhotoPicker({ onChoose }: { onChoose: (file: File) => void }) {
   }
 
   return (
-    <div className="rounded-xl border-2 border-dashed border-lca-navy/15 bg-card p-6 text-center sm:p-10">
-      <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-lca-gold/10">
-        <Camera className="size-6 text-lca-gold" aria-hidden="true" />
-      </div>
-      <h2 className="mt-4 text-lg font-semibold text-lca-navy">Add a photo of your scoresheet</h2>
-      <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-        One sheet per photo, taken from straight above, with every row visible.
-      </p>
-      <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
-        {/* capture opens the camera directly on phones; desktops ignore it
-            and show the file picker, which is why both buttons exist. */}
-        <Button type="button" className={GOLD_BUTTON} onClick={() => cameraRef.current?.click()}>
-          <Camera className="size-4" aria-hidden="true" /> Take a photo
-        </Button>
-        <Button type="button" variant="outline" onClick={() => libraryRef.current?.click()}>
-          <ImagePlus className="size-4" aria-hidden="true" /> Choose a photo
-        </Button>
-      </div>
+    <div className={cn('flex flex-col gap-3 sm:flex-row', className)}>
+      <Button type="button" className={GOLD_BUTTON} onClick={() => cameraRef.current?.click()}>
+        <Camera className="size-4" aria-hidden="true" /> {cameraLabel}
+      </Button>
+      <Button type="button" variant="outline" onClick={() => libraryRef.current?.click()}>
+        <ImagePlus className="size-4" aria-hidden="true" /> {libraryLabel}
+      </Button>
       <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={handle} />
       <input ref={libraryRef} type="file" accept="image/*" className="sr-only" tabIndex={-1} aria-hidden="true" onChange={handle} />
     </div>
+  )
+}
+
+/** The chosen pages side by side, numbered, each removable before scanning. */
+function PageStrip({
+  urls,
+  dimmed,
+  onRemove,
+}: {
+  urls: string[]
+  dimmed?: boolean
+  onRemove?: (index: number) => void
+}) {
+  if (urls.length === 1) return <PhotoPreview url={urls[0]!} dimmed={dimmed} />
+  return (
+    <ol className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {urls.map((url, i) => (
+        <li key={url} className="relative">
+          <img
+            src={url}
+            alt={`Page ${i + 1} of your scoresheet`}
+            className={cn('aspect-[3/4] w-full rounded-lg border object-cover transition-opacity', dimmed && 'opacity-60')}
+          />
+          <span className="absolute left-2 top-2 rounded-full bg-lca-navy px-2 py-0.5 text-xs font-semibold text-white">
+            Page {i + 1}
+          </span>
+          {onRemove && (
+            <button
+              type="button"
+              onClick={() => onRemove(i)}
+              aria-label={`Remove page ${i + 1}`}
+              className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-white/90 text-foreground shadow hover:bg-white"
+            >
+              <X className="size-4" aria-hidden="true" />
+            </button>
+          )}
+        </li>
+      ))}
+    </ol>
   )
 }
 
