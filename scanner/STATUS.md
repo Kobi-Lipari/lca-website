@@ -74,7 +74,7 @@ npm test && npm run test:integration && npm run typecheck:functions && npm run b
 1. `npm run db:migrate:remote` for the new `scan_usage` table.
 2. Add `ANTHROPIC_API_KEY` as a secret in the Cloudflare Pages dashboard (production), and in `.dev.vars` for local dev (already gitignored).
 
-Until both are done, `/api/scan` answers 503; nothing else on the site is affected.
+Run the migration first. Without the key, `/api/scan` answers 503; with the key but no table, it would fail with a 500. Nothing else on the site is affected either way.
 
 ### Decisions made (defaults from the spec, change if K prefers)
 
