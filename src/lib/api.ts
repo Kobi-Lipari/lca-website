@@ -1100,7 +1100,7 @@ export async function submitContact(data: {
   body: string
   /** Seat slug, e.g. 'scholastic-director'. Omit for a general inquiry. */
   seatRef?: string
-}): Promise<{ ticketId: string; routedTo: string | null }> {
+}): Promise<{ ticketId: string; ticketNumber: number | null; routedTo: string | null }> {
   const response = await fetch('/api/contact', {
     method: 'POST',
     headers: await authHeaders(),
@@ -1166,6 +1166,8 @@ export async function updateTournamentRegistration(
 
 export interface ApiSupportTicket {
   id: string
+  /** Short number people see, e.g. 1042 → "#1042". */
+  number: number | null
   subject: string
   status: string
   created_at: string
@@ -1187,7 +1189,7 @@ export async function createSupportTicket(data: {
   email: string
   subject: string
   body: string
-}): Promise<{ ticketId: string }> {
+}): Promise<{ ticketId: string; ticketNumber: number | null }> {
   // authHeaders (not bare Content-Type): logged-in creators get their
   // member_id bound to the ticket, which is what lets them open it later.
   // Guests are unaffected — the Authorization header is only added when a
@@ -1690,6 +1692,7 @@ export async function adminAssignBoardSeat(
  
 export interface ApiBoardTicket {
   id: string
+  number: number | null
   name: string
   email: string
   subject: string

@@ -134,26 +134,32 @@ export default {
     await phase('registration-open reminders', async () => {
       const newlyOpenedReminders = await env.DB.prepare(
         `SELECT tr.id, tr.email, tr.member_id,
-                t.id as tournament_id, t.name, t.date, t.location,
+                t.id as tournament_id, t.name, t.date, t.end_date, t.location, t.venue,
                 m.full_name
          FROM tournament_reminders tr
          JOIN tournaments t ON tr.tournament_id = t.id
          JOIN members m ON tr.member_id = m.id
          WHERE t.registration_status = 'open'
-           AND tr.sent_registration_open = 0`,
+           AND tr.sent_registration_open = 0
+           AND tr.registration_opened_notified_at IS NULL`,
       ).all<{
         id: string; email: string; member_id: string
-        tournament_id: string; name: string; date: string
-        location: string; full_name: string
+        tournament_id: string; name: string; date: string; end_date: string | null
+        location: string; venue: string | null; full_name: string
       }>()
 
       for (const row of newlyOpenedReminders.results) {
         const template = registrationOpenReminderEmail({
+          siteUrl: SITE_URL,
           memberName: row.full_name,
-          tournamentName: row.name,
-          tournamentDate: row.date,
-          tournamentLocation: row.location,
-          registrationUrl: `${SITE_URL}/tournaments/${row.tournament_id}`,
+          tournament: {
+            name: row.name,
+            date: row.date,
+            endDate: row.end_date,
+            location: row.location,
+            venue: row.venue,
+            url: `${SITE_URL}/tournaments/${row.tournament_id}`,
+          },
         })
         const ok = await trySendEmail(env, { ...template, to: row.email })
         if (!ok) continue // retry on the next run; don't burn the flag
@@ -171,7 +177,7 @@ export default {
 
       const weekBeforeReminders = await env.DB.prepare(
         `SELECT tr.id, tr.email, tr.member_id,
-                t.id as tournament_id, t.name, t.date, t.location,
+                t.id as tournament_id, t.name, t.date, t.end_date, t.location, t.venue,
                 m.full_name
          FROM tournament_reminders tr
          JOIN tournaments t ON tr.tournament_id = t.id
@@ -184,17 +190,22 @@ export default {
            )`,
       ).bind(sevenDaysStr).all<{
         id: string; email: string; member_id: string
-        tournament_id: string; name: string; date: string
-        location: string; full_name: string
+        tournament_id: string; name: string; date: string; end_date: string | null
+        location: string; venue: string | null; full_name: string
       }>()
 
       for (const row of weekBeforeReminders.results) {
         const template = weekBeforeReminderEmail({
+          siteUrl: SITE_URL,
           memberName: row.full_name,
-          tournamentName: row.name,
-          tournamentDate: row.date,
-          tournamentLocation: row.location,
-          registrationUrl: `${SITE_URL}/tournaments/${row.tournament_id}`,
+          tournament: {
+            name: row.name,
+            date: row.date,
+            endDate: row.end_date,
+            location: row.location,
+            venue: row.venue,
+            url: `${SITE_URL}/tournaments/${row.tournament_id}`,
+          },
         })
         const ok = await trySendEmail(env, { ...template, to: row.email })
         if (!ok) continue
@@ -211,14 +222,17 @@ export default {
         const enabledCol = `reminder_${reminderNum}_enabled`
 
         const attendees = await env.DB.prepare(
-          `SELECT r.member_id, r.tournament_id,
-                  t.name, t.date, t.location,
+          `SELECT r.member_id, r.tournament_id, r.section,
+                  t.name, t.date, t.end_date, t.location, t.venue,
                   t.${daysCol} as days_before,
                   m.email, m.full_name
            FROM registrations r
            JOIN tournaments t ON r.tournament_id = t.id
            JOIN members m ON r.member_id = m.id
            WHERE t.${enabledCol} = 1
+             AND r.withdrawn_at IS NULL
+             AND r.payment_status = 'paid'
+             AND m.email NOT LIKE '%@walkin.lca.invalid'
              AND date(t.date, '-' || t.${daysCol} || ' days') = ?
              AND NOT EXISTS (
                SELECT 1 FROM tournament_attendee_reminders tar
@@ -227,18 +241,25 @@ export default {
                  AND tar.reminder_number = ?
              )`,
         ).bind(todayStr, reminderNum).all<{
-          member_id: string; tournament_id: string
-          name: string; date: string; location: string
+          member_id: string; tournament_id: string; section: string
+          name: string; date: string; end_date: string | null; location: string; venue: string | null
           days_before: number; email: string; full_name: string
         }>()
 
         for (const row of attendees.results) {
           const template = attendeeReminderEmail({
+            siteUrl: SITE_URL,
             memberName: row.full_name,
-            tournamentName: row.name,
-            tournamentDate: row.date,
-            tournamentLocation: row.location,
+            section: row.section,
             daysUntil: row.days_before,
+            tournament: {
+              name: row.name,
+              date: row.date,
+              endDate: row.end_date,
+              location: row.location,
+              venue: row.venue,
+              url: `${SITE_URL}/tournaments/${row.tournament_id}`,
+            },
           })
           const ok = await trySendEmail(env, { ...template, to: row.email })
           if (!ok) continue

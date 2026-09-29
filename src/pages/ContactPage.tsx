@@ -29,7 +29,7 @@ export function ContactPage() {
   const [seats, setSeats] = useState<ApiBoardSeat[]>([])
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)
-  const [ticketId, setTicketId] = useState<string | null>(null)
+  const [ticketNumber, setTicketNumber] = useState<number | null>(null)
 
   useEffect(() => {
     // A failed seat load isn't fatal — the form still sends as a general
@@ -47,7 +47,7 @@ export function ContactPage() {
     setError(null)
     try {
       const result = await submitContact(form)
-      setTicketId(result.ticketId)
+      setTicketNumber(result.ticketNumber)
       setStatus('success')
       setForm({ name: '', email: '', subject: '', body: '', seatRef: '' })
     } catch {
@@ -78,7 +78,8 @@ export function ContactPage() {
               <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-center">
                 <p className="font-semibold text-emerald-800">Message sent</p>
                 <p className="mt-1 text-sm text-emerald-700">
-                  We opened ticket <span className="font-mono">{ticketId}</span> and emailed you a copy. You can follow it in the{' '}
+                  {ticketNumber ? <>Your request number is <strong>#{ticketNumber}</strong>. </> : null}
+                  We emailed you a copy. You can follow it in the{' '}
                   <a href="/support" className="underline">support area</a>.
                 </p>
                 <Button className="mt-4" variant="outline" onClick={() => setStatus('idle')}>Send another message</Button>

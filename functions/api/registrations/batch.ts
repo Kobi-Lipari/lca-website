@@ -14,6 +14,8 @@ import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { canActFor } from '../../utils/family'
 import { createCheckoutSession } from '../../utils/stripe'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
+import { sendRegistrationConfirmations } from '../../utils/registrationEmails'
+import { resolveSiteUrl } from '../../utils/site'
 
 interface BatchEntry {
   /** Omitted = the signed-in member themselves. */
@@ -218,6 +220,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     )
   }
   await db.batch(statements)
+
+  // Free entries are confirmed now; paid ones when Stripe reports payment.
+  const confirmedNow = rows.filter((r) => r.amount <= 0).map((r) => r.registrationId)
+  await sendRegistrationConfirmations(
+    context.env, resolveSiteUrl(context.env, context.request), confirmedNow,
+  )
 
   const names = rows.map((r) => r.name).join(', ')
   return jsonResponse(

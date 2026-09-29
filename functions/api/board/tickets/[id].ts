@@ -23,6 +23,8 @@ interface TicketRow {
   created_at: string
   updated_at: string
   seat_role: string | null
+  number: number | null
+  member_id: string | null
 }
 
 /**
@@ -43,7 +45,7 @@ async function loadAccessibleTicket(
   const { id } = ctx.params as { id: string }
 
   const ticket = await ctx.env.DB.prepare(
-    `SELECT t.id, t.name, t.email, t.subject, t.status, t.seat_id,
+    `SELECT t.id, t.number, t.member_id, t.name, t.email, t.subject, t.status, t.seat_id,
             t.created_at, t.updated_at, b.role AS seat_role
        FROM support_tickets t
        LEFT JOIN board_members b ON b.id = t.seat_id
@@ -166,9 +168,12 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     ...supportReplyNotificationEmail({
       name: ticket.name,
       ticketId: ticket.id,
+      ticketNumber: ticket.number,
       subject: ticket.subject,
       replyBody: text,
-      siteUrl: siteUrlFromRequest(ctx.request),
+      fromLabel: ticket.seat_role,
+      hasAccount: !!ticket.member_id,
+      siteUrl: siteUrlFromRequest(ctx.request, ctx.env),
     }),
     to: ticket.email,
   })

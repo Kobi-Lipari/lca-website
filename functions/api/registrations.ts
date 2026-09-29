@@ -3,6 +3,8 @@ import type { Env } from '../types'
 import { isResponse, requireAuthedMember } from '../utils/auth'
 import { createCheckoutSession } from '../utils/stripe'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../utils/response'
+import { sendRegistrationConfirmations } from '../utils/registrationEmails'
+import { resolveSiteUrl } from '../utils/site'
 
 interface RegistrationBody {
   tournamentId?: string
@@ -149,6 +151,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const registration = await context.env.DB.prepare(
       'SELECT * FROM registrations WHERE id = ?',
     ).bind(registrationId).first()
+
+    await sendRegistrationConfirmations(
+      context.env, resolveSiteUrl(context.env, context.request), [registrationId],
+    )
 
     return jsonResponse(
       {

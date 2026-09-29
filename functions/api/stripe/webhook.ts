@@ -3,6 +3,8 @@ import type { Env } from '../../types'
 import { jsonResponse, errorResponse } from '../../utils/response'
 import { verifyStripeSignature } from '../../utils/stripe'
 import { activateMembershipPayment } from '../../utils/membershipActivation'
+import { sendRegistrationConfirmations } from '../../utils/registrationEmails'
+import { resolveSiteUrl } from '../../utils/site'
 
 /** Re-exported so the route keeps its published surface; the implementation
  *  now lives with the activation logic that uses it. */
@@ -80,6 +82,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
               `UPDATE registrations SET payment_status = 'paid' WHERE id = ?`
             ).bind(registrationId),
           ])
+          // Inside the guard, so Stripe's retries don't send it twice.
+          await sendRegistrationConfirmations(
+            context.env, resolveSiteUrl(context.env, context.request), [registrationId],
+          )
         }
       }
       return jsonResponse({ received: true })
@@ -90,6 +96,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     // the ones not yet completed (Stripe retries, so this must be idempotent).
     if (type === 'tournament_batch') {
       if (session.id) {
+        // Which entries this delivery settles — read first, so a retry
+        // (where they're already settled) doesn't email anyone again.
+        const pending = await context.env.DB.prepare(
+          `SELECT reference_id FROM payments
+            WHERE stripe_session_id = ? AND type = 'tournament' AND status != 'completed'`
+        ).bind(session.id).all<{ reference_id: string }>()
         await context.env.DB.batch([
           context.env.DB.prepare(
             `UPDATE registrations SET payment_status = 'paid'
@@ -101,6 +113,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
               WHERE stripe_session_id = ? AND type = 'tournament' AND status != 'completed'`
           ).bind(session.payment_intent ?? null, session.id),
         ])
+        await sendRegistrationConfirmations(
+          context.env,
+          resolveSiteUrl(context.env, context.request),
+          (pending.results ?? []).map((r) => r.reference_id),
+        )
       }
       return jsonResponse({ received: true })
     }
