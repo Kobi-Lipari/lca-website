@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { ADMIN_SCROLL, LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
 import {
   getClubs,
   getCampaigns,
@@ -606,7 +606,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                 <p className="text-sm text-muted-foreground">No campaigns sent yet.</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className={`${ADMIN_SCROLL} space-y-3 pr-1`}>
                 {campaigns.map((c) => <CampaignRow key={c.id} c={c} />)}
               </div>
             )}

@@ -11,7 +11,7 @@ import { DirectorsModal } from '@/components/admin/DirectorsModal'
 import { TournamentWizard } from '@/components/admin/TournamentWizard'
 import type { ApiClubListItem, ApiTournamentListItem } from '@/lib/api'
 import { cn } from '@/lib/utils'
-import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 const STATUS: Record<string, { label: string; className: string }> = {
   upcoming: { label: 'Upcoming', className: 'bg-lca-gold/15 text-[#7a5c00] border border-lca-gold/40' },
@@ -140,7 +140,7 @@ export function TournamentList({
               Nothing upcoming right now.
             </p>
           )}
-          {current.map(row)}
+          {current.length > 0 && <div className={`${ADMIN_SCROLL} space-y-3 pr-1`}>{current.map(row)}</div>}
 
           {completed.length > 0 && (
             <div className="pt-3">
@@ -148,7 +148,7 @@ export function TournamentList({
                 className="text-sm font-medium text-lca-navy hover:underline">
                 {showCompleted ? 'Hide' : 'Show'} {completed.length} completed
               </button>
-              {showCompleted && <div className="mt-3 space-y-3">{completed.map(row)}</div>}
+              {showCompleted && <div className={`${ADMIN_SCROLL} mt-3 space-y-3 pr-1`}>{completed.map(row)}</div>}
             </div>
           )}
         </div>
