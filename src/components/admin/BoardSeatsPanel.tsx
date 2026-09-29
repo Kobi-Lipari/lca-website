@@ -18,6 +18,7 @@ import {
   type ApiSeatAssignment,
   type ApiSeatHolder,
 } from '@/lib/api'
+import { ADMIN_SCROLL } from '@/lib/brand'
 
 function formatDate(value: string | null): string {
   if (!value) return 'present'
@@ -259,7 +260,7 @@ export function BoardSeatsPanel() {
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className={`${ADMIN_SCROLL} space-y-3 pr-1`}>
         {seats.map((seat) => (
           <SeatRow
             key={seat.id}

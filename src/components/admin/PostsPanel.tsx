@@ -24,7 +24,7 @@ import {
 import { downscaleImage } from '@/lib/resizeImage'
 import { formatPostDate } from '@/lib/posts'
 import { cn } from '@/lib/utils'
-import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 const SITE = 'https://www.louisianachess.org'
 
@@ -116,7 +116,7 @@ export function PostsPanel() {
       ) : posts.length === 0 ? (
         <p className="rounded-xl border border-dashed px-6 py-10 text-center text-sm text-muted-foreground">No posts yet.</p>
       ) : (
-        <ul className="divide-y overflow-hidden rounded-xl border bg-card shadow-sm">
+        <ul className={`${ADMIN_SCROLL} divide-y rounded-xl border bg-card shadow-sm`}>
           {posts.map((p) => (
             <li key={p.id}>
               <button type="button" onClick={() => openPost(p)} className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted/30">

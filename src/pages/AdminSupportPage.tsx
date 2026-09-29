@@ -12,6 +12,7 @@ import {
   type ApiSupportTicket,
   type ApiSupportMessage,
 } from '@/lib/api'
+import { ADMIN_SCROLL } from '@/lib/brand'
 
 const statusColors: Record<string, string> = {
   open: 'bg-blue-100 text-blue-800',
@@ -186,7 +187,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className={`${ADMIN_SCROLL} space-y-2 pr-1`}>
             {displayTickets.map(ticket => (
               <button
                 key={ticket.id}

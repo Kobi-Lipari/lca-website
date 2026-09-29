@@ -14,6 +14,7 @@ import type {
 } from '@/lib/api'
 import { MEMBER_ROLES, ROLE_LABELS, type MemberRole } from '@/lib/roles'
 import { cn } from '@/lib/utils'
+import { ADMIN_SCROLL } from '@/lib/brand'
 
 // ── Members tab content (membership-focused, searchable + filterable; edit controls admin-only) ────
 
@@ -172,10 +173,10 @@ export function MembersTable({ members, admin }: {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border">
+      <div className={`${ADMIN_SCROLL} rounded-xl border`}>
         <table className="w-full min-w-[820px] text-left text-sm">
-          <thead>
-            <tr className="border-b bg-muted/50">
+          <thead className="sticky top-0 z-10 bg-muted">
+            <tr className="border-b bg-muted">
               <th className="px-3 py-2.5 font-semibold">Name</th>
               <th className="px-3 py-2.5 font-semibold">Email</th>
               <th className="px-3 py-2.5 font-semibold">Membership</th>

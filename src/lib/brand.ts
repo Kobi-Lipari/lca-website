@@ -29,3 +29,10 @@ export const LCA: Readonly<Record<'navy' | 'gold' | 'cream', string>> = {
  */
 export const GOLD_BUTTON =
   'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+
+/**
+ * Long admin lists and tables: a fixed-height box that scrolls on its own,
+ * so the horizontal scrollbar and the rest of the page stay in reach.
+ * Pair with a sticky header (`sticky top-0`) on tables.
+ */
+export const ADMIN_SCROLL = 'max-h-[70vh] overflow-auto overscroll-contain'

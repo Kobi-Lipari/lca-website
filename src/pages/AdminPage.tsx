@@ -51,7 +51,7 @@ import {
 import type { MemberRole } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 // ── Sections ─────────────────────────────────────────────────────────────────
 
@@ -505,7 +505,7 @@ function ClubsSection() {
         <>
           <Input type="search" placeholder="Search clubs by name or city…" value={search}
             onChange={(e) => setSearch(e.target.value)} className="mb-4 h-9 max-w-sm text-sm" />
-          <ul className="divide-y overflow-hidden rounded-xl border bg-card shadow-sm">
+          <ul className={`${ADMIN_SCROLL} divide-y rounded-xl border bg-card shadow-sm`}>
             {visible.map((club) => (
               <li key={club.id} className="flex items-center gap-3 px-4 py-3">
                 <span className="size-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: club.color || '#c8a94a' }} />

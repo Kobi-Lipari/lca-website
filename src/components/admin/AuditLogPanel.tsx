@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { adminGetAuditLog, type ApiAuditEntry } from '@/lib/api'
 import { ROLE_LABELS } from '@/lib/roles'
 import { cn } from '@/lib/utils'
+import { ADMIN_SCROLL } from '@/lib/brand'
 
 const FILTERS: { value: string; label: string }[] = [
   { value: '', label: 'All actions' },
@@ -182,7 +183,7 @@ export function AuditLogPanel() {
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border bg-card">
+        <div className={`${ADMIN_SCROLL} rounded-xl border bg-card`}>
           {entries.map((entry) => {
             const meta = ACTION_META[entry.action] ?? {
               label: entry.action,
