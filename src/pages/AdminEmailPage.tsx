@@ -54,6 +54,8 @@ const SITE_URL_DISPLAY = (
 /** Visual mirror of functions/utils/campaigns.ts → wrapBrandedEmail().
  *  Preview only — the actual email HTML is generated server-side. If you
  *  change the backend template's colors/spacing, update this one too. */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml: string }) {
   return (
     <div className="overflow-hidden rounded-xl border shadow-sm" style={{ background: LCA.cream }}>
@@ -152,6 +154,11 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
   const [resolvedRecipients, setResolvedRecipients] = useState<ApiCampaignRecipient[]>([])
   const [excludedIds, setExcludedIds] = useState<Set<string>>(new Set())
   const [manuallyAdded, setManuallyAdded] = useState<ApiCampaignRecipient[]>([])
+  // 'groups' = pick by role/club/status (empty = everyone), then trim.
+  // 'people' = start from nobody and add names or typed-in addresses.
+  const [mode, setMode] = useState<'groups' | 'people'>('groups')
+  // Addresses with no account behind them.
+  const [extraEmails, setExtraEmails] = useState<string[]>([])
   const [addSearch, setAddSearch] = useState('')
 
   const [sending, setSending] = useState(false)
@@ -193,18 +200,28 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
   // Final send list = whatever the filter resolved to, minus anyone X'd
   // off, plus anyone hand-picked from the individual-member search.
   const finalList = useMemo(() => {
-    const kept = resolvedRecipients.filter((r) => !excludedIds.has(r.id))
-    return [...kept, ...manuallyAdded]
-  }, [resolvedRecipients, excludedIds, manuallyAdded])
+    const kept = mode === 'people' ? [] : resolvedRecipients.filter((r) => !excludedIds.has(r.id))
+    const members = [...kept, ...manuallyAdded]
+    const onList = new Set(members.map((r) => r.email.toLowerCase()))
+    const typed = extraEmails
+      .filter((e) => !onList.has(e))
+      .map((e) => ({ id: `ext:${e}`, email: e, full_name: e }))
+    return [...members, ...typed]
+  }, [mode, resolvedRecipients, excludedIds, manuallyAdded, extraEmails])
 
   async function handlePreview() {
+    if (mode === 'people') {
+      setResolvedRecipients([])
+      setExcludedIds(new Set())
+      setConfirming(true)
+      return
+    }
     setPreviewing(true)
     setError(null)
     try {
       const { recipients } = await previewCampaignCount(currentFilter())
       setResolvedRecipients(recipients)
       setExcludedIds(new Set())
-      setManuallyAdded([])
       setAddSearch('')
       setConfirming(true)
     } catch (err) {
@@ -220,6 +237,37 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
   function removeManual(id: string) {
     setManuallyAdded((prev) => prev.filter((p) => p.id !== id))
   }
+  function removeExtra(email: string) {
+    setExtraEmails((prev) => prev.filter((e) => e !== email))
+  }
+  function addExtra(raw: string) {
+    // Accepts one address or several pasted at once (commas, spaces, lines).
+    const found = raw.split(/[\s,;]+/).map((e) => e.trim().toLowerCase()).filter((e) => EMAIL_RE.test(e))
+    if (found.length === 0) return
+    // Someone typed a member's address: add the member instead.
+    const byEmail = new Map(memberPool.map((m) => [m.email.toLowerCase(), m]))
+    const members = found.map((e) => byEmail.get(e)).filter((m): m is ApiAdminMember => !!m)
+    if (members.length) {
+      setManuallyAdded((prev) => [
+        ...prev,
+        ...members.filter((m) => !prev.some((p) => p.id === m.id)).map((m) => ({ id: m.id, email: m.email, full_name: m.full_name })),
+      ])
+    }
+    const outsiders = found.filter((e) => !byEmail.has(e))
+    setExtraEmails((prev) => [...new Set([...prev, ...outsiders])])
+    setAddSearch('')
+  }
+  /** Empties the list in one click, so a few people can be added back. */
+  function removeAll() {
+    setExcludedIds(new Set(resolvedRecipients.map((r) => r.id)))
+    setManuallyAdded([])
+    setExtraEmails([])
+  }
+  function removeFromList(r: ApiCampaignRecipient) {
+    if (r.id.startsWith('ext:')) removeExtra(r.email)
+    else if (manuallyAdded.some((m) => m.id === r.id)) removeManual(r.id)
+    else excludeFromResolved(r.id)
+  }
   function addManual(m: ApiAdminMember) {
     setManuallyAdded((prev) => [...prev, { id: m.id, email: m.email, full_name: m.full_name }])
     setAddSearch('')
@@ -233,8 +281,10 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
         subject: subject.trim(),
         bodyHtml: body,
         filter: currentFilter(),
-        excludeMemberIds: [...excludedIds],
+        excludeMemberIds: mode === 'people' ? [] : [...excludedIds],
         includeMemberIds: manuallyAdded.map((m) => m.id),
+        onlySelected: mode === 'people',
+        extraEmails,
       })
       setSubject('')
       setBody('')
@@ -242,6 +292,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
       setResolvedRecipients([])
       setExcludedIds(new Set())
       setManuallyAdded([])
+      setExtraEmails([])
       await loadHistory()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to start campaign')
@@ -268,6 +319,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
 
   const addQuery = addSearch.trim().toLowerCase()
   const finalIds = useMemo(() => new Set(finalList.map((r) => r.id)), [finalList])
+  const typedAddresses = addSearch.split(/[\s,;]+/).filter((e) => EMAIL_RE.test(e.trim()))
   const addMatches = addQuery.length >= 2
     ? memberPool
         .filter((m) => !finalIds.has(m.id))
@@ -304,6 +356,22 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
             <div className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
               <div>
                 <Label className="text-xs">Recipients</Label>
+                <div role="tablist" className="mb-2 mt-1.5 inline-flex rounded-lg border p-0.5 text-xs font-medium">
+                  {([['groups', 'Groups of members'], ['people', 'Specific people']] as const).map(([value, label]) => (
+                    <button key={value} type="button" role="tab" aria-selected={mode === value}
+                      onClick={() => { setMode(value); setConfirming(false) }}
+                      className={cn('rounded-md px-3 py-1 transition-colors',
+                        mode === value ? 'bg-lca-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                {mode === 'people' ? (
+                  <p className="text-[11px] text-muted-foreground">
+                    Start from nobody: search members by name, or type any email address, including people without an account.
+                  </p>
+                ) : (
+                <>
                 <p className="mb-2 mt-0.5 text-[11px] text-muted-foreground">
                   Leave all three at their defaults to reach everyone.
                 </p>
@@ -317,6 +385,8 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                   />
                   <MultiSelectDropdown defaultLabel="Any status" options={STATUS_OPTIONS} selected={statuses} onChange={setStatuses} />
                 </div>
+                </>
+                )}
               </div>
 
               <div>
@@ -378,11 +448,12 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                     disabled={previewing}
                     onClick={handlePreview}
                   >
-                    {previewing ? 'Resolving recipients…' : 'Review recipients'}
+                    {previewing ? 'Resolving recipients…' : mode === 'people' ? 'Choose people' : 'Review recipients'}
                   </Button>
                   <p className="text-[10px] text-muted-foreground">
-                    Shows exactly who the filters match, so you can remove anyone before sending.
-                    Nothing is sent from this step.
+                    {mode === 'people'
+                      ? 'Pick who gets it on the next step. Nothing is sent until you confirm.'
+                      : 'Shows exactly who the filters match, so you can remove anyone before sending. Nothing is sent from this step.'}
                   </p>
                 </div>
               ) : (
@@ -391,28 +462,49 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                     <Users className="size-4 text-lca-gold" />
                     This will email <span className="font-bold">{finalList.length}</span> {finalList.length === 1 ? 'person' : 'people'}.
                   </p>
+                  {mode === 'groups' && (
+                    <div className="mt-1.5 flex flex-wrap gap-3 text-[11px]">
+                      {finalList.length > 0 && (
+                        <button type="button" onClick={removeAll} className="font-medium text-lca-navy hover:underline">
+                          Remove all
+                        </button>
+                      )}
+                      {excludedIds.size > 0 && (
+                        <button type="button" onClick={() => setExcludedIds(new Set())} className="font-medium text-lca-navy hover:underline">
+                          Restore {excludedIds.size} removed
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   {/* ── Reviewable list ── */}
                   <div className="mt-3 max-h-64 overflow-y-auto rounded-lg border bg-card">
                     {finalList.length === 0 ? (
                       <p className="px-3 py-4 text-center text-xs text-muted-foreground">
-                        Nobody left to send to — add someone below or adjust the filters.
+                        {mode === 'people'
+                          ? 'Nobody yet — search for a member or type an email address below.'
+                          : 'Nobody left to send to — add someone below or adjust the filters.'}
                       </p>
                     ) : (
                       finalList.map((r) => {
-                        const isManual = manuallyAdded.some((m) => m.id === r.id)
+                        const isTyped = r.id.startsWith('ext:')
+                        const isManual = isTyped || (mode === 'groups' && manuallyAdded.some((m) => m.id === r.id))
                         return (
                           <div key={r.id} className="flex items-center justify-between gap-2 border-b border-border px-3 py-2 last:border-0">
                             <div className="min-w-0">
                               <p className="truncate text-xs font-medium text-foreground">
                                 {r.full_name}
-                                {isManual && <span className="ml-1.5 rounded-full bg-lca-gold/15 px-1.5 py-0.5 text-[9px] font-medium text-[#7a5c00]">Added</span>}
+                                {isManual && (
+                                  <span className="ml-1.5 rounded-full bg-lca-gold/15 px-1.5 py-0.5 text-[9px] font-medium text-[#7a5c00]">
+                                    {isTyped ? 'No account' : 'Added'}
+                                  </span>
+                                )}
                               </p>
-                              <p className="truncate text-[11px] text-muted-foreground">{r.email}</p>
+                              {!isTyped && <p className="truncate text-[11px] text-muted-foreground">{r.email}</p>}
                             </div>
                             <button
                               type="button"
-                              onClick={() => (isManual ? removeManual(r.id) : excludeFromResolved(r.id))}
+                              onClick={() => removeFromList(r)}
                               className="flex-shrink-0 text-muted-foreground hover:text-destructive"
                               aria-label={`Remove ${r.full_name}`}
                             >
@@ -432,10 +524,32 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                         className="h-8 pl-8 text-xs"
                         value={addSearch}
                         onChange={(e) => setAddSearch(e.target.value)}
-                        placeholder="Add someone specific by name or email…"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && typedAddresses.length > 0) { e.preventDefault(); addExtra(addSearch) }
+                        }}
+                        onPaste={(e) => {
+                          const text = e.clipboardData.getData('text')
+                          if (/[\s,;]/.test(text.trim()) && EMAIL_RE.test(text.split(/[\s,;]+/)[0] ?? '')) {
+                            e.preventDefault()
+                            addExtra(text)
+                          }
+                        }}
+                        placeholder="Add a member by name, or type / paste email addresses…"
                       />
                     </div>
-                    {addQuery.length >= 2 && (
+                    {typedAddresses.length > 0 && (
+                      <button type="button" onClick={() => addExtra(addSearch)}
+                        className="mt-1.5 flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left hover:bg-muted/50">
+                        <span className="min-w-0 truncate text-xs">
+                          Add <span className="font-medium">{typedAddresses.join(', ')}</span>
+                          {typedAddresses.every((e) => !memberPool.some((m) => m.email.toLowerCase() === e.trim().toLowerCase())) && (
+                            <span className="text-muted-foreground"> (no account)</span>
+                          )}
+                        </span>
+                        <UserPlus className="size-3.5 flex-shrink-0 text-lca-gold" />
+                      </button>
+                    )}
+                    {addQuery.length >= 2 && typedAddresses.length === 0 && (
                       addMatches.length > 0 ? (
                         <div className="mt-1.5 overflow-hidden rounded-lg border">
                           {addMatches.map((m) => (
