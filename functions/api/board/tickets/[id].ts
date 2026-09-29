@@ -168,7 +168,6 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     ...supportReplyNotificationEmail({
       name: ticket.name,
       ticketId: ticket.id,
-      ticketNumber: ticket.number,
       subject: ticket.subject,
       replyBody: text,
       fromLabel: ticket.seat_role,

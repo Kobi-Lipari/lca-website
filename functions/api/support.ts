@@ -35,7 +35,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const authed = await optionalAuthedMember(context.request, context.env)
 
-  const { ticketId, ticketNumber, seat } = await createTicket(context.env, {
+  const { ticketId, seat } = await createTicket(context.env, {
     name: body.name,
     email: body.email,
     subject: body.subject,
@@ -46,7 +46,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   })
 
   return jsonResponse(
-    { success: true, ticketId, ticketNumber, routedTo: seat?.role ?? null },
+    { success: true, ticketId, routedTo: seat?.role ?? null },
     201,
   )
 }
@@ -71,5 +71,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
      ORDER BY t.updated_at DESC`,
   ).bind(user.id, member?.email ?? '').all()
 
-  return jsonResponse({ tickets: tickets.results })
+  // Ticket numbers are for staff and board members only.
+  const visible = (tickets.results ?? []).map(({ number: _number, ...t }) => t)
+  return jsonResponse({ tickets: visible })
 }

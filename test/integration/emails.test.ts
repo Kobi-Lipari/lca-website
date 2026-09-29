@@ -31,21 +31,29 @@ async function deliver(sessionId: string, metadata: Record<string, string>) {
 const confirmations = () => emailOutbox.filter((e) => e.subject.startsWith("You're registered"))
 
 describe('ticket numbers', () => {
-  it('each new ticket gets the next number, and emails show it instead of the id', async () => {
+  it('numbers are sequential and shown to staff only, never to the person who wrote in', async () => {
     const open = async (body: Record<string, string>, handler = supportPost) => {
       const res = await invoke(handler, { method: 'POST', body })
       expect(res.status).toBe(201)
-      return res.json<{ ticketId: string; ticketNumber: number }>()
+      const json = await res.json<{ ticketId: string; ticketNumber?: number }>()
+      expect(json.ticketNumber).toBeUndefined()
+      const row = await env.DB.prepare('SELECT number FROM support_tickets WHERE id = ?')
+        .bind(json.ticketId).first<{ number: number }>()
+      return row!.number
     }
     const first = await open({ name: 'A', email: 'a@example.org', subject: 'One', body: 'x' })
     const second = await open({ name: 'B', email: 'b@example.org', subject: 'Two', body: 'y' }, contactPost)
 
-    expect(first.ticketNumber).toBeGreaterThan(1000)
-    expect(second.ticketNumber).toBe(first.ticketNumber + 1)
+    expect(first).toBeGreaterThan(1000)
+    expect(second).toBe(first + 1)
 
     const toSubmitter = emailOutbox.find((e) => e.to === 'b@example.org')!
-    expect(toSubmitter.subject).toContain(`#${second.ticketNumber}`)
-    expect(toSubmitter.html).toContain(`#${second.ticketNumber}`)
+    expect(toSubmitter.subject).not.toContain(String(second))
+    expect(toSubmitter.html).not.toContain(`Ticket: ${second}`)
+    expect(toSubmitter.html).not.toContain(`>${second}<`)
+
+    const toStaff = emailOutbox.filter((e) => e.to === 'contact@louisianachess.org').at(-1)!
+    expect(toStaff.subject.endsWith(`[Ticket: ${second}]`)).toBe(true)
     for (const e of emailOutbox) {
       expect(e.subject).not.toContain('ticket-')
       expect(e.html).not.toMatch(/>ticket-\d+/)

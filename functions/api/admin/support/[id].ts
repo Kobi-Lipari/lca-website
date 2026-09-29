@@ -83,7 +83,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const notification = supportReplyNotificationEmail({
     name: ticket.name,
     ticketId,
-    ticketNumber: ticket.number,
     subject: ticket.subject,
     replyBody: body.body,
     hasAccount: !!ticket.member_id,

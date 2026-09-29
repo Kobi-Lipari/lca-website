@@ -200,11 +200,10 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-medium text-lca-navy truncate">
-                      {ticket.number && <span className="mr-1.5 font-normal text-muted-foreground">#{ticket.number}</span>}
                       {ticket.subject}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                      {ticket.name} · {ticket.email}
+                      {ticket.number ? `Ticket: ${ticket.number} · ` : ''}{ticket.name} · {ticket.email}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
                       {ticket.last_message}
@@ -241,13 +240,10 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
               <div className="flex items-start justify-between gap-3 mb-4 pb-4 border-b">
                 <div>
                   <h3 className="font-semibold text-lca-navy">
-                    {selectedTicket.ticket.number && (
-                      <span className="mr-1.5 font-normal text-muted-foreground">#{selectedTicket.ticket.number}</span>
-                    )}
                     {selectedTicket.ticket.subject}
                   </h3>
                   <p className="text-sm text-muted-foreground mt-0.5">
-                    {selectedTicket.ticket.name} · {selectedTicket.ticket.email}
+                    {selectedTicket.ticket.number ? `Ticket: ${selectedTicket.ticket.number} · ` : ''}{selectedTicket.ticket.name} · {selectedTicket.ticket.email}
                   </p>
                 </div>
                 <span

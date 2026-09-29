@@ -37,7 +37,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // ticket, which is what lets them open it again later from /support.
   const authed = await optionalAuthedMember(context.request, context.env)
 
-  const { ticketId, ticketNumber, seat } = await createTicket(context.env, {
+  const { ticketId, seat } = await createTicket(context.env, {
     name: body.name,
     email: body.email,
     subject: body.subject,
@@ -48,7 +48,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   })
 
   return jsonResponse(
-    { success: true, ticketId, ticketNumber, routedTo: seat?.role ?? null },
+    { success: true, ticketId, routedTo: seat?.role ?? null },
     201,
   )
 }
