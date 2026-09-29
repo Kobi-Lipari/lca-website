@@ -12,11 +12,9 @@
 
 import { useEffect, useState } from 'react'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
-import { ArrowRight } from 'lucide-react'
-import { LCA } from '@/lib/brand'
+import { ArrowRight, Link2, MessageSquareText, PlayCircle } from 'lucide-react'
 
 const FACEBOOK_PAGE_URL = 'https://www.facebook.com/LouisianaChessAssociation'
-const LCA_GOLD = LCA.gold
 
 interface FacebookFeedPost {
   id: string
@@ -72,33 +70,6 @@ function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-function useColumnCount(): number {
-  const [columns, setColumns] = useState(1)
-
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 640px)')
-    function update() {
-      setColumns(mq.matches ? 3 : 1)
-    }
-    update()
-    mq.addEventListener('change', update)
-    return () => mq.removeEventListener('change', update)
-  }, [])
-
-  return columns
-}
-
-// Round-robin distribution (post 0 → col 0, post 1 → col 1, post 2 → col 2,
-// post 3 → col 0, ...) rather than letting the browser fill one column
-// top-to-bottom before starting the next. That's what guarantees the top
-// ROW is always the most recent posts, left to right — plain CSS multi-
-// column layout doesn't preserve that, it just dumps everything down
-// column 1 first.
-function distributeRoundRobin<T>(items: T[], columnCount: number): T[][] {
-  const columns: T[][] = Array.from({ length: columnCount }, () => [])
-  items.forEach((item, i) => columns[i % columnCount].push(item))
-  return columns
-}
 function useFacebookPosts(limit: number) {
   const [posts, setPosts] = useState<FacebookFeedPost[] | null>(null)
   const [error, setError] = useState(false)
@@ -130,7 +101,6 @@ interface FacebookFeedProps {
 
 export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }: FacebookFeedProps) {
   const { posts, error } = useFacebookPosts(limit)
-  const columnCount = useColumnCount()
 
   if (variant === 'compact') {
     return (
@@ -201,33 +171,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }:
         ) : posts.length === 0 ? (
           <p className="text-sm text-muted-foreground">No recent posts.</p>
         ) : (
-          <div
-            className="grid items-start gap-4"
-            style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))` }}
-          >
-            {distributeRoundRobin(posts, columnCount).map((columnPosts, colIdx) => (
-              <div key={colIdx} className="flex flex-col gap-4">
-                {columnPosts.map((post) => (
-                  <a
-                    key={post.id}
-                    href={post.permalinkUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md"
-                    style={{ borderLeftColor: LCA_GOLD, borderLeftWidth: 3 }}
-                  >
-                    {post.imageUrl && (
-                      <img src={post.imageUrl} alt="" className="block w-full" loading="lazy" />
-                    )}
-                    <div className="p-4">
-                      <p className="text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</p>
-                      <p className="mt-1.5 text-sm leading-relaxed text-lca-navy">{postText(post)}</p>
-                    </div>
-                  </a>
-                ))}
-              </div>
-            ))}
-          </div>
+          <FullFeed posts={posts} />
         )}
       </div>
 
@@ -243,4 +187,76 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }:
       </div>
     </div>
   )
+}
+// ── News page layout ────────────────────────────────────────────────────────
+//
+// Photo posts and text/link posts are laid out separately. Mixed together in
+// one grid, a two-line text post sat beside a tall photo and left a large
+// empty gap under it. Photos get even-sized cards; everything else is a
+// compact list alongside (below on phones). Both stay newest-first.
+
+function FullFeed({ posts }: { posts: FacebookFeedPost[] }) {
+  const photos = posts.filter((p) => p.imageUrl)
+  const others = posts.filter((p) => !p.imageUrl)
+
+  const photoGrid = photos.length > 0 && (
+    <div className={others.length > 0 ? 'grid gap-4 sm:grid-cols-2' : 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3'}>
+      {photos.map((post) => (
+        <a
+          key={post.id}
+          href={post.permalinkUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md"
+        >
+          <img src={post.imageUrl!} alt="" loading="lazy" className="aspect-[4/3] w-full bg-muted object-cover" />
+          <div className="flex flex-1 flex-col border-t-2 border-lca-gold p-4">
+            <p className="text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</p>
+            <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-lca-navy group-hover:underline">{postText(post)}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+  )
+
+  const list = others.length > 0 && (
+    <div>
+      {photos.length > 0 && (
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">More updates</p>
+      )}
+      <ul className="divide-y overflow-hidden rounded-xl border bg-card">
+        {others.map((post) => {
+          const Icon = kindIcon(post)
+          return (
+            <li key={post.id}>
+              <a
+                href={post.permalinkUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex gap-3 px-4 py-3 transition-colors hover:bg-muted/30"
+              >
+                <Icon className="mt-0.5 size-4 flex-shrink-0 text-lca-gold" aria-hidden="true" />
+                <span className="min-w-0">
+                  <span className="line-clamp-2 text-sm text-lca-navy group-hover:underline">{postText(post)}</span>
+                  <span className="mt-0.5 block text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</span>
+                </span>
+              </a>
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+
+  if (photoGrid && list) {
+    return <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">{photoGrid}{list}</div>
+  }
+  return <>{photoGrid || list}</>
+}
+
+function kindIcon(post: FacebookFeedPost) {
+  const host = hostOf(post.linkUrl) ?? hostOf(post.message.match(URL_RE)?.[0])
+  if (host === 'youtube.com' || host === 'youtu.be') return PlayCircle
+  if (host) return Link2
+  return MessageSquareText
 }
