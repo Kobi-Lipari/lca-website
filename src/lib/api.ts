@@ -1833,3 +1833,103 @@ export async function scanScoresheet(
   })
   return handleResponse(response)
 }
+
+// ── LCA news posts ──────────────────────────────────────────────────────────
+
+export interface ApiPost {
+  id: string
+  slug: string
+  title: string
+  summary: string
+  /** Only on the single-post and admin responses. */
+  body_html?: string
+  image_url: string | null
+  link_url: string | null
+  link_label: string | null
+  status?: 'draft' | 'published'
+  pinned: number
+  published_at: string | null
+  updated_at?: string
+}
+
+export interface ApiPostInput {
+  title?: string
+  slug?: string
+  summary?: string
+  bodyHtml?: string
+  linkUrl?: string | null
+  linkLabel?: string | null
+  status?: 'draft' | 'published'
+  pinned?: boolean
+  publishedAt?: string | null
+}
+
+export async function getPosts(limit = 20): Promise<ApiPost[]> {
+  const response = await fetch(`/api/posts?limit=${limit}`)
+  const data = await handleResponse<{ posts: ApiPost[] }>(response)
+  return data.posts
+}
+
+export async function getPost(slug: string): Promise<ApiPost> {
+  const response = await fetch(`/api/posts/${encodeURIComponent(slug)}`)
+  const data = await handleResponse<{ post: ApiPost }>(response)
+  return data.post
+}
+
+export async function adminGetPosts(): Promise<ApiPost[]> {
+  const response = await fetch('/api/admin/posts', { headers: await authHeaders() })
+  const data = await handleResponse<{ posts: ApiPost[] }>(response)
+  return data.posts
+}
+
+export async function adminGetPost(id: string): Promise<ApiPost> {
+  const response = await fetch(`/api/admin/posts/${id}`, { headers: await authHeaders() })
+  const data = await handleResponse<{ post: ApiPost }>(response)
+  return data.post
+}
+
+export async function adminCreatePost(body: ApiPostInput): Promise<ApiPost> {
+  const response = await fetch('/api/admin/posts', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ post: ApiPost }>(response)
+  return data.post
+}
+
+export async function adminUpdatePost(id: string, body: ApiPostInput): Promise<ApiPost> {
+  const response = await fetch(`/api/admin/posts/${id}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  const data = await handleResponse<{ post: ApiPost }>(response)
+  return data.post
+}
+
+export async function adminDeletePost(id: string): Promise<void> {
+  const response = await fetch(`/api/admin/posts/${id}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  await handleResponse(response)
+}
+
+export async function adminUploadPostImage(id: string, blob: Blob): Promise<{ imageUrl: string }> {
+  const headers = await authHeaders()
+  const response = await fetch(`/api/admin/posts/${id}/image`, {
+    method: 'POST',
+    headers: { ...headers, 'Content-Type': 'image/jpeg' },
+    body: blob,
+  })
+  return handleResponse(response)
+}
+
+export async function adminRemovePostImage(id: string): Promise<void> {
+  const response = await fetch(`/api/admin/posts/${id}/image`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  await handleResponse(response)
+}
