@@ -42,6 +42,6 @@ describe('resolveSiteUrl', () => {
 
   it('builds an absolute logo URL for mail clients', () => {
     expect(emailLogoUrl({ SITE_URL: 'https://louisianachess.org' }))
-      .toBe('https://louisianachess.org/lca-logo.jpg')
+      .toBe('https://louisianachess.org/email-logo.jpg')
   })
 })
