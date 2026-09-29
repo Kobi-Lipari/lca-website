@@ -35,7 +35,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     `SELECT * FROM support_messages WHERE ticket_id = ? ORDER BY created_at ASC`,
   ).bind(ticketId).all()
 
-  return jsonResponse({ ticket, messages: messages.results })
+  // Ticket numbers are for staff and board members only.
+  const { number: _number, ...visible } = ticket as Record<string, unknown>
+  return jsonResponse({ ticket: visible, messages: messages.results })
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {

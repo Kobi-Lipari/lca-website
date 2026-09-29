@@ -254,9 +254,10 @@ export function attendeeReminderEmail(data: {
   const t = data.tournament
   const when = formatEventDate(t.date, t.endDate)
   const timeLabel = data.daysUntil === 1 ? 'tomorrow' : `in ${data.daysUntil} days`
+  const seeYou = data.daysUntil === 1 ? 'tomorrow' : `on ${formatEventDate(t.date).split(',').slice(0, 2).join(',')}`
   return {
     to: '',
-    subject: `${t.name} is ${timeLabel}`,
+    subject: `See you ${seeYou} at ${t.name}`,
     html: renderEmail({
       siteUrl: data.siteUrl,
       heading: `See you ${data.daysUntil === 1 ? 'tomorrow' : 'soon'}`,
@@ -287,7 +288,7 @@ export function tournamentAnnouncementEmail(data: {
       heading: data.subject,
       preheader: `An update about ${data.tournamentName}`,
       body: p(`An update from the director of <strong>${escapeHtml(data.tournamentName)}</strong>:`) +
-        emailQuote(data.message),
+        emailQuote(data.message, 'Message from the director'),
       cta: { label: 'Tournament page', url: data.tournamentUrl },
       footerNote: "You're getting this because you're entered in this tournament. Questions? Just reply to this email.",
     }),
@@ -296,41 +297,48 @@ export function tournamentAnnouncementEmail(data: {
 }
 
 // ── Support tickets ──────────────────────────────────────────────
+//
+// Ticket numbers are for staff and board members only. Emails to the person
+// who wrote in never show one; staff emails show "Ticket: 1042" in the
+// details and at the END of the subject line.
 
-/** To the person who wrote in: we have it, here's your number. */
+/** To the person who wrote in: we have it, and who will answer. */
 export function supportTicketConfirmationEmail(data: {
   siteUrl: string
   name: string
   ticketId: string
-  ticketNumber: number | null
   subject: string
   body?: string
   /** e.g. "Scholastic Director" — omitted for general inquiries. */
   seatLabel?: string | null
-  /** Signed-in submitters can follow the ticket on the site. */
+  /** Signed-in submitters can follow the conversation on the site. */
   hasAccount: boolean
 }): EmailMessage {
-  const ref = ticketRef(data.ticketNumber)
   const routed = data.seatLabel
     ? `It has gone to our <strong>${escapeHtml(data.seatLabel)}</strong>, who will get back to you.`
     : 'Someone from the association will get back to you.'
   return {
     to: '',
-    subject: ref ? `We got your message (${ref})` : 'We got your message',
+    subject: 'We got your message',
     html: renderEmail({
       siteUrl: data.siteUrl,
       heading: 'Thanks, we got your message',
-      preheader: ref ? `Your request number is ${ref}.` : undefined,
+      preheader: `About: ${data.subject}`,
       body: hi(data.name) + p(routed) +
-        emailDetails([['Request', ref || null], ['Subject', data.subject]]) +
-        (data.body ? emailQuote(data.body) : '') +
+        emailDetails([['Subject', data.subject]]) +
+        (data.body ? emailQuote(data.body, 'Your message') : '') +
         p(data.hasAccount
           ? 'You can follow the conversation and reply on the site.'
           : 'To add anything, just reply to this email.'),
-      cta: data.hasAccount ? { label: 'View your request', url: memberTicketUrl(data.siteUrl, data.ticketId) } : undefined,
+      cta: data.hasAccount ? { label: 'View the conversation', url: memberTicketUrl(data.siteUrl, data.ticketId) } : undefined,
     }),
-    text: `Hi ${firstName(data.name)},\n\nThanks, we got your message${ref ? ` (request ${ref})` : ''}: "${data.subject}".\n${data.seatLabel ? `It has gone to our ${data.seatLabel}.` : 'Someone will get back to you.'}\n\n${data.hasAccount ? `Follow it here: ${memberTicketUrl(data.siteUrl, data.ticketId)}` : 'To add anything, just reply to this email.'}\n\n— Louisiana Chess Association`,
+    text: `Hi ${firstName(data.name)},\n\nThanks, we got your message: "${data.subject}".\n${data.seatLabel ? `It has gone to our ${data.seatLabel}.` : 'Someone will get back to you.'}\n\n${data.hasAccount ? `Follow it here: ${memberTicketUrl(data.siteUrl, data.ticketId)}` : 'To add anything, just reply to this email.'}\n\n— Louisiana Chess Association`,
   }
+}
+
+/** " [Ticket: 1042]" for the end of a staff subject line. */
+function subjectTag(number: number | null): string {
+  return number ? ` [${ticketRef(number)}]` : ''
 }
 
 /**
@@ -356,21 +364,22 @@ export function staffTicketNotificationEmail(data: {
   return {
     to: '',
     replyTo: data.email,
-    subject: `${ref ? `${ref} ` : ''}${data.subject} (from ${data.name})`,
+    subject: `${data.subject} (from ${data.name})${subjectTag(data.ticketNumber)}`,
     html: renderEmail({
       siteUrl: data.siteUrl,
-      heading: `New message${ref ? ` ${ref}` : ''}`,
+      heading: 'New message',
       preheader: `${data.name}: ${data.subject}`,
       body: emailDetails([
+        ['Ticket', data.ticketNumber ? String(data.ticketNumber) : null],
         ['From', `${data.name} <${data.email}>`],
         ['For', forLine],
         ['Subject', data.subject],
-      ]) + emailQuote(data.body),
+      ]) + emailQuote(data.body, 'Their message'),
       cta: { label: 'Reply on the site', url },
-      ctaNote: 'Replying on the site keeps the answer with the request, where the next person in the role can find it. If you answer from your inbox instead, paste it into the request with "Log an email".',
+      ctaNote: 'Replying on the site keeps the answer with the ticket, where the next person in the role can find it. If you answer from your inbox instead, paste it into the ticket with "Log an email".',
       footerNote: `Replying to this email goes straight to ${escapeHtml(data.name)}.`,
     }),
-    text: `New message ${ref} for ${forLine}\nFrom: ${data.name} <${data.email}>\nSubject: ${data.subject}\n\n${data.body}\n\nReply on the site: ${url}`,
+    text: `New message for ${forLine}${ref ? ` (${ref})` : ''}\nFrom: ${data.name} <${data.email}>\nSubject: ${data.subject}\n\n${data.body}\n\nReply on the site: ${url}`,
   }
 }
 
@@ -391,20 +400,20 @@ export function boardSeatNotificationEmail(data: {
   return {
     to: '',
     replyTo: data.fromEmail,
-    subject: `${ref ? `${ref} ` : ''}${data.subject} (for the ${data.seatLabel})`,
+    subject: `${data.subject} (for the ${data.seatLabel})${subjectTag(data.ticketNumber)}`,
     html: renderEmail({
       siteUrl: data.siteUrl,
       heading: `A message for the ${data.seatLabel}`,
       preheader: `${data.fromName}: ${data.subject}`,
       body: hi(data.holderName) +
-        p(`Someone contacted you through the LCA website.`) +
+        p('Someone contacted you through the LCA website.') +
         emailDetails([
-          ['Request', ref || null],
+          ['Ticket', data.ticketNumber ? String(data.ticketNumber) : null],
           ['From', `${data.fromName} <${data.fromEmail}>`],
           ['Subject', data.subject],
-        ]) + emailQuote(data.body),
+        ]) + emailQuote(data.body, 'Their message'),
       cta: { label: 'Reply in your board inbox', url },
-      ctaNote: `Answering there keeps the conversation with the ${escapeHtml(data.seatLabel)} role, so whoever holds it after you can see it. If you reply from your own email, paste it into the request afterwards with "Log an email".`,
+      ctaNote: `Answering there keeps the conversation with the ${escapeHtml(data.seatLabel)} role, so whoever holds it after you can see it. If you reply from your own email, paste it into the ticket afterwards with "Log an email".`,
       footerNote: `Replying to this email goes straight to ${escapeHtml(data.fromName)}.`,
     }),
     text: `Hi ${firstName(data.holderName)},\n\nA message for the ${data.seatLabel}${ref ? ` (${ref})` : ''} from ${data.fromName} <${data.fromEmail}>:\n\n${data.subject}\n\n${data.body}\n\nReply in your board inbox: ${url}`,
@@ -416,29 +425,27 @@ export function supportReplyNotificationEmail(data: {
   siteUrl: string
   name: string
   ticketId: string
-  ticketNumber: number | null
   subject: string
   replyBody: string
   /** e.g. "Scholastic Director"; defaults to the association. */
   fromLabel?: string | null
   hasAccount: boolean
 }): EmailMessage {
-  const ref = ticketRef(data.ticketNumber)
   const from = data.fromLabel ? `Our ${escapeHtml(data.fromLabel)}` : 'The Louisiana Chess Association'
   return {
     to: '',
-    subject: `Re: ${data.subject}${ref ? ` (${ref})` : ''}`,
+    subject: `Re: ${data.subject}`,
     html: renderEmail({
       siteUrl: data.siteUrl,
       heading: 'You have a reply',
       preheader: data.replyBody.slice(0, 120),
       body: hi(data.name) +
-        p(`${from} replied to your message <strong>“${escapeHtml(data.subject)}”</strong>${ref ? ` (${ref})` : ''}:`) +
-        emailQuote(data.replyBody),
+        p(`${from} replied to your message <strong>“${escapeHtml(data.subject)}”</strong>.`) +
+        emailQuote(data.replyBody, data.fromLabel ? `Reply from the ${data.fromLabel}` : 'Our reply'),
       cta: data.hasAccount ? { label: 'View the conversation', url: memberTicketUrl(data.siteUrl, data.ticketId) } : undefined,
       footerNote: 'To answer, just reply to this email.',
     }),
-    text: `Hi ${firstName(data.name)},\n\n${data.fromLabel ? `Our ${data.fromLabel}` : 'The Louisiana Chess Association'} replied to "${data.subject}"${ref ? ` (${ref})` : ''}:\n\n${data.replyBody}\n\n${data.hasAccount ? `View the conversation: ${memberTicketUrl(data.siteUrl, data.ticketId)}\n\n` : ''}To answer, just reply to this email.`,
+    text: `Hi ${firstName(data.name)},\n\n${data.fromLabel ? `Our ${data.fromLabel}` : 'The Louisiana Chess Association'} replied to "${data.subject}":\n\n${data.replyBody}\n\n${data.hasAccount ? `View the conversation: ${memberTicketUrl(data.siteUrl, data.ticketId)}\n\n` : ''}To answer, just reply to this email.`,
   }
 }
 
@@ -457,15 +464,19 @@ export function memberFollowUpStaffEmail(data: {
   return {
     to: '',
     replyTo: data.email,
-    subject: `Re: ${ref ? `${ref} ` : ''}${data.subject} (from ${data.name})`,
+    subject: `Re: ${data.subject} (from ${data.name})${subjectTag(data.ticketNumber)}`,
     html: renderEmail({
       siteUrl: data.siteUrl,
-      heading: `${data.name} replied${ref ? ` on ${ref}` : ''}`,
+      heading: `${data.name} replied`,
       preheader: data.body.slice(0, 120),
-      body: emailDetails([['From', `${data.name} <${data.email}>`], ['Subject', data.subject]]) + emailQuote(data.body),
-      cta: { label: 'Open the request', url },
+      body: emailDetails([
+        ['Ticket', data.ticketNumber ? String(data.ticketNumber) : null],
+        ['From', `${data.name} <${data.email}>`],
+        ['Subject', data.subject],
+      ]) + emailQuote(data.body, 'Their reply'),
+      cta: { label: 'Open the ticket', url },
       footerNote: `Replying to this email goes straight to ${escapeHtml(data.name)}.`,
     }),
-    text: `${data.name} replied${ref ? ` on ${ref}` : ''} "${data.subject}":\n\n${data.body}\n\nOpen: ${url}`,
+    text: `${data.name} replied${ref ? ` (${ref})` : ''} on "${data.subject}":\n\n${data.body}\n\nOpen: ${url}`,
   }
 }

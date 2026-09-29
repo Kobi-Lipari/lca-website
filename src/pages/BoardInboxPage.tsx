@@ -303,10 +303,9 @@ export function BoardInboxPage() {
                         </span>
                       </div>
                       <p className="mt-1 truncate text-sm font-medium text-lca-navy">
-                        {t.number && <span className="mr-1.5 font-normal text-muted-foreground">#{t.number}</span>}
                         {t.subject}
                       </p>
-                      <p className="truncate text-xs text-muted-foreground">{t.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">{t.number ? `Ticket: ${t.number} · ` : ''}{t.name}</p>
                       {(waiting || t.seat_holder_count === 0) && (
                         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                           {waiting && (
@@ -337,10 +336,9 @@ export function BoardInboxPage() {
                         </p>
                         <h2 className="mt-0.5 font-bold text-lca-navy">
                           {selected.subject}
-                          {selected.number && <span className="ml-1.5 font-normal text-muted-foreground">#{selected.number}</span>}
                         </h2>
                         <p className="mt-0.5 text-xs text-muted-foreground">
-                          {selected.name} · {selected.email}
+                          {selected.number ? `Ticket: ${selected.number} · ` : ''}{selected.name} · {selected.email}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">

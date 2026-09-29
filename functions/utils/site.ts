@@ -43,5 +43,5 @@ export function resolveSiteUrl(env: SiteEnv, request?: Request): string {
 /** The logo used by the branded email templates. Must be absolute: it is
  *  loaded by a mail client that has no notion of the site's base URL. */
 export function emailLogoUrl(env: SiteEnv, request?: Request): string {
-  return `${resolveSiteUrl(env, request)}/lca-logo.jpg`
+  return `${resolveSiteUrl(env, request)}/email-logo.jpg`
 }

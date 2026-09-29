@@ -41,9 +41,12 @@ export function escapeHtml(s: string): string {
     .replace(/'/g, '&#39;')
 }
 
-/** "#1042", or '' for a ticket from before numbers existed. */
+/**
+ * "Ticket: 1042", or '' for a ticket from before numbers existed.
+ * Staff and board only: never put this in an email to the person who wrote in.
+ */
 export function ticketRef(number: number | null | undefined): string {
-  return number ? `#${number}` : ''
+  return number ? `Ticket: ${number}` : ''
 }
 
 /**
@@ -102,9 +105,17 @@ export function emailDetails(rows: Array<[string, string | null | undefined]>): 
 </table>`
 }
 
-/** Someone's message, quoted. Plain text in, line breaks kept. */
-export function emailQuote(text: string): string {
-  return `<div style="margin:4px 0 20px;padding:12px 16px;border-left:3px solid ${GOLD};background:#faf9f5;font-family:${SANS};font-size:15px;line-height:1.6;color:${INK};white-space:pre-line;">${escapeHtml(text)}</div>`
+/**
+ * Someone's message, set apart as a labelled box so it is obvious which part
+ * of the email is the message itself. Plain text in, line breaks kept.
+ */
+export function emailQuote(text: string, label = 'Message'): string {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 20px;border:1px solid #e6e1d3;border-radius:10px;border-collapse:separate;">
+  <tr><td style="padding:10px 16px 0;font-family:${SANS};font-size:11px;font-weight:bold;letter-spacing:.08em;text-transform:uppercase;color:${MUTED};">${escapeHtml(label)}</td></tr>
+  <tr><td style="padding:6px 16px 14px;">
+    <div style="padding:2px 0 2px 14px;border-left:3px solid ${GOLD};font-family:${SANS};font-size:15px;line-height:1.6;color:${INK};white-space:pre-line;">${escapeHtml(text)}</div>
+  </td></tr>
+</table>`
 }
 
 /** A paragraph in the house style. Already-safe HTML in. */
@@ -150,7 +161,7 @@ export function renderEmail(layout: EmailLayout): string {
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e0ddd5;">
           <tr>
             <td style="background-color:${NAVY};padding:28px 40px;text-align:center;">
-              <a href="${siteUrl}"><img src="${siteUrl}/lca-logo.jpg" alt="Louisiana Chess Association" width="140" style="display:block;margin:0 auto;border:0;border-radius:8px;"></a>
+              <a href="${siteUrl}"><img src="${siteUrl}/email-logo.jpg" alt="Louisiana Chess Association" width="140" style="display:block;margin:0 auto;border:0;border-radius:8px;"></a>
             </td>
           </tr>
           <tr>

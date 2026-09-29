@@ -181,7 +181,6 @@ export async function createTicket(
     ...supportTicketConfirmationEmail({
       name: input.name,
       ticketId,
-      ticketNumber,
       subject: input.subject,
       body: input.body,
       seatLabel,
