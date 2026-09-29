@@ -413,3 +413,68 @@ describe('campaigns: failure handling', () => {
     expect((await campaignRow(campaignId))!.status).toBe('completed')
   })
 })
+
+describe('emailing a few specific people', () => {
+  it('onlySelected sends to the picked members only, not the whole list', async () => {
+    await clearCampaigns()
+    const admin = await seedAdmin()
+    const [picked] = await seedRecipients(1, 'picked-only-')
+    await seedRecipients(3, 'not-picked-')
+
+    const res = await invoke(campaignsPost, {
+      method: 'POST', as: admin,
+      body: { subject: 'Hi', bodyHtml: '<p>Hello</p>', filter: {}, onlySelected: true, includeMemberIds: [picked] },
+    })
+    expect(res.status).toBe(201)
+    const { totalRecipients } = await res.json<{ totalRecipients: number }>()
+    expect(totalRecipients).toBe(1)
+  })
+
+  it('can email addresses that have no account, without duplicating members', async () => {
+    await clearCampaigns()
+    const admin = await seedAdmin()
+    const [member] = await seedRecipients(1, 'typed-member-')
+
+    const res = await invoke(campaignsPost, {
+      method: 'POST', as: admin,
+      body: {
+        subject: 'Hi', bodyHtml: '<p>Hello</p>', filter: {}, onlySelected: true,
+        includeMemberIds: [member],
+        // One brand-new address (twice, in different case) and the member's own address typed in.
+        extraEmails: ['Parent@Example.org', 'parent@example.org', 'typed-member-0@campaign.lca.invalid'],
+      },
+    })
+    expect(res.status).toBe(201)
+    const { campaignId, totalRecipients } = await res.json<{ campaignId: string; totalRecipients: number }>()
+    expect(totalRecipients).toBe(2)
+
+    const { results } = await env.DB.prepare(
+      'SELECT member_id, email FROM email_campaign_recipients WHERE campaign_id = ? ORDER BY email',
+    ).bind(campaignId).all<{ member_id: string | null; email: string }>()
+    expect(results).toEqual([
+      { member_id: null, email: 'parent@example.org' },
+      { member_id: member, email: 'typed-member-0@campaign.lca.invalid' },
+    ])
+
+    await flushWaitUntil()
+    expect(emailOutbox.map((e) => e.to)).toContain('parent@example.org')
+  })
+
+  it('rejects a malformed typed-in address', async () => {
+    const admin = await seedAdmin()
+    const res = await invoke(campaignsPost, {
+      method: 'POST', as: admin,
+      body: { subject: 'Hi', bodyHtml: '<p>Hello</p>', onlySelected: true, extraEmails: ['not-an-email'] },
+    })
+    expect(res.status).toBe(400)
+  })
+
+  it('refuses to send when nobody was picked', async () => {
+    const admin = await seedAdmin()
+    const res = await invoke(campaignsPost, {
+      method: 'POST', as: admin,
+      body: { subject: 'Hi', bodyHtml: '<p>Hello</p>', filter: {}, onlySelected: true },
+    })
+    expect(res.status).toBe(400)
+  })
+})

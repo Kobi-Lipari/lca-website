@@ -1430,6 +1430,10 @@ export async function createCampaign(payload: {
   filter: CampaignFilter
   excludeMemberIds?: string[]
   includeMemberIds?: string[]
+  /** Only the hand-picked people and typed-in addresses; ignore the filter. */
+  onlySelected?: boolean
+  /** Addresses that don't have an account. */
+  extraEmails?: string[]
 }): Promise<{ campaignId: string; totalRecipients: number; status: string }> {
   const response = await fetch('/api/admin/campaigns', {
     method: 'POST',

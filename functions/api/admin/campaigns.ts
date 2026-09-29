@@ -17,7 +17,20 @@ interface CreateCampaignBody {
   excludeMemberIds?: string[]
   /** Member IDs to add on top of the filter-resolved list (picked individually, may not match the filter at all). */
   includeMemberIds?: string[]
+  /**
+   * Send only to the people picked by hand (includeMemberIds + extraEmails),
+   * ignoring the filter. Without this an empty filter means "everyone", so
+   * emailing three people would otherwise mean starting from the whole list.
+   */
+  onlySelected?: boolean
+  /** Addresses with no account behind them (not members yet). */
+  extraEmails?: string[]
 }
+
+const MAX_EXTRA_EMAILS = 200
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+type CampaignRecipient = ResolvedRecipient | { id: null; email: string; full_name: string }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -45,12 +58,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const filter = body.filter ?? {}
-  let recipients = await resolveRecipients(context.env.DB, filter)
+  let recipients: CampaignRecipient[] = body.onlySelected
+    ? []
+    : await resolveRecipients(context.env.DB, filter)
 
   // Drop anyone the admin X'd off in the review step.
   if (body.excludeMemberIds?.length) {
     const excludeSet = new Set(body.excludeMemberIds)
-    recipients = recipients.filter((r) => !excludeSet.has(r.id))
+    recipients = recipients.filter((r) => r.id === null || !excludeSet.has(r.id))
   }
 
   // Add anyone hand-picked via the individual-member search, even if they
@@ -67,8 +82,28 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
   }
 
+  // Addresses typed in by hand. An address that already belongs to someone
+  // on the list is skipped rather than emailed twice.
+  const extras = [...new Set((body.extraEmails ?? []).map((e) => e.trim().toLowerCase()).filter(Boolean))]
+  if (extras.length > MAX_EXTRA_EMAILS) {
+    return errorResponse(`At most ${MAX_EXTRA_EMAILS} typed-in addresses per email`, 400)
+  }
+  const invalid = extras.filter((e) => !EMAIL_RE.test(e))
+  if (invalid.length > 0) {
+    return errorResponse(`Not a valid email address: ${invalid.slice(0, 3).join(', ')}`, 400)
+  }
+  const onList = new Set(recipients.map((r) => r.email.trim().toLowerCase()))
+  for (const email of extras) {
+    if (onList.has(email)) continue
+    onList.add(email)
+    recipients.push({ id: null, email, full_name: email })
+  }
+
   if (recipients.length === 0) {
-    return errorResponse('No members match that filter — nothing would be sent', 400)
+    return errorResponse(
+      body.onlySelected ? 'Add at least one person to send to' : 'No members match that filter — nothing would be sent',
+      400,
+    )
   }
 
   const campaignId = `campaign-${Date.now().toString(36)}`
@@ -80,6 +115,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     ...filter,
     excludedCount: body.excludeMemberIds?.length ?? 0,
     manuallyAddedCount: body.includeMemberIds?.length ?? 0,
+    onlySelected: !!body.onlySelected,
+    typedInCount: extras.length,
   }
 
   await context.env.DB.prepare(
@@ -95,10 +132,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   for (let i = 0; i < recipients.length; i += CHUNK) {
     const chunk = recipients.slice(i, i + CHUNK)
     await context.env.DB.batch(
-      chunk.map((r) =>
+      chunk.map((r, j) =>
         context.env.DB.prepare(
           `INSERT INTO email_campaign_recipients (id, campaign_id, member_id, email) VALUES (?, ?, ?, ?)`,
-        ).bind(`rcpt-${campaignId}-${r.id}`, campaignId, r.id, r.email),
+        ).bind(`rcpt-${campaignId}-${r.id ?? `ext-${i + j}`}`, campaignId, r.id, r.email),
       ),
     )
   }
