@@ -1,6 +1,7 @@
 // functions/utils/campaigns.ts
-import { DEFAULT_FROM } from './email'
-import { emailLogoUrl, resolveSiteUrl, type SiteEnv } from './site'
+import { DEFAULT_FROM, DEFAULT_REPLY_TO } from './email'
+import { renderEmail } from './emailLayout'
+import { resolveSiteUrl, type SiteEnv } from './site'
 
 /**
  * The bindings the campaign send path needs.
@@ -13,6 +14,7 @@ export interface CampaignEnv extends SiteEnv {
   DB: D1Database
   RESEND_API_KEY: string
   FROM_EMAIL?: string
+  REPLY_TO_EMAIL?: string
 }
 
 export interface CampaignFilter {
@@ -103,92 +105,21 @@ async function resolveRecipientRows(
   return results ?? []
 }
 
-// ── Branded template (matches the Supabase auth-email style) ─────────────────
-// Table-based markup for email-client compatibility, navy header with logo,
-// gold divider, Georgia serif heading, Arial body. Unlike the auth templates
-// this is modeled on, there's no fixed CTA button — group email has no single
-// canonical action the way "reset password" does, so the admin's own message
-// (including any links they add via the editor) renders directly in the body.
-// Reintroduces some of the visual signals (colored header, embedded image)
-// that the earlier plain version deliberately avoided for inbox placement —
-// a deliberate tradeoff, not an oversight; worth retesting placement after
-// this change since bulk sending pattern matters as much as content style.
+// ── Branded template ─────────────────────────────────────────────────────────
+// Group email uses the same layout as every other email the site sends
+// (utils/emailLayout). There's no fixed button: the admin's own message,
+// including any links they add in the editor, is the body.
 
 export function wrapBrandedEmail(
   env: SiteEnv,
   subject: string,
   bodyHtml: string,
 ): string {
-  const safeSubject = escapeHtmlAttr(subject)
-  const siteUrl = resolveSiteUrl(env)
-  const logoUrl = emailLogoUrl(env)
-  return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>${safeSubject}</title>
-  <style>
-    .lca-body p { margin: 0 0 16px; }
-    .lca-body ul, .lca-body ol { margin: 0 0 16px; padding-left: 20px; }
-    .lca-body a { color: #c8a94a; text-decoration: underline; }
-  </style>
-</head>
-<body style="margin:0;padding:0;background-color:#f4f4f0;font-family:Georgia,serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f0;padding:40px 20px;">
-    <tr>
-      <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e0ddd5;">
-
-          <!-- Header -->
-          <tr>
-            <td style="background-color:#1a2744;padding:32px 40px;text-align:center;">
-              <img src="${logoUrl}" alt="Louisiana Chess Association" width="160" style="display:block;margin:0 auto;border-radius:8px;">
-            </td>
-          </tr>
-
-          <!-- Gold bar -->
-          <tr>
-            <td style="background-color:#c8a94a;height:4px;font-size:0;line-height:0;">&nbsp;</td>
-          </tr>
-
-          <!-- Body -->
-          <tr>
-            <td style="padding:40px 40px 32px;">
-              <h1 style="margin:0 0 16px;font-size:24px;color:#1a2744;font-family:Georgia,serif;">${safeSubject}</h1>
-              <div class="lca-body" style="font-size:16px;color:#444;line-height:1.6;font-family:Arial,sans-serif;">
-                ${bodyHtml}
-              </div>
-            </td>
-          </tr>
-
-          <!-- Footer -->
-          <tr>
-            <td style="background-color:#f4f4f0;border-top:1px solid #e0ddd5;padding:24px 40px;text-align:center;">
-              <p style="margin:0 0 4px;font-size:12px;color:#999;font-family:Arial,sans-serif;">Louisiana Chess Association</p>
-              <p style="margin:0;font-size:12px;font-family:Arial,sans-serif;">
-                <a href="${siteUrl}" style="color:#1a2744;text-decoration:none;">${siteLabel(siteUrl)}</a>
-                &nbsp;·&nbsp;
-                <a href="mailto:support@louisianachess.org" style="color:#1a2744;text-decoration:none;">support@louisianachess.org</a>
-              </p>
-            </td>
-          </tr>
-
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`
-}
-
-/** "https://louisianachess.org" → "louisianachess.org", for link text. */
-function siteLabel(url: string): string {
-  return url.replace(/^https?:\/\//, '')
-}
-
-function escapeHtmlAttr(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  return renderEmail({
+    siteUrl: resolveSiteUrl(env),
+    heading: subject,
+    body: bodyHtml,
+  })
 }
 
 // ── Sending ───────────────────────────────────────────────────────────────────
@@ -243,7 +174,15 @@ async function sendViaResend(
         Authorization: `Bearer ${env.RESEND_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ from: `LCA <${env.FROM_EMAIL ?? DEFAULT_FROM}>`, to, subject, html }),
+      // reply_to matters: the From address has no mailbox behind it, so
+      // without it every reply to a group email was lost.
+      body: JSON.stringify({
+        from: `Louisiana Chess Association <${env.FROM_EMAIL ?? DEFAULT_FROM}>`,
+        reply_to: [env.REPLY_TO_EMAIL ?? DEFAULT_REPLY_TO],
+        to,
+        subject,
+        html,
+      }),
     })
     if (res.ok) return { ok: true }
 

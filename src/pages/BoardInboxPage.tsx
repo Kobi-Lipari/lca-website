@@ -80,6 +80,10 @@ export function BoardInboxPage() {
         if (cancelled) return
         setTickets(data.tickets)
         setIsAdmin(!!data.isAdmin)
+        // Links in notification emails open the message directly.
+        const linked = new URLSearchParams(window.location.search).get('ticket')
+        const match = linked ? data.tickets.find((t) => t.id === linked) : undefined
+        if (match) void openTicket(match)
       })
       .catch(() => { if (!cancelled) setDenied(true) })
       .finally(() => { if (!cancelled) setLoading(false) })
@@ -298,7 +302,10 @@ export function BoardInboxPage() {
                           {STATUS_LABEL[t.status] ?? t.status}
                         </span>
                       </div>
-                      <p className="mt-1 truncate text-sm font-medium text-lca-navy">{t.subject}</p>
+                      <p className="mt-1 truncate text-sm font-medium text-lca-navy">
+                        {t.number && <span className="mr-1.5 font-normal text-muted-foreground">#{t.number}</span>}
+                        {t.subject}
+                      </p>
                       <p className="truncate text-xs text-muted-foreground">{t.name}</p>
                       {(waiting || t.seat_holder_count === 0) && (
                         <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -328,7 +335,10 @@ export function BoardInboxPage() {
                         <p className="text-[11px] font-semibold uppercase tracking-wide text-lca-navy">
                           {selected.seat_role}
                         </p>
-                        <h2 className="mt-0.5 font-bold text-lca-navy">{selected.subject}</h2>
+                        <h2 className="mt-0.5 font-bold text-lca-navy">
+                          {selected.subject}
+                          {selected.number && <span className="ml-1.5 font-normal text-muted-foreground">#{selected.number}</span>}
+                        </h2>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           {selected.name} · {selected.email}
                         </p>

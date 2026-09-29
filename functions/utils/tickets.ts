@@ -11,6 +11,7 @@ import {
   supportTicketConfirmationEmail,
   boardSeatNotificationEmail,
 } from './email'
+import { resolveSiteUrl, type SiteEnv } from './site'
 
 export interface SeatRow {
   id: string
@@ -71,12 +72,12 @@ export async function getSeatHolders(
 }
 
 /**
- * Absolute origin for links in outbound email. Taken from the request rather
- * than an env var so it's correct on the live domain, on *.pages.dev, and on
- * preview branches without anything to configure.
+ * Absolute origin for links in outbound email: the configured SITE_URL,
+ * falling back to the request's origin (see resolveSiteUrl). Links must
+ * point at the canonical site, not whichever preview URL the form was on.
  */
-export function siteUrlFromRequest(request: Request): string {
-  return new URL(request.url).origin
+export function siteUrlFromRequest(request: Request, env?: SiteEnv): string {
+  return resolveSiteUrl(env ?? {}, request)
 }
 
 export interface CreateTicketInput {
@@ -94,6 +95,8 @@ export interface CreateTicketInput {
 
 export interface CreateTicketResult {
   ticketId: string
+  /** The short number people see, e.g. 1042 for "#1042". */
+  ticketNumber: number | null
   seat: SeatRow | null
   holders: SeatHolder[]
 }
@@ -109,11 +112,15 @@ export async function createTicket(
   const messageId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
   const memberId = input.memberId ?? null
 
-  await env.DB.batch([
+  // The number is taken inside the INSERT itself, so two tickets opened at
+  // the same moment can't be handed the same one (D1 runs statements one at
+  // a time, and the unique index would catch it regardless).
+  const results = await env.DB.batch([
     env.DB.prepare(
       `INSERT INTO support_tickets
-         (id, member_id, name, email, subject, seat_id)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+         (id, number, member_id, name, email, subject, seat_id)
+       SELECT ?, COALESCE(MAX(number), 1000) + 1, ?, ?, ?, ?, ?
+         FROM support_tickets`,
     ).bind(ticketId, memberId, input.name, input.email, input.subject, seat?.id ?? null),
     env.DB.prepare(
       `INSERT INTO support_messages
@@ -126,7 +133,9 @@ export async function createTicket(
       memberId ? 'member' : 'guest',
       input.body,
     ),
+    env.DB.prepare('SELECT number FROM support_tickets WHERE id = ?').bind(ticketId),
   ])
+  const ticketNumber = (results[2]?.results?.[0] as { number: number | null } | undefined)?.number ?? null
 
   const seatLabel = seat?.role ?? null
   const holderNames = holders.map((h) => h.full_name).join(' & ')
@@ -137,6 +146,7 @@ export async function createTicket(
   await trySendEmail(env, {
     ...staffTicketNotificationEmail({
       ticketId,
+      ticketNumber,
       name: input.name,
       email: input.email,
       subject: input.subject,
@@ -156,6 +166,7 @@ export async function createTicket(
         holderName: holder.full_name,
         seatLabel: seat?.role ?? '',
         ticketId,
+        ticketNumber,
         subject: input.subject,
         body: input.body,
         fromName: input.name,
@@ -170,12 +181,15 @@ export async function createTicket(
     ...supportTicketConfirmationEmail({
       name: input.name,
       ticketId,
+      ticketNumber,
       subject: input.subject,
+      body: input.body,
       seatLabel,
+      hasAccount: !!memberId,
       siteUrl: input.siteUrl,
     }),
     to: input.email,
   })
 
-  return { ticketId, seat, holders }
+  return { ticketId, ticketNumber, seat, holders }
 }

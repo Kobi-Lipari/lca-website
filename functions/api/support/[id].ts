@@ -7,7 +7,8 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../utils/response'
-import { trySendEmail, escapeHtml } from '../../utils/email'
+import { trySendEmail, memberFollowUpStaffEmail } from '../../utils/email'
+import { resolveSiteUrl } from '../../utils/site'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -49,7 +50,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const ticket = await context.env.DB.prepare(
     `SELECT * FROM support_tickets WHERE ${OWNS_TICKET}`,
   ).bind(ticketId, user.id, user.email ?? '')
-    .first<{ email: string; name: string; subject: string; member_id: string | null }>()
+    .first<{ email: string; name: string; subject: string; member_id: string | null; number: number | null }>()
 
   if (!ticket) return errorResponse('Ticket not found', 404)
 
@@ -73,15 +74,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // Best-effort: the reply is already saved; a mail failure must not 500 it.
   await trySendEmail(context.env, {
+    ...memberFollowUpStaffEmail({
+      siteUrl: resolveSiteUrl(context.env, context.request),
+      ticketId,
+      ticketNumber: ticket.number,
+      name: ticket.name,
+      email: ticket.email,
+      subject: ticket.subject,
+      body: body.body,
+    }),
     to: context.env.SUPPORT_EMAIL,
-    subject: `Member reply on ticket: ${ticket.subject}`,
-    html: `
-      <h2>Member replied to support ticket</h2>
-      <p><strong>Ticket:</strong> ${escapeHtml(ticketId)}</p>
-      <p><strong>From:</strong> ${escapeHtml(ticket.name)}</p>
-      <p><strong>Message:</strong></p>
-      <p>${escapeHtml(body.body).replace(/\n/g, '<br>')}</p>
-    `,
   })
 
   return jsonResponse({ success: true, messageId }, 201)

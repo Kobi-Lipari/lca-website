@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { MessageSquare, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -44,6 +45,8 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
   } | null>(null)
   const [replyBody, setReplyBody] = useState('')
   const [sending, setSending] = useState(false)
+  const [searchParams] = useSearchParams()
+  const linkedTicketId = searchParams.get('ticket')
 
   async function loadTickets() {
     setLoading(true)
@@ -68,6 +71,21 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
   }, [])
+
+  // Links in staff emails open the ticket directly (?ticket=<id>).
+  useEffect(() => {
+    if (!linkedTicketId) return
+    let cancelled = false
+    adminGetTicket(linkedTicketId)
+      .then((data) => {
+        if (cancelled) return
+        const t = data.ticket as AdminApiSupportTicket
+        setSelectedTicket({ ticket: t, messages: data.messages })
+        if (t.status !== 'open' && t.status !== 'new') setTab('answered')
+      })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [linkedTicketId])
 
   async function openTicket(ticket: AdminApiSupportTicket) {
     const data = await adminGetTicket(ticket.id)
@@ -182,6 +200,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-medium text-lca-navy truncate">
+                      {ticket.number && <span className="mr-1.5 font-normal text-muted-foreground">#{ticket.number}</span>}
                       {ticket.subject}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">
@@ -222,6 +241,9 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
               <div className="flex items-start justify-between gap-3 mb-4 pb-4 border-b">
                 <div>
                   <h3 className="font-semibold text-lca-navy">
+                    {selectedTicket.ticket.number && (
+                      <span className="mr-1.5 font-normal text-muted-foreground">#{selectedTicket.ticket.number}</span>
+                    )}
                     {selectedTicket.ticket.subject}
                   </h3>
                   <p className="text-sm text-muted-foreground mt-0.5">

@@ -62,7 +62,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     email: string
     name: string
     subject: string
-    member_id: string
+    member_id: string | null
+    number: number | null
   }>()
 
   if (!ticket) return errorResponse('Ticket not found', 404)
@@ -82,8 +83,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const notification = supportReplyNotificationEmail({
     name: ticket.name,
     ticketId,
+    ticketNumber: ticket.number,
     subject: ticket.subject,
     replyBody: body.body,
+    hasAccount: !!ticket.member_id,
     siteUrl: resolveSiteUrl(context.env, context.request),
   })
   await trySendEmail(context.env, { ...notification, to: ticket.email })

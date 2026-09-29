@@ -35,18 +35,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const authed = await optionalAuthedMember(context.request, context.env)
 
-  const { ticketId, seat } = await createTicket(context.env, {
+  const { ticketId, ticketNumber, seat } = await createTicket(context.env, {
     name: body.name,
     email: body.email,
     subject: body.subject,
     body: body.body,
     memberId: authed?.member.id ?? null,
     seatRef: body.seatRef ?? null,
-    siteUrl: siteUrlFromRequest(context.request),
+    siteUrl: siteUrlFromRequest(context.request, context.env),
   })
 
   return jsonResponse(
-    { success: true, ticketId, routedTo: seat?.role ?? null },
+    { success: true, ticketId, ticketNumber, routedTo: seat?.role ?? null },
     201,
   )
 }

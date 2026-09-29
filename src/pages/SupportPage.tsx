@@ -49,7 +49,7 @@ export function SupportPage() {
   const [replyBody, setReplyBody] = useState('')
   const [sending, setSending] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'sending' | 'success'>('idle')
-  const [submittedTicketId, setSubmittedTicketId] = useState<string | null>(null)
+  const [submittedTicketNumber, setSubmittedTicketNumber] = useState<number | null>(null)
 
   const loading = !!user && ticketsFor !== user.id
 
@@ -123,7 +123,7 @@ export function SupportPage() {
     try {
       const result = await createSupportTicket(form)
       setSubmitStatus('success')
-      setSubmittedTicketId(result.ticketId)
+      setSubmittedTicketNumber(result.ticketNumber)
       if (user) {
         const data = await getMyTickets()
         setTickets(data.tickets)
@@ -303,9 +303,9 @@ export function SupportPage() {
               </p>
               <p className="text-emerald-700 text-sm mt-1">
                 We'll respond as soon as possible.
-                {submittedTicketId && (
-                  <span className="block mt-1 text-xs">
-                    Ticket ID: {submittedTicketId}
+                {submittedTicketNumber && (
+                  <span className="block mt-1">
+                    Your request number is <strong>#{submittedTicketNumber}</strong>.
                   </span>
                 )}
               </p>
@@ -400,6 +400,9 @@ export function SupportPage() {
           <div className="flex items-center gap-3 mb-6">
             <h2 className="text-xl font-semibold text-lca-navy">
               {selectedTicket.ticket.subject}
+              {selectedTicket.ticket.number && (
+                <span className="ml-2 font-normal text-muted-foreground">#{selectedTicket.ticket.number}</span>
+              )}
             </h2>
             <span
               className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[selectedTicket.ticket.status] ?? ''}`}
@@ -470,7 +473,10 @@ function TicketRow({
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-medium text-lca-navy">{ticket.subject}</p>
+          <p className="font-medium text-lca-navy">
+            {ticket.subject}
+            {ticket.number && <span className="ml-1.5 text-xs font-normal text-muted-foreground">#{ticket.number}</span>}
+          </p>
           <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
             {ticket.last_message}
           </p>

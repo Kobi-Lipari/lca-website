@@ -56,7 +56,7 @@ export const onRequestGet: PagesFunction<Env> = async (ctx) => {
   // is_note = 0 on the sender lookup: logging a Gmail exchange after the fact
   // does count as having answered, and those rows are stored as 'admin'.
   const tickets = await ctx.env.DB.prepare(
-    `SELECT t.id,
+    `SELECT t.id, t.number,
             t.name,
             t.email,
             t.subject,

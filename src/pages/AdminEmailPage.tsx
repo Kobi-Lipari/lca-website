@@ -81,9 +81,9 @@ function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml:
         </div>
         {/* Footer */}
         <div style={{ background: LCA.cream, borderTop: '1px solid #e0ddd5', padding: '16px 28px', textAlign: 'center' }}>
-          <p style={{ margin: '0 0 3px', fontSize: 11, color: '#999' }}>Louisiana Chess Association</p>
-          <p style={{ margin: 0, fontSize: 11 }}>
-            <span style={{ color: LCA.navy }}>{SITE_URL_DISPLAY}</span> · <span style={{ color: LCA.navy }}>support@louisianachess.org</span>
+          <p style={{ margin: '0 0 4px', fontSize: 12, color: '#3a3f4b' }}>Questions? Just reply to this email and it will reach us.</p>
+          <p style={{ margin: 0, fontSize: 11, color: '#999' }}>
+            Louisiana Chess Association · <span style={{ color: LCA.navy }}>{SITE_URL_DISPLAY}</span>
           </p>
         </div>
       </div>
