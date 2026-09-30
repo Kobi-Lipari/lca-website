@@ -21,6 +21,11 @@
 //      guideline) for alternation, 200 for equalization.
 //   4. Optional "avoid" pairs (family, same club) — soft, never at the cost
 //      of the score groups.
+//
+// Accelerated pairings (US Chess 28R, added-score method): for the first
+// rounds the top half of the field is paired as if it had one extra point,
+// so the strongest players don't all meet the weakest in round 1. The extra
+// point only affects pairing, never the score.
 // Rematches are never used unless no complete pairing exists without one.
 
 import { maxWeightMatching, type WeightedEdge } from './matching'
@@ -56,6 +61,12 @@ export interface PairingOptions {
   firstBoardWhite?: boolean
   /** Pairs of player ids to keep apart where possible (family, teammates). */
   avoid?: Array<[string, string]>
+  /**
+   * Accelerated pairings: ids of the players given an extra point for
+   * pairing this round. The caller decides who (the top half by rating)
+   * and for which rounds.
+   */
+  bonusPoint?: Set<string> | string[]
 }
 
 export interface Pairing {
@@ -101,7 +112,7 @@ const points2 = (result: GameResult, side: 'white' | 'black'): number => {
   }
 }
 
-function buildStates(players: SwissPlayer[], games: SwissGame[]): State[] {
+function buildStates(players: SwissPlayer[], games: SwissGame[], bonus: Set<string> = new Set()): State[] {
   const byId = new Map<string, State>()
   for (const p of players) {
     byId.set(p.id, {
@@ -140,6 +151,11 @@ function buildStates(players: SwissPlayer[], games: SwissGame[]): State[] {
     if (b) b.score2 += points2(g.result, 'black')
     if (g.result === '1-0 F' && w) w.hadUnplayedPoint = true
     if (g.result === '0-1 F' && b) b.hadUnplayedPoint = true
+  }
+
+  for (const id of bonus) {
+    const s = byId.get(id)
+    if (s) s.score2 += 2
   }
 
   const sorted = [...byId.values()].sort(
@@ -285,7 +301,7 @@ function placementCost(a: State, b: State, groups: State[][], system: PairingSys
   return Math.max(0, hi.rating - lowestOfHigh) + Math.max(0, highestOfLow - lo.rating)
 }
 
-function roundOne(states: State[], firstBoardWhite: boolean): PairingOutcome {
+function roundOne(states: State[], firstBoardWhite: boolean, avoid: Set<string> = new Set()): PairingOutcome {
   const sorted = [...states].sort((a, b) => b.rating - a.rating || a.name.localeCompare(b.name))
   const pairings: Pairing[] = []
   let bye: State | null = null
@@ -295,9 +311,22 @@ function roundOne(states: State[], firstBoardWhite: boolean): PairingOutcome {
     pool = pool.slice(0, -1)
   }
   const half = pool.length / 2
+  // Bottom half in order; swap neighbours to keep "avoid" pairs apart, the
+  // usual small transposition a director would make by hand.
+  const bottoms = pool.slice(half)
+  const clash = (i: number) => avoid.has([pool[i].id, bottoms[i].id].sort().join('|'))
+  for (let i = 0; i < half; i++) {
+    if (!clash(i)) continue
+    for (const j of [i + 1, i - 1, i + 2, i - 2]) {
+      if (j < 0 || j >= half) continue
+      ;[bottoms[i], bottoms[j]] = [bottoms[j], bottoms[i]]
+      if (!clash(i) && !clash(j)) break
+      ;[bottoms[i], bottoms[j]] = [bottoms[j], bottoms[i]]
+    }
+  }
   for (let i = 0; i < half; i++) {
     const top = pool[i]
-    const bottom = pool[i + half]
+    const bottom = bottoms[i]
     // Board 1 per the coin toss, then alternate down the boards.
     const topWhite = (i % 2 === 0) === firstBoardWhite
     pairings.push({ board: i + 1, whiteId: topWhite ? top.id : bottom.id, blackId: topWhite ? bottom.id : top.id })
@@ -323,10 +352,27 @@ export function pairRound(
   const firstBoardWhite = options.firstBoardWhite ?? true
   if (players.length === 0) return { pairings: [], warnings: [] }
 
-  const states = buildStates(players, games)
+  const bonus = new Set(options.bonusPoint ?? [])
+  const states = buildStates(players, games, bonus)
   const playedAny = games.some((g) => g.result !== 'pending' && g.blackId)
-  if (round === 1 || (!playedAny && states.every((s) => s.score2 === 0))) {
-    return roundOne(states, firstBoardWhite)
+  if (round === 1 || (!playedAny && states.every((s) => s.score2 === 0) && bonus.size === 0)) {
+    const avoidSet = new Set((options.avoid ?? []).map(([x, y]) => [x, y].sort().join('|')))
+    if (bonus.size === 0) return roundOne(states, firstBoardWhite, avoidSet)
+    // Accelerated round 1: pair the top group and the rest separately,
+    // each top half against bottom half, boards numbered straight on.
+    const top = states.filter((s) => bonus.has(s.id))
+    const rest = states.filter((s) => !bonus.has(s.id))
+    // An odd top group would hand the bye to a strong player: the lowest of
+    // the top group joins the rest instead.
+    if (top.length % 2 === 1) rest.unshift(top.pop() as State)
+    const a = roundOne(top, firstBoardWhite, avoidSet)
+    // Keep colors alternating down the boards across the two groups.
+    const topBoards = a.pairings.filter((p) => p.blackId).length
+    const b = roundOne(rest, topBoards % 2 === 0 ? firstBoardWhite : !firstBoardWhite, avoidSet)
+    const games1 = [...a.pairings.filter((p) => p.blackId), ...b.pairings.filter((p) => p.blackId)]
+    const byes = [...a.pairings, ...b.pairings].filter((p) => !p.blackId)
+    const pairings = [...games1, ...byes].map((p, i) => ({ ...p, board: i + 1 }))
+    return { pairings, warnings: [] }
   }
 
   const groups: State[][] = []
@@ -444,3 +490,21 @@ export function pairRound(
   if (byePlayer) pairings.push({ board: pairings.length + 1, whiteId: byePlayer.id, blackId: null })
   return { pairings, warnings }
 }
+
+/**
+ * Who gets the extra pairing point in an accelerated event: the top half by
+ * rating (an even number, so the top group pairs within itself).
+ */
+export function acceleratedTopGroup(players: SwissPlayer[]): string[] {
+  const sorted = [...players].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0) || (a.name ?? a.id).localeCompare(b.name ?? b.id))
+  let count = Math.ceil(sorted.length / 2)
+  if (count % 2 === 1) count -= 1
+  return sorted.slice(0, count).map((p) => p.id)
+}
+
+/**
+ * Worth accelerating? With more than 2^rounds players, a plain Swiss can end
+ * with several perfect scores; acceleration separates the top players sooner.
+ */
+export const accelerationRecommended = (players: number, rounds: number) =>
+  rounds >= 3 && players > 2 ** rounds

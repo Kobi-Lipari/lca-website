@@ -7,7 +7,7 @@
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import { recordAdminAction } from '../../../../utils/audit'
-import { pairRound, type PairingSystem, type SwissGame, type SwissPlayer } from '../../../../utils/swiss/engine'
+import { acceleratedTopGroup, pairRound, type PairingSystem, type SwissGame, type SwissPlayer } from '../../../../utils/swiss/engine'
 import {
   errorResponse,
   handleOptions,
@@ -51,8 +51,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (round < 1) return errorResponse('round must be at least 1', 400)
 
   const db = context.env.DB
-  const tournament = await db.prepare('SELECT name, rounds, pairing_system FROM tournaments WHERE id = ?')
-    .bind(tournamentId).first<{ name: string; rounds: number; pairing_system: string | null }>()
+  const tournament = await db.prepare('SELECT name, rounds, pairing_system, accelerated, keep_apart FROM tournaments WHERE id = ?')
+    .bind(tournamentId).first<{ name: string; rounds: number; pairing_system: string | null; accelerated: number | null; keep_apart: string | null }>()
   if (!tournament) return errorResponse('Tournament not found', 404)
 
   if (round > tournament.rounds && !body.allowExtraRound) {
@@ -89,7 +89,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const roster = await db.prepare(
     `SELECT r.member_id, r.bye_rounds, r.checked_in_at, r.rating_at_entry,
-            m.uscf_rating, m.full_name
+            m.uscf_rating, m.full_name, m.guardian_id, m.club_id
        FROM registrations r
        JOIN members m ON m.id = r.member_id
       WHERE r.tournament_id = ? AND r.section = ? AND r.withdrawn_at IS NULL AND r.waitlisted_at IS NULL`,
@@ -100,6 +100,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     rating_at_entry: number | null
     uscf_rating: number | null
     full_name: string
+    guardian_id: string | null
+    club_id: string | null
   }>()
 
   const rows = roster.results ?? []
@@ -126,8 +128,33 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const system: PairingSystem = tournament.pairing_system === 'fide' ? 'fide' : 'uscf'
   const firstBoardWhite = body.firstBoardWhite ?? Math.random() < 0.5
+
+  // Accelerated pairings: the top half of the whole section by rating (not
+  // just those playing this round) gets an extra pairing point in rounds 1–2.
+  const ACCELERATED_ROUNDS = 2
+  const bonusPoint = tournament.accelerated && round <= ACCELERATED_ROUNDS
+    ? acceleratedTopGroup(rows.map((r) => ({ id: r.member_id, rating: r.rating_at_entry ?? r.uscf_rating ?? null, name: r.full_name })))
+    : []
+
+  // Keep apart: a family is a parent and their children (and so siblings);
+  // a club is the club on each player's account.
+  const keepApart = tournament.keep_apart ?? 'family'
+  const avoid: Array<[string, string]> = []
+  if (keepApart !== 'none') {
+    const familyOf = (r: typeof rows[number]) => r.guardian_id ?? r.member_id
+    for (let i = 0; i < rows.length; i++) {
+      for (let j = i + 1; j < rows.length; j++) {
+        const a = rows[i]
+        const b = rows[j]
+        const sameFamily = familyOf(a) === familyOf(b)
+        const sameClub = keepApart === 'family_club' && !!a.club_id && a.club_id === b.club_id
+        if (sameFamily || sameClub) avoid.push([a.member_id, b.member_id])
+      }
+    }
+  }
+
   const outcome = players.length > 0
-    ? pairRound(players, games, round, { system, firstBoardWhite })
+    ? pairRound(players, games, round, { system, firstBoardWhite, bonusPoint, avoid })
     : { pairings: [], warnings: [] }
 
   const suffix = Date.now().toString(36)
@@ -163,6 +190,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   })
 
   const warnings = [...outcome.warnings]
+  const avoidSet = new Set(avoid.map(([a, b]) => [a, b].sort().join('|')))
+  const names = new Map(rows.map((r) => [r.member_id, r.full_name]))
+  for (const p of outcome.pairings) {
+    if (p.blackId && avoidSet.has([p.whiteId, p.blackId].sort().join('|'))) {
+      warnings.push(`${names.get(p.whiteId)} and ${names.get(p.blackId)} are paired even though you asked to keep them apart; there was no fair way around it.`)
+    }
+  }
   if (notCheckedIn.length > 0) {
     warnings.push(`Not paired because they haven't checked in: ${notCheckedIn.map((r) => r.full_name).join(', ')}.`)
   }

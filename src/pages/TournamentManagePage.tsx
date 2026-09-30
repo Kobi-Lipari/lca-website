@@ -92,6 +92,8 @@ interface FormSnapshot {
   maxPlayers: string
   isRated: boolean
   pairingSystem: 'uscf' | 'fide'
+  accelerated: boolean
+  keepApart: 'family' | 'family_club' | 'none'
   timeControl: string
   sections: string // JSON
   customDetails: string // JSON
@@ -185,6 +187,8 @@ export function TournamentManagePage() {
   const [maxPlayers, setMaxPlayers] = useState('')
   const [isRated, setIsRated] = useState(true)
   const [pairingSystem, setPairingSystem] = useState<'uscf' | 'fide'>('uscf')
+  const [accelerated, setAccelerated] = useState(false)
+  const [keepApart, setKeepApart] = useState<'family' | 'family_club' | 'none'>('family')
   const [timeControl, setTimeControl] = useState('')
   const [customTimeControl, setCustomTimeControl] = useState('')
   const [sections, setSections] = useState<ApiTournamentSection[]>([])
@@ -284,6 +288,8 @@ export function TournamentManagePage() {
     const nMaxPlayers = t.max_players != null ? String(t.max_players) : ''
     const nIsRated = t.is_rated !== 0
     const nPairingSystem: 'uscf' | 'fide' = t.pairing_system === 'fide' ? 'fide' : 'uscf'
+    const nAccelerated = !!t.accelerated
+    const nKeepApart = t.keep_apart ?? 'family'
     const nTimeControl = t.time_control ?? ''
     const nSections = t.sections ?? []
     const nCustomDetails = t.custom_details ?? []
@@ -310,6 +316,8 @@ export function TournamentManagePage() {
     setMaxPlayers(nMaxPlayers)
     setIsRated(nIsRated)
     setPairingSystem(nPairingSystem)
+    setAccelerated(nAccelerated)
+    setKeepApart(nKeepApart)
     setTimeControl(nTimeControl)
     setCustomTimeControl(
       nTimeControl && !TIME_CONTROL_PRESETS.includes(nTimeControl) ? nTimeControl : '',
@@ -333,6 +341,8 @@ export function TournamentManagePage() {
       maxPlayers: nMaxPlayers,
       isRated: nIsRated,
       pairingSystem: nPairingSystem,
+      accelerated: nAccelerated,
+      keepApart: nKeepApart,
       timeControl: nTimeControl,
       sections: JSON.stringify(nSections),
       customDetails: JSON.stringify(nCustomDetails),
@@ -479,6 +489,8 @@ export function TournamentManagePage() {
     maxPlayers !== snap.maxPlayers ||
     isRated !== snap.isRated ||
     pairingSystem !== snap.pairingSystem ||
+    accelerated !== snap.accelerated ||
+    keepApart !== snap.keepApart ||
     timeControl !== snap.timeControl ||
     JSON.stringify(sections) !== snap.sections ||
     JSON.stringify(customDetails) !== snap.customDetails
@@ -511,6 +523,8 @@ export function TournamentManagePage() {
     setMaxPlayers(s.maxPlayers)
     setIsRated(s.isRated)
     setPairingSystem(s.pairingSystem)
+    setAccelerated(s.accelerated)
+    setKeepApart(s.keepApart)
     setTimeControl(s.timeControl)
     setCustomTimeControl(
       s.timeControl && !TIME_CONTROL_PRESETS.includes(s.timeControl) ? s.timeControl : '',
@@ -558,6 +572,8 @@ export function TournamentManagePage() {
     if (maxPlayers !== s.maxPlayers) body.maxPlayers = maxPlayers ? Number(maxPlayers) : null
     if (isRated !== s.isRated) body.isRated = isRated
     if (pairingSystem !== s.pairingSystem) body.pairingSystem = pairingSystem
+    if (accelerated !== s.accelerated) body.accelerated = accelerated
+    if (keepApart !== s.keepApart) body.keepApart = keepApart
     if (timeControl !== s.timeControl) body.timeControl = timeControl || null
     if (JSON.stringify(sections) !== s.sections) body.sections = sections
     if (JSON.stringify(customDetails) !== s.customDetails) body.customDetails = customDetails
@@ -1147,7 +1163,11 @@ export function TournamentManagePage() {
                     >Unrated</button>
                   </div>
                   <details className="text-xs text-muted-foreground">
-                    <summary className="cursor-pointer select-none">Pairing rules: {pairingSystem === 'fide' ? 'FIDE-style' : 'US Chess'}</summary>
+                    <summary className="cursor-pointer select-none">
+                      Pairing rules: {pairingSystem === 'fide' ? 'FIDE-style' : 'US Chess'}
+                      {accelerated ? ' · accelerated' : ''}
+                      {keepApart === 'none' ? '' : keepApart === 'family_club' ? ' · keep families and clubmates apart' : ' · keep families apart'}
+                    </summary>
                     <div className="mt-2 space-y-1.5">
                       <label className="flex items-center gap-2">
                         <input type="radio" name="pairing-system" checked={pairingSystem === 'uscf'} onChange={() => setPairingSystem('uscf')} />
@@ -1157,6 +1177,26 @@ export function TournamentManagePage() {
                         <input type="radio" name="pairing-system" checked={pairingSystem === 'fide'} onChange={() => setPairingSystem('fide')} />
                         FIDE-style (strict color rules; for FIDE-rated or international-format events)
                       </label>
+                      <label className="mt-3 flex items-start gap-2">
+                        <input type="checkbox" className="mt-0.5" checked={accelerated} onChange={(e) => setAccelerated(e.target.checked)} />
+                        <span>
+                          Accelerated pairings for rounds 1–2
+                          <span className="block text-muted-foreground">
+                            The top half by rating is paired as if it had an extra point, so the strongest players meet each
+                            other sooner. Useful when there are more players than the rounds can sort out.
+                          </span>
+                        </span>
+                      </label>
+                      <div className="mt-3">
+                        <p className="mb-1">Try to keep apart:</p>
+                        {([['family', 'Family members (parents, children, siblings on one account)'], ['family_club', 'Family members and players from the same club'], ['none', 'Nobody']] as const).map(([v, label]) => (
+                          <label key={v} className="flex items-center gap-2">
+                            <input type="radio" name="keep-apart" checked={keepApart === v} onChange={() => setKeepApart(v)} />
+                            {label}
+                          </label>
+                        ))}
+                        <p className="mt-1 text-muted-foreground">Only when a pairing just as fair exists; scores always come first.</p>
+                      </div>
                     </div>
                   </details>
                 </div>
@@ -1869,8 +1909,20 @@ export function TournamentManagePage() {
                 {tournament?.pairing_system === 'fide'
                   ? 'FIDE-style pairings (set on the Details tab).'
                   : 'US Chess rules: score groups, top half against bottom half, colors evened out, no rematches.'}{' '}
+                {tournament?.accelerated && nextRoundFor(generateForm.section) <= 2 ? ' Accelerated for this round.' : ''}{' '}
                 Requested byes become half-point byes. You can swap or edit any pairing afterwards.
               </p>
+              {(() => {
+                const inSection = roster.filter((p) => !p.withdrawn_at && p.section === generateForm.section).length
+                const rounds = tournament?.rounds ?? 0
+                if (tournament?.accelerated || nextRoundFor(generateForm.section) > 1 || !(rounds >= 3 && inSection > 2 ** rounds)) return null
+                return (
+                  <p className="mt-2 rounded-md border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-lca-navy">
+                    {inSection} players in {rounds} rounds may finish with more than one perfect score. Consider accelerated
+                    pairings (Details tab, Pairing rules) before pairing round 1.
+                  </p>
+                )
+              })()}
               <div className="mt-4 grid gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="gen-section">Section</Label>

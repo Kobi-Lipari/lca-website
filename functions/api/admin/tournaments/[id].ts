@@ -20,6 +20,10 @@ interface UpdateTournamentBody {
   registrationDeadline?: string | null
   isRated?: boolean
   pairingSystem?: string
+  /** Accelerated pairings for rounds 1–2. */
+  accelerated?: boolean
+  /** 'family' | 'family_club' | 'none' */
+  keepApart?: string
   /** Pricing: Central date/times and dollar amounts. null clears. */
   earlyDeadline?: string | null
   earlyDiscount?: number | null
@@ -89,6 +93,11 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     ? (existing.pairing_system ?? 'uscf')
     : body.pairingSystem === 'fide' ? 'fide' : 'uscf'
 
+  const accelerated = body.accelerated === undefined ? (existing.accelerated ?? 0) : body.accelerated ? 1 : 0
+  const keepApart = body.keepApart === undefined
+    ? (existing.keep_apart ?? 'family')
+    : ['family', 'family_club', 'none'].includes(body.keepApart) ? body.keepApart : 'family'
+
   const isVisible = body.isVisible !== undefined
     ? body.isVisible ? 1 : 0
     : existing.is_visible
@@ -117,7 +126,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       is_rated = ?, is_visible = ?, round_schedule = ?,
       registration_closes_at = ?, custom_details = ?, time_control = ?,
       club_id = ?, pairing_system = ?,
-      early_deadline = ?, early_discount = ?, late_after = ?, late_fee = ?, member_discount = ?
+      early_deadline = ?, early_discount = ?, late_after = ?, late_fee = ?, member_discount = ?,
+      accelerated = ?, keep_apart = ?
      WHERE id = ?`,
   ).bind(
     body.name ?? existing.name,
@@ -145,6 +155,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     body.lateAfter !== undefined ? body.lateAfter || null : existing.late_after ?? null,
     body.lateFee !== undefined ? Math.max(0, Number(body.lateFee) || 0) : existing.late_fee ?? 0,
     body.memberDiscount !== undefined ? Math.max(0, Number(body.memberDiscount) || 0) : existing.member_discount ?? 0,
+    accelerated,
+    keepApart,
     tournamentId,
   ).run()
 
