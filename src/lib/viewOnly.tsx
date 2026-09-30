@@ -5,7 +5,7 @@
 // honest by disabling the controls instead of letting clicks fail.
 import type { ReactNode } from 'react'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/auth-context'
 import { isViewOnlyAdmin } from '@/lib/roles'
 
 export function useViewOnly(): boolean {
