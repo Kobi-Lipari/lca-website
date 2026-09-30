@@ -57,13 +57,13 @@ function isLinkActive(pathname: string, link: NavLink): boolean {
  * everyone and an admin's bar is no wider than a player's.
  */
 function useAccountLinks(): NavLink[] {
-  const { user, loading, role, isBoardMember } = useAuth()
+  const { user, loading, role, isBoardMember, directedTournamentIds } = useAuth()
   if (loading || !user) return []
 
   const links: NavLink[] = []
   if (role === 'lca_admin') {
     links.push({ label: 'Admin panel', href: '/admin' })
-  } else if (WORKSPACE_ROLES.includes(role)) {
+  } else if (WORKSPACE_ROLES.includes(role) || directedTournamentIds.length > 0) {
     links.push({ label: 'Workspace', href: '/workspace' })
   }
   // Not a role check: isBoardMember comes from a current seat assignment (or

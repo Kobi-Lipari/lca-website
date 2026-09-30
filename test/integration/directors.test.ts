@@ -1,12 +1,7 @@
 // test/integration/directors.test.ts
-// Covers the directors endpoint: who may assign, listing, and removal
-// (including the demote-when-last-tournament mirror of the auto-promote).
-//
-// Note: tests deliberately assign members who already hold the
-// tournament_director role, so the POST promote path (which calls
-// syncSupabaseUserMetadata against a Supabase admin endpoint the harness
-// does not implement) is not exercised here. The DELETE demote path IS
-// exercised — its metadata sync is wrapped best-effort in the handler.
+// Covers the directors endpoint: who may assign, listing, and removal.
+// Assigning or removing a director never changes anyone's role: the
+// assignment is access to that one event.
 import { describe, it, expect } from 'vitest'
 import { env } from 'cloudflare:test'
 import { invoke } from './harness'
@@ -24,6 +19,8 @@ import {
   onRequestPost as assignDirector,
   onRequestDelete as removeDirector,
 } from '../../functions/api/admin/tournaments/[id]/directors'
+import { onRequestPatch as tournamentPatch } from '../../functions/api/admin/tournaments/[id]'
+import { onRequestGet as membersGet } from '../../functions/api/admin/members'
 
 describe('tournament directors', () => {
   it('admin can assign a director; list reflects it', async () => {
@@ -109,7 +106,45 @@ describe('tournament directors', () => {
     expect(res.status).toBe(403)
   })
 
-  it('removing a director demotes them when it was their last tournament', async () => {
+  it('assigning an ordinary member gives them that event, not a new role', async () => {
+    const club = await seedClub()
+    const rep = await seedMember({ role: 'club_rep', clubId: club })
+    const helper = await seedMember()
+    const tournamentId = await seedTournament({ clubId: club })
+    const otherEvent = await seedTournament({ clubId: club })
+
+    const res = await invoke(assignDirector, {
+      method: 'POST', as: rep, params: { id: tournamentId }, body: { memberId: helper },
+    })
+    expect(res.status).toBe(201)
+
+    const row = await env.DB.prepare('SELECT role FROM members WHERE id = ?')
+      .bind(helper).first<{ role: string }>()
+    expect(row?.role).toBe('member')
+
+    // They can run this event…
+    const edit = await invoke(tournamentPatch, {
+      method: 'PATCH', as: helper, params: { id: tournamentId }, body: { name: 'Renamed by helper' },
+    })
+    expect(edit.status).toBe(200)
+    // …but not another one, not the member directory, and they can't hand out access.
+    const other = await invoke(tournamentPatch, {
+      method: 'PATCH', as: helper, params: { id: otherEvent }, body: { name: 'Nope' },
+    })
+    expect(other.status).toBe(403)
+    expect((await invoke(membersGet, { as: helper })).status).toBe(403)
+    const assign = await invoke(assignDirector, {
+      method: 'POST', as: helper, params: { id: tournamentId }, body: { memberId: await seedMember() },
+    })
+    expect(assign.status).toBe(403)
+
+    const log = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM admin_audit_log WHERE action = 'director_assign' AND target_member_id = ?`,
+    ).bind(helper).first<{ n: number }>()
+    expect(log?.n).toBe(1)
+  })
+
+  it('removing a director leaves their role alone', async () => {
     const adminId = await seedAdmin()
     const tdId = await seedDirector()
     const tournamentId = await seedTournament()
@@ -124,28 +159,6 @@ describe('tournament directors', () => {
     expect(res.status).toBe(200)
     const { directors } = (await res.json()) as { directors: Array<{ member_id: string }> }
     expect(directors.map((d) => d.member_id)).not.toContain(tdId)
-
-    const row = await env.DB.prepare('SELECT role FROM members WHERE id = ?')
-      .bind(tdId)
-      .first<{ role: string }>()
-    expect(row?.role).toBe('member')
-  })
-
-  it('removing a director does NOT demote them while they direct another tournament', async () => {
-    const adminId = await seedAdmin()
-    const tdId = await seedDirector()
-    const t1 = await seedTournament()
-    const t2 = await seedTournament()
-    await seedTournamentDirector(t1, tdId)
-    await seedTournamentDirector(t2, tdId)
-
-    const res = await invoke(removeDirector, {
-      method: 'DELETE',
-      as: adminId,
-      params: { id: t1 },
-      body: { memberId: tdId },
-    })
-    expect(res.status).toBe(200)
 
     const row = await env.DB.prepare('SELECT role FROM members WHERE id = ?')
       .bind(tdId)

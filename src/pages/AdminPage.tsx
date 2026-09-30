@@ -185,7 +185,7 @@ function AdminSectionView({ section }: { section: AdminSection }) {
     case 'email': return <AdminEmailPage embedded />
     case 'announcements': return <><SectionHeading title="Site banners" description="Short notices shown across the top of every page. For full announcements, use News posts." /><AdminAnnouncementPanel /></>
     case 'support': return <AdminSupportPage embedded />
-    case 'activity': return <><SectionHeading title="Admin activity" description="Role changes, membership overrides, club changes and impersonation." /><AuditLogPanel /></>
+    case 'activity': return <><SectionHeading title="Admin activity" description="Who changed what: roles, memberships, events, payments and club pages." /><AuditLogPanel /></>
   }
 }
 

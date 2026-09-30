@@ -3,6 +3,7 @@ import type { Env } from '../../../types'
 import { isResponse, requireTournamentManager, requireAdmin } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
 import { parseJsonArray } from '../../../utils/json'
+import { recordAdminAction } from '../../../utils/audit'
 
 interface UpdateTournamentBody {
   name?: string
@@ -128,6 +129,14 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     clubId,
     tournamentId,
   ).run()
+
+  if (Number(isVisible) !== Number(existing.is_visible)) {
+    await recordAdminAction(context.env.DB, authResult.member, {
+      action: isVisible ? 'tournament_publish' : 'tournament_unpublish',
+      targetLabel: String(body.name ?? existing.name),
+      detail: { tournament_id: tournamentId },
+    })
+  }
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',

@@ -67,14 +67,11 @@ export async function canManageTournament(
     return true
   }
 
-  // Director assignments count for anyone who holds one, not just members
-  // whose role is tournament_director — a club rep asked to direct another
-  // club's event must be able to run it.
-  if (member.role === 'tournament_director' || member.role === 'club_rep') {
-    return isTournamentDirector(db, member.id, tournamentId)
-  }
-
-  return false
+  // A director assignment is access to that one event, whoever holds it.
+  // Being assigned no longer changes anyone's role: a club rep naming a
+  // member as director gives that member this event and nothing else.
+  if (member.role === 'guest') return false
+  return isTournamentDirector(db, member.id, tournamentId)
 }
 
 export async function canManageClub(

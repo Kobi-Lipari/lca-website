@@ -9,6 +9,7 @@ import {
 } from '../../../../utils/response'
 import { sendEmail, tournamentAnnouncementEmail } from '../../../../utils/email'
 import { resolveSiteUrl } from '../../../../utils/site'
+import { recordAdminAction } from '../../../../utils/audit'
 
 interface AnnounceBody {
   subject?: string
@@ -73,6 +74,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       failures.push(r.email)
     }
   }
+
+  await recordAdminAction(context.env.DB, authResult.member, {
+    action: 'announcement_sent',
+    targetLabel: tournament.name,
+    detail: { tournament_id: tournamentId, subject, sent, failed: failures.length },
+  })
 
   return jsonResponse({ sent, failed: failures.length, total: list.length })
 }

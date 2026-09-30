@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { MessageSquare, RefreshCw } from 'lucide-react'
+import { MessageSquare, RefreshCw, Trash2 } from 'lucide-react'
+import { ConfirmDialog } from '@/components/admin/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -9,6 +10,7 @@ import {
   adminGetTickets,
   adminUpdateTicket,
   adminReplyToTicket,
+  adminDeleteTicket,
   type ApiSupportTicket,
   type ApiSupportMessage,
 } from '@/lib/api'
@@ -46,6 +48,8 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
   } | null>(null)
   const [replyBody, setReplyBody] = useState('')
   const [sending, setSending] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const [searchParams] = useSearchParams()
   const linkedTicketId = searchParams.get('ticket')
 
@@ -95,6 +99,19 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
       messages: data.messages,
     })
     setReplyBody('')
+  }
+
+  async function handleDelete() {
+    if (!selectedTicket) return
+    setConfirmDelete(false)
+    setDeleteError(null)
+    try {
+      await adminDeleteTicket(selectedTicket.ticket.id)
+      setSelectedTicket(null)
+      await loadTickets()
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Could not delete the ticket')
+    }
   }
 
   async function handleReply(e: React.FormEvent) {
@@ -247,14 +264,28 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                     {selectedTicket.ticket.number ? `Ticket: ${selectedTicket.ticket.number} · ` : ''}{selectedTicket.ticket.name} · {selectedTicket.ticket.email}
                   </p>
                 </div>
-                <span
-                  className={`text-xs px-2 py-1 rounded-full font-medium shrink-0 ${
-                    statusColors[selectedTicket.ticket.status] ?? ''
-                  }`}
-                >
-                  {statusLabels[selectedTicket.ticket.status] ?? selectedTicket.ticket.status}
-                </span>
+                <div className="flex shrink-0 items-center gap-2">
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      statusColors[selectedTicket.ticket.status] ?? ''
+                    }`}
+                  >
+                    {statusLabels[selectedTicket.ticket.status] ?? selectedTicket.ticket.status}
+                  </span>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmDelete(true)}
+                    className="h-7 px-2 text-muted-foreground hover:text-destructive" aria-label="Delete ticket">
+                    <Trash2 className="size-4" />
+                  </Button>
+                </div>
               </div>
+              {deleteError && <p className="mb-3 text-sm text-destructive">{deleteError}</p>}
+              {confirmDelete && (
+                <ConfirmDialog
+                  message={`Permanently delete "${selectedTicket.ticket.subject}" from ${selectedTicket.ticket.name}? The whole conversation goes too. This can't be undone.`}
+                  onConfirm={handleDelete}
+                  onCancel={() => setConfirmDelete(false)}
+                />
+              )}
 
               <div className="space-y-3 mb-5 max-h-80 overflow-y-auto">
                 {selectedTicket.messages.map(msg => (

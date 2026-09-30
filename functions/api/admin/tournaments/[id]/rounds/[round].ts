@@ -2,6 +2,7 @@
 import type { Env } from '../../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../../utils/response'
+import { recordAdminAction } from '../../../../../utils/audit'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -58,6 +59,14 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
   )
     .bind(tournamentId, section, round)
     .run()
+
+  const t = await context.env.DB.prepare('SELECT name FROM tournaments WHERE id = ?')
+    .bind(tournamentId).first<{ name: string }>()
+  await recordAdminAction(context.env.DB, authResult.member, {
+    action: 'round_delete',
+    targetLabel: t?.name ?? tournamentId,
+    detail: { tournament_id: tournamentId, round, section, games: existing.count },
+  })
 
   return jsonResponse({ deleted: existing.count, round, section })
 }

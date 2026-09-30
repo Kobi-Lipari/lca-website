@@ -29,9 +29,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const where: string[] = []
   const binds: unknown[] = []
-  if (action) {
-    where.push('action = ?')
-    binds.push(action)
+  // One action, or several separated by commas (a filter group).
+  const actions = (action ?? '').split(',').map((a) => a.trim()).filter(Boolean).slice(0, 20)
+  if (actions.length) {
+    where.push(`action IN (${actions.map(() => '?').join(', ')})`)
+    binds.push(...actions)
   }
 
   const { results } = await context.env.DB.prepare(

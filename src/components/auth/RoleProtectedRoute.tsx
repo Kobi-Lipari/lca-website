@@ -14,6 +14,8 @@ interface RoleProtectedRouteProps {
    * for reps/directors/auditors) rather than the dashboard.
    */
   fallbackToToolsHome?: boolean
+  /** Also let in anyone assigned to direct at least one event. */
+  allowDirectors?: boolean
 }
 
 function canAccessTournament(
@@ -22,9 +24,8 @@ function canAccessTournament(
   directedTournamentIds: string[],
 ): boolean {
   if (role === 'lca_admin') return true
-  if (role === 'tournament_director') {
-    return directedTournamentIds.includes(tournamentId)
-  }
+  // Anyone assigned to direct this event, whatever their role.
+  if (directedTournamentIds.includes(tournamentId)) return true
   if (role === 'club_rep') return true
   return false
 }
@@ -35,6 +36,7 @@ export function RoleProtectedRoute({
   requireClubMatch,
   requireTournamentAccess,
   fallbackToToolsHome,
+  allowDirectors,
 }: RoleProtectedRouteProps) {
   const {
     user,
@@ -72,7 +74,8 @@ export function RoleProtectedRoute({
     return <Navigate to="/dashboard" replace />
   }
 
-  if (roles && !roles.includes(role)) {
+  const isDirector = directedTournamentIds.length > 0
+  if (roles && !roles.includes(role) && !(allowDirectors && isDirector)) {
     return <Navigate to={fallbackToToolsHome ? toolsHomeFor(role) : '/dashboard'} replace />
   }
 

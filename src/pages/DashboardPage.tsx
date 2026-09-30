@@ -286,10 +286,10 @@ export function DashboardPage() {
 
         {!loadingData && !loadError && (
           <>
-            {(role === 'lca_admin' || role === 'club_rep' || role === 'tournament_director' || role === 'lca_auditor') && (
+            {(role === 'lca_admin' || role === 'club_rep' || role === 'tournament_director' || role === 'lca_auditor' || directedTournaments.length > 0) && (
               <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
                 <h2 className="text-lg font-bold text-lca-navy">
-                  {ROLE_LABELS[role]} tools
+                  {role === 'member' ? 'Event director' : ROLE_LABELS[role]} tools
                 </h2>
                 <div className="mt-4 flex flex-wrap gap-3">
                   {role === 'lca_admin' ? (

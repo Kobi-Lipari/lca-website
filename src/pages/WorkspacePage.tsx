@@ -24,7 +24,7 @@ import {
   type ApiClubDetail,
   type ApiTournamentListItem,
 } from '@/lib/api'
-import { ROLE_LABELS } from '@/lib/roles'
+import { ROLE_LABELS, WORKSPACE_ROLES } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
@@ -43,7 +43,9 @@ export function WorkspacePage() {
     const list: { id: WorkspaceTab; label: string; icon: typeof Users }[] = []
     if (clubId) list.push({ id: 'club', label: 'My club', icon: Building2 })
     if (role !== 'lca_auditor') list.push({ id: 'events', label: 'Events', icon: Trophy })
-    list.push({ id: 'lookup', label: 'Member lookup', icon: Search })
+    // Member lookup comes with a role; being assigned to direct an event
+    // doesn't include it.
+    if (WORKSPACE_ROLES.includes(role)) list.push({ id: 'lookup', label: 'Member lookup', icon: Search })
     return list
   }, [clubId, role])
 
@@ -65,7 +67,7 @@ export function WorkspacePage() {
       <PageHero
         title="Workspace"
         subtitle={subtitle}
-        badges={<span className="rounded-full border border-white/20 px-2.5 py-0.5 text-xs text-white/80">{ROLE_LABELS[role]}</span>}
+        badges={<span className="rounded-full border border-white/20 px-2.5 py-0.5 text-xs text-white/80">{WORKSPACE_ROLES.includes(role) ? ROLE_LABELS[role] : 'Event director'}</span>}
         size="compact"
       />
 

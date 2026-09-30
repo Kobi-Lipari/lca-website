@@ -1253,6 +1253,15 @@ export async function adminUpdateTicket(
   return handleResponse(response)
 }
 
+/** Permanently deletes a ticket and its messages (admins only). */
+export async function adminDeleteTicket(ticketId: string): Promise<void> {
+  const response = await fetch(`/api/admin/support/${ticketId}`, {
+    method: 'DELETE',
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
 export async function adminReplyToTicket(
   ticketId: string,
   body: string,

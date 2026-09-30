@@ -16,6 +16,20 @@ export type AdminAction =
   | 'impersonation_start'
   | 'impersonation_end'
   | 'ticket_delete'
+  // What club reps and directors do (admins too, when they do it).
+  | 'tournament_create'
+  | 'tournament_publish'
+  | 'tournament_unpublish'
+  | 'round_delete'
+  | 'announcement_sent'
+  | 'director_assign'
+  | 'director_remove'
+  | 'payment_change'
+  | 'registration_withdraw'
+  | 'registration_reinstate'
+  | 'club_edit'
+  | 'officer_add'
+  | 'officer_remove'
 
 export interface AuditEntry {
   action: AdminAction
