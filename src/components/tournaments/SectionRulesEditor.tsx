@@ -105,7 +105,7 @@ export function SectionRulesEditor({ section, onChange }: {
               <option value="">any</option>
               {GRADES.map((g) => <option key={g} value={g}>{gradeLabel(g)}</option>)}
             </select>
-            <span className="text-muted-foreground">(entrants are asked their grade only when set)</span>
+            <span className="text-muted-foreground">(entrants tick a box to confirm; we never ask the actual grade)</span>
           </div>
           <div className={cn('flex flex-wrap items-center gap-2 text-muted-foreground')}>
             {fromName ? (

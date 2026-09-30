@@ -10,10 +10,11 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { createBatchRegistration, getMyChildren, hasGradePrizes, type ApiChild, type ApiTournamentDetail } from '@/lib/api'
+import { createBatchRegistration, getMyChildren, type ApiChild, type ApiTournamentDetail } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
-import { effectiveRules, eligibilityProblem, gradeLabel, needsGrade, parseGrade } from '@/lib/sectionRules'
+import { effectiveRules, eligibilityProblem, needsGrade } from '@/lib/sectionRules'
+import { confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
 import { entryPrice } from '@/lib/pricing'
 
 interface Player {
@@ -23,24 +24,22 @@ interface Player {
   uscfId: string | null
   rating: number | null
   isLcaMember: boolean
-  grade: string | null
 }
 
 interface Choice {
   selected: boolean
   section: string
   byes: number[]
-  /** Only asked for when the section has grade limits. */
-  grade?: string
+  /** Grade-range boxes ticked (grade sections and grade prizes). */
+  ticks: GradeTicks
 }
 
-export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, selfRating = null, selfIsLcaMember = false, selfGrade = null, selfRegistered }: {
+export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, selfRating = null, selfIsLcaMember = false, selfRegistered }: {
   tournament: ApiTournamentDetail
   selfName: string
   selfUscfId: string | null
   selfRating?: number | null
   selfIsLcaMember?: boolean
-  selfGrade?: string | null
   selfRegistered: boolean
 }) {
   const [children, setChildren] = useState<ApiChild[] | null>(null)
@@ -64,15 +63,15 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
 
   const entered = children.filter((c) => c.registration)
   const players: Player[] = [
-    ...(selfRegistered ? [] : [{ name: `${selfName} (me)`, uscfId: selfUscfId, rating: selfRating, isLcaMember: selfIsLcaMember, grade: selfGrade }]),
+    ...(selfRegistered ? [] : [{ name: `${selfName} (me)`, uscfId: selfUscfId, rating: selfRating, isLcaMember: selfIsLcaMember }]),
     ...children.filter((c) => !c.registration).map((c) => ({
       memberId: c.id, name: c.full_name, uscfId: c.uscf_id, rating: c.uscf_rating,
-      isLcaMember: c.membership_status === 'active', grade: c.grade ?? null,
+      isLcaMember: c.membership_status === 'active',
     })),
   ]
 
   const keyOf = (p: Player) => p.memberId ?? 'self'
-  const choiceOf = (p: Player): Choice => choices[keyOf(p)] ?? { selected: false, section: defaultSection, byes: [], grade: p.grade ?? '' }
+  const choiceOf = (p: Player): Choice => choices[keyOf(p)] ?? { selected: false, section: defaultSection, byes: [], ticks: NO_TICKS }
   const setChoice = (p: Player, patch: Partial<Choice>) =>
     setChoices((prev) => ({ ...prev, [keyOf(p)]: { ...choiceOf(p), ...patch } }))
 
@@ -82,14 +81,19 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
   const total = picked.reduce((sum, p) => sum + feeOf(p, choiceOf(p).section), 0)
   const missingUscf = tournament.is_rated !== 0 ? picked.filter((p) => !p.uscfId) : []
   const sectionOf = (name: string) => tournament.sections.find((s) => s.name === name)
-  const gradeRequired = (c: Choice) => { const s = sectionOf(c.section); return !!s && needsGrade(effectiveRules(s)) }
-  const gradeAsked = (c: Choice) => gradeRequired(c) || hasGradePrizes(sectionOf(c.section))
+  /** Rating problems; the grade box is checked separately (it sits right there). */
   const problemOf = (p: Player) => {
+    const s = sectionOf(choiceOf(p).section)
+    if (!s) return null
+    const r = effectiveRules(s)
+    return eligibilityProblem(s, { rating: p.rating, gradeRange: needsGrade(r) ? { min: r.gradeMin ?? 0, max: r.gradeMax ?? 12 } : null })
+  }
+  const gradeUnconfirmed = (p: Player) => {
     const c = choiceOf(p)
     const s = sectionOf(c.section)
-    return s ? eligibilityProblem(s, { rating: p.rating, grade: gradeRequired(c) ? parseGrade(c.grade) : null }) : null
+    return (!!s && needsGrade(effectiveRules(s)) && !c.ticks.section) || confirmedRange(s, c.ticks) === 'conflict'
   }
-  const blocked = picked.some((p) => problemOf(p))
+  const blocked = picked.some((p) => problemOf(p) || gradeUnconfirmed(p))
 
   async function submit() {
     setSubmitting(true)
@@ -99,7 +103,8 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
         tournament.id,
         picked.map((p) => {
           const c = choiceOf(p)
-          return { memberId: p.memberId, section: c.section, byeRounds: c.byes, grade: gradeAsked(c) ? c.grade || null : null }
+          const range = confirmedRange(sectionOf(c.section), c.ticks)
+          return { memberId: p.memberId, section: c.section, byeRounds: c.byes, gradeRange: range === 'conflict' ? null : range }
         }),
       )
       if (result.paymentUrl) {
@@ -161,23 +166,20 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
                   <div className="mt-2.5 space-y-2 pl-6">
                     <select aria-label={`Section for ${p.name}`}
                       className="w-full rounded-md border bg-background px-2.5 py-1.5 text-sm"
-                      value={c.section} onChange={(e) => setChoice(p, { section: e.target.value })}>
+                      value={c.section} onChange={(e) => setChoice(p, { section: e.target.value, ticks: NO_TICKS })}>
                       {tournament.sections.map((s) => {
                         const fee = feeOf(p, s.name)
                         return <option key={s.name} value={s.name}>{s.name}{fee > 0 ? ` — $${fee}` : ''}</option>
                       })}
                     </select>
-                    {gradeAsked(c) && (
-                      <select aria-label={`Grade for ${p.name}`}
-                        className="w-full rounded-md border bg-background px-2.5 py-1.5 text-sm"
-                        value={c.grade ?? ''} onChange={(e) => setChoice(p, { grade: e.target.value })}>
-                        <option value="">{gradeRequired(c) ? 'Grade this school year…' : 'Grade (optional, for grade prizes)…'}</option>
-                        {Array.from({ length: 13 }, (_, g) => (
-                          <option key={g} value={gradeLabel(g)}>{g === 0 ? 'Kindergarten' : `Grade ${g}`}</option>
-                        ))}
-                      </select>
-                    )}
-                    {problemOf(p) && !(gradeRequired(c) && !c.grade) && (
+                    <GradeConfirm
+                      section={sectionOf(c.section)}
+                      ticks={c.ticks}
+                      onChange={(ticks) => setChoice(p, { ticks })}
+                      who={p.memberId ? p.name : null}
+                      compact
+                    />
+                    {problemOf(p) && (
                       <p className="text-xs text-amber-800">{problemOf(p)}</p>
                     )}
                     {maxByes > 0 && (

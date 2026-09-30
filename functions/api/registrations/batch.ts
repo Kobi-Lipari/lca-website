@@ -17,7 +17,7 @@ import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../..
 import { sendRegistrationConfirmations } from '../../utils/registrationEmails'
 import { resolveSiteUrl } from '../../utils/site'
 import { hasPassed } from '../../utils/time'
-import { eligibilityProblem, parseGrade, type SectionWithRules } from '../../utils/sectionRules'
+import { eligibilityProblem, formatGradeRange, parseGradeRange, type SectionWithRules } from '../../utils/sectionRules'
 import { entryPrice } from '../../utils/pricing'
 
 interface BatchEntry {
@@ -25,8 +25,8 @@ interface BatchEntry {
   memberId?: string
   section?: string
   byeRounds?: number[]
-  /** When the section has grade limits: 'K', '1'..'12'. */
-  grade?: string
+  /** Grade range the player confirmed, "min-max" (K = 0); see registrations.ts. */
+  gradeRange?: string
 }
 
 interface BatchBody {
@@ -113,10 +113,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
 
     const player = await db.prepare(
-      'SELECT id, full_name, uscf_id, uscf_rating, membership_status, grade FROM members WHERE id = ?',
+      'SELECT id, full_name, uscf_id, uscf_rating, membership_status FROM members WHERE id = ?',
     )
       .bind(memberId)
-      .first<{ id: string; full_name: string; uscf_id: string | null; uscf_rating: number | null; membership_status: string; grade: string | null }>()
+      .first<{ id: string; full_name: string; uscf_id: string | null; uscf_rating: number | null; membership_status: string }>()
     if (!player) return errorResponse('Player not found', 404)
 
     if (tournament.is_rated && !player.uscf_id) {
@@ -125,8 +125,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const section = sections.find((s) => s.name === entry.section)
     if (!section) return errorResponse(`Choose a valid section for ${player.full_name}`, 400)
-    const grade = parseGrade(entry.grade ?? player.grade ?? null)
-    const problem = eligibilityProblem(section, { rating: player.uscf_rating, grade })
+    const gradeRange = parseGradeRange(entry.gradeRange ?? null)
+    const problem = eligibilityProblem(section, { rating: player.uscf_rating, gradeRange })
     if (problem) return errorResponse(`${player.full_name}: ${problem}`, 400)
 
     const byeRounds = entry.byeRounds ?? []
@@ -155,7 +155,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       section: section.name,
       byeRounds,
       amount: entryPrice(tournament, section.name, { isLcaMember: player.membership_status === 'active' }).amount,
-      grade: grade === null ? null : grade === 0 ? 'K' : String(grade),
+      grade: gradeRange ? formatGradeRange(gradeRange) : null,
     })
   }
 
@@ -224,7 +224,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         r.byeRounds.length > 0 ? JSON.stringify(r.byeRounds) : null,
         r.grade,
       ),
-      ...(r.grade ? [db.prepare('UPDATE members SET grade = ? WHERE id = ?').bind(r.grade, r.memberId)] : []),
       db.prepare(
         `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
          VALUES (?, ?, ?, 'tournament', ?, ?, ?)`,

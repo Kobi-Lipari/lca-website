@@ -76,7 +76,7 @@ describe('children on an account', () => {
     const parent = await seedMember()
     const kid = await addChild(parent, 'Played Before')
     const tournamentId = await seedTournament({ sections: [{ name: 'K-8', entryFee: 0 }] })
-    await invoke(batchPost, { method: 'POST', as: parent, body: { tournamentId, entries: [{ memberId: kid.id, section: 'K-8', grade: '4' }] } })
+    await invoke(batchPost, { method: 'POST', as: parent, body: { tournamentId, entries: [{ memberId: kid.id, section: 'K-8', gradeRange: '0-8' }] } })
 
     const res = await invoke(childDelete, { method: 'DELETE', as: parent, params: { id: kid.id } })
     expect(res.status).toBe(409)
@@ -148,8 +148,8 @@ describe('registering a family in one checkout', () => {
         tournamentId,
         entries: [
           { section: 'Open' },
-          { memberId: a.id, section: 'K-8', byeRounds: [1], grade: '6' },
-          { memberId: b.id, section: 'K-8', grade: 'K' },
+          { memberId: a.id, section: 'K-8', byeRounds: [1], gradeRange: '0-8' },
+          { memberId: b.id, section: 'K-8', gradeRange: '0-8' },
         ],
       },
     })

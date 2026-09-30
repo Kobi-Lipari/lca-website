@@ -6,15 +6,18 @@ import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../ut
 import { sendRegistrationConfirmations } from '../utils/registrationEmails'
 import { resolveSiteUrl } from '../utils/site'
 import { hasPassed } from '../utils/time'
-import { eligibilityProblem, parseGrade, type SectionWithRules } from '../utils/sectionRules'
+import { eligibilityProblem, formatGradeRange, parseGradeRange, type SectionWithRules } from '../utils/sectionRules'
 import { entryPrice } from '../utils/pricing'
 
 interface RegistrationBody {
   tournamentId?: string
   section?: string
   byeRounds?: number[]
-  /** Required when the section has grade limits: 'K', '1'..'12'. */
-  grade?: string
+  /**
+   * The grade range the player confirmed they're in, "min-max" with K = 0
+   * (e.g. "0-8" for "8th grade or below"). We never ask the actual grade.
+   */
+  gradeRange?: string
   /** Join the waitlist when the event is full. */
   waitlist?: boolean
 }
@@ -95,10 +98,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // Section eligibility (rating, grade). Directors can still place anyone by hand.
   const section = parseSections(tournament.sections).find((s) => s.name === body.section) as SectionWithRules
-  const grade = parseGrade(body.grade ?? authed.member.grade ?? null)
-  const problem = eligibilityProblem(section, { rating: authed.member.uscf_rating ?? null, grade })
+  const gradeRange = parseGradeRange(body.gradeRange ?? null)
+  const problem = eligibilityProblem(section, { rating: authed.member.uscf_rating ?? null, gradeRange })
   if (problem) return errorResponse(problem, 400)
-  const gradeText = grade === null ? null : grade === 0 ? 'K' : String(grade)
+  const gradeText = gradeRange ? formatGradeRange(gradeRange) : null
 
   const existing = await context.env.DB.prepare(
     'SELECT id, withdrawn_at, waitlisted_at FROM registrations WHERE tournament_id = ? AND member_id = ?',
@@ -164,9 +167,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const amount = entryPrice(tournament, body.section, {
     isLcaMember: authed.member.membership_status === 'active',
   }).amount
-  if (gradeText) {
-    await context.env.DB.prepare('UPDATE members SET grade = ? WHERE id = ?').bind(gradeText, authed.member.id).run()
-  }
   // Heads-up, not a block: the director may sell memberships at the door.
   const warnings: string[] = []
   if (tournament.is_rated && authed.member.uscf_expiration && authed.member.uscf_expiration.slice(0, 10) < String(tournament.date).slice(0, 10)) {

@@ -64,12 +64,52 @@ export function effectiveRules(section: SectionWithRules): SectionRules {
 
 export const gradeLabel = (g: number) => (g === 0 ? 'K' : String(g))
 
-export function parseGrade(value: string | number | null | undefined): number | null {
-  if (value === null || value === undefined || value === '') return null
+/**
+ * We never ask a player's grade, only whether they're in a range ("8th
+ * grade or below"). What we keep is the narrowest range they confirmed,
+ * stored as "min-max" (K = 0), e.g. "0-8". That is all the rules and grade
+ * prizes need to know.
+ */
+export interface GradeRange { min: number; max: number }
+
+export function parseGradeRange(value: string | null | undefined): GradeRange | null {
+  if (!value) return null
   const v = String(value).trim().toUpperCase()
-  if (v === 'K' || v === 'KG' || v === '0') return 0
-  const n = Number(v)
-  return Number.isInteger(n) && n >= 1 && n <= 12 ? n : null
+  const one = (x: string) => (x === 'K' || x === 'KG' ? 0 : Number(x))
+  const m = /^(K|KG|\d{1,2})\s*-\s*(K|KG|\d{1,2})$/.exec(v) ?? /^(K|KG|\d{1,2})$/.exec(v)
+  if (!m) return null
+  const min = one(m[1])
+  const max = one(m[2] ?? m[1])
+  if (!Number.isInteger(min) || !Number.isInteger(max) || min < 0 || max > 12 || min > max) return null
+  return { min, max }
+}
+
+export const formatGradeRange = (r: GradeRange) => `${r.min}-${r.max}`
+
+/** Both ranges confirmed at once: the overlap, or null if they can't both hold. */
+export function intersectGradeRanges(a: GradeRange | null, b: GradeRange): GradeRange | null {
+  if (!a) return b
+  const min = Math.max(a.min, b.min)
+  const max = Math.min(a.max, b.max)
+  return min <= max ? { min, max } : null
+}
+
+const gradeName = (g: number) => {
+  if (g === 0) return 'kindergarten'
+  const s = ['th', 'st', 'nd', 'rd']
+  const v = g % 100
+  return `${g}${s[(v - 20) % 10] ?? s[v] ?? s[0]} grade`
+}
+
+/** "in 8th grade or below", "in kindergarten", "in 6th through 8th grade". */
+export function gradeRangeText(min: number | null | undefined, max: number | null | undefined): string {
+  const lo = min ?? 0
+  const hi = max ?? 12
+  if (lo === hi) return `in ${gradeName(lo)}`
+  if (lo === 0 && hi === 12) return 'in kindergarten through 12th grade'
+  if (lo === 0) return `in ${gradeName(hi)} or below`
+  if (hi === 12) return `in ${gradeName(lo)} or above`
+  return `in ${gradeName(lo).replace(' grade', '')} through ${gradeName(hi)}`
 }
 
 /** Plain-language summary, e.g. "Rated under 1600 (unrated welcome)". */
@@ -84,9 +124,8 @@ export function describeRules(rules: SectionRules): string {
     parts.push('Rated players only')
   }
   if (rules.gradeMin != null || rules.gradeMax != null) {
-    const lo = rules.gradeMin ?? 0
-    const hi = rules.gradeMax ?? 12
-    parts.push(lo === hi ? `Grade ${gradeLabel(lo)}` : `Grades ${gradeLabel(lo)}–${gradeLabel(hi)}`)
+    const text = gradeRangeText(rules.gradeMin, rules.gradeMax)
+    parts.push(text.charAt(3).toUpperCase() + text.slice(4))
   }
   return parts.length ? parts.join(' · ') : 'Open to all'
 }
@@ -96,7 +135,7 @@ export const needsGrade = (rules: SectionRules) => rules.gradeMin != null || rul
 /** Why a player can't enter, or null if they can. */
 export function eligibilityProblem(
   section: SectionWithRules,
-  player: { rating: number | null | undefined; grade?: number | null },
+  player: { rating: number | null | undefined; gradeRange?: GradeRange | null },
 ): string | null {
   const r = effectiveRules(section)
   const rating = player.rating && player.rating > 0 ? player.rating : null
@@ -111,11 +150,11 @@ export function eligibilityProblem(
     }
   }
   if (needsGrade(r)) {
-    if (player.grade === null || player.grade === undefined) return `Choose the player's grade to enter ${section.name}.`
     const lo = r.gradeMin ?? 0
     const hi = r.gradeMax ?? 12
-    if (player.grade < lo || player.grade > hi) {
-      return `${section.name} is for ${lo === hi ? `grade ${gradeLabel(lo)}` : `grades ${gradeLabel(lo)}–${gradeLabel(hi)}`}.`
+    const g = player.gradeRange
+    if (!g || g.min < lo || g.max > hi) {
+      return `${section.name} is for players ${gradeRangeText(lo, hi)}. Tick the box to confirm the player is.`
     }
   }
   return null

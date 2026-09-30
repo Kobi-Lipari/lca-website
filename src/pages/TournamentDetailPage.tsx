@@ -15,7 +15,6 @@ import {
   optInTournamentReminder,
   optOutTournamentReminder,
   getTournamentReminderStatus,
-  hasGradePrizes,
   payRegistration,
   updateRegistration,
   updateRegistrationByes,
@@ -26,7 +25,8 @@ import {
   type TournamentStatus,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
-import { describeRules, effectiveRules, eligibilityProblem, gradeLabel, needsGrade, parseGrade } from '@/lib/sectionRules'
+import { describeRules, effectiveRules, eligibilityProblem, gradeRangeText, needsGrade, parseGradeRange } from '@/lib/sectionRules'
+import { asksGrade, confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
 import { entryPrice, type Price } from '@/lib/pricing'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { FamilyRegistrationPanel } from '@/components/family/FamilyRegistrationPanel'
@@ -106,9 +106,9 @@ function RegistrationModal({
             </div>
           )}
           {grade && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Grade</span>
-              <span className="font-medium">{grade}</span>
+            <div className="flex justify-between gap-4">
+              <span className="text-muted-foreground">Confirmed</span>
+              <span className="text-right font-medium">{grade}</span>
             </div>
           )}
           {!waitlist && <PriceLines price={price} />}
@@ -245,9 +245,7 @@ export function TournamentDetailPage() {
 
   const [selectedSection, setSelectedSection] = useState('')
   const [selectedByes, setSelectedByes] = useState<number[]>([])
-  // null until the player picks one; the last grade they gave fills in meanwhile.
-  const [pickedGrade, setSelectedGrade] = useState<string | null>(null)
-  const selectedGrade = pickedGrade ?? authMember?.grade ?? ''
+  const [gradeTicks, setGradeTicks] = useState<GradeTicks>(NO_TICKS)
   const [warnings, setWarnings] = useState<string[]>([])
   const [withdrawing, setWithdrawing] = useState(false)
   const [registering, setRegistering] = useState(false)
@@ -301,7 +299,9 @@ export function TournamentDetailPage() {
       return
     }
     const section = tournament?.sections.find((s) => s.name === selectedSection)
-    const problem = section && eligibilityProblem(section, { rating: authMember?.uscf_rating ?? null, grade: parseGrade(selectedGrade) })
+    const range = confirmedRange(section, gradeTicks)
+    if (range === 'conflict') { setRegisterError("The grade boxes you ticked can't all be true."); return }
+    const problem = section && eligibilityProblem(section, { rating: authMember?.uscf_rating ?? null, gradeRange: parseGradeRange(range) })
     if (problem) { setRegisterError(problem); return }
     setRegisterError(null)
     setShowModal(true)
@@ -314,8 +314,11 @@ export function TournamentDetailPage() {
     try {
       const full = !!tournament?.max_players && roster.filter((p) => !p.withdrawn_at).length >= tournament.max_players
       const section = tournament?.sections.find((s) => s.name === selectedSection)
-      const grade = section && (needsGrade(effectiveRules(section)) || hasGradePrizes(section)) ? selectedGrade || null : null
-      const result = await createRegistration(id, selectedSection, selectedByes, { grade, waitlist: full })
+      const range = confirmedRange(section, gradeTicks)
+      const result = await createRegistration(id, selectedSection, selectedByes, {
+        gradeRange: range === 'conflict' ? null : range,
+        waitlist: full,
+      })
       setWarnings(result.warnings ?? [])
       setConfirmation({ message: result.message, paymentUrl: result.paymentUrl, section: selectedSection })
       setShowModal(false)
@@ -442,15 +445,18 @@ export function TournamentDetailPage() {
   )
   const chosenSection = tournament.sections.find((s) => s.name === selectedSection)
   const chosenRules = chosenSection ? effectiveRules(chosenSection) : {}
-  const gradeNeeded = needsGrade(chosenRules)
-  // Grade prizes want the grade too, but it's optional for them.
-  const gradeForPrizes = !gradeNeeded && hasGradePrizes(chosenSection)
   const chosenPrice = priceFor(selectedSection)
-  const eligibility = user && chosenSection
-    ? eligibilityProblem(chosenSection, { rating: authMember?.uscf_rating ?? null, grade: gradeNeeded ? parseGrade(selectedGrade) : null })
+  // Only a rating problem blocks the button up front; the grade box sits
+  // right below, so an unticked box is checked on submit instead.
+  const blockingProblem = user && chosenSection
+    ? eligibilityProblem(chosenSection, {
+      rating: authMember?.uscf_rating ?? null,
+      gradeRange: needsGrade(chosenRules) ? { min: chosenRules.gradeMin ?? 0, max: chosenRules.gradeMax ?? 12 } : null,
+    })
     : null
-  // A missing grade isn't an error yet; the select right below asks for it.
-  const blockingProblem = eligibility && !(gradeNeeded && !selectedGrade) ? eligibility : null
+  const confirmed = confirmedRange(chosenSection, gradeTicks)
+  const confirmedGrade = confirmed && confirmed !== 'conflict' ? parseGradeRange(confirmed) : null
+  const confirmedText = confirmedGrade ? `In ${gradeRangeText(confirmedGrade.min, confirmedGrade.max).slice(3)}` : ''
   const myWithdrawn = !!myRegistration?.withdrawn_at
   const myWaitlisted = !!myRegistration?.waitlisted_at && !myWithdrawn
   const mySectionPaired = !!myRegistration && pairings.some((g) => g.section === myRegistration.section)
@@ -483,7 +489,7 @@ export function TournamentDetailPage() {
           member={authMember}
           selectedSection={selectedSection}
           byeRounds={selectedByes}
-          grade={gradeNeeded || gradeForPrizes ? (selectedGrade === 'K' ? 'Kindergarten' : selectedGrade) : ''}
+          grade={confirmedText}
           price={chosenPrice}
           waitlist={isFull}
           onConfirm={handleConfirmRegistration}
@@ -913,7 +919,7 @@ export function TournamentDetailPage() {
                           id="section"
                           className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                           value={selectedSection}
-                          onChange={(e) => setSelectedSection(e.target.value)}
+                          onChange={(e) => { setSelectedSection(e.target.value); setGradeTicks(NO_TICKS) }}
                           required
                         >
                           {tournament.sections.map((s) => {
@@ -928,25 +934,8 @@ export function TournamentDetailPage() {
                         <p className="text-xs text-muted-foreground">{describeRules(chosenRules)}</p>
                       </div>
 
-                      {(gradeNeeded || gradeForPrizes) && (
-                        <div className="space-y-1.5">
-                          <Label htmlFor="grade">
-                            Grade this school year
-                            {gradeForPrizes && <span className="ml-1 text-xs font-normal text-muted-foreground">(optional, for grade prizes)</span>}
-                          </Label>
-                          <select
-                            id="grade"
-                            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-                            value={selectedGrade}
-                            onChange={(e) => setSelectedGrade(e.target.value)}
-                            required={gradeNeeded}
-                          >
-                            <option value="">Choose a grade…</option>
-                            {Array.from({ length: 13 }, (_, g) => (
-                              <option key={g} value={gradeLabel(g)}>{g === 0 ? 'Kindergarten' : `Grade ${g}`}</option>
-                            ))}
-                          </select>
-                        </div>
+                      {asksGrade(chosenSection) && (
+                        <GradeConfirm section={chosenSection} ticks={gradeTicks} onChange={setGradeTicks} who={null} />
                       )}
 
                       {blockingProblem && (
@@ -1033,7 +1022,6 @@ export function TournamentDetailPage() {
                     selfUscfId={authMember.uscf_id ?? null}
                     selfRating={authMember.uscf_rating ?? null}
                     selfIsLcaMember={isLcaMember}
-                    selfGrade={authMember.grade ?? null}
                     selfRegistered={!!myRegistration || !!confirmation}
                   />
                 )}
