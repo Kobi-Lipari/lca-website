@@ -46,6 +46,7 @@ import { ResultsEntry } from '@/components/tournaments/ResultsEntry'
 import { SectionRulesEditor } from '@/components/tournaments/SectionRulesEditor'
 import { gradeRangeText, parseGradeRange } from '@/lib/sectionRules'
 import { PrizesEditor } from '@/components/tournaments/PrizesEditor'
+import { UsChessUploadPanel } from '@/components/tournaments/UsChessUploadPanel'
 import { Crosstable } from '@/components/tournaments/Crosstable'
 import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
 
@@ -2179,13 +2180,14 @@ export function TournamentManagePage() {
                   </div>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Submit at uschess.org → your affiliate dashboard → Tournament Rating Reports →
-                  New Event → Start Blank, and key in each section below. Only affiliate-authorized
-                  certified TDs can submit.
+                  Submit at uschess.org → your affiliate dashboard → Tournament Rating Reports → New Event.
+                  Upload the three files made below, or choose Start Blank and key in each section from the
+                  table. Only affiliate-authorized certified TDs can submit.
                 </p>
 
                 {report && (
                   <div className="mt-4 space-y-6">
+                    {id && <UsChessUploadPanel key={JSON.stringify(report.upload?.settings ?? null)} tournamentId={id} report={report} canEdit={!viewOnly} />}
                     {report.validationErrors.length > 0 && (
                       <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
                         <p className="font-semibold">Fix these before submitting to US Chess:</p>

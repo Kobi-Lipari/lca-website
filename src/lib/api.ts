@@ -598,6 +598,8 @@ export async function adminUpdateTournament(
     pairingSystem?: 'uscf' | 'fide'
     accelerated?: boolean
     keepApart?: 'family' | 'family_club' | 'none'
+    /** US Chess upload details (lib/uschessUpload UploadSettings). */
+    reportSettings?: Record<string, unknown> | null
     name?: string
     location?: string
     venue?: string | null
@@ -1097,6 +1099,19 @@ export interface ApiRatingReport {
     endDate: string
     location: string
     rounds: number
+    timeControl?: string | null
+  }
+  /** For the US Chess upload files: saved details and suggestions. */
+  upload?: {
+    settings: unknown
+    suggested: {
+      chiefTdId: string
+      chiefTdName: string
+      assistantTdId: string
+      city: string
+      state: string
+      zip: string
+    }
   }
   sections: Array<{ name: string; players: ApiRatingReportPlayer[] }>
   validationErrors: string[]
