@@ -26,7 +26,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const rosterRaw = await context.env.DB.prepare(
     `SELECT r.id as registration_id, r.member_id, r.section, r.payment_status,
-            r.bye_rounds, r.withdrawn_at, r.checked_in_at, r.rating_at_entry,
+            r.bye_rounds, r.withdrawn_at, r.checked_in_at, r.rating_at_entry, r.waitlisted_at, r.grade,
+            m.uscf_expiration,
             m.full_name, m.uscf_id, m.uscf_rating
      FROM registrations r
      JOIN members m ON m.id = r.member_id
@@ -54,7 +55,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // Withdrawn players are included: their played results stand.
   const standings = computeStandings(
     (games.results ?? []) as never,
-    roster as unknown as Parameters<typeof computeStandings>[1],
+    roster.filter((r) => !r.waitlisted_at) as unknown as Parameters<typeof computeStandings>[1],
     Number(tournament.rounds) || undefined,
   )
 

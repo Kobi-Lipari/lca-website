@@ -48,7 +48,7 @@ export interface SeedTournamentOptions {
   id?: string
   name?: string
   date?: string
-  sections?: Array<{ name: string; entryFee: number }>
+  sections?: Array<{ name: string; entryFee: number; [rule: string]: unknown }>
   entryFee?: number
   rounds?: number
   maxPlayers?: number | null

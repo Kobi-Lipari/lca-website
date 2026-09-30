@@ -39,6 +39,11 @@ export interface MemberRow {
   created_at: string
   /** Set on a child's profile: the parent who manages it (family accounts). */
   guardian_id?: string | null
+  uscf_rating?: number | null
+  /** US Chess membership expiry from the nightly sync. */
+  uscf_expiration?: string | null
+  /** Last grade given at entry ('K', '1'..'12'). */
+  grade?: string | null
 }
 
 export interface ClubRow {

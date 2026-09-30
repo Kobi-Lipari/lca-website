@@ -20,6 +20,12 @@ interface UpdateTournamentBody {
   registrationDeadline?: string | null
   isRated?: boolean
   pairingSystem?: string
+  /** Pricing: Central date/times and dollar amounts. null clears. */
+  earlyDeadline?: string | null
+  earlyDiscount?: number | null
+  lateAfter?: string | null
+  lateFee?: number | null
+  memberDiscount?: number | null
   isVisible?: boolean
   roundSchedule?: Array<{ round: number; date: string; time: string }>
   registrationClosesAt?: string | null
@@ -110,7 +116,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       status = ?, description = ?, registration_deadline = ?,
       is_rated = ?, is_visible = ?, round_schedule = ?,
       registration_closes_at = ?, custom_details = ?, time_control = ?,
-      club_id = ?, pairing_system = ?
+      club_id = ?, pairing_system = ?,
+      early_deadline = ?, early_discount = ?, late_after = ?, late_fee = ?, member_discount = ?
      WHERE id = ?`,
   ).bind(
     body.name ?? existing.name,
@@ -133,6 +140,11 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     timeControl ?? null,
     clubId,
     pairingSystem,
+    body.earlyDeadline !== undefined ? body.earlyDeadline || null : existing.early_deadline ?? null,
+    body.earlyDiscount !== undefined ? Math.max(0, Number(body.earlyDiscount) || 0) : existing.early_discount ?? 0,
+    body.lateAfter !== undefined ? body.lateAfter || null : existing.late_after ?? null,
+    body.lateFee !== undefined ? Math.max(0, Number(body.lateFee) || 0) : existing.late_fee ?? 0,
+    body.memberDiscount !== undefined ? Math.max(0, Number(body.memberDiscount) || 0) : existing.member_discount ?? 0,
     tournamentId,
   ).run()
 

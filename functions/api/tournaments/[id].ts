@@ -66,11 +66,16 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
             m.full_name, m.uscf_id, m.uscf_rating
      FROM registrations r
      JOIN members m ON m.id = r.member_id
-     WHERE r.tournament_id = ?
+     WHERE r.tournament_id = ? AND r.waitlisted_at IS NULL
      ORDER BY m.full_name ASC`,
   )
     .bind(tournamentId)
     .all()
+
+  const waitlist = await context.env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM registrations
+      WHERE tournament_id = ? AND waitlisted_at IS NOT NULL AND withdrawn_at IS NULL`,
+  ).bind(tournamentId).first<{ n: number }>()
 
   const pairings = await context.env.DB.prepare(
     `SELECT g.*,
@@ -103,6 +108,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       round_schedule: roundSchedule,
       custom_details: customDetails,
       is_rated: tournament.is_rated ?? 1,
+      waitlist_count: waitlist?.n ?? 0,
     },
     roster: roster.results ?? [],
     pairings: pairings.results ?? [],

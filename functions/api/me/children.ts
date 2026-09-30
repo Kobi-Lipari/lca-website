@@ -32,13 +32,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const { results } = await context.env.DB.prepare(
-    `SELECT r.id, r.member_id, r.section, r.payment_status, r.withdrawn_at
+    `SELECT r.id, r.member_id, r.section, r.payment_status, r.withdrawn_at, r.waitlisted_at
        FROM registrations r
        JOIN members m ON m.id = r.member_id
       WHERE r.tournament_id = ? AND m.guardian_id = ?`,
   )
     .bind(tournamentId, authed.member.id)
-    .all<{ id: string; member_id: string; section: string; payment_status: string; withdrawn_at: string | null }>()
+    .all<{ id: string; member_id: string; section: string; payment_status: string; withdrawn_at: string | null; waitlisted_at: string | null }>()
 
   const byChild = new Map((results ?? []).map((r) => [r.member_id, r]))
   return jsonResponse({

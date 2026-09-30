@@ -49,10 +49,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const rosterRes = await context.env.DB.prepare(
-    `SELECT r.member_id, r.section, m.full_name, m.uscf_id, m.uscf_rating
+    `SELECT r.member_id, r.section, m.full_name, m.uscf_id,
+            COALESCE(r.rating_at_entry, m.uscf_rating) AS uscf_rating
      FROM registrations r
      JOIN members m ON m.id = r.member_id
-     WHERE r.tournament_id = ?`,
+     WHERE r.tournament_id = ? AND r.waitlisted_at IS NULL`,
   ).bind(tournamentId).all<PlayerRow>()
 
   const gamesRes = await context.env.DB.prepare(

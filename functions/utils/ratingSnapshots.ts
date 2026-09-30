@@ -119,8 +119,8 @@ export async function snapshotMemberRatings(
     const primary = detail.ratings.find((r) => r.system === PRIMARY_SYSTEM)
     writes.push(
       db
-        .prepare(`UPDATE members SET uscf_rating = ?, uscf_rating_updated_at = ? WHERE id = ?`)
-        .bind(primary?.rating ?? null, now, member.id),
+        .prepare(`UPDATE members SET uscf_rating = ?, uscf_rating_updated_at = ?, uscf_expiration = ? WHERE id = ?`)
+        .bind(primary?.rating ?? null, now, detail.expirationDate ?? null, member.id),
     )
   }
 

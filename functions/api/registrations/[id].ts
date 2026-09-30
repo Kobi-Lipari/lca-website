@@ -13,6 +13,7 @@ import {
   parseJsonBody,
 } from '../../utils/response'
 import { recordAdminAction, type AuditEntry } from '../../utils/audit'
+import { escapeHtml, trySendEmail } from '../../utils/email'
 
 interface UpdateRegistrationBody {
   byeRounds?: unknown
@@ -122,6 +123,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const setClauses: string[] = []
   const binds: unknown[] = []
   let feeNote: string | undefined
+  let selfWithdrawal = false
   // Written to the activity log only after the update succeeds.
   const auditEntries: AuditEntry[] = []
   const actor = isResponse(managerResult) ? authed.member : managerResult.member
@@ -133,7 +135,18 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   // ── Withdrawal / reinstatement (manager only) ─────────────────────────────
   if (body.withdrawn !== undefined) {
     if (!isManager) {
-      return errorResponse('Only a tournament manager can withdraw or reinstate a player', 403)
+      // Players may withdraw themselves (never reinstate) until round 1 of
+      // their section is paired; after that the director handles it.
+      if (!body.withdrawn) {
+        return errorResponse('Ask the tournament director to reinstate you', 403)
+      }
+      const paired = await context.env.DB.prepare(
+        `SELECT 1 FROM tournament_games WHERE tournament_id = ? AND section = ? LIMIT 1`,
+      ).bind(registration.tournament_id, registration.section).first()
+      if (paired) {
+        return errorResponse('Pairings are already out. Please tell the tournament director you are withdrawing.', 403)
+      }
+      selfWithdrawal = true
     }
     if (body.withdrawn && registration.withdrawn_at) {
       return errorResponse('This player is already withdrawn', 400)
@@ -312,6 +325,22 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       `UPDATE registrations SET ${setClauses.join(', ')} WHERE id = ?`,
     ).bind(...binds, registrationId).run()
     for (const entry of auditEntries) await recordAdminAction(context.env.DB, actor, entry)
+  }
+
+  // A player who paid by card and withdrew needs a refund decision from
+  // the organizers; tell them rather than leaving it to be noticed.
+  if (selfWithdrawal && registration.payment_status === 'paid') {
+    const card = await context.env.DB.prepare(
+      `SELECT amount FROM payments WHERE reference_id = ? AND type = 'tournament' AND stripe_payment_intent IS NOT NULL LIMIT 1`,
+    ).bind(registrationId).first<{ amount: number }>()
+    if (card && context.env.CONTACT_EMAIL) {
+      await trySendEmail(context.env, {
+        to: context.env.CONTACT_EMAIL,
+        subject: `Withdrawal: ${playerLabel}, paid $${card.amount}`,
+        html: `<p>${escapeHtml(playerLabel)} withdrew online and had paid $${card.amount} by card.</p><p>Decide on a refund in the Stripe dashboard. An admin can mark it refunded on the event's Registration tab.</p>`,
+        text: `${playerLabel} withdrew online and had paid $${card.amount} by card. Decide on a refund in Stripe; an admin can mark it refunded on the event's Registration tab.`,
+      })
+    }
   }
 
   const updated = await context.env.DB.prepare(

@@ -46,7 +46,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const roster = await db.prepare(
     `SELECT r.member_id, m.full_name FROM registrations r JOIN members m ON m.id = r.member_id
-      WHERE r.tournament_id = ? AND r.section = ? AND r.withdrawn_at IS NULL`,
+      WHERE r.tournament_id = ? AND r.section = ? AND r.withdrawn_at IS NULL AND r.waitlisted_at IS NULL`,
   ).bind(tournamentId, section).all<{ member_id: string; full_name: string }>()
   const names = new Map((roster.results ?? []).map((r) => [r.member_id, r.full_name]))
   const nameOf = (id: string) => names.get(id) ?? 'That player'

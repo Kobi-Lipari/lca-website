@@ -244,7 +244,7 @@ export function DashboardPage() {
   const membershipExpiry = member?.membership_expiry ?? 'Not yet purchased'
 
   const upcomingRegistrations = registrations.filter(
-    (reg) => reg.payment_status === 'paid' || reg.payment_status === 'pending',
+    (reg) => !reg.withdrawn_at && (reg.payment_status === 'paid' || reg.payment_status === 'pending'),
   )
 
   // Most recently updated first; the dashboard shows the top 3.
@@ -666,12 +666,14 @@ export function DashboardPage() {
                     <span
                       className={cn(
                         'rounded-full px-2.5 py-0.5 text-xs font-medium',
-                        reg.payment_status === 'paid'
+                        reg.waitlisted_at
+                          ? 'bg-muted text-muted-foreground'
+                          : reg.payment_status === 'paid'
                           ? 'bg-emerald-100 text-emerald-800'
                           : 'bg-lca-gold/20 text-lca-navy',
                       )}
                     >
-                      {reg.payment_status === 'paid' ? 'Paid' : 'Payment pending'}
+                      {reg.waitlisted_at ? 'Waitlisted' : reg.payment_status === 'paid' ? 'Paid' : 'Payment pending'}
                     </span>
                     <Button asChild variant="outline" size="sm">
                       <Link to={`/tournaments/${reg.tournament_id}`}>View</Link>

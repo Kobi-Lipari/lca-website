@@ -17,12 +17,16 @@ import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../..
 import { sendRegistrationConfirmations } from '../../utils/registrationEmails'
 import { resolveSiteUrl } from '../../utils/site'
 import { hasPassed } from '../../utils/time'
+import { eligibilityProblem, parseGrade, type SectionWithRules } from '../../utils/sectionRules'
+import { entryPrice } from '../../utils/pricing'
 
 interface BatchEntry {
   /** Omitted = the signed-in member themselves. */
   memberId?: string
   section?: string
   byeRounds?: number[]
+  /** When the section has grade limits: 'K', '1'..'12'. */
+  grade?: string
 }
 
 interface BatchBody {
@@ -32,9 +36,9 @@ interface BatchBody {
 
 const MAX_ENTRIES = 9
 
-function parseSections(sectionsJson: string): Array<{ name: string; entryFee?: number }> {
+function parseSections(sectionsJson: string): SectionWithRules[] {
   try {
-    const parsed = JSON.parse(sectionsJson) as Array<{ name: string; entryFee?: number } | string>
+    const parsed = JSON.parse(sectionsJson) as Array<SectionWithRules | string>
     return parsed.map((s) => (typeof s === 'string' ? { name: s } : s))
   } catch {
     return []
@@ -70,6 +74,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       max_players: number | null
       rounds: number
       is_rated: number
+      early_deadline: string | null
+      early_discount: number | null
+      late_after: string | null
+      late_fee: number | null
+      member_discount: number | null
     }>()
   if (!tournament) return errorResponse('Tournament not found', 404)
 
@@ -91,6 +100,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     section: string
     byeRounds: number[]
     amount: number
+    grade: string | null
   }> = []
 
   for (const entry of entries) {
@@ -102,9 +112,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       return errorResponse('You can only register yourself and your own children', 403)
     }
 
-    const player = await db.prepare('SELECT id, full_name, uscf_id FROM members WHERE id = ?')
+    const player = await db.prepare(
+      'SELECT id, full_name, uscf_id, uscf_rating, membership_status, grade FROM members WHERE id = ?',
+    )
       .bind(memberId)
-      .first<{ id: string; full_name: string; uscf_id: string | null }>()
+      .first<{ id: string; full_name: string; uscf_id: string | null; uscf_rating: number | null; membership_status: string; grade: string | null }>()
     if (!player) return errorResponse('Player not found', 404)
 
     if (tournament.is_rated && !player.uscf_id) {
@@ -113,6 +125,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const section = sections.find((s) => s.name === entry.section)
     if (!section) return errorResponse(`Choose a valid section for ${player.full_name}`, 400)
+    const grade = parseGrade(entry.grade ?? player.grade ?? null)
+    const problem = eligibilityProblem(section, { rating: player.uscf_rating, grade })
+    if (problem) return errorResponse(`${player.full_name}: ${problem}`, 400)
 
     const byeRounds = entry.byeRounds ?? []
     if (byeRounds.length > maxByes) {
@@ -139,13 +154,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       name: player.full_name,
       section: section.name,
       byeRounds,
-      amount: section.entryFee ?? tournament.entry_fee,
+      amount: entryPrice(tournament, section.name, { isLcaMember: player.membership_status === 'active' }).amount,
+      grade: grade === null ? null : grade === 0 ? 'K' : String(grade),
     })
   }
 
   if (tournament.max_players != null) {
     const countRow = await db.prepare(
-      'SELECT COUNT(*) as count FROM registrations WHERE tournament_id = ? AND withdrawn_at IS NULL',
+      'SELECT COUNT(*) as count FROM registrations WHERE tournament_id = ? AND withdrawn_at IS NULL AND waitlisted_at IS NULL',
     ).bind(tournament.id).first<{ count: number }>()
     const left = tournament.max_players - (countRow?.count ?? 0)
     if (left < resolved.length) {
@@ -197,8 +213,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const free = r.amount <= 0
     statements.push(
       db.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, (SELECT uscf_rating FROM members WHERE id = ?3))`,
+        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, (SELECT uscf_rating FROM members WHERE id = ?3), ?7)`,
       ).bind(
         r.registrationId,
         tournament.id,
@@ -206,7 +222,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         r.section,
         free ? 'paid' : 'pending',
         r.byeRounds.length > 0 ? JSON.stringify(r.byeRounds) : null,
+        r.grade,
       ),
+      ...(r.grade ? [db.prepare('UPDATE members SET grade = ? WHERE id = ?').bind(r.grade, r.memberId)] : []),
       db.prepare(
         `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
          VALUES (?, ?, ?, 'tournament', ?, ?, ?)`,
