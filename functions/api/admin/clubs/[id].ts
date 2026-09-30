@@ -3,7 +3,7 @@
 // Merged from the two previous copies: full field set (color, imageUrl,
 // region) from one, hex-color validation from the other.
 import type { Env } from '../../../types'
-import { isResponse, requireClubRep, requireAdmin } from '../../../utils/auth'
+import { isResponse, requireClubRep, requireAdmin, requireClubView } from '../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -28,7 +28,7 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
-  const authResult = await requireClubRep(context.request, context.env, clubId)
+  const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
 
   const club = await context.env.DB.prepare('SELECT * FROM clubs WHERE id = ?')

@@ -177,6 +177,14 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     to: ticket.email,
   })
 
+  if (access.isObserver) {
+    await recordAdminAction(ctx.env.DB, access.member, {
+      action: 'ticket_reply',
+      targetLabel: `${ticket.seat_role ?? 'General'}: "${ticket.subject}"`,
+      detail: { ticket_id: ticket.id, to: ticket.email },
+    })
+  }
+
   return jsonResponse({ success: true, messageId, kind }, 201)
 }
 
@@ -224,6 +232,7 @@ export const onRequestPatch: PagesFunction<Env> = async (ctx) => {
 export const onRequestDelete: PagesFunction<Env> = async (ctx) => {
   const access = await requireSeatAccess(ctx.request, ctx.env)
   if (isResponse(access)) return access
+  if (access.isObserver) return errorResponse('Observers can read and reply, but not delete', 403)
 
   const ticket = await loadAccessibleTicket(ctx, access.seatIds, access.isAdmin)
   if (isResponse(ticket)) return ticket

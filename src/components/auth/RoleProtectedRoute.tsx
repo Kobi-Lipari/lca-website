@@ -23,7 +23,7 @@ function canAccessTournament(
   tournamentId: string,
   directedTournamentIds: string[],
 ): boolean {
-  if (role === 'lca_admin') return true
+  if (role === 'lca_admin' || role === 'lca_observer') return true
   // Anyone assigned to direct this event, whatever their role.
   if (directedTournamentIds.includes(tournamentId)) return true
   if (role === 'club_rep') return true
@@ -62,7 +62,7 @@ export function RoleProtectedRoute({
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }
 
-  if (requireClubMatch && id && !canManageClub(role, member?.club_id, id)) {
+  if (requireClubMatch && id && role !== 'lca_observer' && !canManageClub(role, member?.club_id, id)) {
     return <Navigate to="/dashboard" replace />
   }
 

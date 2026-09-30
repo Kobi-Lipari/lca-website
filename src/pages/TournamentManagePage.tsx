@@ -37,6 +37,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { toolsHomeFor } from '@/lib/roles'
+import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
@@ -917,8 +918,11 @@ export function TournamentManagePage() {
           </p>
         )}
 
+        <ViewOnlyNote>View only: you can see everything about this event and email its entrants from the Email tab. Changes are made by the organizers.</ViewOnlyNote>
+
         {/* ══════════ DETAILS ══════════ */}
         {activeTab === 'details' && (
+          <ViewOnlyFieldset>
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-8">
               <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -1202,10 +1206,12 @@ export function TournamentManagePage() {
               </div>
             )}
           </>
+          </ViewOnlyFieldset>
         )}
 
         {/* ══════════ REGISTRATION ══════════ */}
         {activeTab === 'registration' && (
+          <ViewOnlyFieldset>
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-6">
               <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -1482,10 +1488,12 @@ export function TournamentManagePage() {
               </form>
             </div>
           </>
+          </ViewOnlyFieldset>
         )}
 
         {/* ══════════ ROUNDS ══════════ */}
         {activeTab === 'rounds' && (
+          <ViewOnlyFieldset>
           <>
             {/* Rounds count + schedule */}
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
@@ -1766,6 +1774,7 @@ export function TournamentManagePage() {
               )}
             </div>
           </>
+          </ViewOnlyFieldset>
         )}
 
         {/* ══════════ STANDINGS ══════════ */}

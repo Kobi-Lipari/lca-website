@@ -1,6 +1,6 @@
 // functions/api/admin/campaigns.ts
 import type { Env } from '../../types'
-import { isResponse, requireAdmin } from '../../utils/auth'
+import { isResponse, requireAdminView } from '../../utils/auth'
 import { resolveRecipients, drainCampaign, type CampaignFilter, type ResolvedRecipient } from '../../utils/campaigns'
 import {
   errorResponse,
@@ -8,6 +8,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../utils/response'
+import { recordAdminAction } from '../../utils/audit'
 
 interface CreateCampaignBody {
   subject?: string
@@ -35,7 +36,7 @@ type CampaignRecipient = ResolvedRecipient | { id: null; email: string; full_nam
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdmin(context.request, context.env)
+  const authResult = await requireAdminView(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const { results } = await context.env.DB.prepare(
@@ -49,7 +50,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdmin(context.request, context.env)
+  const authResult = await requireAdminView(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const body = await parseJsonBody<CreateCampaignBody>(context.request)
@@ -145,6 +146,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // works to a deadline rather than to completion — anything it does not
   // reach is finished by the cron sweep, which is also what rescues this
   // campaign if the isolate running the waitUntil is evicted.
+  await recordAdminAction(context.env.DB, authResult.member, {
+    action: 'group_email_sent',
+    targetLabel: body.subject.trim(),
+    detail: { campaign_id: campaignId, recipients: recipients.length },
+  })
+
   context.waitUntil(drainCampaign(context.env, campaignId))
 
   return jsonResponse(

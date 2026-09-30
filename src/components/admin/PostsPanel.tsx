@@ -25,6 +25,7 @@ import { downscaleImage } from '@/lib/resizeImage'
 import { formatPostDate } from '@/lib/posts'
 import { cn } from '@/lib/utils'
 import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 
 const SITE = 'https://www.louisianachess.org'
 
@@ -51,6 +52,7 @@ function toDraft(p: ApiPost): Draft {
 }
 
 export function PostsPanel() {
+  const viewOnly = useViewOnly()
   const [posts, setPosts] = useState<ApiPost[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [editing, setEditing] = useState<ApiPost | null>(null)
@@ -85,6 +87,20 @@ export function PostsPanel() {
     }
   }
 
+  if (editing && viewOnly) {
+    return (
+      <div>
+        <Button type="button" variant="outline" size="sm" className="mb-4" onClick={() => { setEditing(null); refresh() }}>
+          Back to posts
+        </Button>
+        <ViewOnlyNote />
+        <ViewOnlyFieldset>
+          <PostEditor key={editing.id} post={editing} onClose={() => setEditing(null)} onSaved={() => {}} />
+        </ViewOnlyFieldset>
+      </div>
+    )
+  }
+
   if (editing) {
     return (
       <PostEditor
@@ -105,9 +121,11 @@ export function PostsPanel() {
             LCA announcements on the News page. Each post has its own page you can share to Facebook.
           </p>
         </div>
-        <Button type="button" size="sm" className={GOLD} onClick={newPost}>
-          <Plus className="mr-1.5 size-3.5" /> New post
-        </Button>
+        {!viewOnly && (
+          <Button type="button" size="sm" className={GOLD} onClick={newPost}>
+            <Plus className="mr-1.5 size-3.5" /> New post
+          </Button>
+        )}
       </div>
       {error && <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
 

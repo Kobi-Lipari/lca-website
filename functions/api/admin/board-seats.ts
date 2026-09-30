@@ -1,6 +1,6 @@
 // functions/api/admin/board-seats.ts
 import type { Env } from '../../types'
-import { isResponse, requireAdmin } from '../../utils/auth'
+import { isResponse, requireAdmin, requireAdminView } from '../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -27,7 +27,7 @@ interface AssignBody {
  * and why the tickets attached to it still exist.
  */
 export const onRequestGet: PagesFunction<Env> = async (ctx) => {
-  const auth = await requireAdmin(ctx.request, ctx.env)
+  const auth = await requireAdminView(ctx.request, ctx.env)
   if (isResponse(auth)) return auth
 
   const seats = await ctx.env.DB.prepare(

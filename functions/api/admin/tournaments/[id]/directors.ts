@@ -68,7 +68,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const authed = await requireAuthedMember(context.request, context.env)
   if (isResponse(authed)) return authed
 
-  const allowed = await canManageTournament(
+  const allowed = authed.member.role === 'lca_observer' || await canManageTournament(
     context.env.DB,
     authed.member,
     tournamentId,

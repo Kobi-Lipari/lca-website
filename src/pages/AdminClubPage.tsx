@@ -29,6 +29,7 @@ import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
+import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
@@ -308,7 +309,9 @@ export function AdminClubPage() {
         )}
 
         {/* ── Details tab ── */}
+        <ViewOnlyNote />
         {tab === 'details' && (
+          <ViewOnlyFieldset>
           <form onSubmit={handleSaveClub} className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <h2 className="mb-4 text-base font-semibold text-lca-navy">Basic information</h2>
@@ -454,10 +457,12 @@ export function AdminClubPage() {
               </Button>
             </div>
           </form>
+          </ViewOnlyFieldset>
         )}
 
         {/* ── News tab ── */}
         {tab === 'news' && (
+          <ViewOnlyFieldset>
           <div className="space-y-4">
             {/*
               Posted news was previously invisible here — the tab only offered a
@@ -531,10 +536,12 @@ export function AdminClubPage() {
             </Button>
           </form>
           </div>
+          </ViewOnlyFieldset>
         )}
 
         {/* ── Roster & officers tab ── */}
         {tab === 'roster' && (
+          <ViewOnlyFieldset>
           <div className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-1 flex items-center gap-2">
@@ -622,6 +629,7 @@ export function AdminClubPage() {
               )}
             </div>
           </div>
+          </ViewOnlyFieldset>
         )}
 
         {/* ── Tournaments tab (includes hidden drafts) ── */}

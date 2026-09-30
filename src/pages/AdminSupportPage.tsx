@@ -15,6 +15,7 @@ import {
   type ApiSupportMessage,
 } from '@/lib/api'
 import { ADMIN_SCROLL } from '@/lib/brand'
+import { useViewOnly } from '@/lib/viewOnly'
 
 const statusColors: Record<string, string> = {
   open: 'bg-blue-100 text-blue-800',
@@ -49,6 +50,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
   const [replyBody, setReplyBody] = useState('')
   const [sending, setSending] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const viewOnly = useViewOnly()
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [searchParams] = useSearchParams()
   const linkedTicketId = searchParams.get('ticket')
@@ -272,10 +274,12 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                   >
                     {statusLabels[selectedTicket.ticket.status] ?? selectedTicket.ticket.status}
                   </span>
-                  <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmDelete(true)}
-                    className="h-7 px-2 text-muted-foreground hover:text-destructive" aria-label="Delete ticket">
-                    <Trash2 className="size-4" />
-                  </Button>
+                  {!viewOnly && (
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setConfirmDelete(true)}
+                      className="h-7 px-2 text-muted-foreground hover:text-destructive" aria-label="Delete ticket">
+                      <Trash2 className="size-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
               {deleteError && <p className="mb-3 text-sm text-destructive">{deleteError}</p>}

@@ -385,7 +385,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   // lca_admin can read every seat's inbox, so the link shows for them too.
-  const isBoardMember = seats.length > 0 || role === 'lca_admin'
+  const isBoardMember = seats.length > 0 || role === 'lca_admin' || role === 'lca_observer'
 
   // Only meaningful once the profile has loaded and the assurance check has
   // resolved; before that `member` is null and this would flap true.

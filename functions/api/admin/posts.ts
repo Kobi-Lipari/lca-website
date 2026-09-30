@@ -1,13 +1,13 @@
 // functions/api/admin/posts.ts — LCA news posts: list all (admin) and create.
 import type { Env } from '../../types'
-import { isResponse, requireAdmin } from '../../utils/auth'
+import { isResponse, requireAdmin, requireAdminView } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 import { applyPostEdits, POST_LIST_COLUMNS, uniqueSlug, type PostBody } from '../../utils/posts'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const authed = await requireAdmin(context.request, context.env)
+  const authed = await requireAdminView(context.request, context.env)
   if (isResponse(authed)) return authed
 
   // Drafts first (they're what you're working on), then newest.

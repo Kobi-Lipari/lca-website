@@ -1,6 +1,6 @@
 // functions/api/admin/support/[id].ts
 import type { Env } from '../../../types'
-import { isResponse, requireAdmin } from '../../../utils/auth'
+import { isResponse, requireAdmin, requireAdminView } from '../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -14,7 +14,7 @@ import { recordAdminAction } from '../../../utils/audit'
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdmin(context.request, context.env)
+  const authResult = await requireAdminView(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const ticketId = context.params.id as string
@@ -33,7 +33,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 }
 
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdmin(context.request, context.env)
+  const authResult = await requireAdminView(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const ticketId = context.params.id as string
@@ -49,7 +49,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdmin(context.request, context.env)
+  const authResult = await requireAdminView(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const ticketId = context.params.id as string
@@ -90,6 +90,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     siteUrl: resolveSiteUrl(context.env, context.request),
   })
   await trySendEmail(context.env, { ...notification, to: ticket.email })
+
+  if (authResult.member.role === 'lca_observer') {
+    await recordAdminAction(context.env.DB, authResult.member, {
+      action: 'ticket_reply',
+      targetLabel: `"${ticket.subject}"`,
+      detail: { ticket_id: ticketId, to: ticket.email },
+    })
+  }
 
   return jsonResponse({ success: true, messageId }, 201)
 }
