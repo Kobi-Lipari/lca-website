@@ -220,7 +220,7 @@ export function Navbar() {
   const desktopOnlyLinks = primaryLinks.filter((link) => !HYBRID_VISIBLE_LABELS.includes(link.label))
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-lca-navy text-white shadow-md">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-lca-navy text-white shadow-md print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-90" onClick={closeMobile}>
           <img src={lcaLogo} alt="Louisiana Chess Association" className="h-11 w-11 rounded-lg object-contain" />

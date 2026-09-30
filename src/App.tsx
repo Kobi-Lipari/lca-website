@@ -40,6 +40,7 @@ const SupportPage = lazy(() => import('@/pages/SupportPage').then(m => ({ defaul
 const TournamentDetailPage = lazy(() => import('@/pages/TournamentDetailPage').then(m => ({ default: m.TournamentDetailPage })))
 const TournamentManagePage = lazy(() => import('@/pages/TournamentManagePage').then(m => ({ default: m.TournamentManagePage })))
 const TournamentPairingsPage = lazy(() => import('@/pages/TournamentPairingsPage').then(m => ({ default: m.TournamentPairingsPage })))
+const TournamentPrintPage = lazy(() => import('@/pages/TournamentPrintPage').then(m => ({ default: m.TournamentPrintPage })))
 const WorkspacePage = lazy(() => import('@/pages/WorkspacePage').then(m => ({ default: m.WorkspacePage })))
 const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => ({ default: m.TournamentsPage })))
 function App() {
@@ -68,6 +69,7 @@ function App() {
             <Route path="/tournaments" element={<TournamentsPage />} />
             <Route path="/tournaments/:id" element={<TournamentDetailPage />} />
             <Route path="/tournaments/:id/pairings" element={<TournamentPairingsPage />} />
+            <Route path="/tournaments/:id/print" element={<TournamentPrintPage />} />
             <Route path="/scholastic" element={<ScholasticPage />} />
             <Route path="/clubs" element={<ClubsPage />} />
             <Route path="/clubs/:id" element={<ClubDetailPage />} />

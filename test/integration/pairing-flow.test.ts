@@ -84,3 +84,59 @@ describe('a whole Swiss event', () => {
     expect(playoff.status).toBe(201)
   })
 })
+
+import { onRequestPost as gamesPost } from '../../functions/api/admin/tournaments/[id]/games'
+
+describe('manual pairings', () => {
+  async function setup() {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ rounds: 3, sections: [{ name: 'Open', entryFee: 0 }] })
+    const ids: string[] = []
+    for (let i = 0; i < 4; i++) {
+      const id = await seedMember({ uscfRating: 1800 - i * 100 })
+      ids.push(id)
+      await seedRegistration({ tournamentId, memberId: id, section: 'Open' })
+    }
+    await invoke(generatePost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { round: 1, section: 'Open' } })
+    return { admin, tournamentId, ids }
+  }
+
+  it('swaps colors on a board', async () => {
+    const { admin, tournamentId } = await setup()
+    const [g] = await pendingGames(tournamentId, 1)
+    const res = await invoke(gamesPost, {
+      method: 'POST', as: admin, params: { id: tournamentId },
+      body: { round: 1, section: 'Open', pairings: [{ board: g.board, whiteMemberId: g.black_member_id, blackMemberId: g.white_member_id }] },
+    })
+    expect(res.status).toBe(201)
+    const [after] = await pendingGames(tournamentId, 1)
+    expect(after.white_member_id).toBe(g.black_member_id)
+  })
+
+  it('refuses a player on two boards, someone outside the section, and self-pairing', async () => {
+    const { admin, tournamentId, ids } = await setup()
+    const [b1] = await pendingGames(tournamentId, 1)
+    const onBoardTwo = (await pendingGames(tournamentId, 1))[1].white_member_id
+    const twoBoards = await invoke(gamesPost, { method: 'POST', as: admin, params: { id: tournamentId },
+      body: { round: 1, section: 'Open', pairings: [{ board: b1.board, whiteMemberId: b1.white_member_id, blackMemberId: onBoardTwo }] } })
+    expect(twoBoards.status).toBe(400)
+    const outsider = await seedMember()
+    const notEntered = await invoke(gamesPost, { method: 'POST', as: admin, params: { id: tournamentId },
+      body: { round: 1, section: 'Open', pairings: [{ board: 9, whiteMemberId: outsider, blackMemberId: null }] } })
+    expect(notEntered.status).toBe(400)
+    const self = await invoke(gamesPost, { method: 'POST', as: admin, params: { id: tournamentId },
+      body: { round: 1, section: 'Open', pairings: [{ board: 1, whiteMemberId: ids[0], blackMemberId: ids[0] }] } })
+    expect(self.status).toBe(400)
+  })
+
+  it('asks before replacing a board that already has a result', async () => {
+    const { admin, tournamentId } = await setup()
+    const [g] = await pendingGames(tournamentId, 1)
+    await invoke(resultPatch, { method: 'PATCH', as: admin, params: { id: tournamentId, gameId: g.id }, body: { result: '1-0' } })
+    const swap = { round: 1, section: 'Open', pairings: [{ board: g.board, whiteMemberId: g.black_member_id, blackMemberId: g.white_member_id }] }
+    const first = await invoke(gamesPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: swap })
+    expect(first.status).toBe(409)
+    const confirmed = await invoke(gamesPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { ...swap, confirmReplace: true } })
+    expect(confirmed.status).toBe(201)
+  })
+})

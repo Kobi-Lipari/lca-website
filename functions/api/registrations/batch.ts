@@ -16,6 +16,7 @@ import { createCheckoutSession } from '../../utils/stripe'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 import { sendRegistrationConfirmations } from '../../utils/registrationEmails'
 import { resolveSiteUrl } from '../../utils/site'
+import { hasPassed } from '../../utils/time'
 
 interface BatchEntry {
   /** Omitted = the signed-in member themselves. */
@@ -75,7 +76,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (tournament.registration_status !== 'open') {
     return errorResponse('Registration is not open for this tournament', 400)
   }
-  if (tournament.registration_closes_at && new Date(tournament.registration_closes_at).getTime() <= Date.now()) {
+  if (hasPassed(tournament.registration_closes_at)) {
     return errorResponse('Registration is closed for this tournament', 400)
   }
 

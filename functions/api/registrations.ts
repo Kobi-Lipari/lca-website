@@ -5,6 +5,7 @@ import { createCheckoutSession } from '../utils/stripe'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../utils/response'
 import { sendRegistrationConfirmations } from '../utils/registrationEmails'
 import { resolveSiteUrl } from '../utils/site'
+import { hasPassed } from '../utils/time'
 
 interface RegistrationBody {
   tournamentId?: string
@@ -67,10 +68,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // Belt-and-suspenders deadline enforcement: even if no cron has flipped
   // registration_status yet, a past auto-close timestamp closes registration.
-  if (
-    tournament.registration_closes_at &&
-    new Date(tournament.registration_closes_at).getTime() <= Date.now()
-  ) {
+  if (hasPassed(tournament.registration_closes_at)) {
     return errorResponse('Registration is closed for this tournament', 400)
   }
 

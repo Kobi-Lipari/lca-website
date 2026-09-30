@@ -74,8 +74,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const pairings = await context.env.DB.prepare(
     `SELECT g.*,
-            w.full_name as white_name, w.uscf_rating as white_rating,
-            b.full_name as black_name, b.uscf_rating as black_rating
+            w.full_name as white_name,
+            COALESCE((SELECT rating_at_entry FROM registrations x
+                       WHERE x.tournament_id = g.tournament_id AND x.member_id = g.white_member_id), w.uscf_rating) as white_rating,
+            b.full_name as black_name,
+            COALESCE((SELECT rating_at_entry FROM registrations x
+                       WHERE x.tournament_id = g.tournament_id AND x.member_id = g.black_member_id), b.uscf_rating) as black_rating
      FROM tournament_games g
      LEFT JOIN members w ON w.id = g.white_member_id
      LEFT JOIN members b ON b.id = g.black_member_id

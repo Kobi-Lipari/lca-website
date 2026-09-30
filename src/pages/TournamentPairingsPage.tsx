@@ -1,7 +1,7 @@
 // src/pages/TournamentPairingsPage.tsx
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, ChevronDown, ChevronRight, Trophy } from 'lucide-react'
+import { ArrowLeft, ChevronDown, ChevronRight, Trophy, Printer } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -240,6 +240,9 @@ export function TournamentPairingsPage() {
           <p className="mt-2 text-sm text-white/60">
             {tournament.name} · {pairedRounds.length} of {tournament.rounds} rounds posted
           </p>
+          <Link to={`/tournaments/${id}/print`} className="mt-3 inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
+            <Printer className="size-3.5" /> Print pairings or standings
+          </Link>
         </div>
       </section>
 

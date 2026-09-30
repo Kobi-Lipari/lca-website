@@ -659,9 +659,9 @@ export function TournamentDetailPage() {
                 <h2 className="font-semibold text-white">
                   {myRegistration ? 'Your registration' : 'Register'}
                 </h2>
-                {tournament.registration_deadline && !myRegistration && (
+                {(tournament.registration_closes_at || tournament.registration_deadline) && !myRegistration && (
                   <p className="mt-0.5 text-xs text-white/50">
-                    Closes {tournament.registration_deadline}
+                    Registration closes {formatCloseTime(tournament.registration_closes_at || tournament.registration_deadline || '')}
                   </p>
                 )}
               </div>
@@ -905,4 +905,16 @@ export function TournamentDetailPage() {
       </section>
     </div>
   )
+}
+
+/** "Fri, Oct 16, 6:00 PM" for a Central wall-clock value like "2026-10-16T18:00". */
+function formatCloseTime(value: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/.exec(value)
+  if (!m) return value
+  const [, y, mo, d, h, mi] = m
+  const date = new Date(Date.UTC(Number(y), Number(mo) - 1, Number(d), Number(h ?? 23), Number(mi ?? 59)))
+  const day = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })
+  if (h === undefined) return day
+  const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'UTC' })
+  return `${day}, ${time} Central`
 }
