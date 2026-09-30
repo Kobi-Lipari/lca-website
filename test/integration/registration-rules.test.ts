@@ -42,16 +42,17 @@ describe('section entry rules', () => {
     expect((await register(unrated, { tournamentId, section: 'U1200' })).status).toBe(400)
   })
 
-  it('asks for a grade in a grade section and remembers it', async () => {
+  it('needs the player to confirm the grade range, and keeps only that', async () => {
     const tournamentId = await seedTournament({ sections: [{ name: 'K-5', entryFee: 0 }] })
     const kid = await seedMember()
-    expect((await register(kid, { tournamentId, section: 'K-5' })).status).toBe(400)
-    expect((await register(kid, { tournamentId, section: 'K-5', grade: '7' })).status).toBe(400)
-    expect((await register(kid, { tournamentId, section: 'K-5', grade: '3' })).status).toBe(201)
+    const none = await register(kid, { tournamentId, section: 'K-5' })
+    expect(none.status).toBe(400)
+    expect((await none.json<{ error: string }>()).error).toMatch(/5th grade or below/)
+    // Confirming a wider range isn't enough.
+    expect((await register(kid, { tournamentId, section: 'K-5', gradeRange: '0-8' })).status).toBe(400)
+    expect((await register(kid, { tournamentId, section: 'K-5', gradeRange: '0-5' })).status).toBe(201)
     const reg = await env.DB.prepare('SELECT grade FROM registrations WHERE member_id = ?').bind(kid).first<{ grade: string }>()
-    const member = await env.DB.prepare('SELECT grade FROM members WHERE id = ?').bind(kid).first<{ grade: string }>()
-    expect(reg?.grade).toBe('3')
-    expect(member?.grade).toBe('3')
+    expect(reg?.grade).toBe('0-5')
   })
 
   it('checks each player in a family entry', async () => {

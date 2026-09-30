@@ -2,7 +2,7 @@
 import type { GameResult } from './swiss/engine'
 import { computeStandings as standingsFor, type Tiebreaks } from './swiss/tiebreaks'
 import { awardPrizes, type PrizeAward, type SectionPrizes } from './prizes'
-import { parseGrade } from './sectionRules'
+import { parseGradeRange, type GradeRange } from './sectionRules'
 
 interface GameRow {
   id: string
@@ -114,12 +114,12 @@ export async function tournamentPrizes(
     .filter((s): s is { name: string; prizes: SectionPrizes } => !!s && typeof s === 'object' && !!s.name && !!s.prizes)
   if (withPrizes.length === 0 || standings.length === 0) return []
   const needsGrades = withPrizes.some((s) => s.prizes.classes?.some((c) => c.gradeMin != null || c.gradeMax != null))
-  const grades = new Map<string, number | null>()
+  const grades = new Map<string, GradeRange | null>()
   if (needsGrades) {
     const { results } = await db.prepare(
       `SELECT member_id, grade FROM registrations WHERE tournament_id = ?`,
     ).bind(tournamentId).all<{ member_id: string; grade: string | null }>()
-    for (const r of results ?? []) grades.set(r.member_id, parseGrade(r.grade))
+    for (const r of results ?? []) grades.set(r.member_id, parseGradeRange(r.grade))
   }
-  return awardPrizes(withPrizes, standings.map((s) => ({ ...s, grade: grades.get(s.member_id) ?? null })))
+  return awardPrizes(withPrizes, standings.map((s) => ({ ...s, gradeRange: grades.get(s.member_id) ?? null })))
 }

@@ -44,6 +44,7 @@ import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
 import { ResultsEntry } from '@/components/tournaments/ResultsEntry'
 import { SectionRulesEditor } from '@/components/tournaments/SectionRulesEditor'
+import { gradeRangeText, parseGradeRange } from '@/lib/sectionRules'
 import { PrizesEditor } from '@/components/tournaments/PrizesEditor'
 import { Crosstable } from '@/components/tournaments/Crosstable'
 import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
@@ -113,6 +114,12 @@ function normalizeSchedule(
     next.push(existing ?? { round: i, date: '', time: '' })
   }
   return next
+}
+
+/** "in 8th grade or below" from a confirmed range like "0-8". */
+function gradeNote(range: string): string {
+  const r = parseGradeRange(range)
+  return r ? gradeRangeText(r.min, r.max) : ''
 }
 
 function buildReportCsv(report: ApiRatingReport): string {
@@ -1555,8 +1562,8 @@ export function TournamentManagePage() {
                                 </span>
                               )}
                               {player.grade && (
-                                <span className="ml-2 text-xs font-normal text-muted-foreground">
-                                  {player.grade === 'K' ? 'K' : `Gr ${player.grade}`}
+                                <span className="ml-2 text-xs font-normal text-emerald-700" title={`Confirmed ${gradeNote(player.grade)} this school year`}>
+                                  ✓ grade
                                 </span>
                               )}
                               {isRated && player.uscf_expiration && tournament && player.uscf_expiration.slice(0, 10) < tournament.date.slice(0, 10) && (
@@ -1673,7 +1680,7 @@ export function TournamentManagePage() {
                         <span className="font-medium">{p.full_name}</span>
                         <span className="ml-2 text-xs text-muted-foreground">
                           {p.section}{p.uscf_rating ? ` · ${p.uscf_rating}` : ' · unrated'}
-                          {p.grade ? ` · ${p.grade === 'K' ? 'K' : `Gr ${p.grade}`}` : ''}
+                          {p.grade ? ` · confirmed ${gradeNote(p.grade)}` : ''}
                         </span>
                       </span>
                       <span className="flex gap-2">

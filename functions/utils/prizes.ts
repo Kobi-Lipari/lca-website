@@ -47,8 +47,8 @@ export interface PrizeStanding {
   score: number
   /** Rating at entry; null = unrated. */
   rating: number | null
-  /** 0 = K. Only used by grade classes. */
-  grade?: number | null
+  /** Grade range the player confirmed (K = 0). Only used by grade classes. */
+  gradeRange?: { min: number; max: number } | null
 }
 
 export interface PrizeAward {
@@ -87,9 +87,10 @@ function classEligible(c: PrizeClass) {
       if (c.ratingMin != null && (p.rating as number) < c.ratingMin) return false
     }
     if (c.gradeMin != null || c.gradeMax != null) {
-      if (p.grade == null) return false
-      if (c.gradeMin != null && p.grade < c.gradeMin) return false
-      if (c.gradeMax != null && p.grade > c.gradeMax) return false
+      // Eligible only if everything they confirmed falls inside the class.
+      const g = p.gradeRange
+      if (!g) return false
+      if (g.min < (c.gradeMin ?? 0) || g.max > (c.gradeMax ?? 12)) return false
     }
     return true
   }

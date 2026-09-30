@@ -116,7 +116,7 @@ describe('registration confirmations', () => {
 
     const res = await invoke(batchPost, {
       method: 'POST', as: parent,
-      body: { tournamentId, entries: [{ memberId: a, section: 'K-8', grade: '2' }, { memberId: b, section: 'K-8', grade: '5' }] },
+      body: { tournamentId, entries: [{ memberId: a, section: 'K-8', gradeRange: '0-8' }, { memberId: b, section: 'K-8', gradeRange: '0-8' }] },
     })
     expect(res.status).toBe(201)
     const session = stripeSessions.at(-1)!

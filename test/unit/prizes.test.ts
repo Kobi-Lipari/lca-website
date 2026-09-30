@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { awardPrizes, prizeFundTotal, type PrizeStanding, type SectionPrizes } from '../../functions/utils/prizes'
 
 const S = 'Open'
-const p = (member_id: string, score: number, rating: number | null, grade?: number): PrizeStanding =>
-  ({ member_id, section: S, score, rating, grade })
+const p = (member_id: string, score: number, rating: number | null, grade?: [number, number]): PrizeStanding =>
+  ({ member_id, section: S, score, rating, gradeRange: grade ? { min: grade[0], max: grade[1] } : null })
 
 const field = [p('A', 4, 1800), p('B', 3.5, 1300), p('C', 3.5, 1700), p('D', 3, 1350), p('E', 2, 1200), p('U', 1, null)]
 const cash = (awards: ReturnType<typeof awardPrizes>) => Object.fromEntries(awards.map((a) => [a.member_id, a.cash]))
@@ -49,7 +49,8 @@ describe('prizes', () => {
   })
 
   it('awards grade classes by grade', () => {
-    const kids = [p('A', 3, 900, 5), p('B', 2.5, 700, 2), p('C', 2, 600, 3)]
+    // A confirmed only "8th or below", so doesn't qualify for K-3.
+    const kids = [p('A', 3, 900, [0, 8]), p('B', 2.5, 700, [0, 3]), p('C', 2, 600, [0, 3])]
     const prizes: SectionPrizes = { classes: [{ label: 'Top K-3', gradeMax: 3, prizes: [{ amount: 0, label: 'Trophy' }, { label: 'Trophy' }] }] }
     const awards = awardPrizes([{ name: S, prizes }], kids)
     expect(awards.map((a) => [a.member_id, a.items])).toEqual([['B', ['Trophy (Top K-3)']], ['C', ['Trophy (Top K-3)']]])

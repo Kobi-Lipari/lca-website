@@ -158,7 +158,7 @@ export function PrizesEditor({ section, onChange }: {
           <p className="text-muted-foreground">
             Cash is split evenly among players tied on score, and each player gets only their largest cash prize
             (US Chess rules). Items like trophies can't be split, so they go by tiebreaks. Class prizes use the
-            rating at entry; grade prizes use the grade given on the entry form.
+            rating at entry. For grade prizes, entrants tick a box on the entry form to confirm they qualify.
           </p>
         </div>
       )}
