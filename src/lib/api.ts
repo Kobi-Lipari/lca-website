@@ -787,6 +787,7 @@ export async function adminCreatePairings(
       whiteMemberId?: string | null
       blackMemberId?: string | null
     }>
+    confirmReplace?: boolean
   },
 ) {
   const response = await fetch(`/api/admin/tournaments/${tournamentId}/games`, {
@@ -794,7 +795,7 @@ export async function adminCreatePairings(
     headers: await authHeaders(),
     body: JSON.stringify(body),
   })
-  return handleResponse<{ games: ApiTournamentGame[] }>(response)
+  return handleResponse<{ games: ApiTournamentGame[]; warnings: string[] }>(response)
 }
 
 export async function adminGeneratePairings(

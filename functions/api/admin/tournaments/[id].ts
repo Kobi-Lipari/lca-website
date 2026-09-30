@@ -136,6 +136,14 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     tournamentId,
   ).run()
 
+  if (body.status && body.status !== existing.status && (body.status === 'completed' || existing.status === 'completed')) {
+    await recordAdminAction(context.env.DB, authResult.member, {
+      action: 'tournament_complete',
+      targetLabel: String(body.name ?? existing.name),
+      detail: { tournament_id: tournamentId, from: existing.status, to: body.status },
+    })
+  }
+
   if (Number(isVisible) !== Number(existing.is_visible)) {
     await recordAdminAction(context.env.DB, authResult.member, {
       action: isVisible ? 'tournament_publish' : 'tournament_unpublish',

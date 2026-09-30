@@ -46,7 +46,7 @@ const footerSections = [
 export function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer className="border-t-[3px] border-lca-gold bg-lca-navy text-white">
+    <footer className="border-t-[3px] border-lca-gold bg-lca-navy text-white print:hidden">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr] lg:gap-16">
           {/* Brand column — identity, social, and actions as one anchored block */}

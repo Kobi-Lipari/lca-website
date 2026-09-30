@@ -14,6 +14,7 @@ import {
   adminAddWalkIn,
   adminAnnounce,
   adminCreatePairings,
+  ApiError,
   adminDeleteRoundPairings,
   adminDeleteTournament,
   adminGeneratePairings,
@@ -37,22 +38,11 @@ import {
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { toolsHomeFor } from '@/lib/roles'
-import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
+import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
+import { ResultsEntry } from '@/components/tournaments/ResultsEntry'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
-
-const RESULT_OPTIONS = [
-  { value: 'pending', label: 'pending' },
-  { value: '1-0', label: '1-0' },
-  { value: '0-1', label: '0-1' },
-  { value: '1/2-1/2', label: '1/2-1/2' },
-  { value: '1-0 F', label: '1-0 forfeit' },
-  { value: '0-1 F', label: '0-1 forfeit' },
-  { value: '0-0 F', label: '0-0 double forfeit' },
-  { value: 'bye', label: 'Bye (1 pt)' },
-  { value: 'bye-half', label: 'Bye (½ pt)' },
-]
 
 const SECTION_PRESETS = [
   'Open', 'U2200', 'U2000', 'U1800', 'U1600',
@@ -204,6 +194,9 @@ export function TournamentManagePage() {
 
   const [generateForm, setGenerateForm] = useState({ round: '1', section: 'Open' })
   const [pairingNotes, setPairingNotes] = useState<string[]>([])
+  const [savingStatus, setSavingStatus] = useState(false)
+  const [savedGameId, setSavedGameId] = useState<string | null>(null)
+  const viewOnly = useViewOnly()
   /** The round the engine will pair next in a section: one past the last paired. */
   const nextRoundFor = (section: string) =>
     games.filter((g) => g.section === section).reduce((max, g) => Math.max(max, g.round), 0) + 1
@@ -326,6 +319,24 @@ export function TournamentManagePage() {
     setPairingForm((p) => ({ ...p, section: defaultSection }))
     setWalkIn((p) => ({ ...p, section: p.section || defaultSection }))
     setDeleteSection((p) => p || defaultSection)
+  }
+
+  /**
+   * Refresh the live data (roster, games, standings) without blanking the
+   * page or touching any half-edited form. Used after results and other
+   * at-the-board actions, which happen dozens of times a round.
+   */
+  async function refreshLive() {
+    if (!id) return
+    try {
+      const data = await adminGetTournamentManage(id)
+      setTournament(data.tournament)
+      setRoster(data.roster ?? [])
+      setGames(data.games)
+      setStandings(data.standings)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to refresh')
+    }
   }
 
   async function loadManage() {
@@ -588,8 +599,11 @@ export function TournamentManagePage() {
       prev.map((r, i) => {
         if (i === 0) return r
         const d = new Date(baseDate.getTime() + i * autoFillGap * 60 * 1000)
-        const date = d.toISOString().split('T')[0]
-        const time = d.toTimeString().slice(0, 5)
+        // Local date parts: toISOString() is UTC and would move evening
+        // rounds to the next day.
+        const pad = (n: number) => String(n).padStart(2, '0')
+        const date = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+        const time = `${pad(d.getHours())}:${pad(d.getMinutes())}`
         return { ...r, date, time }
       }),
     )
@@ -623,6 +637,21 @@ export function TournamentManagePage() {
     )
   }
 
+  async function handleSetStatus(status: 'active' | 'completed') {
+    if (!id) return
+    if (status === 'completed' && !window.confirm('Finish this event? The public page will show final standings.')) return
+    setSavingStatus(true)
+    setError(null)
+    try {
+      await adminUpdateTournament(id, { status })
+      await refreshLive()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not update the event')
+    } finally {
+      setSavingStatus(false)
+    }
+  }
+
   async function handleGeneratePairings() {
     if (!id || !tournament) return
     const round = nextRoundFor(generateForm.section)
@@ -644,7 +673,7 @@ export function TournamentManagePage() {
         allowExtraRound,
       })
       setPairingNotes(result.warnings ?? [])
-      await loadManage()
+      await refreshLive()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate pairings')
     } finally {
@@ -664,11 +693,52 @@ export function TournamentManagePage() {
     setError(null)
     try {
       await adminDeleteRoundPairings(id, lastRound, deleteSection)
-      await loadManage()
+      await refreshLive()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete round')
     } finally {
       setDeletingRound(false)
+    }
+  }
+
+  /**
+   * Saves one board, asking first if it would replace an entered result.
+   * Returns false if the director backed out.
+   */
+  async function savePairing(
+    round: number,
+    section: string,
+    pairing: { board: number; whiteMemberId: string | null; blackMemberId: string | null },
+  ): Promise<boolean> {
+    if (!id) return false
+    const send = (confirmReplace: boolean) => adminCreatePairings(id, { round, section, pairings: [pairing], confirmReplace })
+    let result
+    try {
+      result = await send(false)
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        if (!window.confirm(`${err.message}`)) return false
+        result = await send(true)
+      } else {
+        throw err
+      }
+    }
+    setPairingNotes(result.warnings ?? [])
+    await refreshLive()
+    return true
+  }
+
+  async function handleSwapColors(game: ApiTournamentGame) {
+    if (!game.black_member_id) return
+    setError(null)
+    try {
+      await savePairing(game.round, game.section, {
+        board: game.board,
+        whiteMemberId: game.black_member_id,
+        blackMemberId: game.white_member_id,
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not swap colors')
     }
   }
 
@@ -678,20 +748,16 @@ export function TournamentManagePage() {
     setSavingPairings(true)
     setError(null)
     try {
-      await adminCreatePairings(id, {
-        round: Number(pairingForm.round),
-        section: pairingForm.section,
-        pairings: [{
-          board: Number(pairingForm.board),
-          whiteMemberId: pairingForm.whiteMemberId || null,
-          blackMemberId: pairingForm.blackMemberId || null,
-        }],
+      const result = await savePairing(Number(pairingForm.round), pairingForm.section, {
+        board: Number(pairingForm.board),
+        whiteMemberId: pairingForm.whiteMemberId || null,
+        blackMemberId: pairingForm.blackMemberId || null,
       })
+      if (!result) return
       setPairingForm((p) => ({
         ...p, whiteMemberId: '', blackMemberId: '',
         board: String(Number(p.board) + 1),
       }))
-      await loadManage()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add pairing')
     } finally {
@@ -701,10 +767,16 @@ export function TournamentManagePage() {
 
   async function handleResultChange(gameId: string, result: string) {
     if (!id) return
+    const before = games.find((g) => g.id === gameId)?.result
+    // Show it straight away; put it back if the save fails.
+    setGames((prev) => prev.map((g) => (g.id === gameId ? { ...g, result } : g)))
+    setSavedGameId(null)
     try {
       await adminUpdateGameResult(id, gameId, result)
-      await loadManage()
+      setSavedGameId(gameId)
+      await refreshLive()
     } catch (err) {
+      setGames((prev) => prev.map((g) => (g.id === gameId ? { ...g, result: before ?? g.result } : g)))
       setError(err instanceof Error ? err.message : 'Failed to update result')
     }
   }
@@ -719,12 +791,18 @@ export function TournamentManagePage() {
       checkedIn?: boolean
     },
   ) {
+    if (patch.withdrawn === true && !window.confirm(
+      `Withdraw ${player.full_name}? They won't be paired in later rounds. Results already played stand, and you can reinstate them.`,
+    )) return
+    if (patch.section && patch.section !== player.section && !window.confirm(
+      `Move ${player.full_name} from ${player.section} to ${patch.section}?`,
+    )) return
     setRosterSaving(player.registration_id)
     setError(null)
     try {
       const result = await updateRegistration(player.registration_id, patch)
       if (result.feeNote) setError(result.feeNote) // surfaced as a warning, not a failure
-      await loadManage()
+      await refreshLive()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update registration')
     } finally {
@@ -1773,46 +1851,14 @@ export function TournamentManagePage() {
                   </div>
                 )}
               </div>
-              {games.length === 0 ? (
-                <p className="mt-4 text-sm text-muted-foreground">No pairings yet.</p>
-              ) : (
-                <div className="mt-4 overflow-x-auto">
-                  <table className="w-full min-w-[640px] text-left text-sm">
-                    <thead>
-                      <tr className="border-b bg-muted/50">
-                        <th className="px-3 py-2">Rd</th>
-                        <th className="px-3 py-2">Bd</th>
-                        <th className="px-3 py-2">Section</th>
-                        <th className="px-3 py-2">White</th>
-                        <th className="px-3 py-2">Black</th>
-                        <th className="px-3 py-2">Result</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {games.map((game) => (
-                        <tr key={game.id} className="border-b">
-                          <td className="px-3 py-2">{game.round}</td>
-                          <td className="px-3 py-2">{game.board}</td>
-                          <td className="px-3 py-2">{game.section}</td>
-                          <td className="px-3 py-2">{game.white_name ?? game.white_member_id ?? '—'}</td>
-                          <td className="px-3 py-2">{game.black_name ?? game.black_member_id ?? 'BYE'}</td>
-                          <td className="px-3 py-2">
-                            <select
-                              className="rounded-md border bg-background px-2 py-1"
-                              value={game.result}
-                              onChange={(e) => handleResultChange(game.id, e.target.value)}
-                            >
-                              {RESULT_OPTIONS.map((r) => (
-                                <option key={r.value} value={r.value}>{r.label}</option>
-                              ))}
-                            </select>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
+              <ResultsEntry
+                games={games}
+                sections={sections.map((sec) => sec.name)}
+                onResult={handleResultChange}
+                onSwap={handleSwapColors}
+                tournamentId={id}
+                savedGameId={savedGameId}
+              />
             </div>
           </>
           </ViewOnlyFieldset>
@@ -1821,6 +1867,35 @@ export function TournamentManagePage() {
         {/* ══════════ STANDINGS ══════════ */}
         {activeTab === 'standings' && (
           <>
+            {tournament && !viewOnly && (() => {
+              const pendingCount = games.filter((g) => g.result === 'pending').length
+              const roundsDone = sections.every((sec) =>
+                games.some((g) => g.section === sec.name && g.round >= tournament.rounds))
+              const finished = tournament.status === 'completed'
+              return (
+                <div className={cn('flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4',
+                  finished ? 'border-emerald-200 bg-emerald-50' : 'bg-card')}>
+                  <div className="text-sm">
+                    <p className="font-semibold text-lca-navy">
+                      {finished ? 'This event is finished' : roundsDone && pendingCount === 0 ? 'All rounds are in' : 'Event in progress'}
+                    </p>
+                    <p className="text-muted-foreground">
+                      {finished
+                        ? 'The public page shows final standings. Reopen it if a result needs correcting.'
+                        : pendingCount > 0
+                          ? `${pendingCount} result${pendingCount === 1 ? '' : 's'} still to enter.`
+                          : 'Finish the event to show final standings and close it out.'}
+                    </p>
+                  </div>
+                  <Button type="button" variant={finished ? 'outline' : 'default'} size="sm"
+                    className={finished ? '' : goldButtonClass}
+                    disabled={savingStatus || (!finished && pendingCount > 0)}
+                    onClick={() => handleSetStatus(finished ? 'active' : 'completed')}>
+                    {finished ? 'Reopen event' : 'Finish event'}
+                  </Button>
+                </div>
+              )
+            })()}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <h2 className="text-lg font-bold text-lca-navy">Standings</h2>
               {standings.length === 0 ? (

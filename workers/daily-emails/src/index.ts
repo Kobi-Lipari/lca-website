@@ -28,6 +28,7 @@ import { sweepPendingCampaigns } from '../../../functions/utils/campaigns'
 import { resolveSiteUrl } from '../../../functions/utils/site'
 import { expireLapsedMemberships } from '../../../functions/utils/membershipExpiry'
 import { snapshotMemberRatings } from '../../../functions/utils/ratingSnapshots'
+import { hasPassed } from '../../../functions/utils/time'
 
 interface Env {
   DB: D1Database
@@ -79,7 +80,6 @@ export default {
 
     const today = new Date()
     const todayStr = today.toISOString().split('T')[0]
-    const nowIso = new Date().toISOString()
 
     // 1. Auto-open tournaments where registration_opens_at <= today
     await phase('auto-open', async () => {
@@ -93,14 +93,17 @@ export default {
     })
 
     // 1b. Auto-close registrations past their closing datetime
+    // Close times are Central wall-clock values, so compare as instants in
+    // code rather than as strings in SQL (utils/time).
     await phase('auto-close', async () => {
-      await env.DB.prepare(
-        `UPDATE tournaments
-         SET registration_status = 'closed'
-         WHERE registration_closes_at IS NOT NULL
-           AND registration_closes_at <= ?
-           AND registration_status = 'open'`,
-      ).bind(nowIso).run()
+      const { results } = await env.DB.prepare(
+        `SELECT id, registration_closes_at FROM tournaments
+          WHERE registration_closes_at IS NOT NULL AND registration_status = 'open'`,
+      ).all<{ id: string; registration_closes_at: string }>()
+      for (const t of results ?? []) {
+        if (!hasPassed(t.registration_closes_at)) continue
+        await env.DB.prepare(`UPDATE tournaments SET registration_status = 'closed' WHERE id = ?`).bind(t.id).run()
+      }
     })
 
     // 1c. Lapse memberships whose paid term has ended. Semantics and the

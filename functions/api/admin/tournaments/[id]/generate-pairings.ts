@@ -148,7 +148,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
        VALUES (?, ?, ?, ?, ?, ?, NULL, 'bye-half')`,
     ).bind(`game-${tournamentId}-r${round}-b${board}-${suffix}`, tournamentId, round, board, section, r.member_id))
   }
-  if (statements.length > 0) await db.batch(statements)
+  // The event is under way once anything is paired.
+  statements.push(db.prepare(`UPDATE tournaments SET status = 'active' WHERE id = ? AND status = 'upcoming'`).bind(tournamentId))
+  await db.batch(statements)
 
   const created = await db.prepare(
     `SELECT * FROM tournament_games WHERE tournament_id = ? AND section = ? AND round = ? ORDER BY board`,
