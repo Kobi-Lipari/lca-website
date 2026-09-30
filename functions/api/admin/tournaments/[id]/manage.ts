@@ -55,7 +55,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // Withdrawn players are included: their played results stand.
   const standings = computeStandings(
     (games.results ?? []) as never,
-    roster.filter((r) => !r.waitlisted_at) as unknown as Parameters<typeof computeStandings>[1],
+    roster.filter((r) => !(r as Record<string, unknown>).waitlisted_at) as unknown as Parameters<typeof computeStandings>[1],
     Number(tournament.rounds) || undefined,
   )
 
