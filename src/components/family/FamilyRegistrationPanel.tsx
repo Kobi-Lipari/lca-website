@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom'
 import { CheckCircle2, Users } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
-import { createBatchRegistration, getMyChildren, type ApiChild, type ApiTournamentDetail } from '@/lib/api'
+import { createBatchRegistration, getMyChildren, hasGradePrizes, type ApiChild, type ApiTournamentDetail } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { effectiveRules, eligibilityProblem, gradeLabel, needsGrade, parseGrade } from '@/lib/sectionRules'
@@ -82,11 +82,12 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
   const total = picked.reduce((sum, p) => sum + feeOf(p, choiceOf(p).section), 0)
   const missingUscf = tournament.is_rated !== 0 ? picked.filter((p) => !p.uscfId) : []
   const sectionOf = (name: string) => tournament.sections.find((s) => s.name === name)
-  const gradeAsked = (c: Choice) => { const s = sectionOf(c.section); return !!s && needsGrade(effectiveRules(s)) }
+  const gradeRequired = (c: Choice) => { const s = sectionOf(c.section); return !!s && needsGrade(effectiveRules(s)) }
+  const gradeAsked = (c: Choice) => gradeRequired(c) || hasGradePrizes(sectionOf(c.section))
   const problemOf = (p: Player) => {
     const c = choiceOf(p)
     const s = sectionOf(c.section)
-    return s ? eligibilityProblem(s, { rating: p.rating, grade: gradeAsked(c) ? parseGrade(c.grade) : null }) : null
+    return s ? eligibilityProblem(s, { rating: p.rating, grade: gradeRequired(c) ? parseGrade(c.grade) : null }) : null
   }
   const blocked = picked.some((p) => problemOf(p))
 
@@ -170,13 +171,13 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
                       <select aria-label={`Grade for ${p.name}`}
                         className="w-full rounded-md border bg-background px-2.5 py-1.5 text-sm"
                         value={c.grade ?? ''} onChange={(e) => setChoice(p, { grade: e.target.value })}>
-                        <option value="">Grade this school year…</option>
+                        <option value="">{gradeRequired(c) ? 'Grade this school year…' : 'Grade (optional, for grade prizes)…'}</option>
                         {Array.from({ length: 13 }, (_, g) => (
                           <option key={g} value={gradeLabel(g)}>{g === 0 ? 'Kindergarten' : `Grade ${g}`}</option>
                         ))}
                       </select>
                     )}
-                    {problemOf(p) && !(gradeAsked(c) && !c.grade) && (
+                    {problemOf(p) && !(gradeRequired(c) && !c.grade) && (
                       <p className="text-xs text-amber-800">{problemOf(p)}</p>
                     )}
                     {maxByes > 0 && (

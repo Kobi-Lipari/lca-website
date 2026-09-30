@@ -29,6 +29,7 @@ import {
   updateTournamentRegistration,
   type ApiCustomDetail,
   type ApiManageRosterPlayer,
+  type ApiPrizeAward,
   type ApiRatingReport,
   type ApiRoundScheduleItem,
   type ApiStanding,
@@ -43,6 +44,9 @@ import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
 import { ResultsEntry } from '@/components/tournaments/ResultsEntry'
 import { SectionRulesEditor } from '@/components/tournaments/SectionRulesEditor'
+import { PrizesEditor } from '@/components/tournaments/PrizesEditor'
+import { Crosstable } from '@/components/tournaments/Crosstable'
+import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
@@ -147,6 +151,8 @@ export function TournamentManagePage() {
   const [roster, setRoster] = useState<ApiManageRosterPlayer[]>([])
   const [games, setGames] = useState<ApiTournamentGame[]>([])
   const [standings, setStandings] = useState<ApiStanding[]>([])
+  const [prizes, setPrizes] = useState<ApiPrizeAward[]>([])
+  const [standingsView, setStandingsView] = useState<'standings' | 'crosstable'>('standings')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
@@ -258,6 +264,7 @@ export function TournamentManagePage() {
     splitRoster(data.roster ?? [])
     setGames(data.games)
     setStandings(data.standings)
+    setPrizes(data.prizes ?? [])
 
     // Normalize once so form state, the rounds→schedule sync effect, and the
     // snapshot all agree — no false "unsaved changes" straight after load.
@@ -371,6 +378,7 @@ export function TournamentManagePage() {
       splitRoster(data.roster ?? [])
       setGames(data.games)
       setStandings(data.standings)
+      setPrizes(data.prizes ?? [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to refresh')
     }
@@ -1235,7 +1243,7 @@ export function TournamentManagePage() {
                           <th className="px-3 py-2 text-left font-semibold">Section</th>
                           <th className="px-3 py-2 text-left font-semibold">Who can enter</th>
                           <th className="px-3 py-2 text-left font-semibold">Entry fee ($)</th>
-                          <th className="px-3 py-2 text-left font-semibold">Prize fund</th>
+                          <th className="px-3 py-2 text-left font-semibold">Prizes</th>
                           <th className="px-3 py-2 w-8"></th>
                         </tr>
                       </thead>
@@ -1261,10 +1269,18 @@ export function TournamentManagePage() {
                             <td className="px-3 py-2">
                               <Input
                                 className="h-8 w-32"
-                                placeholder="e.g. $500"
+                                placeholder="Prize fund text"
+                                aria-label={`Prize fund text for ${s.name}`}
+                                title='Shown on the public page, e.g. "$500 based on 40". Leave blank to show the total of the prizes below.'
                                 value={s.prizeFund ?? ''}
                                 onChange={(e) => updateSectionPrize(s.name, e.target.value)}
                               />
+                              <div className="mt-1.5">
+                                <PrizesEditor
+                                  section={s}
+                                  onChange={(next) => setSections((prev) => prev.map((x) => (x.name === s.name ? next : x)))}
+                                />
+                              </div>
                             </td>
                             <td className="px-3 py-2">
                               <button
@@ -2043,14 +2059,43 @@ export function TournamentManagePage() {
               )
             })()}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
-              <h2 className="text-lg font-bold text-lca-navy">Standings</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="text-lg font-bold text-lca-navy">Standings</h2>
+                {standings.length > 0 && (
+                  <div className="inline-flex rounded-lg border p-0.5 text-sm" role="tablist" aria-label="Standings view">
+                    {(['standings', 'crosstable'] as const).map((v) => (
+                      <button key={v} type="button" role="tab" aria-selected={standingsView === v} onClick={() => setStandingsView(v)}
+                        className={standingsView === v ? 'rounded-md bg-lca-navy px-3 py-1 font-medium text-white' : 'rounded-md px-3 py-1 text-muted-foreground hover:text-lca-navy'}>
+                        {v === 'standings' ? 'Standings' : 'Crosstable'}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               {standings.length === 0 ? (
                 <p className="mt-4 text-sm text-muted-foreground">Standings appear once results are recorded.</p>
               ) : (
                 <div className="mt-4">
                   {sections.map((sec) => (
-                    <StandingsTable key={sec.name} standings={standings} sectionName={sec.name} showHeading={sections.length > 1} />
+                    <div key={sec.name}>
+                      <PrizeWinners
+                        prizes={prizes}
+                        standings={standings}
+                        sectionName={sec.name}
+                        note={tournament?.status === 'completed'
+                          ? 'Shown on the public page.'
+                          : 'Provisional: updates as results come in, and goes on the public page when you finish the event.'}
+                      />
+                      {standingsView === 'standings'
+                        ? <StandingsTable standings={standings} sectionName={sec.name} showHeading={sections.length > 1} />
+                        : <Crosstable standings={standings} pairings={games} sectionName={sec.name} rounds={tournament?.rounds ?? 0} showHeading={sections.length > 1} />}
+                    </div>
                   ))}
+                  {sections.every((s) => !s.prizes) && (
+                    <p className="text-xs text-muted-foreground">
+                      Set prizes on the Details tab (Sections, Prizes column) and the winners are worked out here, with ties split the US Chess way.
+                    </p>
+                  )}
                 </div>
               )}
             </div>

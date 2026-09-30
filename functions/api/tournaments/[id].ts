@@ -2,7 +2,7 @@
 import type { Env } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { requireAuthedMember, isResponse } from '../../utils/auth'
-import { computeStandings } from '../../utils/tournament-manage'
+import { computeStandings, tournamentPrizes } from '../../utils/tournament-manage'
 import { parseJsonArray } from '../../utils/json'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -100,6 +100,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     (roster.results ?? []) as Parameters<typeof computeStandings>[1],
     Number(tournament.rounds) || undefined,
   )
+  // Prize winners are published once the event is finished.
+  const prizes = tournament.status === 'completed'
+    ? await tournamentPrizes(context.env.DB, tournamentId, sections, standings)
+    : []
 
   return jsonResponse({
     tournament: {
@@ -113,6 +117,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     roster: roster.results ?? [],
     pairings: pairings.results ?? [],
     standings,
+    prizes,
     myRegistration,
   })
 }

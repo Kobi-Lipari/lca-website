@@ -217,6 +217,42 @@ export interface ApiTournamentSection {
   gradeMin?: number | null
   gradeMax?: number | null
   rulesSet?: boolean
+  prizes?: ApiSectionPrizes
+}
+
+export interface ApiPrizeSlot {
+  amount?: number
+  label?: string
+}
+
+export interface ApiPrizeClass {
+  label: string
+  ratingMax?: number | null
+  ratingMin?: number | null
+  unratedOnly?: boolean
+  unratedOk?: boolean
+  gradeMin?: number | null
+  gradeMax?: number | null
+  prizes: ApiPrizeSlot[]
+}
+
+export interface ApiSectionPrizes {
+  place?: ApiPrizeSlot[]
+  classes?: ApiPrizeClass[]
+}
+
+/** One player's prize, worked out by the server (functions/utils/prizes). */
+export interface ApiPrizeAward {
+  member_id: string
+  section: string
+  prize: string
+  cash: number
+  items: string[]
+}
+
+/** True when a section's grade prizes need the entrant's grade. */
+export function hasGradePrizes(section: ApiTournamentSection | undefined): boolean {
+  return !!section?.prizes?.classes?.some((c) => c.gradeMin != null || c.gradeMax != null)
 }
 
 /**
@@ -425,6 +461,8 @@ export async function getTournament(id: string): Promise<{
   roster: ApiRosterPlayer[]
   pairings: ApiTournamentPairing[]
   standings: ApiStanding[]
+  /** Published once the event is finished. */
+  prizes?: ApiPrizeAward[]
   myRegistration?: ApiMyRegistration | null
 }> {
   const response = await fetch(`/api/tournaments/${id}`)
@@ -804,6 +842,7 @@ export async function adminGetTournamentManage(tournamentId: string) {
     roster: ApiManageRosterPlayer[]
     games: ApiTournamentGame[]
     standings: ApiStanding[]
+    prizes?: ApiPrizeAward[]
     directors: Array<{ member_id: string; full_name: string; email: string }>
   }>(response)
 }
