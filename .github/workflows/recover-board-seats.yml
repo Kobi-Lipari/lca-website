@@ -1,0 +1,116 @@
+name: Recover board seats
+
+# One-off recovery for board seat assignments wiped by migration 0040
+# (see migrations/0046 and migrations/README.md). Run it by hand from the
+# Actions tab.
+#
+# D1 Time Travel can only roll back the whole database, so this:
+#   1. records a bookmark for the database as it is now,
+#   2. rolls the database back to `restore_to`,
+#   3. copies out the board seat assignments,
+#   4. rolls forward again to the bookmark from step 1 (always, even if
+#      step 3 fails), which brings back everything since,
+#   5. puts the copied seats back and lists them.
+# The site shows the old data for about a minute during steps 2–4, and
+# anything saved on the site in that minute is lost, so run it when nobody
+# is using the site.
+
+on:
+  workflow_dispatch:
+    inputs:
+      restore_to:
+        description: 'Point in time to copy the seats from (UTC). Default is just before 0040 ran.'
+        required: true
+        default: '2026-09-30T15:20:00Z'
+      understood:
+        description: 'I understand the site is rolled back for about a minute while this runs.'
+        type: boolean
+        required: true
+        default: false
+
+concurrency:
+  group: migrate-db
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    name: Recover board seats
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Makes wrangler skip its "are you sure" prompts, as in migrate-db.yml.
+      CI: 'true'
+    steps:
+      - name: Confirmation
+        if: ${{ !inputs.understood }}
+        run: |
+          echo "::error::Tick 'I understand the site is rolled back for about a minute' and run again."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: 1. Bookmark the database as it is now
+        id: now
+        run: |
+          npx wrangler d1 time-travel info lca-db | tee now.txt
+          BOOKMARK=$(python3 scripts/recover-board-seats.py bookmark now.txt)
+          echo "bookmark=$BOOKMARK" >> "$GITHUB_OUTPUT"
+          echo "### Current database bookmark" >> "$GITHUB_STEP_SUMMARY"
+          echo "\`$BOOKMARK\` (restore to this to undo anything below)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 2. Roll back to ${{ inputs.restore_to }}
+        id: back
+        run: |
+          TS=$(date -u -d "${{ inputs.restore_to }}" +%s)
+          npx wrangler d1 time-travel restore lca-db --timestamp="$TS" | tee back.txt
+
+      - name: 3. Copy out the board seats
+        id: copy
+        run: |
+          npx wrangler d1 execute lca-db --remote --json --command \
+            "SELECT a.*, m.full_name AS member_name, s.role AS seat_role
+               FROM board_seat_assignments a
+               LEFT JOIN members m ON m.id = a.member_id
+               LEFT JOIN board_members s ON s.id = a.seat_id" > seats.json
+          python3 scripts/recover-board-seats.py report seats.json
+
+      - name: 4. Roll forward to now (always runs)
+        if: ${{ always() && steps.now.outputs.bookmark != '' && steps.back.conclusion != 'skipped' }}
+        run: |
+          npx wrangler d1 time-travel restore lca-db --bookmark="${{ steps.now.outputs.bookmark }}" | tee forward.txt
+
+      - name: 5. Put the seats back
+        if: ${{ success() }}
+        run: |
+          python3 scripts/recover-board-seats.py seats-sql seats.json restore.sql
+          if [ -s restore.sql ]; then
+            npx wrangler d1 execute lca-db --remote --file=restore.sql
+          fi
+          npx wrangler d1 execute lca-db --remote --json --command \
+            "SELECT a.*, m.full_name AS member_name, s.role AS seat_role
+               FROM board_seat_assignments a
+               LEFT JOIN members m ON m.id = a.member_id
+               LEFT JOIN board_members s ON s.id = a.seat_id" > after.json
+          {
+            echo "### Board seats now"
+            python3 scripts/recover-board-seats.py report after.json
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the copied seats
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: board-seats
+          path: |
+            seats.json
+            after.json
+            restore.sql
+          if-no-files-found: ignore
