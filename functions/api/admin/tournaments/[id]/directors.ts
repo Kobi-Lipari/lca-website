@@ -1,11 +1,8 @@
 // functions/api/admin/tournaments/[id]/directors.ts
-import type { Env } from '../../../../types'
+import type { Env, MemberRow } from '../../../../types'
 import { isResponse, requireAuthedMember } from '../../../../utils/auth'
-import {
-  canManageTournament,
-  getDirectedTournamentIds,
-} from '../../../../utils/permissions'
-import { syncSupabaseUserMetadata } from '../../../../utils/supabase'
+import { canManageTournament } from '../../../../utils/permissions'
+import { recordAdminAction } from '../../../../utils/audit'
 import {
   errorResponse,
   handleOptions,
@@ -31,50 +28,39 @@ async function listDirectors(env: Env, tournamentId: string) {
   return directors.results ?? []
 }
 
-// Shared gate for assigning/removing: must be able to manage the tournament,
-// must not be a TD themselves (TDs run the event, they don't grant access),
-// and club reps only touch their own club's tournaments.
+// Shared gate for assigning/removing: admins, or the rep of the club that
+// organizes the event. Assigning someone gives them this event only; it
+// never changes their role.
 async function requireCanAssign(
   context: EventContext<Env, string, unknown>,
 ): Promise<
   | Response
-  | { tournamentId: string }
+  | { tournamentId: string; tournamentName: string; actor: MemberRow }
 > {
   const tournamentId = context.params.id as string
   const authed = await requireAuthedMember(context.request, context.env)
   if (isResponse(authed)) return authed
 
-  const canAssign = await canManageTournament(
-    context.env.DB,
-    authed.member,
-    tournamentId,
-  )
-  if (!canAssign) {
-    return errorResponse('Forbidden', 403)
-  }
-
-  if (authed.member.role === 'tournament_director') {
-    return errorResponse('Only admins and club reps can assign directors', 403)
-  }
-
   const tournament = await context.env.DB.prepare(
-    'SELECT id, club_id FROM tournaments WHERE id = ?',
+    'SELECT id, name, club_id FROM tournaments WHERE id = ?',
   )
     .bind(tournamentId)
-    .first<{ id: string; club_id: string | null }>()
+    .first<{ id: string; name: string; club_id: string | null }>()
 
   if (!tournament) {
     return errorResponse('Tournament not found', 404)
   }
 
-  if (
-    authed.member.role === 'club_rep' &&
-    authed.member.club_id !== tournament.club_id
-  ) {
-    return errorResponse('Forbidden', 403)
+  // Only admins and the organizing club's rep hand out director access.
+  // Directors run the event; they don't give others access to it.
+  const isAdmin = authed.member.role === 'lca_admin'
+  const isOwnRep = authed.member.role === 'club_rep' &&
+    !!tournament.club_id && authed.member.club_id === tournament.club_id
+  if (!isAdmin && !isOwnRep) {
+    return errorResponse('Only admins and the organizing club\'s rep can assign directors', 403)
   }
 
-  return { tournamentId }
+  return { tournamentId, tournamentName: tournament.name, actor: authed.member }
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
@@ -105,12 +91,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const targetMember = await context.env.DB.prepare(
-    'SELECT * FROM members WHERE id = ?',
+    'SELECT id, full_name, role FROM members WHERE id = ?',
   )
     .bind(body.memberId)
-    .first<{ id: string; role: string; club_id: string | null }>()
+    .first<{ id: string; full_name: string; role: string }>()
 
-  if (!targetMember) {
+  if (!targetMember || targetMember.role === 'guest') {
     return errorResponse('Member not found', 404)
   }
 
@@ -121,17 +107,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     .bind(tournamentId, body.memberId)
     .run()
 
-  if (targetMember.role === 'member') {
-    await context.env.DB.prepare(
-      `UPDATE members SET role = 'tournament_director' WHERE id = ?`,
-    )
-      .bind(body.memberId)
-      .run()
-    await syncSupabaseUserMetadata(context.env, body.memberId, {
-      role: 'tournament_director',
-      club_id: targetMember.club_id,
-    })
-  }
+  await recordAdminAction(context.env.DB, gate.actor, {
+    action: 'director_assign',
+    targetMemberId: targetMember.id,
+    targetLabel: targetMember.full_name,
+    detail: { tournament_id: tournamentId, tournament: gate.tournamentName },
+  })
 
   return jsonResponse({ directors: await listDirectors(context.env, tournamentId) }, 201)
 }
@@ -146,39 +127,21 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     return errorResponse('memberId is required', 400)
   }
 
+  const removed = await context.env.DB.prepare('SELECT full_name FROM members WHERE id = ?')
+    .bind(body.memberId).first<{ full_name: string }>()
+
   await context.env.DB.prepare(
     `DELETE FROM tournament_directors WHERE tournament_id = ? AND member_id = ?`,
   )
     .bind(tournamentId, body.memberId)
     .run()
 
-  // Mirror of the POST auto-promote: if this was their last directed
-  // tournament and their role is tournament_director, demote back to member.
-  // Metadata sync is best-effort — the DB is authoritative either way.
-  const target = await context.env.DB.prepare(
-    'SELECT id, role, club_id FROM members WHERE id = ?',
-  )
-    .bind(body.memberId)
-    .first<{ id: string; role: string; club_id: string | null }>()
-
-  if (target && target.role === 'tournament_director') {
-    const remaining = await getDirectedTournamentIds(context.env.DB, body.memberId)
-    if (remaining.length === 0) {
-      await context.env.DB.prepare(
-        `UPDATE members SET role = 'member' WHERE id = ?`,
-      )
-        .bind(body.memberId)
-        .run()
-      try {
-        await syncSupabaseUserMetadata(context.env, body.memberId, {
-          role: 'member',
-          club_id: target.club_id,
-        })
-      } catch {
-        // best-effort; D1 role is the source of truth
-      }
-    }
-  }
+  await recordAdminAction(context.env.DB, gate.actor, {
+    action: 'director_remove',
+    targetMemberId: body.memberId,
+    targetLabel: removed?.full_name ?? null,
+    detail: { tournament_id: tournamentId, tournament: gate.tournamentName },
+  })
 
   return jsonResponse({ directors: await listDirectors(context.env, tournamentId) })
 }

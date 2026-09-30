@@ -12,6 +12,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../utils/response'
+import { recordAdminAction, type AuditEntry } from '../../utils/audit'
 
 interface UpdateRegistrationBody {
   byeRounds?: unknown
@@ -108,8 +109,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   }
 
   const tournament = await context.env.DB.prepare(
-    'SELECT rounds, sections, entry_fee FROM tournaments WHERE id = ?',
+    'SELECT name, rounds, sections, entry_fee FROM tournaments WHERE id = ?',
   ).bind(registration.tournament_id).first<{
+    name: string
     rounds: number
     sections: string
     entry_fee: number
@@ -120,6 +122,13 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const setClauses: string[] = []
   const binds: unknown[] = []
   let feeNote: string | undefined
+  // Written to the activity log only after the update succeeds.
+  const auditEntries: AuditEntry[] = []
+  const actor = isResponse(managerResult) ? authed.member : managerResult.member
+  const isAdmin = actor.role === 'lca_admin'
+  const player = await context.env.DB.prepare('SELECT full_name FROM members WHERE id = ?')
+    .bind(registration.member_id).first<{ full_name: string }>()
+  const playerLabel = `${player?.full_name ?? 'Player'} (${tournament.name})`
 
   // ── Withdrawal / reinstatement (manager only) ─────────────────────────────
   if (body.withdrawn !== undefined) {
@@ -134,6 +143,12 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     }
     setClauses.push('withdrawn_at = ?')
     binds.push(body.withdrawn ? new Date().toISOString() : null)
+    auditEntries.push({
+      action: body.withdrawn ? 'registration_withdraw' : 'registration_reinstate',
+      targetMemberId: registration.member_id,
+      targetLabel: playerLabel,
+      detail: { registration_id: registrationId, tournament_id: registration.tournament_id },
+    })
   }
 
   // ── Check-in (manager only) ───────────────────────────────────────────────
@@ -156,8 +171,39 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     if (!PAYMENT_STATUSES.includes(body.paymentStatus as (typeof PAYMENT_STATUSES)[number])) {
       return errorResponse('Invalid payment status', 400)
     }
-    setClauses.push('payment_status = ?')
-    binds.push(body.paymentStatus)
+    // Directors and club reps record cash at the door. Refunds, and anything
+    // touching a card payment, stay with admins: marking a card payment
+    // "refunded" here moves no money in Stripe, and marking it "pending"
+    // would hide that it was paid.
+    if (!isAdmin) {
+      if (body.paymentStatus === 'refunded' || registration.payment_status === 'refunded') {
+        return errorResponse('Only an LCA admin can record refunds', 403)
+      }
+      const card = await context.env.DB.prepare(
+        `SELECT 1 FROM payments
+          WHERE reference_id = ? AND type = 'tournament'
+            AND (stripe_payment_intent IS NOT NULL OR (stripe_session_id IS NOT NULL AND status = 'completed'))
+          LIMIT 1`,
+      ).bind(registrationId).first()
+      if (card) {
+        return errorResponse('This entry was paid by card. Ask an LCA admin to change it.', 403)
+      }
+    }
+    if (body.paymentStatus !== registration.payment_status) {
+      setClauses.push('payment_status = ?')
+      binds.push(body.paymentStatus)
+      auditEntries.push({
+        action: 'payment_change',
+        targetMemberId: registration.member_id,
+        targetLabel: playerLabel,
+        detail: {
+          registration_id: registrationId,
+          tournament_id: registration.tournament_id,
+          from: registration.payment_status,
+          to: body.paymentStatus,
+        },
+      })
+    }
   }
 
   // ── Section change ─────────────────────────────────────────────────────────
@@ -265,6 +311,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     await context.env.DB.prepare(
       `UPDATE registrations SET ${setClauses.join(', ')} WHERE id = ?`,
     ).bind(...binds, registrationId).run()
+    for (const entry of auditEntries) await recordAdminAction(context.env.DB, actor, entry)
   }
 
   const updated = await context.env.DB.prepare(

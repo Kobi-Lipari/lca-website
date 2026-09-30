@@ -31,7 +31,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   let statement: D1PreparedStatement
   if (viewer?.role === 'lca_admin') {
     statement = context.env.DB.prepare(`${base} ORDER BY t.date ASC`)
-  } else if (viewer && ['club_rep', 'tournament_director'].includes(viewer.role)) {
+  } else if (viewer) {
+    // Drafts: a rep's own club's, plus any event this person directs.
     statement = context.env.DB.prepare(
       `${base}
        WHERE t.is_visible = 1

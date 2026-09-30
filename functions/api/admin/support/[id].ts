@@ -9,6 +9,7 @@ import {
 } from '../../../utils/response'
 import { trySendEmail, supportReplyNotificationEmail } from '../../../utils/email'
 import { resolveSiteUrl } from '../../../utils/site'
+import { recordAdminAction } from '../../../utils/audit'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -91,4 +92,44 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   await trySendEmail(context.env, { ...notification, to: ticket.email })
 
   return jsonResponse({ success: true, messageId }, 201)
+}
+
+/**
+ * Permanently deletes a ticket and its messages. Admins only; any ticket,
+ * including general inquiries that no board seat can see. Logged, since the
+ * ticket itself is gone afterwards.
+ */
+export const onRequestDelete: PagesFunction<Env> = async (context) => {
+  const authResult = await requireAdmin(context.request, context.env)
+  if (isResponse(authResult)) return authResult
+
+  const ticketId = context.params.id as string
+  const ticket = await context.env.DB.prepare(
+    `SELECT t.id, t.number, t.name, t.email, t.subject, t.seat_id, b.role AS seat_role
+       FROM support_tickets t
+       LEFT JOIN board_members b ON b.id = t.seat_id
+      WHERE t.id = ?`,
+  ).bind(ticketId).first<{
+    id: string; number: number | null; name: string; email: string
+    subject: string; seat_id: string | null; seat_role: string | null
+  }>()
+  if (!ticket) return errorResponse('Ticket not found', 404)
+
+  await context.env.DB.batch([
+    context.env.DB.prepare('DELETE FROM support_messages WHERE ticket_id = ?').bind(ticket.id),
+    context.env.DB.prepare('DELETE FROM support_tickets WHERE id = ?').bind(ticket.id),
+  ])
+
+  await recordAdminAction(context.env.DB, authResult.member, {
+    action: 'ticket_delete',
+    targetLabel: `${ticket.seat_role ?? 'General'}: "${ticket.subject}"`,
+    detail: {
+      ticket_id: ticket.id,
+      ticket_number: ticket.number,
+      from: `${ticket.name} <${ticket.email}>`,
+      seat_id: ticket.seat_id,
+    },
+  })
+
+  return jsonResponse({ success: true })
 }

@@ -2,6 +2,7 @@
 import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
+import { recordAdminAction } from '../../utils/audit'
 
 interface CreateTournamentBody {
   id?: string
@@ -122,6 +123,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   )
     .bind(id)
     .first()
+
+  await recordAdminAction(context.env.DB, member, {
+    action: 'tournament_create',
+    targetLabel: body.name,
+    detail: { tournament_id: id },
+  })
 
   return jsonResponse({ tournament }, 201)
 }

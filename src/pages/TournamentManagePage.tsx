@@ -163,7 +163,8 @@ export function TournamentManagePage() {
   const [myRole, setMyRole] = useState<string | null>(null)
   // Back links go to the admin panel for admins, the workspace for reps/directors.
   const { role: authRole } = useAuth()
-  const backHref = toolsHomeFor(authRole, 'tournaments')
+  // Someone directing an event with an ordinary member account works from the workspace.
+  const backHref = authRole === 'member' ? '/workspace?tab=events' : toolsHomeFor(authRole, 'tournaments')
 
   // ── Details tab form state ──
   const [name, setName] = useState('')

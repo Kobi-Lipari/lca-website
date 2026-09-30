@@ -1,6 +1,6 @@
 // src/components/admin/AuditLogPanel.tsx
 import { useEffect, useMemo, useState } from 'react'
-import { ShieldAlert, UserCog, CreditCard, Building2, Eye, EyeOff } from 'lucide-react'
+import { ShieldAlert, UserCog, CreditCard, Building2, Eye, EyeOff, Trophy, Globe, Trash2, Mail, UserPlus, UserMinus, DollarSign, Pencil } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { adminGetAuditLog, type ApiAuditEntry } from '@/lib/api'
@@ -14,6 +14,10 @@ const FILTERS: { value: string; label: string }[] = [
   { value: 'membership_override', label: 'Membership overrides' },
   { value: 'club_change', label: 'Club changes' },
   { value: 'impersonation_start', label: 'Impersonation' },
+  { value: 'tournament_create,tournament_publish,tournament_unpublish,round_delete,announcement_sent,director_assign,director_remove,registration_withdraw,registration_reinstate', label: 'Events' },
+  { value: 'payment_change', label: 'Payments' },
+  { value: 'club_edit,officer_add,officer_remove', label: 'Club edits' },
+  { value: 'ticket_delete', label: 'Deleted tickets' },
 ]
 
 const ACTION_META: Record<
@@ -46,6 +50,20 @@ const ACTION_META: Record<
     icon: EyeOff,
     className: 'bg-muted text-muted-foreground',
   },
+  ticket_delete: { label: 'Deleted ticket', icon: Trash2, className: 'bg-red-100 text-red-800' },
+  tournament_create: { label: 'Created event', icon: Trophy, className: 'bg-emerald-100 text-emerald-800' },
+  tournament_publish: { label: 'Made event public', icon: Globe, className: 'bg-emerald-100 text-emerald-800' },
+  tournament_unpublish: { label: 'Hid event', icon: EyeOff, className: 'bg-muted text-muted-foreground' },
+  round_delete: { label: 'Deleted round', icon: Trash2, className: 'bg-red-100 text-red-800' },
+  announcement_sent: { label: 'Emailed entrants', icon: Mail, className: 'bg-blue-100 text-blue-800' },
+  director_assign: { label: 'Added director', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
+  director_remove: { label: 'Removed director', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
+  registration_withdraw: { label: 'Withdrew player', icon: UserMinus, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  registration_reinstate: { label: 'Reinstated player', icon: UserPlus, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  payment_change: { label: 'Payment status', icon: DollarSign, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  club_edit: { label: 'Edited club', icon: Pencil, className: 'bg-blue-100 text-blue-800' },
+  officer_add: { label: 'Added officer', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
+  officer_remove: { label: 'Removed officer', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
 }
 
 function roleLabel(role: unknown): string {
@@ -76,6 +94,22 @@ function describeDetail(entry: ApiAuditEntry): string | null {
         to?.status ?? '—'
       } (${to?.expiry ?? 'no expiry'})`
     }
+    case 'payment_change':
+      return `${parsed.from ?? '—'} → ${parsed.to ?? '—'}`
+    case 'director_assign':
+    case 'director_remove':
+      return typeof parsed.tournament === 'string' ? parsed.tournament : null
+    case 'round_delete':
+      return `Round ${parsed.round}${parsed.section ? `, ${parsed.section}` : ''} (${parsed.games ?? 0} games)`
+    case 'announcement_sent':
+      return `"${parsed.subject ?? ''}" to ${parsed.sent ?? 0} players`
+    case 'club_edit':
+      return Array.isArray(parsed.fields) ? `Changed ${parsed.fields.join(', ').replace(/_/g, ' ')}` : null
+    case 'officer_add':
+    case 'officer_remove':
+      return typeof parsed.title === 'string' ? parsed.title : null
+    case 'ticket_delete':
+      return typeof parsed.from === 'string' ? `From ${parsed.from}` : null
     default:
       return null
   }
@@ -135,9 +169,10 @@ export function AuditLogPanel() {
         <h2 className="text-xl font-bold text-lca-navy">Admin activity</h2>
       </div>
       <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
-        Privileged actions, newest first. Role changes matter most here — that is
-        how an account gains admin access, so an entry you don't recognise is
-        worth asking about.
+        Admin actions plus what club reps and directors change (events, payments,
+        club pages), newest first. Role changes matter most here: that is how an
+        account gains admin access, so an entry you don't recognise is worth
+        asking about.
       </p>
 
       <div className="mb-4 flex flex-wrap gap-2">

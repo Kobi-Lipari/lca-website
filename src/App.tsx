@@ -111,14 +111,14 @@ function App() {
             */}
             <Route path="/board/inbox" element={<ProtectedRoute><BoardInboxPage /></ProtectedRoute>} />
             {/* ── Club reps, directors, auditors ── */}
-            <Route path="/workspace" element={<RoleProtectedRoute roles={WORKSPACE_ROLES}><WorkspacePage /></RoleProtectedRoute>} />
+            <Route path="/workspace" element={<RoleProtectedRoute roles={WORKSPACE_ROLES} allowDirectors><WorkspacePage /></RoleProtectedRoute>} />
             {/* ── Admin ── */}
             {/* Admin-only. Anyone else who follows an old /admin link lands in
                 their workspace (or the dashboard) instead of an empty panel. */}
             <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin']} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/:section" element={<RoleProtectedRoute roles={['lca_admin']} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
-            <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']} requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
+            <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']} allowDirectors requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
           </Routes>
         </Suspense>
       </main>

@@ -11,6 +11,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../../../utils/response'
+import { recordAdminAction } from '../../../../utils/audit'
 
 interface AddOfficerBody {
   memberId?: string
@@ -71,5 +72,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     .bind(id, clubId, body.memberId, title)
     .run()
 
-  return jsonResponse({ officers: await listOfficers(context.env.DB, clubId) }, 201)
+  const officers = await listOfficers(context.env.DB, clubId)
+  const added = (officers as Array<{ id: string; full_name: string }>).find((o) => o.id === id)
+  await recordAdminAction(context.env.DB, authResult.member, {
+    action: 'officer_add',
+    targetMemberId: body.memberId,
+    targetLabel: added?.full_name ?? null,
+    detail: { club_id: clubId, title },
+  })
+
+  return jsonResponse({ officers }, 201)
 }

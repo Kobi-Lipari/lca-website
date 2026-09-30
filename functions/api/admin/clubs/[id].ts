@@ -10,6 +10,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../../utils/response'
+import { recordAdminAction } from '../../../utils/audit'
 
 interface UpdateClubBody {
   name?: string
@@ -133,7 +134,21 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   ).run()
 
   const club = await context.env.DB.prepare('SELECT * FROM clubs WHERE id = ?')
-    .bind(clubId).first()
+    .bind(clubId).first<Record<string, unknown>>()
+
+  // Which fields actually changed, for the activity log.
+  const COLUMNS = ['name', 'city', 'location', 'description', 'meeting_schedule',
+    'contact_email', 'color', 'image_url', 'region']
+  const changed = club
+    ? COLUMNS.filter((c) => (club[c] ?? null) !== ((existing as Record<string, unknown>)[c] ?? null))
+    : []
+  if (changed.length) {
+    await recordAdminAction(context.env.DB, authResult.member, {
+      action: 'club_edit',
+      targetLabel: String(club?.name ?? existing.name),
+      detail: { club_id: clubId, fields: changed },
+    })
+  }
 
   return jsonResponse({ club })
 }
