@@ -1,8 +1,13 @@
 // functions/api/admin/tournaments/[id]/generate-pairings.ts
+//
+// Pairs the next round of one section with the Swiss engine
+// (utils/swiss/engine): US Chess rules unless the tournament is set to
+// FIDE-style. Everything is written in one batch, so a failure leaves no
+// half-paired round behind.
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
-import { generateDutchPairings } from '../../../../utils/pairing'
-import type { PastGameInput, PairingPlayerInput } from '../../../../utils/pairing'
+import { recordAdminAction } from '../../../../utils/audit'
+import { pairRound, type PairingSystem, type SwissGame, type SwissPlayer } from '../../../../utils/swiss/engine'
 import {
   errorResponse,
   handleOptions,
@@ -14,13 +19,17 @@ interface GenerateBody {
   round?: number
   section?: string
   onlyCheckedIn?: boolean
+  /** Round 1 coin toss: higher-rated player on board 1 gets White. Random if omitted. */
+  firstBoardWhite?: boolean
+  /** Pair a round beyond the advertised number of rounds (e.g. a playoff). */
+  allowExtraRound?: boolean
 }
 
 function parseByes(raw: string | null): number[] {
   if (!raw) return []
   try {
     const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : []
+    return Array.isArray(parsed) ? parsed.filter((n) => typeof n === 'number') : []
   } catch {
     return []
   }
@@ -30,173 +39,139 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const tournamentId = context.params.id as string
-  const authResult = await requireTournamentManager(
-    context.request,
-    context.env,
-    tournamentId,
-  )
+  const authResult = await requireTournamentManager(context.request, context.env, tournamentId)
   if (isResponse(authResult)) return authResult
 
   const body = await parseJsonBody<GenerateBody>(context.request)
   if (!body?.round || !body.section) {
     return errorResponse('round and section are required', 400)
   }
+  const round = Math.floor(body.round)
+  const section = body.section
+  if (round < 1) return errorResponse('round must be at least 1', 400)
 
-  if (body.round < 1) {
-    return errorResponse('round must be at least 1', 400)
+  const db = context.env.DB
+  const tournament = await db.prepare('SELECT name, rounds, pairing_system FROM tournaments WHERE id = ?')
+    .bind(tournamentId).first<{ name: string; rounds: number; pairing_system: string | null }>()
+  if (!tournament) return errorResponse('Tournament not found', 404)
+
+  if (round > tournament.rounds && !body.allowExtraRound) {
+    return errorResponse(
+      `This tournament has ${tournament.rounds} rounds. To pair round ${round} anyway (for a playoff), confirm the extra round.`,
+      400,
+    )
   }
 
-  const existingRound = await context.env.DB.prepare(
-    `SELECT id FROM tournament_games
-     WHERE tournament_id = ? AND round = ? AND section = ? LIMIT 1`,
-  )
-    .bind(tournamentId, body.round, body.section)
-    .first()
-
-  if (existingRound) {
+  const latest = await db.prepare(
+    `SELECT MAX(round) AS r FROM tournament_games WHERE tournament_id = ? AND section = ?`,
+  ).bind(tournamentId, section).first<{ r: number | null }>()
+  const lastRound = latest?.r ?? 0
+  if (round <= lastRound) {
     return errorResponse(
-      'Pairings already exist for this round and section. Delete them first or choose the next round.',
+      `Round ${round} is already paired for ${section}. Delete it first to re-pair, or pair round ${lastRound + 1}.`,
       409,
     )
   }
+  if (round !== lastRound + 1) {
+    return errorResponse(`Pair round ${lastRound + 1} of ${section} first.`, 400)
+  }
 
-  if (body.round > 1) {
-    const priorRound = body.round - 1
-    const pendingPrior = await context.env.DB.prepare(
-      `SELECT id FROM tournament_games
-       WHERE tournament_id = ? AND round = ? AND section = ? AND result = 'pending' LIMIT 1`,
+  const pending = await db.prepare(
+    `SELECT COUNT(*) AS n FROM tournament_games
+      WHERE tournament_id = ? AND section = ? AND result = 'pending'`,
+  ).bind(tournamentId, section).first<{ n: number }>()
+  if ((pending?.n ?? 0) > 0) {
+    return errorResponse(
+      `Enter all results for round ${lastRound} (${pending?.n} still missing) before pairing round ${round}.`,
+      400,
     )
-      .bind(tournamentId, priorRound, body.section)
-      .first()
-
-    if (pendingPrior) {
-      return errorResponse(
-        `Enter all results for round ${priorRound} before generating round ${body.round}.`,
-        400,
-      )
-    }
   }
 
-  const roster = await context.env.DB.prepare(
-    `SELECT r.member_id, r.bye_rounds, r.checked_in_at, m.uscf_rating, m.full_name
-     FROM registrations r
-     JOIN members m ON m.id = r.member_id
-     WHERE r.tournament_id = ? AND r.section = ? AND r.withdrawn_at IS NULL
-     ORDER BY COALESCE(m.uscf_rating, 0) DESC`,
-  )
-    .bind(tournamentId, body.section)
-    .all<{
-      member_id: string
-      bye_rounds: string | null
-      checked_in_at: string | null
-      uscf_rating: number | null
-      full_name: string
-    }>()
+  const roster = await db.prepare(
+    `SELECT r.member_id, r.bye_rounds, r.checked_in_at, r.rating_at_entry,
+            m.uscf_rating, m.full_name
+       FROM registrations r
+       JOIN members m ON m.id = r.member_id
+      WHERE r.tournament_id = ? AND r.section = ? AND r.withdrawn_at IS NULL`,
+  ).bind(tournamentId, section).all<{
+    member_id: string
+    bye_rounds: string | null
+    checked_in_at: string | null
+    rating_at_entry: number | null
+    uscf_rating: number | null
+    full_name: string
+  }>()
 
-  const allRows = roster.results ?? []
-  if (allRows.length === 0) {
-    return errorResponse('No registered players in this section', 400)
+  const rows = roster.results ?? []
+  if (rows.length === 0) return errorResponse('No registered players in this section', 400)
+
+  const requestedBye = rows.filter((r) => parseByes(r.bye_rounds).includes(round))
+  const notCheckedIn = body.onlyCheckedIn
+    ? rows.filter((r) => !r.checked_in_at && !parseByes(r.bye_rounds).includes(round))
+    : []
+  const skip = new Set([...requestedBye, ...notCheckedIn].map((r) => r.member_id))
+  const players: SwissPlayer[] = rows
+    .filter((r) => !skip.has(r.member_id))
+    .map((r) => ({ id: r.member_id, rating: r.rating_at_entry ?? r.uscf_rating ?? null, name: r.full_name }))
+
+  const prior = await db.prepare(
+    `SELECT white_member_id, black_member_id, result FROM tournament_games
+      WHERE tournament_id = ? AND section = ? AND round < ?`,
+  ).bind(tournamentId, section, round).all<{ white_member_id: string; black_member_id: string | null; result: string }>()
+  const games: SwissGame[] = (prior.results ?? []).map((g) => ({
+    whiteId: g.white_member_id,
+    blackId: g.black_member_id,
+    result: g.result as SwissGame['result'],
+  }))
+
+  const system: PairingSystem = tournament.pairing_system === 'fide' ? 'fide' : 'uscf'
+  const firstBoardWhite = body.firstBoardWhite ?? Math.random() < 0.5
+  const outcome = players.length > 0
+    ? pairRound(players, games, round, { system, firstBoardWhite })
+    : { pairings: [], warnings: [] }
+
+  const suffix = Date.now().toString(36)
+  const statements: D1PreparedStatement[] = []
+  for (const p of outcome.pairings) {
+    statements.push(db.prepare(
+      `INSERT INTO tournament_games (id, tournament_id, round, board, section, white_member_id, black_member_id, result)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).bind(`game-${tournamentId}-r${round}-b${p.board}-${suffix}`, tournamentId, round, p.board, section,
+      p.whiteId, p.blackId, p.blackId ? 'pending' : 'bye'))
   }
+  // Requested half-point byes: visible rows after the real boards.
+  let board = outcome.pairings.length
+  for (const r of requestedBye) {
+    board += 1
+    statements.push(db.prepare(
+      `INSERT INTO tournament_games (id, tournament_id, round, board, section, white_member_id, black_member_id, result)
+       VALUES (?, ?, ?, ?, ?, ?, NULL, 'bye-half')`,
+    ).bind(`game-${tournamentId}-r${round}-b${board}-${suffix}`, tournamentId, round, board, section, r.member_id))
+  }
+  if (statements.length > 0) await db.batch(statements)
 
-  // Players who requested a bye for this round get a visible half-point row —
-  // regardless of check-in status, since they told us in advance they'd be out.
-  const byeRows = allRows.filter((row) =>
-    parseByes(row.bye_rounds).includes(body.round!),
-  )
+  const created = await db.prepare(
+    `SELECT * FROM tournament_games WHERE tournament_id = ? AND section = ? AND round = ? ORDER BY board`,
+  ).bind(tournamentId, section, round).all()
 
-  const activeRows = allRows.filter((row) => {
-    if (parseByes(row.bye_rounds).includes(body.round!)) return false
-    if (body.onlyCheckedIn && !row.checked_in_at) return false
-    return true
+  await recordAdminAction(db, authResult.member, {
+    action: 'round_paired',
+    targetLabel: tournament.name,
+    detail: { tournament_id: tournamentId, round, section, boards: outcome.pairings.length, system },
   })
 
-  const players: PairingPlayerInput[] = activeRows.map((row) => ({
-    id: row.member_id,
-    rating: row.uscf_rating ?? 1200,
-    name: row.full_name,
-  }))
-
-  const priorGames = await context.env.DB.prepare(
-    `SELECT white_member_id, black_member_id, result
-     FROM tournament_games
-     WHERE tournament_id = ? AND section = ? AND round < ?`,
-  )
-    .bind(tournamentId, body.section, body.round)
-    .all<{ white_member_id: string; black_member_id: string | null; result: string }>()
-
-  const pastGames: PastGameInput[] = (priorGames.results ?? []).map((game) => ({
-    whiteId: game.white_member_id,
-    blackId: game.black_member_id,
-    result: game.result as PastGameInput['result'],
-  }))
-
-  const pairings = players.length > 0
-    ? generateDutchPairings(players, pastGames, body.round)
-    : []
-
-  const created: unknown[] = []
-  const suffix = Date.now().toString(36)
-
-  for (const pairing of pairings) {
-    const id = `game-${tournamentId}-r${body.round}-b${pairing.board}-${suffix}`
-    await context.env.DB.prepare(
-      `INSERT INTO tournament_games (
-        id, tournament_id, round, board, section,
-        white_member_id, black_member_id, result
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    )
-      .bind(
-        id,
-        tournamentId,
-        body.round,
-        pairing.board,
-        body.section,
-        pairing.whiteId,
-        pairing.blackId,
-        pairing.blackId ? 'pending' : 'bye',
-      )
-      .run()
-
-    const game = await context.env.DB.prepare(
-      'SELECT * FROM tournament_games WHERE id = ?',
-    )
-      .bind(id)
-      .first()
-
-    if (game) created.push(game)
-  }
-
-  // Requested half-point byes: visible rows, boards after the real games
-  const maxBoard = pairings.reduce((max, p) => Math.max(max, p.board), 0)
-  let byeBoard = maxBoard
-
-  for (const row of byeRows) {
-    byeBoard += 1
-    const id = `game-${tournamentId}-r${body.round}-b${byeBoard}-${suffix}`
-    await context.env.DB.prepare(
-      `INSERT INTO tournament_games (
-        id, tournament_id, round, board, section,
-        white_member_id, black_member_id, result
-      ) VALUES (?, ?, ?, ?, ?, ?, NULL, 'bye-half')`,
-    )
-      .bind(id, tournamentId, body.round, byeBoard, body.section, row.member_id)
-      .run()
-
-    const game = await context.env.DB.prepare(
-      'SELECT * FROM tournament_games WHERE id = ?',
-    )
-      .bind(id)
-      .first()
-
-    if (game) created.push(game)
+  const warnings = [...outcome.warnings]
+  if (notCheckedIn.length > 0) {
+    warnings.push(`Not paired because they haven't checked in: ${notCheckedIn.map((r) => r.full_name).join(', ')}.`)
   }
 
   return jsonResponse(
     {
-      round: body.round,
-      section: body.section,
-      pairings: created,
-      count: created.length,
+      round,
+      section,
+      pairings: created.results ?? [],
+      count: (created.results ?? []).length,
+      warnings,
     },
     201,
   )

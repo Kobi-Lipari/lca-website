@@ -12,6 +12,7 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { StandingsTable } from '@/components/tournaments/StandingsTable'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -122,66 +123,6 @@ function RoundAccordion({
           })}
         </div>
       )}
-    </div>
-  )
-}
-
-// ── Standings table ───────────────────────────────────────────────────────────
-
-function StandingsTable({
-  standings,
-  sectionName,
-}: {
-  standings: ApiStanding[]
-  sectionName: string
-}) {
-  // Server order is authoritative (score desc, wins desc, name); filter only
-  const sorted = standings.filter((s) => s.section === sectionName)
-
-  if (sorted.length === 0) return null
-
-  return (
-    <div className="mb-6">
-      <h3 className="mb-3 text-base font-semibold text-lca-navy">{sectionName}</h3>
-      <div className="overflow-x-auto rounded-xl border">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="border-b bg-muted/50">
-              <th className="px-4 py-3 font-semibold text-lca-navy">#</th>
-              <th className="px-4 py-3 font-semibold text-lca-navy">Player</th>
-              <th className="px-4 py-3 text-center font-semibold text-lca-navy">Pts</th>
-              <th className="px-4 py-3 text-center font-semibold text-lca-navy">W</th>
-              <th className="px-4 py-3 text-center font-semibold text-lca-navy">D</th>
-              <th className="px-4 py-3 text-center font-semibold text-lca-navy">L</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sorted.map((player, idx) => (
-              <tr
-                key={player.member_id}
-                className={cn(
-                  'border-b last:border-0',
-                  idx === 0 && 'bg-lca-gold/5',
-                )}
-              >
-                <td className={cn(
-                  'px-4 py-3 font-medium',
-                  idx === 0 ? 'text-lca-navy' : 'text-muted-foreground',
-                )}>
-                  {idx + 1}
-                </td>
-                <td className="px-4 py-3 font-medium text-lca-navy">{player.full_name}</td>
-                <td className="px-4 py-3 text-center font-semibold text-lca-navy">
-                  {player.score % 1 === 0 ? player.score : player.score.toFixed(1)}
-                </td>
-                <td className="px-4 py-3 text-center text-muted-foreground">{player.wins}</td>
-                <td className="px-4 py-3 text-center text-muted-foreground">{player.draws}</td>
-                <td className="px-4 py-3 text-center text-muted-foreground">{player.losses}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
     </div>
   )
 }

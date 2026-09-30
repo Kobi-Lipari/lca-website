@@ -108,9 +108,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
        VALUES (?, ?, ?, ?, ?, 'pending', 'guest')`,
     ).bind(guestId, `${guestId}@walkin.lca.invalid`, fullName, uscfId, body?.uscfRating ?? null),
     context.env.DB.prepare(
-      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds)
-       VALUES (?, ?, ?, ?, ?, NULL)`,
-    ).bind(registrationId, tournamentId, guestId, section, regStatus),
+      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry)
+       VALUES (?, ?, ?, ?, ?, NULL, ?)`,
+    ).bind(registrationId, tournamentId, guestId, section, regStatus, body?.uscfRating ?? null),
     // Cash/check payment recorded for reconciliation; no stripe_session_id
     // is itself the marker that Stripe was never involved.
     context.env.DB.prepare(

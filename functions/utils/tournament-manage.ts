@@ -1,6 +1,6 @@
 // functions/utils/tournament-manage.ts
-import { whitePoints, blackPoints } from './pairing'
-import type { GameResult } from './pairing'
+import type { GameResult } from './swiss/engine'
+import { computeStandings as standingsFor, type Tiebreaks } from './swiss/tiebreaks'
 
 interface GameRow {
   id: string
@@ -19,67 +19,74 @@ interface StandingRow {
   member_id: string
   full_name: string
   section: string
+  rating: number | null
   score: number
   wins: number
   draws: number
   losses: number
+  /** Place within the section; tied players share it (see placeLabel). */
+  place: number
+  placeLabel: string
+  tiebreaks: Tiebreaks
 }
 
+/**
+ * Standings per section, ordered by score then US Chess tiebreaks
+ * (utils/swiss/tiebreaks). Withdrawn players are included: their played
+ * results stand.
+ */
 export function computeStandings(
   games: GameRow[],
-  roster: Array<{ member_id: string; full_name: string; section: string }>,
+  roster: Array<{
+    member_id: string
+    full_name: string
+    section: string
+    rating_at_entry?: number | null
+    uscf_rating?: number | null
+  }>,
+  totalRounds?: number,
 ): StandingRow[] {
-  const standings = new Map<string, StandingRow>()
-
-  for (const player of roster) {
-    standings.set(player.member_id, {
-      member_id: player.member_id,
-      full_name: player.full_name,
-      section: player.section,
-      score: 0,
-      wins: 0,
-      draws: 0,
-      losses: 0,
-    })
-  }
-
-  for (const game of games) {
-    if (!game.result || game.result === 'pending') continue
-    const result = game.result as GameResult
-
-    const white = game.white_member_id
-      ? standings.get(game.white_member_id)
-      : undefined
-    const black = game.black_member_id
-      ? standings.get(game.black_member_id)
-      : undefined
-
-    // Points: single source of truth, shared with the pairing engine.
-    // Unknown result strings fall through every branch to zero effect.
-    if (white) white.score += whitePoints(result)
-    if (black) black.score += blackPoints(result)
-
-    // W/D/L tallies (byes are neither wins nor losses)
-    if (result === '1-0' || result === '1-0 F') {
-      if (white) white.wins += 1
-      if (black) black.losses += 1
-    } else if (result === '0-1' || result === '0-1 F') {
-      if (black) black.wins += 1
-      if (white) white.losses += 1
-    } else if (result === '1/2-1/2') {
-      if (white) white.draws += 1
-      if (black) black.draws += 1
-    } else if (result === '0-0 F') {
-      if (white) white.losses += 1
-      if (black) black.losses += 1
+  const sections = [...new Set(roster.map((r) => r.section))]
+  const out: StandingRow[] = []
+  for (const section of sections) {
+    const players = roster.filter((r) => r.section === section)
+    const ids = new Set(players.map((p) => p.member_id))
+    const sectionGames = games
+      .filter((g) => g.section === section && g.white_member_id && ids.has(g.white_member_id))
+      .map((g) => ({
+        round: g.round,
+        whiteId: g.white_member_id as string,
+        blackId: g.black_member_id,
+        result: g.result as GameResult,
+      }))
+    const rows = standingsFor(
+      players.map((p) => ({ id: p.member_id, name: p.full_name, rating: p.rating_at_entry ?? p.uscf_rating ?? null })),
+      sectionGames,
+      totalRounds,
+    )
+    for (const r of rows) {
+      out.push({
+        member_id: r.id,
+        full_name: r.name,
+        section,
+        rating: r.rating,
+        score: r.score,
+        wins: r.wins,
+        draws: r.draws,
+        losses: r.losses,
+        place: r.place,
+        placeLabel: r.placeLabel,
+        tiebreaks: {
+          modifiedMedian: r.modifiedMedian,
+          solkoff: r.solkoff,
+          cumulative: r.cumulative,
+          oppCumulative: r.oppCumulative,
+          blacks: r.blacks,
+        },
+      })
     }
   }
-
-  return [...standings.values()].sort((a, b) => {
-    if (b.score !== a.score) return b.score - a.score
-    if (b.wins !== a.wins) return b.wins - a.wins
-    return a.full_name.localeCompare(b.full_name)
-  })
+  return out
 }
 
 export function parseTournamentSections(sectionsJson: string): unknown[] {
