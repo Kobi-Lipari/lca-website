@@ -38,10 +38,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (isResponse(authResult)) return authResult
 
   const tournament = await context.env.DB.prepare(
-    'SELECT id, name, date, end_date, location, rounds, sections, is_rated FROM tournaments WHERE id = ?',
+    `SELECT id, name, date, end_date, location, venue, rounds, sections, is_rated, time_control, report_settings, created_by
+       FROM tournaments WHERE id = ?`,
   ).bind(tournamentId).first<{
     id: string; name: string; date: string; end_date: string | null
-    location: string; rounds: number; sections: string; is_rated: number
+    location: string; venue: string | null; rounds: number; sections: string; is_rated: number
+    time_control: string | null; report_settings: string | null; created_by: string | null
   }>()
 
   if (!tournament) return errorResponse('Tournament not found', 404)
@@ -181,6 +183,21 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     validationErrors.push('Some games still have pending results — enter all results before submitting')
   }
 
+  // Suggestions for the upload details: the first director with a US Chess
+  // ID as chief TD, and city/state/ZIP read from the location or venue.
+  const tds = await context.env.DB.prepare(
+    `SELECT m.full_name, m.uscf_id FROM tournament_directors td
+       JOIN members m ON m.id = td.member_id
+      WHERE td.tournament_id = ? AND m.uscf_id IS NOT NULL
+      ORDER BY td.assigned_at`,
+  ).bind(tournamentId).all<{ full_name: string; uscf_id: string }>()
+  const place = `${tournament.venue ?? ''} ${tournament.location ?? ''}`
+  const zip = /\b(\d{5})(?:-\d{4})?\b/.exec(place)?.[1] ?? ''
+  const stateMatch = /,\s*([A-Z]{2})\b/.exec(tournament.location ?? '') ?? /\b([A-Z]{2})\s+\d{5}\b/.exec(place)
+  const city = (tournament.location ?? '').split(',')[0]?.trim() ?? ''
+  let settings: unknown = null
+  try { settings = tournament.report_settings ? JSON.parse(tournament.report_settings) : null } catch { settings = null }
+
   return jsonResponse({
     tournament: {
       name: tournament.name,
@@ -188,6 +205,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       endDate: tournament.end_date ?? tournament.date,
       location: tournament.location,
       rounds: tournament.rounds,
+      timeControl: tournament.time_control,
+    },
+    upload: {
+      settings,
+      suggested: {
+        chiefTdId: tds.results?.[0]?.uscf_id ?? '',
+        chiefTdName: tds.results?.[0]?.full_name ?? '',
+        assistantTdId: tds.results?.[1]?.uscf_id ?? '',
+        city,
+        state: stateMatch?.[1] ?? 'LA',
+        zip,
+      },
     },
     sections,
     validationErrors,

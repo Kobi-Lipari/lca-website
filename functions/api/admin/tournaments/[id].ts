@@ -24,6 +24,8 @@ interface UpdateTournamentBody {
   accelerated?: boolean
   /** 'family' | 'family_club' | 'none' */
   keepApart?: string
+  /** US Chess upload details; see migration 0045. */
+  reportSettings?: Record<string, unknown> | null
   /** Pricing: Central date/times and dollar amounts. null clears. */
   earlyDeadline?: string | null
   earlyDiscount?: number | null
@@ -127,7 +129,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       registration_closes_at = ?, custom_details = ?, time_control = ?,
       club_id = ?, pairing_system = ?,
       early_deadline = ?, early_discount = ?, late_after = ?, late_fee = ?, member_discount = ?,
-      accelerated = ?, keep_apart = ?
+      accelerated = ?, keep_apart = ?, report_settings = ?
      WHERE id = ?`,
   ).bind(
     body.name ?? existing.name,
@@ -157,6 +159,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     body.memberDiscount !== undefined ? Math.max(0, Number(body.memberDiscount) || 0) : existing.member_discount ?? 0,
     accelerated,
     keepApart,
+    body.reportSettings === undefined
+      ? (existing.report_settings ?? null)
+      : body.reportSettings === null ? null : JSON.stringify(body.reportSettings).slice(0, 8000),
     tournamentId,
   ).run()
 
