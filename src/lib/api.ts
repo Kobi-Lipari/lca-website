@@ -12,6 +12,10 @@ export interface ApiMember {
   uscf_rating_updated_at: string | null
   membership_status: 'active' | 'expired' | 'pending'
   membership_expiry: string | null
+  /** Last grade given on an entry form ('K', '1'..'12'). */
+  grade?: string | null
+  /** US Chess membership expiry, from the nightly sync. */
+  uscf_expiration?: string | null
   role: string
   club_id: string | null
   created_at: string
@@ -30,6 +34,8 @@ export interface ApiRegistration {
   /** Who the entry is for — set when it may be one of the member's children. */
   player_name?: string
   is_child_entry?: number
+  withdrawn_at?: string | null
+  waitlisted_at?: string | null
 }
 
 /** A child on a family account: a profile the parent manages, no login. */
@@ -42,12 +48,14 @@ export interface ApiChild {
   membership_expiry: string | null
   membership_type: string | null
   created_at: string
+  grade?: string | null
   /** Present when listed for a specific tournament (?tournamentId=). */
   registration?: {
     id: string
     section: string
     payment_status: string
     withdrawn_at: string | null
+    waitlisted_at?: string | null
   } | null
 }
 
@@ -202,6 +210,13 @@ export interface ApiTournamentSection {
   name: string
   entryFee: number
   prizeFund?: string
+  /** Entry rules; see lib/sectionRules. Absent = taken from the name. */
+  ratingMax?: number | null
+  ratingMin?: number | null
+  unratedOk?: boolean
+  gradeMin?: number | null
+  gradeMax?: number | null
+  rulesSet?: boolean
 }
 
 /**
@@ -296,6 +311,12 @@ export interface ApiTournamentDetail {
   round_schedule: ApiRoundScheduleItem[]
   custom_details: ApiCustomDetail[]
   time_control: string | null
+  early_deadline?: string | null
+  early_discount?: number | null
+  late_after?: string | null
+  late_fee?: number | null
+  member_discount?: number | null
+  waitlist_count?: number
 }
 
 export interface ApiRosterPlayer {
@@ -332,6 +353,8 @@ export interface ApiMyRegistration {
   registered_at: string
   withdrawn_at?: string | null
   checked_in_at?: string | null
+  waitlisted_at?: string | null
+  grade?: string | null
 }
 
 export interface ApiStanding {
@@ -557,6 +580,11 @@ export async function adminUpdateTournament(
     registrationClosesAt?: string | null
     customDetails?: ApiCustomDetail[]
     timeControl?: string | null
+    earlyDeadline?: string | null
+    earlyDiscount?: number | null
+    lateAfter?: string | null
+    lateFee?: number | null
+    memberDiscount?: number | null
     /** lca_admin only; null detaches the event from its club. */
     clubId?: string | null
   },
@@ -762,6 +790,9 @@ export interface ApiManageRosterPlayer {
   full_name: string
   uscf_id: string | null
   uscf_rating: number | null
+  waitlisted_at?: string | null
+  grade?: string | null
+  uscf_expiration?: string | null
 }
 
 export async function adminGetTournamentManage(tournamentId: string) {
@@ -855,16 +886,31 @@ export async function createRegistration(
   tournamentId: string,
   section: string,
   byeRounds: number[] = [],
+  extra: { grade?: string | null; waitlist?: boolean } = {},
 ): Promise<{
-  registration: ApiRegistration
-  payment: { id: string; amount: number; status: string }
+  registration: ApiRegistration & { waitlisted?: boolean }
+  payment?: { id: string; amount: number; status: string }
   paymentUrl: string | null
   message: string
+  warnings?: string[]
 }> {
   const response = await fetch('/api/registrations', {
     method: 'POST',
     headers: await authHeaders(),
-    body: JSON.stringify({ tournamentId, section, byeRounds }),
+    body: JSON.stringify({ tournamentId, section, byeRounds, grade: extra.grade ?? undefined, waitlist: extra.waitlist || undefined }),
+  })
+  return handleResponse(response)
+}
+
+/** Director: move a waitlisted player into the event. */
+export async function offerWaitlistSpot(
+  tournamentId: string,
+  registrationId: string,
+): Promise<{ success: boolean; amount: number }> {
+  const response = await fetch(`/api/admin/tournaments/${tournamentId}/waitlist`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ registrationId }),
   })
   return handleResponse(response)
 }
@@ -916,7 +962,7 @@ export async function removeChild(childId: string): Promise<ApiChild[]> {
 /** Register several players (you and/or your children) in one checkout. */
 export async function createBatchRegistration(
   tournamentId: string,
-  entries: Array<{ memberId?: string; section: string; byeRounds?: number[] }>,
+  entries: Array<{ memberId?: string; section: string; byeRounds?: number[]; grade?: string | null }>,
 ): Promise<{
   registrations: Array<{ id: string; memberId: string; section: string; amount: number; paymentStatus: string }>
   total: number

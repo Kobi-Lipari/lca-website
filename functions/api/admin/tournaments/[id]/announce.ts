@@ -44,6 +44,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
      JOIN members m ON m.id = r.member_id
      WHERE r.tournament_id = ?
        AND r.withdrawn_at IS NULL
+       AND r.waitlisted_at IS NULL
        AND m.role != 'guest'
        AND m.email NOT LIKE '%@walkin.lca.invalid'`,
   ).bind(tournamentId).all<{ email: string; full_name: string }>()

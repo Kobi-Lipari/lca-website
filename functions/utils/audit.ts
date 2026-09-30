@@ -30,6 +30,7 @@ export type AdminAction =
   | 'payment_change'
   | 'registration_withdraw'
   | 'registration_reinstate'
+  | 'waitlist_offer'
   | 'club_edit'
   | 'officer_add'
   | 'officer_remove'

@@ -39,7 +39,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       t.time_control,
       t.max_players,
       (SELECT COUNT(*) FROM registrations r
-        WHERE r.tournament_id = t.id AND r.withdrawn_at IS NULL) AS registered_count,
+        WHERE r.tournament_id = t.id AND r.withdrawn_at IS NULL AND r.waitlisted_at IS NULL) AS registered_count,
       t.club_id,
       c.color AS club_color,
       c.name AS club_name

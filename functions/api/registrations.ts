@@ -6,11 +6,26 @@ import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../ut
 import { sendRegistrationConfirmations } from '../utils/registrationEmails'
 import { resolveSiteUrl } from '../utils/site'
 import { hasPassed } from '../utils/time'
+import { eligibilityProblem, parseGrade, type SectionWithRules } from '../utils/sectionRules'
+import { entryPrice } from '../utils/pricing'
 
 interface RegistrationBody {
   tournamentId?: string
   section?: string
   byeRounds?: number[]
+  /** Required when the section has grade limits: 'K', '1'..'12'. */
+  grade?: string
+  /** Join the waitlist when the event is full. */
+  waitlist?: boolean
+}
+
+function parseSections(sectionsJson: string): SectionWithRules[] {
+  try {
+    const parsed = JSON.parse(sectionsJson) as Array<SectionWithRules | string>
+    return parsed.map((s) => (typeof s === 'string' ? { name: s } : s))
+  } catch {
+    return []
+  }
 }
 
 function parseSectionNames(sectionsJson: string): string[] {
@@ -19,16 +34,6 @@ function parseSectionNames(sectionsJson: string): string[] {
     return parsed.map((s) => (typeof s === 'string' ? s : s.name))
   } catch {
     return []
-  }
-}
-
-function getSectionEntryFee(sectionsJson: string, sectionName: string, defaultFee: number): number {
-  try {
-    const parsed = JSON.parse(sectionsJson) as Array<{ name: string; entryFee?: number }>
-    const match = parsed.find((s) => s.name === sectionName)
-    return match?.entryFee ?? defaultFee
-  } catch {
-    return defaultFee
   }
 }
 
@@ -56,6 +61,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       entry_fee: number
       max_players: number | null
       name: string
+      date: string
+      early_deadline: string | null
+      early_discount: number | null
+      late_after: string | null
+      late_fee: number | null
+      member_discount: number | null
       rounds: number
       is_rated: number
     }>()
@@ -82,13 +93,23 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse('Invalid section', 400)
   }
 
+  // Section eligibility (rating, grade). Directors can still place anyone by hand.
+  const section = parseSections(tournament.sections).find((s) => s.name === body.section) as SectionWithRules
+  const grade = parseGrade(body.grade ?? authed.member.grade ?? null)
+  const problem = eligibilityProblem(section, { rating: authed.member.uscf_rating ?? null, grade })
+  if (problem) return errorResponse(problem, 400)
+  const gradeText = grade === null ? null : grade === 0 ? 'K' : String(grade)
+
   const existing = await context.env.DB.prepare(
-    'SELECT id, withdrawn_at FROM registrations WHERE tournament_id = ? AND member_id = ?',
+    'SELECT id, withdrawn_at, waitlisted_at FROM registrations WHERE tournament_id = ? AND member_id = ?',
   )
     .bind(body.tournamentId, authed.member.id)
-    .first<{ id: string; withdrawn_at: string | null }>()
+    .first<{ id: string; withdrawn_at: string | null; waitlisted_at: string | null }>()
 
   if (existing) {
+    if (existing.waitlisted_at && !existing.withdrawn_at) {
+      return errorResponse("You're already on the waitlist for this tournament", 409)
+    }
     return errorResponse(
       existing.withdrawn_at
         ? 'You were withdrawn from this tournament. Ask the tournament director to reinstate you.'
@@ -99,13 +120,28 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   if (tournament.max_players != null) {
     const countRow = await context.env.DB.prepare(
-      'SELECT COUNT(*) as count FROM registrations WHERE tournament_id = ? AND withdrawn_at IS NULL',
+      'SELECT COUNT(*) as count FROM registrations WHERE tournament_id = ? AND withdrawn_at IS NULL AND waitlisted_at IS NULL',
     )
       .bind(body.tournamentId)
       .first<{ count: number }>()
 
     if ((countRow?.count ?? 0) >= tournament.max_players) {
-      return errorResponse('This tournament is full', 400)
+      if (!body.waitlist) {
+        return jsonResponse({ error: 'This tournament is full. You can join the waitlist.', full: true }, 400)
+      }
+      // Waitlist: no charge until the director offers a spot.
+      const waitId = `reg-${body.tournamentId}-${Date.now().toString(36)}`
+      await context.env.DB.prepare(
+        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade, waitlisted_at)
+         VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, datetime('now'))`,
+      ).bind(waitId, body.tournamentId, authed.member.id, body.section,
+        body.byeRounds?.length ? JSON.stringify(body.byeRounds) : null,
+        authed.member.uscf_rating ?? null, gradeText).run()
+      return jsonResponse({
+        registration: { id: waitId, waitlisted: true },
+        paymentUrl: null,
+        message: `You're on the waitlist for ${tournament.name}. If a spot opens, the director will email you.`,
+      }, 201)
     }
   }
 
@@ -125,20 +161,31 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const registrationId = `reg-${body.tournamentId}-${Date.now().toString(36)}`
   const paymentId = `pay-${registrationId}`
-  const amount = getSectionEntryFee(tournament.sections, body.section, tournament.entry_fee)
+  const amount = entryPrice(tournament, body.section, {
+    isLcaMember: authed.member.membership_status === 'active',
+  }).amount
+  if (gradeText) {
+    await context.env.DB.prepare('UPDATE members SET grade = ? WHERE id = ?').bind(gradeText, authed.member.id).run()
+  }
+  // Heads-up, not a block: the director may sell memberships at the door.
+  const warnings: string[] = []
+  if (tournament.is_rated && authed.member.uscf_expiration && authed.member.uscf_expiration.slice(0, 10) < String(tournament.date).slice(0, 10)) {
+    warnings.push(`Your US Chess membership expires ${authed.member.uscf_expiration.slice(0, 10)}, before this event. Renew it at uschess.org so your games can be rated.`)
+  }
 
   // ── Free section: no Stripe involved, registered & paid immediately ──────
   if (amount <= 0) {
     await context.env.DB.batch([
       context.env.DB.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry)
-         VALUES (?1, ?2, ?3, ?4, 'paid', ?5, (SELECT uscf_rating FROM members WHERE id = ?3))`,
+        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
+         VALUES (?1, ?2, ?3, ?4, 'paid', ?5, (SELECT uscf_rating FROM members WHERE id = ?3), ?6)`,
       ).bind(
         registrationId,
         body.tournamentId,
         authed.member.id,
         body.section,
         byeRounds.length > 0 ? JSON.stringify(byeRounds) : null,
+        gradeText,
       ),
       context.env.DB.prepare(
         `INSERT INTO payments (id, member_id, amount, type, reference_id, status)
@@ -159,6 +206,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         registration,
         payment: { id: paymentId, amount: 0, status: 'completed' },
         paymentUrl: null,
+        warnings,
         message: `Registered for ${tournament.name} (${body.section}). No entry fee for this section — you're all set.`,
       },
       201,
@@ -194,14 +242,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   await context.env.DB.batch([
     context.env.DB.prepare(
-      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry)
-       VALUES (?1, ?2, ?3, ?4, 'pending', ?5, (SELECT uscf_rating FROM members WHERE id = ?3))`,
+      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
+       VALUES (?1, ?2, ?3, ?4, 'pending', ?5, (SELECT uscf_rating FROM members WHERE id = ?3), ?6)`,
     ).bind(
       registrationId,
       body.tournamentId,
       authed.member.id,
       body.section,
       byeRounds.length > 0 ? JSON.stringify(byeRounds) : null,
+      gradeText,
     ),
     context.env.DB.prepare(
       `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
@@ -218,6 +267,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       registration,
       payment: { id: paymentId, amount, status: 'pending' },
       paymentUrl: session.url,
+      warnings,
       message: `Registered for ${tournament.name} (${body.section}). Complete payment to confirm your spot.`,
     },
     201,

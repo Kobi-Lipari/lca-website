@@ -30,7 +30,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       `SELECT t.name, t.date, t.end_date, t.location, t.venue, t.rounds, t.time_control,
               t.max_players, t.registration_status, t.status, c.name AS club_name,
               (SELECT COUNT(*) FROM registrations r
-                WHERE r.tournament_id = t.id AND r.withdrawn_at IS NULL) AS registered
+                WHERE r.tournament_id = t.id AND r.withdrawn_at IS NULL AND r.waitlisted_at IS NULL) AS registered
          FROM tournaments t
          LEFT JOIN clubs c ON c.id = t.club_id
         WHERE t.id = ? AND t.is_visible = 1`,

@@ -92,7 +92,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
             m.uscf_rating, m.full_name
        FROM registrations r
        JOIN members m ON m.id = r.member_id
-      WHERE r.tournament_id = ? AND r.section = ? AND r.withdrawn_at IS NULL`,
+      WHERE r.tournament_id = ? AND r.section = ? AND r.withdrawn_at IS NULL AND r.waitlisted_at IS NULL`,
   ).bind(tournamentId, section).all<{
     member_id: string
     bye_rounds: string | null

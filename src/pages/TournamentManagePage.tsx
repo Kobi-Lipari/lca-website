@@ -24,6 +24,7 @@ import {
   adminUpdateTournament,
   getMe,
   lookupUscfRating,
+  offerWaitlistSpot,
   updateRegistration,
   updateTournamentRegistration,
   type ApiCustomDetail,
@@ -41,6 +42,7 @@ import { toolsHomeFor } from '@/lib/roles'
 import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
 import { ResultsEntry } from '@/components/tournaments/ResultsEntry'
+import { SectionRulesEditor } from '@/components/tournaments/SectionRulesEditor'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
@@ -91,6 +93,7 @@ interface FormSnapshot {
   isVisible: boolean
   registrationStatus: string
   registrationClosesAt: string
+  pricing: string // JSON
   rounds: string
   roundSchedule: string // JSON
 }
@@ -179,6 +182,9 @@ export function TournamentManagePage() {
   const [isVisible, setIsVisible] = useState(true)
   const [registrationStatus, setRegistrationStatus] = useState('draft')
   const [registrationClosesAt, setRegistrationClosesAt] = useState('')
+  const [pricing, setPricing] = useState({ earlyDeadline: '', earlyDiscount: '', lateAfter: '', lateFee: '', memberDiscount: '' })
+  const [waitlist, setWaitlist] = useState<ApiManageRosterPlayer[]>([])
+  const [offering, setOffering] = useState<string | null>(null)
 
   // ── Rounds tab form state ──
   const [rounds, setRounds] = useState('5')
@@ -249,7 +255,7 @@ export function TournamentManagePage() {
   function applyManage(data: ManageData) {
     const t = data.tournament
     setTournament(t)
-    setRoster(data.roster ?? [])
+    splitRoster(data.roster ?? [])
     setGames(data.games)
     setStandings(data.standings)
 
@@ -270,6 +276,14 @@ export function TournamentManagePage() {
     const nIsVisible = t.is_visible !== 0
     const nRegistrationStatus = t.registration_status ?? 'draft'
     const nRegistrationClosesAt = (t.registration_closes_at ?? '').slice(0, 16)
+    const money = (n: number | null | undefined) => (n ? String(n) : '')
+    const nPricing = {
+      earlyDeadline: (t.early_deadline ?? '').slice(0, 16),
+      earlyDiscount: money(t.early_discount),
+      lateAfter: (t.late_after ?? '').slice(0, 16),
+      lateFee: money(t.late_fee),
+      memberDiscount: money(t.member_discount),
+    }
     const nRounds = String(t.rounds ?? 5)
     const nRoundSchedule = normalizeSchedule(t.round_schedule ?? [], Number(nRounds))
 
@@ -291,6 +305,7 @@ export function TournamentManagePage() {
     setIsVisible(nIsVisible)
     setRegistrationStatus(nRegistrationStatus)
     setRegistrationClosesAt(nRegistrationClosesAt)
+    setPricing(nPricing)
     setRounds(nRounds)
     setRoundSchedule(nRoundSchedule)
 
@@ -310,6 +325,7 @@ export function TournamentManagePage() {
       isVisible: nIsVisible,
       registrationStatus: nRegistrationStatus,
       registrationClosesAt: nRegistrationClosesAt,
+      pricing: JSON.stringify(nPricing),
       rounds: nRounds,
       roundSchedule: JSON.stringify(nRoundSchedule),
     })
@@ -326,12 +342,33 @@ export function TournamentManagePage() {
    * page or touching any half-edited form. Used after results and other
    * at-the-board actions, which happen dozens of times a round.
    */
+  /** Waitlisted entries get their own list; everywhere else sees only real entrants. */
+  function splitRoster(all: ApiManageRosterPlayer[]) {
+    setRoster(all.filter((p) => !p.waitlisted_at))
+    setWaitlist(all.filter((p) => p.waitlisted_at && !p.withdrawn_at))
+  }
+
+  async function handleOfferSpot(player: ApiManageRosterPlayer) {
+    if (!id) return
+    if (!window.confirm(`Offer ${player.full_name} a spot in ${player.section}? They'll be emailed${tournament?.max_players && roster.filter((p) => !p.withdrawn_at).length >= tournament.max_players ? ', and the event will go over its player cap' : ''}.`)) return
+    setOffering(player.registration_id)
+    setError(null)
+    try {
+      await offerWaitlistSpot(id, player.registration_id)
+      await refreshLive()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not offer the spot')
+    } finally {
+      setOffering(null)
+    }
+  }
+
   async function refreshLive() {
     if (!id) return
     try {
       const data = await adminGetTournamentManage(id)
       setTournament(data.tournament)
-      setRoster(data.roster ?? [])
+      splitRoster(data.roster ?? [])
       setGames(data.games)
       setStandings(data.standings)
     } catch (err) {
@@ -434,7 +471,8 @@ export function TournamentManagePage() {
   const registrationDirty = !!snap && (
     isVisible !== snap.isVisible ||
     registrationStatus !== snap.registrationStatus ||
-    registrationClosesAt !== snap.registrationClosesAt
+    registrationClosesAt !== snap.registrationClosesAt ||
+    JSON.stringify(pricing) !== snap.pricing
   )
   const scheduleDirty = !!snap && (
     rounds !== snap.rounds ||
@@ -467,6 +505,7 @@ export function TournamentManagePage() {
     setIsVisible(s.isVisible)
     setRegistrationStatus(s.registrationStatus)
     setRegistrationClosesAt(s.registrationClosesAt)
+    setPricing(JSON.parse(s.pricing))
     setRounds(s.rounds)
     setRoundSchedule(JSON.parse(s.roundSchedule) as ApiRoundScheduleItem[])
   }
@@ -528,6 +567,15 @@ export function TournamentManagePage() {
     if (isVisible !== s.isVisible) body.isVisible = isVisible
     if (registrationClosesAt !== s.registrationClosesAt) {
       body.registrationClosesAt = registrationClosesAt || null
+    }
+    if (JSON.stringify(pricing) !== s.pricing) {
+      const was = JSON.parse(s.pricing) as typeof pricing
+      const amt = (v: string) => (v.trim() === '' ? 0 : Math.max(0, Number(v) || 0))
+      if (pricing.earlyDeadline !== was.earlyDeadline) body.earlyDeadline = pricing.earlyDeadline || null
+      if (pricing.earlyDiscount !== was.earlyDiscount) body.earlyDiscount = amt(pricing.earlyDiscount)
+      if (pricing.lateAfter !== was.lateAfter) body.lateAfter = pricing.lateAfter || null
+      if (pricing.lateFee !== was.lateFee) body.lateFee = amt(pricing.lateFee)
+      if (pricing.memberDiscount !== was.memberDiscount) body.memberDiscount = amt(pricing.memberDiscount)
     }
     const statusChanged = registrationStatus !== s.registrationStatus
     if (Object.keys(body).length === 0 && !statusChanged) return
@@ -791,7 +839,10 @@ export function TournamentManagePage() {
       checkedIn?: boolean
     },
   ) {
-    if (patch.withdrawn === true && !window.confirm(
+    if (patch.withdrawn === true && player.waitlisted_at && !window.confirm(
+      `Remove ${player.full_name} from the waitlist?`,
+    )) return
+    if (patch.withdrawn === true && !player.waitlisted_at && !window.confirm(
       `Withdraw ${player.full_name}? They won't be paired in later rounds. Results already played stand, and you can reinstate them.`,
     )) return
     if (patch.section && patch.section !== player.section && !window.confirm(
@@ -1177,11 +1228,12 @@ export function TournamentManagePage() {
                 </div>
 
                 {sections.length > 0 && (
-                  <div className="rounded-lg border overflow-hidden">
-                    <table className="w-full text-sm">
+                  <div className="rounded-lg border overflow-x-auto">
+                    <table className="w-full min-w-[640px] text-sm">
                       <thead>
                         <tr className="border-b bg-muted/50">
                           <th className="px-3 py-2 text-left font-semibold">Section</th>
+                          <th className="px-3 py-2 text-left font-semibold">Who can enter</th>
                           <th className="px-3 py-2 text-left font-semibold">Entry fee ($)</th>
                           <th className="px-3 py-2 text-left font-semibold">Prize fund</th>
                           <th className="px-3 py-2 w-8"></th>
@@ -1189,8 +1241,14 @@ export function TournamentManagePage() {
                       </thead>
                       <tbody>
                         {sections.map((s) => (
-                          <tr key={s.name} className="border-b last:border-0">
+                          <tr key={s.name} className="border-b last:border-0 align-top">
                             <td className="px-3 py-2 font-medium">{s.name}</td>
+                            <td className="px-3 py-2">
+                              <SectionRulesEditor
+                                section={s}
+                                onChange={(next) => setSections((prev) => prev.map((x) => (x.name === s.name ? next : x)))}
+                              />
+                            </td>
                             <td className="px-3 py-2">
                               <Input
                                 type="number"
@@ -1374,6 +1432,44 @@ export function TournamentManagePage() {
                   <p className="text-xs text-muted-foreground">Registration will automatically close at this time.</p>
                 </div>
               </div>
+              <div className="space-y-3 border-t pt-5">
+                <div>
+                  <Label>Discounts and late fee</Label>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Optional. Applied to every section's entry fee at checkout, never below free. Times are Central.
+                  </p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="p-early" className="text-xs">Early-entry discount ($)</Label>
+                    <Input id="p-early" type="number" min={0} placeholder="0" value={pricing.earlyDiscount}
+                      onChange={(e) => setPricing((p) => ({ ...p, earlyDiscount: e.target.value }))} />
+                    <Input type="datetime-local" aria-label="Early entry ends" value={pricing.earlyDeadline}
+                      onChange={(e) => setPricing((p) => ({ ...p, earlyDeadline: e.target.value }))} />
+                    <p className="text-[11px] text-muted-foreground">Until this time.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="p-late" className="text-xs">Late fee ($)</Label>
+                    <Input id="p-late" type="number" min={0} placeholder="0" value={pricing.lateFee}
+                      onChange={(e) => setPricing((p) => ({ ...p, lateFee: e.target.value }))} />
+                    <Input type="datetime-local" aria-label="Late fee starts" value={pricing.lateAfter}
+                      onChange={(e) => setPricing((p) => ({ ...p, lateAfter: e.target.value }))} />
+                    <p className="text-[11px] text-muted-foreground">From this time on.</p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="p-member" className="text-xs">LCA member discount ($)</Label>
+                    <Input id="p-member" type="number" min={0} placeholder="0" value={pricing.memberDiscount}
+                      onChange={(e) => setPricing((p) => ({ ...p, memberDiscount: e.target.value }))} />
+                    <p className="text-[11px] text-muted-foreground">For players with a current LCA membership.</p>
+                  </div>
+                </div>
+                {Number(pricing.earlyDiscount) > 0 && !pricing.earlyDeadline && (
+                  <p className="text-xs text-amber-700">Set when early entry ends, or the discount won't apply.</p>
+                )}
+                {Number(pricing.lateFee) > 0 && !pricing.lateAfter && (
+                  <p className="text-xs text-amber-700">Set when the late fee starts, or it won't apply.</p>
+                )}
+              </div>
               <Button
                 type="button"
                 className={goldButtonClass}
@@ -1440,6 +1536,19 @@ export function TournamentManagePage() {
                               {withdrawn && (
                                 <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700">
                                   Withdrawn
+                                </span>
+                              )}
+                              {player.grade && (
+                                <span className="ml-2 text-xs font-normal text-muted-foreground">
+                                  {player.grade === 'K' ? 'K' : `Gr ${player.grade}`}
+                                </span>
+                              )}
+                              {isRated && player.uscf_expiration && tournament && player.uscf_expiration.slice(0, 10) < tournament.date.slice(0, 10) && (
+                                <span
+                                  className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800"
+                                  title={`US Chess membership expires ${player.uscf_expiration.slice(0, 10)}`}
+                                >
+                                  USCF expired
                                 </span>
                               )}
                             </td>
@@ -1531,6 +1640,43 @@ export function TournamentManagePage() {
                 </div>
               )}
             </div>
+
+            {/* Waitlist */}
+            {waitlist.length > 0 && (
+              <div className="rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="text-lg font-bold text-lca-navy">Waitlist ({waitlist.length})</h2>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  In the order they joined. Offering a spot moves the player into the event and emails them;
+                  paid sections get a payment link. Nobody on the waitlist has been charged.
+                </p>
+                <ol className="mt-4 divide-y rounded-lg border">
+                  {waitlist.map((p, i) => (
+                    <li key={p.registration_id} className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm">
+                      <span>
+                        <span className="mr-2 text-muted-foreground">{i + 1}.</span>
+                        <span className="font-medium">{p.full_name}</span>
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          {p.section}{p.uscf_rating ? ` · ${p.uscf_rating}` : ' · unrated'}
+                          {p.grade ? ` · ${p.grade === 'K' ? 'K' : `Gr ${p.grade}`}` : ''}
+                        </span>
+                      </span>
+                      <span className="flex gap-2">
+                        <Button type="button" size="sm" className={goldButtonClass}
+                          disabled={offering === p.registration_id}
+                          onClick={() => handleOfferSpot(p)}>
+                          {offering === p.registration_id ? 'Offering…' : 'Offer spot'}
+                        </Button>
+                        <Button type="button" size="sm" variant="outline"
+                          disabled={rosterSaving === p.registration_id}
+                          onClick={() => handleRosterUpdate(p, { withdrawn: true })}>
+                          Remove
+                        </Button>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            )}
 
             {/* Add walk-in */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">

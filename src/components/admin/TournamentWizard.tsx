@@ -23,6 +23,7 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { SectionRulesEditor } from '@/components/tournaments/SectionRulesEditor'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -396,7 +397,8 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
               ))}
             </div>
             {w.sections.map((s) => (
-              <div key={s.name} className="grid border-t border-border" style={{ gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.1fr) 32px' }}>
+              <div key={s.name} className="border-t border-border">
+              <div className="grid" style={{ gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.1fr) 32px' }}>
                 <div className="flex items-center px-3 py-2 text-sm font-medium">{s.name}</div>
                 <div className="flex items-center px-2 py-1.5">
                   <Input type="number" min={0} value={s.entryFee} onChange={(e) => updateFee(s.name, e.target.value)}
@@ -409,6 +411,10 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
                 <div className="flex items-center justify-center">
                   <button type="button" onClick={() => removeSection(s.name)} className="text-muted-foreground hover:text-destructive"><X className="size-3.5" /></button>
                 </div>
+              </div>
+              <div className="px-3 pb-2">
+                <SectionRulesEditor section={s} onChange={(next) => set({ sections: w.sections.map((x) => (x.name === s.name ? next : x)) })} />
+              </div>
               </div>
             ))}
           </div>

@@ -16,6 +16,7 @@ import {
   optOutTournamentReminder,
   getTournamentReminderStatus,
   payRegistration,
+  updateRegistration,
   updateRegistrationByes,
   type ApiMyRegistration,
   type ApiRosterPlayer,
@@ -24,6 +25,8 @@ import {
   type TournamentStatus,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { describeRules, effectiveRules, eligibilityProblem, gradeLabel, needsGrade, parseGrade } from '@/lib/sectionRules'
+import { entryPrice, type Price } from '@/lib/pricing'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { FamilyRegistrationPanel } from '@/components/family/FamilyRegistrationPanel'
 
@@ -38,13 +41,16 @@ const goldBtn = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 // ── Registration confirmation modal ─────────────────────────────────────────
 
 function RegistrationModal({
-  tournament, member, selectedSection, byeRounds,
+  tournament, member, selectedSection, byeRounds, grade, price, waitlist,
   onConfirm, onCancel, registering, error,
 }: {
   tournament: ApiTournamentDetail
   member: { full_name: string; email: string; uscf_id?: string | null; uscf_rating?: number | null }
   selectedSection: string
   byeRounds: number[]
+  grade: string
+  price: Price
+  waitlist: boolean
   onConfirm: () => void
   onCancel: () => void
   registering: boolean
@@ -58,13 +64,14 @@ function RegistrationModal({
     >
       <div className="mx-4 w-full max-w-md rounded-xl border bg-background p-6 shadow-lg">
         <div className="mb-4 flex items-start justify-between">
-          <h3 className="text-lg font-bold text-lca-navy">Confirm registration</h3>
+          <h3 className="text-lg font-bold text-lca-navy">{waitlist ? 'Join the waitlist' : 'Confirm registration'}</h3>
           <button type="button" onClick={onCancel} className="text-muted-foreground hover:text-foreground">
             <X className="size-5" />
           </button>
         </div>
         <p className="mb-4 text-sm text-muted-foreground">
-          Registering for <span className="font-medium text-foreground">{tournament.name}</span>.
+          {waitlist ? 'Waitlist for' : 'Registering for'} <span className="font-medium text-foreground">{tournament.name}</span>.
+          {waitlist && ' You won\'t be charged unless the director offers you a spot.'}
         </p>
         <div className="mb-4 space-y-2 rounded-lg border bg-muted/30 p-4 text-sm">
           <div className="flex justify-between">
@@ -97,6 +104,13 @@ function RegistrationModal({
               <span className="font-medium">{byeRounds.map((r) => `Rd ${r}`).join(', ')}</span>
             </div>
           )}
+          {grade && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Grade</span>
+              <span className="font-medium">{grade}</span>
+            </div>
+          )}
+          {!waitlist && <PriceLines price={price} />}
         </div>
         {error && <p className="mb-3 text-sm text-destructive">{error}</p>}
         <div className="flex gap-3">
@@ -104,11 +118,36 @@ function RegistrationModal({
             Cancel
           </Button>
           <Button type="button" className={cn('flex-1', goldBtn)} onClick={onConfirm} disabled={registering}>
-            {registering ? 'Registering…' : 'Confirm'}
+            {registering ? 'Submitting…' : waitlist ? 'Join waitlist' : 'Confirm'}
           </Button>
         </div>
       </div>
     </div>
+  )
+}
+
+/** Entry fee with any discounts or late fee, one line each. */
+function PriceLines({ price }: { price: Price }) {
+  const money = (n: number) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`
+  return (
+    <>
+      {price.lines.length > 0 && (
+        <div className="flex justify-between border-t pt-2">
+          <span className="text-muted-foreground">Entry fee</span>
+          <span>{money(price.base)}</span>
+        </div>
+      )}
+      {price.lines.map((l) => (
+        <div key={l.label} className="flex justify-between">
+          <span className="text-muted-foreground">{l.label}</span>
+          <span>{l.amount < 0 ? `−${money(-l.amount)}` : `+${money(l.amount)}`}</span>
+        </div>
+      ))}
+      <div className={cn('flex justify-between font-medium', price.lines.length === 0 && 'border-t pt-2')}>
+        <span className="text-muted-foreground">{price.lines.length ? 'You pay' : 'Entry fee'}</span>
+        <span>{price.amount > 0 ? money(price.amount) : 'Free'}</span>
+      </div>
+    </>
   )
 }
 
@@ -205,6 +244,11 @@ export function TournamentDetailPage() {
 
   const [selectedSection, setSelectedSection] = useState('')
   const [selectedByes, setSelectedByes] = useState<number[]>([])
+  // null until the player picks one; the last grade they gave fills in meanwhile.
+  const [pickedGrade, setSelectedGrade] = useState<string | null>(null)
+  const selectedGrade = pickedGrade ?? authMember?.grade ?? ''
+  const [warnings, setWarnings] = useState<string[]>([])
+  const [withdrawing, setWithdrawing] = useState(false)
   const [registering, setRegistering] = useState(false)
   const [registerError, setRegisterError] = useState<string | null>(null)
   const [showModal, setShowModal] = useState(false)
@@ -255,6 +299,9 @@ export function TournamentDetailPage() {
       setRegisterError('This is a USCF-rated tournament. Add your USCF ID to your profile before registering.')
       return
     }
+    const section = tournament?.sections.find((s) => s.name === selectedSection)
+    const problem = section && eligibilityProblem(section, { rating: authMember?.uscf_rating ?? null, grade: parseGrade(selectedGrade) })
+    if (problem) { setRegisterError(problem); return }
     setRegisterError(null)
     setShowModal(true)
   }
@@ -264,7 +311,11 @@ export function TournamentDetailPage() {
     setRegistering(true)
     setRegisterError(null)
     try {
-      const result = await createRegistration(id, selectedSection, selectedByes)
+      const full = !!tournament?.max_players && roster.filter((p) => !p.withdrawn_at).length >= tournament.max_players
+      const section = tournament?.sections.find((s) => s.name === selectedSection)
+      const grade = section && needsGrade(effectiveRules(section)) ? selectedGrade : null
+      const result = await createRegistration(id, selectedSection, selectedByes, { grade, waitlist: full })
+      setWarnings(result.warnings ?? [])
       setConfirmation({ message: result.message, paymentUrl: result.paymentUrl, section: selectedSection })
       setShowModal(false)
       const data = await getTournament(id)
@@ -288,6 +339,29 @@ export function TournamentDetailPage() {
       setRegisterError(err instanceof Error ? err.message : 'Could not start payment')
     } finally {
       setPayingNow(false)
+    }
+  }
+
+  async function handleWithdraw() {
+    if (!myRegistration || !id) return
+    const paid = myRegistration.payment_status === 'paid'
+    const ok = window.confirm(
+      myRegistration.waitlisted_at
+        ? 'Leave the waitlist for this tournament?'
+        : `Withdraw from this tournament?${paid ? ' Refunds are up to the organizers; they\'ll be notified.' : ''} Only the director can put you back in.`,
+    )
+    if (!ok) return
+    setWithdrawing(true)
+    setRegisterError(null)
+    try {
+      await updateRegistration(myRegistration.id, { withdrawn: true })
+      const data = await getTournament(id)
+      setRoster(data.roster)
+      setMyRegistration(data.myRegistration ?? null)
+    } catch (err) {
+      setRegisterError(err instanceof Error ? err.message : 'Could not withdraw')
+    } finally {
+      setWithdrawing(false)
     }
   }
 
@@ -358,6 +432,28 @@ export function TournamentDetailPage() {
 
   // Withdrawn players are excluded from public display and counts
   const activeRoster = roster.filter((p) => !p.withdrawn_at)
+  const isFull = !!tournament.max_players && activeRoster.length >= tournament.max_players
+  const isLcaMember = authMember?.membership_status === 'active'
+  const priceFor = (sectionName: string) => entryPrice(
+    { ...tournament, sections: JSON.stringify(tournament.sections) },
+    sectionName,
+    { isLcaMember },
+  )
+  const chosenSection = tournament.sections.find((s) => s.name === selectedSection)
+  const chosenRules = chosenSection ? effectiveRules(chosenSection) : {}
+  const gradeNeeded = needsGrade(chosenRules)
+  const chosenPrice = priceFor(selectedSection)
+  const eligibility = user && chosenSection
+    ? eligibilityProblem(chosenSection, { rating: authMember?.uscf_rating ?? null, grade: gradeNeeded ? parseGrade(selectedGrade) : null })
+    : null
+  // A missing grade isn't an error yet; the select right below asks for it.
+  const blockingProblem = eligibility && !(gradeNeeded && !selectedGrade) ? eligibility : null
+  const myWithdrawn = !!myRegistration?.withdrawn_at
+  const myWaitlisted = !!myRegistration?.waitlisted_at && !myWithdrawn
+  const mySectionPaired = !!myRegistration && pairings.some((g) => g.section === myRegistration.section)
+  const expiresBefore = isRated && authMember?.uscf_expiration && authMember.uscf_expiration.slice(0, 10) < tournament.date.slice(0, 10)
+    ? authMember.uscf_expiration.slice(0, 10) : null
+  const memberDiscount = tournament.member_discount ?? 0
 
   // Group active roster by section, sorted by name within each section
   const rosterBySectionMap = new Map<string, ApiRosterPlayer[]>()
@@ -384,6 +480,9 @@ export function TournamentDetailPage() {
           member={authMember}
           selectedSection={selectedSection}
           byeRounds={selectedByes}
+          grade={gradeNeeded ? (selectedGrade === 'K' ? 'Kindergarten' : selectedGrade) : ''}
+          price={chosenPrice}
+          waitlist={isFull}
           onConfirm={handleConfirmRegistration}
           onCancel={() => { setShowModal(false); setRegisterError(null) }}
           registering={registering}
@@ -532,10 +631,11 @@ export function TournamentDetailPage() {
             <div>
               <h2 className="text-xl font-bold text-lca-navy">Sections</h2>
               <div className="mt-4 overflow-x-auto rounded-xl border">
-                <table className="w-full min-w-[360px] text-left text-sm">
+                <table className="w-full min-w-[480px] text-left text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
                       <th className="px-4 py-3 font-semibold text-lca-navy">Section</th>
+                      <th className="px-4 py-3 font-semibold text-lca-navy">Who can enter</th>
                       <th className="px-4 py-3 font-semibold text-lca-navy">Entry fee</th>
                       <th className="px-4 py-3 font-semibold text-lca-navy">Prize fund</th>
                     </tr>
@@ -544,6 +644,7 @@ export function TournamentDetailPage() {
                     {tournament.sections.map((s) => (
                       <tr key={s.name} className="border-b last:border-0">
                         <td className="px-4 py-3 font-medium">{s.name}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{describeRules(effectiveRules(s))}</td>
                         <td className="px-4 py-3 text-muted-foreground">
                           {s.entryFee > 0 ? `$${s.entryFee}` : 'Free'}
                         </td>
@@ -565,18 +666,20 @@ export function TournamentDetailPage() {
                     <dd className="text-muted-foreground">{myRegistration.section}</dd>
                   </div>
                   <div className="flex gap-4">
-                    <dt className="font-medium text-lca-navy">Payment</dt>
-                    <dd className="text-muted-foreground">{myRegistration.payment_status}</dd>
+                    <dt className="font-medium text-lca-navy">{myWithdrawn || myWaitlisted ? 'Status' : 'Payment'}</dt>
+                    <dd className="text-muted-foreground">
+                      {myWithdrawn ? 'Withdrawn' : myWaitlisted ? 'On the waitlist' : myRegistration.payment_status}
+                    </dd>
                   </div>
                 </dl>
-                <div className="mt-4">
+                {!myWithdrawn && <div className="mt-4">
                   <p className="mb-2 text-sm font-medium text-lca-navy">Bye rounds</p>
                   <ByeRoundsEditor
                     registration={myRegistration}
                     totalRounds={tournament.rounds}
                     onSave={handleUpdateByes}
                   />
-                </div>
+                </div>}
               </div>
             )}
 
@@ -701,22 +804,36 @@ export function TournamentDetailPage() {
                 </dl>
 
                 {/* Already registered */}
-                {myRegistration && !confirmation && (
+                {myRegistration && !confirmation && myWithdrawn && (
+                  <div className="mt-5 space-y-2 rounded-lg border bg-muted/40 px-3 py-2.5 text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground">You've withdrawn from this tournament.</p>
+                    <p>To be put back in, contact the tournament director.</p>
+                    {registerError && <p className="text-destructive">{registerError}</p>}
+                  </div>
+                )}
+                {myRegistration && !confirmation && !myWithdrawn && (
                   <div className="mt-5 space-y-3">
                     <div className={cn(
                       'flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium',
-                      myRegistration.payment_status === 'paid'
+                      myWaitlisted
+                        ? 'border-border bg-muted/40 text-lca-navy'
+                        : myRegistration.payment_status === 'paid'
                         ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
                         : 'border-lca-gold/40 bg-lca-gold/10 text-lca-navy',
                     )}>
                       <CheckCircle2 className="size-4" />
-                      Registered · {myRegistration.section}
-                      {myRegistration.payment_status !== 'paid' && ' · payment pending'}
+                      {myWaitlisted ? 'Waitlisted' : 'Registered'} · {myRegistration.section}
+                      {!myWaitlisted && myRegistration.payment_status !== 'paid' && ' · payment pending'}
                     </div>
+                    {myWaitlisted && (
+                      <p className="text-xs text-muted-foreground">
+                        If a spot opens, the director will email you. You won't be charged until then.
+                      </p>
+                    )}
                     {registerError && (
                       <p className="text-sm text-destructive">{registerError}</p>
                     )}
-                    {myRegistration.payment_status === 'pending' && (
+                    {!myWaitlisted && myRegistration.payment_status === 'pending' && (
                       <Button
                         type="button"
                         className={cn('w-full', goldBtn)}
@@ -726,14 +843,26 @@ export function TournamentDetailPage() {
                         {payingNow ? 'Redirecting…' : 'Complete payment'}
                       </Button>
                     )}
-                    <div>
-                      <p className="mb-2 text-xs font-medium text-lca-navy">Bye rounds</p>
-                      <ByeRoundsEditor
-                        registration={myRegistration}
-                        totalRounds={tournament.rounds}
-                        onSave={handleUpdateByes}
-                      />
-                    </div>
+                    {!myWaitlisted && (
+                      <div>
+                        <p className="mb-2 text-xs font-medium text-lca-navy">Bye rounds</p>
+                        <ByeRoundsEditor
+                          registration={myRegistration}
+                          totalRounds={tournament.rounds}
+                          onSave={handleUpdateByes}
+                        />
+                      </div>
+                    )}
+                    {!mySectionPaired && tournament.status !== 'completed' && (
+                      <button
+                        type="button"
+                        onClick={handleWithdraw}
+                        disabled={withdrawing}
+                        className="w-full text-center text-xs text-muted-foreground underline-offset-2 hover:text-destructive hover:underline"
+                      >
+                        {withdrawing ? 'Withdrawing…' : myWaitlisted ? 'Leave the waitlist' : 'Withdraw from this tournament'}
+                      </button>
+                    )}
                   </div>
                 )}
 
@@ -748,6 +877,9 @@ export function TournamentDetailPage() {
                           <p className="mt-1 text-sm text-emerald-800">{confirmation.message}</p>
                         </div>
                       </div>
+                      {warnings.map((w) => (
+                        <p key={w} className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900">{w}</p>
+                      ))}
                       {confirmation.paymentUrl && (
                         <Button asChild className={cn('w-full', goldBtn)}>
                           <a href={confirmation.paymentUrl} target="_blank" rel="noopener noreferrer">
@@ -781,13 +913,60 @@ export function TournamentDetailPage() {
                           onChange={(e) => setSelectedSection(e.target.value)}
                           required
                         >
-                          {tournament.sections.map((s) => (
-                            <option key={s.name} value={s.name}>
-                              {s.name}{s.entryFee > 0 ? ` — $${s.entryFee}` : ''}
-                            </option>
-                          ))}
+                          {tournament.sections.map((s) => {
+                            const amount = priceFor(s.name).amount
+                            return (
+                              <option key={s.name} value={s.name}>
+                                {s.name}{amount > 0 ? ` — $${amount}` : ''}
+                              </option>
+                            )
+                          })}
                         </select>
+                        <p className="text-xs text-muted-foreground">{describeRules(chosenRules)}</p>
                       </div>
+
+                      {gradeNeeded && (
+                        <div className="space-y-1.5">
+                          <Label htmlFor="grade">Grade this school year</Label>
+                          <select
+                            id="grade"
+                            className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                            value={selectedGrade}
+                            onChange={(e) => setSelectedGrade(e.target.value)}
+                            required
+                          >
+                            <option value="">Choose a grade…</option>
+                            {Array.from({ length: 13 }, (_, g) => (
+                              <option key={g} value={gradeLabel(g)}>{g === 0 ? 'Kindergarten' : `Grade ${g}`}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+
+                      {blockingProblem && (
+                        <p className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900">
+                          {blockingProblem} Pick another section, or ask the director if you think this is wrong.
+                        </p>
+                      )}
+
+                      {expiresBefore && (
+                        <p className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900">
+                          Your US Chess membership expires {expiresBefore}, before this event. Renew it at uschess.org so your games can be rated.
+                        </p>
+                      )}
+
+                      {!isFull && (chosenPrice.lines.length > 0) && (
+                        <div className="space-y-1 rounded-lg border bg-muted/30 p-3 text-xs">
+                          <PriceLines price={chosenPrice} />
+                        </div>
+                      )}
+
+                      {isFull && (
+                        <p className="text-xs text-muted-foreground">
+                          This tournament is full{tournament.waitlist_count ? ` (${tournament.waitlist_count} on the waitlist)` : ''}.
+                          Join the waitlist and the director will email you if a spot opens. No charge until then.
+                        </p>
+                      )}
 
                       {tournament.rounds > 1 && (
                         <div className="space-y-1.5">
@@ -827,8 +1006,8 @@ export function TournamentDetailPage() {
                         </div>
                       )}
 
-                      <Button type="submit" size="lg" className={cn('w-full', goldBtn)} disabled={registering}>
-                        {registering ? 'Registering…' : 'Register now'}
+                      <Button type="submit" size="lg" className={cn('w-full', goldBtn)} disabled={registering || !!blockingProblem}>
+                        {registering ? 'Submitting…' : isFull ? 'Join the waitlist' : 'Register now'}
                       </Button>
 
                       {!user && (
@@ -846,6 +1025,9 @@ export function TournamentDetailPage() {
                     tournament={tournament}
                     selfName={authMember.full_name}
                     selfUscfId={authMember.uscf_id ?? null}
+                    selfRating={authMember.uscf_rating ?? null}
+                    selfIsLcaMember={isLcaMember}
+                    selfGrade={authMember.grade ?? null}
                     selfRegistered={!!myRegistration || !!confirmation}
                   />
                 )}
@@ -893,13 +1075,15 @@ export function TournamentDetailPage() {
               </div>
             </div>
 
-            {/* LCA membership note */}
-            <p className="text-xs text-muted-foreground">
-              LCA members receive discounted entry fees.{' '}
-              <Link to="/membership" className="text-lca-navy hover:underline">
-                Join LCA
-              </Link>
-            </p>
+            {/* LCA membership note: only when this event has a member discount */}
+            {memberDiscount > 0 && !isLcaMember && (
+              <p className="text-xs text-muted-foreground">
+                LCA members save ${memberDiscount} on entry.{' '}
+                <Link to="/membership" className="text-lca-navy hover:underline">
+                  Join LCA
+                </Link>
+              </p>
+            )}
           </div>
         </div>
       </section>
