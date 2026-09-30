@@ -17,6 +17,7 @@ const FILTERS: { value: string; label: string }[] = [
   { value: 'tournament_create,tournament_publish,tournament_unpublish,round_paired,round_delete,pairing_edit,tournament_complete,announcement_sent,director_assign,director_remove,registration_withdraw,registration_reinstate,waitlist_offer', label: 'Events' },
   { value: 'payment_change', label: 'Payments' },
   { value: 'club_edit,officer_add,officer_remove', label: 'Club edits' },
+  { value: 'seat_assign,seat_end', label: 'Board seats' },
   { value: 'group_email_sent', label: 'Group email' },
   { value: 'ticket_delete', label: 'Deleted tickets' },
 ]
@@ -70,6 +71,8 @@ const ACTION_META: Record<
   officer_add: { label: 'Added officer', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
   officer_remove: { label: 'Removed officer', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   group_email_sent: { label: 'Sent group email', icon: Mail, className: 'bg-blue-100 text-blue-800' },
+  seat_assign: { label: 'Board seat filled', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
+  seat_end: { label: 'Board seat ended', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   ticket_reply: { label: 'Answered ticket', icon: Mail, className: 'bg-muted text-muted-foreground' },
 }
 
@@ -114,6 +117,9 @@ function describeDetail(entry: ApiAuditEntry): string | null {
       return `"${parsed.subject ?? ''}" to ${parsed.sent ?? 0} players`
     case 'club_edit':
       return Array.isArray(parsed.fields) ? `Changed ${parsed.fields.join(', ').replace(/_/g, ' ')}` : null
+    case 'seat_assign':
+    case 'seat_end':
+      return typeof parsed.seat === 'string' ? parsed.seat : null
     case 'officer_add':
     case 'officer_remove':
       return typeof parsed.title === 'string' ? parsed.title : null

@@ -1,6 +1,7 @@
 // functions/api/admin/board-seats.ts
 import type { Env } from '../../types'
 import { isResponse, requireAdmin, requireAdminView } from '../../utils/auth'
+import { recordAdminAction } from '../../utils/audit'
 import {
   errorResponse,
   handleOptions,
@@ -116,6 +117,10 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     )
       .bind(body.seatId, body.endMemberId)
       .run()
+    await recordAdminAction(ctx.env.DB, auth.member, {
+      action: 'seat_end', targetMemberId: body.endMemberId, targetLabel: seat.role,
+      detail: { seat_id: seat.id, seat: seat.role },
+    })
 
     return jsonResponse({ success: true, seatId: body.seatId, removed: body.endMemberId })
   }
@@ -129,6 +134,9 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     )
       .bind(body.seatId)
       .run()
+    await recordAdminAction(ctx.env.DB, auth.member, {
+      action: 'seat_end', targetLabel: seat.role, detail: { seat_id: seat.id, seat: seat.role, vacated: true },
+    })
 
     return jsonResponse({ success: true, seatId: body.seatId, memberId: null })
   }
@@ -175,6 +183,10 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
   // Batched so an unshared seat can never end up with two live holders, or
   // none when a replacement was intended.
   await ctx.env.DB.batch(statements)
+  await recordAdminAction(ctx.env.DB, auth.member, {
+    action: 'seat_assign', targetMemberId: body.memberId, targetLabel: seat.role,
+    detail: { seat_id: seat.id, seat: seat.role, shared: !!seat.is_shared },
+  })
 
   return jsonResponse({ success: true, seatId: body.seatId, memberId: body.memberId })
 }
