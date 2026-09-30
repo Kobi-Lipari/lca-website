@@ -17,6 +17,7 @@ interface PlayerRow {
   full_name: string
   uscf_id: string | null
   uscf_rating: number | null
+  uscf_expiration: string | null
   section: string
 }
 
@@ -49,7 +50,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   const rosterRes = await context.env.DB.prepare(
-    `SELECT r.member_id, r.section, m.full_name, m.uscf_id,
+    `SELECT r.member_id, r.section, m.full_name, m.uscf_id, m.uscf_expiration,
             COALESCE(r.rating_at_entry, m.uscf_rating) AS uscf_rating
      FROM registrations r
      JOIN members m ON m.id = r.member_id
@@ -78,6 +79,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .map((s) => (typeof s === 'string' ? s : s.name))
 
   const validationErrors: string[] = []
+  const eventStart = String(tournament.date).slice(0, 10)
+
+  // One US Chess ID on two players is almost always a typo.
+  const byId = new Map<string, string[]>()
+  for (const p of roster) {
+    if (!p.uscf_id || !participated.has(p.member_id)) continue
+    byId.set(p.uscf_id, [...(byId.get(p.uscf_id) ?? []), p.full_name])
+  }
+  for (const [id, names] of byId) {
+    if (names.length > 1) validationErrors.push(`US Chess ID ${id} is on more than one player: ${names.join(', ')}.`)
+  }
 
   const sections = sectionNames.map((sectionName) => {
     // Pairing numbers: rating desc, then name — conventional wall-chart order
@@ -95,6 +107,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       if (!p.uscf_id) {
         validationErrors.push(
           `${p.full_name} (${sectionName}) has no USCF ID — the report cannot be submitted until this is fixed`,
+        )
+      }
+      const expires = p.uscf_expiration?.slice(0, 10)
+      if (p.uscf_id && expires && expires < eventStart) {
+        validationErrors.push(
+          `${p.full_name} (${sectionName}): US Chess membership expired ${expires}. It must be renewed before US Chess will rate the event.`,
         )
       }
     }
