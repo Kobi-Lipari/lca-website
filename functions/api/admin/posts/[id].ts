@@ -1,13 +1,13 @@
 // functions/api/admin/posts/[id].ts — edit or delete one LCA news post.
 import type { Env } from '../../../types'
-import { isResponse, requireAdmin } from '../../../utils/auth'
+import { isResponse, requireAdmin, requireAdminView } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
 import { applyPostEdits, type PostBody } from '../../../utils/posts'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const authed = await requireAdmin(context.request, context.env)
+  const authed = await requireAdminView(context.request, context.env)
   if (isResponse(authed)) return authed
   const post = await context.env.DB.prepare('SELECT * FROM lca_posts WHERE id = ?')
     .bind(context.params.id as string).first()

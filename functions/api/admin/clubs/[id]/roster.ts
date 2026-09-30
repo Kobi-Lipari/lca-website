@@ -1,13 +1,13 @@
 // functions/api/admin/clubs/[id]/roster.ts
 import type { Env } from '../../../../types'
-import { isResponse, requireClubRep } from '../../../../utils/auth'
+import { isResponse, requireClubView } from '../../../../utils/auth'
 import { handleOptions, jsonResponse } from '../../../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
-  const authResult = await requireClubRep(context.request, context.env, clubId)
+  const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
 
   const roster = await context.env.DB.prepare(

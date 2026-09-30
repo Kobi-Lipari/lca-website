@@ -30,6 +30,8 @@ export type AdminAction =
   | 'club_edit'
   | 'officer_add'
   | 'officer_remove'
+  | 'group_email_sent'
+  | 'ticket_reply'
 
 export interface AuditEntry {
   action: AdminAction

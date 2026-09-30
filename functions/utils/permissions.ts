@@ -10,6 +10,7 @@ import type { MemberRow } from '../types'
 export type MemberRole =
   | 'member'
   | 'lca_auditor'
+  | 'lca_observer'
   | 'club_rep'
   | 'tournament_director'
   | 'lca_admin'
@@ -17,6 +18,7 @@ export type MemberRole =
 export const MEMBER_ROLES: MemberRole[] = [
   'member',
   'lca_auditor',
+  'lca_observer',
   'club_rep',
   'tournament_director',
   'lca_admin',

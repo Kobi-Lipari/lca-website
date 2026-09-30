@@ -4,7 +4,7 @@
 // club GET's SELECT) is excerpt-based — so date and excerpt were silently
 // dropped, or the INSERT failed outright on a missing `body` column.
 import type { Env } from '../../../../types'
-import { isResponse, requireClubRep } from '../../../../utils/auth'
+import { isResponse, requireClubRep, requireClubView } from '../../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -22,7 +22,7 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
-  const authResult = await requireClubRep(context.request, context.env, clubId)
+  const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
 
   const { results } = await context.env.DB.prepare(

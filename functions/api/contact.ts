@@ -6,7 +6,7 @@
 // one place.
 
 import type { Env } from '../types'
-import { isResponse, optionalAuthedMember, requireAdmin } from '../utils/auth'
+import { isResponse, optionalAuthedMember, requireAdminView } from '../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -58,7 +58,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
  * nothing in there still needs answering. New submissions no longer land here.
  */
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdmin(context.request, context.env)
+  const authResult = await requireAdminView(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const messages = await context.env.DB.prepare(

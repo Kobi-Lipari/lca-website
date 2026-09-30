@@ -1,12 +1,12 @@
 // functions/api/admin/campaigns/[id].ts
 import type { Env } from '../../../types'
-import { isResponse, requireAdmin } from '../../../utils/auth'
+import { isResponse, requireAdminView } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdmin(context.request, context.env)
+  const authResult = await requireAdminView(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const campaignId = context.params.id as string

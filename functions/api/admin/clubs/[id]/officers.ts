@@ -4,7 +4,7 @@
 // and email are published on the club page, so a rep can list only people
 // who are actually on their roster.
 import type { Env } from '../../../../types'
-import { isResponse, requireClubRep } from '../../../../utils/auth'
+import { isResponse, requireClubRep, requireClubView } from '../../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -36,7 +36,7 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const clubId = context.params.id as string
-  const authResult = await requireClubRep(context.request, context.env, clubId)
+  const authResult = await requireClubView(context.request, context.env, clubId)
   if (isResponse(authResult)) return authResult
 
   return jsonResponse({ officers: await listOfficers(context.env.DB, clubId) })

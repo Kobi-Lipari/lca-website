@@ -160,8 +160,57 @@ export async function requireAdmin(
   return authed
 }
 
+// ── LCA Observer ─────────────────────────────────────────────────
+//
+// lca_observer sees everything an admin sees and can do a short list of
+// things (send group email, email a tournament's entrants, answer support
+// tickets), but changes nothing else. Read endpoints use the *View guards
+// below; every write keeps requireAdmin / requireClubRep /
+// requireTournamentManager, which an observer never passes. No second
+// factor is required of observers: they cannot change roles, delete
+// anything or alter records.
+
+export function isObserver(member: { role: string }): boolean {
+  return member.role === 'lca_observer'
+}
+
+/** Admin read access: admins (with 2FA) or observers. */
+export async function requireAdminView(
+  request: Request,
+  env: Env,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (authed instanceof Response) return authed
+  if (isObserver(authed.member)) return authed
+  return requireAdmin(request, env)
+}
+
+/** Read access to one club's management view. */
+export async function requireClubView(
+  request: Request,
+  env: Env,
+  clubId: string,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (authed instanceof Response) return authed
+  if (isObserver(authed.member)) return authed
+  return requireClubRep(request, env, clubId)
+}
+
+/** Read access to one tournament's management view. */
+export async function requireTournamentView(
+  request: Request,
+  env: Env,
+  tournamentId: string,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (authed instanceof Response) return authed
+  if (isObserver(authed.member)) return authed
+  return requireTournamentManager(request, env, tournamentId)
+}
+
 /** Roles that may read the member directory, besides lca_admin. */
-const DIRECTORY_ROLES: MemberRole[] = ['lca_auditor', 'club_rep', 'tournament_director']
+const DIRECTORY_ROLES: MemberRole[] = ['lca_auditor', 'lca_observer', 'club_rep', 'tournament_director']
 
 /**
  * Read access to the member directory.
@@ -258,6 +307,8 @@ export async function getActiveSeatIds(
 
 export interface SeatAccess extends AuthedMember {
   isAdmin: boolean
+  /** Reads every seat like an admin, but may not delete. */
+  isObserver: boolean
   /** Seat ids this caller may read. Admins get every active seat. */
   seatIds: string[]
 }
@@ -279,11 +330,13 @@ export async function requireSeatAccess(
   const authed = await requireAuthedMember(request, env)
   if (authed instanceof Response) return authed
 
-  if (authed.member.role === 'lca_admin') {
+  // Admins and observers read every seat. Observers may reply and log notes
+  // but not delete; the delete handler checks isObserver.
+  if (authed.member.role === 'lca_admin' || isObserver(authed.member)) {
     const { results } = await env.DB.prepare(
       `SELECT id FROM board_members WHERE is_active = 1`,
     ).all<{ id: string }>()
-    return { ...authed, isAdmin: true, seatIds: (results ?? []).map((r) => r.id) }
+    return { ...authed, isAdmin: true, isObserver: isObserver(authed.member), seatIds: (results ?? []).map((r) => r.id) }
   }
 
   const seatIds = await getActiveSeatIds(env.DB, authed.member.id)
@@ -302,7 +355,7 @@ export async function requireSeatAccess(
     }
   }
 
-  return { ...authed, isAdmin: false, seatIds }
+  return { ...authed, isAdmin: false, isObserver: false, seatIds }
 }
 
 export function isResponse(value: unknown): value is Response {

@@ -52,6 +52,7 @@ import type { MemberRole } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 
 // ── Sections ─────────────────────────────────────────────────────────────────
 
@@ -97,6 +98,7 @@ export function AdminPage() {
   const { section: rawSection } = useParams<{ section?: string }>()
   const navigate = useNavigate()
 
+  const viewOnly = useViewOnly()
   const section = (LEGACY[rawSection ?? ''] ?? rawSection ?? 'members') as AdminSection
   const current = ALL_SECTIONS.find((s) => s.id === section)
   usePageTitle(current ? `Admin · ${current.label}` : 'Admin panel')
@@ -106,7 +108,14 @@ export function AdminPage() {
 
   return (
     <div>
-      <PageHero title="Admin panel" subtitle="Manage members, clubs, tournaments and communications across the LCA." size="compact" />
+      <PageHero
+        title="Admin panel"
+        subtitle={viewOnly
+          ? 'See everything across the LCA. You can send group email, email entrants and answer support tickets; other changes are made by admins.'
+          : 'Manage members, clubs, tournaments and communications across the LCA.'}
+        badges={viewOnly ? <span className="rounded-full border border-white/25 px-2.5 py-0.5 text-xs text-white/85">View only</span> : undefined}
+        size="compact"
+      />
 
       <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:grid lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-8 lg:py-8">
         {/* Phone / tablet: a select instead of the sidebar */}
@@ -178,12 +187,12 @@ function SectionHeading({ title, description, action }: { title: string; descrip
 function AdminSectionView({ section }: { section: AdminSection }) {
   switch (section) {
     case 'members': return <MembersSection key="members" />
-    case 'board-seats': return <><SectionHeading title="Board seats" description="Who holds each board seat, and for how long." /><BoardSeatsPanel /></>
+    case 'board-seats': return <><SectionHeading title="Board seats" description="Who holds each board seat, and for how long." /><ViewOnlyNote /><ViewOnlyFieldset><BoardSeatsPanel /></ViewOnlyFieldset></>
     case 'tournaments': return <TournamentsSection key="tournaments" />
     case 'clubs': return <ClubsSection key="clubs" />
     case 'news': return <PostsPanel />
     case 'email': return <AdminEmailPage embedded />
-    case 'announcements': return <><SectionHeading title="Site banners" description="Short notices shown across the top of every page. For full announcements, use News posts." /><AdminAnnouncementPanel /></>
+    case 'announcements': return <><SectionHeading title="Site banners" description="Short notices shown across the top of every page. For full announcements, use News posts." /><ViewOnlyNote /><ViewOnlyFieldset><AdminAnnouncementPanel /></ViewOnlyFieldset></>
     case 'support': return <AdminSupportPage embedded />
     case 'activity': return <><SectionHeading title="Admin activity" description="Who changed what: roles, memberships, events, payments and club pages." /><AuditLogPanel /></>
   }
@@ -200,6 +209,7 @@ function ErrorNote({ error }: { error: string | null }) {
 
 function MembersSection() {
   const { startImpersonation } = useAuth()
+  const viewOnly = useViewOnly()
   const navigate = useNavigate()
 
   const [members, setMembers] = useState<ApiAdminMember[]>([])
@@ -332,6 +342,7 @@ function MembersSection() {
         <MembersTable
           members={members}
           admin={{
+            viewOnly,
             clubs, savingId, boardSeats, seatHolders,
             onRoleChange: handleRoleChange,
             onClubChange: handleClubChange,
@@ -351,6 +362,7 @@ function MembersSection() {
 // ── Tournaments ──────────────────────────────────────────────────────────────
 
 function TournamentsSection() {
+  const viewOnly = useViewOnly()
   const [tournaments, setTournaments] = useState<ApiTournamentListItem[]>([])
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -388,10 +400,10 @@ function TournamentsSection() {
       {loading ? <p className="text-muted-foreground" role="status">Loading…</p> : (
         <TournamentList
           tournaments={tournaments}
-          canCreate
-          canAssignDirectors={() => true}
-          clubs={clubs}
-          onClubChange={handleClubChange}
+          canCreate={!viewOnly}
+          canAssignDirectors={() => !viewOnly}
+          clubs={viewOnly ? undefined : clubs}
+          onClubChange={viewOnly ? undefined : handleClubChange}
           savingId={savingId}
         />
       )}
@@ -411,6 +423,7 @@ function ClubsSection() {
   const [creating, setCreating] = useState(false)
   const [search, setSearch] = useState('')
   const navigate = useNavigate()
+  const viewOnly = useViewOnly()
 
   useEffect(() => {
     let cancelled = false
@@ -464,7 +477,7 @@ function ClubsSection() {
       <SectionHeading
         title="Clubs"
         description={`${clubs.length} clubs. Club reps can edit their own club; renaming, region and deleting stay with admins.`}
-        action={!showNew && (
+        action={!showNew && !viewOnly && (
           <Button type="button" size="sm" className={GOLD} onClick={() => setShowNew(true)}>
             <Plus className="mr-1.5 size-3.5" /> New club
           </Button>
@@ -516,12 +529,14 @@ function ClubsSection() {
                   </p>
                 </div>
                 <Button asChild size="sm" variant="outline" className="h-8">
-                  <Link to={`/admin/clubs/${club.id}`}>Edit</Link>
+                  <Link to={`/admin/clubs/${club.id}`}>{viewOnly ? 'View' : 'Edit'}</Link>
                 </Button>
-                <button type="button" onClick={() => handleDelete(club)} title={`Delete ${club.name}`}
-                  className="p-1 text-muted-foreground transition-colors hover:text-destructive">
-                  <Trash2 className="size-4" />
-                </button>
+                {!viewOnly && (
+                  <button type="button" onClick={() => handleDelete(club)} title={`Delete ${club.name}`}
+                    className="p-1 text-muted-foreground transition-colors hover:text-destructive">
+                    <Trash2 className="size-4" />
+                  </button>
+                )}
               </li>
             ))}
             {visible.length === 0 && (

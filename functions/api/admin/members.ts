@@ -9,7 +9,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const authResult = await requireMemberDirectory(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
-  const isAdmin = authResult.member.role === 'lca_admin'
+  // Observers see the full admin view (they can't change any of it).
+  const isAdmin = authResult.member.role === 'lca_admin' || authResult.member.role === 'lca_observer'
 
   // Non-admins (auditor, club rep, director) get exactly the columns their view renders, plus
   // the USCF id the search box matches on. Hiding a column in the UI is not

@@ -17,6 +17,7 @@ const FILTERS: { value: string; label: string }[] = [
   { value: 'tournament_create,tournament_publish,tournament_unpublish,round_delete,announcement_sent,director_assign,director_remove,registration_withdraw,registration_reinstate', label: 'Events' },
   { value: 'payment_change', label: 'Payments' },
   { value: 'club_edit,officer_add,officer_remove', label: 'Club edits' },
+  { value: 'group_email_sent', label: 'Group email' },
   { value: 'ticket_delete', label: 'Deleted tickets' },
 ]
 
@@ -64,6 +65,8 @@ const ACTION_META: Record<
   club_edit: { label: 'Edited club', icon: Pencil, className: 'bg-blue-100 text-blue-800' },
   officer_add: { label: 'Added officer', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
   officer_remove: { label: 'Removed officer', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
+  group_email_sent: { label: 'Sent group email', icon: Mail, className: 'bg-blue-100 text-blue-800' },
+  ticket_reply: { label: 'Answered ticket', icon: Mail, className: 'bg-muted text-muted-foreground' },
 }
 
 function roleLabel(role: unknown): string {
@@ -108,6 +111,8 @@ function describeDetail(entry: ApiAuditEntry): string | null {
     case 'officer_add':
     case 'officer_remove':
       return typeof parsed.title === 'string' ? parsed.title : null
+    case 'group_email_sent':
+      return `${parsed.recipients ?? 0} recipients`
     case 'ticket_delete':
       return typeof parsed.from === 'string' ? `From ${parsed.from}` : null
     default:

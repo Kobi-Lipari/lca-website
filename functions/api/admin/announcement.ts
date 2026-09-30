@@ -1,5 +1,5 @@
 import type { Env } from '../../types'
-import { isResponse, requireAdmin } from '../../utils/auth'
+import { isResponse, requireAdmin, requireAdminView } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -46,7 +46,7 @@ export function validateAnnouncement(body: AnnouncementBody): string | null {
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
-  const authed = await requireAdmin(context.request, context.env)
+  const authed = await requireAdminView(context.request, context.env)
   if (isResponse(authed)) return authed
 
   // Every banner, including disabled and expired ones — this is the

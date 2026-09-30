@@ -61,7 +61,7 @@ function useAccountLinks(): NavLink[] {
   if (loading || !user) return []
 
   const links: NavLink[] = []
-  if (role === 'lca_admin') {
+  if (role === 'lca_admin' || role === 'lca_observer') {
     links.push({ label: 'Admin panel', href: '/admin' })
   } else if (WORKSPACE_ROLES.includes(role) || directedTournamentIds.length > 0) {
     links.push({ label: 'Workspace', href: '/workspace' })

@@ -24,7 +24,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       const authed = await requireAuthedMember(context.request, context.env)
       if (!isResponse(authed)) {
         const { canManageTournament } = await import('../../utils/permissions')
-        isPrivileged = await canManageTournament(context.env.DB, authed.member, tournamentId)
+        isPrivileged = authed.member.role === 'lca_observer' ||
+          await canManageTournament(context.env.DB, authed.member, tournamentId)
       }
     } catch { /* not logged in */ }
     if (!isPrivileged) return errorResponse('Tournament not found', 404)

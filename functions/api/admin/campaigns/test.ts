@@ -1,6 +1,6 @@
 // functions/api/admin/campaigns/test.ts
 import type { Env } from '../../../types'
-import { isResponse, requireAdmin } from '../../../utils/auth'
+import { isResponse, requireAdminView } from '../../../utils/auth'
 import { sendTestEmail } from '../../../utils/campaigns'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
 
@@ -15,7 +15,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdmin(context.request, context.env)
+  const authResult = await requireAdminView(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const body = await parseJsonBody<TestSendBody>(context.request)

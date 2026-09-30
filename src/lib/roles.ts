@@ -2,6 +2,7 @@
 export type MemberRole =
   | 'member'
   | 'lca_auditor'
+  | 'lca_observer'
   | 'club_rep'
   | 'tournament_director'
   | 'lca_admin'
@@ -9,6 +10,7 @@ export type MemberRole =
 export const MEMBER_ROLES: MemberRole[] = [
   'member',
   'lca_auditor',
+  'lca_observer',
   'club_rep',
   'tournament_director',
   'lca_admin',
@@ -17,6 +19,7 @@ export const MEMBER_ROLES: MemberRole[] = [
 export const ROLE_LABELS: Record<MemberRole, string> = {
   member: 'Member',
   lca_auditor: 'LCA Auditor',
+  lca_observer: 'LCA Observer',
   club_rep: 'Club Representative',
   tournament_director: 'Tournament Director',
   lca_admin: 'LCA Admin',
@@ -35,8 +38,16 @@ export function resolveRole(
   return 'member'
 }
 
+/** Roles that open the admin panel. Observers see it in view-only mode. */
+export const ADMIN_PANEL_ROLES: MemberRole[] = ['lca_admin', 'lca_observer']
+
 export function canAccessAdmin(role: MemberRole): boolean {
-  return role === 'lca_admin'
+  return ADMIN_PANEL_ROLES.includes(role)
+}
+
+/** Sees everything an admin sees; can't change anything except a few tools. */
+export function isViewOnlyAdmin(role: MemberRole): boolean {
+  return role === 'lca_observer'
 }
 
 export function canManageClub(
@@ -57,7 +68,7 @@ export const WORKSPACE_ROLES: MemberRole[] = ['lca_auditor', 'club_rep', 'tourna
  * dashboard. `section` picks the tournaments view in either.
  */
 export function toolsHomeFor(role: MemberRole, section?: 'tournaments'): string {
-  if (role === 'lca_admin') return section ? `/admin/${section}` : '/admin'
+  if (role === 'lca_admin' || role === 'lca_observer') return section ? `/admin/${section}` : '/admin'
   if (WORKSPACE_ROLES.includes(role)) return section ? '/workspace?tab=events' : '/workspace'
   return '/dashboard'
 }

@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute'
-import { WORKSPACE_ROLES } from '@/lib/roles'
+import { ADMIN_PANEL_ROLES, WORKSPACE_ROLES } from '@/lib/roles'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
 import { HomePage } from '@/pages/HomePage'
@@ -115,10 +115,10 @@ function App() {
             {/* ── Admin ── */}
             {/* Admin-only. Anyone else who follows an old /admin link lands in
                 their workspace (or the dashboard) instead of an empty panel. */}
-            <Route path="/admin" element={<RoleProtectedRoute roles={['lca_admin']} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
-            <Route path="/admin/:section" element={<RoleProtectedRoute roles={['lca_admin']} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
+            <Route path="/admin" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
+            <Route path="/admin/:section" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
-            <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'club_rep', 'tournament_director']} allowDirectors requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
+            <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'lca_observer', 'club_rep', 'tournament_director']} allowDirectors requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
           </Routes>
         </Suspense>
       </main>

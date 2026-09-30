@@ -93,6 +93,8 @@ export interface MembersTableAdminProps {
   onImpersonate: (m: ApiAdminMember) => void
   onSeatAdd: (seatId: string, memberId: string) => void
   onSeatRemove: (seatId: string, memberId: string) => void
+  /** LCA Observer: show every admin column, but as text with no controls. */
+  viewOnly?: boolean
 }
 
 export function MembersTable({ members, admin }: {
@@ -101,6 +103,7 @@ export function MembersTable({ members, admin }: {
   admin?: MembersTableAdminProps
 }) {
   const isAdmin = !!admin
+  const canEdit = isAdmin && !admin!.viewOnly
   const [filter, setFilter] = useState<MembershipFilter>('active')
   const [search, setSearch] = useState('')
 
@@ -184,8 +187,8 @@ export function MembersTable({ members, admin }: {
               {isAdmin && <th className="px-3 py-2.5 font-semibold">Role</th>}
               {isAdmin && <th className="px-3 py-2.5 font-semibold">Club</th>}
               {isAdmin && <th className="px-3 py-2.5 font-semibold">Board seats</th>}
-              {isAdmin && <th className="w-10 px-3 py-2.5" />}
-              {isAdmin && <th className="w-10 px-3 py-2.5" />}
+              {canEdit && <th className="w-10 px-3 py-2.5" />}
+              {canEdit && <th className="w-10 px-3 py-2.5" />}
             </tr>
           </thead>
           <tbody>
@@ -201,7 +204,7 @@ export function MembersTable({ members, admin }: {
               filtered.map((m) => (
                 <tr key={m.id} className="border-b last:border-0">
                   <td className="px-3 py-2.5 font-medium">
-                    {isAdmin ? (
+                    {canEdit ? (
                       <NameCell
                         value={m.full_name}
                         disabled={admin!.savingId === m.id}
@@ -213,7 +216,7 @@ export function MembersTable({ members, admin }: {
                   </td>
                   <td className="px-3 py-2.5 text-muted-foreground">{m.email}</td>
                   <td className="px-3 py-2.5">
-                    {isAdmin ? (
+                    {canEdit ? (
                       <select
                         className="rounded-md border bg-background px-2 py-1 text-xs"
                         value={m.membership_status}
@@ -231,7 +234,7 @@ export function MembersTable({ members, admin }: {
                     )}
                   </td>
                   <td className="px-3 py-2.5">
-                    {isAdmin ? (
+                    {canEdit ? (
                       <Input
                         type="date"
                         className="h-8 w-[140px] text-xs"
@@ -243,7 +246,24 @@ export function MembersTable({ members, admin }: {
                       <span className="text-muted-foreground">{m.membership_expiry ?? '—'}</span>
                     )}
                   </td>
-                  {isAdmin && (
+                  {isAdmin && !canEdit && (
+                    <td className="px-3 py-2.5 text-sm">{ROLE_LABELS[m.role as MemberRole] ?? m.role}</td>
+                  )}
+                  {isAdmin && !canEdit && (
+                    <td className="px-3 py-2.5 text-sm text-muted-foreground">
+                      {admin!.clubs.find((c) => c.id === m.club_id)?.name ?? 'No club'}
+                    </td>
+                  )}
+                  {isAdmin && !canEdit && (
+                    <td className="px-3 py-2.5 text-sm text-muted-foreground">
+                      {admin!.seatHolders
+                        .filter((h) => h.member_id === m.id)
+                        .map((h) => admin!.boardSeats.find((b) => b.id === h.seat_id)?.role)
+                        .filter(Boolean)
+                        .join(', ') || '—'}
+                    </td>
+                  )}
+                  {canEdit && (
                     <td className="px-3 py-2.5">
                       <select
                         className="rounded-md border bg-background px-2 py-1 text-sm"
@@ -255,7 +275,7 @@ export function MembersTable({ members, admin }: {
                       </select>
                     </td>
                   )}
-                  {isAdmin && (
+                  {canEdit && (
                     <td className="px-3 py-2.5">
                       <select
                         className="max-w-[180px] rounded-md border bg-background px-2 py-1 text-sm"
@@ -268,7 +288,7 @@ export function MembersTable({ members, admin }: {
                       </select>
                     </td>
                   )}
-                  {isAdmin && (
+                  {canEdit && (
                     <td className="px-3 py-2.5">
                       <MemberSeatsCell
                         member={m}
@@ -280,7 +300,7 @@ export function MembersTable({ members, admin }: {
                       />
                     </td>
                   )}
-                  {isAdmin && (
+                  {canEdit && (
                     <td className="px-3 py-2.5">
                       <button
                         type="button"
@@ -293,7 +313,7 @@ export function MembersTable({ members, admin }: {
                       </button>
                     </td>
                   )}
-                  {isAdmin && (
+                  {canEdit && (
                     <td className="px-3 py-2.5">
                       <button type="button" onClick={() => admin!.onDelete(m)} className="text-muted-foreground transition-colors hover:text-destructive" title="Delete member">
                         <Trash2 className="size-4" />

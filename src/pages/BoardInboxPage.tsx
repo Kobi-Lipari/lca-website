@@ -25,6 +25,7 @@ import {
   type ApiBoardTicket,
   type ApiTicketMessage,
 } from '@/lib/api'
+import { useViewOnly } from '@/lib/viewOnly'
 
 const STATUS_LABEL: Record<string, string> = {
   open: 'New',
@@ -54,6 +55,7 @@ export function BoardInboxPage() {
 
   const [tickets, setTickets] = useState<ApiBoardTicket[]>([])
   const [isAdmin, setIsAdmin] = useState(false)
+  const viewOnly = useViewOnly()
   const [selected, setSelected] = useState<ApiBoardTicket | null>(null)
   const [messages, setMessages] = useState<ApiTicketMessage[]>([])
   const [mode, setMode] = useState<'reply' | 'note'>('reply')
@@ -346,6 +348,7 @@ export function BoardInboxPage() {
                           <MailOpen className="mr-1.5 size-3.5" />
                           {selected.status === 'resolved' ? 'Reopen' : 'Mark resolved'}
                         </Button>
+{!viewOnly && (
                         <Button
                           type="button"
                           variant="outline"
@@ -358,6 +361,7 @@ export function BoardInboxPage() {
                           <Trash2 className="mr-1.5 size-3.5" />
                           {deleting ? 'Deleting…' : 'Delete'}
                         </Button>
+                        )}
                       </div>
                     </div>
 

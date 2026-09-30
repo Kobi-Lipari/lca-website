@@ -1,6 +1,6 @@
 // functions/api/admin/tournaments/[id]/manage.ts
 import type { Env } from '../../../../types'
-import { isResponse, requireTournamentManager } from '../../../../utils/auth'
+import { isResponse, requireTournamentView } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
 import { computeStandings } from '../../../../utils/tournament-manage'
 import { parseJsonArray } from '../../../../utils/json'
@@ -9,7 +9,7 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const tournamentId = context.params.id as string
-  const authResult = await requireTournamentManager(context.request, context.env, tournamentId)
+  const authResult = await requireTournamentView(context.request, context.env, tournamentId)
   if (isResponse(authResult)) return authResult
 
   const tournament = await context.env.DB.prepare(
