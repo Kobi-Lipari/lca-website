@@ -6,6 +6,7 @@ import { ArrowLeft, ChevronDown, ChevronRight, Trophy, Printer } from 'lucide-re
 import { Button } from '@/components/ui/button'
 import {
   getTournament,
+  type ApiPrizeAward,
   type ApiStanding,
   type ApiTournamentDetail,
   type ApiTournamentPairing,
@@ -13,6 +14,8 @@ import {
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
+import { Crosstable } from '@/components/tournaments/Crosstable'
+import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -135,6 +138,8 @@ export function TournamentPairingsPage() {
   const [tournament, setTournament] = useState<ApiTournamentDetail | null>(null)
   const [pairings, setPairings] = useState<ApiTournamentPairing[]>([])
   const [standings, setStandings] = useState<ApiStanding[]>([])
+  const [prizes, setPrizes] = useState<ApiPrizeAward[]>([])
+  const [view, setView] = useState<'standings' | 'crosstable'>('standings')
   // The route param is known at first render, so a missing id is the state we
   // start in rather than something an effect corrects a render later.
   const [loading, setLoading] = useState(!!id)
@@ -150,6 +155,7 @@ export function TournamentPairingsPage() {
         setTournament(data.tournament)
         setPairings(data.pairings ?? [])
         setStandings(data.standings ?? [])
+        setPrizes(data.prizes ?? [])
       })
       .catch((err) => {
         const msg = err instanceof Error ? err.message : 'Failed to load'
@@ -252,11 +258,34 @@ export function TournamentPairingsPage() {
         {/* Standings — live during the event, final after */}
         {hasScores && (
           <div>
-            <h2 className="mb-6 text-2xl font-bold text-lca-navy">
-              {isCompleted ? 'Final standings' : 'Current standings'}
-            </h2>
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-2xl font-bold text-lca-navy">
+                {isCompleted ? 'Final standings' : 'Current standings'}
+              </h2>
+              <div className="inline-flex rounded-lg border p-0.5 text-sm" role="tablist" aria-label="Standings view">
+                {(['standings', 'crosstable'] as const).map((v) => (
+                  <button
+                    key={v}
+                    type="button"
+                    role="tab"
+                    aria-selected={view === v}
+                    onClick={() => setView(v)}
+                    className={view === v
+                      ? 'rounded-md bg-lca-navy px-3 py-1 font-medium text-white'
+                      : 'rounded-md px-3 py-1 text-muted-foreground hover:text-lca-navy'}
+                  >
+                    {v === 'standings' ? 'Standings' : 'Crosstable'}
+                  </button>
+                ))}
+              </div>
+            </div>
             {sectionOrder.map((sec) => (
-              <StandingsTable key={sec} standings={standings} sectionName={sec} />
+              <div key={sec}>
+                {isCompleted && <PrizeWinners prizes={prizes} standings={standings} sectionName={sec} />}
+                {view === 'standings'
+                  ? <StandingsTable standings={standings} sectionName={sec} />
+                  : <Crosstable standings={standings} pairings={pairings} sectionName={sec} rounds={tournament.rounds} />}
+              </div>
             ))}
           </div>
         )}

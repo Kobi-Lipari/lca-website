@@ -1,6 +1,8 @@
 // functions/utils/tournament-manage.ts
 import type { GameResult } from './swiss/engine'
 import { computeStandings as standingsFor, type Tiebreaks } from './swiss/tiebreaks'
+import { awardPrizes, type PrizeAward, type SectionPrizes } from './prizes'
+import { parseGrade } from './sectionRules'
 
 interface GameRow {
   id: string
@@ -95,4 +97,29 @@ export function parseTournamentSections(sectionsJson: string): unknown[] {
   } catch {
     return []
   }
+}
+
+/**
+ * Prize winners for a tournament, from the prizes the director set on each
+ * section. Grades are looked up here rather than carried on the standings,
+ * so the public standings never expose a child's grade.
+ */
+export async function tournamentPrizes(
+  db: D1Database,
+  tournamentId: string,
+  sections: unknown[],
+  standings: Array<{ member_id: string; section: string; score: number; rating: number | null }>,
+): Promise<PrizeAward[]> {
+  const withPrizes = (sections as Array<{ name?: string; prizes?: SectionPrizes }>)
+    .filter((s): s is { name: string; prizes: SectionPrizes } => !!s && typeof s === 'object' && !!s.name && !!s.prizes)
+  if (withPrizes.length === 0 || standings.length === 0) return []
+  const needsGrades = withPrizes.some((s) => s.prizes.classes?.some((c) => c.gradeMin != null || c.gradeMax != null))
+  const grades = new Map<string, number | null>()
+  if (needsGrades) {
+    const { results } = await db.prepare(
+      `SELECT member_id, grade FROM registrations WHERE tournament_id = ?`,
+    ).bind(tournamentId).all<{ member_id: string; grade: string | null }>()
+    for (const r of results ?? []) grades.set(r.member_id, parseGrade(r.grade))
+  }
+  return awardPrizes(withPrizes, standings.map((s) => ({ ...s, grade: grades.get(s.member_id) ?? null })))
 }

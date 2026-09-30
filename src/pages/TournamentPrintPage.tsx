@@ -4,6 +4,7 @@
 //   ?what=pairings&section=Open&round=3  — pairings by board
 //   ?what=alpha&section=Open&round=3     — alphabetical "find your board"
 //   ?what=standings&section=Open         — standings with tiebreaks
+//   ?what=crosstable&section=Open        — crosstable (plus prize winners once finished)
 // Plain black on white, no site header or footer when printed.
 import { useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
@@ -11,11 +12,13 @@ import { ArrowLeft, Printer } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
-import { getTournament, type ApiStanding, type ApiTournamentDetail, type ApiTournamentPairing } from '@/lib/api'
+import { Crosstable } from '@/components/tournaments/Crosstable'
+import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
+import { getTournament, type ApiPrizeAward, type ApiStanding, type ApiTournamentDetail, type ApiTournamentPairing } from '@/lib/api'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { cn } from '@/lib/utils'
 
-type What = 'pairings' | 'alpha' | 'standings'
+type What = 'pairings' | 'alpha' | 'standings' | 'crosstable'
 
 const pts = (result: string, side: 'w' | 'b'): number => {
   if (result === '1/2-1/2') return 0.5
@@ -33,13 +36,14 @@ export function TournamentPrintPage() {
   const [tournament, setTournament] = useState<ApiTournamentDetail | null>(null)
   const [pairings, setPairings] = useState<ApiTournamentPairing[]>([])
   const [standings, setStandings] = useState<ApiStanding[]>([])
+  const [prizes, setPrizes] = useState<ApiPrizeAward[]>([])
   const [error, setError] = useState<string | null>(null)
   usePageTitle(tournament ? `Print · ${tournament.name}` : 'Print')
 
   useEffect(() => {
     if (!id) return
     getTournament(id)
-      .then((d) => { setTournament(d.tournament); setPairings(d.pairings ?? []); setStandings(d.standings ?? []) })
+      .then((d) => { setTournament(d.tournament); setPairings(d.pairings ?? []); setStandings(d.standings ?? []); setPrizes(d.prizes ?? []) })
       .catch((e) => setError(e instanceof Error ? e.message : 'Failed to load'))
   }, [id])
 
@@ -67,8 +71,8 @@ export function TournamentPrintPage() {
     return rows
   }).sort((a, b) => a.name.localeCompare(b.name))
 
-  const title = what === 'standings'
-    ? `${section} — Standings${rounds.length ? ` after round ${rounds[rounds.length - 1]}` : ''}`
+  const title = what === 'standings' || what === 'crosstable'
+    ? `${section} — ${what === 'crosstable' ? 'Crosstable' : 'Standings'}${rounds.length ? ` after round ${rounds[rounds.length - 1]}` : ''}`
     : `${section} — Round ${round} pairings${what === 'alpha' ? ' (alphabetical)' : ''}`
 
   return (
@@ -81,13 +85,14 @@ export function TournamentPrintPage() {
           <option value="pairings">Pairings by board</option>
           <option value="alpha">Pairings alphabetical</option>
           <option value="standings">Standings</option>
+          <option value="crosstable">Crosstable</option>
         </select>
         {sections.length > 1 && (
           <select aria-label="Section" className="rounded-md border bg-background px-2.5 py-1.5 text-sm" value={section} onChange={(e) => set('section', e.target.value)}>
             {sections.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         )}
-        {what !== 'standings' && rounds.length > 0 && (
+        {(what === 'pairings' || what === 'alpha') && rounds.length > 0 && (
           <select aria-label="Round" className="rounded-md border bg-background px-2.5 py-1.5 text-sm" value={round} onChange={(e) => set('round', e.target.value)}>
             {rounds.map((r) => <option key={r} value={r}>Round {r}</option>)}
           </select>
@@ -103,6 +108,12 @@ export function TournamentPrintPage() {
       </header>
 
       {what === 'standings' && <StandingsTable standings={standings} sectionName={section} showHeading={false} />}
+      {what === 'crosstable' && (
+        <>
+          <Crosstable standings={standings} pairings={pairings} sectionName={section} rounds={tournament.rounds} showHeading={false} />
+          <PrizeWinners prizes={prizes} standings={standings} sectionName={section} />
+        </>
+      )}
 
       {what === 'pairings' && (
         boards.length === 0 ? <p>This round hasn't been paired yet.</p> : (

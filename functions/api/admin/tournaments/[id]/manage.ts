@@ -2,7 +2,7 @@
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentView } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
-import { computeStandings } from '../../../../utils/tournament-manage'
+import { computeStandings, tournamentPrizes } from '../../../../utils/tournament-manage'
 import { parseJsonArray } from '../../../../utils/json'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -76,6 +76,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     roster,
     games: games.results ?? [],
     standings,
+    prizes: await tournamentPrizes(context.env.DB, tournamentId, sections, standings),
     directors: directors.results ?? [],
   })
 }

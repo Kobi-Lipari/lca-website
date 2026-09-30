@@ -15,6 +15,7 @@ import {
   optInTournamentReminder,
   optOutTournamentReminder,
   getTournamentReminderStatus,
+  hasGradePrizes,
   payRegistration,
   updateRegistration,
   updateRegistrationByes,
@@ -313,7 +314,7 @@ export function TournamentDetailPage() {
     try {
       const full = !!tournament?.max_players && roster.filter((p) => !p.withdrawn_at).length >= tournament.max_players
       const section = tournament?.sections.find((s) => s.name === selectedSection)
-      const grade = section && needsGrade(effectiveRules(section)) ? selectedGrade : null
+      const grade = section && (needsGrade(effectiveRules(section)) || hasGradePrizes(section)) ? selectedGrade || null : null
       const result = await createRegistration(id, selectedSection, selectedByes, { grade, waitlist: full })
       setWarnings(result.warnings ?? [])
       setConfirmation({ message: result.message, paymentUrl: result.paymentUrl, section: selectedSection })
@@ -442,6 +443,8 @@ export function TournamentDetailPage() {
   const chosenSection = tournament.sections.find((s) => s.name === selectedSection)
   const chosenRules = chosenSection ? effectiveRules(chosenSection) : {}
   const gradeNeeded = needsGrade(chosenRules)
+  // Grade prizes want the grade too, but it's optional for them.
+  const gradeForPrizes = !gradeNeeded && hasGradePrizes(chosenSection)
   const chosenPrice = priceFor(selectedSection)
   const eligibility = user && chosenSection
     ? eligibilityProblem(chosenSection, { rating: authMember?.uscf_rating ?? null, grade: gradeNeeded ? parseGrade(selectedGrade) : null })
@@ -480,7 +483,7 @@ export function TournamentDetailPage() {
           member={authMember}
           selectedSection={selectedSection}
           byeRounds={selectedByes}
-          grade={gradeNeeded ? (selectedGrade === 'K' ? 'Kindergarten' : selectedGrade) : ''}
+          grade={gradeNeeded || gradeForPrizes ? (selectedGrade === 'K' ? 'Kindergarten' : selectedGrade) : ''}
           price={chosenPrice}
           waitlist={isFull}
           onConfirm={handleConfirmRegistration}
@@ -648,7 +651,7 @@ export function TournamentDetailPage() {
                         <td className="px-4 py-3 text-muted-foreground">
                           {s.entryFee > 0 ? `$${s.entryFee}` : 'Free'}
                         </td>
-                        <td className="px-4 py-3 text-muted-foreground">{s.prizeFund ?? '—'}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{s.prizeFund || prizeFundLabel(s) || '—'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -925,15 +928,18 @@ export function TournamentDetailPage() {
                         <p className="text-xs text-muted-foreground">{describeRules(chosenRules)}</p>
                       </div>
 
-                      {gradeNeeded && (
+                      {(gradeNeeded || gradeForPrizes) && (
                         <div className="space-y-1.5">
-                          <Label htmlFor="grade">Grade this school year</Label>
+                          <Label htmlFor="grade">
+                            Grade this school year
+                            {gradeForPrizes && <span className="ml-1 text-xs font-normal text-muted-foreground">(optional, for grade prizes)</span>}
+                          </Label>
                           <select
                             id="grade"
                             className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                             value={selectedGrade}
                             onChange={(e) => setSelectedGrade(e.target.value)}
-                            required
+                            required={gradeNeeded}
                           >
                             <option value="">Choose a grade…</option>
                             {Array.from({ length: 13 }, (_, g) => (
@@ -1089,6 +1095,13 @@ export function TournamentDetailPage() {
       </section>
     </div>
   )
+}
+
+/** "$300 in prizes" from the prizes the director set, when there's cash. */
+function prizeFundLabel(s: ApiTournamentDetail['sections'][number]): string | null {
+  const sum = (slots: Array<{ amount?: number }> = []) => slots.reduce((a, x) => a + Math.max(0, x.amount ?? 0), 0)
+  const cash = sum(s.prizes?.place) + (s.prizes?.classes ?? []).reduce((a, c) => a + sum(c.prizes), 0)
+  return cash > 0 ? `$${cash} in prizes` : null
 }
 
 /** "Fri, Oct 16, 6:00 PM" for a Central wall-clock value like "2026-10-16T18:00". */
