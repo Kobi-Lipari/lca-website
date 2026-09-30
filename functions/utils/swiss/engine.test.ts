@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { pairRound, type PairingSystem, type SwissGame, type SwissPlayer } from './engine'
+import { accelerationRecommended, acceleratedTopGroup, pairRound, type PairingSystem, type SwissGame, type SwissPlayer } from './engine'
 
 function lcg(seed: number) {
   let s = seed
@@ -135,6 +135,74 @@ describe('later rounds', () => {
       for (const h of hist.values()) {
         for (let i = 2; i < h.length; i++) expect(h[i] === h[i - 1] && h[i] === h[i - 2]).toBe(false)
       }
+    }
+  })
+})
+
+describe('accelerated pairings', () => {
+  it('pairs the top half and the bottom half separately in round 1', () => {
+    const players = field(16)
+    const top = new Set(acceleratedTopGroup(players))
+    expect(top.size).toBe(8)
+    const { pairings } = pairRound(players, [], 1, { bonusPoint: top })
+    expect(pairings).toHaveLength(8)
+    for (const p of pairings) {
+      // Both players in the same group.
+      expect(top.has(p.whiteId)).toBe(top.has(p.blackId as string))
+    }
+  })
+
+  it('never gives a top-group player the round-1 bye', () => {
+    const players = field(11)
+    const top = acceleratedTopGroup(players)
+    expect(top.length % 2).toBe(0)
+    const { pairings } = pairRound(players, [], 1, { bonusPoint: top })
+    const bye = pairings.find((p) => !p.blackId)
+    expect(top.includes(bye?.whiteId ?? '')).toBe(false)
+  })
+
+  it('keeps pairing cleanly through an accelerated event', () => {
+    for (let seed = 1; seed <= 20; seed++) {
+      const rnd = lcg(seed)
+      const players = field(24, rnd)
+      const top = acceleratedTopGroup(players)
+      const games: SwissGame[] = []
+      for (let r = 1; r <= 5; r++) {
+        const out = pairRound(players, games, r, { bonusPoint: r <= 2 ? top : [] })
+        expect(out.warnings).toEqual([])
+        for (const p of out.pairings) {
+          const x = rnd()
+          games.push(p.blackId
+            ? { whiteId: p.whiteId, blackId: p.blackId, result: x < 0.45 ? '1-0' : x < 0.6 ? '1/2-1/2' : '0-1' }
+            : { whiteId: p.whiteId, blackId: null, result: 'bye' })
+        }
+      }
+    }
+  })
+
+  it('recommends acceleration only when the field outgrows the rounds', () => {
+    expect(accelerationRecommended(40, 4)).toBe(true)
+    expect(accelerationRecommended(16, 4)).toBe(false)
+  })
+})
+
+describe('keeping players apart', () => {
+  it('swaps neighbours in round 1 to keep a family apart', () => {
+    const players = [2000, 1900, 1800, 1700].map((rating) => ({ id: `r${rating}`, rating }))
+    const { pairings } = pairRound(players, [], 1, { avoid: [['r2000', 'r1800']] })
+    for (const p of pairings) expect([p.whiteId, p.blackId].sort().join()).not.toBe('r1800,r2000')
+    expect(pairings).toHaveLength(2)
+  })
+
+  it('avoids pairing family members when another pairing is just as good', () => {
+    const players = field(8)
+    const games: SwissGame[] = []
+    for (const [w, b] of [['p0', 'p4'], ['p1', 'p5'], ['p2', 'p6'], ['p3', 'p7']]) games.push({ whiteId: w, blackId: b, result: '1-0' })
+    const plain = pairRound(players, games, 2)
+    const first = plain.pairings[0]
+    const avoided = pairRound(players, games, 2, { avoid: [[first.whiteId, first.blackId as string]] })
+    for (const p of avoided.pairings) {
+      expect([p.whiteId, p.blackId].sort().join()).not.toBe([first.whiteId, first.blackId].sort().join())
     }
   })
 })

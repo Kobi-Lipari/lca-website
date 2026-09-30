@@ -140,3 +140,45 @@ describe('manual pairings', () => {
     expect(confirmed.status).toBe(201)
   })
 })
+
+describe('pairing options', () => {
+  it('accelerates round 1 when the event is set to', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ rounds: 4, sections: [{ name: 'Open', entryFee: 0 }] })
+    expect((await invoke(tournamentPatch, { method: 'PATCH', as: admin, params: { id: tournamentId }, body: { accelerated: true } })).status).toBe(200)
+    const ids: string[] = []
+    for (let i = 0; i < 8; i++) {
+      const id = await seedMember({ uscfRating: 2000 - i * 100 })
+      ids.push(id)
+      await seedRegistration({ tournamentId, memberId: id, section: 'Open' })
+    }
+    await invoke(generatePost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { round: 1, section: 'Open' } })
+    const top = new Set(ids.slice(0, 4))
+    for (const g of await pendingGames(tournamentId, 1)) {
+      expect(top.has(g.white_member_id)).toBe(top.has(g.black_member_id as string))
+    }
+  })
+
+  it('keeps a parent and child apart when it can', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ rounds: 3, sections: [{ name: 'Open', entryFee: 0 }] })
+    const ids: string[] = []
+    for (let i = 0; i < 4; i++) {
+      const id = await seedMember({ uscfRating: 1600 - i * 100 })
+      ids.push(id)
+      await seedRegistration({ tournamentId, memberId: id, section: 'Open' })
+    }
+    // Round 1 would pair 1600 with 1400 (top half vs bottom half); make them family.
+    await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(ids[0], ids[2]).run()
+    await invoke(generatePost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { round: 1, section: 'Open' } })
+    const r1 = await pendingGames(tournamentId, 1)
+    for (const g of r1) {
+      expect([g.white_member_id, g.black_member_id].sort().join()).not.toBe([ids[0], ids[2]].sort().join())
+    }
+    for (const g of r1) await invoke(resultPatch, { method: 'PATCH', as: admin, params: { id: tournamentId, gameId: g.id }, body: { result: '1/2-1/2' } })
+    await invoke(generatePost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { round: 2, section: 'Open' } })
+    for (const g of await pendingGames(tournamentId, 2)) {
+      expect([g.white_member_id, g.black_member_id].sort().join()).not.toBe([ids[0], ids[2]].sort().join())
+    }
+  })
+})

@@ -318,6 +318,9 @@ export interface ApiTournamentDetail {
   name: string
   /** 'uscf' (default) or 'fide' */
   pairing_system?: 'uscf' | 'fide'
+  /** 1 = accelerated pairings in rounds 1–2 */
+  accelerated?: number
+  keep_apart?: 'family' | 'family_club' | 'none'
   date: string
   end_date: string | null
   location: string
@@ -593,6 +596,8 @@ export async function adminUpdateTournament(
   id: string,
   body: {
     pairingSystem?: 'uscf' | 'fide'
+    accelerated?: boolean
+    keepApart?: 'family' | 'family_club' | 'none'
     name?: string
     location?: string
     venue?: string | null
