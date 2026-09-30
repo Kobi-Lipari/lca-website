@@ -196,8 +196,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const free = r.amount <= 0
     statements.push(
       db.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds)
-         VALUES (?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6, (SELECT uscf_rating FROM members WHERE id = ?3))`,
       ).bind(
         r.registrationId,
         tournament.id,

@@ -62,7 +62,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // named individual has paid is between them and the organizer. Withdrawn
   // players are included (with the flag) so displays can grey/exclude them.
   const roster = await context.env.DB.prepare(
-    `SELECT r.member_id, r.section, r.withdrawn_at,
+    `SELECT r.member_id, r.section, r.withdrawn_at, r.rating_at_entry,
             m.full_name, m.uscf_id, m.uscf_rating
      FROM registrations r
      JOIN members m ON m.id = r.member_id
@@ -88,7 +88,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // Single standings brain — shared with the manage endpoint
   const standings = computeStandings(
     (pairings.results ?? []) as never,
-    (roster.results ?? []) as Array<{ member_id: string; full_name: string; section: string }>,
+    (roster.results ?? []) as Parameters<typeof computeStandings>[1],
+    Number(tournament.rounds) || undefined,
   )
 
   return jsonResponse({

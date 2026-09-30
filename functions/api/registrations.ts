@@ -133,8 +133,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (amount <= 0) {
     await context.env.DB.batch([
       context.env.DB.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds)
-         VALUES (?, ?, ?, ?, 'paid', ?)`,
+        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry)
+         VALUES (?1, ?2, ?3, ?4, 'paid', ?5, (SELECT uscf_rating FROM members WHERE id = ?3))`,
       ).bind(
         registrationId,
         body.tournamentId,
@@ -196,8 +196,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   await context.env.DB.batch([
     context.env.DB.prepare(
-      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds)
-       VALUES (?, ?, ?, ?, 'pending', ?)`,
+      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry)
+       VALUES (?1, ?2, ?3, ?4, 'pending', ?5, (SELECT uscf_rating FROM members WHERE id = ?3))`,
     ).bind(
       registrationId,
       body.tournamentId,

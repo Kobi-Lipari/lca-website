@@ -19,6 +19,7 @@ interface UpdateTournamentBody {
   description?: string | null
   registrationDeadline?: string | null
   isRated?: boolean
+  pairingSystem?: string
   isVisible?: boolean
   roundSchedule?: Array<{ round: number; date: string; time: string }>
   registrationClosesAt?: string | null
@@ -78,6 +79,10 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     ? body.isRated ? 1 : 0
     : existing.is_rated
 
+  const pairingSystem = body.pairingSystem === undefined
+    ? (existing.pairing_system ?? 'uscf')
+    : body.pairingSystem === 'fide' ? 'fide' : 'uscf'
+
   const isVisible = body.isVisible !== undefined
     ? body.isVisible ? 1 : 0
     : existing.is_visible
@@ -105,7 +110,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       status = ?, description = ?, registration_deadline = ?,
       is_rated = ?, is_visible = ?, round_schedule = ?,
       registration_closes_at = ?, custom_details = ?, time_control = ?,
-      club_id = ?
+      club_id = ?, pairing_system = ?
      WHERE id = ?`,
   ).bind(
     body.name ?? existing.name,
@@ -127,6 +132,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     customDetails ?? null,
     timeControl ?? null,
     clubId,
+    pairingSystem,
     tournamentId,
   ).run()
 

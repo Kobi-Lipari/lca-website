@@ -38,6 +38,7 @@ import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
 import { toolsHomeFor } from '@/lib/roles'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
+import { StandingsTable } from '@/components/tournaments/StandingsTable'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
@@ -93,6 +94,7 @@ interface FormSnapshot {
   description: string
   maxPlayers: string
   isRated: boolean
+  pairingSystem: 'uscf' | 'fide'
   timeControl: string
   sections: string // JSON
   customDetails: string // JSON
@@ -176,6 +178,7 @@ export function TournamentManagePage() {
   const [description, setDescription] = useState('')
   const [maxPlayers, setMaxPlayers] = useState('')
   const [isRated, setIsRated] = useState(true)
+  const [pairingSystem, setPairingSystem] = useState<'uscf' | 'fide'>('uscf')
   const [timeControl, setTimeControl] = useState('')
   const [customTimeControl, setCustomTimeControl] = useState('')
   const [sections, setSections] = useState<ApiTournamentSection[]>([])
@@ -200,6 +203,10 @@ export function TournamentManagePage() {
   const appliedDefaultTab = useRef(false)
 
   const [generateForm, setGenerateForm] = useState({ round: '1', section: 'Open' })
+  const [pairingNotes, setPairingNotes] = useState<string[]>([])
+  /** The round the engine will pair next in a section: one past the last paired. */
+  const nextRoundFor = (section: string) =>
+    games.filter((g) => g.section === section).reduce((max, g) => Math.max(max, g.round), 0) + 1
   const [pairingForm, setPairingForm] = useState({
     round: '1', section: 'Open', whiteMemberId: '', blackMemberId: '', board: '1',
   })
@@ -263,6 +270,7 @@ export function TournamentManagePage() {
     const nDescription = t.description ?? ''
     const nMaxPlayers = t.max_players != null ? String(t.max_players) : ''
     const nIsRated = t.is_rated !== 0
+    const nPairingSystem: 'uscf' | 'fide' = t.pairing_system === 'fide' ? 'fide' : 'uscf'
     const nTimeControl = t.time_control ?? ''
     const nSections = t.sections ?? []
     const nCustomDetails = t.custom_details ?? []
@@ -280,6 +288,7 @@ export function TournamentManagePage() {
     setDescription(nDescription)
     setMaxPlayers(nMaxPlayers)
     setIsRated(nIsRated)
+    setPairingSystem(nPairingSystem)
     setTimeControl(nTimeControl)
     setCustomTimeControl(
       nTimeControl && !TIME_CONTROL_PRESETS.includes(nTimeControl) ? nTimeControl : '',
@@ -301,6 +310,7 @@ export function TournamentManagePage() {
       description: nDescription,
       maxPlayers: nMaxPlayers,
       isRated: nIsRated,
+      pairingSystem: nPairingSystem,
       timeControl: nTimeControl,
       sections: JSON.stringify(nSections),
       customDetails: JSON.stringify(nCustomDetails),
@@ -405,6 +415,7 @@ export function TournamentManagePage() {
     description !== snap.description ||
     maxPlayers !== snap.maxPlayers ||
     isRated !== snap.isRated ||
+    pairingSystem !== snap.pairingSystem ||
     timeControl !== snap.timeControl ||
     JSON.stringify(sections) !== snap.sections ||
     JSON.stringify(customDetails) !== snap.customDetails
@@ -435,6 +446,7 @@ export function TournamentManagePage() {
     setDescription(s.description)
     setMaxPlayers(s.maxPlayers)
     setIsRated(s.isRated)
+    setPairingSystem(s.pairingSystem)
     setTimeControl(s.timeControl)
     setCustomTimeControl(
       s.timeControl && !TIME_CONTROL_PRESETS.includes(s.timeControl) ? s.timeControl : '',
@@ -480,6 +492,7 @@ export function TournamentManagePage() {
     if (description !== s.description) body.description = description.trim() || null
     if (maxPlayers !== s.maxPlayers) body.maxPlayers = maxPlayers ? Number(maxPlayers) : null
     if (isRated !== s.isRated) body.isRated = isRated
+    if (pairingSystem !== s.pairingSystem) body.pairingSystem = pairingSystem
     if (timeControl !== s.timeControl) body.timeControl = timeControl || null
     if (JSON.stringify(sections) !== s.sections) body.sections = sections
     if (JSON.stringify(customDetails) !== s.customDetails) body.customDetails = customDetails
@@ -611,15 +624,26 @@ export function TournamentManagePage() {
   }
 
   async function handleGeneratePairings() {
-    if (!id) return
+    if (!id || !tournament) return
+    const round = nextRoundFor(generateForm.section)
+    let allowExtraRound = false
+    if (round > tournament.rounds) {
+      if (!window.confirm(
+        `${tournament.name} has ${tournament.rounds} rounds. Pair an extra round ${round} in ${generateForm.section} (for a playoff)?`,
+      )) return
+      allowExtraRound = true
+    }
     setGenerating(true)
     setError(null)
+    setPairingNotes([])
     try {
-      await adminGeneratePairings(id, {
-        round: Number(generateForm.round),
+      const result = await adminGeneratePairings(id, {
+        round,
         section: generateForm.section,
         onlyCheckedIn,
+        allowExtraRound,
       })
+      setPairingNotes(result.warnings ?? [])
       await loadManage()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate pairings')
@@ -978,6 +1002,19 @@ export function TournamentManagePage() {
                         !isRated ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}
                     >Unrated</button>
                   </div>
+                  <details className="text-xs text-muted-foreground">
+                    <summary className="cursor-pointer select-none">Pairing rules: {pairingSystem === 'fide' ? 'FIDE-style' : 'US Chess'}</summary>
+                    <div className="mt-2 space-y-1.5">
+                      <label className="flex items-center gap-2">
+                        <input type="radio" name="pairing-system" checked={pairingSystem === 'uscf'} onChange={() => setPairingSystem('uscf')} />
+                        US Chess (recommended for US Chess-rated events)
+                      </label>
+                      <label className="flex items-center gap-2">
+                        <input type="radio" name="pairing-system" checked={pairingSystem === 'fide'} onChange={() => setPairingSystem('fide')} />
+                        FIDE-style (strict color rules; for FIDE-rated or international-format events)
+                      </label>
+                    </div>
+                  </details>
                 </div>
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="d-description">Description</Label>
@@ -1579,23 +1616,15 @@ export function TournamentManagePage() {
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-2">
                 <Sparkles className="size-5 text-lca-gold" />
-                <h2 className="text-lg font-bold text-lca-navy">Generate pairings (FIDE Dutch)</h2>
+                <h2 className="text-lg font-bold text-lca-navy">Pair the next round</h2>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                Pair players using the FIDE Dutch system. Requested byes are applied as
-                half-point bye rows.
+                {tournament?.pairing_system === 'fide'
+                  ? 'FIDE-style pairings (set on the Details tab).'
+                  : 'US Chess rules: score groups, top half against bottom half, colors evened out, no rematches.'}{' '}
+                Requested byes become half-point byes. You can swap or edit any pairing afterwards.
               </p>
               <div className="mt-4 grid gap-4 sm:grid-cols-3">
-                <div className="space-y-2">
-                  <Label htmlFor="gen-round">Round</Label>
-                  <Input
-                    id="gen-round"
-                    type="number"
-                    min={1}
-                    value={generateForm.round}
-                    onChange={(e) => setGenerateForm((p) => ({ ...p, round: e.target.value }))}
-                  />
-                </div>
                 <div className="space-y-2">
                   <Label htmlFor="gen-section">Section</Label>
                   <select
@@ -1609,6 +1638,13 @@ export function TournamentManagePage() {
                     ))}
                   </select>
                 </div>
+                <div className="space-y-2">
+                  <Label>Round</Label>
+                  <p className="rounded-md border bg-muted/30 px-3 py-2 text-sm font-medium text-lca-navy">
+                    Round {nextRoundFor(generateForm.section)}
+                    <span className="font-normal text-muted-foreground"> of {tournament?.rounds}</span>
+                  </p>
+                </div>
                 <div className="flex items-end">
                   <Button
                     type="button"
@@ -1616,7 +1652,7 @@ export function TournamentManagePage() {
                     disabled={generating}
                     onClick={handleGeneratePairings}
                   >
-                    {generating ? 'Generating…' : 'Generate pairings'}
+                    {generating ? 'Pairing…' : `Pair round ${nextRoundFor(generateForm.section)}`}
                   </Button>
                 </div>
                 <label className="flex items-center gap-2 text-sm text-muted-foreground sm:col-span-3">
@@ -1635,6 +1671,11 @@ export function TournamentManagePage() {
                     </span>
                   )}
                 </label>
+                {pairingNotes.length > 0 && (
+                  <ul className="space-y-1 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-sm text-lca-navy sm:col-span-3">
+                    {pairingNotes.map((note) => <li key={note}>{note}</li>)}
+                  </ul>
+                )}
               </div>
             </div>
 
@@ -1785,27 +1826,10 @@ export function TournamentManagePage() {
               {standings.length === 0 ? (
                 <p className="mt-4 text-sm text-muted-foreground">Standings appear once results are recorded.</p>
               ) : (
-                <div className="mt-4 overflow-x-auto">
-                  <table className="w-full min-w-[480px] text-left text-sm">
-                    <thead>
-                      <tr className="border-b bg-muted/50">
-                        <th className="px-3 py-2">Player</th>
-                        <th className="px-3 py-2">Section</th>
-                        <th className="px-3 py-2">Score</th>
-                        <th className="px-3 py-2">W-D-L</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {standings.map((s) => (
-                        <tr key={s.member_id} className="border-b">
-                          <td className="px-3 py-2 font-medium">{s.full_name}</td>
-                          <td className="px-3 py-2">{s.section}</td>
-                          <td className="px-3 py-2">{s.score % 1 === 0 ? s.score : s.score.toFixed(1)}</td>
-                          <td className="px-3 py-2 text-muted-foreground">{s.wins}-{s.draws}-{s.losses}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="mt-4">
+                  {sections.map((sec) => (
+                    <StandingsTable key={sec.name} standings={standings} sectionName={sec.name} showHeading={sections.length > 1} />
+                  ))}
                 </div>
               )}
             </div>

@@ -273,6 +273,8 @@ export interface ApiClubListItem {
 export interface ApiTournamentDetail {
   id: string
   name: string
+  /** 'uscf' (default) or 'fide' */
+  pairing_system?: 'uscf' | 'fide'
   date: string
   end_date: string | null
   location: string
@@ -336,10 +338,22 @@ export interface ApiStanding {
   member_id: string
   full_name: string
   section: string
+  rating: number | null
   score: number
   wins: number
   draws: number
   losses: number
+  /** Place in the section; tied players share it. */
+  place: number
+  /** "3" or "3-5" for a shared place. */
+  placeLabel: string
+  tiebreaks: {
+    modifiedMedian: number
+    solkoff: number
+    cumulative: number
+    oppCumulative: number
+    blacks: number
+  }
 }
 
 export async function getClubs(): Promise<ApiClubListItem[]> {
@@ -524,6 +538,7 @@ export async function adminCreateTournament(body: {
 export async function adminUpdateTournament(
   id: string,
   body: {
+    pairingSystem?: 'uscf' | 'fide'
     name?: string
     location?: string
     venue?: string | null
@@ -784,7 +799,7 @@ export async function adminCreatePairings(
 
 export async function adminGeneratePairings(
   tournamentId: string,
-  body: { round: number; section: string; onlyCheckedIn?: boolean },
+  body: { round: number; section: string; onlyCheckedIn?: boolean; allowExtraRound?: boolean },
 ) {
   const response = await fetch(
     `/api/admin/tournaments/${tournamentId}/generate-pairings`,
@@ -799,6 +814,8 @@ export async function adminGeneratePairings(
     section: string
     pairings: ApiTournamentGame[]
     count: number
+    /** Plain-language notes for the director (rematch, repeat bye, skipped players). */
+    warnings: string[]
   }>(response)
 }
 

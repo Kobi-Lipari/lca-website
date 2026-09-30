@@ -14,7 +14,7 @@ const FILTERS: { value: string; label: string }[] = [
   { value: 'membership_override', label: 'Membership overrides' },
   { value: 'club_change', label: 'Club changes' },
   { value: 'impersonation_start', label: 'Impersonation' },
-  { value: 'tournament_create,tournament_publish,tournament_unpublish,round_delete,announcement_sent,director_assign,director_remove,registration_withdraw,registration_reinstate', label: 'Events' },
+  { value: 'tournament_create,tournament_publish,tournament_unpublish,round_paired,round_delete,pairing_edit,tournament_complete,announcement_sent,director_assign,director_remove,registration_withdraw,registration_reinstate', label: 'Events' },
   { value: 'payment_change', label: 'Payments' },
   { value: 'club_edit,officer_add,officer_remove', label: 'Club edits' },
   { value: 'group_email_sent', label: 'Group email' },
@@ -56,6 +56,9 @@ const ACTION_META: Record<
   tournament_publish: { label: 'Made event public', icon: Globe, className: 'bg-emerald-100 text-emerald-800' },
   tournament_unpublish: { label: 'Hid event', icon: EyeOff, className: 'bg-muted text-muted-foreground' },
   round_delete: { label: 'Deleted round', icon: Trash2, className: 'bg-red-100 text-red-800' },
+  round_paired: { label: 'Paired round', icon: Trophy, className: 'bg-emerald-100 text-emerald-800' },
+  pairing_edit: { label: 'Changed a pairing', icon: Pencil, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  tournament_complete: { label: 'Finished event', icon: Trophy, className: 'bg-emerald-100 text-emerald-800' },
   announcement_sent: { label: 'Emailed entrants', icon: Mail, className: 'bg-blue-100 text-blue-800' },
   director_assign: { label: 'Added director', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
   director_remove: { label: 'Removed director', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
@@ -102,6 +105,8 @@ function describeDetail(entry: ApiAuditEntry): string | null {
     case 'director_assign':
     case 'director_remove':
       return typeof parsed.tournament === 'string' ? parsed.tournament : null
+    case 'round_paired':
+      return `Round ${parsed.round}${parsed.section ? `, ${parsed.section}` : ''} (${parsed.boards ?? 0} boards)`
     case 'round_delete':
       return `Round ${parsed.round}${parsed.section ? `, ${parsed.section}` : ''} (${parsed.games ?? 0} games)`
     case 'announcement_sent':
