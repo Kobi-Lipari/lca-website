@@ -4,7 +4,7 @@ import { beforeAll } from 'vitest'
 import { installFetchInterceptor } from './harness'
 
 // Vite pulls every migration in as raw SQL text at build time.
-const migrationModules = import.meta.glob('../../migrations/*.sql', {
+export const migrationModules = import.meta.glob('../../migrations/*.sql', {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -17,7 +17,7 @@ const migrationModules = import.meta.glob('../../migrations/*.sql', {
  * Strips -- line comments (outside strings) and PRAGMA statements
  * (D1 rejects most PRAGMAs).
  */
-function splitSql(sql: string): string[] {
+export function splitSql(sql: string): string[] {
   const statements: string[] = []
   let current = ''
   let inString = false
@@ -52,6 +52,11 @@ function splitSql(sql: string): string[] {
     }
 
     if (ch === ';') {
+      // A trigger body holds its own semicolons; it ends at END;
+      if (/^\s*CREATE\s+TRIGGER\b/i.test(current) && !/\bEND\s*$/i.test(current.trim())) {
+        current += ch
+        continue
+      }
       statements.push(current.trim())
       current = ''
       continue

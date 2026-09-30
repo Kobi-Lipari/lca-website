@@ -36,6 +36,9 @@ export type AdminAction =
   | 'officer_remove'
   | 'group_email_sent'
   | 'ticket_reply'
+  // Board seats: logged so the officer history can always be rebuilt.
+  | 'seat_assign'
+  | 'seat_end'
 
 export interface AuditEntry {
   action: AdminAction
