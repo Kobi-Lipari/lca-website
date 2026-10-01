@@ -1197,6 +1197,28 @@ export interface ApiBoardSeat {
   holder_name: string
   /** 0 when nobody currently holds the seat. */
   holder_count: number
+  /** Photo for a seat with no member linked. */
+  photo_url?: string | null
+  /** Current holders, with their photos. */
+  holders?: Array<{ member_id: string; name: string; photo_url: string | null }>
+}
+
+/** Admin: upload an officer photo (already cropped square) for a member or an unlinked seat. */
+export async function adminUploadOfficerPhoto(target: { member?: string; seat?: string }, blob: Blob): Promise<{ photoUrl: string }> {
+  const headers = await authHeaders()
+  const q = target.member ? `member=${encodeURIComponent(target.member)}` : `seat=${encodeURIComponent(target.seat ?? '')}`
+  const response = await fetch(`/api/admin/officer-photo?${q}`, {
+    method: 'POST',
+    headers: { ...headers, 'Content-Type': 'image/jpeg' },
+    body: blob,
+  })
+  return handleResponse(response)
+}
+
+export async function adminRemoveOfficerPhoto(target: { member?: string; seat?: string }): Promise<void> {
+  const q = target.member ? `member=${encodeURIComponent(target.member)}` : `seat=${encodeURIComponent(target.seat ?? '')}`
+  const response = await fetch(`/api/admin/officer-photo?${q}`, { method: 'DELETE', headers: await authHeaders() })
+  await handleResponse(response)
 }
  
 export async function getBoardSeats(): Promise<ApiBoardSeat[]> {

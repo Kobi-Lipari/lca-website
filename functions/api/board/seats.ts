@@ -21,6 +21,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
             s.category,
             s.sort_order,
             s.is_shared,
+            s.photo_url,
             COALESCE(GROUP_CONCAT(m.full_name, ' & '), s.name) AS holder_name,
             COUNT(a.id) AS holder_count
        FROM board_members s
@@ -30,7 +31,20 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       WHERE s.is_active = 1
       GROUP BY s.id
       ORDER BY s.sort_order ASC, s.role ASC`,
-  ).all()
+  ).all<Record<string, unknown>>()
 
-  return jsonResponse({ seats: results ?? [] })
+  // Each current holder, for photos (a shared seat can have several).
+  const held = await context.env.DB.prepare(
+    `SELECT a.seat_id, m.id AS member_id, m.full_name AS name, m.photo_url
+       FROM board_seat_assignments a
+       JOIN members m ON m.id = a.member_id
+      WHERE a.ended_at IS NULL
+      ORDER BY a.started_at`,
+  ).all<{ seat_id: string; member_id: string; name: string; photo_url: string | null }>()
+  const bySeat = new Map<string, Array<{ member_id: string; name: string; photo_url: string | null }>>()
+  for (const h of held.results ?? []) {
+    bySeat.set(h.seat_id, [...(bySeat.get(h.seat_id) ?? []), { member_id: h.member_id, name: h.name, photo_url: h.photo_url }])
+  }
+
+  return jsonResponse({ seats: (results ?? []).map((s) => ({ ...s, holders: bySeat.get(s.id as string) ?? [] })) })
 }
