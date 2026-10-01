@@ -7,7 +7,7 @@ import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { listChildren, syncFamilyCoverage } from '../../utils/family'
 import { validateFullName } from '../../utils/members'
-import { isValidUscfId } from '../../utils/uscf'
+import { isValidUscfId, refreshUscfSoon } from '../../utils/uscf'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 
 interface AddChildBody {
@@ -91,6 +91,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // An active family membership covers the new child straight away.
   await syncFamilyCoverage(context.env.DB, parent.id)
+  await refreshUscfSoon(context.env.DB, id, uscfId)
 
   const children = await listChildren(context.env.DB, parent.id)
   return jsonResponse({ children }, 201)
