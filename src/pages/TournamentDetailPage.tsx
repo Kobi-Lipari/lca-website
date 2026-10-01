@@ -30,6 +30,7 @@ import { asksGrade, confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } fr
 import { entryPrice, type Price } from '@/lib/pricing'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { FamilyRegistrationPanel } from '@/components/family/FamilyRegistrationPanel'
+import { PreviewBanner } from '@/components/tournaments/PreviewBanner'
 
 const statusConfig: Record<TournamentStatus, { label: string; className: string }> = {
   upcoming: { label: 'Upcoming', className: 'bg-lca-gold/20 text-lca-gold' },
@@ -498,6 +499,8 @@ export function TournamentDetailPage() {
           error={registerError}
         />
       )}
+
+      <PreviewBanner tournamentId={tournament.id} visible={tournament.is_visible} />
 
       {/* ── Hero ── */}
       <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">

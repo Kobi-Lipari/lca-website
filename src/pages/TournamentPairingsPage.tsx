@@ -16,6 +16,7 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
 import { Crosstable } from '@/components/tournaments/Crosstable'
 import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
+import { PreviewBanner } from '@/components/tournaments/PreviewBanner'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -202,6 +203,7 @@ export function TournamentPairingsPage() {
 
   if (pairings.length === 0) return (
     <div>
+      <PreviewBanner tournamentId={tournament.id} visible={tournament.is_visible} />
       <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-4xl px-6 py-10">
           <Link
@@ -232,6 +234,7 @@ export function TournamentPairingsPage() {
   return (
     <div>
       {/* ── Hero ── */}
+      <PreviewBanner tournamentId={tournament.id} visible={tournament.is_visible} />
       <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-4xl px-6 py-10">
           <Link

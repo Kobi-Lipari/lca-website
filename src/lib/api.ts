@@ -461,7 +461,9 @@ export async function getTournament(id: string): Promise<{
   prizes?: ApiPrizeAward[]
   myRegistration?: ApiMyRegistration | null
 }> {
-  const response = await fetch(`/api/tournaments/${id}`)
+  // Signed in, the page also gets your own entry, and directors can preview
+  // an event that isn't public yet. Signed out it's the plain public view.
+  const response = await fetch(`/api/tournaments/${id}`, { headers: await authHeaders() })
   return handleResponse(response)
 }
 
