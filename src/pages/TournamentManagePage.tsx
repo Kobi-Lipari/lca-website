@@ -95,6 +95,7 @@ interface FormSnapshot {
   pairingSystem: 'uscf' | 'fide'
   accelerated: boolean
   keepApart: 'family' | 'family_club' | 'none'
+  stateChampionship: boolean
   timeControl: string
   sections: string // JSON
   customDetails: string // JSON
@@ -191,6 +192,7 @@ export function TournamentManagePage() {
   const [isRated, setIsRated] = useState(true)
   const [pairingSystem, setPairingSystem] = useState<'uscf' | 'fide'>('uscf')
   const [accelerated, setAccelerated] = useState(false)
+  const [stateChampionship, setStateChampionship] = useState(false)
   const [keepApart, setKeepApart] = useState<'family' | 'family_club' | 'none'>('family')
   const [timeControl, setTimeControl] = useState('')
   const [customTimeControl, setCustomTimeControl] = useState('')
@@ -294,6 +296,7 @@ export function TournamentManagePage() {
     const nPairingSystem: 'uscf' | 'fide' = t.pairing_system === 'fide' ? 'fide' : 'uscf'
     const nAccelerated = !!t.accelerated
     const nKeepApart = t.keep_apart ?? 'family'
+    const nStateChampionship = !!t.is_state_championship
     const nTimeControl = t.time_control ?? ''
     const nSections = t.sections ?? []
     const nCustomDetails = t.custom_details ?? []
@@ -322,6 +325,7 @@ export function TournamentManagePage() {
     setPairingSystem(nPairingSystem)
     setAccelerated(nAccelerated)
     setKeepApart(nKeepApart)
+    setStateChampionship(nStateChampionship)
     setTimeControl(nTimeControl)
     setCustomTimeControl(
       nTimeControl && !TIME_CONTROL_PRESETS.includes(nTimeControl) ? nTimeControl : '',
@@ -347,6 +351,7 @@ export function TournamentManagePage() {
       pairingSystem: nPairingSystem,
       accelerated: nAccelerated,
       keepApart: nKeepApart,
+      stateChampionship: nStateChampionship,
       timeControl: nTimeControl,
       sections: JSON.stringify(nSections),
       customDetails: JSON.stringify(nCustomDetails),
@@ -495,6 +500,7 @@ export function TournamentManagePage() {
     pairingSystem !== snap.pairingSystem ||
     accelerated !== snap.accelerated ||
     keepApart !== snap.keepApart ||
+    stateChampionship !== snap.stateChampionship ||
     timeControl !== snap.timeControl ||
     JSON.stringify(sections) !== snap.sections ||
     JSON.stringify(customDetails) !== snap.customDetails
@@ -529,6 +535,7 @@ export function TournamentManagePage() {
     setPairingSystem(s.pairingSystem)
     setAccelerated(s.accelerated)
     setKeepApart(s.keepApart)
+    setStateChampionship(s.stateChampionship)
     setTimeControl(s.timeControl)
     setCustomTimeControl(
       s.timeControl && !TIME_CONTROL_PRESETS.includes(s.timeControl) ? s.timeControl : '',
@@ -578,6 +585,7 @@ export function TournamentManagePage() {
     if (pairingSystem !== s.pairingSystem) body.pairingSystem = pairingSystem
     if (accelerated !== s.accelerated) body.accelerated = accelerated
     if (keepApart !== s.keepApart) body.keepApart = keepApart
+    if (stateChampionship !== s.stateChampionship) body.isStateChampionship = stateChampionship
     if (timeControl !== s.timeControl) body.timeControl = timeControl || null
     if (JSON.stringify(sections) !== s.sections) body.sections = sections
     if (JSON.stringify(customDetails) !== s.customDetails) body.customDetails = customDetails
@@ -1174,6 +1182,11 @@ export function TournamentManagePage() {
                         !isRated ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}
                     >Unrated</button>
                   </div>
+                  <label className="flex items-center gap-2 text-sm text-lca-navy">
+                    <input type="checkbox" checked={stateChampionship} onChange={(e) => setStateChampionship(e.target.checked)} />
+                    State championship
+                    <span className="text-xs text-muted-foreground">(badged, and listed on the State champions page)</span>
+                  </label>
                   <details className="text-xs text-muted-foreground">
                     <summary className="cursor-pointer select-none">
                       Pairing rules: {pairingSystem === 'fide' ? 'FIDE-style' : 'US Chess'}

@@ -24,6 +24,8 @@ interface UpdateTournamentBody {
   accelerated?: boolean
   /** 'family' | 'family_club' | 'none' */
   keepApart?: string
+  /** Marks the event as a state championship (badge, champions page). */
+  isStateChampionship?: boolean
   /** US Chess upload details; see migration 0045. */
   reportSettings?: Record<string, unknown> | null
   /** Pricing: Central date/times and dollar amounts. null clears. */
@@ -129,7 +131,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       registration_closes_at = ?, custom_details = ?, time_control = ?,
       club_id = ?, pairing_system = ?,
       early_deadline = ?, early_discount = ?, late_after = ?, late_fee = ?, member_discount = ?,
-      accelerated = ?, keep_apart = ?, report_settings = ?
+      accelerated = ?, keep_apart = ?, report_settings = ?, is_state_championship = ?
      WHERE id = ?`,
   ).bind(
     body.name ?? existing.name,
@@ -162,6 +164,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     body.reportSettings === undefined
       ? (existing.report_settings ?? null)
       : body.reportSettings === null ? null : JSON.stringify(body.reportSettings).slice(0, 8000),
+    body.isStateChampionship === undefined ? (existing.is_state_championship ?? 0) : body.isStateChampionship ? 1 : 0,
     tournamentId,
   ).run()
 
