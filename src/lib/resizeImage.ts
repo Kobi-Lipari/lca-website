@@ -83,3 +83,28 @@ export async function downscaleImage(
     )
   })
 }
+
+/**
+ * A square portrait for an officer card: crops to a square (keeping the
+ * top of a tall photo, where faces usually are) and scales to size x size.
+ */
+export async function cropToSquare(file: Blob, size = 480, quality = 0.85): Promise<Blob> {
+  const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' })
+  const side = Math.min(bitmap.width, bitmap.height)
+  const sx = (bitmap.width - side) / 2
+  const sy = bitmap.height > bitmap.width ? (bitmap.height - side) * 0.2 : (bitmap.height - side) / 2
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('Canvas not supported')
+  ctx.drawImage(bitmap, sx, sy, side, side, 0, 0, size, size)
+  bitmap.close()
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error('Failed to encode image'))),
+      'image/jpeg',
+      quality,
+    )
+  })
+}
