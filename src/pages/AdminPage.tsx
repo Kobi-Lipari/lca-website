@@ -54,6 +54,7 @@ import { usePageTitle } from '@/hooks/usePageTitle'
 import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { ChampionsPanel } from '@/components/admin/ChampionsPanel'
+import { MembersExportMenu } from '@/components/admin/MembersExportMenu'
 
 // ── Sections ─────────────────────────────────────────────────────────────────
 
@@ -339,7 +340,7 @@ function MembersSection() {
   return (
     <>
       {confirm && <ConfirmDialog message={confirm.message} onConfirm={confirm.onConfirm} onCancel={() => setConfirm(null)} />}
-      <SectionHeading title="Members" description="Edit roles, clubs, and membership; log in as a member to see what they see." />
+      <SectionHeading title="Members" description="Edit roles, clubs, and membership; log in as a member to see what they see." action={<MembersExportMenu />} />
       <ErrorNote error={error} />
       {loading ? <p className="text-muted-foreground" role="status">Loading…</p> : (
         <MembersTable

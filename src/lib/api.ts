@@ -2145,3 +2145,30 @@ export async function adminDeleteChampion(id: string): Promise<void> {
   const response = await fetch(`/api/admin/champions/${id}`, { method: 'DELETE', headers: await authHeaders() })
   await handleResponse(response)
 }
+
+// ── Member export (admins and observers) ───────────────────────────────────
+
+export interface MemberExportOptions {
+  type: 'emails' | 'full'
+  who: 'all' | 'current' | 'lapsed'
+  children?: boolean
+}
+
+function exportQuery(o: MemberExportOptions, extra = ''): string {
+  return `type=${o.type}&who=${o.who}${o.children ? '&children=1' : ''}${extra}`
+}
+
+/** The CSV as a file to save, with how many rows it holds. */
+export async function adminExportMembers(o: MemberExportOptions): Promise<{ blob: Blob; filename: string; count: number }> {
+  const response = await fetch(`/api/admin/members/export?${exportQuery(o)}`, { headers: await authHeaders() })
+  if (!response.ok) await handleResponse(response)
+  const name = /filename="([^"]+)"/.exec(response.headers.get('Content-Disposition') ?? '')?.[1] ?? 'lca-members.csv'
+  return { blob: await response.blob(), filename: name, count: Number(response.headers.get('X-Row-Count') ?? 0) }
+}
+
+/** Just the email addresses, one per line, for pasting into an email's BCC. */
+export async function adminExportEmailList(o: MemberExportOptions): Promise<string[]> {
+  const response = await fetch(`/api/admin/members/export?${exportQuery({ ...o, type: 'emails' }, '&format=list')}`, { headers: await authHeaders() })
+  if (!response.ok) await handleResponse(response)
+  return (await response.text()).split('\n').filter(Boolean)
+}
