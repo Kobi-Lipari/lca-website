@@ -322,6 +322,8 @@ export interface ApiTournamentDetail {
   pairing_system?: 'uscf' | 'fide'
   /** 1 = accelerated pairings in rounds 1–2 */
   accelerated?: number
+  /** 1 = a state championship */
+  is_state_championship?: number
   keep_apart?: 'family' | 'family_club' | 'none'
   date: string
   end_date: string | null
@@ -602,6 +604,7 @@ export async function adminUpdateTournament(
     pairingSystem?: 'uscf' | 'fide'
     accelerated?: boolean
     keepApart?: 'family' | 'family_club' | 'none'
+    isStateChampionship?: boolean
     /** US Chess upload details (lib/uschessUpload UploadSettings). */
     reportSettings?: Record<string, unknown> | null
     name?: string
@@ -2089,5 +2092,56 @@ export async function adminRemovePostImage(id: string): Promise<void> {
     method: 'DELETE',
     headers: await authHeaders(),
   })
+  await handleResponse(response)
+}
+
+// ── State champions ────────────────────────────────────────────────────────
+
+export interface ApiChampion {
+  id: string
+  year: number
+  title: string
+  champion: string
+  notes: string | null
+  tournament_id: string | null
+  tournament_name: string | null
+}
+
+export interface ApiChampionshipEvent {
+  id: string
+  name: string
+  date: string
+  end_date: string | null
+  location: string
+  status: TournamentStatus
+}
+
+export async function getChampions(): Promise<{ champions: ApiChampion[]; upcoming: ApiChampionshipEvent[] }> {
+  const response = await fetch('/api/champions')
+  return handleResponse(response)
+}
+
+export type ChampionInput = { year: number | string; title: string; champion: string; notes?: string | null; tournamentId?: string | null }
+
+export async function adminAddChampions(rows: ChampionInput[]): Promise<{ added: number }> {
+  const response = await fetch('/api/admin/champions', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify(rows.length === 1 ? rows[0] : { rows }),
+  })
+  return handleResponse(response)
+}
+
+export async function adminUpdateChampion(id: string, body: Partial<ChampionInput>): Promise<void> {
+  const response = await fetch(`/api/admin/champions/${id}`, {
+    method: 'PATCH',
+    headers: await authHeaders(),
+    body: JSON.stringify(body),
+  })
+  await handleResponse(response)
+}
+
+export async function adminDeleteChampion(id: string): Promise<void> {
+  const response = await fetch(`/api/admin/champions/${id}`, { method: 'DELETE', headers: await authHeaders() })
   await handleResponse(response)
 }
