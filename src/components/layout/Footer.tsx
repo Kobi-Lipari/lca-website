@@ -13,6 +13,7 @@ const footerSections = [
       { label: 'Tournaments', href: '/tournaments' },
       { label: 'Chess clubs', href: '/clubs' },
       { label: 'Scholastic chess', href: '/scholastic' },
+      { label: 'State champions', href: '/champions' },
       { label: 'Scoresheet scanner', href: '/scanner' },
     ],
   },

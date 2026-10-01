@@ -17,6 +17,7 @@ const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ de
 const AdminPage = lazy(() => import('@/pages/AdminPage').then(m => ({ default: m.AdminPage })))
 const BoardInboxPage = lazy(() => import('@/pages/BoardInboxPage').then(m => ({ default: m.BoardInboxPage })))
 const BoardPage = lazy(() => import('@/pages/BoardPage').then(m => ({ default: m.BoardPage })))
+const ChampionsPage = lazy(() => import('@/pages/ChampionsPage').then(m => ({ default: m.ChampionsPage })))
 const BylawsPage = lazy(() => import('@/pages/BylawsPage').then(m => ({ default: m.BylawsPage })))
 const ClubDetailPage = lazy(() => import('@/pages/ClubDetailPage').then(m => ({ default: m.ClubDetailPage })))
 const ClubsPage = lazy(() => import('@/pages/ClubsPage').then(m => ({ default: m.ClubsPage })))
@@ -95,6 +96,8 @@ function App() {
                 Board members, and GovLayout links to the rest from there. */}
             <Route path="/governance" element={<Navigate to="/governance/board" replace />} />
             <Route path="/governance/board" element={<BoardPage />} />
+            <Route path="/champions" element={<ChampionsPage />} />
+            <Route path="/state-champions" element={<Navigate to="/champions" replace />} />
             <Route path="/governance/bylaws" element={<BylawsPage />} />
             {/* RulesPage retired — its content merged into /governance/bylaws */}
             <Route path="/governance/rules" element={<Navigate to="/governance/bylaws" replace />} />

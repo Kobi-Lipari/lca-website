@@ -521,6 +521,11 @@ export function TournamentDetailPage() {
                 <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-medium', status.className)}>
                   {status.label}
                 </span>
+                {!!tournament.is_state_championship && (
+                  <Link to="/champions" className="rounded-full bg-lca-gold px-2.5 py-0.5 text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
+                    State Championship
+                  </Link>
+                )}
                 <span className={cn(
                   'rounded-full px-2.5 py-0.5 text-xs font-medium',
                   isRated ? 'bg-blue-500/20 text-blue-200' : 'bg-white/10 text-white/60',

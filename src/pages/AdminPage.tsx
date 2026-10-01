@@ -9,7 +9,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import {
-  Award, Building2, Mail, Megaphone, MessageSquare, Newspaper, Plus, ShieldAlert, Trash2, Trophy, Users,
+  Award, Building2, Crown, Mail, Megaphone, MessageSquare, Newspaper, Plus, ShieldAlert, Trash2, Trophy, Users,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -53,12 +53,13 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
+import { ChampionsPanel } from '@/components/admin/ChampionsPanel'
 
 // ── Sections ─────────────────────────────────────────────────────────────────
 
 type AdminSection =
   | 'members' | 'board-seats'
-  | 'tournaments' | 'clubs'
+  | 'tournaments' | 'clubs' | 'champions'
   | 'news' | 'email' | 'announcements' | 'support'
   | 'activity'
 
@@ -70,6 +71,7 @@ const GROUPS: { label: string; items: { id: AdminSection; label: string; icon: L
   { label: 'Events', items: [
     { id: 'tournaments', label: 'Tournaments', icon: Trophy },
     { id: 'clubs', label: 'Clubs', icon: Building2 },
+    { id: 'champions', label: 'State champions', icon: Crown },
   ] },
   { label: 'Communications', items: [
     { id: 'news', label: 'News posts', icon: Newspaper },
@@ -190,6 +192,7 @@ function AdminSectionView({ section }: { section: AdminSection }) {
     case 'board-seats': return <><SectionHeading title="Board seats" description="Who holds each board seat, and for how long." /><ViewOnlyNote /><ViewOnlyFieldset><BoardSeatsPanel /></ViewOnlyFieldset></>
     case 'tournaments': return <TournamentsSection key="tournaments" />
     case 'clubs': return <ClubsSection key="clubs" />
+    case 'champions': return <><SectionHeading title="State champions" description="The honor roll on the public State champions page." /><ViewOnlyNote /><ChampionsPanel /></>
     case 'news': return <PostsPanel />
     case 'email': return <AdminEmailPage embedded />
     case 'announcements': return <><SectionHeading title="Site banners" description="Short notices shown across the top of every page. For full announcements, use News posts." /><ViewOnlyNote /><ViewOnlyFieldset><AdminAnnouncementPanel /></ViewOnlyFieldset></>
