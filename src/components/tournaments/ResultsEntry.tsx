@@ -1,7 +1,7 @@
 // src/components/tournaments/ResultsEntry.tsx
 //
-// Entering results at the board: one round of one section at a time, with
-// one-tap buttons for the common results and a menu for forfeits and byes.
+// Entering results at the board: one round of every section at once (or
+// just one section), with one-tap buttons for the common results and a menu for forfeits and byes.
 // Each result saves on its own; the table never reloads under the director.
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -22,6 +22,8 @@ const OTHER = [
   { value: '0-0 F', label: 'Double forfeit' },
 ]
 
+const ALL = '__all__'
+
 export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, tournamentId }: {
   /** Shows print links for the selected round. */
   tournamentId?: string
@@ -33,18 +35,23 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
   savedGameId: string | null
 }) {
   const withGames = sections.filter((s) => games.some((g) => g.section === s))
-  const [section, setSection] = useState(withGames[0] ?? sections[0] ?? '')
+  // All sections at once by default; one section is a click away.
+  const [section, setSection] = useState(withGames.length > 1 ? ALL : (withGames[0] ?? sections[0] ?? ''))
+  const showAll = section === ALL && withGames.length > 1
+  const shownSections = showAll ? withGames : [section === ALL ? withGames[0] ?? '' : section]
   const rounds = useMemo(
-    () => [...new Set(games.filter((g) => g.section === section).map((g) => g.round))].sort((a, b) => a - b),
-    [games, section],
+    () => [...new Set(games.filter((g) => shownSections.includes(g.section)).map((g) => g.round))].sort((a, b) => a - b),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [games, section, withGames.join('|')],
   )
   const [roundChoice, setRoundChoice] = useState<number | null>(null)
   const round = roundChoice !== null && rounds.includes(roundChoice) ? roundChoice : rounds[rounds.length - 1]
 
-  const shown = games
-    .filter((g) => g.section === section && g.round === round)
+  const boardsFor = (sec: string) => games
+    .filter((g) => g.section === sec && g.round === round)
     .sort((a, b) => a.board - b.board)
-  const missing = shown.filter((g) => g.result === 'pending').length
+  const missing = shownSections.reduce((n, sec) => n + boardsFor(sec).filter((g) => g.result === 'pending').length, 0)
+  const printSection = showAll ? 'all' : shownSections[0]
 
   if (games.length === 0) return <p className="mt-4 text-sm text-muted-foreground">No pairings yet.</p>
 
@@ -54,6 +61,7 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
         {withGames.length > 1 && (
           <select aria-label="Section" className="rounded-md border bg-background px-2.5 py-1.5 text-sm"
             value={section} onChange={(e) => { setSection(e.target.value); setRoundChoice(null) }}>
+            <option value={ALL}>All sections</option>
             {withGames.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         )}
@@ -68,11 +76,11 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
         </div>
         {tournamentId && round !== undefined && (
           <span className="flex gap-3 text-sm">
-            <Link to={`/tournaments/${tournamentId}/print?what=pairings&section=${encodeURIComponent(section)}&round=${round}`}
+            <Link to={`/tournaments/${tournamentId}/print?what=pairings&section=${encodeURIComponent(printSection)}&round=${round}`}
               className="inline-flex items-center gap-1 text-lca-navy hover:underline">
               <Printer className="size-3.5" /> Print pairings
             </Link>
-            <Link to={`/tournaments/${tournamentId}/print?what=alpha&section=${encodeURIComponent(section)}&round=${round}`}
+            <Link to={`/tournaments/${tournamentId}/print?what=alpha&section=${encodeURIComponent(printSection)}&round=${round}`}
               className="text-lca-navy hover:underline">
               Alphabetical
             </Link>
@@ -83,6 +91,44 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
         </span>
       </div>
 
+      <div className="space-y-5">
+        {shownSections.map((sec) => {
+          const shown = boardsFor(sec)
+          const secMissing = shown.filter((g) => g.result === 'pending').length
+          return (
+            <section key={sec} aria-label={showAll ? `${sec} section` : undefined}>
+              {showAll && (
+                <div className="mb-1.5 flex items-baseline justify-between gap-3 border-b-2 border-lca-navy pb-1">
+                  <h3 className="text-sm font-bold uppercase tracking-wide text-lca-navy">{sec}</h3>
+                  {shown.length > 0 && (
+                    <span className={cn('text-xs', secMissing ? 'font-medium text-[#7a5c00]' : 'text-emerald-700')}>
+                      {secMissing ? `${secMissing} missing` : 'All in'}
+                    </span>
+                  )}
+                </div>
+              )}
+              {shown.length === 0 ? (
+                <p className="rounded-lg border border-dashed px-3 py-2 text-sm text-muted-foreground">
+                  Round {round} isn't paired in {sec} yet.
+                </p>
+              ) : (
+                <BoardsTable shown={shown} onResult={onResult} onSwap={onSwap} savedGameId={savedGameId} />
+              )}
+            </section>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function BoardsTable({ shown, onResult, onSwap, savedGameId }: {
+  shown: ApiTournamentGame[]
+  onResult: (gameId: string, result: string) => void
+  onSwap?: (game: ApiTournamentGame) => void
+  savedGameId: string | null
+}) {
+  return (
       <div className="overflow-x-auto rounded-lg border">
         <table className="w-full min-w-[560px] text-left text-sm">
           <thead>
@@ -139,6 +185,5 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
           </tbody>
         </table>
       </div>
-    </div>
   )
 }
