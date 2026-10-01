@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Archive, Mail, Plus, ShieldCheck, MapPin } from 'lucide-react'
 import { GovLayout } from '@/components/governance/GovLayout'
+import { OfficerPhoto, OfficerPhotoControl } from '@/components/governance/OfficerPhoto'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -40,8 +41,9 @@ function isRegional(seat: ApiBoardSeat): boolean {
 // changes, old links keep working and the new holder inherits the history.
 
 function MemberCard({
-  seat, member, isAdmin, saving, onLocalChange, onSave, onRetire,
+  seat, member, isAdmin, saving, onLocalChange, onSave, onRetire, onPhoto,
 }: {
+  onPhoto: (seatId: string, target: { member?: string; seat?: string }, url: string | null) => void
   seat: ApiBoardSeat
   member?: ApiBoardMember
   isAdmin: boolean
@@ -87,6 +89,15 @@ function MemberCard({
               sees — which is exactly how the two views drifted apart. */}
           {isLinked ? (
             <div className="rounded-md border border-lca-gold/40 bg-lca-gold/8 px-2 py-1.5">
+              <div className="mb-1.5 space-y-1.5">
+                {(seat.holders ?? []).map((h) => (
+                  <div key={h.member_id} className="flex items-center gap-2">
+                    <OfficerPhoto name={h.name} photoUrl={h.photo_url} size={36} />
+                    <OfficerPhotoControl target={{ member: h.member_id }} hasPhoto={!!h.photo_url}
+                      onChanged={(url) => onPhoto(seat.id, { member: h.member_id }, url)} />
+                  </div>
+                ))}
+              </div>
               <p className="text-sm font-semibold text-lca-navy">{seat.holder_name}</p>
               <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">
                 From {seat.holder_count > 1 ? 'their member accounts' : 'their member account'}.
@@ -103,6 +114,11 @@ function MemberCard({
                 onBlur={(e) => onSave(seat.id, 'name', e.target.value)}
                 onChange={(e) => onLocalChange(seat.id, 'name', e.target.value)}
               />
+              <div className="flex items-center gap-2">
+                <OfficerPhoto name={member.name} photoUrl={seat.photo_url} size={36} />
+                <OfficerPhotoControl target={{ seat: seat.id }} hasPhoto={!!seat.photo_url}
+                  onChanged={(url) => onPhoto(seat.id, { seat: seat.id }, url)} />
+              </div>
               <p className="text-[11px] leading-snug text-muted-foreground">
                 No member account linked — messages go to the LCA inbox. Link one in
                 Admin → Board seats.
@@ -129,7 +145,12 @@ function MemberCard({
             </div>
           ) : (
             <>
-              <p className="mt-1 font-semibold text-lca-navy">{displayName}</p>
+              <div className="mt-2 flex items-center gap-3">
+                {(seat.holders?.length ? seat.holders : [{ member_id: seat.id, name: displayName, photo_url: seat.photo_url ?? null }]).map((h) => (
+                  <OfficerPhoto key={h.member_id} name={h.name} photoUrl={h.photo_url} size={(seat.holders?.length ?? 1) > 1 ? 44 : 56} />
+                ))}
+                <p className="font-semibold text-lca-navy">{displayName}</p>
+              </div>
               <Link
                 to={contactHref}
                 aria-label={`Message the ${seat.role}`}
@@ -231,6 +252,15 @@ export function BoardPage() {
     } finally { setSaving(null) }
   }
 
+  // Keep the cards in step after a photo upload, without refetching.
+  function handlePhoto(seatId: string, target: { member?: string; seat?: string }, url: string | null) {
+    setSeats((prev) => prev.map((s) => {
+      if (target.seat) return s.id === seatId ? { ...s, photo_url: url } : s
+      // A member's photo shows on every seat they hold.
+      return { ...s, holders: (s.holders ?? []).map((h) => (h.member_id === target.member ? { ...h, photo_url: url } : h)) }
+    }))
+  }
+
   const officers = seats.filter((s) => !isRegional(s))
   const reps = seats.filter(isRegional)
 
@@ -268,6 +298,7 @@ export function BoardPage() {
                     onLocalChange={handleLocalChange}
                     onSave={handleSave}
                     onRetire={handleRetire}
+                    onPhoto={handlePhoto}
                   />
                 ))}
               </div>
@@ -292,6 +323,7 @@ export function BoardPage() {
                     onLocalChange={handleLocalChange}
                     onSave={handleSave}
                     onRetire={handleRetire}
+                    onPhoto={handlePhoto}
                   />
                 ))}
               </div>
