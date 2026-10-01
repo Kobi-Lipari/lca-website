@@ -39,6 +39,8 @@ export type AdminAction =
   // Board seats: logged so the officer history can always be rebuilt.
   | 'seat_assign'
   | 'seat_end'
+  // Member data leaving the site.
+  | 'members_export'
 
 export interface AuditEntry {
   action: AdminAction
