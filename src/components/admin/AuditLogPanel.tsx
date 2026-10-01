@@ -1,6 +1,6 @@
 // src/components/admin/AuditLogPanel.tsx
 import { useEffect, useMemo, useState } from 'react'
-import { ShieldAlert, UserCog, CreditCard, Building2, Eye, EyeOff, Trophy, Globe, Trash2, Mail, UserPlus, UserMinus, DollarSign, Pencil } from 'lucide-react'
+import { ShieldAlert, UserCog, CreditCard, Building2, Eye, EyeOff, Trophy, Globe, Trash2, Mail, UserPlus, UserMinus, DollarSign, Pencil, Download } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { adminGetAuditLog, type ApiAuditEntry } from '@/lib/api'
@@ -18,6 +18,7 @@ const FILTERS: { value: string; label: string }[] = [
   { value: 'payment_change', label: 'Payments' },
   { value: 'club_edit,officer_add,officer_remove', label: 'Club edits' },
   { value: 'seat_assign,seat_end', label: 'Board seats' },
+  { value: 'members_export', label: 'Member exports' },
   { value: 'group_email_sent', label: 'Group email' },
   { value: 'ticket_delete', label: 'Deleted tickets' },
 ]
@@ -72,6 +73,7 @@ const ACTION_META: Record<
   officer_remove: { label: 'Removed officer', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   group_email_sent: { label: 'Sent group email', icon: Mail, className: 'bg-blue-100 text-blue-800' },
   seat_assign: { label: 'Board seat filled', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
+  members_export: { label: 'Exported members', icon: Download, className: 'bg-lca-gold/20 text-[#7a5c00]' },
   seat_end: { label: 'Board seat ended', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   ticket_reply: { label: 'Answered ticket', icon: Mail, className: 'bg-muted text-muted-foreground' },
 }
