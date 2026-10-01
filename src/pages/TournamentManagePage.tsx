@@ -125,6 +125,8 @@ function gradeNote(range: string): string {
   return r ? gradeRangeText(r.min, r.max) : ''
 }
 
+const ALL_SECTIONS = '__all__'
+
 function buildReportCsv(report: ApiRatingReport): string {
   const rounds = report.tournament.rounds
   const header = ['Section', 'Pairing#', 'Name', 'USCF ID', 'Pre-Rating', 'Total']
@@ -216,7 +218,8 @@ export function TournamentManagePage() {
   const [snapshot, setSnapshot] = useState<FormSnapshot | null>(null)
   const appliedDefaultTab = useRef(false)
 
-  const [generateForm, setGenerateForm] = useState({ round: '1', section: 'Open' })
+  // '__all__' pairs the next round in every section at once (the default).
+  const [generateForm, setGenerateForm] = useState({ round: '1', section: '__all__' })
   const [pairingNotes, setPairingNotes] = useState<string[]>([])
   const [savingStatus, setSavingStatus] = useState(false)
   const [savedGameId, setSavedGameId] = useState<string | null>(null)
@@ -356,7 +359,7 @@ export function TournamentManagePage() {
     })
 
     const defaultSection = nSections[0]?.name ?? 'Open'
-    setGenerateForm((p) => ({ ...p, section: defaultSection }))
+    setGenerateForm((p) => ({ ...p, section: nSections.length > 1 ? '__all__' : defaultSection }))
     setPairingForm((p) => ({ ...p, section: defaultSection }))
     setWalkIn((p) => ({ ...p, section: p.section || defaultSection }))
     setDeleteSection((p) => p || defaultSection)
@@ -734,31 +737,39 @@ export function TournamentManagePage() {
 
   async function handleGeneratePairings() {
     if (!id || !tournament) return
-    const round = nextRoundFor(generateForm.section)
+    const all = generateForm.section === ALL_SECTIONS
+    // Every section with players in it, each at its own next round.
+    const targets = (all ? sections.map((s) => s.name) : [generateForm.section])
+      .filter((name) => !all || roster.some((p) => !p.withdrawn_at && p.section === name))
+    if (targets.length === 0) { setError('No section has players to pair.'); return }
+    const extra = targets.filter((name) => nextRoundFor(name) > tournament.rounds)
     let allowExtraRound = false
-    if (round > tournament.rounds) {
+    if (extra.length > 0) {
       if (!window.confirm(
-        `${tournament.name} has ${tournament.rounds} rounds. Pair an extra round ${round} in ${generateForm.section} (for a playoff)?`,
+        `${tournament.name} has ${tournament.rounds} rounds. Pair an extra round (for a playoff) in ${extra.join(', ')}?`,
       )) return
       allowExtraRound = true
     }
     setGenerating(true)
     setError(null)
     setPairingNotes([])
-    try {
-      const result = await adminGeneratePairings(id, {
-        round,
-        section: generateForm.section,
-        onlyCheckedIn,
-        allowExtraRound,
-      })
-      setPairingNotes(result.warnings ?? [])
-      await refreshLive()
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate pairings')
-    } finally {
-      setGenerating(false)
+    const notes: string[] = []
+    let paired = 0
+    for (const name of targets) {
+      const round = nextRoundFor(name)
+      try {
+        const result = await adminGeneratePairings(id, { round, section: name, onlyCheckedIn, allowExtraRound })
+        paired += 1
+        for (const w of result.warnings ?? []) notes.push(targets.length > 1 ? `${name}: ${w}` : w)
+      } catch (err) {
+        // One section not ready (results missing, say) mustn't stop the rest.
+        notes.push(`${name}: ${err instanceof Error ? err.message : 'could not be paired'}`)
+      }
     }
+    if (targets.length > 1) notes.unshift(`Paired ${paired} of ${targets.length} sections.`)
+    setPairingNotes(notes)
+    await refreshLive()
+    setGenerating(false)
   }
 
   async function handleDeleteLastRound() {
@@ -1910,17 +1921,21 @@ export function TournamentManagePage() {
                 {tournament?.pairing_system === 'fide'
                   ? 'FIDE-style pairings (set on the Details tab).'
                   : 'US Chess rules: score groups, top half against bottom half, colors evened out, no rematches.'}{' '}
-                {tournament?.accelerated && nextRoundFor(generateForm.section) <= 2 ? ' Accelerated for this round.' : ''}{' '}
+                {tournament?.accelerated && (generateForm.section === ALL_SECTIONS ? sections.some((s) => nextRoundFor(s.name) <= 2) : nextRoundFor(generateForm.section) <= 2) ? ' Accelerated for rounds 1–2.' : ''}{' '}
                 Requested byes become half-point byes. You can swap or edit any pairing afterwards.
               </p>
               {(() => {
-                const inSection = roster.filter((p) => !p.withdrawn_at && p.section === generateForm.section).length
                 const rounds = tournament?.rounds ?? 0
-                if (tournament?.accelerated || nextRoundFor(generateForm.section) > 1 || !(rounds >= 3 && inSection > 2 ** rounds)) return null
+                if (tournament?.accelerated || rounds < 3) return null
+                const big = sections
+                  .filter((s) => nextRoundFor(s.name) === 1)
+                  .map((s) => ({ name: s.name, n: roster.filter((p) => !p.withdrawn_at && p.section === s.name).length }))
+                  .filter((s) => s.n > 2 ** rounds)
+                if (big.length === 0) return null
                 return (
                   <p className="mt-2 rounded-md border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-lca-navy">
-                    {inSection} players in {rounds} rounds may finish with more than one perfect score. Consider accelerated
-                    pairings (Details tab, Pairing rules) before pairing round 1.
+                    {big.map((s) => `${s.name} (${s.n} players)`).join(', ')} in {rounds} rounds may finish with more than one
+                    perfect score. Consider accelerated pairings (Details tab, Pairing rules) before pairing round 1.
                   </p>
                 )
               })()}
@@ -1933,6 +1948,7 @@ export function TournamentManagePage() {
                     value={generateForm.section}
                     onChange={(e) => setGenerateForm((p) => ({ ...p, section: e.target.value }))}
                   >
+                    {sections.length > 1 && <option value={ALL_SECTIONS}>All sections</option>}
                     {sections.map((s) => (
                       <option key={s.name} value={s.name}>{s.name}</option>
                     ))}
@@ -1940,10 +1956,16 @@ export function TournamentManagePage() {
                 </div>
                 <div className="space-y-2">
                   <Label>Round</Label>
-                  <p className="rounded-md border bg-muted/30 px-3 py-2 text-sm font-medium text-lca-navy">
-                    Round {nextRoundFor(generateForm.section)}
-                    <span className="font-normal text-muted-foreground"> of {tournament?.rounds}</span>
-                  </p>
+                  {generateForm.section === ALL_SECTIONS && new Set(sections.map((s) => nextRoundFor(s.name))).size > 1 ? (
+                    <p className="rounded-md border bg-muted/30 px-3 py-2 text-xs text-lca-navy">
+                      {sections.map((s) => `${s.name}: Rd ${nextRoundFor(s.name)}`).join(' · ')}
+                    </p>
+                  ) : (
+                    <p className="rounded-md border bg-muted/30 px-3 py-2 text-sm font-medium text-lca-navy">
+                      Round {nextRoundFor(generateForm.section === ALL_SECTIONS ? sections[0]?.name ?? '' : generateForm.section)}
+                      <span className="font-normal text-muted-foreground"> of {tournament?.rounds}</span>
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-end">
                   <Button
@@ -1952,7 +1974,13 @@ export function TournamentManagePage() {
                     disabled={generating}
                     onClick={handleGeneratePairings}
                   >
-                    {generating ? 'Pairing…' : `Pair round ${nextRoundFor(generateForm.section)}`}
+                    {generating
+                      ? 'Pairing…'
+                      : generateForm.section === ALL_SECTIONS
+                        ? (new Set(sections.map((s) => nextRoundFor(s.name))).size === 1
+                          ? `Pair round ${nextRoundFor(sections[0]?.name ?? '')}, all sections`
+                          : 'Pair next round, all sections')
+                        : `Pair round ${nextRoundFor(generateForm.section)}`}
                   </Button>
                 </div>
                 <label className="flex items-center gap-2 text-sm text-muted-foreground sm:col-span-3">
@@ -1967,7 +1995,7 @@ export function TournamentManagePage() {
                   Only pair checked-in players
                   {onlyCheckedIn && (
                     <span className="text-xs">
-                      ({roster.filter((p) => p.checked_in_at && !p.withdrawn_at && p.section === generateForm.section).length} in {generateForm.section})
+                      ({roster.filter((p) => p.checked_in_at && !p.withdrawn_at && (generateForm.section === ALL_SECTIONS || p.section === generateForm.section)).length} checked in{generateForm.section === ALL_SECTIONS ? '' : ` in ${generateForm.section}`})
                     </span>
                   )}
                 </label>
