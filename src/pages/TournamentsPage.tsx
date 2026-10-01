@@ -525,7 +525,7 @@ export function TournamentsPage() {
       <PageHero
         size="compact"
         title="Tournaments"
-        subtitle="LCA events and Gulf South regional tournaments — all in one place."
+        subtitle={<>LCA events and Gulf South regional tournaments — all in one place. <Link to="/champions" className="text-lca-gold hover:underline">State champions →</Link></>}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
