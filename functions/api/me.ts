@@ -6,7 +6,7 @@ import {
   upsertMemberFromAuth,
   validateFullName,
 } from '../utils/members'
-import { isValidUscfId } from '../utils/uscf'
+import { isValidUscfId, refreshUscfSoon } from '../utils/uscf'
 import { getDirectedTournamentIds } from '../utils/permissions'
 import { listChildren } from '../utils/family'
 import {
@@ -108,8 +108,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   // Make sure the row exists before updating it — someone who registered but
   // has never loaded their dashboard has a Supabase user and no members row.
-  // The value was never read here; only this side effect matters.
-  if (!(await getMemberById(context.env.DB, authResult.id))) {
+  // The earlier US Chess ID tells us below whether it just changed.
+  const before = await getMemberById(context.env.DB, authResult.id)
+  if (!before) {
     await upsertMemberFromAuth(context.env.DB, authResult, context.env)
   }
 
@@ -122,6 +123,12 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   if (!updated) {
     return errorResponse('Member not found', 404)
+  }
+
+  // A new or changed US Chess ID: fetch its rating and expiry now.
+  if (updated.uscf_id && updated.uscf_id !== (before?.uscf_id ?? null)) {
+    await refreshUscfSoon(context.env.DB, updated.id, updated.uscf_id)
+    return jsonResponse({ member: (await getMemberById(context.env.DB, updated.id)) ?? updated })
   }
 
   return jsonResponse({ member: updated })

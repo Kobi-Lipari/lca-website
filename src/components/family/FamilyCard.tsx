@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { addChild, getMyChildren, removeChild, updateChild, type ApiChild } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+import { USCHESS_RENEW_URL, usChessState } from '@/components/uscf/UsChessMembership'
 
 const STATUS: Record<string, { label: string; className: string }> = {
   active: { label: 'Member', className: 'bg-emerald-100 text-emerald-800' },
@@ -138,8 +139,21 @@ export function FamilyCard() {
                       <p className="text-xs text-muted-foreground">
                         {c.uscf_id ? `USCF ${c.uscf_id}` : 'No USCF ID yet — needed for rated events'}
                         {c.uscf_rating ? ` · rating ${c.uscf_rating}` : ''}
-                        {c.membership_status === 'active' && c.membership_expiry ? ` · member through ${c.membership_expiry}` : ''}
+                        {c.membership_status === 'active' && c.membership_expiry ? ` · LCA member through ${c.membership_expiry}` : ''}
                       </p>
+                      {(() => {
+                        const st = usChessState(c.uscf_id, c.uscf_expiration)
+                        if (st === 'none' || st === 'unknown') return null
+                        const date = (c.uscf_expiration as string).slice(0, 10)
+                        return (
+                          <p className={cn('text-xs', st === 'expired' ? 'text-red-700' : st === 'soon' ? 'text-amber-800' : 'text-muted-foreground')}>
+                            US Chess {st === 'expired' ? `expired ${date}` : `through ${date}`}
+                            {st !== 'valid' && (
+                              <> · <a href={USCHESS_RENEW_URL} target="_blank" rel="noopener noreferrer" className="font-medium underline underline-offset-2">Renew</a></>
+                            )}
+                          </p>
+                        )
+                      })()}
                     </div>
                     <div className="flex items-center gap-2">
                       <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', (STATUS[c.membership_status] ?? STATUS.pending).className)}>

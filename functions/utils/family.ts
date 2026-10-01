@@ -14,13 +14,14 @@ export interface ChildRow {
   membership_expiry: string | null
   membership_type: string | null
   created_at: string
+  uscf_expiration: string | null
 }
 
 export async function listChildren(db: D1Database, guardianId: string): Promise<ChildRow[]> {
   const { results } = await db
     .prepare(
       `SELECT id, full_name, uscf_id, uscf_rating, membership_status, membership_expiry,
-              membership_type, created_at
+              membership_type, created_at, uscf_expiration
          FROM members
         WHERE guardian_id = ?
         ORDER BY created_at ASC, rowid ASC`,

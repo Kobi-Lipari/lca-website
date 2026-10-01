@@ -3,7 +3,7 @@ import type { Env } from '../../../types'
 import { isResponse, requireAuthedMember } from '../../../utils/auth'
 import { listChildren } from '../../../utils/family'
 import { validateFullName } from '../../../utils/members'
-import { isValidUscfId } from '../../../utils/uscf'
+import { isValidUscfId, refreshUscfSoon } from '../../../utils/uscf'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
 
 interface EditChildBody {
@@ -53,6 +53,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   await context.env.DB.prepare('UPDATE members SET full_name = ?, uscf_id = ? WHERE id = ?')
     .bind(fullName, uscfId, childId)
     .run()
+  if (uscfId && uscfId !== child.uscf_id) await refreshUscfSoon(context.env.DB, childId, uscfId)
 
   return jsonResponse({ children: await listChildren(context.env.DB, authed.member.id) })
 }

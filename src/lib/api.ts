@@ -46,6 +46,8 @@ export interface ApiChild {
   membership_expiry: string | null
   membership_type: string | null
   created_at: string
+  /** US Chess membership expiry, from the nightly check. */
+  uscf_expiration?: string | null
   /** Present when listed for a specific tournament (?tournamentId=). */
   registration?: {
     id: string
