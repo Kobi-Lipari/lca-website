@@ -38,8 +38,8 @@ describe('US Chess membership expiry', () => {
 
   it('is filled in for a child added with an ID', async () => {
     const parent = await seedMember()
-    uscfBehavior.members['34567890'] = rated('2026-12-31')
-    const res = await invoke(childrenPost, { method: 'POST', as: parent, body: { fullName: 'Kid Player', uscfId: '34567890' } })
+    uscfBehavior.members['45678912'] = rated('2026-12-31')
+    const res = await invoke(childrenPost, { method: 'POST', as: parent, body: { fullName: 'Kid Player', uscfId: '45678912' } })
     expect(res.status).toBe(201)
     const { children } = await res.json<{ children: Array<{ uscf_expiration: string | null }> }>()
     expect(children[0].uscf_expiration).toBe('2026-12-31')
