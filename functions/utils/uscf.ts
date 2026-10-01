@@ -282,9 +282,24 @@ export async function refreshMemberUscfRating(
   const now = new Date().toISOString()
   await db
     .prepare(
-      `UPDATE members SET uscf_rating = ?, uscf_rating_updated_at = ? WHERE id = ?`,
+      `UPDATE members SET uscf_rating = ?, uscf_rating_updated_at = ?,
+              uscf_expiration = COALESCE(?, uscf_expiration) WHERE id = ?`,
     )
-    .bind(player?.rating ?? null, now, memberId)
+    .bind(player?.rating ?? null, now, player?.expirationDate ?? null, memberId)
     .run()
   return player?.rating ?? null
+}
+
+/**
+ * Look a newly added US Chess ID up straight away, so the rating and the
+ * membership expiry show without waiting for the nightly check. Never fails
+ * the request that triggered it: the nightly check is the backstop.
+ */
+export async function refreshUscfSoon(db: D1Database, memberId: string, uscfId: string | null): Promise<void> {
+  if (!uscfId) return
+  try {
+    await refreshMemberUscfRating(db, memberId, uscfId)
+  } catch {
+    /* the nightly sync will pick it up */
+  }
 }

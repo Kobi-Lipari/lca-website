@@ -33,6 +33,7 @@ import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { FamilyCard } from '@/components/family/FamilyCard'
+import { UsChessBadge, UsChessMembershipDetail, usChessState } from '@/components/uscf/UsChessMembership'
 
 type MembershipStatus = 'active' | 'expired' | 'pending'
 
@@ -329,7 +330,7 @@ export function DashboardPage() {
             )}
 
             <div className="grid gap-6 lg:grid-cols-3">
-              <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-1">
+              <div id="profile" className="scroll-mt-24 rounded-xl border bg-card p-6 shadow-sm lg:col-span-1">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <User className="size-5 text-lca-gold" />
@@ -483,34 +484,45 @@ export function DashboardPage() {
                 )}
               </div>
 
-              <div className="rounded-xl border bg-card p-6 shadow-sm lg:col-span-2">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="size-5 text-lca-gold" />
-                    <h2 className="text-lg font-bold text-lca-navy">Membership</h2>
+              <div className="grid gap-6 rounded-xl border bg-card p-6 shadow-sm sm:grid-cols-2 sm:divide-x lg:col-span-2">
+                <div>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <CreditCard className="size-5 text-lca-gold" />
+                      <h2 className="text-lg font-bold text-lca-navy">LCA membership</h2>
+                    </div>
+                    <span
+                      className={cn(
+                        'w-fit rounded-full px-2.5 py-0.5 text-xs font-medium',
+                        status.className,
+                      )}
+                    >
+                      {status.label}
+                    </span>
                   </div>
-                  <span
-                    className={cn(
-                      'w-fit rounded-full px-2.5 py-0.5 text-xs font-medium',
-                      status.className,
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    {membershipStatus === 'active' ? (
+                      <>
+                        Your LCA membership is valid through{' '}
+                        <span className="font-medium text-lca-navy">{membershipExpiry}</span>.
+                      </>
+                    ) : (
+                      <>Membership status: {status.label.toLowerCase()}.</>
                     )}
-                  >
-                    {status.label}
-                  </span>
+                  </p>
+                  <Button asChild className={cn('mt-4', goldButtonClass)}>
+                    <Link to="/membership">Join / Renew Membership</Link>
+                  </Button>
                 </div>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  {membershipStatus === 'active' ? (
-                    <>
-                      Your LCA membership is valid through{' '}
-                      <span className="font-medium text-lca-navy">{membershipExpiry}</span>.
-                    </>
-                  ) : (
-                    <>Membership status: {status.label.toLowerCase()}.</>
-                  )}
-                </p>
-                <Button asChild className={cn('mt-4', goldButtonClass)}>
-                  <Link to="/membership">Join / Renew Membership</Link>
-                </Button>
+                <div className="sm:pl-6">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h2 className="text-lg font-bold text-lca-navy">US Chess membership</h2>
+                    <UsChessBadge state={usChessState(member?.uscf_id, member?.uscf_expiration)} />
+                  </div>
+                  <div className="mt-4">
+                    <UsChessMembershipDetail uscfId={member?.uscf_id} expiration={member?.uscf_expiration} />
+                  </div>
+                </div>
               </div>
             </div>
 
