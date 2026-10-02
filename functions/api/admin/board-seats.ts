@@ -74,10 +74,26 @@ export const onRequestGet: PagesFunction<Env> = async (ctx) => {
       ORDER BY a.started_at DESC`,
   ).all()
 
+  // Regions each regional seat covers, and how many clubs are in each region,
+  // so the panel can show what a seat's holder will manage.
+  const seatRegions = await ctx.env.DB.prepare(
+    'SELECT seat_id, region FROM seat_regions ORDER BY region',
+  ).all<{ seat_id: string; region: string }>()
+  const regionClubs = await ctx.env.DB.prepare(
+    `SELECT COALESCE(region, '') AS region, COUNT(*) AS clubs
+       FROM clubs GROUP BY COALESCE(region, '')`,
+  ).all<{ region: string; clubs: number }>()
+
   return jsonResponse({
-    seats: seats.results ?? [],
+    seats: (seats.results ?? []).map((s) => ({
+      ...(s as Record<string, unknown>),
+      regions: (seatRegions.results ?? [])
+        .filter((r) => r.seat_id === (s as { id: string }).id)
+        .map((r) => r.region),
+    })),
     holders: holders.results ?? [],
     history: history.results ?? [],
+    regionClubs: regionClubs.results ?? [],
   })
 }
 

@@ -123,7 +123,7 @@ function App() {
             <Route path="/admin" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/:section" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
-            <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'lca_observer', 'club_rep', 'tournament_director']} allowDirectors requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
+            <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'lca_observer', 'lca_officer', 'club_rep', 'tournament_director']} allowDirectors requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
           </Routes>
         </Suspense>
       </main>

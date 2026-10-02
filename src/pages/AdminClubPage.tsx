@@ -24,7 +24,8 @@ import {
   type ApiClubNews,
 } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
-import { toolsHomeFor } from '@/lib/roles'
+import { isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
+import { REGIONS } from '@/lib/regions'
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -40,6 +41,11 @@ export function AdminClubPage() {
   const { role } = useAuth()
   const isAdmin = role === 'lca_admin'
   const toolsHome = toolsHomeFor(role)
+  // Regional representatives reach this page through their board seat, not a
+  // role, so they come back to their dashboard. Club tournaments stay with
+  // admins and the club's own rep for now.
+  const backLabel = isAdmin ? 'All clubs' : toolsHome === '/dashboard' ? 'My profile' : toolsHome.startsWith('/admin') ? 'Admin panel' : 'Workspace'
+  const showTournaments = isAdmin || isViewOnlyAdmin(role) || role === 'club_rep'
   const [params, setParams] = useSearchParams()
 
   const [club, setClub] = useState<ApiClubDetail | null>(null)
@@ -53,7 +59,7 @@ export function AdminClubPage() {
   const [saving, setSaving] = useState(false)
   const [newsSaving, setNewsSaving] = useState(false)
   const tabParam = params.get('tab') as ClubTab | null
-  const tab: ClubTab = tabParam && ['details', 'news', 'roster', 'tournaments'].includes(tabParam) ? tabParam : 'details'
+  const tab: ClubTab = tabParam && ['details', 'news', 'roster', 'tournaments'].includes(tabParam) && (tabParam !== 'tournaments' || showTournaments) ? tabParam : 'details'
   const setTab = (next: ClubTab) => setParams(next === 'details' ? {} : { tab: next }, { replace: true })
 
   const [logoUploading, setLogoUploading] = useState(false)
@@ -248,7 +254,7 @@ export function AdminClubPage() {
     { id: 'details',     label: 'Club details',  icon: Building2  },
     { id: 'news',        label: 'News',           icon: Newspaper  },
     { id: 'roster',      label: `Roster & officers (${roster.length})`, icon: Users },
-    { id: 'tournaments', label: 'Tournaments',    icon: Trophy     },
+    ...(showTournaments ? [{ id: 'tournaments' as const, label: 'Tournaments', icon: Trophy }] : []),
   ]
 
   return (
@@ -263,7 +269,7 @@ export function AdminClubPage() {
             to={isAdmin ? '/admin/clubs' : toolsHome}
             className="inline-flex items-center gap-1.5 text-sm text-white/55 transition-colors hover:text-lca-gold"
           >
-            <ArrowLeft className="size-3.5" /> {isAdmin ? 'All clubs' : 'Workspace'}
+            <ArrowLeft className="size-3.5" /> {backLabel}
           </Link>
           <div className="mt-4 flex items-center gap-3">
             <div
@@ -357,15 +363,7 @@ export function AdminClubPage() {
                     onChange={(e) => setForm((p) => ({ ...p, region: e.target.value }))}
                   >
                     <option value="">Select a region…</option>
-                    {[
-                      'North Louisiana',
-                      'Central Louisiana',
-                      'North of Lake Pontchartrain',
-                      'New Orleans Metro',
-                      'Southwest Louisiana',
-                      'South Central Louisiana',
-                      'Bayou Region',
-                    ].map((r) => (
+                    {REGIONS.map((r) => (
                       <option key={r} value={r}>{r}</option>
                     ))}
                   </select>

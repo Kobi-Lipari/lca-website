@@ -21,10 +21,11 @@ import {
   syncMember as apiSyncMember,
   type ApiDirectedTournament,
   type ApiMember,
+  type ApiManagedClub,
   type ApiMySeat,
 } from '@/lib/api'
 import { getAssuranceLevel } from '@/lib/mfa'
-import { resolveRole, type MemberRole } from '@/lib/roles'
+import { isViewOnlyAdmin, resolveRole, type MemberRole } from '@/lib/roles'
 import { supabase } from '@/lib/supabase'
 
 interface ImpersonationTarget {
@@ -47,6 +48,11 @@ export interface AuthContextValue {
    * club_rep or a plain member, and losing one must never touch their account.
    */
   seats: ApiMySeat[]
+  /**
+   * Clubs this member manages because a regional representative seat they
+   * hold covers the club's region. A seat grant like `seats`, not a role.
+   */
+  managedClubs: ApiManagedClub[]
   isBoardMember: boolean
   /**
    * Assurance level of the current session: 'aal2' once a second factor has
@@ -95,9 +101,9 @@ const ADMIN_SESSION_STASH_KEY = 'lca_admin_session_stash'
 async function loadMemberProfile() {
   const [data, seatData] = await Promise.all([
     getMe(),
-    getMySeats().catch(() => ({ seats: [] as ApiMySeat[] })),
+    getMySeats().catch(() => ({ seats: [] as ApiMySeat[], managedClubs: [] as ApiManagedClub[] })),
   ])
-  return { ...data, seats: seatData.seats }
+  return { ...data, seats: seatData.seats, managedClubs: seatData.managedClubs ?? [] }
 }
 
 /**
@@ -129,6 +135,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [member, setMember] = useState<ApiMember | null>(null)
   const [seats, setSeats] = useState<ApiMySeat[]>([])
+  const [managedClubs, setManagedClubs] = useState<ApiManagedClub[]>([])
   const [directedTournaments, setDirectedTournaments] = useState<
     ApiDirectedTournament[]
   >([])
@@ -153,6 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!session) {
       setMember(null)
       setSeats([])
+      setManagedClubs([])
       setDirectedTournaments([])
       return
     }
@@ -162,10 +170,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await loadMemberProfile()
       setMember(data.member)
       setSeats(data.seats)
+      setManagedClubs(data.managedClubs)
       setDirectedTournaments(data.directedTournaments ?? [])
     } catch (err) {
       setMember(null)
       setSeats([])
+      setManagedClubs([])
       setDirectedTournaments([])
 
       // A 401 means the server rejected this token outright — the session is
@@ -202,15 +212,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const data = await loadMemberProfile()
           setMember(data.member)
           setSeats(data.seats)
+          setManagedClubs(data.managedClubs)
           setDirectedTournaments(data.directedTournaments ?? [])
         } catch {
           setMember(null)
           setSeats([])
+          setManagedClubs([])
           setDirectedTournaments([])
         }
       } else {
         setMember(null)
         setSeats([])
+        setManagedClubs([])
         setDirectedTournaments([])
       }
     })
@@ -316,6 +329,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setImpersonating(null)
     setMember(null)
     setSeats([])
+    setManagedClubs([])
     setDirectedTournaments([])
   }, [])
 
@@ -385,7 +399,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   )
 
   // lca_admin can read every seat's inbox, so the link shows for them too.
-  const isBoardMember = seats.length > 0 || role === 'lca_admin' || role === 'lca_observer'
+  const isBoardMember = seats.length > 0 || role === 'lca_admin' || isViewOnlyAdmin(role)
 
   // Only meaningful once the profile has loaded and the assurance check has
   // resolved; before that `member` is null and this would flap true.
@@ -401,6 +415,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       member,
       role,
       seats,
+      managedClubs,
       isBoardMember,
       assuranceLevel,
       mfaRequired,
@@ -424,6 +439,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       member,
       role,
       seats,
+      managedClubs,
       isBoardMember,
       assuranceLevel,
       mfaRequired,

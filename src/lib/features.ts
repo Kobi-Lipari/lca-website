@@ -11,4 +11,17 @@ export const FEATURES = {
    * own tournaments here.
    */
   clubTournaments: false,
+
+  /**
+   * The "USCF rated" and "Register on this site" quick filters on the
+   * Tournaments page. Off until the listings carry reliable rating and
+   * registration details for every event.
+   */
+  tournamentQuickFilters: false,
+
+  /**
+   * The "Ext" / "External" tags that mark events not run through this site.
+   * Off while every listed event is external, since the tag says nothing.
+   */
+  externalTags: false,
 } as const
