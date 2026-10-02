@@ -8,6 +8,8 @@ import serverTime from '../../functions/utils/time.ts?raw'
 import browserTime from '../../src/lib/lcaTime.ts?raw'
 import serverPricing from '../../functions/utils/pricing.ts?raw'
 import browserPricing from '../../src/lib/pricing.ts?raw'
+import { REGIONS as serverRegions } from '../../functions/utils/regions'
+import { REGIONS as browserRegions } from '../../src/lib/regions'
 import { FAMILY_MEMBERSHIP_CHILDREN as serverFamily } from '../../functions/utils/family'
 import { FAMILY_MEMBERSHIP_CHILDREN as browserFamily } from '../../src/lib/family'
 
@@ -26,4 +28,8 @@ describe('browser copies of server helpers', () => {
 
 describe('family membership size', () => {
   it('is the same in the browser and on the server', () => expect(browserFamily).toBe(serverFamily))
+})
+
+describe('club regions', () => {
+  it('are the same in the browser and on the server', () => expect([...browserRegions]).toEqual([...serverRegions]))
 })

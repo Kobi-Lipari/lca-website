@@ -48,7 +48,8 @@ import {
   type ApiSeatHolder,
   type ApiTournamentListItem,
 } from '@/lib/api'
-import type { MemberRole } from '@/lib/roles'
+import { canUseMailing, type MemberRole } from '@/lib/roles'
+import { REGIONS } from '@/lib/regions'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
@@ -85,15 +86,9 @@ const GROUPS: { label: string; items: { id: AdminSection; label: string; icon: L
   ] },
 ]
 
-const ALL_SECTIONS = GROUPS.flatMap((g) => g.items)
 
 /** Old ?tab / section names that should still land somewhere sensible. */
 const LEGACY: Record<string, AdminSection> = { boardseats: 'board-seats', audit: 'activity' }
-
-const REGIONS = [
-  'North Louisiana', 'Central Louisiana', 'North of Lake Pontchartrain', 'New Orleans Metro',
-  'Southwest Louisiana', 'South Central Louisiana', 'Bayou Region',
-]
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
@@ -102,8 +97,14 @@ export function AdminPage() {
   const navigate = useNavigate()
 
   const viewOnly = useViewOnly()
+  const { role } = useAuth()
+  // LCA Officers get everything an Observer does except the mailing tools.
+  const mailing = canUseMailing(role)
+  const groups = mailing
+    ? GROUPS
+    : GROUPS.map((g) => ({ ...g, items: g.items.filter((i) => i.id !== 'email') }))
   const section = (LEGACY[rawSection ?? ''] ?? rawSection ?? 'members') as AdminSection
-  const current = ALL_SECTIONS.find((s) => s.id === section)
+  const current = groups.flatMap((g) => g.items).find((s) => s.id === section)
   usePageTitle(current ? `Admin · ${current.label}` : 'Admin panel')
 
   if (!current) return <Navigate to="/admin" replace />
@@ -114,7 +115,9 @@ export function AdminPage() {
       <PageHero
         title="Admin panel"
         subtitle={viewOnly
-          ? 'See everything across the LCA. You can send group email, email entrants and answer support tickets; other changes are made by admins.'
+          ? mailing
+            ? 'See everything across the LCA. You can send group email, email entrants, answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
+            : 'See everything across the LCA. You can answer support tickets and manage the bylaws and minutes; other changes are made by admins.'
           : 'Manage members, clubs, tournaments and communications across the LCA.'}
         badges={viewOnly ? <span className="rounded-full border border-white/25 px-2.5 py-0.5 text-xs text-white/85">View only</span> : undefined}
         size="compact"
@@ -130,7 +133,7 @@ export function AdminPage() {
             value={section}
             onChange={(e) => navigate(`/admin/${e.target.value}`)}
           >
-            {GROUPS.map((g) => (
+            {groups.map((g) => (
               <optgroup key={g.label} label={g.label}>
                 {g.items.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </optgroup>
@@ -140,7 +143,7 @@ export function AdminPage() {
 
         <nav aria-label="Admin sections" className="hidden lg:block">
           <div className="sticky top-6 space-y-5">
-            {GROUPS.map((g) => (
+            {groups.map((g) => (
               <div key={g.label}>
                 <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{g.label}</p>
                 <ul className="space-y-0.5">

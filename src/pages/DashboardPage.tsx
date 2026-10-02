@@ -27,7 +27,7 @@ import {
   type ApiRegistration,
   type ApiSupportTicket,
 } from '@/lib/api'
-import { ROLE_LABELS } from '@/lib/roles'
+import { ROLE_LABELS, canAccessAdmin } from '@/lib/roles'
 import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
@@ -63,7 +63,7 @@ const goldButtonClass =
   'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
 
 export function DashboardPage() {
-  const { user, role, member: authMember, directedTournaments } = useAuth()
+  const { user, role, member: authMember, directedTournaments, managedClubs } = useAuth()
   const [member, setMember] = useState<ApiMember | null>(null)
   const [registrations, setRegistrations] = useState<ApiRegistration[]>([])
   const [tickets, setTickets] = useState<ApiSupportTicket[]>([])
@@ -287,13 +287,13 @@ export function DashboardPage() {
 
         {!loadingData && !loadError && (
           <>
-            {(role === 'lca_admin' || role === 'lca_observer' || role === 'club_rep' || role === 'tournament_director' || role === 'lca_auditor' || directedTournaments.length > 0) && (
+            {(canAccessAdmin(role) || role === 'club_rep' || role === 'tournament_director' || role === 'lca_auditor' || directedTournaments.length > 0) && (
               <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
                 <h2 className="text-lg font-bold text-lca-navy">
                   {role === 'member' ? 'Event director' : ROLE_LABELS[role]} tools
                 </h2>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  {role === 'lca_admin' || role === 'lca_observer' ? (
+                  {canAccessAdmin(role) ? (
                     <Button asChild className={goldButtonClass}>
                       <Link to="/admin">
                         <Shield className="size-4" />
@@ -326,6 +326,34 @@ export function DashboardPage() {
                       </Button>
                     ))}
                 </div>
+              </div>
+            )}
+
+            {/* Regional representatives manage every club in their region. */}
+            {role !== 'lca_admin' && managedClubs.length > 0 && (
+              <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
+                <h2 className="flex items-center gap-2 text-lg font-bold text-lca-navy">
+                  <Building2 className="size-5 text-lca-gold" /> Clubs in your region
+                </h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  As regional representative you can update these clubs' pages, officers and news.
+                </p>
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {managedClubs.map((c) => (
+                    <li key={c.id}>
+                      <Link
+                        to={`/admin/clubs/${c.id}`}
+                        className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors hover:border-lca-navy/40 hover:bg-muted/40"
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium text-lca-navy">{c.name}</span>
+                          {c.region && <span className="block text-xs text-muted-foreground">{c.region}</span>}
+                        </span>
+                        <span className="flex-shrink-0 text-xs font-medium text-lca-navy">Manage →</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 

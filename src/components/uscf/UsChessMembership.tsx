@@ -8,7 +8,8 @@ import { ExternalLink } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
-export const USCHESS_RENEW_URL = 'https://new.uschess.org/join-us-chess'
+/** US Chess sign-in, which lands on their membership renewal form. */
+export const USCHESS_RENEW_URL = 'https://new.uschess.org/user/login?destination=/form/membership'
 const SOON_DAYS = 45
 
 export type UsChessState = 'none' | 'unknown' | 'valid' | 'soon' | 'expired'

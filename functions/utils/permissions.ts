@@ -10,6 +10,7 @@ import type { MemberRow } from '../types'
 export type MemberRole =
   | 'member'
   | 'lca_auditor'
+  | 'lca_officer'
   | 'lca_observer'
   | 'club_rep'
   | 'tournament_director'
@@ -18,6 +19,7 @@ export type MemberRole =
 export const MEMBER_ROLES: MemberRole[] = [
   'member',
   'lca_auditor',
+  'lca_officer',
   'lca_observer',
   'club_rep',
   'tournament_director',
@@ -76,12 +78,70 @@ export async function canManageTournament(
   return isTournamentDirector(db, member.id, tournamentId)
 }
 
+/**
+ * Clubs a member manages as a regional representative: every club whose
+ * region is covered by a regional seat they currently hold. Like all board
+ * access this is a grant on the seat, not the account, so it starts and ends
+ * with the term and never touches members.role or members.club_id.
+ */
+export async function getRegionalClubIds(
+  db: D1Database,
+  memberId: string,
+): Promise<string[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT DISTINCT c.id
+         FROM board_seat_assignments a
+         JOIN board_members s ON s.id = a.seat_id
+         JOIN seat_regions r  ON r.seat_id = s.id
+         JOIN clubs c         ON c.region = r.region
+        WHERE a.member_id = ?
+          AND a.ended_at IS NULL
+          AND s.is_active = 1
+          AND s.category = 'regional_rep'`,
+    )
+    .bind(memberId)
+    .all<{ id: string }>()
+  return (results ?? []).map((r) => r.id)
+}
+
+export async function isRegionalRepFor(
+  db: D1Database,
+  memberId: string,
+  clubId: string,
+): Promise<boolean> {
+  const row = await db
+    .prepare(
+      `SELECT 1
+         FROM board_seat_assignments a
+         JOIN board_members s ON s.id = a.seat_id
+         JOIN seat_regions r  ON r.seat_id = s.id
+         JOIN clubs c         ON c.region = r.region
+        WHERE a.member_id = ?
+          AND c.id = ?
+          AND a.ended_at IS NULL
+          AND s.is_active = 1
+          AND s.category = 'regional_rep'
+        LIMIT 1`,
+    )
+    .bind(memberId, clubId)
+    .first()
+  return !!row
+}
+
+/**
+ * The club's own page, officers, news, logo and roster: admins, the club's
+ * rep, and the regional representative for the club's region.
+ */
 export async function canManageClub(
+  db: D1Database,
   member: MemberRow,
   clubId: string,
 ): Promise<boolean> {
   if (member.role === 'lca_admin') return true
-  return member.role === 'club_rep' && member.club_id === clubId
+  if (member.role === 'club_rep' && member.club_id === clubId) return true
+  if (member.role === 'guest') return false
+  return isRegionalRepFor(db, member.id, clubId)
 }
 
 export async function getDirectedTournamentIds(

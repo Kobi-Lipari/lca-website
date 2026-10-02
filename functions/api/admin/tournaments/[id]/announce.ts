@@ -1,6 +1,6 @@
 // functions/api/admin/tournaments/[id]/announce.ts
 import type { Env } from '../../../../types'
-import { isResponse, requireTournamentView } from '../../../../utils/auth'
+import { canUseMailing, isObserver, isResponse, requireTournamentView } from '../../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -22,6 +22,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const tournamentId = context.params.id as string
   const authResult = await requireTournamentView(context.request, context.env, tournamentId)
   if (isResponse(authResult)) return authResult
+  // Officers see the event like an observer but don't have the mailing tools.
+  if (isObserver(authResult.member) && !canUseMailing(authResult.member)) {
+    return errorResponse('Emailing entrants is limited to admins, the LCA Observer and the event\'s organizers', 403)
+  }
 
   const body = await parseJsonBody<AnnounceBody>(context.request)
   const subject = body?.subject?.trim()

@@ -1,7 +1,8 @@
 // functions/api/governance/documents.ts
 import type { Env } from '../../types'
 import { errorResponse, jsonResponse, parseJsonBody } from '../../utils/response'
-import { requireAdmin, isResponse } from '../../utils/auth'
+import { requireGovernanceEditor, isResponse } from '../../utils/auth'
+import { recordAdminAction } from '../../utils/audit'
 
 // Mirrors the frontend ApiGovernanceDocument['category'] union. The DB column
 // has no CHECK constraint, so this allowlist is what keeps a typo'd category
@@ -28,7 +29,7 @@ interface CreateDocumentBody {
 }
 
 export const onRequestPost: PagesFunction<Env> = async (ctx) => {
-  const auth = await requireAdmin(ctx.request, ctx.env)
+  const auth = await requireGovernanceEditor(ctx.request, ctx.env)
   if (isResponse(auth)) return auth
 
   const body = await parseJsonBody<CreateDocumentBody>(ctx.request)
@@ -64,5 +65,10 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     year,
   ).run()
   const doc = await ctx.env.DB.prepare('SELECT * FROM governance_documents WHERE id = ?').bind(id).first()
+  await recordAdminAction(ctx.env.DB, auth.member, {
+    action: 'document_add',
+    targetLabel: `"${body.title.trim()}"`,
+    detail: { id, category: body.category },
+  })
   return jsonResponse({ document: doc }, 201)
 }

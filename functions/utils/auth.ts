@@ -160,18 +160,62 @@ export async function requireAdmin(
   return authed
 }
 
-// ── LCA Observer ─────────────────────────────────────────────────
+// ── LCA Observer and LCA Officer ─────────────────────────────────
 //
-// lca_observer sees everything an admin sees and can do a short list of
-// things (send group email, email a tournament's entrants, answer support
-// tickets), but changes nothing else. Read endpoints use the *View guards
-// below; every write keeps requireAdmin / requireClubRep /
-// requireTournamentManager, which an observer never passes. No second
-// factor is required of observers: they cannot change roles, delete
-// anything or alter records.
+// lca_observer (meant for the president) sees everything an admin sees and
+// can do a short list of things: send group email, email a tournament's
+// entrants, answer support tickets, and manage the governance documents
+// (bylaws, rules, minutes, treasurer's reports). Everything else stays with
+// admins. Read endpoints use the *View guards below; every other write keeps
+// requireAdmin / requireClubRep / requireTournamentManager, which an
+// observer never passes.
+//
+// lca_officer (meant for the treasurer, secretary and other officers) is
+// the same minus the mailing tools: no group email, no emailing entrants.
+// Everywhere below, "observer" means either role; requireMailer is the one
+// place they differ.
+//
+// No second factor is required of either: they cannot change roles,
+// delete accounts or send anything beyond the tools listed above.
+
+/** Roles with the admin panel in view-only mode. */
+export const OBSERVER_ROLES: MemberRole[] = ['lca_observer', 'lca_officer']
 
 export function isObserver(member: { role: string }): boolean {
-  return member.role === 'lca_observer'
+  return OBSERVER_ROLES.includes(member.role as MemberRole)
+}
+
+/** Group email and emailing entrants: admins and lca_observer, not officers. */
+export function canUseMailing(member: { role: string }): boolean {
+  return member.role === 'lca_admin' || member.role === 'lca_observer'
+}
+
+/** Admin read access plus the mailing tools. Officers are turned away. */
+export async function requireMailer(
+  request: Request,
+  env: Env,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAdminView(request, env)
+  if (isResponse(authed)) return authed
+  if (!canUseMailing(authed.member)) {
+    return errorResponse('Group email is limited to admins and the LCA Observer', 403)
+  }
+  return authed
+}
+
+/**
+ * Adding, editing and removing governance documents (bylaws, rules,
+ * amendments, minutes, treasurer's reports): admins with 2FA, observers and
+ * officers.
+ */
+export async function requireGovernanceEditor(
+  request: Request,
+  env: Env,
+): Promise<AuthedMember | Response> {
+  const authed = await requireAuthedMember(request, env)
+  if (authed instanceof Response) return authed
+  if (isObserver(authed.member)) return authed
+  return requireAdmin(request, env)
 }
 
 /** Admin read access: admins (with 2FA) or observers. */
@@ -210,7 +254,7 @@ export async function requireTournamentView(
 }
 
 /** Roles that may read the member directory, besides lca_admin. */
-const DIRECTORY_ROLES: MemberRole[] = ['lca_auditor', 'lca_observer', 'club_rep', 'tournament_director']
+const DIRECTORY_ROLES: MemberRole[] = ['lca_auditor', 'lca_officer', 'lca_observer', 'club_rep', 'tournament_director']
 
 /**
  * Read access to the member directory.
@@ -251,13 +295,10 @@ export async function requireClubRep(
   const authed = await requireAuthedMember(request, env)
   if (authed instanceof Response) return authed
 
-  if (authed.member.role === 'lca_admin') return authed
-  if (
-    authed.member.role === 'club_rep' &&
-    authed.member.club_id === clubId
-  ) {
-    return authed
-  }
+  // Admins, the club's own rep, and the regional representative whose seat
+  // covers the club's region.
+  const { canManageClub } = await import('./permissions')
+  if (await canManageClub(env.DB, authed.member, clubId)) return authed
 
   return errorResponse('Forbidden', 403)
 }

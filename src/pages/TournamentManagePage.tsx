@@ -39,7 +39,7 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
-import { toolsHomeFor } from '@/lib/roles'
+import { canUseMailing, isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
 import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
 import { ResultsEntry } from '@/components/tournaments/ResultsEntry'
@@ -180,6 +180,9 @@ export function TournamentManagePage() {
   const { role: authRole } = useAuth()
   // Someone directing an event with an ordinary member account works from the workspace.
   const backHref = authRole === 'member' ? '/workspace?tab=events' : toolsHomeFor(authRole, 'tournaments')
+  // LCA Officers see events like an observer but without the mailing tools.
+  const noEmailTab = isViewOnlyAdmin(authRole) && !canUseMailing(authRole)
+  const visibleTabs = noEmailTab ? TABS.filter((t) => t.id !== 'email') : TABS
 
   // ── Details tab form state ──
   const [name, setName] = useState('')
@@ -464,7 +467,7 @@ export function TournamentManagePage() {
   // ── Tabs ──
 
   const tabParam = searchParams.get('tab')
-  const activeTab: TabId = (VALID_TABS as readonly string[]).includes(tabParam ?? '')
+  const activeTab: TabId = (VALID_TABS as readonly string[]).includes(tabParam ?? '') && !(noEmailTab && tabParam === 'email')
     ? (tabParam as TabId)
     : 'details'
 
@@ -1091,7 +1094,7 @@ export function TournamentManagePage() {
       {/* Tab bar */}
       <div className="border-b bg-white sticky top-0 z-10">
         <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-6">
-          {TABS.map((t) => (
+          {visibleTabs.map((t) => (
             <button
               key={t.id}
               type="button"
