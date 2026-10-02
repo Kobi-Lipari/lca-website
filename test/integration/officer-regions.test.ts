@@ -189,6 +189,28 @@ describe('regional representatives', () => {
     expect(row?.club_id).toBeNull()
   })
 
+  it('can set and remove a club\'s map location', async () => {
+    const rep = await seedMember()
+    const seat = await regionalSeat()
+    await hold(seat, rep)
+    await env.DB.prepare("INSERT INTO seat_regions (seat_id, region) VALUES (?, 'Bayou Region')").bind(seat).run()
+    const club = await clubIn('Bayou Region')
+
+    const set = await invoke(clubPatch, { method: 'PATCH', as: rep, params: { id: club }, body: { mapLocation: { lat: 29.5958, lng: -90.7195 } } })
+    expect(set.status).toBe(200)
+    let row = await env.DB.prepare('SELECT latitude, longitude FROM clubs WHERE id = ?').bind(club).first<{ latitude: number | null; longitude: number | null }>()
+    expect(row?.latitude).toBe(29.5958)
+    expect(row?.longitude).toBe(-90.7195)
+
+    const bad = await invoke(clubPatch, { method: 'PATCH', as: rep, params: { id: club }, body: { mapLocation: { lat: 200, lng: 0 } } })
+    expect(bad.status).toBe(400)
+
+    const cleared = await invoke(clubPatch, { method: 'PATCH', as: rep, params: { id: club }, body: { mapLocation: null } })
+    expect(cleared.status).toBe(200)
+    row = await env.DB.prepare('SELECT latitude, longitude FROM clubs WHERE id = ?').bind(club).first<{ latitude: number | null; longitude: number | null }>()
+    expect(row?.latitude).toBeNull()
+  })
+
   it('lose access the moment their term ends', async () => {
     const rep = await seedMember()
     const seat = await regionalSeat()

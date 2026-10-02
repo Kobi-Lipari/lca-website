@@ -9,7 +9,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // every card and marker render default gold and broke the region filter
   // (every club's region compared as undefined).
   const { results } = await context.env.DB.prepare(
-    `SELECT id, name, city, meeting_schedule, color, image_url, region
+    `SELECT id, name, city, meeting_schedule, color, image_url, region, latitude, longitude
      FROM clubs
      ORDER BY name ASC`,
   ).all()

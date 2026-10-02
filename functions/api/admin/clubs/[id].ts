@@ -22,6 +22,8 @@ interface UpdateClubBody {
   color?: string | null
   imageUrl?: string | null
   region?: string | null
+  /** The club's pin on the Clubs map; null removes it. */
+  mapLocation?: { lat: number; lng: number } | null
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -106,6 +108,23 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     return errorResponse('Contact email is not a valid address', 400)
   }
 
+  let latitude = existing.latitude ?? null
+  let longitude = existing.longitude ?? null
+  if (body.mapLocation !== undefined) {
+    if (body.mapLocation === null) {
+      latitude = null
+      longitude = null
+    } else {
+      const lat = Number(body.mapLocation?.lat)
+      const lng = Number(body.mapLocation?.lng)
+      if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+        return errorResponse('Map location must be a valid latitude and longitude', 400)
+      }
+      latitude = Math.round(lat * 1e6) / 1e6
+      longitude = Math.round(lng * 1e6) / 1e6
+    }
+  }
+
   // Hex-validate color when provided; explicit null clears it, an invalid
   // string is ignored in favor of the existing value.
   const color = body.color !== undefined
@@ -118,7 +137,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     `UPDATE clubs SET
       name = ?, city = ?, location = ?, description = ?,
       meeting_schedule = ?, contact_email = ?,
-      color = ?, image_url = ?, region = ?
+      color = ?, image_url = ?, region = ?, latitude = ?, longitude = ?
      WHERE id = ?`,
   ).bind(
     body.name?.trim() ?? existing.name,
@@ -130,6 +149,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     color,
     body.imageUrl !== undefined ? body.imageUrl : existing.image_url,
     body.region !== undefined ? (body.region || null) : existing.region,
+    latitude,
+    longitude,
     clubId,
   ).run()
 
@@ -138,7 +159,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   // Which fields actually changed, for the activity log.
   const COLUMNS = ['name', 'city', 'location', 'description', 'meeting_schedule',
-    'contact_email', 'color', 'image_url', 'region']
+    'contact_email', 'color', 'image_url', 'region', 'latitude', 'longitude']
   const changed = club
     ? COLUMNS.filter((c) => (club[c] ?? null) !== ((existing as Record<string, unknown>)[c] ?? null))
     : []

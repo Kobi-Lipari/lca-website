@@ -8,7 +8,7 @@ import { PageHero } from '@/components/PageHero'
 import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { LCAMap, directionsUrl, findPinByName } from '@/components/maps/LCAMap'
+import { LCAMap, clubLocation, directionsUrl } from '@/components/maps/LCAMap'
 import { LCA } from '@/lib/brand'
 import { REGIONS } from '@/lib/regions'
 
@@ -95,7 +95,7 @@ function ClubCard({
   cardRef: (el: HTMLDivElement | null) => void
 }) {
   const color = club.color || LCA_GOLD
-  const pin = findPinByName(club.name)
+  const pin = clubLocation(club)
 
   return (
     <div
@@ -215,7 +215,7 @@ export function ClubsPage() {
   const distances = new Map<string, number>()
   if (userLocation) {
     for (const c of regionScoped) {
-      const pin = findPinByName(c.name)
+      const pin = clubLocation(c)
       if (pin) distances.set(c.id, milesBetween(userLocation, pin))
     }
   }
@@ -271,7 +271,7 @@ export function ClubsPage() {
     )
   }
 
-  const mappedCount = displayedClubs.filter((c) => findPinByName(c.name)).length
+  const mappedCount = displayedClubs.filter((c) => clubLocation(c)).length
 
   return (
     <div>
@@ -381,6 +381,7 @@ export function ClubsPage() {
                     hoveredId={hoveredId}
                     onSelect={(id) => select(id, 'map')}
                     userLocation={userLocation}
+                    frame={isFiltered ? 'clubs' : 'state'}
                   />
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">

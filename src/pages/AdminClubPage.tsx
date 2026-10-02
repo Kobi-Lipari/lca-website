@@ -26,6 +26,7 @@ import {
 import { useAuth } from '@/contexts/auth-context'
 import { isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
 import { REGIONS } from '@/lib/regions'
+import { ClubLocationPicker } from '@/components/maps/ClubLocationPicker'
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -455,6 +456,18 @@ export function AdminClubPage() {
               </Button>
             </div>
           </form>
+          <div className="mt-6">
+            <ClubLocationPicker
+              clubName={club.name}
+              latitude={club.latitude}
+              longitude={club.longitude}
+              disabled={isViewOnlyAdmin(role)}
+              onSave={async (location) => {
+                const updated = await adminUpdateClub(club.id, { mapLocation: location })
+                setClub(updated)
+              }}
+            />
+          </div>
           </ViewOnlyFieldset>
         )}
 
