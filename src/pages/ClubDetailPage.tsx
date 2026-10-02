@@ -346,7 +346,12 @@ export function ClubDetailPage() {
                 {/* Map goes LAST: the -mx-5/-mb-5 bleed means anything after it
                     renders on top of the map (the overlap bug in the screenshots). */}
                 <div className="mt-5 -mx-5 -mb-5 overflow-hidden">
-                  <LCAMap mode="single" clubName={club.name} height={200} />
+                  <LCAMap
+                    mode="single"
+                    clubName={club.name}
+                    location={club.latitude != null && club.longitude != null ? { lat: club.latitude, lng: club.longitude } : null}
+                    height={200}
+                  />
                 </div>
               </div>
             </div>

@@ -37,7 +37,7 @@ const GOLD = LCA.gold
  * the roads themselves stay faintly visible for finding your way once
  * zoomed in on a club.
  */
-const MAP_STYLES: google.maps.MapTypeStyle[] = [
+export const MAP_STYLES: google.maps.MapTypeStyle[] = [
   { elementType: 'geometry', stylers: [{ color: '#f4f2ec' }] },
   { elementType: 'labels.text.fill', stylers: [{ color: '#5b6272' }] },
   { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }, { weight: 3 }] },
@@ -60,7 +60,9 @@ const MAP_STYLES: google.maps.MapTypeStyle[] = [
   { featureType: 'administrative.country', elementType: 'geometry.stroke', stylers: [{ color: '#8a90a0' }] },
 ]
 
-const LOUISIANA_CENTER = { lat: 31.0, lng: -91.8 }
+export const LOUISIANA_CENTER = { lat: 31.0, lng: -91.8 }
+/** The state's outline, for framing the whole of Louisiana and nothing much else. */
+export const LOUISIANA_BOUNDS = { south: 28.95, west: -94.05, north: 33.02, east: -88.85 }
 /** How close to come in when a club is picked: town level, not street level. */
 const FOCUS_ZOOM = 11
 
@@ -101,7 +103,26 @@ export function directionsUrl(pin: Pick<ClubMapPin, 'lat' | 'lng'>): string {
 
 const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
 
-/** The map location for a club, matched on its name. Undefined if it has none yet. */
+/** A spot on the map, with the original club list's note when it came from there. */
+export interface MapPoint {
+  lat: number
+  lng: number
+  description?: string
+}
+
+/**
+ * Where a club goes on the map: the location set on its admin page, or
+ * failing that, its entry in the original club list (matched on name).
+ * Undefined when it has neither yet.
+ */
+export function clubLocation(club: { name: string; latitude?: number | null; longitude?: number | null }): MapPoint | undefined {
+  if (typeof club.latitude === 'number' && typeof club.longitude === 'number') {
+    return { lat: club.latitude, lng: club.longitude, description: findPinByName(club.name)?.description }
+  }
+  return findPinByName(club.name)
+}
+
+/** The original club list's entry for a club, matched on its name. */
 export function findPinByName(name: string): ClubMapPin | undefined {
   const t = normalize(name)
   if (!t) return undefined
@@ -111,7 +132,7 @@ export function findPinByName(name: string): ClubMapPin | undefined {
   )
 }
 
-function loadMapsScript(apiKey: string, onLoad: () => void) {
+export function loadMapsScript(apiKey: string, onLoad: () => void) {
   if (window.google?.maps) { onLoad(); return }
   if (document.querySelector('script[data-lca-maps]')) {
     const prev = window.initLCAMap
@@ -135,6 +156,8 @@ export interface MapClub {
   city?: string | null
   color?: string | null
   meeting_schedule?: string | null
+  latitude?: number | null
+  longitude?: number | null
 }
 
 interface AllClubsProps {
@@ -146,11 +169,18 @@ interface AllClubsProps {
   onSelect?: (id: string | null) => void
   /** The visitor's position, once they've asked for clubs near them. */
   userLocation?: { lat: number; lng: number } | null
+  /**
+   * 'state' frames all of Louisiana (the unfiltered view); 'clubs' fits the
+   * shown clubs, so a region filter zooms in on that region.
+   */
+  frame?: 'state' | 'clubs'
 }
 
 interface SingleClubProps {
   mode: 'single'
   clubName: string
+  /** The club's saved map location; falls back to the original club list. */
+  location?: { lat: number; lng: number } | null
   height?: number
 }
 
@@ -170,7 +200,7 @@ function pinIcon(club: MapClub, state: PinState): google.maps.Icon {
   }
 }
 
-function infoContent(club: MapClub, pin: ClubMapPin): string {
+function infoContent(club: MapClub, pin: MapPoint): string {
   const meta = [club.city ? `${escapeHtml(club.city)}, LA` : '', club.meeting_schedule ? escapeHtml(club.meeting_schedule) : '']
     .filter(Boolean)
     .join(' · ')
@@ -178,7 +208,7 @@ function infoContent(club: MapClub, pin: ClubMapPin): string {
     `<div style="font-family:system-ui,-apple-system,sans-serif;max-width:250px;padding:2px 2px 0">` +
     `<p style="font-weight:700;font-size:14px;color:${NAVY};margin:0 0 4px">${escapeHtml(club.name)}</p>` +
     (meta ? `<p style="font-size:12px;color:#555;margin:0 0 6px;line-height:1.45">${meta}</p>` : '') +
-    `<p style="font-size:12px;color:#555;margin:0;line-height:1.5">${escapeHtml(pin.description)}</p>` +
+    (pin.description ? `<p style="font-size:12px;color:#555;margin:0;line-height:1.5">${escapeHtml(pin.description)}</p>` : '') +
     `<div style="display:flex;gap:14px;margin-top:10px">` +
     `<a href="/clubs/${encodeURIComponent(club.id)}" style="font-size:12px;font-weight:600;color:${NAVY};text-decoration:underline;">View club page →</a>` +
     `<a href="${directionsUrl(pin)}" target="_blank" rel="noopener noreferrer" style="font-size:12px;font-weight:600;color:${GOLD_ON_LIGHT};text-decoration:underline;">Directions ↗</a>` +
@@ -191,7 +221,7 @@ export function LCAMap(props: Props) {
   const mapObj = useRef<google.maps.Map | null>(null)
   const infoRef = useRef<google.maps.InfoWindow | null>(null)
   /** Club id → its marker, for the clubs currently shown. */
-  const markersRef = useRef(new Map<string, { marker: google.maps.Marker; club: MapClub; pin: ClubMapPin }>())
+  const markersRef = useRef(new Map<string, { marker: google.maps.Marker; club: MapClub; pin: MapPoint }>())
   const singleMarkerRef = useRef<google.maps.Marker | null>(null)
   const userMarkerRef = useRef<google.maps.Marker | null>(null)
   const [loaded, setLoaded] = useState(false)
@@ -199,7 +229,10 @@ export function LCAMap(props: Props) {
   const isAll = props.mode === 'all'
   const height = props.height ?? (isAll ? 480 : 240)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
-  const singlePin = props.mode === 'single' ? findPinByName(props.clubName) : undefined
+  const singlePin: MapPoint | undefined = props.mode === 'single'
+    ? (props.location ?? findPinByName(props.clubName))
+    : undefined
+  const frame = isAll ? (props.frame ?? 'clubs') : 'clubs'
   const clubs = isAll ? props.clubs : []
   const selectedId = isAll ? (props.selectedId ?? null) : null
   const hoveredId = isAll ? (props.hoveredId ?? null) : null
@@ -211,7 +244,7 @@ export function LCAMap(props: Props) {
 
   // Stable key: markers only rebuild when the set of clubs changes, not when
   // the parent re-renders with a new array identity.
-  const clubsKey = clubs.map((c) => `${c.id}:${c.color ?? ''}`).join(',')
+  const clubsKey = clubs.map((c) => `${c.id}:${c.color ?? ''}:${c.latitude ?? ''}:${c.longitude ?? ''}`).join(',')
 
   useEffect(() => {
     if (!apiKey) return
@@ -231,6 +264,9 @@ export function LCAMap(props: Props) {
       fullscreenControl: isAll,
       zoomControl: true,
       clickableIcons: false,
+      // Whole zoom steps leave a lot of empty map around the state; this
+      // lets fitBounds land in between.
+      isFractionalZoomEnabled: true,
       gestureHandling: isAll ? 'cooperative' : 'none',
     })
     if (isAll) {
@@ -241,7 +277,7 @@ export function LCAMap(props: Props) {
       singleMarkerRef.current = new g.Marker({
         position: { lat: singlePin.lat, lng: singlePin.lng },
         map: mapObj.current,
-        title: singlePin.name,
+        title: props.mode === 'single' ? props.clubName : undefined,
         icon: {
           url: markerSvg(NAVY, GOLD, 30),
           scaledSize: new g.Size(30, 40),
@@ -264,7 +300,7 @@ export function LCAMap(props: Props) {
 
     const bounds = new g.LatLngBounds()
     for (const club of clubs) {
-      const pin = findPinByName(club.name)
+      const pin = clubLocation(club)
       if (!pin) continue
       const marker = new g.Marker({
         position: { lat: pin.lat, lng: pin.lng },
@@ -278,9 +314,11 @@ export function LCAMap(props: Props) {
       bounds.extend(marker.getPosition()!)
     }
 
-    // Frame what's shown: a region filter zooms to that region.
+    // Frame what's shown: the whole state, or a region filter's clubs.
     const count = markersRef.current.size
-    if (count === 1) {
+    if (frame === 'state') {
+      map.fitBounds(LOUISIANA_BOUNDS, 12)
+    } else if (count === 1) {
       map.panTo(bounds.getCenter())
       map.setZoom(FOCUS_ZOOM)
     } else if (count > 1) {
@@ -290,7 +328,7 @@ export function LCAMap(props: Props) {
       map.setZoom(7)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, clubsKey])
+  }, [loaded, clubsKey, frame])
 
   // Selection and hover: restyle pins, and bring the selected club into view.
   useEffect(() => {
@@ -349,7 +387,9 @@ export function LCAMap(props: Props) {
   function showAll() {
     onSelectRef.current?.(null)
     const map = mapObj.current
-    if (!map || markersRef.current.size === 0) return
+    if (!map) return
+    if (frame === 'state') { map.fitBounds(LOUISIANA_BOUNDS, 12); return }
+    if (markersRef.current.size === 0) return
     const bounds = new google.maps.LatLngBounds()
     markersRef.current.forEach(({ marker }) => bounds.extend(marker.getPosition()!))
     if (markersRef.current.size === 1) {
