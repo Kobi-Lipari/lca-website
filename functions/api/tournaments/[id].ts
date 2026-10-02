@@ -1,7 +1,7 @@
 // functions/api/tournaments/[id].ts
 import type { Env } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
-import { requireAuthedMember, isResponse } from '../../utils/auth'
+import { isObserver, requireAuthedMember, isResponse } from '../../utils/auth'
 import { computeStandings, tournamentPrizes } from '../../utils/tournament-manage'
 import { parseJsonArray } from '../../utils/json'
 
@@ -24,7 +24,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       const authed = await requireAuthedMember(context.request, context.env)
       if (!isResponse(authed)) {
         const { canManageTournament } = await import('../../utils/permissions')
-        isPrivileged = authed.member.role === 'lca_observer' ||
+        isPrivileged = isObserver(authed.member) ||
           await canManageTournament(context.env.DB, authed.member, tournamentId)
       }
     } catch { /* not logged in */ }

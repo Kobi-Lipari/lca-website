@@ -1,6 +1,6 @@
 // functions/api/admin/support/[id].ts
 import type { Env } from '../../../types'
-import { isResponse, requireAdmin, requireAdminView } from '../../../utils/auth'
+import { isObserver, isResponse, requireAdmin, requireAdminView } from '../../../utils/auth'
 import {
   errorResponse,
   handleOptions,
@@ -91,7 +91,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   })
   await trySendEmail(context.env, { ...notification, to: ticket.email })
 
-  if (authResult.member.role === 'lca_observer') {
+  if (isObserver(authResult.member)) {
     await recordAdminAction(context.env.DB, authResult.member, {
       action: 'ticket_reply',
       targetLabel: `"${ticket.subject}"`,

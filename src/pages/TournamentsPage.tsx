@@ -200,7 +200,9 @@ function ExternalDetailPane({ t }: { t: UnifiedTournament }) {
   return (
     <div className="p-4">
       <div className="mb-2 flex items-center gap-1.5">
-        <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">External</span>
+        {FEATURES.externalTags && (
+          <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">External</span>
+        )}
         {t.state && t.state !== 'LA' && (
           <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">{t.state}</span>
         )}
@@ -615,12 +617,17 @@ export function TournamentsPage() {
           <Chip active={typeFilter === 'open'} onClick={() => { setTypeFilter(f => (f === 'open' ? 'all' : 'open')); setSelectedId(null) }}>
             Open / adult
           </Chip>
-          <Chip active={ratedOnly} onClick={() => { setRatedOnly(v => !v); setSelectedId(null) }}>
-            USCF rated
-          </Chip>
-          <Chip active={registerHereOnly} onClick={() => { setRegisterHereOnly(v => !v); setSelectedId(null) }}>
-            Register on this site
-          </Chip>
+          {/* Off for now: see FEATURES.tournamentQuickFilters in src/lib/features.ts. */}
+          {FEATURES.tournamentQuickFilters && (
+            <>
+              <Chip active={ratedOnly} onClick={() => { setRatedOnly(v => !v); setSelectedId(null) }}>
+                USCF rated
+              </Chip>
+              <Chip active={registerHereOnly} onClick={() => { setRegisterHereOnly(v => !v); setSelectedId(null) }}>
+                Register on this site
+              </Chip>
+            </>
+          )}
           {hasActiveFilters && (
             <button type="button" onClick={clearFilters} className="ml-auto flex-shrink-0 pl-2 text-xs text-muted-foreground hover:text-foreground">
               Clear all
@@ -795,7 +802,7 @@ export function TournamentsPage() {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-1.5">
                             <p className="truncate text-[13px] font-medium text-foreground">{t.name}</p>
-                            {t.is_lca === 0 && (
+                            {FEATURES.externalTags && t.is_lca === 0 && (
                               <span className="flex-shrink-0 rounded border border-border px-1 py-px text-[10px] text-muted-foreground">Ext</span>
                             )}
                           </div>

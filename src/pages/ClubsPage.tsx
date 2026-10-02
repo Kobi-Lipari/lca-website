@@ -10,20 +10,12 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/components/maps/LCAMap'
 import { LCA } from '@/lib/brand'
+import { REGIONS } from '@/lib/regions'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const LCA_GOLD = LCA.gold
 
-const REGIONS = [
-  'North Louisiana',
-  'Central Louisiana',
-  'North of Lake Pontchartrain',
-  'New Orleans Metro',
-  'Southwest Louisiana',
-  'South Central Louisiana',
-  'Bayou Region',
-]
 
 function abbreviateRegion(region: string): string {
   return region.replace(/\bLouisiana\b/, 'LA')

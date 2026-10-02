@@ -1792,6 +1792,8 @@ export interface ApiAdminBoardSeat {
   /** board_members.name — the display fallback for seats with no account linked. */
   fallback_name: string
   ticket_count: number
+  /** Club regions this seat covers (regional representative seats). */
+  regions?: string[]
 }
  
 export interface ApiSeatAssignment {
@@ -1818,9 +1820,21 @@ export async function adminGetBoardSeats(): Promise<{
   seats: ApiAdminBoardSeat[]
   holders: ApiSeatHolder[]
   history: ApiSeatAssignment[]
+  /** Club count per region; '' is clubs with no region set. */
+  regionClubs?: { region: string; clubs: number }[]
 }> {
   const response = await fetch('/api/admin/board-seats', {
     headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+/** Which club regions a regional representative's seat covers. */
+export async function adminSetSeatRegions(seatId: string, regions: string[]): Promise<{ seatId: string; regions: string[] }> {
+  const response = await fetch('/api/admin/seat-regions', {
+    method: 'PUT',
+    headers: { ...(await authHeaders()), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ seatId, regions }),
   })
   return handleResponse(response)
 }
@@ -1935,9 +1949,18 @@ export interface ApiMySeat {
   role: string
   category: 'officer' | 'regional_rep'
   started_at: string
+  /** Club regions a regional seat covers. Empty for officer seats. */
+  regions?: string[]
 }
- 
-export async function getMySeats(): Promise<{ seats: ApiMySeat[] }> {
+
+/** A club this member manages as its region's representative. */
+export interface ApiManagedClub {
+  id: string
+  name: string
+  region: string | null
+}
+
+export async function getMySeats(): Promise<{ seats: ApiMySeat[]; managedClubs?: ApiManagedClub[] }> {
   const response = await fetch('/api/board/my-seats', {
     headers: await authHeaders(),
   })

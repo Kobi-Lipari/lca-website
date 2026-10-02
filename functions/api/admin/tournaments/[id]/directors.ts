@@ -1,6 +1,6 @@
 // functions/api/admin/tournaments/[id]/directors.ts
 import type { Env, MemberRow } from '../../../../types'
-import { isResponse, requireAuthedMember } from '../../../../utils/auth'
+import { isObserver, isResponse, requireAuthedMember } from '../../../../utils/auth'
 import { canManageTournament } from '../../../../utils/permissions'
 import { recordAdminAction } from '../../../../utils/audit'
 import {
@@ -68,7 +68,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const authed = await requireAuthedMember(context.request, context.env)
   if (isResponse(authed)) return authed
 
-  const allowed = authed.member.role === 'lca_observer' || await canManageTournament(
+  const allowed = isObserver(authed.member) || await canManageTournament(
     context.env.DB,
     authed.member,
     tournamentId,

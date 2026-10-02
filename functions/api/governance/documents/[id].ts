@@ -1,6 +1,7 @@
 import type { Env } from '../../../types'
 import { jsonResponse } from '../../../utils/response'
-import { requireAdmin, isResponse } from '../../../utils/auth'
+import { requireGovernanceEditor, isResponse } from '../../../utils/auth'
+import { recordAdminAction } from '../../../utils/audit'
 
 interface GovernanceDocumentBody {
   category?: string
@@ -13,7 +14,7 @@ interface GovernanceDocumentBody {
 }
 
 export const onRequestPut: PagesFunction<Env> = async (ctx) => {
-  const auth = await requireAdmin(ctx.request, ctx.env)
+  const auth = await requireGovernanceEditor(ctx.request, ctx.env)
   if (isResponse(auth)) return auth
   const { id } = ctx.params as { id: string }
   const body = (await ctx.request.json()) as GovernanceDocumentBody
@@ -25,13 +26,27 @@ export const onRequestPut: PagesFunction<Env> = async (ctx) => {
   ).bind(body.category, body.title, body.content || null, body.filename || null, body.file_url || null, body.doc_date || null, body.year || null, id).run()
   const doc = await ctx.env.DB.prepare('SELECT * FROM governance_documents WHERE id = ?').bind(id).first()
   if (!doc) return jsonResponse({ error: 'Not found' }, 404)
+  await recordAdminAction(ctx.env.DB, auth.member, {
+    action: 'document_edit',
+    targetLabel: `"${body.title.trim()}"`,
+    detail: { id, category: body.category },
+  })
   return jsonResponse({ document: doc })
 }
 
 export const onRequestDelete: PagesFunction<Env> = async (ctx) => {
-  const auth = await requireAdmin(ctx.request, ctx.env)
+  const auth = await requireGovernanceEditor(ctx.request, ctx.env)
   if (isResponse(auth)) return auth
   const { id } = ctx.params as { id: string }
+  const doc = await ctx.env.DB.prepare('SELECT title, category FROM governance_documents WHERE id = ?')
+    .bind(id).first<{ title: string; category: string }>()
   await ctx.env.DB.prepare('DELETE FROM governance_documents WHERE id = ?').bind(id).run()
+  if (doc) {
+    await recordAdminAction(ctx.env.DB, auth.member, {
+      action: 'document_remove',
+      targetLabel: `"${doc.title}"`,
+      detail: { id, category: doc.category },
+    })
+  }
   return jsonResponse({ deleted: true })
 }

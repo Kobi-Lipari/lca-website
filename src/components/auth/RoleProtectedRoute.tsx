@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { useAuth } from '@/contexts/auth-context'
-import { canManageClub, toolsHomeFor, type MemberRole } from '@/lib/roles'
+import { canManageClub, isViewOnlyAdmin, toolsHomeFor, type MemberRole } from '@/lib/roles'
 
 interface RoleProtectedRouteProps {
   children: ReactNode
@@ -23,7 +23,7 @@ function canAccessTournament(
   tournamentId: string,
   directedTournamentIds: string[],
 ): boolean {
-  if (role === 'lca_admin' || role === 'lca_observer') return true
+  if (role === 'lca_admin' || isViewOnlyAdmin(role)) return true
   // Anyone assigned to direct this event, whatever their role.
   if (directedTournamentIds.includes(tournamentId)) return true
   if (role === 'club_rep') return true
@@ -45,6 +45,7 @@ export function RoleProtectedRoute({
     loading,
     memberLoading,
     directedTournamentIds,
+    managedClubs,
     mfaRequired,
   } = useAuth()
   const location = useLocation()
@@ -62,7 +63,8 @@ export function RoleProtectedRoute({
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
   }
 
-  if (requireClubMatch && id && role !== 'lca_observer' && !canManageClub(role, member?.club_id, id)) {
+  const regionalClubIds = managedClubs.map((c) => c.id)
+  if (requireClubMatch && id && !isViewOnlyAdmin(role) && !canManageClub(role, member?.club_id, id, regionalClubIds)) {
     return <Navigate to="/dashboard" replace />
   }
 
