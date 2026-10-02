@@ -4,6 +4,12 @@
 // this reference is what makes @types/google.maps load at all — without it
 // the dependency sits in package.json doing nothing and every handle below
 // falls back to `any`.
+//
+// Two uses:
+//   mode="all"    the Clubs page. The page owns which club is selected and
+//                 hovered; the map follows it (pans, zooms, opens the club's
+//                 card) and reports marker clicks back with onSelect.
+//   mode="single" one club's page: a small fixed map with directions.
 import { useEffect, useRef, useState } from 'react'
 import { CLUB_MAP_PINS, type ClubMapPin } from '@/lib/clubMapData'
 import { LCA } from '@/lib/brand'
@@ -24,48 +30,84 @@ const GOLD_ON_LIGHT = '#8a6d1f'
 const NAVY = LCA.navy
 const GOLD = LCA.gold
 
+/**
+ * A quiet base map: the state outline, parishes' towns and water carry the
+ * picture, and roads fade into the background. Highway shields and road
+ * names are what made the old map read like a road atlas, so they're off;
+ * the roads themselves stay faintly visible for finding your way once
+ * zoomed in on a club.
+ */
 const MAP_STYLES: google.maps.MapTypeStyle[] = [
-  { elementType: 'geometry', stylers: [{ color: '#f5f5f0' }] },
-  { elementType: 'labels.text.fill', stylers: [{ color: '#333333' }] },
-  { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }] },
-  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#c9d8e8' }] },
-  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#6b93b0' }] },
-  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }] },
-  { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#e8e8e0' }] },
-  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#ddd8c4' }] },
-  { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: LCA.gold, lightness: 40 }] },
+  { elementType: 'geometry', stylers: [{ color: '#f4f2ec' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#5b6272' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#ffffff' }, { weight: 3 }] },
+  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f2efe6' }] },
+  { featureType: 'landscape.natural', elementType: 'geometry', stylers: [{ color: '#eeeadf' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#bfd4e6' }] },
+  { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#6b8fae' }] },
+  { featureType: 'road', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#ffffff' }, { visibility: 'simplified' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#e4dfd2' }, { weight: 0.8 }] },
+  { featureType: 'road.arterial', elementType: 'geometry', stylers: [{ color: '#ebe7dc' }] },
+  { featureType: 'road.local', stylers: [{ visibility: 'simplified' }, { lightness: 20 }] },
   { featureType: 'poi', stylers: [{ visibility: 'off' }] },
   { featureType: 'transit', stylers: [{ visibility: 'off' }] },
-  { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: LCA.navy }] },
-  { featureType: 'administrative.province', elementType: 'geometry.stroke', stylers: [{ color: LCA.navy }] },
-  { featureType: 'landscape', elementType: 'geometry', stylers: [{ color: '#f0ede4' }] },
+  { featureType: 'administrative.land_parcel', stylers: [{ visibility: 'off' }] },
+  { featureType: 'administrative.neighborhood', stylers: [{ visibility: 'off' }] },
+  { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: NAVY }] },
+  { featureType: 'administrative.province', elementType: 'geometry.stroke', stylers: [{ color: NAVY }, { weight: 1.6 }] },
+  { featureType: 'administrative.province', elementType: 'labels.text.fill', stylers: [{ color: NAVY }] },
+  { featureType: 'administrative.country', elementType: 'geometry.stroke', stylers: [{ color: '#8a90a0' }] },
 ]
 
-/** Brand pin: navy teardrop, gold inner dot (inverted on hover). */
-function markerSvg(pinColor: string, dotColor: string, size = 24): string {
+const LOUISIANA_CENTER = { lat: 31.0, lng: -91.8 }
+/** How close to come in when a club is picked: town level, not street level. */
+const FOCUS_ZOOM = 11
+
+/** Brand pin: a teardrop with a dot in the club's color. */
+function markerSvg(pinColor: string, dotColor: string, size: number): string {
   const h = Math.round(size * 1.33)
   return (
     'data:image/svg+xml;charset=UTF-8,' +
     encodeURIComponent(
       `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${h}" viewBox="0 0 24 32">` +
       `<path d="M12 1C7.3 1 3.5 4.8 3.5 9.5c0 6.6 8.5 21.5 8.5 21.5s8.5-14.9 8.5-21.5C20.5 4.8 16.7 1 12 1z" fill="${pinColor}" stroke="#ffffff" stroke-width="1.5"/>` +
-      `<circle cx="12" cy="9.5" r="3.5" fill="${dotColor}"/>` +
+      `<circle cx="12" cy="9.5" r="3.6" fill="${dotColor}" stroke="#ffffff" stroke-width="0.8"/>` +
       '</svg>'
     )
   )
 }
 
+/** A blue "you are here" dot. */
+const USER_DOT =
+  'data:image/svg+xml;charset=UTF-8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">' +
+    '<circle cx="11" cy="11" r="10" fill="#2563eb" fill-opacity="0.18"/>' +
+    '<circle cx="11" cy="11" r="5.5" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>' +
+    '</svg>',
+  )
 
-function directionsUrl(pin: ClubMapPin): string {
+const safeColor = (c: string | null | undefined, fallback: string) =>
+  c && /^#[0-9a-f]{6}$/i.test(c) ? c : fallback
+
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!)
+}
+
+export function directionsUrl(pin: Pick<ClubMapPin, 'lat' | 'lng'>): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${pin.lat},${pin.lng}`
 }
 
-function findPinByName(name: string): ClubMapPin | undefined {
-  const n = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
-  const t = n(name)
+const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
+
+/** The map location for a club, matched on its name. Undefined if it has none yet. */
+export function findPinByName(name: string): ClubMapPin | undefined {
+  const t = normalize(name)
+  if (!t) return undefined
   return (
-    CLUB_MAP_PINS.find((p) => n(p.name) === t) ??
-    CLUB_MAP_PINS.find((p) => n(p.name).includes(t) || t.includes(n(p.name)))
+    CLUB_MAP_PINS.find((p) => normalize(p.name) === t) ??
+    CLUB_MAP_PINS.find((p) => normalize(p.name).includes(t) || t.includes(normalize(p.name)))
   )
 }
 
@@ -86,16 +128,24 @@ function loadMapsScript(apiKey: string, onLoad: () => void) {
   document.head.appendChild(script)
 }
 
-export interface DbClub {
+/** What the Clubs page tells the map about each club it's showing. */
+export interface MapClub {
   id: string
   name: string
-  city?: string
+  city?: string | null
+  color?: string | null
+  meeting_schedule?: string | null
 }
 
 interface AllClubsProps {
   mode: 'all'
-  height?: number
-  clubs?: DbClub[]
+  height?: number | string
+  clubs: MapClub[]
+  selectedId?: string | null
+  hoveredId?: string | null
+  onSelect?: (id: string | null) => void
+  /** The visitor's position, once they've asked for clubs near them. */
+  userLocation?: { lat: number; lng: number } | null
 }
 
 interface SingleClubProps {
@@ -106,12 +156,33 @@ interface SingleClubProps {
 
 type Props = AllClubsProps | SingleClubProps
 
-function findDbClub(pinName: string, clubs: DbClub[]): DbClub | undefined {
-  const n = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '')
-  const t = n(pinName)
+type PinState = 'normal' | 'hover' | 'selected'
+
+function pinIcon(club: MapClub, state: PinState): google.maps.Icon {
+  const g = google.maps
+  const size = state === 'selected' ? 36 : state === 'hover' ? 30 : 24
+  const h = Math.round(size * 1.33)
+  const dot = safeColor(club.color, GOLD)
+  return {
+    url: state === 'selected' ? markerSvg(GOLD, NAVY, size) : markerSvg(NAVY, dot, size),
+    scaledSize: new g.Size(size, h),
+    anchor: new g.Point(size / 2, h),
+  }
+}
+
+function infoContent(club: MapClub, pin: ClubMapPin): string {
+  const meta = [club.city ? `${escapeHtml(club.city)}, LA` : '', club.meeting_schedule ? escapeHtml(club.meeting_schedule) : '']
+    .filter(Boolean)
+    .join(' · ')
   return (
-    clubs.find((c) => n(c.name) === t) ??
-    clubs.find((c) => n(c.name).includes(t) || t.includes(n(c.name)))
+    `<div style="font-family:system-ui,-apple-system,sans-serif;max-width:250px;padding:2px 2px 0">` +
+    `<p style="font-weight:700;font-size:14px;color:${NAVY};margin:0 0 4px">${escapeHtml(club.name)}</p>` +
+    (meta ? `<p style="font-size:12px;color:#555;margin:0 0 6px;line-height:1.45">${meta}</p>` : '') +
+    `<p style="font-size:12px;color:#555;margin:0;line-height:1.5">${escapeHtml(pin.description)}</p>` +
+    `<div style="display:flex;gap:14px;margin-top:10px">` +
+    `<a href="/clubs/${encodeURIComponent(club.id)}" style="font-size:12px;font-weight:600;color:${NAVY};text-decoration:underline;">View club page →</a>` +
+    `<a href="${directionsUrl(pin)}" target="_blank" rel="noopener noreferrer" style="font-size:12px;font-weight:600;color:${GOLD_ON_LIGHT};text-decoration:underline;">Directions ↗</a>` +
+    `</div></div>`
   )
 }
 
@@ -119,17 +190,28 @@ export function LCAMap(props: Props) {
   const mapRef = useRef<HTMLDivElement>(null)
   const mapObj = useRef<google.maps.Map | null>(null)
   const infoRef = useRef<google.maps.InfoWindow | null>(null)
-  const markersRef = useRef<google.maps.Marker[]>([])
+  /** Club id → its marker, for the clubs currently shown. */
+  const markersRef = useRef(new Map<string, { marker: google.maps.Marker; club: MapClub; pin: ClubMapPin }>())
+  const singleMarkerRef = useRef<google.maps.Marker | null>(null)
+  const userMarkerRef = useRef<google.maps.Marker | null>(null)
   const [loaded, setLoaded] = useState(false)
 
-  const height = props.height ?? (props.mode === 'all' ? 480 : 240)
+  const isAll = props.mode === 'all'
+  const height = props.height ?? (isAll ? 480 : 240)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
   const singlePin = props.mode === 'single' ? findPinByName(props.clubName) : undefined
-  const clubs = props.mode === 'all' ? (props.clubs ?? null) : null
-  // Stable key: markers only rebuild when the actual set of clubs changes,
-  // not when the parent re-renders with a new array identity (which used to
-  // tear down and rebuild the whole map on every keystroke/filter change).
-  const clubsKey = clubs ? clubs.map((c) => c.id).join(',') : 'all'
+  const clubs = isAll ? props.clubs : []
+  const selectedId = isAll ? (props.selectedId ?? null) : null
+  const hoveredId = isAll ? (props.hoveredId ?? null) : null
+  const userLocation = isAll ? (props.userLocation ?? null) : null
+
+  // The latest onSelect without making every effect depend on it.
+  const onSelectRef = useRef<((id: string | null) => void) | undefined>(undefined)
+  onSelectRef.current = isAll ? props.onSelect : undefined
+
+  // Stable key: markers only rebuild when the set of clubs changes, not when
+  // the parent re-renders with a new array identity.
+  const clubsKey = clubs.map((c) => `${c.id}:${c.color ?? ''}`).join(',')
 
   useEffect(() => {
     if (!apiKey) return
@@ -140,103 +222,143 @@ export function LCAMap(props: Props) {
   useEffect(() => {
     if (!loaded || !mapRef.current || mapObj.current) return
     const g = google.maps
-    const center =
-      props.mode === 'single' && singlePin
-        ? { lat: singlePin.lat, lng: singlePin.lng }
-        : { lat: 31.0, lng: -91.8 }
-
     mapObj.current = new g.Map(mapRef.current, {
-      center,
-      zoom: props.mode === 'single' ? 14 : 7,
+      center: !isAll && singlePin ? { lat: singlePin.lat, lng: singlePin.lng } : LOUISIANA_CENTER,
+      zoom: isAll ? 7 : 14,
       styles: MAP_STYLES,
       mapTypeControl: false,
       streetViewControl: false,
-      fullscreenControl: props.mode === 'all',
+      fullscreenControl: isAll,
       zoomControl: true,
-      gestureHandling: props.mode === 'all' ? 'cooperative' : 'none',
+      clickableIcons: false,
+      gestureHandling: isAll ? 'cooperative' : 'none',
     })
-    if (props.mode === 'all') {
-      infoRef.current = new g.InfoWindow()
+    if (isAll) {
+      const info = new g.InfoWindow({ maxWidth: 270 })
+      info.addListener('closeclick', () => onSelectRef.current?.(null))
+      infoRef.current = info
+    } else if (singlePin) {
+      singleMarkerRef.current = new g.Marker({
+        position: { lat: singlePin.lat, lng: singlePin.lng },
+        map: mapObj.current,
+        title: singlePin.name,
+        icon: {
+          url: markerSvg(NAVY, GOLD, 30),
+          scaledSize: new g.Size(30, 40),
+          anchor: new g.Point(15, 40),
+        },
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaded])
 
-  // Sync markers whenever the club set changes.
+  // Rebuild markers when the shown clubs change, and frame them all.
   useEffect(() => {
-    if (!loaded || !mapObj.current) return
+    if (!isAll || !loaded || !mapObj.current) return
     const g = google.maps
     const map = mapObj.current
-    const infoWindow = infoRef.current
 
-    markersRef.current.forEach((m) => m.setMap(null))
-    markersRef.current = []
-    infoWindow?.close()
+    markersRef.current.forEach(({ marker }) => marker.setMap(null))
+    markersRef.current.clear()
+    infoRef.current?.close()
 
-    const dbClubs = clubs ?? []
-    let pins: ClubMapPin[]
-    if (props.mode === 'single') {
-      pins = singlePin ? [singlePin] : []
-    } else if (clubs) {
-      // Pins follow the filtered/searched club list from the page.
-      pins = CLUB_MAP_PINS.filter((pin) => findDbClub(pin.name, dbClubs))
-    } else {
-      pins = CLUB_MAP_PINS
-    }
-
-    pins.forEach((pin) => {
-      // Deprecated in favour of AdvancedMarkerElement, which requires a mapId
-      // on the Map — and a mapId makes Google ignore the inline MAP_STYLES
-      // above in favour of Cloud Console styling. Migrating means rebuilding
-      // the brand palette by hand over there, so it is a decision, not a
-      // cleanup. Google has committed to 12 months' notice before removal.
+    const bounds = new g.LatLngBounds()
+    for (const club of clubs) {
+      const pin = findPinByName(club.name)
+      if (!pin) continue
       const marker = new g.Marker({
         position: { lat: pin.lat, lng: pin.lng },
         map,
-        title: pin.name,
-        icon: {
-          url: markerSvg(NAVY, GOLD, 24),
-          scaledSize: new g.Size(24, 32),
-          anchor: new g.Point(12, 32),
-        },
+        title: club.name,
+        icon: pinIcon(club, 'normal'),
+        optimized: true,
       })
-      markersRef.current.push(marker)
+      marker.addListener('click', () => onSelectRef.current?.(club.id))
+      markersRef.current.set(club.id, { marker, club, pin })
+      bounds.extend(marker.getPosition()!)
+    }
 
-      if (props.mode === 'all' && infoWindow) {
-        marker.addListener('click', () => {
-          const dbClub = findDbClub(pin.name, dbClubs)
-          const clubLink = dbClub
-            ? `<a href="/clubs/${dbClub.id}" style="font-size:12px;font-weight:600;color:${NAVY};text-decoration:underline;">View club page →</a>`
-            : ''
-          const dirLink =
-            `<a href="${directionsUrl(pin)}" target="_blank" rel="noopener noreferrer" ` +
-            `style="font-size:12px;font-weight:600;color:${GOLD_ON_LIGHT};text-decoration:underline;">Directions ↗</a>`
-          infoWindow.setContent(
-            `<div style="font-family:system-ui;max-width:240px;padding:4px 2px">` +
-            `<p style="font-weight:600;color:${NAVY};margin:0 0 6px">${pin.name}</p>` +
-            `<p style="font-size:12px;color:#555;margin:0;line-height:1.5">${pin.description}</p>` +
-            `<div style="display:flex;gap:12px;margin-top:8px">${clubLink}${dirLink}</div>` +
-            `</div>`,
-          )
-          infoWindow.open(map, marker)
-        })
-        marker.addListener('mouseover', () => {
-          marker.setIcon({
-            url: markerSvg(GOLD, NAVY, 28),
-            scaledSize: new g.Size(28, 37),
-            anchor: new g.Point(14, 37),
-          })
-        })
-        marker.addListener('mouseout', () => {
-          marker.setIcon({
-            url: markerSvg(NAVY, GOLD, 24),
-            scaledSize: new g.Size(24, 32),
-            anchor: new g.Point(12, 32),
-          })
-        })
-      }
-    })
+    // Frame what's shown: a region filter zooms to that region.
+    const count = markersRef.current.size
+    if (count === 1) {
+      map.panTo(bounds.getCenter())
+      map.setZoom(FOCUS_ZOOM)
+    } else if (count > 1) {
+      map.fitBounds(bounds, 48)
+    } else {
+      map.panTo(LOUISIANA_CENTER)
+      map.setZoom(7)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, clubsKey, singlePin])
+  }, [loaded, clubsKey])
+
+  // Selection and hover: restyle pins, and bring the selected club into view.
+  useEffect(() => {
+    if (!isAll || !loaded || !mapObj.current) return
+    markersRef.current.forEach(({ marker, club }, id) => {
+      const state: PinState = id === selectedId ? 'selected' : id === hoveredId ? 'hover' : 'normal'
+      marker.setIcon(pinIcon(club, state))
+      marker.setZIndex(state === 'selected' ? 1000 : state === 'hover' ? 900 : undefined)
+    })
+  }, [loaded, selectedId, hoveredId, clubsKey, isAll])
+
+  useEffect(() => {
+    if (!isAll || !loaded || !mapObj.current) return
+    const map = mapObj.current
+    const info = infoRef.current
+    const entry = selectedId ? markersRef.current.get(selectedId) : undefined
+    if (!entry) {
+      info?.close()
+      return
+    }
+    map.panTo(entry.marker.getPosition()!)
+    if ((map.getZoom() ?? 7) < FOCUS_ZOOM) map.setZoom(FOCUS_ZOOM)
+    if (info) {
+      info.setContent(infoContent(entry.club, entry.pin))
+      info.open({ map, anchor: entry.marker, shouldFocus: false })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, selectedId, clubsKey])
+
+  // "You are here", once the visitor asks for clubs near them.
+  useEffect(() => {
+    if (!isAll || !loaded || !mapObj.current) return
+    const g = google.maps
+    userMarkerRef.current?.setMap(null)
+    userMarkerRef.current = null
+    if (!userLocation) return
+    userMarkerRef.current = new g.Marker({
+      position: userLocation,
+      map: mapObj.current,
+      title: 'You are here',
+      icon: { url: USER_DOT, scaledSize: new g.Size(22, 22), anchor: new g.Point(11, 11) },
+      zIndex: 1100,
+      clickable: false,
+    })
+    // Frame the visitor and the three closest clubs.
+    const nearest = [...markersRef.current.values()]
+      .map((e) => ({ e, d: (e.pin.lat - userLocation.lat) ** 2 + (e.pin.lng - userLocation.lng) ** 2 }))
+      .sort((a, b) => a.d - b.d)
+      .slice(0, 3)
+    const bounds = new g.LatLngBounds(userLocation, userLocation)
+    nearest.forEach(({ e }) => bounds.extend(e.marker.getPosition()!))
+    mapObj.current.fitBounds(bounds, 64)
+  }, [loaded, userLocation?.lat, userLocation?.lng, isAll])
+
+  /** Back to every shown club, nothing selected. */
+  function showAll() {
+    onSelectRef.current?.(null)
+    const map = mapObj.current
+    if (!map || markersRef.current.size === 0) return
+    const bounds = new google.maps.LatLngBounds()
+    markersRef.current.forEach(({ marker }) => bounds.extend(marker.getPosition()!))
+    if (markersRef.current.size === 1) {
+      map.panTo(bounds.getCenter())
+      map.setZoom(FOCUS_ZOOM)
+    } else {
+      map.fitBounds(bounds, 48)
+    }
+  }
 
   if (!apiKey) {
     return (
@@ -252,7 +374,7 @@ export function LCAMap(props: Props) {
   if (props.mode === 'single' && !singlePin) return null
 
   return (
-    <div className="relative overflow-hidden rounded-xl border" style={{ height }}>
+    <div className="relative overflow-hidden rounded-xl border bg-[#f2efe6]" style={{ height }}>
       <div ref={mapRef} style={{ width: '100%', height: '100%' }} />
       {props.mode === 'single' && singlePin && (
         <a
@@ -263,6 +385,15 @@ export function LCAMap(props: Props) {
         >
           Get directions ↗
         </a>
+      )}
+      {isAll && loaded && selectedId && (
+        <button
+          type="button"
+          onClick={showAll}
+          className="absolute left-2.5 top-2.5 z-10 rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-lca-navy shadow-md ring-1 ring-black/5 transition-colors hover:bg-muted"
+        >
+          ← Show all clubs
+        </button>
       )}
       {!loaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-muted/30">
