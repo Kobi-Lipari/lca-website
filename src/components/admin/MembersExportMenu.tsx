@@ -92,7 +92,7 @@ export function MembersExportMenu() {
             </label>
             <label className={option(opts.type === 'full')}>
               <input type="radio" name="exp-type" className="mt-0.5" checked={opts.type === 'full'} onChange={() => setOpts((o) => ({ ...o, type: 'full' }))} />
-              <span><span className="font-medium">Full member list</span><span className="block text-xs text-muted-foreground">Email, role, club, LCA and US Chess membership and dates.</span></span>
+              <span><span className="font-medium">Full member list</span><span className="block text-xs text-muted-foreground">Name and email, plus LCA membership status and expiry, US Chess ID and expiry.</span></span>
             </label>
           </div>
 
