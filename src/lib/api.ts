@@ -12,6 +12,8 @@ export interface ApiMember {
   uscf_rating_updated_at: string | null
   membership_status: 'active' | 'expired' | 'pending'
   membership_expiry: string | null
+  /** 'family' for a family membership; null if never bought. */
+  membership_type?: string | null
   /** US Chess membership expiry, from the nightly sync. */
   uscf_expiration?: string | null
   role: string
