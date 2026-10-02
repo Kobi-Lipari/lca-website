@@ -1,7 +1,7 @@
 // src/components/layout/Navbar.tsx
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ChevronDown, Menu, X } from 'lucide-react'
+import { ChevronDown, Menu, UserCircle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
@@ -252,8 +252,8 @@ export function Navbar() {
           </a>
           {!loading && user ? (
             <>
-              <Button asChild variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
-                <Link to="/dashboard">Profile</Link>
+              <Button asChild variant="outline" className="h-10 gap-2 border-white/40 bg-white/5 px-4 text-[15px] font-semibold text-white hover:bg-white/15 hover:text-white">
+                <Link to="/dashboard"><UserCircle className="size-5 text-lca-gold" /> Profile</Link>
               </Button>
               <Button type="button" size="sm" onClick={handleSignOut} className="bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">Log out</Button>
             </>
@@ -291,7 +291,9 @@ export function Navbar() {
               </a>
               {!loading && user ? (
                 <>
-                  <Link to="/dashboard" className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>Profile</Link>
+                  <Link to="/dashboard" className="flex items-center gap-2.5 rounded-md border border-white/20 bg-white/5 px-3 py-2.5 text-base font-semibold text-white hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>
+                    <UserCircle className="size-6 text-lca-gold" /> Profile
+                  </Link>
                   <Button type="button" onClick={handleSignOut} className="w-full bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">Log out</Button>
                 </>
               ) : (

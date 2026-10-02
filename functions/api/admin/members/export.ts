@@ -3,7 +3,8 @@
 // Download the member list as CSV. Admins and observers.
 //   ?type=emails   name and email, one row per address (a parent and
 //                  their children share an email, so it appears once)
-//   ?type=full     every member with LCA and US Chess membership details
+//   ?type=full     name, email, LCA membership status and expiry,
+//                  US Chess ID and expiry
 //   &who=all | current (LCA membership active) | lapsed (expired or never paid)
 //   &children=1    include children on family accounts (full list only)
 //   &format=list   emails only as plain text, one per line (for Copy)
@@ -77,11 +78,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   } else {
     count = rows.length
     csv = toCsv(
-      ['Name', 'Email', 'Site role', 'LCA membership', 'LCA expires', 'Membership type', 'Club',
-        'US Chess ID', 'US Chess rating', 'US Chess expires', 'Family account of', 'Joined site'],
+      ['Name', 'Email', 'LCA membership', 'LCA expires', 'US Chess ID', 'US Chess expires'],
       rows.map((r) => [
-        r.full_name, r.email, r.role, r.membership_status, r.membership_expiry, r.membership_type, r.club_name,
-        r.uscf_id, r.uscf_rating, r.uscf_expiration?.slice(0, 10) ?? null, r.guardian_name, r.created_at.slice(0, 10),
+        r.full_name, r.email, r.membership_status, r.membership_expiry,
+        r.uscf_id, r.uscf_expiration?.slice(0, 10) ?? null,
       ]),
     )
   }

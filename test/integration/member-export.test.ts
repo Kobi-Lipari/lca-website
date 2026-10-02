@@ -55,3 +55,12 @@ describe('exporting members', () => {
     expect((await get(rep, 'type=emails&who=all')).status).toBe(403)
   })
 })
+
+describe('full member list columns', () => {
+  it('has exactly name, email, LCA status and expiry, US Chess ID and expiry', async () => {
+    const admin = await seedAdmin()
+    await seedMember({ email: 'col@example.org', fullName: 'Col Umns', uscfId: '56781234' })
+    const csv = await (await get(admin, 'type=full&who=all')).response.text()
+    expect(csv.replace('﻿', '').split('\r\n')[0]).toBe('Name,Email,LCA membership,LCA expires,US Chess ID,US Chess expires')
+  })
+})
