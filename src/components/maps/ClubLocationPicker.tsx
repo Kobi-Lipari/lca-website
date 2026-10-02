@@ -91,6 +91,7 @@ export function ClubLocationPicker({
     }
     if (!markerRef.current) {
       const marker = new g.Marker({
+        optimized: false,
         map: mapRef.current,
         position: draft,
         draggable: !disabled,
