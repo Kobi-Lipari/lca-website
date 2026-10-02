@@ -45,7 +45,7 @@ const tiers: MembershipTier[] = [
     name: 'LCA Family Membership',
     price: 25,
     period: 'per year',
-    description: 'Covers you and up to 3 children. Add your children on your dashboard and they are covered automatically.',
+    description: 'Covers you and up to 3 children. Add your children on your profile and they are covered automatically.',
   },
   {
     id: 'senior',
@@ -190,7 +190,7 @@ export function MembershipPage() {
               className="font-medium text-lca-navy underline"
               onClick={() => navigate('/dashboard')}
             >
-              View dashboard
+              View my profile
             </button>
           </div>
         </section>
@@ -301,7 +301,7 @@ export function MembershipPage() {
                 3
               </span>
               <span>
-                Your membership is active as soon as payment goes through, and you'll see it on your dashboard. If it doesn't show within a few minutes, contact us and we'll sort it out.
+                Your membership is active as soon as payment goes through, and you'll see it on your profile. If it doesn't show within a few minutes, contact us and we'll sort it out.
               </span>
             </li>
           </ol>

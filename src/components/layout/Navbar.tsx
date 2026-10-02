@@ -246,14 +246,14 @@ export function Navbar() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow LCA on Facebook"
-            className="mr-1 hidden h-9 w-9 items-center justify-center rounded-lg border border-transparent text-white/70 transition-colors hover:border-white/20 hover:bg-white/10 hover:text-[#1877F2] lg:flex"
+            className="hidden h-8 w-8 items-center justify-center rounded-md text-white/70 transition-colors hover:bg-white/10 hover:text-[#1877F2] lg:flex"
           >
-            <FacebookIcon className="size-6" />
+            <FacebookIcon className="size-4" />
           </a>
           {!loading && user ? (
             <>
               <Button asChild variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
-                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/dashboard">Profile</Link>
               </Button>
               <Button type="button" size="sm" onClick={handleSignOut} className="bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">Log out</Button>
             </>
@@ -285,13 +285,13 @@ export function Navbar() {
               <DrawerLink key={link.href} link={link} onNavigate={closeMobile} />
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3">
-              <a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 rounded-md px-3 py-2.5 text-sm text-white/80 hover:bg-white/10" onClick={closeMobile}>
-                <FacebookIcon className="size-7 text-[#1877F2]" />
-                Follow on Facebook
+              <a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>
+                <FacebookIcon className="size-4" />
+                Facebook
               </a>
               {!loading && user ? (
                 <>
-                  <Link to="/dashboard" className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>Dashboard</Link>
+                  <Link to="/dashboard" className="rounded-md px-3 py-2 text-sm font-medium text-white/90 hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>Profile</Link>
                   <Button type="button" onClick={handleSignOut} className="w-full bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">Log out</Button>
                 </>
               ) : (

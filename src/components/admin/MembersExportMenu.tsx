@@ -78,8 +78,12 @@ export function MembersExportMenu() {
         <Download className="mr-1.5 size-3.5" /> Export
       </Button>
       {open && (
-        <div role="dialog" aria-label="Export members"
-          className="absolute right-0 z-30 mt-2 w-[min(22rem,calc(100vw-2rem))] space-y-4 rounded-xl border bg-card p-4 shadow-lg">
+        <>
+          {/* Phones: a sheet pinned inside the screen, over a dimmed page.
+              Wider screens: a dropdown under the button. */}
+          <div className="fixed inset-0 z-30 bg-black/30 sm:hidden" aria-hidden onClick={() => setOpen(false)} />
+          <div role="dialog" aria-label="Export members"
+          className="fixed inset-x-4 top-20 z-40 max-h-[calc(100dvh-6rem)] space-y-4 overflow-y-auto rounded-xl border bg-card p-4 shadow-lg sm:absolute sm:inset-x-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-[22rem] sm:max-h-none sm:overflow-visible">
           <div className="space-y-1.5">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">What</p>
             <label className={option(opts.type === 'emails')}>
@@ -122,7 +126,8 @@ export function MembersExportMenu() {
             Opens in Excel or Google Sheets. Each export is recorded in Admin activity. Member contact details are for LCA
             business only; please don't share the file outside the board.
           </p>
-        </div>
+          </div>
+        </>
       )}
     </div>
   )
