@@ -61,8 +61,13 @@ export const MAP_STYLES: google.maps.MapTypeStyle[] = [
 ]
 
 export const LOUISIANA_CENTER = { lat: 31.0, lng: -91.8 }
-/** The state's outline, for framing the whole of Louisiana and nothing much else. */
-export const LOUISIANA_BOUNDS = { south: 28.95, west: -94.05, north: 33.02, east: -88.85 }
+/**
+ * The area the whole-state view frames. Tuned by eye on the Clubs page:
+ * the state's outline is -94.05 to -88.85 by 28.95 to 33.02, but centred on
+ * that the view sat too far east, so this is shifted about 0.35 degrees west
+ * and drawn about 5% tighter.
+ */
+export const LOUISIANA_BOUNDS = { south: 29.05, west: -94.28, north: 32.92, east: -89.33 }
 /** How close to come in when a club is picked: town level, not street level. */
 const FOCUS_ZOOM = 11
 
