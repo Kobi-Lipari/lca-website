@@ -358,7 +358,7 @@ export function AccountSecurityPage() {
 
         <p className="mt-6 text-sm text-muted-foreground">
           <Link to="/dashboard" className="text-lca-navy hover:underline">
-            ← Back to dashboard
+            ← Back to my profile
           </Link>
         </p>
       </section>

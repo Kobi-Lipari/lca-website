@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/auth-context'
 import { confirmMembership } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { FAMILY_MEMBERSHIP_CHILDREN } from '@/lib/family'
 
 const goldButtonClass =
   'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
@@ -116,13 +117,33 @@ function MembershipSuccessContent() {
           <h1 className="mt-4 text-2xl font-bold text-lca-navy">
             Membership confirmed
           </h1>
-          <p className="mt-2 text-muted-foreground">
-            Your LCA {tier ? `${tier} ` : ''}membership is now active. You can
-            register for tournaments from your dashboard.
-          </p>
-          <Button asChild className={cn('mt-8', goldButtonClass)}>
-            <Link to="/dashboard">Go to dashboard</Link>
-          </Button>
+          {tier === 'family' ? (
+            <>
+              <p className="mt-2 text-muted-foreground">
+                Your LCA family membership is now active and covers you and up to {FAMILY_MEMBERSHIP_CHILDREN} children.
+              </p>
+              <div className="mx-auto mt-6 max-w-md rounded-xl border border-lca-gold/50 bg-lca-gold/10 p-4 text-left">
+                <p className="font-semibold text-lca-navy">One more step: add your children</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Your membership covers them as soon as they're added to your profile. It takes a minute: just their name,
+                  and their US Chess ID if they have one.
+                </p>
+              </div>
+              <Button asChild className={cn('mt-6', goldButtonClass)}>
+                <Link to="/dashboard?family=setup#family">Add your children</Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="mt-2 text-muted-foreground">
+                Your LCA {tier ? `${tier} ` : ''}membership is now active. You can
+                register for tournaments from your profile.
+              </p>
+              <Button asChild className={cn('mt-8', goldButtonClass)}>
+                <Link to="/dashboard">Go to my profile</Link>
+              </Button>
+            </>
+          )}
         </>
       )}
     </div>

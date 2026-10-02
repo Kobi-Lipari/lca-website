@@ -1,12 +1,12 @@
 // src/pages/DashboardPage.tsx
 import { useEffect, useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import {
   Building2,
   Calendar,
   CreditCard,
   KeyRound,
-  LayoutDashboard,
+  UserCircle,
   MessageSquare,
   Plus,
   Shield,
@@ -90,7 +90,7 @@ export function DashboardPage() {
   const [passwordNotice, setPasswordNotice] = useState<string | null>(null)
   const [passwordSaving, setPasswordSaving] = useState(false)
 
-  usePageTitle('My Dashboard')
+  usePageTitle('My Profile')
 
   useEffect(() => {
     async function load() {
@@ -261,10 +261,10 @@ export function DashboardPage() {
       <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
-            <LayoutDashboard className="size-8 text-lca-gold sm:size-10" />
+            <UserCircle className="size-8 text-lca-gold sm:size-10" />
             <div>
               <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                My Dashboard
+                My Profile
               </h1>
               <p className="mt-2 max-w-2xl text-white/80">
                 Welcome back, {displayName}. Manage your membership, view
@@ -526,9 +526,9 @@ export function DashboardPage() {
               </div>
             </div>
 
-            <div className="mt-6">
-              <FamilyCard />
-            </div>
+            <FamilyCardSlot
+              planActive={member?.membership_type === 'family' && member?.membership_status === 'active'}
+            />
 
             <div className="mt-6 rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center justify-between gap-2">
@@ -782,6 +782,16 @@ export function DashboardPage() {
           </div>
         )}
       </section>
+    </div>
+  )
+}
+
+/** The family card, only for family memberships (it hides itself otherwise). */
+function FamilyCardSlot({ planActive }: { planActive: boolean }) {
+  const [params] = useSearchParams()
+  return (
+    <div className="mt-6 empty:hidden">
+      <FamilyCard planActive={planActive} setup={params.get('family') === 'setup'} />
     </div>
   )
 }
