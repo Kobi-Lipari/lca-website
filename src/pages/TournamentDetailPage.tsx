@@ -905,7 +905,7 @@ export function TournamentDetailPage() {
                         </Button>
                       )}
                       <Button asChild variant="outline" className="w-full">
-                        <Link to="/dashboard">View my dashboard</Link>
+                        <Link to="/dashboard">View my profile</Link>
                       </Button>
                     </div>
                   ) : (

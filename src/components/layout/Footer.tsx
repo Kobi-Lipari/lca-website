@@ -31,7 +31,7 @@ const footerSections = [
     links: [
       { label: 'Join or renew', href: '/membership' },
       { label: 'Log in', href: '/login' },
-      { label: 'My dashboard', href: '/dashboard' },
+      { label: 'My profile', href: '/dashboard' },
     ],
   },
   {

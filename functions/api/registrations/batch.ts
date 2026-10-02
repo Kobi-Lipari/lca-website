@@ -120,7 +120,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!player) return errorResponse('Player not found', 404)
 
     if (tournament.is_rated && !player.uscf_id) {
-      return errorResponse(`${player.full_name} needs a USCF ID to enter a rated tournament. Add it on your dashboard.`, 400)
+      return errorResponse(`${player.full_name} needs a USCF ID to enter a rated tournament. Add it on your profile.`, 400)
     }
 
     const section = sections.find((s) => s.name === entry.section)

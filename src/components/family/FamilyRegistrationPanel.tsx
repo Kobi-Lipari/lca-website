@@ -210,7 +210,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
           {missingUscf.length > 0 && (
             <p className="text-xs text-destructive">
               This is a rated event: {missingUscf.map((p) => p.name).join(', ')} {missingUscf.length === 1 ? 'needs' : 'need'} a USCF ID.{' '}
-              <Link to="/dashboard" className="underline">Add it on your dashboard</Link>
+              <Link to="/dashboard" className="underline">Add it on your profile</Link>
             </p>
           )}
           {error && <p className="text-sm text-destructive">{error}</p>}
