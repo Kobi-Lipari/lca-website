@@ -68,6 +68,31 @@ export const LOUISIANA_CENTER = { lat: 31.0, lng: -91.8 }
  * and drawn about 5% tighter.
  */
 export const LOUISIANA_BOUNDS = { south: 29.05, west: -94.28, north: 32.92, east: -89.33 }
+
+/**
+ * Fits the whole-state view, keeping the town names readable.
+ *
+ * Google draws the base map from whole zoom levels and scales it for the
+ * levels in between, rounding to the nearest one. Just under a half step
+ * (7.49) it scales the zoom 7 map up and the names come out large; just
+ * over (7.51) it scales the zoom 8 map down and they come out tiny, with
+ * every small town crowding in. So a fit that lands in the lower part of
+ * that second range is eased back to just under the half step: a few
+ * percent looser, much more readable.
+ */
+export function fitLouisiana(map: google.maps.Map, padding = 12) {
+  const listener = google.maps.event.addListenerOnce(map, 'idle', () => {
+    const z = map.getZoom()
+    if (z == null) return
+    const step = Math.floor(z)
+    const frac = z - step
+    if (frac >= 0.5 && frac < 0.75) map.setZoom(step + 0.49)
+  })
+  // If the view was already there, no 'idle' comes; don't leave the
+  // listener waiting to re-zoom after the visitor's own next pan.
+  window.setTimeout(() => listener.remove(), 2000)
+  map.fitBounds(LOUISIANA_BOUNDS, padding)
+}
 /** How close to come in when a club is picked: town level, not street level. */
 const FOCUS_ZOOM = 11
 
@@ -195,7 +220,7 @@ type PinState = 'normal' | 'hover' | 'selected'
 
 function pinIcon(club: MapClub, state: PinState): google.maps.Icon {
   const g = google.maps
-  const size = state === 'selected' ? 36 : state === 'hover' ? 30 : 24
+  const size = state === 'selected' ? 44 : state === 'hover' ? 38 : 32
   const h = Math.round(size * 1.33)
   const dot = safeColor(club.color, GOLD)
   return {
@@ -326,7 +351,7 @@ export function LCAMap(props: Props) {
     // Frame what's shown: the whole state, or a region filter's clubs.
     const count = markersRef.current.size
     if (frame === 'state') {
-      map.fitBounds(LOUISIANA_BOUNDS, 12)
+      fitLouisiana(map)
     } else if (count === 1) {
       map.panTo(bounds.getCenter())
       map.setZoom(FOCUS_ZOOM)
@@ -398,7 +423,7 @@ export function LCAMap(props: Props) {
     onSelectRef.current?.(null)
     const map = mapObj.current
     if (!map) return
-    if (frame === 'state') { map.fitBounds(LOUISIANA_BOUNDS, 12); return }
+    if (frame === 'state') { fitLouisiana(map); return }
     if (markersRef.current.size === 0) return
     const bounds = new google.maps.LatLngBounds()
     markersRef.current.forEach(({ marker }) => bounds.extend(marker.getPosition()!))

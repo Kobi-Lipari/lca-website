@@ -10,7 +10,7 @@ import { MapPin } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { LOUISIANA_BOUNDS, MAP_STYLES, findPinByName, loadMapsScript } from '@/components/maps/LCAMap'
+import { MAP_STYLES, findPinByName, fitLouisiana, loadMapsScript } from '@/components/maps/LCAMap'
 import { LCA } from '@/lib/brand'
 import { parseLocation, round6 } from '@/lib/mapLocation'
 
@@ -71,7 +71,7 @@ export function ClubLocationPicker({
       isFractionalZoomEnabled: true,
       draggableCursor: 'crosshair',
     })
-    if (!draft) map.fitBounds(LOUISIANA_BOUNDS, 8)
+    if (!draft) fitLouisiana(map, 8)
     map.addListener('click', (e: google.maps.MapMouseEvent) => {
       if (disabledRef.current || !e.latLng) return
       setDraft({ lat: round6(e.latLng.lat()), lng: round6(e.latLng.lng()) })
