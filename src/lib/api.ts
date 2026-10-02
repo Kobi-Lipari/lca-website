@@ -183,6 +183,9 @@ export interface ApiClubDetail {
   color: string
   image_url: string | null
   region: string | null
+  /** The club's pin on the map, when one has been set. */
+  latitude?: number | null
+  longitude?: number | null
 }
 
 export interface ApiClubOfficer {
@@ -315,6 +318,9 @@ export interface ApiClubListItem {
   color: string | null
   image_url: string | null
   region: string | null
+  /** The club's pin on the map, when one has been set. */
+  latitude?: number | null
+  longitude?: number | null
 }
 
 export interface ApiTournamentDetail {
@@ -659,6 +665,7 @@ export async function adminUpdateClub(
     color?: string | null
     imageUrl?: string | null
     region?: string | null
+    mapLocation?: { lat: number; lng: number } | null
   },
 ): Promise<ApiClubDetail> {
   const response = await fetch(`/api/admin/clubs/${id}`, {
