@@ -18,6 +18,7 @@ import { clubColorTint } from '@/lib/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
+import { FEATURES } from '@/lib/features'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -720,7 +721,10 @@ export function TournamentsPage() {
         </div>
       ) : (
         <div className="mx-auto max-w-6xl">
-          <div className="grid min-h-[420px] grid-cols-1 border-b border-border md:grid-cols-[1fr_1.3fr] lg:grid-cols-[1fr_1.55fr_1fr]">
+          <div className={cn(
+            'grid min-h-[420px] grid-cols-1 border-b border-border md:grid-cols-[1fr_1.3fr]',
+            FEATURES.clubTournaments ? 'lg:grid-cols-[1fr_1.55fr_1fr]' : 'lg:grid-cols-[1fr_1.55fr]',
+          )}>
 
             {/* ── Left: list ── */}
             <div className="border-b border-border md:border-b-0 md:border-r">
@@ -743,7 +747,7 @@ export function TournamentsPage() {
                   ))}
                   <span className="ml-1 text-xs text-muted-foreground">· {filtered.length}</span>
                 </div>
-                {rightSelection && (
+                {FEATURES.clubTournaments && rightSelection && (
                   <button
                     type="button"
                     onClick={() => handleRightSelection(null)}
@@ -813,7 +817,7 @@ export function TournamentsPage() {
             </div>
 
             {/* ── Middle: detail ── */}
-            <div ref={detailRef} className="scroll-mt-16 border-b border-border md:border-b-0 lg:border-r">
+            <div ref={detailRef} className={cn('scroll-mt-16 border-b border-border md:border-b-0', FEATURES.clubTournaments && 'lg:border-r')}>
               <div className="flex items-center border-b border-border bg-muted/20 px-3 py-2">
                 <span className="text-xs font-semibold text-foreground">Selected tournament</span>
               </div>
@@ -832,17 +836,21 @@ export function TournamentsPage() {
               </div>
             </div>
 
-            {/* ── Right: organizer (full width below on tablets) ── */}
-            <div className="border-t border-border md:col-span-2 lg:col-span-1 lg:border-t-0">
-            <RightColumn
-              lcaClubs={lcaClubs}
-              lcaDirectCount={lcaDirectCount}
-              selection={rightSelection}
-              onSelect={handleRightSelection}
-              otherLaCount={otherLaCount}
-              outOfStateCount={outOfStateCount}
-            />
-            </div>
+            {/* ── Right: organizer (full width below on tablets) ──
+                Hidden until clubs can run their own tournaments; turn it
+                back on with FEATURES.clubTournaments in src/lib/features.ts. */}
+            {FEATURES.clubTournaments && (
+              <div className="border-t border-border md:col-span-2 lg:col-span-1 lg:border-t-0">
+              <RightColumn
+                lcaClubs={lcaClubs}
+                lcaDirectCount={lcaDirectCount}
+                selection={rightSelection}
+                onSelect={handleRightSelection}
+                otherLaCount={otherLaCount}
+                outOfStateCount={outOfStateCount}
+              />
+              </div>
+            )}
           </div>
         </div>
       )}
