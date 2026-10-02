@@ -48,23 +48,32 @@ function clubInitials(name: string): string {
   return letters.toUpperCase()
 }
 
-function ClubLogo({ club }: { club: ApiClubListItem }) {
+/**
+ * The card's left panel: runs the full height of the card, edged in the
+ * club's color, with the logo (or initials) centred in it. A small square
+ * pinned to the top left left the panel's lower half empty on taller cards.
+ */
+function ClubLogoPanel({ club }: { club: ApiClubListItem }) {
   const color = club.color || LCA_GOLD
-  if (club.image_url) {
-    return (
-      <div className="flex size-16 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-white p-1">
-        <img src={club.image_url} alt="" loading="lazy" className="max-h-full max-w-full object-contain" />
-      </div>
-    )
-  }
   return (
     <div
-      className="flex size-16 flex-shrink-0 items-center justify-center rounded-lg"
-      style={{ backgroundColor: clubColorTint(color, 0.14) }}
+      className="flex w-[100px] flex-shrink-0 items-center justify-center self-stretch border-l-4 border-r border-r-border p-2.5 sm:w-[108px]"
+      style={{ borderLeftColor: color, backgroundColor: clubColorTint(color, 0.07) }}
     >
-      <span aria-hidden="true" className="select-none text-lg font-bold tracking-tight" style={{ color }}>
-        {clubInitials(club.name)}
-      </span>
+      {club.image_url ? (
+        <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-white p-1.5 shadow-sm ring-1 ring-black/5">
+          <img src={club.image_url} alt="" loading="lazy" className="max-h-full max-w-full object-contain" />
+        </div>
+      ) : (
+        <div
+          className="flex aspect-square w-full items-center justify-center rounded-lg ring-1 ring-black/5"
+          style={{ backgroundColor: clubColorTint(color, 0.16) }}
+        >
+          <span aria-hidden="true" className="select-none text-2xl font-bold tracking-tight" style={{ color }}>
+            {clubInitials(club.name)}
+          </span>
+        </div>
+      )}
     </div>
   )
 }
@@ -112,15 +121,14 @@ function ClubCard({
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
       className={cn(
-        'group relative flex cursor-pointer gap-3.5 rounded-xl border bg-card p-3.5 text-left shadow-sm outline-none transition-all',
+        'group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card text-left shadow-sm outline-none transition-all',
         'hover:border-lca-navy/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-lca-gold',
         selected && 'shadow-md ring-2',
       )}
       style={selected ? ({ borderColor: color, backgroundColor: clubColorTint(color, 0.06), '--tw-ring-color': clubColorTint(color, 0.45) } as CSSProperties) : undefined}
     >
-      <span className="absolute inset-y-3 left-0 w-1 rounded-r-full" style={{ backgroundColor: color }} aria-hidden="true" />
-      <ClubLogo club={club} />
-      <div className="min-w-0 flex-1">
+      <ClubLogoPanel club={club} />
+      <div className="min-w-0 flex-1 p-3.5">
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-semibold leading-snug text-lca-navy">{club.name}</p>
           {distance != null && (
