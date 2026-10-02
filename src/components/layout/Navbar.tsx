@@ -5,7 +5,7 @@ import { ChevronDown, Menu, UserCircle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
-import { WORKSPACE_ROLES } from '@/lib/roles'
+import { WORKSPACE_ROLES, canAccessAdmin } from '@/lib/roles'
 import { cn } from '@/lib/utils'
 import lcaLogo from '@/assets/lca-logo.webp'
 
@@ -57,11 +57,11 @@ function isLinkActive(pathname: string, link: NavLink): boolean {
  * everyone and an admin's bar is no wider than a player's.
  */
 function useAccountLinks(): NavLink[] {
-  const { user, loading, role, isBoardMember, directedTournamentIds } = useAuth()
+  const { user, loading, role, isBoardMember, directedTournamentIds, managedClubs } = useAuth()
   if (loading || !user) return []
 
   const links: NavLink[] = []
-  if (role === 'lca_admin' || role === 'lca_observer') {
+  if (canAccessAdmin(role)) {
     links.push({ label: 'Admin panel', href: '/admin' })
   } else if (WORKSPACE_ROLES.includes(role) || directedTournamentIds.length > 0) {
     links.push({ label: 'Workspace', href: '/workspace' })
@@ -72,6 +72,10 @@ function useAccountLinks(): NavLink[] {
   // account changing in any other way.
   if (isBoardMember) {
     links.push({ label: 'Board inbox', href: '/board/inbox' })
+  }
+  // Regional representatives manage their region's clubs from the dashboard.
+  if (role !== 'lca_admin' && managedClubs.length > 0) {
+    links.push({ label: 'My region\u2019s clubs', href: '/dashboard' })
   }
   return links
 }

@@ -5,7 +5,7 @@
 // and sort order.
 
 import { useEffect, useMemo, useState } from 'react'
-import { ChevronDown, History, UserMinus, UserPlus, Users } from 'lucide-react'
+import { Building2, ChevronDown, History, UserMinus, UserPlus, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -13,12 +13,15 @@ import {
   adminGetBoardSeats,
   adminGetMembers,
   adminRemoveBoardSeatHolder,
+  adminSetSeatRegions,
   type ApiAdminBoardSeat,
   type ApiAdminMember,
   type ApiSeatAssignment,
   type ApiSeatHolder,
 } from '@/lib/api'
 import { ADMIN_SCROLL } from '@/lib/brand'
+import { REGIONS } from '@/lib/regions'
+import { cn } from '@/lib/utils'
 
 function formatDate(value: string | null): string {
   if (!value) return 'present'
@@ -26,17 +29,66 @@ function formatDate(value: string | null): string {
   return Number.isNaN(d.getTime()) ? value : d.toLocaleDateString()
 }
 
+/**
+ * Which club regions a regional representative's seat covers. Whoever holds
+ * the seat manages every club in them.
+ */
+function SeatRegions({ seat, clubsByRegion, busy, onChange }: {
+  seat: ApiAdminBoardSeat
+  clubsByRegion: Map<string, number>
+  busy: boolean
+  onChange: (regions: string[]) => void
+}) {
+  const regions = seat.regions ?? []
+  const clubCount = regions.reduce((n, r) => n + (clubsByRegion.get(r) ?? 0), 0)
+  const toggle = (r: string) =>
+    onChange(regions.includes(r) ? regions.filter((x) => x !== r) : [...regions, r])
+
+  return (
+    <div className="mt-3 rounded-lg border border-dashed px-3 py-2.5">
+      <p className="flex items-center gap-1.5 text-xs font-medium text-lca-navy">
+        <Building2 className="size-3.5 text-lca-gold" />
+        {regions.length === 0
+          ? 'No region set: this seat doesn\u2019t manage any clubs yet'
+          : `Manages ${clubCount} ${clubCount === 1 ? 'club' : 'clubs'} in ${regions.join(', ')}`}
+      </p>
+      <div className="mt-2 flex flex-wrap gap-1.5" role="group" aria-label={`Regions covered by ${seat.role}`}>
+        {REGIONS.map((r) => {
+          const on = regions.includes(r)
+          return (
+            <button
+              key={r}
+              type="button"
+              disabled={busy}
+              aria-pressed={on}
+              onClick={() => toggle(r)}
+              className={cn(
+                'rounded-full border px-2.5 py-0.5 text-xs transition-colors disabled:opacity-60',
+                on ? 'border-lca-navy bg-lca-navy text-white' : 'text-muted-foreground hover:border-lca-navy/40',
+              )}
+            >
+              {r} <span className={on ? 'text-white/70' : 'text-muted-foreground/70'}>· {clubsByRegion.get(r) ?? 0}</span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function SeatRow({
-  seat, holders, history, members, busy, onAssign, onRemove, onVacate,
+  seat, holders, history, members, busy, clubsByRegion, onAssign, onRemove, onVacate, onSetRegions,
 }: {
   seat: ApiAdminBoardSeat
   holders: ApiSeatHolder[]
   history: ApiSeatAssignment[]
   members: ApiAdminMember[]
   busy: boolean
+  clubsByRegion: Map<string, number>
   onAssign: (seatId: string, memberId: string) => void
   onRemove: (seatId: string, memberId: string) => void
   onVacate: (seatId: string) => void
+  onSetRegions: (seatId: string, regions: string[]) => void
 }) {
   const [picking, setPicking] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
@@ -125,6 +177,15 @@ function SeatRow({
         </div>
       </div>
 
+      {seat.category === 'regional_rep' && seat.is_active === 1 && (
+        <SeatRegions
+          seat={seat}
+          clubsByRegion={clubsByRegion}
+          busy={busy}
+          onChange={(regions) => onSetRegions(seat.id, regions)}
+        />
+      )}
+
       {picking && (
         <div className="mt-3 rounded-lg border bg-muted/30 p-3">
           <Input
@@ -199,6 +260,7 @@ export function BoardSeatsPanel() {
   const [holders, setHolders] = useState<ApiSeatHolder[]>([])
   const [history, setHistory] = useState<ApiSeatAssignment[]>([])
   const [members, setMembers] = useState<ApiAdminMember[]>([])
+  const [regionClubs, setRegionClubs] = useState<{ region: string; clubs: number }[]>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -211,6 +273,7 @@ export function BoardSeatsPanel() {
     setSeats(seatData.seats)
     setHolders(seatData.holders)
     setHistory(seatData.history)
+    setRegionClubs(seatData.regionClubs ?? [])
     setMembers(memberList)
   }
 
@@ -222,6 +285,7 @@ export function BoardSeatsPanel() {
         setSeats(seatData.seats)
         setHolders(seatData.holders)
         setHistory(seatData.history)
+        setRegionClubs(seatData.regionClubs ?? [])
         setMembers(memberList)
       })
       .catch(() => { if (!cancelled) setError('Could not load board seats. Reload to try again.') })
@@ -242,6 +306,9 @@ export function BoardSeatsPanel() {
     }
   }
 
+  const clubsByRegion = new Map<string, number>(regionClubs.map((r) => [r.region, r.clubs] as [string, number]))
+  const clubsWithoutRegion = clubsByRegion.get('') ?? 0
+
   if (loading) return <p className="text-sm text-muted-foreground">Loading…</p>
 
   return (
@@ -252,6 +319,16 @@ export function BoardSeatsPanel() {
           Link member accounts to each seat. Messages sent through the board page
           stay with the seat, so whoever holds it next sees the full history.
         </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Regional representative seats also pick the regions they cover. Whoever holds the seat can
+          manage every club in those regions: the club page, officers, news and logo.
+        </p>
+        {clubsWithoutRegion > 0 && (
+          <p className="mt-2 rounded-md bg-lca-gold/10 px-3 py-2 text-xs text-[#7a5c00]">
+            {clubsWithoutRegion} {clubsWithoutRegion === 1 ? 'club has' : 'clubs have'} no region set, so no
+            regional representative manages {clubsWithoutRegion === 1 ? 'it' : 'them'}. Set the region on each club&rsquo;s page under Clubs.
+          </p>
+        )}
       </div>
 
       {error && (
@@ -269,6 +346,13 @@ export function BoardSeatsPanel() {
             history={history.filter((h) => h.seat_id === seat.id)}
             members={members}
             busy={busy}
+            clubsByRegion={clubsByRegion}
+            onSetRegions={(seatId, regions) =>
+              run(
+                async () => { await adminSetSeatRegions(seatId, regions) },
+                'Could not save those regions. Try again.',
+              )
+            }
             onAssign={(seatId, memberId) =>
               run(
                 () => adminAssignBoardSeat(seatId, memberId),

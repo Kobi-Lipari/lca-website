@@ -39,8 +39,13 @@ export type AdminAction =
   // Board seats: logged so the officer history can always be rebuilt.
   | 'seat_assign'
   | 'seat_end'
+  | 'seat_regions'
   // Member data leaving the site.
   | 'members_export'
+  // Governance documents: bylaws, rules, amendments, minutes, treasurer's reports.
+  | 'document_add'
+  | 'document_edit'
+  | 'document_remove'
 
 export interface AuditEntry {
   action: AdminAction

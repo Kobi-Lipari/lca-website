@@ -1,7 +1,7 @@
 // functions/api/tournaments.ts
 import type { Env } from '../types'
 import { handleOptions, jsonResponse } from '../utils/response'
-import { requireAuthedMember, isResponse } from '../utils/auth'
+import { isObserver, requireAuthedMember, isResponse } from '../utils/auth'
 import { parseJsonArray } from '../utils/json'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -29,7 +29,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
        LEFT JOIN clubs c ON t.club_id = c.id`
 
   let statement: D1PreparedStatement
-  if (viewer?.role === 'lca_admin' || viewer?.role === 'lca_observer') {
+  if (viewer && (viewer.role === 'lca_admin' || isObserver(viewer))) {
     statement = context.env.DB.prepare(`${base} ORDER BY t.date ASC`)
   } else if (viewer) {
     // Drafts: a rep's own club's, plus any event this person directs.

@@ -1,6 +1,6 @@
 // functions/api/admin/members.ts
 import type { Env } from '../../types'
-import { isResponse, requireMemberDirectory } from '../../utils/auth'
+import { isObserver, isResponse, requireMemberDirectory } from '../../utils/auth'
 import { handleOptions, jsonResponse } from '../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -10,7 +10,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (isResponse(authResult)) return authResult
 
   // Observers see the full admin view (they can't change any of it).
-  const isAdmin = authResult.member.role === 'lca_admin' || authResult.member.role === 'lca_observer'
+  const isAdmin = authResult.member.role === 'lca_admin' || isObserver(authResult.member)
 
   // Non-admins (auditor, club rep, director) get exactly the columns their view renders, plus
   // the USCF id the search box matches on. Hiding a column in the UI is not

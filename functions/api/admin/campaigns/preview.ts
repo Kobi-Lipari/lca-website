@@ -1,13 +1,13 @@
 // functions/api/admin/campaigns/preview.ts
 import type { Env } from '../../../types'
-import { isResponse, requireAdminView } from '../../../utils/auth'
+import { isResponse, requireMailer } from '../../../utils/auth'
 import { resolveRecipients, type CampaignFilter } from '../../../utils/campaigns'
 import { handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const authResult = await requireAdminView(context.request, context.env)
+  const authResult = await requireMailer(context.request, context.env)
   if (isResponse(authResult)) return authResult
 
   const body = await parseJsonBody<{ filter?: CampaignFilter }>(context.request)

@@ -3,11 +3,13 @@ import { GovLayout } from '@/components/governance/GovLayout'
 import { GovernanceDocuments } from '@/components/governance/GovernanceDocuments'
 import { useAuth } from '@/contexts/auth-context'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { canEditGovernance } from '@/lib/roles'
 
 export function BylawsPage() {
   usePageTitle('Bylaws & Rules')
   const { role } = useAuth()
-  const isAdmin = role === 'lca_admin'
+  // Admins, the LCA Observer and LCA Officers manage these documents.
+  const isAdmin = canEditGovernance(role)
 
   return (
     <GovLayout
