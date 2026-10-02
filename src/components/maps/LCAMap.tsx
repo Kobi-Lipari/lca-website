@@ -280,6 +280,7 @@ export function LCAMap(props: Props) {
       infoRef.current = info
     } else if (singlePin) {
       singleMarkerRef.current = new g.Marker({
+        optimized: false,
         position: { lat: singlePin.lat, lng: singlePin.lng },
         map: mapObj.current,
         title: props.mode === 'single' ? props.clubName : undefined,
@@ -312,7 +313,10 @@ export function LCAMap(props: Props) {
         map,
         title: club.name,
         icon: pinIcon(club, 'normal'),
-        optimized: true,
+        // Drawn as their own elements rather than baked into the map image.
+        // "Optimized" pins are painted with the map, so at an in-between
+        // zoom (the whole-state view) they were scaled down with it.
+        optimized: false,
       })
       marker.addListener('click', () => onSelectRef.current?.(club.id))
       markersRef.current.set(club.id, { marker, club, pin })
@@ -371,6 +375,7 @@ export function LCAMap(props: Props) {
     userMarkerRef.current = null
     if (!userLocation) return
     userMarkerRef.current = new g.Marker({
+      optimized: false,
       position: userLocation,
       map: mapObj.current,
       title: 'You are here',
