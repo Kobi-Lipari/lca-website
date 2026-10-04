@@ -3,6 +3,7 @@ import type { Env } from '../../types'
 import { errorResponse, jsonResponse, parseJsonBody } from '../../utils/response'
 import { requireGovernanceEditor, isResponse } from '../../utils/auth'
 import { recordAdminAction } from '../../utils/audit'
+import { isSafeLink, sanitizeDocumentHtml } from '../../utils/posts'
 
 // Mirrors the frontend ApiGovernanceDocument['category'] union. The DB column
 // has no CHECK constraint, so this allowlist is what keeps a typo'd category
@@ -48,6 +49,16 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     return errorResponse('title is required', 400)
   }
 
+  if (body.file_url && !(typeof body.file_url === 'string' && isSafeLink(body.file_url.trim()))) {
+    return errorResponse('The file link must start with /, http:// or https://', 400)
+  }
+  // The public pages render this HTML as it is, so it is cleaned on the way
+  // in: the editor's formatting and a converted document's tables survive,
+  // script does not.
+  const content = typeof body.content === 'string' && body.content
+    ? await sanitizeDocumentHtml(body.content)
+    : null
+
   const year =
     body.year != null && Number.isFinite(Number(body.year)) ? Number(body.year) : null
 
@@ -58,7 +69,7 @@ export const onRequestPost: PagesFunction<Env> = async (ctx) => {
     id,
     body.category,
     body.title.trim(),
-    body.content || null,
+    content || null,
     body.filename || null,
     body.file_url || null,
     body.doc_date || null,

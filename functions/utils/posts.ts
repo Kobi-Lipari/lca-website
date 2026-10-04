@@ -71,11 +71,48 @@ const DROPPED_WITH_CONTENT = new Set([
 ])
 
 /**
- * Keeps only the formatting the editor produces. Posts are written by
- * admins, but they are shown to everyone, so a pasted <script>, an onclick
- * or a javascript: link is stripped rather than trusted.
+ * What an uploaded Word document adds on top of the editor's formatting once
+ * it has been converted: more heading levels, tables, footnote marks and
+ * embedded pictures. Governance documents (bylaws, minutes, treasurer's
+ * reports) keep these.
  */
-export async function sanitizePostHtml(html: string): Promise<string> {
+const DOCUMENT_TAGS = new Set([
+  ...ALLOWED_TAGS,
+  'h1', 'h4', 'h5', 'h6', 'sup', 'sub', 'img',
+  'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td', 'caption',
+])
+
+/** Pictures embedded by the converter, or files on this site. Never SVG. */
+function isSafeImageSource(src: string): boolean {
+  if (/^data:image\/(png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=\s]+$/i.test(src)) return true
+  return src.startsWith('/') && isSafeLink(src)
+}
+
+/** The attributes worth keeping on an allowed tag; everything else goes. */
+function keptAttributes(tag: string, get: (name: string) => string | null): Array<[string, string]> {
+  const kept: Array<[string, string]> = []
+  const number = (name: string) => {
+    const value = get(name)?.trim()
+    if (value && /^\d{1,4}$/.test(value)) kept.push([name, value])
+  }
+  if (tag === 'a') {
+    const href = get('href')?.trim()
+    if (href && isSafeLink(href)) {
+      kept.push(['href', href])
+      if (!href.startsWith('/')) kept.push(['target', '_blank'], ['rel', 'noopener noreferrer'])
+    }
+  } else if (tag === 'ol') {
+    number('start')
+  } else if (tag === 'td' || tag === 'th') {
+    number('colspan')
+    number('rowspan')
+  } else if (tag === 'img') {
+    kept.push(['src', get('src')?.trim() ?? ''], ['alt', get('alt') ?? ''])
+  }
+  return kept
+}
+
+async function sanitizeHtml(html: string, allowed: Set<string>): Promise<string> {
   const rewritten = new HTMLRewriter()
     .on('*', {
       element(el) {
@@ -84,19 +121,17 @@ export async function sanitizePostHtml(html: string): Promise<string> {
           el.remove()
           return
         }
-        if (!ALLOWED_TAGS.has(tag)) {
+        if (!allowed.has(tag)) {
           el.removeAndKeepContent()
           return
         }
-        const href = tag === 'a' ? el.getAttribute('href') : null
-        for (const [name] of [...el.attributes]) el.removeAttribute(name)
-        if (tag === 'a' && href && isSafeLink(href.trim())) {
-          el.setAttribute('href', href.trim())
-          if (!href.trim().startsWith('/')) {
-            el.setAttribute('target', '_blank')
-            el.setAttribute('rel', 'noopener noreferrer')
-          }
+        if (tag === 'img' && !isSafeImageSource(el.getAttribute('src')?.trim() ?? '')) {
+          el.remove()
+          return
         }
+        const kept = keptAttributes(tag, (name) => el.getAttribute(name))
+        for (const [name] of [...el.attributes]) el.removeAttribute(name)
+        for (const [name, value] of kept) el.setAttribute(name, value)
       },
       // The editor never writes comments, and "<!-->" style ones are one
       // more place where two parsers can disagree about what is markup.
@@ -107,6 +142,23 @@ export async function sanitizePostHtml(html: string): Promise<string> {
     .transform(new Response(`<div>${html}</div>`, { headers: { 'Content-Type': 'text/html' } }))
   const out = await rewritten.text()
   return out.replace(/^<div>/, '').replace(/<\/div>$/, '').trim()
+}
+
+/**
+ * Keeps only the formatting the editor produces. Posts are written by
+ * admins, but they are shown to everyone, so a pasted <script>, an onclick
+ * or a javascript: link is stripped rather than trusted.
+ */
+export function sanitizePostHtml(html: string): Promise<string> {
+  return sanitizeHtml(html, ALLOWED_TAGS)
+}
+
+/**
+ * The same for governance documents, which officers and observers can save
+ * without a second factor and every visitor then reads.
+ */
+export function sanitizeDocumentHtml(html: string): Promise<string> {
+  return sanitizeHtml(html, DOCUMENT_TAGS)
 }
 
 /** YYYY-MM-DD, or null. */
