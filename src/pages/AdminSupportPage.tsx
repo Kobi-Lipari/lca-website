@@ -16,6 +16,7 @@ import {
 } from '@/lib/api'
 import { ADMIN_SCROLL } from '@/lib/brand'
 import { useViewOnly } from '@/lib/viewOnly'
+import { serverTime } from '@/lib/serverTime'
 
 const statusColors: Record<string, string> = {
   open: 'bg-blue-100 text-blue-800',
@@ -238,7 +239,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  {new Date(ticket.updated_at).toLocaleString()} ·{' '}
+                  {serverTime(ticket.updated_at).toLocaleString()} ·{' '}
                   {ticket.message_count} message
                   {ticket.message_count !== 1 ? 's' : ''}
                 </p>
@@ -305,7 +306,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                       {msg.sender_type === 'admin'
                         ? 'LCA Support'
                         : selectedTicket.ticket.name}{' '}
-                      · {new Date(msg.created_at).toLocaleString()}
+                      · {serverTime(msg.created_at).toLocaleString()}
                     </p>
                     <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
                   </div>
