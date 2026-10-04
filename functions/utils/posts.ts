@@ -46,13 +46,28 @@ export async function uniqueSlug(db: D1Database, base: string, exceptId?: string
 
 /** Site paths ("/tournaments/x") or http(s)/mailto links only. */
 export function isSafeLink(url: string): boolean {
-  if (url.startsWith('/') && !url.startsWith('//')) return true
+  // Browsers drop tabs and newlines inside a URL and read "\" as "/", so
+  // "/\evil.example" and "/<tab>/evil.example" both leave the site.
+  const path = url.replace(/[\t\n\r]/g, '').replace(/\\/g, '/')
+  if (path.startsWith('/') && !path.startsWith('//')) return true
   return /^(https?:\/\/|mailto:)/i.test(url)
 }
 
 const ALLOWED_TAGS = new Set([
   'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'h2', 'h3', 'ul', 'ol', 'li',
   'a', 'blockquote', 'hr', 'code', 'pre',
+])
+
+/**
+ * Removed together with everything inside them. The first row is active
+ * content. The second is elements whose content the rewriter hands over as
+ * raw text (and SVG/MathML, where CDATA is text): dropping only the tag
+ * would leave "<img onerror=…>" behind as text here, which the browser then
+ * parses as a real element.
+ */
+const DROPPED_WITH_CONTENT = new Set([
+  'script', 'style', 'iframe', 'object', 'embed',
+  'textarea', 'title', 'xmp', 'noembed', 'noframes', 'noscript', 'plaintext', 'svg', 'math', 'template',
 ])
 
 /**
@@ -65,7 +80,7 @@ export async function sanitizePostHtml(html: string): Promise<string> {
     .on('*', {
       element(el) {
         const tag = el.tagName.toLowerCase()
-        if (tag === 'script' || tag === 'style' || tag === 'iframe' || tag === 'object' || tag === 'embed') {
+        if (DROPPED_WITH_CONTENT.has(tag)) {
           el.remove()
           return
         }
@@ -82,6 +97,11 @@ export async function sanitizePostHtml(html: string): Promise<string> {
             el.setAttribute('rel', 'noopener noreferrer')
           }
         }
+      },
+      // The editor never writes comments, and "<!-->" style ones are one
+      // more place where two parsers can disagree about what is markup.
+      comments(comment) {
+        comment.remove()
       },
     })
     .transform(new Response(`<div>${html}</div>`, { headers: { 'Content-Type': 'text/html' } }))
