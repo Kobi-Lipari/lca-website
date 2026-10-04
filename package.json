@@ -23,6 +23,7 @@
     "scanner:metrics": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/runProfile.ts clean && node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/runProfile.ts typical && node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/runProfile.ts timepressure && node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/printTable.ts",
     "scanner:bench": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/bench.ts",
     "scanner:snapshot": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/snapshot.ts",
+    "scanner:heldout": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/heldout.ts",
     "scanner:perft": "node --no-warnings --experimental-strip-types --import ./scanner/sandbox/register.mjs scanner/sandbox/perft.ts"
   },
   "dependencies": {
