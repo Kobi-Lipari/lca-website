@@ -54,6 +54,30 @@ export interface DecodedGame {
   /** e.g. "rows 24-26 could not be aligned; two interpretations shown" */
   warnings: string[];
   notation: 'algebraic' | 'descriptive' | 'unknown';
+  /**
+   * Places where moves were played but never written (§4.4: a skipped move
+   * pair, or one side's single move). The decoder put stand-in moves there
+   * (status `guessed`, sourceRaw null) so the rest of the game lines up;
+   * only the member can say what was really played. Absent when the sheet
+   * has no such gap.
+   */
+  gaps?: DecodedGap[];
+}
+
+export interface DecodedGap {
+  /** 1-based ply of the first stand-in move */
+  ply: number;
+  /** how many consecutive plies are stand-ins: 1, or 2 for a move pair */
+  plies: 1 | 2;
+  /**
+   * The sheet often reads the same with the gap a little later. This is the
+   * latest ply the first missing move can be; equal to `ply` when the place
+   * is certain. The stand-ins are put at the earliest place that fits, so
+   * every move before them is exactly as written.
+   */
+  latestPly: number;
+  /** one sentence for the page, e.g. "A move pair seems to be missing after move 14." */
+  note: string;
 }
 
 export interface DecodedMove {

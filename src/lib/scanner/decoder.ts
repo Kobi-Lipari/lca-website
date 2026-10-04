@@ -13,14 +13,22 @@
 
 import type {
   DecodedGame,
+  DecodedGap,
   DecodedMove,
   DecodedMoveStatus,
   RawCell,
   RawScan,
 } from './types';
 import { rankCandidates, selectCandidates, type ScoredCandidate } from './candidates';
-import { isResultToken } from './normalize';
+import { cleanToken, isResultToken, stripCheckMateDecoration } from './normalize';
 import { createChessCache, type ChessCache } from './chessAdapter';
+import {
+  buildGapContext,
+  findGapPlans,
+  looksLikeMove,
+  type GapContext,
+  type GapPlan,
+} from './gaps';
 
 export interface DecodeOptions {
   /** §5.1: "Beam width: start at 12, make it a constant, tune in Week 2." */
@@ -89,6 +97,37 @@ const INSERT_TWO_TRIGGER_COST = 1.8;
 
 const COST_EPSILON = 1e-9;
 
+/**
+ * Unwritten moves found by gaps.ts (§4.4). Unlike the blind insertions
+ * above, these are only offered after the following cells were replayed and
+ * read exactly, so each is priced as one slip of the pen (§5.5 puts SHIFT
+ * at ~3), not as two independent guesses. A skipped move pair is one slip.
+ */
+const GAP_SINGLE_COST = 2.5;
+const GAP_PAIR_COST = 2.0;
+/**
+ * A cell is probed for a gap only when its best legal reading costs at
+ * least this. Every single-character confusion in the §4.3 table costs
+ * less, so an ordinary misread does not start a search; a cleanly written
+ * move that is simply not legal here (cost 1 and up) does.
+ */
+const GAP_TRIGGER_COST = 0.9;
+/** Only beams this close to the best one are probed. */
+const GAP_BEAM_SLACK = 0.5;
+const GAP_PROBES_PER_CELL = 2;
+/**
+ * Cap on the search work per decode (move applications and legality
+ * checks), so a sheet full of unreadable cells cannot make the page hang.
+ */
+const GAP_WORK_BUDGET = 4000;
+/**
+ * A gap costs its whole price at once, while the reading it competes with
+ * pays for its mistakes a cell at a time, so on cost alone the gap would be
+ * pruned before the evidence is in. This many gap hypotheses are carried
+ * outside the beam width until the end, where total cost decides.
+ */
+const GAP_GUARDED_BEAMS = 2;
+
 /** An expansion whose cost is known to be at least minCost, computed only if
  *  that could still survive the prune. See the main loop. */
 interface DeferredExpansion {
@@ -122,6 +161,11 @@ interface Beam {
   recentCosts: number[];
   /** written cells skipped since the last move was placed */
   trailingSkips: number;
+  /** how many cells just before the cursor were each read as one move */
+  exactRun: number;
+  /** descends from a gap hypothesis; see GAP_GUARDED_BEAMS */
+  guarded: boolean;
+  gaps: readonly DecodedGap[];
 }
 
 export function decodeScan(
@@ -165,8 +209,20 @@ export function decodeScan(
       warnings: [],
       recentCosts: [],
       trailingSkips: 0,
+      exactRun: 0,
+      guarded: false,
+      gaps: [],
     },
   ];
+
+  const gapContext = options.structuralOps
+    ? buildGapContext(
+        activeSlots.map((s) => s.cell),
+        cache,
+        options.forcedSans,
+        GAP_WORK_BUDGET,
+      )
+    : null;
 
   let truncatedAtPly: number | undefined;
   const warnings: string[] = [];
@@ -176,14 +232,18 @@ export function decodeScan(
     // they were produced. Order matters: prune() breaks cost ties by
     // position, so keeping it is what makes the deferral below exact.
     const parts: Array<Beam | DeferredExpansion> = [];
+    /** beams whose current cell has no clean legal reading */
+    const unreadable: Beam[] = [];
+    let cheapestLive = Infinity;
 
     for (const beam of beams) {
       if (beam.slotIndex >= activeSlots.length || beam.finishedResult) {
         parts.push(beam);
         continue;
       }
+      if (beam.cost < cheapestLive) cheapestLive = beam.cost;
       const deferred: DeferredExpansion[] = [];
-      parts.push(...expandBeam(beam, activeSlots, cache, options, deferred));
+      parts.push(...expandBeam(beam, activeSlots, cache, options, deferred, unreadable));
       parts.push(...deferred);
     }
 
@@ -203,7 +263,7 @@ export function decodeScan(
     const cut =
       provisional.length < options.beamWidth
         ? Infinity
-        : provisional[provisional.length - 1]!.cost;
+        : provisional[options.beamWidth - 1]!.cost;
 
     const next: Beam[] = [];
     for (const part of parts) {
@@ -215,6 +275,34 @@ export function decodeScan(
       // at the cut are common because costs are sums of the same constants.
       else if (part.minCost - COST_EPSILON <= cut) {
         next.push(...part.run().filter((b) => honoursForced(b, options)));
+      }
+    }
+
+    // §4.4: where a cell has no clean reading, ask whether unwritten moves
+    // at or before it would make the sheet read exactly (gaps.ts). What
+    // comes back joins the beam as one more hypothesis, ahead of equal-cost
+    // rivals so that a verified gap is preferred to a blind insertion that
+    // happens to reach the same position.
+    // Only when the best reading so far is itself stuck on this cell, and no
+    // gap hypothesis already in the beam reads it: otherwise the search
+    // would run on every beam that took a wrong turn earlier.
+    if (
+      gapContext &&
+      unreadable.length > 0 &&
+      unreadable[0]!.cost <= cheapestLive &&
+      !beams.some((b) => b.guarded && isLive(b, activeSlots) && !unreadable.includes(b))
+    ) {
+      let probes = 0;
+      for (const beam of unreadable) {
+        if (probes >= GAP_PROBES_PER_CELL) break;
+        if (gapContext.work.ops > gapContext.work.budget) break;
+        if (beam.cost > cheapestLive + GAP_BEAM_SLACK) continue;
+        if (!looksLikeMove(gapContext, beam.slotIndex)) continue;
+        probes++;
+        const found = probeForGap(beam, activeSlots, cache, options, gapContext).filter(
+          (b) => honoursForced(b, options),
+        );
+        next.unshift(...found);
       }
     }
 
@@ -269,7 +357,20 @@ export function decodeScan(
     ...(truncatedAtPly !== undefined ? { truncatedAtPly } : {}),
     warnings: [...warnings, ...winner.warnings],
     notation: 'algebraic',
+    ...(winner.gaps.length > 0 ? { gaps: [...winner.gaps] } : {}),
   };
+}
+
+/**
+ * What each matched move cost, kept beside the move rather than on it so
+ * the decoder's output is unchanged. A gap placed before a cell hands back
+ * what the cells after it were charged: with the gap in place they are
+ * replayed and read exactly.
+ */
+const MATCH_COST = new WeakMap<DecodedMove, number>();
+
+function isLive(beam: Beam, slots: readonly CellSlot[]): boolean {
+  return beam.slotIndex < slots.length && !beam.finishedResult;
 }
 
 /* ------------------------------------------------------------------ */
@@ -282,6 +383,7 @@ function expandBeam(
   cache: ChessCache,
   options: DecodeOptions,
   deferred: DeferredExpansion[],
+  unreadable: Beam[],
 ): Beam[] {
   const slot = slots[beam.slotIndex]!;
   const out: Beam[] = [];
@@ -361,6 +463,12 @@ function expandBeam(
     // inserting would just corrupt it.
     const bestMatchCost = ranked[0]?.cost ?? Infinity;
     const cell = slot.cell;
+    // A forced move that does not fit its cell is the same symptom: the
+    // member has said what was played, and the cell says something else.
+    const readCost = forced ? (branches[0]?.cost ?? Infinity) : bestMatchCost;
+    if (readCost >= GAP_TRIGGER_COST || capturesNothing(cell, ranked[0])) {
+      unreadable.push(beam);
+    }
     if (bestMatchCost > INSERT_ONE_TRIGGER_COST) {
       deferred.push({
         minCost: beam.cost + INSERT_PLY_COST,
@@ -417,6 +525,7 @@ function extendWithMatch(
     fenBefore: beam.fen,
   };
 
+  MATCH_COST.set(move, candidate.cost);
   const nextFen = cache.applyMove(beam.fen, candidate.san);
 
   // §5.5 re-synchronization check after a structural op.
@@ -429,6 +538,9 @@ function extendWithMatch(
     slotIndex: beam.slotIndex + 1,
     moves: [...beam.moves, move],
     trailingSkips: 0,
+    exactRun: beam.exactRun + 1,
+    guarded: beam.guarded,
+    gaps: beam.gaps,
     cost: beam.cost + candidate.cost + extraCost,
     resyncRemaining,
     resyncCosts: resyncRemaining === 0 ? [] : resyncCosts,
@@ -443,11 +555,25 @@ function extendWithMatch(
   } as Beam & { resyncFailed?: boolean };
 }
 
+/**
+ * The cell is written as a capture, and the only thing wrong with it is
+ * that there is nothing on that square to take. Dropping an 'x' is a
+ * habit (§4.2) and cheap; writing one for a capture that never happened is
+ * not, and it is exactly what a move pair missing earlier looks like when
+ * the missing reply put a piece there.
+ */
+function capturesNothing(cell: RawCell, best: ScoredCandidate | undefined): boolean {
+  if (!best || best.cost === 0 || !cell.raw.includes('x')) return false;
+  const written = cleanToken(cell.raw);
+  return written.includes('x') && written.replace('x', '') === stripCheckMateDecoration(best.san);
+}
+
 function skipCell(beam: Beam): Beam {
   return {
     ...beam,
     slotIndex: beam.slotIndex + 1,
     trailingSkips: beam.trailingSkips + 1,
+    exactRun: 0,
     cost: beam.cost + SKIP_CELL_COST,
     resyncRemaining: RESYNC_CELLS,
     resyncCosts: [],
@@ -521,6 +647,7 @@ function insertGuessedPlies(
           fen: cache.applyMove(state.fen, san),
           moves: [...state.moves, move],
           trailingSkips: 0,
+          exactRun: 0,
           cost: state.cost + INSERT_PLY_COST,
           lastMoveTo: squareOf(san),
           resyncRemaining: RESYNC_CELLS,
@@ -649,10 +776,162 @@ function prune(beams: Beam[], beamWidth: number): Beam[] {
   // a tie between two others. That made the result depend on beams that
   // cannot survive, which the deferred-insertion cut in decodeScan relies
   // on NOT happening.)
-  return Array.from(seen.values())
+  const ranked = Array.from(seen.values())
     .sort((a, b) => a.beam.cost - b.beam.cost || a.index - b.index)
-    .slice(0, beamWidth)
     .map((entry) => entry.beam);
+  const kept = ranked.slice(0, beamWidth);
+  // Gap hypotheses that missed the cut ride along (see GAP_GUARDED_BEAMS).
+  // With none in play this is exactly the plain top-beamWidth cut.
+  let extras = 0;
+  for (let i = beamWidth; i < ranked.length && extras < GAP_GUARDED_BEAMS; i++) {
+    if (ranked[i]!.guarded) {
+      kept.push(ranked[i]!);
+      extras++;
+    }
+  }
+  return kept;
+}
+
+/* ------------------------------------------------------------------ */
+/* Unwritten moves (§4.4)                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Turn the gap plans for this beam's current cell into beams that have
+ * consumed that cell, like every other expansion in the same step.
+ */
+function probeForGap(
+  beam: Beam,
+  slots: readonly CellSlot[],
+  cache: ChessCache,
+  options: DecodeOptions,
+  context: GapContext,
+): Beam[] {
+  const back = beam.exactRun;
+  const history = beam.moves.slice(beam.moves.length - back).map((m) => m.fenBefore);
+  const plans = findGapPlans(context, {
+    fen: beam.fen,
+    slot: beam.slotIndex,
+    ply: beam.moves.length,
+    history,
+  });
+  const out: Beam[] = [];
+  for (const plan of plans) {
+    const built = applyGapPlan(beam, plan, slots, cache, options);
+    if (built) out.push(built);
+  }
+  return out;
+}
+
+function applyGapPlan(
+  beam: Beam,
+  plan: GapPlan,
+  slots: readonly CellSlot[],
+  cache: ChessCache,
+  options: DecodeOptions,
+): Beam | null {
+  // Step back to where the gap goes, handing back what the cells in between
+  // were charged; they are read again below, exactly.
+  const back = beam.slotIndex - plan.slot;
+  const keep = beam.moves.length - back;
+  let refund = 0;
+  for (let i = keep; i < beam.moves.length; i++) {
+    refund += MATCH_COST.get(beam.moves[i]!) ?? 0;
+  }
+  let state: Beam =
+    back === 0
+      ? beam
+      : {
+          ...beam,
+          fen: beam.moves[keep]!.fenBefore,
+          slotIndex: plan.slot,
+          moves: beam.moves.slice(0, keep),
+          lastMoveTo: keep > 0 ? squareOf(beam.moves[keep - 1]!.san) : null,
+          exactRun: beam.exactRun - back,
+        };
+
+  const firstPly = state.moves.length + 1;
+  plan.inserted.forEach((san, i) => {
+    const others = plan.alternatives[i] ?? [];
+    const move: DecodedMove = {
+      ply: state.moves.length + 1,
+      san,
+      sourceRaw: null,
+      confidence: 0.15,
+      status: 'guessed',
+      alternatives: [san, ...others]
+        .slice(0, options.maxAlternatives)
+        .map((s, idx) => ({ san: s, score: 1 / (idx + 2) })),
+      fenBefore: state.fen,
+    };
+    state = {
+      ...state,
+      fen: cache.applyMove(state.fen, san),
+      moves: [...state.moves, move],
+      lastMoveTo: squareOf(san),
+      trailingSkips: 0,
+      exactRun: 0,
+      resyncRemaining: 0,
+      resyncCosts: [],
+    };
+  });
+
+  // Re-read the cells from the gap through the current one. gaps.ts already
+  // replayed them; this builds the same moves with their confidence and
+  // alternatives the way every other match is built.
+  for (let i = 0; i < plan.replay.length; i++) {
+    const slot = slots[plan.slot + i]!;
+    if (!slot.cell) return null;
+    const ranked = rankCandidates(cache.legalSans(state.fen), slot.cell);
+    const exact = ranked.find((c) => c.san === plan.replay[i]);
+    if (!exact || exact.cost !== 0) return null;
+    state = extendWithMatch(state, slot, exact, ranked, cache, options, 0);
+  }
+  if (state.slotIndex !== beam.slotIndex + 1) return null;
+
+  const plies = plan.inserted.length === 2 ? 2 : 1;
+  const latestPly = firstPly + (plan.latestSlot - plan.slot);
+  const gap: DecodedGap = {
+    ply: firstPly,
+    plies,
+    latestPly,
+    note: gapNote(firstPly, plies, latestPly),
+  };
+  return {
+    ...state,
+    cost: state.cost - refund + (plies === 2 ? GAP_PAIR_COST : GAP_SINGLE_COST),
+    guarded: true,
+    gaps: [...beam.gaps, gap],
+    warnings: [...beam.warnings, gap.note],
+  };
+}
+
+/** The sentence the page shows for a gap. Move numbers, not plies. */
+function gapNote(firstPly: number, plies: 1 | 2, latestPly: number): string {
+  const moveNumber = plyToMoveLabel(firstPly);
+  const whiteFirst = firstPly % 2 === 1;
+  let note: string;
+  if (plies === 2 && whiteFirst) {
+    note =
+      moveNumber === 1
+        ? 'A move pair seems to be missing at the start of the game.'
+        : `A move pair seems to be missing after move ${moveNumber - 1}.`;
+  } else if (plies === 2) {
+    note =
+      `Two moves seem to be missing: Black's move ${moveNumber} and ` +
+      `White's move ${moveNumber + 1}.`;
+  } else {
+    note = `${whiteFirst ? 'White' : 'Black'}'s move ${moveNumber} seems to be missing.`;
+  }
+  if (latestPly > firstPly) {
+    note += ` It may belong as late as move ${plyToMoveLabel(latestPly)}.`;
+  }
+  return (
+    note +
+    (plies === 2
+      ? ' The two moves shown there are guesses: pick the moves that were played.'
+      : ' The move shown there is a guess: pick the move that was played.')
+  );
 }
 
 /**
