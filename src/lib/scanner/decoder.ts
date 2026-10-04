@@ -667,6 +667,7 @@ function insertGuessedPlies(
             .slice(0, options.maxAlternatives)
             .map((s, idx) => ({ san: s, score: 1 / (idx + 2) })),
           fenBefore: state.fen,
+          ...(consumesCell ? {} : { unwritten: true as const }),
         };
         if (consumesCell) BLANK_FILL.set(move, state.slotIndex);
         grown.push({
@@ -1029,6 +1030,7 @@ function applyGapPlan(
         .slice(0, options.maxAlternatives)
         .map((s, idx) => ({ san: s, score: 1 / (idx + 2) })),
       fenBefore: state.fen,
+      unwritten: true,
     };
     state = {
       ...state,

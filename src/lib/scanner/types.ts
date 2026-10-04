@@ -94,6 +94,13 @@ export interface DecodedMove {
   alternatives: Array<{ san: string; score: number }>;
   /** position before this move (for board preview) */
   fenBefore: string;
+  /**
+   * Set on a guessed move that has no cell on the sheet at all: the decoder
+   * put it in because a move (or a move pair) was played and never written.
+   * A guess that stands in a cell left blank does not carry it. The page
+   * words the two differently ("not on the sheet" / "blank on the sheet").
+   */
+  unwritten?: true;
 }
 
 /**
