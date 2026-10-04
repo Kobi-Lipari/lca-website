@@ -295,8 +295,11 @@ export async function requireClubRep(
   const authed = await requireAuthedMember(request, env)
   if (authed instanceof Response) return authed
 
-  // Admins, the club's own rep, and the regional representative whose seat
-  // covers the club's region.
+  // An admin is an admin here too, so the second factor still applies.
+  if (authed.member.role === 'lca_admin') return requireAdmin(request, env)
+
+  // The club's own rep, and the regional representative whose seat covers
+  // the club's region.
   const { canManageClub } = await import('./permissions')
   if (await canManageClub(env.DB, authed.member, clubId)) return authed
 
@@ -310,6 +313,10 @@ export async function requireTournamentManager(
 ): Promise<AuthedMember | Response> {
   const authed = await requireAuthedMember(request, env)
   if (authed instanceof Response) return authed
+
+  // Admins manage every event, including refunds and emailing entrants, so
+  // they go the long way round and the second factor still applies.
+  if (authed.member.role === 'lca_admin') return requireAdmin(request, env)
 
   const { canManageTournament } = await import('./permissions')
   const allowed = await canManageTournament(
@@ -372,7 +379,12 @@ export async function requireSeatAccess(
   if (authed instanceof Response) return authed
 
   // Admins and observers read every seat. Observers may reply and log notes
-  // but not delete; the delete handler checks isObserver.
+  // but not delete; the delete handler checks isObserver. An admin needs the
+  // second factor here as everywhere else.
+  if (authed.member.role === 'lca_admin') {
+    const admin = await requireAdmin(request, env)
+    if (admin instanceof Response) return admin
+  }
   if (authed.member.role === 'lca_admin' || isObserver(authed.member)) {
     const { results } = await env.DB.prepare(
       `SELECT id FROM board_members WHERE is_active = 1`,

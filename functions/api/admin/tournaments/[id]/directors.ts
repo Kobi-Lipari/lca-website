@@ -1,6 +1,6 @@
 // functions/api/admin/tournaments/[id]/directors.ts
 import type { Env, MemberRow } from '../../../../types'
-import { isObserver, isResponse, requireAuthedMember } from '../../../../utils/auth'
+import { isObserver, isResponse, requireAdmin, requireAuthedMember } from '../../../../utils/auth'
 import { canManageTournament } from '../../../../utils/permissions'
 import { recordAdminAction } from '../../../../utils/audit'
 import {
@@ -54,6 +54,11 @@ async function requireCanAssign(
   // Only admins and the organizing club's rep hand out director access.
   // Directors run the event; they don't give others access to it.
   const isAdmin = authed.member.role === 'lca_admin'
+  if (isAdmin) {
+    // Second factor, as on every other admin action.
+    const admin = await requireAdmin(context.request, context.env)
+    if (isResponse(admin)) return admin
+  }
   const isOwnRep = authed.member.role === 'club_rep' &&
     !!tournament.club_id && authed.member.club_id === tournament.club_id
   if (!isAdmin && !isOwnRep) {

@@ -1,6 +1,6 @@
 // functions/api/admin/tournaments.ts
 import type { Env } from '../../types'
-import { isResponse, requireAuthedMember } from '../../utils/auth'
+import { isResponse, requireAdmin, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 import { recordAdminAction } from '../../utils/audit'
 
@@ -46,6 +46,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   if (!isAdmin && !isClubRep) {
     return errorResponse('Forbidden', 403)
+  }
+  if (isAdmin) {
+    // Second factor, as on every other admin action.
+    const admin = await requireAdmin(context.request, context.env)
+    if (isResponse(admin)) return admin
   }
 
   const body = await parseJsonBody<CreateTournamentBody>(context.request)

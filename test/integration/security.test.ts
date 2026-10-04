@@ -4,13 +4,21 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { env } from 'cloudflare:test'
 import { invoke, resetHarness, stripeSessions } from './harness'
-import { seedMember, seedTournament, seedTournamentDirector } from './factories'
+import { seedAdmin, seedClub, seedMember, seedRegistration, seedTournament, seedTournamentDirector } from './factories'
 
 import { isSafeLink, sanitizePostHtml } from '../../functions/utils/posts'
 import { onRequestGet as documentsGet, onRequestPost as documentsPost } from '../../functions/api/governance/documents'
 import { onRequestPut as documentPut } from '../../functions/api/governance/documents/[id]'
 import { onRequestPost as registrationsPost } from '../../functions/api/registrations'
 import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
+import { onRequestPost as tournamentCreate } from '../../functions/api/admin/tournaments'
+import { onRequestPatch as tournamentPatch } from '../../functions/api/admin/tournaments/[id]'
+import { onRequestPost as directorsPost } from '../../functions/api/admin/tournaments/[id]/directors'
+import { onRequestPost as announcePost } from '../../functions/api/admin/tournaments/[id]/announce'
+import { onRequestPatch as clubPatch } from '../../functions/api/admin/clubs/[id]'
+import { onRequestGet as boardTicketsGet } from '../../functions/api/board/tickets'
+import { onRequestPost as boardTicketPost, onRequestDelete as boardTicketDelete } from '../../functions/api/board/tickets/[id]'
+import { onRequestPost as contactPost } from '../../functions/api/contact'
 
 beforeEach(resetHarness)
 
@@ -173,5 +181,60 @@ describe('changing the section of an entry', () => {
     const res = await invoke(registrationPatch, { method: 'PATCH', as: director, params: { id }, body: { section: 'Open' } })
     expect(res.status).toBe(200)
     expect(await entryRow(id)).toEqual({ section: 'Open', payment_status: 'paid' })
+  })
+})
+
+describe('an admin signed in with a password only', () => {
+  // requireAdmin refuses a session without a second factor. The club,
+  // tournament and board-inbox guards used to let the same admin through on
+  // the role alone, which left most of the admin's reach open to a stolen
+  // password.
+  it('gets no further through the manager and board guards than through requireAdmin', async () => {
+    const admin = await seedAdmin()
+    const clubId = await seedClub()
+    const tournamentId = await seedTournament({ clubId })
+    const player = await seedMember()
+    const entry = await seedRegistration({ tournamentId, memberId: player, paymentStatus: 'paid' })
+    const ticket = await invoke(contactPost, { method: 'POST', body: { name: 'A', email: 'a@example.org', subject: 'S', body: 'B' } })
+    const { ticketId } = await ticket.json<{ ticketId: string }>()
+
+    const weak = { as: admin, aal: 'aal1' as const }
+    const attempts = {
+      tournamentEdit: await invoke(tournamentPatch, { ...weak, method: 'PATCH', params: { id: tournamentId }, body: { name: 'Renamed' } }),
+      clubEdit: await invoke(clubPatch, { ...weak, method: 'PATCH', params: { id: clubId }, body: { name: 'Renamed club' } }),
+      tournamentCreate: await invoke(tournamentCreate, { ...weak, method: 'POST', body: { name: 'New', location: 'X', date: '2027-01-01', entryFee: 5 } }),
+      directorAssign: await invoke(directorsPost, { ...weak, method: 'POST', params: { id: tournamentId }, body: { memberId: player } }),
+      refund: await invoke(registrationPatch, { ...weak, method: 'PATCH', params: { id: entry }, body: { paymentStatus: 'refunded' } }),
+      emailEntrants: await invoke(announcePost, { ...weak, method: 'POST', params: { id: tournamentId }, body: { subject: 's', body: 'b' } }),
+      inbox: await invoke(boardTicketsGet, { ...weak, path: '/api/board/tickets' }),
+      ticketReply: await invoke(boardTicketPost, { ...weak, method: 'POST', params: { id: ticketId }, body: { body: 'hi' } }),
+      ticketDelete: await invoke(boardTicketDelete, { ...weak, method: 'DELETE', params: { id: ticketId } }),
+    }
+    const statuses = Object.fromEntries(Object.entries(attempts).map(([name, res]) => [name, res.status]))
+    expect(statuses).toEqual({
+      tournamentEdit: 403, clubEdit: 403, tournamentCreate: 403, directorAssign: 403, refund: 403,
+      emailEntrants: 403, inbox: 403, ticketReply: 403, ticketDelete: 403,
+    })
+    expect(await attempts.tournamentEdit.json()).toMatchObject({ mfaRequired: true })
+  })
+
+  it('with the second factor, the same calls go through', async () => {
+    const admin = await seedAdmin()
+    const clubId = await seedClub()
+    const tournamentId = await seedTournament({ clubId })
+    expect((await invoke(tournamentPatch, { as: admin, method: 'PATCH', params: { id: tournamentId }, body: { name: 'Renamed' } })).status).toBe(200)
+    expect((await invoke(clubPatch, { as: admin, method: 'PATCH', params: { id: clubId }, body: { name: 'Renamed club' } })).status).toBe(200)
+    expect((await invoke(boardTicketsGet, { as: admin, path: '/api/board/tickets' })).status).toBe(200)
+  })
+
+  it('directors and club reps are not asked for one', async () => {
+    const clubId = await seedClub()
+    const rep = await seedMember({ role: 'club_rep', clubId })
+    const director = await seedMember()
+    const tournamentId = await seedTournament({ clubId })
+    await seedTournamentDirector(tournamentId, director)
+    expect((await invoke(tournamentPatch, { as: director, aal: 'aal1', method: 'PATCH', params: { id: tournamentId }, body: { description: 'Bring a clock' } })).status).toBe(200)
+    expect((await invoke(clubPatch, { as: rep, aal: 'aal1', method: 'PATCH', params: { id: clubId }, body: { description: 'Thursdays' } })).status).toBe(200)
+    expect((await invoke(tournamentCreate, { as: rep, aal: 'aal1', method: 'POST', body: { name: 'Club open', location: 'X', date: '2027-01-01', entryFee: 5 } })).status).toBe(201)
   })
 })
