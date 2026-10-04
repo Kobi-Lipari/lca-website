@@ -199,13 +199,18 @@ function costOfFirst(run: Run, cells: number): number {
  * cell was left empty, a move was played, and some written move afterwards
  * is only legal if it was this one. Empty when no later cell cares which
  * move it was; the decoder's ordinary guess is as good as any then.
+ *
+ * `tier` groups the fills the later cells cannot tell apart (they read as
+ * far, as cheaply, with the same check marks borne out): 0 for the best
+ * supported. Within a tier the order here means nothing; the decoder puts
+ * its ordinary guess order on it.
  */
 export function findBlankFills(
   ctx: GapContext,
   fen: string,
   blankSlot: number,
   ply: number,
-): Array<{ san: string; support: number }> {
+): Array<{ san: string; support: number; tier: number }> {
   // Two blank cells in a row are a missing pair whose place is known: take
   // the first move of each pair that makes the cells after them read. The
   // second blank is filled the ordinary way on the next step.
@@ -213,18 +218,27 @@ export function findBlankFills(
     ctx.cells[blankSlot + 1] === null &&
     blankSlot + 2 < ctx.readings.length &&
     ctx.readings[blankSlot + 2] !== null;
-  const search = (): Array<{ san: string; support: number }> => {
+  const search = (): Array<{ san: string; support: number; tier: number }> => {
+    // Both lists come back best supported first, so a tier ends wherever
+    // the next entry is strictly worse.
+    const found: Array<{ san: string; run: Run }> = [];
     if (twoBlanks) {
-      const firsts = new Map<string, number>();
+      const seen = new Set<string>();
       for (const pair of resolvePair(ctx, fen, blankSlot + 2, ply, 1)) {
-        if (pair.free[0] || firsts.has(pair.inserted[0])) continue;
-        firsts.set(pair.inserted[0], pair.run.sans.length);
+        if (pair.free[0] || seen.has(pair.inserted[0])) continue;
+        seen.add(pair.inserted[0]);
+        found.push({ san: pair.inserted[0], run: pair.run });
       }
-      return [...firsts].map(([san, support]) => ({ san, support }));
+    } else {
+      for (const u of resolveUnknown(ctx, fen, [], blankSlot + 1, ply, true)) {
+        if (u.how !== 'filler') found.push({ san: u.san, run: u.run });
+      }
     }
-    return resolveUnknown(ctx, fen, [], blankSlot + 1, ply, true)
-      .filter((u) => u.how !== 'filler')
-      .map((u) => ({ san: u.san, support: u.run.sans.length }));
+    let tier = 0;
+    return found.map((f, i) => {
+      if (i > 0 && betterRun(found[i - 1]!.run, f.run) !== 0) tier++;
+      return { san: f.san, support: f.run.sans.length, tier };
+    });
   };
   ctx.tolerant = false;
   let found = search();
@@ -241,7 +255,14 @@ export function findBlankFills(
  * cell at `needySlot` does not. Before supposing more moves are missing, ask
  * whether a different move in the blank makes that cell legal: the guess
  * was only a guess. `paid` is what the cells in between cost as read so
- * far; a new fill must not read them worse.
+ * far.
+ *
+ * The needy cell must then read exactly; that is the cell the new move is
+ * asked to explain. The cells in between may read worse than they did, as
+ * ordinary misreads, as long as that costs less than leaving the needy cell
+ * unreadable would (the first guess was often picked because it made the
+ * very next cell exact, so the right move can cost that cell a dropped 'x').
+ * `extra` says how much worse; the decoder charges it, so price decides.
  */
 export function findBlankRevisions(
   ctx: GapContext,
@@ -250,15 +271,15 @@ export function findBlankRevisions(
   ply: number,
   needySlot: number,
   paid: number,
-): Array<{ san: string; replay: string[] }> {
+): Array<{ san: string; replay: string[]; extra: number }> {
   const span = needySlot - blankSlot;
   if (span < 1 || span > VERIFY_CELLS) return [];
   const search = () =>
-    resolveUnknown(ctx, fen, [], blankSlot + 1, ply, true).filter(
+    resolveUnknown(ctx, fen, [], blankSlot + 1, ply, true, VERIFY_CELLS, needySlot).filter(
       (u) =>
         u.run.sans.length >= span &&
         u.run.costs[span - 1] === 0 &&
-        costOfFirst(u.run, span - 1) <= paid + 1e-9,
+        costOfFirst(u.run, span - 1) < paid + UNREADABLE_COST,
     );
   ctx.tolerant = false;
   let found = search();
@@ -267,7 +288,11 @@ export function findBlankRevisions(
     found = search();
     ctx.tolerant = false;
   }
-  return found.map((u) => ({ san: u.san, replay: u.run.sans.slice(0, span) }));
+  return found.map((u) => ({
+    san: u.san,
+    replay: u.run.sans.slice(0, span),
+    extra: Math.max(0, costOfFirst(u.run, span - 1) - paid),
+  }));
 }
 
 /* ------------------------------------------------------------------ */
@@ -607,6 +632,8 @@ function resolveUnknown(
   ply: number,
   allowBlind: boolean,
   cap = VERIFY_CELLS,
+  /** a cell that must read exactly even when misreads are allowed */
+  strictSlot?: number,
 ): Resolved[] {
   const { cache } = ctx;
   const legal = cache.legalSans(fen);
@@ -616,6 +643,7 @@ function resolveUnknown(
     forced !== undefined ? legal.filter((s) => s === forced) : legal;
   if (pool.length === 0) return [];
   const cellsPly = ply + 1 + fixedAfter.length;
+  const strictAt = strictSlot === undefined ? -1 : strictSlot - slot;
 
   // 'blind': no hint which move it was, try them all (cheap only because
   // nearly all fail at the first cell). 'needed': shortlisted by the cell
@@ -627,7 +655,7 @@ function resolveUnknown(
     const passed = cache.passTurn(fen);
     const start = passed === null ? null : playFixed(ctx, passed, fixedAfter, ply + 1);
     if (start) {
-      const passedRun = exactRun(ctx, start.fen, slot, cap, cellsPly);
+      const passedRun = exactRun(ctx, start.fen, slot, cap, cellsPly, strictAt);
       if (passedRun.stop !== 'mismatch') {
         mode = 'filler';
         fillerMustReach = passedRun.sans.length;
@@ -655,7 +683,7 @@ function resolveUnknown(
     ctx.work.ops++;
     const placed = playFixed(ctx, afterMove, fixedAfter, ply + 1);
     if (!placed) continue;
-    const run = exactRun(ctx, placed.fen, slot, cap, cellsPly, mode === 'blind' ? 0 : -1);
+    const run = exactRun(ctx, placed.fen, slot, cap, cellsPly, mode === 'blind' ? 0 : strictAt);
     if (mode === 'filler') {
       if (run.sans.length >= fillerMustReach) {
         out.push({ san, fixed: placed.sans, run, how: mode });

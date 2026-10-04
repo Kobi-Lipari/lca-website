@@ -317,7 +317,9 @@ export function decodeScan(
         if (beam.cost > cheapestLive + GAP_BEAM_SLACK) continue;
         fills++;
         next.unshift(
-          ...fillBlank(beam, cache, options, gapContext).filter((b) => honoursForced(b, options)),
+          ...fillBlank(beam, activeSlots, cache, options, gapContext).filter((b) =>
+            honoursForced(b, options),
+          ),
         );
       }
     }
@@ -384,8 +386,12 @@ export function decodeScan(
  * replayed and read exactly.
  */
 const MATCH_COST = new WeakMap<DecodedMove, number>();
-/** Guesses that stand in a blank cell: the place is known, the move is not. */
-const BLANK_FILL = new WeakSet<DecodedMove>();
+/**
+ * Guesses that stand in a blank cell (the place is known, the move is not),
+ * with the index of that cell. The cursor alone does not give it back: a
+ * cell skipped after the blank moves the cursor on without adding a move.
+ */
+const BLANK_FILL = new WeakMap<DecodedMove, number>();
 
 function isLive(beam: Beam, slots: readonly CellSlot[]): boolean {
   return beam.slotIndex < slots.length && !beam.finishedResult;
@@ -662,7 +668,7 @@ function insertGuessedPlies(
             .map((s, idx) => ({ san: s, score: 1 / (idx + 2) })),
           fenBefore: state.fen,
         };
-        if (consumesCell) BLANK_FILL.add(move);
+        if (consumesCell) BLANK_FILL.set(move, state.slotIndex);
         grown.push({
           ...state,
           fen: cache.applyMove(state.fen, san),
@@ -832,9 +838,11 @@ function probeForGap(
   const recent = beam.moves.slice(beam.moves.length - back);
 
   // If the cells read so far follow a guess in a blank cell, the likeliest
-  // thing wrong is that guess. Try another move there first.
+  // thing wrong is that guess. Try another move there first. A revision
+  // that reads the cells in between no worse settles it; one that reads
+  // them worse is offered beside the gap plans and pays for it.
   const revised = reviseBlank(beam, slots, cache, options, context);
-  if (revised.length > 0) return revised;
+  if (revised.some((r) => r.clean)) return revised.map((r) => r.beam);
 
   const plans = findGapPlans(context, {
     fen: beam.fen,
@@ -843,7 +851,7 @@ function probeForGap(
     history: recent.map((m) => m.fenBefore),
     historyCosts: recent.map((m) => MATCH_COST.get(m) ?? 0),
   });
-  const out: Beam[] = [];
+  const out: Beam[] = revised.map((r) => r.beam);
   for (const plan of plans) {
     const built = applyGapPlan(beam, plan, slots, cache, options);
     if (built) out.push(built);
@@ -857,17 +865,21 @@ function reviseBlank(
   cache: ChessCache,
   options: DecodeOptions,
   context: GapContext,
-): Beam[] {
+): Array<{ beam: Beam; clean: boolean }> {
   const guessIndex = beam.moves.length - beam.exactRun - 1;
   const guess = beam.moves[guessIndex];
-  if (!guess || !BLANK_FILL.has(guess)) return [];
-  const blankSlot = beam.slotIndex - beam.exactRun - 1;
+  const blankSlot = guess ? BLANK_FILL.get(guess) : undefined;
+  if (!guess || blankSlot === undefined) return [];
+  // Only when every cell since the blank was read as one move. If one was
+  // skipped, the cells and the moves no longer pair off and there is no
+  // line of play to replay with a different guess.
+  if (blankSlot + 1 + beam.exactRun !== beam.slotIndex) return [];
   let paid = 0;
   for (let i = guessIndex + 1; i < beam.moves.length; i++) {
     paid += MATCH_COST.get(beam.moves[i]!) ?? 0;
   }
-  const out: Beam[] = [];
-  for (const { san, replay } of findBlankRevisions(
+  const out: Array<{ beam: Beam; clean: boolean }> = [];
+  for (const { san, replay, extra } of findBlankRevisions(
     context,
     guess.fenBefore,
     blankSlot,
@@ -876,7 +888,7 @@ function reviseBlank(
     paid,
   ).slice(0, 2)) {
     const move: DecodedMove = { ...guess, san };
-    BLANK_FILL.add(move);
+    BLANK_FILL.set(move, blankSlot);
     let state: Beam = {
       ...beam,
       fen: cache.applyMove(guess.fenBefore, san),
@@ -903,7 +915,9 @@ function reviseBlank(
       }
       state = extendWithMatch(state, slot, read, ranked, cache, options, 0);
     }
-    if (ok && state.slotIndex === beam.slotIndex + 1) out.push(state);
+    if (ok && state.slotIndex === beam.slotIndex + 1) {
+      out.push({ beam: state, clean: extra <= COST_EPSILON });
+    }
   }
   return out;
 }
@@ -911,11 +925,42 @@ function reviseBlank(
 /** Beams that fill this beam's blank cell with a move a later cell needs. */
 function fillBlank(
   beam: Beam,
+  slots: readonly CellSlot[],
   cache: ChessCache,
   options: DecodeOptions,
   context: GapContext,
 ): Beam[] {
-  const fills = findBlankFills(context, beam.fen, beam.slotIndex, beam.moves.length);
+  const found = findBlankFills(context, beam.fen, beam.slotIndex, beam.moves.length);
+  if (found.length === 0) return [];
+  // The later cells often cannot tell two fills apart: the sheet reads as
+  // far with either. The order they were found in is the move generator's
+  // and means nothing, so among equals the ordinary guess order decides
+  // (how the next cell reads, then recapture, check, capture). When no
+  // later cell prefers a move, this is the guess the decoder made before
+  // it looked further ahead.
+  let fills = found;
+  const tied = found.some((f, i) => i > 0 && i <= 2 && f.tier === found[i - 1]!.tier);
+  if (tied) {
+    const nextWritten = nextWrittenCell(slots, beam.slotIndex + 1);
+    const byPriors = rankLegalByPriors(beam.fen, beam.lastMoveTo, cache);
+    const ordinary = nextWritten
+      ? rankLegalByLookahead(beam.fen, nextWritten, cache, beam.lastMoveTo)
+      : byPriors;
+    const rank = new Map<string, number>();
+    ordinary.forEach((san, i) => rank.set(san, i));
+    byPriors.forEach((san, i) => {
+      if (!rank.has(san)) rank.set(san, ordinary.length + i);
+    });
+    fills = found
+      .map((f, i) => ({ f, i }))
+      .sort(
+        (a, b) =>
+          a.f.tier - b.f.tier ||
+          (rank.get(a.f.san) ?? Infinity) - (rank.get(b.f.san) ?? Infinity) ||
+          a.i - b.i,
+      )
+      .map((e) => e.f);
+  }
   return fills.slice(0, 2).map(({ san }) => {
     const move: DecodedMove = {
       ply: beam.moves.length + 1,
@@ -928,7 +973,7 @@ function fillBlank(
         .map((f, idx) => ({ san: f.san, score: 1 / (idx + 2) })),
       fenBefore: beam.fen,
     };
-    BLANK_FILL.add(move);
+    BLANK_FILL.set(move, beam.slotIndex);
     return {
       ...beam,
       fen: cache.applyMove(beam.fen, san),
