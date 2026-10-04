@@ -44,6 +44,38 @@ describe('two people going for the last seat at the same moment', () => {
     expect(await entered(tournamentId)).toBe(1)
     expect(await paymentRows(tournamentId)).toBe(1)
   })
+
+  it.each([
+    ['a free section', 0],
+    ['a paid section', 20],
+  ])('%s: the one who misses it, having asked for the waitlist, is put on the waitlist', async (_label, entryFee) => {
+    const tournamentId = await seedTournament({ maxPlayers: 1, sections: [{ name: 'Open', entryFee }] })
+    const a = await seedMember()
+    const b = await seedMember()
+    // "A seat, or the waitlist if there is none."
+    const join = (memberId: string) => invoke(registrationsPost, {
+      method: 'POST', as: memberId, body: { tournamentId, section: 'Open', waitlist: true },
+    })
+
+    const results = await Promise.all([join(a), join(b)])
+
+    expect(results.map((r) => r.status)).toEqual([201, 201])
+    const bodies = await Promise.all(results.map((r) =>
+      r.json<{ registration: { waitlisted?: boolean }; paymentUrl: string | null }>()))
+    const waiting = bodies.filter((body) => body.registration.waitlisted)
+    expect(waiting.length).toBe(1)
+    expect(waiting[0].paymentUrl).toBeNull()
+
+    expect(await count(
+      'SELECT COUNT(*) n FROM registrations WHERE tournament_id = ? AND waitlisted_at IS NULL', tournamentId,
+    )).toBe(1)
+    expect(await count(
+      'SELECT COUNT(*) n FROM registrations WHERE tournament_id = ? AND waitlisted_at IS NOT NULL', tournamentId,
+    )).toBe(1)
+    // The waitlist costs nothing until a spot is offered: the only payment
+    // row is the one for the seat.
+    expect(await paymentRows(tournamentId)).toBe(1)
+  })
 })
 
 describe('one member submitting the form twice at the same moment', () => {
