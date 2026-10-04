@@ -1,6 +1,6 @@
 # Scoresheet scanner: status
 
-Last updated: 2026-09-28 (scanner page)
+Last updated: 2026-10-04 (unwritten moves, branch `feat/scanner-skipped-pairs`, not finished: see below)
 
 ## Where things stand
 
@@ -13,10 +13,12 @@ Week 1 (the decoder core) is complete and was recovered from the August work ses
 | `candidates` cases | 34/34 |
 | S3 decoder scenarios | 10/10 |
 | Metrics: clean sheets | 100% game accuracy |
-| Metrics: typical noise | 87.2% (1st-divergence recall 95.0%, flag recall 71.0%, flag precision 46.0%) |
-| Metrics: time pressure | 52.0% (52.1% before the prune tie-break change) |
-| S5: skipped move pair | 0/60 recovered (40.0% flagged; was 26.7% before the tail-truncation fix below) |
-| S5: half-move shift | 6/60 recovered |
+| Metrics: typical noise | 96.4% (1st-divergence recall 94.3%, flag recall 83.3%, flag precision 19.1%); was 87.5% (95.2%, 73.9%, 46.6%) |
+| Metrics: time pressure | 61.4% (1st-divergence recall 88.3%, flag recall 74.2%, flag precision 63.7%); was 53.3% (88.3%, 77.0%, 72.0%) |
+| S5: skipped move pair | 44/60 recovered, 48/60 first divergence flagged; was 0/60 and 17/60 |
+| S5: half-move shift | 52/60 recovered, 58/60 first divergence flagged; was 6/60 and 23/60 |
+
+The "was" figures are main at 4c1a466 measured on 2026-10-04 with the real chess.js, same machine and commands as the new ones. They differ a little from the figures this table carried before (87.2%, 52.0%, 40.0% flagged); why was not looked into.
 
 ## Layout
 
@@ -56,10 +58,26 @@ Three changes, output identical (snapshot hash) apart from one tie in 60 sheets:
 
 - **Silent tail truncation (2026-09-27).** When the last written cells were unreadable, the decoder skipped them and returned a shorter game with no warning and no `truncatedAtPly`, so it looked complete. It now reports truncation there. Found because the real vitest run failed `truncates rather than inventing moves`: that test had never run under vitest before (the August checks used the sandbox scripts), and it passed vacuously on an empty tail. Accuracy numbers are unchanged.
 
+## Unwritten moves (branch `feat/scanner-skipped-pairs`, not finished)
+
+- `src/lib/scanner/gaps.ts`: at a cell with no clean legal reading, the decoder asks whether one or two unwritten moves at or before it make that cell and the ones after it read exactly as written. The unknown moves are found from what the later cells need (read the sheet with the unknown move as a pass; the first cell that fails says which move is needed), not by trying every pair. A plan needs three exact cells behind it, is placed at the earliest cell that fits, and joins the beam as one hypothesis priced once (pair 2.0, single ply 2.5).
+- The stand-in moves are `guessed` with `sourceRaw: null`. `DecodedGame.gaps` says where each gap is, how many plies, how late it could be, and carries a sentence for the page ("A move pair seems to be missing after move 14. ..."); the same sentence is in `warnings`.
+- A blank cell's guess is now taken from what later cells need, and revised when a later cell contradicts it.
+- `forcedSans` holds inside and around a gap (tested).
+- Tests: `src/lib/scanner/__tests__/gaps.test.ts`.
+
+Not done on this branch:
+
+- **Targets not met for a skipped pair** (80% recovered, 90% flagged): 44/60 and 48/60. In 8 of the 16 failures the gap is found but the no-gap reading of the rest of the sheet is cheaper than the gap's price (the sheet is a legal game as written but for one to three cheap slips). In a trial with the pair priced at 1.0 (plus a small look-back change that is not on this branch) the check reached 49/60 and 54/60, but typical flag recall fell from 83.3% to 66.2%, so the price was left at 2.0.
+- **Speed:** time-pressure sheets decode at 1.40x main's median time (737 to 1031 ms; clean 1.02x, typical 1.22x; three interleaved rounds). The aim was 1.3x.
+- **The page words stand-in moves wrongly.** `ScannerPage.tsx` was not changed. It already prints the "seems to be missing" sentence (it shows `warnings` under "Heads up"), colours the stand-ins amber, counts them as needing a look and opens the picker for them. But it calls them "blank on the sheet", and they are not: there was no cell for them. It should use `DecodedGame.gaps` to say "not on the sheet" in the move list and in the picker.
+- **No held-out check.** All numbers are on the 60-game corpus the mechanism was developed on.
+- **Snapshot hash changed.** 24 of its 60 sheets decode differently from main: no clean sheet, 9 typical, 15 time pressure. Counting wrong and missing plies, 13 are better, 3 worse, 8 equal. The typical ones changed because a blank cell's move is now guessed from later cells; one time-pressure sheet with no gap reports a pair that is not there.
+
 ## Known gaps
 
-- **Skipped move pairs.** When a player skips writing a whole move pair, the decoder can't realign and falls back to flagging. Fixing this needs game-level alignment hypotheses (try "a pair is missing here" as a branch in the beam) rather than per-cell repairs.
-- **Flag precision (46%)** is low: too many correct moves are flagged for review. Tune after real scans are available, since the synthetic noise model is the main guess here.
+- **Skipped move pairs** recover on 44 of 60 clean sheets, and rarely under time-pressure noise (a gap was reported on 5 of the 20 sheets that had one). See above.
+- **Flag precision** is low: too many correct moves are flagged for review (about 10% of correct moves on typical noise, before and after). The percentage fell from 46.6% to 19.1% because far fewer moves are wrong, not because more correct ones are flagged (312 to 361). Tune after real scans are available, since the synthetic noise model is the main guess here.
 - The confusion matrix is hand-built. Replace it with counts from real transcriptions once there are some.
 
 ## Week 2
