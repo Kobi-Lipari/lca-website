@@ -1,6 +1,6 @@
 # Scoresheet scanner: status
 
-Last updated: 2026-10-04 (unwritten moves, branch `feat/scanner-skipped-pairs`, not finished: see below)
+Last updated: 2026-10-04 (unwritten moves, branch `feat/scanner-skipped-pairs`: held-out check added, not ready to merge, see below)
 
 ## Where things stand
 
@@ -13,12 +13,12 @@ Week 1 (the decoder core) is complete and was recovered from the August work ses
 | `candidates` cases | 34/34 |
 | S3 decoder scenarios | 10/10 |
 | Metrics: clean sheets | 100% game accuracy |
-| Metrics: typical noise | 96.4% (1st-divergence recall 94.3%, flag recall 83.3%, flag precision 19.1%); was 87.5% (95.2%, 73.9%, 46.6%) |
-| Metrics: time pressure | 61.4% (1st-divergence recall 88.3%, flag recall 74.2%, flag precision 63.7%); was 53.3% (88.3%, 77.0%, 72.0%) |
+| Metrics: typical noise | 96.4% (1st-divergence recall 94.1%, flag recall 83.3%, flag precision 19.1%); was 87.5% (95.2%, 73.9%, 46.6%) |
+| Metrics: time pressure | 61.8% (1st-divergence recall 86.4%, flag recall 74.2%, flag precision 63.2%); was 53.3% (88.3%, 77.0%, 72.0%) |
 | S5: skipped move pair | 44/60 recovered, 48/60 first divergence flagged; was 0/60 and 17/60 |
 | S5: half-move shift | 52/60 recovered, 58/60 first divergence flagged; was 6/60 and 23/60 |
 
-The "was" figures are main at 4c1a466 measured on 2026-10-04 with the real chess.js, same machine and commands as the new ones. They differ a little from the figures this table carried before (87.2%, 52.0%, 40.0% flagged); why was not looked into.
+The "was" figures are main at 4c1a466 measured on 2026-10-04 with the real chess.js, same machine and commands as the new ones. They differ a little from the figures this table carried before (87.2%, 52.0%, 40.0% flagged). The reason is the move generator: with `CHESS_SHIM=1` main gives exactly the old figures (typical 87.2% / 95.0% / 71.0% / 46.0%, time pressure 52.0%, S5 half-shift 24/60 = 40.0% flagged). The shim lists legal moves in a different order from chess.js, and the decoder breaks cost ties by that order. The old table was taken with the shim; the browser runs chess.js, so the chess.js figures are the ones to use. All of the above is the development set (the 60-game corpus). The held-out figures are in "Unwritten moves" below and are lower.
 
 ## Layout
 
@@ -38,6 +38,7 @@ npm run scanner:check    # S3 and S5 decoder checks
 npm run scanner:metrics  # accuracy table across noise profiles
 npm run scanner:bench    # decode time per game (real chess.js)
 npm run scanner:snapshot # hash of 60 decodes; must not change on a pure refactor/speed-up
+npm run scanner:heldout  # fresh games, gaps dropped anywhere, noise profiles; --seed N, --decoder path, --set dev
 ```
 
 In a workspace without chess.js installed, prefix with `CHESS_SHIM=1` to use the sandbox move generator. Shim timings are meaningless for the browser.
@@ -58,26 +59,61 @@ Three changes, output identical (snapshot hash) apart from one tie in 60 sheets:
 
 - **Silent tail truncation (2026-09-27).** When the last written cells were unreadable, the decoder skipped them and returned a shorter game with no warning and no `truncatedAtPly`, so it looked complete. It now reports truncation there. Found because the real vitest run failed `truncates rather than inventing moves`: that test had never run under vitest before (the August checks used the sandbox scripts), and it passed vacuously on an empty tail. Accuracy numbers are unchanged.
 
-## Unwritten moves (branch `feat/scanner-skipped-pairs`, not finished)
+## Unwritten moves (branch `feat/scanner-skipped-pairs`, not ready to merge)
 
-- `src/lib/scanner/gaps.ts`: at a cell with no clean legal reading, the decoder asks whether one or two unwritten moves at or before it make that cell and the ones after it read exactly as written. The unknown moves are found from what the later cells need (read the sheet with the unknown move as a pass; the first cell that fails says which move is needed), not by trying every pair. A plan needs three exact cells behind it, is placed at the earliest cell that fits, and joins the beam as one hypothesis priced once (pair 2.0, single ply 2.5).
-- The stand-in moves are `guessed` with `sourceRaw: null`. `DecodedGame.gaps` says where each gap is, how many plies, how late it could be, and carries a sentence for the page ("A move pair seems to be missing after move 14. ..."); the same sentence is in `warnings`.
-- A blank cell's guess is now taken from what later cells need, and revised when a later cell contradicts it.
+- `src/lib/scanner/gaps.ts`: at a cell with no clean legal reading, the decoder asks whether one or two unwritten moves at or before it make that cell and the ones after it read exactly as written. The unknown moves are worked out from what the later cells need. A plan needs three exact cells behind it, goes at the earliest cell that fits, and joins the beam as one hypothesis with one price (pair 2.0, single ply 2.5).
+- The stand-in moves are `guessed` with `sourceRaw: null` and `unwritten: true`. `DecodedGame.gaps` says where each gap is, how many plies, how late it could be, and carries a sentence for the page ("A move pair seems to be missing after move 14. ...").
+- A blank cell's guess is taken from what later cells need. When the later cells cannot tell two guesses apart, the ordinary order decides (next cell, then recapture, check, capture). When a later cell contradicts the guess it is revised: the cell that needed the revision must then read exactly, and whatever the revision costs the cells in between is charged.
+- The page says "not on the sheet" for a move that has no cell (`unwritten`), and "blank on the sheet" only for a guess in an empty cell. Wording and the needs-a-look count are in `src/lib/scanner/moveSource.ts`.
 - `forcedSans` holds inside and around a gap (tested).
-- Tests: `src/lib/scanner/__tests__/gaps.test.ts`.
+- Tests: `src/lib/scanner/__tests__/gaps.test.ts`, `moveSource.test.ts`.
 
-Not done on this branch:
+### Held-out check
 
-- **Targets not met for a skipped pair** (80% recovered, 90% flagged): 44/60 and 48/60. In 8 of the 16 failures the gap is found but the no-gap reading of the rest of the sheet is cheaper than the gap's price (the sheet is a legal game as written but for one to three cheap slips). In a trial with the pair priced at 1.0 (plus a small look-back change that is not on this branch) the check reached 49/60 and 54/60, but typical flag recall fell from 83.3% to 66.2%, so the price was left at 2.0.
-- **Speed:** time-pressure sheets decode at 1.40x main's median time (737 to 1031 ms; clean 1.02x, typical 1.22x; three interleaved rounds). The aim was 1.3x.
-- **The page words stand-in moves wrongly.** `ScannerPage.tsx` was not changed. It already prints the "seems to be missing" sentence (it shows `warnings` under "Heads up"), colours the stand-ins amber, counts them as needing a look and opens the picker for them. But it calls them "blank on the sheet", and they are not: there was no cell for them. It should use `DecodedGame.gaps` to say "not on the sheet" in the move list and in the picker.
-- **No held-out check.** All numbers are on the 60-game corpus the mechanism was developed on.
-- **Snapshot hash changed.** 24 of its 60 sheets decode differently from main: no clean sheet, 9 typical, 15 time pressure. Counting wrong and missing plies, 13 are better, 3 worse, 8 equal. The typical ones changed because a blank cell's move is now guessed from later cells; one time-pressure sheet with no gap reports a pair that is not there.
+`npm run scanner:heldout` makes 60 fresh games from seeds the corpus never used (not selected for features), drops a pair or a single ply anywhere from the second row to the last written cell, and runs the three noise profiles on the same games. `--seed N` picks the set, `--decoder path` runs another build of the decoder on identical sheets, `--set dev` prints the development set in the same format. The set is for reporting, not tuning: after a decoder change made with held-out numbers in view, report on a seed not used before.
+
+Two sets were used. Set A (seed 31001) was run on main and on the branch before this stage changed the decoder. The decoder was then changed (blank-cell guesses only, traced on development sheets), so the final figures are on set B (seed 47001), which nothing was tuned on.
+
+| | dev: main | dev: branch | held-out A: main | A: branch before | held-out B: main | B: branch now | aim |
+|---|---|---|---|---|---|---|---|
+| Skipped pair: tail recovered | 0/60 | 44/60 | 3/60 | 32/60 | 6/60 | 36/60 | 48/60 |
+| ... and room made for the missing moves | 0/60 | 44/60 | 0/60 | 29/60 | 0/60 | 30/60 | |
+| Skipped pair: first divergence flagged | 17/60 | 48/60 | 24/60 | 40/60 | 22/60 | 36/60 | 54/60 |
+| Half-shift: tail recovered | 6/60 | 52/60 | 6/60 | 42/60 | 3/60 | 41/60 | 48/60 |
+| Half-shift: first divergence flagged | 23/60 | 58/60 | 30/60 | 47/60 | 18/60 | 46/60 | 54/60 |
+| Clean per-move accuracy | 100% | 100% | 100% | 100% | 100% | 100% | 100% |
+| Typical: accuracy / flag recall / 1st-div recall / flag precision | 87.5 / 73.9 / 95.2 / 46.6 | 96.4 / 83.3 / 94.1 / 19.1 | 86.6 / 76.4 / 94.9 / 51.8 | 93.1 / 74.4 / 82.9 / 28.8 | 85.9 / 69.8 / 85.0 / 53.3 | 91.4 / 60.1 / 82.9 / 34.1 | not worse |
+| Typical: flagged in all / correct moves flagged / wrong moves not flagged | 584 / 312 / 96 | 446 / 361 / 17 | 620 / 299 / 99 | 465 / 331 / 46 | 662 / 309 / 153 | 549 / 362 / 124 | |
+| Time pressure: same four | 53.3 / 77.0 / 88.3 / 72.0 | 61.8 / 74.2 / 86.4 / 63.2 | 47.2 / 74.1 / 89.7 / 74.2 | 53.2 / 68.2 / 87.7 / 66.4 | 46.9 / 74.3 / 83.1 / 73.5 | 57.4 / 70.1 / 83.1 / 63.1 | not worse |
+| Time pressure: flagged in all / correct moves flagged / wrong moves not flagged | 1583 / 444 / 340 | 1457 / 536 / 321 | 1650 / 425 / 429 | 1521 / 511 / 471 | 1584 / 420 / 402 | 1475 / 544 / 398 | |
+| Gap reported on a noisy sheet that has none (typical; time pressure) | 0; 0 | 1 of 60; 1 of 40 | 0; 0 | 1 of 60; 6 of 33 | 0; 0 | 2 of 60; 3 of 32 | 0 |
+
+"Tail recovered" is verify_s5's measure: the moves after the gap are the true moves. Near the end of a game the few cells after a missing pair can read as written with no room made, which that measure counts; the row under it does not.
+
+What the held-out sets show that the development set did not:
+
+- **A skipped pair recovers on 32 and 36 of 60 fresh sheets, not 44,** and the first divergence is flagged on 40 and 36, not 48. Both aims are missed by a wide margin. The half-shift recovers on 42 and 41 of 60 (aim 48) and is flagged on 47 and 46 (aim 54); on the development set it met both.
+- **Typical first-divergence recall fell on set A (94.9% to 82.9%)** although wrong moves that are not flagged fell from 99 to 46. On the one development sheet traced (synth-35) the newly unflagged first divergence is a misread that happens to be a legal move as written ("Kc8" for Rc8); main gets the same move wrong and unflagged, but an earlier flagged error came first. Whether that explains all of the set A sheets was not checked (the held-out set is not to be traced).
+- **Flag recall is below main under noise on the held-out sets:** typical 76.4% to 74.4% (A) and 69.8% to 60.1% (B); time pressure 74.1% to 68.2% (A) and 74.3% to 70.1% (B). On set A the number of wrong time-pressure moves with no flag rose (429 to 471); on set B it is level (402 to 398). A gap reported where none was dropped moves every later move to the wrong move number with nothing to flag it; that happened on 6 of 33 set A sheets before this stage's changes and on 3 of 32 set B sheets after them. The two sets are different sheets, so that is not a before and after.
+
+### Flag precision, and what tells the review burden
+
+Flag precision is wrong-and-flagged over all flagged, so it falls when fewer moves are wrong, even if no flag was added. On the development set (typical) main flags 584 moves and the branch 446. Of the branch's 361 correct-but-flagged moves, 297 are the same moves main flags, 60 are moves main got wrong (most of them flagged there too), and 4 are newly flagged; 7 that main flagged are now clear. Time pressure: 1583 flagged against 1457; of 536 correct-but-flagged, 411 the same as main, 114 moves main had wrong or missing, 7 newly flagged, 8 cleared. So the count of correct moves flagged rose (312 to 361, 444 to 536) because moves moved from wrong-and-flagged to right-and-flagged, and it cannot come back to main's count without unflagging moves the decoder now gets right from a noisy cell. What a member has to look at, the flagged total, went down in every set measured.
+
+### Not done, and known regressions
+
+- **Not ready to merge.** Held-out recovery is well short of the aims, time-pressure flag recall is below main, and gaps are still reported on noisy sheets that have none.
+- **Sheets that decode worse than on main** (development set, fewer correct plies): typical 3 (synth-90 41 to 40, synth-141 46 to 44, synth-40 70 to 69) against 24 better; time pressure 6 (synth-18 40 to 31, synth-13 30 to 20, synth-111 51 to 48, synth-151 50 to 48, synth-39 21 to 19, synth-7 29 to 28) against 32 better. Two of the typical ones were traced to a blank cell where main's guess happened to be the played move (a capture) and the new guess is another move that reads the later cells as well. The tie rule was written for that and did not change them, so the trace is incomplete. Snapshot: typical synth-42 (5 wrong to 8) and time-pressure synth-43 (66+9 to 69+7) are still worse and untraced.
+- **Gaps that are not there.** Fixed: the snapshot sheet that reported a pair at move 3 (a wrong blank guess; it is now revised). Remaining on the development set: typical synth-23 (a garbled cell after a wrong blank guess is skipped and a single stand-in put in its place: the tail comes back, 41 of 44 plies right against 5 on main, but the sentence says a move is missing when the cell is there and unreadable) and time-pressure synth-18 (a pair after a wrong blank guess; 31 plies right against 40 on main).
+- **Time-pressure truncation** rose from 3 sheets to 6 of 60 (development set).
+- **Speed.** Time pressure was 1.40x to 1.43x main's median on a quiet machine before this stage; nothing here was aimed at it except one memo. The one interleaved run of the final code (3 rounds) was taken while other runs loaded the machine: clean 0.98x, typical 1.19x (worst sheet 1.65x), time pressure 1.19x at the median with per-round medians of 1.47x, 0.97x and 1.33x, worst sheet 2.24x, 5 of 8 sheets over 1.3x. Treat the aim of 1.3x as not met until it is measured quietly. Lowering the work cap from 4000 to 2500 was tried: time-pressure accuracy 61.8% to 59.1% and one S5 pair lost, speed not measured. Left at 4000.
+- **Skipped pairs: no change to the mechanism.** Still 44/60 and 48/60 on the development set. The 8 sheets where the gap is found and loses on price were not worked on.
+- **Snapshot hash changed.** 24 of its 60 sheets decode differently from main: no clean sheet, 11 typical, 13 time pressure. By wrong and missing plies: 13 better, 2 worse, 5 equal with different moves, 4 with the same moves (alternatives, confidence, or the `unwritten` mark on a ply main also inserted). Every changed sheet has a blank cell or a structural corruption.
 
 ## Known gaps
 
-- **Skipped move pairs** recover on 44 of 60 clean sheets, and rarely under time-pressure noise (a gap was reported on 5 of the 20 sheets that had one). See above.
-- **Flag precision** is low: too many correct moves are flagged for review (about 10% of correct moves on typical noise, before and after). The percentage fell from 46.6% to 19.1% because far fewer moves are wrong, not because more correct ones are flagged (312 to 361). Tune after real scans are available, since the synthetic noise model is the main guess here.
+- **Skipped move pairs** recover on 44 of 60 development sheets and 32 to 36 of 60 fresh ones, and rarely under time-pressure noise. See above.
+- **Flag precision** is low: about 10% of correct moves are flagged on typical noise, before and after. See "Flag precision" above for why the percentage fell.
 - The confusion matrix is hand-built. Replace it with counts from real transcriptions once there are some.
 
 ## Week 2
