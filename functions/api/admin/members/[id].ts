@@ -36,8 +36,14 @@ export const onRequestDelete: PagesFunction<Env> = async (context) => {
     'SELECT 1 FROM admin_audit_log WHERE actor_id = ? LIMIT 1',
   ).bind(memberId).first()
   if (acted) {
+    // Not only admins and directors: a player who withdraws from a tournament
+    // online is logged as the one who acted, so this reaches ordinary members
+    // too. Only point at the role when there is one to take away.
+    const instead = existing.role === 'member'
+      ? 'Its role is already Member, so the account can simply be left in place.'
+      : 'To take away its access, change its role to Member instead.'
     return errorResponse(
-      'This account made changes that are recorded in the activity log, so it cannot be deleted. Change its role to Member instead. Nothing was changed.',
+      `This account cannot be deleted: the activity log records things it did (changes made as an admin or director, for example, or withdrawing from a tournament online), and those entries point at the account. ${instead} Nothing was changed.`,
       409,
     )
   }

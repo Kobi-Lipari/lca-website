@@ -11,6 +11,7 @@ import { invoke, resetHarness } from './harness'
 import { seedAdmin, seedMember, seedRegistration, seedTournament } from './factories'
 
 import { onRequestDelete as memberDelete } from '../../functions/api/admin/members/[id]'
+import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
 import { onRequestGet as manageGet } from '../../functions/api/admin/tournaments/[id]/manage'
 
 beforeEach(resetHarness)
@@ -113,8 +114,37 @@ describe('deleting a member with history on file', () => {
 
     const res = await remove(admin, formerAdmin)
     expect(res.status).toBe(409)
+    // This account has a role to take away, and the message says how.
+    const { error } = await res.json<{ error: string }>()
+    expect(error).toMatch(/activity log/)
+    expect(error).toMatch(/change its role to Member/)
+    expect(error).toMatch(/Nothing was changed/)
     expect(await count('SELECT COUNT(*) n FROM members WHERE id = ?', formerAdmin)).toBe(1)
     expect(await count('SELECT COUNT(*) n FROM admin_audit_log WHERE actor_id = ?', formerAdmin)).toBe(1)
+  })
+
+  it('does not tell the admin to change the role of an ordinary member who withdrew online', async () => {
+    // Withdrawing yourself is written to the activity log with the player as
+    // the one who acted, so this refusal reaches ordinary members too.
+    const admin = await seedAdmin()
+    const memberId = await seedMember()
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 0 }] })
+    const registrationId = await seedRegistration({ tournamentId, memberId })
+    const withdrawn = await invoke(registrationPatch, {
+      method: 'PATCH', as: memberId, params: { id: registrationId }, body: { withdrawn: true },
+    })
+    expect(withdrawn.status).toBe(200)
+    expect(await count('SELECT COUNT(*) n FROM admin_audit_log WHERE actor_id = ?', memberId)).toBe(1)
+
+    const res = await remove(admin, memberId)
+    expect(res.status).toBe(409)
+    const { error } = await res.json<{ error: string }>()
+    expect(error).toMatch(/activity log/)
+    expect(error).toMatch(/already Member/)
+    expect(error).not.toMatch(/change its role/i)
+    expect(error).toMatch(/Nothing was changed/)
+    expect(await count('SELECT COUNT(*) n FROM members WHERE id = ?', memberId)).toBe(1)
+    expect(await count('SELECT COUNT(*) n FROM registrations WHERE id = ?', registrationId)).toBe(1)
   })
 
   it('changes nothing when a reference it does not know about blocks the delete', async () => {
