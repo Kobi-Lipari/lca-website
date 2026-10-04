@@ -54,32 +54,18 @@ export type ActivationResult = 'activated' | 'already-completed' | 'no-member'
  * Two callers can now race — the webhook and the success page can arrive in
  * either order, or together. Reading the status and then writing it would let
  * both win, and both would extend the expiry, handing someone two years for
- * one payment. So the payment row is CLAIMED first with a conditional update,
- * and only the caller whose UPDATE actually changed a row goes on to touch
- * the membership.
+ * one payment. So the payment row is CLAIMED with a conditional update, and
+ * the membership changes only in the same transaction as a claim that
+ * actually changed a row.
  */
 export async function activateMembershipPayment(
   db: D1Database,
   params: { paymentId: string; memberId: string; paymentIntent?: string | null },
 ): Promise<ActivationResult> {
-  const claim = await db
-    .prepare(
-      `UPDATE payments
-          SET status = 'completed',
-              stripe_payment_intent = COALESCE(?, stripe_payment_intent)
-        WHERE id = ? AND status != 'completed'`,
-    )
-    .bind(params.paymentIntent ?? null, params.paymentId)
-    .run()
-
-  if (claim.meta.changes === 0) return 'already-completed'
-
   const member = await db
     .prepare('SELECT membership_expiry FROM members WHERE id = ?')
     .bind(params.memberId)
     .first<{ membership_expiry: string | null }>()
-
-  if (!member) return 'no-member'
 
   // The tier bought is stored on the payment (reference_id). Recording it on
   // the member is what lets a family membership extend to the children.
@@ -89,15 +75,34 @@ export async function activateMembershipPayment(
     .first<{ reference_id: string | null }>()
   const tier = payment?.reference_id && KNOWN_TIERS.has(payment.reference_id) ? payment.reference_id : null
 
-  await db
-    .prepare(
-      `UPDATE members
-          SET membership_status = 'active', membership_expiry = ?,
-              membership_type = COALESCE(?, membership_type)
-        WHERE id = ?`,
-    )
-    .bind(renewalExpiry(member.membership_expiry), tier, params.memberId)
-    .run()
+  // One batch, so one transaction: the member is activated only while the
+  // payment is still unclaimed, and the payment is claimed with it. These
+  // used to be separate statements with the claim first. When the member
+  // update then failed, the payment was already 'completed', so every retry
+  // (Stripe redelivering, the success page) saw it as done and the member
+  // who had paid was never activated.
+  const [, claim] = await db.batch([
+    db
+      .prepare(
+        `UPDATE members
+            SET membership_status = 'active', membership_expiry = ?1,
+                membership_type = COALESCE(?2, membership_type)
+          WHERE id = ?3
+            AND EXISTS (SELECT 1 FROM payments WHERE id = ?4 AND status != 'completed')`,
+      )
+      .bind(renewalExpiry(member?.membership_expiry), tier, params.memberId, params.paymentId),
+    db
+      .prepare(
+        `UPDATE payments
+            SET status = 'completed',
+                stripe_payment_intent = COALESCE(?, stripe_payment_intent)
+          WHERE id = ? AND status != 'completed'`,
+      )
+      .bind(params.paymentIntent ?? null, params.paymentId),
+  ])
+
+  if (claim.meta.changes === 0) return 'already-completed'
+  if (!member) return 'no-member'
 
   if (tier === 'family') await syncFamilyCoverage(db, params.memberId)
 
