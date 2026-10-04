@@ -206,8 +206,26 @@ export function findBlankFills(
   blankSlot: number,
   ply: number,
 ): Array<{ san: string; support: number }> {
-  const search = () =>
-    resolveUnknown(ctx, fen, [], blankSlot + 1, ply, true).filter((u) => u.how !== 'filler');
+  // Two blank cells in a row are a missing pair whose place is known: take
+  // the first move of each pair that makes the cells after them read. The
+  // second blank is filled the ordinary way on the next step.
+  const twoBlanks =
+    ctx.cells[blankSlot + 1] === null &&
+    blankSlot + 2 < ctx.readings.length &&
+    ctx.readings[blankSlot + 2] !== null;
+  const search = (): Array<{ san: string; support: number }> => {
+    if (twoBlanks) {
+      const firsts = new Map<string, number>();
+      for (const pair of resolvePair(ctx, fen, blankSlot + 2, ply, 1)) {
+        if (pair.free[0] || firsts.has(pair.inserted[0])) continue;
+        firsts.set(pair.inserted[0], pair.run.sans.length);
+      }
+      return [...firsts].map(([san, support]) => ({ san, support }));
+    }
+    return resolveUnknown(ctx, fen, [], blankSlot + 1, ply, true)
+      .filter((u) => u.how !== 'filler')
+      .map((u) => ({ san: u.san, support: u.run.sans.length }));
+  };
   ctx.tolerant = false;
   let found = search();
   if (found.length === 0) {
@@ -215,7 +233,41 @@ export function findBlankFills(
     found = search();
     ctx.tolerant = false;
   }
-  return found.map((u) => ({ san: u.san, support: u.run.sans.length }));
+  return found;
+}
+
+/**
+ * A blank cell was filled with a guess, the cells after it read, and now the
+ * cell at `needySlot` does not. Before supposing more moves are missing, ask
+ * whether a different move in the blank makes that cell legal: the guess
+ * was only a guess. `paid` is what the cells in between cost as read so
+ * far; a new fill must not read them worse.
+ */
+export function findBlankRevisions(
+  ctx: GapContext,
+  fen: string,
+  blankSlot: number,
+  ply: number,
+  needySlot: number,
+  paid: number,
+): Array<{ san: string; replay: string[] }> {
+  const span = needySlot - blankSlot;
+  if (span < 1 || span > VERIFY_CELLS) return [];
+  const search = () =>
+    resolveUnknown(ctx, fen, [], blankSlot + 1, ply, true).filter(
+      (u) =>
+        u.run.sans.length >= span &&
+        u.run.costs[span - 1] === 0 &&
+        costOfFirst(u.run, span - 1) <= paid + 1e-9,
+    );
+  ctx.tolerant = false;
+  let found = search();
+  if (found.length === 0) {
+    ctx.tolerant = true;
+    found = search();
+    ctx.tolerant = false;
+  }
+  return found.map((u) => ({ san: u.san, replay: u.run.sans.slice(0, span) }));
 }
 
 /* ------------------------------------------------------------------ */

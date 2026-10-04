@@ -25,6 +25,7 @@ import { createChessCache, type ChessCache } from './chessAdapter';
 import {
   buildGapContext,
   findBlankFills,
+  findBlankRevisions,
   findGapPlans,
   looksLikeMove,
   UNREADABLE_COST,
@@ -383,6 +384,8 @@ export function decodeScan(
  * replayed and read exactly.
  */
 const MATCH_COST = new WeakMap<DecodedMove, number>();
+/** Guesses that stand in a blank cell: the place is known, the move is not. */
+const BLANK_FILL = new WeakSet<DecodedMove>();
 
 function isLive(beam: Beam, slots: readonly CellSlot[]): boolean {
   return beam.slotIndex < slots.length && !beam.finishedResult;
@@ -659,6 +662,7 @@ function insertGuessedPlies(
             .map((s, idx) => ({ san: s, score: 1 / (idx + 2) })),
           fenBefore: state.fen,
         };
+        if (consumesCell) BLANK_FILL.add(move);
         grown.push({
           ...state,
           fen: cache.applyMove(state.fen, san),
@@ -826,6 +830,12 @@ function probeForGap(
 ): Beam[] {
   const back = beam.exactRun;
   const recent = beam.moves.slice(beam.moves.length - back);
+
+  // If the cells read so far follow a guess in a blank cell, the likeliest
+  // thing wrong is that guess. Try another move there first.
+  const revised = reviseBlank(beam, slots, cache, options, context);
+  if (revised.length > 0) return revised;
+
   const plans = findGapPlans(context, {
     fen: beam.fen,
     slot: beam.slotIndex,
@@ -837,6 +847,63 @@ function probeForGap(
   for (const plan of plans) {
     const built = applyGapPlan(beam, plan, slots, cache, options);
     if (built) out.push(built);
+  }
+  return out;
+}
+
+function reviseBlank(
+  beam: Beam,
+  slots: readonly CellSlot[],
+  cache: ChessCache,
+  options: DecodeOptions,
+  context: GapContext,
+): Beam[] {
+  const guessIndex = beam.moves.length - beam.exactRun - 1;
+  const guess = beam.moves[guessIndex];
+  if (!guess || !BLANK_FILL.has(guess)) return [];
+  const blankSlot = beam.slotIndex - beam.exactRun - 1;
+  let paid = 0;
+  for (let i = guessIndex + 1; i < beam.moves.length; i++) {
+    paid += MATCH_COST.get(beam.moves[i]!) ?? 0;
+  }
+  const out: Beam[] = [];
+  for (const { san, replay } of findBlankRevisions(
+    context,
+    guess.fenBefore,
+    blankSlot,
+    guessIndex,
+    beam.slotIndex,
+    paid,
+  ).slice(0, 2)) {
+    const move: DecodedMove = { ...guess, san };
+    BLANK_FILL.add(move);
+    let state: Beam = {
+      ...beam,
+      fen: cache.applyMove(guess.fenBefore, san),
+      slotIndex: blankSlot + 1,
+      moves: [...beam.moves.slice(0, guessIndex), move],
+      lastMoveTo: squareOf(san),
+      exactRun: 0,
+      cost: beam.cost - paid,
+      resyncRemaining: 0,
+      resyncCosts: [],
+    };
+    let ok = true;
+    for (let i = 0; i < replay.length; i++) {
+      const slot = slots[blankSlot + 1 + i]!;
+      if (!slot.cell) {
+        ok = false;
+        break;
+      }
+      const ranked = rankCandidates(cache.legalSans(state.fen), slot.cell);
+      const read = ranked.find((c) => c.san === replay[i]);
+      if (!read) {
+        ok = false;
+        break;
+      }
+      state = extendWithMatch(state, slot, read, ranked, cache, options, 0);
+    }
+    if (ok && state.slotIndex === beam.slotIndex + 1) out.push(state);
   }
   return out;
 }
@@ -861,6 +928,7 @@ function fillBlank(
         .map((f, idx) => ({ san: f.san, score: 1 / (idx + 2) })),
       fenBefore: beam.fen,
     };
+    BLANK_FILL.add(move);
     return {
       ...beam,
       fen: cache.applyMove(beam.fen, san),
