@@ -113,6 +113,38 @@ describe('entry pricing', () => {
     expect(stripeSessions.at(-1)?.amountCents).toBe(2200)
   })
 
+  it('leaves nothing due when a director moves an unpaid late entry into a free section', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 25 }, { name: 'Free', entryFee: 0 }] })
+    await env.DB.prepare(`UPDATE tournaments SET late_after = '2020-01-01T00:00', late_fee = 10 WHERE id = ?`)
+      .bind(tournamentId).run()
+    const member = await seedMember()
+    const res = await register(member, { tournamentId, section: 'Open' })
+    const { registration, payment } = await res.json<{ registration: { id: string }; payment: { amount: number } }>()
+    expect(payment.amount).toBe(35)
+
+    const moved = await invoke(registrationPatch, {
+      method: 'PATCH', as: admin, params: { id: registration.id }, body: { section: 'Free' },
+    })
+    expect(moved.status).toBe(200)
+
+    // A free section costs nothing whenever you enter it, so the late fee
+    // priced into the Open entry does not follow the player there.
+    const due = await env.DB.prepare('SELECT amount FROM payments WHERE reference_id = ?')
+      .bind(registration.id).first<{ amount: number }>()
+    expect(due?.amount).toBe(0)
+    const checkouts = stripeSessions.length
+    const pay = await invoke(payPost, { method: 'POST', as: member, params: { id: registration.id } })
+    expect(pay.status).toBe(400)
+    expect(stripeSessions.length).toBe(checkouts)
+
+    // Someone entering the free section directly, also after the late date,
+    // pays the same: nothing.
+    const direct = await register(await seedMember(), { tournamentId, section: 'Free' })
+    expect(direct.status).toBe(201)
+    expect(await direct.json()).toMatchObject({ payment: { amount: 0, status: 'completed' } })
+  })
+
   it('adds the late fee once the late date has passed', async () => {
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 25 }] })
     await env.DB.prepare(`UPDATE tournaments SET late_after = '2020-01-01T00:00', late_fee = 10 WHERE id = ?`)
