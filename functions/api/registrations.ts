@@ -8,6 +8,7 @@ import { resolveSiteUrl } from '../utils/site'
 import { hasPassed } from '../utils/time'
 import { eligibilityProblem, formatGradeRange, parseGradeRange, type SectionWithRules } from '../utils/sectionRules'
 import { entryPrice } from '../utils/pricing'
+import { checkByeRequest } from '../utils/byes'
 
 interface RegistrationBody {
   tournamentId?: string
@@ -190,22 +191,20 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Validate bye rounds — max is rounds - 1. Before the capacity check,
   // because a waitlist entry stores them too and becomes a real entry, byes
   // and all, when the director offers the spot.
-  const requestedByes = body.byeRounds ?? []
-  if (!Array.isArray(requestedByes) || requestedByes.some((r) => !Number.isInteger(r))) {
-    return errorResponse('byeRounds must be an array of whole numbers', 400)
+  const byes = checkByeRequest(body.byeRounds, tournament.rounds)
+  if (!byes.ok) {
+    if (byes.problem === 'malformed') {
+      return errorResponse('byeRounds must be an array of whole numbers', 400)
+    }
+    if (byes.problem === 'too-many') {
+      return errorResponse(
+        `You can request at most ${byes.maxByes} bye${byes.maxByes !== 1 ? 's' : ''} (one less than total rounds)`,
+        400,
+      )
+    }
+    return errorResponse(`Round ${byes.round} is not valid for this tournament`, 400)
   }
-  const byeRounds = [...new Set(requestedByes)].sort((a, b) => a - b)
-  const maxByes = tournament.rounds - 1
-  if (byeRounds.length > maxByes) {
-    return errorResponse(
-      `You can request at most ${maxByes} bye${maxByes !== 1 ? 's' : ''} (one less than total rounds)`,
-      400,
-    )
-  }
-  const invalidRound = byeRounds.find((r) => r < 1 || r > tournament.rounds)
-  if (invalidRound !== undefined) {
-    return errorResponse(`Round ${invalidRound} is not valid for this tournament`, 400)
-  }
+  const byeRounds = byes.byeRounds
 
   if (tournament.max_players != null) {
     const countRow = await context.env.DB.prepare(

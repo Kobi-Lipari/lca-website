@@ -293,6 +293,29 @@ describe('bye requests at registration', () => {
     expect((await register(twice, { tournamentId, section: 'Open', byeRounds: [3, 1, 3] })).status).toBe(201)
     expect(await byesOf(twice)).toBe('[1,3]')
   })
+
+  it('follow the same rules in a family checkout', async () => {
+    const tournamentId = await seedTournament({ rounds: 4, sections: [{ name: 'Open', entryFee: 0 }] })
+    const parent = await seedMember()
+    const child = await seedMember()
+    await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(parent, child).run()
+    const enter = (byeRounds: unknown) => invoke(batchPost, {
+      method: 'POST', as: parent, body: { tournamentId, entries: [{ memberId: child, section: 'Open', byeRounds }] },
+    })
+
+    // Not a list, not whole rounds, not a round of this event, every round.
+    for (const bad of ['2', 2, [1.5], ['2'], [9], [1, 2, 3, 4]]) {
+      const res = await enter(bad)
+      expect(res.status, JSON.stringify(bad)).toBe(400)
+      expect((await res.json<{ error: string }>()).error).toMatch(/bye/)
+    }
+    expect(await byesOf(child)).toBeUndefined()
+
+    // A round asked for twice counts once, and is stored once.
+    const fine = await enter([3, 1, 3])
+    expect(fine.status).toBe(201)
+    expect(await byesOf(child)).toBe('[1,3]')
+  })
 })
 
 describe('withdrawing yourself', () => {

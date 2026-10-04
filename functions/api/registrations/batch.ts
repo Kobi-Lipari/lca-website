@@ -19,6 +19,7 @@ import { resolveSiteUrl } from '../../utils/site'
 import { hasPassed } from '../../utils/time'
 import { eligibilityProblem, formatGradeRange, parseGradeRange, type SectionWithRules } from '../../utils/sectionRules'
 import { entryPrice } from '../../utils/pricing'
+import { checkByeRequest } from '../../utils/byes'
 
 interface BatchEntry {
   /** Omitted = the signed-in member themselves. */
@@ -90,7 +91,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const sections = parseSections(tournament.sections)
-  const maxByes = tournament.rounds - 1
 
   // ── Validate every entry before writing anything ──────────────────────────
   const seen = new Set<string>()
@@ -129,13 +129,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const problem = eligibilityProblem(section, { rating: player.uscf_rating, gradeRange })
     if (problem) return errorResponse(`${player.full_name}: ${problem}`, 400)
 
-    const byeRounds = entry.byeRounds ?? []
-    if (byeRounds.length > maxByes) {
-      return errorResponse(`${player.full_name}: at most ${maxByes} bye${maxByes !== 1 ? 's' : ''}`, 400)
-    }
-    if (byeRounds.some((r) => !Number.isInteger(r) || r < 1 || r > tournament.rounds)) {
+    // The same bye rules as a single entry: whole rounds, a round asked for
+    // twice counts once, at most one less than the number of rounds.
+    const byes = checkByeRequest(entry.byeRounds, tournament.rounds)
+    if (!byes.ok) {
+      if (byes.problem === 'malformed') {
+        return errorResponse(`${player.full_name}: byes must be a list of whole round numbers`, 400)
+      }
+      if (byes.problem === 'too-many') {
+        return errorResponse(`${player.full_name}: at most ${byes.maxByes} bye${byes.maxByes !== 1 ? 's' : ''}`, 400)
+      }
       return errorResponse(`${player.full_name}: a requested bye round is not part of this tournament`, 400)
     }
+    const byeRounds = byes.byeRounds
 
     const existing = await db.prepare(
       'SELECT withdrawn_at FROM registrations WHERE tournament_id = ? AND member_id = ?',
