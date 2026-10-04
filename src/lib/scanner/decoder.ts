@@ -725,6 +725,24 @@ function rankLegalByLookahead(
   cache: ChessCache,
   lastMoveTo: string | null,
 ): string[] {
+  // Asked twice for the same blank cell (the ordinary guess, and the order
+  // among fills the later cells cannot tell apart); worked out once.
+  let memo = LOOKAHEAD_MEMO.get(nextCell);
+  if (!memo) LOOKAHEAD_MEMO.set(nextCell, (memo = new Map()));
+  const key = `${fen}|${lastMoveTo ?? ''}`;
+  let ranked = memo.get(key);
+  if (!ranked) memo.set(key, (ranked = computeLookaheadRanking(fen, nextCell, cache, lastMoveTo)));
+  return ranked;
+}
+
+const LOOKAHEAD_MEMO = new WeakMap<RawCell, Map<string, string[]>>();
+
+function computeLookaheadRanking(
+  fen: string,
+  nextCell: RawCell,
+  cache: ChessCache,
+  lastMoveTo: string | null,
+): string[] {
   const priorRank = new Map(
     rankLegalByPriors(fen, lastMoveTo, cache).map((san, i) => [san, i]),
   );
