@@ -263,9 +263,12 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       ).bind(registrationId).first<{ id: string; status: string }>()
 
       if (payment?.status === 'pending') {
+        // Move the amount by the difference between the two sections' fees,
+        // so the discounts and late fee priced in at registration stay as
+        // they were. Setting it to the new section's bare fee dropped them.
         await context.env.DB.prepare(
-          'UPDATE payments SET amount = ? WHERE id = ?',
-        ).bind(newFee, payment.id).run()
+          'UPDATE payments SET amount = ROUND(MAX(0, amount + ?), 2) WHERE id = ?',
+        ).bind(newFee - oldFee, payment.id).run()
       } else if (payment) {
         feeNote = `Entry fee changed from $${oldFee} to $${newFee} but payment is already ${payment.status}. Reconcile manually in the Stripe dashboard.`
       }

@@ -8,6 +8,7 @@ import { seedAdmin, seedMember, seedRegistration, seedTournament } from './facto
 
 import { onRequestPost as registrationsPost } from '../../functions/api/registrations'
 import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
+import { onRequestPost as payPost } from '../../functions/api/registrations/[id]/pay'
 import { onRequestPost as batchPost } from '../../functions/api/registrations/batch'
 import { onRequestPost as waitlistPost } from '../../functions/api/admin/tournaments/[id]/waitlist'
 import { onRequestPost as walkInPost } from '../../functions/api/admin/tournaments/[id]/walk-ins'
@@ -85,6 +86,31 @@ describe('entry pricing', () => {
     const guest = await seedMember({ membershipStatus: 'expired' })
     const res2 = await register(guest, { tournamentId, section: 'Open' })
     expect((await res2.json<{ payment: { amount: number } }>()).payment.amount).toBe(20)
+  })
+
+  it('keeps the discounts when a director moves an unpaid entry to another section', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 30 }, { name: 'Reserve', entryFee: 20 }] })
+    await env.DB.prepare(
+      `UPDATE tournaments SET early_deadline = '2099-01-01', early_discount = 5, member_discount = 3 WHERE id = ?`,
+    ).bind(tournamentId).run()
+    const member = await seedMember({ membershipStatus: 'active' })
+    const res = await register(member, { tournamentId, section: 'Reserve' })
+    const { registration, payment } = await res.json<{ registration: { id: string }; payment: { amount: number } }>()
+    expect(payment.amount).toBe(12)
+
+    const moved = await invoke(registrationPatch, {
+      method: 'PATCH', as: admin, params: { id: registration.id }, body: { section: 'Open' },
+    })
+    expect(moved.status).toBe(200)
+
+    // Entering Open directly would have cost this member 30 - 5 - 3.
+    const due = await env.DB.prepare('SELECT amount FROM payments WHERE reference_id = ?')
+      .bind(registration.id).first<{ amount: number }>()
+    expect(due?.amount).toBe(22)
+    const pay = await invoke(payPost, { method: 'POST', as: member, params: { id: registration.id } })
+    expect(pay.status).toBe(200)
+    expect(stripeSessions.at(-1)?.amountCents).toBe(2200)
   })
 
   it('adds the late fee once the late date has passed', async () => {
