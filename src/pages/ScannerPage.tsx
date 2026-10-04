@@ -42,6 +42,7 @@ import { downscaleImage } from '@/lib/resizeImage'
 import { decodeInBackground } from '@/lib/scanner/decodeInBackground'
 import { legalMovesAt } from '@/lib/scanner/chessAdapter'
 import { mergePages } from '@/lib/scanner/mergePages'
+import { countNeedingLook, needsLook as moveNeedsLook, sourceLabel, sourceSentence } from '@/lib/scanner/moveSource'
 import { emailGameLink, gameToPgn, lichessAnalysisUrl, pgnFilename } from '@/lib/scanner/export'
 import type { DecodedGame, DecodedMove, RawScan } from '@/lib/scanner/types'
 import { cn } from '@/lib/utils'
@@ -471,8 +472,6 @@ function PhotoPreview({ url, dimmed }: { url: string; dimmed?: boolean }) {
 
 // ── Results ──────────────────────────────────────────────────────────
 
-const NEEDS_LOOK: DecodedMove['status'][] = ['flagged', 'guessed']
-
 /** The game as the member has corrected it so far. */
 interface Edited {
   game: DecodedGame
@@ -502,9 +501,7 @@ function Results({
   const [updateError, setUpdateError] = useState<string | null>(null)
 
   const game = current.game
-  const needsLook = game.moves.filter(
-    (m) => NEEDS_LOOK.includes(m.status) && !current.fixed.has(m.ply),
-  ).length
+  const needsLook = countNeedingLook(game, current.fixed)
 
   /**
    * Settle one move and work the rest of the game out again from there.
@@ -838,7 +835,7 @@ function MoveCell({
   onEdit: (move: DecodedMove) => void
 }) {
   if (!move) return <td className="py-1.5 pr-2" />
-  const needsLook = !fixed && NEEDS_LOOK.includes(move.status)
+  const needsLook = !fixed && moveNeedsLook(move)
   const readDifferently = !fixed && move.status === 'corrected'
   const others = move.alternatives.filter((a) => a.san !== move.san).slice(0, 2)
 
@@ -859,7 +856,7 @@ function MoveCell({
       </button>
       {(needsLook || readDifferently) && (
         <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground">
-          {move.sourceRaw === null ? 'blank on the sheet' : `written “${move.sourceRaw}”`}
+          {sourceLabel(move)}
           {needsLook && others.length > 0 && ` · or ${others.map((a) => a.san).join(', ')}`}
         </span>
       )}
@@ -922,9 +919,7 @@ function MoveEditor({
                 Move {Math.ceil(move.ply / 2)}, {move.ply % 2 === 1 ? 'White' : 'Black'}
               </DialogTitle>
               <DialogDescription>
-                {move.sourceRaw === null
-                  ? 'This move was blank on the sheet and worked out from the position.'
-                  : `Written on the sheet as “${move.sourceRaw}”.`}{' '}
+                {sourceSentence(move)}{' '}
                 Pick the move that was played.
               </DialogDescription>
             </DialogHeader>

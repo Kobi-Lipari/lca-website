@@ -40,13 +40,32 @@ import { Chess } from 'chess.js';
  */
 export interface ChessCache {
   legalSans(fen: string): string[];
+  /**
+   * Legal moves of one piece type ('p', 'n', 'b', 'r', 'q' or 'k'; castling
+   * is a king move). Asking for one piece type costs about a quarter of the
+   * full list, which is what makes the gap search (gaps.ts) affordable: it
+   * mostly asks "is this one written move legal here?". May return the full
+   * list when that is already known, so callers must match by SAN.
+   */
+  legalSansOf(fen: string, piece: PieceLetter): string[];
   applyMove(fen: string, san: string): string;
+  /**
+   * The same position with the other side to move, as if the side to move
+   * had passed. Null when the side to move is in check (a pass would leave
+   * the king to be taken). Used to read the sheet "as if an unwritten move
+   * had been played here" before deciding which move it was.
+   */
+  passTurn(fen: string): string | null;
   startingFen(): string;
 }
+
+export type PieceLetter = 'p' | 'n' | 'b' | 'r' | 'q' | 'k';
 
 export function createChessCache(): ChessCache {
   const legalCache = new Map<string, string[]>();
   const applyCache = new Map<string, string>();
+  const pieceCache = new Map<string, string[]>();
+  const passCache = new Map<string, string | null>();
 
   return {
     legalSans(fen: string): string[] {
@@ -55,6 +74,33 @@ export function createChessCache(): ChessCache {
       const sans = new Chess(fen).moves() as string[];
       legalCache.set(fen, sans);
       return sans;
+    },
+
+    legalSansOf(fen: string, piece: PieceLetter): string[] {
+      const full = legalCache.get(fen);
+      if (full) return full;
+      const key = `${fen}|${piece}`;
+      const hit = pieceCache.get(key);
+      if (hit) return hit;
+      // SAN disambiguation only ever involves pieces of the same type, so
+      // the restricted list spells each move exactly as the full list does.
+      const sans = new Chess(fen).moves({ piece }) as string[];
+      pieceCache.set(key, sans);
+      return sans;
+    },
+
+    passTurn(fen: string): string | null {
+      const hit = passCache.get(fen);
+      if (hit !== undefined) return hit;
+      let passed: string | null = null;
+      if (!new Chess(fen).inCheck()) {
+        const fields = fen.split(' ');
+        fields[1] = fields[1] === 'w' ? 'b' : 'w';
+        fields[3] = '-'; // an en passant right does not survive a pass
+        passed = fields.join(' ');
+      }
+      passCache.set(fen, passed);
+      return passed;
     },
 
     applyMove(fen: string, san: string): string {
