@@ -2,12 +2,15 @@
 // Regression tests for the security review: each block is one finding, and
 // each test failed before its fix.
 import { beforeEach, describe, expect, it } from 'vitest'
-import { invoke, resetHarness } from './harness'
-import { seedMember } from './factories'
+import { env } from 'cloudflare:test'
+import { invoke, resetHarness, stripeSessions } from './harness'
+import { seedMember, seedTournament, seedTournamentDirector } from './factories'
 
 import { isSafeLink, sanitizePostHtml } from '../../functions/utils/posts'
 import { onRequestGet as documentsGet, onRequestPost as documentsPost } from '../../functions/api/governance/documents'
 import { onRequestPut as documentPut } from '../../functions/api/governance/documents/[id]'
+import { onRequestPost as registrationsPost } from '../../functions/api/registrations'
+import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
 
 beforeEach(resetHarness)
 
@@ -112,5 +115,63 @@ describe('governance documents', () => {
       body: { category: 'bylaws', title: 'Bylaws', file_url: 'javascript:alert(1)' },
     })
     expect(res.status).toBe(400)
+  })
+})
+
+describe('changing the section of an entry', () => {
+  async function enter(member: string, tournamentId: string, section: string): Promise<string> {
+    const res = await invoke(registrationsPost, { method: 'POST', as: member, body: { tournamentId, section } })
+    expect(res.status).toBe(201)
+    const { registration } = await res.json<{ registration: { id: string } }>()
+    return registration.id
+  }
+
+  const entryRow = (id: string) =>
+    env.DB.prepare('SELECT section, payment_status FROM registrations WHERE id = ?').bind(id).first()
+
+  it('a player cannot move a free entry into a paid section', async () => {
+    const member = await seedMember({ uscfRating: 1000 })
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 40 }, { name: 'Novice', entryFee: 0 }] })
+    const id = await enter(member, tournamentId, 'Novice')
+
+    const res = await invoke(registrationPatch, { method: 'PATCH', as: member, params: { id }, body: { section: 'Open' } })
+    expect(res.status).toBe(403)
+    expect(await entryRow(id)).toEqual({ section: 'Novice', payment_status: 'paid' })
+    expect(stripeSessions.length).toBe(0)
+  })
+
+  it('a player cannot move into a section they could not have entered', async () => {
+    const member = await seedMember({ uscfRating: 2100 })
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 0 }, { name: 'U1200', entryFee: 0 }] })
+    const refused = await invoke(registrationsPost, { method: 'POST', as: member, body: { tournamentId, section: 'U1200' } })
+    expect(refused.status).toBe(400)
+    const id = await enter(member, tournamentId, 'Open')
+
+    const res = await invoke(registrationPatch, { method: 'PATCH', as: member, params: { id }, body: { section: 'U1200' } })
+    expect(res.status).toBe(403)
+    expect(await entryRow(id)).toEqual({ section: 'Open', payment_status: 'paid' })
+  })
+
+  it('sending byes along does not carry a section change through', async () => {
+    const member = await seedMember({ uscfRating: 1000 })
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 40 }, { name: 'Novice', entryFee: 0 }] })
+    const id = await enter(member, tournamentId, 'Novice')
+
+    const both = await invoke(registrationPatch, { method: 'PATCH', as: member, params: { id }, body: { byeRounds: [1], section: 'Open' } })
+    expect(both.status).toBe(403)
+    const byes = await invoke(registrationPatch, { method: 'PATCH', as: member, params: { id }, body: { byeRounds: [1], section: 'Novice' } })
+    expect(byes.status).toBe(200)
+  })
+
+  it('the director still can', async () => {
+    const member = await seedMember({ uscfRating: 1000 })
+    const director = await seedMember()
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 40 }, { name: 'Novice', entryFee: 0 }] })
+    await seedTournamentDirector(tournamentId, director)
+    const id = await enter(member, tournamentId, 'Novice')
+
+    const res = await invoke(registrationPatch, { method: 'PATCH', as: director, params: { id }, body: { section: 'Open' } })
+    expect(res.status).toBe(200)
+    expect(await entryRow(id)).toEqual({ section: 'Open', payment_status: 'paid' })
   })
 })

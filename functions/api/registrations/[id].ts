@@ -224,6 +224,12 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     body.section !== undefined && body.section !== registration.section
 
   if (body.section !== undefined && sectionChanging) {
+    // Manager only. Eligibility and price are checked when a player enters;
+    // letting them move afterwards skipped both (a free entry stayed "paid"
+    // in a paid section).
+    if (!isManager) {
+      return errorResponse('Ask the tournament director to change your section', 403)
+    }
     if (registration.withdrawn_at) {
       return errorResponse('Reinstate this player before changing their section', 400)
     }
