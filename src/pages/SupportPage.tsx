@@ -15,6 +15,7 @@ import {
   type ApiSupportTicket,
   type ApiSupportMessage,
 } from '@/lib/api'
+import { serverTime } from '@/lib/serverTime'
 
 const statusColors: Record<string, string> = {
   open: 'bg-blue-100 text-blue-800',
@@ -413,7 +414,7 @@ export function SupportPage() {
               >
                 <p className="text-xs font-medium text-muted-foreground mb-2">
                   {msg.sender_type === 'admin' ? 'LCA Support' : 'You'} ·{' '}
-                  {new Date(msg.created_at).toLocaleString()}
+                  {serverTime(msg.created_at).toLocaleString()}
                 </p>
                 <p className="text-sm whitespace-pre-wrap">{msg.body}</p>
               </div>
@@ -479,7 +480,7 @@ function TicketRow({
         </span>
       </div>
       <p className="text-xs text-muted-foreground mt-2">
-        {new Date(ticket.updated_at).toLocaleDateString()} ·{' '}
+        {serverTime(ticket.updated_at).toLocaleDateString()} ·{' '}
         {ticket.message_count} message{ticket.message_count !== 1 ? 's' : ''}
       </p>
     </button>

@@ -10,6 +10,7 @@ import { MultiSelectDropdown } from '@/components/MultiSelectDropdown'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { serverTime } from '@/lib/serverTime'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { ADMIN_SCROLL, LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
@@ -110,7 +111,7 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
         <div className="min-w-0">
           <p className="truncate font-medium text-lca-navy">{c.subject}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
-            {new Date(c.created_at).toLocaleString()} · {c.total_recipients} recipients
+            {serverTime(c.created_at).toLocaleString()} · {c.total_recipients} recipients
           </p>
         </div>
         <span className={cn('flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium', meta.className)}>

@@ -16,6 +16,7 @@ import {
 } from '../../functions/api/me/children/[id]'
 import { onRequestPost as batchPost } from '../../functions/api/registrations/batch'
 import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
+import { onRequestPost as payPost } from '../../functions/api/registrations/[id]/pay'
 import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook'
 import { onRequestPost as membershipCheckout } from '../../functions/api/membership/checkout'
 import { onRequestPost as impersonatePost } from '../../functions/api/admin/impersonate/[memberId]'
@@ -179,6 +180,62 @@ describe('registering a family in one checkout', () => {
       `SELECT COUNT(*) AS n FROM payments WHERE stripe_session_id = ? AND status = 'completed'`,
     ).bind(session.id).first<{ n: number }>()
     expect(completed?.n).toBe(3)
+  })
+
+  it('finishing the family checkout still confirms an entry after "pay now" was started on it', async () => {
+    const parent = await seedMember()
+    const a = await addChild(parent, 'Alpha')
+    const b = await addChild(parent, 'Bravo')
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 20 }] })
+
+    const res = await invoke(batchPost, {
+      method: 'POST', as: parent,
+      body: { tournamentId, entries: [{ memberId: a.id, section: 'Open' }, { memberId: b.id, section: 'Open' }] },
+    })
+    expect(res.status).toBe(201)
+    const family = stripeSessions.at(-1)!
+    expect(family.lineItems.map((l) => l.amountCents)).toEqual([2000, 2000])
+
+    // The parent backs out of the checkout, presses "pay now" on one child's
+    // entry, backs out of that too...
+    const entry = await env.DB.prepare('SELECT id FROM registrations WHERE member_id = ?')
+      .bind(a.id).first<{ id: string }>()
+    const pay = await invoke(payPost, { method: 'POST', as: parent, params: { id: entry!.id } })
+    expect(pay.status).toBe(200)
+
+    // ...and then pays the family checkout, which charges for both children.
+    await completeCheckout(family.id, family.metadata)
+
+    const { results } = await env.DB.prepare(
+      'SELECT member_id, payment_status FROM registrations WHERE tournament_id = ?',
+    ).bind(tournamentId).all<{ member_id: string; payment_status: string }>()
+    expect(Object.fromEntries(results.map((r) => [r.member_id, r.payment_status])))
+      .toEqual({ [a.id]: 'paid', [b.id]: 'paid' })
+  })
+
+  it('the "pay now" checkout for one family entry confirms that entry alone', async () => {
+    const parent = await seedMember()
+    const a = await addChild(parent, 'Alpha')
+    const b = await addChild(parent, 'Bravo')
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 20 }] })
+    await invoke(batchPost, {
+      method: 'POST', as: parent,
+      body: { tournamentId, entries: [{ memberId: a.id, section: 'Open' }, { memberId: b.id, section: 'Open' }] },
+    })
+
+    const entry = await env.DB.prepare('SELECT id FROM registrations WHERE member_id = ?')
+      .bind(a.id).first<{ id: string }>()
+    const pay = await invoke(payPost, { method: 'POST', as: parent, params: { id: entry!.id } })
+    expect(pay.status).toBe(200)
+    const single = stripeSessions.at(-1)!
+    expect(single.amountCents).toBe(2000)
+    await completeCheckout(single.id, single.metadata)
+
+    const { results } = await env.DB.prepare(
+      'SELECT member_id, payment_status FROM registrations WHERE tournament_id = ?',
+    ).bind(tournamentId).all<{ member_id: string; payment_status: string }>()
+    expect(Object.fromEntries(results.map((r) => [r.member_id, r.payment_status])))
+      .toEqual({ [a.id]: 'paid', [b.id]: 'pending' })
   })
 
   it('free sections are confirmed straight away with no checkout', async () => {

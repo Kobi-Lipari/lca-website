@@ -81,10 +81,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       },
     })
 
-    // Keep the payment row pointing at the latest payable session — a future
-    // hook for expiring superseded sessions via the Stripe API.
+    // A payment row that already has a session keeps it. A family checkout
+    // settles every row that carries its session id, so pointing this row
+    // at the new session meant that finishing the original family checkout
+    // charged for this entry and left it unpaid. The session made here
+    // settles through its own metadata (payment_id, registration_id).
+    //
+    // A row with no session (a waitlist offer, an unpaid walk-in) gets this
+    // one, so a card payment made this way has its checkout on record.
     await context.env.DB.prepare(
-      'UPDATE payments SET stripe_session_id = ? WHERE id = ?',
+      'UPDATE payments SET stripe_session_id = ? WHERE id = ? AND stripe_session_id IS NULL',
     ).bind(session.id, payment.id).run()
 
     return jsonResponse({ paymentUrl: session.url })

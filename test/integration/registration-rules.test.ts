@@ -3,15 +3,18 @@
 // through the real endpoints.
 import { beforeEach, describe, expect, it } from 'vitest'
 import { env } from 'cloudflare:test'
-import { emailOutbox, invoke, resetHarness, stripeSessions } from './harness'
+import { emailOutbox, invoke, resetHarness, signStripePayload, stripeSessions } from './harness'
 import { seedAdmin, seedMember, seedRegistration, seedTournament } from './factories'
 
 import { onRequestPost as registrationsPost } from '../../functions/api/registrations'
 import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
+import { onRequestPost as payPost } from '../../functions/api/registrations/[id]/pay'
 import { onRequestPost as batchPost } from '../../functions/api/registrations/batch'
 import { onRequestPost as waitlistPost } from '../../functions/api/admin/tournaments/[id]/waitlist'
+import { onRequestPost as walkInPost } from '../../functions/api/admin/tournaments/[id]/walk-ins'
 import { onRequestPost as generatePost } from '../../functions/api/admin/tournaments/[id]/generate-pairings'
 import { onRequestGet as publicGet } from '../../functions/api/tournaments/[id]'
+import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook'
 
 beforeEach(resetHarness)
 
@@ -86,6 +89,63 @@ describe('entry pricing', () => {
     expect((await res2.json<{ payment: { amount: number } }>()).payment.amount).toBe(20)
   })
 
+  it('keeps the discounts when a director moves an unpaid entry to another section', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 30 }, { name: 'Reserve', entryFee: 20 }] })
+    await env.DB.prepare(
+      `UPDATE tournaments SET early_deadline = '2099-01-01', early_discount = 5, member_discount = 3 WHERE id = ?`,
+    ).bind(tournamentId).run()
+    const member = await seedMember({ membershipStatus: 'active' })
+    const res = await register(member, { tournamentId, section: 'Reserve' })
+    const { registration, payment } = await res.json<{ registration: { id: string }; payment: { amount: number } }>()
+    expect(payment.amount).toBe(12)
+
+    const moved = await invoke(registrationPatch, {
+      method: 'PATCH', as: admin, params: { id: registration.id }, body: { section: 'Open' },
+    })
+    expect(moved.status).toBe(200)
+
+    // Entering Open directly would have cost this member 30 - 5 - 3.
+    const due = await env.DB.prepare('SELECT amount FROM payments WHERE reference_id = ?')
+      .bind(registration.id).first<{ amount: number }>()
+    expect(due?.amount).toBe(22)
+    const pay = await invoke(payPost, { method: 'POST', as: member, params: { id: registration.id } })
+    expect(pay.status).toBe(200)
+    expect(stripeSessions.at(-1)?.amountCents).toBe(2200)
+  })
+
+  it('leaves nothing due when a director moves an unpaid late entry into a free section', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 25 }, { name: 'Free', entryFee: 0 }] })
+    await env.DB.prepare(`UPDATE tournaments SET late_after = '2020-01-01T00:00', late_fee = 10 WHERE id = ?`)
+      .bind(tournamentId).run()
+    const member = await seedMember()
+    const res = await register(member, { tournamentId, section: 'Open' })
+    const { registration, payment } = await res.json<{ registration: { id: string }; payment: { amount: number } }>()
+    expect(payment.amount).toBe(35)
+
+    const moved = await invoke(registrationPatch, {
+      method: 'PATCH', as: admin, params: { id: registration.id }, body: { section: 'Free' },
+    })
+    expect(moved.status).toBe(200)
+
+    // A free section costs nothing whenever you enter it, so the late fee
+    // priced into the Open entry does not follow the player there.
+    const due = await env.DB.prepare('SELECT amount FROM payments WHERE reference_id = ?')
+      .bind(registration.id).first<{ amount: number }>()
+    expect(due?.amount).toBe(0)
+    const checkouts = stripeSessions.length
+    const pay = await invoke(payPost, { method: 'POST', as: member, params: { id: registration.id } })
+    expect(pay.status).toBe(400)
+    expect(stripeSessions.length).toBe(checkouts)
+
+    // Someone entering the free section directly, also after the late date,
+    // pays the same: nothing.
+    const direct = await register(await seedMember(), { tournamentId, section: 'Free' })
+    expect(direct.status).toBe(201)
+    expect(await direct.json()).toMatchObject({ payment: { amount: 0, status: 'completed' } })
+  })
+
   it('adds the late fee once the late date has passed', async () => {
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 25 }] })
     await env.DB.prepare(`UPDATE tournaments SET late_after = '2020-01-01T00:00', late_fee = 10 WHERE id = ?`)
@@ -128,6 +188,68 @@ describe('waitlist', () => {
     expect(twice.status).toBe(404)
   })
 
+  it('records the checkout on an offered spot that is then paid by card', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ maxPlayers: 1, sections: [{ name: 'Open', entryFee: 20 }] })
+    await seedRegistration({ tournamentId, memberId: await seedMember() })
+    const late = await seedMember()
+    expect((await register(late, { tournamentId, section: 'Open', waitlist: true })).status).toBe(201)
+    const reg = await env.DB.prepare('SELECT id FROM registrations WHERE member_id = ?').bind(late).first<{ id: string }>()
+    const offered = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg!.id } })
+    expect(offered.status).toBe(200)
+
+    // The offer makes a pending payment that no checkout has been opened for.
+    const paymentRow = () => env.DB.prepare(
+      'SELECT amount, status, stripe_session_id, stripe_payment_intent FROM payments WHERE reference_id = ?',
+    ).bind(reg!.id).first()
+    expect(await paymentRow()).toEqual({ amount: 20, status: 'pending', stripe_session_id: null, stripe_payment_intent: null })
+
+    // "Pay now" is the only way this entry gets paid by card.
+    const pay = await invoke(payPost, { method: 'POST', as: late, params: { id: reg!.id } })
+    expect(pay.status).toBe(200)
+    const session = stripeSessions.at(-1)!
+    expect(session.amountCents).toBe(2000)
+    expect((await paymentRow())?.stripe_session_id).toBe(session.id)
+
+    const rawBody = JSON.stringify({
+      type: 'checkout.session.completed',
+      data: { object: { id: session.id, payment_intent: 'pi_card', metadata: session.metadata } },
+    })
+    const delivered = await invoke(webhookPost, {
+      method: 'POST', rawBody, headers: { 'stripe-signature': await signStripePayload(rawBody) },
+    })
+    expect(delivered.status).toBe(200)
+
+    expect(await paymentRow()).toEqual({
+      amount: 20, status: 'completed', stripe_session_id: session.id, stripe_payment_intent: 'pi_card',
+    })
+    const entry = await env.DB.prepare('SELECT payment_status FROM registrations WHERE id = ?')
+      .bind(reg!.id).first<{ payment_status: string }>()
+    expect(entry?.payment_status).toBe('paid')
+  })
+
+  it('does not take a seat away from a walk-in', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ maxPlayers: 2, sections: [{ name: 'Open', entryFee: 0 }] })
+    const leaving = await seedRegistration({ tournamentId, memberId: await seedMember() })
+    await seedRegistration({ tournamentId, memberId: await seedMember() })
+    const waiting = await seedMember()
+    expect((await register(waiting, { tournamentId, section: 'Open', waitlist: true })).status).toBe(201)
+
+    const walkIn = () => invoke(walkInPost, {
+      method: 'POST', as: admin, params: { id: tournamentId }, body: { fullName: 'Door Player', section: 'Open' },
+    })
+    // Two entered, one waiting: full.
+    expect((await walkIn()).status).toBe(400)
+
+    // One player withdraws. There is a free seat now, and the director can
+    // give it to someone at the door; the person waiting does not hold it.
+    await env.DB.prepare(`UPDATE registrations SET withdrawn_at = datetime('now') WHERE id = ?`).bind(leaving).run()
+    expect((await walkIn()).status).toBe(201)
+    // And that filled it again.
+    expect((await walkIn()).status).toBe(400)
+  })
+
   it('is only for the director to offer spots', async () => {
     const tournamentId = await seedTournament({ maxPlayers: 1, sections: [{ name: 'Open', entryFee: 0 }] })
     await seedRegistration({ tournamentId, memberId: await seedMember() })
@@ -136,6 +258,63 @@ describe('waitlist', () => {
     const reg = await env.DB.prepare('SELECT id FROM registrations WHERE member_id = ?').bind(late).first<{ id: string }>()
     const res = await invoke(waitlistPost, { method: 'POST', as: late, params: { id: tournamentId }, body: { registrationId: reg!.id } })
     expect(res.status).toBe(403)
+  })
+})
+
+describe('bye requests at registration', () => {
+  const byesOf = async (memberId: string) => (await env.DB.prepare(
+    'SELECT bye_rounds FROM registrations WHERE member_id = ?',
+  ).bind(memberId).first<{ bye_rounds: string | null }>())?.bye_rounds
+
+  it('are checked for a waitlist entry too, since it becomes a real entry with them', async () => {
+    const tournamentId = await seedTournament({ rounds: 4, maxPlayers: 1, sections: [{ name: 'Open', entryFee: 0 }] })
+    await seedRegistration({ tournamentId, memberId: await seedMember() })
+    const waiting = await seedMember()
+
+    const notARound = await register(waiting, { tournamentId, section: 'Open', waitlist: true, byeRounds: [9] })
+    expect(notARound.status).toBe(400)
+    const everyRound = await register(waiting, { tournamentId, section: 'Open', waitlist: true, byeRounds: [1, 2, 3, 4] })
+    expect(everyRound.status).toBe(400)
+    expect(await byesOf(waiting)).toBeUndefined()
+
+    const fine = await register(waiting, { tournamentId, section: 'Open', waitlist: true, byeRounds: [2] })
+    expect(fine.status).toBe(201)
+    expect(await byesOf(waiting)).toBe('[2]')
+  })
+
+  it('must be whole rounds, and a round asked for twice counts once', async () => {
+    const tournamentId = await seedTournament({ rounds: 4, sections: [{ name: 'Open', entryFee: 0 }] })
+
+    const half = await seedMember()
+    expect((await register(half, { tournamentId, section: 'Open', byeRounds: [1.5] })).status).toBe(400)
+    expect((await register(half, { tournamentId, section: 'Open', byeRounds: ['2'] })).status).toBe(400)
+
+    const twice = await seedMember()
+    expect((await register(twice, { tournamentId, section: 'Open', byeRounds: [3, 1, 3] })).status).toBe(201)
+    expect(await byesOf(twice)).toBe('[1,3]')
+  })
+
+  it('follow the same rules in a family checkout', async () => {
+    const tournamentId = await seedTournament({ rounds: 4, sections: [{ name: 'Open', entryFee: 0 }] })
+    const parent = await seedMember()
+    const child = await seedMember()
+    await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(parent, child).run()
+    const enter = (byeRounds: unknown) => invoke(batchPost, {
+      method: 'POST', as: parent, body: { tournamentId, entries: [{ memberId: child, section: 'Open', byeRounds }] },
+    })
+
+    // Not a list, not whole rounds, not a round of this event, every round.
+    for (const bad of ['2', 2, [1.5], ['2'], [9], [1, 2, 3, 4]]) {
+      const res = await enter(bad)
+      expect(res.status, JSON.stringify(bad)).toBe(400)
+      expect((await res.json<{ error: string }>()).error).toMatch(/bye/)
+    }
+    expect(await byesOf(child)).toBeUndefined()
+
+    // A round asked for twice counts once, and is stored once.
+    const fine = await enter([3, 1, 3])
+    expect(fine.status).toBe(201)
+    expect(await byesOf(child)).toBe('[1,3]')
   })
 })
 

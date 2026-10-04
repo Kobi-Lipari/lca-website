@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { GOLD_BUTTON } from '@/lib/brand'
+import { hasPassed } from '@/lib/lcaTime'
 import { cn } from '@/lib/utils'
 import {
   adminCreateAnnouncement,
@@ -52,8 +53,8 @@ const blank: Draft = {
   endsAt: '',
 }
 
-/** datetime-local gives "2026-09-06T16:30"; D1 compares these as plain
- *  strings against datetime('now'), which is "2026-09-06 16:30:00". */
+/** datetime-local gives "2026-09-06T16:30"; stored as "2026-09-06 16:30:00"
+ *  and read back as Louisiana time (lib/lcaTime). */
 const toSql = (v: string) => (v ? v.replace('T', ' ') + ':00' : null)
 
 /** And back again, so an existing banner opens with its dates filled in. */
@@ -282,9 +283,9 @@ export function AdminAnnouncementPanel() {
   /** Why a banner is or is not on screen right now — enabled is only half of it. */
   function status(a: ApiAdminAnnouncement): { label: string; className: string } {
     if (!a.enabled) return { label: 'Off', className: 'bg-muted text-muted-foreground' }
-    const now = new Date().toISOString().replace('T', ' ').slice(0, 19)
-    if (a.starts_at && a.starts_at > now) return { label: 'Scheduled', className: 'bg-[#1e4d7b]/15 text-[#1e4d7b]' }
-    if (a.ends_at && a.ends_at < now) return { label: 'Expired', className: 'bg-muted text-muted-foreground' }
+    // Same reading of the window as the public endpoint: Louisiana time.
+    if (a.starts_at && !hasPassed(a.starts_at)) return { label: 'Scheduled', className: 'bg-[#1e4d7b]/15 text-[#1e4d7b]' }
+    if (hasPassed(a.ends_at)) return { label: 'Expired', className: 'bg-muted text-muted-foreground' }
     return { label: 'Live', className: 'bg-emerald-100 text-emerald-800' }
   }
 
