@@ -187,6 +187,26 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     )
   }
 
+  // Validate bye rounds — max is rounds - 1. Before the capacity check,
+  // because a waitlist entry stores them too and becomes a real entry, byes
+  // and all, when the director offers the spot.
+  const requestedByes = body.byeRounds ?? []
+  if (!Array.isArray(requestedByes) || requestedByes.some((r) => !Number.isInteger(r))) {
+    return errorResponse('byeRounds must be an array of whole numbers', 400)
+  }
+  const byeRounds = [...new Set(requestedByes)].sort((a, b) => a - b)
+  const maxByes = tournament.rounds - 1
+  if (byeRounds.length > maxByes) {
+    return errorResponse(
+      `You can request at most ${maxByes} bye${maxByes !== 1 ? 's' : ''} (one less than total rounds)`,
+      400,
+    )
+  }
+  const invalidRound = byeRounds.find((r) => r < 1 || r > tournament.rounds)
+  if (invalidRound !== undefined) {
+    return errorResponse(`Round ${invalidRound} is not valid for this tournament`, 400)
+  }
+
   if (tournament.max_players != null) {
     const countRow = await context.env.DB.prepare(
       'SELECT COUNT(*) as count FROM registrations WHERE tournament_id = ? AND withdrawn_at IS NULL AND waitlisted_at IS NULL',
@@ -206,7 +226,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
          SELECT ?1, ?2, ?3, ?4, 'pending', ?5, ?6, ?7, datetime('now')
           WHERE NOT EXISTS (SELECT 1 FROM registrations WHERE tournament_id = ?2 AND member_id = ?3)`,
       ).bind(waitId, body.tournamentId, authed.member.id, body.section,
-        body.byeRounds?.length ? JSON.stringify(body.byeRounds) : null,
+        byeRounds.length > 0 ? JSON.stringify(byeRounds) : null,
         authed.member.uscf_rating ?? null, gradeText).run()
       if (joined.meta.changes === 0) {
         return errorResponse("You're already on the waitlist for this tournament", 409)
@@ -217,20 +237,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         message: `You're on the waitlist for ${tournament.name}. If a spot opens, the director will email you.`,
       }, 201)
     }
-  }
-
-  // Validate bye rounds — max is rounds - 1
-  const byeRounds = body.byeRounds ?? []
-  const maxByes = tournament.rounds - 1
-  if (byeRounds.length > maxByes) {
-    return errorResponse(
-      `You can request at most ${maxByes} bye${maxByes !== 1 ? 's' : ''} (one less than total rounds)`,
-      400,
-    )
-  }
-  const invalidRound = byeRounds.find((r) => r < 1 || r > tournament.rounds)
-  if (invalidRound !== undefined) {
-    return errorResponse(`Round ${invalidRound} is not valid for this tournament`, 400)
   }
 
   // The random part keeps two entries made in the same millisecond apart.

@@ -139,6 +139,40 @@ describe('waitlist', () => {
   })
 })
 
+describe('bye requests at registration', () => {
+  const byesOf = async (memberId: string) => (await env.DB.prepare(
+    'SELECT bye_rounds FROM registrations WHERE member_id = ?',
+  ).bind(memberId).first<{ bye_rounds: string | null }>())?.bye_rounds
+
+  it('are checked for a waitlist entry too, since it becomes a real entry with them', async () => {
+    const tournamentId = await seedTournament({ rounds: 4, maxPlayers: 1, sections: [{ name: 'Open', entryFee: 0 }] })
+    await seedRegistration({ tournamentId, memberId: await seedMember() })
+    const waiting = await seedMember()
+
+    const notARound = await register(waiting, { tournamentId, section: 'Open', waitlist: true, byeRounds: [9] })
+    expect(notARound.status).toBe(400)
+    const everyRound = await register(waiting, { tournamentId, section: 'Open', waitlist: true, byeRounds: [1, 2, 3, 4] })
+    expect(everyRound.status).toBe(400)
+    expect(await byesOf(waiting)).toBeUndefined()
+
+    const fine = await register(waiting, { tournamentId, section: 'Open', waitlist: true, byeRounds: [2] })
+    expect(fine.status).toBe(201)
+    expect(await byesOf(waiting)).toBe('[2]')
+  })
+
+  it('must be whole rounds, and a round asked for twice counts once', async () => {
+    const tournamentId = await seedTournament({ rounds: 4, sections: [{ name: 'Open', entryFee: 0 }] })
+
+    const half = await seedMember()
+    expect((await register(half, { tournamentId, section: 'Open', byeRounds: [1.5] })).status).toBe(400)
+    expect((await register(half, { tournamentId, section: 'Open', byeRounds: ['2'] })).status).toBe(400)
+
+    const twice = await seedMember()
+    expect((await register(twice, { tournamentId, section: 'Open', byeRounds: [3, 1, 3] })).status).toBe(201)
+    expect(await byesOf(twice)).toBe('[1,3]')
+  })
+})
+
 describe('withdrawing yourself', () => {
   it('works until pairings are out, and never reinstates', async () => {
     const admin = await seedAdmin()
