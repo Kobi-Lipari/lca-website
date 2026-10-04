@@ -208,25 +208,45 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   // ── Write every registration + payment together ──────────────────────────
+  // All or nothing, decided by the first statement. The checks above ran
+  // before the Stripe call, so another request can have taken the seats, or
+  // entered one of these players, since. The first row is written only if
+  // none of the players has an entry and the whole group still fits; every
+  // later statement writes only if that first row is there.
+  const playerSlots = rows.map((_, i) => `?${9 + i}`).join(', ')
+  const groupStillFits = `
+    NOT EXISTS (SELECT 1 FROM registrations WHERE tournament_id = ?2 AND member_id IN (${playerSlots}))
+    AND (SELECT max_players IS NULL OR max_players - (
+           SELECT COUNT(*) FROM registrations
+            WHERE tournament_id = ?2 AND withdrawn_at IS NULL AND waitlisted_at IS NULL) >= ?8
+           FROM tournaments WHERE id = ?2)`
+  const firstRowWritten = 'EXISTS (SELECT 1 FROM registrations WHERE id = ?8)'
+
   const statements: D1PreparedStatement[] = []
-  for (const r of rows) {
+  rows.forEach((r, i) => {
     const free = r.amount <= 0
+    const registration = db.prepare(
+      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
+       SELECT ?1, ?2, ?3, ?4, ?5, ?6, (SELECT uscf_rating FROM members WHERE id = ?3), ?7
+        WHERE ${i === 0 ? groupStillFits : firstRowWritten}`,
+    )
+    const values = [
+      r.registrationId,
+      tournament.id,
+      r.memberId,
+      r.section,
+      free ? 'paid' : 'pending',
+      r.byeRounds.length > 0 ? JSON.stringify(r.byeRounds) : null,
+      r.grade,
+    ]
     statements.push(
-      db.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, (SELECT uscf_rating FROM members WHERE id = ?3), ?7)`,
-      ).bind(
-        r.registrationId,
-        tournament.id,
-        r.memberId,
-        r.section,
-        free ? 'paid' : 'pending',
-        r.byeRounds.length > 0 ? JSON.stringify(r.byeRounds) : null,
-        r.grade,
-      ),
+      i === 0
+        ? registration.bind(...values, rows.length, ...rows.map((row) => row.memberId))
+        : registration.bind(...values, rows[0].registrationId),
       db.prepare(
         `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
-         VALUES (?, ?, ?, 'tournament', ?, ?, ?)`,
+         SELECT ?1, ?2, ?3, 'tournament', ?4, ?5, ?6
+          WHERE EXISTS (SELECT 1 FROM registrations WHERE id = ?4)`,
       ).bind(
         r.paymentId,
         r.memberId,
@@ -236,8 +256,21 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         free ? null : session?.id ?? null,
       ),
     )
+  })
+  const [firstRow] = await db.batch(statements)
+
+  // Nothing was written, and the checkout made above is never handed out, so
+  // nobody can pay for entries that do not exist.
+  if (firstRow.meta.changes === 0) {
+    const taken = await db.prepare(
+      `SELECT m.full_name FROM registrations r JOIN members m ON m.id = r.member_id
+        WHERE r.tournament_id = ?1 AND r.member_id IN (${rows.map((_, i) => `?${2 + i}`).join(', ')})
+        LIMIT 1`,
+    ).bind(tournament.id, ...rows.map((r) => r.memberId)).first<{ full_name: string }>()
+    return taken
+      ? errorResponse(`${taken.full_name} is already registered for this tournament`, 409)
+      : errorResponse('The last spots were taken while you were registering, so these entries no longer fit. Nothing was charged.', 400)
   }
-  await db.batch(statements)
 
   // Free entries are confirmed now; paid ones when Stripe reports payment.
   const confirmedNow = rows.filter((r) => r.amount <= 0).map((r) => r.registrationId)

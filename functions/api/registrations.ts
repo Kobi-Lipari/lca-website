@@ -40,6 +40,72 @@ function parseSectionNames(sectionsJson: string): string[] {
   }
 }
 
+/**
+ * The registration and its payment row, written only if the member is not
+ * already entered and a seat is still free.
+ *
+ * The handler checks both before it gets here, but several statements (and,
+ * for a paid section, a Stripe call) earlier, so two requests can both pass:
+ * two people going for the last seat, or one person submitting twice. Here
+ * the same conditions are part of the insert itself, where nothing can come
+ * in between. The first result's meta.changes is 0 when nothing was written.
+ */
+function guardedEntryStatements(db: D1Database, e: {
+  registrationId: string
+  tournamentId: string
+  memberId: string
+  section: string
+  paymentStatus: 'paid' | 'pending'
+  byeRounds: number[]
+  grade: string | null
+  paymentId: string
+  amount: number
+  sessionId: string | null
+}): D1PreparedStatement[] {
+  return [
+    db.prepare(
+      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
+       SELECT ?1, ?2, ?3, ?4, ?5, ?6, (SELECT uscf_rating FROM members WHERE id = ?3), ?7
+        WHERE NOT EXISTS (SELECT 1 FROM registrations WHERE tournament_id = ?2 AND member_id = ?3)
+          AND (SELECT max_players IS NULL OR max_players > (
+                 SELECT COUNT(*) FROM registrations
+                  WHERE tournament_id = ?2 AND withdrawn_at IS NULL AND waitlisted_at IS NULL)
+                 FROM tournaments WHERE id = ?2)`,
+    ).bind(
+      e.registrationId,
+      e.tournamentId,
+      e.memberId,
+      e.section,
+      e.paymentStatus,
+      e.byeRounds.length > 0 ? JSON.stringify(e.byeRounds) : null,
+      e.grade,
+    ),
+    db.prepare(
+      `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
+       SELECT ?1, ?2, ?3, 'tournament', ?4, ?5, ?6
+        WHERE EXISTS (SELECT 1 FROM registrations WHERE id = ?4)`,
+    ).bind(
+      e.paymentId,
+      e.memberId,
+      e.amount,
+      e.registrationId,
+      e.paymentStatus === 'paid' ? 'completed' : 'pending',
+      e.sessionId,
+    ),
+  ]
+}
+
+/** What to tell the request that lost: someone else took the seat, or this
+ *  member's own other request got in first. */
+async function lostTheSeat(db: D1Database, tournamentId: string, memberId: string): Promise<Response> {
+  const mine = await db.prepare(
+    'SELECT 1 FROM registrations WHERE tournament_id = ? AND member_id = ?',
+  ).bind(tournamentId, memberId).first()
+  return mine
+    ? errorResponse('You are already registered for this tournament', 409)
+    : jsonResponse({ error: 'This tournament is full. You can join the waitlist.', full: true }, 400)
+}
+
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -133,13 +199,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         return jsonResponse({ error: 'This tournament is full. You can join the waitlist.', full: true }, 400)
       }
       // Waitlist: no charge until the director offers a spot.
-      const waitId = `reg-${body.tournamentId}-${Date.now().toString(36)}`
-      await context.env.DB.prepare(
+      const waitId = `reg-${body.tournamentId}-${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 4)}`
+      // Guarded like the entry itself, so submitting twice joins once.
+      const joined = await context.env.DB.prepare(
         `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade, waitlisted_at)
-         VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, datetime('now'))`,
+         SELECT ?1, ?2, ?3, ?4, 'pending', ?5, ?6, ?7, datetime('now')
+          WHERE NOT EXISTS (SELECT 1 FROM registrations WHERE tournament_id = ?2 AND member_id = ?3)`,
       ).bind(waitId, body.tournamentId, authed.member.id, body.section,
         body.byeRounds?.length ? JSON.stringify(body.byeRounds) : null,
         authed.member.uscf_rating ?? null, gradeText).run()
+      if (joined.meta.changes === 0) {
+        return errorResponse("You're already on the waitlist for this tournament", 409)
+      }
       return jsonResponse({
         registration: { id: waitId, waitlisted: true },
         paymentUrl: null,
@@ -162,8 +233,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse(`Round ${invalidRound} is not valid for this tournament`, 400)
   }
 
-  const registrationId = `reg-${body.tournamentId}-${Date.now().toString(36)}`
+  // The random part keeps two entries made in the same millisecond apart.
+  const registrationId = `reg-${body.tournamentId}-${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 4)}`
   const paymentId = `pay-${registrationId}`
+  const entry = {
+    registrationId,
+    tournamentId: body.tournamentId,
+    memberId: authed.member.id,
+    section: body.section,
+    byeRounds,
+    grade: gradeText,
+    paymentId,
+  }
   const amount = entryPrice(tournament, body.section, {
     isLcaMember: authed.member.membership_status === 'active',
   }).amount
@@ -175,23 +256,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // ── Free section: no Stripe involved, registered & paid immediately ──────
   if (amount <= 0) {
-    await context.env.DB.batch([
-      context.env.DB.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
-         VALUES (?1, ?2, ?3, ?4, 'paid', ?5, (SELECT uscf_rating FROM members WHERE id = ?3), ?6)`,
-      ).bind(
-        registrationId,
-        body.tournamentId,
-        authed.member.id,
-        body.section,
-        byeRounds.length > 0 ? JSON.stringify(byeRounds) : null,
-        gradeText,
-      ),
-      context.env.DB.prepare(
-        `INSERT INTO payments (id, member_id, amount, type, reference_id, status)
-         VALUES (?, ?, 0, 'tournament', ?, 'completed')`,
-      ).bind(paymentId, authed.member.id, registrationId),
-    ])
+    const [inserted] = await context.env.DB.batch(guardedEntryStatements(context.env.DB, {
+      ...entry, paymentStatus: 'paid', amount: 0, sessionId: null,
+    }))
+    if (inserted.meta.changes === 0) return lostTheSeat(context.env.DB, entry.tournamentId, entry.memberId)
 
     const registration = await context.env.DB.prepare(
       'SELECT * FROM registrations WHERE id = ?',
@@ -240,23 +308,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     )
   }
 
-  await context.env.DB.batch([
-    context.env.DB.prepare(
-      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
-       VALUES (?1, ?2, ?3, ?4, 'pending', ?5, (SELECT uscf_rating FROM members WHERE id = ?3), ?6)`,
-    ).bind(
-      registrationId,
-      body.tournamentId,
-      authed.member.id,
-      body.section,
-      byeRounds.length > 0 ? JSON.stringify(byeRounds) : null,
-      gradeText,
-    ),
-    context.env.DB.prepare(
-      `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
-       VALUES (?, ?, ?, 'tournament', ?, 'pending', ?)`,
-    ).bind(paymentId, authed.member.id, amount, registrationId, session.id),
-  ])
+  // The checkout session made above is simply never handed out when this
+  // writes nothing, so nobody can pay for an entry that does not exist.
+  const [inserted] = await context.env.DB.batch(guardedEntryStatements(context.env.DB, {
+    ...entry, paymentStatus: 'pending', amount, sessionId: session.id,
+  }))
+  if (inserted.meta.changes === 0) return lostTheSeat(context.env.DB, entry.tournamentId, entry.memberId)
 
   const registration = await context.env.DB.prepare(
     'SELECT * FROM registrations WHERE id = ?',
