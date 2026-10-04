@@ -24,8 +24,10 @@ import { cleanToken, isResultToken, stripCheckMateDecoration } from './normalize
 import { createChessCache, type ChessCache } from './chessAdapter';
 import {
   buildGapContext,
+  findBlankFills,
   findGapPlans,
   looksLikeMove,
+  UNREADABLE_COST,
   type GapContext,
   type GapPlan,
 } from './gaps';
@@ -105,13 +107,6 @@ const COST_EPSILON = 1e-9;
  */
 const GAP_SINGLE_COST = 2.5;
 const GAP_PAIR_COST = 2.0;
-/**
- * A cell is probed for a gap only when its best legal reading costs at
- * least this. Every single-character confusion in the §4.3 table costs
- * less, so an ordinary misread does not start a search; a cleanly written
- * move that is simply not legal here (cost 1 and up) does.
- */
-const GAP_TRIGGER_COST = 0.9;
 /** Only beams this close to the best one are probed. */
 const GAP_BEAM_SLACK = 0.5;
 const GAP_PROBES_PER_CELL = 2;
@@ -234,6 +229,8 @@ export function decodeScan(
     const parts: Array<Beam | DeferredExpansion> = [];
     /** beams whose current cell has no clean legal reading */
     const unreadable: Beam[] = [];
+    /** beams whose current cell is blank */
+    const atBlank: Beam[] = [];
     let cheapestLive = Infinity;
 
     for (const beam of beams) {
@@ -243,7 +240,9 @@ export function decodeScan(
       }
       if (beam.cost < cheapestLive) cheapestLive = beam.cost;
       const deferred: DeferredExpansion[] = [];
-      parts.push(...expandBeam(beam, activeSlots, cache, options, deferred, unreadable));
+      parts.push(
+        ...expandBeam(beam, activeSlots, cache, options, deferred, unreadable, atBlank),
+      );
       parts.push(...deferred);
     }
 
@@ -303,6 +302,22 @@ export function decodeScan(
           (b) => honoursForced(b, options),
         );
         next.unshift(...found);
+      }
+    }
+
+    // A blank cell is an unwritten move whose place is known. The ordinary
+    // guess for it looks one cell ahead; when a cell further on is only
+    // legal after one particular move, offer that move as well.
+    if (gapContext) {
+      let fills = 0;
+      for (const beam of atBlank) {
+        if (fills >= GAP_PROBES_PER_CELL) break;
+        if (gapContext.work.ops > gapContext.work.budget) break;
+        if (beam.cost > cheapestLive + GAP_BEAM_SLACK) continue;
+        fills++;
+        next.unshift(
+          ...fillBlank(beam, cache, options, gapContext).filter((b) => honoursForced(b, options)),
+        );
       }
     }
 
@@ -384,6 +399,7 @@ function expandBeam(
   options: DecodeOptions,
   deferred: DeferredExpansion[],
   unreadable: Beam[],
+  atBlank: Beam[],
 ): Beam[] {
   const slot = slots[beam.slotIndex]!;
   const out: Beam[] = [];
@@ -428,6 +444,7 @@ function expandBeam(
     // scan before the search starts, so reaching here means written cells
     // follow and a ply genuinely belongs in this slot.
     if (options.structuralOps) {
+      atBlank.push(beam);
       const nextWritten = nextWrittenCell(slots, beam.slotIndex + 1);
       deferred.push({
         minCost: beam.cost + INSERT_PLY_COST,
@@ -466,7 +483,7 @@ function expandBeam(
     // A forced move that does not fit its cell is the same symptom: the
     // member has said what was played, and the cell says something else.
     const readCost = forced ? (branches[0]?.cost ?? Infinity) : bestMatchCost;
-    if (readCost >= GAP_TRIGGER_COST || capturesNothing(cell, ranked[0])) {
+    if (readCost >= UNREADABLE_COST || capturesNothing(cell, ranked[0])) {
       unreadable.push(beam);
     }
     if (bestMatchCost > INSERT_ONE_TRIGGER_COST) {
@@ -808,12 +825,13 @@ function probeForGap(
   context: GapContext,
 ): Beam[] {
   const back = beam.exactRun;
-  const history = beam.moves.slice(beam.moves.length - back).map((m) => m.fenBefore);
+  const recent = beam.moves.slice(beam.moves.length - back);
   const plans = findGapPlans(context, {
     fen: beam.fen,
     slot: beam.slotIndex,
     ply: beam.moves.length,
-    history,
+    history: recent.map((m) => m.fenBefore),
+    historyCosts: recent.map((m) => MATCH_COST.get(m) ?? 0),
   });
   const out: Beam[] = [];
   for (const plan of plans) {
@@ -821,6 +839,41 @@ function probeForGap(
     if (built) out.push(built);
   }
   return out;
+}
+
+/** Beams that fill this beam's blank cell with a move a later cell needs. */
+function fillBlank(
+  beam: Beam,
+  cache: ChessCache,
+  options: DecodeOptions,
+  context: GapContext,
+): Beam[] {
+  const fills = findBlankFills(context, beam.fen, beam.slotIndex, beam.moves.length);
+  return fills.slice(0, 2).map(({ san }) => {
+    const move: DecodedMove = {
+      ply: beam.moves.length + 1,
+      san,
+      sourceRaw: null,
+      confidence: 0.15,
+      status: 'guessed',
+      alternatives: fills
+        .slice(0, options.maxAlternatives)
+        .map((f, idx) => ({ san: f.san, score: 1 / (idx + 2) })),
+      fenBefore: beam.fen,
+    };
+    return {
+      ...beam,
+      fen: cache.applyMove(beam.fen, san),
+      slotIndex: beam.slotIndex + 1,
+      moves: [...beam.moves, move],
+      trailingSkips: 0,
+      exactRun: 0,
+      cost: beam.cost + INSERT_PLY_COST,
+      lastMoveTo: squareOf(san),
+      resyncRemaining: RESYNC_CELLS,
+      resyncCosts: [],
+    };
+  });
 }
 
 function applyGapPlan(
@@ -883,9 +936,9 @@ function applyGapPlan(
     const slot = slots[plan.slot + i]!;
     if (!slot.cell) return null;
     const ranked = rankCandidates(cache.legalSans(state.fen), slot.cell);
-    const exact = ranked.find((c) => c.san === plan.replay[i]);
-    if (!exact || exact.cost !== 0) return null;
-    state = extendWithMatch(state, slot, exact, ranked, cache, options, 0);
+    const read = ranked.find((c) => c.san === plan.replay[i]);
+    if (!read) return null;
+    state = extendWithMatch(state, slot, read, ranked, cache, options, 0);
   }
   if (state.slotIndex !== beam.slotIndex + 1) return null;
 
