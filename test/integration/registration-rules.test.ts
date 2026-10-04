@@ -10,6 +10,7 @@ import { onRequestPost as registrationsPost } from '../../functions/api/registra
 import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
 import { onRequestPost as batchPost } from '../../functions/api/registrations/batch'
 import { onRequestPost as waitlistPost } from '../../functions/api/admin/tournaments/[id]/waitlist'
+import { onRequestPost as walkInPost } from '../../functions/api/admin/tournaments/[id]/walk-ins'
 import { onRequestPost as generatePost } from '../../functions/api/admin/tournaments/[id]/generate-pairings'
 import { onRequestGet as publicGet } from '../../functions/api/tournaments/[id]'
 
@@ -126,6 +127,28 @@ describe('waitlist', () => {
 
     const twice = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg!.id } })
     expect(twice.status).toBe(404)
+  })
+
+  it('does not take a seat away from a walk-in', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ maxPlayers: 2, sections: [{ name: 'Open', entryFee: 0 }] })
+    const leaving = await seedRegistration({ tournamentId, memberId: await seedMember() })
+    await seedRegistration({ tournamentId, memberId: await seedMember() })
+    const waiting = await seedMember()
+    expect((await register(waiting, { tournamentId, section: 'Open', waitlist: true })).status).toBe(201)
+
+    const walkIn = () => invoke(walkInPost, {
+      method: 'POST', as: admin, params: { id: tournamentId }, body: { fullName: 'Door Player', section: 'Open' },
+    })
+    // Two entered, one waiting: full.
+    expect((await walkIn()).status).toBe(400)
+
+    // One player withdraws. There is a free seat now, and the director can
+    // give it to someone at the door; the person waiting does not hold it.
+    await env.DB.prepare(`UPDATE registrations SET withdrawn_at = datetime('now') WHERE id = ?`).bind(leaving).run()
+    expect((await walkIn()).status).toBe(201)
+    // And that filled it again.
+    expect((await walkIn()).status).toBe(400)
   })
 
   it('is only for the director to offer spots', async () => {

@@ -70,8 +70,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (!sectionMatch) return errorResponse('Invalid section', 400)
 
   if (tournament.max_players != null) {
+    // Seats taken, counted as online registration counts them: people on
+    // the waitlist do not hold one.
     const countRow = await context.env.DB.prepare(
-      'SELECT COUNT(*) as count FROM registrations WHERE tournament_id = ? AND withdrawn_at IS NULL',
+      'SELECT COUNT(*) as count FROM registrations WHERE tournament_id = ? AND withdrawn_at IS NULL AND waitlisted_at IS NULL',
     ).bind(tournamentId).first<{ count: number }>()
     if ((countRow?.count ?? 0) >= tournament.max_players) {
       return errorResponse('This tournament is full', 400)
