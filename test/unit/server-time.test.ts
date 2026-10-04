@@ -8,6 +8,15 @@ describe('database timestamps shown in the browser', () => {
     expect(serverTime('2026-10-04 21:05:00').toISOString()).toBe('2026-10-04T21:05:00.000Z')
   })
 
+  it('fall on the right day where only the date is shown', () => {
+    // The dashboard's ticket list shows the date alone. A ticket updated at
+    // 8:30 PM in Louisiana is stored as 01:30 UTC the next day; read as
+    // local time it showed tomorrow's date.
+    const shown = serverTime('2026-10-05 01:30:00')
+      .toLocaleDateString('en-US', { timeZone: 'America/Chicago' })
+    expect(shown).toBe('10/4/2026')
+  })
+
   it('leaves a value that already says its zone alone', () => {
     expect(serverTime('2026-10-04T21:05:00.000Z').toISOString()).toBe('2026-10-04T21:05:00.000Z')
   })

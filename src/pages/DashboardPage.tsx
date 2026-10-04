@@ -29,6 +29,7 @@ import {
 } from '@/lib/api'
 import { ROLE_LABELS, canAccessAdmin } from '@/lib/roles'
 import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
+import { serverTime } from '@/lib/serverTime'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -776,7 +777,7 @@ export function DashboardPage() {
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
                       <span className="text-xs text-muted-foreground">
-                        {new Date(ticket.updated_at).toLocaleDateString()} ·{' '}
+                        {serverTime(ticket.updated_at).toLocaleDateString()} ·{' '}
                         {ticket.message_count} message{ticket.message_count !== 1 ? 's' : ''}
                       </span>
                       <span
