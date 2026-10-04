@@ -1,5 +1,6 @@
 import type { Env } from '../types'
 import { jsonResponse, handleOptions } from '../utils/response'
+import { hasPassed } from '../utils/time'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -10,6 +11,8 @@ export interface AnnouncementRow {
   link_label: string | null
   tone: string
   size: string
+  starts_at: string | null
+  ends_at: string | null
 }
 
 /**
@@ -27,15 +30,18 @@ export interface AnnouncementRow {
  */
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { results } = await context.env.DB.prepare(
-    `SELECT id, message, link_url, link_label, tone, size
+    `SELECT id, message, link_url, link_label, tone, size, starts_at, ends_at
        FROM site_announcements
       WHERE enabled = 1
-        AND (starts_at IS NULL OR starts_at <= datetime('now'))
-        AND (ends_at   IS NULL OR ends_at   >= datetime('now'))
       ORDER BY sort_order ASC, updated_at DESC`,
   ).all<AnnouncementRow>()
 
+  // The window is typed by an admin as Louisiana wall-clock time, like every
+  // other time on the site (see utils/time). Comparing it in SQL with
+  // datetime('now'), which is UTC, started and ended every banner five or
+  // six hours early.
   const announcements = (results ?? [])
+    .filter((r) => (!r.starts_at || hasPassed(r.starts_at)) && !hasPassed(r.ends_at))
     .filter((r) => r.message.trim() || r.link_label?.trim())
     .map((r) => ({
       id: r.id,
