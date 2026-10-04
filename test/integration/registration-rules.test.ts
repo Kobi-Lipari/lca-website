@@ -3,7 +3,7 @@
 // through the real endpoints.
 import { beforeEach, describe, expect, it } from 'vitest'
 import { env } from 'cloudflare:test'
-import { emailOutbox, invoke, resetHarness, stripeSessions } from './harness'
+import { emailOutbox, invoke, resetHarness, signStripePayload, stripeSessions } from './harness'
 import { seedAdmin, seedMember, seedRegistration, seedTournament } from './factories'
 
 import { onRequestPost as registrationsPost } from '../../functions/api/registrations'
@@ -14,6 +14,7 @@ import { onRequestPost as waitlistPost } from '../../functions/api/admin/tournam
 import { onRequestPost as walkInPost } from '../../functions/api/admin/tournaments/[id]/walk-ins'
 import { onRequestPost as generatePost } from '../../functions/api/admin/tournaments/[id]/generate-pairings'
 import { onRequestGet as publicGet } from '../../functions/api/tournaments/[id]'
+import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook'
 
 beforeEach(resetHarness)
 
@@ -185,6 +186,46 @@ describe('waitlist', () => {
 
     const twice = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg!.id } })
     expect(twice.status).toBe(404)
+  })
+
+  it('records the checkout on an offered spot that is then paid by card', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament({ maxPlayers: 1, sections: [{ name: 'Open', entryFee: 20 }] })
+    await seedRegistration({ tournamentId, memberId: await seedMember() })
+    const late = await seedMember()
+    expect((await register(late, { tournamentId, section: 'Open', waitlist: true })).status).toBe(201)
+    const reg = await env.DB.prepare('SELECT id FROM registrations WHERE member_id = ?').bind(late).first<{ id: string }>()
+    const offered = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg!.id } })
+    expect(offered.status).toBe(200)
+
+    // The offer makes a pending payment that no checkout has been opened for.
+    const paymentRow = () => env.DB.prepare(
+      'SELECT amount, status, stripe_session_id, stripe_payment_intent FROM payments WHERE reference_id = ?',
+    ).bind(reg!.id).first()
+    expect(await paymentRow()).toEqual({ amount: 20, status: 'pending', stripe_session_id: null, stripe_payment_intent: null })
+
+    // "Pay now" is the only way this entry gets paid by card.
+    const pay = await invoke(payPost, { method: 'POST', as: late, params: { id: reg!.id } })
+    expect(pay.status).toBe(200)
+    const session = stripeSessions.at(-1)!
+    expect(session.amountCents).toBe(2000)
+    expect((await paymentRow())?.stripe_session_id).toBe(session.id)
+
+    const rawBody = JSON.stringify({
+      type: 'checkout.session.completed',
+      data: { object: { id: session.id, payment_intent: 'pi_card', metadata: session.metadata } },
+    })
+    const delivered = await invoke(webhookPost, {
+      method: 'POST', rawBody, headers: { 'stripe-signature': await signStripePayload(rawBody) },
+    })
+    expect(delivered.status).toBe(200)
+
+    expect(await paymentRow()).toEqual({
+      amount: 20, status: 'completed', stripe_session_id: session.id, stripe_payment_intent: 'pi_card',
+    })
+    const entry = await env.DB.prepare('SELECT payment_status FROM registrations WHERE id = ?')
+      .bind(reg!.id).first<{ payment_status: string }>()
+    expect(entry?.payment_status).toBe('paid')
   })
 
   it('does not take a seat away from a walk-in', async () => {
