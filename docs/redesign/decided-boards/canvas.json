@@ -627,7 +627,7 @@
    "x": 640,
    "y": 0,
    "w": 1440,
-   "h": 6900,
+   "h": 7450,
    "title": "Tournament page · decided · setup: two schedules that merge",
    "page": "event",
    "expand": "fill"
@@ -636,7 +636,7 @@
    "x": 2160,
    "y": 0,
    "w": 1440,
-   "h": 6000,
+   "h": 6450,
    "title": "Tournament page · decided · setup: one schedule, limits by section",
    "page": "event",
    "expand": "fill"
@@ -653,7 +653,7 @@
    "x": 5200,
    "y": 0,
    "w": 1440,
-   "h": 4950,
+   "h": 6400,
    "title": "Register my family · decided",
    "page": "event"
   },
@@ -661,7 +661,7 @@
    "x": 6720,
    "y": 0,
    "w": 1440,
-   "h": 5950,
+   "h": 6000,
    "title": "Tournament setup options · decided",
    "page": "event"
   },
@@ -678,7 +678,7 @@
    "x": 2160,
    "y": 8700,
    "w": 1440,
-   "h": 7700,
+   "h": 7900,
    "title": "Festival page · decided (public page)",
    "page": "event",
    "expand": "fill"
@@ -687,7 +687,7 @@
    "x": 3680,
    "y": 8700,
    "w": 1440,
-   "h": 5500,
+   "h": 6450,
    "title": "Festival page · decided (admin panel, home hero)",
    "page": "event"
   },
@@ -695,7 +695,7 @@
    "x": 5200,
    "y": 8700,
    "w": 2800,
-   "h": 4100,
+   "h": 4500,
    "title": "Tournament page on phones · decided",
    "page": "event"
   }
@@ -1546,7 +1546,7 @@
    "w": 760,
    "x": 640,
    "y": 6510,
-   "text": "What this part shows: the decided /tournaments list at 1440px, signed in. Frame A is the default list with one uniform filter-and-sort line (count at the left, When, Type and Region dropdowns, the applied chips, Clear all, then Sort at the far right), the info note under it, and The Baton Rouge Classic hovered with its bell's Remind me popover open beside the rail. Frame B selects that row: the 400px preview replaces the rail, with See who's registered (under-18s as first name and last initial for the public) and the Register, Remind me, Add to calendar, Share and Full event page buttons; the partner and not-open panes sit below. No Copy link anywhere.\n\nBuilt from Tourn-A and Tourn-B with the decided header; replaces Tourn-A and Tourn-B. The Results tab and bell states continue in \"Tournaments list · decided (Results tab, bell states)\".\n\nSecond round applied (Thu, Oct 8): items 4.1 to 4.7 are tick boxes in the legend. Nothing left to pick on this board."
+   "text": "What this part shows: Tournaments list · decided (list and preview). Built from Tourn-A (toolbar, rows, month groups, right rail) and Tourn-B (preview pane, partner and not-open states). Replaces Tourn-A and Tourn-B. October 8 update: one entry price. The preview pane's sections table now reads Section · Entry · Registered, with no \"LCA member\" column, because an LCA membership is required to enter and is added at checkout. Partner panes still have no count, no fee table and no Register."
   },
   "s_Tourn-List-States": {
    "fill": "gray",
@@ -1578,7 +1578,7 @@
    "w": 760,
    "x": 6720,
    "y": 3610,
-   "text": "What this part shows: the decided table view, K's option 3 (Compact table with a side panel), redrawn with the second-round chrome: one filter-and-sort line, the info note instead of loose text, no bell column (Remind me lives in the panel), the picked row with a gold ring, and the List view's button row at the bottom of the panel. Below: the rail at rest, a partner row picked, the public See who's registered list (under-18s abbreviated) and the drawer below 1280px.\n\nBuilt from Tourn-Table-3 with the Tourn-List-Final toolbar and preview; replaces Tourn-Table-1, 2 and 3.\n\nOpen question for K: the CSV export for directors was dropped with the bell column. Does it come back here, or live in the TD tools?"
+   "text": "What this part shows: Tourn-Table-Final (decided). Option 3 table, signed in, The Baton Rouge Classic picked. One 44px filter-and-sort line, an info note card, no bell column, a side panel that matches the List view's button row (Register, Remind me · Add to calendar, Share · Full event page). Oct 8 update: one entry price per section. The panel's fee table no longer has an LCA member column and now reads Section · Entry · Registered. K's items 4.1 to 4.7 are ticked on the board."
   },
   "s_Tourn-Phones-Final": {
    "fill": "gray",
@@ -1586,23 +1586,23 @@
    "w": 760,
    "x": 640,
    "y": 11760,
-   "text": "What this part shows: thirteen 390×844 phone frames, decided: List B (with a full preview), Map A (map on top, list sheet, pin preview with Back to map) and Table A (frozen Date and Event columns), with Calendar A drawn as the default. One toolbar on every view: a Display dropdown replaces the four-way picker, the live count sits beside a Filters button that opens the filter sheet. Rows have no LCA or Partner tag text and no bell; the bell lives only in the preview's Remind me, which opens reminders with one week and one day before ticked. Under-18s abbreviated in the public registered list. No Copy link anywhere. The panel at the right shows the pieces every view shares.\n\nBuilt from Tourn-Phones-Options, the Tourn-List-Final preview and Nav-Mobile-Final; replaces Tourn-Phones-Options.\n\nLeft for K: the phone calendar was not picked, so Calendar A (month grid over the day's agenda) is the default. Say B or C to swap it."
+   "text": "What this part shows: Tournaments on phones · decided (Tourn-Phones-Final). K's picks: List B, Map A, Table A, with Calendar A as the default. One shared toolbar (Display, count, Filters), rows without tags or bells, and one event preview that opens from a row, a pin, a table row or a calendar day. Updated Oct 8: one entry price. The preview's sections table reads Section · Entry · Registered, with no member price, since an LCA membership is required to enter and is added at checkout. Still open for K: the phone calendar (A drawn as default; say B or C to swap)."
   },
   "s_Event-Final-1": {
    "fill": "gray",
    "page": "event",
    "w": 760,
    "x": 640,
-   "y": 6960,
-   "text": "What this part shows: the unified tournament page for the 2027 Louisiana State Championship (Sample data) when the TD's setup has two schedules that merge, viewed signed out. Setup: Hotel & travel on, side events on (Labor Day Scholastic, State Blitz Championship, the annual business meeting), a championship title (Past champions ↗ in the sub nav), an overall entry limit (23 of 160), three fee tiers and a member discount. The sidebar card shows the fee ladder, the \"3-day · 2-day\" schedule picker, the side events line and Register my family with \"One checkout for you and your children. See how it works\", which opens \"How family registration works\". Same page. The TD's setup picks the layout.\nBuilt from: Event-B and Event-A. Replaces: Event-A, Event-B and Event-C.\nLeft for K: Should Register my family use the line from section 6a, as drawn here, or the older section 3.1 hint? The spec has both."
+   "y": 7510,
+   "text": "What this part shows: Event page, final 1 (State Championship, signed out, 1440px). One entry price: the card reads 'You pay today $50' with 'LCA membership required to enter · $15 a year, added at checkout if you don't have one'. Venue & travel is one block: the venue first, then Getting here (Travel details on), then the optional Hotel at the bottom. The sidebar carries the Venue & travel summary card. The notes explain why each part shows; the page itself carries no notes."
   },
   "s_Event-Final-2": {
    "fill": "gray",
    "page": "event",
    "w": 760,
    "x": 2160,
-   "y": 6060,
-   "text": "What this part shows: the unified tournament page for the 2027 Paul Morphy Open (Sat–Sun, Jun 12–13, 2027, New Orleans; Sample data), seen by a signed-in Adult LCA member who has not registered. The setup has one schedule and limits by section (Open 9 of 15, U1800 19 of 20, U1400 7 of 15, U1000 3 of 10; 38 of 60 overall, set by the TD), three fee tiers and a member discount. Hotel & travel and side events are off, and there is no championship title. The top band reads \"LCA event\" · \"Run by LCA · TD Chris Arceneaux\". The key-facts card shows \"Register · $30\" (navy text on gold), the member's own price in U1800, and a note explains that signed-out viewers see \"from $20\". The sub nav uses the simple labels. Section cards come from Event-A, with pills and bars. Schedule and Prizes sit side by side, followed by Who's coming (no club column), Venue only and Good to know. In the member registration card, \"19 of 20 in U1800 · 1 spot left\" has \"38 of 60 overall\" under it. Register my family is not shown (note 12). There is a link preview and a Remind me popover. A 440px inset shows the same top band for a club-run event (\"Club event\" · \"Run by Lafayette Chess Club · TD [name]\"). Same page. The TD's setup picks the layout.\nBuilt from: Event-A, Event-B. Replaces: Event-A, Event-B, Event-C.\nLeft for K: the wording for a full section (\"Then a waitlist, no charge\") is drawn on Event-Final-States, not on this board."
+   "y": 6510,
+   "text": "What this part shows: Event-Final-2 · Paul Morphy Open, one schedule, limits by section, signed-in Adult member. K's Oct 8 changes applied: one entry price per section per tier and no member price anywhere. Section cards read 'Early $40 until Fri, May 28 · Regular $50 · Late $65 from Mon, Jun 7' plus today's price. The card and the top button say 'Register · $40'. The card states 'LCA membership required to enter' and, for this member, 'Your LCA membership is active through Sun, Mar 14, 2027'. Good to know's Discounts is now Membership. Venue & travel is one block; with travel off and no hotel it is the venue part only, and the sub nav still reads 'Venue & travel'. A Venue & travel summary card (venue, city, Open in Maps, parking, Full venue & travel) takes the Hotel & travel card's place in the sidebar. Checklist items 5.10 to 5.14 added."
   },
   "s_Event-Final-States": {
    "fill": "gray",
@@ -1610,23 +1610,23 @@
    "w": 760,
    "x": 3680,
    "y": 8060,
-   "text": "What this part shows: the states of the unified tournament page (spec section 5), drawn as labelled frames. (1) The registration card in six entry setups, each with its count line: overall limit with the fee ladder (signed out), limits by section with U1800 picked (member), limits by section with partial caps, overall limit with one fee (\"Entry fee $50\"), no limit, and event full with the waitlist. (2) The family row three ways, plus the card with the schedule picker. (3) The button strips: the sidebar card's other states beside the top card's lifecycle buttons, with the TD override tag \"Shown as: During (set by the TD)\". (4) The top of the page during the event (live strip, Pairings and Standings lit) and after it (Final results tag, winners line, See standings card). (5) The sidebar for a registered viewer: You're registered with Manage my entry, Hotel & travel, Round alerts with one email switch per registered person, and the link preview.\nBuilt from: Event-A, Event-B and Event-C. Replaces: Event-C.\nLeft for K: confirm the waitlist wording on card 1f (\"No charge to join the waitlist.\" and \"Next: we email you if a spot opens; you confirm your US Chess ID and byes and pay then.\"). The 2027 State Championship and Paul Morphy Open figures are sample data and carry the badge."
+   "text": "What this part shows: the states of the unified tournament page (spec section 5), drawn as labelled frames. (1) The registration card in six entry setups, each with its count line: overall limit with the fee ladder (signed out), limits by section with U1800 picked (member), limits by section with partial caps, overall limit with one fee (\"Entry fee $50\"), no limit, and event full with the waitlist. (2) The family row three ways, plus the card with the schedule picker. (3) The button strips: the sidebar card's other states beside the top card's lifecycle buttons, with the TD override tag \"Shown as: During (set by the TD)\". (4) The top of the page during the event (live strip, Pairings and Standings lit) and after it (Final results tag, winners line, See standings card). (5) The sidebar for a registered viewer: You're registered with Manage my entry, the Venue & travel summary card (with the hotel line when one is set), Round alerts with one email switch per registered person, and the link preview.\nBuilt from: Event-A, Event-B and Event-C. Replaces: Event-C.\nLeft for K: confirm the waitlist wording on card 1f (\"No charge to join the waitlist.\" and \"Next: we email you if a spot opens; you confirm your US Chess ID and byes and pay then.\"). The 2027 State Championship and Paul Morphy Open figures are sample data and carry the badge.\n\nK's second round applied: one entry price per section and tier with no member price; the card's membership line reads \"LCA membership required to enter · $15 a year, added at checkout if you don't have one\"."
   },
   "s_Event-Final-Family": {
    "fill": "gray",
    "page": "event",
    "w": 760,
    "x": 5200,
-   "y": 5010,
-   "text": "What this part shows: the \"Register my family · who's playing\" flow for the 2027 Louisiana State Championship (Sample data), in three frames. (D) The 600px picker sheet for Danielle Robichaux with Maya and Leo. It has the member-price line, a Playing checkbox per person, the name as the TD sees it with \"Shown publicly as Maya R.\" and Edit name on every row, the grade box before a scholastic section, the section select with member prices and the State Blitz side event, Leo's schedule select, the running total, \"Someone missing? Add a family member\", the 9-player note, the names confirmation and Continue. Insets show the duplicate-name error (drawn once), the row states and the disabled Continue. (E) The explainer a signed-out viewer gets: three steps, a picker preview with sample names, \"Get a Family membership · $25 a year\", \"Start: create your login\" and Log in, plus where each button goes. (F) The phone picker at 390 wide: the top of the list, the list scrolled to the end, and Maya's section select open as a bottom sheet. Edit name is on all three people's rows, and Maya's card has the unticked State Blitz side event, the same as frame D.\nBuilt from: Reg-C, Account-B and Event-A. Replaces: nothing (new).\nLeft for K: whether the Family membership explainer (E) should also show the \"Register without one\" path inline, or only after the login is created."
+   "y": 6460,
+   "text": "What this part shows: the \"Register my family · who's playing\" flow for the 2027 Louisiana State Championship (Sat–Mon, Sep 4–6, 2027, Baton Rouge; Sample data), in three frames. (D) The 600px picker sheet for Danielle Robichaux with Maya and Leo. The intro says the Family membership is the only thing shared: it covers you and up to 3 children, and every player pays their own entry fee. Each row has a Playing checkbox, the name as the TD sees it with \"Shown publicly as Maya R.\" and Edit name, the grade box before a scholastic section, a section select with one price and a count per option (\"Labor Day Scholastic · K–8 · $25 · 14 of 60 entered\") and the State Blitz side event. Leo's row also has a schedule select. Below the rows: \"Add a family member\" with \"Your Family plan covers 3 children · 1 spot left\", the 9-player note, the names confirmation, and a running total of entry fees only (step 3 adds an LCA membership for anyone without one; no card fees). Insets: D2 the open select, D3 the duplicate-name error (drawn once), D4 the row states (not on the plan: a Scholastic membership, $5 a year, is added in step 3), D5 add a family member, D6 Continue disabled, D7 the family limit (plan full, still allows a 4th child with a Scholastic membership; list full at 8 profiles, link disabled). (E) The explainer a signed-out viewer gets: three steps, a picker preview with sample names, \"Get a Family membership · $25 a year\" with \"Everyone on the plan gets a LCA membership\" under it, \"Start: create your login\" and Log in. E1 shows the card's family row with the line \"LCA membership required to enter · $15 a year, added at checkout if you don't have one\". E2 says where each button goes. (F) The phone picker at 390 wide: the top, the list scrolled to the end, the section select as a bottom sheet (the one place on the phone that shows prices and counts), and Edit name as a bottom sheet holding the public name. F5 compares the row before and after: no price or count under a select, no detail line under a name, the rating beside the name (\"Maya Robichaux · 1102\").\nBuilt from: Reg-C, Account-B and Event-A. Replaces: nothing (new).\nLeft for K: whether the Family membership explainer (E) should also show the \"Register without one\" path inline, or only after the login is created."
   },
   "s_Event-Final-Setup": {
    "fill": "gray",
    "page": "event",
    "w": 760,
    "x": 6720,
-   "y": 6010,
-   "text": "What this part shows: the TD's setup panel at /workspace/tournaments/:id/setup for the 2027 Louisiana State Championship (Sat–Mon, Sep 4–6, 2027, Sample data), after creation and still editable. The form runs in order: 1 Basics (tagline and championship title), 2 Sections (Overall limit by default, or Limits by section with a cap per section and an optional overall, plus the rule in one line), 3 Fees (Regular required; Early, Late and the member discount optional, each with its date), 4 Schedules (on or off, a second schedule with weekday-dated rounds and its own time control, the merge round), 5 Side events (on or off; add, reorder, remove; kind side or meeting), 6 Hotel & travel (on or off, folds to one line when off) and 7 Publish (share card beside the Automatic, Before, During, After override and its TD-only tag). The narrow right column holds only the steps rail and two schematic previews: the page lit by this setup, and the 2027 Paul Morphy Open with options off.\nBuilt from: Work-D (step cards, fee ladder, preview and link-preview column) and Event-B (two schedules that merge, side events, Hotel & travel, share card), with the decided header and footer.\nReplaces: nothing (feeds WS08, the setup checklist).\nLeft for K: whether the Paul Morphy Open with options off should stay as a second preview card or become a toggle on the first one."
+   "y": 6060,
+   "text": "What this part shows: Tournament setup, decided (Event-Final-Setup). The TD's setup panel for the 2027 Louisiana State Championship. The form scrolls in its own container. The steps rail is sticky, and so is the page preview: on a short window the preview column scrolls on its own and the rail stays pinned at its top. K's Thu, Oct 8 notes 5.10 to 5.14 are applied. The decided footer sits below the scroll shell and is not drawn on this board."
   },
   "s_Event-Partner-Final": {
    "fill": "gray",
@@ -1641,7 +1641,7 @@
    "page": "event",
    "w": 760,
    "x": 2160,
-   "y": 16460,
+   "y": 16660,
    "text": "What this part shows: Frame A, the public festival page for the 2027 Paul Morphy Festival as a signed-out visitor sees it on Tue, May 18, 2027. It has the decided header, the festival bar and the three events with their sections. Eligibility is a single yes or no, and fees and counts appear as \"X of Y\". Below those come the day-by-day schedule with the event filter, the Morphy heritage block, Visit (flying in via MSY and BTR, then drive times and the Visiting New Orleans note), Good to know, partners and share. There is no bundle. The second file (frames B and C) holds the admin panel at /admin/festivals/new and the festival-mode home hero.\nBuilt from: Event-D and Home-Final, with the decided header (Nav-Header-Final) and Tourn-List-Final's title strip, info note and button row. Replaces: Event-D.\nQA fix: the Stay card's hotel block now reads \"block held until Fri, May 28\", so it falls after the frame date and matches the Open's early-price deadline. No \"May 17\" is left in this file. I re-rendered it at 7692px, so the declared height stays 7700.\nLeft for K: the hotel block deadline is sample data (badged), and the Featured-rung question is in frame C."
   },
   "s_Event-Festival-Final-2": {
@@ -1649,15 +1649,15 @@
    "page": "event",
    "w": 760,
    "x": 3680,
-   "y": 14260,
-   "text": "What this part shows: Frame B is the admin panel \"Festival page\" at /admin/festivals/new, with every field from spec 7. It starts with Status Draft, Go live, and Feature on the home page disabled while the page is a draft. After creation the card reads \"Live since Mon, Mar 1\", with Take offline and the feature switch enabled. Frame C is the home hero in festival mode as a 1440 by 700 crop, with one primary \"Choose your event\" and a plain link \"See the schedule\".\nBuilt from: Event-D, Work-D's form and Home-Final. Replaces: Event-D.\nLeft for K: the Featured-rung question in frame C. This QA pass did not change this file."
+   "y": 15210,
+   "text": "What this part shows: festival page, part 2 of 2: frame B (admin panel: Go live, home feature switch, Take offline, Venue & travel block with optional hotel) and frame C (home hero with the featured festival). Frame A, the public festival page, is on part 1. The checklist on this board marks only 5.5, 5.8 and 5.11 as landed here. Every other item points to the board where it was drawn."
   },
   "s_Event-Phones-Final": {
    "fill": "gray",
    "page": "event",
    "w": 760,
    "x": 5200,
-   "y": 12860,
+   "y": 13260,
    "text": "What this part shows: the unified tournament page at 390px, in eight groups. (1) State Championship top, signed out, with the card inline and the bar \"From $30 · early until Sun, Jul 25 · Register\". (2) Paul Morphy Open top for a signed-in Adult member, U1800 picked, plus inset 2c drawn signed out with the single-fee bar \"Entry $50 · Register\". (3) Schedule in the multi-schedule form, with the sticky chip row scrolled to its end so you can see Past champions ↗ and the dashed Pairings and Standings chips (from Sat, Sep 4). (4) Sections in the simple form. (5) Who's coming, with no clubs. (6) The registered bar and sheet, with email round alerts only. (7) The partner page, with its no-link inset. (8) The festival page top with \"From $15 · 3 events · Register\". Built from: Event-Phones, Event-A, Event-B, Event-D, Event-E and Nav-Mobile-Final. Replaces: Event-Phones. Left for K: check the K's feedback panel beside the legend. Each item from spec section 11 is ticked there, with the frame where it landed."
   }
  },

@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
 <style>
 body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
-.su-root{width:100%;max-width:1440px;margin:0 auto;box-sizing:border-box;padding:32px 24px 32px;background:#ecebe6;color:#1a2744}
+.su-root{width:100%;max-width:1440px;margin:0 auto;box-sizing:border-box;padding:24px 24px 24px;background:#ecebe6;color:#1a2744}
 .su-root *{box-sizing:border-box}
 
 /* title strip, legend, feedback */
@@ -21,16 +21,17 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .su-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
 .su-meta{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1000px}
 .su-meta b{color:#1a2744;font-weight:600}
-.su-same{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:7px 12px;border-radius:8px;background:#1a2744;color:#ffffff;font-size:14.5px;font-weight:600}
+.su-doc-r{display:flex;flex-direction:column;align-items:flex-end;gap:12px;flex:none;max-width:360px}
+.su-same{display:inline-flex;align-items:center;gap:8px;margin:0;white-space:nowrap;padding:7px 12px;border-radius:8px;background:#1a2744;color:#ffffff;font-size:14.5px;font-weight:600}
 .su-same i{display:block;width:8px;height:8px;border-radius:50%;background:#c8a94a}
-.su-legend{display:grid;grid-template-columns:minmax(0,1fr) 520px;gap:20px;margin-top:20px;align-items:start}
+.su-legend{display:grid;grid-template-columns:minmax(0,1fr) 540px;gap:20px;margin-top:20px;align-items:start}
 .su-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
-.su-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 24px}
-.su-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.su-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 22px}
+.su-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.42}
 .su-notes b,.su-fb b{font-weight:600}
 .su-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
-.su-fb ol{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
-.su-fb li{display:grid;grid-template-columns:22px 34px minmax(0,1fr);gap:8px;align-items:start;font-size:13px;line-height:1.45}
+.su-fb ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:5px}
+.su-fb li{display:grid;grid-template-columns:22px 36px minmax(0,1fr);gap:8px;align-items:start;font-size:12.5px;line-height:1.4}
 .su-tick{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;border:1.5px solid #1a2744;background:#1a2744;color:#ffffff;margin-top:1px}
 .su-tick svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .su-tick-off{background:#ffffff;border-color:#858b99}
@@ -39,7 +40,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .su-fb-w{display:block;color:#3d4556}
 .su-fb-no{color:#555c6b}
 .su-fb-no .su-fb-k{color:#3d4556}
-.su-fb-key{font-size:12.5px;line-height:1.45;color:#555c6b;margin:12px 0 0;padding-top:10px;border-top:1px solid #ecebe5}
+.su-fb-key{font-size:12.5px;line-height:1.4;color:#555c6b;margin:10px 0 0;padding-top:8px;border-top:1px solid #ecebe5}
 
 /* frame label */
 .su-sec{margin-top:28px}
@@ -81,7 +82,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .su-edit b{font-weight:600}
 
 /* body grid */
-.su-body{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start;padding-top:24px;padding-bottom:32px}
+.su-body{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start;padding-top:20px;padding-bottom:24px}
 .su-rail{display:flex;flex-direction:column;gap:10px}
 .su-steps2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px}
 .su-steps2 li:nth-child(2){border-top:0}
@@ -93,15 +94,15 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .su-steps li.su-cur a{text-decoration:underline;text-decoration-color:#866a1e;text-decoration-thickness:2px;text-underline-offset:4px}
 .su-n{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:#efefea;color:#1a2744;font-size:14px;font-weight:700;flex:none}
 .su-n-on{background:#1a2744;color:#ffffff}
-.su-form{display:flex;flex-direction:column;gap:16px;min-width:0}
+.su-form{display:flex;flex-direction:column;gap:12px;min-width:0}
 .su-step{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden}
-.su-step-in{padding:18px 24px 18px;display:flex;flex-direction:column;gap:14px}
+.su-step-in{padding:16px 22px 16px;display:flex;flex-direction:column;gap:12px}
 .su-step-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .su-step-h h2{margin:0;font-size:20px;line-height:1.3;font-weight:600}
 .su-push{margin-left:auto}
 .su-new{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#e8edf4;color:#2d3a52;font-size:12px;font-weight:600;line-height:1.2}
 .su-lede{margin:0;font-size:14.5px;line-height:1.5;color:#3d4556}
-.su-lights{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:9px 24px;background:#f6f7fa;border-top:1px solid #e3e6ec;font-size:13px;line-height:1.35;color:#3d4556}
+.su-lights{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:8px 22px;background:#f6f7fa;border-top:1px solid #e3e6ec;font-size:13px;line-height:1.35;color:#3d4556}
 .su-lights b{color:#1a2744;font-weight:600;margin-right:2px}
 .su-lc{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:#ffffff;border:1.5px solid #1a2744;color:#1a2744;font-weight:600;font-size:12.5px}
 .su-g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px}
@@ -206,7 +207,29 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .su-se-a{display:flex;gap:4px}
 .su-add{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 14px;border:1.5px dashed #9a9ca3;border-radius:10px;background:#fbfbf8}
 
-/* hotel */
+/* venue & travel */
+.su-sub{border:1px solid #dddcd4;border-radius:10px;background:#fbfbf8;padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.su-sub-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.su-sub-h b{font-size:15.5px;font-weight:600}
+.su-sub-off{background:#ffffff;border-style:dashed;border-color:#9a9ca3}
+.su-mseg{align-self:flex-start;flex:none}
+.su-mseg button{display:inline-flex;align-items:center;gap:8px}
+.su-offline{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.su-offline b{color:#1a2744;font-weight:600}
+.su-mseg button[aria-disabled="true"]{color:#555c6b;font-weight:500;background:#f5f5f2;cursor:not-allowed}
+.su-mseg small{display:inline-flex;align-items:center;padding:1px 6px;border-radius:5px;background:rgba(255,255,255,.18);font-size:11.5px;font-weight:600}
+/* scroll container */
+.su-sc-wrap{display:flex;flex-direction:column;gap:8px;min-width:0}
+.su-sc-cap{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.su-sc{position:relative;overflow:hidden;border:1px solid #b9b7ad;border-radius:12px;background:#ecebe6;padding:12px 28px 0 12px}
+.su-sc-bar{position:absolute;top:10px;right:8px;bottom:10px;width:10px;border-radius:99px;background:#dddcd4}
+.su-sc-bar i{position:absolute;left:1px;right:1px;top:2px;border-radius:99px;background:#6b7180}
+.su-sc-fade{position:absolute;left:1px;right:22px;bottom:0;height:90px;background:linear-gradient(rgba(236,235,230,0),#ecebe6 85%)}
+.su-sc-cut{position:absolute;left:0;right:0;bottom:0;border-bottom:2px dashed #866a1e}
+.su-sc-note{position:absolute;left:0;right:22px;bottom:12px;display:flex;justify-content:center;margin:0}
+.su-sc-pill{display:inline-flex;align-items:center;gap:10px;padding:7px 14px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:13.5px;font-weight:500;box-shadow:0 4px 12px rgba(16,24,43,.18)}
+.su-sc-pill b{font-weight:700}
+/* travel lists */
 .su-drive{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .su-drive li{display:grid;grid-template-columns:minmax(0,1fr) 140px 36px;gap:8px;align-items:center}
 .su-x{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid #c9c8c0;background:#ffffff;color:#1a2744;padding:0}
@@ -280,30 +303,30 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
     <div>
       <p class="k-kicker">5 · Tournament setup options · decided</p>
       <h1 class="su-title">Tournament setup options · decided</h1>
-      <p class="su-meta" style="margin-top:8px"><b>Built from:</b> Work-D (the setup checklist: step cards, the fee ladder, the live preview and link preview column) and Event-B (two schedules that merge, side events, Hotel &amp; travel, the share card) · the decided header and footer</p>
+      <p class="su-meta" style="margin-top:8px"><b>Built from:</b> Work-D (the setup checklist: step cards, the fee ladder, the live preview and link preview column) and Event-B (two schedules that merge, side events, travel and hotel detail, the share card) · the decided header; the decided footer sits below the scroll shell, not drawn</p>
       <p class="su-meta"><b>Replaces:</b> nothing (feeds WS08, the setup checklist)</p>
-      <p class="su-meta"><b>K's feedback applied:</b> the tick boxes at the right, one line each on where it landed here</p>
-      <p class="su-meta"><b>Shown:</b> /workspace/tournaments/:id/setup for the 2027 Louisiana State Championship on Thu, Oct 8, 2026, signed in as its TD. The event is live with 23 registered: this is the panel after creation.</p>
-      <p class="su-same"><i></i>Same page. The TD's setup picks the layout.</p>
+      <p class="su-meta"><b>K's feedback applied:</b> the tick boxes at the right, one line each on where it landed here, now with K's Thu, Oct 8 notes (5.10 to 5.14)</p>
+      <p class="su-meta"><b>Shown:</b> /workspace/tournaments/:id/setup for the 2027 Louisiana State Championship, live with 23 registered, on Thu, Oct 8, 2026.</p>
     </div>
-    <span class="k-sample">Sample data · State Championship and Paul Morphy Open figures, times, side events</span>
+    <div class="su-doc-r"><span class="k-sample">Sample data · State Championship and Paul Morphy Open figures, times, side events</span><p class="su-same"><i></i>Same page. The TD's setup picks the layout.</p></div>
   </div>
   <div class="su-legend">
     <div class="su-lbox">
       <p class="k-label">Notes on this board</p>
       <ol class="su-notes">
-        <li><span class="k-num-badge">1</span><span><b>One panel, before and after creation.</b> Every step stays editable once the event is live. A change that would strand paid players stops and says what to do first (lock lines).</span></li>
-        <li><span class="k-num-badge">2</span><span><b>Basics gains a tagline and a championship title.</b> The tagline is the kicker over the title and in the link preview. The title (championship_title) adds "Past champions ↗" to the sub nav, never a block.</span></li>
-        <li><span class="k-num-badge">3</span><span><b>Entry limit: Overall limit is the default.</b> One number, today's max_players. Section cards read "9 entered" with no bar, and one waitlist starts when the event is full.</span></li>
-        <li><span class="k-num-badge">4</span><span><b>Limits by section.</b> A cap per section (sections[].cap; blank means no cap) and an optional overall number, drawn with the 2027 Paul Morphy Open's figures.</span></li>
-        <li><span class="k-num-badge">5</span><span><b>Fees stay a ladder.</b> Regular is required; Early, Late and the member discount each switch on. The card shows only the tiers set; Regular alone reads "Entry fee $75" once Championship is picked.</span></li>
-        <li><span class="k-num-badge">6</span><span><b>Schedules, on or off.</b> A second schedule has its own label, rounds with weekday dates and times, and time control (schedules[] and merge_round; the pick is registrations.schedule_id).</span></li>
+        <li><span class="k-num-badge">1</span><span><b>One panel, before and after creation.</b> Every step stays editable once the event is live. A change that would strand paid players stops and says what to do first.</span></li>
+        <li><span class="k-num-badge">2</span><span><b>Basics gains a tagline and a championship title.</b> The tagline is the kicker over the title and in the link preview; the title adds "Past champions ↗" to the sub nav, never a block.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>Entry limit: Overall limit is the default.</b> One number, today's max_players. Section cards read "9 entered" with no bar; one waitlist starts when the event is full.</span></li>
+        <li><span class="k-num-badge">4</span><span><b>Limits by section.</b> A cap per section (sections[].cap; blank means none) and an optional overall number, drawn with the 2027 Paul Morphy Open's figures.</span></li>
+        <li><span class="k-num-badge">5</span><span><b>One price per section per tier.</b> Regular is required; Early and Late switch on; the card shows only the tiers set. No member price. LCA membership is Required to enter by default; a club's own event may switch it off.</span></li>
+        <li><span class="k-num-badge">6</span><span><b>Schedules, on or off.</b> A second schedule has its own label, rounds with weekday dates and times, and time control (schedules[], merge_round; the pick is registrations.schedule_id).</span></li>
         <li><span class="k-num-badge">7</span><span><b>The merge round.</b> From this round on both schedules are paired as one field; the page's "Round 4 · schedules merge" row comes from it.</span></li>
-        <li><span class="k-num-badge">8</span><span><b>Side events, on or off.</b> A child tournament (parent_event_id), kind side or meeting, with its own fee and cap, paid in the same checkout. Arrows reorder; Remove asks about entries first.</span></li>
-        <li><span class="k-num-badge">9</span><span><b>Hotel &amp; travel, on or off.</b> travel_json holds hotel, rate, block deadline, booking link, parking, airport, drive times, between rounds. Off folds the step to one line.</span></li>
-        <li><span class="k-num-badge">10</span><span><b>Publish</b> holds the share card and the TD override (display_state). Automatic follows the clock; forcing a state shows TDs the "Shown as" tag.</span></li>
-        <li><span class="k-num-badge">11</span><span><b>Preview column.</b> A schematic of the tournament page. Blocks a step turns on are outlined in navy with its number and On; blocks every event has say Always.</span></li>
-        <li><span class="k-num-badge">12</span><span><b>Same page, options off.</b> The 2027 Paul Morphy Open: one schedule, limits by section, no side events, no hotel, so the page takes the simple form.</span></li>
+        <li><span class="k-num-badge">8</span><span><b>Side events, on or off.</b> A child tournament (parent_event_id), kind side or meeting, with its own fee and cap, paid in the same checkout. Remove asks about entries first.</span></li>
+        <li><span class="k-num-badge">9</span><span><b>Venue &amp; travel, one step.</b> The venue is always on. Travel details (airport, drive times, between rounds) switch on; Add a hotel puts the host hotel at the bottom of the block and on the sidebar card.</span></li>
+        <li><span class="k-num-badge">10</span><span><b>Publish</b> holds the share card and the TD override (display_state). Automatic follows the clock; a forced state shows TDs the "Shown as" tag.</span></li>
+        <li><span class="k-num-badge">11</span><span><b>Preview column.</b> A schematic of the tournament page. Blocks a step turns on are outlined in navy with its number; blocks every event has say Always. On a short window the right column scrolls on its own; the steps rail stays pinned at its top.</span></li>
+        <li><span class="k-num-badge">12</span><span><b>Same page, options off.</b> The 2027 Paul Morphy Open: one schedule, limits by section, no side events, no travel details or hotel, so the simple form.</span></li>
+        <li><span class="k-num-badge">13</span><span><b>The form scrolls in its own container;</b> the steps rail and the page preview stay in view. Phone sheets and the family picker scroll inside their sheet the same way.</span></li>
       </ol>
     </div>
     <aside class="su-fb" aria-labelledby="su-fbh">
@@ -315,11 +338,16 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
         <li class="su-fb-no"><span class="su-tick su-tick-off" role="img" aria-label="Not on this board"></span><span class="su-fbn">5.4</span><span><b class="su-fb-k">Partner page ready for bad feed fields.</b><span class="su-fb-w">Not on this board (Event-Partner-Final).</span></span></li>
         <li class="su-fb-no"><span class="su-tick su-tick-off" role="img" aria-label="Not on this board"></span><span class="su-fbn">5.5</span><span><b class="su-fb-k">Festival page with Go live and a home feature.</b><span class="su-fb-w">Not on this board (Event-Festival-Final).</span></span></li>
         <li><span class="su-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="su-fbn">5.6</span><span><b class="su-fb-k">Merging schedules and side events as setup options.</b><span class="su-fb-w">Steps 4 and 5 switch on or off, editable later (notes 6 to 8).</span></span></li>
-        <li><span class="su-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="su-fbn">5.7</span><span><b class="su-fb-k">Page form set by the setup; past champions in the sub nav only.</b><span class="su-fb-w">Preview: the setup picks the form; the title adds Past champions ↗ (notes 2, 11, 12).</span></span></li>
-        <li><span class="su-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="su-fbn">5.8</span><span><b class="su-fb-k">Hotel &amp; travel, link preview, round alerts.</b><span class="su-fb-w">Step 6 lights Hotel &amp; travel; step 7 holds the share card. Round alerts are not a setup option.</span></span></li>
+        <li><span class="su-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="su-fbn">5.7</span><span><b class="su-fb-k">Page form set by the setup; past champions in the sub nav.</b><span class="su-fb-w">Preview: the setup picks the form; the title adds Past champions ↗.</span></span></li>
+        <li><span class="su-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="su-fbn">5.8</span><span><b class="su-fb-k">Travel in the sidebar, link preview, round alerts.</b><span class="su-fb-w">Steps 6 and 7 light the venue card and share card; alerts aren't a setup option.</span></span></li>
         <li class="su-fb-no"><span class="su-tick su-tick-off" role="img" aria-label="Not on this board"></span><span class="su-fbn">5.9</span><span><b class="su-fb-k">Phones follow the desktop changes.</b><span class="su-fb-w">Not on this board (Event-Phones-Final).</span></span></li>
+        <li><span class="su-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="su-fbn">5.10</span><span><b class="su-fb-k">One entry price; LCA membership required by default.</b><span class="su-fb-w">Step 3: no member price; a club's own event may switch it off (note 5).</span></span></li>
+        <li><span class="su-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="su-fbn">5.11</span><span><b class="su-fb-k">Venue &amp; travel is one block, optional hotel at the bottom.</b><span class="su-fb-w">Step 6: venue always, Travel details on or off, Add a hotel (note 9).</span></span></li>
+        <li class="su-fb-no"><span class="su-tick su-tick-off" role="img" aria-label="Not on this board"></span><span class="su-fbn">5.12</span><span><b class="su-fb-k">Family picker wording, phone picker, family limit.</b><span class="su-fb-w">Not on this board (Event-Final-Family, Event-Phones-Final).</span></span></li>
+        <li><span class="su-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="su-fbn">5.13</span><span><b class="su-fb-k">The setup form scrolls in its own container.</b><span class="su-fb-w">Frame A: the steps rail and the preview stay in view (note 13).</span></span></li>
+        <li class="su-fb-no"><span class="su-tick su-tick-off" role="img" aria-label="Not on this board"></span><span class="su-fbn">5.14</span><span><b class="su-fb-k">One receipt per payer, one confirmation per player.</b><span class="su-fb-w">Not on this board (the page 6 boards).</span></span></li>
       </ol>
-      <p class="su-fb-key">Filled box: applied on this board. Empty box: applied on another page 5 board, named in the line.</p>
+      <p class="su-fb-key">Filled box: applied on this board. Empty box: applied on the board named in the line.</p>
     </aside>
   </div>
 </section>
@@ -328,7 +356,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
   <div class="su-flab">
     <span class="su-code">A</span>
     <h2 id="su-fa">The TD's setup panel, after creation (2027 Louisiana State Championship)</h2>
-    <span class="k-meta">Signed in as the event's TD · desktop, 1440px</span>
+    <span class="k-meta">Signed in as the event's TD · desktop, 1440px · the form scrolls in its own container under the tabs, drawn tall here so the steps show</span>
   </div>
   <div class="k-browser su-browser">
     <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/workspace/tournaments/2027-louisiana-state-championship/setup</div></div>
@@ -367,7 +395,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
             </div>
           </div>
           <nav class="su-tabs" aria-label="This tournament"><a class="su-tab-on" href="#" aria-current="page">Setup</a><a href="#">Entries <span class="su-cnt">23</span></a><a href="#">Pairings &amp; results</a></nav>
-          <div class="su-edit"><span class="k-num-badge su-b">1</span><span><b>Everything here can be changed after creation.</b> Turn options on or off, add a second schedule or a side event, change caps and fees. The public page updates when you press Save changes. A change that would leave paid players without a place stops and tells you what to do first.</span></div>
+          <div class="su-edit"><span class="k-num-badge su-b">1</span><span><b>Everything here can be changed after creation.</b> The public page updates when you press Save changes; a change that would strand paid players stops and says what to do first.</span></div>
         </div>
       </div>
 
@@ -375,6 +403,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
 
 
+        <div class="su-sc-wrap">
+        <div class="su-sc" role="region" aria-label="Setup form, scrolls" tabindex="0" style="height:4450px">
         <div class="su-form">
 
           <!-- Step 1 -->
@@ -491,8 +521,11 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
                   <div class="su-tier-r"><div class="su-inline"><span class="su-in su-in-sm su-in-r" style="width:72px">$15</span><span>more from</span><span class="su-in su-in-sm">Sat, Sep 4, 2027</span><span>shown as</span><button class="su-dd su-dd-sm" type="button" style="width:140px">At the door<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div><p class="su-hint">Optional. A start date after online entry closes means the fee is paid at the door.</p></div>
                 </div>
                 <div class="su-tier">
-                  <div class="su-tier-l"><b>Member discount</b><span class="su-swwrap"><button class="su-sw su-sw-on" type="button" role="switch" aria-checked="true" aria-label="Member discount"><i></i></button><span class="su-swword">On</span></span></div>
-                  <div class="su-tier-r"><div class="su-inline"><span class="su-in su-in-sm su-in-r" style="width:72px">$10</span><span>off for LCA members, at every step</span></div><p class="su-hint">Optional. Off, the card drops the "LCA members pay less" line and Good to know drops Discounts.</p></div>
+                  <div class="su-tier-l"><b>LCA membership</b><span><span class="su-new">New</span></span></div>
+                  <div class="su-tier-r">
+                    <div class="su-inline" style="gap:8px 14px"><div class="k-seg su-mseg" role="radiogroup" aria-label="LCA membership"><button class="k-seg-on" type="button" role="radio" aria-checked="true">Required to enter<small>Default</small></button><button type="button" role="radio" aria-checked="false" aria-disabled="true">Not required</button></div><p class="su-hint" style="flex:1;min-width:220px">LCA events require it. A club running its own event may switch it off.</p></div>
+                    <div class="su-result"><span>The card reads</span><span class="su-q">LCA membership required to enter · $15 a year, added at checkout if you don't have one</span><span>Not required drops it and the checkout's membership step.</span></div>
+                  </div>
                 </div>
               </div>
               <div class="su-ladder" role="img" aria-label="Fee ladder: early until Sun, Jul 25; regular Mon, Jul 26 to Thu, Sep 2; at the door from Sat, Sep 4">
@@ -502,7 +535,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
               </div>
               <div class="su-result"><span>Only Regular set? The card shows</span><span class="su-q">Entry fee $75</span><span>once Championship is picked. Paid players keep their price.</span></div>
             </div>
-            <div class="su-lights"><b>Lights on the page:</b><span class="su-lc"><span class="su-sn">3</span>Fee ladder, tiers set only</span><span class="su-lc"><span class="su-sn">3</span>Member price line</span><span class="su-lc"><span class="su-sn">3</span>"from $30" on the top card</span></div>
+            <div class="su-lights"><b>Lights on the page:</b><span class="su-lc"><span class="su-sn">3</span>Fee ladder, tiers set only</span><span class="su-lc"><span class="su-sn">3</span>Membership line, card and Good to know</span><span class="su-lc"><span class="su-sn">3</span>"from $30" on the top card</span></div>
           </section>
 
           <!-- Step 4 -->
@@ -565,12 +598,12 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
                 </li>
                 <li>
                   <div class="su-ord"><button type="button" aria-label="Move Labor Day Scholastic up"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button><button type="button" aria-label="Move Labor Day Scholastic down"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
-                  <div><div class="su-se-t"><span class="su-kind su-kind-side">Side event</span><b>Labor Day Scholastic</b></div><p class="su-se-m">Sat, Sep 4 · 9:30 AM · K–12, K–8, K–3 · $25, members $20 · 14 of 60 registered</p></div>
+                  <div><div class="su-se-t"><span class="su-kind su-kind-side">Side event</span><b>Labor Day Scholastic</b></div><p class="su-se-m">Sat, Sep 4 · 9:30 AM · K–12, K–8, K–3 · $25 · 14 of 60 registered</p></div>
                   <div class="su-se-a"><button class="k-btn k-btn-line k-btn-sm" type="button">Edit</button><button class="k-btn k-btn-ghost k-btn-sm" type="button">Remove</button></div>
                 </li>
                 <li>
                   <div class="su-ord"><button type="button" aria-label="Move State Blitz Championship up"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button><button type="button" aria-label="Move down" disabled><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
-                  <div><div class="su-se-t"><span class="su-kind su-kind-side">Side event</span><b>State Blitz Championship</b></div><p class="su-se-m">Sun, Sep 5 · 9:00 PM · one section, all ratings · $20, members $15 · 6 of 40 registered</p></div>
+                  <div><div class="su-se-t"><span class="su-kind su-kind-side">Side event</span><b>State Blitz Championship</b></div><p class="su-se-m">Sun, Sep 5 · 9:00 PM · one section, all ratings · $20 · 6 of 40 registered</p></div>
                   <div class="su-se-a"><button class="k-btn k-btn-line k-btn-sm" type="button">Edit</button><button class="k-btn k-btn-ghost k-btn-sm" type="button">Remove</button></div>
                 </li>
               </ol>
@@ -587,38 +620,52 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
           <!-- Step 6 -->
           <section class="su-step" id="su-s6" aria-labelledby="su-h6">
             <div class="su-step-in">
-              <div class="su-step-h"><span class="su-n">6</span><h2 id="su-h6">Hotel &amp; travel</h2><span class="su-new">New</span><span class="su-swwrap su-push"><button class="su-sw su-sw-on" type="button" role="switch" aria-checked="true" aria-label="Hotel and travel"><i></i></button><span class="su-swword">On</span></span><span class="k-num-badge su-b">9</span></div>
-              <p class="su-lede">For events people travel to. Many events leave this off; the Venue block still shows the address, parking, getting in and food.</p>
-              <div class="su-g3" style="grid-template-columns:repeat(4,minmax(0,1fr))">
-                <div class="su-f"><span class="su-fl">Host hotel</span><span class="su-in su-in-sm">[Host hotel name]</span></div>
-                <div class="su-f"><span class="su-fl">LCA rate, per night</span><span class="su-in su-in-sm">[Hotel rate]</span></div>
-                <div class="su-f"><span class="su-fl">Block held until</span><span class="su-in su-in-sm">Fri, Aug 13, 2027</span></div>
-                <div class="su-f"><span class="su-fl">Walk to the hall</span><span class="su-in su-in-sm">[n]-minute walk</span></div>
-                <div class="su-f" style="grid-column:span 2"><span class="su-fl">Booking link</span><span class="su-in su-in-sm">[Booking link for the LCA block]</span></div>
-                <div class="su-f"><span class="su-fl">Parking</span><span class="su-in su-in-sm">[Parking details]</span></div>
-                <div class="su-f"><span class="su-fl">Nearest airport</span><span class="su-in su-in-sm">Baton Rouge (BTR)</span></div>
-              </div>
-              <div class="su-g2" style="align-items:start">
-                <div class="su-f">
-                  <span class="su-fl">Drive times <small>· one line each</small></span>
-                  <ul class="su-drive">
-                    <li><span class="su-in su-in-sm">New Orleans</span><span class="su-in su-in-sm">1 hr 20 min</span><button class="su-x" type="button" aria-label="Remove New Orleans"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></li>
-                    <li><span class="su-in su-in-sm">Lafayette</span><span class="su-in su-in-sm">1 hr</span><button class="su-x" type="button" aria-label="Remove Lafayette"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></li>
-                    <li><span class="su-in su-in-sm">Lake Charles</span><span class="su-in su-in-sm">2 hr</span><button class="su-x" type="button" aria-label="Remove Lake Charles"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></li>
-                  </ul>
-                  <div><button class="k-btn k-btn-ghost k-btn-sm" type="button" style="padding-left:0"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a line</button></div>
-                </div>
-                <div class="su-f">
-                  <span class="su-fl">Between rounds</span>
-                  <span class="su-in su-in-sm su-area">Close by: [Café], [Restaurant], [Grocery]. The skittles room is open all weekend for casual games and post-mortems. Food stays outside the playing hall.</span>
-                  <p class="su-hint">Plain text, a few lines. Shown in Venue &amp; travel.</p>
+              <div class="su-step-h"><span class="su-n">6</span><h2 id="su-h6">Venue &amp; travel</h2><span class="k-tag k-tag-open">Set · travel on · hotel added</span><span class="k-num-badge su-push su-b">9</span></div>
+              <p class="su-lede">One block on the page. The venue is always there; travel details and a hotel are optional, and many events leave both off.</p>
+              <div class="su-sub">
+                <div class="su-sub-h"><b>Venue</b><span class="su-opt-t">Always on</span><span class="k-meta">Open in Maps is built from the address</span></div>
+                <div class="su-g3" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px">
+                  <div class="su-f"><span class="su-fl">Venue name</span><span class="su-in su-in-sm">[Venue name]</span></div>
+                  <div class="su-f" style="grid-column:span 2"><span class="su-fl">Address</span><span class="su-in su-in-sm">[Street address], Baton Rouge, LA [ZIP]</span></div>
+                  <div class="su-f"><span class="su-fl">Parking</span><span class="su-in su-in-sm">[Where to park, cost]</span></div>
+                  <div class="su-f" style="grid-column:span 2"><span class="su-fl">Getting in</span><span class="su-in su-in-sm">[Entrance, floor and step-free route]</span></div>
+                  <div class="su-f" style="grid-column:span 2"><span class="su-fl">Food</span><span class="su-in su-in-sm">[Places to eat between rounds]</span></div>
                 </div>
               </div>
-              <div class="k-stack-sm">
-                <div class="su-offrow"><span class="k-label" style="flex:none">When off:</span><span class="su-n">6</span><b>Hotel &amp; travel</b><span class="k-meta">the step folds to this one line.</span><span class="su-swwrap su-push"><button class="su-sw" type="button" role="switch" aria-checked="false" aria-label="Hotel and travel"><i></i></button><span class="su-swword">Off</span></span></div>
+              <div class="su-sub">
+                <div class="su-sub-h"><b>Travel details</b><span class="su-new">New</span><span class="k-meta">shown as "Getting here" under the venue</span><span class="su-push"><span class="su-swwrap"><button class="su-sw su-sw-on" type="button" role="switch" aria-checked="true" aria-label="Travel details"><i></i></button><span class="su-swword">On</span></span></span></div>
+                <div class="su-g2" style="align-items:start">
+                  <div class="k-stack-sm">
+                    <div class="su-f"><span class="su-fl">Nearest airport</span><span class="su-in su-in-sm">Baton Rouge Metropolitan (BTR)</span></div>
+                    <div class="su-f">
+                      <span class="su-fl">Between rounds <small>· plain text, a few lines</small></span>
+                      <span class="su-in su-in-sm su-area">Close by: [Café], [Restaurant], [Grocery]. The skittles room is open all weekend for casual games and post-mortems. Food stays outside the playing hall.</span>
+                    </div>
+                  </div>
+                  <div class="su-f">
+                    <span class="su-fl">Drive times <small>· one line each</small></span>
+                    <ul class="su-drive">
+                      <li><span class="su-in su-in-sm">New Orleans</span><span class="su-in su-in-sm">1 hr 20 min</span><button class="su-x" type="button" aria-label="Remove New Orleans"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></li>
+                      <li><span class="su-in su-in-sm">Lafayette</span><span class="su-in su-in-sm">1 hr</span><button class="su-x" type="button" aria-label="Remove Lafayette"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></li>
+                      <li><span class="su-in su-in-sm">Lake Charles</span><span class="su-in su-in-sm">2 hr</span><button class="su-x" type="button" aria-label="Remove Lake Charles"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></li>
+                    </ul>
+                    <div><button class="k-btn k-btn-ghost k-btn-sm" type="button" style="padding-left:0"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a line</button></div>
+                  </div>
+                </div>
               </div>
+              <div class="su-sub">
+                <div class="su-sub-h"><b>Hotel</b><span class="su-opt-t">Optional</span><span class="k-meta">shown at the bottom of the block and on the sidebar card</span><button class="k-btn k-btn-ghost k-btn-sm su-push" type="button">Remove the hotel</button></div>
+                <div class="su-g3" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 14px">
+                  <div class="su-f"><span class="su-fl">Host hotel</span><span class="su-in su-in-sm">[Host hotel name]</span></div>
+                  <div class="su-f"><span class="su-fl">LCA rate, per night</span><span class="su-in su-in-sm">[Hotel rate]</span></div>
+                  <div class="su-f"><span class="su-fl">Block held until</span><span class="su-in su-in-sm">Fri, Aug 13, 2027</span></div>
+                  <div class="su-f"><span class="su-fl">Walk to the hall</span><span class="su-in su-in-sm">[n]-minute walk</span></div>
+                  <div class="su-f" style="grid-column:span 4"><span class="su-fl">Booking link <small>· the button reads "Book in the LCA block ↗"</small></span><span class="su-in su-in-sm">[Booking link for the LCA block]</span></div>
+                </div>
+              </div>
+              <div class="su-offline"><span class="k-label" style="flex:none">Both off:</span><b>Travel details</b><span class="su-swwrap"><button class="su-sw" type="button" role="switch" aria-checked="false" aria-label="Travel details"><i></i></button><span class="su-swword">Off</span></span><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a hotel</button><span>The block is just the venue; the sub nav still reads <b>Venue &amp; travel</b>.</span></div>
             </div>
-            <div class="su-lights"><b>Lights on the page:</b><span class="su-lc"><span class="su-sn">6</span>Hotel &amp; travel in the sidebar</span><span class="su-lc"><span class="su-sn">6</span>Travel detail in Venue</span><span class="su-lc"><span class="su-sn">6</span>"Venue &amp; travel" in the sub nav</span></div>
+            <div class="su-lights"><b>Lights on the page:</b><span class="su-lc"><span class="su-sn">6</span>Venue &amp; travel card</span><span class="su-lc"><span class="su-sn">6</span>Getting here</span><span class="su-lc"><span class="su-sn">6</span>Hotel at the bottom</span><span class="su-lc"><span class="su-sn">6</span>Host hotel line on the card</span></div>
           </section>
 
           <!-- Step 7 -->
@@ -661,6 +708,12 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
           </section>
 
         </div>
+        <span class="su-sc-bar" aria-hidden="true"><i style="height:94%"></i></span>
+        <span class="su-sc-fade" aria-hidden="true"></span>
+        <span class="su-sc-cut" aria-hidden="true"></span>
+        <p class="su-sc-note"><span class="su-sc-pill"><b>Scrolls ↓</b><span>the rest of 7 Publish is below; Save changes stays in the bar above</span><span class="k-num-badge su-b" style="background:#ffffff;color:#1a2744">13</span></span></p>
+        </div>
+        </div>
 
         <aside class="su-pvcol" aria-label="Steps and page preview">
         <nav class="su-rail" aria-label="Setup steps">
@@ -669,10 +722,10 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
             <ol class="su-steps su-steps2">
               <li><span class="su-n">1</span><span><a href="#su-s1">Basics</a><small>Tagline and title set</small></span></li>
               <li><span class="su-n">2</span><span><a href="#su-s2">Sections</a><small>4 · Overall limit 160</small></span></li>
-              <li><span class="su-n">3</span><span><a href="#su-s3">Fees</a><small>Early, Regular, At the door · member $10 off</small></span></li>
+              <li><span class="su-n">3</span><span><a href="#su-s3">Fees</a><small>Early, Regular, At the door · LCA membership required</small></span></li>
               <li class="su-cur"><span class="su-n su-n-on">4</span><span><a href="#su-s4" aria-current="step">Schedules</a><small>On · 3-day and 2-day</small></span></li>
               <li><span class="su-n">5</span><span><a href="#su-s5">Side events</a><small>On · 3 added</small></span></li>
-              <li><span class="su-n">6</span><span><a href="#su-s6">Hotel &amp; travel</a><small>On</small></span></li>
+              <li><span class="su-n">6</span><span><a href="#su-s6">Venue &amp; travel</a><small>Travel on · hotel added</small></span></li>
               <li><span class="su-n">7</span><span><a href="#su-s7">Publish</a><small>Live · page shown by the clock</small></span></li>
             </ol>
             <p class="su-hint">Byes, prizes, staff and registration opening keep their Work-D steps; they sit under Basics and Sections and are not redrawn here.</p>
@@ -680,7 +733,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
         </nav>
           <section class="su-pv" aria-labelledby="su-pv1">
             <div class="su-pv-h"><b id="su-pv1">Page preview</b><span class="k-num-badge su-b">11</span></div>
-            <p class="su-pv-sub">This setup: two schedules, side events and Hotel &amp; travel on, overall limit. A schematic of the tournament page; it redraws as you change a step.</p>
+            <p class="su-pv-sub">This setup: two schedules, side events, travel details and a hotel on, overall limit. A schematic of the tournament page; it redraws as you change a step.</p>
             <div class="su-pband">
               <div class="su-ptags"><span class="su-pt">LCA event</span><span class="su-pt su-pt-open">Registration open</span></div>
               <span class="su-pkick"><span class="su-sn" style="background:#e6cf86;color:#1a2744">1</span>State flagship · Labor Day weekend</span>
@@ -696,13 +749,13 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
                 <div class="su-pb"><span class="su-ps">Always</span><b>Sections &amp; prizes</b><small>Counts from 2, fees from 3</small></div>
                 <div class="su-pb su-pb-on"><span class="su-ps"><span class="su-sn">5</span>On</span><b>Side events</b><small>Meeting, Scholastic, Blitz</small></div>
                 <div class="su-pb"><span class="su-ps">Always</span><b>Who's coming</b></div>
-                <div class="su-pb"><span class="su-ps">Always</span><b>Venue</b><span class="su-pline su-pline-on"><span class="su-sn">6</span>Hotel &amp; travel detail</span></div>
-                <div class="su-pb"><span class="su-ps">Always</span><b>Good to know</b><span class="su-pline su-pline-on"><span class="su-sn">3</span>Discounts</span></div>
+                <div class="su-pb"><span class="su-ps">Always</span><b>Venue &amp; travel</b><span class="su-pline su-pline-on"><span class="su-sn">6</span>Getting here</span><span class="su-pline su-pline-on"><span class="su-sn">6</span>Hotel at the bottom</span></div>
+                <div class="su-pb"><span class="su-ps">Always</span><b>Good to know</b><span class="su-pline su-pline-on"><span class="su-sn">3</span>Membership</span></div>
               </div>
               <div class="su-pcol">
                 <p class="su-pcol-l">Sidebar</p>
-                <div class="su-pb"><span class="su-ps">Always</span><b>Registration card</b><span class="su-pline su-pline-on"><span class="su-sn">2</span>23 of 160</span><span class="su-pline su-pline-on"><span class="su-sn">4</span>3-day · 2-day</span><span class="su-pline su-pline-on"><span class="su-sn">3</span>3-step ladder</span><span class="su-pline su-pline-on"><span class="su-sn">3</span>Members $10 less</span><span class="su-pline su-pline-on"><span class="su-sn">5</span>Add a side event</span></div>
-                <div class="su-pb su-pb-on"><span class="su-ps"><span class="su-sn">6</span>On</span><b>Hotel &amp; travel</b></div>
+                <div class="su-pb"><span class="su-ps">Always</span><b>Registration card</b><span class="su-pline su-pline-on"><span class="su-sn">2</span>23 of 160</span><span class="su-pline su-pline-on"><span class="su-sn">4</span>3-day · 2-day</span><span class="su-pline su-pline-on"><span class="su-sn">3</span>3-step ladder</span><span class="su-pline su-pline-on"><span class="su-sn">3</span>LCA membership required</span><span class="su-pline su-pline-on"><span class="su-sn">5</span>Add a side event</span></div>
+                <div class="su-pb"><span class="su-ps">Always</span><b>Venue &amp; travel card</b><span class="su-pline su-pline-on"><span class="su-sn">6</span>Host hotel line</span></div>
                 <div class="su-pb"><span class="su-ps"><span class="su-sn">7</span>Always</span><b>Link preview</b></div>
               </div>
             </div>
@@ -711,13 +764,13 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
           <section class="su-pv" aria-labelledby="su-pv2">
             <div class="su-pv-h"><b id="su-pv2">Same page, options off</b><span class="k-num-badge su-b">12</span></div>
-            <p class="su-pv-sub">The 2027 Paul Morphy Open: one schedule, limits by section, side events and Hotel &amp; travel off, no championship title.</p>
+            <p class="su-pv-sub">The 2027 Paul Morphy Open: one schedule, limits by section, side events and travel details off, no hotel, no championship title.</p>
             <div class="su-pband">
               <div class="su-ptags"><span class="su-pt">LCA event</span><span class="su-pt su-pt-open">Registration open</span></div>
               <span class="su-ptitle">2027 Paul Morphy Open</span>
               <div class="su-ptiles"><span class="su-ptile">US Chess rated</span><span class="su-ptile">5 rounds</span><span class="su-ptile">G/90+30</span><span class="su-ptile">2 byes</span><span class="su-ptile">4 sections</span><span class="su-ptile">$1,500</span></div>
             </div>
-            <div class="su-pnav" aria-label="Sub nav"><span>Overview</span><span>Sections</span><span>Schedule &amp; prizes</span><span>Who's coming</span><span>Venue</span><span>Good to know</span><span class="su-pn-mute">Pairings</span><span class="su-pn-mute">Standings</span></div>
+            <div class="su-pnav" aria-label="Sub nav"><span>Overview</span><span>Sections</span><span>Schedule &amp; prizes</span><span>Who's coming</span><span>Venue &amp; travel</span><span>Good to know</span><span class="su-pn-mute">Pairings</span><span class="su-pn-mute">Standings</span></div>
             <div class="su-pgrid">
               <div class="su-pcol">
                 <p class="su-pcol-l">Main column</p>
@@ -725,13 +778,13 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
                 <div class="su-pb"><span class="su-ps">Always</span><b>Schedule &amp; prizes, side by side</b></div>
                 <div class="su-pb su-pb-off"><span class="su-ps">Off</span><b>Side events</b></div>
                 <div class="su-pb"><span class="su-ps">Always</span><b>Who's coming</b></div>
-                <div class="su-pb"><span class="su-ps">Always</span><b>Venue</b><span class="su-pline su-pline-off">Hotel &amp; travel off</span></div>
-                <div class="su-pb"><span class="su-ps">Always</span><b>Good to know</b></div>
+                <div class="su-pb"><span class="su-ps">Always</span><b>Venue &amp; travel</b><span class="su-pline su-pline-off">Travel details off</span><span class="su-pline su-pline-off">No hotel</span></div>
+                <div class="su-pb"><span class="su-ps">Always</span><b>Good to know</b><span class="su-pline">Membership</span></div>
               </div>
               <div class="su-pcol">
                 <p class="su-pcol-l">Sidebar</p>
-                <div class="su-pb"><span class="su-ps">Always</span><b>Registration card</b><span class="su-pline">38 of 60</span><span class="su-pline">Early · Regular · Late</span><span class="su-pline">Members $10 less</span></div>
-                <div class="su-pb su-pb-off"><span class="su-ps">Off</span><b>Hotel &amp; travel</b></div>
+                <div class="su-pb"><span class="su-ps">Always</span><b>Registration card</b><span class="su-pline">38 of 60</span><span class="su-pline">Early · Regular · Late</span><span class="su-pline">LCA membership required</span></div>
+                <div class="su-pb"><span class="su-ps">Always</span><b>Venue &amp; travel card</b><small>Venue and parking lines only</small></div>
                 <div class="su-pb"><span class="su-ps">Always</span><b>Link preview</b></div>
               </div>
             </div>
@@ -741,13 +794,6 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
       </main>
 
-      <footer class="k-footer su-foot">
-        <div class="k-wrap-wide su-foot-in">
-          <div class="k-row-sm" style="gap:10px"><svg class="su-rook su-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
-          <span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span>
-          <nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
-        </div>
-      </footer>
 
     </div>
   </div>
@@ -755,7 +801,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5950}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6000}}'>
 class Component extends DCLogic {
   renderVals() { return {}; }
 }

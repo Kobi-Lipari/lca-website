@@ -149,6 +149,11 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .ef-pr span{display:block;font-size:12px;color:#555c6b;margin-top:2px}
 .ef-seg{display:flex;width:100%}
 .ef-seg button{flex:1;padding:0 6px}
+.ef-vcard{display:flex;flex-direction:column;gap:10px;padding:20px}
+.ef-vline{display:flex;align-items:flex-start;gap:10px;margin:0;font-size:14px;line-height:1.45;color:#1a2744}
+.ef-vline .k-i{flex:none;margin-top:2px;color:#555c6b}
+.ef-memok{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1px solid #cfe0d4;border-radius:10px;background:#f1f7f2;font-size:14px;line-height:1.45;color:#1a2744}
+.ef-memok .k-i{flex:none;margin-top:2px;color:#1f6b3a}
 .ef-gone{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px dashed #b9b6aa;border-radius:10px;background:#fbfaf6;font-size:13px;line-height:1.4;color:#3d4556}
 .ef-og{border:1px solid #dcdad2;border-radius:10px;overflow:hidden}
 
@@ -185,7 +190,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
     <div>
       <p class="k-kicker">5 · Tournament page · decided · setup: one schedule, limits by section</p>
       <h1 class="ef-title">Unified tournament page · one schedule, limits by section</h1>
-      <p class="ef-meta" style="margin-top:8px"><b>Built from:</b> Event-A (section cards, schedule and prizes side by side, registration card, who's coming, venue, good to know) · Event-B (navy top band with the key-facts card, sub nav, link preview) · the decided header with the rook mark and My LCA</p>
+      <p class="ef-meta" style="margin-top:8px"><b>Built from:</b> Event-A (section cards, schedule and prizes side by side, registration card, who's coming, venue, good to know) · Event-B (navy top band with the key-facts card, sub nav, link preview) · the decided header with the rook mark and My LCA · K's October 8 changes: one entry price with the LCA membership required, and Venue &amp; travel as one block</p>
       <p class="ef-meta"><b>Replaces:</b> Event-A, Event-B and Event-C</p>
       <p class="ef-meta"><b>Shown:</b> /tournaments/2027-paul-morphy-open at 1440px on Thu, Oct 8, 2026, signed in as an Adult LCA member who has not registered yet. Frame A is the page; B and C are small insets.</p>
       <p class="ef-same"><i></i>Same page. The TD's setup picks the layout.</p>
@@ -197,10 +202,12 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
     <span class="k-label">This tournament's setup</span>
     <span class="ef-sw ef-sw-on"><span class="ef-dot"></span><b>Schedules:</b> one</span>
     <span class="ef-sw ef-sw-on"><span class="ef-dot"></span><b>Entry limits:</b> by section, overall 60 entered by the TD</span>
-    <span class="ef-sw ef-sw-on"><span class="ef-dot"></span><b>Fees:</b> early · regular · late</span>
-    <span class="ef-sw ef-sw-on"><span class="ef-dot"></span><b>Member discount:</b> $10</span>
+    <span class="ef-sw ef-sw-on"><span class="ef-dot"></span><b>Fees:</b> early · regular · late, one price per section</span>
+    <span class="ef-sw ef-sw-on"><span class="ef-dot"></span><b>LCA membership:</b> required to enter</span>
     <span class="ef-sw ef-sw-off"><span class="ef-dot"></span><b>Side events:</b> off</span>
-    <span class="ef-sw ef-sw-off"><span class="ef-dot"></span><b>Hotel &amp; travel:</b> off</span>
+    <span class="ef-sw ef-sw-on"><span class="ef-dot"></span><b>Venue:</b> on</span>
+    <span class="ef-sw ef-sw-off"><span class="ef-dot"></span><b>Travel details:</b> off</span>
+    <span class="ef-sw ef-sw-off"><span class="ef-dot"></span><b>Hotel:</b> none</span>
     <span class="ef-sw ef-sw-off"><span class="ef-dot"></span><b>Championship title:</b> none</span>
   </div>
 
@@ -211,31 +218,38 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
         <li><span class="k-num-badge">1</span><span><b>Top band from Event-B.</b> Tags ("LCA event", status in words, Sample data), the setup's tagline as a kicker, the H1, the date line with weekdays, and Event-A's organizer line "Run by LCA · TD Chris Arceneaux". Frame B shows the same band for a club-run event.</span></li>
         <li><span class="k-num-badge">2</span><span><b>Fact tiles, each with plain words.</b> Six tiles on one schedule, so no schedules tile. They wrap to two rows of three.</span></li>
         <li><span class="k-num-badge">3</span><span><b>Key-facts card.</b> "247 days" is plain text that changes once a day; nothing ticks. The count is the overall "38 of 60", the TD's own number.</span></li>
-        <li><span class="k-num-badge">4</span><span><b>"Register · $30" is this member's own price</b> for U1800, the section picked in the card below. Signed out, on the link preview and on the signed-out phone bar it reads "Register · from $20": the lowest non-member price today across sections (U1000, early).</span></li>
+        <li><span class="k-num-badge">4</span><span><b>"Register · $40" is the price for U1800</b>, the section picked in the card below. There is one entry price per section per tier, with no member price. Signed out, on the link preview and on the signed-out phone bar it reads "Register · from $20": the lowest price today across sections (U1000, early).</span></li>
         <li><span class="k-num-badge">5</span><span><b>Remind me</b> replaces Event-B's Follow and opens the page 4 reminder options by email (frame C).</span></li>
         <li><span class="k-num-badge">6</span><span><b>Sub nav, 48px, sticky under the header.</b> Simple-form labels. The current item is navy with a 2px underline in #866a1e. Pairings and Standings stay muted, non-link and aria-disabled until Sat, Jun 12. No Past champions: the setup names no title.</span></li>
-        <li><span class="k-num-badge">7</span><span><b>Limits by section drive the section cards.</b> Each capped card shows a pill in words, a bar and "X of Y entered"; a nearly full section says what comes next ("Last spot, then a waitlist, no charge"), and a full section says "Then a waitlist, no charge" (drawn on Event-Final-States; no section is full here). The fee step is the same in every section.</span></li>
+        <li><span class="k-num-badge">7</span><span><b>Limits by section drive the section cards.</b> Each capped card shows a pill in words, a bar and "X of Y entered"; a nearly full section says what comes next ("Last spot, then a waitlist, no charge"), and a full section says "Then a waitlist, no charge" (drawn on Event-Final-States; no section is full here). Each card reads one amount per tier ("Early $40 until Fri, May 28 · Regular $50 · Late $65 from Mon, Jun 7") and today's price; the step is the same in every section.</span></li>
         <li><span class="k-num-badge">8</span><span><b>One schedule, so Schedule and Prizes sit side by side</b> (Event-A's form), with "Add all 5 rounds to my calendar" and the tie rule in words.</span></li>
         <li><span class="k-num-badge">9</span><span><b>Who's coming has no Club column</b> and no club name anywhere. Under-18s show as first name and last initial (Priya S., Theo G.); unrated players sort last. Section chips are filter toggles.</span></li>
-        <li><span class="k-num-badge">10</span><span><b>Venue only.</b> Hotel &amp; travel is off, so there is no hotel line here and no hotel block in the sidebar.</span></li>
-        <li><span class="k-num-badge">11</span><span><b>Registration card, member view.</b> With U1800 picked the count line reads "19 of 20 in U1800 · 1 spot left", with "38 of 60 overall" under it. The ladder shows "Your member price" with the non-member price beside each step.</span></li>
+        <li><span class="k-num-badge">10</span><span><b>Venue &amp; travel, venue part only.</b> One block: venue, address, Open in Maps, Parking, Getting in, Food. Travel details are off and no hotel is set, so "Getting here" and the Hotel addition at the bottom do not show; the heading and the sub nav label still read "Venue &amp; travel".</span></li>
+        <li><span class="k-num-badge">11</span><span><b>Registration card, member view.</b> With U1800 picked the count line reads "19 of 20 in U1800 · 1 spot left", with "38 of 60 overall" under it. The ladder shows one amount per tier: everyone pays the same entry fee.</span></li>
         <li><span class="k-num-badge">12</span><span><b>Only signed-out viewers and Family members see Register my family.</b> An Adult member adds a child inside Register's "Who's playing" step.</span></li>
         <li><span class="k-num-badge">13</span><span><b>No Round alerts block:</b> it appears only once the viewer, or a player they are guardian of, is registered.</span></li>
         <li><span class="k-num-badge">14</span><span><b>Link preview</b> as Facebook draws it, viewer-neutral ("from $20", "38 registered"), with Copy link, Share to Facebook and QR code. It replaces Event-A's Share block.</span></li>
+        <li><span class="k-num-badge">15</span><span><b>LCA membership required to enter.</b> The line that carried the member discount now states the rule. This member's membership is active, so it reads "Your LCA membership is active through Tue, Mar 14, 2028". Signed out or lapsed: "LCA membership required to enter · $15 a year, added at checkout if you don't have one" with Join LCA. A club-run event that switched the requirement off shows no line.</span></li>
+        <li><span class="k-num-badge">16</span><span><b>Venue &amp; travel summary card</b> in the place the Hotel &amp; travel card had: venue name, city, Open in Maps, one parking line, and "Full venue &amp; travel" to #venue. No hotel is set, so there is no Host hotel line.</span></li>
       </ol>
     </div>
     <aside class="ef-fb" aria-labelledby="ef-fbh">
       <p id="ef-fbh" class="k-label-gold">K's feedback, and where it landed</p>
       <ol>
         <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.1</span><span><b class="ef-fb-k">Entry limits overall or by section.</b><span class="ef-fb-w">By section here: pills and bars on the section cards (note 7); U1800 picked shows its own count and cap (note 11).</span></span></li>
-        <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.2</span><span><b class="ef-fb-k">Fee tiers only when the TD set them.</b><span class="ef-fb-w">Three tiers set, so the card and the section cards show the ladder (note 11).</span></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.2</span><span><b class="ef-fb-k">Fee tiers only when the TD set them.</b><span class="ef-fb-w">Three tiers set, so the card and the section cards show the ladder, one amount per tier (notes 7, 11).</span></span></li>
         <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.3</span><span><b class="ef-fb-k">Register my family for signed out or Family only.</b><span class="ef-fb-w">Hidden for this Adult member (note 12). The picker is on Event-Final-Family.</span></span></li>
         <li class="ef-fb-no"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span class="ef-fbn">5.4</span><span><b class="ef-fb-k">Partner page ready for bad feed fields.</b><span class="ef-fb-w">Not on this board.</span></span></li>
         <li class="ef-fb-no"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span class="ef-fbn">5.5</span><span><b class="ef-fb-k">Festival page with Go live and a home feature.</b><span class="ef-fb-w">Not on this board.</span></span></li>
         <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.6</span><span><b class="ef-fb-k">Merging schedules and side events are setup options.</b><span class="ef-fb-w">Both off here: one schedule, no schedule picker, no side events block (the setup strip above).</span></span></li>
         <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.7</span><span><b class="ef-fb-k">B's top and sub nav; A's card, who's coming, good to know.</b><span class="ef-fb-w">Notes 1 to 9; sections and schedule in the simple form; no Past champions, since no title is set.</span></span></li>
-        <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.8</span><span><b class="ef-fb-k">Hotel &amp; travel, link preview, round alerts.</b><span class="ef-fb-w">Link preview in the sidebar (note 14). Hotel &amp; travel is off and round alerts wait for a registration (notes 10, 13).</span></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.8</span><span><b class="ef-fb-k">Venue &amp; travel, link preview, round alerts.</b><span class="ef-fb-w">Now folded into Venue &amp; travel (5.11). Link preview in the sidebar (note 14); round alerts wait for a registration (note 13).</span></span></li>
         <li class="ef-fb-no"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span class="ef-fbn">5.9</span><span><b class="ef-fb-k">Phones follow the desktop changes.</b><span class="ef-fb-w">Not on this board.</span></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.10</span><span><b class="ef-fb-k">One entry price; LCA membership required to enter, added at checkout; club-run events may switch it off.</b><span class="ef-fb-w">No member price in the section cards, the key-facts card, the registration card or Good to know; the card states the requirement (notes 4, 7, 11, 15).</span></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-fbn">5.11</span><span><b class="ef-fb-k">Venue &amp; travel is one block with an optional hotel at the bottom; the sidebar carries the venue summary card.</b><span class="ef-fb-w">Travel off and no hotel here, so the block is the venue part and the card shows just the venue and parking (notes 10, 16).</span></span></li>
+        <li class="ef-fb-no"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span class="ef-fbn">5.12</span><span><b class="ef-fb-k">Family picker wording, phone picker trimmed, family limit enforced.</b><span class="ef-fb-w">Not on this board · Event-Final-Family and Event-Phones-Final. Register my family is hidden for this Adult member (note 12).</span></span></li>
+        <li class="ef-fb-no"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span class="ef-fbn">5.13</span><span><b class="ef-fb-k">The setup form scrolls in its own container; sheets scroll inside themselves.</b><span class="ef-fb-w">Not on this board · Event-Final-Setup. This page scrolls as one; the sub nav and the sidebar stay in view.</span></span></li>
+        <li class="ef-fb-no"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span class="ef-fbn">5.14</span><span><b class="ef-fb-k">Receipts: one receipt per payer, one confirmation per player.</b><span class="ef-fb-w">Not on this board · page 6, the checkout.</span></span></li>
       </ol>
     </aside>
   </div>
@@ -309,10 +323,10 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
             <div class="ef-bar" style="margin:16px 0 6px" role="img" aria-label="38 of 60 places taken"><i style="width:63%"></i></div>
             <div class="k-between k-small"><span><b>38 of 60</b> registered</span><span class="k-muted">4 sections</span></div>
             <div class="k-row-sm" style="margin-top:14px;gap:8px;flex-wrap:nowrap">
-              <a class="k-btn k-btn-gold" href="#register" style="flex:1">Register · $30</a>
+              <a class="k-btn k-btn-gold" href="#register" style="flex:1">Register · $40</a>
               <button class="k-btn k-btn-line" type="button" aria-haspopup="dialog" aria-expanded="false"><svg class="ef-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button>
             </div>
-            <p class="k-meta" style="margin-top:10px">Your member price in U1800, early. Change the section in the card below.</p>
+            <p class="k-meta" style="margin-top:10px">The early price in U1800. Change the section in the card below.</p>
             <span class="k-num-badge ef-ab" style="left:-14px;top:208px">4</span>
             <span class="k-num-badge ef-ab" style="right:-14px;top:208px">5</span>
           </div>
@@ -326,7 +340,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
             <a class="ef-tab" href="#sections">Sections</a>
             <a class="ef-tab" href="#schedule">Schedule &amp; prizes</a>
             <a class="ef-tab" href="#whos-coming">Who's coming <span class="k-chip-count">(38)</span></a>
-            <a class="ef-tab" href="#venue">Venue</a>
+            <a class="ef-tab" href="#venue">Venue &amp; travel</a>
             <a class="ef-tab" href="#good-to-know">Good to know</a>
             <span class="ef-tsep" role="presentation"></span>
             <span class="ef-tab ef-tab-off" role="link" aria-disabled="true">Pairings <small>from Sat, Jun 12</small></span>
@@ -344,35 +358,35 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
               <div class="k-row-sm" style="gap:10px"><h2 id="ef-s1" class="k-h2">Sections</h2><span class="k-num-badge">7</span></div>
               <a class="k-link k-small" href="#">Which section fits me?</a>
             </div>
-            <p class="k-muted" style="margin-top:8px">You only play people near your strength. Enter any section whose rating limit is above your rating. Each section also has its own number of places; LCA members pay $10 less at every step.</p>
+            <p class="k-muted" style="margin-top:8px">You only play people near your strength. Enter any section whose rating limit is above your rating. Each section also has its own number of places. Everyone pays the same entry fee, and an LCA membership is required to enter.</p>
             <div class="ef-g2" style="margin-top:20px">
               <article class="k-card-pad k-stack-sm ef-sc">
                 <div class="k-between"><h3 class="k-h3">Open</h3><span class="k-tag k-tag-open">6 spots left</span></div>
                 <p class="k-small">Open to everyone, any rating.</p>
                 <div class="ef-bar" role="img" aria-label="9 of 15 places taken"><i style="width:60%"></i></div>
                 <div class="k-between k-meta"><span><b style="color:#1a2744">9 of 15</b> entered</span><span>Top rating 2014</span></div>
-                <dl class="ef-dl" style="margin-top:4px"><dt>Entry</dt><dd>$50 early · $60 · $75 late</dd><dt>You pay</dt><dd>$40 now, as a member</dd><dt>Prizes</dt><dd>$300 · $200 · $100</dd><dt>Eligible</dt><dd>Everyone, including unrated players</dd></dl>
+                <dl class="ef-dl" style="margin-top:4px"><dt>Entry</dt><dd>Early $50 until Fri, May 28 · Regular $60 · Late $75 from Mon, Jun 7</dd><dt>Today</dt><dd>$50, the early price</dd><dt>Prizes</dt><dd>$300 · $200 · $100</dd><dt>Eligible</dt><dd>Everyone, including unrated players</dd></dl>
               </article>
               <article class="k-card-pad k-stack-sm ef-sc ef-sc-full">
                 <div class="k-between"><h3 class="k-h3">U1800</h3><span class="k-tag k-tag-full">1 spot left</span></div>
                 <p class="k-small">Rated under 1800.</p>
                 <div class="ef-bar" role="img" aria-label="19 of 20 places taken"><i class="ef-hot" style="width:95%"></i></div>
                 <div class="k-between k-meta"><span><b style="color:#1a2744">19 of 20</b> entered</span><span>Last spot, then a waitlist, no charge</span></div>
-                <dl class="ef-dl" style="margin-top:4px"><dt>Entry</dt><dd>$40 early · $50 · $65 late</dd><dt>You pay</dt><dd>$30 now, as a member</dd><dt>Prizes</dt><dd>$200 · $120 · $80</dd><dt>Eligible</dt><dd>A US Chess rating under 1800</dd></dl>
+                <dl class="ef-dl" style="margin-top:4px"><dt>Entry</dt><dd>Early $40 until Fri, May 28 · Regular $50 · Late $65 from Mon, Jun 7</dd><dt>Today</dt><dd>$40, the early price</dd><dt>Prizes</dt><dd>$200 · $120 · $80</dd><dt>Eligible</dt><dd>A US Chess rating under 1800</dd></dl>
               </article>
               <article class="k-card-pad k-stack-sm ef-sc">
                 <div class="k-between"><h3 class="k-h3">U1400</h3><span class="k-tag k-tag-open">8 spots left</span></div>
                 <p class="k-small">Rated under 1400.</p>
                 <div class="ef-bar" role="img" aria-label="7 of 15 places taken"><i style="width:47%"></i></div>
                 <div class="k-between k-meta"><span><b style="color:#1a2744">7 of 15</b> entered</span><span>Top rating 1388</span></div>
-                <dl class="ef-dl" style="margin-top:4px"><dt>Entry</dt><dd>$30 early · $40 · $55 late</dd><dt>You pay</dt><dd>$20 now, as a member</dd><dt>Prizes</dt><dd>$150 · $100</dd><dt>Eligible</dt><dd>A US Chess rating under 1400</dd></dl>
+                <dl class="ef-dl" style="margin-top:4px"><dt>Entry</dt><dd>Early $30 until Fri, May 28 · Regular $40 · Late $55 from Mon, Jun 7</dd><dt>Today</dt><dd>$30, the early price</dd><dt>Prizes</dt><dd>$150 · $100</dd><dt>Eligible</dt><dd>A US Chess rating under 1400</dd></dl>
               </article>
               <article class="k-card-pad k-stack-sm ef-sc">
                 <div class="k-between"><h3 class="k-h3">U1000</h3><span class="k-tag k-tag-open">7 spots left</span></div>
                 <p class="k-small">Rated under 1000, or unrated. A good first event.</p>
                 <div class="ef-bar" role="img" aria-label="3 of 10 places taken"><i style="width:30%"></i></div>
                 <div class="k-between k-meta"><span><b style="color:#1a2744">3 of 10</b> entered</span><span>Unrated welcome</span></div>
-                <dl class="ef-dl" style="margin-top:4px"><dt>Entry</dt><dd>$20 early · $30 · $45 late</dd><dt>You pay</dt><dd>$10 now, as a member</dd><dt>Prizes</dt><dd>$125 · $75 · trophies to top 3</dd><dt>Eligible</dt><dd>A rating under 1000, or no rating yet</dd></dl>
+                <dl class="ef-dl" style="margin-top:4px"><dt>Entry</dt><dd>Early $20 until Fri, May 28 · Regular $30 · Late $45 from Mon, Jun 7</dd><dt>Today</dt><dd>$20, the early price</dd><dt>Prizes</dt><dd>$125 · $75 · trophies to top 3</dd><dt>Eligible</dt><dd>A rating under 1000, or no rating yet</dd></dl>
               </article>
             </div>
             <p class="ef-note" role="note" style="margin-top:14px"><svg class="ef-ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"></circle></svg><span><b>Every section steps up the same way:</b> $10 more from Sat, May 29, then $15 more from Mon, Jun 7. Online entry closes Thu, Jun 10. A full section opens a waitlist at no charge.</span></p>
@@ -456,7 +470,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
           </section>
 
           <section id="venue" class="ef-blk" aria-labelledby="ef-s4">
-            <div class="k-row-sm" style="gap:10px"><h2 id="ef-s4" class="k-h2">Venue</h2><span class="k-num-badge">10</span></div>
+            <div class="k-row-sm" style="gap:10px"><h2 id="ef-s4" class="k-h2">Venue &amp; travel</h2><span class="k-num-badge">10</span></div>
             <div class="ef-g2" style="margin-top:20px;align-items:start">
               <div class="k-map" style="height:260px" role="img" aria-label="Map showing [Venue name] in New Orleans">
                 <svg viewBox="0 0 400 260" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><path d="M0 214C70 186 120 246 200 226S330 170 400 196" fill="none" stroke="#c7d5e4" stroke-width="22"></path><path d="M0 112L400 84M70 0L118 260M262 0L240 260M0 36L400 54M0 168L400 138" fill="none" stroke="#ffffff" stroke-width="6"></path></svg>
@@ -485,6 +499,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
                 <a class="k-link-plain k-small" href="#">New Orleans Westbank Chess Club · Thu, 7:30 PM, rated</a>
               </div>
             </div>
+            <div class="ef-gone" style="margin-top:16px"><span>Not shown here: "Getting here" (airport, drive times, between rounds) needs Travel details on, and the Hotel addition sits at the bottom of this block only when the setup has a hotel. Both are drawn on Event-Final-1.</span></div>
           </section>
 
           <section id="good-to-know" class="ef-blk" aria-labelledby="ef-s5">
@@ -498,7 +513,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
               <div class="k-card-pad k-stack-sm"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6.5" r="2.5"></circle><path d="M9.5 10h5M10.5 10l-1 6h5l-1-6M7.5 20.5h9l-1-3.5h-7z"></path></svg></span><h3 class="k-h4">Byes</h3><p class="k-small">Can't make a round? Take up to 2 half-point byes in Rounds 1–4, each worth ½. Ask when you register or before Round 2.</p></div>
               <div class="k-card-pad k-stack-sm"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg></span><h3 class="k-h4">Arriving</h3><p class="k-small">Check in by 9:30 AM on Sat, Jun 12. Not at your board 30 minutes after a round starts? That game is a forfeit.</p></div>
               <div class="k-card-pad k-stack-sm"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></span><h3 class="k-h4">Withdrawing</h3><p class="k-small">Full refund until Wed, Jun 9. After that, your fee becomes credit toward another LCA event.</p></div>
-              <div class="k-card-pad k-stack-sm"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg></span><h3 class="k-h4">Discounts</h3><p class="k-small">LCA members pay $10 less at every step. Your membership is active, so the prices shown to you already include it.</p></div>
+              <div class="k-card-pad k-stack-sm"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6 15.5c.6-1.3 1.7-2 3-2s2.4.7 3 2M14.5 10h4M14.5 13h3"></path></svg></span><h3 class="k-h4">Membership</h3><p class="k-small">An LCA membership is required to enter and is added at checkout if you need one. Family plans cover you and up to 3 children.</p></div>
             </div>
           </section>
 
@@ -522,16 +537,16 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
                 <p class="k-hint">Rated under 1800 · <b style="color:#7a3d00">1 spot left</b></p>
               </div>
               <div class="k-stack-sm">
-                <div class="k-between"><span class="k-flabel">Entry fee</span><span class="k-meta">Your member price</span></div>
-                <ol class="ef-ladder" aria-label="U1800 entry fee by date, member price">
-                  <li class="ef-now"><div><b>Early <span class="k-tag k-tag-gold">Now</span></b><small>Until Fri, May 28</small></div><span class="ef-pr"><b>$30</b><span>non-members $40</span></span></li>
-                  <li><div><b>Regular</b><small>Sat, May 29 – Sun, Jun 6</small></div><span class="ef-pr"><b>$40</b><span>non-members $50</span></span></li>
-                  <li><div><b>Late</b><small>Mon, Jun 7 – Thu, Jun 10</small></div><span class="ef-pr"><b>$55</b><span>non-members $65</span></span></li>
+                <div class="k-between"><span class="k-flabel">Entry fee</span><span class="k-meta">U1800</span></div>
+                <ol class="ef-ladder" aria-label="U1800 entry fee by date">
+                  <li class="ef-now"><div><b>Early <span class="k-tag k-tag-gold">Now</span></b><small>Until Fri, May 28</small></div><span class="ef-pr"><b>$40</b></span></li>
+                  <li><div><b>Regular</b><small>Sat, May 29 – Sun, Jun 6</small></div><span class="ef-pr"><b>$50</b></span></li>
+                  <li><div><b>Late</b><small>Mon, Jun 7 – Thu, Jun 10</small></div><span class="ef-pr"><b>$65</b></span></li>
                 </ol>
               </div>
-              <div class="k-panel k-row-sm" style="padding:12px 14px;flex-wrap:nowrap;align-items:flex-start"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg><p class="k-small"><b>Your member price.</b> LCA members pay $10 less at every step, and your Adult membership is active.</p></div>
-              <div class="k-between"><span class="k-strong">You pay today</span><span class="k-h2 k-num">$30</span></div>
-              <a class="k-btn k-btn-gold k-btn-lg k-btn-block" href="#">Register · $30</a>
+              <div class="ef-memok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6 15.5c.6-1.3 1.7-2 3-2s2.4.7 3 2M14.5 10h4M14.5 13h3"></path></svg><p style="flex:1;margin:0"><b>LCA membership required to enter.</b> Your LCA membership is active through Tue, Mar 14, 2028.</p><span class="k-num-badge">15</span></div>
+              <div class="k-between"><span class="k-strong">You pay today</span><span class="k-h2 k-num">$40</span></div>
+              <a class="k-btn k-btn-gold k-btn-lg k-btn-block" href="#">Register · $40</a>
               <div class="ef-gone"><span class="k-num-badge">12</span><span>Register my family is not shown here. Only signed-out viewers and Family members see it.</span></div>
               <p class="k-meta">Next: confirm your US Chess ID and byes, check your answers, then pay by card with Stripe in this tab. You see the full total before paying.</p>
             </div>
@@ -541,6 +556,17 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
               <button class="k-btn k-btn-ghost k-btn-sm" type="button" aria-haspopup="dialog"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5.5" r="2.5"></circle><circle cx="6" cy="12" r="2.5"></circle><circle cx="18" cy="18.5" r="2.5"></circle><path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1"></path></svg>Share</button>
               <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Ask the TD</a>
             </div>
+          </div>
+
+          <div class="k-card ef-vcard" aria-label="Venue and travel">
+            <div class="k-between"><span class="k-label">Venue &amp; travel</span><span class="k-num-badge">16</span></div>
+            <div>
+              <p class="k-strong" style="margin:0">[Venue name]</p>
+              <p class="k-small k-muted" style="margin:0">New Orleans</p>
+            </div>
+            <a class="k-link-plain k-small" href="#" style="align-self:flex-start">Open in Maps<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+            <p class="ef-vline"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"></rect><path d="M9.5 16.5v-9h3.2a2.8 2.8 0 0 1 0 5.6H9.5"></path></svg><span>Parking: [Where to park and what it costs]</span></p>
+            <a class="k-link k-small" href="#venue" style="align-self:flex-start">Full venue &amp; travel</a>
           </div>
 
           <div class="ef-gone" style="background:#f5f5f2"><span class="k-num-badge">13</span><span>Round alerts appear here once you are registered.</span></div>
@@ -576,7 +602,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
     </div>
   </div>
-  <p class="ef-cap">The page as a member sees it the moment they arrive. The sub nav and the sidebar are drawn in place; on the live page both stay in view while scrolling, and every section clears the header and sub nav when jumped to. The setup strip at the top of this board lists what the TD turned on; Event-Final-1 draws the same page with two schedules, side events and Hotel &amp; travel on.</p>
+  <p class="ef-cap">The page as a member sees it the moment they arrive. The sub nav and the sidebar are drawn in place; on the live page both stay in view while scrolling, and every section clears the header and sub nav when jumped to. The setup strip at the top of this board lists what the TD turned on; Event-Final-1 draws the same page with two schedules, side events, travel details and a hotel on.</p>
 </section>
 
 <section class="ef-sec" aria-label="Insets">
@@ -608,7 +634,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
         <span class="ef-code">C</span>
         <h2>Remind me, from the top card</h2>
       </div>
-      <div class="ef-btnrow"><a class="k-btn k-btn-gold" href="#" style="flex:1">Register · $30</a><button class="k-btn k-btn-navy" type="button" aria-haspopup="dialog" aria-expanded="true"><svg class="ef-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div>
+      <div class="ef-btnrow"><a class="k-btn k-btn-gold" href="#" style="flex:1">Register · $40</a><button class="k-btn k-btn-navy" type="button" aria-haspopup="dialog" aria-expanded="true"><svg class="ef-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div>
       <div class="ef-pop" role="dialog" aria-labelledby="ef-pop-h" style="margin-left:auto;width:360px">
         <div class="k-between" style="gap:8px"><p id="ef-pop-h" class="ef-pop-h">Remind me</p><span class="k-meta">by email</span></div>
         <fieldset class="ef-opts">
@@ -628,7 +654,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
       <ul>
         <li>The registration card's other states, the top card's lifecycle buttons and the TD override tag are on Event-Final-States.</li>
         <li>The Register my family picker and the signed-out explainer are on Event-Final-Family.</li>
-        <li>Two schedules, side events and Hotel &amp; travel are drawn on Event-Final-1.</li>
+        <li>Two schedules, side events, and Venue &amp; travel with Getting here and the Hotel addition are drawn on Event-Final-1.</li>
         <li>The phone version of this page is on Event-Phones-Final.</li>
       </ul>
     </div>
@@ -637,7 +663,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6450}}'>
 class Component extends DCLogic {
   renderVals() { return {}; }
 }

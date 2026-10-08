@@ -191,6 +191,14 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .ef-klab{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#866a1e}
 .ef-drive{display:grid;grid-template-columns:1fr auto;gap:4px 16px;font-size:14px}
 .ef-drive span:nth-child(even){font-family:"Geist Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right}
+.ef-vsub{display:flex;align-items:center;gap:10px;margin:0 0 2px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.ef-vsub::after{content:"";flex:1;height:1px;background:#dddcd4}
+.ef-hotel{margin-top:16px;padding:18px 20px;border-radius:12px;background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #866a1e;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:16px;align-items:center}
+.ef-hotel p{margin:0}
+.ef-hico{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:#f4ecd4;color:#664c0c}
+.ef-vline{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45;margin:0}
+.ef-vline .k-i{flex:none;margin-top:1px;color:#555c6b}
+.ef-vhot{padding-top:10px;border-top:1px solid #ecebe5}
 
 /* good to know */
 .ef-gk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
@@ -279,9 +287,9 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
     <div>
       <p class="k-kicker">5 · Tournament page · decided · setup: two schedules that merge</p>
       <h1 class="tl-title">Unified tournament page · Setup: two schedules that merge (2027 Louisiana State Championship)</h1>
-      <p class="tl-meta-line" style="margin-top:8px"><b>Built from:</b> Event-B (navy top band with the key-facts card, sub nav, "Two schedules, one championship", Sections &amp; prizes, Side events, the sidebar's Hotel &amp; travel and link preview) and Event-A (organizer line, fact tiles with plain words, the registration card, Who's coming, Venue, Good to know) · Event-D's Visit block for the travel detail · the decided header and footer</p>
+      <p class="tl-meta-line" style="margin-top:8px"><b>Built from:</b> Event-B (navy top band with the key-facts card, sub nav, "Two schedules, one championship", Sections &amp; prizes, Side events, the sidebar's link preview) and Event-A (organizer line, fact tiles with plain words, the registration card, Who's coming, Venue, Good to know) · Event-D's Visit block for the Getting here detail · K's Thu, Oct 8 changes: one entry price with the LCA membership required, and Venue &amp; travel as one block with the hotel at the bottom · the decided header and footer</p>
       <p class="tl-meta-line"><b>Replaces:</b> Event-A, Event-B and Event-C</p>
-      <p class="tl-meta-line"><b>Setup on this frame:</b> Schedules on (3-day and 2-day, merge at Round 4) · Side events on (Labor Day Scholastic, State Blitz Championship, annual business meeting as kind "meeting") · Hotel &amp; travel on · championship title set · overall entry limit 160 · three fee tiers (early, regular, at the door) · member discount $10</p>
+      <p class="tl-meta-line"><b>Setup on this frame:</b> Schedules on (3-day and 2-day, merge at Round 4) · Side events on (Labor Day Scholastic, State Blitz Championship, annual business meeting as kind "meeting") · Venue &amp; travel with Travel details on and a hotel added · championship title set · overall entry limit 160 · three fee tiers (early, regular, at the door), one price per section per tier · LCA membership required to enter (LCA-run event)</p>
       <p class="tl-meta-line"><b>Shown:</b> /tournaments/2027-louisiana-state-championship at 1440px on Thu, Oct 8, 2026, signed out (Donate · Log in · Join LCA). No Round alerts block, since nobody is registered here.</p>
       <p class="ef-same"><i></i>Same page. The TD's setup picks the layout.</p>
     </div>
@@ -292,31 +300,38 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
       <p class="k-label">Notes on this board</p>
       <ol class="tl-notes">
         <li><span class="k-num-badge">1</span><span><b>Top band from Event-B.</b> Tags with status in words, the kicker from the setup's tagline, the H1, the date line with weekdays, the organizer line, then seven fact tiles (4 + 3), each with its plain-words companion. The 2-day tile shows only because there is more than one schedule.</span></li>
-        <li><span class="k-num-badge">2</span><span><b>Key-facts card.</b> "331 days" is plain text that changes once a day; nothing ticks. "Register · from $30" is the lowest non-member price today (U1000, early). Remind me opens the page 4 reminder options (frame A below). This button follows the lifecycle on the states board.</span></li>
-        <li><span class="k-num-badge">3</span><span><b>Sub nav, 48px, sticky under the header.</b> Current item navy with a 2px gold-ink underline. "Venue &amp; travel" because Hotel &amp; travel is on. "Past champions ↗" only because the setup names a title; it opens the honor roll filtered to it. Pairings and Standings are muted, aria-disabled text until Sat, Sep 4.</span></li>
+        <li><span class="k-num-badge">2</span><span><b>Key-facts card.</b> "331 days" is plain text that changes once a day; nothing ticks. "Register · from $30" is the lowest entry fee today (U1000, early). There is one price for everyone; there is no member price. Remind me opens the page 4 reminder options (frame A below). This button follows the lifecycle on the states board.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>Sub nav, 48px, sticky under the header.</b> Current item navy with a 2px gold-ink underline. "Venue &amp; travel" always, with or without travel details or a hotel. "Past champions ↗" only because the setup names a title; it opens the honor roll filtered to it. Pairings and Standings are muted, aria-disabled text until Sat, Sep 4.</span></li>
         <li><span class="k-num-badge">4</span><span><b>Two schedules, so the multi-schedule form.</b> Schedule leads the main column: day by day, every row tagged 3-day, 2-day or Everyone in words, the merge row, the business meeting and side events as rows, and the time-control key per schedule.</span></li>
-        <li><span class="k-num-badge">5</span><span><b>Sections &amp; prizes in Event-B's form,</b> overall limit: each section reads "9 entered" with no pill, no bar and no waitlist line. Fee now, member price and the dated later steps, since the setup has all three tiers.</span></li>
+        <li><span class="k-num-badge">5</span><span><b>Sections &amp; prizes in Event-B's form,</b> overall limit: each section reads "9 entered" with no pill, no bar and no waitlist line. One amount per tier: the fee now, then the dated later steps, since the setup has all three tiers. No member price.</span></li>
         <li><span class="k-num-badge">6</span><span><b>Side events (setup).</b> Child tournaments with their own count and cap, added to the same checkout. The business meeting is a side event of kind "meeting": Members vote · RSVP · Meeting page, no fee.</span></li>
         <li><span class="k-num-badge">7</span><span><b>Who's coming, no clubs.</b> Section chips are filter toggles over one table (#, Player, Rating, Section). Players under 18 show as first name and last initial; unrated players sort last. Once Round 1 starts, Standings replaces this block.</span></li>
-        <li><span class="k-num-badge">8</span><span><b>Venue, then the Hotel &amp; travel detail (setup).</b> The hotel line in Venue and the whole travel panel appear only because Hotel &amp; travel is on: host hotel, rate and block deadline, airport, the TD's drive times, Between rounds.</span></li>
+        <li><span class="k-num-badge">8</span><span><b>Venue &amp; travel is one block (K, Thu, Oct 8).</b> The venue first: address, Open in Maps, Parking, Getting in, Food. Then Getting here, because the TD turned on Travel details: the TD's drive times, the nearest airport, Between rounds. Then the optional Hotel at the bottom, because the setup adds one: host hotel, LCA rate, block held until Fri, Aug 13, Book in the LCA block ↗. With both off it is just the venue part.</span></li>
         <li><span class="k-num-badge">9</span><span><b>Registration card from Event-A.</b> Drawn after this viewer picked U1800 and 3-day; before any pick the ladder shows ranges and the button reads "Register · from $30" (frame C). Overall limit, so the count line stays "23 of 160 registered · 137 left" whatever section is picked.</span></li>
         <li><span class="k-num-badge">10</span><span><b>Schedule picker,</b> only with more than one schedule. One plain line for each. The choice is saved as registrations.schedule_id.</span></li>
         <li><span class="k-num-badge">11</span><span><b>Register my family,</b> shown because the viewer is signed out, with the line "One checkout for you and your children. See how it works". Both open the sheet "How family registration works" (Event-Final-Family, frame E). Signed in, only an active Family membership sees this button; everyone else gets "Register", whose first step is the same picker.</span></li>
-        <li><span class="k-num-badge">12</span><span><b>Sidebar below the card:</b> Hotel &amp; travel (setup) linking to the detail, then the link preview (K's pick) with Copy link · Share to Facebook · QR code. No Round alerts block for a signed-out viewer.</span></li>
+        <li><span class="k-num-badge">12</span><span><b>Sidebar below the card:</b> the Venue &amp; travel summary card, where the Hotel &amp; travel card used to be: venue, city, Open in Maps, one parking line, the host hotel line (a hotel is set here) and "Full venue &amp; travel" to #venue. Then the link preview (K's pick) with Copy link · Share to Facebook · QR code. No Round alerts block for a signed-out viewer.</span></li>
+        <li><span class="k-num-badge">13</span><span><b>One entry price; the LCA membership is required to enter.</b> The line that carried the member discount now reads "LCA membership required to enter · $15 a year, added at checkout if you don't have one". A signed-in member sees "Your LCA membership is active through Tue, Mar 14, 2028"; on a club-run event with the requirement switched off the line is absent. "You pay today" is the entry fee alone; the line under the buttons says the full total, any membership included, shows before paying.</span></li>
+        <li><span class="k-num-badge">14</span><span><b>Good to know: Membership</b> replaces Discounts: required to enter, added at checkout if needed, Family plans cover you and up to 3 children. Side event cards show one fee each.</span></li>
       </ol>
     </div>
     <aside class="tl-fb" aria-labelledby="ef-fbh">
       <p id="ef-fbh" class="k-label-gold">K's feedback, and where it landed</p>
       <ol class="ef-fb">
         <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.1</span><b>Entry limits overall or by section, set in setup.</b><em>Overall limit here: "9 entered" per section, no bar; the card reads 23 of 160 (notes 5, 9). By section is on Event-Final-2.</em></span></li>
-        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.2</span><b>Fee tiers only when the TD set them.</b><em>All three set, so the ladder shows Early, Regular and At the door. The one-fee line is on the states board.</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.2</span><b>Fee tiers only when the TD set them.</b><em>All three set, so the ladder shows Early, Regular and At the door, one amount each. The one-fee line is on the states board.</em></span></li>
         <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.3</span><b>Register my family only signed out or on a Family membership.</b><em>Signed out here, so it shows with "See how it works", which opens "How family registration works" (note 11). The picker is on Event-Final-Family.</em></span></li>
         <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.4</span><b>Partner page ready for bad feed fields.</b><em>Not on this board · Event-Partner-Final.</em></span></li>
         <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.5</span><b>Festival page, Go live, home feature.</b><em>Not on this board · Event-Festival-Final.</em></span></li>
         <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.6</span><b>Merging schedules and side events are setup options.</b><em>Both on: Schedule leads, the card gains the schedule picker and the side events line, Side events gets its block (notes 4, 6, 10).</em></span></li>
         <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.7</span><b>B's top and sub nav, A's card, Who's coming and Good to know; past champions in the sub nav only.</b><em>All here. Past champions ↗ is a sub nav link, never a block (notes 1, 3, 7).</em></span></li>
-        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.8</span><b>Hotel &amp; travel, link preview, round alerts.</b><em>Hotel &amp; travel in the sidebar and the venue block; link preview in the sidebar; no round alerts, since the viewer is signed out (notes 8, 12).</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.8</span><b>Travel in the sidebar and the venue block, link preview, round alerts.</b><em>Now folded into Venue &amp; travel (5.11): the sidebar carries the venue summary card with the host hotel line; link preview in the sidebar; no round alerts, since the viewer is signed out (notes 8, 12).</em></span></li>
         <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.9</span><b>Phones follow the desktop changes.</b><em>Not on this board · Event-Phones-Final.</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.10</span><b>One entry price; LCA membership required to enter, added at checkout; club-run events may switch it off.</b><em>No member price in the section cards, side events, the card or Good to know; the card's membership line and Good to know's Membership say it once (notes 5, 13, 14).</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.11</span><b>Venue &amp; travel is one block with an optional hotel at the bottom; the sidebar carries the venue summary card.</b><em>Venue, Getting here, then Hotel; the summary card sits where Hotel &amp; travel was (notes 8, 12).</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.12</span><b>Family picker wording, phone picker trimmed, family limit enforced.</b><em>Not on this board · Event-Final-Family and Event-Phones-Final. The button here opens them (note 11).</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.13</span><b>The setup form scrolls in its own container; sheets scroll inside themselves.</b><em>Not on this board · Event-Final-Setup. This page scrolls as one; the sidebar stays sticky beside it.</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.14</span><b>Receipts: one receipt per payer, one confirmation per player.</b><em>Not on this board · page 6, the checkout.</em></span></li>
       </ol>
       <div class="ef-fbkey"><span><span class="ef-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Applied here</span><span><span class="ef-tick ef-tick-off" aria-hidden="true"></span>Not on this board</span></div>
     </aside>
@@ -453,12 +468,12 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
     <!-- Sections & prizes, multi-schedule form -->
     <section class="ef-sec" id="sections" aria-labelledby="ef-sp">
       <div class="ef-sh"><div class="ef-l"><span class="k-num-badge ef-b">5</span><h2 class="k-h2" id="ef-sp">Sections &amp; prizes</h2></div><a class="k-link k-small" href="#">Which section fits me?</a></div>
-      <p class="ef-intro">$3,000 prize fund, based on 120 paid entries. Early prices shown; they rise on Mon, Jul 26 and again at the door on Sat, Sep 4. LCA members pay $10 less at every step. Unrated players may enter any section.</p>
+      <p class="ef-intro">$3,000 prize fund, based on 120 paid entries. Early prices shown; they rise on Mon, Jul 26 and again at the door on Sat, Sep 4. One price for everyone; an LCA membership is required to enter. Unrated players may enter any section.</p>
       <div class="ef-g4">
         <article class="ef-scard">
           <h3>Championship</h3>
           <p class="ef-who">All ratings</p>
-          <div class="ef-fee"><b>$60</b><span class="k-meta">members $50</span></div>
+          <div class="ef-fee"><b>$60</b><span class="k-meta">early price</span></div>
           <ul class="ef-steps"><li>$75 from Mon, Jul 26</li><li>$90 at the door, Sat, Sep 4</li></ul>
           <p class="ef-cnt"><b>9 entered</b></p>
           <p class="ef-prz"><b>Prizes</b> $600 · $400 · $200</p>
@@ -467,7 +482,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
         <article class="ef-scard">
           <h3>U1800</h3>
           <p class="ef-who">Rated under 1800</p>
-          <div class="ef-fee"><b>$50</b><span class="k-meta">members $40</span></div>
+          <div class="ef-fee"><b>$50</b><span class="k-meta">early price</span></div>
           <ul class="ef-steps"><li>$65 from Mon, Jul 26</li><li>$80 at the door, Sat, Sep 4</li></ul>
           <p class="ef-cnt"><b>6 entered</b></p>
           <p class="ef-prz"><b>Prizes</b> $300 · $200 · $100</p>
@@ -476,7 +491,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
         <article class="ef-scard">
           <h3>U1400</h3>
           <p class="ef-who">Rated under 1400</p>
-          <div class="ef-fee"><b>$40</b><span class="k-meta">members $30</span></div>
+          <div class="ef-fee"><b>$40</b><span class="k-meta">early price</span></div>
           <ul class="ef-steps"><li>$55 from Mon, Jul 26</li><li>$70 at the door, Sat, Sep 4</li></ul>
           <p class="ef-cnt"><b>5 entered</b></p>
           <p class="ef-prz"><b>Prizes</b> $250 · $150 · $100</p>
@@ -485,7 +500,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
         <article class="ef-scard">
           <h3>U1000</h3>
           <p class="ef-who">Rated under 1000, or unrated</p>
-          <div class="ef-fee"><b>$30</b><span class="k-meta">members $20</span></div>
+          <div class="ef-fee"><b>$30</b><span class="k-meta">early price</span></div>
           <ul class="ef-steps"><li>$45 from Mon, Jul 26</li><li>$60 at the door, Sat, Sep 4</li></ul>
           <p class="ef-cnt"><b>3 entered</b></p>
           <p class="ef-prz"><b>Prizes</b> $150 · $100 · $50</p>
@@ -505,7 +520,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
           <h3>Labor Day Scholastic</h3>
           <p>Sat, Sep 4 · 9:30 AM · K–12, K–8 and K–3 sections</p>
           <p>5 rounds at G/30+5, 30 minutes each plus 5 seconds per move. US Chess rated.</p>
-          <div class="ef-fee" style="margin-top:2px"><b style="font-size:22px">$25</b><span class="k-meta">members $20</span></div>
+          <div class="ef-fee" style="margin-top:2px"><b style="font-size:22px">$25</b><span class="k-meta">entry</span></div>
           <div class="ef-bar" role="img" aria-label="14 of 60 places taken"><i style="width:23%"></i></div>
           <p><b>14 of 60</b> registered</p>
           <p class="ef-m">Each player ticks one box for their grade, like "In 8th grade or below".</p>
@@ -516,7 +531,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
           <h3>State Blitz Championship</h3>
           <p>Sun, Sep 5 · 9:00 PM · one section, all ratings</p>
           <p>8 games at G/5+2, 5 minutes each plus 2 seconds per move. US Chess blitz rated.</p>
-          <div class="ef-fee" style="margin-top:2px"><b style="font-size:22px">$20</b><span class="k-meta">members $15</span></div>
+          <div class="ef-fee" style="margin-top:2px"><b style="font-size:22px">$20</b><span class="k-meta">entry</span></div>
           <div class="ef-bar" role="img" aria-label="6 of 40 places taken"><i style="width:15%"></i></div>
           <p><b>6 of 40</b> registered</p>
           <p class="ef-m">State Blitz Champion title to the top Louisiana resident.</p>
@@ -594,22 +609,14 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
             <dt>Parking</dt><dd>[Where to park and what it costs]</dd>
             <dt>Getting in</dt><dd>[Entrance, floor and step-free route]</dd>
             <dt>Food</dt><dd>[Places to eat between rounds]</dd>
-            <dt>Hotel</dt><dd>[Host hotel name] · LCA rate until Fri, Aug 13 · details below</dd>
           </dl>
         </div>
       </div>
       <div class="ef-travel" id="travel">
-        <div class="ef-travel-h"><h3 class="k-h3" style="margin:0">Hotel &amp; travel</h3><span class="k-meta">Shown because the TD turned on Hotel &amp; travel</span></div>
+        <div class="ef-travel-h"><h3 class="k-h3" style="margin:0">Getting here</h3></div>
         <div class="ef-tg">
           <div class="ef-tcard">
-            <span class="ef-klab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg>Stay</span>
-            <p class="k-h4">[Host hotel name]</p>
-            <p class="k-small">LCA rate [Hotel rate] a night. The block is held until Fri, Aug 13.</p>
-            <p class="k-small k-muted">[n]-minute walk to the playing hall.</p>
-            <a class="k-btn k-btn-line k-btn-sm" href="#" style="align-self:flex-start" target="_blank" rel="noopener">Book in the LCA block ↗<span class="ef-vh"> (opens the hotel's site in a new tab)</span></a>
-          </div>
-          <div class="ef-tcard">
-            <span class="ef-klab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"></path></svg>Get there</span>
+            <span class="ef-klab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"></path></svg>Drive</span>
             <p class="k-small k-strong">Drive times to Baton Rouge, as entered by the TD</p>
             <div class="ef-drive">
               <span>New Orleans</span><span>1 hr 20 min</span>
@@ -618,7 +625,11 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
               <span>Alexandria</span><span>1 hr 45 min</span>
               <span>Shreveport</span><span>3 hr 45 min</span>
             </div>
-            <p class="k-small k-muted">Nearest airport: Baton Rouge Metropolitan (BTR), [n] minutes away. New Orleans (MSY) is about 1 hr 15 min by car.</p>
+          </div>
+          <div class="ef-tcard">
+            <span class="ef-klab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 13.5l19-7-3 13-6.5-4.5-3 4v-5.5l9.5-6.5"></path></svg>Fly in</span>
+            <p class="k-small"><b>Nearest airport:</b> Baton Rouge Metropolitan (BTR), [n] minutes from the venue.</p>
+            <p class="k-small"><b>More flights:</b> New Orleans (MSY), about 1 hr 15 min by car.</p>
           </div>
           <div class="ef-tcard" style="grid-column:1 / -1">
             <span class="ef-klab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Between rounds</span>
@@ -626,18 +637,27 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
           </div>
         </div>
       </div>
+      <div class="ef-hotel" id="hotel" aria-labelledby="ef-hot">
+        <span class="ef-hico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"></path><circle cx="7" cy="11.5" r="2"></circle></svg></span>
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <h3 class="k-h4" id="ef-hot" style="margin:0">Hotel</h3>
+          <p class="k-strong">[Host hotel name] · LCA rate [Hotel rate] a night</p>
+          <p class="k-small k-muted">Block held until Fri, Aug 13 · [n]-minute walk to the playing hall</p>
+        </div>
+        <a class="k-btn k-btn-line k-btn-sm" href="#" target="_blank" rel="noopener">Book in the LCA block ↗<span class="ef-vh"> (opens the hotel's site in a new tab)</span></a>
+      </div>
     </section>
 
     <!-- Good to know -->
     <section class="ef-sec" id="good-to-know" aria-labelledby="ef-gtk">
-      <div class="ef-sh"><h2 class="k-h2" id="ef-gtk">Good to know</h2><a class="k-link k-small" href="#">Full rules and FAQ</a></div>
+      <div class="ef-sh"><div class="ef-l"><span class="k-num-badge ef-b">14</span><h2 class="k-h2" id="ef-gtk">Good to know</h2></div><a class="k-link k-small" href="#">Full rules and FAQ</a></div>
       <div class="ef-gk">
         <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><h3>Time control</h3><p>G/90+30: 90 minutes each, plus 30 seconds after every move; a game can run about 4 hours. The 2-day schedule plays Rounds 1–3 at G/45+10.</p></div>
         <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg></span><h3>US Chess membership</h3><p>Required, and current on Sat, Sep 4. We check your US Chess ID as you enter and warn you if it lapses.</p></div>
         <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6.5" r="2.5"></circle><path d="M9.5 10h5M10.5 10l-1 6h5l-1-6M7.5 20.5h9l-1-3.5h-7z"></path></svg></span><h3>Byes</h3><p>Can't make a round? Take up to 2 half-point byes, each worth ½, in Rounds 1–5. Ask when you register or before Round 2 is paired.</p></div>
         <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg></span><h3>Arriving</h3><p>3-day players check in by 9:30 AM on Sat, Sep 4; 2-day players by 7:40 AM on Sun, Sep 5. Not at your board 30 minutes after a round starts? That game is a forfeit.</p></div>
         <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></span><h3>Withdrawing</h3><p>Full refund until Thu, Sep 2. After that, your fee becomes credit toward another LCA event.</p></div>
-        <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg></span><h3>Discounts</h3><p>LCA members pay $10 less at every step. <a class="k-link" href="#">Join LCA</a></p></div>
+        <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg></span><h3>Membership</h3><p>An LCA membership is required to enter and is added at checkout if you need one. Family plans cover you and up to 3 children. <a class="k-link" href="#">Join LCA</a></p></div>
       </div>
     </section>
   </div>
@@ -675,7 +695,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
             <li><div><b>At the door</b><small>Sat, Sep 4</small></div><span class="ef-price">$80</span></li>
           </ol>
         </div>
-        <div class="ef-mem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg><p><b>LCA members pay $10 less</b> at every step, so $40 today. <a class="k-link" href="#">Join LCA · $15/yr</a></p></div>
+        <div class="ef-mem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6 15.5c.6-1.3 1.7-2 3-2s2.4.7 3 2M14.5 10h4M14.5 13h3"></path></svg><p style="flex:1"><b>LCA membership required to enter</b> · $15 a year, added at checkout if you don't have one. <a class="k-link" href="#">Join LCA</a></p><span class="k-num-badge ef-b">13</span></div>
         <p class="ef-sidel"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span>Add the Scholastic or Blitz in the same checkout.</span></p>
         <div class="ef-pay"><span class="k-strong">You pay today</span><b>$50</b></div>
         <a class="k-btn k-btn-gold k-btn-lg k-btn-block" href="#">Register · $50</a>
@@ -683,7 +703,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
           <div class="k-row-sm" style="flex-wrap:nowrap"><a class="k-btn k-btn-line k-btn-block" href="#" aria-haspopup="dialog"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>Register my family</a><span class="k-num-badge ef-b">11</span></div>
           <p class="k-hint" style="margin:0;text-align:center">One checkout for you and your children. <a class="k-link" href="#" aria-haspopup="dialog">See how it works</a></p>
         </div>
-        <p class="k-meta" style="margin:0">Next: confirm your US Chess ID and byes, check your answers, then pay by card with Stripe in this tab. You see the full total before paying.</p>
+        <p class="k-meta" style="margin:0">Next: confirm your US Chess ID and byes, check your answers, then pay by card with Stripe in this tab. You see the full total, any membership included, before paying.</p>
       </div>
       <div class="ef-acts">
         <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</a>
@@ -692,13 +712,16 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
       </div>
     </div>
 
-    <div class="ef-scard2" aria-label="Hotel and travel">
-      <div class="k-between"><span class="k-label">Hotel &amp; travel</span><span class="k-num-badge ef-b">12</span></div>
-      <p class="k-strong">[Host hotel name]</p>
-      <p class="k-small">LCA rate [Hotel rate] per night · block held until Fri, Aug 13</p>
-      <a class="k-btn k-btn-line k-btn-sm" href="#" style="align-self:flex-start" target="_blank" rel="noopener">Book in the LCA block ↗<span class="ef-vh"> (opens in a new tab)</span></a>
-      <p class="k-small k-muted">Parking: [Parking details] · Nearest airport: Baton Rouge (BTR)</p>
-      <a class="k-link k-small" href="#travel" style="align-self:flex-start">Drive times and between rounds</a>
+    <div class="ef-scard2" aria-label="Venue and travel">
+      <div class="k-between"><span class="k-label">Venue &amp; travel</span><span class="k-num-badge ef-b">12</span></div>
+      <div>
+        <p class="k-strong">[Venue name]</p>
+        <p class="k-small k-muted">Baton Rouge</p>
+      </div>
+      <a class="k-link-plain k-small" href="#" style="align-self:flex-start">Open in Maps<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+      <p class="ef-vline"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"></rect><path d="M9.5 16.5v-9h3.2a2.8 2.8 0 0 1 0 5.6H9.5"></path></svg><span>Parking: [Where to park and what it costs]</span></p>
+      <p class="ef-vline ef-vhot"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"></path><circle cx="7" cy="11.5" r="2"></circle></svg><span><b>Host hotel:</b> [Host hotel name] · LCA rate · <a class="k-link" href="#" target="_blank" rel="noopener">Book in the LCA block ↗<span class="ef-vh"> (opens in a new tab)</span></a></span></p>
+      <a class="k-link k-small" href="#venue" style="align-self:flex-start">Full venue &amp; travel</a>
     </div>
 
     <div class="ef-scard2" aria-label="Link preview">
@@ -778,7 +801,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
           <li><div><b>At the door</b><small>Sat, Sep 4</small></div><span class="ef-price">$60–$90</span></li>
         </ol>
         <span class="k-btn k-btn-gold k-btn-block">Register · from $30</span>
-        <p class="ef-cut">Schedule picker, member line and the rest as drawn above</p>
+        <p class="ef-cut">Schedule picker, membership line and the rest as drawn above</p>
       </div>
     </figure>
   </div>
@@ -786,7 +809,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":7450}}'>
 class Component extends DCLogic {
   renderVals() { return {}; }
 }

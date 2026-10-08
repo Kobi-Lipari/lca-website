@@ -432,14 +432,14 @@ Each has a default in bold; silence keeps the default.
 ## 10. Board index for page 5
 | Board | Size | What it shows | Replaces |
 |---|---|---|---|
-| `Event-Final-1` | 1440 × 6900 | the unified page, setup: two schedules that merge, signed out, hotel and travel on, side events on, overall limit | `Event-A`, `Event-B`, `Event-C` |
-| `Event-Final-2` | 1440 × 6000 | the unified page, setup: one schedule, limits by section, signed-in member, plus the club-run inset | (with the above) |
+| `Event-Final-1` | 1440 × 7450 | the unified page, setup: two schedules that merge, signed out, hotel and travel on, side events on, overall limit | `Event-A`, `Event-B`, `Event-C` |
+| `Event-Final-2` | 1440 × 6450 | the unified page, setup: one schedule, limits by section, signed-in member, plus the club-run inset | (with the above) |
 | `Event-Final-States` | 1440 × 8000 | six card variants, the family row, the button strips, during and after tops, the registered sidebar | `Event-C` |
-| `Event-Final-Family` | 1440 × 4950 | the who's playing picker, the signed-out explainer, the phone picker | new |
-| `Event-Final-Setup` | 1440 × 5950 | the TD setup panel with the new options | new (feeds WS08) |
+| `Event-Final-Family` | 1440 × 6400 | the who's playing picker, the signed-out explainer, the phone picker | new |
+| `Event-Final-Setup` | 1440 × 6000 | the TD setup panel with the new options | new (feeds WS08) |
 | `Event-Partner-Final` | 1440 × 7700 | the partner page and eight human-error states | `Event-E` |
-| `Event-Festival-Final-1`, `-2` | 1440 × 7700 and 1440 × 5500 | the public festival page; the admin panel and the home hero in festival mode | `Event-D` |
-| `Event-Phones-Final` | 2800 × 4100 | the phone frames | `Event-Phones` |
+| `Event-Festival-Final-1`, `-2` | 1440 × 7900 and 1440 × 6450 | the public festival page; the admin panel and the home hero in festival mode | `Event-D` |
+| `Event-Phones-Final` | 2800 × 4500 | the phone frames | `Event-Phones` |
 
 ## 11. Second round on the Tournament page and the family picker (October 8)
 
