@@ -1,9 +1,9 @@
 Decided boards (the canvas after K's October 8 choices)
 
 These artboards replaced the option boards on pages 1 to 4 of the
-"LCA Look & Feel Options" canvas. Pages 1 to 3 are decided; page 4 holds
-the decided list plus option boards K still picks from. They are drawn
-from DESIGN_REPLAN_phase0.md and K's section 4 notes, and carry the same
+"LCA Look & Feel Options" canvas. Pages 1 to 4 are decided. Pages 1 to 3
+are drawn from DESIGN_REPLAN_phase0.md; page 4 from DESIGN_REPLAN_phase1.md
+(K's two rounds of Tournaments notes, October 8). They carry the same
 numbered notes and open questions as the canvas copies. canvas.json is
 the canvas index as published with them. Frames are capped at 8000px on
 the canvas, so tall boards are split into parts. The option boards they
@@ -28,7 +28,8 @@ Page 3 · Home
 Page 4 · Tournaments list
   Tourn-List-Final         decided list and preview (replaces Tourn-A and Tourn-B)
   Tourn-List-States        the Results tab and the bell states
-  Tourn-Calendar-1..3      three calendar directions to pick from (replace Tourn-C)
-  Tourn-Map-1..3           three map directions to pick from (replace Tourn-D)
-  Tourn-Table-1..3         three table directions to pick from (replace Tourn-E)
-  Tourn-Phones-Options     phone options per view (replaces Tourn-Phones)
+  Tourn-Calendar-Final     calendar view, month beside the list (replaces Tourn-C)
+  Tourn-Map-Final          map view, map first with a list drawer (replaces Tourn-D)
+  Tourn-Table-Final        table view, compact table with a side panel (replaces Tourn-E)
+  Tourn-Phones-Final       every phone view: List B, Map A, Table A, Calendar A
+                           (replaces Tourn-Phones)

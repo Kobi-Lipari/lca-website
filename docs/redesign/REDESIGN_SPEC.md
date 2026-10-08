@@ -3,7 +3,7 @@
 **For:** Claude Code working in `github.com/Kobi-Lipari/lca-website`
 **Owner and reviewer:** K
 **Version:** 1.2, October 8, 2026. Adds K's Phase 0 design decisions (sections 1.1, 1.2, 2.2, WS01–WS03) from DESIGN_REPLAN_phase0.md and K's second-round notes; D1 amended.
-**Design source:** the canvas "LCA Look & Feel Options". Pages 1 to 3 carry the decided boards (copies in `docs/redesign/decided-boards`); the later pages still hold option boards until K picks. Board names in this brief, such as `Event-A` or `Clubs-B`, refer to artboards on that canvas. Open the named board before building a screen.
+**Design source:** the canvas "LCA Look & Feel Options". Pages 1 to 4 carry the decided boards (copies in `docs/redesign/decided-boards`); the later pages still hold option boards until K picks. Board names in this brief, such as `Event-A` or `Clubs-B`, refer to artboards on that canvas. Open the named board before building a screen.
 
 This brief turns the redesign options K picked from into buildable work. It sets out:
 - the look,

@@ -631,7 +631,7 @@
    "x": 640,
    "y": 0,
    "w": 1440,
-   "h": 6350,
+   "h": 6450,
    "title": "Tournaments list · decided (list and preview)",
    "page": "tournaments"
   },
@@ -639,88 +639,40 @@
    "x": 2160,
    "y": 0,
    "w": 1440,
-   "h": 2550,
+   "h": 3000,
    "title": "Tournaments list · decided (Results tab, bell states)",
    "page": "tournaments"
   },
-  "Tourn-Calendar-1.dc.html": {
+  "Tourn-Calendar-Final.dc.html": {
    "x": 3680,
    "y": 0,
    "w": 1440,
-   "h": 4750,
-   "title": "Calendar view · option 1: Weekend by weekend",
+   "h": 3400,
+   "title": "Calendar view · decided (month beside the list)",
    "page": "tournaments"
   },
-  "Tourn-Calendar-2.dc.html": {
+  "Tourn-Map-Final.dc.html": {
    "x": 5200,
    "y": 0,
    "w": 1440,
-   "h": 3050,
-   "title": "Calendar view · option 2: Month beside the list",
+   "h": 4500,
+   "title": "Map view · decided (map first, list drawer)",
    "page": "tournaments"
   },
-  "Tourn-Calendar-3.dc.html": {
+  "Tourn-Table-Final.dc.html": {
    "x": 6720,
    "y": 0,
    "w": 1440,
-   "h": 4100,
-   "title": "Calendar view · option 3: Three months at a glance",
+   "h": 3550,
+   "title": "Table view · decided (compact table, side panel)",
    "page": "tournaments"
   },
-  "Tourn-Map-1.dc.html": {
-   "x": 8240,
-   "y": 0,
-   "w": 1440,
-   "h": 3650,
-   "title": "Map view · option 1: Side by side",
-   "page": "tournaments"
-  },
-  "Tourn-Map-2.dc.html": {
-   "x": 9760,
-   "y": 0,
-   "w": 1440,
-   "h": 2900,
-   "title": "Map view · option 2: Map first, list drawer",
-   "page": "tournaments"
-  },
-  "Tourn-Map-3.dc.html": {
-   "x": 11280,
-   "y": 0,
-   "w": 1440,
-   "h": 4150,
-   "title": "Map view · option 3: Regions first",
-   "page": "tournaments"
-  },
-  "Tourn-Table-1.dc.html": {
+  "Tourn-Phones-Final.dc.html": {
    "x": 640,
    "y": 7600,
-   "w": 1440,
-   "h": 3950,
-   "title": "Table view · option 1: Clean six",
-   "page": "tournaments"
-  },
-  "Tourn-Table-2.dc.html": {
-   "x": 2160,
-   "y": 7600,
-   "w": 1440,
-   "h": 2800,
-   "title": "Table view · option 2: Month-grouped with entry bars",
-   "page": "tournaments"
-  },
-  "Tourn-Table-3.dc.html": {
-   "x": 3680,
-   "y": 7600,
-   "w": 1440,
-   "h": 3150,
-   "title": "Table view · option 3: Compact table with a side panel",
-   "page": "tournaments"
-  },
-  "Tourn-Phones-Options.dc.html": {
-   "x": 5200,
-   "y": 7600,
    "w": 2800,
-   "h": 4650,
-   "title": "Tournaments on phones · options per view",
+   "h": 4100,
+   "title": "Tournaments on phones · decided",
    "page": "tournaments"
   }
  },
@@ -1566,7 +1518,7 @@
    "kind": "title1",
    "maxW": 8000,
    "page": "tournaments",
-   "text": "Tournaments list · decided list, then options to pick: calendar (3), map (3), table (3), phones (3 per view)",
+   "text": "Tournaments list · decided: list and preview, Results tab, calendar, map, table and phones. Second round of K's notes applied Thu, Oct 8; the discarded options are gone from this page.",
    "w": 240,
    "x": 640,
    "y": -320
@@ -1617,96 +1569,48 @@
    "page": "tournaments",
    "w": 760,
    "x": 640,
-   "y": 6410,
-   "text": "What this part shows: the decided /tournaments list at 1440px, signed in. Frame A is the default list with The Baton Rouge Classic hovered and its bell's \"Remind me\" popover open, beside the rail (New to tournaments?, Latest results, For organizers). Frame B selects that row: the 400px preview pane replaces the rail, with the partner-event and entries-not-open pane variants below. The legend keeps notes 1 to 12 and K's feedback 1 to 7.\n\nBuilt from Tourn-A (toolbar, rows, month groups, rail) and Tourn-B (preview pane and its partner and not-open states), with the decided header. Replaces Tourn-A and Tourn-B. The Results tab and bell states (frames C and D) continue in \"Tournaments list · decided (Results tab, bell states)\".\n\nNothing to pick: this is the decided design. K confirms the rows, the rail-to-preview swap, the event= link and the hover bell's reminder options."
+   "y": 6510,
+   "text": "What this part shows: the decided /tournaments list at 1440px, signed in. Frame A is the default list with one uniform filter-and-sort line (count at the left, When, Type and Region dropdowns, the applied chips, Clear all, then Sort at the far right), the info note under it, and The Baton Rouge Classic hovered with its bell's Remind me popover open beside the rail. Frame B selects that row: the 400px preview replaces the rail, with See who's registered (under-18s as first name and last initial for the public) and the Register, Remind me, Add to calendar, Share and Full event page buttons; the partner and not-open panes sit below. No Copy link anywhere.\n\nBuilt from Tourn-A and Tourn-B with the decided header; replaces Tourn-A and Tourn-B. The Results tab and bell states continue in \"Tournaments list · decided (Results tab, bell states)\".\n\nSecond round applied (Thu, Oct 8): items 4.1 to 4.7 are tick boxes in the legend. Nothing left to pick on this board."
   },
   "s_Tourn-List-States": {
    "fill": "gray",
    "page": "tournaments",
    "w": 760,
    "x": 2160,
-   "y": 2610,
-   "text": "What this part shows: frame C, the Results tab signed out, with the State champions card on top (plain names, honor roll link) and past LCA events by month with Standings and Crosstable. Frame D crops one row three ways for the bell: signed out (asks for a log in), a partner event signed in (only the two date reminders) and after saving (filled bell, \"Reminders on · 2\", saved toast). Notes 11 and 12 come with them.\n\nContinued from \"Tournaments list · decided (list and preview)\"; together the two parts replace Tourn-A and Tourn-B. The champions card is where K's note 1 (State champions under the title) landed, and the signed-out bell is the second half of note 6.\n\nNothing to pick: K confirms champions sit at the top of Results and that the signed-out, partner and saved bell states read right."
+   "y": 3060,
+   "text": "What this part shows: frame C, the Results tab signed out, with the State champions card on top and past LCA events by month with Standings and Crosstable, now on the same one-line toolbar and info note as the list. Frame D crops one row three ways for the bell: signed out (asks for a log in), a partner event signed in (only the two date reminders) and after saving (filled bell, \"Reminders on · 2\", saved toast).\n\nContinued from \"Tournaments list · decided (list and preview)\"; together the two parts replace Tourn-A and Tourn-B.\n\nNothing to pick: K confirms champions sit at the top of Results and that the three bell states read right."
   },
-  "s_Tourn-Calendar-1": {
+  "s_Tourn-Calendar-Final": {
    "fill": "gray",
    "page": "tournaments",
    "w": 760,
    "x": 3680,
-   "y": 4810,
-   "text": "What this part shows: the board title strip and the notes for all three calendar options, then option C1, Weekend by weekend. The list is the calendar: one block per weekend from Oct 10 to Jan 3, a 13-weekend ribbon on top, quiet weekends as one line, and a deadline strip inside each weekend. Signed out, Baton Rouge Classic selected with B's preview in the rail.\n\nBuilt from Tourn-C, Tourn-A rows and rail, Tourn-B preview and the decided header. Replaces Tourn-C, Calendar as navigator. Options 2 and 3 continue in Tourn-Calendar-2 and Tourn-Calendar-3.\n\nK picks C1, C2 or C3, or one with a piece of another (for example C1's empty-weekend lines inside C2 or C3)."
+   "y": 3460,
+   "text": "What this part shows: the decided calendar view, K's option 2 (Month beside the list), redrawn with the second-round chrome: one filter-and-sort line, the info note under it, the small Monday-first month at the left with the dated list beside it, and the same preview pane as the list when a day or row is picked. Partner rows say \"Registers on the organizer's site ↗\" with no count; LCA rows show entries. No Copy link.\n\nBuilt from Tourn-Calendar-2 with the Tourn-List-Final toolbar and preview; replaces Tourn-Calendar-1, 2 and 3.\n\nNothing left to pick on desktop. The phone calendar is on the phones board."
   },
-  "s_Tourn-Calendar-2": {
+  "s_Tourn-Map-Final": {
    "fill": "gray",
    "page": "tournaments",
    "w": 760,
    "x": 5200,
-   "y": 3110,
-   "text": "What this part shows: option C2, Month beside the list. A small Monday-first month grid with unlabeled bars and a season strip sits in the right rail as a navigator; the main column is a week-grouped list in Tourn-A rows. Signed out, with the signed-out bell popover open.\n\nBuilt from Tourn-C (month grid, season strip), Tourn-A rows and rail, Tourn-B preview. Replaces Tourn-C. Continued from option 1, which carries the board title strip and the full notes.\n\nK decides whether a rail month grid that only navigates is worth its place, against C1 and C3."
+   "y": 4560,
+   "text": "What this part shows: the decided map view, K's option 2 (Map first, list drawer), redrawn with the second-round chrome: one filter-and-sort line with the count at the left and Sort at the far right, the info note under it, the map across the full width with the list drawer below, and the drawer preview with the full button row (Register, Remind me, Add to calendar, Share, Full event page). Partner previews carry no count and say \"Registers on the organizer's site ↗\". Under-18s show as first name and last initial publicly, full names for TDs and admins. No Copy link.\n\nBuilt from Tourn-Map-2 with the Tourn-List-Final toolbar and preview; replaces Tourn-Map-1, 2 and 3.\n\nLeft for K: whether \"Update the list as I move the map\" starts ticked, and whether the map opens on the Gulf South or on Louisiana only."
   },
-  "s_Tourn-Calendar-3": {
+  "s_Tourn-Table-Final": {
    "fill": "gray",
    "page": "tournaments",
    "w": 760,
    "x": 6720,
-   "y": 4160,
-   "text": "What this part shows: option C3, Three months at a glance. A full-width overview of the three months in the When range counts tournaments per weekend, above one continuous dated list. Signed in, with the bell popover open and a partner row selected in the preview.\n\nBuilt from Tourn-C, Tourn-A rows and rail, Tourn-B preview. Replaces Tourn-C. Continued from option 1, which carries the board title strip and the full notes.\n\nK decides whether a counting overview that scrolls away earns its place, against C1 and C2."
+   "y": 3610,
+   "text": "What this part shows: the decided table view, K's option 3 (Compact table with a side panel), redrawn with the second-round chrome: one filter-and-sort line, the info note instead of loose text, no bell column (Remind me lives in the panel), the picked row with a gold ring, and the List view's button row at the bottom of the panel. Below: the rail at rest, a partner row picked, the public See who's registered list (under-18s abbreviated) and the drawer below 1280px.\n\nBuilt from Tourn-Table-3 with the Tourn-List-Final toolbar and preview; replaces Tourn-Table-1, 2 and 3.\n\nOpen question for K: the CSV export for directors was dropped with the bell column. Does it come back here, or live in the TD tools?"
   },
-  "s_Tourn-Map-1": {
-   "fill": "gray",
-   "page": "tournaments",
-   "w": 760,
-   "x": 8240,
-   "y": 3710,
-   "text": "What this part shows: the board title strip and the full \"Notes on this board\" legend (all three options plus \"The same in all three\"), then option 1, Side by side. Tourn-D's list sits beside a sticky map, with an anchored event card, optional straight-line distance rings from a typed city or ZIP, and region counts under the map. Drawn signed in with Baton Rouge Classic selected.\n\nBuilt from Tourn-D, Tourn-A rows, Tourn-B preview, the decided header and Appendix A evidence. Replaces Tourn-D, Map view. Parts 2 and 3 continue the board.\n\nK picks 1, 2 or 3, or a mix (for example option 3's region shapes as the \"Louisiana only\" mode of option 1 or 2). This part is the one closest to the Tourn-D layout K already loves."
-  },
-  "s_Tourn-Map-2": {
-   "fill": "gray",
-   "page": "tournaments",
-   "w": 760,
-   "x": 9760,
-   "y": 2960,
-   "text": "What this part shows: option 2, Map first, list drawer. The map takes the full width and the list floats in a drawer on its left. Selecting an event turns the drawer into B's preview, and Back returns to the list. Drawn signed out in two states: the list drawer with a cluster popover and the signed-out bell, then a partner preview.\n\nBuilt from the same sources as part 1, reusing K's own list pattern (one thing until an event is selected). Continued from part 1; together the parts replace Tourn-D, Map view.\n\nK decides whether a big map with a drawer suits a \"where first\" scan better than side by side, and whether the \"in view\" count beside the filter total reads clearly."
-  },
-  "s_Tourn-Map-3": {
-   "fill": "gray",
-   "page": "tournaments",
-   "w": 760,
-   "x": 11280,
-   "y": 4210,
-   "text": "What this part shows: option 3, Regions first. Louisiana's seven regions become the map as selectable shapes with names and counts, neighbouring states are edge tabs with counts, and the list beside it groups events by region. Drawn signed in in two states: the whole map, then South Central Louisiana chosen with its pins and clubs.\n\nBuilt from the same sources as part 1. Continued from part 1; together the parts replace Tourn-D, Map view. The region outlines are approximate and need a parish-to-region table that does not exist yet.\n\nK decides whether grouping by region is worth making \"this weekend\" a List-view question, or whether the region shapes should become a \"Louisiana only\" mode inside option 1 or 2."
-  },
-  "s_Tourn-Table-1": {
+  "s_Tourn-Phones-Final": {
    "fill": "gray",
    "page": "tournaments",
    "w": 760,
    "x": 640,
-   "y": 11610,
-   "text": "What this part shows: the board's title strip and the full notes legend, then option 1, Clean six: six columns (Date, Event, City, Type, Entries, Status) with Date and Event frozen, one row expanded in place, the reminder popover, and its other states (Columns menu, the table at 1024px, reminders on a partner row).\n\nBuilt from the Tourn-E power table, Tourn-A month groups and rail, Tourn-B preview pane and selected-row ring, and Nav-Header-Final frame A. Replaces Tourn-E. Part 1 of 3, split from Tourn-Table-Options; options 2 and 3 are in Tourn-Table-2 and Tourn-Table-3.\n\nFor K: pick one of the three as the Table view, or a mix (for example option 1's columns with option 3's panel). Here, judge whether Clean six is plain enough while still a power table."
-  },
-  "s_Tourn-Table-2": {
-   "fill": "gray",
-   "page": "tournaments",
-   "w": 760,
-   "x": 2160,
-   "y": 10460,
-   "text": "What this part shows: option 2, Month-grouped with entry bars: month headers with counts, a This weekend sub-heading, two-line LCA rows with a 120px entry bar, light one-line partner rows, a one-line peek and the signed-out bell prompt. Other states: sorted by City (the groups fold away) and how the rows are weighted.\n\nBuilt from Tourn-A's month groups and row weighting, set in the Tourn-E table. Replaces Tourn-E. Part 2 of 3, continued from Table view · option 1: Clean six, which holds the shared notes.\n\nFor K: decide whether the month groups and inline bar earn the extra height, or whether Table should differ more from the List view."
-  },
-  "s_Tourn-Table-3": {
-   "fill": "gray",
-   "page": "tournaments",
-   "w": 760,
-   "x": 3680,
-   "y": 10810,
-   "text": "What this part shows: option 3, Compact table with a side panel: dense 13px one-line rows with a bell gutter and a Source column, the picked row in a gold ring, and a 380px sticky panel with the preview and inline reminders. Other states: the panel at rest (Tourn-A's rail), a partner row picked, and the drawer below 1280px.\n\nBuilt from the Tourn-E table, Tourn-A's right rail and Tourn-B's preview pane and selected-row ring. Replaces Tourn-E. Part 3 of 3, continued from Table view · option 1: Clean six, which holds the shared notes.\n\nFor K: decide whether a panel that never pushes the table beats an expanded row, and whether the footer CSV link stays."
-  },
-  "s_Tourn-Phones-Options": {
-   "fill": "gray",
-   "page": "tournaments",
-   "w": 760,
-   "x": 5200,
-   "y": 12310,
-   "text": "What: Fourteen 390×844 phone frames, each with the decided app bar and tab bar. There are three options for each view: List A to C, Calendar A to C, Map A to C and Table A to C. Two shared frames follow: the filter sheet (When, Type and Region with counts, and a live \"Show 16 events\" button) and the event sheet with the reminder sheet open. A panel shows the toolbar at rest, the sticky chip bar, the three bell states and the row rules. Every option has a title strip giving its name, idea, Best for and Trade-off. Notes 1 to 28 at the top match the badges on the frames.\n\nBuilt from: Tourn-Phones, Tourn-A cards and right rail, the Tourn-B preview, the Tourn-C season strip, Tourn-D map and region counts, Tourn-E table, and the Nav-Mobile-Final app bar and tab bar. Replaces Tourn-Phones. Today on the board is Thu, Oct 8. Lafayette Open 2026 is a partner event.\n\nK's feedback applied: every frame uses the decided toolbar. Upcoming 25 | Results is at the top. List, Calendar, Map and Table are centred with Search to their right. The chips are When, Type and Region, with removable values, a live count, Clear all and Copy link. There is no Rated chip, no LCA-run chip and no subscribe card. A bell is always visible on every row. Signed in, it offers one week and one day before (ticked), plus when registration opens and before the early price ends. Signed out, it asks you to log in or create an account. Partner rows never show Register or a count. K still needs to pick one option per view (List, Calendar, Map and Table). Options can be mixed: Map A already uses List B's rows, and Map C opens into Map A or Map B."
+   "y": 11760,
+   "text": "What this part shows: thirteen 390×844 phone frames, decided: List B (with a full preview), Map A (map on top, list sheet, pin preview with Back to map) and Table A (frozen Date and Event columns), with Calendar A drawn as the default. One toolbar on every view: a Display dropdown replaces the four-way picker, the live count sits beside a Filters button that opens the filter sheet. Rows have no LCA or Partner tag text and no bell; the bell lives only in the preview's Remind me, which opens reminders with one week and one day before ticked. Under-18s abbreviated in the public registered list. No Copy link anywhere. The panel at the right shows the pieces every view shares.\n\nBuilt from Tourn-Phones-Options, the Tourn-List-Final preview and Nav-Mobile-Final; replaces Tourn-Phones-Options.\n\nLeft for K: the phone calendar was not picked, so Calendar A (month grid over the day's agenda) is the default. Say B or C to swap it."
   }
  },
  "order": [
@@ -1785,16 +1689,10 @@
   "Home-Hero-Modes-2.dc.html",
   "Tourn-List-Final.dc.html",
   "Tourn-List-States.dc.html",
-  "Tourn-Calendar-1.dc.html",
-  "Tourn-Calendar-2.dc.html",
-  "Tourn-Calendar-3.dc.html",
-  "Tourn-Map-1.dc.html",
-  "Tourn-Map-2.dc.html",
-  "Tourn-Map-3.dc.html",
-  "Tourn-Table-1.dc.html",
-  "Tourn-Table-2.dc.html",
-  "Tourn-Table-3.dc.html",
-  "Tourn-Phones-Options.dc.html"
+  "Tourn-Calendar-Final.dc.html",
+  "Tourn-Map-Final.dc.html",
+  "Tourn-Table-Final.dc.html",
+  "Tourn-Phones-Final.dc.html"
  ],
  "pages": [
   {
