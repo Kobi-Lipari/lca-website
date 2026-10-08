@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home · decided (A + search band, Register mode)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#f5f5f2}
+.hf-root{width:100%;max-width:1440px;margin:0 auto;background:#f5f5f2}
+.hf-doc{background:#fbfaf6;border-bottom:1px solid #dddcd4}
+.hf-doc-in{padding-top:36px;padding-bottom:32px}
+.hf-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin-top:6px}
+.hf-meta-line{font-size:15px;line-height:1.5;color:#3d4556}
+.hf-meta-line b{color:#1a2744;font-weight:600}
+.hf-legend{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;margin-top:22px}
+.hf-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 26px}
+.hf-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.hf-q{border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;background:#ffffff;padding:18px 20px}
+.hf-q ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.hf-q li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.hf-qn{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:24px;padding:0 6px;border-radius:6px;background:#f4ecd4;color:#664c0c;font-size:12px;font-weight:700;flex:none}
+.hf-def{display:block;margin-top:3px;font-weight:600;color:#145b3a}
+
+/* header (decided: H1 base, 68px, H4 search button) */
+.hf-head-in{gap:16px}
+.hf-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6;color:#1a2744;flex:none;line-height:1}
+.hf-plate b{font-size:14px;font-weight:700;letter-spacing:.02em}
+.hf-plate small{font-size:7.5px;font-weight:600;color:#555c6b;margin-top:3px;letter-spacing:0;white-space:nowrap}
+.hf-nav a{padding:0 10px}
+.hf-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.hf-skip{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}
+.hf-foot-brand{display:flex;align-items:center;gap:12px;flex-wrap:nowrap}
+.hf-sbtn{display:flex;align-items:center;gap:8px;width:220px;height:40px;padding:0 10px 0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.42);background:rgba(255,255,255,.08);color:#ffffff;text-decoration:none;font-size:14px;font-weight:500;flex:none}
+.hf-sbtn span{flex:1}
+.hf-kbd{font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;padding:2px 6px;border-radius:5px;border:1px solid rgba(255,255,255,.4);color:rgba(255,255,255,.88)}
+
+/* hero */
+.hf-hero{position:relative;overflow:hidden;background:#1a2744;color:#ffffff}
+.hf-photo{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+.hf-tint{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(17,27,49,.8)}
+.hf-hero-in{position:relative;padding-top:36px;padding-bottom:44px}
+.hf-card{padding:32px;color:#1a2744}
+.hf-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 32px;margin-top:24px}
+.hf-fact{display:flex;gap:12px;align-items:flex-start}
+.hf-fact>svg{color:#866a1e;margin-top:1px}
+.hf-fact b{display:block;font-size:17px;line-height:1.35;font-weight:600}
+.hf-bar{height:10px;border-radius:999px;background:#e6e5de;overflow:hidden;margin-top:10px}
+.hf-bar i{display:block;height:100%;border-radius:999px;background:#1a2744}
+.hf-also{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:22px;padding-top:16px;border-top:1px solid #ecebe5;font-size:14px}
+.hf-pill{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;padding:4px 12px 4px 4px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:13px;font-weight:700}
+.hf-inset{border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:20px;background:rgba(17,27,49,.55)}
+.hf-var{padding:12px 0;border-top:1px solid rgba(255,255,255,.18)}
+.hf-var:first-of-type{border-top:0;padding-top:4px}
+.hf-var-btn{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:7px;font-size:13px;font-weight:600;margin-top:6px}
+.hf-vb-gold{background:#c8a94a;color:#1a2744}
+.hf-vb-line{border:1px solid rgba(255,255,255,.7);color:#ffffff}
+.hf-onnavy{color:rgba(255,255,255,.86)}
+
+/* identity and search band */
+.hf-band{background:#ffffff;border-bottom:1px solid #dddcd4}
+.hf-band-in{padding-top:26px;padding-bottom:28px}
+.hf-id{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hf-id-line{font-size:17px;line-height:1.45;font-weight:500}
+.hf-id-line a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.hf-tt{height:6px;border-top:3px solid #c8a94a;border-bottom:1px solid #c8a94a;margin:18px 0 20px}
+.hf-sfield{display:flex;gap:10px;align-items:stretch;margin-top:8px}
+.hf-sbox{flex:1;display:flex;align-items:center;gap:10px;height:56px;padding:0 16px;border:1px solid #858b99;border-radius:10px;background:#ffffff;color:#555c6b}
+.hf-sbox input{border:0;outline:0;flex:1;min-width:0;font:inherit;font-size:17px;color:#1a2744;background:transparent}
+.hf-sgo{min-height:56px;padding:0 28px;font-size:16px}
+.hf-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+.hf-chip-off{opacity:.45;border-style:dashed;cursor:default}
+.hf-flag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;border:1px dashed #7a6a3a;background:#fffaf0;color:#664c0c;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap}
+
+/* this-week strip (flagged) */
+.hf-week{border:2px dashed #b9b7ad;border-radius:12px;background:repeating-linear-gradient(135deg,#f7f7f3 0 10px,#f1f1ec 10px 20px);padding:18px 20px}
+.hf-week-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.hf-meet{background:#ffffff;border:1px solid #e2e1da;border-radius:10px;padding:10px 12px}
+.hf-meet-now{border-color:#c8a94a;background:#fffdf6}
+
+/* upcoming six */
+.hf-list{list-style:none;margin:16px 0 0;padding:0}
+.hf-row{display:grid;grid-template-columns:76px minmax(0,1fr) 300px 190px;gap:20px;align-items:center;padding:12px 20px;border-top:1px solid #ecebe5}
+.hf-row:first-child{border-top:0}
+.hf-st{display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.hf-act{display:flex;justify-content:flex-end}
+
+/* doors */
+.hf-door{display:flex;flex-direction:column;gap:6px}
+.hf-door-ic{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:#f4ecd4;color:#1a2744;flex:none}
+.hf-dlinks{list-style:none;margin:10px 0 0;padding:0}
+.hf-dlinks li{padding:11px 0;border-top:1px solid #ecebe5}
+.hf-dlinks a{display:inline-flex;align-items:center;gap:6px;font-weight:600;color:#1a2744;text-decoration:none;min-height:24px}
+.hf-dlinks span{display:block;font-size:13px;color:#555c6b}
+
+/* results and champions */
+.hf-recap{border:2px dashed #b9b7ad;border-radius:12px;background:#fbfbf8;overflow:hidden}
+.hf-champ{position:relative;background:#1a2744;color:#ffffff}
+.hf-champ-tt{height:6px;border-top:3px solid #c8a94a;border-bottom:1px solid #c8a94a}
+.hf-champ-in{display:grid;grid-template-columns:120px minmax(0,1fr);gap:32px;align-items:center;padding-top:30px;padding-bottom:34px}
+.hf-cgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;margin-top:18px}
+.hf-cell{display:flex;flex-direction:column;gap:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.28)}
+.hf-clabel{font-size:12px;line-height:1.25;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.hf-cname{font-size:19px;line-height:1.3;font-weight:600;color:#ffffff}
+
+/* news */
+.hf-news{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:18px 20px;border-top:1px solid #ecebe5}
+.hf-news:first-child{border-top:0}
+.hf-fb{padding:12px 0;border-top:1px solid #ecebe5}
+
+/* footer F1 */
+.hf-foot{background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}
+.hf-foot a{color:#ffffff;text-decoration:none}
+.hf-foot-grid{display:grid;grid-template-columns:minmax(0,1.3fr) repeat(4,minmax(0,1fr));gap:32px;padding-top:40px;padding-bottom:32px}
+.hf-foot h2{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86;margin:0 0 10px}
+.hf-foot ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.hf-foot li a{display:inline-flex;align-items:center;min-height:32px;font-size:14px}
+.hf-base{border-top:1px solid rgba(255,255,255,.2)}
+.hf-base-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:16px;padding-bottom:20px}
+.hf-appear{display:inline-flex;border:1px solid rgba(255,255,255,.45);border-radius:8px;overflow:hidden}
+.hf-appear button{min-height:36px;padding:0 12px;border:0;background:transparent;color:#ffffff;font-size:13px;font-weight:600;cursor:pointer}
+.hf-appear button[aria-checked="true"]{background:#c8a94a;color:#1a2744}
+.hf-onnavy-meta{font-size:13px;line-height:1.45;color:rgba(255,255,255,.78)}
+
+@media (max-width:760px){
+.hf-legend{grid-template-columns:1fr}
+.hf-notes{grid-template-columns:1fr}
+.hf-card{padding:20px}
+.hf-facts{grid-template-columns:1fr}
+.hf-sbtn{display:none}
+.hf-week-grid{grid-template-columns:1fr 1fr}
+.hf-row{grid-template-columns:76px minmax(0,1fr);gap:8px 14px;padding:14px 16px}
+.hf-st,.hf-act{grid-column:2}
+.hf-act{justify-content:flex-start}
+.hf-champ-in{grid-template-columns:1fr}
+.hf-cgrid{grid-template-columns:1fr 1fr}
+.hf-news{grid-template-columns:1fr;padding:16px}
+.hf-foot-grid{grid-template-columns:1fr}
+}
+</style>
+</helmet>
+<div class="hf-root">
+
+<!-- Board title strip and legend -->
+<section class="hf-doc" aria-label="About this board">
+  <div class="k-wrap-wide hf-doc-in">
+    <div class="k-between" style="align-items:flex-start">
+      <div>
+        <p class="k-kicker">Homepage · decided design · Phase 0</p>
+        <h1 class="hf-title">Home · decided (A + search band, Register mode)</h1>
+        <p class="hf-meta-line" style="margin-top:8px"><b>Built from:</b> Home-A hero and page · Home-B search box in the identity band · Home-C this-week strip (flagged) · Home-E doors band · Home-D champions band</p>
+        <p class="hf-meta-line"><b>Replaces:</b> Home-A, Home-B, Home-C, Home-D, Home-E and Home-F, the six homepage options</p>
+        <p class="hf-meta-line"><b>Shown:</b> hero rung 5, Register, for the Paul Morphy Open, as a signed-out visitor sees it on Mon, May 17, 2027 at 1440px</p>
+      </div>
+      <span class="k-sample">Sample data · counts, fees, results, news</span>
+    </div>
+    <div class="hf-legend">
+      <div class="k-panel">
+        <p class="k-label">Notes on this board</p>
+        <ol class="hf-notes">
+          <li><span class="k-num-badge">1</span><span><b>Hero, rung 5 Register.</b> An open LCA event starts within 30 days, or its early entry ends within 14. Home-A's card, the hall photo (LCA modes only) and exactly one gold primary.</span></li>
+          <li><span class="k-num-badge">2</span><span><b>Same card, by registration state.</b> Full shows Join the waitlist; closed online shows Event details. "You're entered" is added in the browser from your account, never cached.</span></li>
+          <li><span class="k-num-badge">3</span><span><b>Should I hurry?</b> Count, spots left and the early-entry date in one line, with a fill bar. Counts appear on LCA events only.</span></li>
+          <li><span class="k-num-badge">4</span><span><b>Also this weekend.</b> A Louisiana partner event within 7 days gets one foot line. No Register, no count; the link opens the organizer's site in a new tab.</span></li>
+          <li><span class="k-num-badge">5</span><span><b>Identity and search band,</b> under every hero mode, so the box never moves. Each stat is a link. Results open below the field only on click or Tab, as an overlay that never pushes the page.</span></li>
+          <li><span class="k-num-badge">6</span><span><b>Quick picks stay hidden</b> until WS04 and WS09 ship the filters they point at. Drawn greyed here so the slot is known.</span></li>
+          <li><span class="k-num-badge">7</span><span><b>This-week strip</b> waits for WS09 (flag homeWeek). Free-text club schedules are never parsed into a Tonight list; a wrong time sends a parent to a locked door.</span></li>
+          <li><span class="k-num-badge">8</span><span><b>Upcoming six:</b> Louisiana only, the hero's event removed, status in words, counts on LCA rows only. All tournaments covers the rest of the Gulf South.</span></li>
+          <li><span class="k-num-badge">9</span><span><b>Doors band</b> replaces Home-A's "Start here" row. Three doors, three links each, each landing on a shared page named in grey.</span></li>
+          <li><span class="k-num-badge">10</span><span><b>Results and champions.</b> Heritage accent in Geist (thick–thin rule, seal), no heritage fonts on the homepage. Hidden when the newest title is over 13 months old. Names never link (D9). The recap card waits for WS10.</span></li>
+          <li><span class="k-num-badge">11</span><span><b>News and a compact Facebook rail.</b> Three dated posts; Facebook posts are fetched on the server.</span></li>
+          <li><span class="k-num-badge">12</span><span><b>Membership band,</b> hidden for active members. Then the decided F1 footer with the trust line and the Appearance control.</span></li>
+        </ol>
+      </div>
+      <aside class="hf-q" aria-labelledby="hf-qh">
+        <p id="hf-qh" class="k-label-gold">Open questions for K</p>
+        <ol>
+          <li><span class="hf-qn">Q11</span><span>Should an open LCA event lead the homepage for 30 days, with a last-call tier at 14 days and early-entry overrides at 14 and 7 days, instead of the brief's 21 days?<span class="hf-def">Default: yes.</span></span></li>
+          <li><span class="hf-qn">Q14</span><span>Should the Results hero and the Champions band ship in Phase 0 from today's standings and state champions list, ahead of the WS10 results archive?<span class="hf-def">Default: yes, each behind its own switch.</span></span></li>
+        </ol>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- Decided header -->
+<a class="hf-skip" href="#hf-main">Skip to content</a>
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in hf-head-in">
+    <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><span class="hf-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks hf-nav" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="hf-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+    </nav>
+    <a class="hf-sbtn" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="hf-kbd" aria-hidden="true">⌘K</kbd></a>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+    </div>
+  </div>
+</header>
+
+<main id="hf-main">
+<!-- Hero: rung 5, Register -->
+<section class="hf-hero" aria-labelledby="hf-event">
+  <img class="hf-photo" src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at long tables in a tournament hall">
+  <div class="hf-tint"></div>
+  <div class="k-wrap-wide hf-hero-in">
+    <div class="k-split" style="align-items:flex-start">
+      <article class="k-main k-card-raised hf-card">
+        <div class="k-between">
+          <div class="k-row-sm"><span class="k-num-badge">1</span><span class="k-tag k-tag-open" style="font-size:13px">Registration open</span><span class="k-tag k-tag-lca" style="font-size:13px">LCA event</span></div>
+          <span class="k-small k-strong">Starts Sat, Jun 12 · in 26 days</span>
+        </div>
+        <h2 id="hf-event" class="k-display" style="margin-top:14px">Paul Morphy Open 2027</h2>
+        <div class="k-row" style="margin-top:12px">
+          <span class="k-tag">Classical</span>
+          <span class="k-tag">All ages</span>
+          <span class="k-tag">US Chess rated</span>
+          <span class="k-small k-muted">Run by the Louisiana Chess Association, in Paul Morphy's city</span>
+        </div>
+        <div class="hf-facts">
+          <div class="hf-fact"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><div><b>Sat–Sun, Jun 12–13, 2027</b><span class="k-meta">Check-in Sat 8:30–9:30 AM · Round 1 at 10:00 AM</span></div></div>
+          <div class="hf-fact"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><div><b>New Orleans, LA</b><span class="k-meta">[Venue name] · <a href="#">Directions ↗</a></span></div></div>
+          <div class="hf-fact"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><b>5 rounds · G/90+30</b><span class="k-meta">90 minutes each, plus 30 seconds per move. A round can take about 4 hours.</span></div></div>
+          <div class="hf-fact"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg><div><b>Open · U1800 · U1400 · U1000</b><span class="k-meta">Four sections by rating · ½-point byes in rounds 1–4</span></div></div>
+        </div>
+        <div style="margin-top:24px">
+          <div class="k-between"><span class="k-row-sm"><span class="k-num-badge">3</span><span class="k-strong">38 of 60 registered · 22 spots left · early entry ends Tue, Jun 1</span></span><span class="k-sample">Sample data</span></div>
+          <div class="hf-bar" role="img" aria-label="38 of 60 spots taken"><i style="width:63%"></i></div>
+        </div>
+        <div class="k-row" style="margin-top:24px">
+          <a class="k-btn k-btn-gold k-btn-lg" href="#">Register · from $30</a>
+          <a class="k-btn k-btn-line k-btn-lg" href="#">Event details</a>
+          <a class="k-btn k-btn-ghost" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a>
+          <span class="k-small k-strong">LCA members save $10</span>
+        </div>
+        <p class="hf-also"><span class="k-num-badge">4</span><span class="k-strong">Also this weekend:</span><span>The Baton Rouge Classic</span><span class="k-muted" aria-hidden="true">·</span><span class="k-tag k-tag-ext">Partner event</span><span class="k-muted" aria-hidden="true">·</span><a class="k-link" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"> (opens in new tab)</span></a></p>
+      </article>
+      <aside class="k-side" style="flex:1 1 320px;max-width:380px" aria-label="The same card in other registration states">
+        <div class="hf-pill"><span class="k-num-badge">2</span>Same card, other states</div>
+        <div class="hf-inset">
+          <div class="hf-var">
+            <p class="k-label" style="color:#e6cf86">Event full</p>
+            <p class="k-small hf-onnavy">Tag "Full · waitlist open" in words; the count reads "60 of 60 registered".</p>
+            <span class="hf-var-btn hf-vb-gold">Join the waitlist</span>
+          </div>
+          <div class="hf-var">
+            <p class="k-label" style="color:#e6cf86">Online entry closed</p>
+            <p class="k-small hf-onnavy">Stays in the hero until the start, so late arrivals still find check-in times.</p>
+            <span class="hf-var-btn hf-vb-gold">Event details</span>
+          </div>
+          <div class="hf-var">
+            <p class="k-label" style="color:#e6cf86">Already entered (signed in)</p>
+            <p class="k-small hf-onnavy">"You're entered · Open" replaces the count line, added in the browser after the page loads.</p>
+            <span class="hf-var-btn hf-vb-gold">Your entry</span>
+          </div>
+          <div class="hf-var">
+            <p class="k-label" style="color:#e6cf86">Within 14 days</p>
+            <p class="k-small hf-onnavy">Rung 3, last call: the same card, with "Starts Saturday · in 4 days" as the eyebrow.</p>
+            <span class="hf-var-btn hf-vb-line">Same buttons</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- Identity and search band -->
+<section class="hf-band" aria-label="About LCA and search">
+  <div class="k-wrap-wide hf-band-in">
+    <div class="hf-id">
+      <span class="hf-plate" role="img" aria-label="Louisiana Chess Association official logo" style="border:1px solid #dddcd4"><b>LCA</b><small>official logo</small></span>
+      <p class="hf-id-line">Louisiana's chess community <a href="#">since 1915</a> · <a href="#">300+ members</a> · <a href="#">25+ clubs</a> · <a href="#">7 regions</a></p>
+      <span class="k-num-badge" style="margin-left:auto">5</span>
+    </div>
+    <div class="hf-tt" role="presentation"></div>
+    <form role="search" action="#">
+      <label class="k-flabel" for="hf-q" style="font-size:16px">Search tournaments, clubs and news</label>
+      <div class="hf-sfield">
+        <div class="hf-sbox"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hf-q" type="search" role="combobox" aria-expanded="false" aria-controls="hf-q-list" aria-autocomplete="list" placeholder="Try a city, a club or a month"></div>
+        <button class="k-btn k-btn-gold hf-sgo" type="submit">Search</button>
+      </div>
+      <div id="hf-q-list" role="listbox" aria-label="Search results" hidden=""></div>
+    </form>
+    <div class="hf-chips">
+      <span class="k-num-badge">6</span>
+      <span class="k-meta">Quick picks:</span>
+      <span class="k-chip hf-chip-off" aria-disabled="true">This weekend</span>
+      <span class="k-chip hf-chip-off" aria-disabled="true">Scholastic</span>
+      <span class="k-chip hf-chip-off" aria-disabled="true">Clubs by region</span>
+      <span class="hf-flag">WS04 · hidden until the filters ship</span>
+    </div>
+  </div>
+</section>
+
+<!-- This-week strip (WS09, flagged) -->
+<section class="k-section-sm" style="padding-bottom:8px" aria-labelledby="hf-week">
+  <div class="k-wrap-wide">
+    <div class="hf-week">
+      <div class="k-between">
+        <div class="k-row-sm"><span class="k-num-badge">7</span><h2 id="hf-week" class="k-h3">This week at the clubs</h2><span class="k-meta">Mon, May 17 – Sun, May 23 · 19 meetings statewide</span></div>
+        <span class="hf-flag">WS09 · flagged off until club schedules exist</span>
+      </div>
+      <div class="hf-week-grid">
+        <div class="hf-meet hf-meet-now"><p class="k-label-gold">Today · Mon</p><p class="k-mono k-small k-strong" style="margin-top:4px">1:00–5:00 PM</p><p class="k-small"><b>Shreveport-Bossier Chess Club</b></p><p class="k-meta">Gamers XP · Shreveport</p></div>
+        <div class="hf-meet hf-meet-now"><p class="k-label-gold">Today · Mon</p><p class="k-mono k-small k-strong" style="margin-top:4px">5:00 PM</p><p class="k-small"><b>Mandeville Chess Club</b></p><p class="k-meta">George's Mexican Restaurant · Mandeville</p></div>
+        <div class="hf-meet hf-meet-now"><p class="k-label-gold">Today · Mon</p><p class="k-mono k-small k-strong" style="margin-top:4px">5:30 PM</p><p class="k-small"><b>Monroe Chess Club</b></p><p class="k-meta">Enochs Pub and Grill · Monroe</p></div>
+        <div class="hf-meet hf-meet-now"><p class="k-label-gold">Today · Mon</p><p class="k-mono k-small k-strong" style="margin-top:4px">7:00 PM</p><p class="k-small"><b>Downriver Chess Club</b></p><p class="k-meta">Decatur St · New Orleans · Game 15</p></div>
+      </div>
+      <div class="k-between" style="margin-top:12px"><span class="k-meta">Later this week: Greater New Orleans Tue 7:00 PM · Baton Rouge casual Wed 6:00 PM · Westbank Thu 7:30 PM · Baton Rouge Sat 10:00 AM</span><a class="k-link k-small" href="#">Find a club</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- Upcoming six -->
+<section class="k-section" style="padding-top:36px" aria-labelledby="hf-up">
+  <div class="k-wrap-wide">
+    <div class="k-between">
+      <div>
+        <div class="k-row-sm"><span class="k-num-badge">8</span><h2 id="hf-up" class="k-h2">Upcoming tournaments in Louisiana</h2></div>
+        <p class="k-meta" style="margin-top:4px">Soonest first · LCA and partner events · the Paul Morphy Open is in the box above, so it is not repeated here</p>
+      </div>
+      <div class="k-row"><span class="k-sample">Sample data</span><a class="k-btn k-btn-line" href="#">All tournaments</a></div>
+    </div>
+    <ol class="k-card hf-list">
+      <li class="hf-row">
+        <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat–Sun</span><b style="font-size:20px">22–23</b><span>May</span></div>
+        <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">The Baton Rouge Classic</a><p class="k-small k-muted">Baton Rouge, LA · Downriver Chess · Classical · All ages</p></div>
+        <div class="hf-st"><span class="k-tag k-tag-ext">Partner event</span><span class="k-meta">Registers on the organizer's site</span></div>
+        <div class="hf-act"><a class="k-btn k-btn-line k-btn-sm" href="#" target="_blank" rel="noopener" aria-label="The Baton Rouge Classic on the organizer's site (opens in new tab)">Organizer's site ↗</a></div>
+      </li>
+      <li class="hf-row">
+        <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat</span><b>26</b><span>Jun</span></div>
+        <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">The Casa Chess Tournament</a><p class="k-small k-muted">Sulphur, LA · Casa de Ajedrez · Dual-rated, counts for regular and quick ratings · All ages</p></div>
+        <div class="hf-st"><span class="k-tag k-tag-ext">Partner event</span><span class="k-meta">Registers on the organizer's site</span></div>
+        <div class="hf-act"><a class="k-btn k-btn-line k-btn-sm" href="#" target="_blank" rel="noopener" aria-label="The Casa Chess Tournament on the organizer's site (opens in new tab)">Organizer's site ↗</a></div>
+      </li>
+      <li class="hf-row">
+        <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat–Sun</span><b style="font-size:20px">17–18</b><span>Jul</span></div>
+        <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">Lafayette Open 2027</a><p class="k-small k-muted">Lafayette, LA · Lafayette Chess Club · Classical · All ages</p></div>
+        <div class="hf-st"><span class="k-tag k-tag-ext">Partner event</span><span class="k-meta">Registers on the organizer's site</span></div>
+        <div class="hf-act"><a class="k-btn k-btn-line k-btn-sm" href="#" target="_blank" rel="noopener" aria-label="Lafayette Open 2027 on the organizer's site (opens in new tab)">Organizer's site ↗</a></div>
+      </li>
+      <li class="hf-row">
+        <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat</span><b>7</b><span>Aug</span></div>
+        <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">Downriver Summer Quads</a><p class="k-small k-muted">New Orleans · Downriver Chess · Quick, 30 minutes each · All ages</p></div>
+        <div class="hf-st"><span class="k-tag k-tag-ext">Partner event</span><span class="k-meta">Registers on the organizer's site</span></div>
+        <div class="hf-act"><a class="k-btn k-btn-line k-btn-sm" href="#" target="_blank" rel="noopener" aria-label="Downriver Summer Quads on the organizer's site (opens in new tab)">Organizer's site ↗</a></div>
+      </li>
+      <li class="hf-row">
+        <div class="k-date k-date-navy" style="width:76px"><span style="margin:0 0 3px">Sat–Mon</span><b style="font-size:20px">4–6</b><span>Sep</span></div>
+        <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">2027 Louisiana State Championship</a><p class="k-small k-muted">[City] · Louisiana Chess Association · Classical · Labor Day weekend · state title and the annual meeting</p></div>
+        <div class="hf-st"><span class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-open">Registration open</span></span><span class="k-meta k-mono">14 of 120 registered</span></div>
+        <div class="hf-act"><a class="k-btn k-btn-navy k-btn-sm" href="#">Register</a></div>
+      </li>
+      <li class="hf-row">
+        <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat</span><b>18</b><span>Sep</span></div>
+        <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">New Orleans Youth Chess September Meet</a><p class="k-small k-muted">New Orleans · Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess · Scholastic, K–12</p></div>
+        <div class="hf-st"><span class="k-tag k-tag-ext">Partner event</span><span class="k-meta">Registers on the organizer's site</span></div>
+        <div class="hf-act"><a class="k-btn k-btn-line k-btn-sm" href="#" target="_blank" rel="noopener" aria-label="New Orleans Youth Chess September Meet on the organizer's site (opens in new tab)">Organizer's site ↗</a></div>
+      </li>
+    </ol>
+    <p class="k-meta" style="margin-top:12px">Partner events come from the Gulf South Tournament Clearinghouse and are hidden if its sync is more than 3 days old. You register on the organizer's site, which opens in a new tab. Events in Mississippi, Texas and Alabama are on All tournaments.</p>
+  </div>
+</section>
+
+<!-- Doors band -->
+<section class="k-cream" style="border-top:1px solid #e2e1da;border-bottom:1px solid #e2e1da" aria-labelledby="hf-doors">
+  <div class="k-section"><div class="k-wrap-wide">
+    <div class="k-between">
+      <div class="k-row-sm"><span class="k-num-badge">9</span><h2 id="hf-doors" class="k-h2">Where do you want to start?</h2></div>
+      <p class="k-meta">Each link opens a page everyone shares. The grey line says where it lands.</p>
+    </div>
+    <div class="k-grid-3" style="margin-top:20px">
+      <div class="k-card-pad hf-door">
+        <div class="k-row"><span class="hf-door-ic"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></span><h3 class="k-h3">I want to play</h3></div>
+        <p class="k-small k-muted">Rated weekend tournaments, and clubs that meet most nights somewhere in the state.</p>
+        <ul class="hf-dlinks">
+          <li><a href="#">Tournaments in Louisiana<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>Tournaments · soonest first</span></li>
+          <li><a href="#">Find a club near you<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>Clubs · map and the seven regions</span></li>
+          <li><a href="#">Pairings, standings and results<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>Tournaments · each event's results page</span></li>
+        </ul>
+      </div>
+      <div class="k-card-pad hf-door">
+        <div class="k-row"><span class="hf-door-ic"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg></span><h3 class="k-h3">My child plays</h3></div>
+        <p class="k-small k-muted">Scholastic events, youth programs and a plain-English guide for parents.</p>
+        <ul class="hf-dlinks">
+          <li><a href="#">Your child's first tournament<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>Scholastic · the day, what to bring, terms explained</span></li>
+          <li><a href="#">Scholastic events<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>Scholastic · events for K–12 players</span></li>
+          <li><a href="#">Youth programs and school clubs<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>Scholastic · programs</span></li>
+        </ul>
+      </div>
+      <div class="k-card-pad hf-door">
+        <div class="k-row"><span class="hf-door-ic"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg></span><h3 class="k-h3">I run a club or tournament</h3></div>
+        <p class="k-small k-muted">Keep your club's listing current, list your events and run tournament day here.</p>
+        <ul class="hf-dlinks">
+          <li><a href="#">List or update your club<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>Contact form · club subject already picked</span></li>
+          <li><a href="#">Run a tournament<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>Workspace · sign in as a tournament director</span></li>
+          <li><a href="#">Bylaws &amp; rules<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span>About · Bylaws &amp; rules</span></li>
+        </ul>
+      </div>
+    </div>
+  </div></div>
+</section>
+
+<!-- Results and champions -->
+<section class="k-section" aria-labelledby="hf-res">
+  <div class="k-wrap-wide">
+    <div class="k-between">
+      <div class="k-row-sm"><span class="k-num-badge">10</span><h2 id="hf-res" class="k-h2">Results and champions</h2></div>
+      <div class="k-row"><span class="k-sample">Sample data</span><a class="k-btn k-btn-line" href="#">Past results</a></div>
+    </div>
+    <div class="k-grid-2" style="margin-top:20px">
+      <div class="k-card" style="overflow:hidden">
+        <div class="k-between" style="padding:20px">
+          <div><h3 class="k-h3">Latest results</h3><p class="k-meta">2027 State Scholastic Championship · Sat, Apr 10, 2027 · [City]</p></div>
+          <span class="k-tag k-tag-closed">Final standings</span>
+        </div>
+        <div class="k-tablebox" style="border-radius:0;border-right:0;border-left:0">
+          <table class="k-table">
+            <caption>K–12 section · top 5</caption>
+            <thead><tr><th scope="col" class="k-c">#</th><th scope="col">Player</th><th scope="col" class="k-r">Rating</th><th scope="col" class="k-r">Score</th><th scope="col" class="k-r">Tiebreak</th></tr></thead>
+            <tbody>
+              <tr><td class="k-c k-num">1</td><td class="k-strong">Priya Shah</td><td class="k-r k-mono">1803</td><td class="k-r k-mono k-strong">5</td><td class="k-r k-mono">12½</td></tr>
+              <tr><td class="k-c k-num">2</td><td class="k-strong">Theo Guidry</td><td class="k-r k-mono">1295</td><td class="k-r k-mono k-strong">4</td><td class="k-r k-mono">13</td></tr>
+              <tr><td class="k-c k-num">3</td><td class="k-strong">Rosa Mendez</td><td class="k-r k-mono">1219</td><td class="k-r k-mono k-strong">4</td><td class="k-r k-mono">11½</td></tr>
+              <tr><td class="k-c k-num">4</td><td class="k-strong">Sam Nguyen</td><td class="k-r k-mono">1160</td><td class="k-r k-mono k-strong">3½</td><td class="k-r k-mono">12</td></tr>
+              <tr><td class="k-c k-num">5</td><td class="k-strong">Leo Robichaux</td><td class="k-r k-mono">1004</td><td class="k-r k-mono k-strong">3½</td><td class="k-r k-mono">10½</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="k-stack-sm" style="padding:16px 20px">
+          <p class="k-meta">Tiebreak is modified median, the US Chess default: opponents' combined scores with the highest and lowest dropped. Three more sections: K–8, K–5 and K–3.</p>
+          <div class="k-row"><a class="k-link k-small" href="#">Full crosstable</a><a class="k-link k-small" href="#">All four sections</a></div>
+        </div>
+      </div>
+      <div class="hf-recap">
+        <div class="k-between" style="padding:16px 20px;border-bottom:1px dashed #b9b7ad">
+          <span class="k-label">Recap card</span>
+          <span class="hf-flag">WS10 · waits for the results archive</span>
+        </div>
+        <div style="padding:20px">
+          <div class="k-img" style="height:200px">Photo from the linked recap post</div>
+          <p class="k-meta" style="margin-top:14px">Tue, Apr 13, 2027 · Results</p>
+          <h3 class="k-h3" style="margin-top:4px"><a href="#" style="text-decoration:none">State Scholastic Championship: Priya Shah wins K–12 with 5 of 5</a></h3>
+          <p class="k-small k-muted" style="margin-top:6px">Four sections, one perfect score, and photos from the skittles room. The card appears once a recap post is linked to its tournament.</p>
+          <div class="k-row" style="margin-top:12px"><a class="k-link k-small" href="#">Read the recap</a><a class="k-link k-small" href="#">Photos</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hf-champ" aria-labelledby="hf-champs">
+  <div class="hf-champ-tt" role="presentation"></div>
+  <div class="k-wrap-wide hf-champ-in">
+    <svg width="120" height="120" viewBox="0 0 200 200" role="img" aria-label="Seal: Louisiana Chess Association, since 1915">
+      <defs><path id="hf-seal-arc" d="M26 100a74 74 0 1 1 148 0a74 74 0 1 1-148 0"></path></defs>
+      <circle cx="100" cy="100" r="98" fill="#1a2744"></circle>
+      <circle cx="100" cy="100" r="91" fill="none" stroke="#c8a94a" stroke-width="2"></circle>
+      <circle cx="100" cy="100" r="60" fill="none" stroke="#c8a94a" stroke-width="1.5"></circle>
+      <text fill="#c8a94a" font-family="Geist, ui-sans-serif, sans-serif" font-size="12.5" font-weight="600" letter-spacing="2.4"><textPath href="#hf-seal-arc">LOUISIANA CHESS ASSOCIATION · SINCE 1915 ·</textPath></text>
+      <g transform="translate(64.6 64) scale(.68)" fill="#f7f3e8"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></g>
+    </svg>
+    <div>
+      <div class="k-between">
+        <div><div class="k-row-sm"><p class="hf-clabel">Current state champions</p><span class="k-sample">Sample data</span></div><h2 id="hf-champs" class="k-h2" style="margin-top:4px;color:#ffffff">Louisiana's reigning title holders</h2></div>
+        <a class="k-link-plain" href="#" style="color:#ffffff">State champions honor roll<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+      </div>
+      <div class="hf-cgrid">
+        <div class="hf-cell"><span class="hf-clabel">State Champion · 2026</span><span class="hf-cname">Marcus Landry</span><span class="hf-onnavy-meta">4½ of 5 · Sulphur · Sat–Mon, Sep 5–7</span></div>
+        <div class="hf-cell"><span class="hf-clabel">State Scholastic Champion · 2027</span><span class="hf-cname">Priya Shah</span><span class="hf-onnavy-meta">K–12 · 5 of 5 · Sat, Apr 10</span></div>
+        <div class="hf-cell"><span class="hf-clabel">Paul Morphy Open · 2026</span><span class="hf-cname">Avery Thibodeaux</span><span class="hf-onnavy-meta">Open section · New Orleans</span></div>
+        <div class="hf-cell"><span class="hf-clabel">TOC Qualifier · 2027</span><span class="hf-cname">Rosa Mendez</span><span class="hf-onnavy-meta">K–12 · qualified for the national Tournament of Champions</span></div>
+      </div>
+      <p class="hf-onnavy-meta" style="margin-top:16px">Names are plain text, never links to a player page. The band hides itself when the newest title is more than 13 months old.</p>
+    </div>
+  </div>
+</section>
+
+<!-- News and Facebook -->
+<section class="k-section" aria-labelledby="hf-news">
+  <div class="k-wrap-wide">
+    <div class="k-between"><div class="k-row-sm"><span class="k-num-badge">11</span><h2 id="hf-news" class="k-h2">News</h2></div><a class="k-btn k-btn-line" href="#">All news</a></div>
+    <div class="k-split" style="margin-top:20px">
+      <div class="k-main k-card">
+        <article class="hf-news">
+          <p class="k-meta">Mon, May 10, 2027<br>Tournaments</p>
+          <div class="k-stack-sm" style="gap:4px"><h3 class="k-h4"><a href="#" style="text-decoration:none">Paul Morphy Open: sections, prizes and where to stay</a></h3><p class="k-small k-muted">Four sections over two days in New Orleans. Early entry ends Tue, Jun 1, and LCA members save $10.</p></div>
+        </article>
+        <article class="hf-news">
+          <p class="k-meta">Tue, Apr 13, 2027<br>Results</p>
+          <div class="k-stack-sm" style="gap:4px"><h3 class="k-h4"><a href="#" style="text-decoration:none">2027 State Scholastic Championship: final standings and photos</a></h3><p class="k-small k-muted">Crosstables for the K–12, K–8, K–5 and K–3 sections, the trophy list and a photo gallery.</p></div>
+        </article>
+        <article class="hf-news">
+          <p class="k-meta">Fri, Apr 2, 2027<br>Board</p>
+          <div class="k-stack-sm" style="gap:4px"><h3 class="k-h4"><a href="#" style="text-decoration:none">Spring board meeting minutes are posted</a></h3><p class="k-small k-muted">Draft minutes from the Sun, Mar 21 meeting, with the treasurer's report and the 2027 calendar.</p></div>
+        </article>
+      </div>
+      <aside class="k-side k-card-pad" aria-labelledby="hf-fb">
+        <h3 id="hf-fb" class="k-h4">From our Facebook page</h3>
+        <div class="hf-fb" style="margin-top:10px"><p class="k-meta">Fri, May 14</p><p class="k-small">Early entry for the Paul Morphy Open ends Tue, Jun 1. Four sections, all ages.</p></div>
+        <div class="hf-fb"><p class="k-meta">Wed, May 12</p><p class="k-small">Photos from last Thursday night at Downriver on Decatur St.</p></div>
+        <a class="k-btn k-btn-soft k-btn-block" href="#" style="margin-top:6px">LCA on Facebook ↗</a>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- Membership band -->
+<section class="k-gold-band k-section" aria-labelledby="hf-join">
+  <div class="k-wrap-wide">
+    <div class="k-split" style="align-items:center">
+      <div class="k-main k-stack">
+        <div>
+          <div class="k-row-sm"><span class="k-num-badge">12</span><p class="k-label-gold">Membership</p></div>
+          <h2 id="hf-join" class="k-h2" style="margin-top:6px">Join the Louisiana Chess Association</h2>
+          <p class="k-body" style="margin-top:6px;color:#3d4556">Members get LCA tournament entry discounts, a member profile, voting rights and online registration.</p>
+        </div>
+        <div class="k-grid-4">
+          <div class="k-card-pad"><p class="k-h4">Adult</p><p style="margin-top:2px"><span class="k-h2">$15</span><span class="k-meta"> per year</span></p><p class="k-meta">For players 18 and up</p></div>
+          <div class="k-card-pad"><p class="k-h4">Scholastic</p><p style="margin-top:2px"><span class="k-h2">$5</span><span class="k-meta"> per year</span></p><p class="k-meta">K–12 students</p></div>
+          <div class="k-card-pad"><p class="k-h4">Family</p><p style="margin-top:2px"><span class="k-h2">$25</span><span class="k-meta"> per year</span></p><p class="k-meta">You + up to 3 children</p></div>
+          <div class="k-card-pad"><p class="k-h4">Senior</p><p style="margin-top:2px"><span class="k-h2">$10</span><span class="k-meta"> per year</span></p><p class="k-meta">65 and up</p></div>
+        </div>
+      </div>
+      <div class="k-side-narrow k-stack-sm" style="max-width:320px">
+        <a class="k-btn k-btn-navy k-btn-lg k-btn-block" href="#">Join LCA</a>
+        <a class="k-btn k-btn-line k-btn-block" href="#">Renew my membership</a>
+        <a class="k-link k-small" href="#" style="margin-top:4px">Am I a member?</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- Decided footer: F1 with F3's trust line -->
+<footer class="hf-foot">
+  <div class="k-wrap-wide hf-foot-grid">
+    <div class="k-stack-sm" style="gap:10px">
+      <div class="hf-foot-brand"><span class="hf-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span><b style="font-size:16px;line-height:1.3">Louisiana Chess Association</b></div>
+      <p class="hf-onnavy-meta">Louisiana's chess community since 1915</p>
+      <p class="hf-onnavy-meta" style="max-width:300px">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+      <div class="k-row-sm" style="margin-top:4px"><a class="k-btn k-btn-gold k-btn-sm" href="#" style="color:#1a2744">Join LCA</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Donate</a></div>
+    </div>
+    <nav aria-labelledby="hf-f1"><h2 id="hf-f1">Play</h2><ul><li><a href="#">Tournaments</a></li><li><a href="#">Scholastic chess</a></li><li><a href="#">State champions</a></li><li><a href="#">Scoresheet scanner</a></li></ul></nav>
+    <nav aria-labelledby="hf-f2"><h2 id="hf-f2">Community</h2><ul><li><a href="#">Clubs</a></li><li><a href="#">Club map</a></li><li><a href="#">List or update your club</a></li><li><a href="#">News</a></li><li><a href="#">LCA on Facebook ↗</a></li></ul></nav>
+    <nav aria-labelledby="hf-f3"><h2 id="hf-f3">About LCA</h2><ul><li><a href="#">About LCA</a></li><li><a href="#">Board &amp; regions</a></li><li><a href="#">Bylaws &amp; rules</a></li><li><a href="#">Minutes</a></li><li><a href="#">Annual meeting</a></li></ul></nav>
+    <nav aria-labelledby="hf-f4"><h2 id="hf-f4">Contact</h2><ul><li><a href="#">Contact form</a></li><li><a href="#">Membership help</a></li><li><a href="#">Website help</a></li><li><a href="#">Donate</a></li></ul></nav>
+  </div>
+  <div class="hf-base">
+    <div class="k-wrap-wide hf-base-in">
+      <p class="hf-onnavy-meta">US Chess state affiliate · Louisiana's chess community since 1915 · <a href="#" style="text-decoration:underline">Bylaws &amp; rules</a> · <a href="#" style="text-decoration:underline">Minutes</a> · Site last updated Mon, May 17, 2027</p>
+      <div class="k-row-sm"><span class="hf-onnavy-meta" id="hf-ap">Appearance:</span><div class="hf-appear" role="radiogroup" aria-labelledby="hf-ap"><button type="button" role="radio" aria-checked="true">System</button><button type="button" role="radio" aria-checked="false">Light</button><button type="button" role="radio" aria-checked="false">Dark</button></div></div>
+    </div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5450}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

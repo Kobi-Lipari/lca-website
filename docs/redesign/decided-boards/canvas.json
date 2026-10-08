@@ -1,0 +1,1743 @@
+{
+ "v": 3,
+ "attachments": {},
+ "boards": {
+  "About-A.dc.html": {
+   "expand": "fill",
+   "h": 3050,
+   "page": "about",
+   "title": "About · A · Transparency hub",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "About-B.dc.html": {
+   "expand": "fill",
+   "h": 3150,
+   "page": "about",
+   "title": "About · B · Board & regions",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "About-C.dc.html": {
+   "expand": "fill",
+   "h": 2900,
+   "page": "about",
+   "title": "About · C · Bylaws & minutes reader",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "About-D.dc.html": {
+   "expand": "fill",
+   "h": 3400,
+   "page": "about",
+   "title": "About · D · Champions & heritage",
+   "w": 1440,
+   "x": 5200,
+   "y": 0
+  },
+  "Account-A.dc.html": {
+   "expand": "fill",
+   "h": 3150,
+   "page": "account",
+   "title": "My LCA · A · Next up",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Account-B.dc.html": {
+   "expand": "fill",
+   "h": 3150,
+   "page": "account",
+   "title": "My LCA · B · Family first",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Account-C.dc.html": {
+   "expand": "fill",
+   "h": 3200,
+   "page": "account",
+   "title": "My LCA · C · One account, many roles",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "Club-A.dc.html": {
+   "expand": "fill",
+   "h": 2850,
+   "page": "club",
+   "title": "Club page · A · Visit-first",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Club-B.dc.html": {
+   "expand": "fill",
+   "h": 2850,
+   "page": "club",
+   "title": "Club page · B · Club mini-site",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Club-C.dc.html": {
+   "expand": "fill",
+   "h": 1950,
+   "page": "club",
+   "title": "Club page · C · Compact profile",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "Clubs-A.dc.html": {
+   "expand": "fill",
+   "h": 2600,
+   "page": "clubs",
+   "title": "Clubs · A · List + map, meeting-first",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Clubs-B.dc.html": {
+   "expand": "fill",
+   "h": 2450,
+   "page": "clubs",
+   "title": "Clubs · B · Where to play this week",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Clubs-C.dc.html": {
+   "expand": "fill",
+   "h": 2600,
+   "page": "clubs",
+   "title": "Clubs · C · Region-first",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "Clubs-D.dc.html": {
+   "expand": "fill",
+   "h": 3100,
+   "page": "clubs",
+   "title": "Clubs · D · Directory cards",
+   "w": 1440,
+   "x": 5200,
+   "y": 0
+  },
+  "Clubs-Phones.dc.html": {
+   "h": 1100,
+   "page": "clubs",
+   "title": "Clubs · on phones",
+   "w": 1960,
+   "x": 6720,
+   "y": 0
+  },
+  "Event-A.dc.html": {
+   "expand": "fill",
+   "h": 4600,
+   "page": "event",
+   "title": "Tournament page · A · Sticky registration card",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Event-B.dc.html": {
+   "expand": "fill",
+   "h": 3000,
+   "page": "event",
+   "title": "Tournament page · B · Championship hub",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Event-C.dc.html": {
+   "h": 2000,
+   "page": "event",
+   "title": "Tournament page · C · Before, during, after",
+   "w": 1960,
+   "x": 3680,
+   "y": 0
+  },
+  "Event-D.dc.html": {
+   "expand": "fill",
+   "h": 4400,
+   "page": "event",
+   "title": "Tournament page · D · Festival microsite",
+   "w": 1440,
+   "x": 5720,
+   "y": 0
+  },
+  "Event-E.dc.html": {
+   "expand": "fill",
+   "h": 2250,
+   "page": "event",
+   "title": "Tournament page · E · Partner event",
+   "w": 1440,
+   "x": 7240,
+   "y": 0
+  },
+  "Event-Phones.dc.html": {
+   "h": 1100,
+   "page": "event",
+   "title": "Tournament page · on phones",
+   "w": 1960,
+   "x": 8760,
+   "y": 0
+  },
+  "Live-A.dc.html": {
+   "h": 1100,
+   "page": "live",
+   "title": "Tournament day · A · My board (phone)",
+   "w": 1500,
+   "x": 640,
+   "y": 0
+  },
+  "Live-B.dc.html": {
+   "expand": "fill",
+   "h": 2200,
+   "page": "live",
+   "title": "Tournament day · B · Pairings page",
+   "w": 1440,
+   "x": 2220,
+   "y": 0
+  },
+  "Live-C.dc.html": {
+   "expand": "fill",
+   "h": 2560,
+   "page": "live",
+   "title": "Tournament day · C · Standings & crosstable",
+   "w": 1440,
+   "x": 3740,
+   "y": 0
+  },
+  "Live-D.dc.html": {
+   "h": 1080,
+   "page": "live",
+   "title": "Tournament day · D · Hall TV mode",
+   "w": 1920,
+   "x": 5260,
+   "y": 0
+  },
+  "Live-E.dc.html": {
+   "h": 1300,
+   "page": "live",
+   "title": "Tournament day · E · Print & QR kit",
+   "w": 3600,
+   "x": 7260,
+   "y": 0
+  },
+  "Looks-1-Heritage-Page.dc.html": {
+   "expand": "fill",
+   "h": 2620,
+   "page": "looks",
+   "title": "1 · Heritage Club — sample page",
+   "w": 1440,
+   "x": 2160,
+   "y": 3100
+  },
+  "Looks-1-Heritage-Tile.dc.html": {
+   "h": 2400,
+   "page": "looks",
+   "title": "1 · Heritage Club — style tile",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Looks-3-Minimal-Page.dc.html": {
+   "expand": "fill",
+   "h": 2560,
+   "page": "looks",
+   "title": "3 · Modern Minimal — sample page",
+   "w": 1440,
+   "x": 5200,
+   "y": 3100
+  },
+  "Looks-3-Minimal-Tile.dc.html": {
+   "h": 2400,
+   "page": "looks",
+   "title": "3 · Modern Minimal — style tile",
+   "w": 1440,
+   "x": 5200,
+   "y": 0
+  },
+  "Looks-6-Scholastic-Page.dc.html": {
+   "expand": "fill",
+   "h": 2950,
+   "page": "looks",
+   "title": "6 · Bright Scholastic — sample page",
+   "w": 1440,
+   "x": 9760,
+   "y": 3100
+  },
+  "Looks-6-Scholastic-Tile.dc.html": {
+   "h": 2400,
+   "page": "looks",
+   "title": "6 · Bright Scholastic — style tile",
+   "w": 1440,
+   "x": 9760,
+   "y": 0
+  },
+  "Looks-7-Broadcast-Page.dc.html": {
+   "expand": "fill",
+   "h": 2900,
+   "page": "looks",
+   "title": "7 · Broadcast Night — sample page",
+   "w": 1440,
+   "x": 11280,
+   "y": 3100
+  },
+  "Looks-7-Broadcast-Tile.dc.html": {
+   "h": 2400,
+   "page": "looks",
+   "title": "7 · Broadcast Night — style tile",
+   "w": 1440,
+   "x": 11280,
+   "y": 0
+  },
+  "Looks-Compare.dc.html": {
+   "h": 1400,
+   "page": "looks",
+   "title": "All 7 looks at a glance",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Main.dc.html": {
+   "h": 2600,
+   "page": "start",
+   "title": "Start here · Overview",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Member-A.dc.html": {
+   "expand": "fill",
+   "h": 2600,
+   "page": "membership",
+   "title": "Membership · A · Which one fits you?",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Member-B.dc.html": {
+   "expand": "fill",
+   "h": 2900,
+   "page": "membership",
+   "title": "Membership · B · Tier cards + what dues fund",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Member-C.dc.html": {
+   "expand": "fill",
+   "h": 2900,
+   "page": "membership",
+   "title": "Giving · C · Donate page",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "Member-D.dc.html": {
+   "h": 1300,
+   "page": "membership",
+   "title": "Membership · D · Digital card",
+   "w": 1960,
+   "x": 5200,
+   "y": 0
+  },
+  "News-A.dc.html": {
+   "expand": "fill",
+   "h": 2460,
+   "page": "news",
+   "title": "News · A · Feature + list",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "News-B.dc.html": {
+   "expand": "fill",
+   "h": 2600,
+   "page": "news",
+   "title": "News · B · Mixed stream",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "News-C.dc.html": {
+   "expand": "fill",
+   "h": 3200,
+   "page": "news",
+   "title": "News · C · Sections",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "News-D.dc.html": {
+   "expand": "fill",
+   "h": 3750,
+   "page": "news",
+   "title": "News · D · Tournament recap template",
+   "w": 1440,
+   "x": 5200,
+   "y": 0
+  },
+  "Reg-A.dc.html": {
+   "h": 1200,
+   "page": "register",
+   "title": "Registration · A · Inside the card",
+   "w": 2000,
+   "x": 640,
+   "y": 0
+  },
+  "Reg-B.dc.html": {
+   "h": 1100,
+   "page": "register",
+   "title": "Registration · B · Step by step (phone)",
+   "w": 2400,
+   "x": 2720,
+   "y": 0
+  },
+  "Reg-C.dc.html": {
+   "expand": "fill",
+   "h": 2700,
+   "page": "register",
+   "title": "Registration · C · Household checkout",
+   "w": 1440,
+   "x": 5200,
+   "y": 0
+  },
+  "Reg-D.dc.html": {
+   "h": 1200,
+   "page": "register",
+   "title": "Registration · D · No-account quick entry",
+   "w": 2000,
+   "x": 6720,
+   "y": 0
+  },
+  "Scan-A.dc.html": {
+   "expand": "fill",
+   "h": 2050,
+   "page": "scanner",
+   "title": "Scanner · A · Photo, moves & board",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Scan-B.dc.html": {
+   "h": 1100,
+   "page": "scanner",
+   "title": "Scanner · B · Phone flow",
+   "w": 1960,
+   "x": 2160,
+   "y": 0
+  },
+  "Scan-C.dc.html": {
+   "h": 1300,
+   "page": "scanner",
+   "title": "Scanner · C · Notation kit (print)",
+   "w": 1900,
+   "x": 4200,
+   "y": 0
+  },
+  "Schol-A.dc.html": {
+   "expand": "fill",
+   "h": 4700,
+   "page": "scholastic",
+   "title": "Scholastic · A · Your child's first tournament",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Schol-B.dc.html": {
+   "expand": "fill",
+   "h": 3600,
+   "page": "scholastic",
+   "title": "Scholastic · B · Pathway & series",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Schol-C.dc.html": {
+   "expand": "fill",
+   "h": 3850,
+   "page": "scholastic",
+   "title": "Scholastic · C · Scholastic hub",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "Schol-Phones.dc.html": {
+   "h": 1100,
+   "page": "scholastic",
+   "title": "Scholastic · on phones",
+   "w": 1960,
+   "x": 5200,
+   "y": 0
+  },
+  "Sources.dc.html": {
+   "h": 4350,
+   "page": "sources",
+   "title": "Research & sources",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Start-Audit.dc.html": {
+   "h": 4200,
+   "page": "start",
+   "title": "Current site · Keep and fix",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "Start-Picks.dc.html": {
+   "h": 3000,
+   "page": "start",
+   "title": "Recommended build · the picks",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Start-Principles.dc.html": {
+   "h": 2000,
+   "page": "start",
+   "title": "Principles & review checklist",
+   "w": 1440,
+   "x": 5200,
+   "y": 0
+  },
+  "Tourn-A.dc.html": {
+   "expand": "fill",
+   "h": 3150,
+   "page": "tournaments",
+   "title": "Tournaments · A · Agenda + filter chips",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Tourn-B.dc.html": {
+   "expand": "fill",
+   "h": 2150,
+   "page": "tournaments",
+   "title": "Tournaments · B · List + preview pane",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Tourn-C.dc.html": {
+   "expand": "fill",
+   "h": 2450,
+   "page": "tournaments",
+   "title": "Tournaments · C · Calendar as navigator",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "Tourn-D.dc.html": {
+   "expand": "fill",
+   "h": 2100,
+   "page": "tournaments",
+   "title": "Tournaments · D · Map view",
+   "w": 1440,
+   "x": 5200,
+   "y": 0
+  },
+  "Tourn-E.dc.html": {
+   "expand": "fill",
+   "h": 2400,
+   "page": "tournaments",
+   "title": "Tournaments · E · Power table",
+   "w": 1440,
+   "x": 6720,
+   "y": 0
+  },
+  "Tourn-Phones.dc.html": {
+   "h": 1100,
+   "page": "tournaments",
+   "title": "Tournaments · on phones",
+   "w": 1960,
+   "x": 8240,
+   "y": 0
+  },
+  "Work-A.dc.html": {
+   "expand": "fill",
+   "h": 2800,
+   "page": "workspace",
+   "title": "Workspace · A · TD event-day console",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Work-B.dc.html": {
+   "expand": "fill",
+   "h": 2400,
+   "page": "workspace",
+   "title": "Workspace · B · Club rep workspace",
+   "w": 1440,
+   "x": 2160,
+   "y": 0
+  },
+  "Work-C.dc.html": {
+   "expand": "fill",
+   "h": 2150,
+   "page": "workspace",
+   "title": "Admin · C · Admin home & queues",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
+  "Work-D.dc.html": {
+   "expand": "fill",
+   "h": 2400,
+   "page": "workspace",
+   "title": "Workspace · D · New tournament setup",
+   "w": 1440,
+   "x": 5200,
+   "y": 0
+  },
+  "Home-Final.dc.html": {
+   "x": 640,
+   "y": 0,
+   "w": 1440,
+   "h": 5450,
+   "title": "Home · decided (A + search band, Register mode)",
+   "page": "home",
+   "expand": "fill"
+  },
+  "Home-Hero-Modes.dc.html": {
+   "x": 2160,
+   "y": 0,
+   "w": 1440,
+   "h": 9750,
+   "title": "Home · the hero in every other mode",
+   "page": "home"
+  },
+  "Home-Final-Phones.dc.html": {
+   "x": 3680,
+   "y": 0,
+   "w": 1960,
+   "h": 2750,
+   "title": "Home · on phones (decided)",
+   "page": "home"
+  },
+  "Looks-Applied.dc.html": {
+   "x": 3680,
+   "y": 0,
+   "w": 1440,
+   "h": 7050,
+   "title": "Where each look applies · decided",
+   "page": "looks"
+  },
+  "Nav-IA-Final.dc.html": {
+   "x": 640,
+   "y": 0,
+   "w": 1440,
+   "h": 4900,
+   "title": "Site structure · decided (structure 1)",
+   "page": "nav"
+  },
+  "Nav-Header-Final.dc.html": {
+   "x": 2160,
+   "y": 0,
+   "w": 1440,
+   "h": 8650,
+   "title": "Header · decided (H1 + H4 search + H5 event strip)",
+   "page": "nav"
+  },
+  "Nav-Mobile-Final.dc.html": {
+   "x": 3680,
+   "y": 0,
+   "w": 1960,
+   "h": 4450,
+   "title": "Mobile nav · decided (M2 tab bar + M4 event day)",
+   "page": "nav"
+  },
+  "Nav-Footer-Final.dc.html": {
+   "x": 5720,
+   "y": 0,
+   "w": 1440,
+   "h": 2850,
+   "title": "Footer · decided (F1 + trust line)",
+   "page": "nav"
+  }
+ },
+ "createdOnFiles": {
+  "at": "2026-10-06T11:58:00Z",
+  "v": 1
+ },
+ "designSystems": [],
+ "launch": {
+  "page": "start",
+  "view": "canvas"
+ },
+ "notes": {
+  "b_about": {
+   "fill": "teal",
+   "page": "about",
+   "text": "A volunteer board earns trust by being visibly current: next meeting, minutes, bylaws as web pages (PDF as a download), 'Last updated' stamps, a yearly financial summary. Only 4% of nonprofit sites say where money goes (NN/g).",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_account": {
+   "fill": "teal",
+   "page": "account",
+   "text": "Dashboards should show status and the next action at a glance: membership expiry, upcoming entries, payment pending, US Chess expiring before an event (NN/g, Baymard). One login can be member + parent + club rep + TD + board — sections appear by role, no mode switch.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_club": {
+   "fill": "teal",
+   "page": "club",
+   "text": "For most Louisiana clubs the LCA club page is their only web presence. A first-time visitor needs two answers before anything else: when do you meet, and what happens on my first visit (parkrun, Downriver).",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_clubs": {
+   "fill": "teal",
+   "page": "clubs",
+   "text": "With the map beside the list, 95% of testers used it; on list-only sites 65% never found the map (Baymard). Lead club cards with WHEN they meet. 7 of 25 clubs show no schedule today — a 'last confirmed' stamp and 'report outdated info' keep volunteer listings honest (NC Chess).",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_event": {
+   "fill": "teal",
+   "page": "event",
+   "text": "On phones the Register card currently renders after the entire player list. Recommended mobile order: title → key facts → Register + price → sections & fees → schedule → prizes → entries → venue → rules. Show facts as structure, not shorthand prose (US Chess TLAs are the cautionary tale).",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_home": {
+   "fill": "teal",
+   "page": "home",
+   "text": "A homepage must say who LCA is, give the top 3–4 tasks a clear start, show real dated content, and keep motion minimal (NN/g). The current 5-second slideshow has no pause control, which fails WCAG 2.2.2 (Level A) — all six options replace it.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_live": {
+   "fill": "teal",
+   "page": "live",
+   "text": "At the venue, players check pairings on phones in a crowd. Find-my-name, my board pinned (and my kids'), 'Updated 2 min ago', bigger text. Real tables with a frozen Player column; results as letter + color. QR codes on the wall replace the print scramble (Chess67's Campbell story).",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_looks": {
+   "fill": "teal",
+   "page": "looks",
+   "text": "Seven complete looks on the same brand (navy #1a2744 + gold #c8a94a). Top row: style tiles (type, color, components, chess data). Bottom row: the same sample page in each look, so you compare like with like. Gold works as text only on navy (6.5:1); on white it fails (2.3:1), so each look has a darker gold for light grounds.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_membership": {
+   "fill": "teal",
+   "page": "membership",
+   "text": "LCA tiers depend on who you are (adult, K–12, family, 65+), not on upgrading — so lead with 'Which one fits you?'. Family $25 equals Adult + 2 Scholastic; it only saves money with 3 children. There is no visible Donate entry point on the site today.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_nav": {
+   "fill": "teal",
+   "page": "nav",
+   "text": "Evidence: visible desktop nav beats hidden menus (NN/g: hamburger used 27% of the time vs ~50% for visible links). Audience labels (Parents, Players) work as homepage entry points, not as the main nav (NN/g, GOV.UK). Donate · Log in · Join top-right, same order on every page (WCAG 3.2.6).",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_news": {
+   "fill": "teal",
+   "page": "news",
+   "text": "Date every item. Rows scan faster than cards for chronological feeds (NN/g). 'From the clubs' is switched off today and Facebook posts are pulled server-side. Results recaps with named winners turn events into community stories.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_register": {
+   "fill": "teal",
+   "page": "register",
+   "text": "Baymard: forced account creation causes 18% of checkout abandonment (24% in 2022) and surprise costs 40%. GOV.UK: ask eligibility first, end with check-your-answers, confirm with what happens next. One checkout for a whole family is LCA's edge over KingRegistration.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_scanner": {
+   "fill": "teal",
+   "page": "scanner",
+   "text": "The scanner is live (photo → moves → lichess). Gaps: nothing is saved, no board while correcting, the photo can't be seen next to the moves. Chess67 now sells a scanner with photo and moves side by side.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_scholastic": {
+   "fill": "teal",
+   "page": "scholastic",
+   "text": "Scholastic families are LCA's biggest group of newcomers — often not chess players, often on phones. Explain jargon inline (G/30+5, section, bye), draw the tournament-day timeline, and say plainly what LCA collects about kids.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_sources": {
+   "fill": "teal",
+   "page": "sources",
+   "text": "Every source behind this board, grouped: peer federations, tournament platforms, clubs and chess brands, cross-domain sites, evidence (NN/g, Baymard, GOV.UK, USWDS, WCAG 2.2), type and visual references, plus the LCA codebase inventory.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_start": {
+   "fill": "teal",
+   "page": "start",
+   "text": "How to use this board: start with the overview and the recommended picks beside it, then flip pages with the page menu. The implementation brief (REDESIGN_SPEC.md) turns the picks into buildable work. Every option has a grey note underneath: What / Borrowed from / Trade-off. Options are built to mix and match, so pick per section, then pick one look. Invented details are badged Sample data; everything else is real LCA data.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_tournaments": {
+   "fill": "teal",
+   "page": "tournaments",
+   "text": "A dated list beats a month grid for finding dates (Hund et al. 2014). Show applied filters as removable chips with a visible result count; keep filters in the URL (Baymard, NN/g). Mix of LCA-run events and Gulf South partner listings — make the source obvious. Event names and dates here are real, from the live feed.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "b_workspace": {
+   "fill": "teal",
+   "page": "workspace",
+   "text": "Directors work on laptops and tablets at the venue. Today's manage page has 5 tabs and ~11 cards; its tables need 640–840px and scroll sideways on a tablet. Priorities: check-in speed, pairing, results entry, publishing, printing.",
+   "w": 560,
+   "x": 0,
+   "y": 0
+  },
+  "s_About-A": {
+   "fill": "gray",
+   "page": "about",
+   "text": "What: Transparency hub for About: who LCA is (real stats), a next-board-meeting card (Tue, Nov 10 · agenda · add to calendar), bylaws as a web page with per-article \"Changed\" flags, a records list where every item carries a status and last-updated date, a plain-language minutes recap tagged Notable/Routine, \"write to a seat…\n\nBorrowed from: Chicago Councilmatic (next-meeting card + plain-language recap), NN/g and data.gov (minutes and bylaws as web pages with \"Last…\n\nTrade-off: Only builds trust if the Secretary and Treasurer keep it current; stale stamps or empty [Amount] cells would advertise neglect, and every meeting needs a plain-language recap.",
+   "w": 760,
+   "x": 640,
+   "y": 3110
+  },
+  "s_About-B": {
+   "fill": "gray",
+   "page": "about",
+   "text": "What: A board page built around \"who do I call\": a \"Who represents me?\" lookup (club, city or ZIP) that routes a message to the right rep and falls back to the whole board when the seat is open; officer cards with role, term, one-line duties and Message…\n\nBorrowed from: board as two groups with open seats labeled (Michigan, Texas); regional directors list (Texas)…\n\nTrade-off: Empty seats and \"none listed yet\" for quiet regions become very visible, and the lookup only works once clubs have confirmed regions (blank in live data today).",
+   "w": 760,
+   "x": 2160,
+   "y": 3210
+  },
+  "s_About-C": {
+   "fill": "gray",
+   "page": "about",
+   "text": "What: Governance as a real reading experience — the bylaws are the official web text with a sticky contents rail, \"In plain words\" summaries, redlines that show exactly what each vote changed, a per-version change log…\n\nBorrowed from: Chicago Councilmatic (searchable decisions, plain summaries, subscribe), Keep a Changelog (Added/Changed/Removed/Fixed per…\n\nTrade-off: The secretary has to enter motions and section versions in a structured way after each meeting instead of uploading one PDF; if that slips, the register and change log go stale.",
+   "w": 760,
+   "x": 3680,
+   "y": 2960
+  },
+  "s_About-D": {
+   "fill": "gray",
+   "page": "about",
+   "text": "What: A living heritage page — a Reigning champions band (the same data feeds a one-line homepage band), an honor roll filtered by title with \"Show all N years\" and player pages behind every name, a single timeline from Morphy's birth (1837) through LCA's 1915 start to Sulphur 2026 beside a step-through Opera Game board…\n\nBorrowed from: North Carolina Chess Association and Irish Chess Union (current-champions band, filterable champions table by year and title…\n\nTrade-off: Most of the value depends on someone digitising old records and moderating submissions; until the archive grows, many rows and timeline points stay as gaps (which the page shows openly rather than hiding).",
+   "w": 760,
+   "x": 5200,
+   "y": 3460
+  },
+  "s_Account-A": {
+   "fill": "gray",
+   "page": "account",
+   "text": "What: \"Next up\" dashboard for an adult member (Avery): a Needs-attention row (unpaid entry before the early-entry deadline, US Chess membership ending before an entered event, LCA membership ending in 21 days), then one date-ordered timeline that mixes entries, saved events (LCA and partner), deadlines and the home club's nights…\n\nBorrowed from: NN/g + Baymard (current status and next action first; tracker), KingRegistration (US Chess expiry flagged against the event…\n\nTrade-off: Showing saved events and club nights alongside entries makes a long page for active players, and the nightly US Chess check depends on lookups that can be slow or rate-limited.",
+   "w": 760,
+   "x": 640,
+   "y": 3210
+  },
+  "s_Account-B": {
+   "fill": "gray",
+   "page": "account",
+   "text": "What: Parent-first dashboard for Danielle: household header with everyone's chips, two needs-attention items (Leo has no US Chess ID before his first event; Maya's bye waiting on the director), one card per person (next events, section, payment, US Chess status, kid-sized milestone…\n\nBorrowed from: AskFRED / Chess67 / onlineregistration.cc \"Who's playing?\" household picker, ChessRoster (one section panel per player…\n\nTrade-off: The day view only shines on event days and needs pairings published through the site in real time; the rest of the year it is a preview, and the page is long for families with three kids.",
+   "w": 760,
+   "x": 2160,
+   "y": 3210
+  },
+  "s_Account-C": {
+   "fill": "gray",
+   "page": "account",
+   "text": "What: One login, many roles (Chris: member, parent, club rep, tournament director, board rep) with no mode switch: role chips at the top name every role and jump to its section; a single \"Today across your roles\" list merges tasks with a worded role label (US Chess expiries among entrants, a bye request to approve, a board vote…\n\nBorrowed from: NN/g on personalization and modes (accurate role-based sections, no switcher), GOV.UK task list (status in words)…\n\nTrade-off: The page grows with every role, so a heavy volunteer gets a long scroll; the merged Today list needs careful ranking or one role's noise drowns the rest.",
+   "w": 760,
+   "x": 3680,
+   "y": 3260
+  },
+  "s_Club-A": {
+   "fill": "gray",
+   "page": "club",
+   "text": "What: Visit-first Downriver Chess Club page: \"Tonight, 7:00 PM · Mon, Oct 5\" as the headline, Turtle Bay (1119 Decatur St) with a mini map and honest access notes (two flights of stairs, a bar, parking placeholder), cost and G/15 in plain words, a four-step \"Your first visit\" story with a before-you-go card…\n\nBorrowed from: Downriver Chess (its \"Your first visit!\" story, honest Turtle Bay notes, no club night on Saints games)…\n\nTrade-off: Downriver is the richest case; most of the 25 clubs can't supply venue notes, first-visit copy or photos, so their pages would be mostly brackets unless paired with a compact fallback (Club-C).",
+   "w": 760,
+   "x": 640,
+   "y": 2910
+  },
+  "s_Club-B": {
+   "fill": "gray",
+   "page": "club",
+   "text": "What: A club-branded mini-site for Baton Rouge Chess Club. It has a colour band and tint, a logo slot, Follow and Add to calendar, and a \"Next at the club\" card built from both weekly nights. Anchor tabs lead to About (two ways to play, first-visit Q&A, a two-venue map, facts)…\n\nBorrowed from: Strava clubs (club page with events, posts and a weekly leaderboard; join/follow), Downriver (\"Your first visit\" questions)…\n\nTrade-off: It only pays off if the club rep keeps posting; with sparse content the tabs look empty (Club-C is the fallback). The leaderboard needs a results archive matched by US Chess ID, and some players won't want to be ranked, hence the opt-out.",
+   "w": 760,
+   "x": 2160,
+   "y": 2910
+  },
+  "s_Club-C": {
+   "fill": "gray",
+   "page": "club",
+   "text": "What: A compact, honest profile for a club with little info (Gonzales Chess Club). A \"2 of 7 details\" meter puts \"What we know\" (missing facts stated plainly, each with an Add link) beside a \"Help us complete this listing\" form that takes a structured schedule (day, repeat rule, time, venue, cost, good-for, contact…\n\nBorrowed from: NC Chess Association (freshness loop: Last confirmed, report/complete info, nearby clubs…\n\nTrade-off: The page asks visitors for data, and unverified suggestions need a volunteer to review them. Without that, the queue goes stale and the page stays empty. It's also less inviting than a full club page, by design.",
+   "w": 760,
+   "x": 3680,
+   "y": 2010
+  },
+  "s_Clubs-A": {
+   "fill": "gray",
+   "page": "clubs",
+   "text": "What: List and map side by side with lettered pins linked to the rows. Each row starts with when the club meets and a computed \"Tonight\" or next date, then name, venue and tags. Day and \"Good for\" chips filter list and pins together, and every row shows a Confirmed stamp or a Needs-check flag.\n\nBorrowed from: Baymard (map beside the list), NC Chess Association (Last confirmed + Report outdated info), Seattle tags (quick filter chips)…\n\nTrade-off: Every club needs a structured schedule and a confirmed date before the page works, and 25 rows make a long page at 1440px (about 2600px tall).",
+   "w": 760,
+   "x": 640,
+   "y": 2660
+  },
+  "s_Clubs-B": {
+   "fill": "gray",
+   "page": "clubs",
+   "text": "What: A statewide Monday–Sunday timetable of all 19 real meetings this week, with days as columns and morning/afternoon/evening as rows. A navy \"Tonight\" panel with a small map of tonight's clubs comes first.\n\nBorrowed from: Saint Louis, Columbia and Downriver (statewide weekly grid; Downriver's real \"no play on Saints game nights\" skip rule)…\n\nTrade-off: Clubs without a structured schedule (7 not listed, plus 3 monthly or seasonal) drop off the grid into side lists, and the 8-column table scrolls sideways on phones, where the Tonight panel does most of the work.",
+   "w": 760,
+   "x": 2160,
+   "y": 2510
+  },
+  "s_Clubs-C": {
+   "fill": "gray",
+   "page": "clubs",
+   "text": "What: The 7 official regions as sections, each with a mini-map cropped to its clubs, its board seat (a rep with a Message button, or \"Seat open · Volunteer\", which also flags listings that need a check), its clubs with meeting lines, and its upcoming tournaments.\n\nBorrowed from: NC Chess Association (region chips with counts, cards grouped by region, clubs keep their own entries)…\n\nTrade-off: All 25 clubs must be assigned to a region first (blank in live data) and reps recruited. People near a border (Hammond, Picayune) may look in the wrong section, and cross-region questions like \"who meets Tuesday?\" are harder than in A or B.",
+   "w": 760,
+   "x": 3680,
+   "y": 2660
+  },
+  "s_Clubs-D": {
+   "fill": "gray",
+   "page": "clubs",
+   "text": "What: Directory of all 25 real clubs as A–Z cards (logo slot or initials, club-colour dot, meeting day/time and venue, time control in plain words, up to three tags, \"Confirmed\" month) with search, a region mini-map and region list with counts, quick chips with live counts (Meets today 6, Weekends, Kids welcome, Rated, Free…\n\nBorrowed from: North Carolina Chess Association (region chips with counts, club cards, \"Last confirmed\" + \"Report outdated info\")…\n\nTrade-off: 25 cards make a long scroll and shrink geography to a mini-map; most cards will show initials rather than logos; an A–Z bar is heavy for 25 clubs.",
+   "w": 760,
+   "x": 5200,
+   "y": 3160
+  },
+  "s_Clubs-Phones": {
+   "fill": "gray",
+   "page": "clubs",
+   "text": "What: The clubs directory on a phone in four states: a list sorted by next meeting where each row leads with when (\"On now · until 5:00 PM\", \"Tonight 5:30 PM\"), with \"Confirmed Sep 2026 · Report outdated info\" and a floating Map button…\n\nBorrowed from: Airbnb (linked pins), Yelp (\"Search this area\" and the list/map toggle), Baymard (map findability on list-first sites…\n\nTrade-off: Sorting by next meeting needs every club's schedule as structured data (7 clubs have none and drop to the end). Day columns show only about two days at a time, so a statewide glance needs swipes.",
+   "w": 760,
+   "x": 6720,
+   "y": 1160
+  },
+  "s_Event-A": {
+   "fill": "gray",
+   "page": "event",
+   "text": "What: 2027 Paul Morphy Open (Sample details) with fact tiles that translate chess shorthand, a sticky registration card (38 of 60, section picker, early/regular/late ladder with dates, member price, Register / Register my family, plus the button's other states: opens-remind, waitlist, registered, live, final)…\n\nBorrowed from: Luma (sticky two-column card, button states, \"38 registered — names and 36 others\"), Chess67 / ChessRoster (registration card…\n\nTrade-off: Very long page that needs a lot of TD-entered data per event (caps, price dates, venue notes); a public rating-sorted entry list puts kids' names and ratings on the page (normal at rated events, but parents notice).",
+   "w": 760,
+   "x": 640,
+   "y": 4660
+  },
+  "s_Event-B": {
+   "fill": "gray",
+   "page": "event",
+   "text": "What: Flagship hub for the 2027 Louisiana State Championship. It has a navy banner with a countdown and \"23 of 160 registered\", sticky tabs (Overview · Sections & prizes · Entries · Pairings · Standings · Hotel & travel · Past champions) and a live-strip slot that appears only Sep 4–6.\n\nBorrowed from: Grand Chess Tour / FIDE Candidates (event tabs as a mini-microsite), Tata Steel Chess (countdown)…\n\nTrade-off: A lot of page for one weekend a year. Pairings and Standings sit empty for 11 months, and volunteers must feed in the hotel, meeting room and agenda details or the hub looks half-built.",
+   "w": 760,
+   "x": 2160,
+   "y": 3060
+  },
+  "s_Event-C": {
+   "fill": "gray",
+   "page": "event",
+   "text": "What: The same 2027 Paul Morphy Open page at three moments, side by side. Before (Tue, Jun 1): price today, how full each section is, who's coming, and Register in the phone bar. During (Sat, Jun 12, 7:40 PM, live Round 3): a \"Your board\" card, pairings by section, TD notes, round alerts and a site-wide live banner.\n\nBorrowed from: Marshall / Columbia / Norway Chess (live mode via the site banner), start.gg and Chesstide (round and check-in banners)…\n\nTrade-off: The automatic switch is only as good as the data. A late result entry or a section that finishes hours after the others leaves the page in the wrong mode, so TDs need an override and the edge cases need testing.",
+   "w": 760,
+   "x": 3680,
+   "y": 2060
+  },
+  "s_Event-D": {
+   "fill": "gray",
+   "page": "event",
+   "text": "What: Festival microsite for the Paul Morphy Open + Morphy Scholastic + Friday Night Blitz (Sample, Fri–Sun, Jun 11–13, 2027): sticky festival bar, photo hero with countdown and \"112 players registered across 3 events\", all three events with sections, eligibility as one yes/no box, fees and \"X of Y\", an Open + Blitz bundle…\n\nBorrowed from: London Chess Classic and the Ken Ferguson Memorial (festival grouping with side events)…\n\nTrade-off: Pays off for one or two flagship weekends a year and needs a volunteer for hotel, sponsor, speaker and venue content; a second event template to maintain.",
+   "w": 760,
+   "x": 5720,
+   "y": 4460
+  },
+  "s_Event-E": {
+   "fill": "gray",
+   "page": "event",
+   "text": "What: Internal LCA page for a real clearinghouse listing: Mississippi State Championship, Sat–Sun, Oct 17–18, Canton, MS, Mississippi Chess Association. It has one gold \"Register on organizer site\" exit and a facts card with the same fields in the same order on every partner event, which says plainly what the feed lacks (fees…\n\nBorrowed from: NC Chess Association (internal pages for clearinghouse events, consistent facts card, \"Register on organizer site ↗\"…\n\nTrade-off: Partner pages are thin by nature (no fees or status in the feed), and the drive times and change alerts depend on geocoding and a reliable daily diff. Every Register click still sends the visitor away.",
+   "w": 760,
+   "x": 7240,
+   "y": 2310
+  },
+  "s_Event-Phones": {
+   "fill": "gray",
+   "page": "event",
+   "text": "What: The event page on a phone with a sticky bottom Register bar in three states (\"$40 early · Register · $40\", then \"Registered · Change section or byes\"), the top of the 2027 Paul Morphy Open above the fold (weekday dates, plain-language G/90+30, 38 of 60, early/regular/late ladder)…\n\nBorrowed from: Luma, Meetup and Dice (one action button whose state changes: Register / Registered / Join waitlist / Closed)…\n\nTrade-off: A fixed bar permanently takes about 90 px of a small screen and has to be kept out of the way of the in-page tabs. Listing young players by first name and last initial departs from full-name entry lists some players expect.",
+   "w": 760,
+   "x": 8760,
+   "y": 1160
+  },
+  "s_Live-A": {
+   "fill": "gray",
+   "page": "live",
+   "text": "What: Three phones across one Saturday evening (all Sample data, matching Live-D's Round 3). (1) The round-ready banner, then find-your-board by typing a few letters, with a follow star on each match. (2) A pinned \"Board 7 · You have White · vs Sam Nguyen 1650 · starts 7:00 PM\" card in big type, with a text-size toggle…\n\nBorrowed from: Chess67 (round-posted message \"You are playing White against … on board 4\"), start.gg / melee.gg (pinned \"your board\" card)…\n\nTrade-off: Results reported by players need the opponent's confirmation plus a TD review queue, or disputes move from the TD table to the website. Alerts only help if the TD publishes pairings on the site the moment they're made.",
+   "w": 760,
+   "x": 640,
+   "y": 1160
+  },
+  "s_Live-B": {
+   "fill": "gray",
+   "page": "live",
+   "text": "What: The main live pairings page, shown at 8:41 PM Saturday with Round 3 in progress and 5 of 13 U1800 results in. It has round tabs and section chips with counts, type-to-find (it highlights the matching row), by-board or A–Z order, a text-size toggle remembered on the device, and \"Updated 1 min ago\" with refresh every 60 s.\n\nBorrowed from: IRLchess / SwissSys (board rows with scores, \"Bd · White (2½) · result · Black\"), SwissSys (by-board and alphabetical orders)…\n\nTrade-off: One page for every section means long scrolling at big events. Collapsing the other sections keeps it short but hides boards that spectators may expect to see.",
+   "w": 760,
+   "x": 2220,
+   "y": 2260
+  },
+  "s_Live-C": {
+   "fill": "gray",
+   "page": "live",
+   "text": "What: Final U1800 results (Sample data, internally consistent with Live-D's Round 3). One place-ordered \"standings + crosstable\" table in SwissSys style. Round cells read like \"W ○ 17\": letter, tint and a hollow (White) or filled (Black) dot, so colour is never the only signal. Scores use ½.\n\nBorrowed from: ChessRoster / SwissSys (standings with W17 / L2 / D3 / H / B / U cells and a prize column…\n\nTrade-off: The combined table is wide (14 columns) and dense. On phones it leans on the column chooser and the player card, and opponent pairing numbers need tap-to-jump to feel friendly.",
+   "w": 760,
+   "x": 3740,
+   "y": 2620
+  },
+  "s_Live-D": {
+   "fill": "gray",
+   "page": "live",
+   "text": "What: Hall TV screen for the 2027 Paul Morphy Open (Sample): Round 3 U1800 pairings in two big columns (colour, name, rating, points going in), round start with countdown and posted time, byes spelled out, a QR to the phone view (\"Your board, on your phone\"), a round timeline…\n\nBorrowed from: ChessRoster (/live TV mode cycling pairings and standings), Chesstide / Chess-Results / Chess67's Campbell story (hall QR to the…\n\nTrade-off: Only for LCA-run events paired on the site, and needs a screen plus laptop at the venue; 15-second paging means a player may wait up to a minute for their section.",
+   "w": 760,
+   "x": 5260,
+   "y": 1140
+  },
+  "s_Live-E": {
+   "fill": "gray",
+   "page": "live",
+   "text": "What: Six letter-size sheets (560×725) on a neutral ground, each captioned, all built from the same live data (Sample, consistent with Live-B/C/D). (1) Hall poster with a QR placeholder drawn as an SVG grid, the short link louisianachess.org/morphy27, the round times and \"Phones off and away once clocks start\".\n\nBorrowed from: Chess67 Campbell story (two posted QR codes ended \"the frantic scramble to print\")…\n\nTrade-off: Paper never fully goes away at a volunteer event, and two sources of truth (sheet and site) can drift unless results circled on paper are entered right away. The per-board QR cards add a setup step for whoever lays out the tables.",
+   "w": 760,
+   "x": 7260,
+   "y": 1360
+  },
+  "s_Looks-1-Heritage-Page": {
+   "fill": "gray",
+   "page": "looks",
+   "text": "What: The shared sample page set as a printed club program: cream header with Caslon wordmark, small-caps nav and a thick–thin rule; \"Lafayette Open 2026\" hero with a When/Where/Format/Hosted-by ledger and a navy–cream duotone photo in a cream mat; a ruled \"since 1915 · 300+ · 25+ · 7\" band…\n\nBorrowed from: The Masters (leaderboard-first, honor-board standings), Marshall Chess Club (history told in copy, plain interface)…\n\nTrade-off: Calm and trustworthy but slow-feeling: no live state, and the duotone dulls photos that sell scholastic events; the serif-heavy header needs care at phone widths.",
+   "w": 760,
+   "x": 2160,
+   "y": 5780
+  },
+  "s_Looks-1-Heritage-Tile": {
+   "fill": "gray",
+   "maxH": 560,
+   "page": "looks",
+   "text": "What: Style tile for \"Heritage Club — since 1915\": Libre Caslon Display headlines, Source Serif 4 text with true small caps and tabular figures, IBM Plex Mono for notation; cream paper, navy ink, gold only for rules/seals/text on navy; a round seal built from the rook-shaped mark…\n\nBorrowed from: Pentagram's World Chess identity (\"a study, not a stage\": wood, brass, paper), Marshall Chess Club (heritage from copy and type…\n\nTrade-off: Weakest at fast-changing live data, and serif small caps get fussy in dense admin/workspace UI; brand gold can never be text on cream (2.05:1), so it recedes to rules and seals.",
+   "w": 760,
+   "x": 2160,
+   "y": 2460
+  },
+  "s_Looks-3-Minimal-Page": {
+   "fill": "gray",
+   "page": "looks",
+   "text": "What: The sample homepage in Modern Tech-Minimal, matched to the published tile: a sticky 92%-navy glass header with ⌘K search; a next-event hero on the 8-column a–h / 8–1 dot grid with a navy-to-gold duotone photo; events as a quiet table with \"in N days\"; a Mon–Sat club agenda; standings with W/D/L chips and a fixed Player column…\n\nBorrowed from: Vercel's Geist design system (Geist + Geist Mono, 6/12px radii), Linear (lists as quiet tables, almost no motion)…\n\nTrade-off: The calmest and cheapest of the seven, and the most generic. Only coordinates, notation and real data make it read as chess or Louisiana, and the duotone mutes the warmth of the photos.",
+   "w": 760,
+   "x": 5200,
+   "y": 5720
+  },
+  "s_Looks-3-Minimal-Tile": {
+   "fill": "gray",
+   "maxH": 560,
+   "page": "looks",
+   "text": "What: Style tile for \"Modern Tech-Minimal — the club, engineered\": idea / best for / watch out, Geist + Geist Mono + one Instrument Serif accent, light and dark palettes with contrast ratios (gold as fill only on white, #866a1e for gold text), components (navy glass header with ⌘K search, buttons, all status tags, US Chess ID input…\n\nBorrowed from: visual-directions §3 references — Vercel Geist (font, 6/12px radii), Linear (near-black surfaces, quiet tables)…\n\nTrade-off: Closest to today's site and cheapest to adopt, but reads as generic SaaS unless notation, clocks and coordinates carry the chess character.",
+   "w": 760,
+   "x": 5200,
+   "y": 2460
+  },
+  "s_Looks-6-Scholastic-Page": {
+   "fill": "gray",
+   "page": "looks",
+   "text": "What: The shared sample page in Bright Scholastic. A cream header with an app-icon mark and a four-color checker strip; a press-down hero card for the Lafayette Open with a \"5 days to go\" sticker and a ticket-style date…\n\nBorrowed from: Story Time Chess and ChessKid (friendly, parent-first tone), ONY's WSTC identity (checker strip, pawn motif)…\n\nTrade-off: Chunky 48px+ targets and card rows make the same content about 20% taller than the 2400px plan (about 2,900px), and the playful tone fits Scholastic far better than the home page shown here.",
+   "w": 760,
+   "x": 9760,
+   "y": 6110
+  },
+  "s_Looks-6-Scholastic-Tile": {
+   "fill": "gray",
+   "maxH": 560,
+   "page": "looks",
+   "text": "What: Style tile for Bright Scholastic: Baloo 2 / Nunito / Atkinson Hyperlegible Mono on cream with navy as the anchor, one color per section (K–3 coral, K–5 mint, K–8 sky, K–12 grape), press-down buttons with a hard navy shadow, checker-strip section tabs, a pawn-to-queen sign-up track, podium medal circles…\n\nBorrowed from: ONY's World Schools Team Chess Championship identity (pawn mascot, playful marks on strict type), Story Time Chess (rounded…\n\nTrade-off: Five hues can tip into \"toy store\". It only stays credible to coaches if navy carries all text and buttons and color only ever means section, so it works as a section theme, not site-wide.",
+   "w": 760,
+   "x": 9760,
+   "y": 2460
+  },
+  "s_Looks-7-Broadcast-Page": {
+   "fill": "gray",
+   "page": "looks",
+   "text": "What: The shared sample page in Broadcast Night, previewed in event-day mode (labelled \"Event-day preview: Sat, Oct 10, 8:15 PM\" with a Night mode toggle). It has a header status line (\"LIVE · R3 · Lafayette Open 2026 · Round 3 in progress · pairings posted 6:42 PM\")…\n\nBorrowed from: Lichess broadcasts (LIVE and round before the title), Saint Louis Chess Club (\"Open today\" header status line)…\n\nTrade-off: The live hero only fits event days, and this board doesn't show the non-live fallback (a countdown). Also, the Lafayette Open is a partner event, so real live data would exist only for LCA-run events or partners using LCA's pairing engine.",
+   "w": 760,
+   "x": 11280,
+   "y": 6060
+  },
+  "s_Looks-7-Broadcast-Tile": {
+   "fill": "gray",
+   "maxH": 560,
+   "page": "looks",
+   "text": "What: Style tile for Broadcast Night: Barlow Condensed / Barlow / JetBrains Mono (ligatures off), with Big Shoulders Display for round banners only, on navy-black. Gold is the live accent; live red carries dark text only; elevation comes from lighter surfaces.\n\nBorrowed from: Lichess broadcasts (LIVE and round before the title) and the lila source (shrinking 4px clock bar…\n\nTrade-off: Dark, condensed and data-dense is right for a dim hall or a projector but tiring for long reading. Live red is a trap (white on #ff4757 is only 3.34), so this has to stay an event-day theme, not the site default.",
+   "w": 760,
+   "x": 11280,
+   "y": 2460
+  },
+  "s_Looks-Compare": {
+   "fill": "gray",
+   "page": "looks",
+   "text": "What: All seven looks side by side in a 4+3 grid. Each card is set in the look's own fonts (all 21 families come from one css2 request) and shows a 5-swatch strip with hex values, a header slice with its primary \"Join LCA\" button, and \"Registration open\" / \"Live · Round 3\" tags in its style, plus a \"Best for\" line.\n\nBorrowed from: visual-directions.md's seven directions and their references: Pentagram's World Chess identity and Marshall Chess Club…\n\nTrade-off: Each card is a thumbnail, so subtleties such as contrast pairs, motifs and photo treatment only show on the full tiles and pages. Twenty-one families in one request is heavy, but only this board needs it.",
+   "w": 760,
+   "x": 640,
+   "y": 1460
+  },
+  "s_Member-A": {
+   "fill": "gray",
+   "page": "membership",
+   "text": "What: Eligibility first. Two yes/no questions, then a household builder that prices every combination (Family vs Adult/Senior + Scholastic), recommends the cheapest and prints the family math openly (\"Family only saves with three children\"). All four tiers sit below with the fitting one highlighted.\n\nBorrowed from: USA Pickleball and AMNH (separate Join and Renew paths, tiers described by who they cover), Patreon (one highlighted tier…\n\nTrade-off: The questions add a step for people who already know they want Adult, so the plain tier cards must stay one click away. The optimizer's rules (ties, seniors, up to 3 children, adding a child later) must match board policy exactly…",
+   "w": 760,
+   "x": 640,
+   "y": 2660
+  },
+  "s_Member-B": {
+   "fill": "gray",
+   "page": "membership",
+   "text": "What: A conventional, easy-to-scan pricing page built on honest numbers: four tier cards described by who they cover, one highlight with a label that is literally true (\"Best value with 3 children\") and the family math printed on the card.\n\nBorrowed from: Patreon (single highlighted tier), AMNH and USA Pickleball (tiers by who's covered, Renew next to Join)…\n\nTrade-off: Less guided than Member-A, so visitors still pick the tier themselves. The dues breakdown is only credible once the treasurer enters real figures. Auto-renew brings Stripe subscription upkeep (failed cards, cancellations, refunds).",
+   "w": 760,
+   "x": 2160,
+   "y": 2960
+  },
+  "s_Member-C": {
+   "fill": "gray",
+   "page": "membership",
+   "text": "What: A purpose-first /donate page. The donor picks one of three funds (\"Send a Louisiana kid to Nationals\", \"Club equipment\", \"General fund\"), each with its goal and progress, then fills a short sticky form: once or monthly, four amounts plus Other (numeric keypad), a board-approved impact line, cover-the-fee…\n\nBorrowed from: GiveDirectly and Wikimedia (plain framing, amount buttons, a trust fact up front), NN/g nonprofit study (say where donations go…\n\nTrade-off: Fund accounting is ongoing work. The treasurer must log spending per fund for the table and progress bars to stay true, an officer has to review sponsored-entry requests before each event…",
+   "w": 760,
+   "x": 3680,
+   "y": 2960
+  },
+  "s_Member-D": {
+   "fill": "gray",
+   "page": "membership",
+   "text": "What: One membership card in four places (Apple Wallet and Google Wallet passes with front and back, a My LCA card with a pass per child, printable member and family cards) sharing one signed QR that checks people in at the director's table or by scanning the door poster; on event days the pass shows round, board and color.\n\nBorrowed from: Apple Wallet pass layout (header/primary/secondary/auxiliary fields, contact info on the back, navy-and-gold sample)…\n\nTrade-off: The heaviest membership option to run: Apple passes need a paid Apple Developer account plus signing and push certificates, and event-day pass updates need a pass web service. Paper and the in-account card cover anyone who skips the wallet.",
+   "w": 760,
+   "x": 5200,
+   "y": 1360
+  },
+  "s_News-A": {
+   "fill": "gray",
+   "page": "news",
+   "text": "What: News as one featured results story (State Championship, Sample) with section winners, pinned items that expire on a set date, month-grouped dated rows with category chips and counts, a \"From our Facebook page\" rail fed server-side, a \"Post club news\" prompt for reps, \"Load 10 more\" and a yearly archive.\n\nBorrowed from: Substack (Feature hero mode), Chess Scotland (pinned news), NN/g (rows not cards, \"Load more\" instead of infinite scroll)…\n\nTrade-off: The featured slot needs a steady supply of recaps with photos; pins and categories add an editorial job.",
+   "w": 760,
+   "x": 640,
+   "y": 2520
+  },
+  "s_News-B": {
+   "fill": "gray",
+   "page": "news",
+   "text": "What: One chronological stream grouped by day (Today / Yesterday / dates) mixing LCA posts, results (top three), club news with a club-colour dot, Facebook posts and announcements, each with a type label and time; short items read in full, type chips with counts plus a club filter, a pinned announcement, older posts a month at a time.\n\nBorrowed from: The Verge Storystream (short posts between full articles), Ghost's Source theme (single feed with byline and date)…\n\nTrade-off: With 16 of 60 items from Facebook the stream can feel noisy and bury the big recaps; it depends on a merged feed with consistent type labels.",
+   "w": 760,
+   "x": 2160,
+   "y": 2660
+  },
+  "s_News-C": {
+   "fill": "gray",
+   "page": "news",
+   "text": "What: News as five labelled sections (Results, Announcements, From the clubs, Scholastic, Board updates), each a short dated list of 3–4 rows with its own \"See all\", \"In my digest\" toggle and RSS, under a pinned announcement…\n\nBorrowed from: one block per tag with \"Show more\" (Ghost Headline); short grouped teasers ending in \"See all\" (Harvard design system)…\n\nTrade-off: Five sections need steady posting; a thin section (Board updates) looks stale fast, and auto-posted results read flat until someone writes the recap.",
+   "w": 760,
+   "x": 3680,
+   "y": 3260
+  },
+  "s_News-D": {
+   "fill": "gray",
+   "page": "news",
+   "text": "What: A recap article template for every LCA event: a TD-only draft bar (filled in from final standings), headline, byline and fact chips, hero photo and lede, a winner card per section, an Open standings snippet with round-by-round results…\n\nBorrowed from: bylined recap with section winners, ratings, top-board games and rating-report link (Central Florida Chess Club)…\n\nTrade-off: Auto-drafts make recaps cheap but tempt publishing tables with bracketed gaps; someone still has to write the story and pick the game, and photos of kids need a consent and take-down routine.",
+   "w": 760,
+   "x": 5200,
+   "y": 3810
+  },
+  "s_Reg-A": {
+   "fill": "gray",
+   "page": "register",
+   "text": "What: Registration stays inside the event page's sticky card: five states beside a dimmed 2027 Paul Morphy Open page — at rest with prices and 38 of 60; \"Who's playing?\" (Danielle, Maya, Leo, someone else); section + one-box eligibility + byes by round with day and time, ineligible sections greyed with the reason…\n\nBorrowed from: Chess67 / ChessRoster / Luma (registration card in the right column), AskFRED / Chess67 / onlineregistration.cc (\"Who's playing?\"…\n\nTrade-off: A narrow card gets cramped for families with per-player sections and byes, and on phones it becomes a full-height sheet anyway.",
+   "w": 760,
+   "x": 640,
+   "y": 1260
+  },
+  "s_Reg-B": {
+   "fill": "gray",
+   "page": "register",
+   "text": "What: Five phones, one question per screen for Jordan Lee (Sample): who's playing, then which section (only eligible ones, priced with early + member discounts, \"Which section fits me?\"), then byes by round plus an inline US Chess ID check whose expiry warning never blocks…\n\nBorrowed from: GOV.UK (one question per page, check your answers), ChessRoster (step-by-step Player → Section → Byes → Pay)…\n\nTrade-off: More taps than a one-card form for regulars who already know their section, and a separate flow from the event page.",
+   "w": 760,
+   "x": 2720,
+   "y": 1160
+  },
+  "s_Reg-C": {
+   "fill": "gray",
+   "page": "register",
+   "text": "What: A one-page household checkout for the Paul Morphy Open & Morphy Scholastic. Danielle Robichaux ticks saved players (herself, Maya, Leo; no child logins). Each player gets a panel showing only the sections they can enter by rating, one yes/no grade box for grade-capped sections (\"Maya is in 8th grade or below\")…\n\nBorrowed from: ChessRoster (one section panel per player, one fee table, one payment), AskFRED / Chess67 / onlineregistration.cc (\"Who's…\n\nTrade-off: A long page for a single adult entering one section, and the edge cases multiply: playing up, one child's section filling mid-checkout, partial refunds on one payment. Passing on the processing fee is a board policy call.",
+   "w": 760,
+   "x": 5200,
+   "y": 2760
+  },
+  "s_Reg-D": {
+   "fill": "gray",
+   "page": "register",
+   "text": "What: Guest-first quick entry for the Paul Morphy Open, on desktop and two phones. Typing a US Chess ID fills in name, rating and membership expiry (\"Found: Sam Nguyen · 1650 · member through Nov 30, 2027\"), with search by name as a fallback.\n\nBorrowed from: KingRegistration and ECF (US Chess ID or last-name lookup fills name, rating, expiry), Luma (guest-first, account after payment)…\n\nTrade-off: Guest entries scatter player data outside accounts (duplicates, a typo'd email locks someone out of their manage link). It also depends on a reliable US Chess lookup, and players without an ID still need a slower path.",
+   "w": 760,
+   "x": 6720,
+   "y": 1260
+  },
+  "s_Scan-A": {
+   "fill": "gray",
+   "page": "scanner",
+   "text": "What: Desktop review screen for the scanner: scoresheet photo on the left (the move being checked is highlighted on the sheet), a scoresheet-style move list in the centre that labels \"fixed automatically\" (7.\n\nBorrowed from: Chess67 (photo and moves side by side, threefold-repetition flag, one-tap export), lichess (import for analysis…\n\nTrade-off: Saving and publishing games brings storage, consent and juniors'-privacy rules to a feature that keeps nothing today, and TD mode only works when the pairings live in LCA's system; board is 150px taller than planned.",
+   "w": 760,
+   "x": 640,
+   "y": 2110
+  },
+  "s_Scan-B": {
+   "fill": "gray",
+   "page": "scanner",
+   "text": "What: Four phones: (1) capture with a gold guide frame that finds the sheet and shoots when steady, plus upload, back side and the daily scan count; (2) reading, with the photo, a reading line, staged progress (grid, handwriting, legality, pairing match) and moves streaming in with \"9...?\" flagged…\n\nBorrowed from: Chess67 (photo-and-moves scanner with one-tap export), lichess (import for analysis)…\n\nTrade-off: Auto-capture and streamed progress turn today's single request into a camera path plus an async job; checking one flag per screen is slower than editing in a list when a sheet has many flags.",
+   "w": 760,
+   "x": 2160,
+   "y": 1160
+  },
+  "s_Scan-C": {
+   "fill": "gray",
+   "page": "scanner",
+   "text": "What: A printable notation kit that feeds the Scanner, as three Letter sheets: a scan-ready LCA scoresheet (four corner marks, one comb-ticked box per move, 50 moves on the front, fill-in result boxes, and when printed from the pairings a typed header plus a sheet-ID QR), a kids' notation cheat sheet (square names, piece letters…\n\nBorrowed from: Saint Louis Chess Club's free notation workbook and the clubs-brands \"notation kit, Scanner, analysis\" loop…\n\nTrade-off: pre-printed sheets add a print step that needs final pairings, and reading marks, QR and result boxes is new backend work; players will still bring their own sheets, so the scanner must keep working without marks…",
+   "w": 760,
+   "x": 4200,
+   "y": 1360
+  },
+  "s_Schol-A": {
+   "fill": "gray",
+   "page": "scholastic",
+   "text": "What: Parent guide to a first scholastic tournament: quick facts, a numbered jump bar, a check-in-to-awards timeline (Sample times, \"~\" for rounds that start when the last ends), a what-to-bring checklist, chess words in plain English, grade-band sections, costs (real $5 / $25 memberships, Sample entries…\n\nBorrowed from: New South Wales / Virginia / Ireland / England federations (\"Your first tournament\" path)…\n\nTrade-off: Very long and content-heavy; times and fees must stay in sync with real events, and the lunch discount implies asking families something the privacy card doesn't list.",
+   "w": 760,
+   "x": 640,
+   "y": 4760
+  },
+  "s_Schol-B": {
+   "fill": "gray",
+   "page": "scholastic",
+   "text": "What: A five-rung staircase (club night → first scholastic meet → NOLA Youth Chess Grand Prix → LCA State Scholastic → Nationals) whose rungs list real upcoming events, then live Grand Prix standings by grade band with team standings and follow-a-player alerts, auto-awarded milestones…\n\nBorrowed from: pathway ladder with \"qualified via\" (FIDE Candidates); series leaderboard (Downriver youth page, Grand Chess Tour standings)…\n\nTrade-off: The Grand Prix meets are partner-run, so automatic points only work if organizers run meets in LCA's TD tools or upload final standings; public kids' standings and the scoring rules need organizer and parent sign-off.",
+   "w": 760,
+   "x": 2160,
+   "y": 3660
+  },
+  "s_Schol-C": {
+   "fill": "gray",
+   "page": "scholastic",
+   "text": "What: A scholastic hub with an audience switch and three doors (Parents, Coaches, Schools), one merged table of real scholastic events (LCA vs partner sign-up, iCal subscription), a map-based youth program finder over the 5 youth programs plus 3 kid-friendly clubs…\n\nBorrowed from: audience row (Ireland); parent page order (England Football); \"For parents\" as a hub (NN/g)…\n\nTrade-off: It is a long page that tries to serve three audiences at once, and team entry adds a new coach role, parent-confirmation emails and invoice handling for volunteers to support.",
+   "w": 760,
+   "x": 3680,
+   "y": 3910
+  },
+  "s_Schol-Phones": {
+   "fill": "gray",
+   "page": "scholastic",
+   "text": "What: Scholastic for parents on phones at the venue: a live day view of the (real) New Orleans Youth Chess November Meet showing each family child's board and colour, the round in progress on a timeline (check-in to awards, later times marked as estimates), \"Updated 1 min ago\" and an opt-in round-ready alert…\n\nBorrowed from: AskFRED (first-tournament guide with a glossary and a day-of checklist), ChessRoster (\"Round 3 pairings are ready\" banner) and…\n\nTrade-off: The live view only works for LCA-run events where pairings come out of LCA's own engine, not for partner meets. Alerts need push permission (iOS only for home-screen web apps), so email is the fallback.",
+   "w": 760,
+   "x": 5200,
+   "y": 1160
+  },
+  "s_Sources": {
+   "fill": "gray",
+   "page": "sources",
+   "text": "What: One index of every source behind the board, 236 lines in four balanced columns: peer federations (27), tournament platforms (14), clubs and chess brands incl. Louisiana (34), cross-domain sites (53), evidence (62 lines covering NN/g, Baymard, GOV.UK, USWDS, WCAG 2.2, practitioners, platform docs and studies…\n\nBorrowed from: the reference and \"Sites examined\" sections of all seven research files.\n\nTrade-off: dense by design (a lookup page, not a read-through); links are plain text; related evidence articles share a line so ~120 references fit in 62 lines; the board is 1,350px taller than planned to avoid clipping.",
+   "w": 760,
+   "x": 640,
+   "y": 4410
+  },
+  "s_Start-Audit": {
+   "fill": "gray",
+   "page": "start",
+   "text": "What: A factual audit of today's louisianachess.org: a 5-card \"Fix first\" strip (slideshow fails WCAG 2.2.2, 1.54:1 focus ring, 2.28:1 gold text, colour-only status dots, Register card below the player list on phones), then a table of 17 areas with KEEP strengths and FIX problems rated High/Med/Low…\n\nBorrowed from: codebase-inventory.md (page layouts, data model, the 52 UX issues), ux-evidence.md \"Current site\" findings and file map (WCAG…\n\nTrade-off: severity is a reasoned rating from the research, not usage data; it is a snapshot of the code as read (the ticket-reply bug is marked \"worth verifying\"), and the board runs 1,600px taller than planned to fit 17 areas without clipping.",
+   "w": 760,
+   "x": 3680,
+   "y": 4260
+  },
+  "s_Start-Principles": {
+   "fill": "gray",
+   "page": "start",
+   "text": "What: A one-page doc on #fbfaf6. On the left are ten LCA design principles, each with a one-line rule, a concrete example and the checklist rows it maps to, followed by an 8-line \"What the evidence settles\" summary.\n\nBorrowed from: the sources behind ux-evidence.md (NN/g, Baymard, GOV.UK, USWDS, W3C WAI / WCAG 2.2)…\n\nTrade-off: One-line rows compress some nuance, such as the mega-menu rule and the Core Web Vitals targets, so the source checklist stays the reference in a dispute. It is a static checklist, not a scoring tool.",
+   "w": 760,
+   "x": 5200,
+   "y": 2060
+  },
+  "s_Tourn-A": {
+   "fill": "gray",
+   "page": "tournaments",
+   "text": "What: Month-grouped agenda (16 events Oct–Dec, LCA and Gulf South partner) with date blocks, status in words, \"X of Y registered\" with fill bars and deadlines on LCA rows, lighter partner rows that say where entry happens, one row of filter chips (When · Type · Region · Rated · LCA-run / Partner) with removable applied chips…\n\nBorrowed from: the federations research's top idea (one chip row incl. LCA-run vs clearinghouse)…\n\nTrade-off: Partner rows (12 of 16) are thin by necessity and dominate the list; Calendar and Map are only tabs here.",
+   "w": 760,
+   "x": 640,
+   "y": 3210
+  },
+  "s_Tourn-B": {
+   "fill": "gray",
+   "page": "tournaments",
+   "text": "What: Master–detail list. A compact, month-grouped list (16 events) drives a sticky preview pane with the facts, sections and fees, live per-section counts, household checkout and Register (or \"Register on organizer site\"). The selected event is kept in the URL.\n\nBorrowed from: NN/g (side panel instead of a pop-up; lists over cards for comparing), Luma (status slot plus \"N going\"…\n\nTrade-off: the two panes need about 1200px. On tablets and phones the layout falls back to list, then a full-screen sheet, so \"preview without losing your place\" only works on desktop. The pane also gets long for LCA events.",
+   "w": 760,
+   "x": 2160,
+   "y": 2210
+  },
+  "s_Tourn-C": {
+   "fill": "gray",
+   "page": "tournaments",
+   "text": "What: The rebuilt calendar works as a navigator. A 9-month season strip (counts split into LCA and partner) and a clean Monday-first month grid sit beside a week-grouped agenda. In the grid, Sat–Sun events draw as one bar, today is marked, deadline and \"entries open\" ticks show, and a gold frame marks the week in view.\n\nBorrowed from: Hund, Dowell & Mueller 2014 (a list beats a grid across month breaks, so the grid only navigates)…\n\nTrade-off: the two views must stay in sync (scroll-spy moves the grid frame, and tapping a day scrolls the list). Big weekends get busy (Oct 24 stacks three bars). On phones the grid stacks above the list and the side-by-side navigation is lost.",
+   "w": 760,
+   "x": 3680,
+   "y": 2510
+  },
+  "s_Tourn-D": {
+   "fill": "gray",
+   "page": "tournaments",
+   "text": "What: Split map view. On the left, a list sorted by estimated drive time from a typed city or ZIP (or \"Use my location\"). On the right, a Gulf South map: filled pins for LCA events, hollow pins for partner events, clusters, and 100/200/300-mile rings.\n\nBorrowed from: Baymard (split view, map beside the list, never in a pop-up), US Chess tournament search (distance from a ZIP code)…\n\nTrade-off: drive times need geocoding plus a routing API and caching, and they are still estimates. Houston and the Jackson area cluster at state zoom. On phones the map stacks above the list and eats the screen.",
+   "w": 760,
+   "x": 5200,
+   "y": 2160
+  },
+  "s_Tourn-E": {
+   "fill": "gray",
+   "page": "tournaments",
+   "text": "What: A dense, sortable power table of all 25 upcoming events. Date and Event are frozen; the other columns are City · Type · Rating · Sections · Entries/cap (with mini bars) · Status (with the next deadline) · Source. Saved views sit in a tab bar, each with email alerts, its own .ics feed and a shareable URL.\n\nBorrowed from: NAChessHub (dense list columns: date · state · city · type · rating · time control · organizer)…\n\nTrade-off: it's intimidating for newcomers and parents, so it belongs behind the view switch, not as the default. It also exposes how thin the partner listings are (\"Not listed\", \"Not in feed\"), because the feed carries no sections, fees or status.",
+   "w": 760,
+   "x": 6720,
+   "y": 2460
+  },
+  "s_Tourn-Phones": {
+   "fill": "gray",
+   "page": "tournaments",
+   "text": "What: The tournaments list on a phone in four states: a month-grouped agenda with a Louisiana chip applied (removable, \"11 events\", Subscribe); a near-full-height filter sheet (When / Where with state counts and a region row / Type / Where you register / rated-only) whose button shows the live total \"Show 16 events\"…\n\nBorrowed from: Baymard and AllTrails (filter panel with an Apply button and live count, removable applied chips)…\n\nTrade-off: The sheet covers the list while you choose (the live count compensates). The Monday-first grid breaks the US Sunday-first habit to keep weekend events on one line.",
+   "w": 760,
+   "x": 8240,
+   "y": 1160
+  },
+  "s_Work-A": {
+   "fill": "gray",
+   "page": "workspace",
+   "text": "What: Tablet-first event-day console for the TD (The Baton Rouge Classic, Sun 9:14 AM before round 4): navy status band with a countdown, a round rail (check-in, rounds 1–5, prizes, rating report) and an offline/sync badge…\n\nBorrowed from: Chesstide (per-round check-in badges with undo, 1/2/3 + arrow result entry, \"Check-in All\", event poster with QR…\n\nTrade-off: Real-time sync plus offline editing is the hardest engineering on this board (two tablets editing the same round need conflict rules), texting players costs money per message, and player-reported results need a dispute flow TDs trust.",
+   "w": 760,
+   "x": 640,
+   "y": 2860
+  },
+  "s_Work-B": {
+   "fill": "gray",
+   "page": "workspace",
+   "text": "What: Club rep workspace (Houma Chess Club) built around the freshness loop: \"Is this still accurate?\" with one-tap confirm and visitor reports, a Tonight switch (on / moved / cancelled → club page + follower email), a structured-schedule club page editor with live card preview, club news with \"Suggest for LCA News\"…\n\nBorrowed from: NC (\"Last confirmed\" stamp + \"Report outdated info\"), England Football (clubs manage their own listing)…\n\nTrade-off: A lot for a volunteer who logs in twice a year (the emailed one-tap check and the Tonight switch have to carry it), and showing members' renewal status to reps needs an explicit privacy rule; board is 200px taller than planned.",
+   "w": 760,
+   "x": 2160,
+   "y": 2460
+  },
+  "s_Work-C": {
+   "fill": "gray",
+   "page": "workspace",
+   "text": "What: Admin home at /admin with K's grouped sidebar (queues first) and one merged \"Needs attention\" queue — approvals, support tickets, board inbox, failed emails and club-listing gaps — where every row has an owner, waiting time and its own action button…\n\nBorrowed from: Luma and Strava (approval queues; Luma's \"pending approval by the calendar admin\")…\n\nTrade-off: The merged queue needs one item model across five existing systems and someone who actually owns assignment; with two or three admins the owner column may go unused. Board is 150px taller than planned.",
+   "w": 760,
+   "x": 3680,
+   "y": 2210
+  },
+  "s_Work-D": {
+   "fill": "gray",
+   "page": "workspace",
+   "text": "What: One-page setup checklist for an LCA event (Paul Morphy Open 2027, cloned from 2026) with quick-add section presets (Open/U1800/U1400/U1000 or K–12/K–8/K–5/K–3, plus a Morphy Scholastic side event), a fee-ladder timeline with member discount, a schedule check that flags tight turnarounds for G/90+30…\n\nBorrowed from: ChessRoster, Chesstide and onlineregistration.cc (resumable checklist, quick-add section chips, fee tiers, bye rules…\n\nTrade-off: Every step on one page is fast for experienced TDs but less guided than a one-step-at-a-time wizard for a first-time club rep; the schedule check and the dynamic preview image are extra moving parts.",
+   "w": 760,
+   "x": 5200,
+   "y": 2460
+  },
+  "t_about": {
+   "kind": "title1",
+   "maxW": 6000,
+   "page": "about",
+   "text": "About, board & history — 4 options",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_account": {
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "account",
+   "text": "My LCA (account) — 3 options",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_club": {
+   "kind": "title1",
+   "maxW": 4480,
+   "page": "club",
+   "text": "Club page — 3 options",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_clubs": {
+   "kind": "title1",
+   "maxW": 8000,
+   "page": "clubs",
+   "text": "Clubs directory — 4 options + phones",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_event": {
+   "kind": "title1",
+   "maxW": 8000,
+   "page": "event",
+   "text": "Tournament page — 5 options + phones",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_home": {
+   "kind": "title1",
+   "maxW": 8000,
+   "page": "home",
+   "text": "Home · decided: A with the search band, the hero in every mode, phones",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_live": {
+   "kind": "title1",
+   "maxW": 8000,
+   "page": "live",
+   "text": "Tournament day — pairings, standings, TV, print",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_looks": {
+   "kind": "title1",
+   "maxW": 8000,
+   "page": "looks",
+   "text": "Visual directions · decided: Minimal base, Heritage record pages, Broadcast live, Scholastic later",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_membership": {
+   "kind": "title1",
+   "maxW": 6520,
+   "page": "membership",
+   "text": "Membership & giving — 4 options",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_nav": {
+   "kind": "title1",
+   "maxW": 6520,
+   "page": "nav",
+   "text": "Navigation & footer · decided: structure 1, header, phones, footer",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_news": {
+   "kind": "title1",
+   "maxW": 6000,
+   "page": "news",
+   "text": "News & stories — 4 options",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_register": {
+   "kind": "title1",
+   "maxW": 8000,
+   "page": "register",
+   "text": "Registration — 4 options",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_scanner": {
+   "kind": "title1",
+   "maxW": 5460,
+   "page": "scanner",
+   "text": "Scoresheet scanner — 3 options",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_scholastic": {
+   "kind": "title1",
+   "maxW": 6520,
+   "page": "scholastic",
+   "text": "Scholastic & parents — 3 options + phones",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_sources": {
+   "kind": "title1",
+   "maxW": 1440,
+   "page": "sources",
+   "text": "Research & sources",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_start": {
+   "kind": "title1",
+   "maxW": 6000,
+   "page": "start",
+   "text": "LCA website — look & feel options (Oct 2026)",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_tournaments": {
+   "kind": "title1",
+   "maxW": 8000,
+   "page": "tournaments",
+   "text": "Tournaments list — 5 options + phones",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "t_workspace": {
+   "kind": "title1",
+   "maxW": 6000,
+   "page": "workspace",
+   "text": "Workspace & admin — 4 options",
+   "w": 240,
+   "x": 640,
+   "y": -320
+  },
+  "s_Home-Final": {
+   "fill": "gray",
+   "page": "home",
+   "w": 760,
+   "x": 640,
+   "y": 5510,
+   "text": "What: The whole decided homepage at 1440px, as a signed-out visitor sees it on Mon, May 17, 2027. The hero is in Register mode (rung 5) for the Paul Morphy Open, Sat–Sun, Jun 12–13, 2027, and the panel beside it shows the same card when the event is full, when online entry is closed, when you're already entered, and in last call. Under the hero, in order: the identity and search band, the this-week strip (WS09, flagged off), the upcoming six, the three doors, results with the recap card (WS10) and the Champions band, news with the Facebook rail, and membership. The decided header and F1 footer frame the page. Numbers on the page match the 12 notes at the top.\n\nBuilt from: Home-A's hero and page, Home-B's search box (now in the identity band), Home-C's this-week strip (flagged), Home-E's doors band and Home-D's Champions band, with the Heritage accent (thick–thin rule and seal) set in Geist. It replaces Home-A.\n\nOpen questions: Q11, should an open LCA event lead the homepage for 30 days (last call at 14, early-entry overrides at 14 and 7) instead of 21? Default: yes. Q14, should the Results hero and Champions band ship in Phase 0, ahead of WS10's results archive? Default: yes, each behind its own switch."
+  },
+  "s_Home-Hero-Modes": {
+   "fill": "gray",
+   "page": "home",
+   "w": 760,
+   "x": 2160,
+   "y": 9810,
+   "text": "What: The homepage header, hero and identity-and-search band, drawn once for each mode of the hero ladder, in order. The modes are Live (live colour tokens, rounds named in words, Pause updates, the personal \"You're on board 6 with White\" line), Event day, Register last call (with the four primary buttons by registration state as swatches), Results (Heritage rule and seal, winners with ½), Announced (signed in and signed out), Week (WS09), This week in Louisiana, Quiet, and the Clubs floor. Mode 5 Register points to Home-Final. Each mode has a divider giving its trigger, its flag and that frame's \"today\". Each mode has exactly one gold primary in the hero. Partner rows only ever say \"Registers on the organizer's site ↗\".\n\nBuilt from: Home-A hero with the replan's ten-rung ladder, Home-C week view, Home-D results, and Home-B search in the band. Replaces Home-B, Home-C, Home-D, Home-E and Home-F.\n\nOpen questions: Q3, whether the live hero stays public (default: public, with the personal line only for signed-in involved people). Q11, the 30-day register window with a 14-day last-call tier and early-deadline overrides (default: yes). Q14, whether Results and Champions ship in Phase 0 ahead of WS10 (default: yes, behind homeResults and homeChampions)."
+  },
+  "s_Home-Final-Phones": {
+   "fill": "gray",
+   "page": "home",
+   "w": 760,
+   "x": 3680,
+   "y": 2810,
+   "text": "What: the decided homepage at 390px, drawn as eight phones. Each phone has the 56px navy app bar (rook mark, a 44×44 Search button) and the four-tab bar (Tournaments · Clubs · Log in or My LCA · Menu). The phones show: Register, the first screen for the Paul Morphy Open; the same page scrolled to the identity and search band and the upcoming list, with a strip beside it giving the full phone order (WS03 AC5); Live, in live colours with the rounds written out and Pause updates; Results, with the Heritage accent; This weekend in Louisiana, with partner rows that open the organizer's site; Quiet, signed in, with the My LCA count; the Clubs floor; and the doors accordion with one door open at a time.\n\nBuilt from: Home-Phones A, the decided M2 app bar and tab bar, the identity and search band, and the \"At 390px\" column of the hero ladder in replan section 4. Replaces Home-Phones.\n\nOpen questions: Q11, a 30-day Register window with a 14-day last-call tier (default yes). Q3, keep the live hero public (default yes, with the personal board line only for signed-in players). Q14, ship the Results hero in Phase 0 (default yes, behind its own switch). Q10, Donate is two taps on phones (default accept)."
+  },
+  "s_Looks-Applied": {
+   "fill": "gray",
+   "page": "looks",
+   "w": 760,
+   "x": 3680,
+   "y": 7110,
+   "text": "What: This board shows the decided scope of each look. The rule is \"Minimal is for doing, Heritage is for the lasting record, Broadcast is for what is live right now\", with Scholastic as the one exception. A site map puts every route on a chip coloured by scope, and each chip also names its scope in words. Three slices sit under the same base header: a Heritage Bylaws page whose base buttons and status tag never change, a Minimal Tournaments list, and a Broadcast pairings page with a static Live dot. Below them are Heritage Level A (full scope) and Level B (homepage accent in Geist), token and contrast tables for all five scopes, fonts per scope with their budgets, and the Scholastic plan, kept and flagged off.\n\nBuilt from: Looks-3 Modern Tech-Minimal (base), Looks-1 Heritage Club (record pages), Looks-7 Broadcast Night (live) and Looks-6 Bright Scholastic (scholastic, later). Replaces Looks-2, Looks-4 and Looks-5, both the Tile and Page boards of each. Source: replan Note 1, Q1 and amendment 5.1.\n\nOpen questions: Q6, should Heritage load its own fonts, about 110 KB (default yes). Q7, should the /membership tier cards be Heritage (default no; only the member's card and its preview). Q8, keep Bright Scholastic for WS11, flagged off (default keep). Q13, should the event strip take the live colour tokens while a round is live (default yes)."
+  },
+  "s_Nav-IA-Final": {
+   "fill": "gray",
+   "page": "nav",
+   "w": 760,
+   "x": 640,
+   "y": 4960,
+   "text": "What: the final site map. It shows the six sections (Tournaments · Clubs · Scholastic · News · Membership · About ▾) with every page under each. Each page has its route, tagged as either \"Route today\" (checked against src/App.tsx) or \"Later\" with its workstream (This weekend and Calendar WS04, Results WS10, /search WS02, Your child's first tournament WS11, /donate and Am I a member? WS12). The board also covers the utility trio, the My LCA ▾ menu by role, the phone tabs and Menu sheet, the tablet and width summary, and footer F1's four columns with the trust line. It ends with \"Changes from today\", where the awkward six land, the one-label-per-destination table and the search Popular list.\n\nBuilt from: Nav-IA structure 1 (task and topic). It applies K's October 8 header, mobile and footer picks as written in replan section 1 note 2, Q2, Q3, Q5 and section 5.2. It replaces Nav-IA. Where the replan's own lists used two words for one page, the board picks one label: State champions, Contact, Scholastic, Clubs, LCA on Facebook ↗.\n\nOpen questions: Q10 only. On phones Donate is two taps (Menu, then Donate) and stays one click on tablet and desktop. Default: accept, and change WS02 AC6 and WS12 AC6 to match."
+  },
+  "s_Nav-Header-Final": {
+   "fill": "gray",
+   "page": "nav",
+   "w": 760,
+   "x": 2160,
+   "y": 8710,
+   "text": "What: the decided desktop header with eight frames. (A) 1280px signed out, with the logo plate, six sections, the 220px Search button with ⌘K and Donate · Log in · Join LCA. (B) 1024px, with a width budget measured on the board. (C) The About menu open on Minutes. (D) My LCA ▾ open with to-dos first, plus the Renew variant. (E) The condensed 56px header with the rook mark and the sticky 44px live strip. (F) The event strip in every state, one row per role, with the copy from replan section 3, and the \"same line, other moments\" chip row. (G) The public view during a live round: no strip, only a \"Live\" tag on Tournaments. (H) A dark-mode sample. Measured on the board: with 12px section padding the 1280px row has only 28px spare, so 8px padding and a 12px utility gap run up to 1439px. Renew plus the Live tag at 1024px is still about 38px over, which AC1 should test.\n\nBuilt from: H1 Refined as the base. H4 search, reconciled as a field-shaped button in the bar. H5 event strip, personalised to players, guardians, the event's TDs and lca_admin. The strip uses a light tint before and after the event and live tokens during rounds. H2's \"same line, other moments\" becomes a lifecycle chip row. Replaces Nav-Header (H1–H5).\n\nOpen questions: Q1 search as a button (default: the button). Q2 no public live bar (default: none). Q3 public homepage live hero (default: public). Q9 cream logo plate (default: plate, judge by eye). Q13 live colour tokens on the strip (default: yes). Q15 light tint instead of the brand-gold band (default: yes). Q16 drop the countdown (default: drop)."
+  },
+  "s_Nav-Mobile-Final": {
+   "fill": "gray",
+   "page": "nav",
+   "w": 760,
+   "x": 3680,
+   "y": 4510,
+   "text": "What: This is the decided mobile nav, drawn as 12 real screens. A 56px navy app bar has the rook mark, the two-line name and a 44×44 Search button. Below it is the M2 tab bar: Tournaments · Clubs · Log in or My LCA (with a to-do count) · Menu. Current tab: bold navy label with a 3px gold-ink bar. Menu opens the M1 sheet with the six sections, \"You are here\", then Donate · My LCA · Renew, role tools, the Appearance switch and \"Hide event bar until the next update\". Event day is shown for a player, a guardian, a TD and admin, the \"New\" tag and check-in. Also drawn: the Log in page, an iPhone SE showing how much screen the top and bottom bars take, the 768px hybrid header with its one-line strip, and the landscape reflow fallback. The bottom safe area is drawn on every phone.\n\nBuilt from: the M2 bottom tab bar, the M1 sheet behind the Menu tab, and M4's banner and pill. The banner becomes an in-flow card under the app bar. The pill becomes a 56px event bar docked above the tabs: live tokens in round states, light tint at check-in. Replaces Nav-Mobile (M1–M4).\n\nOpen questions: Q5 admins also get the phone banner at each round (default yes). Q10 Donate is two taps on phones, first in the sheet (default accept; WS02 AC6 and WS12 AC6 change). Q17 the pill becomes a docked bar (default docked). Q18 the phone bar starts at check-in on day 1, and event week is a card in My LCA and on Home (default yes)."
+  },
+  "s_Nav-Footer-Final": {
+   "fill": "gray",
+   "page": "nav",
+   "w": 760,
+   "x": 5720,
+   "y": 2910,
+   "text": "What: The decided footer, drawn three ways. (A) At 1280px: the brand block (official logo on a cream plate, Join LCA, Donate), four columns of nav.ts links, with Calendar (WS04) and Results (WS10) drawn dashed because they arrive later, then the base line with the trust line and the System / Light / Dark Appearance control. (B1) At 390px, full length: the columns fold into tap-to-open groups with Contact open, and the brand block and trust line stack. (B2, B3) A dark sample: a phone scrolled to the end above the tab bar, and the brand block on a dark page.\n\nBuilt from: F1's four columns and brand block, plus F3's trust line (\"US Chess state affiliate · Louisiana's chess community since 1915 · Bylaws & rules · Minutes · Site last updated Thu, Oct 8, 2026\"). It replaces Nav-Footer (F1–F3). The labels follow the replan's footer list (section 5.5) and the one-label rule: \"Bylaws & rules\" and \"Minutes\" are two separate links, never \"Bylaws & minutes\". \"Scholastic\" and \"State champions\" match the header, and \"Contact\" leads with the LouisianaChess@gmail.com inbox. That way this board and the IA board read the same.\n\nOpen questions: None for the footer. The logo plate follows Q9's default (a cream plate on navy), which is asked on the header board. In dark mode the footer stays navy like the header. The replan's dark table doesn't list the footer, so the board says this outright."
+  }
+ },
+ "order": [
+  "Main.dc.html",
+  "Start-Picks.dc.html",
+  "Start-Audit.dc.html",
+  "Start-Principles.dc.html",
+  "Looks-Compare.dc.html",
+  "Looks-1-Heritage-Tile.dc.html",
+  "Looks-1-Heritage-Page.dc.html",
+  "Looks-3-Minimal-Tile.dc.html",
+  "Looks-3-Minimal-Page.dc.html",
+  "Looks-6-Scholastic-Tile.dc.html",
+  "Looks-6-Scholastic-Page.dc.html",
+  "Looks-7-Broadcast-Tile.dc.html",
+  "Looks-7-Broadcast-Page.dc.html",
+  "Tourn-A.dc.html",
+  "Tourn-B.dc.html",
+  "Tourn-C.dc.html",
+  "Tourn-D.dc.html",
+  "Tourn-E.dc.html",
+  "Tourn-Phones.dc.html",
+  "Event-A.dc.html",
+  "Event-B.dc.html",
+  "Event-C.dc.html",
+  "Event-D.dc.html",
+  "Event-E.dc.html",
+  "Event-Phones.dc.html",
+  "Reg-A.dc.html",
+  "Reg-B.dc.html",
+  "Reg-C.dc.html",
+  "Reg-D.dc.html",
+  "Live-A.dc.html",
+  "Live-B.dc.html",
+  "Live-C.dc.html",
+  "Live-D.dc.html",
+  "Live-E.dc.html",
+  "Clubs-A.dc.html",
+  "Clubs-B.dc.html",
+  "Clubs-C.dc.html",
+  "Clubs-D.dc.html",
+  "Clubs-Phones.dc.html",
+  "Club-A.dc.html",
+  "Club-B.dc.html",
+  "Club-C.dc.html",
+  "Schol-A.dc.html",
+  "Schol-B.dc.html",
+  "Schol-C.dc.html",
+  "Schol-Phones.dc.html",
+  "News-A.dc.html",
+  "News-B.dc.html",
+  "News-C.dc.html",
+  "News-D.dc.html",
+  "About-A.dc.html",
+  "About-B.dc.html",
+  "About-C.dc.html",
+  "About-D.dc.html",
+  "Member-A.dc.html",
+  "Member-B.dc.html",
+  "Member-C.dc.html",
+  "Member-D.dc.html",
+  "Account-A.dc.html",
+  "Account-B.dc.html",
+  "Account-C.dc.html",
+  "Work-A.dc.html",
+  "Work-B.dc.html",
+  "Work-C.dc.html",
+  "Work-D.dc.html",
+  "Scan-A.dc.html",
+  "Scan-B.dc.html",
+  "Scan-C.dc.html",
+  "Sources.dc.html",
+  "Home-Final.dc.html",
+  "Home-Hero-Modes.dc.html",
+  "Home-Final-Phones.dc.html",
+  "Looks-Applied.dc.html",
+  "Nav-IA-Final.dc.html",
+  "Nav-Header-Final.dc.html",
+  "Nav-Mobile-Final.dc.html",
+  "Nav-Footer-Final.dc.html"
+ ],
+ "pages": [
+  {
+   "id": "start",
+   "name": "0 · Start here"
+  },
+  {
+   "id": "looks",
+   "name": "1 · Visual directions"
+  },
+  {
+   "id": "nav",
+   "name": "2 · Navigation & footer"
+  },
+  {
+   "id": "home",
+   "name": "3 · Home"
+  },
+  {
+   "id": "tournaments",
+   "name": "4 · Tournaments list"
+  },
+  {
+   "id": "event",
+   "name": "5 · Tournament page"
+  },
+  {
+   "id": "register",
+   "name": "6 · Registration"
+  },
+  {
+   "id": "live",
+   "name": "7 · Tournament day"
+  },
+  {
+   "id": "clubs",
+   "name": "8 · Clubs directory"
+  },
+  {
+   "id": "club",
+   "name": "9 · Club page"
+  },
+  {
+   "id": "scholastic",
+   "name": "10 · Scholastic & parents"
+  },
+  {
+   "id": "news",
+   "name": "11 · News & stories"
+  },
+  {
+   "id": "about",
+   "name": "12 · About, board & history"
+  },
+  {
+   "id": "membership",
+   "name": "13 · Membership & giving"
+  },
+  {
+   "id": "account",
+   "name": "14 · My LCA (account)"
+  },
+  {
+   "id": "workspace",
+   "name": "15 · Workspace & admin"
+  },
+  {
+   "id": "scanner",
+   "name": "16 · Scoresheet scanner"
+  },
+  {
+   "id": "sources",
+   "name": "17 · Research & sources"
+  }
+ ],
+ "title": "LCA Look & Feel Options"
+}

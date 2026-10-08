@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Site structure · decided</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744;background:#ecebe6}
+.ia2-root{width:1440px;box-sizing:border-box;padding:40px 48px 56px;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ia2-title{display:flex;justify-content:space-between;align-items:flex-start;gap:32px;background:#1a2744;color:#ffffff;border-radius:14px;padding:22px 26px;border-bottom:4px solid #c8a94a}
+.ia2-title .k-kicker{color:#e6cf86}
+.ia2-title h1{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:6px 0 12px}
+.ia2-tmeta{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14.5px;line-height:1.45;max-width:900px;margin:0}
+.ia2-tmeta dt{font-weight:600;color:#e6cf86}
+.ia2-tmeta dd{margin:0;color:#ffffff}
+.ia2-tside{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none}
+.ia2-tside .k-meta{color:rgba(255,255,255,.8);text-align:right;max-width:300px}
+.ia2-legend{display:grid;grid-template-columns:1fr 440px;gap:20px;margin-top:20px}
+.ia2-lbox{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:18px 20px}
+.ia2-lgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px 24px;margin-top:12px}
+.ia2-li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.42}
+.ia2-li code,.ia2-c{font-family:"Geist Mono",ui-monospace,monospace;font-size:.9em;color:#1a2744}
+.ia2-q{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.42;margin-top:12px}
+.ia2-qn{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:24px;padding:0 6px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;flex:none}
+.ia2-def{color:#145b3a;font-weight:600}
+.ia2-key{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.ia2-key > div{display:flex;align-items:center;gap:10px;font-size:13px;line-height:1.35;color:#3d4556}
+.ia2-key .k-tag{flex:none;min-width:112px;justify-content:center}
+.ia2-sec{margin-top:36px}
+.ia2-lab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.ia2-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ia2-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;box-sizing:border-box}
+.ia2-rel{position:relative}
+.ia2-mk{position:absolute;z-index:5;box-shadow:0 0 0 3px #ffffff}
+.ia2-bar{display:flex;align-items:center;gap:22px;height:68px;padding:0 22px;background:#1a2744;border-radius:12px 12px 0 0;border-bottom:3px solid #c8a94a}
+.ia2-brand{display:flex;align-items:center;gap:10px;color:#ffffff;text-decoration:none;flex:none}
+.ia2-plate{width:44px;height:44px;border-radius:8px;background:#fbfaf6;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;flex:none}
+.ia2-plate b{font-size:14px;font-weight:700;color:#1a2744;letter-spacing:.03em}
+.ia2-plate i{font-style:normal;font-size:7px;font-weight:500;color:#555c6b;margin-top:3px;white-space:nowrap}
+.ia2-bname{display:flex;flex-direction:column;line-height:1.1}
+.ia2-bname b{font-size:15px;font-weight:700}
+.ia2-bname span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#d9c27c;font-weight:600}
+.ia2-nav{display:flex;align-items:center;gap:2px;margin-left:8px}
+.ia2-nav a,.ia2-nav button{display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 12px;color:#ffffff;font:500 15px/1 Geist,system-ui,sans-serif;text-decoration:none;background:none;border:0;cursor:pointer}
+.ia2-nav .ia2-on{color:#e6cf86;box-shadow:inset 0 -2px 0 #c8a94a}
+.ia2-srch{display:inline-flex;align-items:center;gap:8px;width:220px;height:40px;box-sizing:border-box;padding:0 12px;border-radius:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#e8ecf4;font-size:14px;text-decoration:none;margin-left:auto}
+.ia2-srch kbd{margin-left:auto;font:500 12px "Geist Mono",monospace;color:#c9d0de;border:1px solid rgba(255,255,255,.3);border-radius:4px;padding:1px 5px}
+.ia2-util{display:flex;align-items:center;gap:16px;flex:none}
+.ia2-util a.ia2-tl{color:#ffffff;font-size:15px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;height:44px}
+.ia2-sixgrid{display:grid;align-items:start;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;background:#fbfaf6;border:1px solid #d9d8d1;border-top:0;border-radius:0 0 12px 12px;padding:18px}
+.ia2-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;min-width:0}
+.ia2-chead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid #ecebe5}
+.ia2-pill{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 11px;border-radius:7px;background:#1a2744;color:#ffffff;font-size:14px;font-weight:600;line-height:1;white-space:nowrap}
+.ia2-sub{font-size:13px;color:#555c6b}
+.ia2-pages{list-style:none;margin:0;padding:0}
+.ia2-pages li{padding:9px 0;border-bottom:1px solid #f0efea}
+.ia2-pages li:last-child{border-bottom:0;padding-bottom:0}
+.ia2-l1{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.ia2-l1 > a,.ia2-l1 > span.ia2-name{font-size:14.5px;font-weight:600;color:#1a2744;text-decoration:none;line-height:1.3}
+.ia2-st{flex:none;font-size:11.5px;padding:3px 8px}
+.ia2-l2{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;margin-top:3px;font-size:12.5px;line-height:1.4;color:#555c6b}
+.ia2-rt{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#f3f2ed;border-radius:4px;padding:0 5px}
+.ia2-menuhd{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:12px 0 0}
+.ia2-livetag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:5px;background:#b3202f;color:#ffffff;font-size:12px;font-weight:600}
+.ia2-two{display:grid;align-items:start;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+.ia2-utilrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:10px;background:#1a2744;margin-top:8px}
+.ia2-utilrow .ia2-tl{color:#ffffff;font-size:15px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0 4px}
+.ia2-utilrow .ia2-sx{color:#c9d0de;font-size:12.5px;margin-left:auto}
+.ia2-mylca{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 6px;color:#ffffff;font:500 15px Geist,system-ui,sans-serif;background:none;border:0;cursor:pointer}
+.ia2-cnt{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:11px;font-weight:700;box-sizing:border-box}
+.ia2-roles{display:grid;grid-template-columns:150px 1fr;gap:0;margin-top:10px;border:1px solid #e3e2dc;border-radius:10px;overflow:hidden}
+.ia2-roles > div{padding:9px 12px;border-bottom:1px solid #efeee9;font-size:13.5px;line-height:1.4}
+.ia2-roles > div:nth-last-child(-n+2){border-bottom:0}
+.ia2-rk{background:#f7f6f1;font-weight:600;color:#3d4556;font-size:12.5px !important}
+.ia2-mi{display:flex;flex-direction:column;gap:3px}
+.ia2-mi span.ia2-it{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ia2-mi b{font-weight:600}
+.ia2-todo{color:#7a3d00;font-weight:600}
+.ia2-phone{display:grid;grid-template-columns:392px minmax(0,1fr);gap:22px;align-items:start}
+.ia2-sheet{margin-top:18px}
+.ia2-sheet .ia2-ol{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}
+.ia2-sheet .ia2-ol > li:nth-last-child(2){border-bottom:0}
+.ia2-appbar{display:flex;align-items:center;gap:10px;height:56px;padding:0 6px 0 14px;background:#1a2744;border-radius:10px 10px 0 0}
+.ia2-appbar .k-mark{width:26px;height:26px;fill:#ffffff;flex:none}
+.ia2-appbar .ia2-bname b{font-size:14px;color:#ffffff}
+.ia2-appbar .ia2-bname span{font-size:10px}
+.ia2-iconbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;border:1px solid rgba(255,255,255,.45);background:none;color:#ffffff;margin-left:auto;cursor:pointer}
+.ia2-pagefill{height:62px;background:#fbfaf6;border-left:1px solid #d9d8d1;border-right:1px solid #d9d8d1;display:flex;align-items:center;justify-content:center;font-size:12.5px;color:#555c6b}
+.ia2-tabs{display:grid;grid-template-columns:repeat(4,1fr);height:56px;background:#ffffff;border:1px solid #d9d8d1;border-radius:0 0 10px 10px}
+.ia2-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;color:#3d4556;font:500 12px Geist,system-ui,sans-serif;text-decoration:none;background:none;border:0;cursor:pointer}
+.ia2-tab .k-i{width:20px;height:20px}
+.ia2-tab-on{color:#1a2744;font-weight:700}
+.ia2-tab-on::before{content:"";position:absolute;top:-1px;left:14px;right:14px;height:3px;background:#866a1e;border-radius:0 0 2px 2px}
+.ia2-tab .ia2-cnt{position:absolute;top:5px;left:calc(50% + 6px);background:#1a2744;color:#ffffff}
+.ia2-ol{margin:8px 0 0;padding:0;list-style:none;counter-reset:s}
+.ia2-ol > li{counter-increment:s;position:relative;padding:8px 0 8px 32px;border-bottom:1px solid #f0efea;font-size:13.5px;line-height:1.45}
+.ia2-ol > li:last-child{border-bottom:0}
+.ia2-ol > li::before{content:counter(s);position:absolute;left:0;top:8px;width:22px;height:22px;border-radius:6px;background:#eceef2;color:#1a2744;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.ia2-ol b{font-weight:600}
+.ia2-yah{font-size:12.5px;font-weight:600;color:#866a1e}
+.ia2-widths{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px;line-height:1.4}
+.ia2-widths th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:7px 10px;background:#fbfbf8;border-bottom:1px solid #d6d5cd}
+.ia2-widths td{padding:8px 10px;border-bottom:1px solid #ecebe5;vertical-align:top}
+.ia2-widths tr:last-child td{border-bottom:0}
+.ia2-foot{background:#1a2744;color:#ffffff;border-radius:12px;border-top:3px solid #c8a94a;padding:26px 28px 0}
+.ia2-fgrid{display:grid;grid-template-columns:300px repeat(4,minmax(0,1fr));gap:28px}
+.ia2-fbrand p{margin:10px 0 14px;font-size:13.5px;line-height:1.5;color:#c9d0de}
+.ia2-fcol h3{margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.ia2-fcol ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.ia2-fcol li{display:flex;flex-direction:column;gap:2px;padding:4px 0}
+.ia2-fcol a{color:#ffffff;font-size:14px;text-decoration:none;line-height:1.35}
+.ia2-fcol .ia2-fr{font-family:"Geist Mono",monospace;font-size:11px;color:#aab3c5}
+.ia2-later a{color:#c9d0de}
+.ia2-fst{font-size:11px;font-weight:600;color:#e6cf86}
+.ia2-fbase{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:22px;padding:14px 0 16px;border-top:1px solid rgba(255,255,255,.18);font-size:13px;color:#c9d0de}
+.ia2-fbase a{color:#ffffff}
+.ia2-seg{display:inline-flex;border:1px solid rgba(255,255,255,.4);border-radius:8px;overflow:hidden}
+.ia2-seg button{min-height:36px;padding:0 12px;background:none;border:0;color:#ffffff;font:500 13px Geist,system-ui,sans-serif;cursor:pointer}
+.ia2-seg button[aria-pressed="true"]{background:#c8a94a;color:#1a2744;font-weight:600}
+.ia2-chg{list-style:none;margin:10px 0 0;padding:0}
+.ia2-chg li{display:grid;grid-template-columns:132px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #f0efea;font-size:13.5px;line-height:1.45}
+.ia2-chg li:last-child{border-bottom:0}
+.ia2-was{font-size:12.5px;color:#555c6b;line-height:1.4}
+.ia2-was s{text-decoration-color:#8f1d24}
+.ia2-six{width:100%;border-collapse:collapse;font-size:13px;line-height:1.4}
+.ia2-six th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:9px 10px;background:#fbfbf8;border-bottom:1px solid #d6d5cd}
+.ia2-six td{padding:10px;border-bottom:1px solid #ecebe5;vertical-align:top}
+.ia2-six tr:last-child td{border-bottom:0}
+.ia2-six td:first-child{font-weight:600;white-space:nowrap}
+.ia2-six .ia2-tdy{color:#555c6b}
+.ia2-lbl{width:100%;border-collapse:collapse;font-size:13px;line-height:1.4}
+.ia2-lbl th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:8px 10px;background:#fbfbf8;border-bottom:1px solid #d6d5cd}
+.ia2-lbl td{padding:9px 10px;border-bottom:1px solid #ecebe5;vertical-align:top}
+.ia2-lbl tr:last-child td{border-bottom:0}
+.ia2-syn{display:grid;grid-template-columns:1fr auto 1fr;gap:6px 10px;align-items:baseline;font-size:13px;margin-top:10px}
+.ia2-syn .ia2-arr{color:#555c6b}
+.ia2-pop{display:flex;flex-direction:column;margin-top:8px;border:1px solid #e3e2dc;border-radius:10px;overflow:hidden}
+.ia2-pop a{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 12px;border-bottom:1px solid #efeee9;color:#1a2744;text-decoration:none;font-size:14px}
+.ia2-pop a:last-child{border-bottom:0}
+.ia2-pop a .k-tag{margin-left:auto}
+</style>
+</helmet>
+<div class="ia2-root" style="width:1440px">
+
+<div class="ia2-title">
+  <div>
+    <div class="k-kicker">Navigation · Site structure · decided</div>
+    <h1>Site structure · decided (structure 1)</h1>
+    <dl class="ia2-tmeta">
+      <dt>Built from</dt><dd>Nav-IA structure 1 (task and topic): Tournaments · Clubs · Scholastic · News · Membership · About&nbsp;&#9662;, with the header, phone and footer picks K made on October 8</dd>
+      <dt>Replaces</dt><dd>Nav-IA (Today and structures 1, 2 and 3)</dd>
+      <dt>Source</dt><dd>Design replan, section 1 note 2, Q2, Q3, Q5 and section 5.2 · WS02 footer amendment, section 5.5 · routes checked against <span class="ia2-c" style="color:#ffffff">src/App.tsx</span></dd>
+    </dl>
+  </div>
+  <div class="ia2-tside">
+    <span class="k-sample">Sample data</span>
+    <span class="k-meta">The to-do count and the two to-do items in My LCA are invented. Every label, route and role rule is real.</span>
+  </div>
+</div>
+
+<div class="ia2-legend">
+  <div class="ia2-lbox">
+    <div class="k-label">Notes on this board</div>
+    <div class="ia2-lgrid">
+      <div class="ia2-li"><span class="k-num-badge">1</span><span>Six sections in one row, the same order at every width. Only About opens a menu (on click, with a caret). The current section is light gold with a 2px gold underline and <code>aria-current="page"</code>.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">2</span><span>One <code>nav.ts</code>: every destination has one entry and one label. The header, Menu sheet, tabs, footer, trust line and the search Popular list all read it, so a page is never called two things.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">3</span><span>Each page lives under one section. Pages reached only from a list (an event, a club, a news post) are shown in grey type; they are not menu links.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">4</span><span>Routes that arrive later are tagged with their workstream. Their menu, sheet, footer and search rows are gated on the same flag as the route, so no menu ever holds a dead link.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">5</span><span>The utility trio, in this order on every page: Donate · Log in · Join LCA. Signed in: Donate · My LCA&nbsp;&#9662;. Renew takes the Join slot within 30 days of expiry or once lapsed.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">6</span><span>My LCA&nbsp;&#9662; holds to-dos first, then personal pages, then volunteer tools by role (from today&#8217;s <code>useAccountLinks()</code> and <code>roles.ts</code>), then Log out.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">7</span><span>Phones (under 768px): four tabs, Tournaments · Clubs · Log in or My LCA · Menu. The first tab says &#8220;Tournaments&#8221;, the same word as desktop.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">8</span><span>The Menu sheet holds everything the tabs do not, in a fixed order. Donate is the first button after the section list.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">9</span><span>Footer F1: four columns of <code>nav.ts</code> entries by id, F3&#8217;s trust line and the Appearance control. No Privacy or Accessibility links until those pages exist.</span></div>
+      <div class="ia2-li"><span class="k-num-badge">10</span><span>Where the replan&#8217;s own lists used two words for one page, this board picks one. Section F lists each choice; <code>test/unit/nav.test.ts</code> fails on any second label.</span></div>
+    </div>
+  </div>
+  <div class="ia2-lbox">
+    <div class="k-label">Open questions for K · replan section 6</div>
+    <div class="ia2-q"><span class="ia2-qn">Q10</span><span>On phones, Donate is the first of the three buttons after the section list in the Menu sheet (two taps) rather than a link in the app bar; on tablets and desktop it stays one click. <span class="ia2-def">Default: accept two taps on phones and change WS02 AC6 and WS12 AC6 to match.</span></span></div>
+    <p class="k-meta" style="margin:10px 0 0">The default is what this board draws. Answer by number; the board changes only if the answer differs.</p>
+    <div class="k-label" style="margin-top:18px">Key</div>
+    <div class="ia2-key">
+      <div><span class="k-tag k-tag-open">Route today</span><span>The URL exists in <span class="ia2-c">src/App.tsx</span> now</span></div>
+      <div><span class="k-tag k-tag-soon">Later · WS10</span><span>Arrives with that workstream; hidden until then</span></div>
+      <div><span class="k-tag k-tag-ext">Opens Facebook &#8599;</span><span>Leaves the site, in a new tab</span></div>
+      <div><span class="k-tag k-tag-lca">By role</span><span>Shown only to the people who hold that role</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- A · THE SIX SECTIONS -->
+<section class="ia2-sec" aria-labelledby="ia2-a">
+  <div class="ia2-lab"><span class="ia2-code">A</span><h2 id="ia2-a">The bar, and every page under each section</h2><span class="k-meta">Desktop 1024px and up · signed out · the Tournaments section current</span></div>
+  <div class="ia2-bar">
+    <a class="ia2-brand" href="/" aria-label="Louisiana Chess Association, home"><span class="ia2-plate" aria-hidden="true"><b>LCA</b><i>official logo</i></span><span class="ia2-bname" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="ia2-nav ia2-rel" aria-label="Main">
+      <a class="ia2-on" href="/tournaments" aria-current="page">Tournaments</a>
+      <a href="/clubs">Clubs</a>
+      <a href="/scholastic">Scholastic</a>
+      <a href="/news">News</a>
+      <a href="/membership">Membership</a>
+      <button type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+      <span class="k-num-badge ia2-mk" style="top:-14px;left:-14px">1</span>
+    </nav>
+    <a class="ia2-srch" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd aria-hidden="true">&#8984;K</kbd></a>
+    <div class="ia2-util ia2-rel">
+      <a class="ia2-tl" href="/donate">Donate</a>
+      <a class="ia2-tl" href="/login">Log in</a>
+      <a class="k-btn k-btn-gold" href="/membership">Join LCA</a>
+      <span class="k-num-badge ia2-mk" style="top:-14px;right:-14px">5</span>
+    </div>
+  </div>
+  <div class="ia2-sixgrid">
+
+    <!-- Tournaments -->
+    <div class="ia2-card ia2-rel">
+      <span class="k-num-badge ia2-mk" style="top:-12px;right:-10px">4</span>
+      <div class="ia2-chead"><span class="ia2-pill">Tournaments</span><span class="ia2-rt">/tournaments</span><span class="ia2-sub">During an LCA round: <span class="ia2-livetag">Live</span></span></div>
+      <ul class="ia2-pages">
+        <li><div class="ia2-l1"><a href="/tournaments">Tournaments</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/tournaments</span><span>LCA and partner events, Louisiana first</span></div></li>
+        <li><div class="ia2-l1"><a href="/scanner">Scoresheet scanner</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/scanner</span><span>Off the bar; in the sheet, footer and search</span></div></li>
+        <li><div class="ia2-l1"><a href="/tournaments?when=weekend">This weekend</a><span class="k-tag k-tag-soon ia2-st">Later · WS04</span></div><div class="ia2-l2"><span class="ia2-rt">/tournaments?when=weekend</span><span>Sheet row once the filter ships</span></div></li>
+        <li><div class="ia2-l1"><span class="ia2-name">Calendar</span><span class="k-tag k-tag-soon ia2-st">Later · WS04</span></div><div class="ia2-l2"><span>Footer, Play column; WS04 sets the URL</span></div></li>
+        <li><div class="ia2-l1"><a href="/results">Results</a><span class="k-tag k-tag-soon ia2-st">Later · WS10</span></div><div class="ia2-l2"><span class="ia2-rt">/results</span><span>Sheet and footer rows arrive with the route</span></div></li>
+        <li><div class="ia2-l1"><span class="ia2-name" style="color:#555c6b;font-weight:500">Event pages and pairings <span class="k-num-badge" style="width:22px;height:22px;font-size:11px;vertical-align:1px">3</span></span><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/tournaments/:id</span><span class="ia2-rt">/tournaments/:id/pairings</span><span>From lists, the Live tag and the event strip</span></div></li>
+      </ul>
+    </div>
+
+    <!-- Clubs -->
+    <div class="ia2-card">
+      <div class="ia2-chead"><span class="ia2-pill">Clubs</span><span class="ia2-rt">/clubs</span><span class="ia2-sub">Regions per D10</span></div>
+      <ul class="ia2-pages">
+        <li><div class="ia2-l1"><a href="/clubs">Clubs</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/clubs</span><span>Every club by region, with search</span></div></li>
+        <li><div class="ia2-l1"><a href="/clubs#map">Club map</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/clubs#map</span><span>The map section of the Clubs page</span></div></li>
+        <li><div class="ia2-l1"><a href="/contact?subject=club">List or update your club</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/contact?subject=club</span><span>Contact form, club subject already picked (WS02)</span></div></li>
+        <li><div class="ia2-l1"><span class="ia2-name" style="color:#555c6b;font-weight:500">Club pages</span><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/clubs/:id</span><span>25+ clubs, from Baton Rouge Chess Club to Shreveport-Bossier; reached from the list</span></div></li>
+      </ul>
+    </div>
+
+    <!-- Scholastic -->
+    <div class="ia2-card">
+      <div class="ia2-chead"><span class="ia2-pill">Scholastic</span><span class="ia2-rt">/scholastic</span><span class="ia2-sub">Sheet sub-line: Kids and school chess</span></div>
+      <ul class="ia2-pages">
+        <li><div class="ia2-l1"><a href="/scholastic">Scholastic</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/scholastic</span><span>The hub for parents and schools</span></div></li>
+        <li><div class="ia2-l1"><span class="ia2-name" style="color:#555c6b;font-weight:500">Scholastic tournaments</span><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/scholastic</span><span>A section of the hub, e.g. the State Scholastic Championship, Sat, Apr 10, 2027</span></div></li>
+        <li><div class="ia2-l1"><span class="ia2-name" style="color:#555c6b;font-weight:500">Scholastic programs</span><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/scholastic</span><span>A section of the hub: youth programs and school clubs</span></div></li>
+        <li><div class="ia2-l1"><a href="/scholastic/first-tournament">Your child&#8217;s first tournament</a><span class="k-tag k-tag-soon ia2-st">Later · WS11</span></div><div class="ia2-l2"><span class="ia2-rt">/scholastic/first-tournament</span><span>The day, what to bring, terms explained; its search row waits for the route</span></div></li>
+      </ul>
+    </div>
+
+    <!-- News -->
+    <div class="ia2-card">
+      <div class="ia2-chead"><span class="ia2-pill">News</span><span class="ia2-rt">/news</span></div>
+      <ul class="ia2-pages">
+        <li><div class="ia2-l1"><a href="/news">News</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/news</span><span>Announcements, recaps and club news</span></div></li>
+        <li><div class="ia2-l1"><span class="ia2-name" style="color:#555c6b;font-weight:500">News posts</span><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/news/:slug</span><span>Reached from the list and from search</span></div></li>
+        <li><div class="ia2-l1"><a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer">LCA on Facebook &#8599;</a><span class="k-tag k-tag-ext ia2-st">Opens Facebook &#8599;</span></div><div class="ia2-l2"><span class="ia2-rt">facebook.com/LouisianaChessAssociation</span><span>Kept: About menu footer row, Menu sheet, footer Community column</span></div></li>
+      </ul>
+    </div>
+
+    <!-- Membership -->
+    <div class="ia2-card">
+      <div class="ia2-chead"><span class="ia2-pill">Membership</span><span class="ia2-rt">/membership</span><span class="ia2-sub">Out of More, onto the bar</span></div>
+      <ul class="ia2-pages">
+        <li><div class="ia2-l1"><a href="/membership">Membership</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/membership</span><span>Join or renew: Adult $15, Scholastic $5, Family $25, Senior $10 a year</span></div></li>
+        <li><div class="ia2-l1"><a href="/donate">Donate</a><span class="k-tag k-tag-soon ia2-st">Later · WS12</span></div><div class="ia2-l2"><span class="ia2-rt">/donate</span><span>Its home section; linked top right on every page. Today only <span class="ia2-rt">/donate/success</span> exists</span></div></li>
+        <li><div class="ia2-l1"><span class="ia2-name">Am I a member?</span><span class="k-tag k-tag-soon ia2-st">Later · WS12</span></div><div class="ia2-l2"><span>A lookup on the Membership page</span></div></li>
+        <li><div class="ia2-l1"><a href="/contact?subject=membership">Membership help</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/contact?subject=membership</span><span>Footer, Contact column</span></div></li>
+      </ul>
+    </div>
+
+    <!-- About -->
+    <div class="ia2-card ia2-rel">
+      
+      <div class="ia2-chead"><span class="ia2-pill">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span><span class="ia2-sub">The one menu: opens on click, 7 rows</span></div>
+      <ul class="ia2-pages">
+        <li><div class="ia2-l1"><a href="/about">About LCA</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/about</span><span>Since 1915, with the history timeline</span></div></li>
+        <li><div class="ia2-l1"><a href="/governance/board">Board &amp; regions</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/governance/board</span><span><span class="ia2-rt">/governance</span> redirects here</span></div></li>
+        <li><div class="ia2-l1"><a href="/governance/bylaws">Bylaws &amp; rules</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/governance/bylaws</span><span><span class="ia2-rt">/governance/rules</span> redirects here</span></div></li>
+        <li><div class="ia2-l1"><a href="/governance/minutes">Minutes</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/governance/minutes</span><span>Its own row, never merged with Bylaws</span></div></li>
+        <li><div class="ia2-l1"><a href="/meeting">Annual meeting</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/meeting</span><span>No menu links to it today</span></div></li>
+        <li><div class="ia2-l1"><a href="/champions">State champions</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/champions</span><span><span class="ia2-rt">/state-champions</span> redirects here</span></div></li>
+        <li><div class="ia2-l1"><a href="/contact">Contact</a><span class="k-tag k-tag-open ia2-st">Route today</span></div><div class="ia2-l2"><span class="ia2-rt">/contact</span><span>The contact form</span></div></li>
+        <li><div class="ia2-l1"><a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer">LCA on Facebook &#8599;</a><span class="k-tag k-tag-ext ia2-st">Opens Facebook &#8599;</span></div><div class="ia2-l2"><span>The menu&#8217;s footer row; no Facebook icon in the bar</span></div></li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- B · UTILITIES, MY LCA, PHONES -->
+<section class="ia2-sec" aria-labelledby="ia2-b">
+  <div class="ia2-lab"><span class="ia2-code">B</span><h2 id="ia2-b">Utilities, the My LCA menu by role, and what phones hold</h2></div>
+  <div class="ia2-two">
+
+    <div class="ia2-card ia2-rel" style="padding:18px 20px">
+      <span class="k-num-badge ia2-mk" style="top:-12px;right:-10px">6</span>
+      <div class="k-between"><h3 class="k-h4" style="margin:0">Top right, on every page</h3><span class="k-sample">Sample data</span></div>
+      <div class="k-label" style="margin-top:12px">Signed out</div>
+      <div class="ia2-utilrow">
+        <a class="ia2-srch" href="/search" style="margin-left:0;width:200px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd aria-hidden="true">&#8984;K</kbd></a>
+        <a class="ia2-tl" href="/donate">Donate</a><a class="ia2-tl" href="/login">Log in</a><a class="k-btn k-btn-gold" href="/membership">Join LCA</a>
+      </div>
+      <div class="k-label" style="margin-top:14px">Signed in, membership ending within 30 days</div>
+      <div class="ia2-utilrow">
+        <a class="ia2-tl" href="/donate">Donate</a>
+        <button class="ia2-mylca" type="button" aria-expanded="true" aria-haspopup="true" aria-label="My LCA, 2 things to do">My LCA<span class="ia2-cnt" aria-hidden="true">2</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <a class="k-btn k-btn-gold" href="/membership">Renew</a>
+        <span class="ia2-sx">Active members see no Join LCA</span>
+      </div>
+      <p class="k-meta" style="margin:10px 0 0"><b>Search</b> <span class="ia2-rt">/search</span> <span class="k-tag k-tag-soon ia2-st">Later · WS02</span> is an <span class="ia2-c">&lt;a href="/search"&gt;</span> underneath, outside the trio. <b>Log in</b> <span class="ia2-rt">/login</span> passes the page you were on, at every width, so you land back there.</p>
+
+      <div class="k-label" style="margin-top:16px">What My LCA&nbsp;&#9662; holds, in this order</div>
+      <div class="ia2-roles">
+        <div class="ia2-rk">Everyone signed in</div>
+        <div class="ia2-mi">
+          <span class="ia2-it"><span class="ia2-todo">To do:</span> Finish payment · Paul Morphy Open</span>
+          <span class="ia2-it"><span class="ia2-todo">To do:</span> Renew membership</span>
+          <span class="ia2-it"><b>My LCA</b> <span class="ia2-rt">/dashboard</span><span class="k-tag k-tag-open ia2-st">Route today</span></span>
+          <span class="ia2-it"><b>Paul Morphy Open · My board</b> <span class="k-meta">only while event mode is on, Sat–Sun, Jun 12–13, 2027</span></span>
+          <span class="ia2-it"><b>Family</b> <span class="ia2-rt">/dashboard</span><span class="k-tag k-tag-open ia2-st">Route today</span></span>
+          <span class="ia2-it"><b>Membership card</b><span class="k-tag k-tag-soon ia2-st">Later · WS12</span></span>
+        </div>
+        <div class="ia2-rk">Event TDs, club and workspace roles</div>
+        <div class="ia2-mi"><span class="ia2-it"><b>Workspace</b> <span class="ia2-rt">/workspace</span><span class="k-tag k-tag-lca ia2-st">By role</span></span></div>
+        <div class="ia2-rk">lca_admin</div>
+        <div class="ia2-mi"><span class="ia2-it"><b>Admin</b> <span class="ia2-rt">/admin</span><span class="k-tag k-tag-lca ia2-st">By role</span></span><span class="k-meta">Shown instead of Workspace, as today. &#8220;Admin panel&#8221; becomes &#8220;Admin&#8221;.</span></div>
+        <div class="ia2-rk">A current board seat</div>
+        <div class="ia2-mi"><span class="ia2-it"><b>Board inbox</b> <span class="ia2-rt">/board/inbox</span><span class="k-tag k-tag-lca ia2-st">By role</span></span></div>
+        <div class="ia2-rk">Regional reps</div>
+        <div class="ia2-mi"><span class="ia2-it"><b>My region&#8217;s clubs</b> <span class="ia2-rt">/dashboard</span><span class="k-tag k-tag-lca ia2-st">By role</span></span></div>
+        <div class="ia2-rk">Last row</div>
+        <div class="ia2-mi"><span class="ia2-it"><b>Log out</b></span></div>
+      </div>
+      <p class="k-meta" style="margin:10px 0 0">The count counts personal to-dos only (unpaid entries, a membership ending or lapsed, a US Chess membership ending before an entered event), from <span class="ia2-c">src/lib/todo.ts</span>. Volunteer queues keep their own counts inside My LCA.</p>
+    </div>
+
+    <div class="ia2-card ia2-rel" style="padding:18px 20px">
+      <span class="k-num-badge ia2-mk" style="top:-12px;right:-10px">7</span>
+      <h3 class="k-h4" style="margin:0">Phones, under 768px: app bar, four tabs, the Menu sheet</h3>
+      <div class="ia2-phone" style="margin-top:12px">
+        <div>
+          <div class="ia2-appbar">
+            <svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>
+            <span class="ia2-bname"><b>Louisiana Chess</b><span>Association</span></span>
+            <a class="ia2-iconbtn" href="/search" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a>
+          </div>
+          <div class="ia2-pagefill">The page · 390px wide</div>
+          <nav class="ia2-tabs" aria-label="Main (phone)">
+            <a class="ia2-tab ia2-tab-on" href="/tournaments" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg>Tournaments</a>
+            <a class="ia2-tab" href="/clubs"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Clubs</a>
+            <a class="ia2-tab" href="/dashboard" aria-label="My LCA, 2 things to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.5-4 4.5-5.5 8-5.5s6.5 1.5 8 5.5"></path></svg>My LCA<span class="ia2-cnt" aria-hidden="true">2</span></a>
+            <button class="ia2-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+          </nav>
+          <p class="k-meta" style="margin:10px 0 0">Signed out, the third tab reads <b>Log in</b> with the same icon in the same place. The current tab: bold navy and a 3px gold-ink bar, never colour alone.</p>
+        </div>
+        <div><div class="k-label">Tabs, left to right</div><ol class="ia2-ol"><li><b>Tournaments</b> <span class="ia2-rt">/tournaments</span>, the desktop word, never &#8220;Events&#8221;</li><li><b>Clubs</b> <span class="ia2-rt">/clubs</span></li><li><b>Log in</b> <span class="ia2-rt">/login</span> signed out, <b>My LCA</b> <span class="ia2-rt">/dashboard</span> signed in, with the count</li><li><b>Menu</b> opens the sheet and reads &#8220;Close&#8221; while it is open; it is the current tab on Scholastic, News, Membership and About pages</li></ol></div>
+      </div>
+      <div class="ia2-rel ia2-sheet">
+          <span class="k-num-badge ia2-mk" style="top:-6px;right:-6px">8</span>
+          <div class="k-label">Menu sheet, top to bottom</div>
+          <ol class="ia2-ol">
+            <li><b>The six sections.</b> The current one is open with <span class="ia2-yah">You are here</span>. Tournaments holds All tournaments and Scoresheet scanner (This weekend and Results join with WS04 and WS10); Clubs holds All clubs, Club map, List or update your club.</li>
+            <li><b>Donate · Log in · Join LCA</b>, the desktop order; My LCA and Renew when they apply.</li>
+            <li><b>Workspace, Admin, Board inbox</b> by role.</li>
+            <li><b>LCA on Facebook &#8599; · Contact · Website help</b></li>
+            <li><b>Appearance: System · Light · Dark</b>, a shortcut to the footer&#8217;s control.</li>
+            <li><b>Hide event bar until the next update</b>, only while event mode is on.</li>
+          </ol>
+        </div>
+      <table class="ia2-widths">
+        <thead><tr><th scope="col">Width</th><th scope="col">Shown directly</th><th scope="col">Donate</th></tr></thead>
+        <tbody>
+          <tr><td><b>1024px and up</b></td><td>All six sections, Search, the utility trio</td><td>One click</td></tr>
+          <tr><td><b>768–1023px</b></td><td>Tournaments and Clubs, Search, a Donate text link, Log in or My LCA&nbsp;&#9662;, a Menu button that opens the same sheet as a right drawer. No tab bar.</td><td>One click</td></tr>
+          <tr><td><b>Under 768px</b></td><td>App bar with Search; tabs Tournaments · Clubs · Log in or My LCA · Menu</td><td>Two taps: Menu, then Donate <span class="ia2-qn" style="height:20px;min-width:30px;font-size:11px;vertical-align:1px">Q10</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- C · FOOTER -->
+<section class="ia2-sec" aria-labelledby="ia2-c">
+  <div class="ia2-lab"><span class="ia2-code">C</span><h2 id="ia2-c">Footer F1, on every page</h2><span class="k-meta">Four columns of nav.ts entries · folds into tap-to-open groups under 768px, Contact open</span></div>
+  <footer class="ia2-foot ia2-rel">
+    <span class="k-num-badge ia2-mk" style="top:-14px;right:-10px">9</span>
+    <div class="ia2-fgrid">
+      <div class="ia2-fbrand">
+        <a class="ia2-brand" href="/" aria-label="Louisiana Chess Association, home"><span class="ia2-plate" aria-hidden="true"><b>LCA</b><i>official logo</i></span><span class="ia2-bname" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+        <p>Louisiana&#8217;s chess community since 1915. Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+        <div class="k-row-sm"><a class="k-btn k-btn-gold" href="/membership">Join LCA</a><a class="k-btn k-btn-on-dark" href="/donate">Donate</a></div>
+      </div>
+      <div class="ia2-fcol"><h3>Play</h3><ul>
+        <li><a href="/tournaments">Tournaments</a><span class="ia2-fr">/tournaments</span></li>
+        <li><a href="/scholastic">Scholastic</a><span class="ia2-fr">/scholastic</span></li>
+        <li><a href="/champions">State champions</a><span class="ia2-fr">/champions</span></li>
+        <li><a href="/scanner">Scoresheet scanner</a><span class="ia2-fr">/scanner</span></li>
+        <li class="ia2-later"><span class="ia2-name" style="color:#c9d0de;font-size:14px">Calendar</span><span class="ia2-fst">Later · WS04, URL to come</span></li>
+        <li class="ia2-later"><a href="/results">Results</a><span class="ia2-fst">Later · WS10</span></li>
+      </ul></div>
+      <div class="ia2-fcol"><h3>Community</h3><ul>
+        <li><a href="/clubs">Clubs</a><span class="ia2-fr">/clubs</span></li>
+        <li><a href="/clubs#map">Club map</a><span class="ia2-fr">/clubs#map</span></li>
+        <li><a href="/contact?subject=club">List or update your club</a><span class="ia2-fr">/contact?subject=club</span></li>
+        <li><a href="/news">News</a><span class="ia2-fr">/news</span></li>
+        <li><a href="https://www.facebook.com/LouisianaChessAssociation" target="_blank" rel="noopener noreferrer">LCA on Facebook &#8599;</a><span class="ia2-fr">opens in a new tab</span></li>
+      </ul></div>
+      <div class="ia2-fcol"><h3>About LCA</h3><ul>
+        <li><a href="/about">About LCA</a><span class="ia2-fr">/about</span></li>
+        <li><a href="/governance/board">Board &amp; regions</a><span class="ia2-fr">/governance/board</span></li>
+        <li><a href="/governance/bylaws">Bylaws &amp; rules</a><span class="ia2-fr">/governance/bylaws</span></li>
+        <li><a href="/governance/minutes">Minutes</a><span class="ia2-fr">/governance/minutes</span></li>
+        <li><a href="/meeting">Annual meeting</a><span class="ia2-fr">/meeting</span></li>
+      </ul></div>
+      <div class="ia2-fcol"><h3>Contact</h3><ul>
+        <li><a href="/contact">Contact</a><span class="ia2-fr">/contact</span></li>
+        <li><a href="/contact?subject=membership">Membership help</a><span class="ia2-fr">/contact?subject=membership</span></li>
+        <li><a href="/support">Website help</a><span class="ia2-fr">/support</span></li>
+        <li><a href="/donate">Donate</a><span class="ia2-fst">Later · WS12 page</span></li>
+      </ul></div>
+    </div>
+    <div class="ia2-fbase">
+      <span>US Chess state affiliate · Louisiana&#8217;s chess community since 1915 · <a href="/governance/bylaws">Bylaws &amp; rules</a> · <a href="/governance/minutes">Minutes</a> · Site last updated Thu, Oct 8, 2026</span>
+      <span class="k-row-sm" style="gap:10px"><span id="ia2-app">Appearance:</span><span class="ia2-seg" role="radiogroup" aria-labelledby="ia2-app"><button type="button" aria-pressed="true">System</button><button type="button" aria-pressed="false">Light</button><button type="button" aria-pressed="false">Dark</button></span></span>
+    </div>
+  </footer>
+</section>
+
+<!-- D · CHANGES AND LANDINGS -->
+<section class="ia2-sec" aria-labelledby="ia2-d">
+  <div class="ia2-two" style="grid-template-columns:minmax(0,1fr) minmax(0,1.08fr)">
+    <div>
+      <div class="ia2-lab"><span class="ia2-code">D</span><h2 id="ia2-d">Changes from today</h2></div>
+      <div class="ia2-card" style="padding:6px 20px 8px">
+        <ul class="ia2-chg">
+          <li><b>Scanner</b><span>Leaves the main bar. Lives under Tournaments (Menu sheet, search) and in the footer&#8217;s Play column. <span class="ia2-was">Today: the 5th bar slot.</span></span></li>
+          <li><b>Membership</b><span>Out of More and onto the bar. More is gone. <span class="ia2-was">Today: hidden under More.</span></span></li>
+          <li><b>Donate</b><span>Permanent: top right on every page, the sheet, the footer and search Popular. <span class="ia2-was">Today: no way in.</span></span></li>
+          <li><b>Admin links</b><span>Admin, Workspace, Board inbox and My region&#8217;s clubs move from More into My LCA&nbsp;&#9662;, by role. <span class="ia2-was">Today: under More.</span></span></li>
+          <li><b>My LCA</b><span>Log in becomes My LCA&nbsp;&#9662;, with the to-do count, and the third phone tab. <span class="ia2-was">Today: a &#8220;Profile&#8221; button.</span></span></li>
+          <li><b>Facebook</b><span>Kept, as &#8220;LCA on Facebook &#8599;&#8221;: the About menu&#8217;s footer row, the sheet and the footer. <span class="ia2-was">Today: an icon in the bar.</span></span></li>
+          <li><b>Governance</b><span>Becomes About&nbsp;&#9662;, adding About LCA, Annual meeting, State champions and Contact. <span class="ia2-was">Today: More, then Governance; Annual meeting unlinked.</span></span></li>
+          <li><b>Order</b><span>Tournaments · Clubs · Scholastic · News · Membership · About. <span class="ia2-was">Today: Tournaments · Scholastic · Clubs · News · Scanner · More.</span></span></li>
+          <li><b>Footer</b><span>Play · Community · About LCA · Contact. Log in and My profile leave it; &#8220;Contact us&#8221; and &#8220;Support&#8221; become Contact and Website help. <span class="ia2-was">Today: Play · Governance · Membership · Connect.</span></span></li>
+          <li><b>Search</b><span>New: a Search button in the header, the box on the homepage, and <span class="ia2-rt">/search</span> (WS02). <span class="ia2-was">Today: none.</span></span></li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <div class="ia2-lab"><span class="ia2-code">E</span><h2 id="ia2-e">Where the awkward six land</h2></div>
+      <div class="k-tablebox">
+        <table class="ia2-six">
+          <thead><tr><th scope="col">Page</th><th scope="col">Today</th><th scope="col">Desktop</th><th scope="col">Phone</th><th scope="col">Footer and search</th></tr></thead>
+          <tbody>
+            <tr><td>Scanner</td><td class="ia2-tdy">5th bar slot</td><td>No bar slot</td><td>Sheet, under Tournaments</td><td>Play column · Popular</td></tr>
+            <tr><td>State champions</td><td class="ia2-tdy">Footer only</td><td>About&nbsp;&#9662; row</td><td>Sheet, under About</td><td>Play column · Popular</td></tr>
+            <tr><td>Governance docs</td><td class="ia2-tdy">More, Governance</td><td>About&nbsp;&#9662;: Board &amp; regions, Bylaws &amp; rules, Minutes</td><td>Sheet, under About</td><td>About LCA column · trust line · Popular</td></tr>
+            <tr><td>Donate</td><td class="ia2-tdy">No entry point</td><td>Top right, one click</td><td>Sheet, first button after the sections</td><td>Brand block · Contact column · Popular</td></tr>
+            <tr><td>My LCA</td><td class="ia2-tdy">&#8220;Profile&#8221; button</td><td>Log in becomes My LCA&nbsp;&#9662;</td><td>Third tab, with the count</td><td>Not in the footer</td></tr>
+            <tr><td>Workspace</td><td class="ia2-tdy">More, signed in</td><td>My LCA&nbsp;&#9662;, by role</td><td>Sheet, role tools</td><td>Search &#8220;Your tools&#8221;, signed in</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- F · ONE NAV.TS -->
+<section class="ia2-sec" aria-labelledby="ia2-f">
+  <div class="ia2-two">
+    <div class="ia2-rel">
+      <div class="ia2-lab"><span class="ia2-code">F</span><h2 id="ia2-f">One label per destination</h2><span class="k-num-badge">10</span><span class="k-meta">Where the replan&#8217;s lists differed</span></div>
+      <div class="k-tablebox">
+        <table class="ia2-lbl">
+          <thead><tr><th scope="col">Destination</th><th scope="col">The one label</th><th scope="col">Words it replaces</th></tr></thead>
+          <tbody>
+            <tr><td><span class="ia2-rt">/champions</span></td><td><b>State champions</b></td><td>&#8220;Champions&#8221; (About menu row)</td></tr>
+            <tr><td><span class="ia2-rt">/contact</span></td><td><b>Contact</b></td><td>&#8220;Contact form&#8221; (footer), &#8220;Contact us&#8221; (today)</td></tr>
+            <tr><td><span class="ia2-rt">/scholastic</span></td><td><b>Scholastic</b></td><td>&#8220;Scholastic chess&#8221; (footer)</td></tr>
+            <tr><td><span class="ia2-rt">/clubs</span></td><td><b>Clubs</b></td><td>&#8220;Find a club&#8221; (search Popular), &#8220;Chess clubs&#8221; (today)</td></tr>
+            <tr><td><span class="ia2-rt">facebook.com/&#8230;</span></td><td><b>LCA on Facebook &#8599;</b></td><td>&#8220;Facebook &#8599;&#8221; (Menu sheet)</td></tr>
+            <tr><td><span class="ia2-rt">/governance/board</span></td><td><b>Board &amp; regions</b></td><td>&#8220;Board members&#8221; (today)</td></tr>
+            <tr><td><span class="ia2-rt">/support</span></td><td><b>Website help</b></td><td>&#8220;Support&#8221; (today)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="k-meta" style="margin:10px 0 0">The sheet&#8217;s &#8220;All tournaments&#8221; and &#8220;All clubs&#8221; rows are built from the section&#8217;s own label, not stored as a second one.</p>
+    </div>
+    <div>
+      <div class="ia2-lab"><span class="ia2-code">G</span><h2 id="ia2-g">Search reads the same list</h2><span class="k-num-badge">2</span><span class="k-meta">The Pages group and the Popular list, Q5</span></div>
+      <div class="ia2-card" style="padding:16px 20px">
+        <div class="k-label">Popular, shown before you type</div>
+        <div class="ia2-pop">
+          <a href="/clubs">Clubs<span class="k-tag k-tag-open ia2-st">Route today</span></a>
+          <a href="/scholastic/first-tournament">Your child&#8217;s first tournament<span class="k-tag k-tag-soon ia2-st">Later · WS11</span></a>
+          <a href="/membership">Membership<span class="k-tag k-tag-open ia2-st">Route today</span></a>
+          <a href="/champions">State champions<span class="k-tag k-tag-open ia2-st">Route today</span></a>
+          <a href="/governance/bylaws">Bylaws &amp; rules<span class="k-tag k-tag-open ia2-st">Route today</span></a>
+          <a href="/governance/minutes">Minutes<span class="k-tag k-tag-open ia2-st">Route today</span></a>
+          <a href="/donate">Donate<span class="k-tag k-tag-soon ia2-st">Later · WS12 page</span></a>
+          <a href="/scanner">Scoresheet scanner<span class="k-tag k-tag-open ia2-st">Route today</span></a>
+        </div>
+        <div class="k-label" style="margin-top:14px">Pages group: about 40 nav.ts entries plus parents&#8217; words</div>
+        <div class="ia2-syn">
+          <span>kids, youth, school, first tournament</span><span class="ia2-arr">&#8594;</span><b>Your child&#8217;s first tournament</b>
+          <span>bylaws, rules</span><span class="ia2-arr">&#8594;</span><b>Bylaws &amp; rules</b>
+          <span>board, officers, regions</span><span class="ia2-arr">&#8594;</span><b>Board &amp; regions</b>
+          <span>join, renew</span><span class="ia2-arr">&#8594;</span><b>Membership</b>
+          <span>scoresheet</span><span class="ia2-arr">&#8594;</span><b>Scoresheet scanner</b>
+        </div>
+        <p class="k-meta" style="margin:10px 0 0">Matched on the client, so they appear with no request. While WS07 reports a live LCA round, &#8220;Live now: Paul Morphy Open · Round 3 pairings&#8221; heads the Popular list.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home · on phones (decided)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6}
+.hp-board{width:1960px;box-sizing:border-box;background:#ecebe6;padding:28px 44px 40px;color:#1a2744;font-family:Geist,system-ui,sans-serif;display:flex;flex-direction:column;gap:30px}
+.hp-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* title strip and legend */
+.hp-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:16px;padding:24px 28px 26px}
+.hp-top{display:flex;justify-content:space-between;align-items:flex-start;gap:40px}
+.hp-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 8px}
+.hp-meta{font-size:15px;line-height:1.5;color:#3d4556;margin:0}
+.hp-meta b{color:#1a2744;font-weight:600}
+.hp-topr{display:flex;flex-direction:column;align-items:flex-end;gap:8px;text-align:right}
+.hp-legend{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:24px;margin-top:20px}
+.hp-notes{background:#efefea;border-radius:12px;padding:16px 18px}
+.hp-notes ol{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 26px}
+.hp-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.hp-q{border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;background:#ffffff;padding:16px 18px}
+.hp-q ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.hp-q li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.hp-qn{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:24px;padding:0 6px;border-radius:6px;background:#f4ecd4;color:#664c0c;font-size:12px;font-weight:700;flex:none}
+.hp-def{display:block;margin-top:3px;font-weight:600;color:#145b3a}
+
+/* rows of phones */
+.hp-row1,.hp-row2{display:flex;justify-content:space-between;align-items:flex-start}
+.hp-col{position:relative;width:390px;flex:none;display:flex;flex-direction:column;gap:12px}
+.hp-col2{display:flex;gap:14px;align-items:flex-start}
+.hp-cap{display:flex;flex-direction:column;gap:3px}
+.hp-moment{font-size:13px;font-weight:600;color:#866a1e}
+.hp-mk{position:absolute;left:-36px;z-index:5;box-shadow:0 0 0 3px #ecebe6}
+
+/* phone order strip */
+.hp-order{position:relative;width:170px;flex:none;margin-top:40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:16px 14px 14px}
+.hp-omk{position:absolute;top:-12px;right:-10px;box-shadow:0 0 0 3px #ecebe6}
+.hp-ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.hp-oi{position:relative;display:flex;gap:9px;align-items:flex-start;padding:0 0 12px}
+.hp-oi::before{content:"";position:absolute;left:10px;top:22px;bottom:0;width:2px;background:#d9d8d1}
+.hp-oi:last-child::before{display:none}
+.hp-on{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;border:1.5px solid #858b99;background:#ffffff;color:#3d4556;font-size:11.5px;font-weight:700;flex:none;position:relative;z-index:1}
+.hp-oi-on .hp-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.hp-oi b{display:block;font-size:13px;line-height:1.3;font-weight:600}
+.hp-oi small{display:block;font-size:12px;line-height:1.35;color:#555c6b;margin-top:1px}
+
+/* phone chrome: app bar, tab bar */
+.hp-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:56px;padding:0 10px 0 16px;background:#1a2744;color:#ffffff}
+.hp-brand{display:flex;align-items:center;gap:9px;color:#ffffff;text-decoration:none;min-height:44px}
+.hp-rook{width:28px;height:28px;fill:#ffffff;flex:none}
+.hp-bn{display:flex;flex-direction:column;line-height:1.12}
+.hp-bn b{font-size:14px;font-weight:700}
+.hp-bn span{font-size:11px;font-weight:500;color:rgba(255,255,255,.8)}
+.hp-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.55);border-radius:9px;color:#ffffff;box-sizing:border-box}
+.hp-i20{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.hp-tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);height:56px;background:#ffffff;border-top:1px solid #d9d8d1}
+.hp-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;border:0;background:transparent;padding:0;color:#555c6b;text-decoration:none;font-size:12px;font-weight:500;line-height:1.1;cursor:pointer}
+.hp-tab-on{color:#1a2744;font-weight:700}
+.hp-tab-on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.hp-count{position:absolute;top:5px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#1a2744;color:#ffffff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.hp-tlive{position:absolute;top:4px;left:calc(50% + 8px);padding:2px 5px;border-radius:4px;background:#b3202f;color:#ffffff;font-size:10.5px;font-weight:700;line-height:1.15}
+.hp-safe{flex:none;height:24px;background:#ffffff;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;box-sizing:border-box}
+.hp-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+.hp-scroll{background:#f5f5f2;display:flex;flex-direction:column}
+
+/* phone content basics */
+.hp-pad{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.hp-h1{font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:0}
+.hp-h2{font-size:19px;line-height:1.25;font-weight:700;margin:0}
+.hp-h3{font-size:16px;line-height:1.3;font-weight:600;margin:0;color:#1a2744;text-decoration:none}
+.hp-t{font-size:14px;line-height:1.45;margin:0}
+.hp-m{font-size:13px;line-height:1.4;color:#555c6b;margin:0}
+.hp-xs{font-size:12px;line-height:1.35;color:#555c6b;margin:0}
+.hp-strong{font-weight:600;color:#1a2744}
+.hp-w{color:#ffffff}
+.hp-wm{color:#d5d9e3}
+.hp-ln{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.hp-r{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hp-st{display:flex;flex-direction:column;gap:6px}
+.hp-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.hp-grow{flex:1;min-width:0}
+.hp-b44{min-height:44px;padding:0 12px}
+.hp-b48{min-height:48px;width:100%;font-size:16px}
+.hp-tl{display:inline-flex;align-items:center;min-height:44px;font-size:14px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+
+/* register hero */
+.hp-hero{background:#1a2744;color:#ffffff;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.hp-strip{width:100%;height:96px;object-fit:cover;border-radius:10px;display:block}
+.hp-tag-lca{background:#ffffff;color:#1a2744}
+.hp-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.22);overflow:hidden;margin-top:6px}
+.hp-bar i{display:block;height:100%;background:#c8a94a}
+.hp-also{font-size:12.5px;line-height:1.45;color:#d5d9e3;margin:0;padding-top:10px;border-top:1px solid rgba(255,255,255,.18)}
+.hp-also a{color:#ffffff;font-weight:600;display:inline-flex;align-items:center;min-height:24px}
+.hp-hero-tail{border-radius:0 0 14px 14px;padding-top:6px}
+
+/* identity and search band */
+.hp-band{background:#ffffff;border-top:1px solid #dddcd4;border-bottom:1px solid #dddcd4;padding:16px}
+.hp-id{display:flex;align-items:center;gap:12px}
+.hp-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6;color:#1a2744;flex:none;line-height:1}
+.hp-plate b{font-size:14px;font-weight:700;letter-spacing:.02em}
+.hp-plate small{font-size:7.5px;font-weight:600;color:#555c6b;margin-top:3px;white-space:nowrap}
+.hp-plate-b{border:1px solid #dddcd4}
+.hp-idl{font-size:14px;line-height:1.5;font-weight:500;margin:0}
+.hp-idl a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.hp-tt{height:6px;border-top:3px solid #c8a94a;border-bottom:1px solid #c8a94a;margin:14px 0}
+.hp-slabel{display:block;font-size:14px;font-weight:600;color:#1a2744;margin-bottom:6px}
+.hp-sfield{display:flex;gap:8px}
+.hp-sbox{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:48px;padding:0 12px;border:1px solid #858b99;border-radius:10px;background:#ffffff;color:#555c6b;box-sizing:border-box}
+.hp-sbox input{border:0;outline:0;flex:1;min-width:0;font:inherit;font-size:16px;color:#1a2744;background:transparent;padding:0}
+.hp-sbox input::placeholder{color:#6b7180}
+.hp-sgo{min-height:48px;padding:0 14px}
+
+/* flagged strip, upcoming rows */
+.hp-flagbox{display:flex;flex-direction:column;gap:6px;align-items:flex-start;border:2px dashed #b9b7ad;border-radius:10px;background:repeating-linear-gradient(135deg,#f7f7f3 0 10px,#f1f1ec 10px 20px);padding:10px 12px}
+.hp-flag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;border:1px dashed #7a6a3a;background:#fffaf0;color:#664c0c;font-size:12px;font-weight:700;line-height:1.2}
+.hp-list,.hp-plist,.hp-qlist{list-style:none;margin:0;padding:0}
+.hp-row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid #e2e1da}
+.hp-row:first-child{border-top:0;padding-top:2px}
+.hp-date{width:58px;min-height:62px}
+.hp-date small{font-size:10.5px;font-weight:600;color:#555c6b;margin-bottom:3px}
+.hp-date b{font-size:20px;white-space:nowrap;letter-spacing:-.03em}
+.hp-date b.hp-dr{font-size:16px}
+.hp-ic{display:flex;gap:8px;align-items:flex-start}
+.hp-ic svg{margin-top:2px}
+.hp-ic span{flex:1;min-width:0}
+.k-date-navy.hp-date small{color:#e6cf86}
+.hp-row .hp-h3{display:block}
+
+/* live hero: live colour tokens only, Geist type */
+.hp-live{background:#070b14;color:#f3f5f9;border:1px solid #1a2744;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:7px}
+.hp-ltag{display:inline-flex;align-items:center;padding:4px 9px;border-radius:5px;background:#ff4757;color:#070b14;font-size:12.5px;font-weight:700;line-height:1.2}
+.hp-lm{color:#8e9ab2}
+.hp-lfg{color:#f3f5f9}
+.hp-lname{color:#f3f5f9;text-decoration:none}
+.hp-lfield{display:flex;flex-direction:column;gap:5px;margin-top:2px}
+.hp-llabel{font-size:14px;font-weight:600;color:#f3f5f9}
+.hp-linput{height:44px;padding:0 12px;border:1px solid #5f6d89;border-radius:8px;background:#0e1526;color:#f3f5f9;font:inherit;font-size:16px;box-sizing:border-box;width:100%}
+.hp-linput::placeholder{color:#8e9ab2}
+.hp-lgold{min-height:48px;width:100%;background:#c8a94a;border-color:#c8a94a;color:#070b14;font-size:16px}
+.hp-llink{display:inline-flex;align-items:center;min-height:44px;color:#f3f5f9;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.hp-lrounds{border-top:1px solid rgba(255,255,255,.08);padding-top:9px}
+.hp-lrh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#8e9ab2;margin:0 0 6px}
+.hp-rounds{list-style:none;margin:0;padding:0;display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.hp-rounds li{display:inline-flex;align-items:center;height:30px;padding:0 9px;border-radius:6px;border:1px solid rgba(255,255,255,.14);font-size:13px;font-weight:600;color:#8e9ab2;white-space:nowrap}
+.hp-rounds li.hp-rd-done{color:#f3f5f9;background:#0e1526}
+.hp-rounds li.hp-rd-live{color:#070b14;background:#c8a94a;border-color:#c8a94a}
+.hp-lfoot{border-top:1px solid rgba(255,255,255,.08);padding-top:8px}
+.hp-pause{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border:1px solid #5f6d89;border-radius:8px;background:transparent;color:#f3f5f9;font-size:14px;font-weight:600;cursor:pointer}
+
+/* results hero (Heritage accent, Geist) */
+.hp-res{background:#fbfaf6;border:1px solid #dddcd4;border-radius:14px;overflow:hidden;padding:10px 0 0}
+.hp-res .hp-tt{margin:0 14px}
+.hp-resin{padding:12px 14px 10px;display:flex;flex-direction:column;gap:10px}
+.hp-seal{width:52px;height:52px;flex:none}
+.hp-champ{display:flex;flex-direction:column;gap:1px;padding:10px 12px;border-radius:10px;background:#1a2744;color:#ffffff}
+.hp-champ .hp-m{color:#d5d9e3}
+.hp-clabel{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.hp-cname{font-size:20px;line-height:1.25;font-weight:700}
+.hp-wins{list-style:none;margin:0;padding:0}
+.hp-wins li{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-top:1px solid #e2e1da;font-size:14px;line-height:1.4}
+.hp-wins li:first-child{border-top:0;padding-top:0}
+.hp-wsec{width:52px;flex:none;font-size:12px;font-weight:700;letter-spacing:.04em;color:#866a1e}
+.hp-wmore a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;font-size:14px;color:#1a2744}
+
+/* grid motif (partner, quiet and clubs modes) */
+.hp-grid{position:relative;background-color:#fbfaf6;background-image:repeating-conic-gradient(rgba(26,39,68,.045) 0 25%,transparent 0 50%);background-size:91.5px 91.5px;border-bottom:1px solid #e2e1da}
+.hp-files{position:absolute;left:0;right:0;bottom:3px;display:flex;justify-content:space-around;font-family:'Geist Mono',ui-monospace,monospace;font-size:10px;color:#9a9fab;pointer-events:none}
+.hp-plist{display:flex;flex-direction:column;gap:8px}
+.hp-prow{display:flex;gap:12px;align-items:flex-start;background:#ffffff;border:1px solid #e2e1da;border-radius:12px;padding:10px 12px 2px}
+.hp-org{display:inline-flex;align-items:center;min-height:44px;font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.hp-smp{padding:2px 7px;font-size:10.5px;vertical-align:2px;margin-left:4px;text-transform:none;letter-spacing:0}
+.hp-next{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 12px;border-radius:10px;background:#ffffff;border:1px solid #e2e1da;color:#1a2744;text-decoration:none;font-size:13px;line-height:1.4}
+.hp-nextcard{display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:#ffffff;border:1px solid #dddcd4;color:#1a2744;text-decoration:none}
+.hp-qlist{margin-top:4px;background:#ffffff;border:1px solid #e2e1da;border-radius:12px}
+.hp-qrow{display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid #ecebe5;color:#1a2744;text-decoration:none;min-height:44px}
+.hp-qlist li:first-child .hp-qrow{border-top:0}
+.hp-qwhen{display:block;font-size:12px;font-weight:600;color:#3d4556}
+.hp-region{display:flex;flex-direction:column;gap:8px}
+.hp-region .hp-slabel{margin-bottom:0}
+.hp-select{min-height:48px;appearance:auto}
+.hp-chips{display:flex;flex-wrap:wrap;gap:8px}
+.hp-chip{min-height:44px;text-decoration:none}
+.hp-err{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px}
+
+/* doors accordion */
+.hp-doors{background:#fbfaf6;border-top:1px solid #e2e1da;border-bottom:1px solid #e2e1da;padding:18px 16px;display:flex;flex-direction:column;gap:10px}
+.hp-door{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden}
+.hp-door-open{border-color:#1a2744;box-shadow:inset 0 3px 0 #c8a94a}
+.hp-dh{margin:0}
+.hp-dbtn{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:10px 12px;border:0;background:transparent;text-align:left;color:#1a2744;cursor:pointer}
+.hp-dbtn b{display:block;font-size:16px;line-height:1.3}
+.hp-dbtn small{display:block;font-size:13px;line-height:1.35;color:#555c6b;font-weight:400}
+.hp-dic{display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:#f4ecd4;color:#1a2744;flex:none}
+.hp-dlinks{list-style:none;margin:0;padding:0 12px 4px}
+.hp-dlinks li{border-top:1px solid #ecebe5}
+.hp-dlinks a{display:flex;align-items:center;gap:10px;min-height:52px;padding:6px 0;color:#1a2744;text-decoration:none}
+.hp-dlinks a > span{flex:1}
+.hp-dlinks b{display:block;font-size:15px;font-weight:600}
+.hp-dlinks small{display:block;font-size:12.5px;color:#555c6b}
+
+</style>
+</helmet>
+<div class="hp-board" style="min-height:2750px">
+
+  <section class="hp-doc" aria-label="About this board">
+    <div class="hp-top">
+      <div>
+        <p class="k-kicker">Homepage · decided design · phones, 390 px · Phase 0</p>
+        <h1 class="hp-title">Home · on phones (decided)</h1>
+        <p class="hp-meta"><b>Built from:</b> Home-Phones A next-event hero · Home-Phones B search box, in the identity band · Home-Phones E doors accordion · Nav-Mobile M2 app bar and tab bar · the hero ladder at 390px</p>
+        <p class="hp-meta"><b>Replaces:</b> Home-Phones (options A, B, C and E at 390px)</p>
+      </div>
+      <div class="hp-topr"><span class="k-sample">Sample data</span><p class="hp-xs" style="max-width:400px">Events, clubs, cities and people are the ones the other boards use. Entry counts, fees, live times, results and the Downriver Quads row are sample. Each phone shows its own moment.</p></div>
+    </div>
+    <div class="hp-legend">
+      <div class="hp-notes">
+        <p class="k-label">Notes on this board</p>
+        <ol><li><span class="k-num-badge">1</span><span><b>App bar.</b> 56px navy: rook mark and "Louisiana Chess Association", tap for Home. A 44×44 bordered Search button opens the /search page, so Back works. It never condenses.</span></li><li><span class="k-num-badge">2</span><span><b>Tab bar.</b> Tournaments · Clubs · Log in · Menu, labels always shown, 56px plus the safe area, never hidden on scroll. The current tab gets a bold label and a 3px gold-ink bar. Home is not a tab, so none is marked here.</span></li><li><span class="k-num-badge">3</span><span><b>Register hero at 390px.</b> Home-A's card: 96px hall photo, two tags, 26px title, weekday dates, format in words, sections and fees, one gold primary. While loading, the hero holds 360px with a plain skeleton.</span></li><li><span class="k-num-badge">4</span><span><b>Should I hurry?</b> Count and spots left over a 6px bar, early entry on its own line. Counts only on LCA events. Within 14 days this is the last-call rung, the same card with "Starts Saturday · in 4 days".</span></li><li><span class="k-num-badge">5</span><span><b>Identity and search band,</b> under every hero mode: official logo, linked stats, the thick–thin rule and a 48px box with a visible label. Quick picks stay hidden until their filters ship.</span></li><li><span class="k-num-badge">6</span><span><b>Phone order (WS03 AC5):</b> the brief's order with the band added. Nothing is hidden by hero mode; flagged blocks are absent until their data exists.</span></li><li><span class="k-num-badge">7</span><span><b>Live hero.</b> Live colour tokens on this card only, Geist type, no live fonts on Home. One gold button. Signed-in players also get "You're on board 6 with White". The Tournaments tab carries a worded Live tag.</span></li><li><span class="k-num-badge">8</span><span><b>Rounds in words.</b> A visible "Rounds" heading; "Round" is in each item for screen readers, never an abbreviation. Updates every 20 seconds while the tab is visible; Pause updates stops them. Nothing moves.</span></li><li><span class="k-num-badge">9</span><span><b>Results hero.</b> Heritage accent in Geist: thick–thin rule and seal, no photo. One winner per section by full name with ½, ties in words, up to four sections. Names never link to a player page.</span></li><li><span class="k-num-badge">10</span><span><b>This weekend in Louisiana.</b> Up to three dated rows. Partner rows say where you register and open the organizer's site in a new tab: never a Register button, a count or the LCA hall photo. Ends with the Next LCA event line.</span></li><li><span class="k-num-badge">11</span><span><b>Quiet.</b> The usual state: the next LCA event, the three soonest Louisiana events however far, and clubs by region. Shown signed in: My LCA replaces Log in, with a count of personal to-dos.</span></li><li><span class="k-num-badge">12</span><span><b>Clubs floor.</b> When nothing else matches, or when the home data fails to load, the hero is built from the static region list with no error message. Lower blocks keep their own honest error states.</span></li><li><span class="k-num-badge">13</span><span><b>Doors band as an accordion.</b> One door open at a time, opened by a real button with aria-expanded. Three links each, with the landing page named in grey. It opens in place without animation.</span></li></ol>
+      </div>
+      <aside class="hp-q" aria-labelledby="hp-qh">
+        <p id="hp-qh" class="k-label-gold">Open questions for K</p>
+        <ol><li><span class="hp-qn">Q11</span><span>Should an open LCA event lead the homepage for 30 days, with a last-call tier at 14 days and early-entry overrides at 14 and 7 days, instead of the brief's 21 days? (phone 1)<span class="hp-def">Default: yes.</span></span></li><li><span class="hp-qn">Q3</span><span>Should the live hero stay public, while the event bar and the round pop-ups stay for involved people only? (phone 3)<span class="hp-def">Default: public hero; the "You're on board 6" line only for signed-in involved people.</span></span></li><li><span class="hp-qn">Q14</span><span>Should the Results hero and the Champions band ship in Phase 0 from today's standings, ahead of the results archive? (phone 4)<span class="hp-def">Default: yes, each behind its own switch.</span></span></li><li><span class="hp-qn">Q10</span><span>On phones, Donate sits first in the Menu sheet after the sections (two taps), not in the app bar. Accept that? (every phone)<span class="hp-def">Default: accept two taps on phones; one click on tablet and desktop.</span></span></li></ol>
+      </aside>
+    </div>
+  </section>
+
+  <div class="hp-row1"><div class="hp-col"><span class="k-num-badge hp-mk" style="top:12px">1</span><span class="k-num-badge hp-mk" style="top:790px">2</span><span class="k-num-badge hp-mk" style="top:100px">3</span><span class="k-num-badge hp-mk" style="top:438px">4</span><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll hp-scroll "><div class="hp-pad">
+  <div class="hp-ln"><span class="k-label" style="white-space:nowrap">Next LCA tournament</span><span class="hp-xs hp-strong" style="white-space:nowrap">Sat, Jun 12 · in 26 days</span></div>
+  <article class="hp-hero" aria-labelledby="hp-ev1">
+    <img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at long tables in a tournament hall" class="hp-strip">
+    <div class="hp-wrap" style="align-items:center"><span class="k-tag k-tag-open">Registration open</span><span class="k-tag hp-tag-lca">LCA event</span><span class="k-sample hp-smp" style="margin-left:auto">Sample data</span></div>
+    <h2 id="hp-ev1" class="hp-h1 hp-w">Paul Morphy Open 2027</h2>
+    <div class="hp-st">
+      <div class="hp-ic hp-t hp-w"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span><b>Sat–Sun, Jun 12–13, 2027</b> · New Orleans</span></div>
+      <div class="hp-ic hp-t hp-wm"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>5 rounds. Each player has 90 minutes, plus 30 seconds a move.</span></div>
+      <div class="hp-ic hp-t hp-wm"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg><span>Open · U1800 · U1400 · U1000 · <b class="hp-w">$30–$60</b></span></div>
+    </div>
+    <div>
+      <div class="hp-ln hp-t hp-w"><b>38 of 60 registered · 22 spots left</b></div>
+      <div class="hp-bar" role="img" aria-label="38 of 60 spots taken"><i style="width:63%"></i></div>
+      <p class="hp-xs hp-wm" style="margin-top:7px">Early entry ends Tue, Jun 1 · LCA members save $10</p>
+    </div>
+    <div class="hp-r"><a class="k-btn k-btn-gold hp-b44" href="#" style="flex:1.25">Register · from $30</a><a class="k-btn k-btn-on-dark hp-b44" href="#" style="flex:1">Event details</a></div>
+    <p class="hp-also"><b class="hp-w">Also this weekend:</b> The Baton Rouge Classic · Sat–Sun, May 22–23 · Partner event · <a href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="hp-vh"> (opens in new tab)</span></a></p>
+  </article>
+</div>
+<section class="hp-band" aria-label="About LCA and search">
+  <div class="hp-id"><span class="hp-plate hp-plate-b" aria-hidden="true"><b>LCA</b><small>official logo</small></span><p class="hp-idl">Louisiana's chess community <a href="#">since 1915</a> · <a href="#">300+ members</a> · <a href="#">25+ clubs</a> · <a href="#">7 regions</a></p></div>
+  <div class="hp-tt" role="presentation"></div>
+  <form role="search" action="#">
+    <label class="hp-slabel" for="hp-q1">Search tournaments, clubs and news</label>
+    <div class="hp-sfield"><div class="hp-sbox"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hp-q1" type="search" role="combobox" aria-expanded="false" aria-autocomplete="list" placeholder="A city, a club or a month"></div><button class="k-btn k-btn-navy hp-sgo" type="submit">Search</button></div>
+  </form>
+</section></main><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><div class="hp-cap"><div class="k-caption">1 · Register, first screen</div><div class="hp-moment">Mon, May 17, 2027 · 1:00 PM · signed out</div><div class="k-caption-sub">Rung 5: an open LCA event within 30 days. The hero fills the first screen; the band starts just below it.</div></div></div><div class="hp-col2"><div class="hp-col"><span class="k-num-badge hp-mk" style="top:236px">5</span><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll hp-scroll "><div class="hp-pad" style="padding-top:0">
+  <div class="hp-hero hp-hero-tail" aria-hidden="true">
+    <div class="hp-bar"><i style="width:63%"></i></div>
+    <p class="hp-xs hp-wm">Early entry ends Tue, Jun 1 · LCA members save $10</p>
+    <div class="hp-r"><span class="k-btn k-btn-gold hp-b44" style="flex:1.25">Register · from $30</span><span class="k-btn k-btn-on-dark hp-b44" style="flex:1">Event details</span></div>
+  </div>
+</div>
+<section class="hp-band" aria-label="About LCA and search">
+  <div class="hp-id"><span class="hp-plate hp-plate-b" aria-hidden="true"><b>LCA</b><small>official logo</small></span><p class="hp-idl">Louisiana's chess community <a href="#">since 1915</a> · <a href="#">300+ members</a> · <a href="#">25+ clubs</a> · <a href="#">7 regions</a></p></div>
+  <div class="hp-tt" role="presentation"></div>
+  <form role="search" action="#">
+    <label class="hp-slabel" for="hp-q2">Search tournaments, clubs and news</label>
+    <div class="hp-sfield"><div class="hp-sbox"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hp-q2" type="search" role="combobox" aria-expanded="false" aria-autocomplete="list" placeholder="A city, a club or a month"></div><button class="k-btn k-btn-navy hp-sgo" type="submit">Search</button></div>
+  </form>
+</section>
+<div class="hp-pad" style="gap:12px">
+  <div class="hp-flagbox"><span class="hp-xs hp-strong" style="color:#3d4556">This week at the clubs</span><span class="hp-flag">WS09 · off until club schedules exist</span></div>
+  <div class="hp-ln" style="align-items:flex-end"><h2 class="hp-h2">Upcoming tournaments in Louisiana</h2></div>
+  <ol class="hp-list">
+    <li class="hp-row"><div class="k-date hp-date"><small>Sat–Sun</small><b class="hp-dr">22–23</b><span>May</span></div><div class="hp-grow"><a class="hp-h3" href="#">The Baton Rouge Classic</a><div class="hp-m">Baton Rouge · Downriver Chess · Classical</div><div class="hp-r" style="margin-top:4px"><span class="k-tag k-tag-ext">Partner event</span><span class="hp-xs">Registers on the organizer's site ↗</span></div></div></li>
+    <li class="hp-row"><div class="k-date hp-date"><small>Sat</small><b>26</b><span>Jun</span></div><div class="hp-grow"><a class="hp-h3" href="#">The Casa Chess Tournament</a><div class="hp-m">Sulphur · Casa de Ajedrez · Dual-rated</div><div class="hp-r" style="margin-top:4px"><span class="k-tag k-tag-ext">Partner event</span><span class="hp-xs">Registers on the organizer's site ↗</span></div></div></li>
+    <li class="hp-row"><div class="k-date hp-date"><small>Sat–Sun</small><b class="hp-dr">17–18</b><span>Jul</span></div><div class="hp-grow"><a class="hp-h3" href="#">Lafayette Open 2027</a><div class="hp-m">Lafayette · Lafayette Chess Club · Classical</div><div class="hp-r" style="margin-top:4px"><span class="k-tag k-tag-ext">Partner event</span><span class="hp-xs">Registers on the organizer's site ↗</span></div></div></li>
+  </ol>
+</div></main><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><div class="hp-cap"><div class="k-caption">2 · Same page, scrolled</div><div class="hp-moment">Mon, May 17, 2027 · signed out</div><div class="k-caption-sub">The identity and search band, then the top of the upcoming list.</div></div></div><aside class="hp-order" aria-labelledby="hp-oh"><span class="k-num-badge hp-omk">6</span><p id="hp-oh" class="k-label-gold">Phone order</p><p class="hp-xs" style="margin:4px 0 12px">Top to bottom at 390px, WS03 AC5. Filled = drawn on this board.</p><ol class="hp-ol"><li class="hp-oi hp-oi-on"><span class="hp-on">1</span><span><b>Hero</b><small>One mode at a time, picked by data. Phones 1, 3–7.</small></span></li><li class="hp-oi hp-oi-on"><span class="hp-on">2</span><span><b>Identity and search band</b><small>Under every mode. Phone 2.</small></span></li><li class="hp-oi"><span class="hp-on">3</span><span><b>This week at the clubs</b><small>WS09, off until club schedules exist.</small></span></li><li class="hp-oi hp-oi-on"><span class="hp-on">4</span><span><b>Upcoming six</b><small>Louisiana only, the hero event removed. Phone 2.</small></span></li><li class="hp-oi hp-oi-on"><span class="hp-on">5</span><span><b>Doors</b><small>Accordion, one open at a time. Phone 8.</small></span></li><li class="hp-oi"><span class="hp-on">6</span><span><b>Results and champions</b><small>Champions band from the state champions list.</small></span></li><li class="hp-oi"><span class="hp-on">7</span><span><b>News and Facebook</b><small>Three posts and a compact Facebook rail.</small></span></li><li class="hp-oi"><span class="hp-on">8</span><span><b>Membership</b><small>Hidden for active members.</small></span></li></ol><p class="hp-xs" style="margin-top:12px">Then the footer, folded into tap-to-open groups.</p></aside></div><div class="hp-col"><span class="k-num-badge hp-mk" style="top:82px">7</span><span class="k-num-badge hp-mk" style="top:405px">8</span><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll hp-scroll "><div class="hp-pad">
+  <section class="hp-live" data-theme="live" aria-labelledby="hp-ev3">
+    <div class="hp-ln"><span class="hp-ltag">Live · Round 3 of 5</span><span class="hp-xs hp-lm">Sat, Jun 12</span></div>
+    <h2 id="hp-ev3" class="hp-h1"><a href="#" class="hp-lname">Paul Morphy Open 2027</a></h2>
+    <p class="hp-t hp-lfg">Players are in round 3 in New Orleans. Pairings show who plays whom on each board.</p>
+    <p class="hp-xs hp-lm">Round 3 pairings posted 6:41 PM · starts 7:00 PM</p>
+    <form class="hp-lfield" action="#"><label for="hp-find" class="hp-llabel">Find your name</label><input id="hp-find" class="hp-linput" type="search" placeholder="First or last name" autocomplete="off"></form>
+    <a class="k-btn hp-lgold" href="#">Find my board</a>
+    <div class="hp-lrounds">
+      <div class="hp-ln" style="margin-bottom:6px"><h3 class="hp-lrh" id="hp-rh" style="margin:0">Rounds</h3><span class="hp-xs hp-lm" role="status">Updated 6:42 PM</span></div>
+      <ol class="hp-rounds" aria-labelledby="hp-rh">
+        <li class="hp-rd-done"><span class="hp-vh">Round </span>1 Final</li>
+        <li class="hp-rd-done"><span class="hp-vh">Round </span>2 Final</li>
+        <li class="hp-rd-live" aria-current="step"><span class="hp-vh">Round </span>3 Live</li>
+        <li><span class="hp-vh">Round </span>4<span class="hp-vh"> · Sun 9:30 AM</span></li>
+        <li><span class="hp-vh">Round </span>5<span class="hp-vh"> · Sun 2:00 PM</span></li>
+      </ol>
+    </div>
+    <div class="hp-ln hp-lfoot"><div class="hp-r" style="gap:16px"><a class="hp-llink" href="#">Pairings</a><a class="hp-llink" href="#">Standings</a></div><button class="hp-pause" type="button" aria-pressed="false"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5v14M15 5v14"></path></svg>Pause updates</button></div>
+  </section>
+</div>
+<section class="hp-band" aria-label="About LCA and search">
+  <div class="hp-id"><span class="hp-plate hp-plate-b" aria-hidden="true"><b>LCA</b><small>official logo</small></span><p class="hp-idl">Louisiana's chess community <a href="#">since 1915</a> · <a href="#">300+ members</a> · <a href="#">25+ clubs</a> · <a href="#">7 regions</a></p></div>
+  <div class="hp-tt" role="presentation"></div>
+  <form role="search" action="#">
+    <label class="hp-slabel" for="hp-q3">Search tournaments, clubs and news</label>
+    <div class="hp-sfield"><div class="hp-sbox"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hp-q3" type="search" role="combobox" aria-expanded="false" aria-autocomplete="list" placeholder="A city, a club or a month"></div><button class="k-btn k-btn-navy hp-sgo" type="submit">Search</button></div>
+  </form>
+</section>
+<div class="hp-pad" style="gap:12px">
+  <h2 class="hp-h2">Upcoming tournaments in Louisiana</h2>
+  <ol class="hp-list">
+    <li class="hp-row"><div class="k-date hp-date"><small>Sat</small><b>26</b><span>Jun</span></div><div class="hp-grow"><a class="hp-h3" href="#">The Casa Chess Tournament</a><div class="hp-m">Sulphur · Casa de Ajedrez · Dual-rated</div><div class="hp-r" style="margin-top:4px"><span class="k-tag k-tag-ext">Partner event</span><span class="hp-xs">Registers on the organizer's site ↗</span></div></div></li>
+  </ol>
+</div></main><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span><span class="hp-tlive">Live</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><div class="hp-cap"><div class="k-caption">3 · Live</div><div class="hp-moment">Sat, Jun 12, 2027 · 6:42 PM · signed out</div><div class="k-caption-sub">Rung 1, WS07. A dark card in the live colours: find your board in one step, rounds in words.</div></div></div><div class="hp-col"><span class="k-num-badge hp-mk" style="top:82px">9</span><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll hp-scroll "><div class="hp-pad">
+  <article class="hp-res" aria-labelledby="hp-ev4">
+    <div class="hp-tt" role="presentation" style="margin:0"></div>
+    <div class="hp-resin">
+      <div class="hp-r" style="gap:12px;align-items:flex-start">
+        <svg class="hp-seal" viewBox="0 0 200 200" role="img" aria-label="Seal: Louisiana Chess Association, since 1915">
+  <defs><path id="hp-arc" d="M26 100a74 74 0 1 1 148 0a74 74 0 1 1-148 0"></path></defs>
+  <circle cx="100" cy="100" r="98" fill="#1a2744"></circle>
+  <circle cx="100" cy="100" r="91" fill="none" stroke="#c8a94a" stroke-width="3"></circle>
+  <circle cx="100" cy="100" r="60" fill="none" stroke="#c8a94a" stroke-width="2"></circle>
+  <text fill="#c8a94a" font-family="Geist, ui-sans-serif, sans-serif" font-size="14" font-weight="600" letter-spacing="2"><textPath href="#hp-arc">LOUISIANA CHESS ASSOCIATION · SINCE 1915 ·</textPath></text>
+  <g transform="translate(64.6 64) scale(.68)" fill="#f7f3e8"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></g>
+</svg>
+        <div class="hp-grow"><p class="k-label-gold">Final standings <span class="k-sample hp-smp">Sample data</span></p><h2 id="hp-ev4" class="hp-h1" style="font-size:24px;margin-top:4px">2026 Louisiana State Championship</h2></div>
+      </div>
+      <p class="hp-m" style="margin-top:8px">Sat–Mon, Sep 5–7 · Sulphur · 6 sections</p>
+      <div class="hp-champ"><span class="hp-clabel">State champion</span><span class="hp-cname">Marcus Landry</span><span class="hp-m">Open section · 4½ of 5</span></div>
+      <ul class="hp-wins" aria-label="Section winners">
+        <li><span class="hp-wsec">U1800</span><span><b>Devin Batiste</b>, 4½ of 5</span></li>
+        <li><span class="hp-wsec">U1400</span><span>Tied for first: <b>Sam Nguyen</b>, <b>Leo Robichaux</b>, 4 of 5</span></li>
+        <li><span class="hp-wsec">U1000</span><span><b>Theo Guidry</b>, 4½ of 5</span></li>
+        <li class="hp-wmore"><a href="#">+2 more sections</a></li>
+      </ul>
+      <a class="k-btn k-btn-gold hp-b48" href="#">Final standings</a>
+      <div class="hp-r" style="gap:18px;margin-top:4px"><a class="hp-tl" href="#">Crosstable</a><a class="hp-tl" href="#" target="_blank" rel="noopener">LCA on Facebook ↗<span class="hp-vh"> (opens in new tab)</span></a></div>
+    </div>
+  </article>
+</div>
+<section class="hp-band" aria-label="About LCA and search">
+  <div class="hp-id"><span class="hp-plate hp-plate-b" aria-hidden="true"><b>LCA</b><small>official logo</small></span><p class="hp-idl">Louisiana's chess community <a href="#">since 1915</a> · <a href="#">300+ members</a> · <a href="#">25+ clubs</a> · <a href="#">7 regions</a></p></div>
+  <div class="hp-tt" role="presentation"></div>
+  <form role="search" action="#">
+    <label class="hp-slabel" for="hp-q4">Search tournaments, clubs and news</label>
+    <div class="hp-sfield"><div class="hp-sbox"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hp-q4" type="search" role="combobox" aria-expanded="false" aria-autocomplete="list" placeholder="A city, a club or a month"></div><button class="k-btn k-btn-navy hp-sgo" type="submit">Search</button></div>
+  </form>
+</section></main><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><div class="hp-cap"><div class="k-caption">4 · Results</div><div class="hp-moment">Thu, Sep 10, 2026 · signed out</div><div class="k-caption-sub">Rung 4: an LCA event finished within 7 days and every section has results. Heritage accent, Geist type.</div></div></div></div>
+  <div class="hp-row2"><div class="hp-col"><span class="k-num-badge hp-mk" style="top:82px">10</span><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll hp-scroll "><section class="hp-grid" aria-labelledby="hp-h5">
+  <div class="hp-pad" style="gap:10px;padding-bottom:20px">
+    <p class="k-label">Mon, Oct 19 – Sun, Nov 1</p>
+    <h2 id="hp-h5" class="hp-h1">This weekend in Louisiana</h2>
+    <ol class="hp-plist">
+      <li class="hp-prow"><div class="k-date hp-date"><small>Sat–Sun</small><b class="hp-dr">24–25</b><span>Oct</span></div><div class="hp-grow"><span class="k-tag k-tag-ext">Partner event</span><div class="hp-h3" style="margin-top:4px">The Baton Rouge Classic</div><div class="hp-m">Baton Rouge · Downriver Chess · Classical</div><a class="hp-org" href="#" target="_blank" rel="noopener">Organizer's site ↗ (opens in new tab)</a></div></li>
+      <li class="hp-prow"><div class="k-date hp-date"><small>Sat</small><b>31</b><span>Oct</span></div><div class="hp-grow"><span class="k-tag k-tag-ext">Partner event</span><div class="hp-h3" style="margin-top:4px">The Casa Chess Tournament</div><div class="hp-m">Sulphur · Casa de Ajedrez · Dual-rated</div><a class="hp-org" href="#" target="_blank" rel="noopener">Organizer's site ↗ (opens in new tab)</a></div></li>
+      <li class="hp-prow"><div class="k-date hp-date"><small>Sun</small><b>1</b><span>Nov</span></div><div class="hp-grow"><span class="k-tag k-tag-ext">Partner event</span><div class="hp-h3" style="margin-top:4px">Downriver Quads <span class="k-sample hp-smp">Sample data</span></div><div class="hp-m">New Orleans · Downriver Chess · Quick, 30 minutes each</div><a class="hp-org" href="#" target="_blank" rel="noopener">Organizer's site ↗ (opens in new tab)</a></div></li>
+    </ol>
+    <a class="hp-tl" href="#" style="align-self:flex-start">Or play this week at one of 25+ clubs →</a>
+    <a class="k-btn k-btn-gold hp-b48" href="#">All tournaments</a>
+    <a class="hp-next" href="#"><span><b>Next LCA event:</b> State Scholastic Championship · Sat, Apr 10 · Registration opens Fri, Jan 15</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+  </div>
+  <div class="hp-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+</section></main><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><div class="hp-cap"><div class="k-caption">5 · This weekend in Louisiana</div><div class="hp-moment">Mon, Oct 19, 2026 · signed out</div><div class="k-caption-sub">Rung 8, the usual state between LCA events. Partner rows point to the organizer's site.</div></div></div><div class="hp-col"><span class="k-num-badge hp-mk" style="top:82px">11</span><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll hp-scroll "><section class="hp-grid" aria-labelledby="hp-h6">
+  <div class="hp-pad" style="gap:9px;padding-bottom:20px">
+    <h1 id="hp-h6" class="hp-h1">Find your next game in Louisiana</h1>
+    <a class="hp-nextcard" href="#">
+      <span class="k-date k-date-navy hp-date"><small>Sat</small><b>10</b><span>Apr</span></span>
+      <span class="hp-grow"><span class="k-label-gold" style="display:block">Next LCA event</span><span class="hp-h3" style="display:block;margin-top:2px">State Scholastic Championship</span><span class="hp-m" style="display:block">Sat, Apr 10, 2027 · K–12</span><span class="k-tag k-tag-soon" style="margin-top:6px">Registration opens Fri, Jan 15</span></span>
+      <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+    </a>
+    <div>
+      <h2 class="hp-h3" style="color:#3d4556">Soonest in Louisiana</h2>
+      <ol class="hp-qlist">
+        <li><a class="hp-qrow" href="#" target="_blank" rel="noopener"><span class="hp-grow"><span class="hp-qwhen">Sat, Dec 5 · in 19 days · New Orleans</span><span class="hp-h3" style="display:block">New Orleans Youth Chess December Meet</span><span class="hp-r" style="margin-top:3px;flex-wrap:nowrap;gap:7px"><span class="k-tag k-tag-ext">Partner event</span><span class="hp-xs" style="white-space:nowrap">Registers on the organizer's site ↗</span></span></span><span class="hp-vh"> (opens in new tab)</span></a></li>
+        <li><a class="hp-qrow" href="#" target="_blank" rel="noopener"><span class="hp-grow"><span class="hp-qwhen">Sat–Mon, Jan 16–18 · in 61 days · New Orleans</span><span class="hp-h3" style="display:block">Ken Ferguson Memorial Open</span><span class="hp-r" style="margin-top:3px;flex-wrap:nowrap;gap:7px"><span class="k-tag k-tag-ext">Partner event</span><span class="hp-xs" style="white-space:nowrap">Registers on the organizer's site ↗</span></span></span><span class="hp-vh"> (opens in new tab)</span></a></li>
+        <li><a class="hp-qrow" href="#" target="_blank" rel="noopener"><span class="hp-grow"><span class="hp-qwhen">Sat, Mar 20 · in 124 days · New Orleans</span><span class="hp-h3" style="display:block">New Orleans Youth Chess March Meet</span><span class="hp-r" style="margin-top:3px;flex-wrap:nowrap;gap:7px"><span class="k-tag k-tag-ext">Partner event</span><span class="hp-xs" style="white-space:nowrap">Registers on the organizer's site ↗</span></span></span><span class="hp-vh"> (opens in new tab)</span></a></li>
+      </ol>
+    </div>
+    <form class="hp-region" action="#">
+      <label for="hp-reg" class="hp-slabel">Clubs meet every week. Your region</label>
+      <select id="hp-reg" class="k-input hp-select"><option>New Orleans Metro</option><option>North of Lake Pontchartrain</option><option>South Central</option><option>Bayou Region</option><option>Southwest</option><option>Central</option><option>North</option></select>
+      <button class="k-btn k-btn-gold hp-b48" type="submit">Find a club near you</button>
+    </form>
+    <a class="hp-tl" href="#" style="align-self:flex-start">All tournaments</a>
+  </div>
+  <div class="hp-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+</section></main><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#" aria-label="My LCA, 2 things to do"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="hp-count" aria-hidden="true">2</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><div class="hp-cap"><div class="k-caption">6 · Quiet</div><div class="hp-moment">Mon, Nov 16, 2026 · signed in</div><div class="k-caption-sub">Rung 9: nothing within 14 days. Next LCA event, three soonest events, clubs by region.</div></div></div><div class="hp-col"><span class="k-num-badge hp-mk" style="top:82px">12</span><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll hp-scroll "><section class="hp-grid" aria-labelledby="hp-h7">
+  <div class="hp-pad" style="gap:12px;padding-bottom:22px">
+    <h2 id="hp-h7" class="hp-h1">25+ clubs meet across Louisiana</h2>
+    <p class="hp-t" style="color:#3d4556">Most meet every week, and beginners and kids are welcome. Pick your region to see where and when.</p>
+    <div class="hp-chips" role="list" aria-label="Regions"><a class="k-chip hp-chip" href="#">New Orleans Metro</a><a class="k-chip hp-chip" href="#">North of Lake Pontchartrain</a><a class="k-chip hp-chip" href="#">South Central</a><a class="k-chip hp-chip" href="#">Bayou Region</a><a class="k-chip hp-chip" href="#">Southwest</a><a class="k-chip hp-chip" href="#">Central</a><a class="k-chip hp-chip" href="#">North</a></div>
+    <a class="k-btn k-btn-gold hp-b48" href="#">Find a club</a>
+  </div>
+  <div class="hp-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+</section>
+<section class="hp-band" aria-label="About LCA and search">
+  <div class="hp-id"><span class="hp-plate hp-plate-b" aria-hidden="true"><b>LCA</b><small>official logo</small></span><p class="hp-idl">Louisiana's chess community <a href="#">since 1915</a> · <a href="#">300+ members</a> · <a href="#">25+ clubs</a> · <a href="#">7 regions</a></p></div>
+  <div class="hp-tt" role="presentation"></div>
+  <form role="search" action="#">
+    <label class="hp-slabel" for="hp-q7">Search tournaments, clubs and news</label>
+    <div class="hp-sfield"><div class="hp-sbox"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hp-q7" type="search" role="combobox" aria-expanded="false" aria-autocomplete="list" placeholder="A city, a club or a month"></div><button class="k-btn k-btn-navy hp-sgo" type="submit">Search</button></div>
+  </form>
+</section>
+<div class="hp-pad" style="gap:10px">
+  <h2 class="hp-h2">Upcoming tournaments in Louisiana</h2>
+  <div class="hp-err" role="status"><p class="hp-t"><b>Tournaments didn't load just now.</b></p><p class="hp-m">Check your connection and try again, or open the full list.</p><div class="hp-r" style="margin-top:8px"><button class="k-btn k-btn-line hp-b44" type="button">Try again</button><a class="hp-tl" href="#">All tournaments</a></div></div>
+</div></main><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><div class="hp-cap"><div class="k-caption">7 · Clubs floor</div><div class="hp-moment">Any time · home data did not load</div><div class="k-caption-sub">Rung 10, the floor. Never blank, never stale. Region chips wrap; the band and lower blocks follow.</div></div></div><div class="hp-col"><span class="k-num-badge hp-mk" style="top:372px">13</span><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header><main class="k-phone-scroll hp-scroll "><div class="hp-pad" style="padding-top:0;gap:10px">
+  <ol class="hp-list" aria-label="Upcoming tournaments, end of list">
+    <li class="hp-row" style="border-top:0"><div class="k-date hp-date"><small>Sat</small><b>18</b><span>Sep</span></div><div class="hp-grow"><a class="hp-h3" href="#">New Orleans Youth Chess September Meet</a><div class="hp-m">New Orleans · Scholastic, K–12</div><div class="hp-r" style="margin-top:4px"><span class="k-tag k-tag-ext">Partner event</span><span class="hp-xs">Registers on the organizer's site ↗</span></div></div></li>
+  </ol>
+  <a class="k-btn k-btn-line hp-b44" href="#">All tournaments</a>
+</div>
+<section class="hp-doors" aria-labelledby="hp-h8">
+  <h2 id="hp-h8" class="hp-h2">Where do you want to start?</h2>
+  <p class="hp-m" style="margin-top:2px">Each link opens a page everyone shares. The grey line says where it lands.</p>
+  <div class="hp-door hp-door-open">
+    <h3 class="hp-dh"><button type="button" class="hp-dbtn" aria-expanded="true" aria-controls="hp-d1"><span class="hp-dic"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></span><span class="hp-grow"><b>I want to play</b><small>Rated weekend tournaments, and clubs that meet most nights.</small></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></button></h3>
+    <ul class="hp-dlinks" id="hp-d1">
+      <li><a href="#"><span><b>Tournaments in Louisiana</b><small>Tournaments · soonest first</small></span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></li>
+      <li><a href="#"><span><b>Find a club near you</b><small>Clubs · map and the seven regions</small></span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></li>
+      <li><a href="#"><span><b>Pairings, standings and results</b><small>Tournaments · each event's results page</small></span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></li>
+    </ul>
+  </div>
+  <div class="hp-door">
+    <h3 class="hp-dh"><button type="button" class="hp-dbtn" aria-expanded="false" aria-controls="hp-d2"><span class="hp-dic"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg></span><span class="hp-grow"><b>My child plays</b><small>Scholastic events, youth programs and a guide for parents.</small></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h3>
+  </div>
+  <div class="hp-door">
+    <h3 class="hp-dh"><button type="button" class="hp-dbtn" aria-expanded="false" aria-controls="hp-d3"><span class="hp-dic"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg></span><span class="hp-grow"><b>I run a club or tournament</b><small>Keep your listing current and run tournament day here.</small></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h3>
+  </div>
+</section>
+<div class="hp-pad" style="padding-top:18px">
+  <div class="hp-ln"><h2 class="hp-h2">Results and champions</h2><a class="hp-tl" href="#">Past results</a></div>
+</div></main><nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div></div></div><div class="hp-cap"><div class="k-caption">8 · Doors, further down</div><div class="hp-moment">Mon, May 17, 2027 · signed out</div><div class="k-caption-sub">The doors band after the upcoming list: one door open at a time, then results and champions.</div></div></div></div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1960,"height":2750}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

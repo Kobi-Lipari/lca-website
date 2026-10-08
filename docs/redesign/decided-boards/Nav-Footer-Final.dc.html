@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Footer · decided (F1 + trust line)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744}
+.ff-board{width:1440px;box-sizing:border-box;padding:28px 48px 56px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.ff-title{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;padding-bottom:16px;border-bottom:1px solid #d3d2ca}
+.ff-built{display:flex;flex-direction:column;gap:4px;font-size:14px;line-height:1.45;color:#3d4556;max-width:640px}
+.ff-title h1{white-space:nowrap}
+.ff-built b{color:#1a2744}
+.ff-legend{display:grid;grid-template-columns:1fr 400px;gap:20px;margin:18px 0 8px}
+.ff-notes{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:14px 18px 16px}
+.ff-lh{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#866a1e;margin-bottom:10px}
+.ff-notes-g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 22px}
+.ff-li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446}
+.ff-li b{color:#1a2744}
+.ff-li code,.ff-card code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;background:#efeee8;border-radius:4px;padding:0 4px;color:#1a2744}
+.ff-li .k-num-badge,.ff-mk{width:22px;height:22px;font-size:11.5px}
+.ff-qs{background:#ffffff;border:1px solid #d9d8d1;border-top:3px solid #866a1e;border-radius:12px;padding:14px 18px 16px;display:flex;flex-direction:column;gap:10px;align-self:start}
+.ff-q{font-size:13px;line-height:1.45;color:#2b3446;margin:0}
+.ff-q b{color:#1a2744}
+.ff-qfoot{font-size:12px;line-height:1.45;color:#555c6b;border-top:1px solid #ecebe5;padding-top:8px;margin:0}
+.ff-lab{display:flex;align-items:center;gap:12px;margin:30px 0 14px}
+.ff-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ff-code{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:28px;padding:0 8px;border-radius:7px;background:#1a2744;color:#ffffff;font-weight:700;font-size:13px}
+.ff-rel{position:relative}
+.ff-mk{position:absolute;z-index:5;box-shadow:0 0 0 2px #ffffff}
+.ff-mk-out{box-shadow:0 0 0 3px #ecebe6}
+/* desktop frame */
+.ff-browser{width:1280px;margin:0 auto}
+.ff-pg{background:#f5f5f2;padding:26px 48px 30px}
+.ff-pgcard{display:flex;align-items:center;justify-content:space-between;gap:24px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 22px}
+.ff-pgcard h3{font-size:17px;font-weight:600;margin:0 0 2px}
+/* desktop footer */
+.ff-foot{background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}
+.ff-foot a{color:#ffffff;text-decoration:none}
+.ff-din{padding:42px 48px 0}
+.ff-dgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);gap:36px}
+.ff-brand{display:flex;align-items:center;gap:12px}
+.ff-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6;color:#1a2744;flex:none;line-height:1}
+.ff-plate b{font-size:14px;font-weight:700;letter-spacing:.02em;color:#1a2744}
+.ff-plate small{font-size:7.5px;font-weight:600;color:#555c6b;margin-top:3px;white-space:nowrap}
+.ff-bname{font-size:17px;font-weight:700;line-height:1.25;color:#ffffff}
+.ff-bp{font-size:14px;line-height:1.5;color:rgba(255,255,255,.82);margin:14px 0 18px;max-width:270px}
+.ff-btns{display:flex;gap:10px}
+.ff-foot a.k-btn-gold,.ff-pf a.k-btn-gold{color:#1a2744}
+.ff-dh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86;margin:4px 0 10px;display:flex;align-items:center;gap:8px}
+.ff-dl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ff-dl li{display:flex;align-items:center;gap:8px;min-height:34px}
+.ff-dl a{display:inline-flex;align-items:center;gap:7px;font-size:14.5px;line-height:1.3}
+.ff-dl a:hover{text-decoration:underline}
+.ff-later{align-self:flex-start;border:1px dashed rgba(230,207,134,.55);border-radius:7px;padding:2px 8px;margin:3px 0 0 -9px;min-height:30px}
+.ff-later a{color:rgba(255,255,255,.86)}
+.ff-ltag{font-size:11.5px;font-weight:600;color:#e6cf86;white-space:nowrap}
+.ff-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ff-dbase{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:34px;padding:16px 0 20px;border-top:1px solid rgba(255,255,255,.18)}
+.ff-trust{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.82);margin:0}
+.ff-trust a{color:#ffffff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.55)}
+.ff-app{display:flex;align-items:center;gap:10px;flex:none}
+.ff-applab{font-size:13.5px;color:rgba(255,255,255,.82)}
+.ff-seg{display:inline-flex;border:1px solid rgba(255,255,255,.45);border-radius:9px;overflow:hidden}
+.ff-seg button{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 13px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer}
+.ff-seg button + button{border-left:1px solid rgba(255,255,255,.25)}
+.ff-seg button[aria-checked="true"]{background:#c8a94a;color:#1a2744;font-weight:600}
+/* row B */
+.ff-row{display:grid;grid-template-columns:410px 410px minmax(0,1fr);gap:46px;align-items:start}
+.ff-col{display:flex;flex-direction:column;gap:12px;position:relative}
+.ff-cap{display:flex;flex-direction:column;gap:3px;padding:0 4px}
+.ff-capsub{font-size:13.5px;line-height:1.45;color:#555c6b}
+.ff-long{width:390px;margin:0 10px;border:1px solid #cfcec6;border-radius:26px;overflow:hidden;background:#f5f5f2;box-shadow:0 20px 44px rgba(16,24,43,.14)}
+.ff-longtop{display:flex;align-items:center;justify-content:center;height:30px;background:#e4e3dd;font-size:12px;font-weight:600;color:#555c6b;letter-spacing:.02em}
+.ff-ppg{padding:16px}
+.ff-ppgcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px}
+.ff-ppgcard h3{font-size:16px;font-weight:600;margin:0 0 4px}
+.ff-ppgcard .k-btn{width:100%;margin-top:12px}
+/* phone footer */
+.ff-pf{background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}
+.ff-pf a{color:#ffffff;text-decoration:none}
+.ff-pbrand{padding:24px 16px 20px}
+.ff-pbrand .ff-bp{margin:12px 0 16px;max-width:none}
+.ff-pbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ff-pbtns .k-btn{min-height:48px}
+.ff-grp{border-top:1px solid rgba(255,255,255,.16)}
+.ff-grp h2{margin:0;font-size:inherit}
+.ff-gbtn{display:flex;width:100%;align-items:center;justify-content:space-between;min-height:52px;padding:0 16px;background:transparent;border:0;color:#ffffff;font:inherit;font-size:16px;font-weight:600;cursor:pointer;text-align:left}
+.ff-gbtn svg{width:18px;height:18px;color:#e6cf86}
+.ff-gbtn[aria-expanded="true"] svg{transform:rotate(180deg)}
+.ff-gl{list-style:none;margin:0;padding:0 16px 10px}
+.ff-gl li{display:flex;align-items:center;gap:8px}
+.ff-gl a{display:flex;align-items:center;gap:8px;min-height:44px;font-size:15px}
+.ff-pbase{border-top:1px solid rgba(255,255,255,.16);padding:16px 16px 22px}
+.ff-tl{list-style:none;margin:0;padding:0;font-size:14px;line-height:1.45;color:rgba(255,255,255,.84)}
+.ff-tl li{display:flex;align-items:center;min-height:26px}
+.ff-tl a{display:inline-flex;align-items:center;min-height:44px;color:#ffffff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.55)}
+.ff-tl .ff-dot{margin:0 10px;color:rgba(255,255,255,.6)}
+.ff-papp{margin-top:12px}
+.ff-papp .ff-applab{display:block;margin-bottom:8px;font-size:14px}
+.ff-pseg{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid rgba(255,255,255,.45);border-radius:10px;overflow:hidden}
+.ff-pseg button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:14.5px;font-weight:500;cursor:pointer}
+.ff-pseg button + button{border-left:1px solid rgba(255,255,255,.25)}
+.ff-pseg button[aria-checked="true"]{background:#c8a94a;color:#1a2744;font-weight:600}
+/* tab bar */
+.ff-tabs{flex:none;background:#ffffff;border-top:1px solid #d9d8d1}
+.ff-tabs-in{display:grid;grid-template-columns:repeat(4,1fr);height:56px}
+.ff-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;padding:0;border:0;background:transparent;color:#1a2744;font:inherit;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none;cursor:pointer}
+.ff-tab svg{width:20px;height:20px}
+.ff-tab.on{font-weight:700}
+.ff-tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.ff-safe{height:34px;position:relative}
+.ff-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.ff-dark .ff-tabs{background:#111a2c;border-top:1px solid rgba(255,255,255,.08)}
+.ff-dark .ff-tab{color:#9aa6bf}
+.ff-dark .ff-tab.on{color:#e8ecf4}
+.ff-dark .ff-tab.on::before{background:#c8a94a}
+.ff-dark .ff-homeind{background:#e8ecf4}
+.ff-docknote{display:flex;align-items:center;justify-content:center;gap:8px;height:26px;background:#e4e3dd;border-top:1px dashed #b9b7ad;font-size:11.5px;font-weight:600;color:#555c6b}
+/* phone frame */
+.ff-phone{width:390px;height:844px;box-sizing:content-box;border:10px solid #10182b;border-radius:52px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2);flex:none}
+.ff-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#0b1220}
+.ff-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 40px;font-size:15px;font-weight:600;position:relative}
+.ff-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.ff-statr{display:flex;align-items:center;gap:6px}
+.ff-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.ff-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.ff-sig i:nth-child(1){height:4px}.ff-sig i:nth-child(2){height:6px}.ff-sig i:nth-child(3){height:8.5px}.ff-sig i:nth-child(4){height:11px}
+.ff-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px}
+.ff-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.ff-appbar{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff;border-bottom:1px solid rgba(255,255,255,.08)}
+.ff-abrand{display:flex;align-items:center;gap:8px;color:#ffffff;text-decoration:none;min-height:44px;min-width:0}
+.ff-amark{width:28px;height:28px;fill:currentColor;flex:none}
+.ff-aname{display:flex;flex-direction:column;line-height:1.12}
+.ff-aname b{font-size:14px;font-weight:700;white-space:nowrap}
+.ff-aname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.ff-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;box-sizing:border-box;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.ff-dmain{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;background:#0b1220}
+.ff-dcard{margin:0 16px 16px;background:#111a2c;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px;color:#e8ecf4}
+.ff-dark .ff-longtop{background:#1d2740;color:#9aa6bf}
+.ff-dcard p{color:#9aa6bf;font-size:13.5px;line-height:1.45}
+/* spec column */
+.ff-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px}
+.ff-card h3{font-size:16px;font-weight:600;margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.ff-pre{margin:0 0 10px;padding:10px 12px;border-radius:8px;background:#f3f2ec;border:1px solid #e3e2dc;font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;line-height:1.55;color:#1a2744;white-space:pre;overflow:hidden}
+.ff-ul{margin:0;padding:0 0 0 18px;font-size:13.5px;line-height:1.45;color:#2b3446;display:flex;flex-direction:column;gap:6px}
+.ff-ul b{color:#1a2744}
+.ff-tok{width:100%;border-collapse:collapse;font-size:13px}
+.ff-tok th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:6px 6px 6px 0;border-bottom:1px solid #d6d5cd}
+.ff-tok td{padding:7px 6px 7px 0;border-bottom:1px solid #ecebe5;vertical-align:middle}
+.ff-tok tr:last-child td{border-bottom:0}
+.ff-sw{display:inline-flex;align-items:center;gap:6px;font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;white-space:nowrap}
+.ff-sw i{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid rgba(26,39,68,.25);flex:none}
+</style>
+</helmet>
+<div class="ff-board" style="min-height:2850px">
+
+  <div class="ff-title">
+    <div>
+      <div class="k-kicker">Navigation · Footer · decided</div>
+      <h1 class="k-h1" style="margin:4px 0 0">Footer · decided (F1 + trust line)</h1>
+    </div>
+    <div class="ff-built">
+      <span><b>Built from:</b> F1 Refined four columns and brand block · F3's trust line, with the Appearance control in the base line</span>
+      <span><b>Replaces:</b> Nav-Footer (F1–F3)</span>
+      <span>Every link, label and route is real and comes from <code style="font-family:'Geist Mono',monospace;font-size:12.5px">nav.ts</code>. "Site last updated" is the build date, Thu, Oct 8, 2026. Nothing on this board is sample data.</span>
+    </div>
+  </div>
+
+  <div class="ff-legend">
+    <div class="ff-notes">
+      <div class="ff-lh">Notes on this board</div>
+      <div class="ff-notes-g">
+        <div class="ff-li"><span class="k-num-badge">1</span><span><b>Brand block.</b> The official logo on the same 44px cream plate as the header (D1: never recoloured, set on cream), the name, one sentence, then Join LCA (gold fill, navy text) and Donate. It never folds, at any width.</span></div>
+        <div class="ff-li"><span class="k-num-badge">2</span><span><b>Four columns of <code>nav.ts</code> entries by id.</b> One label per destination, the same words as the header, Menu sheet and search: "Board &amp; regions", "Bylaws &amp; rules" and "Minutes" (two links, never merged), "State champions", "Contact".</span></div>
+        <div class="ff-li"><span class="k-num-badge">3</span><span><b>Rows that arrive later.</b> Calendar (WS04) and Results (WS10) are drawn dashed. In the build each renders only when its route's flag is on, so the footer never holds a dead link.</span></div>
+        <div class="ff-li"><span class="k-num-badge">4</span><span><b>A real inbox first.</b> LouisianaChess@gmail.com is a mailto link at the top of Contact (brief AC7), then the contact form, membership help, website help (<code>/support</code>) and Donate.</span></div>
+        <div class="ff-li"><span class="k-num-badge">5</span><span><b>LCA on Facebook ↗</b> opens in a new tab and says so to screen readers. With the About menu's footer row it keeps the Facebook link the brief requires (rule 0.1.4).</span></div>
+        <div class="ff-li"><span class="k-num-badge">6</span><span><b>F3's trust line.</b> Bylaws &amp; rules and Minutes link to their pages. "Site last updated" is written at build time, with its weekday. No Privacy or Accessibility links until those pages exist.</span></div>
+        <div class="ff-li"><span class="k-num-badge">7</span><span><b>Appearance: System · Light · Dark.</b> A three-button radio group, the one theme switch at every width (the Menu sheet's switch is a shortcut to it). Stored in <code>localStorage</code> inside try/catch; default System. The chosen one is gold with a check, not colour alone.</span></div>
+        <div class="ff-li"><span class="k-num-badge">8</span><span><b>Under 768px the columns fold.</b> Each heading becomes <code>&lt;h2&gt;&lt;button aria-expanded aria-controls&gt;</code> in a 52px row. Contact starts open, the rest collapsed; each group opens on its own; nothing animates.</span></div>
+        <div class="ff-li"><span class="k-num-badge">9</span><span><b>Phone base line.</b> The trust line stacks one fact per line; Bylaws &amp; rules and Minutes keep 44px targets. Appearance spans the width in three 44px buttons.</span></div>
+        <div class="ff-li"><span class="k-num-badge">10</span><span><b>Clears the tab bar.</b> <code>&lt;main&gt;</code>'s padding-bottom comes from <code>--bottom-chrome-h</code>, so at the end of the page the Appearance control sits fully above the tabs, never behind them.</span></div>
+        <div class="ff-li"><span class="k-num-badge">11</span><span><b>Dark mode.</b> The footer stays navy <code>#1a2744</code>, as the header does; the page ground turns <code>#0b1220</code> and the tab bar <code>#111a2c</code>. The logo plate stays cream. Gold text is fine on these grounds.</span></div>
+      </div>
+    </div>
+    <div class="ff-qs">
+      <div class="ff-lh" style="margin:0">Open questions for K</div>
+      <p class="ff-q"><b>None asked about the footer itself.</b> K picked F1 on October 8; the trust line, the Appearance control and the fold come from the brief and the replan's section 5.5, and section 6 asks nothing about them.</p>
+      <p class="ff-q"><b>Q9 · shared with the header.</b> The official logo on a small cream plate inside navy (D1 forbids recolouring)? <b>Default: cream plate, judged by eye on the preview.</b> Asked on the header board; the footer uses the same plate.</p>
+      <p class="ff-qfoot">Labels follow the replan's footer list and the one-label table on Nav-IA (decided), section F: "Scholastic", "State champions" and "Contact" replace the list's "Scholastic chess", "Champions" and "Contact form".</p>
+    </div>
+  </div>
+
+  <!-- A · DESKTOP -->
+  <div class="ff-lab"><span class="ff-code">A</span><h2>Desktop · 1280px</h2><span class="k-meta">The end of every page, shown under /clubs · light, Appearance on System</span></div>
+  <div class="ff-browser k-browser">
+    <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/clubs</div></div>
+    <div class="ff-pg">
+      <div class="ff-pgcard">
+        <div><h3>Run a club that isn't listed here?</h3><p class="k-small k-muted">Send its meeting day, time and place, and a volunteer adds it to the map.</p></div>
+        <a class="k-btn k-btn-line" href="#">List or update your club</a>
+      </div>
+    </div>
+    <footer class="ff-foot">
+      <div class="ff-din">
+        <div class="ff-dgrid">
+          <div class="ff-rel">
+            <span class="k-num-badge ff-mk" style="top:-12px;left:-30px">1</span>
+            <a class="ff-brand" href="#" aria-label="Louisiana Chess Association, home"><span class="ff-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span><span class="ff-bname" aria-hidden="true">Louisiana Chess Association</span></a>
+            <p class="ff-bp">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+            <div class="ff-btns"><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Donate</a></div>
+          </div>
+          <nav aria-labelledby="ff-d1">
+            <h2 class="ff-dh" id="ff-d1">Play <span class="k-num-badge ff-mk" style="position:static">2</span></h2>
+            <ul class="ff-dl">
+              <li><a href="#">Tournaments</a></li>
+              <li><a href="#">Scholastic</a></li>
+              <li><a href="#">State champions</a></li>
+              <li><a href="#">Scoresheet scanner</a></li>
+              <li class="ff-later ff-rel"><a href="#">Calendar</a><span class="ff-ltag">with WS04</span><span class="k-num-badge ff-mk" style="top:3px;left:-36px">3</span></li>
+              <li class="ff-later"><a href="#">Results</a><span class="ff-ltag">with WS10</span></li>
+            </ul>
+          </nav>
+          <nav aria-labelledby="ff-d2">
+            <h2 class="ff-dh" id="ff-d2">Community</h2>
+            <ul class="ff-dl">
+              <li><a href="#">Clubs</a></li>
+              <li><a href="#">Club map</a></li>
+              <li><a href="#">List or update your club</a></li>
+              <li><a href="#">News</a></li>
+              <li class="ff-rel"><a href="#" target="_blank" rel="noopener noreferrer">LCA on Facebook ↗<span class="ff-sr"> (opens in a new tab)</span></a><span class="k-num-badge ff-mk" style="position:static">5</span></li>
+            </ul>
+          </nav>
+          <nav aria-labelledby="ff-d3">
+            <h2 class="ff-dh" id="ff-d3">About LCA</h2>
+            <ul class="ff-dl">
+              <li><a href="#">About LCA</a></li>
+              <li><a href="#">Board &amp; regions</a></li>
+              <li><a href="#">Bylaws &amp; rules</a></li>
+              <li><a href="#">Minutes</a></li>
+              <li><a href="#">Annual meeting</a></li>
+            </ul>
+          </nav>
+          <nav aria-labelledby="ff-d4">
+            <h2 class="ff-dh" id="ff-d4">Contact <span class="k-num-badge ff-mk" style="position:static">4</span></h2>
+            <ul class="ff-dl">
+              <li><a href="mailto:LouisianaChess@gmail.com"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>LouisianaChess@gmail.com</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Membership help</a></li>
+              <li><a href="#">Website help</a></li>
+              <li><a href="#">Donate</a></li>
+            </ul>
+          </nav>
+        </div>
+        <div class="ff-dbase">
+          <p class="ff-trust ff-rel"><span class="k-num-badge ff-mk" style="top:-3px;left:-30px">6</span>US Chess state affiliate · Louisiana's chess community since 1915 · <a href="#">Bylaws &amp; rules</a> · <a href="#">Minutes</a> · Site last updated Thu, Oct 8, 2026</p>
+          <div class="ff-app ff-rel">
+            <span class="ff-applab" id="ff-ap1">Appearance:</span>
+            <div class="ff-seg" role="radiogroup" aria-labelledby="ff-ap1">
+              <button type="button" role="radio" aria-checked="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>System</button>
+              <button type="button" role="radio" aria-checked="false">Light</button>
+              <button type="button" role="radio" aria-checked="false">Dark</button>
+            </div>
+            <span class="k-num-badge ff-mk" style="top:-14px;right:-30px">7</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- B · PHONES -->
+  <div class="ff-lab" style="margin-top:40px"><span class="ff-code">B</span><h2>Phone · 390px, folded into tap-to-open groups</h2><span class="k-meta">Same links, same order · Contact open, the rest collapsed · then the same footer in dark</span></div>
+  <div class="ff-row">
+
+    <!-- B1 full length, light -->
+    <div class="ff-col">
+      <div class="ff-cap"><div class="k-caption">1 · Full length, light, as it first loads</div><div class="ff-capsub">The whole footer at 390px with nothing tapped yet. The tab bar is drawn at the end; on the phone it stays fixed at the bottom of the screen.</div></div>
+      <div class="ff-long ff-rel">
+        <div class="ff-longtop">390px · end of /clubs · full length</div>
+        <div class="ff-ppg"><div class="ff-ppgcard"><h3>Run a club that isn't listed here?</h3><p class="k-small k-muted">Send its meeting day, time and place, and a volunteer adds it to the map.</p><a class="k-btn k-btn-line" href="#">List or update your club</a></div></div>
+        <footer class="ff-pf">
+          <div class="ff-pbrand ff-rel">
+            <span class="k-num-badge ff-mk" style="top:24px;right:16px">1</span>
+            <a class="ff-brand" href="#" aria-label="Louisiana Chess Association, home"><span class="ff-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span><span class="ff-bname" aria-hidden="true">Louisiana Chess Association</span></a>
+            <p class="ff-bp">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+            <div class="ff-pbtns"><a class="k-btn k-btn-gold" href="#">Join LCA</a><a class="k-btn k-btn-on-dark" href="#">Donate</a></div>
+          </div>
+          <div class="ff-grp ff-rel"><h2><button class="ff-gbtn" type="button" aria-expanded="false" aria-controls="ff-p1">Play<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2><ul class="ff-gl" id="ff-p1" hidden><li><a href="#">Tournaments</a></li></ul><span class="k-num-badge ff-mk" style="top:15px;right:48px">8</span></div>
+          <div class="ff-grp"><h2><button class="ff-gbtn" type="button" aria-expanded="false" aria-controls="ff-p2">Community<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2><ul class="ff-gl" id="ff-p2" hidden><li><a href="#">Clubs</a></li></ul></div>
+          <div class="ff-grp"><h2><button class="ff-gbtn" type="button" aria-expanded="false" aria-controls="ff-p3">About LCA<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2><ul class="ff-gl" id="ff-p3" hidden><li><a href="#">About LCA</a></li></ul></div>
+          <div class="ff-grp"><h2><button class="ff-gbtn" type="button" aria-expanded="true" aria-controls="ff-p4">Contact<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2>
+            <ul class="ff-gl" id="ff-p4">
+              <li><a href="mailto:LouisianaChess@gmail.com"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>LouisianaChess@gmail.com</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Membership help</a></li>
+              <li><a href="#">Website help</a></li>
+              <li><a href="#">Donate</a></li>
+            </ul>
+          </div>
+          <div class="ff-pbase ff-rel">
+            <span class="k-num-badge ff-mk" style="top:16px;right:16px">9</span>
+            <ul class="ff-tl" aria-label="About this site">
+              <li>US Chess state affiliate</li>
+              <li>Louisiana's chess community since 1915</li>
+              <li><a href="#">Bylaws &amp; rules</a><span class="ff-dot" aria-hidden="true">·</span><a href="#">Minutes</a></li>
+              <li>Site last updated Thu, Oct 8, 2026</li>
+            </ul>
+            <div class="ff-papp">
+              <span class="ff-applab" id="ff-ap2">Appearance</span>
+              <div class="ff-pseg" role="radiogroup" aria-labelledby="ff-ap2">
+                <button type="button" role="radio" aria-checked="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>System</button>
+                <button type="button" role="radio" aria-checked="false">Light</button>
+                <button type="button" role="radio" aria-checked="false">Dark</button>
+              </div>
+            </div>
+          </div>
+        </footer>
+        <div class="ff-docknote">Tab bar, fixed to the screen bottom</div>
+        <nav class="ff-tabs" aria-label="Main"><div class="ff-tabs-in">
+          <a class="ff-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a>
+          <a class="ff-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a>
+          <a class="ff-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a>
+          <button class="ff-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button>
+        </div><div class="ff-safe"><span class="ff-homeind"></span></div></nav>
+      </div>
+    </div>
+
+    <!-- B2 dark phone, scrolled to the end -->
+    <div class="ff-col">
+      <div class="ff-cap"><div class="k-caption">2 · Dark, scrolled to the end</div><div class="ff-capsub">Appearance set to Dark. Contact is still open; the base line ends above the tab bar, not under it.</div></div>
+      <div class="ff-rel" style="padding:0 0 0 0">
+        <div class="ff-phone ff-dark">
+          <div class="ff-scr">
+            <div class="ff-status" aria-hidden="true"><span>7:12</span><span class="ff-island"></span><span class="ff-statr"><span class="ff-sig"><i></i><i></i><i></i><i></i></span><span class="ff-batt"><i></i></span></span></div>
+            <div class="ff-appbar"><a class="ff-abrand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ff-amark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ff-aname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="ff-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+            <main class="ff-dmain">
+              <div class="ff-dcard"><b style="font-size:15px">Run a club that isn't listed here?</b><p>Send its meeting day, time and place, and a volunteer adds it to the map.</p></div>
+              <footer class="ff-pf">
+                <div class="ff-pbrand">
+                  <a class="ff-brand" href="#" aria-label="Louisiana Chess Association, home"><span class="ff-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span><span class="ff-bname" aria-hidden="true">Louisiana Chess Association</span></a>
+                  <p class="ff-bp">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+                  <div class="ff-pbtns"><a class="k-btn k-btn-gold" href="#">Join LCA</a><a class="k-btn k-btn-on-dark" href="#">Donate</a></div>
+                </div>
+                <div class="ff-grp"><h2><button class="ff-gbtn" type="button" aria-expanded="false" aria-controls="ff-q1">Play<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2><ul class="ff-gl" id="ff-q1" hidden><li><a href="#">Tournaments</a></li></ul></div>
+                <div class="ff-grp"><h2><button class="ff-gbtn" type="button" aria-expanded="false" aria-controls="ff-q2">Community<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2><ul class="ff-gl" id="ff-q2" hidden><li><a href="#">Clubs</a></li></ul></div>
+                <div class="ff-grp"><h2><button class="ff-gbtn" type="button" aria-expanded="false" aria-controls="ff-q3">About LCA<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2><ul class="ff-gl" id="ff-q3" hidden><li><a href="#">About LCA</a></li></ul></div>
+                <div class="ff-grp"><h2><button class="ff-gbtn" type="button" aria-expanded="true" aria-controls="ff-q4">Contact<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2>
+                  <ul class="ff-gl" id="ff-q4">
+                    <li><a href="mailto:LouisianaChess@gmail.com"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>LouisianaChess@gmail.com</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Membership help</a></li>
+                    <li><a href="#">Website help</a></li>
+                    <li><a href="#">Donate</a></li>
+                  </ul>
+                </div>
+                <div class="ff-pbase">
+                  <ul class="ff-tl" aria-label="About this site">
+                    <li>US Chess state affiliate</li>
+                    <li>Louisiana's chess community since 1915</li>
+                    <li><a href="#">Bylaws &amp; rules</a><span class="ff-dot" aria-hidden="true">·</span><a href="#">Minutes</a></li>
+                    <li>Site last updated Thu, Oct 8, 2026</li>
+                  </ul>
+                  <div class="ff-papp">
+                    <span class="ff-applab" id="ff-ap3">Appearance</span>
+                    <div class="ff-pseg" role="radiogroup" aria-labelledby="ff-ap3">
+                      <button type="button" role="radio" aria-checked="false">System</button>
+                      <button type="button" role="radio" aria-checked="false">Light</button>
+                      <button type="button" role="radio" aria-checked="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Dark</button>
+                    </div>
+                  </div>
+                </div>
+              </footer>
+            </main>
+            <nav class="ff-tabs" aria-label="Main"><div class="ff-tabs-in">
+              <a class="ff-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a>
+              <a class="ff-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a>
+              <a class="ff-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a>
+              <button class="ff-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button>
+            </div><div class="ff-safe"><span class="ff-homeind"></span></div></nav>
+          </div>
+        </div>
+        <span class="k-num-badge ff-mk ff-mk-out" style="top:130px;left:-34px">11</span>
+        <span class="k-num-badge ff-mk ff-mk-out" style="top:760px;left:-34px">10</span>
+      </div>
+      <div class="ff-cap" style="margin-top:8px"><div class="k-caption">3 · Dark, one screen higher</div><div class="ff-capsub">The brand block on a dark page: the logo plate stays cream and Join LCA stays gold with navy text.</div></div>
+      <div class="ff-long ff-dark" style="background:#0b1220;border-color:#2a3550">
+        <div class="ff-longtop">390px · dark · the top of the footer</div>
+        <div style="height:22px;background:#0b1220"></div>
+        <footer class="ff-pf">
+          <div class="ff-pbrand">
+            <a class="ff-brand" href="#" aria-label="Louisiana Chess Association, home"><span class="ff-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span><span class="ff-bname" aria-hidden="true">Louisiana Chess Association</span></a>
+            <p class="ff-bp">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+            <div class="ff-pbtns"><a class="k-btn k-btn-gold" href="#">Join LCA</a><a class="k-btn k-btn-on-dark" href="#">Donate</a></div>
+          </div>
+          <div class="ff-grp"><h2><button class="ff-gbtn" type="button" aria-expanded="false" aria-controls="ff-r1">Play<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></h2><ul class="ff-gl" id="ff-r1" hidden><li><a href="#">Tournaments</a></li></ul></div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- B3 spec -->
+    <div class="ff-col">
+      <div class="ff-cap"><div class="k-caption">How the fold works</div><div class="ff-capsub">One <code style="font-family:'Geist Mono',monospace;font-size:12.5px">Footer.tsx</code>; the headings turn into buttons only under 768px.</div></div>
+      <div class="ff-card">
+        <h3><span class="k-num-badge" style="width:22px;height:22px;font-size:11.5px">8</span>Markup under 768px</h3>
+<pre class="ff-pre">&lt;h2&gt;
+  &lt;button aria-expanded="true"
+          aria-controls="footer-contact"&gt;
+    Contact
+  &lt;/button&gt;
+&lt;/h2&gt;
+&lt;ul id="footer-contact"&gt;…&lt;/ul&gt;</pre>
+        <ul class="ff-ul">
+          <li><b>Starts with Contact open,</b> Play, Community and About LCA collapsed (<code>hidden</code> on their lists).</li>
+          <li><b>Each group is its own switch.</b> Opening Play leaves Contact open; it is not an accordion.</li>
+          <li><b>52px heading rows, 44px link rows,</b> 16px side gutter. The chevron turns; nothing slides, at any motion setting.</li>
+          <li><b>Tab order:</b> brand link, Join LCA, Donate, then each heading button, the open lists, the trust-line links and Appearance. Every footer link is reachable by keyboard at 390px.</li>
+          <li><b>768px and up:</b> the buttons go away and the headings are plain <code>&lt;h2&gt;</code> over always-open lists, as in A.</li>
+        </ul>
+      </div>
+      <div class="ff-card">
+        <h3><span class="k-num-badge" style="width:22px;height:22px;font-size:11.5px">11</span>Footer colours, light and dark</h3>
+        <table class="ff-tok">
+          <thead><tr><th scope="col">Surface</th><th scope="col">Light</th><th scope="col">Dark</th></tr></thead>
+          <tbody>
+            <tr><td>Footer ground</td><td><span class="ff-sw"><i style="background:#1a2744"></i>#1a2744</span></td><td><span class="ff-sw"><i style="background:#1a2744"></i>#1a2744</span></td></tr>
+            <tr><td>Top rule</td><td><span class="ff-sw"><i style="background:#c8a94a"></i>#c8a94a</span></td><td><span class="ff-sw"><i style="background:#c8a94a"></i>#c8a94a</span></td></tr>
+            <tr><td>Headings on navy</td><td><span class="ff-sw"><i style="background:#e6cf86"></i>#e6cf86</span></td><td><span class="ff-sw"><i style="background:#e6cf86"></i>#e6cf86</span></td></tr>
+            <tr><td>Logo plate</td><td><span class="ff-sw"><i style="background:#fbfaf6"></i>#fbfaf6</span></td><td><span class="ff-sw"><i style="background:#fbfaf6"></i>#fbfaf6</span></td></tr>
+            <tr><td>Page ground above</td><td><span class="ff-sw"><i style="background:#f5f5f2"></i>#f5f5f2</span></td><td><span class="ff-sw"><i style="background:#0b1220"></i>#0b1220</span></td></tr>
+            <tr><td>Tab bar</td><td><span class="ff-sw"><i style="background:#ffffff"></i>#ffffff</span></td><td><span class="ff-sw"><i style="background:#111a2c"></i>#111a2c</span></td></tr>
+          </tbody>
+        </table>
+        <p class="k-meta" style="margin-top:10px">The replan's dark table has no footer row, so the footer takes the header's: navy in both modes, and the brand chrome reads the same either way. Every value is a WS01 token.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2850}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
