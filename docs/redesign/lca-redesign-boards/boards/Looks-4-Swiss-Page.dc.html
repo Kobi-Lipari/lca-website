@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Looks 4 · Swiss Grid — Sample page</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;125,800;125,900&amp;family=Fragment+Mono:ital@0;1">
+<style>
+body{margin:0;background:#f4f4f0}
+.sp{background:#f4f4f0;color:#0d0d0d;font-family:'Archivo',system-ui,sans-serif;font-stretch:100%;font-weight:400;font-size:16px;line-height:1.5;font-variant-numeric:lining-nums tabular-nums}
+.sp *{box-sizing:border-box}
+.sp h1,.sp h2,.sp h3,.sp p,.sp figure{margin:0;font-family:inherit}
+.sp b{font-weight:500}
+.sp a{color:inherit}
+.sp table{border-collapse:collapse;width:100%}
+.sp-x{font-stretch:125%;font-weight:800}
+.sp-xx{font-stretch:125%;font-weight:900}
+.sp-m{font-family:'Fragment Mono',ui-monospace,monospace;font-weight:400;font-stretch:100%;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.sp-lab{display:block;font-family:'Fragment Mono',monospace;font-size:11px;line-height:1.4;letter-spacing:.05em;text-transform:uppercase;color:#5c5f66;font-weight:400;font-stretch:100%}
+.sp-fr{display:grid;grid-template-columns:72px minmax(0,1fr) 40px;max-width:1440px;margin:0 auto}
+.sp-rn{grid-column:1;padding:30px 0 0 24px;font-stretch:125%;font-weight:900;font-size:34px;line-height:1}
+.sp-main{grid-column:2;min-width:0}
+.sp-rr{grid-column:3;padding-top:36px;text-align:center;font-family:'Fragment Mono',monospace;font-size:11px;color:#5c5f66}
+.sp-g8{display:grid;grid-template-columns:repeat(8,minmax(0,1fr))}
+.s1{grid-column:span 1}.s2{grid-column:span 2}.s3{grid-column:span 3}.s4{grid-column:span 4}.s5{grid-column:span 5}.s6{grid-column:span 6}
+.sp-lines{background:repeating-linear-gradient(90deg,rgba(13,13,13,.07) 0 1px,transparent 1px 12.5%)}
+.sp-sec{border-top:1px solid #0d0d0d}
+.sp-cell{padding:0 12px}
+.sp-hd{background:#1a2744;color:#ffffff}
+.sp-hd-in{max-width:1440px;margin:0 auto;height:72px;display:flex;align-items:center;gap:24px;padding:0 40px 0 24px}
+.sp-brand{display:flex;align-items:center;gap:12px;color:#ffffff;text-decoration:none;flex:none}
+.sp-nav{display:flex;gap:26px;align-self:stretch;margin-left:36px}
+.sp-nav a{display:flex;align-items:center;color:#ffffff;text-decoration:none;font-size:15px;font-weight:500;border-bottom:3px solid transparent;padding-top:3px}
+.sp-util{margin-left:auto;display:flex;align-items:center;gap:22px}
+.sp-ul{color:#ffffff;text-decoration:none;font-size:15px;font-weight:500}
+.sp-menu{display:none;align-items:center;gap:8px;min-height:44px;padding:0 12px;background:transparent;color:#ffffff;border:1.5px solid #ffffff;border-radius:0;font-family:inherit;font-size:15px;font-weight:500}
+.sp-menu svg,.sp-btn svg,.sp-more svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;flex:none}
+.sp-btn{display:inline-flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;padding:0 18px;font-family:'Archivo',sans-serif;font-stretch:100%;font-size:16px;font-weight:500;border:0;border-radius:0;text-decoration:none;cursor:pointer;white-space:nowrap}
+.sp-gold{background:#c8a94a;color:#0d0d0d}
+.sp-line{background:transparent;color:#0d0d0d;border:2px solid #0d0d0d}
+.sp-tag{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 10px;font-size:13px;font-weight:500;line-height:1;white-space:nowrap;border:1.5px solid #0d0d0d;background:#ffffff;color:#0d0d0d}
+.sp-tag svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square}
+.sp-fn{display:inline-block;width:10px;height:10px;margin-right:8px;flex:none}
+.sp-files{border-bottom:1px solid #0d0d0d}
+.sp-files .sp-g8 span{display:block;text-align:center;font-family:'Fragment Mono',monospace;font-size:12px;color:#5c5f66;line-height:28px}
+.sp-hero{padding:28px 0 32px}
+.sp-h1{font-size:104px;line-height:.9;letter-spacing:-.045em;margin-top:22px}
+.sp-facts{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;margin-top:30px;border-top:2px solid #0d0d0d}
+.sp-facts > div{padding:10px 12px 12px;border-left:1px solid rgba(13,13,13,.2)}
+.sp-facts > div:first-child{border-left:0;padding-left:0}
+.sp-facts b{display:block;font-size:18px;line-height:1.3;margin-top:4px}
+.sp-host{margin-top:18px;font-size:15px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.sp-acts{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.sp-photo{position:relative;aspect-ratio:1/1;background:#1a2744;isolation:isolate;overflow:hidden}
+.sp-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1) contrast(1.8) brightness(1.05);mix-blend-mode:screen}
+.sp-photo .ov{position:absolute;left:0;top:0;right:0;bottom:0;background:#f4f4f0;mix-blend-mode:multiply}
+.sp-photo .ad{position:absolute;left:0;top:0;background:#0d0d0d;color:#ffffff;padding:6px 10px;font-family:'Fragment Mono',monospace;font-size:11px}
+.sp-photo figcaption{position:absolute;left:0;bottom:0;background:#0d0d0d;color:#ffffff;padding:6px 10px;font-family:'Fragment Mono',monospace;font-size:11px}
+.sp-stats{background:#c8a94a;color:#0d0d0d;border-top:1px solid #0d0d0d}
+.sp-stat{padding:20px 12px 22px;border-left:1px solid rgba(13,13,13,.35)}
+.sp-stat:first-child{border-left:0}
+.sp-stat .n{display:block;font-stretch:125%;font-weight:900;font-size:46px;line-height:.95;letter-spacing:-.035em}
+.sp-stat .t{display:block;font-size:15px;font-weight:500;margin-top:8px}
+.sp-pad{padding:28px 0 32px}
+.sp-hdrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:16px 28px;padding:0 12px 18px}
+.sp-h2{font-size:44px;line-height:.95;letter-spacing:-.035em;margin-top:10px}
+.sp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-left:auto}
+.sp-chip{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;font-size:14px;font-weight:500;border:1.5px solid #0d0d0d;text-decoration:none;color:#0d0d0d;background:#ffffff}
+.sp-chip.on{background:#0d0d0d;color:#ffffff}
+.sp-more{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-weight:500;text-decoration:none}
+.sp-list{border-top:2px solid #0d0d0d}
+.sp-ev{align-items:center;min-height:72px;border-bottom:1px solid rgba(13,13,13,.25);text-decoration:none;color:#0d0d0d}
+.sp-ev > div{padding:12px}
+.sp-ev .w{display:block;font-family:'Fragment Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#5c5f66}
+.sp-ev .dd{display:block;font-stretch:125%;font-weight:800;font-size:19px;line-height:1.1}
+.sp-ev-n b{display:block;font-stretch:125%;font-weight:800;font-size:19px;line-height:1.15;letter-spacing:-.01em}
+.sp-ev-n span{display:block;font-size:14px;color:#5c5f66;margin-top:3px}
+.sp-ev-t{font-size:15px;line-height:1.3}
+.sp-ev-t span{display:block;font-size:13px;color:#5c5f66}
+.sp-ev-go{display:flex;justify-content:flex-end;align-items:center;gap:8px;font-weight:500}
+.sp-ev-go svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter}
+.sp-scroll{overflow-x:auto}
+.sp-week{display:grid;grid-template-columns:repeat(8,minmax(150px,1fr));border-top:2px solid #0d0d0d}
+.sp-day{padding:14px 12px 18px;border-left:1px solid rgba(13,13,13,.18);min-height:230px}
+.sp-day:first-child{border-left:0}
+.sp-dh{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.sp-dh b{font-stretch:125%;font-weight:800;font-size:20px}
+.sp-dh span{font-family:'Fragment Mono',monospace;font-size:11px;color:#5c5f66}
+.sp-mt{margin-top:14px}
+.sp-mt b{display:block;font-size:14px;line-height:1.3}
+.sp-mt span{display:block;font-family:'Fragment Mono',monospace;font-size:13px;margin-top:2px}
+.sp-plus{display:inline-block;margin-top:14px;font-size:13px;font-weight:500;text-decoration:underline;text-underline-offset:3px}
+.sp-today{background:#1a2744;color:#ffffff}
+.sp-today .sp-dh span{color:#dec478}
+.sp-find{display:flex;flex-direction:column;gap:10px;text-decoration:none;color:#0d0d0d}
+.sp-res th{font-family:'Fragment Mono',monospace;font-weight:400;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#5c5f66;text-align:left;padding:0 6px 8px;border-bottom:2px solid #0d0d0d;white-space:nowrap}
+.sp-res td{padding:0 6px;height:48px;border-bottom:1px solid rgba(13,13,13,.2);font-size:16px;font-weight:500;white-space:nowrap}
+.sp-res .r{text-align:right}
+.sp-res .c{text-align:center;padding:0 2px}
+.sp-res .rt{font-stretch:125%;font-weight:800;font-size:20px}
+.sp-res .pt{font-stretch:125%;font-weight:900;font-size:22px}
+.sp-xc{position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid #0d0d0d;background:#ffffff;vertical-align:middle}
+.sp-xc i{position:absolute;left:3px;top:3px;width:7px;height:7px;border:1.2px solid #0d0d0d}
+.sp-xc i.f{background:#0d0d0d}
+.sp-xc span{font-stretch:125%;font-weight:800;font-size:17px;line-height:1}
+.sp-xc sup{font-family:'Fragment Mono',monospace;font-weight:400;font-stretch:100%;font-size:9px;vertical-align:top;margin-left:1px}
+.sp-champ{background:#1a2744;color:#ffffff;padding:20px 22px;display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.sp-join{background:#1a2744;color:#ffffff;border-top:1px solid #0d0d0d}
+.sp-tier{padding:4px 12px 0;border-left:1px solid rgba(255,255,255,.25)}
+.sp-tier .n{display:block;font-stretch:125%;font-weight:900;font-size:50px;line-height:.95;letter-spacing:-.035em;color:#c8a94a}
+.sp-tier b{display:block;font-size:17px;margin-top:10px}
+.sp-tier span{display:block;font-size:14px;line-height:1.35;margin-top:2px}
+.sp-ft{background:#0d0d0d;color:#ffffff}
+.sp-ft a{color:#ffffff;text-decoration:none}
+.sp-ft h3{font-family:'Fragment Mono',monospace;font-size:11px;font-weight:400;letter-spacing:.05em;text-transform:uppercase;color:#dec478;margin-bottom:10px}
+.sp-ft ul{list-style:none;margin:0;padding:0;font-size:15px;line-height:2}
+@media (max-width:1100px){
+.sp-nav{display:none}
+.sp-menu{display:inline-flex}
+.sp-h1{font-size:84px}
+}
+@media (max-width:900px){
+.sp-fr{grid-template-columns:16px minmax(0,1fr) 16px}
+.sp-rn,.sp-rr,.sp-files{display:none}
+.sp-g8{grid-template-columns:repeat(2,minmax(0,1fr))}
+.s1,.s2,.s3,.s4,.s5,.s6{grid-column:1/-1}
+.sp-g8 > .sp-half{grid-column:span 1}
+.sp-lines{background:none}
+.sp-hd-in{padding:0 16px}
+.sp-ul{display:none}
+.sp-ev{display:flex;flex-wrap:wrap;gap:2px 0;padding:10px 0}
+.sp-ev > div{padding:2px 12px}
+.sp-ev .sp-ev-n{flex-basis:100%}
+.sp-ev-go{display:none}
+.sp-chips{margin-left:0}
+.sp-stat:nth-child(3),.sp-tier:nth-child(2){border-left:0}
+.sp-tier{padding:14px 12px}
+.sp-champ{margin-top:20px}
+}
+@media (max-width:600px){
+.sp-h1{font-size:56px}
+.sp-h2{font-size:32px}
+.sp-facts{grid-template-columns:1fr 1fr}
+.sp-facts > div:nth-child(3){border-left:0;padding-left:0}
+.sp-hjoin{display:none}
+.sp-stat .n{font-size:36px}
+}
+</style>
+</helmet>
+<div class="k-page sp">
+
+<header class="sp-hd">
+<div class="sp-hd-in">
+<a class="sp-brand" href="#"><svg viewBox="0 0 100 100" width="34" height="34" fill="currentColor" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="sp-x" style="font-size:16px;line-height:1.05;letter-spacing:-.01em">Louisiana Chess<br><span style="font-stretch:100%;font-weight:400;font-size:12.5px;letter-spacing:0">Association</span></span></a>
+<nav class="sp-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a></nav>
+<div class="sp-util">
+<a class="sp-ul" href="#">Donate</a>
+<a class="sp-ul" href="#">Log in</a>
+<a class="sp-btn sp-gold sp-hjoin" href="#" style="min-height:44px">Join LCA<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></a>
+<button class="sp-menu" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+</div>
+</div>
+</header>
+
+<div class="sp-files">
+<div class="sp-fr" style="align-items:center">
+<div class="sp-m" style="grid-column:1;padding-left:24px;font-size:11px;color:#5c5f66">LCA</div>
+<div class="sp-main sp-g8"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+<div style="grid-column:3"></div>
+</div>
+</div>
+
+<section>
+<div class="sp-fr">
+<div class="sp-rn">8</div>
+<div class="sp-main sp-g8 sp-lines sp-hero">
+<div class="s5 sp-cell">
+<span class="sp-lab">a8 · Next event · this weekend</span>
+<h1 class="sp-xx sp-h1">Lafayette<br>Open 2026</h1>
+<div class="sp-facts">
+<div><span class="sp-lab">When</span><b>Sat–Sun, Oct 10–11, 2026</b></div>
+<div><span class="sp-lab">Where</span><b>Lafayette, LA</b></div>
+<div><span class="sp-lab">Type</span><b>Classical</b></div>
+<div><span class="sp-lab">Ages</span><b>All ages</b></div>
+</div>
+<p class="sp-host"><span>Hosted by <b>Lafayette Chess Club</b></span><span class="sp-tag">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg></span><span style="font-size:14px;color:#5c5f66">Registration is on the organizer's site</span></p>
+<div class="sp-acts">
+<a class="sp-btn sp-gold" href="#">Event details<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></a>
+<a class="sp-btn sp-line" href="#">Add to calendar<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg></a>
+</div>
+</div>
+<figure class="s3 sp-photo">
+<img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at long tables in a wood-paneled tournament hall, printed in navy and paper">
+<div class="ov"></div>
+<span class="ad">f8</span>
+<figcaption>Photo · LCA tournament hall</figcaption>
+</figure>
+</div>
+<div class="sp-rr">8</div>
+</div>
+</section>
+
+<section class="sp-stats">
+<div class="sp-fr">
+<div class="sp-rn" style="padding-top:22px">7</div>
+<div class="sp-main sp-g8">
+<div class="s2 sp-stat sp-half"><span class="n">Since 1915</span><span class="t">Louisiana's chess community</span></div>
+<div class="s2 sp-stat sp-half"><span class="n">300+</span><span class="t">members</span></div>
+<div class="s2 sp-stat sp-half"><span class="n">25+</span><span class="t">clubs</span></div>
+<div class="s2 sp-stat sp-half"><span class="n">7</span><span class="t">regions</span></div>
+</div>
+<div class="sp-rr" style="padding-top:26px;color:#0d0d0d">7</div>
+</div>
+</section>
+
+<section class="sp-sec">
+<div class="sp-fr">
+<div class="sp-rn">6</div>
+<div class="sp-main sp-lines sp-pad">
+<div class="sp-hdrow">
+<div><span class="sp-lab">a6 · Tournaments</span><h2 class="sp-xx sp-h2">Upcoming tournaments</h2></div>
+<div class="sp-chips"><a class="sp-chip on" href="#">All</a><a class="sp-chip" href="#">Classical</a><a class="sp-chip" href="#">Scholastic</a><a class="sp-chip" href="#">LCA-run</a><a class="sp-chip" href="#">Partner events</a></div>
+<a class="sp-more" href="#">All tournaments<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v14h12M15 13l4 4-4 4"></path></svg></a>
+</div>
+<div class="sp-list">
+<a class="sp-ev sp-g8" href="#">
+<div class="s1"><span class="w">Sat–Sun</span><span class="dd">Oct 10–11</span></div>
+<div class="s4 sp-ev-n"><b>Lafayette Open 2026</b><span>Lafayette Chess Club · this weekend</span></div>
+<div class="s1 sp-ev-t">Lafayette, LA</div>
+<div class="s1 sp-ev-t"><i class="sp-fn" style="background:#1a2744"></i>Classical<span>All ages</span></div>
+<div class="s1"><span class="sp-tag">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg></span></div>
+</a>
+<a class="sp-ev sp-g8" href="#">
+<div class="s1"><span class="w">Sat–Sun</span><span class="dd">Oct 24–25</span></div>
+<div class="s4 sp-ev-n"><b>The Baton Rouge Classic</b><span>Downriver Chess</span></div>
+<div class="s1 sp-ev-t">Baton Rouge, LA</div>
+<div class="s1 sp-ev-t"><i class="sp-fn" style="background:#1a2744"></i>Classical<span>All ages</span></div>
+<div class="s1"><span class="sp-tag">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg></span></div>
+</a>
+<a class="sp-ev sp-g8" href="#">
+<div class="s1"><span class="w">Sat</span><span class="dd">Oct 31</span></div>
+<div class="s4 sp-ev-n"><b>The Casa Chess Tournament</b><span>Casa de Ajedrez</span></div>
+<div class="s1 sp-ev-t">Sulphur, LA</div>
+<div class="s1 sp-ev-t"><i class="sp-fn" style="background:#c8a94a;outline:1px solid #0d0d0d"></i>Dual-rated<span>All ages</span></div>
+<div class="s1"><span class="sp-tag">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg></span></div>
+</a>
+<a class="sp-ev sp-g8" href="#">
+<div class="s1"><span class="w">Sat</span><span class="dd">Nov 14</span></div>
+<div class="s4 sp-ev-n"><b>New Orleans Youth Chess November Meet</b><span>Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</span></div>
+<div class="s1 sp-ev-t">New Orleans, LA</div>
+<div class="s1 sp-ev-t"><i class="sp-fn" style="background:#0d0d0d"></i>Scholastic<span>Students</span></div>
+<div class="s1"><span class="sp-tag">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg></span></div>
+</a>
+<a class="sp-ev sp-g8" href="#">
+<div class="s1"><span class="w">Sat</span><span class="dd">Dec 5</span></div>
+<div class="s4 sp-ev-n"><b>New Orleans Youth Chess December Meet</b><span>Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</span></div>
+<div class="s1 sp-ev-t">New Orleans, LA</div>
+<div class="s1 sp-ev-t"><i class="sp-fn" style="background:#0d0d0d"></i>Scholastic<span>Students</span></div>
+<div class="s1"><span class="sp-tag">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg></span></div>
+</a>
+</div>
+</div>
+<div class="sp-rr">6</div>
+</div>
+</section>
+
+<section class="sp-sec">
+<div class="sp-fr">
+<div class="sp-rn">5</div>
+<div class="sp-main sp-pad">
+<div class="sp-hdrow">
+<div><span class="sp-lab">a5 · Clubs · Mon, Oct 5 – Sun, Oct 11</span><h2 class="sp-xx sp-h2">This week at the clubs</h2></div>
+<a class="sp-more" href="#" style="margin-left:auto">All clubs and meeting times<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v14h12M15 13l4 4-4 4"></path></svg></a>
+</div>
+<div class="sp-scroll">
+<div class="sp-week">
+<div class="sp-day sp-today">
+<div class="sp-dh"><b>Mon</b><span>Oct 5 · tonight</span></div>
+<div class="sp-mt"><b>Mandeville Chess Club</b><span>5:00 PM</span></div>
+<div class="sp-mt"><b>Houma Chess Club</b><span>6:00 PM</span></div>
+<div class="sp-mt"><b>Downriver Chess Club</b><span>7:00 PM</span></div>
+<a class="sp-plus" href="#">+3 more tonight</a>
+</div>
+<div class="sp-day">
+<div class="sp-dh"><b>Tue</b><span>Oct 6</span></div>
+<div class="sp-mt"><b>Ruston Knights Chess Club</b><span>6:00 PM</span></div>
+<div class="sp-mt"><b>Greater New Orleans Chess Club</b><span>7:00 PM</span></div>
+<a class="sp-plus" href="#">+2 more</a>
+</div>
+<div class="sp-day">
+<div class="sp-dh"><b>Wed</b><span>Oct 7</span></div>
+<div class="sp-mt"><b>Marrero Chess Organization</b><span>6:00 PM · casual</span></div>
+<a class="sp-plus" href="#">+1 more</a>
+</div>
+<div class="sp-day">
+<div class="sp-dh"><b>Thu</b><span>Oct 8</span></div>
+<div class="sp-mt"><b>New Orleans Westbank Chess Club</b><span>7:30 PM · rated</span></div>
+<a class="sp-plus" href="#">+2 more</a>
+</div>
+<div class="sp-day">
+<div class="sp-dh"><b>Fri</b><span>Oct 9</span></div>
+<div class="sp-mt"><b>Slidell Chess Club</b><span>7:00 PM</span></div>
+<a class="sp-plus" href="#">+1 more</a>
+</div>
+<div class="sp-day">
+<div class="sp-dh"><b>Sat</b><span>Oct 10</span></div>
+<div class="sp-mt"><b>Baton Rouge Chess Club</b><span>10:00 AM</span></div>
+<a class="sp-plus" href="#">+1 more</a>
+</div>
+<div class="sp-day">
+<div class="sp-dh"><b>Sun</b><span>Oct 11</span></div>
+<p style="font-size:14px;line-height:1.4;margin-top:14px;color:#5c5f66">No club meetings listed. Bluebonnet meets 1st and 3rd Sundays, next on Oct 18.</p>
+</div>
+<a class="sp-day sp-find" href="#">
+<div class="sp-dh"><b>Find</b><span>h5</span></div>
+<svg viewBox="0 0 220 190" style="width:100%;height:auto;display:block" role="img" aria-label="Map of Louisiana with this week's club meetings; tonight's are gold"><path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#0d0d0d" stroke-width="1.5"></path><rect x="62" y="23" width="8" height="8" fill="#0d0d0d"></rect><rect x="112" y="117" width="8" height="8" fill="#0d0d0d"></rect><rect x="162" y="117" width="8" height="8" fill="#0d0d0d"></rect><rect x="152" y="141" width="8" height="8" fill="#0d0d0d"></rect><rect x="146" y="114" width="8" height="8" fill="#c8a94a" stroke="#0d0d0d"></rect><rect x="132" y="156" width="8" height="8" fill="#c8a94a" stroke="#0d0d0d"></rect><rect x="155" y="136" width="8" height="8" fill="#c8a94a" stroke="#0d0d0d"></rect></svg>
+<span style="font-size:14px;line-height:1.35">25+ clubs in 7 regions. Gold squares meet tonight.</span>
+<span class="sp-plus" style="margin-top:0">Open the club map</span>
+</a>
+</div>
+</div>
+</div>
+<div class="sp-rr">5</div>
+</div>
+</section>
+
+<section class="sp-sec">
+<div class="sp-fr">
+<div class="sp-rn">4</div>
+<div class="sp-main sp-lines sp-pad">
+<div class="sp-hdrow">
+<div><span class="sp-lab">a4 · Results</span><h2 class="sp-xx sp-h2">Latest results</h2></div>
+<span class="k-sample" style="margin-left:auto">Sample data</span>
+</div>
+<div class="sp-g8">
+<div class="s6 sp-cell">
+<div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin-bottom:14px"><h3 class="sp-x" style="font-size:21px;line-height:1.2;letter-spacing:-.01em">2026 Louisiana State Championship · Final standings</h3><span style="font-size:14px;color:#5c5f66">Sulphur, LA · Labor Day weekend</span></div>
+<div class="sp-scroll">
+<table class="sp-res" style="min-width:720px">
+<thead><tr><th style="width:44px">Rk</th><th>Player</th><th class="r">Rating</th><th class="c">Rd 1</th><th class="c">Rd 2</th><th class="c">Rd 3</th><th class="c">Rd 4</th><th class="c">Rd 5</th><th class="r">Pts</th><th class="r">Tiebreak</th></tr></thead>
+<tbody>
+<tr><td class="sp-m">1</td><td>Marcus Landry</td><td class="r rt">2014</td><td class="c"><span class="sp-xc"><i></i><span>1<sup>13</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>1<sup>9</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>1<sup>4</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>½<sup>2</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>1<sup>3</sup></span></span></td><td class="r pt">4½</td><td class="r sp-m">14</td></tr>
+<tr><td class="sp-m">2</td><td>Avery Thibodeaux</td><td class="r rt">1912</td><td class="c"><span class="sp-xc"><i class="f"></i><span>1<sup>14</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>1<sup>10</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>½<sup>5</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>½<sup>1</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>1<sup>6</sup></span></span></td><td class="r pt">4</td><td class="r sp-m">13½</td></tr>
+<tr><td class="sp-m">3</td><td>Priya Shah</td><td class="r rt">1803</td><td class="c"><span class="sp-xc"><i></i><span>1<sup>15</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>1<sup>11</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>1<sup>6</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>1<sup>5</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>0<sup>1</sup></span></span></td><td class="r pt">4</td><td class="r sp-m">12½</td></tr>
+<tr><td class="sp-m">4</td><td>Camille Broussard</td><td class="r rt">1744</td><td class="c"><span class="sp-xc"><i class="f"></i><span>1<sup>16</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>1<sup>12</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>0<sup>1</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>1<sup>7</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>½<sup>5</sup></span></span></td><td class="r pt">3½</td><td class="r sp-m">12</td></tr>
+<tr><td class="sp-m">5</td><td>Isaac Dupre</td><td class="r rt">1688</td><td class="c"><span class="sp-xc"><i></i><span>1<sup>17</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>1<sup>8</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>½<sup>2</sup></span></span></td><td class="c"><span class="sp-xc"><i></i><span>0<sup>3</sup></span></span></td><td class="c"><span class="sp-xc"><i class="f"></i><span>½<sup>4</sup></span></span></td><td class="r pt">3</td><td class="r sp-m">10½</td></tr>
+</tbody>
+</table>
+</div>
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;margin-top:12px"><span class="sp-m" style="font-size:12px;color:#5c5f66">1 · ½ · 0 with the opponent's number raised · open corner = White, filled = Black</span><a class="sp-more" href="#" style="min-height:0">Full crosstable<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></a></div>
+</div>
+<div class="s2 sp-champ">
+<span class="sp-lab" style="color:#dec478">g4 · 2026 State Champion</span>
+<div><span class="sp-x" style="display:block;font-size:26px;line-height:1.05;letter-spacing:-.02em">Marcus Landry</span><span style="display:block;font-size:14px;margin-top:6px">Rated 2014 · undefeated</span></div>
+<div><span class="sp-xx" style="display:block;font-size:112px;line-height:.8;letter-spacing:-.05em;color:#c8a94a">4½</span><span class="sp-m" style="display:block;font-size:12px;margin-top:10px">points of 5</span></div>
+</div>
+</div>
+</div>
+<div class="sp-rr">4</div>
+</div>
+</section>
+
+<section class="sp-join">
+<div class="sp-fr">
+<div class="sp-rn">3</div>
+<div class="sp-main sp-g8" style="padding:32px 0 36px">
+<div class="s4 sp-cell">
+<span class="sp-lab" style="color:#dec478">a3 · Membership · per year</span>
+<h2 class="sp-xx" style="font-size:44px;line-height:.95;letter-spacing:-.035em;margin-top:10px">Join LCA</h2>
+<p style="font-size:16px;margin-top:12px;max-width:520px">Members get LCA tournament entry discounts, a member profile, voting rights and online registration.</p>
+<a class="sp-btn sp-gold" href="#" style="margin-top:20px">Join LCA<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></a>
+</div>
+<div class="s1 sp-tier sp-half"><span class="n">$15</span><b>Adult</b><span>For players 18 and up</span></div>
+<div class="s1 sp-tier sp-half"><span class="n">$5</span><b>Scholastic</b><span>K–12 students</span></div>
+<div class="s1 sp-tier sp-half"><span class="n">$25</span><b>Family</b><span>You + up to 3 children</span></div>
+<div class="s1 sp-tier sp-half"><span class="n">$10</span><b>Senior</b><span>65 and up</span></div>
+</div>
+<div class="sp-rr" style="color:#c9cfdb">3</div>
+</div>
+</section>
+
+<footer class="sp-ft">
+<div class="sp-fr">
+<div class="sp-rn" style="color:#ffffff">2</div>
+<div class="sp-main sp-g8" style="padding:36px 0 32px;row-gap:24px">
+<div class="s2 sp-cell">
+<span style="color:#c8a94a;display:flex"><svg viewBox="0 0 100 100" width="40" height="40" fill="currentColor" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>
+<p class="sp-x" style="font-size:17px;line-height:1.15;margin-top:14px">Louisiana Chess Association</p>
+<p style="font-size:14px;margin-top:6px;color:#c9cfdb">US Chess state affiliate · since 1915</p>
+<p style="font-size:14px;margin-top:10px"><a href="#" style="text-decoration:underline;text-underline-offset:3px">LouisianaChess@gmail.com</a></p>
+</div>
+<div class="s1 sp-cell sp-half"><h3>Play</h3><ul><li><a href="#">Tournaments</a></li><li><a href="#">Clubs</a></li><li><a href="#">Scholastic</a></li><li><a href="#">Results</a></li></ul></div>
+<div class="s1 sp-cell sp-half"><h3>Join</h3><ul><li><a href="#">Membership</a></li><li><a href="#">Donate</a></li><li><a href="#">Log in</a></li></ul></div>
+<div class="s1 sp-cell sp-half"><h3>About</h3><ul><li><a href="#">Board</a></li><li><a href="#">Bylaws &amp; minutes</a></li><li><a href="#">Annual meeting</a></li><li><a href="#">Champions</a></li></ul></div>
+<div class="s1 sp-cell sp-half"><h3>Help</h3><ul><li><a href="#">Contact LCA</a></li><li><a href="#">Website help</a></li><li><a href="#">News</a></li></ul></div>
+<div class="s2 sp-cell"><h3>Follow</h3><a class="sp-btn" href="#" style="background:transparent;color:#ffffff;border:2px solid #ffffff;min-height:44px">LCA on Facebook<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg></a></div>
+</div>
+<div class="sp-rr" style="color:#c9cfdb">2</div>
+</div>
+<div style="border-top:1px solid rgba(255,255,255,.25)">
+<div class="sp-fr" style="align-items:center;min-height:40px">
+<div class="sp-rn" style="padding-top:0;font-size:16px;color:#ffffff">1</div>
+<div class="sp-main" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;padding:10px 12px;font-size:13px;color:#c9cfdb"><span>© 2026 Louisiana Chess Association · louisianachess.org</span><span class="sp-m">a · b · c · d · e · f · g · h</span></div>
+<div class="sp-rr" style="padding-top:0;color:#c9cfdb">1</div>
+</div>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

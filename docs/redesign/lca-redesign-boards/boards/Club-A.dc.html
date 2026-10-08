@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Club A — Visit-first</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.ca-list{list-style:none;margin:0;padding:0}
+.ca-hero{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);overflow:hidden}
+.ca-hero-main{padding:32px 32px 28px}
+.ca-hero-map{box-shadow:inset 1px 0 0 #e2e1da;background:#fbfaf6;padding:20px;display:flex;flex-direction:column;gap:16px}
+.ca-fact{display:flex;gap:14px;align-items:flex-start}
+.ca-ico{width:40px;height:40px;border-radius:10px;background:#eceef3;color:#1a2744;display:flex;align-items:center;justify-content:center;flex:none}
+.ca-note{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5}
+.ca-note svg{margin-top:2px}
+.ca-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ca-tl li{display:grid;grid-template-columns:104px 22px minmax(0,1fr);column-gap:14px}
+.ca-tl-time{text-align:right;font-size:15px;font-weight:500;padding-top:1px;color:#1a2744}
+.ca-tl-rail{position:relative}
+.ca-tl-rail::before{content:"";position:absolute;left:10px;top:6px;bottom:-6px;width:2px;background:#d6d5cd}
+.ca-tl li:last-child .ca-tl-rail::before{display:none}
+.ca-tl-rail::after{content:"";position:absolute;left:4px;top:4px;width:14px;height:14px;border-radius:50%;background:#1a2744;border:3px solid #fbfaf6;box-shadow:0 0 0 1px #1a2744}
+.ca-tl-body{padding-bottom:22px}
+.ca-ev{display:flex;flex-wrap:wrap;align-items:center;gap:14px 18px;padding:16px 20px}
+.ca-ev-body{flex:1 1 220px;min-width:0}
+.ca-ev .k-date{width:78px}
+.ca-ev .k-date b{font-size:21px}
+.ca-night{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:10px 0;border-bottom:1px solid #ecebe5}
+.ca-night:last-child{border-bottom:0}
+.ca-night-d{flex:1 1 150px;min-width:0}
+.ca-club{padding:10px 0;border-bottom:1px solid #ecebe5}
+.ca-club:last-child{border-bottom:0}
+.ca-news{padding:16px 20px;border-bottom:1px solid #ecebe5}
+.ca-news:last-child{border-bottom:0}
+.ca-photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ca-legend p{display:flex;gap:8px;align-items:flex-start}
+@media (max-width:900px){.ca-hero{grid-template-columns:1fr}.ca-hero-map{box-shadow:inset 0 1px 0 #e2e1da}}
+@media (max-width:760px){.ca-hero-main{padding:22px 18px}.ca-tl li{grid-template-columns:76px 22px minmax(0,1fr);column-gap:10px}.ca-tl-time{font-size:13px}.ca-photos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a class="k-nav-on" href="#" aria-current="page">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<!-- Title band -->
+<section style="background:#ffffff;border-bottom:1px solid #e2e1da">
+  <div class="k-wrap k-section-sm k-stack">
+    <div class="k-between">
+      <nav class="k-row-sm k-small" aria-label="Breadcrumb">
+        <a class="k-link-plain" href="Clubs-A.dc.html"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Clubs</a>
+        <span class="k-muted k-hide-sm">/</span><a class="k-hide-sm" href="#">New Orleans Metro</a>
+        <span class="k-muted k-hide-sm">/</span><span class="k-muted k-hide-sm" aria-current="page">Downriver Chess Club</span>
+      </nav>
+      <div class="k-row-sm"><span class="k-sample">Sample data</span><span class="k-meta">club news, photos and the confirmed date. Times, venue and events are real.</span></div>
+    </div>
+    <div class="k-between" style="align-items:flex-end;gap:16px 24px">
+      <div class="k-stack-sm" style="max-width:780px">
+        <div class="k-row-sm"><span class="k-dot" style="color:#2b6c8f"></span><span class="k-label">LCA-affiliated club · New Orleans</span></div>
+        <h1 class="k-h1">Downriver Chess Club</h1>
+        <p class="k-lead">Fast weeknight chess on Decatur Street, every Monday and Thursday.</p>
+        <div class="k-row" style="margin-top:4px">
+          <div class="k-row-sm"><span class="k-tag">Weeknights</span><span class="k-tag">Fast games · G/15</span><span class="k-tag">Newcomers welcome</span></div>
+          <div class="k-row k-small">
+            <a class="k-link-plain" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>downriverchess.com</a>
+            <a class="k-link-plain" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Email the club</a>
+          </div>
+        </div>
+      </div>
+      <div class="k-row">
+        <button class="k-btn k-btn-line" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Remind me the day before</button>
+        <button class="k-btn k-btn-ghost" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share</button>
+        <span class="k-num-badge">6</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Next club night -->
+<section class="k-section-sm" style="padding-top:32px">
+  <div class="k-wrap">
+    <div class="k-card-raised ca-hero">
+      <div class="ca-hero-main k-stack">
+        <div class="k-row-sm"><span class="k-label-gold">Next club night</span><span class="k-tag k-tag-open">Tonight</span><span class="k-num-badge">1</span></div>
+        <div class="k-stack-sm">
+          <h2 class="k-display">Tonight, 7:00 PM</h2>
+          <p class="k-lead"><span class="k-strong k-ink">Mon, Oct 5</span> · sign-in opens 6:45 PM · then every Monday and Thursday</p>
+        </div>
+        <div class="k-stack" style="margin-top:6px">
+          <div class="ca-fact">
+            <span class="ca-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></span>
+            <div><p class="k-h4">Turtle Bay, upstairs · 1119 Decatur St</p><p class="k-small k-muted">Thursdays: [Thursday venue], Decatur St</p></div>
+          </div>
+          <div class="ca-fact">
+            <span class="ca-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v3a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4z"></path><path d="M14 7v10"></path></svg></span>
+            <div><p class="k-h4">$1–2 entry</p><p class="k-small k-muted">With a US Chess membership. No LCA membership needed.</p></div>
+          </div>
+          <div class="ca-fact">
+            <span class="ca-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+            <div><p class="k-h4">G/15, no delay</p><p class="k-small k-muted">15 minutes per player for the whole game, no time added per move.</p></div>
+          </div>
+        </div>
+        <div class="k-row" style="margin-top:6px">
+          <a class="k-btn k-btn-gold" href="#">Get directions<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          <a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add club nights to calendar</a>
+        </div>
+        <p class="ca-note k-muted"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span>No club night on Saints game nights or major holidays.</span></p>
+      </div>
+      <div class="ca-hero-map">
+        <svg viewBox="0 0 400 240" style="width:100%;height:auto;display:block;border-radius:10px" role="img" aria-label="Map: Turtle Bay at 1119 Decatur St, between Ursulines Ave and Gov. Nicholls St in the French Quarter, four blocks downriver from Jackson Square">
+          <rect x="0" y="0" width="400" height="240" fill="#e9edf1"></rect>
+          <path d="M0 204 C 110 188, 240 222, 400 176 L400 240 L0 240 Z" fill="#cddcea"></path>
+          <text x="262" y="230" font-size="12" font-style="italic" fill="#3d4f66">Mississippi River</text>
+          <path d="M40 155 L360 115 L360 139 L40 179 Z" fill="#dfe2d4"></path>
+          <text x="236" y="146" font-size="11" fill="#4b5263" transform="rotate(-7.1 236 146)">French Market</text>
+          <path d="M0 95 L400 45" stroke="#ffffff" stroke-width="8" fill="none"></path>
+          <text x="14" y="86" font-size="10.5" fill="#555c6b" transform="rotate(-7.1 14 86)">Chartres St</text>
+          <path d="M118 0 L142 200" stroke="#ffffff" stroke-width="7" fill="none"></path>
+          <path d="M214 0 L238 190" stroke="#ffffff" stroke-width="7" fill="none"></path>
+          <path d="M310 0 L334 180" stroke="#ffffff" stroke-width="7" fill="none"></path>
+          <text x="124" y="16" font-size="10.5" fill="#555c6b">Ursulines Ave</text>
+          <text x="220" y="16" font-size="10.5" fill="#555c6b">Gov. Nicholls St</text>
+          <text x="316" y="16" font-size="10.5" fill="#555c6b">Barracks St</text>
+          <path d="M0 150 L400 100" stroke="#ffffff" stroke-width="13" fill="none"></path>
+          <text x="20" y="151" font-size="12" font-weight="600" fill="#1a2744" transform="rotate(-7.1 20 151)">Decatur St</text>
+          <path d="M22 196 L10 196 M15 191 L10 196 L15 201" stroke="#1a2744" stroke-width="1.6" fill="none"></path>
+          <text x="27" y="200" font-size="10.5" fill="#1a2744">Jackson Square, 4 blocks</text>
+          <path d="M180 126 L214 92" stroke="#1a2744" stroke-width="1.5" fill="none"></path>
+          <rect x="206" y="58" width="164" height="42" rx="7" fill="#ffffff" stroke="#c9c8c0"></rect>
+          <text x="216" y="76" font-size="12.5" font-weight="700" fill="#1a2744">Turtle Bay · upstairs</text>
+          <text x="216" y="92" font-size="11" fill="#555c6b">1119 Decatur St</text>
+          <circle cx="178" cy="128" r="10" fill="#c8a94a" stroke="#1a2744" stroke-width="3"></circle>
+          <circle cx="178" cy="128" r="3" fill="#1a2744"></circle>
+          <rect x="10" y="10" width="40" height="20" rx="5" fill="#ffffff" stroke="#c9c8c0"></rect>
+          <text x="18" y="24" font-size="11" font-weight="600" fill="#1a2744">Map</text>
+        </svg>
+        <div class="k-stack-sm">
+          <div class="k-row-sm"><span class="k-label">Getting in at Turtle Bay</span><span class="k-num-badge">2</span></div>
+          <p class="ca-note"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h5v-5h5v-5h6"></path></svg><span><span class="k-strong">Up two flights of narrow, old stairs.</span> Tell the club ahead if stairs are hard for you.</span></p>
+          <p class="ca-note"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10l-1.5 8a3.5 3.5 0 0 1-7 0L7 3zM12 14.5V20M8.5 20.5h7"></path></svg><span>Turtle Bay is a bar. [Club's policy for players under 21]</span></p>
+          <p class="ca-note"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="2"></rect><path d="M9.5 16V8h3a2.5 2.5 0 0 1 0 5h-3"></path></svg><span>Parking: [club's tip, e.g. nearest lot or streetcar stop]</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Your first visit -->
+<section class="k-section k-cream" style="border-top:1px solid #e2e1da;border-bottom:1px solid #e2e1da;margin-top:20px">
+  <div class="k-wrap k-stack-lg">
+    <div class="k-stack-sm" style="max-width:720px">
+      <div class="k-row-sm"><span class="k-label-gold">New here?</span><span class="k-num-badge">3</span></div>
+      <h2 class="k-h2">Your first visit</h2>
+      <p class="k-lead">What a Monday at Turtle Bay is like, from the stairs to the last round.</p>
+    </div>
+    <div class="k-split">
+      <ol class="k-main ca-tl">
+        <li>
+          <div class="ca-tl-time k-mono">6:45 PM</div>
+          <div class="ca-tl-rail"></div>
+          <div class="ca-tl-body"><h3 class="k-h4">Climb the stairs and sign in</h3><p class="k-body k-muted">Give your name and US Chess ID at the sign-in table, and pay the $1–2 entry.</p></div>
+        </li>
+        <li>
+          <div class="ca-tl-time k-mono">7:00 PM</div>
+          <div class="ca-tl-rail"></div>
+          <div class="ca-tl-body"><h3 class="k-h4">Round 1 starts</h3><p class="k-body k-muted">You're paired with another player. Each of you has 15 minutes for the game.</p></div>
+        </li>
+        <li>
+          <div class="ca-tl-time k-mono">Each round</div>
+          <div class="ca-tl-rail"></div>
+          <div class="ca-tl-body"><h3 class="k-h4">Report your result, then play again</h3><p class="k-body k-muted">Tell the tournament director (TD) the result. The next pairings follow.</p></div>
+        </li>
+        <li>
+          <div class="ca-tl-time k-mono">Last round</div>
+          <div class="ca-tl-rail"></div>
+          <div class="ca-tl-body"><h3 class="k-h4">A casual game, or home</h3><p class="k-body k-muted">Stay for a casual game or head out. Either is fine on your first night.</p></div>
+        </li>
+      </ol>
+      <aside class="k-side" style="flex:1 1 380px">
+        <div class="k-card-pad k-stack">
+          <h3 class="k-h3">Before you go</h3>
+          <div class="ca-fact">
+            <svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top:3px"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+            <div class="k-stack-sm" style="gap:2px"><p class="k-strong">Your US Chess ID and $1–2</p><p class="k-small k-muted">No US Chess membership yet? Join online first, or ask at the table.</p><a class="k-link-plain k-small" href="#">Join US Chess<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+          </div>
+          <div class="ca-fact">
+            <svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top:3px"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+            <p class="k-strong">A set and clock, if you have one</p>
+          </div>
+          <div class="ca-fact">
+            <svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="margin-top:3px"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>
+            <div class="k-stack-sm" style="gap:2px"><p class="k-strong">Who to ask</p><p class="k-small k-muted">The TD at the sign-in table runs the night. Email ahead so someone looks out for you.</p></div>
+          </div>
+          <a class="k-btn k-btn-navy k-btn-block" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Email the club first</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- Events, news, photos + side -->
+<section class="k-section">
+  <div class="k-wrap k-split">
+    <div class="k-main k-stack-lg">
+
+      <div class="k-stack">
+        <div class="k-between" style="align-items:flex-end">
+          <div class="k-stack-sm"><h2 class="k-h2">Tournaments by Downriver</h2><p class="k-small k-muted">From the Gulf South Tournament Clearinghouse · entry is on the organizer's site</p></div>
+          <a class="k-link" href="#">All Downriver events</a>
+        </div>
+        <div class="k-card">
+          <div class="ca-ev">
+            <div class="k-date"><b>24–25</b><span>Oct</span></div>
+            <div class="ca-ev-body k-stack-sm">
+              <h3 class="k-h4">The Baton Rouge Classic</h3>
+              <p class="k-small k-muted">Sat–Sun, Oct 24–25 · Baton Rouge, LA · Classical · All ages</p>
+              <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span></div>
+            </div>
+            <div class="k-row"><a class="k-btn k-btn-line k-btn-sm" href="#">Details</a><a class="k-link-plain k-small" href="#">Organizer site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+          </div>
+          <hr class="k-rule">
+          <div class="ca-ev">
+            <div class="k-date"><b>14</b><span>Nov</span></div>
+            <div class="ca-ev-body k-stack-sm">
+              <h3 class="k-h4">New Orleans Youth Chess November Meet</h3>
+              <p class="k-small k-muted">Sat, Nov 14 · New Orleans · December Meet Sat, Dec 5</p>
+              <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-tag">Scholastic</span></div>
+            </div>
+            <div class="k-row"><a class="k-btn k-btn-line k-btn-sm" href="#">Details</a><a class="k-link-plain k-small" href="#">Organizer site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+          </div>
+          <hr class="k-rule">
+          <div class="ca-ev">
+            <div class="k-date"><b>16–18</b><span>Jan</span></div>
+            <div class="ca-ev-body k-stack-sm">
+              <h3 class="k-h4">Ken Ferguson Memorial Open</h3>
+              <p class="k-small k-muted">Sat–Mon, Jan 16–18, 2027 · New Orleans · Classical</p>
+              <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-meta">+ Blitz and Scholastic, Sun, Jan 17</span></div>
+            </div>
+            <div class="k-row"><a class="k-btn k-btn-line k-btn-sm" href="#">Details</a><a class="k-link-plain k-small" href="#">Organizer site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="k-stack">
+        <div class="k-between">
+          <div class="k-row-sm"><h2 class="k-h2">Club news</h2><span class="k-sample">Sample data</span></div>
+          <a class="k-link" href="#">All club news</a>
+        </div>
+        <div class="k-card">
+          <article class="ca-news k-stack-sm">
+            <p class="k-meta k-mono">Wed, Sep 30, 2026</p>
+            <h3 class="k-h4">The Baton Rouge Classic is Oct 24–25</h3>
+            <p class="k-small k-muted">Our October weekend heads up I-10: classical sections, all ages. Entry is open on our site.</p>
+          </article>
+          <article class="ca-news k-stack-sm">
+            <p class="k-meta k-mono">Mon, Sep 21, 2026</p>
+            <h3 class="k-h4">New Orleans Youth Chess starts again Nov 14</h3>
+            <p class="k-small k-muted">Meets run November to May. Best 4 of 5 results count; the top six are invited to the final.</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="k-stack">
+        <div class="k-between"><h2 class="k-h2">Photos</h2><a class="k-link" href="#">See all photos</a></div>
+        <div class="ca-photos">
+          <div class="k-img" style="height:130px">Photo · Monday night upstairs</div>
+          <div class="k-img" style="height:130px">Photo · hands on the clock</div>
+          <div class="k-img" style="height:130px">Photo · youth meet</div>
+          <div class="k-img" style="height:130px">Photo · Ken Ferguson Memorial</div>
+        </div>
+      </div>
+
+    </div>
+
+    <aside class="k-side k-stack">
+      <div class="k-card-pad k-stack-sm">
+        <div class="k-between"><h3 class="k-h4">Next club nights</h3><span class="k-num-badge">4</span></div>
+        <ul class="ca-list">
+          <li class="ca-night"><span class="ca-night-d"><span class="k-strong">Mon, Oct 5</span><br><span class="k-meta">7:00 PM · Turtle Bay</span></span><span class="k-tag k-tag-open">Tonight</span></li>
+          <li class="ca-night"><span class="ca-night-d"><span class="k-strong">Thu, Oct 8</span><br><span class="k-meta">7:00 PM · [Thursday venue]</span></span></li>
+          <li class="ca-night"><span class="ca-night-d"><span class="k-strong">Mon, Oct 12</span><br><span class="k-meta">7:00 PM · Turtle Bay</span></span></li>
+        </ul>
+        <p class="k-label" style="margin-top:6px">Skipped dates</p>
+        <ul class="ca-list">
+          <li class="ca-night"><span class="ca-night-d"><span class="k-strong">Thu, Nov 26</span><br><span class="k-meta">Thanksgiving</span></span><span class="k-tag k-tag-closed">No club night</span></li>
+        </ul>
+        <a class="k-link-plain k-small" href="#" style="margin-top:4px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Subscribe to club nights (.ics)</a>
+      </div>
+
+      <div class="k-panel k-stack-sm">
+        <div class="k-between"><div class="k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="k-strong">Schedule confirmed Sept 2026</span></div><span class="k-num-badge">5</span></div>
+        <p class="k-meta">Confirmed by the club. Clubs re-check their times every three months.</p>
+        <div class="k-row-sm" style="margin-top:4px"><button class="k-btn k-btn-line k-btn-sm" type="button">Report outdated info</button><a class="k-link k-small" href="#">Run this club? Update it</a></div>
+      </div>
+
+      <div class="k-card-pad k-stack-sm">
+        <h3 class="k-h4">Other New Orleans clubs</h3>
+        <div class="ca-club"><p class="k-strong">Greater New Orleans Chess Club</p><p class="k-meta">Tue · 7:00 PM · G/90, one round a week</p></div>
+        <div class="ca-club"><p class="k-strong">New Orleans Westbank Chess Club</p><p class="k-meta">Thu · 7:30 PM · US Chess rated · Gretna</p></div>
+        <div class="ca-club"><p class="k-strong">Marrero Chess Organization</p><p class="k-meta">Wed · 6:00 PM · free, casual games</p></div>
+        <a class="k-link-plain k-small" href="Clubs-A.dc.html">All 8 New Orleans Metro clubs<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- Annotation legend -->
+<section class="k-wrap" style="padding-bottom:40px">
+  <div class="k-panel k-stack-sm ca-legend">
+    <p class="k-label">Notes on this option</p>
+    <div class="k-grid-3" style="gap:10px 20px">
+      <p class="k-small"><span class="k-num-badge">1</span><span>When is the headline: day, date and time before anything else.</span></p>
+      <p class="k-small"><span class="k-num-badge">2</span><span>Honest venue notes. Blanks stay visible until the club fills them.</span></p>
+      <p class="k-small"><span class="k-num-badge">3</span><span>First visit as a short story, beside a “before you go” card.</span></p>
+      <p class="k-small"><span class="k-num-badge">4</span><span>Real dates for the next nights; skipped dates spelled out.</span></p>
+      <p class="k-small"><span class="k-num-badge">5</span><span>Freshness stamp plus one-tap “Report outdated info”.</span></p>
+      <p class="k-small"><span class="k-num-badge">6</span><span>“Remind me” follows the club: a note the day before.</span></p>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2850}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

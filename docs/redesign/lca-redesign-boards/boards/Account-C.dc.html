@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Account C — Many roles</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.ac-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8}
+.ac-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.ac-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 14px 6px 6px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px;box-sizing:border-box}
+.ac-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.ac-r-td{background:#1a2744;color:#ffffff}
+.ac-r-club{background:#f6efd9;color:#5e4a12}
+.ac-r-board{background:#e4e9f3;color:#1a2744}
+.ac-r-parent{background:#e3efe6;color:#1f4d33}
+.ac-r-member{background:#ecebe5;color:#1a2744}
+.ac-layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:40px;align-items:start}
+.ac-rail{position:sticky;top:16px;display:flex;flex-direction:column;gap:16px}
+.ac-nav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.ac-nav a{display:flex;justify-content:space-between;align-items:center;padding:10px 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:44px;box-sizing:border-box}
+.ac-nav a.ac-on{background:#efede6;font-weight:600}
+.ac-today{list-style:none;margin:0;padding:0}
+.ac-today li{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:16px;align-items:center;padding:14px 0;border-top:1px solid #eeede7}
+.ac-sh{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.ac-bar{height:8px;border-radius:4px;background:#eceae2;overflow:hidden;margin:6px 0 4px}
+.ac-bar i{display:block;height:100%;background:#1a2744}
+.ac-ms{padding:8px 0}
+.ac-note{border:1px dashed #c9c6ba;border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.45;margin:12px 0}
+.ac-fresh{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px 16px;align-items:center;padding:12px 0;border-top:1px solid #eeede7;font-size:14px}
+.ac-stat{background:#f5f5f2;border-radius:10px;padding:12px 14px}
+.ac-stat b{display:block;font-size:24px;line-height:1.1;color:#1a2744}
+.ac-act{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #eeede7;font-size:14px;color:#1a2744;text-decoration:none}
+.ac-ev{display:grid;grid-template-columns:64px minmax(0,1fr) 220px;gap:18px;align-items:start;padding:16px 0;border-top:1px solid #eeede7}
+.ac-check{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4;padding:5px 0}
+.ac-ok{color:#2f6b45;flex:none}
+.ac-bad{color:#9a3b1b;flex:none}
+.ac-inbox{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:11px 0;border-top:1px solid #eeede7;font-size:14px}
+.ac-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 28px;font-size:13px;line-height:1.45}
+.ac-legend div{display:flex;gap:8px;align-items:flex-start}
+@media (max-width:900px){.ac-layout{grid-template-columns:1fr}.ac-rail{position:static}.ac-ev{grid-template-columns:64px minmax(0,1fr)}.ac-ev>div:last-child{grid-column:1 / -1}}
+@media (max-width:720px){.ac-today li{grid-template-columns:1fr;gap:8px}.ac-legend{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Workspace</a>
+      <a class="k-ulink" href="#">Board inbox (3)</a>
+      <a class="k-ulink" href="#" aria-current="page" style="display:inline-flex;align-items:center;gap:6px;font-weight:600"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>My LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="ac-band">
+    <div class="k-wrap-wide k-section-sm">
+      <div class="k-between" style="align-items:flex-end">
+        <div>
+          <div class="k-row k-row-sm"><span class="k-kicker">My LCA</span><span class="k-sample">Sample data · roles, entries, counts and messages</span></div>
+          <h1 class="k-h1" style="margin:6px 0 0">Chris Arceneaux</h1>
+          <div class="ac-roles" aria-label="Your roles">
+            <span class="k-num-badge">1</span>
+            <a class="ac-rchip" href="#you"><span class="ac-role ac-r-member">Member</span>Adult</a>
+            <a class="ac-rchip" href="#family"><span class="ac-role ac-r-parent">Parent</span>Ella</a>
+            <a class="ac-rchip" href="#club"><span class="ac-role ac-r-club">Club representative</span>Baton Rouge Chess Club</a>
+            <a class="ac-rchip" href="#td"><span class="ac-role ac-r-td">Tournament director</span>1 upcoming event</a>
+            <a class="ac-rchip" href="#board"><span class="ac-role ac-r-board">Board</span>South Central Louisiana rep</a>
+          </div>
+          <p class="k-small k-muted" style="margin:10px 0 0">Sections appear for the roles LCA has given you. There are no modes to switch. <a class="k-link" href="#">Role looks wrong?</a></p>
+        </div>
+        <div class="k-row k-row-sm">
+          <a class="k-btn k-btn-line" href="Member-D.dc.html"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Show my card</a>
+          <a class="k-btn k-btn-navy" href="#">Open Workspace</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap-wide k-section">
+    <div class="ac-layout">
+
+      <aside class="ac-rail">
+        <div class="k-card k-card-pad">
+          <div class="k-label">On this page</div>
+          <nav class="ac-nav" aria-label="Sections">
+            <a class="ac-on" href="#today">Today <span class="k-chip-count">6</span></a>
+            <a href="#you">You</a>
+            <a href="#family">Family <span class="k-chip-count">1</span></a>
+            <a href="#club">Your club <span class="k-chip-count">1</span></a>
+            <a href="#td">Events you direct <span class="k-chip-count">3</span></a>
+            <a href="#board">Board <span class="k-chip-count">2</span></a>
+          </nav>
+        </div>
+        <div class="k-card k-card-pad">
+          <div class="k-label">Shortcuts into Workspace</div>
+          <div class="k-stack-sm" style="margin-top:10px">
+            <a class="k-link" href="Work-A.dc.html">Event-day console</a>
+            <a class="k-link" href="#">The Baton Rouge Classic · Manage</a>
+            <a class="k-link" href="#">Baton Rouge Chess Club · Edit page</a>
+            <a class="k-link" href="#">Board inbox</a>
+            <a class="k-link" href="#">Workspace home</a>
+          </div>
+        </div>
+        <div class="k-card k-card-pad">
+          <div class="k-label">Daily digest</div>
+          <label class="k-check k-small" style="margin-top:10px"><input type="checkbox" checked> One email at 6:30 AM with every role's to-dos</label>
+          <div class="k-small k-muted" style="margin-top:6px">Replaces a separate email stream per role. Urgent items still arrive right away.</div>
+        </div>
+      </aside>
+
+      <div class="k-stack-lg">
+
+        <div class="k-card k-card-pad" id="today">
+          <div class="ac-sh">
+            <h2 class="k-h2" style="margin:0;display:flex;align-items:center;gap:10px"><span class="k-num-badge">2</span>Today across your roles</h2>
+            <span class="k-small k-muted">Mon, Oct 5 · most urgent first</span>
+          </div>
+          <ul class="ac-today">
+            <li>
+              <span><span class="ac-role ac-r-td">Director</span></span>
+              <div><b>2 players' US Chess memberships end before The Baton Rouge Classic.</b><div class="k-small k-muted">Jordan Lee (ended Sep 30) · Rosa Mendez (ends Oct 12) · event starts Sat, Oct 24</div></div>
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Email both a reminder</a>
+            </li>
+            <li>
+              <span><span class="ac-role ac-r-td">Director</span></span>
+              <div><b>Bye request: Maya Robichaux, ½ point in round 5.</b><div class="k-small k-muted">The Baton Rouge Classic · requested Fri, Oct 2 · within the 2-bye limit</div></div>
+              <div class="k-row k-row-sm"><a class="k-btn k-btn-gold k-btn-sm" href="#">Approve</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Decline</a></div>
+            </li>
+            <li>
+              <span><span class="ac-role ac-r-board">Board</span></span>
+              <div><b>Vote open: approve the September board minutes.</b><div class="k-small k-muted">Closes Fri, Oct 9 · 4 of 9 have voted</div></div>
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Read and vote</a>
+            </li>
+            <li>
+              <span><span class="ac-role ac-r-club">Club rep</span></span>
+              <div><b>Is the Baton Rouge Chess Club listing still accurate?</b><div class="k-small k-muted">Last confirmed Mon, Mar 2, seven months ago</div></div>
+              <a class="k-btn k-btn-line k-btn-sm" href="#club">Check it</a>
+            </li>
+            <li>
+              <span><span class="ac-role ac-r-parent">Parent</span></span>
+              <div><b>Ella's November Meet entry isn't paid yet.</b><div class="k-small k-muted">New Orleans Youth Chess November Meet · Sat, Nov 14 · $20</div></div>
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Pay $20</a>
+            </li>
+            <li>
+              <span><span class="ac-role ac-r-board">Board</span></span>
+              <div><b>3 unread messages in the board inbox.</b><div class="k-small k-muted">Oldest from Fri, Oct 2</div></div>
+              <a class="k-btn k-btn-ghost k-btn-sm" href="#board">Open inbox</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="k-grid-2" style="align-items:start">
+          <div class="k-card k-card-pad" id="you">
+            <div class="ac-sh"><div><span class="ac-role ac-r-member">Member</span><h2 class="k-h3" style="margin:8px 0 0">You</h2></div><a class="k-link k-small" href="Account-A.dc.html">Full player view</a></div>
+            <div class="k-small">Adult · <span class="k-mono">LCA-24-0562</span> · renews automatically Mon, Nov 2 ($15)<br>US Chess ID <span class="k-mono">30077415</span> · regular rating 1835 · through Jun 30, 2027</div>
+            <div class="ac-note">You're directing The Baton Rouge Classic, so you aren't entered. <b>Next as a player:</b> Ken Ferguson Memorial Open, Sat–Mon, Jan 16–18, 2027 (saved). <a class="k-link" href="#">Enter</a></div>
+            <div class="k-row k-row-sm"><span class="k-num-badge">5</span><span class="k-label">Milestones</span></div>
+            <div class="ac-ms"><div class="k-between k-small"><span>Events played</span><b>41</b></div><div class="ac-bar"><i style="width:82%"></i></div><div class="k-small k-muted">9 more to 50</div></div>
+            <div class="ac-ms"><div class="k-between k-small"><span>Events directed</span><b>17</b></div><div class="ac-bar"><i style="width:85%"></i></div><div class="k-small k-muted">3 more to 20</div></div>
+            <div class="ac-ms"><div class="k-between k-small"><span>Volunteer days</span><b>6</b></div><div class="ac-bar"><i style="width:60%"></i></div><div class="k-small k-muted">4 more to 10</div></div>
+          </div>
+
+          <div class="k-card k-card-pad" id="family">
+            <div class="ac-sh"><div><span class="ac-role ac-r-parent">Parent</span><h2 class="k-h3" style="margin:8px 0 0">Family</h2></div><a class="k-link k-small" href="Account-B.dc.html">Family view</a></div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <span style="width:42px;height:42px;border-radius:50%;background:#c8a94a;color:#1a2744;display:flex;align-items:center;justify-content:center;font-weight:600;flex:none">EA</span>
+              <div style="flex:1"><b>Ella Arceneaux</b><div class="k-small k-muted">Scholastic · US Chess ID <span class="k-mono">30611208</span> · rating 734</div></div>
+              <button class="k-iconbtn" type="button" aria-label="Show Ella's check-in QR"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg></button>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;margin-top:14px;padding-top:14px;border-top:1px solid #eeede7">
+              <div class="k-date"><b>14</b><span>Nov</span></div>
+              <div style="flex:1"><b>New Orleans Youth Chess November Meet</b><div class="k-small k-muted">Sat, Nov 14 · K–5 section</div><div class="k-row k-row-sm" style="margin-top:8px"><span class="k-tag k-tag-soon">Payment pending</span><a class="k-btn k-btn-gold k-btn-sm" href="#">Pay $20</a></div></div>
+            </div>
+            <div class="ac-note">Ella has no login of her own. You register and pay for her, and her pass lives on your phone. <a class="k-link" href="#">Add a child</a></div>
+          </div>
+        </div>
+
+        <div class="k-card k-card-pad" id="club">
+          <div class="ac-sh">
+            <div><span class="ac-role ac-r-club">Club representative</span><h2 class="k-h3" style="margin:8px 0 0">Baton Rouge Chess Club</h2><div class="k-small k-muted">South Central Louisiana · representative since 2024</div></div>
+            <div class="k-row k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Edit club page</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">View public page</a></div>
+          </div>
+          <div class="k-grid-2" style="align-items:start;gap:32px">
+            <div>
+              <div class="k-row k-row-sm" style="margin-bottom:6px"><span class="k-num-badge">3</span><b>Is this still accurate?</b><span class="k-small k-muted">Last confirmed Mon, Mar 2</span></div>
+              <div class="ac-fresh"><div><b>Saturdays 10 AM</b> · Jones Creek Branch Library<div class="k-small k-muted">G/90+30 (90 min each + 30 sec per move)</div></div><div class="k-seg"><button class="k-seg-on" type="button">Still right</button><button type="button">Change</button></div></div>
+              <div class="ac-fresh"><div><b>Wednesdays 6 PM</b> · Boba ParTea on O'Neil Lane<div class="k-small k-muted">Casual meets</div></div><div class="k-seg"><button class="k-seg-on" type="button">Still right</button><button type="button">Change</button></div></div>
+              <div class="ac-fresh"><div><b>Contact</b> · [Club email or phone]</div><div class="k-seg"><button type="button">Still right</button><button type="button">Change</button></div></div>
+              <div class="k-row k-row-sm" style="margin-top:14px"><a class="k-btn k-btn-gold k-btn-sm" href="#">Confirm all</a><span class="k-small k-muted">The club page then shows "Confirmed Oct 2026".</span></div>
+            </div>
+            <div>
+              <div class="k-grid-2">
+                <div class="ac-stat"><b>212</b><span class="k-small k-muted">club page views, last 30 days</span></div>
+                <div class="ac-stat"><b>37</b><span class="k-small k-muted">members list it as their home club</span></div>
+              </div>
+              <div style="margin-top:12px">
+                <a class="ac-act" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg>Post club news</a>
+                <a class="ac-act" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add a club event or rated night</a>
+                <a class="ac-act" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>Club members</a>
+                <a class="ac-act" href="#"><span class="k-num-badge">6</span>Add a co-representative</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="k-card k-card-pad" id="td">
+          <div class="ac-sh">
+            <div><span class="ac-role ac-r-td">Tournament director</span><h2 class="k-h3" style="margin:8px 0 0">Events you direct</h2></div>
+            <a class="k-link k-small" href="#">All your events in Workspace</a>
+          </div>
+          <div class="ac-ev">
+            <div class="k-date k-date-navy"><b>24</b><span>Oct</span></div>
+            <div>
+              <div class="k-row k-row-sm"><b class="k-h4" style="margin:0">The Baton Rouge Classic</b><span class="k-tag k-tag-open">Registration open</span></div>
+              <div class="k-small k-muted">Sat–Sun, Oct 24–25 · Baton Rouge · 5 rounds · G/90+30</div>
+              <div class="ac-bar" style="max-width:440px;margin-top:10px"><i style="width:63%"></i></div>
+              <div class="k-small"><b>38 of 60</b> registered</div>
+              <div class="k-row k-row-sm" style="margin-top:10px"><span class="k-chip">Open <span class="k-chip-count">10</span></span><span class="k-chip">U1800 <span class="k-chip-count">12</span></span><span class="k-chip">U1400 <span class="k-chip-count">9</span></span><span class="k-chip">U1000 <span class="k-chip-count">7</span></span></div>
+              <div class="k-row k-row-sm" style="margin-top:10px"><span class="k-tag k-tag-full">2 US Chess expiring</span><span class="k-tag k-tag-soon">1 unpaid</span><span class="k-tag k-tag-soon">1 bye request</span></div>
+              <div class="k-small" style="margin-top:10px">Setup: 6 of 7 steps done · next: <a class="k-link" href="#">publish the prize list</a></div>
+            </div>
+            <div class="k-stack-sm">
+              <a class="k-btn k-btn-navy k-btn-block" href="#">Manage</a>
+              <a class="k-btn k-btn-gold k-btn-block" href="Work-A.dc.html">Event-day console</a>
+              <a class="k-btn k-btn-ghost k-btn-block" href="#"><span class="k-num-badge">6</span>Add a co-director</a>
+            </div>
+          </div>
+          <div class="ac-ev">
+            <div class="k-date"><b>3</b><span>Oct</span></div>
+            <div>
+              <div class="k-row k-row-sm"><b class="k-h4" style="margin:0">Baton Rouge Chess Club Saturday G/90</b><span class="k-tag k-tag-closed">Finished</span></div>
+              <div class="k-small k-muted">Sat, Oct 3 · 14 players · rating report not sent yet</div>
+              <div class="k-row k-row-sm" style="margin:12px 0 4px"><span class="k-num-badge">4</span><b class="k-small">Rating report check</b></div>
+              <div class="ac-check"><svg class="k-i k-i-sm ac-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Every game has a result</span></div>
+              <div class="ac-check"><svg class="k-i k-i-sm ac-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Byes within the event's limit</span></div>
+              <div class="ac-check"><svg class="k-i k-i-sm ac-bad" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg><span><b>Theo Guidry's US Chess membership ended Sep 30.</b> US Chess will reject the report until he renews. <a class="k-link" href="#">Email him the renewal link</a></span></div>
+            </div>
+            <div class="k-stack-sm">
+              <a class="k-btn k-btn-line k-btn-block" href="#">Run the check again</a>
+              <a class="k-btn k-btn-ghost k-btn-block" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Rating report files</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="k-card k-card-pad" id="board">
+          <div class="ac-sh">
+            <div><span class="ac-role ac-r-board">Board</span><h2 class="k-h3" style="margin:8px 0 0">South Central Louisiana representative</h2><div class="k-small k-muted">Seat term ends [date]</div></div>
+            <a class="k-btn k-btn-line k-btn-sm" href="#">Open board inbox</a>
+          </div>
+          <div class="k-grid-2" style="align-items:start;gap:32px">
+            <div>
+              <div class="k-label">Board inbox · 3 unread</div>
+              <div class="ac-inbox"><b>Question about scholastic section eligibility</b><span class="k-tag k-tag-soon">New</span><span class="k-small k-muted">From a parent · Mon, Oct 5</span></div>
+              <div class="ac-inbox"><b>Club listing correction for Bunkie Chess Club</b><span class="k-tag k-tag-soon">New</span><span class="k-small k-muted">From the contact form · Sun, Oct 4</span></div>
+              <div class="ac-inbox"><b>Sponsorship offer for the State Scholastic</b><span class="k-tag k-tag-soon">New</span><span class="k-small k-muted">From [Business name] · Fri, Oct 2</span></div>
+            </div>
+            <div class="k-stack-sm">
+              <div class="k-label">Votes and meetings</div>
+              <div class="ac-stat" style="background:#ffffff;border:1px solid #e3e1d8">
+                <div class="k-between"><b style="font-size:15px;display:inline">Approve the September minutes</b><span class="k-tag k-tag-open">Open</span></div>
+                <div class="ac-bar"><i style="width:44%"></i></div>
+                <div class="k-between k-small"><span class="k-muted">4 of 9 voted · closes Fri, Oct 9</span><a class="k-link" href="#">Read and vote</a></div>
+              </div>
+              <div class="k-small"><b>Next board meeting:</b> [Date] · [Video link or location] · <a class="k-link" href="#">Add to calendar</a></div>
+              <div class="k-small"><b>Drafts to review:</b> Treasurer report, September · <a class="k-link" href="#">Open</a></div>
+              <div class="k-small"><a class="k-link" href="#">Governance documents</a></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="k-small k-muted" style="margin:0">Officers and admins also see Admin in the header. Admin keeps its own area and never mixes into this page.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap-wide k-section-sm">
+    <div class="k-rule" style="margin-bottom:16px"></div>
+    <div class="ac-legend">
+      <div><span class="k-num-badge">1</span><span>Role chips name every role you hold. Each adds a section; nothing to switch.</span></div>
+      <div><span class="k-num-badge">2</span><span>One "Today" list merges tasks from every role, each labeled with its role in words.</span></div>
+      <div><span class="k-num-badge">3</span><span>Club reps confirm their listing line by line when LCA asks "Is this still accurate?"</span></div>
+      <div><span class="k-num-badge">4</span><span>Before upload, the rating report check flags expired IDs, bye limits and missing results.</span></div>
+      <div><span class="k-num-badge">5</span><span>Milestones count directing and volunteering, not just playing.</span></div>
+      <div><span class="k-num-badge">6</span><span>Hand off: add a co-director or co-representative for one event or a date range.</span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3200}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

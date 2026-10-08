@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home D — Front page</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.d-rule2{height:5px;border-top:3px solid #1a2744;border-bottom:1px solid #1a2744}
+.d-list{list-style:none;margin:0;padding:0}
+.d-list > li{padding:12px 0;border-top:1px solid #e2e1da}
+.d-list > li:first-child{border-top:0;padding-top:4px}
+.d-story{display:flex;flex-direction:column;gap:8px;padding-top:16px}
+.d-hl{color:inherit;text-decoration:none}
+.d-hl:hover{text-decoration:underline;text-decoration-color:#c8a94a}
+.d-tl{display:grid;grid-template-columns:96px 1fr;gap:10px 14px;margin:0}
+.d-tl dt{font-family:'Geist Mono',ui-monospace,monospace;font-weight:500;color:#866a1e}
+.d-tl dd{margin:0}
+.d-board{grid-template-rows:repeat(8,1fr)}
+.d-board > div{display:flex;align-items:center;justify-content:center}
+.d-pw,.d-pb{display:flex;align-items:center;justify-content:center;width:74%;height:74%;border-radius:50%;font-size:13px;font-weight:700;line-height:1}
+.d-pw{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.d-pb{background:#1a2744;color:#ffffff;border:2px solid #ffffff;box-shadow:0 0 0 1px #1a2744}
+.d-ranks{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;font-size:11px;color:#555c6b;text-align:center}
+.d-files{display:grid;grid-template-columns:repeat(8,1fr);font-size:11px;color:#555c6b;text-align:center}
+.k-navy .k-label.d-champ{color:#e6cf86}
+.d-note{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.5}
+</style>
+</helmet>
+<div class="k-page">
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="k-wrap-wide">
+
+  <!-- Dateline -->
+  <div class="k-between" style="padding:18px 0 12px">
+    <div class="k-row">
+      <span class="k-label" style="color:#1a2744">Tuesday, October 6, 2026</span>
+      <span class="k-meta">Updated 9:12 AM</span>
+      <span class="k-num-badge">6</span>
+    </div>
+    <p class="k-small"><b>Louisiana's state chess association since 1915</b> · tournaments, clubs and youth chess · US Chess state affiliate</p>
+    <span class="k-sample">Sample data</span>
+  </div>
+  <div class="d-rule2"></div>
+
+  <!-- Bulletin (becomes the live line on event days) -->
+  <div class="k-between" style="padding:12px 0;border-bottom:1px solid #e2e1da">
+    <div class="k-row">
+      <span class="k-num-badge">1</span>
+      <span class="k-tag k-tag-gold">This weekend</span>
+      <a class="k-link-plain" href="#">Lafayette Open 2026</a>
+      <span class="k-small k-muted">Sat–Sun, Oct 10–11 · Lafayette, LA · Classical · All ages</span>
+      <span class="k-tag k-tag-ext">Partner event</span>
+    </div>
+    <div class="k-row">
+      <a class="k-link-plain k-small" href="#">Event details<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+      <a class="k-link-plain k-small" href="#">Register on organizer site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="k-meta">opens in new tab</span></a>
+    </div>
+  </div>
+
+  <!-- Lead story + side column -->
+  <div class="k-split" style="padding-top:28px">
+    <article class="k-main k-stack">
+      <span class="k-label-gold">Results · 2026 Louisiana State Championship</span>
+      <h1 class="k-display"><a class="d-hl" href="#">Landry takes the state title in Sulphur with 4½ of 5</a></h1>
+      <p class="k-lead">A final-round draw on board 1 sealed a half-point win. Four sections played over Labor Day weekend, with the annual business meeting on Sunday.</p>
+      <p class="k-meta">By [Author name] · Wed, Sep 9, 2026 · 4 min read</p>
+      <figure style="margin:4px 0 0">
+        <img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Adult players at long tables in a wood-paneled tournament hall" style="width:100%;aspect-ratio:3/2;height:auto;object-fit:cover;border-radius:12px">
+        <figcaption class="k-meta" style="margin-top:8px">[Caption: round, room and city] · Photo: [Photographer name]</figcaption>
+      </figure>
+      <p class="k-body k-muted">[Two short paragraphs: the deciding game on board 1, the upset of the weekend, the scholastic players who moved up, and thanks to the host club and the TD team.]</p>
+      <div class="k-card-pad k-stack">
+        <div class="k-between">
+          <h2 class="k-h4">Section winners</h2>
+          <span class="k-meta">5 rounds · G/90+30 · 90 min each + 30 sec per move</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:16px">
+          <div class="k-stack-sm" style="gap:2px"><span class="k-label">Open</span><span class="k-strong">Marcus Landry</span><span class="k-meta k-mono">2014 · 4½/5</span></div>
+          <div class="k-stack-sm" style="gap:2px"><span class="k-label">Under 1800</span><span class="k-strong">Sam Nguyen</span><span class="k-meta k-mono">1650 · 4½/5</span></div>
+          <div class="k-stack-sm" style="gap:2px"><span class="k-label">Under 1400</span><span class="k-strong">Theo Guidry</span><span class="k-meta k-mono">1295 · 4/5</span></div>
+          <div class="k-stack-sm" style="gap:2px"><span class="k-label">Under 1000</span><span class="k-strong">Leo Robichaux</span><span class="k-meta k-mono">Unrated · 5/5</span></div>
+        </div>
+        <div class="k-row">
+          <a class="k-btn k-btn-navy k-btn-sm" href="#">Read the full recap</a>
+          <a class="k-btn k-btn-line k-btn-sm" href="#">Full crosstable</a>
+          <a class="k-link-plain k-small" href="#">US Chess rating report<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>36 photos</a>
+        </div>
+      </div>
+    </article>
+
+    <div class="k-rule-v k-hide-sm"></div>
+
+    <aside class="k-side k-stack-lg" style="flex-basis:380px">
+      <section class="k-stack-sm" aria-label="Results box">
+        <div class="k-between"><span class="k-label">Results box</span><span class="k-num-badge">2</span></div>
+        <div class="k-tablebox">
+          <table class="k-table">
+            <caption>State Championship · Open · Final standings</caption>
+            <thead>
+              <tr><th scope="col" class="k-r">#</th><th scope="col">Player</th><th scope="col" class="k-r">Rating</th><th scope="col" class="k-r">Score</th><th scope="col" class="k-r">TB</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="k-r k-mono">1</td><td class="k-strong">Marcus Landry</td><td class="k-r k-mono">2014</td><td class="k-r k-mono">4½</td><td class="k-r k-mono">13½</td></tr>
+              <tr><td class="k-r k-mono">2</td><td>Avery Thibodeaux</td><td class="k-r k-mono">1912</td><td class="k-r k-mono">4</td><td class="k-r k-mono">14</td></tr>
+              <tr><td class="k-r k-mono">3</td><td>Priya Shah</td><td class="k-r k-mono">1803</td><td class="k-r k-mono">4</td><td class="k-r k-mono">12½</td></tr>
+              <tr><td class="k-r k-mono">4</td><td>Camille Broussard</td><td class="k-r k-mono">1744</td><td class="k-r k-mono">3½</td><td class="k-r k-mono">13</td></tr>
+              <tr><td class="k-r k-mono">5</td><td>Isaac Dupre</td><td class="k-r k-mono">1688</td><td class="k-r k-mono">3½</td><td class="k-r k-mono">11½</td></tr>
+            </tbody>
+          </table>
+          <div class="k-between" style="padding:12px 14px;border-top:1px solid #ecebe5">
+            <span class="k-meta">TB = modified median, the first US Chess tiebreak</span>
+            <a class="k-link-plain k-small" href="#">Full crosstable<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="k-card-pad k-stack-sm">
+        <span class="k-label-gold">Upset of the weekend</span>
+        <p class="k-body"><b>Rosa Mendez</b> <span class="k-mono">(1219)</span> beat <b>Jordan Lee</b> <span class="k-mono">(1388)</span> in round 4 of the Under 1400 section.</p>
+        <a class="k-link-plain k-small" href="#">Replay the game<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+      </section>
+
+      <section class="k-stack-sm">
+        <div class="k-between">
+          <h2 class="k-h3">Coming up</h2>
+          <a class="k-link-plain k-small" href="#">All tournaments<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+        </div>
+        <ul class="d-list">
+          <li class="k-row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px">
+            <div class="k-date" style="width:58px;min-height:58px"><b style="font-size:18px">10–11</b><span>Oct</span></div>
+            <div class="k-stack-sm" style="gap:4px;min-width:0">
+              <a class="k-link-plain" href="#">Lafayette Open 2026</a>
+              <span class="k-row-sm k-meta">Sat–Sun · Lafayette · Classical<span class="k-tag k-tag-ext">Partner event</span></span>
+            </div>
+          </li>
+          <li class="k-row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px">
+            <div class="k-date" style="width:58px;min-height:58px"><b style="font-size:18px">24–25</b><span>Oct</span></div>
+            <div class="k-stack-sm" style="gap:4px;min-width:0">
+              <a class="k-link-plain" href="#">The Baton Rouge Classic</a>
+              <span class="k-row-sm k-meta">Sat–Sun · Baton Rouge · Classical<span class="k-tag k-tag-ext">Partner event</span></span>
+            </div>
+          </li>
+          <li class="k-row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px">
+            <div class="k-date" style="width:58px;min-height:58px"><b>31</b><span>Oct</span></div>
+            <div class="k-stack-sm" style="gap:4px;min-width:0">
+              <a class="k-link-plain" href="#">The Casa Chess Tournament</a>
+              <span class="k-row-sm k-meta">Sat · Sulphur · Dual-rated<span class="k-tag k-tag-ext">Partner event</span></span>
+            </div>
+          </li>
+          <li class="k-row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px">
+            <div class="k-date" style="width:58px;min-height:58px"><b>14</b><span>Nov</span></div>
+            <div class="k-stack-sm" style="gap:4px;min-width:0">
+              <a class="k-link-plain" href="#">New Orleans Youth Chess November Meet</a>
+              <span class="k-row-sm k-meta">Sat · New Orleans · Scholastic<span class="k-tag k-tag-ext">Partner event</span></span>
+            </div>
+          </li>
+          <li class="k-row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px">
+            <div class="k-date" style="width:58px;min-height:58px"><b>5</b><span>Dec</span></div>
+            <div class="k-stack-sm" style="gap:4px;min-width:0">
+              <a class="k-link-plain" href="#">New Orleans Youth Chess December Meet</a>
+              <span class="k-row-sm k-meta">Sat · New Orleans · Scholastic<span class="k-tag k-tag-ext">Partner event</span></span>
+            </div>
+          </li>
+          <li class="k-row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px">
+            <div class="k-date" style="width:58px;min-height:58px"><b style="font-size:18px">16–18</b><span>Jan</span></div>
+            <div class="k-stack-sm" style="gap:4px;min-width:0">
+              <a class="k-link-plain" href="#">Ken Ferguson Memorial Open</a>
+              <span class="k-row-sm k-meta">Sat–Mon, 2027 · New Orleans · Classical<span class="k-tag k-tag-ext">Partner event</span></span>
+            </div>
+          </li>
+          <li class="k-row" style="flex-wrap:nowrap;align-items:flex-start;gap:12px">
+            <div class="k-date k-date-navy" style="width:58px;min-height:58px"><b>13</b><span>Feb</span></div>
+            <div class="k-stack-sm" style="gap:4px;min-width:0">
+              <a class="k-link-plain" href="#">2027 LCA TOC Qualifier</a>
+              <span class="k-row-sm k-meta">Sat, 2027 · [City] · K–12 Tournament of Champions qualifier<span class="k-tag k-tag-lca">LCA event</span></span>
+              <span class="k-row-sm"><span class="k-tag k-tag-open">Registration open</span><span class="k-meta k-mono">18 of 80 registered</span></span>
+            </div>
+          </li>
+        </ul>
+        <div class="k-row">
+          <a class="k-btn k-btn-soft k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Subscribe (.ics)</a>
+          <a class="k-link-plain k-small" href="#">Add to Google Calendar</a>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- Secondary stories -->
+  <section style="margin-top:40px" aria-label="More stories">
+    <div class="d-rule2"></div>
+    <div class="k-grid-4" style="gap:28px">
+      <article class="d-story">
+        <span class="k-label-gold">This weekend</span>
+        <h3 class="k-h3"><a class="d-hl" href="#">Lafayette Open: two days of classical chess for all ages</a></h3>
+        <p class="k-small k-muted">Lafayette Chess Club hosts on Sat–Sun, Oct 10–11. Registration is on the club's own site.</p>
+        <span class="k-meta">Mon, Oct 5</span>
+      </article>
+      <article class="d-story">
+        <span class="k-label-gold">Scholastic</span>
+        <h3 class="k-h3"><a class="d-hl" href="#">Next New Orleans Youth Chess meet is Sat, Nov 14</a></h3>
+        <p class="k-small k-muted">Then Dec 5, Mar 20 and the Grand Prix Final on Sat, May 8. Run by Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess.</p>
+        <span class="k-meta">Fri, Oct 2</span>
+      </article>
+      <article class="d-story">
+        <span class="k-label-gold">From the board</span>
+        <h3 class="k-h3"><a class="d-hl" href="#">Annual business meeting, Sun, Sep 6: the recap</a></h3>
+        <p class="k-small k-muted">[Plain-language recap: what members decided, who was elected, what happens next.] Minutes go under Bylaws &amp; minutes.</p>
+        <span class="k-meta">Thu, Sep 17</span>
+      </article>
+      <article class="d-story">
+        <span class="k-label-gold">Coming in January</span>
+        <h3 class="k-h3"><a class="d-hl" href="#">Ken Ferguson Memorial: an open, a blitz and a scholastic in one weekend</a></h3>
+        <p class="k-small k-muted">Downriver Chess, New Orleans, Sat–Mon, Jan 16–18, 2027. Blitz and the scholastic are on Sunday, Jan 17.</p>
+        <span class="k-meta">Tue, Sep 29</span>
+      </article>
+    </div>
+  </section>
+</div>
+
+<!-- Champions band -->
+<section class="k-navy" style="margin-top:48px" aria-label="Reigning champions">
+  <div class="k-wrap-wide k-section-sm">
+    <div class="k-between">
+      <div class="k-row">
+        <span style="color:#e6cf86;display:flex"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg></span>
+        <h2 class="k-h3">Reigning champions</h2>
+        <span class="k-num-badge" style="background:#c8a94a;color:#1a2744">3</span>
+      </div>
+      <a class="k-link-plain" href="#" style="color:#ffffff">State champions honor roll<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+    </div>
+    <div class="k-grid-4" style="margin-top:18px">
+      <div class="k-stack-sm" style="gap:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.28)">
+        <span class="k-label d-champ">State Champion · 2026</span>
+        <span class="k-h4">Marcus Landry</span>
+        <span class="k-meta k-mono">4½/5 · Sulphur</span>
+      </div>
+      <div class="k-stack-sm" style="gap:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.28)">
+        <span class="k-label d-champ">State Scholastic Champion · 2026</span>
+        <span class="k-h4">Priya Shah</span>
+        <span class="k-meta k-mono">K–12 · [City]</span>
+      </div>
+      <div class="k-stack-sm" style="gap:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.28)">
+        <span class="k-label d-champ">Paul Morphy Open · 2026</span>
+        <span class="k-h4">Avery Thibodeaux</span>
+        <span class="k-meta k-mono">New Orleans</span>
+      </div>
+      <div class="k-stack-sm" style="gap:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.28)">
+        <span class="k-label d-champ">TOC Qualifier · 2026</span>
+        <span class="k-h4">Rosa Mendez</span>
+        <span class="k-meta k-mono">K–12 · qualified for the national TOC</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="k-wrap-wide">
+  <!-- Heritage feature + around the state -->
+  <section class="k-split" style="margin-top:48px">
+    <article class="k-main k-card" style="padding:28px">
+      <div class="k-split">
+        <div class="k-main k-stack" style="flex-basis:340px">
+          <div class="k-row"><span class="k-label-gold">Louisiana heritage</span><span class="k-num-badge">4</span></div>
+          <h2 class="k-h1"><a class="d-hl" href="#">Paul Morphy, born in New Orleans, 1837</a></h2>
+          <p class="k-lead">He won the First American Chess Congress in 1857. A year later, at the opera in Paris, he played the most famous short game in chess.</p>
+          <dl class="d-tl">
+            <dt>1837</dt><dd>Born in New Orleans</dd>
+            <dt>1857</dt><dd>Wins the First American Chess Congress, New York</dd>
+            <dt>1858</dt><dd>Plays the Opera Game in Paris</dd>
+            <dt>1915</dt><dd>LCA begins serving Louisiana players</dd>
+            <dt>June 2027</dt><dd>The Paul Morphy Open &amp; Morphy Scholastic, in his city <span class="k-tag k-tag-lca">LCA event</span></dd>
+          </dl>
+          <div class="k-stack-sm">
+            <a class="k-link-plain k-small" href="#">Historic New Orleans Collection: when Morphy brought chess mania to New Orleans<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+            <a class="k-link-plain k-small" href="#">64 Parishes: Paul Morphy<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+            <a class="k-link-plain k-small" href="#">LCA's state champions and history<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+          </div>
+        </div>
+        <div class="k-side k-stack-sm" style="flex-basis:280px;max-width:320px">
+          <span class="k-label">Puzzle · The Opera Game, Paris, 1858</span>
+          <div style="display:grid;grid-template-columns:14px 1fr;gap:4px">
+            <div class="d-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+            <div class="k-board d-board" role="img" aria-label="Position before White's 16th move: White king c1, queen b3, rook d1, bishop g5; Black king e8, queen e6, knight d7, bishop f8, rook h8">
+              <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="d-pb">K</span></div><div class="k-sq-d"><span class="d-pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="d-pb">R</span></div>
+              <div class="k-sq-d"><span class="d-pb">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="d-pb">N</span></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="d-pb">P</span></div><div class="k-sq-d"><span class="d-pb">P</span></div><div class="k-sq-l"><span class="d-pb">P</span></div>
+              <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="d-pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+              <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="d-pb">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="d-pw">B</span></div><div class="k-sq-l"></div>
+              <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="d-pw">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+              <div class="k-sq-d"></div><div class="k-sq-l"><span class="d-pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+              <div class="k-sq-l"><span class="d-pw">P</span></div><div class="k-sq-d"><span class="d-pw">P</span></div><div class="k-sq-l"><span class="d-pw">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="d-pw">P</span></div><div class="k-sq-l"><span class="d-pw">P</span></div><div class="k-sq-d"><span class="d-pw">P</span></div>
+              <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="d-pw">K</span></div><div class="k-sq-l"><span class="d-pw">R</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+            </div>
+            <span></span>
+            <div class="d-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+          </div>
+          <p class="k-small"><b>White to move and mate in two.</b> Morphy found it at move 16. White pieces are outlined discs; Black pieces are solid.</p>
+          <div class="k-row"><button class="k-btn k-btn-soft k-btn-sm" type="button">Show the answer</button><a class="k-link-plain k-small" href="#">Play through the game</a></div>
+        </div>
+      </div>
+    </article>
+
+    <aside class="k-side k-stack" style="flex-basis:380px" aria-label="Around the state">
+      <div class="k-between"><h2 class="k-h3">Around the state</h2><span class="k-num-badge">5</span></div>
+      <p class="k-meta">Club news and short posts from LCA's Facebook page, newest first.</p>
+      <ul class="d-list">
+        <li class="k-stack-sm" style="gap:4px">
+          <span class="k-row-sm k-meta"><span class="k-tag">Facebook</span>Sun, Oct 4</span>
+          <p class="k-small">[Post text from the LCA Facebook page, clamped to two lines.]</p>
+          <a class="k-link-plain k-small" href="#">View on Facebook<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+        </li>
+        <li class="k-stack-sm" style="gap:4px">
+          <span class="k-row-sm k-meta"><span class="k-dot" style="color:#2e6b4f"></span><b class="k-ink">Downriver Chess</b>· Fri, Oct 2</span>
+          <a class="k-link-plain" href="#">Ken Ferguson Memorial set for Sat–Mon, Jan 16–18, with a blitz and a scholastic on Sunday</a>
+        </li>
+        <li class="k-stack-sm" style="gap:4px">
+          <span class="k-row-sm k-meta"><span class="k-dot" style="color:#6b3d8f"></span><b class="k-ink">Baton Rouge Chess Club</b>· Thu, Oct 1</span>
+          <a class="k-link-plain" href="#">Casual nights are Wednesdays at 6 PM at Boba ParTea on O'Neil Lane; rated play stays Saturdays at 10 AM</a>
+        </li>
+        <li class="k-stack-sm" style="gap:4px">
+          <span class="k-row-sm k-meta"><span class="k-dot" style="color:#b0572a"></span><b class="k-ink">Casa de Ajedrez</b>· Tue, Sep 29</span>
+          <a class="k-link-plain" href="#">The Casa Chess Tournament is Sat, Oct 31 in Sulphur: dual-rated, all ages</a>
+        </li>
+        <li class="k-stack-sm" style="gap:4px">
+          <span class="k-row-sm k-meta"><span class="k-dot" style="color:#245f96"></span><b class="k-ink">Picayune Chess Club</b>· Mon, Sep 28</span>
+          <a class="k-link-plain" href="#">Quick-rated first Mondays: 4 rounds of G/20 d5 (20 minutes each, 5-second delay)</a>
+        </li>
+      </ul>
+      <div class="k-row">
+        <a class="k-link-plain k-small" href="#">Follow LCA on Facebook<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+        <a class="k-link-plain k-small" href="#">Club reps: post your news</a>
+      </div>
+    </aside>
+  </section>
+
+  <!-- Notices -->
+  <section class="k-grid-4" style="margin-top:48px;margin-bottom:56px" aria-label="Notices">
+    <div class="k-card-pad k-stack-sm">
+      <span class="k-label">Membership</span>
+      <h3 class="k-h3">Join LCA</h3>
+      <p class="k-small">Adult $15 · Scholastic $5 · Family $25 · Senior $10 a year.</p>
+      <p class="k-meta">Entry discounts at LCA tournaments, a member profile, voting rights and online registration.</p>
+      <div><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+    </div>
+    <div class="k-card-pad k-stack-sm">
+      <span class="k-label">From the board</span>
+      <h3 class="k-h3">Next board meeting</h3>
+      <p class="k-small">[Day, Mon DD] · [7:00 PM] · Online</p>
+      <p class="k-meta">Open to members. [Agenda link when posted.]</p>
+      <div><a class="k-btn k-btn-line k-btn-sm" href="#">Meetings &amp; minutes</a></div>
+    </div>
+    <div class="k-card-pad k-stack-sm">
+      <span class="k-label">Organizers</span>
+      <h3 class="k-h3">Run a club or tournament?</h3>
+      <p class="k-small">Keep your club's meeting times current and list your events.</p>
+      <p class="k-meta">Club reps and TDs sign in to the workspace.</p>
+      <div><a class="k-btn k-btn-line k-btn-sm" href="#">Organizer tools</a></div>
+    </div>
+    <div class="k-card-pad k-stack-sm">
+      <span class="k-label">Support</span>
+      <h3 class="k-h3">Donate to LCA</h3>
+      <p class="k-small">[One line on what gifts fund, e.g., scholastic entry help and club equipment.]</p>
+      <p class="k-meta">Checkout stays on louisianachess.org.</p>
+      <div><a class="k-btn k-btn-navy k-btn-sm" href="#">Donate</a></div>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+<!-- Annotation legend (not part of the page) -->
+<section style="background:#ecebe6;border-top:1px solid #d6d5cd" aria-label="Notes on this option">
+  <div class="k-wrap-wide k-section-sm k-stack">
+    <div class="k-row"><span class="k-label">Notes on option D · Front page</span><span class="k-meta">On event days the bulletin reads:</span><span class="k-tag k-tag-live">Live · Round 3</span><span class="k-small k-strong">Round 3 pairings posted · Find your board</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:14px 32px">
+      <p class="d-note"><span class="k-num-badge">1</span><span>The bulletin line under the dateline turns into the live line during an LCA event, so pairings are one tap from home.</span></p>
+      <p class="d-note"><span class="k-num-badge">2</span><span>Every recap gets a results box beside it: standings as a real table with ½ points and the tiebreak explained.</span></p>
+      <p class="d-note"><span class="k-num-badge">3</span><span>Reigning champions, one line per title, linked to the honor roll.</span></p>
+      <p class="d-note"><span class="k-num-badge">4</span><span>Morphy feature with a mate-in-two from the Opera Game (public domain), tied to LCA's own Paul Morphy Open.</span></p>
+      <p class="d-note"><span class="k-num-badge">5</span><span>One dated stream mixes club news (club colour dot) and Facebook posts, so the page moves between recaps.</span></p>
+      <p class="d-note"><span class="k-num-badge">6</span><span>Dateline and "Updated" time show the page is looked after.</span></p>
+    </div>
+  </div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3300}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

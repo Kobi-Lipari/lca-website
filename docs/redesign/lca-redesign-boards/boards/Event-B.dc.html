@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Event B — Championship hub</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.eb-hero{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:40px;align-items:end}
+.eb-chip-dark{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.3);color:#ffffff;font-size:14px}
+.eb-tabs{display:flex;gap:2px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.eb-tab{display:inline-flex;align-items:center;gap:6px;min-height:52px;padding:0 14px;font-weight:600;font-size:15px;color:#555c6b;text-decoration:none;border-bottom:3px solid transparent;box-sizing:border-box}
+.eb-tab-on{color:#1a2744;border-bottom-color:#c8a94a}
+.eb-bar{height:8px;border-radius:4px;background:#e6e4dc;overflow:hidden}
+.eb-bar i{display:block;height:100%;background:#1a2744;border-radius:4px}
+.eb-days{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.eb-slot{display:grid;grid-template-columns:72px 1fr;gap:8px;padding:8px 10px;border-radius:8px;font-size:14px;line-height:1.35}
+.eb-slot b{font-weight:600;font-variant-numeric:tabular-nums}
+.eb-3{background:#eef0f5}
+.eb-2{background:#f6efd9}
+.eb-x{background:#ffffff;border:1px dashed #b9b6aa}
+.eb-key{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.eb-cdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:1px}
+.eb-g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.eb-g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.eb-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px 28px}
+.eb-og{border:1px solid #dcdad2;border-radius:10px;overflow:hidden}
+.eb-phonebar{display:none}
+@media (max-width:760px){
+  .eb-hero{grid-template-columns:1fr}
+  .eb-phonebar{display:flex;position:sticky;bottom:0;z-index:6;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#ffffff;border-top:1px solid #dcdad2}
+}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#" class="k-nav-on">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="k-wrap-wide" style="padding-top:14px;padding-bottom:14px">
+  <div class="k-between">
+    <nav class="k-row-sm k-small" aria-label="Breadcrumb">
+      <a class="k-link-plain" href="#">Tournaments</a><span class="k-muted">/</span><a class="k-link-plain" href="#">LCA championships</a><span class="k-muted">/</span><span class="k-muted">2027 Louisiana State Championship</span>
+    </nav>
+    <span class="k-sample">Sample data</span>
+  </div>
+</div>
+
+<section class="k-navy" style="padding:44px 0 40px">
+  <div class="k-wrap-wide eb-hero">
+    <div class="k-stack">
+      <div class="k-row-sm">
+        <span class="k-tag k-tag-lca">LCA event</span>
+        <span class="k-tag k-tag-open">Registration open</span>
+        <span class="k-label-gold">State flagship · Labor Day weekend</span>
+      </div>
+      <h1 class="k-display" style="color:#ffffff;margin:0">2027 Louisiana State Championship</h1>
+      <p class="k-lead" style="color:#e9e7df;margin:0">Sat–Mon, Sep 4–6, 2027 · Baton Rouge · [Venue name] · also home of the LCA annual business meeting</p>
+      <div class="k-row-sm">
+        <span class="eb-chip-dark">US Chess rated</span>
+        <span class="eb-chip-dark">6 rounds</span>
+        <span class="eb-chip-dark">G/90+30 · 90 min each + 30 sec per move</span>
+        <span class="eb-chip-dark">3-day or 2-day schedule</span>
+        <span class="eb-chip-dark">Up to 2 half-point byes</span>
+        <span class="eb-chip-dark">$3,000 prize fund</span>
+      </div>
+    </div>
+    <div class="k-card" style="padding:22px;color:#1a2744">
+      <div class="k-between"><span class="k-label">Round 1 starts in</span><span class="k-num-badge">1</span></div>
+      <div class="k-row" style="align-items:flex-end;gap:16px;margin-top:6px">
+        <div><div style="font-size:60px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums">334</div><div class="k-meta">days</div></div>
+        <div class="k-small" style="padding-bottom:6px">Sat, Sep 4 · 10:00 AM<br>Early price until Sun, Jul 25</div>
+      </div>
+      <div class="eb-bar" style="margin:16px 0 6px"><i style="width:14%"></i></div>
+      <div class="k-between k-small"><span><b>23 of 160</b> registered</span><span class="k-muted">4 sections</span></div>
+      <div class="k-row-sm" style="margin-top:14px">
+        <a class="k-btn k-btn-gold" href="#">Register · from $30</a>
+        <button class="k-btn k-btn-line" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Follow</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="position:sticky;top:0;z-index:5;background:#ffffff;border-bottom:1px solid #dcdad2">
+  <div class="k-wrap-wide" style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <nav class="eb-tabs" aria-label="Championship pages">
+      <a class="eb-tab eb-tab-on" href="#" aria-current="page">Overview</a>
+      <a class="eb-tab" href="#">Sections &amp; prizes</a>
+      <a class="eb-tab" href="#">Entries <span class="k-chip-count">23</span></a>
+      <a class="eb-tab" href="#">Pairings <span class="k-meta">from Sep 4</span></a>
+      <a class="eb-tab" href="#">Standings <span class="k-meta">from Sep 4</span></a>
+      <a class="eb-tab" href="#">Hotel &amp; travel</a>
+      <a class="eb-tab" href="#">Past champions</a>
+    </nav>
+    <div class="k-row-sm k-hide-sm"><span class="k-num-badge">2</span><a class="k-btn k-btn-gold k-btn-sm" href="#">Register</a></div>
+  </div>
+</div>
+
+<div class="k-wrap-wide" style="padding-top:22px">
+  <div class="k-between" style="border:1.5px dashed #b9b6aa;border-radius:12px;padding:14px 18px;background:#fbfaf6;gap:12px">
+    <div class="k-row" style="gap:12px">
+      <span class="k-num-badge">3</span>
+      <span class="k-label">Live strip · shows Sep 4–6 only</span>
+      <span class="k-tag k-tag-live">Live · Round 3</span>
+      <span class="k-small"><b>Championship pairings posted 9:52 AM.</b> Board 1: Landry (2014) vs Thibodeaux (1912). Round 4 at 4:00 PM.</span>
+    </div>
+    <div class="k-row-sm"><a class="k-btn k-btn-navy k-btn-sm" href="#">My board</a><a class="k-btn k-btn-line k-btn-sm" href="#">All pairings</a></div>
+  </div>
+</div>
+
+<div class="k-wrap-wide k-section-sm">
+  <div class="k-split">
+    <main class="k-main k-stack-lg">
+
+      <section class="k-stack">
+        <div class="k-between"><h2 class="k-h2" style="margin:0">Two schedules, one championship</h2><span class="k-num-badge">4</span></div>
+        <p class="k-body k-muted" style="margin:0">Play all three days, or start Sunday with three faster rounds. Everyone plays Rounds 4–6 together.</p>
+        <div class="eb-days">
+          <div class="k-card" style="padding:16px">
+            <div class="k-label" style="margin-bottom:10px">Sat, Sep 4</div>
+            <div class="k-stack-sm">
+              <div class="eb-slot eb-x"><b>8:30 AM</b><span>LCA annual business meeting</span></div>
+              <div class="eb-slot eb-x"><b>9:30 AM</b><span>Labor Day Scholastic · Rounds 1–5</span></div>
+              <div class="eb-slot eb-3"><b>10:00 AM</b><span>Round 1 · 3-day</span></div>
+              <div class="eb-slot eb-3"><b>4:00 PM</b><span>Round 2 · 3-day</span></div>
+            </div>
+          </div>
+          <div class="k-card" style="padding:16px">
+            <div class="k-label" style="margin-bottom:10px">Sun, Sep 5</div>
+            <div class="k-stack-sm">
+              <div class="eb-slot eb-2"><b>8:00 AM</b><span>Round 1 · 2-day · G/45+10</span></div>
+              <div class="eb-slot eb-3"><b>10:00 AM</b><span>Round 3 · 3-day</span></div>
+              <div class="eb-slot eb-2"><b>10:30 AM</b><span>Round 2 · 2-day · G/45+10</span></div>
+              <div class="eb-slot eb-2"><b>1:00 PM</b><span>Round 3 · 2-day · G/45+10</span></div>
+              <div class="eb-slot eb-3"><b>4:00 PM</b><span>Round 4 · schedules merge</span></div>
+              <div class="eb-slot eb-x"><b>9:00 PM</b><span>State Blitz Championship</span></div>
+            </div>
+          </div>
+          <div class="k-card" style="padding:16px">
+            <div class="k-label" style="margin-bottom:10px">Mon, Sep 6 · Labor Day</div>
+            <div class="k-stack-sm">
+              <div class="eb-slot eb-3"><b>9:00 AM</b><span>Round 5</span></div>
+              <div class="eb-slot eb-3"><b>2:30 PM</b><span>Round 6</span></div>
+              <div class="eb-slot eb-x"><b>7:00 PM</b><span>Awards (approximate) · State Champion crowned</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="k-row k-small k-muted">
+          <span><span class="eb-key" style="background:#dfe3ec"></span>3-day schedule · all rounds G/90+30</span>
+          <span><span class="eb-key" style="background:#efe0b0"></span>2-day schedule · Rounds 1–3 G/45+10 (45 min each + 10 sec per move)</span>
+          <span><span class="eb-key" style="background:#ffffff;border:1px dashed #8a8f9c"></span>Side events</span>
+        </div>
+      </section>
+
+      <section class="k-stack">
+        <div class="k-between"><h2 class="k-h2" style="margin:0">Sections &amp; prizes</h2><a class="k-link" href="#">All prizes and rules</a></div>
+        <p class="k-small k-muted" style="margin:0">$3,000 prize fund based on 120 paid entries. Today's early price shown; it rises on Mon, Jul 26. LCA members pay $10 less.</p>
+        <div class="eb-g4">
+          <article class="k-card" style="padding:18px">
+            <div class="k-stack-sm">
+              <div class="k-between"><h3 class="k-h4" style="margin:0">Championship</h3><span class="k-tag">All ratings</span></div>
+              <div class="k-row-sm" style="align-items:baseline"><span style="font-size:30px;font-weight:700">$60</span><span class="k-meta">members $50</span></div>
+              <div class="k-meta">$75 from Mon, Jul 26</div>
+              <div class="eb-bar"><i style="width:18%"></i></div>
+              <div class="k-between k-small"><b>9 of 50</b><span class="k-muted">41 left</span></div>
+              <div class="k-small">Prizes $600 · $400 · $200</div>
+              <div class="k-small k-gold-ink"><b>State Champion title</b> to the top Louisiana resident</div>
+            </div>
+          </article>
+          <article class="k-card" style="padding:18px">
+            <div class="k-stack-sm">
+              <div class="k-between"><h3 class="k-h4" style="margin:0">U1800</h3><span class="k-tag">Under 1800</span></div>
+              <div class="k-row-sm" style="align-items:baseline"><span style="font-size:30px;font-weight:700">$50</span><span class="k-meta">members $40</span></div>
+              <div class="k-meta">$65 from Mon, Jul 26</div>
+              <div class="eb-bar"><i style="width:15%"></i></div>
+              <div class="k-between k-small"><b>6 of 40</b><span class="k-muted">34 left</span></div>
+              <div class="k-small">Prizes $300 · $200 · $100</div>
+              <div class="k-small k-muted">Top U1600: $100</div>
+            </div>
+          </article>
+          <article class="k-card" style="padding:18px">
+            <div class="k-stack-sm">
+              <div class="k-between"><h3 class="k-h4" style="margin:0">U1400</h3><span class="k-tag">Under 1400</span></div>
+              <div class="k-row-sm" style="align-items:baseline"><span style="font-size:30px;font-weight:700">$40</span><span class="k-meta">members $30</span></div>
+              <div class="k-meta">$55 from Mon, Jul 26</div>
+              <div class="eb-bar"><i style="width:13%"></i></div>
+              <div class="k-between k-small"><b>5 of 40</b><span class="k-muted">35 left</span></div>
+              <div class="k-small">Prizes $250 · $150 · $100</div>
+              <div class="k-small k-muted">Top U1200: $100</div>
+            </div>
+          </article>
+          <article class="k-card" style="padding:18px">
+            <div class="k-stack-sm">
+              <div class="k-between"><h3 class="k-h4" style="margin:0">U1000</h3><span class="k-tag">Under 1000 or unrated</span></div>
+              <div class="k-row-sm" style="align-items:baseline"><span style="font-size:30px;font-weight:700">$30</span><span class="k-meta">members $20</span></div>
+              <div class="k-meta">$45 from Mon, Jul 26</div>
+              <div class="eb-bar"><i style="width:10%"></i></div>
+              <div class="k-between k-small"><b>3 of 30</b><span class="k-muted">27 left</span></div>
+              <div class="k-small">Prizes $150 · $100 · $50</div>
+              <div class="k-small k-muted">Trophies to top 3 · top unrated $100</div>
+            </div>
+          </article>
+        </div>
+        <div class="k-callout k-small">Byes: up to 2 half-point byes, requested before Round 2 is paired (none in Round 6). Biggest upset in any section wins $100. Unrated players may enter any section.</div>
+      </section>
+
+      <section class="k-stack">
+        <div class="k-between"><h2 class="k-h2" style="margin:0">Side events</h2><span class="k-num-badge">5</span></div>
+        <p class="k-small k-muted" style="margin:0">Add them to the same registration and pay once. Family members can be added too.</p>
+        <div class="eb-g3">
+          <article class="k-card" style="padding:18px">
+            <div class="k-stack-sm">
+              <div class="k-row-sm"><span class="k-tag k-tag-lca">Scholastic</span></div>
+              <h3 class="k-h4" style="margin:0">Labor Day Scholastic</h3>
+              <div class="k-small">Sat, Sep 4 · 9:30 AM · K–12, K–8 and K–5 sections</div>
+              <div class="k-small">5 rounds · G/30+5 (30 min each + 5 sec per move)</div>
+              <div class="k-row-sm" style="align-items:baseline"><b style="font-size:20px">$25</b><span class="k-meta">members $20</span></div>
+              <div class="eb-bar"><i style="width:23%"></i></div>
+              <div class="k-small"><b>14 of 60</b> registered</div>
+              <div class="k-small k-muted">One checkbox per child, like "In 8th grade or below?"</div>
+              <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add to my registration</button>
+            </div>
+          </article>
+          <article class="k-card" style="padding:18px">
+            <div class="k-stack-sm">
+              <div class="k-row-sm"><span class="k-tag k-tag-lca">Blitz</span></div>
+              <h3 class="k-h4" style="margin:0">State Blitz Championship</h3>
+              <div class="k-small">Sun, Sep 5 · 9:00 PM · one section, all ratings</div>
+              <div class="k-small">8 games · G/5+2 (5 min each + 2 sec per move) · US Chess blitz rated</div>
+              <div class="k-row-sm" style="align-items:baseline"><b style="font-size:20px">$20</b><span class="k-meta">members $15</span></div>
+              <div class="eb-bar"><i style="width:15%"></i></div>
+              <div class="k-small"><b>6 of 40</b> registered</div>
+              <div class="k-small k-muted">State Blitz Champion title to the top Louisiana resident</div>
+              <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add to my registration</button>
+            </div>
+          </article>
+          <article class="k-card" style="padding:18px">
+            <div class="k-stack-sm">
+              <div class="k-row-sm"><span class="k-tag k-tag-gold">Members vote</span></div>
+              <h3 class="k-h4" style="margin:0">LCA annual business meeting</h3>
+              <div class="k-small">Sat, Sep 4 · 8:30 AM · [Room name], before Round 1</div>
+              <div class="k-small">Open to everyone. LCA members vote. Agenda posts Fri, Aug 20.</div>
+              <div class="k-row-sm" style="align-items:baseline"><b style="font-size:20px">Free</b></div>
+              <div class="k-small"><b>31</b> plan to attend</div>
+              <div class="k-small k-muted">Last year's minutes and the bylaws are one tap away.</div>
+              <div class="k-row-sm"><button class="k-btn k-btn-line k-btn-sm" type="button">RSVP</button><a class="k-link k-small" href="#">Meeting page</a></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="k-stack">
+        <div class="k-between"><h2 class="k-h2" style="margin:0">Who's coming</h2><a class="k-link" href="#">All 23 entries</a></div>
+        <div class="k-row-sm">
+          <button class="k-chip k-chip-on" type="button">All <span class="k-chip-count">23</span></button>
+          <button class="k-chip" type="button">Championship <span class="k-chip-count">9</span></button>
+          <button class="k-chip" type="button">U1800 <span class="k-chip-count">6</span></button>
+          <button class="k-chip" type="button">U1400 <span class="k-chip-count">5</span></button>
+          <button class="k-chip" type="button">U1000 <span class="k-chip-count">3</span></button>
+          <button class="k-chip" type="button">Side events <span class="k-chip-count">20</span></button>
+        </div>
+        <div class="k-tablebox">
+          <table class="k-table">
+            <thead><tr><th class="k-c">#</th><th>Player</th><th class="k-r">Rating</th><th>Section</th><th>Club</th></tr></thead>
+            <tbody>
+              <tr><td class="k-c">1</td><td><b>Marcus Landry</b></td><td class="k-r k-mono">2014</td><td>Championship</td><td><span class="eb-cdot" style="background:#2b5c8a"></span>Greater New Orleans Chess Club</td></tr>
+              <tr><td class="k-c">2</td><td><b>Avery Thibodeaux</b></td><td class="k-r k-mono">1912</td><td>Championship</td><td><span class="eb-cdot" style="background:#2f6f4e"></span>Houma Chess Club</td></tr>
+              <tr><td class="k-c">3</td><td><b>Priya Shah</b></td><td class="k-r k-mono">1803</td><td>Championship</td><td><span class="eb-cdot" style="background:#7a2f3b"></span>Baton Rouge Chess Club</td></tr>
+              <tr><td class="k-c">4</td><td><b>Camille Broussard</b></td><td class="k-r k-mono">1744</td><td>U1800</td><td><span class="eb-cdot" style="background:#b5562b"></span>Lafayette Chess Club</td></tr>
+              <tr><td class="k-c">5</td><td><b>Isaac Dupre</b></td><td class="k-r k-mono">1688</td><td>U1800</td><td><span class="eb-cdot" style="background:#5b3f8c"></span>Shreveport-Bossier Chess Club</td></tr>
+              <tr><td class="k-c">6</td><td><b>Sam Nguyen</b></td><td class="k-r k-mono">1650</td><td>U1800</td><td><span class="eb-cdot" style="background:#1f7a7a"></span>New Orleans Westbank Chess Club</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="k-small k-muted" style="margin:0">Sorted by US Chess rating within the whole field. Scholastic entries show first name and last initial.</p>
+      </section>
+
+      <section class="k-stack">
+        <div class="k-between"><h2 class="k-h2" style="margin:0">Past champions</h2><a class="k-link" href="#">Full honor roll</a></div>
+        <div class="eb-g4">
+          <div class="k-card" style="padding:16px"><div class="k-stack-sm"><div class="k-label-gold">2026 · Sulphur</div><div class="k-strong">[2026 champion]</div><div class="k-meta">[Score] · [Club]</div></div></div>
+          <div class="k-card" style="padding:16px"><div class="k-stack-sm"><div class="k-label-gold">2025 · [City]</div><div class="k-strong">[2025 champion]</div><div class="k-meta">[Score] · [Club]</div></div></div>
+          <div class="k-card" style="padding:16px"><div class="k-stack-sm"><div class="k-label-gold">2024 · [City]</div><div class="k-strong">[2024 champion]</div><div class="k-meta">[Score] · [Club]</div></div></div>
+          <div class="k-card" style="padding:16px"><div class="k-stack-sm"><div class="k-label-gold">2023 · [City]</div><div class="k-strong">[2023 champion]</div><div class="k-meta">[Score] · [Club]</div></div></div>
+        </div>
+        <p class="k-small k-muted" style="margin:0">Pulled from the state champions honor roll. The 2027 champion is added the moment Round 6 results are final.</p>
+      </section>
+
+    </main>
+
+    <aside class="k-side">
+      <div class="k-sticky k-stack">
+
+        <div class="k-card" style="padding:20px">
+          <div class="k-stack-sm">
+            <div class="k-between"><span class="k-tag k-tag-open">Registration open</span><span class="k-meta">Early price</span></div>
+            <h3 class="k-h3" style="margin:4px 0 0">Enter the championship</h3>
+            <div class="k-tablebox">
+              <table class="k-table">
+                <thead><tr><th>When</th><th class="k-r">Price</th></tr></thead>
+                <tbody>
+                  <tr class="k-tr-me"><td><b>Early</b> · now to Sun, Jul 25</td><td class="k-r">$30–$60</td></tr>
+                  <tr><td>Regular · Mon, Jul 26 to Mon, Aug 30</td><td class="k-r">$45–$75</td></tr>
+                  <tr><td>At the door · Sat, Sep 4</td><td class="k-r">$60–$90</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="k-small">LCA members pay $10 less in every section.</div>
+            <div class="eb-bar"><i style="width:14%"></i></div>
+            <div class="k-between k-small"><span><b>23 of 160</b> registered</span><span class="k-muted">online entry closes Thu, Sep 2</span></div>
+            <a class="k-btn k-btn-gold k-btn-block" href="#">Register · from $30</a>
+            <a class="k-btn k-btn-line k-btn-block" href="#">Register your family</a>
+            <div class="k-small k-muted">Add the Scholastic or Blitz in the same checkout. Full refund until Thu, Sep 2.</div>
+          </div>
+        </div>
+
+        <div class="k-card" style="padding:20px">
+          <div class="k-stack-sm">
+            <div class="k-label">Hotel &amp; travel</div>
+            <div class="k-strong">[Host hotel name]</div>
+            <div class="k-small">LCA rate [Hotel rate] per night · block held until Fri, Aug 13</div>
+            <a class="k-btn k-btn-line k-btn-sm" href="#">Book in the LCA block<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+            <div class="k-small k-muted">Parking: [Parking details] · Nearest airport: Baton Rouge (BTR)</div>
+          </div>
+        </div>
+
+        <div class="k-card" style="padding:20px">
+          <div class="k-stack-sm">
+            <div class="k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg><span class="k-strong">Round alerts</span></div>
+            <div class="k-small">A message when pairings post, 15 minutes before each round, and when your result is in. Followers also get schedule changes.</div>
+            <label class="k-check"><input type="checkbox" checked> Email</label>
+            <label class="k-check"><input type="checkbox" checked> Notifications on this phone</label>
+            <button class="k-btn k-btn-navy k-btn-sm" type="button">Follow the championship</button>
+          </div>
+        </div>
+
+        <div class="k-card" style="padding:20px">
+          <div class="k-stack-sm">
+            <div class="k-between"><span class="k-label">Link preview</span><span class="k-num-badge">6</span></div>
+            <div class="eb-og">
+              <div class="k-navy" style="padding:16px 18px;height:132px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between">
+                <div class="k-row-sm"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-label-gold">LCA flagship</span></div>
+                <div><div style="color:#ffffff;font-weight:700;font-size:18px;line-height:1.2">2027 Louisiana State Championship</div><div style="color:#e9e7df;font-size:13px;margin-top:4px">Sat–Mon, Sep 4–6 · Baton Rouge · 23 registered</div></div>
+              </div>
+              <div style="padding:10px 12px;background:#f5f5f2"><div class="k-meta">LOUISIANACHESS.ORG</div><div class="k-small k-strong">Register · from $30 · 334 days to go</div></div>
+            </div>
+            <div class="k-row-sm">
+              <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Copy link</button>
+              <a class="k-btn k-btn-ghost k-btn-sm" href="#">Share to Facebook</a>
+              <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+  </div>
+</div>
+
+<section class="k-wrap-wide" style="padding-bottom:40px">
+  <div class="k-card" style="padding:20px 24px">
+    <div class="k-label" style="margin-bottom:12px">What to notice</div>
+    <div class="eb-legend k-small">
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">1</span><span>The countdown turns into the live strip once Round 1 is paired.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">2</span><span>Tabs stay in reach; Pairings and Standings switch on when the event starts.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">3</span><span>Live slot: round status, my board and all pairings, only during the event.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">4</span><span>Both schedules drawn side by side, merging at Round 4.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">5</span><span>Side events and the annual meeting join the same checkout and calendar.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">6</span><span>Each event gets its own server-drawn link preview with live counts.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+<div class="eb-phonebar">
+  <div><div class="k-strong">From $30 · early price</div><div class="k-meta">23 of 160 registered</div></div>
+  <a class="k-btn k-btn-gold" href="#">Register</a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

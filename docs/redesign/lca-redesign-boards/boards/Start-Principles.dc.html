@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Start — Principles and review checklist</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#fbfaf6}
+.sp{font-family:'Geist',ui-sans-serif,system-ui,sans-serif;color:#1a2744;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.sp *,.sp *::before,.sp *::after{box-sizing:border-box}
+.sp h1,.sp h2,.sp h3,.sp p,.sp ol,.sp ul{margin:0}
+.sp ol,.sp ul{padding:0;list-style:none}
+.sp-kick{font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.sp-head{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:48px;align-items:end;padding-bottom:24px;border-bottom:2px solid #1a2744}
+.sp-head h1{margin-top:10px;font-size:44px;line-height:1.05;font-weight:700;letter-spacing:-.03em}
+.sp-sub{margin-top:12px;font-size:16px;line-height:1.55;color:#3f4657;max-width:760px}
+.sp-how{background:#ffffff;border:1px solid #e3e0d6;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.sp-how ul{display:flex;flex-direction:column;gap:8px}
+.sp-how li{display:flex;align-items:flex-start;gap:10px;font-size:13px;line-height:20px}
+.sp-how .src{font-size:12px;line-height:18px;color:#555c6b}
+.sp-cols{display:grid;grid-template-columns:420px minmax(0,1fr);gap:48px;margin-top:32px}
+.sp-h2{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid #d9d5c9}
+.sp-h2 h2{font-size:22px;line-height:1.25;font-weight:600;letter-spacing:-.02em}
+.sp-h2 span{font-family:'Geist Mono',monospace;font-size:12px;color:#555c6b}
+/* principles */
+.sp-pr li{display:grid;grid-template-columns:34px minmax(0,1fr);padding:12px 0;border-bottom:1px solid #e3e0d6}
+.sp-pn{font-family:'Geist Mono',monospace;font-size:13px;font-weight:500;line-height:22px;color:#866a1e}
+.sp-pr h3{font-size:16px;line-height:22px;font-weight:600;letter-spacing:-.01em}
+.sp-pr p{margin-top:4px;font-size:14px;line-height:21px;color:#3f4657}
+.sp-ref{display:block;margin-top:5px;font-family:'Geist Mono',monospace;font-size:12px;line-height:16px;color:#555c6b}
+.sp-set{margin-top:24px;background:#f1efe7;border-radius:12px;padding:14px 16px 12px}
+.sp-set ol{margin-top:8px}
+.sp-set li{display:grid;grid-template-columns:24px minmax(0,1fr);font-size:13px;line-height:20px;padding:2px 0}
+.sp-set li span{font-family:'Geist Mono',monospace;font-size:12px;color:#555c6b}
+/* checklist */
+.sp-ck{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;align-items:start}
+.sp-grp{margin-top:16px}
+.sp-grp h3{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:4px 0 6px;border-bottom:2px solid #1a2744;font-size:15px;line-height:22px;font-weight:600}
+.sp-grp h3 span{font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;color:#555c6b}
+.sp-row{display:grid;grid-template-columns:16px 24px minmax(0,1fr);gap:0 10px;align-items:start;padding:7px 0;border-bottom:1px solid #e3e0d6;font-size:14px;line-height:20px}
+.sp-box{display:block;width:16px;height:16px;margin-top:2px;border:1.5px solid #1a2744;border-radius:3px;background:#ffffff;flex:none}
+.sp-num{font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;line-height:20px;color:#555c6b}
+.sp-tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:4px;background:#fbe9e7;color:#9f2a1c;font-size:12px;font-weight:600;line-height:1;white-space:nowrap;flex:none}
+.sp-fail{display:flex;align-items:flex-start;gap:8px;margin-top:5px;font-size:13px;line-height:20px;color:#9f2a1c}
+.sp-ext{display:inline-block;width:14px;height:14px;vertical-align:-2px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</helmet>
+<div class="sp" style="width:1440px;height:2000px;box-sizing:border-box;padding:56px 64px 48px;background:#fbfaf6;position:relative;overflow:hidden">
+
+  <header class="sp-head">
+    <div>
+      <p class="sp-kick">Start · read before judging any option</p>
+      <h1>Principles &amp; review checklist</h1>
+      <p class="sp-sub">Ten principles behind every option on this board, plus the 39-point design review checklist from the UX evidence, condensed so any option can be checked against it.</p>
+    </div>
+    <aside class="sp-how" aria-label="How to use the checklist">
+      <p class="sp-kick">How to use it</p>
+      <ul>
+        <li><i class="sp-box"></i><span>Walk the rows for every area an option touches and mark each one pass, fix or not applicable.</span></li>
+        <li><span class="sp-tag">Fails today</span><span>Confirmed in today's code. It has to pass in whatever ships.</span></li>
+      </ul>
+      <p class="src">Source: ux-evidence.md (NN/g, Baymard, GOV.UK, USWDS, W3C WAI / WCAG 2.2). Row numbers match its checklist.</p>
+    </aside>
+  </header>
+
+  <div class="sp-cols">
+
+    <section aria-labelledby="sp-p">
+      <div class="sp-h2"><h2 id="sp-p">Principles</h2><span>10 · each with an example</span></div>
+      <ol class="sp-pr">
+        <li><span class="sp-pn">01</span><div><h3>Dated and current — every item shows when</h3><p>“Sat–Sun, Oct 10–11” always carries its weekday; live pages say “Updated 9:42 PM”, documents “Last updated”.</p><span class="sp-ref">Checks 10 · 11 · 28 · 39</span></div></li>
+        <li><span class="sp-pn">02</span><div><h3>Built for the venue — a phone, a crowd, bad signal</h3><p>Pairings open with “Find my name”, your family's games pinned, a text-size toggle and auto-refresh.</p><span class="sp-ref">Checks 9 · 17 · 26 · 28 · 36</span></div></li>
+        <li><span class="sp-pn">03</span><div><h3>Status in words, never colour alone</h3><p>“Registration open”, “Waitlist”, “Live · Round 3”. A coloured dot may sit beside the words, never replace them.</p><span class="sp-ref">Checks 13 · 29</span></div></li>
+        <li><span class="sp-pn">04</span><div><h3>Plain language for parents — explain G/30+5 inline</h3><p>“G/30+5 · 30 minutes each, plus 5 seconds a move” on first use; nothing essential hides in a tooltip.</p><span class="sp-ref">Checks 37</span></div></li>
+        <li><span class="sp-pn">05</span><div><h3>One table design for entries, pairings and standings</h3><p>Real tables with a caption and a Player column that stays put when you scroll sideways; scores read 3½, not 3.5.</p><span class="sp-ref">Checks 26 · 27 · 29</span></div></li>
+        <li><span class="sp-pn">06</span><div><h3>Collect only what's needed</h3><p>An “In 8th grade or below?” checkbox, never a child's grade or birthdate; the US Chess ID lookup means nothing known is asked twice.</p><span class="sp-ref">Checks 19 · 20 · 25</span></div></li>
+        <li><span class="sp-pn">07</span><div><h3>The full price before payment</h3><p>Entry fee, early or late pricing and the member discount add up to one total before Stripe, which opens in the same tab.</p><span class="sp-ref">Checks 17 · 18 · 23 · 24</span></div></li>
+        <li><span class="sp-pn">08</span><div><h3>Nothing moves on its own</h3><p>The 5-second slideshow (fails WCAG 2.2.2) gives way to a “next event” hero that becomes “Pairings posted” during an event.</p><span class="sp-ref">Checks 7 · 8 · 9</span></div></li>
+        <li><span class="sp-pn">09</span><div><h3>Volunteer-maintainable — freshness stamps, not heroics</h3><p>Club listings and documents show “Last updated”, so a stale page is visible and any volunteer can fix it.</p><span class="sp-ref">Checks 39</span></div></li>
+        <li><span class="sp-pn">10</span><div><h3>Gold is an accent; gold text only on navy</h3><p>Brand gold #c8a94a is 2.28:1 on white, so on light grounds it is a fill or a rule; gold-toned text uses #866a1e.</p><span class="sp-ref">Checks 34 · 35</span></div></li>
+      </ol>
+      <div class="sp-set">
+        <p class="sp-kick">What the evidence settles</p>
+        <ol>
+          <li><span>1</span>Navigation by task and topic, always visible on desktop</li>
+          <li><span>2</span>A “next event” hero replaces the auto-advancing slideshow</li>
+          <li><span>3</span>Tournament list first, removable filter chips, weekday on dates</li>
+          <li><span>4</span>Register visible on phones, full total first, Stripe in the same tab</li>
+          <li><span>5</span>“Find my name”, pinned games and an “Updated” time on pairings</li>
+          <li><span>6</span>Accessibility debt gets fixed before visual polish</li>
+          <li><span>7</span>A visible Donate entry point; membership as “which one fits you”</li>
+          <li><span>8</span>The five hero images weigh about 2.1 MB, a whole median mobile page</li>
+        </ol>
+      </div>
+    </section>
+
+    <section aria-labelledby="sp-c">
+      <div class="sp-h2"><h2 id="sp-c">Design review checklist</h2><span>39 checks · 8 areas</span></div>
+      <div class="sp-ck">
+        <div>
+          <div class="sp-grp">
+            <h3>Navigation<span>1–6</span></h3>
+            <ul>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">1</span><span>Desktop (1024px and wider) shows every top-level item; no hamburger.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">2</span><span>7 or fewer top items, task or topic labels (not audiences), current section shown.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">3</span><span>Dropdowns open on click or Enter, show a caret and hold 6 links or fewer, else a mega menu.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">4</span><span>The mobile menu button says “Menu” in text and has a visible border.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">5</span><span>Donate, Log in / Account and Join sit top-right, in the same order on every page.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">6</span><span>Pages three levels deep show a breadcrumb or a back link to their parent.</span></li>
+            </ul>
+          </div>
+          <div class="sp-grp">
+            <h3>Homepage<span>7–10</span></h3>
+            <ul>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">7</span><span>Nothing moves on its own without a visible pause; no motion with “reduce motion” or on phones.<span class="sp-fail"><span class="sp-tag">Fails today</span><span>Slideshow auto-advances every 5 s with no pause (WCAG 2.2.2, Level A).</span></span></span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">8</span><span>First screen: LCA's identity, three top tasks, and the next event with day, date, city and status.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">9</span><span>On event days, “Pairings posted” is one tap from the homepage.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">10</span><span>Every news or time-sensitive item shows a date.</span></li>
+            </ul>
+          </div>
+          <div class="sp-grp">
+            <h3>Tournaments<span>11–16</span></h3>
+            <ul>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">11</span><span>List view is the default, and every date includes the day of the week.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">12</span><span>Active filters are removable chips with “Clear all”; the result count is always visible; filters live in the URL.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">13</span><span>Registration status is shown as text, never as a coloured dot alone.<span class="sp-fail"><span class="sp-tag">Fails today</span><span>Status dots use colour alone.</span></span></span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">14</span><span>External events show the arrow <svg class="sp-ext" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg> plus “opens in new tab” text.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">15</span><span>LCA events offer .ics and Google Calendar export and include Event markup for Google.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">16</span><span>Past events sit under Results, separate from upcoming events.</span></li>
+            </ul>
+          </div>
+          <div class="sp-grp">
+            <h3>Pairings and results<span>26–29</span></h3>
+            <ul>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">26</span><span>Pairings, standings and crosstables have “Find my name”; your own and your children's games are pinned.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">27</span><span>Real tables: a caption and scope, a labelled keyboard-reachable scroll area, a fixed Player column.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">28</span><span>Live pages have a text-size toggle, “Updated hh:mm” and auto-refresh.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">29</span><span>The print view uses large type, doesn't depend on colour and never splits rows across pages.</span></li>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <div class="sp-grp">
+            <h3>Registration and payment<span>17–25</span></h3>
+            <ul>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">17</span><span>On phones, the Register button and price are visible without scrolling to the bottom.<span class="sp-fail"><span class="sp-tag">Fails today</span><span>The Register card sits below the player list on phones.</span></span></span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">18</span><span>The full total, including fees, is shown before payment.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">19</span><span>Eligibility is asked first, and only necessary information is collected.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">20</span><span>US Chess ID lookup happens inside the form; nothing already known is asked again.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">21</span><span>Several players: a list with Change / Remove for each, then “Check your answers”.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">22</span><span>Errors: a linked summary at the top plus a fix-it message by each field; checked on leaving a field or on submit, not while typing.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">23</span><span>Payment redirects in the same tab, returns to a confirmation page with next steps, and sends an email.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">24</span><span>Withdraw buttons use specific labels and state the refund rule.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">25</span><span>Number fields use type=text with inputmode=numeric; personal fields have autocomplete.</span></li>
+            </ul>
+          </div>
+          <div class="sp-grp">
+            <h3>Clubs and maps<span>30–31</span></h3>
+            <ul>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">30</span><span>Every map has an equivalent list (the default on phones), and each location has a Directions link.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">31</span><span>Map markers can be reached by keyboard and have names.</span></li>
+            </ul>
+          </div>
+          <div class="sp-grp">
+            <h3>Money<span>32–33</span></h3>
+            <ul>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">32</span><span>Donate is visible from every page, with preset amounts, Other, a monthly option and where the money goes.<span class="sp-fail"><span class="sp-tag">Fails today</span><span>There is no visible Donate entry point anywhere.</span></span></span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">33</span><span>Membership is chosen by eligibility; no badge that isn't literally true; the family maths is stated.</span></li>
+            </ul>
+          </div>
+          <div class="sp-grp">
+            <h3>Accessibility and quality<span>34–39</span></h3>
+            <ul>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">34</span><span>All text at least 4.5:1 (large text 3:1); gold never as text on light grounds; controls and focus rings at least 3:1.<span class="sp-fail"><span class="sp-tag">Fails today</span><span>Gold text on light grounds at 2.28:1; small faded white text on navy below 4.5:1.</span></span></span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">35</span><span>The focus ring is a 2px solid line, at least 3:1, never hidden under the sticky header.<span class="sp-fail"><span class="sp-tag">Fails today</span><span>The focus ring is 1.54:1.</span></span></span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">36</span><span>Tap targets are at least 24px everywhere and 44px for primary mobile actions.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">37</span><span>Jargon is defined inline on first use; essential information never sits only in a tooltip.</span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">38</span><span>Homepage under 1 MB on mobile; largest paint ≤ 2.5 s, layout shift ≤ 0.1, input response ≤ 200 ms.<span class="sp-fail"><span class="sp-tag">Fails today</span><span>The five hero images total about 2.1 MB.</span></span></span></li>
+              <li class="sp-row"><i class="sp-box"></i><span class="sp-num">39</span><span>Governance documents show “Last updated”; Contact and Support labels are clearly different.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

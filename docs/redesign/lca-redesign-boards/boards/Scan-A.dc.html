@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scan A — Photo, moves &amp; board</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.sa-band{background:#ffffff;border-bottom:1px solid #dddcd4}
+.sa-band-in{padding:20px 0 22px}
+.sa-stepper{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:4px 0 0;padding:0}
+.sa-stepper li{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid #dddcd4;font-size:14px;color:#555c6b;background:#ffffff}
+.sa-stepper li.sa-done{color:#2f6b45;border-color:#b9d3c1;background:#f1f7f2}
+.sa-stepper li.sa-now{color:#ffffff;background:#1a2744;border-color:#1a2744;font-weight:600}
+.sa-main{padding:24px 0 28px}
+.sa-grid{display:grid;grid-template-columns:330px minmax(0,1fr) 380px;gap:24px;align-items:start}
+.sa-col{padding:18px 20px}
+.sa-photo{background:#3b4150;border-radius:10px;padding:16px 14px}
+.sa-sheet{background:#fbfaf3;border-radius:3px;transform:rotate(-1.4deg);box-shadow:0 10px 22px rgba(0,0,0,.35);padding:10px 12px 12px}
+.sa-sh-h{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:#6b6f78;border-bottom:1px solid #cfccbd;padding:3px 0}
+.sa-sh-h i{font-family:'Geist Mono',monospace;font-size:12.5px;color:#2b3a67}
+.sa-r{display:grid;grid-template-columns:24px 1fr 1fr;height:21px;align-items:center;border-bottom:1px solid #dcd9cb}
+.sa-r b{font-size:9.5px;color:#8b8a80;font-weight:500;text-align:center}
+.sa-r span{position:relative;height:100%;display:flex;align-items:center;padding-left:8px;box-shadow:inset 1px 0 0 #dcd9cb;font-family:'Geist Mono',monospace;font-style:italic;font-size:13.5px;color:#2b3a67}
+.sa-r span.sa-hl{outline:2px solid #c8a94a;outline-offset:-1px;background:#f3e6bd}
+.sa-r span.sa-hl2{outline:1px dashed #2f6b45;outline-offset:-1px}
+.sa-smudge{position:absolute;left:5px;top:3px;width:26px;height:14px;border-radius:50%;background:rgba(60,62,72,.38);filter:blur(3px)}
+.sa-mt th,.sa-mt td{padding:6px 10px;font-size:14px}
+.sa-mt td.sa-no{color:#555c6b;font-size:12px;width:26px;text-align:center}
+.sa-mt td.sa-mv{font-family:'Geist Mono',monospace;font-weight:500;color:#1a2744}
+.sa-mt td.sa-split{box-shadow:inset 2px 0 0 #dddcd4}
+.sa-mt td.sa-sel{background:#1a2744;color:#ffffff}
+.sa-mini{display:block;font-family:Geist,sans-serif;font-size:11px;font-weight:600;margin-top:1px}
+.sa-mini-auto{color:#866a1e}
+.sa-mini-ok{color:#2f6b45}
+.sa-mini-sel{color:#c8a94a}
+.sa-game{border-radius:10px;background:#f5f5f2;padding:10px 14px;font-size:15px;color:#1a2744}
+.sa-checks{list-style:none;margin:0;padding:0}
+.sa-checks li{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:#1a2744;padding:3px 0}
+.sa-bwrap{display:grid;grid-template-columns:14px minmax(0,1fr);grid-template-rows:auto 16px;column-gap:4px}
+.sa-ranks{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;text-align:center;font-size:11px;color:#555c6b}
+.sa-files{grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:11px;color:#555c6b;padding-top:2px}
+.sa-bd > div{display:flex;align-items:center;justify-content:center}
+.pc{width:74%;height:74%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;box-sizing:border-box;font-size:15px}
+.pw{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.pb{background:#1a2744;color:#ffffff;border:2px solid #1a2744}
+.pp{width:54%;height:54%;font-size:10px}
+.lm{box-shadow:inset 0 0 0 3px #c8a94a}
+.sa-bd-s{width:132px;flex:none;border-width:1px}
+.sa-bd-s .pc{font-size:8px;border-width:1px}
+.sa-bd-s .pp{font-size:5px}
+.sa-bd-s .lm{box-shadow:inset 0 0 0 2px #c8a94a}
+.sa-nav{display:flex;align-items:center;gap:6px}
+.sa-opt{display:flex;align-items:center;gap:12px;min-height:50px;padding:6px 12px;border:1px solid #c4c3bb;border-radius:10px;background:#ffffff}
+.sa-opt input{width:18px;height:18px;accent-color:#1a2744;flex:none;margin:0}
+.sa-opt b{display:block;font-family:'Geist Mono',monospace;font-size:16px;color:#1a2744}
+.sa-opt small{display:block;font-size:12.5px;color:#555c6b}
+.sa-opt-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.sa-lib{list-style:none;margin:0;padding:0}
+.sa-lib li{display:flex;flex-direction:column;padding:7px 0;border-bottom:1px solid #ecebe4;font-size:14px;color:#1a2744}
+.sa-lib li:last-child{border-bottom:0}
+.sa-xt th,.sa-xt td{padding:6px 5px;font-size:12.5px}
+.sa-share{display:flex;gap:14px;align-items:center;border:1px solid #c4c3bb;border-radius:10px;padding:10px;background:#ffffff}
+.sa-td{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.sa-td div{border:1px solid #dddcd4;border-radius:8px;padding:8px 10px;display:flex;flex-direction:column;gap:1px;font-size:12.5px;background:#ffffff}
+.sa-td b{font-size:13px;color:#1a2744}
+.sa-td div.sa-this{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.sa-ok{color:#2f6b45}
+.sa-look{color:#866a1e}
+.sa-miss{color:#555c6b}
+.sa-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px 28px}
+.sa-legend div{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:#1a2744}
+@media (max-width:1180px){.sa-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.sa-grid > section:first-child{grid-column:1 / -1}}
+@media (max-width:760px){.sa-grid{grid-template-columns:minmax(0,1fr)}.sa-td{grid-template-columns:repeat(3,minmax(0,1fr))}.sa-legend{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">My LCA</a>
+      <a class="k-ulink" href="#">Marcus Landry</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="sa-band">
+  <div class="k-wrap-wide sa-band-in">
+    <div class="k-between" style="align-items:flex-end">
+      <div class="k-stack-sm">
+        <div class="k-row-sm"><span class="k-kicker">Scoresheet scanner · members only</span><span class="k-sample">Sample data · players, round, scan limit · moves are Morphy's Opera Game (1858)</span></div>
+        <h1 class="k-h1" style="margin:0">Check your game</h1>
+        <ol class="sa-stepper" aria-label="Progress">
+          <li class="sa-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Photo</li>
+          <li class="sa-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Read · 17 moves</li>
+          <li class="sa-now" aria-current="step">Check · 1 move left</li>
+          <li>Save &amp; share</li>
+        </ol>
+      </div>
+      <div class="k-stack-sm" style="align-items:flex-end">
+        <div class="k-row-sm">
+          <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan another sheet</a>
+          <a class="k-btn k-btn-soft k-btn-sm" href="#sa-tdh"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Directors: scan a whole round</a>
+        </div>
+        <span class="k-small k-muted">3 of 5 scans left today · resets at midnight</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="sa-main">
+  <div class="k-wrap-wide k-stack-lg">
+
+    <div class="sa-grid">
+
+      <section class="k-card sa-col k-stack-sm" aria-labelledby="sa-ph">
+        <div class="k-between"><div class="k-row-sm"><span class="k-num-badge">1</span><h2 id="sa-ph" class="k-h3" style="margin:0">Your photo</h2></div><span class="k-small k-muted">Sheet 1 of 1</span></div>
+        <div class="sa-photo" role="img" aria-label="Photo of the handwritten scoresheet with moves 1 to 17; Black's move 13 is highlighted and smudged, Black's move 9 was checked">
+          <div class="sa-sheet">
+            <div class="sa-sh-h"><span>White <i>M. Landry</i></span><span>Black <i>P. Shah</i></span></div>
+            <div class="sa-sh-h"><span>Event <i>LA State Ch.</i></span><span>Rd <i>4</i> · Bd <i>6</i></span></div>
+            <div class="sa-r"><b>1</b><span>e4</span><span>e5</span></div>
+            <div class="sa-r"><b>2</b><span>Nf3</span><span>d6</span></div>
+            <div class="sa-r"><b>3</b><span>d4</span><span>Bg4</span></div>
+            <div class="sa-r"><b>4</b><span>dxe5</span><span>Bxf3</span></div>
+            <div class="sa-r"><b>5</b><span>Qxf3</span><span>dxe5</span></div>
+            <div class="sa-r"><b>6</b><span>Bc4</span><span>Nf6</span></div>
+            <div class="sa-r"><b>7</b><span>Qb3</span><span>Qe7</span></div>
+            <div class="sa-r"><b>8</b><span>Nc3</span><span>c6</span></div>
+            <div class="sa-r"><b>9</b><span>Bg5</span><span class="sa-hl2"><em class="sa-smudge"></em>b5</span></div>
+            <div class="sa-r"><b>10</b><span>Nxb5</span><span>cxb5</span></div>
+            <div class="sa-r"><b>11</b><span>Bxb5+</span><span>Nbd7</span></div>
+            <div class="sa-r"><b>12</b><span>O-O-O</span><span>Rd8</span></div>
+            <div class="sa-r"><b>13</b><span>Rxd7</span><span class="sa-hl"><em class="sa-smudge"></em>Rxd7</span></div>
+            <div class="sa-r"><b>14</b><span>Rd1</span><span>Qe6</span></div>
+            <div class="sa-r"><b>15</b><span>Bxd7+</span><span>Nxd7</span></div>
+            <div class="sa-r"><b>16</b><span>Qb8+</span><span>Nxb8</span></div>
+            <div class="sa-r"><b>17</b><span>Rd8#</span><span></span></div>
+            <div class="sa-r"><b>18</b><span></span><span></span></div>
+            <div class="sa-sh-h" style="border-bottom:0"><span>Result <i>1-0</i></span><span>Signed <i>ML</i> · <i>PS</i></span></div>
+          </div>
+        </div>
+        <div class="k-row-sm">
+          <button class="k-iconbtn" type="button" aria-label="Zoom out"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+          <button class="k-iconbtn" type="button" aria-label="Zoom in"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+          <button class="k-iconbtn" type="button" aria-label="Rotate photo"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></button>
+          <label class="k-check k-small"><input type="checkbox" checked><span>Show what we read</span></label>
+        </div>
+        <span class="k-small k-muted">Tap a move on the sheet or in the list; the other side follows.</span>
+      </section>
+
+      <section class="k-card sa-col k-stack" aria-labelledby="sa-mh">
+        <div class="k-between"><div class="k-row-sm"><span class="k-num-badge">2</span><h2 id="sa-mh" class="k-h3" style="margin:0">Moves</h2></div><a class="k-link k-small" href="#">Edit game details</a></div>
+        <div class="sa-game"><b>Marcus Landry</b> <span class="k-muted">2014</span> vs <b>Priya Shah</b> <span class="k-muted">1803</span> · <b>1-0</b><div class="k-small k-muted">Louisiana State Championship 2026 · Open · Round 4 · Board 6 · Sun, Sep 6 · names and colors matched from the pairings</div></div>
+        <div class="k-row-sm"><span class="k-chip k-chip-on">All moves <span class="k-chip-count">17</span></span><span class="k-chip">Needs a look <span class="k-chip-count">1</span></span><span class="k-chip">Fixed automatically <span class="k-chip-count">1</span></span></div>
+        <div class="k-tablebox">
+          <table class="k-table sa-mt">
+            <thead><tr><th class="k-c">#</th><th>White</th><th>Black</th><th class="k-c">#</th><th>White</th><th>Black</th></tr></thead>
+            <tbody>
+              <tr><td class="sa-no">1</td><td class="sa-mv">e4</td><td class="sa-mv">e5</td><td class="sa-no sa-split">10</td><td class="sa-mv">Nxb5</td><td class="sa-mv">cxb5</td></tr>
+              <tr><td class="sa-no">2</td><td class="sa-mv">Nf3</td><td class="sa-mv">d6</td><td class="sa-no sa-split">11</td><td class="sa-mv">Bxb5+</td><td class="sa-mv">Nbd7</td></tr>
+              <tr><td class="sa-no">3</td><td class="sa-mv">d4</td><td class="sa-mv">Bg4</td><td class="sa-no sa-split">12</td><td class="sa-mv">O-O-O</td><td class="sa-mv">Rd8</td></tr>
+              <tr><td class="sa-no">4</td><td class="sa-mv">dxe5</td><td class="sa-mv">Bxf3</td><td class="sa-no sa-split">13</td><td class="sa-mv">Rxd7</td><td class="sa-mv sa-sel">Rxd7<span class="sa-mini sa-mini-sel">Check this</span></td></tr>
+              <tr><td class="sa-no">5</td><td class="sa-mv">Qxf3</td><td class="sa-mv">dxe5</td><td class="sa-no sa-split">14</td><td class="sa-mv">Rd1</td><td class="sa-mv">Qe6</td></tr>
+              <tr><td class="sa-no">6</td><td class="sa-mv">Bc4</td><td class="sa-mv">Nf6</td><td class="sa-no sa-split">15</td><td class="sa-mv">Bxd7+</td><td class="sa-mv">Nxd7</td></tr>
+              <tr><td class="sa-no">7</td><td class="sa-mv">Qb3<span class="sa-mini sa-mini-auto">Fixed automatically</span></td><td class="sa-mv">Qe7</td><td class="sa-no sa-split">16</td><td class="sa-mv">Qb8+</td><td class="sa-mv">Nxb8</td></tr>
+              <tr><td class="sa-no">8</td><td class="sa-mv">Nc3</td><td class="sa-mv">c6</td><td class="sa-no sa-split">17</td><td class="sa-mv">Rd8#</td><td class="sa-mv"></td></tr>
+              <tr><td class="sa-no">9</td><td class="sa-mv">Bg5</td><td class="sa-mv">b5<span class="sa-mini sa-mini-ok">You checked</span></td><td class="sa-no sa-split"></td><td class="sa-mv"></td><td class="sa-mv"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <span class="k-small k-muted">7. Qb3 was read as "Qb8", which isn't a legal move there; Qb3 is the only legal match, so it was fixed without asking.</span>
+        <div class="k-stack-sm">
+          <div class="k-row-sm"><span class="k-num-badge">4</span><span class="k-label">Game checks</span></div>
+          <ul class="sa-checks">
+            <li><svg class="k-i sa-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Every move is legal in order</span></li>
+            <li><svg class="k-i sa-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>No position repeated three times</span></li>
+            <li><svg class="k-i sa-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>17. Rd8# is checkmate, which matches the result written on the sheet (1-0)</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="k-card sa-col k-stack" aria-labelledby="sa-bh">
+        <div class="k-between"><div class="k-row-sm"><span class="k-num-badge">3</span><h2 id="sa-bh" class="k-h3" style="margin:0">After 13...Rxd7</h2></div><span class="k-tag k-tag-soon">Needs a look</span></div>
+        <div class="sa-bwrap">
+          <div class="sa-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+          <div class="k-board sa-bd" role="img" aria-label="Position after 13...Rxd7. White: king c1, queen b3, rook h1, bishops b5 and g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e7, rooks d7 and h8, knight f6, bishop f8, pawns a7 e5 f7 g7 h7. Last move d8 to d7 highlighted.">
+            <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d lm"></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+            <div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l lm"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+            <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+            <div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+            <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+            <div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+            <div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+            <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div>
+          </div>
+          <div class="sa-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+        </div>
+        <div class="sa-nav">
+          <button class="k-iconbtn" type="button" aria-label="First move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5l-7 7 7 7"></path></svg></button>
+          <button class="k-iconbtn" type="button" aria-label="Previous move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+          <button class="k-iconbtn" type="button" aria-label="Next move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+          <button class="k-iconbtn" type="button" aria-label="Last move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l7 7-7 7"></path></svg></button>
+          <span class="k-small k-muted" style="margin-left:auto">Move 13 · Black</span>
+        </div>
+        <div class="k-stack-sm">
+          <span class="k-label">Smudged on the sheet. Which move is it?</span>
+          <label class="sa-opt sa-opt-on"><input type="radio" name="sa-m13" checked><span><b>Rxd7</b><small>Fits every move that follows</small></span></label>
+          <label class="sa-opt"><input type="radio" name="sa-m13"><span><b>Qxd7</b><small>Legal here, but then 15. Bxd7+ would capture nothing</small></span></label>
+          <label class="sa-opt"><input type="radio" name="sa-m13"><span><b>Nxd7</b><small>Legal here, but then 15...Nxd7 has no knight left</small></span></label>
+          <a class="k-link k-small" href="#">Something else? Type the move</a>
+        </div>
+        <div class="k-row-sm"><button class="k-btn k-btn-gold" type="button">Confirm Rxd7</button><button class="k-btn k-btn-ghost" type="button">Skip for now</button></div>
+      </section>
+
+    </div>
+
+    <div class="k-grid-3" style="align-items:start">
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="sa-sv">
+        <div class="k-row-sm"><span class="k-num-badge">5</span><h2 id="sa-sv" class="k-h3" style="margin:0">Save to My LCA</h2></div>
+        <div class="k-stack-sm"><span class="k-label">Who can see it</span><div class="k-seg" role="group" aria-label="Visibility"><button type="button">Only me</button><button class="k-seg-on" type="button">Anyone with the link</button><button type="button">Public</button></div></div>
+        <button class="k-btn k-btn-gold k-btn-block" type="button">Save to My games</button>
+        <div class="k-stack-sm">
+          <span class="k-label">My games · 3 saved</span>
+          <ul class="sa-lib">
+            <li><b>vs Sam Nguyen · drew</b><span class="k-small k-muted">Houma Chess Club night · Mon, Sep 28</span></li>
+            <li><b>vs Jordan Lee · won</b><span class="k-small k-muted">State Championship, Round 2 · Sat, Sep 5</span></li>
+            <li><b>vs Camille Broussard · lost</b><span class="k-small k-muted">State Championship, Round 1 · Sat, Sep 5</span></li>
+          </ul>
+          <a class="k-link k-small" href="#">Open My games (search by opponent, event or opening)</a>
+        </div>
+      </section>
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="sa-xh">
+        <h2 id="sa-xh" class="k-h3" style="margin:0">Attach to the crosstable</h2>
+        <span class="k-small k-muted">Louisiana State Championship 2026 · Open · Round 4, Board 6</span>
+        <div class="k-tablebox">
+          <table class="k-table sa-xt">
+            <thead><tr><th class="k-c">#</th><th>Player</th><th class="k-c">R1</th><th class="k-c">R2</th><th class="k-c">R3</th><th class="k-c">R4</th><th class="k-c">R5</th><th class="k-r">Pts</th></tr></thead>
+            <tbody>
+              <tr class="k-tr-me"><td class="k-c">3</td><td>Marcus Landry</td><td class="k-c">L15</td><td class="k-c">W7</td><td class="k-c">W9</td><td class="k-c"><b>W12</b></td><td class="k-c">D2</td><td class="k-r k-num">3½</td></tr>
+              <tr><td class="k-c">12</td><td>Priya Shah</td><td class="k-c">W20</td><td class="k-c">D11</td><td class="k-c">W14</td><td class="k-c"><b>L3</b></td><td class="k-c">W8</td><td class="k-r k-num">3½</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <label class="k-check"><input type="checkbox" checked><span>Link this game from both players' Round 4 results (W12 and L3)</span></label>
+        <span class="k-small k-muted">Priya Shah gets an email and can hide the game from her row.</span>
+      </section>
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="sa-shh">
+        <h2 id="sa-shh" class="k-h3" style="margin:0">Share &amp; export</h2>
+        <div class="sa-share">
+          <div class="k-board sa-bd sa-bd-s" role="img" aria-label="Final position after 17. Rd8 checkmate. White: king c1, rook d8, bishop g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e6, bishop f8, knight b8, rook h8, pawns a7 e5 f7 g7 h7.">
+            <div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d lm"><span class="pc pw">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+            <div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+            <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+            <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+            <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+            <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+            <div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+            <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l lm"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+          </div>
+          <div class="k-stack-sm"><b class="k-ink">Landry vs Shah · 1-0</b><span class="k-small k-muted">17 moves · 17. Rd8# · Louisiana State Championship 2026, Round 4</span><span class="k-small k-muted">LOUISIANACHESS.ORG</span></div>
+        </div>
+        <span class="k-small k-muted">How the game link previews when shared: final position, players, result.</span>
+        <div class="k-row-sm"><input class="k-input" value="louisianachess.org/g/landry-shah-r4" aria-label="Game link" style="flex:1;min-width:0"><button class="k-btn k-btn-line k-btn-sm" type="button">Copy</button></div>
+        <div class="k-row-sm">
+          <a class="k-btn k-btn-navy k-btn-sm" href="#">Open in lichess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PGN</button>
+          <button class="k-btn k-btn-ghost k-btn-sm" type="button">Copy PGN</button>
+        </div>
+      </section>
+
+    </div>
+
+    <section class="k-card k-card-pad k-stack" aria-labelledby="sa-tdh" id="sa-td">
+      <div class="k-between">
+        <div class="k-row-sm"><span class="k-num-badge">6</span><h2 id="sa-tdh" class="k-h3" style="margin:0">Directors: scan a whole round</h2><span class="k-tag k-tag-gold">TD mode</span></div>
+        <div class="k-row-sm"><span class="k-small k-muted">Open section · Round 4 · 14 of 30 boards scanned</span><button class="k-btn k-btn-navy k-btn-sm" type="button">Upload Round 4 sheets</button></div>
+      </div>
+      <p class="k-small" style="margin:0">Photograph the stack after a round. Each sheet is matched to its board from the pairings, players find the game in My games, and the crosstable links fill in once the moves are checked.</p>
+      <div class="sa-td">
+        <div><b>Board 1</b><span class="sa-ok">Scanned</span></div>
+        <div><b>Board 2</b><span class="sa-ok">Scanned</span></div>
+        <div><b>Board 3</b><span class="sa-look">2 moves to check</span></div>
+        <div><b>Board 4</b><span class="sa-ok">Scanned</span></div>
+        <div><b>Board 5</b><span class="sa-miss">No sheet yet</span></div>
+        <div class="sa-this"><b>Board 6</b><span class="sa-look">1 move to check</span></div>
+        <div><b>Board 7</b><span class="sa-ok">Scanned</span></div>
+        <div><b>Board 8</b><span class="sa-miss">No sheet yet</span></div>
+        <div><b>Board 9</b><span class="sa-ok">Scanned</span></div>
+        <div><b>Board 10</b><span class="sa-ok">Scanned</span></div>
+        <div><b>Board 11</b><span class="sa-miss">No sheet yet</span></div>
+        <div><b>Board 12</b><span class="sa-ok">Scanned</span></div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<section class="k-wrap-wide" style="padding-bottom:32px" aria-label="Notes">
+  <div class="k-callout">
+    <div class="sa-legend">
+      <div><span class="k-num-badge">1</span><span>Photo and move list stay linked; the move being checked is highlighted on the sheet itself.</span></div>
+      <div><span class="k-num-badge">2</span><span>Moves the legality decoder fixed on its own are labeled apart from moves a person checked.</span></div>
+      <div><span class="k-num-badge">3</span><span>The board shows the selected move exactly; choices are ranked by whether the later moves still work.</span></div>
+      <div><span class="k-num-badge">4</span><span>Game checks: legal order, threefold repetition, and the written result against the final position.</span></div>
+      <div><span class="k-num-badge">5</span><span>Save to My games, link it from the crosstable (opponent can hide it), share a link with a board preview, PGN, lichess.</span></div>
+      <div><span class="k-num-badge">6</span><span>TD mode: one upload per round, sheets matched to boards from the pairings.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2050}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

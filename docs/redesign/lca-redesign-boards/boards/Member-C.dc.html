@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Member C — Donate page</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.fund{display:flex;flex-direction:column;gap:10px;padding:18px;border:1.5px solid #d9d6cc;border-radius:12px;background:#ffffff;cursor:pointer}
+.fund-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744;background:#fbfaf6}
+.ico{width:40px;height:40px;flex:0 0 40px;border-radius:10px;background:#f1efe7;color:#1a2744;display:flex;align-items:center;justify-content:center}
+.bar{height:8px;background:#ebe8df;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:#c8a94a;border-radius:99px}
+.amts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.amts .k-btn{padding-left:6px;padding-right:6px}
+.nm{padding:10px 12px;border:1px solid #e4e1d8;border-radius:10px;background:#ffffff;font-size:14px;color:#1a2744}
+.step{font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#866a1e}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#" aria-current="page" style="text-decoration:underline;text-underline-offset:4px">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<section class="k-wrap-wide k-section-sm">
+  <div class="k-split">
+    <div class="k-main k-stack-lg">
+      <div class="k-stack-sm" style="max-width:720px">
+        <div class="k-row k-row-sm"><span class="k-kicker">Donate</span><span class="k-sample">Sample data</span></div>
+        <h1 class="k-h1">Give to Louisiana chess, and choose what your gift does</h1>
+        <p class="k-lead" style="margin:0">LCA is run by a volunteer board. Every gift goes to the fund you pick, and this page shows what each fund paid for.</p>
+      </div>
+
+      <div class="k-stack" role="radiogroup" aria-label="Choose a purpose">
+        <div class="k-row k-row-sm"><span class="k-label">1 · Choose a purpose</span><span class="k-num-badge">1</span></div>
+
+        <div class="fund fund-on" role="radio" aria-checked="true" tabindex="0">
+          <div class="k-between">
+            <div class="k-row k-row-sm" style="flex-wrap:nowrap"><span class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg></span><span class="k-h3">Send a Louisiana kid to Nationals</span></div>
+            <span class="k-tag k-tag-open">Selected</span>
+          </div>
+          <div class="k-body">Entry fees and travel help for Louisiana scholastic players at national events, including players who qualify through LCA's Tournament of Champions Qualifier.</div>
+          <div class="k-between k-small"><span><b>$1,240</b> raised of a $3,000 goal for the 2026–27 season</span><span class="k-muted">41%</span></div>
+          <div class="bar"><i style="width:41%"></i></div>
+          <div class="k-meta">Last season it paid for: [entries and travel for [N] players, from the treasurer]</div>
+        </div>
+
+        <div class="fund" role="radio" aria-checked="false" tabindex="-1">
+          <div class="k-row k-row-sm" style="flex-wrap:nowrap"><span class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20.5h10M9 20.5c0-3 1.5-5 3-6.5-1.8.4-3.4-.2-4.5-1.5L9.5 9c.6-2.4 2.6-4.5 5.5-4.5 2.8 0 4.5 2.5 4.5 6.5v9.5"></path></svg></span><span class="k-h3">Club equipment</span></div>
+          <div class="k-body">Sets, boards and clocks for clubs and school programs that ask for them, from Bunkie to the Westbank.</div>
+          <div class="k-between k-small"><span><b>$380</b> raised of a $1,000 goal</span><span class="k-muted">38%</span></div>
+          <div class="bar"><i style="width:38%"></i></div>
+        </div>
+
+        <div class="fund" role="radio" aria-checked="false" tabindex="-1">
+          <div class="k-row k-row-sm" style="flex-wrap:nowrap"><span class="ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 7.5 3c0 5.4-7.5 10-7.5 10z"></path></svg></span><span class="k-h3">General fund</span></div>
+          <div class="k-body">Wherever the board needs it most: tournaments, scholastic events, the website and online registration.</div>
+          <div class="k-meta">No goal: used across LCA's work, reported in the table below.</div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="k-side">
+      <div class="k-sticky">
+        <div class="k-card k-card-raised k-card-pad k-stack">
+          <div class="k-between"><h2 class="k-h3">2 · Your gift</h2><span class="k-num-badge">2</span></div>
+          <div class="k-panel k-between" style="padding:10px 12px;border-radius:10px">
+            <div><div class="k-meta">Fund</div><div class="k-strong k-small">Send a Louisiana kid to Nationals</div></div>
+            <a class="k-link k-small" href="#">Change</a>
+          </div>
+          <div class="k-stack-sm">
+            <div class="k-seg" role="group" aria-label="How often"><button class="k-seg-on" type="button" aria-pressed="true">Give once</button><button type="button">Monthly</button></div>
+            <div class="k-hint">Monthly gifts let the board plan the season. Cancel any time.</div>
+          </div>
+          <div class="amts" role="group" aria-label="Amount">
+            <button class="k-btn k-btn-line" type="button">$25</button>
+            <button class="k-btn k-btn-navy" type="button" aria-pressed="true">$50</button>
+            <button class="k-btn k-btn-line" type="button">$100</button>
+            <button class="k-btn k-btn-line" type="button">$250</button>
+          </div>
+          <div class="k-field"><label for="other">Other amount</label><input id="other" class="k-input" inputmode="numeric" placeholder="$ Any amount"></div>
+          <div class="k-callout k-small">$50 · [Board-approved line: what $50 does for this fund]</div>
+          <div class="k-stack-sm">
+            <label class="k-check"><input type="checkbox"> Add [card fee] so LCA gets the full $50</label>
+            <label class="k-check"><input type="checkbox"> Give in honor or memory of someone</label>
+            <label class="k-check"><input type="checkbox"> Show my name on the thank-you wall</label>
+          </div>
+          <a class="k-btn k-btn-gold k-btn-lg k-btn-block" href="#">Continue to secure payment · $50</a>
+          <div class="k-row k-row-sm k-small" style="flex-wrap:nowrap;align-items:flex-start"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span>You pay on Stripe's secure checkout. LCA never sees or stores your card number.</span></div>
+          <div class="k-small k-muted">Receipt by email right away. [Tax status: board to confirm whether gifts are tax-deductible, with EIN.]</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="k-cream">
+  <div class="k-wrap-wide k-section-sm k-stack">
+    <div class="k-between" style="align-items:flex-end">
+      <div class="k-stack-sm" style="max-width:720px">
+        <div class="k-row k-row-sm"><span class="k-kicker">Where the money goes</span><span class="k-num-badge">3</span></div>
+        <h2 class="k-h2">Every fund, money in and money out</h2>
+        <p class="k-body k-muted" style="margin:0">Each gift is recorded against its fund. The treasurer logs what each fund paid for, and this table updates with it.</p>
+      </div>
+      <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg>Read the treasurer's report</a>
+    </div>
+    <div class="k-tablebox">
+      <table class="k-table">
+        <caption>[Season 2025–26] · last updated [date]</caption>
+        <thead><tr><th>Fund</th><th class="k-r">Given</th><th class="k-r">Spent</th><th>What it paid for</th></tr></thead>
+        <tbody>
+          <tr><td class="k-strong">Send a Louisiana kid to Nationals</td><td class="k-r">[Amount]</td><td class="k-r">[Amount]</td><td>[Entries and travel for [N] players]</td></tr>
+          <tr><td class="k-strong">Club equipment</td><td class="k-r">[Amount]</td><td class="k-r">[Amount]</td><td>[Sets and clocks for [club or school]]</td></tr>
+          <tr><td class="k-strong">General fund</td><td class="k-r">[Amount]</td><td class="k-r">[Amount]</td><td>[State Championship trophies, website hosting]</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="k-grid-4">
+      <div class="k-card k-card-pad k-stack-sm"><div class="k-h3 k-num">Since 1915</div><div class="k-small k-muted">110+ years serving Louisiana players</div></div>
+      <div class="k-card k-card-pad k-stack-sm"><div class="k-h3">Volunteer board</div><div class="k-small k-muted">Officers and regional representatives, elected at the annual meeting</div></div>
+      <div class="k-card k-card-pad k-stack-sm"><div class="k-h3">Paid through Stripe</div><div class="k-small k-muted">Your card number never reaches LCA's servers</div></div>
+      <div class="k-card k-card-pad k-stack-sm"><div class="k-h3">[Tax status]</div><div class="k-small k-muted">[e.g. 501(c)(3), EIN on request: board to confirm]</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="k-wrap-wide k-section-sm k-stack">
+  <div class="k-stack-sm" style="max-width:800px">
+    <div class="k-row k-row-sm"><span class="k-tag k-tag-gold">New</span><span class="k-num-badge">4</span></div>
+    <h2 class="k-h2">Sponsored entries: your gift becomes a kid's next tournament</h2>
+    <p class="k-body k-muted" style="margin:0">The Nationals fund can also cover entry fees at LCA scholastic events. Families ask privately when they register; nobody has to explain themselves in public.</p>
+  </div>
+  <div class="k-grid-4">
+    <div class="k-card k-card-pad k-stack-sm">
+      <span class="step">Step 1 · You give</span>
+      <p class="k-small" style="margin:0">Any amount to the fund, or exactly one entry: "Sponsor an entry · $[entry fee]".</p>
+    </div>
+    <div class="k-card k-card-pad k-stack-sm">
+      <span class="step">Step 2 · A family asks</span>
+      <div class="k-panel k-stack-sm" style="padding:10px 12px;border-radius:10px">
+        <label class="k-check"><input type="checkbox" checked> Request a sponsored entry for Maya</label>
+        <div class="k-meta">Only LCA officers see this request.</div>
+      </div>
+    </div>
+    <div class="k-card k-card-pad k-stack-sm">
+      <span class="step">Step 3 · An officer approves</span>
+      <div class="k-panel k-between k-small" style="padding:10px 12px;border-radius:10px"><span>Maya R. · K–8 section</span><span class="k-tag k-tag-open">Sponsored · $0</span></div>
+      <div class="k-meta">The entry is paid from the fund; the family's checkout shows $0.</div>
+    </div>
+    <div class="k-card k-card-pad k-stack-sm">
+      <span class="step">Step 4 · You hear back</span>
+      <div class="k-panel k-stack-sm" style="padding:10px 12px;border-radius:10px">
+        <div class="k-strong k-small">Your gift covered 2 entries</div>
+        <div class="k-small">Two players entered the LCA State Scholastic Championship thanks to you.</div>
+      </div>
+    </div>
+  </div>
+  <div class="k-card k-card-pad k-between">
+    <div class="k-row k-row-sm" style="max-width:640px;flex-wrap:nowrap"><span class="k-num-badge">5</span><div><div class="k-strong">At every LCA checkout</div><div class="k-small k-muted">Registration and membership checkouts offer one small add-on, never pre-checked.</div></div></div>
+    <div class="k-panel k-row k-row-sm" style="padding:10px 14px;border-radius:10px"><span class="k-small">Add $5 to send a Louisiana kid to Nationals?</span><button class="k-btn k-btn-navy k-btn-sm" type="button">Add $5</button><button class="k-btn k-btn-ghost k-btn-sm" type="button">No thanks</button></div>
+  </div>
+</section>
+
+<section class="k-cream">
+  <div class="k-wrap-wide k-section-sm k-stack">
+    <div class="k-between">
+      <div class="k-row k-row-sm"><h2 class="k-h2">Thank you</h2><span class="k-num-badge">6</span><span class="k-sample">Sample data</span></div>
+      <div class="k-row k-row-sm" role="group" aria-label="Show donors"><button class="k-chip k-chip-on" type="button">Everyone</button><button class="k-chip" type="button">Monthly supporters</button><button class="k-chip" type="button">Nationals fund</button><button class="k-chip" type="button">Club equipment</button></div>
+    </div>
+    <p class="k-small k-muted" style="margin:0">Names appear only when the donor ticks "Show my name". Amounts are never shown.</p>
+    <div class="k-grid-4">
+      <div class="nm k-between"><span>Avery Thibodeaux</span><span class="k-tag k-tag-gold">Monthly</span></div>
+      <div class="nm">Camille Broussard</div>
+      <div class="nm">Sam Nguyen</div>
+      <div class="nm k-between"><span>Elise Fontenot</span><span class="k-tag k-tag-gold">Monthly</span></div>
+      <div class="nm">Isaac Dupre</div>
+      <div class="nm">Nora Hebert</div>
+      <div class="nm">The Robichaux family</div>
+      <div class="nm">Priya Shah</div>
+      <div class="nm">Theo Guidry</div>
+      <div class="nm">Rosa Mendez</div>
+      <div class="nm">Devin Batiste</div>
+      <div class="nm">In memory of [name], from [donor]</div>
+    </div>
+    <div class="k-small k-muted">And [N] donors who chose to stay anonymous.</div>
+  </div>
+</section>
+
+<section class="k-wrap-wide k-section-sm">
+  <div class="k-grid-3">
+    <div class="k-card k-card-pad k-stack-sm">
+      <h3 class="k-h4">Sponsor an event or a prize</h3>
+      <p class="k-small" style="margin:0">Businesses and families can sponsor a trophy, a section prize or a whole event. Write to <a class="k-link" href="#">LouisianaChess@gmail.com</a>.</p>
+    </div>
+    <div class="k-card k-card-pad k-stack-sm">
+      <h3 class="k-h4">Give by check</h3>
+      <p class="k-small" style="margin:0">Payable to Louisiana Chess Association, mailed to [mailing address]. Put the fund on the memo line.</p>
+    </div>
+    <div class="k-card k-card-pad k-stack-sm">
+      <h3 class="k-h4">Year-end giving</h3>
+      <p class="k-small" style="margin:0">The year-end appeal runs Tue, Dec 1 to Thu, Dec 31, with a banner on the homepage. [Matching sponsor, if any.]</p>
+    </div>
+  </div>
+</section>
+
+<section class="k-wrap-wide k-section-sm">
+  <div class="k-card k-card-pad k-stack-sm">
+    <div class="k-label">Design notes</div>
+    <div class="k-grid-3 k-small">
+      <div>1 · Purpose first: three funds, each with what it does and its progress toward a goal.</div>
+      <div>2 · Four preset amounts plus Other (numeric keypad), once or monthly, and a board-approved impact line for the chosen amount.</div>
+      <div>3 · Money in and out per fund, linked to the treasurer's report. Few nonprofits say where gifts go.</div>
+      <div>4 · Sponsored entries connect gifts to registration; requests are private and approved by an officer.</div>
+      <div>5 · One optional add-on at LCA checkouts, never pre-checked.</div>
+      <div>6 · The thank-you wall is opt-in and never shows amounts. Donate also appears in the header, the footer, every confirmation page and the Scholastic page.</div>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

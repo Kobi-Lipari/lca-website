@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live B — Pairings page</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.mono{font-family:'Geist Mono',monospace}
+.lb-tabs{display:flex;gap:2px;overflow-x:auto}
+.lb-tabs a{padding:10px 14px;color:#3d4454;text-decoration:none;font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+.lb-tabs a.on{color:#1a2744;font-weight:600;border-bottom-color:#c8a94a}
+.lb-banner{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#1a2744;color:#ffffff;border-radius:14px;padding:14px 18px}
+.pc{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 4px;border-radius:5px;font-family:'Geist Mono',monospace;font-weight:500;font-size:13px;line-height:1;box-sizing:border-box;flex:none}
+.pc-w{background:#ffffff;color:#1a2744;border:1.5px solid #1a2744}
+.pc-b{background:#1a2744;color:#ffffff;border:1.5px solid #1a2744}
+.lb-tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:17px;min-width:560px}
+.lb-tbl th{font-size:13px;font-weight:600;color:#555c6b;text-align:left;padding:10px;border-bottom:1px solid #d9d8d2;background:#fafaf7;white-space:nowrap}
+.lb-tbl td{padding:11px 10px;border-bottom:1px solid #eeede8;vertical-align:middle;background:#ffffff}
+.lb-tbl .bd{position:sticky;left:0;z-index:1;width:52px;text-align:center;font-weight:700;font-size:18px}
+.lb-tbl th.bd{z-index:2;background:#fafaf7;font-size:13px}
+.lb-tbl .num{font-family:'Geist Mono',monospace;font-size:15px;color:#3d4454;text-align:right;white-space:nowrap}
+.lb-tbl th.num{font-family:Geist,system-ui,sans-serif;font-size:13px}
+.lb-tbl .res{text-align:center;white-space:nowrap}
+.lb-tbl .nm{font-weight:600;color:#1a2744;white-space:nowrap}
+.lb-tbl tr.me td{background:#fbf3d9}
+.rbox{display:inline-flex;align-items:center;justify-content:center;min-width:56px;height:28px;padding:0 8px;border-radius:7px;font-family:'Geist Mono',monospace;font-size:15px;font-weight:500;background:#ecebe6;color:#1a2744;box-sizing:border-box}
+.rbox-play{background:transparent;color:#555c6b;border:1px dashed #b4b7bf;font-family:Geist,system-ui,sans-serif;font-size:13px;font-weight:500}
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px}
+.prog{display:inline-block;height:6px;border-radius:3px;background:#e6e5df;overflow:hidden;width:120px;vertical-align:middle}
+.prog i{display:block;height:100%;background:#1a2744}
+mark.hl{background:#f3e3a6;color:inherit;border-radius:2px;padding:0 1px}
+.you{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;background:#1a2744;color:#ffffff;font-size:11px;font-weight:600;vertical-align:middle}
+.lg dt{display:flex;align-items:center}
+.lg dd{margin:0;align-self:center}
+@media (max-width:640px){.lb-tbl{font-size:15px}.lb-tbl td{padding:9px 8px}.rbox{min-width:48px}}
+</style>
+</helmet>
+<div class="k-page">
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a class="k-nav-on" href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<section style="background:#ffffff;border-bottom:1px solid #e3e2dc">
+  <div class="k-wrap" style="padding-top:22px">
+    <nav aria-label="Breadcrumb" class="k-small k-muted"><a class="k-link-plain" href="#">Tournaments</a> / <a class="k-link-plain" href="#">2027 Paul Morphy Open</a> / <span>Live</span></nav>
+    <div class="k-between" style="margin-top:12px;align-items:flex-end;gap:16px">
+      <div>
+        <div class="k-row-sm"><span class="k-tag k-tag-live">Live · Round 3</span><span class="k-tag k-tag-lca">LCA event</span><span class="k-sample">Sample data</span></div>
+        <h1 class="k-h1" style="margin:10px 0 0">2027 Paul Morphy Open</h1>
+        <div class="k-row k-meta" style="margin-top:8px">
+          <span style="display:inline-flex;align-items:center;gap:6px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Sat–Sun, Jun 12–13, 2027</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>[Venue name], New Orleans</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>5 rounds · G/90+30 · 90 min each + 30 sec per move</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>96 players in 4 sections</span>
+        </div>
+      </div>
+      <div class="k-row-sm k-hide-sm">
+        <a class="k-btn k-btn-line k-btn-sm" href="Live-D.dc.html"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"></rect><path d="M8 20h8M12 16v4"></path></svg>Hall TV mode</a>
+        <a class="k-btn k-btn-line k-btn-sm" href="Live-E.dc.html"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Print &amp; QR kit</a>
+      </div>
+    </div>
+    <nav class="lb-tabs" aria-label="Live tournament pages" style="margin-top:16px">
+      <a class="on" href="#" aria-current="page">Pairings</a><a href="Live-C.dc.html">Standings</a><a href="Live-C.dc.html">Crosstable</a><a href="#">Prizes</a><a href="#">Event info</a>
+    </nav>
+  </div>
+</section>
+
+<div class="k-wrap" style="padding-top:20px">
+  <div role="status" class="lb-banner">
+    <span style="color:#c8a94a;display:flex"><svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+    <div style="flex:1;min-width:240px"><b style="font-size:17px">Round 3 is being played</b><div style="color:#d6dae3;font-size:14px;margin-top:2px">Started 7:00 PM · 23 of 46 results in across all sections · Round 4 is Sun 9:30 AM; its pairings post after the last Round 3 game ends</div></div>
+    <button class="k-btn k-btn-gold" type="button">Email me when Round 4 is paired</button>
+  </div>
+</div>
+
+<div class="k-wrap" style="padding-top:16px">
+  <section class="k-card" aria-label="Pairings controls" style="padding:14px 18px">
+    <div class="k-between" style="gap:14px">
+      <div class="k-row-sm">
+        <span class="k-small" style="font-weight:600">Round</span>
+        <div class="k-seg" role="group" aria-label="Round">
+          <button type="button">Rd 1</button><button type="button">Rd 2</button><button class="k-seg-on" type="button" aria-pressed="true">Rd 3 · live</button><button type="button" disabled>Rd 4</button><button type="button" disabled>Rd 5</button>
+        </div>
+      </div>
+      <div class="k-row-sm">
+        <span class="k-small" style="font-weight:600">Order</span>
+        <div class="k-seg" role="group" aria-label="Order"><button class="k-seg-on" type="button">By board</button><button type="button">A–Z by name</button></div>
+      </div>
+    </div>
+    <div class="k-between" style="gap:14px;margin-top:12px;align-items:flex-end">
+      <div class="k-row-sm" role="group" aria-label="Sections">
+        <button class="k-chip k-chip-on" type="button">All sections <span class="k-chip-count">96</span></button>
+        <button class="k-chip" type="button">Open <span class="k-chip-count">21</span></button>
+        <button class="k-chip" type="button">U1800 <span class="k-chip-count">28</span></button>
+        <button class="k-chip" type="button">U1400 <span class="k-chip-count">27</span></button>
+        <button class="k-chip" type="button">U1000 <span class="k-chip-count">20</span></button>
+      </div>
+      <div class="k-row-sm" style="align-items:flex-end">
+        <div class="k-field" style="width:250px"><label for="b-find">Find a player</label><input id="b-find" class="k-input" value="Batiste"></div>
+        <span class="k-small k-muted" style="padding-bottom:12px">1 match · U1800, board 7</span>
+      </div>
+    </div>
+    <div class="k-between" style="margin-top:12px;padding-top:12px;border-top:1px solid #eeede8;gap:12px">
+      <div class="k-row-sm"><span class="k-small" style="font-weight:600">Text size</span><div class="k-seg" role="group" aria-label="Text size"><button type="button">A</button><button class="k-seg-on" type="button">A+</button><button type="button">A++</button></div><span class="k-small k-muted k-hide-sm">Remembered on this device</span></div>
+      <div class="k-row-sm"><span class="k-small">Updated 1 min ago · checks every 60 s</span><button class="k-iconbtn" type="button" aria-label="Refresh pairings now"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></button></div>
+    </div>
+  </section>
+</div>
+
+<div class="k-wrap k-section-sm">
+  <div class="k-split">
+    <div class="k-main k-stack">
+
+      <section class="k-card" aria-labelledby="yg" style="border:2px solid #1a2744;padding:18px 20px">
+        <div class="k-between" style="gap:10px">
+          <div class="k-row-sm"><span class="k-label" id="yg">Your game · Round 3 · U1800</span><span class="k-small k-muted">Pinned on this device · <a class="k-link" href="#">Not you? Change</a></span></div>
+          <span class="k-small" style="display:inline-flex;align-items:center;gap:6px;color:#3d4454"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>In play since 7:00 PM</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin-top:12px">
+          <div style="font-size:52px;font-weight:700;line-height:1;letter-spacing:-.02em">Board 7</div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:20px;font-weight:600"><span class="pc pc-w">W</span>Devin Batiste <span class="mono k-meta">1521 · 1 pt</span></div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:20px;font-weight:600;margin-top:6px"><span class="pc pc-b">B</span>Sam Nguyen <span class="mono k-meta">1650 · 1 pt</span></div>
+          </div>
+          <div class="k-row-sm" style="margin-left:auto">
+            <button class="k-btn k-btn-navy" type="button">Report result</button>
+            <button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="fill:#c8a94a"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg>Following</button>
+          </div>
+        </div>
+        <p class="k-small k-muted" style="margin:12px 0 0">After the game, either player can report here; the other confirms, or the TD enters it at the table. <a class="k-link" href="#">Follow another player</a></p>
+      </section>
+
+      <section class="k-card" aria-labelledby="u18" style="padding:0;overflow:hidden">
+        <div class="sec-head" style="border-bottom:1px solid #e3e2dc">
+          <h2 class="k-h3" id="u18" style="margin:0">U1800 <span class="k-meta" style="font-weight:400">· rated under 1800 · 28 players · 13 boards</span></h2>
+          <div class="k-row-sm"><span class="k-tag k-tag-gold">Your section</span><span class="k-small">5 of 13 results in</span><span class="prog" aria-hidden="true"><i style="width:38%"></i></span></div>
+        </div>
+        <div class="k-tablebox" role="region" aria-labelledby="u18-cap" tabindex="0">
+          <table class="lb-tbl">
+            <caption id="u18-cap" style="caption-side:top;text-align:left;padding:10px 18px;font-size:14px;color:#555c6b">U1800 · Round 3 pairings · Sat, Jun 12 · 7:00 PM · Pts = points before this round</caption>
+            <thead><tr><th scope="col" class="bd">Bd</th><th scope="col">White</th><th scope="col" class="num k-hide-sm">Rtg</th><th scope="col" class="num k-hide-sm">Pts</th><th scope="col" class="res">Result</th><th scope="col">Black</th><th scope="col" class="num k-hide-sm">Rtg</th><th scope="col" class="num k-hide-sm">Pts</th></tr></thead>
+            <tbody>
+              <tr><td class="bd">1</td><td class="nm">Camille Broussard</td><td class="num k-hide-sm">1744</td><td class="num k-hide-sm">2</td><td class="res"><span class="rbox rbox-play">Playing</span></td><td class="nm">Lauren Guillory</td><td class="num k-hide-sm">1641</td><td class="num k-hide-sm">2</td></tr>
+              <tr><td class="bd">2</td><td class="nm">Kendall Pitre</td><td class="num k-hide-sm">1595</td><td class="num k-hide-sm">2</td><td class="res"><span class="rbox rbox-play">Playing</span></td><td class="nm">Isaac Dupre</td><td class="num k-hide-sm">1688</td><td class="num k-hide-sm">2</td></tr>
+              <tr><td class="bd">3</td><td class="nm">Andre Charbonnet</td><td class="num k-hide-sm">1662</td><td class="num k-hide-sm">2</td><td class="res"><span class="rbox rbox-play">Playing</span></td><td class="nm">Rachel Doucet</td><td class="num k-hide-sm">1509</td><td class="num k-hide-sm">2</td></tr>
+              <tr><td class="bd">4</td><td class="nm">Malik Johnson</td><td class="num k-hide-sm">1566</td><td class="num k-hide-sm">1½</td><td class="res"><span class="rbox rbox-play">Playing</span></td><td class="nm">Grant Melancon</td><td class="num k-hide-sm">1731</td><td class="num k-hide-sm">1½</td></tr>
+              <tr><td class="bd">5</td><td class="nm">Olivia Landreneau</td><td class="num k-hide-sm">1588</td><td class="num k-hide-sm">1</td><td class="res"><span class="rbox" aria-label="Black won">0–1</span></td><td class="nm">Minh Tran</td><td class="num k-hide-sm">1676</td><td class="num k-hide-sm">1</td></tr>
+              <tr><td class="bd">6</td><td class="nm">Darius Washington</td><td class="num k-hide-sm">1658</td><td class="num k-hide-sm">1</td><td class="res"><span class="rbox rbox-play">Playing</span></td><td class="nm">Claire Boudreaux</td><td class="num k-hide-sm">1552</td><td class="num k-hide-sm">1</td></tr>
+              <tr class="me"><td class="bd">7</td><td class="nm">Devin <mark class="hl">Batiste</mark><span class="you">You</span></td><td class="num k-hide-sm">1521</td><td class="num k-hide-sm">1</td><td class="res"><span class="rbox rbox-play">Playing</span></td><td class="nm">Sam Nguyen</td><td class="num k-hide-sm">1650</td><td class="num k-hide-sm">1</td></tr>
+              <tr><td class="bd">8</td><td class="nm">Hannah Breaux</td><td class="num k-hide-sm">1618</td><td class="num k-hide-sm">1</td><td class="res"><span class="rbox rbox-play">Playing</span></td><td class="nm">Jacob Romero</td><td class="num k-hide-sm">1497</td><td class="num k-hide-sm">1</td></tr>
+              <tr><td class="bd">9</td><td class="nm">Elise Fontenot</td><td class="num k-hide-sm">1460</td><td class="num k-hide-sm">1</td><td class="res"><span class="rbox" aria-label="Black won">0–1</span></td><td class="nm">Victor Alvarez</td><td class="num k-hide-sm">1604</td><td class="num k-hide-sm">1</td></tr>
+              <tr><td class="bd">10</td><td class="nm">Anh Pham</td><td class="num k-hide-sm">1433</td><td class="num k-hide-sm">½</td><td class="res"><span class="rbox rbox-play">Playing</span></td><td class="nm">Ethan Savoie</td><td class="num k-hide-sm">1540</td><td class="num k-hide-sm">½</td></tr>
+              <tr><td class="bd">11</td><td class="nm">Reid Bergeron</td><td class="num k-hide-sm">1421</td><td class="num k-hide-sm">0</td><td class="res"><span class="rbox" aria-label="Black won">0–1</span></td><td class="nm">Tyler Daigle</td><td class="num k-hide-sm">1483</td><td class="num k-hide-sm">0</td></tr>
+              <tr><td class="bd">12</td><td class="nm">Simone Arcement</td><td class="num k-hide-sm">1472</td><td class="num k-hide-sm">0</td><td class="res"><span class="rbox" aria-label="White won">1–0</span></td><td class="nm">Mia LeJeune</td><td class="num k-hide-sm">1415</td><td class="num k-hide-sm">0</td></tr>
+              <tr><td class="bd">13</td><td class="nm">Gabriel Ortiz</td><td class="num k-hide-sm">1408</td><td class="num k-hide-sm">0</td><td class="res"><span class="rbox" aria-label="Black won">0–1</span></td><td class="nm">Brandon Ledet</td><td class="num k-hide-sm">1447</td><td class="num k-hide-sm">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="k-small" style="padding:12px 18px;border-top:1px solid #e3e2dc;background:#fafaf7"><b>Not playing this round:</b> Nora Hebert 1577 — requested bye, ½ point · Henry Clement 1394 — pairing bye (odd number of players), 1 point</div>
+      </section>
+
+      <section class="k-card" aria-labelledby="sec-open" style="padding:0">
+        <div class="sec-head">
+          <h2 class="k-h3" id="sec-open" style="margin:0">Open <span class="k-meta" style="font-weight:400">· all ratings · 21 players · 10 boards + 1 bye</span></h2>
+          <div class="k-row-sm"><span class="k-small">4 of 10 results in</span><span class="prog" aria-hidden="true"><i style="width:40%"></i></span><button class="k-btn k-btn-line k-btn-sm" type="button" aria-expanded="false">Show pairings<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+        </div>
+      </section>
+      <section class="k-card" aria-labelledby="sec-14" style="padding:0">
+        <div class="sec-head">
+          <h2 class="k-h3" id="sec-14" style="margin:0">U1400 <span class="k-meta" style="font-weight:400">· rated under 1400 · 27 players · 13 boards + 1 bye</span></h2>
+          <div class="k-row-sm"><span class="k-small">6 of 13 results in</span><span class="prog" aria-hidden="true"><i style="width:46%"></i></span><button class="k-btn k-btn-line k-btn-sm" type="button" aria-expanded="false">Show pairings<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+        </div>
+      </section>
+      <section class="k-card" aria-labelledby="sec-10" style="padding:0">
+        <div class="sec-head">
+          <h2 class="k-h3" id="sec-10" style="margin:0">U1000 <span class="k-meta" style="font-weight:400">· rated under 1000 or unrated · 20 players · 10 boards</span></h2>
+          <div class="k-row-sm"><span class="k-small">8 of 10 results in</span><span class="prog" aria-hidden="true"><i style="width:80%"></i></span><button class="k-btn k-btn-line k-btn-sm" type="button" aria-expanded="false">Show pairings<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+        </div>
+      </section>
+
+      <section class="k-card k-card-pad" aria-labelledby="first">
+        <h2 class="k-h4" id="first" style="margin:0">First tournament?</h2>
+        <div class="k-grid-3" style="margin-top:12px">
+          <div class="k-small"><b>1 · Find your board.</b> Type your name above, or check the sheet by the TD table. Sit at that board number.</div>
+          <div class="k-small"><b>2 · Check your colour.</b> White is listed first and plays the white pieces. Ratings and points are just for reference.</div>
+          <div class="k-small"><b>3 · Report the result.</b> When the game ends, tell the TD at the table, or tap Report result on this page.</div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="k-side k-stack" aria-label="Round information">
+      <section class="k-card k-card-pad" aria-labelledby="rounds">
+        <h2 class="k-h4" id="rounds" style="margin:0">Rounds</h2>
+        <ol style="list-style:none;margin:10px 0 0;padding:0">
+          <li class="k-between" style="padding:9px 0;border-bottom:1px solid #eeede8"><span><b>Rd 1</b> · Sat 10:00 AM</span><span class="k-tag k-tag-closed">Done</span></li>
+          <li class="k-between" style="padding:9px 0;border-bottom:1px solid #eeede8"><span><b>Rd 2</b> · Sat 2:30 PM</span><span class="k-tag k-tag-closed">Done</span></li>
+          <li class="k-between" style="padding:9px 0;border-bottom:1px solid #eeede8"><span><b>Rd 3</b> · Sat 7:00 PM</span><span class="k-tag k-tag-live">In play</span></li>
+          <li class="k-between" style="padding:9px 0;border-bottom:1px solid #eeede8"><span><b>Rd 4</b> · Sun 9:30 AM</span><span class="k-small k-muted">Paired tonight</span></li>
+          <li class="k-between" style="padding:9px 0"><span><b>Rd 5</b> · Sun 2:00 PM</span><span class="k-small k-muted">After Rd 4</span></li>
+        </ol>
+        <p class="k-small k-muted" style="margin:8px 0 0">G/90+30: 90 minutes each, plus 30 seconds added per move.</p>
+      </section>
+
+      <section class="k-card k-card-pad" aria-labelledby="alerts">
+        <div class="k-row-sm"><span style="color:#866a1e;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg></span><h2 class="k-h4" id="alerts" style="margin:0">Round alerts</h2></div>
+        <p class="k-small" style="margin:8px 0 0">An email the moment each round is paired: board, colour and opponent for you and everyone you follow.</p>
+        <div class="k-field" style="margin-top:10px"><label for="b-mail">Email</label><input id="b-mail" class="k-input" placeholder="you@example.com"></div>
+        <button class="k-btn k-btn-gold k-btn-block" type="button" style="margin-top:10px">Email me round alerts</button>
+        <p class="k-small k-muted" style="margin:8px 0 0">Phone notifications come later. One click stops every alert.</p>
+      </section>
+
+      <section class="k-card k-card-pad" aria-labelledby="venue">
+        <h2 class="k-h4" id="venue" style="margin:0">At the venue</h2>
+        <div style="display:flex;gap:14px;align-items:center;margin-top:12px">
+          <svg viewBox="0 0 120 120" style="width:104px;height:104px;flex:none" role="img" aria-label="QR code placeholder linking to louisianachess.org/morphy27">
+            <defs><pattern id="b-qr" width="12" height="12" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="#1a2744"></rect><rect x="8" y="4" width="4" height="4" fill="#1a2744"></rect><rect x="4" y="8" width="4" height="4" fill="#1a2744"></rect></pattern></defs>
+            <rect x="0" y="0" width="120" height="120" fill="#ffffff" stroke="#1a2744"></rect>
+            <rect x="8" y="8" width="104" height="104" fill="url(#b-qr)" opacity="0.4"></rect>
+            <rect x="8" y="8" width="28" height="28" fill="#1a2744"></rect><rect x="13" y="13" width="18" height="18" fill="#ffffff"></rect><rect x="17" y="17" width="10" height="10" fill="#1a2744"></rect>
+            <rect x="84" y="8" width="28" height="28" fill="#1a2744"></rect><rect x="89" y="13" width="18" height="18" fill="#ffffff"></rect><rect x="93" y="17" width="10" height="10" fill="#1a2744"></rect>
+            <rect x="8" y="84" width="28" height="28" fill="#1a2744"></rect><rect x="13" y="89" width="18" height="18" fill="#ffffff"></rect><rect x="17" y="93" width="10" height="10" fill="#1a2744"></rect>
+            <rect x="30" y="52" width="60" height="16" rx="3" fill="#ffffff" stroke="#1a2744"></rect>
+            <text x="60" y="63" font-size="8" text-anchor="middle" fill="#1a2744">QR placeholder</text>
+          </svg>
+          <div><div class="mono" style="font-weight:500;font-size:14px">louisianachess.org/morphy27</div><p class="k-small k-muted" style="margin:6px 0 0">The same code is on the hall poster, the hall TV and every pairing sheet.</p></div>
+        </div>
+        <div class="k-stack-sm" style="margin-top:12px">
+          <a class="k-btn k-btn-line k-btn-sm k-btn-block" href="Live-D.dc.html">Show on the hall TV</a>
+          <a class="k-btn k-btn-line k-btn-sm k-btn-block" href="Live-E.dc.html">Print pairings, by board or A–Z</a>
+        </div>
+      </section>
+
+      <section class="k-card k-card-pad" aria-labelledby="legend">
+        <h2 class="k-h4" id="legend" style="margin:0">Reading the pairings</h2>
+        <dl class="k-small lg" style="display:grid;grid-template-columns:64px 1fr;gap:9px 10px;margin:12px 0 0">
+          <dt><span class="pc pc-w">W</span></dt><dd>White, listed first</dd>
+          <dt><span class="pc pc-b">B</span></dt><dd>Black</dd>
+          <dt><span class="rbox">1–0</span></dt><dd>White won</dd>
+          <dt><span class="rbox">0–1</span></dt><dd>Black won</dd>
+          <dt><span class="rbox">½–½</span></dt><dd>Draw</dd>
+          <dt><span class="rbox">1F–0F</span></dt><dd>Forfeit: no game was played</dd>
+          <dt><b>Pts</b></dt><dd>Points before this round</dd>
+          <dt><b>Bye</b></dt><dd>Requested bye: ½ point. Pairing bye, when a section has an odd number of players: 1 point.</dd>
+        </dl>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2200}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

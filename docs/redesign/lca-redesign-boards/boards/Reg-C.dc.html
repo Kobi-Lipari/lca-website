@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reg C — Household checkout</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.rc-av{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#1a2744;color:#ffffff;font-weight:700;font-size:14px;flex:none}
+.rc-av-gold{background:#c8a94a;color:#1a2744}
+.rc-who{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.rc-tile{display:flex;gap:12px;align-items:flex-start;padding:14px;border:2px solid #1a2744;border-radius:12px;background:#ffffff;font-size:15px;line-height:1.35}
+.rc-tile-add{border:2px dashed #b9b6aa;background:#fbfaf6}
+.rc-ph{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:14px 20px;background:#f5f5f2;border-bottom:1px solid #e3e1da}
+.rc-panel{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;padding:18px 20px 20px}
+.rc-opt{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 14px;border:1px solid #dcdad2;border-radius:10px;background:#ffffff;font-size:15px;line-height:1.35}
+.rc-opt-on{border:2px solid #1a2744;background:#f7f8fb}
+.rc-opt-top{grid-template-columns:22px minmax(0,1fr);align-items:start}
+.rc-bye{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid #dcdad2;border-radius:8px;font-size:14px;background:#ffffff}
+.rc-bye-on{border-color:#1a2744;background:#eef0f5}
+.rc-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:11px 0;border-bottom:1px solid #eeece6;font-size:15px;line-height:1.35}
+.rc-line s{color:#555c6b;margin-right:6px;font-size:13px}
+.rc-mem{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.rc-rcpt{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.rc-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px 28px}
+.rc-paybar{display:none}
+@media (max-width:760px){
+  .rc-panel{grid-template-columns:1fr}
+  .rc-paybar{display:flex;position:sticky;bottom:0;z-index:6;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#ffffff;border-top:1px solid #dcdad2}
+}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#" class="k-nav-on">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Danielle R.</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="k-wrap" style="padding-top:18px;padding-bottom:24px">
+  <a class="k-link-plain k-small k-row-sm" href="Event-A.dc.html"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Back to the 2027 Paul Morphy Open</a>
+  <div class="k-between" style="margin-top:12px;align-items:flex-end">
+    <div class="k-stack-sm">
+      <div class="k-label">Household checkout</div>
+      <h1 class="k-h1" style="margin:0">Register your household</h1>
+      <p class="k-lead" style="margin:0">2027 Paul Morphy Open &amp; Morphy Scholastic · Sat–Sun, Jun 12–13, 2027 · New Orleans</p>
+    </div>
+    <div class="k-row-sm"><span class="k-sample">Sample data</span><span class="k-tag k-tag-soon"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>3 spots held · 14:32</span><span class="k-num-badge">6</span></div>
+  </div>
+  <nav class="k-row-sm" style="margin-top:16px" aria-label="On this page">
+    <a class="k-chip k-chip-on" href="#">1 · Who's playing</a><a class="k-chip" href="#">2 · Sections and byes</a><a class="k-chip" href="#">3 · Membership</a><a class="k-chip" href="#">4 · Check and pay</a>
+  </nav>
+</div>
+
+<div class="k-wrap" style="padding-bottom:48px">
+  <div class="k-split">
+    <main class="k-main k-stack-lg">
+
+      <section class="k-card" style="padding:22px">
+        <div class="k-stack">
+          <div class="k-between"><h2 class="k-h3" style="margin:0">1 · Who's playing?</h2><span class="k-num-badge">1</span></div>
+          <p class="k-small k-muted" style="margin:0">Saved in your household. Children don't need their own logins or emails.</p>
+          <div class="rc-who">
+            <label class="rc-tile"><input type="checkbox" checked><span class="rc-av">DR</span><span><b>Danielle Robichaux</b><br><span class="k-meta">You · rating 1210</span></span></label>
+            <label class="rc-tile"><input type="checkbox" checked><span class="rc-av rc-av-gold">MR</span><span><b>Maya Robichaux</b><br><span class="k-meta">Child · rating 1102</span></span></label>
+            <label class="rc-tile"><input type="checkbox" checked><span class="rc-av rc-av-gold">LR</span><span><b>Leo Robichaux</b><br><span class="k-meta">Child · unrated</span></span></label>
+            <div class="rc-tile rc-tile-add"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span><b>Add another player</b><br><span class="k-meta">US Chess ID or name. No login needed.</span></span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="k-stack">
+        <div class="k-between"><h2 class="k-h3" style="margin:0">2 · Sections and byes</h2><span class="k-row-sm"><span class="k-meta">Each player sees only the sections they can enter</span><span class="k-num-badge">2</span></span></div>
+
+        <article class="k-card" style="padding:0;overflow:hidden">
+          <div class="rc-ph">
+            <div class="k-row" style="gap:12px"><span class="rc-av">DR</span><div><div class="k-strong">Danielle Robichaux <span class="k-meta">(you)</span></div><div class="k-meta">Rating 1210 · US Chess ID ending 4410</div></div></div>
+            <div class="k-row-sm"><span class="k-tag k-tag-open">US Chess member through Nov 30, 2027</span><a class="k-link k-small" href="#">Remove</a></div>
+          </div>
+          <div class="rc-panel">
+            <div class="k-stack-sm">
+              <div class="k-label">Paul Morphy Open · Sat–Sun</div>
+              <label class="rc-opt rc-opt-on"><input type="radio" name="rc-d" checked><span><b>U1400</b> <span class="k-meta">· 5 of 15 entered</span></span><span class="k-strong">$30</span></label>
+              <label class="rc-opt"><input type="radio" name="rc-d"><span><b>U1800</b> <span class="k-meta">· play up · 4 of 15</span></span><span class="k-strong">$40</span></label>
+              <label class="rc-opt"><input type="radio" name="rc-d"><span><b>Open</b> <span class="k-meta">· play up · 3 of 15</span></span><span class="k-strong">$50</span></label>
+              <div class="k-meta">Not shown: U1000 (1210 is over 1000) and the Morphy Scholastic (K–12 players only).</div>
+            </div>
+            <div class="k-stack-sm">
+              <div class="k-label">Half-point byes</div>
+              <div class="k-row-sm">
+                <label class="rc-bye"><input type="checkbox"> R1 <span class="k-meta">Sat 10:00 AM</span></label>
+                <label class="rc-bye"><input type="checkbox"> R2 <span class="k-meta">Sat 2:30 PM</span></label>
+                <label class="rc-bye rc-bye-on"><input type="checkbox" checked> R3 <span class="k-meta">Sat 7:00 PM</span></label>
+                <label class="rc-bye"><input type="checkbox"> R4 <span class="k-meta">Sun 9:30 AM</span></label>
+              </div>
+              <div class="k-meta">Byes are available in Rounds 1–4. You can change them until Round 2 is paired.</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="k-card" style="padding:0;overflow:hidden">
+          <div class="rc-ph">
+            <div class="k-row" style="gap:12px"><span class="rc-av rc-av-gold">MR</span><div><div class="k-strong">Maya Robichaux</div><div class="k-meta">Rating 1102 · US Chess ID ending 7731</div></div></div>
+            <div class="k-row-sm"><span class="k-tag k-tag-open">US Chess member through Mar 31, 2028</span><a class="k-link k-small" href="#">Remove</a></div>
+          </div>
+          <div class="rc-panel">
+            <div class="k-stack-sm">
+              <div class="k-label">Morphy Scholastic · Sat only</div>
+              <label class="rc-opt rc-opt-on"><input type="radio" name="rc-m" checked><span><b>K–8</b> <span class="k-meta">· 9 of 48 entered</span></span><span class="k-strong">$25</span></label>
+              <label class="rc-opt"><input type="radio" name="rc-m"><span><b>K–12</b> <span class="k-meta">· 6 of 40</span></span><span class="k-strong">$25</span></label>
+              <div class="k-label" style="margin-top:6px">Paul Morphy Open · Sat–Sun</div>
+              <label class="rc-opt"><input type="radio" name="rc-m"><span><b>U1400</b> <span class="k-meta">· 5 of 15</span></span><span class="k-strong">$30</span></label>
+              <div class="k-meta">Not shown: U1000 (1102 is over 1000). <a class="k-link" href="#">Show K–5, K–3, U1800 and Open</a></div>
+            </div>
+            <div class="k-stack-sm">
+              <div class="k-label">Eligibility for K–8</div>
+              <label class="k-check"><input type="checkbox" checked> Maya is in 8th grade or below</label>
+              <div class="k-meta">One yes or no. We never ask for a grade or a birthdate.</div>
+              <div class="k-label" style="margin-top:8px">Half-point byes</div>
+              <div class="k-small">None · <a class="k-link" href="#">Add a bye</a></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="k-card" style="padding:0;overflow:hidden">
+          <div class="rc-ph">
+            <div class="k-row" style="gap:12px"><span class="rc-av rc-av-gold">LR</span><div><div class="k-strong">Leo Robichaux</div><div class="k-meta">Unrated · US Chess ID ending 2286</div></div></div>
+            <div class="k-row-sm"><span class="k-tag k-tag-soon">US Chess membership expired Aug 31, 2026</span><span class="k-num-badge">3</span><a class="k-link k-small" href="#">Remove</a></div>
+          </div>
+          <div class="k-callout k-small" style="margin:16px 20px 0">Leo can register now. He needs a current US Chess membership by Round 1 on Sat, Jun 12. <a class="k-link" href="#">Renew at US Chess ↗</a> We re-check every Monday and email you only if it's still expired on Mon, Jun 7.</div>
+          <div class="rc-panel">
+            <div class="k-stack-sm">
+              <div class="k-label">Morphy Scholastic · Sat only</div>
+              <label class="rc-opt rc-opt-on"><input type="radio" name="rc-l" checked><span><b>K–3</b> <span class="k-meta">· 6 of 12 entered</span></span><span class="k-strong">$25</span></label>
+              <label class="rc-opt"><input type="radio" name="rc-l"><span><b>K–5</b> <span class="k-meta">· 8 of 40</span></span><span class="k-strong">$25</span></label>
+              <div class="k-label" style="margin-top:6px">Paul Morphy Open · Sat–Sun</div>
+              <label class="rc-opt"><input type="radio" name="rc-l"><span><b>U1000</b> <span class="k-meta">· unrated welcome · 2 of 15</span></span><span class="k-strong">$20</span></label>
+              <div class="k-meta"><a class="k-link" href="#">Show K–8, K–12 and other sections</a></div>
+            </div>
+            <div class="k-stack-sm">
+              <div class="k-label">Eligibility for K–3</div>
+              <label class="k-check"><input type="checkbox" checked> Leo is in 3rd grade or below</label>
+              <div class="k-meta">If K–3 fills before you pay, only Leo moves to the waitlist. Danielle and Maya stay registered.</div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="k-card" style="padding:22px">
+        <div class="k-stack">
+          <h2 class="k-h3" style="margin:0">3 · LCA membership <span class="k-meta">(optional)</span></h2>
+          <p class="k-small k-muted" style="margin:0">Members pay less at every LCA event, and Danielle gets a vote at the annual meeting.</p>
+          <div class="rc-mem">
+            <label class="rc-opt rc-opt-on rc-opt-top"><input type="radio" name="rc-mem" checked><span><b>Family · $25 a year</b><br><span class="k-small">You and up to 3 children. Saves $20 on these three entries.</span><br><span class="k-meta">About $5 more today than not joining</span></span></label>
+            <label class="rc-opt rc-opt-top"><input type="radio" name="rc-mem"><span><b>Separate · $25 a year</b><br><span class="k-small">Adult $15 + Scholastic $5 + Scholastic $5. Same savings.</span><br><span class="k-meta">No room to add a third child later</span></span></label>
+            <label class="rc-opt rc-opt-top"><input type="radio" name="rc-mem"><span><b>Not now · $0</b><br><span class="k-small">Regular prices: $80 for the three entries.</span><br><span class="k-meta">You can join later from My LCA</span></span></label>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <aside class="k-side">
+      <div class="k-sticky k-stack">
+        <div class="k-card" style="padding:20px">
+          <div class="k-stack-sm">
+            <div class="k-between"><h2 class="k-h3" style="margin:0">4 · Check and pay</h2><span class="k-num-badge">4</span></div>
+            <div>
+              <div class="rc-line"><div><b>Danielle</b> · Open U1400<br><span class="k-meta">Bye in Round 3 · <a class="k-link" href="#">Change</a></span></div><div class="k-r"><s>$30</s><b>$20</b></div></div>
+              <div class="rc-line"><div><b>Maya</b> · Scholastic K–8<br><span class="k-meta">8th grade or below, confirmed · <a class="k-link" href="#">Change</a></span></div><div class="k-r"><s>$25</s><b>$20</b></div></div>
+              <div class="rc-line"><div><b>Leo</b> · Scholastic K–3<br><span class="k-meta">3rd grade or below, confirmed · renew US Chess by Jun 12 · <a class="k-link" href="#">Change</a></span></div><div class="k-r"><s>$25</s><b>$20</b></div></div>
+              <div class="rc-line"><div><b>LCA Family membership</b><br><span class="k-meta">Oct 2026 to Oct 2027 · <a class="k-link" href="#">Change</a></span></div><div class="k-r"><b>$25</b></div></div>
+              <div class="rc-line"><div>Card processing<br><span class="k-meta">2.9% + 30¢, shown now so the total won't change at Stripe</span></div><div class="k-r">$2.77</div></div>
+            </div>
+            <div class="k-between" style="padding-top:6px"><span class="k-strong">Total today</span><span style="font-size:30px;font-weight:700;font-variant-numeric:tabular-nums">$87.77</span></div>
+            <div class="k-meta">Early prices until Fri, May 28. Full refund for any player until Thu, Jun 10.</div>
+            <a class="k-btn k-btn-gold k-btn-block k-btn-lg" href="#">Pay $87.77</a>
+            <div class="k-row-sm k-small" style="align-items:flex-start;flex-wrap:nowrap"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span>Secure payment on Stripe's page, in this same tab. Apple Pay, Google Pay or card. LCA never sees your card number.</span></div>
+            <div class="k-small k-muted">One payment, three registrations. Each player gets their own confirmation, with copies to you.</div>
+          </div>
+        </div>
+        <div class="k-card" style="padding:16px">
+          <div class="k-row-sm k-small" style="flex-wrap:nowrap;align-items:flex-start"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span><b>3 spots held for 14:32.</b> Nobody else can take them while you check out. After that they go back on sale.</span></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<section class="k-wrap" style="padding-bottom:40px">
+  <div class="k-stack">
+    <div class="k-between"><h2 class="k-h2" style="margin:0">After you pay: one confirmation per player</h2><span class="k-num-badge">5</span></div>
+    <div class="rc-rcpt">
+      <article class="k-card" style="padding:18px">
+        <div class="k-stack-sm">
+          <div class="k-between"><span class="k-tag k-tag-open">Confirmed</span><span class="k-meta">1 of 3</span></div>
+          <h3 class="k-h4" style="margin:0">Danielle Robichaux</h3>
+          <div class="k-small">Paul Morphy Open · U1400 · bye in Round 3</div>
+          <div class="k-small">Sat, Jun 12 · check in by 9:30 AM · Round 1 at 10:00 AM</div>
+          <div class="k-small k-muted">[Venue name], New Orleans · paid $20, member price</div>
+          <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Add to calendar</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Withdraw Danielle from U1400</a></div>
+        </div>
+      </article>
+      <article class="k-card" style="padding:18px">
+        <div class="k-stack-sm">
+          <div class="k-between"><span class="k-tag k-tag-open">Confirmed</span><span class="k-meta">2 of 3</span></div>
+          <h3 class="k-h4" style="margin:0">Maya Robichaux</h3>
+          <div class="k-small">Morphy Scholastic · K–8</div>
+          <div class="k-small">Sat, Jun 12 · check in by 8:30 AM · Round 1 at 9:00 AM</div>
+          <div class="k-small k-muted">[Venue name], New Orleans · paid $20, member price</div>
+          <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Add to calendar</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Withdraw Maya from K–8</a></div>
+        </div>
+      </article>
+      <article class="k-card" style="padding:18px">
+        <div class="k-stack-sm">
+          <div class="k-between"><span class="k-row-sm"><span class="k-tag k-tag-open">Confirmed</span><span class="k-tag k-tag-soon">Action needed</span></span><span class="k-meta">3 of 3</span></div>
+          <h3 class="k-h4" style="margin:0">Leo Robichaux</h3>
+          <div class="k-small">Morphy Scholastic · K–3</div>
+          <div class="k-small">Renew US Chess membership by Sat, Jun 12 · <a class="k-link" href="#">Renew at US Chess ↗</a></div>
+          <div class="k-small k-muted">[Venue name], New Orleans · paid $20, member price</div>
+          <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Add to calendar</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Withdraw Leo from K–3</a></div>
+        </div>
+      </article>
+    </div>
+    <div class="k-card" style="padding:18px 22px">
+      <div class="k-label" style="margin-bottom:8px">What happens next</div>
+      <ol class="k-small" style="margin:0;padding-left:20px;display:grid;gap:6px">
+        <li><b>Now:</b> one confirmation email per player, with copies to you, and one household receipt for $87.77.</li>
+        <li><b>Mon, Jun 7:</b> check-in times and parking, plus our check on Leo's US Chess membership.</li>
+        <li><b>Sat, Jun 12:</b> optional round alerts for each player, sent to your phone.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="k-wrap" style="padding-bottom:40px">
+  <div class="k-card" style="padding:20px 24px">
+    <div class="k-label" style="margin-bottom:12px">What to notice</div>
+    <div class="rc-legend k-small">
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">1</span><span>Saved household players; add another without a login.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">2</span><span>Each panel lists only sections that player can enter; grade-capped sections ask one yes/no.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">3</span><span>US Chess ID states: found and current, or expired with a weekly re-check.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">4</span><span>One live total, processing included, before anyone reaches Stripe.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">5</span><span>One payment, but a confirmation and a Withdraw link per player.</span></div>
+      <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">6</span><span>Spots are held during checkout; a full section waitlists only that player.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+<div class="rc-paybar">
+  <div><div class="k-strong">Total $87.77</div><div class="k-meta">3 players · Family membership</div></div>
+  <a class="k-btn k-btn-gold" href="#">Pay</a>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2700}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

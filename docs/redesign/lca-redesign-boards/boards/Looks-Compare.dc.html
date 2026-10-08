@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Looks — all 7 at a glance</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Display&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,700;0,6..72,800;1,6..72,400&amp;family=Schibsted+Grotesk:wght@400;500;700;900&amp;family=Chivo+Mono:wght@400;600&amp;family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1&amp;family=Archivo:wdth,wght@100,400;100,500;125,800;125,900&amp;family=Fragment+Mono:ital@0;1&amp;family=Fraunces:opsz,wght,SOFT@9..144,400..800,0..100&amp;family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&amp;family=DM+Mono:ital,wght@0,400;0,500;1,400&amp;family=Baloo+2:wght@600;700;800&amp;family=Nunito:ital,wght@0,400;0,600;0,800;1,400&amp;family=Atkinson+Hyperlegible+Mono:wght@400;600&amp;family=Barlow+Condensed:wght@500;600;700;800&amp;family=Barlow:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Big+Shoulders+Display:wght@800;900&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6}
+.lc{font-family:'Geist',ui-sans-serif,system-ui,sans-serif;color:#1a2744;font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.lc *,.lc *::before,.lc *::after{box-sizing:border-box}
+.lc h1,.lc h2,.lc p{margin:0}
+.lc a{color:inherit;text-decoration:none}
+/* board header */
+.lc-head{display:flex;align-items:flex-end;justify-content:space-between;gap:32px}
+.lc-kick{font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.lc-head h1{margin-top:6px;font-size:36px;line-height:1.05;font-weight:700;letter-spacing:-.03em}
+.lc-sub{margin-top:8px;font-size:14px;color:#555c6b;max-width:860px}
+.lc-hnotes{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.lc-hnotes span{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#fbfaf6;box-shadow:inset 0 0 0 1px #d9d6cc;font-family:'Geist Mono',monospace;font-size:12px;color:#1a2744;white-space:nowrap}
+/* cards */
+.lc-grid{margin-top:22px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:432px;gap:20px}
+.lc-card{position:relative;display:flex;flex-direction:column;gap:11px;padding:18px 18px 16px;overflow:hidden;min-width:0}
+.lc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;font-size:11px;line-height:15px}
+.lc-no{font-weight:600;letter-spacing:.06em;flex:none}
+.lc-fonts{text-align:right}
+.lc-name{line-height:1}
+.lc-tl{margin-top:5px;font-size:15px;line-height:1.3}
+.lc-txt{font-size:15px;line-height:1.35}
+.lc-data{margin-top:3px;font-size:13px;line-height:1.3;font-variant-numeric:tabular-nums;font-variant-ligatures:none}
+.lc-pal{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.lc-pal i{display:block;height:34px;box-shadow:inset 0 0 0 1px rgba(13,13,13,.14)}
+.lc-pal b{display:block;margin-top:4px;font-size:11px;font-weight:500;line-height:14px}
+.lc-hb{display:flex;align-items:center;gap:8px;height:44px;padding:0 8px 0 10px}
+.lc-hb .w{flex:1;min-width:0;white-space:nowrap;overflow:hidden}
+.lc-mk{width:20px;height:20px;fill:currentColor;flex:none}
+.lc-btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;font-size:12px;line-height:1;white-space:nowrap;flex:none}
+.lc-tags{display:flex;flex-wrap:wrap;gap:6px}
+.lc-tg{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;font-size:12px;line-height:1;white-space:nowrap}
+.lc-tg i{display:block;width:8px;height:8px;flex:none}
+.lc-best{margin-top:auto;font-size:13px;line-height:1.4}
+.lc-best b{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}
+/* 1 Heritage Club */
+.v1{background:#f7f3e8;color:#1a2744;border:1px solid #d8cdb4;border-radius:3px;font-family:'Source Serif 4',Georgia,serif}
+.v1 .lc-mono{font-family:'IBM Plex Mono',monospace}
+.v1 .lc-top,.v1 .lc-pal b,.v1 .lc-tl,.v1 .lc-best b{color:#5e5a52}
+.v1 .lc-name{font-family:'Libre Caslon Display',Georgia,serif;font-weight:400;font-size:40px}
+.v1 .lc-tl{font-style:italic}
+.v1 .lc-pal i{border-radius:1px}
+.v1 .lc-hb{background:#fffdf8;border-bottom:3px solid #c8a94a;box-shadow:0 2px 0 #f7f3e8,0 3px 0 #c8a94a}
+.v1 .lc-hb .w{font-weight:600;font-size:16px;font-variant-caps:all-small-caps;letter-spacing:.06em}
+.v1 .lc-btn{background:#1a2744;color:#f7f3e8;border-radius:2px;font-weight:600}
+.v1 .t1{background:#fffdf8;color:#2d5a45;box-shadow:inset 0 0 0 1px #2d5a45;border-radius:2px;font-weight:600}
+.v1 .t2{background:#8a2b38;color:#ffffff;border-radius:2px;font-weight:600}
+/* 2 Editorial Sports */
+.v2{background:#ffffff;color:#121417;border:1px solid #e2e0da;border-radius:2px;font-family:'Schibsted Grotesk',sans-serif}
+.v2 .lc-mono{font-family:'Chivo Mono',monospace}
+.v2 .lc-top,.v2 .lc-pal b,.v2 .lc-best b{color:#5b616e}
+.v2 .lc-no{color:#866a1e;font-family:'Schibsted Grotesk',sans-serif;font-weight:900}
+.v2 .lc-name{font-family:'Newsreader',Georgia,serif;font-weight:800;font-size:32px;letter-spacing:-.02em;font-variant-numeric:proportional-nums}
+.v2 .lc-tl{font-family:'Newsreader',Georgia,serif;font-style:italic;font-size:17px;color:#5b616e}
+.v2 .lc-pal i{border-radius:0}
+.v2 .lc-hb{background:#ffffff;border-top:3px solid #1a2744;box-shadow:inset 0 -1px 0 #1a2744;color:#1a2744}
+.v2 .lc-hb .w{font-family:'Newsreader',Georgia,serif;font-weight:800;font-size:18px;letter-spacing:-.01em}
+.v2 .lc-btn{background:#1a2744;color:#ffffff;border-radius:2px;font-weight:700}
+.v2 .t1{color:#1b7a43;padding-left:0;font-weight:700}
+.v2 .t1 i{background:#1b7a43}
+.v2 .t2{background:#c62828;color:#ffffff;border-radius:2px;font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+/* 3 Modern Tech-Minimal */
+.v3{background:#ffffff;color:#0b1220;border:1px solid #e5e7ed;border-radius:12px;box-shadow:0 1px 2px rgba(11,18,32,.05);font-family:'Geist',sans-serif}
+.v3 .lc-mono{font-family:'Geist Mono',monospace}
+.v3 .lc-top,.v3 .lc-pal b,.v3 .lc-tl,.v3 .lc-best b{color:#5b6478}
+.v3 .lc-name{font-weight:700;font-size:28px;letter-spacing:-.045em}
+.v3 .lc-tl{font-weight:500}
+.v3 .lc-tl .s{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;font-size:21px;color:#0b1220}
+.v3 .lc-pal i{border-radius:6px}
+.v3 .lc-hb{background:rgba(26,39,68,.92);color:#ffffff;border-radius:8px}
+.v3 .lc-hb .w{font-weight:600;font-size:14px}
+.v3 .kbd{display:inline-flex;align-items:center;height:20px;padding:0 5px;border-radius:4px;border:1px solid rgba(255,255,255,.22);font-family:'Geist Mono',monospace;font-size:11px;color:rgba(255,255,255,.85)}
+.v3 .lc-btn{background:#c8a94a;color:#0b1220;border-radius:6px;font-weight:500}
+.v3 .t1{background:#e8f5ef;color:#047857;border-radius:6px;font-weight:500}
+.v3 .t2{background:#c0362c;color:#ffffff;border-radius:6px;font-weight:500}
+/* 4 Swiss Grid */
+.v4{background:#f4f4f0;color:#0d0d0d;border-radius:0;box-shadow:inset 0 0 0 1px #cfc7b2;font-family:'Archivo',sans-serif}
+.v4 .lc-mono{font-family:'Fragment Mono',monospace;font-variant-ligatures:none}
+.v4 .lc-top,.v4 .lc-pal b,.v4 .lc-best b{color:#5c5f66}
+.v4 .lc-coords{display:grid;grid-template-columns:repeat(8,1fr);margin:-6px 0 -2px;padding-bottom:4px;border-bottom:1px solid #cfc7b2;font-family:'Fragment Mono',monospace;font-size:11px;color:#5c5f66}
+.v4 .lc-name{font-weight:900;font-stretch:125%;font-size:32px;line-height:.92;text-transform:uppercase;letter-spacing:-.01em}
+.v4 .lc-tl{font-family:'Fragment Mono',monospace;font-size:14px}
+.v4 .lc-pal{gap:0}
+.v4 .lc-pal i{border-radius:0}
+.v4 .lc-hb{background:#1a2744;color:#ffffff}
+.v4 .lc-hb .w{font-weight:800;font-stretch:125%;font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+.v4 .lc-btn{background:#c8a94a;color:#0d0d0d;border-radius:0;font-weight:800;font-stretch:125%;font-size:11px;letter-spacing:.04em;text-transform:uppercase}
+.v4 .t1{background:#ffffff;color:#0d0d0d;box-shadow:inset 0 0 0 1px #0d0d0d;font-weight:500}
+.v4 .t1 i{background:#1a2744}
+.v4 .t2{background:#c2381f;color:#ffffff;font-weight:500}
+/* 5 Louisiana Rooted */
+.v5{background:#fbf7ee;color:#1a2744;border:1px solid #e2dccb;border-radius:10px;font-family:'Bricolage Grotesque',sans-serif}
+.v5 .lc-mono{font-family:'DM Mono',monospace}
+.v5 .lc-top,.v5 .lc-pal b,.v5 .lc-tl,.v5 .lc-best b{color:#5f5b4f}
+.v5 .lc-name{font-family:'Fraunces',Georgia,serif;font-weight:650;font-size:30px;letter-spacing:-.01em;font-variation-settings:'SOFT' 100}
+.v5 .lc-pal i{border-radius:6px}
+.v5 .lc-hb{background:#2f4a3a;color:#fbf7ee;border-radius:8px}
+.v5 .lc-hb .w{font-family:'Fraunces',Georgia,serif;font-weight:600;font-size:16px;font-variation-settings:'SOFT' 60}
+.v5 .lc-btn{background:#a4442f;color:#ffffff;border-radius:8px;font-weight:600}
+.v5 .t1{background:#ebe7da;color:#2f4a3a;border-radius:999px;font-weight:600}
+.v5 .t2{background:#a4442f;color:#ffffff;border-radius:999px;font-weight:600}
+/* 6 Bright Scholastic */
+.v6{background:#fffaf1;color:#1a2744;border:2px solid #f1e3c4;border-radius:20px;font-family:'Nunito',sans-serif}
+.v6 .lc-mono{font-family:'Atkinson Hyperlegible Mono',monospace}
+.v6 .lc-top,.v6 .lc-pal b,.v6 .lc-tl,.v6 .lc-best b{color:#4f5b75}
+.v6 .lc-name{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:30px}
+.v6 .lc-tl{font-style:italic}
+.v6 .lc-pal i{border-radius:10px}
+.v6 .lc-hb{background:#1a2744;color:#ffffff;border-radius:14px}
+.v6 .lc-hb .w{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px}
+.v6 .chk{display:flex;gap:2px;flex:none}
+.v6 .chk i{display:block;width:8px;height:8px;border-radius:2px}
+.v6 .lc-btn{background:#c8a94a;color:#1a2744;border-radius:999px;font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13px}
+.v6 .t1{background:#dcf5e9;color:#1f7a55;border-radius:999px;font-weight:800}
+.v6 .t2{background:#ffe4da;color:#b23e1a;border-radius:999px;font-weight:800}
+/* 7 Broadcast Night */
+.v7{background:#070b14;color:#f3f5f9;border:1px solid #1a2744;border-radius:8px;font-family:'Barlow',sans-serif}
+.v7 .lc-mono{font-family:'JetBrains Mono',monospace;font-variant-ligatures:none}
+.v7 .lc-top,.v7 .lc-pal b,.v7 .lc-best b{color:#8e9ab2}
+.v7 .lc-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:38px;line-height:.95;letter-spacing:.01em;text-transform:uppercase}
+.v7 .lc-tl{font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#e5c768}
+.v7 .lc-pal i{border-radius:3px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.v7 .lc-hb{background:#0e1526;box-shadow:inset 0 0 0 1px #1a2744;border-radius:6px}
+.v7 .lc-hb .w{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:17px;letter-spacing:.04em;text-transform:uppercase}
+.v7 .lc-btn{background:#c8a94a;color:#070b14;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase}
+.v7 .t1{background:#0e1526;color:#34d399;box-shadow:inset 0 0 0 1px #1a2744;border-radius:4px;font-weight:600}
+.v7 .t2{background:#ff4757;color:#070b14;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+/* 8 logo note */
+.v8{background:#fbfaf6;color:#1a2744;border:1px dashed #a9a395;border-radius:12px}
+.v8 .lc-top{color:#555c6b;font-family:'Geist Mono',monospace}
+.v8 h2{font-size:20px;font-weight:600;letter-spacing:-.015em;line-height:1.25}
+.lc-logo{display:flex;align-items:center;gap:12px}
+.lc-logo img{width:64px;height:64px;object-fit:contain;border-radius:8px;background:#ffffff;box-shadow:inset 0 0 0 1px #e3e0d6;flex:none}
+.lc-logo p{font-size:13px;line-height:1.35}
+.lc-sw3{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px}
+.lc-sw3 span{display:inline-flex;align-items:center;gap:5px;font-family:'Geist Mono',monospace;font-size:11px;color:#555c6b}
+.lc-sw3 i{display:block;width:12px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(13,13,13,.15)}
+.lc-marks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.lc-marks div{display:flex;flex-direction:column;align-items:center;gap:6px}
+.lc-marks b{display:flex;align-items:center;justify-content:center;width:100%;height:60px;border-radius:8px}
+.lc-marks svg{width:32px;height:32px;fill:currentColor}
+.lc-marks span{font-family:'Geist Mono',monospace;font-size:11px;color:#555c6b;text-align:center;line-height:1.3}
+.v8 .lc-note{font-size:13px;line-height:1.45;color:#3c4354}
+/* band: how they fit together */
+.lc-band{margin-top:22px;display:grid;grid-template-columns:300px minmax(0,1fr);gap:36px;padding:20px 26px 20px;background:#fbfaf6;border:1px solid #d9d6cc;border-radius:12px}
+.lc-band h2{margin-top:6px;font-size:22px;line-height:1.2;font-weight:600;letter-spacing:-.02em}
+.lc-band p{margin-top:8px;font-size:13px;line-height:1.5;color:#555c6b}
+.lc-lay{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px 6px;align-content:start}
+.lc-pg{height:40px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 6px;border-radius:6px;background:#ffffff;box-shadow:inset 0 0 0 1px #d9d6cc;font-size:12px;line-height:1.2;font-weight:500}
+.lc-L{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 12px;border-radius:6px;font-size:12px;line-height:1.3}
+.lc-L .k{font-family:'Geist Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;flex:none}
+.lc-L .or{font-size:12px;color:#555c6b}
+.lc-L .nt{margin-left:auto;font-size:12px;color:#555c6b}
+.lc-base{background:#ffffff;box-shadow:inset 0 0 0 1px #1a2744}
+.lc-base .b3{font-family:'Geist',sans-serif;font-weight:700;font-size:16px;letter-spacing:-.03em;color:#0b1220}
+.lc-base .b1{font-family:'Libre Caslon Display',Georgia,serif;font-size:19px;color:#1a2744}
+.lc-stack{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:6px 10px}
+.lc-live{background:#070b14}
+.lc-live .k{color:#8e9ab2}
+.lc-live .nm{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;letter-spacing:.03em;text-transform:uppercase;color:#e5c768;line-height:1}
+.lc-sch{background:#fffaf1;box-shadow:inset 0 0 0 2px #f1e3c4;border-radius:12px}
+.lc-sch .k{color:#4f5b75}
+.lc-sch .nm{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;color:#1a2744;line-height:1.05}
+.lc-rowlab{display:flex;align-items:center;justify-content:flex-end;gap:6px;font-size:12px;color:#555c6b;text-align:right}
+.lc-rowlab svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lc-reb{background:transparent;border:1px dashed #8a8579}
+.lc-reb .sw{font-family:'Archivo',sans-serif;font-weight:900;font-stretch:125%;font-size:14px;text-transform:uppercase;color:#0d0d0d}
+.lc-reb .lr{font-family:'Fraunces',Georgia,serif;font-weight:650;font-size:17px;font-variation-settings:'SOFT' 100;color:#2f4a3a}
+</style>
+</helmet>
+<div class="lc" style="width:1440px;height:1400px;box-sizing:border-box;padding:36px 48px;background:#ecebe6;position:relative;overflow:hidden">
+
+  <header class="lc-head">
+    <div>
+      <p class="lc-kick">LCA Look &amp; Feel Options · Looks · overview</p>
+      <h1>All 7 looks at a glance</h1>
+      <p class="lc-sub">Each card renders the look's own fonts, five key colours with hex values, a header slice with its primary button, and two status tags. Brand navy #1a2744 runs through all seven.</p>
+    </div>
+    <div class="lc-hnotes">
+      <span>One Google Fonts request · 21 families</span>
+      <span>Full detail: Looks-1 to Looks-7 tiles and pages</span>
+    </div>
+  </header>
+
+  <div class="lc-grid">
+
+    <article class="lc-card v1">
+      <div class="lc-top lc-mono"><span class="lc-no">01</span><span class="lc-fonts">Libre Caslon Display · Source Serif 4 · IBM Plex Mono</span></div>
+      <div><h2 class="lc-name">Heritage Club</h2><p class="lc-tl">since 1915</p></div>
+      <div><p class="lc-txt">Louisiana's chess community since 1915.</p><p class="lc-data lc-mono">4½ · 1847 +18 · G/90+30</p></div>
+      <div class="lc-pal lc-mono">
+        <div><i style="background:#f7f3e8"></i><b>#f7f3e8</b></div>
+        <div><i style="background:#1a2744"></i><b>#1a2744</b></div>
+        <div><i style="background:#c8a94a"></i><b>#c8a94a</b></div>
+        <div><i style="background:#8a2b38"></i><b>#8a2b38</b></div>
+        <div><i style="background:#2d5a45"></i><b>#2d5a45</b></div>
+      </div>
+      <div class="lc-hb"><svg class="lc-mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="w">Louisiana Chess</span><a class="lc-btn" href="#">Join LCA</a></div>
+      <div class="lc-tags"><span class="lc-tg t1">Registration open</span><span class="lc-tg t2">Live · Round 3</span></div>
+      <p class="lc-best"><b>Best for</b>Governance, champions and membership. Weakest at fast-changing live data.</p>
+    </article>
+
+    <article class="lc-card v2">
+      <div class="lc-top lc-mono"><span class="lc-no">02</span><span class="lc-fonts">Newsreader · Schibsted Grotesk · Chivo Mono</span></div>
+      <div><h2 class="lc-name">Editorial Sports</h2><p class="lc-tl">results as news</p></div>
+      <div><p class="lc-txt">Louisiana's chess community since 1915.</p><p class="lc-data lc-mono">4½ · 1847 +18 · G/90+30</p></div>
+      <div class="lc-pal lc-mono">
+        <div><i style="background:#f5f4f0"></i><b>#f5f4f0</b></div>
+        <div><i style="background:#121417"></i><b>#121417</b></div>
+        <div><i style="background:#1a2744"></i><b>#1a2744</b></div>
+        <div><i style="background:#c62828"></i><b>#c62828</b></div>
+        <div><i style="background:#1b7a43"></i><b>#1b7a43</b></div>
+      </div>
+      <div class="lc-hb"><svg class="lc-mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="w">Louisiana Chess</span><a class="lc-btn" href="#">Join LCA</a></div>
+      <div class="lc-tags"><span class="lc-tg t1"><i></i>Registration open</span><span class="lc-tg t2">Live · Round 3</span></div>
+      <p class="lc-best"><b>Best for</b>News and results: every event gets a match report, so someone writes a headline.</p>
+    </article>
+
+    <article class="lc-card v3">
+      <div class="lc-top lc-mono"><span class="lc-no">03</span><span class="lc-fonts">Geist · Geist Mono · Instrument Serif</span></div>
+      <div><h2 class="lc-name">Modern Tech-Minimal</h2><p class="lc-tl">the club, <span class="s">engineered</span></p></div>
+      <div><p class="lc-txt">Louisiana's chess community since 1915.</p><p class="lc-data lc-mono">4½ · 1847 +18 · G/90+30</p></div>
+      <div class="lc-pal lc-mono">
+        <div><i style="background:#0b1220"></i><b>#0b1220</b></div>
+        <div><i style="background:#1a2744"></i><b>#1a2744</b></div>
+        <div><i style="background:#c8a94a"></i><b>#c8a94a</b></div>
+        <div><i style="background:#e5e7ed"></i><b>#e5e7ed</b></div>
+        <div><i style="background:#047857"></i><b>#047857</b></div>
+      </div>
+      <div class="lc-hb"><svg class="lc-mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="w">Louisiana Chess</span><span class="kbd">⌘K</span><a class="lc-btn" href="#">Join LCA</a></div>
+      <div class="lc-tags"><span class="lc-tg t1">Registration open</span><span class="lc-tg t2">Live · Round 3</span></div>
+      <p class="lc-best"><b>Best for</b>The site-wide base at the lowest cost: today's Tailwind/shadcn tokens map across.</p>
+    </article>
+
+    <article class="lc-card v4">
+      <div class="lc-coords" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+      <div class="lc-top lc-mono"><span class="lc-no">04 · d1</span><span class="lc-fonts">Archivo (wide 125 / 100) · Fragment Mono</span></div>
+      <div><h2 class="lc-name">Swiss Grid</h2><p class="lc-tl">a–h, 1–8</p></div>
+      <div><p class="lc-txt">Louisiana's chess community since 1915.</p><p class="lc-data lc-mono">4½ · 1847 +18 · G/90+30</p></div>
+      <div class="lc-pal lc-mono">
+        <div><i style="background:#f4f4f0"></i><b>#f4f4f0</b></div>
+        <div><i style="background:#0d0d0d"></i><b>#0d0d0d</b></div>
+        <div><i style="background:#1a2744"></i><b>#1a2744</b></div>
+        <div><i style="background:#c8a94a"></i><b>#c8a94a</b></div>
+        <div><i style="background:#c2381f"></i><b>#c2381f</b></div>
+      </div>
+      <div class="lc-hb"><svg class="lc-mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="w">Louisiana Chess</span><a class="lc-btn" href="#">Join LCA</a></div>
+      <div class="lc-tags"><span class="lc-tg t1"><i></i>Registration open</span><span class="lc-tg t2">Live · Round 3</span></div>
+      <p class="lc-best"><b>Best for</b>The most systematic rebrand. Test it with older members before committing.</p>
+    </article>
+
+    <article class="lc-card v5">
+      <div class="lc-top lc-mono"><span class="lc-no">05</span><span class="lc-fonts">Fraunces · Bricolage Grotesque · DM Mono</span></div>
+      <div><h2 class="lc-name">Louisiana Rooted</h2><p class="lc-tl">statewide, with an accent</p></div>
+      <div><p class="lc-txt">Louisiana's chess community since 1915.</p><p class="lc-data lc-mono">4½ · 1847 +18 · G/90+30</p></div>
+      <div class="lc-pal lc-mono">
+        <div><i style="background:#fbf7ee"></i><b>#fbf7ee</b></div>
+        <div><i style="background:#2f4a3a"></i><b>#2f4a3a</b></div>
+        <div><i style="background:#a4442f"></i><b>#a4442f</b></div>
+        <div><i style="background:#2c6e8f"></i><b>#2c6e8f</b></div>
+        <div><i style="background:#5b2a6e"></i><b>#5b2a6e</b></div>
+      </div>
+      <div class="lc-hb"><svg class="lc-mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="w">Louisiana Chess</span><a class="lc-btn" href="#">Join LCA</a></div>
+      <div class="lc-tags"><span class="lc-tg t1">Registration open</span><span class="lc-tg t2">Live · Round 3</span></div>
+      <p class="lc-best"><b>Best for</b>A place-rooted rebrand with parishes as navigation; purple and green fit here.</p>
+    </article>
+
+    <article class="lc-card v6">
+      <div class="lc-top lc-mono"><span class="lc-no">06</span><span class="lc-fonts">Baloo 2 · Nunito · Atkinson Hyperlegible Mono</span></div>
+      <div><h2 class="lc-name">Bright Scholastic</h2><p class="lc-tl">every pawn can promote</p></div>
+      <div><p class="lc-txt">Louisiana's chess community since 1915.</p><p class="lc-data lc-mono">4½ · 1847 +18 · G/90+30</p></div>
+      <div class="lc-pal lc-mono">
+        <div><i style="background:#2563c9"></i><b>#2563c9</b></div>
+        <div><i style="background:#1f7a55"></i><b>#1f7a55</b></div>
+        <div><i style="background:#b23e1a"></i><b>#b23e1a</b></div>
+        <div><i style="background:#6a3fc1"></i><b>#6a3fc1</b></div>
+        <div><i style="background:#c8a94a"></i><b>#c8a94a</b></div>
+      </div>
+      <div class="lc-hb"><svg class="lc-mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="w">Louisiana Chess</span><span class="chk" aria-hidden="true"><i style="background:#2563c9"></i><i style="background:#1f7a55"></i><i style="background:#b23e1a"></i><i style="background:#6a3fc1"></i></span><a class="lc-btn" href="#">Join LCA</a></div>
+      <div class="lc-tags"><span class="lc-tg t1">Registration open</span><span class="lc-tg t2">Live · Round 3</span></div>
+      <p class="lc-best"><b>Best for</b>The Scholastic pages and parent sign-up flows, not the whole site.</p>
+    </article>
+
+    <article class="lc-card v7">
+      <div class="lc-top lc-mono"><span class="lc-no">07</span><span class="lc-fonts">Barlow Condensed · Barlow · JetBrains Mono · Big Shoulders</span></div>
+      <div><h2 class="lc-name">Broadcast Night</h2><p class="lc-tl">live mode</p></div>
+      <div><p class="lc-txt">Louisiana's chess community since 1915.</p><p class="lc-data lc-mono">4½ · 1847 +18 · G/90+30</p></div>
+      <div class="lc-pal lc-mono">
+        <div><i style="background:#070b14"></i><b>#070b14</b></div>
+        <div><i style="background:#1a2744"></i><b>#1a2744</b></div>
+        <div><i style="background:#c8a94a"></i><b>#c8a94a</b></div>
+        <div><i style="background:#ff4757"></i><b>#ff4757</b></div>
+        <div><i style="background:#34d399"></i><b>#34d399</b></div>
+      </div>
+      <div class="lc-hb"><svg class="lc-mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="w">Louisiana Chess</span><a class="lc-btn" href="#">Join LCA</a></div>
+      <div class="lc-tags"><span class="lc-tg t2">Live · Round 3</span><span class="lc-tg t1">Registration open</span></div>
+      <p class="lc-best"><b>Best for</b>Tournament days: live pairings and standings on a phone in a dim hall.</p>
+    </article>
+
+    <article class="lc-card v8">
+      <div class="lc-top"><span class="lc-no">LOGO</span><span class="lc-fonts">applies to all seven</span></div>
+      <h2>Every look needs a one-colour mark</h2>
+      <div class="lc-logo">
+        <img src="/_blob/670986b2f9e137948361309bea54fef8" alt="Current full-colour LCA logo: green state, yellow LCA letters, purple outline">
+        <div>
+          <p>Today's logo is green, yellow and purple, so it clashes with navy and gold.</p>
+          <div class="lc-sw3"><span><i style="background:#107622"></i>#107622</span><span><i style="background:#fee155"></i>#fee155</span><span><i style="background:#2c035f"></i>#2c035f</span></div>
+        </div>
+      </div>
+      <div class="lc-marks">
+        <div><b style="background:#ffffff;color:#1a2744;box-shadow:inset 0 0 0 1px #e3e0d6"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></b><span>navy on light</span></div>
+        <div><b style="background:#1a2744;color:#f7f3e8"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></b><span>cream on navy</span></div>
+        <div><b style="background:#070b14;color:#f3f5f9"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></b><span>cream on night</span></div>
+      </div>
+      <p class="lc-note">Headers in every look use the rook-shaped mark in one colour. Louisiana Rooted is the only look that makes the logo's purple and green feel intentional.</p>
+    </article>
+
+  </div>
+
+  <section class="lc-band" aria-labelledby="lc-fit">
+    <div>
+      <p class="lc-kick">How they fit together</p>
+      <h2 id="lc-fit">One base, two themes, two rebrand routes</h2>
+      <p>Pick one base for the whole site. Switch to Broadcast Night where play is live (pairings, standings, the hall display) and to Bright Scholastic on the Scholastic pages.</p>
+      <p>Editorial Sports isn't placed in this pairing. Its cost is a headline after every event.</p>
+    </div>
+    <div class="lc-lay">
+      <span class="lc-pg" style="grid-row:1">Home</span>
+      <span class="lc-pg" style="grid-row:1">Tournaments</span>
+      <span class="lc-pg" style="grid-row:1">Event page</span>
+      <span class="lc-pg" style="grid-row:1">Pairings &amp; standings</span>
+      <span class="lc-pg" style="grid-row:1">Clubs</span>
+      <span class="lc-pg" style="grid-row:1">Scholastic</span>
+      <span class="lc-pg" style="grid-row:1">News</span>
+      <span class="lc-pg" style="grid-row:1">About &amp; membership</span>
+      <div class="lc-L lc-base" style="grid-column:1 / -1;grid-row:2"><span class="k">Site-wide base</span><span class="b3">Tech-Minimal</span><span class="or">or</span><span class="b1">Heritage Club</span><span class="nt">every page, header and footer</span></div>
+      <div class="lc-rowlab" style="grid-column:1 / span 3;grid-row:3">Themes switch on only where they earn it<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+      <div class="lc-L lc-live lc-stack" style="grid-column:4;grid-row:3"><span class="k">Live / dark</span><span class="nm">Broadcast Night</span></div>
+      <div class="lc-L lc-sch lc-stack" style="grid-column:6;grid-row:3"><span class="k">Section</span><span class="nm">Bright Scholastic</span></div>
+      <div class="lc-L lc-reb" style="grid-column:1 / -1;grid-row:4"><span class="k">Rebrand options</span><span class="sw">Swiss Grid</span><span class="or">or</span><span class="lr">Louisiana Rooted</span><span class="nt">would replace the base and change the brand itself</span></div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

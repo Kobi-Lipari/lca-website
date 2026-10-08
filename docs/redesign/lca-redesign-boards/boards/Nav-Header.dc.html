@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Header · 5 options</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744}
+.nh-top{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;margin-bottom:34px}
+.nh-moved{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.nh-mv{display:inline-flex;align-items:center;height:30px;padding:0 12px;border-radius:999px;background:#ffffff;border:1px solid #d9d8d1;font-size:13px}
+.nh-legend{width:660px;flex:none;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:16px 18px}
+.nh-lgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px}
+.nh-li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.4}
+.nh-li .k-num-badge{flex:none}
+.nh-opt{margin-top:30px}
+.nh-lab{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+.nh-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.nh-code{display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:28px;padding:0 8px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.nh-view{position:relative;overflow:hidden;background:#f5f5f2}
+.nh-mk{position:absolute;z-index:40;box-shadow:0 0 0 3px #ffffff}
+.nh-ring{box-shadow:0 0 0 2px #ffffff}
+.nh-skel{height:12px;border-radius:6px;background:#e3e2dc;margin:12px 0}
+.nh-ddwrap{position:relative;display:flex}
+.nh-dd{position:absolute;top:calc(100% + 12px);left:0;width:340px;background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.22);padding:8px;z-index:30;color:#1a2744}
+.k-navlinks .nh-dd a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:40px;padding:0 12px;border-radius:8px;color:#1a2744;font-size:15px;font-weight:500;box-shadow:none}
+.k-navlinks .nh-dd a.nh-cur{background:#f3eedc;font-weight:600}
+.nh-ddsub{font-size:12.5px;color:#555c6b;font-weight:400}
+.nh-here{font-size:12px;font-weight:600;color:#866a1e}
+.nh-ddfoot{display:flex;gap:18px;border-top:1px solid #e3e2dc;margin-top:6px;padding:8px 12px 2px}
+.k-navlinks .nh-ddfoot a{min-height:34px;padding:0;font-size:13.5px;color:#1a2744;justify-content:flex-start;gap:5px}
+.nh-topbar{background:#0f1830;color:#ffffff;font-size:13.5px}
+.nh-topin{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:38px}
+.nh-live{display:flex;align-items:center;gap:10px}
+.nh-toplinks{display:flex;align-items:center;gap:18px}
+.nh-toplinks a{color:#ffffff;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.nh-golda{color:#e6cf86;font-weight:600;display:inline-flex;align-items:center;gap:4px;text-decoration:underline;text-underline-offset:3px}
+.nh-states{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.nh-st{display:inline-flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:999px;background:#ffffff;border:1px solid #d9d8d1;font-size:13px}
+.nh-st b{font-weight:600}
+.nh-st-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.nh-mega{position:absolute;left:0;right:0;top:68px;background:#ffffff;border-top:1px solid #e3e2dc;box-shadow:0 26px 40px rgba(16,24,43,.20);z-index:30}
+.nh-megain{display:grid;grid-template-columns:1fr 1.5fr 1fr 1.1fr;gap:32px;padding-top:22px;padding-bottom:22px}
+.nh-ml{display:flex;align-items:center;gap:8px;min-height:34px;color:#1a2744;text-decoration:none;font-size:15px}
+.nh-hint{font-size:12.5px;color:#555c6b}
+.nh-ev{display:flex;align-items:center;gap:12px;padding:8px 0;color:#1a2744;text-decoration:none;border-bottom:1px solid #efeee9}
+.nh-evn{display:block;font-weight:600;font-size:15px}
+.nh-evm{display:block;font-size:13px;color:#555c6b}
+.nh-more{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:14px}
+.nh-run{background:#f3eedc;border-radius:12px;padding:14px 16px}
+.nh-sw{position:relative;flex:1;max-width:640px}
+.nh-sbox{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;background:#ffffff;border-radius:10px;color:#1a2744;box-shadow:0 0 0 3px #c8a94a}
+.nh-sin{flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:16px;color:#1a2744;background:transparent}
+.nh-kbd{font-size:12px;color:#555c6b;border:1px solid #d9d8d1;border-radius:6px;padding:2px 6px;white-space:nowrap}
+.nh-sugg{position:absolute;left:0;right:0;top:calc(100% + 8px);background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.22);padding:6px;z-index:30;color:#1a2744}
+.nh-sg{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:8px 10px 4px}
+.nh-sr{display:flex;align-items:center;gap:12px;min-height:46px;padding:4px 10px;border-radius:8px;color:#1a2744;text-decoration:none}
+.nh-sr-on{background:#f3eedc}
+.nh-srt{flex:1;min-width:0}
+.nh-srn{display:block;font-size:15px}
+.nh-srn strong{font-weight:700;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.nh-srm{display:block;font-size:12.5px;color:#555c6b}
+.nh-srk{font-size:12px;color:#555c6b}
+.nh-sfoot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #e3e2dc;margin-top:6px;padding:10px 10px 6px;font-size:13px;color:#555c6b}
+.nh-sub{background:#ffffff;border-bottom:1px solid #d9d8d1}
+.nh-subnav{display:flex;gap:4px}
+.nh-subnav a{display:inline-flex;align-items:center;gap:4px;min-height:46px;padding:0 14px;color:#1a2744;text-decoration:none;font-size:15px;font-weight:500}
+.nh-subnav a.on{box-shadow:inset 0 -3px 0 #c8a94a;font-weight:600}
+.nh-event{background:#c8a94a;color:#1a2744}
+.nh-evin{display:flex;align-items:center;gap:14px;min-height:60px;font-size:14.5px}
+.nh-count{display:inline-flex;align-items:center;gap:6px;font-family:"Geist Mono",monospace;font-weight:500;font-size:13.5px;background:#ffffff;border-radius:999px;padding:4px 10px}
+.nh-evbtns{display:flex;align-items:center;gap:8px;margin-left:auto}
+</style>
+</helmet>
+<div style="width:1440px;height:2800px;box-sizing:border-box;padding:40px 48px;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744">
+
+  <div class="nh-top">
+    <div style="max-width:600px">
+      <div class="k-kicker">Navigation · Header</div>
+      <h1 class="k-h1" style="margin:6px 0 10px">Header · 5 options</h1>
+      <p class="k-body k-muted" style="margin:0 0 16px">All five keep the same six sections (Tournaments · Clubs · Scholastic · News · Membership · About) and the same utility order: Donate · Log in · Join LCA. Each frame is a 1440 px page with one state open.</p>
+      <div class="nh-moved">
+        <span class="k-label">Changes from today</span>
+        <span class="nh-mv">Scanner moves under Tournaments</span>
+        <span class="nh-mv">Membership comes out of More</span>
+        <span class="nh-mv">Donate gets a permanent spot</span>
+        <span class="nh-mv">Admin links move into the My LCA menu</span>
+        <span class="nh-mv">Facebook link stays</span>
+      </div>
+    </div>
+    <div class="nh-legend">
+      <div class="k-between" style="margin-bottom:12px"><span class="k-label">Notes</span><span class="k-sample">Sample data</span></div>
+      <div class="nh-lgrid">
+        <div class="nh-li"><span class="k-num-badge">1</span><span>Opens on click, with a caret. The current section is underlined and the current page is marked inside the menu.</span></div>
+        <div class="nh-li"><span class="k-num-badge">2</span><span>Utility links keep one order on every page: Donate · Log in · Join LCA.</span></div>
+        <div class="nh-li"><span class="k-num-badge">3</span><span>The live line is written by the system from event status. Nobody types it.</span></div>
+        <div class="nh-li"><span class="k-num-badge">4</span><span>Only Tournaments gets a mega panel (more than six links). Click to open; 0.5 s delay if hover is added.</span></div>
+        <div class="nh-li"><span class="k-num-badge">5</span><span>Results grouped by type. Players come only from published LCA crosstables.</span></div>
+        <div class="nh-li"><span class="k-num-badge">6</span><span>The strip appears only while an LCA event is running; the board button only for registered players.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- H1 -->
+  <section class="nh-opt" style="margin-top:0">
+    <div class="nh-lab"><span class="nh-code">H1</span><h2>Refined · six sections always visible, About opens on click</h2><span class="k-meta">About menu open on the Meeting minutes page</span></div>
+    <div class="k-browser">
+      <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/about/minutes</div></div>
+      <div class="nh-view" style="height:392px">
+        <header class="k-header">
+          <div class="k-wrap-wide k-header-in">
+            <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+            <nav class="k-navlinks" aria-label="Main">
+              <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a>
+              <div class="nh-ddwrap">
+                <a class="k-nav-on" href="#" role="button" aria-expanded="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></a>
+                <div class="nh-dd">
+                  <a href="#"><span>About LCA</span><span class="nh-ddsub">Since 1915</span></a>
+                  <a href="#"><span>Board of directors</span><span class="nh-ddsub">Officers and regional seats</span></a>
+                  <a href="#"><span>Bylaws &amp; documents</span><span class="nh-ddsub">Rules, treasurer reports</span></a>
+                  <a class="nh-cur" href="#" aria-current="page"><span>Meeting minutes</span><span class="nh-here">You are here</span></a>
+                  <a href="#"><span>Annual meeting</span><span class="nh-ddsub">Held at the State Championship</span></a>
+                  <a href="#"><span>State champions</span><span class="nh-ddsub">Honor roll</span></a>
+                  <div class="nh-ddfoot"><a href="#">Contact LCA</a><a href="#">LCA on Facebook<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+                </div>
+                <span class="k-num-badge nh-mk" style="top:80px;left:356px">1</span>
+              </div>
+            </nav>
+            <div class="k-utility">
+              <a class="k-ulink" href="#">Donate</a>
+              <a class="k-ulink" href="#">Log in</a>
+              <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+            </div>
+          </div>
+        </header>
+        <div style="background:#ffffff;border-bottom:1px solid #e3e2dc">
+          <div class="k-wrap-wide" style="padding-top:20px;padding-bottom:22px">
+            <div class="k-row-sm k-small"><a class="k-link" href="#">About LCA</a><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><span class="k-muted">Meeting minutes</span></div>
+            <h3 class="k-h2" style="margin:8px 0 4px">Meeting minutes</h3>
+            <p class="k-body k-muted" style="margin:0">Approved minutes of LCA board meetings and the annual business meeting.</p>
+          </div>
+        </div>
+        <div class="k-wrap-wide" style="padding-top:8px">
+          <div class="nh-skel" style="width:46%"></div>
+          <div class="nh-skel" style="width:38%"></div>
+          <div class="nh-skel" style="width:42%"></div>
+          <div class="nh-skel" style="width:30%"></div>
+        </div>
+        <span class="k-num-badge nh-mk" style="top:78px;right:40px">2</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- H2 -->
+  <section class="nh-opt">
+    <div class="nh-lab"><span class="nh-code">H2</span><h2>Two-tier · a thin live bar above the main bar</h2><span class="k-meta">Homepage on Sat, Oct 10 at 6:41 PM, during the Lafayette Open</span></div>
+    <div class="k-browser">
+      <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org</div></div>
+      <div class="nh-view" style="height:268px">
+        <div class="nh-topbar">
+          <div class="k-wrap-wide nh-topin">
+            <div class="nh-live">
+              <span class="k-tag k-tag-live">Live · Round 3</span>
+              <span><b>Lafayette Open</b> · Round 3 pairings posted at 6:41 PM</span>
+              <a class="nh-golda" href="#">Find your board<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+              <span class="k-num-badge nh-ring">3</span>
+            </div>
+            <div class="nh-toplinks">
+              <a href="#">Facebook<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+              <a href="#">Website help</a>
+              <a href="#">Donate</a>
+              <a href="#">Log in</a>
+            </div>
+          </div>
+        </div>
+        <header class="k-header">
+          <div class="k-wrap-wide k-header-in">
+            <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+            <nav class="k-navlinks" aria-label="Main">
+              <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></a>
+            </nav>
+            <div class="k-utility"><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+          </div>
+        </header>
+        <div style="background:#fbfaf6;border-bottom:1px solid #e3e2dc">
+          <div class="k-wrap-wide k-between" style="padding-top:22px;padding-bottom:22px;align-items:center">
+            <div>
+              <div class="k-kicker">Louisiana's state chess association since 1915</div>
+              <h3 class="k-h2" style="margin:6px 0 0">Tournaments, clubs and youth chess across Louisiana</h3>
+            </div>
+            <div class="k-row-sm">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Find a tournament</a>
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Find a club</a>
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Get your child playing</a>
+            </div>
+          </div>
+        </div>
+        <div class="k-wrap-wide" style="padding-top:4px">
+          <div class="nh-skel" style="width:40%"></div>
+          <div class="nh-skel" style="width:28%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="nh-states">
+      <span class="k-label">Same line, other moments</span>
+      <span class="nh-st"><b>Mon–Fri</b>Lafayette Open this weekend · Register</span>
+      <span class="nh-st"><b>Sat 9:00 AM</b>Check-in open until 9:30 AM</span>
+      <span class="nh-st nh-st-on"><b>Sat 6:41 PM</b>Round 3 pairings posted</span>
+      <span class="nh-st"><b>Sun 6:30 PM</b>Final standings posted</span>
+      <span class="nh-st"><b>Quiet days</b>Tonight: 6 clubs meet</span>
+    </div>
+  </section>
+
+  <!-- H3 -->
+  <section class="nh-opt">
+    <div class="nh-lab"><span class="nh-code">H3</span><h2>Mega menu · Tournaments opens a full-width panel</h2><span class="k-meta">The other sections stay plain links or a short dropdown</span></div>
+    <div class="k-browser">
+      <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments</div></div>
+      <div class="nh-view" style="height:400px">
+        <header class="k-header">
+          <div class="k-wrap-wide k-header-in">
+            <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+            <nav class="k-navlinks" aria-label="Main">
+              <a class="k-nav-on" href="#" role="button" aria-expanded="true">Tournaments<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></a>
+            </nav>
+            <div class="k-utility">
+              <a class="k-ulink" href="#">Donate</a>
+              <a class="k-ulink" href="#">Log in</a>
+              <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+            </div>
+          </div>
+        </header>
+        <div class="k-wrap-wide" style="padding-top:22px">
+          <h3 class="k-h2" style="margin:0">Tournaments</h3>
+          <div class="nh-skel" style="width:34%"></div>
+        </div>
+        <div class="nh-mega">
+          <div class="k-wrap-wide nh-megain">
+            <div>
+              <div class="k-label">Find a tournament</div>
+              <a class="nh-ml" href="#">All tournaments</a>
+              <a class="nh-ml" href="#">This weekend</a>
+              <a class="nh-ml" href="#">Scholastic events</a>
+              <a class="nh-ml" href="#">Gulf South partner events</a>
+              <a class="nh-ml" href="#">Month calendar</a>
+              <a class="nh-ml" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to my calendar (iCal)</a>
+            </div>
+            <div>
+              <div class="k-label">Next up in Louisiana</div>
+              <a class="nh-ev" href="#"><span class="k-date"><b>10</b><span>Oct</span></span><span><span class="nh-evn">Lafayette Open 2026</span><span class="nh-evm">Sat–Sun, Oct 10–11 · Lafayette · Classical · All ages</span></span></a>
+              <a class="nh-ev" href="#"><span class="k-date"><b>24</b><span>Oct</span></span><span><span class="nh-evn">The Baton Rouge Classic</span><span class="nh-evm">Sat–Sun, Oct 24–25 · Baton Rouge · Classical</span></span></a>
+              <a class="nh-ev" href="#"><span class="k-date"><b>31</b><span>Oct</span></span><span><span class="nh-evn">The Casa Chess Tournament</span><span class="nh-evm">Sat, Oct 31 · Sulphur · Dual-rated</span></span></a>
+              <a class="k-link nh-more" href="#">All 11 upcoming Louisiana events<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+            </div>
+            <div>
+              <div class="k-label">Results &amp; records</div>
+              <a class="nh-ml" href="#">Latest results</a>
+              <a class="nh-ml" href="#">Crosstables archive</a>
+              <a class="nh-ml" href="#">State champions</a>
+              <a class="nh-ml" href="#">Scoresheet scanner <span class="nh-hint">photo to moves</span></a>
+            </div>
+            <div class="nh-run">
+              <div class="k-label">Run a tournament</div>
+              <a class="nh-ml" href="#">List your event on the calendar</a>
+              <a class="nh-ml" href="#">Tournament director workspace</a>
+              <a class="nh-ml" href="#">LCA tournament rules</a>
+              <a class="nh-ml" href="#">Become a US Chess TD<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+              <a class="k-btn k-btn-navy k-btn-sm" href="#" style="margin-top:10px">Start here: running an LCA event</a>
+            </div>
+          </div>
+        </div>
+        <span class="k-num-badge nh-mk" style="top:84px;right:30px">4</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- H4 -->
+  <section class="nh-opt">
+    <div class="nh-lab"><span class="nh-code">H4</span><h2>Search in the header · find a tournament, club or player from any page</h2><span class="k-meta">Typing “bat” on the Clubs page</span></div>
+    <div class="k-browser">
+      <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/clubs</div></div>
+      <div class="nh-view" style="height:410px">
+        <header class="k-header">
+          <div class="k-wrap-wide k-header-in">
+            <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+            <div class="nh-sw">
+              <div class="nh-sbox"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input class="nh-sin" aria-label="Find a tournament, club or player" placeholder="Find a tournament, club or player" value="bat"><span class="nh-kbd">Esc closes</span></div>
+              <div class="nh-sugg" role="listbox" aria-label="Suggestions">
+                <div class="nh-sg">Tournaments</div>
+                <a class="nh-sr nh-sr-on" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span class="nh-srt"><span class="nh-srn">The <strong>Bat</strong>on Rouge Classic</span><span class="nh-srm">Sat–Sun, Oct 24–25 · Baton Rouge · Classical</span></span><span class="nh-srk">Tournament</span></a>
+                <div class="nh-sg">Clubs</div>
+                <a class="nh-sr" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg><span class="nh-srt"><span class="nh-srn"><strong>Bat</strong>on Rouge Chess Club</span><span class="nh-srm">Saturdays 10:00 AM · Jones Creek Branch Library</span></span><span class="nh-srk">Club</span></a>
+                <a class="nh-sr" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg><span class="nh-srt"><span class="nh-srn">Bluebonnet Chess Club</span><span class="nh-srm"><strong>Bat</strong>on Rouge · 1st and 3rd Sundays, 4:30 PM</span></span><span class="nh-srk">Club</span></a>
+                <div class="nh-sg">Players</div>
+                <a class="nh-sr" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span class="nh-srt"><span class="nh-srn">Devin <strong>Bat</strong>iste · 1521</span><span class="nh-srm">4 LCA events · last played Sep 2026</span></span><span class="nh-srk">Player</span></a>
+                <div class="nh-sfoot"><a class="k-link" href="#">See all results for “bat”</a><span>Arrow keys move · Enter opens</span></div>
+              </div>
+              <span class="k-num-badge nh-mk" style="top:80px;right:-44px">5</span>
+            </div>
+            <div class="k-utility" style="margin-left:auto">
+              <a class="k-ulink" href="#">Donate</a>
+              <a class="k-ulink" href="#">Log in</a>
+              <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+            </div>
+          </div>
+        </header>
+        <div class="nh-sub">
+          <div class="k-wrap-wide">
+            <nav class="nh-subnav" aria-label="Main">
+              <a href="#">Tournaments</a><a class="on" href="#" aria-current="page">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></a>
+            </nav>
+          </div>
+        </div>
+        <div style="background:#ffffff;border-bottom:1px solid #e3e2dc">
+          <div class="k-wrap-wide" style="padding-top:22px;padding-bottom:22px">
+            <h3 class="k-h2" style="margin:0 0 4px">Clubs</h3>
+            <p class="k-body k-muted" style="margin:0">25+ clubs in 7 regions, from Shreveport to Houma.</p>
+          </div>
+        </div>
+        <div class="k-wrap-wide" style="padding-top:4px">
+          <div class="nh-skel" style="width:44%"></div>
+          <div class="nh-skel" style="width:36%"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- H5 -->
+  <section class="nh-opt">
+    <div class="nh-lab"><span class="nh-code">H5</span><h2>Event mode · the header grows an event strip while an LCA event is live</h2><span class="k-meta">Signed-in player on Sat, Oct 10 at 6:41 PM</span></div>
+    <div class="k-browser">
+      <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments/lafayette-open-2026/pairings</div></div>
+      <div class="nh-view" style="height:384px">
+        <header class="k-header">
+          <div class="k-wrap-wide k-header-in">
+            <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+            <nav class="k-navlinks" aria-label="Main">
+              <a class="k-nav-on" href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></a>
+            </nav>
+            <div class="k-utility">
+              <a class="k-ulink" href="#">Donate</a>
+              <a class="k-ulink" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>My LCA<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></a>
+            </div>
+          </div>
+        </header>
+        <div class="nh-event">
+          <div class="k-wrap-wide nh-evin">
+            <span class="k-tag k-tag-live">Live · Round 3</span>
+            <b>Lafayette Open 2026</b>
+            <span>Round 3 of 5 starts 7:00 PM</span>
+            <span class="nh-count"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>in 19 min</span>
+            <span class="k-num-badge nh-ring">6</span>
+            <div class="nh-evbtns">
+              <a class="k-btn k-btn-navy k-btn-sm" href="#">My board: 6 · White</a>
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Pairings</a>
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Standings</a>
+              <button class="k-iconbtn" type="button" aria-label="Round alerts are on"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg></button>
+              <button class="k-iconbtn" type="button" aria-label="Hide the event strip for today"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="k-wrap-wide" style="padding-top:18px">
+          <div class="k-between" style="align-items:flex-end">
+            <div>
+              <div class="k-small k-muted">Lafayette Open 2026 · Open section</div>
+              <h3 class="k-h3" style="margin:4px 0 0">Round 3 pairings</h3>
+            </div>
+            <div class="k-field" style="width:300px"><input class="k-input" aria-label="Find your name" placeholder="Find your name"></div>
+          </div>
+          <div class="k-tablebox" style="margin-top:12px">
+            <table class="k-table">
+              <thead><tr><th class="k-c">Board</th><th>White</th><th class="k-c">Pts</th><th>Black</th><th class="k-c">Pts</th><th class="k-r">Result</th></tr></thead>
+              <tbody>
+                <tr><td class="k-c">5</td><td>Marcus Landry · 2014</td><td class="k-c">2</td><td>Isaac Dupre · 1688</td><td class="k-c">2</td><td class="k-r k-muted">Not started</td></tr>
+                <tr class="k-tr-me"><td class="k-c"><b>6</b></td><td><b>Avery Thibodeaux · 1912</b> <span class="k-tag k-tag-gold">You</span></td><td class="k-c">1.5</td><td>Priya Shah · 1803</td><td class="k-c">1.5</td><td class="k-r k-muted">Not started</td></tr>
+                <tr><td class="k-c">7</td><td>Sam Nguyen · 1650</td><td class="k-c">1.5</td><td>Camille Broussard · 1744</td><td class="k-c">1.5</td><td class="k-r k-muted">Not started</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

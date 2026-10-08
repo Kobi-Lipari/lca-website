@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Work B — Club rep workspace</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.wb-bar{background:#ffffff;border-bottom:1px solid #dddcd4}
+.wb-top{padding-top:24px}
+.wb-logo{width:64px;height:64px;padding:0;align-items:center;justify-content:center;font-size:11px;flex:none}
+.wb-logo-s{width:44px;height:44px}
+.wb-sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none;background:#2e6b4f}
+.wb-tabs{display:flex;flex-wrap:wrap;gap:2px;margin-top:16px}
+.wb-tabs a{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 14px;color:#555c6b;text-decoration:none;font-size:15px;font-weight:500;border-bottom:3px solid transparent}
+.wb-tabs a.wb-on{color:#1a2744;font-weight:600;border-bottom-color:#c8a94a}
+.wb-body{padding:28px 0 32px}
+.wb-tile{border:1px solid #dddcd4;border-radius:10px;padding:12px 14px;background:#ffffff;display:flex;flex-direction:column;gap:4px}
+.wb-tile-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.wb-quote{border-radius:10px;background:#f5f5f2;padding:14px 16px}
+.wb-prog{height:8px;border-radius:99px;background:#e6e5de;overflow:hidden}
+.wb-prog span{display:block;height:100%;background:#1a2744;border-radius:99px}
+.wb-list{list-style:none;margin:0;padding:0}
+.wb-list li{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #ecebe4;font-size:15px;color:#1a2744}
+.wb-list li:last-child{border-bottom:0}
+.wb-list li span.wb-grow{flex:1}
+.wb-ok{color:#2f6b45}
+.wb-todo{color:#866a1e}
+.wb-preview{border:1px solid #dddcd4;border-radius:12px;background:#ffffff;padding:18px}
+.wb-sched{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.wb-dd{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:15px;font-weight:500;font-family:inherit}
+.wb-time{width:112px}
+.wb-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wb-ev{border:1px solid #dddcd4;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.wb-area{height:auto;min-height:84px;padding-top:10px;padding-bottom:10px;resize:vertical;font-family:inherit;line-height:1.45}
+.wb-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:12px 28px}
+.wb-legend div{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:#1a2744}
+@media (max-width:640px){.wb-two{grid-template-columns:1fr}.wb-time{width:96px}.wb-legend{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#" aria-current="page">Workspace</a>
+      <a class="k-ulink" href="#">Paul Comeaux</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="wb-bar">
+  <div class="k-wrap-wide wb-top">
+    <div class="k-between" style="align-items:flex-start">
+      <div class="k-row" style="align-items:center">
+        <div class="k-img wb-logo">Logo</div>
+        <div class="k-stack-sm">
+          <span class="k-kicker">Club workspace · club rep</span>
+          <h1 class="k-h1" style="margin:0">Houma Chess Club</h1>
+          <div class="k-row-sm k-meta"><span class="wb-sw"></span><span>Bayou Region · Mondays 6:00–8:30 PM · Terrebonne Parish North Library</span></div>
+        </div>
+      </div>
+      <div class="k-stack-sm" style="align-items:flex-end">
+        <span class="k-sample">Sample data · rep, members, followers, reports, posts</span>
+        <a class="k-btn k-btn-line k-btn-sm" href="Club-A.dc.html">View public page<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+        <span class="k-small k-muted">Reps: Paul Comeaux (you) · <a class="k-link" href="#">Add a co-rep</a></span>
+      </div>
+    </div>
+    <nav class="wb-tabs" aria-label="Club workspace">
+      <a class="wb-on" href="#" aria-current="page">Overview</a>
+      <a href="#">Club page</a>
+      <a href="#">Tonight &amp; schedule</a>
+      <a href="#">News</a>
+      <a href="#">Tournaments <span class="k-tag k-tag-gold">New</span></a>
+      <a href="#">Members</a>
+      <a href="#">What's new for reps</a>
+    </nav>
+  </div>
+</div>
+
+<main class="wb-body">
+  <div class="k-wrap-wide k-split">
+
+    <div class="k-main k-stack-lg">
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="wb-fresh">
+        <div class="k-between">
+          <div class="k-row-sm"><span class="k-num-badge">1</span><h2 id="wb-fresh" class="k-h2" style="margin:0">Is this still accurate?</h2></div>
+          <span class="k-tag k-tag-soon">Check due</span>
+        </div>
+        <p class="k-body k-muted" style="margin:0">Last confirmed <b class="k-ink">Mon, Jul 6, 2026</b> (91 days ago). Your club card shows the date you last confirmed. After 120 days it reads "Schedule not confirmed recently".</p>
+        <div class="k-grid-4">
+          <div class="wb-tile"><div class="wb-tile-h"><span class="k-label">When</span><a class="k-link k-small" href="#">Edit</a></div><b class="k-ink">Mondays 6:00–8:30 PM</b></div>
+          <div class="wb-tile"><div class="wb-tile-h"><span class="k-label">Where</span><a class="k-link k-small" href="#">Edit</a></div><b class="k-ink">Terrebonne Parish North Library</b></div>
+          <div class="wb-tile"><div class="wb-tile-h"><span class="k-label">Cost &amp; format</span><a class="k-link k-small" href="#">Edit</a></div><b class="k-ink">[Cost] · [casual or rated]</b></div>
+          <div class="wb-tile"><div class="wb-tile-h"><span class="k-label">Contact</span><a class="k-link k-small" href="#">Edit</a></div><b class="k-ink">Paul Comeaux · [club email] · Facebook</b></div>
+        </div>
+        <div class="wb-quote k-stack-sm">
+          <div class="k-between"><span class="k-label">Report from a visitor · Sat, Sep 26</span><span class="k-tag k-tag-soon">Needs a reply</span></div>
+          <p class="k-body" style="margin:0">"The library closes at 8 PM on Mondays now. Are you still meeting until 8:30?"</p>
+          <div class="k-row-sm">
+            <button class="k-btn k-btn-navy k-btn-sm" type="button">Fix meeting time</button>
+            <button class="k-btn k-btn-line k-btn-sm" type="button">Reply to visitor</button>
+            <button class="k-btn k-btn-ghost k-btn-sm" type="button">Not an issue</button>
+            <span class="k-small k-muted">Reports reach your reps first; unanswered after 14 days, they go to LCA's admin queue.</span>
+          </div>
+        </div>
+        <div class="k-row">
+          <button class="k-btn k-btn-gold" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Yes, everything is still accurate</button>
+          <button class="k-btn k-btn-line" type="button">Something changed</button>
+          <span class="k-small k-muted">The same check arrives by email every 60 days. One tap confirms, no login.</span>
+        </div>
+      </section>
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="wb-page">
+        <div class="k-between">
+          <div class="k-row-sm"><span class="k-num-badge">3</span><h2 id="wb-page" class="k-h2" style="margin:0">Club page</h2></div>
+          <span class="k-small k-muted">Saved changes go live right away · <a class="k-link" href="#">Change history</a></span>
+        </div>
+        <div class="k-grid-2" style="align-items:start">
+          <div class="k-stack">
+            <div class="k-stack-sm">
+              <span class="k-label">When you meet</span>
+              <div class="wb-sched">
+                <button class="wb-dd" type="button">Monday<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+                <input class="k-input wb-time" aria-label="Start time" value="6:00 PM">
+                <span class="k-small k-muted">to</span>
+                <input class="k-input wb-time" aria-label="End time" value="8:30 PM">
+              </div>
+              <div class="k-row-sm"><span class="k-chip k-chip-on">Every week</span><span class="k-chip">1st &amp; 3rd</span><span class="k-chip">1st, 3rd &amp; 5th</span><span class="k-chip">Monthly</span></div>
+              <a class="k-link k-small" href="#">Add another meeting time</a>
+            </div>
+            <div class="k-field"><label for="wb-venue">Where</label><input id="wb-venue" class="k-input" value="Terrebonne Parish North Library"></div>
+            <div class="k-img" style="height:96px">Map · drag the pin to the door you use</div>
+            <div class="k-stack-sm">
+              <span class="k-label">First-visit box</span>
+              <div class="wb-two">
+                <div class="k-field"><label for="wb-bring">What to bring</label><input id="wb-bring" class="k-input" placeholder="e.g. Nothing, boards provided"></div>
+                <div class="k-field"><label for="wb-park">Parking &amp; entrance</label><input id="wb-park" class="k-input" placeholder="e.g. Side door after 6 PM"></div>
+              </div>
+            </div>
+            <div class="k-row-sm"><button class="k-btn k-btn-navy" type="button">Save changes</button><button class="k-btn k-btn-ghost" type="button">Discard</button></div>
+          </div>
+          <div class="k-stack">
+            <div class="k-between"><span class="k-label">Live preview</span><div class="k-seg" role="group" aria-label="Preview size"><button class="k-seg-on" type="button">Club card</button><button type="button">Phone</button></div></div>
+            <div class="wb-preview k-stack-sm">
+              <div class="k-row-sm"><div class="k-img wb-logo wb-logo-s">Logo</div><div><div class="k-row-sm"><span class="wb-sw"></span><b class="k-h4" style="margin:0">Houma Chess Club</b></div><span class="k-meta">Bayou Region · Houma</span></div></div>
+              <div class="k-h3" style="margin:0">Mondays 6:00–8:30 PM</div>
+              <div class="k-row-sm k-small"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Terrebonne Parish North Library</div>
+              <div class="k-row-sm"><span class="k-tag k-tag-open">Meeting tonight · 6:00 PM</span></div>
+              <div class="k-between k-small"><span class="k-muted">Last confirmed Mon, Oct 5, 2026</span><a class="k-link" href="#">Report outdated info</a></div>
+            </div>
+            <p class="k-small k-muted" style="margin:0">Preview shows the card after you confirm. A structured schedule also puts Houma in "Meeting tonight" on the Clubs page and in the weekly calendar.</p>
+            <div class="wb-two">
+              <div class="k-field"><label for="wb-color">Club color</label><div class="k-row-sm"><span class="wb-sw" style="width:28px;height:28px;border-radius:6px"></span><input id="wb-color" class="k-input" value="#2E6B4F" style="width:116px"></div><span class="k-hint">A small bar beside your name</span></div>
+              <div class="k-field"><span class="k-label">Logo</span><button class="k-btn k-btn-soft k-btn-sm" type="button">Replace logo</button><span class="k-hint">Square PNG or SVG</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="wb-mem">
+        <div class="k-between">
+          <div class="k-row-sm"><span class="k-num-badge">6</span><h2 id="wb-mem" class="k-h2" style="margin:0">Members</h2><div class="k-seg" role="group" aria-label="People"><button class="k-seg-on" type="button">Members 8</button><button type="button">Followers 14</button></div></div>
+          <div class="k-row-sm">
+            <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Email selected (2)</button>
+            <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Print sign-in QR</button>
+          </div>
+        </div>
+        <div class="k-row-sm"><span class="k-chip k-chip-on">All <span class="k-chip-count">8</span></span><span class="k-chip">Renewal due <span class="k-chip-count">2</span></span><span class="k-chip">Lapsed <span class="k-chip-count">1</span></span><span class="k-chip">US Chess expired <span class="k-chip-count">1</span></span></div>
+        <label class="k-check"><input type="checkbox" checked><span>Remind members 30 days before their LCA membership ends. LCA sends it, signed by your club.</span></label>
+        <div class="k-tablebox">
+          <table class="k-table">
+            <thead><tr><th><input type="checkbox" aria-label="Select all"></th><th>Name</th><th class="k-r">Rating</th><th>LCA membership</th><th>US Chess</th><th>Last club night</th></tr></thead>
+            <tbody>
+              <tr><td><input type="checkbox" aria-label="Select Avery Thibodeaux"></td><td><b>Avery Thibodeaux</b></td><td class="k-r k-num">1912</td><td><span class="k-tag k-tag-open">Active</span> <span class="k-small k-muted">through Mar 2027</span></td><td class="k-small">Active</td><td class="k-small">Mon, Sep 28</td></tr>
+              <tr><td><input type="checkbox" checked aria-label="Select Theo Guidry"></td><td><b>Theo Guidry</b></td><td class="k-r k-num">1295</td><td><span class="k-tag k-tag-soon">Renewal due</span> <span class="k-small k-muted">ends Sat, Oct 31</span></td><td class="k-small">Active</td><td class="k-small">Mon, Sep 28</td></tr>
+              <tr><td><input type="checkbox" checked aria-label="Select Devin Batiste"></td><td><b>Devin Batiste</b></td><td class="k-r k-num">1521</td><td><span class="k-tag k-tag-soon">Renewal due</span> <span class="k-small k-muted">ends Thu, Oct 22</span></td><td class="k-small">Active</td><td class="k-small">Mon, Sep 28</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Elise Fontenot"></td><td><b>Elise Fontenot</b></td><td class="k-r k-num">1460</td><td><span class="k-tag k-tag-open">Active</span> <span class="k-small k-muted">through Jan 2027</span></td><td><span class="k-tag k-tag-closed">Expired Sep 2026</span></td><td class="k-small">Mon, Sep 21</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Nora Hebert"></td><td><b>Nora Hebert</b></td><td class="k-r k-num">1577</td><td><span class="k-tag k-tag-closed">Lapsed</span> <span class="k-small k-muted">ended Aug 2026</span></td><td class="k-small">Active</td><td class="k-small">Mon, Aug 31</td></tr>
+              <tr><td><input type="checkbox" aria-label="Select Paul Comeaux"></td><td><b>Paul Comeaux</b> <span class="k-small k-muted">club rep</span></td><td class="k-r k-num">1540</td><td><span class="k-tag k-tag-open">Active</span> <span class="k-small k-muted">through Jun 2027</span></td><td class="k-small">Active</td><td class="k-small">Mon, Sep 28</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="k-small k-muted" style="margin:0">Plus 2 junior members, counted but never listed; parents manage their details. "Last club night" comes from the optional sign-in QR on your club table.</p>
+      </section>
+
+    </div>
+
+    <aside class="k-side k-stack-lg" style="flex:1 1 380px" aria-label="Club tools">
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="wb-tonight">
+        <div class="k-between">
+          <div class="k-row-sm"><span class="k-num-badge">2</span><h2 id="wb-tonight" class="k-h3" style="margin:0">Tonight</h2></div>
+          <span class="k-tag k-tag-open">Meeting tonight</span>
+        </div>
+        <div class="k-row">
+          <div class="k-date k-date-navy"><b>5</b><span>Oct</span></div>
+          <div><b class="k-ink">Mon, Oct 5 · 6:00–8:30 PM</b><div class="k-small k-muted">Terrebonne Parish North Library</div></div>
+        </div>
+        <div class="k-seg" role="group" aria-label="Tonight's status"><button class="k-seg-on" type="button">On as usual</button><button type="button">Moved</button><button type="button">Cancelled</button></div>
+        <div class="k-field"><label for="wb-note">Note for tonight (optional)</label><input id="wb-note" class="k-input" placeholder="e.g. We're in Meeting Room B tonight"></div>
+        <label class="k-check"><input type="checkbox" checked><span>If it's moved or cancelled, email the 14 followers and show it on the club page</span></label>
+        <button class="k-btn k-btn-navy k-btn-block" type="button">Update tonight</button>
+        <span class="k-small k-muted">Coming up: Mon, Oct 12 · Mon, Oct 19 · Mon, Oct 26 · <a class="k-link" href="#">Skip a date</a></span>
+      </section>
+
+      <section class="k-card k-card-pad k-stack-sm" aria-labelledby="wb-check">
+        <div class="k-between"><h2 id="wb-check" class="k-h3" style="margin:0">Club page checklist</h2><span class="k-small k-strong">4 of 6 done</span></div>
+        <div class="wb-prog" role="img" aria-label="4 of 6 done"><span style="width:67%"></span></div>
+        <ul class="wb-list">
+          <li><svg class="k-i wb-todo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg><span class="wb-grow">Confirm your schedule</span><a class="k-link k-small" href="#">Confirm</a></li>
+          <li><svg class="k-i wb-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="wb-grow">Venue pinned on the map</span><span class="k-small wb-ok">Done</span></li>
+          <li><svg class="k-i wb-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="wb-grow">Logo</span><span class="k-small wb-ok">Done</span></li>
+          <li><svg class="k-i wb-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="wb-grow">Club color</span><span class="k-small wb-ok">Done</span></li>
+          <li><svg class="k-i wb-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span class="wb-grow">Contact email</span><span class="k-small wb-ok">Done</span></li>
+          <li><svg class="k-i wb-todo" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg><span class="wb-grow">Photo of a club night</span><a class="k-link k-small" href="#">Add</a></li>
+        </ul>
+      </section>
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="wb-tourn">
+        <div class="k-between"><div class="k-row-sm"><span class="k-num-badge">5</span><h2 id="wb-tourn" class="k-h3" style="margin:0">Tournaments</h2></div><span class="k-tag k-tag-gold">New for club reps</span></div>
+        <p class="k-small k-muted" style="margin:0">Create a rated club event. LCA reviews it before it goes public; registration then runs on louisianachess.org.</p>
+        <a class="k-btn k-btn-gold k-btn-block" href="Work-D.dc.html"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Create a tournament</a>
+        <div class="wb-ev">
+          <div class="k-between"><b class="k-ink">Houma Fall Quads</b><span class="k-tag k-tag-soon">In LCA review</span></div>
+          <span class="k-small k-muted">3 Mondays, Oct 19 – Nov 2 · 6:00 PM · one round a week · G/60+5 (60 min each + 5 sec per move)</span>
+          <span class="k-small">Submitted today · <a class="k-link" href="#">Edit</a></span>
+        </div>
+        <div class="wb-ev">
+          <div class="k-between"><b class="k-ink">Houma Summer Quads</b><span class="k-tag k-tag-closed">Finished</span></div>
+          <span class="k-small k-muted">Ended Mon, Aug 17 · rating report sent to US Chess</span>
+          <span class="k-small"><a class="k-link" href="#">Copy as a new event</a></span>
+        </div>
+      </section>
+
+      <section class="k-card k-card-pad k-stack" aria-labelledby="wb-news">
+        <div class="k-row-sm"><span class="k-num-badge">4</span><h2 id="wb-news" class="k-h3" style="margin:0">Post club news</h2></div>
+        <div class="k-field"><label for="wb-hl">Headline</label><input id="wb-hl" class="k-input" value="Fall quads start Mon, Oct 19"></div>
+        <div class="k-field"><label for="wb-story">Story</label><textarea id="wb-story" class="k-input wb-area" rows="3">Three Mondays, one round a week. Sign up at the club or online. All ratings welcome.</textarea></div>
+        <label class="k-check"><input type="checkbox" checked><span>Email the 14 followers</span></label>
+        <label class="k-check"><input type="checkbox" checked><span>Suggest for LCA News (LCA reviews it first)</span></label>
+        <div class="k-row-sm">
+          <button class="k-btn k-btn-navy k-btn-sm" type="button">Publish</button>
+          <button class="k-btn k-btn-line k-btn-sm" type="button">Save draft</button>
+          <button class="k-iconbtn" type="button" aria-label="Add photo"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg></button>
+        </div>
+      </section>
+
+    </aside>
+  </div>
+</main>
+
+<section class="k-wrap-wide" style="padding-bottom:36px" aria-label="Notes">
+  <div class="k-callout">
+    <div class="wb-legend">
+      <div><span class="k-num-badge">1</span><span>Freshness loop: one tap here or in the 60-day email stamps "Last confirmed"; visitor reports reach the rep first, then LCA.</span></div>
+      <div><span class="k-num-badge">2</span><span>Tonight status: move or cancel a meeting and the club page and followers update.</span></div>
+      <div><span class="k-num-badge">3</span><span>Structured schedule with a live card preview; it feeds "Meeting tonight" and the weekly calendar.</span></div>
+      <div><span class="k-num-badge">4</span><span>Club news posts to the club page; "Suggest for LCA News" lands in the admin approval queue.</span></div>
+      <div><span class="k-num-badge">5</span><span>Club reps create tournaments in the setup checklist; LCA approves before publishing.</span></div>
+      <div><span class="k-num-badge">6</span><span>Members with renewal status and automatic reminders; juniors are counted, never listed.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Club B — Club mini-site</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.cb-hero{background:#edf4f0}
+.cb-band{height:8px;background:#2f6b4f}
+.cb-crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:#555c6b;padding:18px 0 0}
+.cb-crumbs a{color:#1a2744}
+.cb-hero-in{display:grid;grid-template-columns:132px minmax(0,1fr) 360px;gap:28px;align-items:start;padding:20px 0 34px}
+.cb-logo{width:132px;height:132px;border-radius:18px;background:#ffffff;border:1px solid #d6e3db;padding:10px;box-sizing:border-box}
+.cb-logo .k-img{width:100%;height:100%;border-radius:10px}
+.cb-next{display:flex;flex-direction:column;gap:12px}
+.cb-nextrow{display:flex;gap:12px;align-items:center}
+.cb-nextrow b{display:block;font-size:14.5px;color:#1a2744}
+.cb-nextrow .s{display:block;font-size:12.5px;color:#555c6b;line-height:1.35}
+.cb-stamp{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:#555c6b;border-top:1px solid #ecebe6;padding-top:10px}
+.cb-tabs{background:#ffffff;border-bottom:1px solid #e4e2db;position:sticky;top:0;z-index:5}
+.cb-tabs-in{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.cb-tablist{display:flex;gap:2px;overflow-x:auto}
+.cb-tab{display:inline-flex;align-items:center;gap:6px;padding:15px 14px 12px;font-size:15px;font-weight:600;color:#555c6b;text-decoration:none;border-bottom:3px solid transparent;min-height:50px;box-sizing:border-box;white-space:nowrap}
+.cb-tab-on{color:#1a2744;border-bottom-color:#2f6b4f}
+.cb-sec{padding:42px 0}
+.cb-alt{background:#fbfaf6;border-top:1px solid #ecebe6;border-bottom:1px solid #ecebe6}
+.cb-h{display:flex;align-items:center;gap:10px;margin:0}
+.cb-bar{width:6px;height:24px;border-radius:3px;background:#2f6b4f;flex:none}
+.cb-big{display:block;font-size:28px;font-weight:700;color:#1a2744;font-variant-numeric:tabular-nums;line-height:1.1}
+.cb-faq{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:10px 18px;margin:12px 0 0}
+.cb-faq dt{font-weight:600;color:#1a2744;font-size:14px}
+.cb-faq dd{margin:0;color:#555c6b;font-size:14px}
+.cb-mapbox{position:relative;height:230px;border-radius:12px;overflow:hidden}
+.cb-vlabel{position:absolute;background:#ffffff;border:1px solid #e4e2db;border-radius:8px;padding:4px 8px;font-size:12px;font-weight:600;color:#1a2744;white-space:nowrap}
+.cb-venue{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:#1a2744;line-height:1.4}
+.cb-vno{width:22px;height:22px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cb-facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;margin:0;font-size:13.5px}
+.cb-facts dt{color:#555c6b}
+.cb-facts dd{margin:0;color:#1a2744;font-weight:500}
+.cb-two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:40px;align-items:start}
+.cb-evrow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid #e4e2db}
+.cb-evrow:last-child{border-bottom:0}
+.cb-evrow b{display:block;font-size:16px;color:#1a2744;margin:6px 0 2px}
+.cb-post{padding:16px 0;border-bottom:1px solid #e4e2db;display:flex;flex-direction:column;gap:6px}
+.cb-post:last-child{border-bottom:0}
+.cb-post h3{margin:0}
+.cb-post h3 a{color:#1a2744;text-decoration:none}
+.cb-post p{margin:0}
+.cb-av{width:48px;height:48px;border-radius:50%;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:none}
+.cb-near{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-bottom:1px solid #ecebe6;font-size:13.5px}
+.cb-near:last-child{border-bottom:0}
+.cb-near a{font-weight:600;color:#1a2744}
+.cb-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px 28px}
+.cb-notes p{display:flex;gap:10px;align-items:flex-start;margin:0;font-size:13.5px;color:#1a2744;line-height:1.45}
+@media (max-width:1060px){.cb-hero-in{grid-template-columns:110px minmax(0,1fr)}.cb-next{grid-column:1 / -1}.cb-two{grid-template-columns:1fr}}
+@media (max-width:640px){.cb-hero-in{grid-template-columns:1fr}.cb-logo{width:96px;height:96px}.cb-faq{grid-template-columns:1fr}.cb-evrow{grid-template-columns:auto minmax(0,1fr)}.cb-evrow .k-btn{grid-column:2}}
+</style>
+</helmet>
+<div class="k-page">
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a class="k-nav-on" href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="cb-hero">
+  <div class="cb-band"></div>
+  <div class="k-wrap-wide">
+    <nav class="cb-crumbs" aria-label="Breadcrumb"><a href="Clubs-A.dc.html">Clubs</a><span aria-hidden="true">/</span><a href="Clubs-C.dc.html">South Central Louisiana</a><span aria-hidden="true">/</span><span>Baton Rouge Chess Club</span></nav>
+    <div class="cb-hero-in">
+      <div class="cb-logo"><div class="k-img">Club logo</div></div>
+      <div class="k-stack-sm">
+        <div class="k-row-sm"><span class="k-dot" style="background:#2f6b4f"></span><span class="k-meta">Club colour and logo set by the club rep</span><span class="k-sample">Sample data</span><span class="k-num-badge">1</span></div>
+        <h1 class="k-h1" style="margin:0">Baton Rouge Chess Club</h1>
+        <p class="k-lead" style="margin:0;max-width:640px">Long games at the library on Saturday mornings and a casual night over boba on Wednesdays, in Baton Rouge.</p>
+        <div class="k-row-sm">
+          <span class="k-tag">Sat 10:00 AM · long games</span>
+          <span class="k-tag">Wed 6:00 PM · casual</span>
+          <span class="k-tag">South Central Louisiana</span>
+        </div>
+        <div class="k-row" style="margin-top:8px">
+          <a class="k-btn k-btn-gold" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Follow this club</a>
+          <a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add both nights to calendar</a>
+          <a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Directions</a>
+          <span class="k-num-badge">2</span>
+        </div>
+      </div>
+      <aside class="k-card k-card-pad cb-next" aria-label="Next meetings">
+        <span class="k-label">Next at the club</span>
+        <div class="cb-nextrow"><span class="k-date k-date-navy"><b>7</b><span>Oct</span></span><div><b>Wed, Oct 7 · 6:00 PM</b><span class="s">Casual night · Boba ParTea, O'Neil Lane</span></div></div>
+        <div class="cb-nextrow"><span class="k-date"><b>10</b><span>Oct</span></span><div><b>Sat, Oct 10 · 10:00 AM</b><span class="s">Long games (90 min each + 30 sec a move) · Jones Creek Branch Library</span></div></div>
+        <div class="cb-nextrow"><span class="k-date"><b>14</b><span>Oct</span></span><div><b>Wed, Oct 14 · 6:00 PM</b><span class="s">Casual night · Boba ParTea</span></div></div>
+        <div class="cb-stamp"><span>Last confirmed Sept 2026</span><a class="k-link" href="#">Report outdated info</a></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<div class="cb-tabs">
+  <div class="k-wrap-wide cb-tabs-in">
+    <nav class="cb-tablist" aria-label="Club sections">
+      <a class="cb-tab cb-tab-on" href="#about" aria-current="true">About</a>
+      <a class="cb-tab" href="#events">Events <span class="k-chip-count">3</span></a>
+      <a class="cb-tab" href="#news">News <span class="k-chip-count">3</span></a>
+      <a class="cb-tab" href="#leaderboard">Leaderboard</a>
+      <a class="cb-tab" href="#contact">Contact</a>
+    </nav>
+    <div class="k-row-sm"><span class="k-meta">Run by the club, hosted by LCA</span><span class="k-num-badge">3</span><a class="k-btn k-btn-ghost k-btn-sm" href="#">Club rep? Edit this page</a></div>
+  </div>
+</div>
+
+<section id="about" class="cb-sec">
+  <div class="k-wrap-wide k-split">
+    <div class="k-main k-stack-lg">
+      <div class="k-stack-sm">
+        <h2 class="k-h2 cb-h"><span class="cb-bar"></span>About the club</h2>
+        <p class="k-body" style="margin:0;max-width:720px">[Club description written by the club rep: how long the club has met, who comes, and what a typical Saturday or Wednesday feels like.]</p>
+      </div>
+      <div class="k-grid-2">
+        <div class="k-card k-card-pad k-stack-sm">
+          <span class="k-label">Saturdays</span>
+          <span class="cb-big">10:00 AM</span>
+          <p class="k-body" style="margin:0">Long games: G/90+30, which means 90 minutes each plus 30 seconds a move</p>
+          <p class="k-meta" style="margin:0">Jones Creek Branch Library · [Room name]</p>
+          <a class="k-link k-small" href="#">Directions</a>
+        </div>
+        <div class="k-card k-card-pad k-stack-sm">
+          <span class="k-label">Wednesdays</span>
+          <span class="cb-big">6:00 PM</span>
+          <p class="k-body" style="margin:0">Casual games</p>
+          <p class="k-meta" style="margin:0">Boba ParTea, O'Neil Lane</p>
+          <a class="k-link k-small" href="#">Directions</a>
+        </div>
+      </div>
+      <div class="k-card k-card-pad">
+        <h3 class="k-h4" style="margin:0">First time here?</h3>
+        <dl class="cb-faq">
+          <dt>Do I need a rating or an LCA membership?</dt><dd>[Answer from the club rep]</dd>
+          <dt>What should I bring?</dt><dd>[e.g. a board and clock if you have them]</dd>
+          <dt>Who do I ask for?</dt><dd>[Name], [where to find them]</dd>
+        </dl>
+      </div>
+    </div>
+    <aside class="k-side k-stack">
+      <div class="k-card k-card-pad k-stack-sm">
+        <div class="k-map cb-mapbox" role="img" aria-label="Map of the club's two Baton Rouge venues">
+          <div class="k-pin k-pin-gold" style="left:66%;top:34%"></div>
+          <div class="k-pin" style="left:38%;top:62%"></div>
+          <span class="cb-vlabel" style="left:52%;top:12%">1 · Sat: Jones Creek Branch Library</span>
+          <span class="cb-vlabel" style="left:8%;top:72%">2 · Wed: Boba ParTea</span>
+        </div>
+        <div class="cb-venue"><span class="cb-vno">1</span><span><b>Jones Creek Branch Library</b><br><span class="k-meta">Saturdays · [Street address] · <a class="k-link" href="#">Directions</a></span></span></div>
+        <div class="cb-venue"><span class="cb-vno">2</span><span><b>Boba ParTea</b><br><span class="k-meta">Wednesdays · O'Neil Lane · <a class="k-link" href="#">Directions</a></span></span></div>
+      </div>
+      <div class="k-card k-card-pad k-stack-sm">
+        <span class="k-label">Club facts</span>
+        <dl class="cb-facts">
+          <dt>Region</dt><dd>South Central Louisiana</dd>
+          <dt>Meets</dt><dd>Sat 10:00 AM · Wed 6:00 PM</dd>
+          <dt>Founded</dt><dd>[Year]</dd>
+          <dt>LCA members</dt><dd>14 list this as their club <span class="k-sample">Sample data</span></dd>
+          <dt>Club colour</dt><dd><span class="k-dot" style="background:#2f6b4f"></span> Forest green</dd>
+        </dl>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="cb-sec cb-alt">
+  <div class="k-wrap-wide cb-two">
+    <div id="events">
+      <div class="k-between" style="margin-bottom:6px">
+        <h2 class="k-h2 cb-h"><span class="cb-bar"></span>Events</h2>
+        <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Club calendar feed</a>
+      </div>
+      <div class="cb-evrow">
+        <span class="k-date"><b>24</b><span>Oct</span></span>
+        <div>
+          <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-meta">In Baton Rouge</span></div>
+          <b>The Baton Rouge Classic</b>
+          <span class="k-meta">Sat–Sun, Oct 24–25 · organized by Downriver Chess · classical · all ages</span>
+        </div>
+        <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+      </div>
+      <div class="cb-evrow">
+        <span class="k-date k-date-navy"><b>7</b><span>Nov</span></span>
+        <div>
+          <div class="k-row-sm"><span class="k-tag k-tag-open">Registration open</span><span class="k-tag">Club event</span><span class="k-sample">Sample data</span></div>
+          <b>Saturday Quads</b>
+          <span class="k-meta">Sat, Nov 7 · Jones Creek Branch Library · groups of four by rating, 3 games each</span>
+          <span class="k-small"><b style="display:inline;font-size:13px;margin:0">6 of 16</b> registered</span>
+        </div>
+        <a class="k-btn k-btn-gold k-btn-sm" href="#">Register</a>
+      </div>
+      <div class="cb-evrow">
+        <span class="k-date k-date-navy"><b>21</b><span>Nov</span></span>
+        <div>
+          <div class="k-row-sm"><span class="k-tag k-tag-open">Registration open</span><span class="k-tag">Club event</span><span class="k-sample">Sample data</span><span class="k-num-badge">4</span></div>
+          <b>Baton Rouge Club Championship</b>
+          <span class="k-meta">Sat–Sun, Nov 21–22 · Jones Creek Branch Library · 5 rounds of long games</span>
+          <span class="k-small"><b style="display:inline;font-size:13px;margin:0">18 of 40</b> registered</span>
+        </div>
+        <a class="k-btn k-btn-gold k-btn-sm" href="#">Register</a>
+      </div>
+      <p class="k-meta" style="margin:8px 0 0">Club events register here on louisianachess.org. Partner events open the organizer's own site.</p>
+    </div>
+
+    <div id="news">
+      <div class="k-between" style="margin-bottom:6px">
+        <h2 class="k-h2 cb-h"><span class="cb-bar"></span>Club news</h2>
+        <span class="k-sample">Sample data</span>
+      </div>
+      <article class="cb-post">
+        <span class="k-meta">Mon, Sep 28 · Paul Comeaux, club rep</span>
+        <h3 class="k-h4"><a href="#">Wednesday casual nights: what to expect</a></h3>
+        <p class="k-small">How a casual night at Boba ParTea works, from finding a free board to joining a game already going.</p>
+        <span class="k-tag k-tag-gold" style="align-self:flex-start">Also shared on LCA News</span>
+      </article>
+      <article class="cb-post">
+        <span class="k-meta">Sat, Sep 19 · Paul Comeaux, club rep</span>
+        <h3 class="k-h4"><a href="#">September Saturday results</a></h3>
+        <p class="k-small">Results from the September Saturday games, with the crosstable and two games worth replaying.</p>
+      </article>
+      <article class="cb-post">
+        <span class="k-meta">Tue, Sep 8 · Paul Comeaux, club rep</span>
+        <h3 class="k-h4"><a href="#">Two more clocks needed</a></h3>
+        <p class="k-small">Saturdays are filling up. If you have a spare digital clock, bring it along.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="leaderboard" class="cb-sec">
+  <div class="k-wrap-wide k-split">
+    <div class="k-main k-stack">
+      <div class="k-between">
+        <h2 class="k-h2 cb-h"><span class="cb-bar"></span>Leaderboard</h2>
+        <div class="k-seg" role="group" aria-label="Rank by"><button class="k-seg-on" type="button">Rating</button><button type="button">Games this season</button><button type="button">Most improved</button></div>
+      </div>
+      <div class="k-tablebox">
+        <table class="k-table">
+          <caption>Players who list Baton Rouge Chess Club, by US Chess rating · club games since Jan 2026 <span class="k-sample">Sample data</span></caption>
+          <thead>
+            <tr><th class="k-c" scope="col">#</th><th scope="col">Player</th><th class="k-r" scope="col">Rating</th><th class="k-r" scope="col">Club games</th><th class="k-r" scope="col">Change this season</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="k-c">1</td><td><a class="k-link" href="#">Marcus Landry</a></td><td class="k-r k-num">2014</td><td class="k-r k-num">22</td><td class="k-r k-num">+18</td></tr>
+            <tr><td class="k-c">2</td><td><a class="k-link" href="#">Priya Shah</a></td><td class="k-r k-num">1803</td><td class="k-r k-num">19</td><td class="k-r k-num">+41</td></tr>
+            <tr><td class="k-c">3</td><td><a class="k-link" href="#">Camille Broussard</a></td><td class="k-r k-num">1744</td><td class="k-r k-num">25</td><td class="k-r k-num">−8</td></tr>
+            <tr><td class="k-c">4</td><td><a class="k-link" href="#">Isaac Dupre</a></td><td class="k-r k-num">1688</td><td class="k-r k-num">14</td><td class="k-r k-num">+15</td></tr>
+            <tr><td class="k-c">5</td><td><a class="k-link" href="#">Sam Nguyen</a></td><td class="k-r k-num">1650</td><td class="k-r k-num">27</td><td class="k-r k-num">+63</td></tr>
+            <tr><td class="k-c">6</td><td><a class="k-link" href="#">Nora Hebert</a></td><td class="k-r k-num">1577</td><td class="k-r k-num">11</td><td class="k-r k-num">+9</td></tr>
+            <tr class="k-tr-me"><td class="k-c">12</td><td><a class="k-link" href="#">Jordan Lee</a> (you)</td><td class="k-r k-num">1388</td><td class="k-r k-num">8</td><td class="k-r k-num">+24</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <aside class="k-side k-stack">
+      <div class="k-card k-card-pad k-stack-sm">
+        <span class="k-label">Where these numbers come from <span class="k-num-badge">5</span></span>
+        <p class="k-small" style="margin:0">Results from club events and LCA tournaments, matched by US Chess ID. Each name opens the player's results page.</p>
+        <p class="k-small" style="margin:0">Players can hide themselves from club leaderboards in My LCA.</p>
+      </div>
+      <div class="k-card k-card-pad k-stack-sm">
+        <span class="k-label">Most improved this season</span>
+        <b class="k-ink" style="font-size:18px">Sam Nguyen · +63</b>
+        <span class="k-meta">27 club games since January <span class="k-sample">Sample data</span></span>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section id="contact" class="cb-sec cb-alt">
+  <div class="k-wrap-wide k-split">
+    <div class="k-main">
+      <div class="k-card k-card-pad k-stack">
+        <div class="k-row"><span class="cb-av">PC</span><div class="k-stack-sm" style="gap:2px"><span class="k-label">Club rep</span><b class="k-ink" style="font-size:17px">Paul Comeaux</b></div><span class="k-sample">Sample data</span></div>
+        <div class="k-stack-sm">
+          <h2 class="k-h2 cb-h"><span class="cb-bar"></span>Contact the club</h2>
+          <p class="k-small" style="margin:0">Your message goes to the club rep by email. Their address stays private. <span class="k-num-badge">6</span></p>
+        </div>
+        <div class="k-grid-2">
+          <div class="k-field"><label for="cb-name">Your name</label><input id="cb-name" class="k-input" placeholder="First and last name"></div>
+          <div class="k-field"><label for="cb-email">Your email</label><input id="cb-email" class="k-input" placeholder="So the club can reply"></div>
+        </div>
+        <div class="k-field"><label for="cb-msg">Message</label><textarea id="cb-msg" class="k-input" rows="4" placeholder="e.g. I just moved to Baton Rouge. Is a Wednesday a good first visit?"></textarea></div>
+        <div class="k-row"><button class="k-btn k-btn-navy" type="button">Send message</button><span class="k-meta">Spam-checked before it reaches the club</span></div>
+      </div>
+    </div>
+    <aside class="k-side k-stack">
+      <div class="k-card k-card-pad k-stack-sm">
+        <span class="k-label">Elsewhere</span>
+        <a class="k-link" href="#">Facebook: [Club Facebook page]</a>
+        <a class="k-link" href="#">Website: [Club website]</a>
+      </div>
+      <div class="k-card k-card-pad k-stack-sm">
+        <span class="k-label">Is this page right?</span>
+        <p class="k-small" style="margin:0">Last confirmed by the club rep in Sept 2026.</p>
+        <a class="k-btn k-btn-line k-btn-sm" href="#">Report outdated info</a>
+      </div>
+      <div class="k-card k-card-pad">
+        <span class="k-label">Nearby clubs</span>
+        <div class="cb-near"><a href="#">Bluebonnet Chess Club</a><span class="k-meta">Baton Rouge · 1st &amp; 3rd Sun, 4:30 PM · next Sun, Oct 18</span></div>
+        <div class="cb-near"><a href="Club-C.dc.html">Gonzales Chess Club</a><span class="k-meta">Gonzales area · schedule not listed</span></div>
+        <div class="cb-near"><a href="#">Heart of Worship Church</a><span class="k-meta">Opelousas · Fri, 5:30–7:00 PM</span></div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section style="padding:30px 0 40px">
+  <div class="k-wrap-wide">
+    <div class="k-card k-card-pad k-stack-sm">
+      <span class="k-label">Notes on this option</span>
+      <div class="cb-notes">
+        <p><span class="k-num-badge">1</span>The club rep sets the colour and uploads the logo. The colour appears only as a band, a light tint, heading bars and dots, never as text.</p>
+        <p><span class="k-num-badge">2</span>Follow sends a short email when the club posts news or adds an event. Add to calendar subscribes to both weekly nights.</p>
+        <p><span class="k-num-badge">3</span>The tabs jump to sections of one page, so a link like /clubs/baton-rouge#events can be shared.</p>
+        <p><span class="k-num-badge">4</span>Club-run events use LCA registration and show "X of Y registered". Partner events link to the organizer's site.</p>
+        <p><span class="k-num-badge">5</span>The leaderboard is built from LCA's results archive, and players can opt out.</p>
+        <p><span class="k-num-badge">6</span>The contact form relays messages, so no rep's email address is ever published.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2850}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

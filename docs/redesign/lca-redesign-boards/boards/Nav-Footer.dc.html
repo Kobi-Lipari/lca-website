@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Footer · 3 options</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744}
+.nf-top{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;margin-bottom:30px}
+.nf-legend{width:660px;flex:none;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:16px 18px}
+.nf-lgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px}
+.nf-li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.4}
+.nf-li .k-num-badge{flex:none}
+.nf-opt{margin-top:30px}
+.nf-lab{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+.nf-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.nf-code{display:inline-flex;align-items:center;justify-content:center;min-width:40px;height:28px;padding:0 8px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.nf-frame{border-radius:14px;overflow:hidden;box-shadow:0 20px 50px rgba(16,24,43,.12)}
+.nf-ring{box-shadow:0 0 0 2px #ffffff}
+.nf-navy{background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}
+.nf-in{padding:40px 48px 0}
+.nf-cols{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr 1.25fr;gap:36px}
+.nf-brand{display:flex;align-items:center;gap:12px}
+.nf-brand .k-mark{width:44px;height:44px}
+.nf-bn{display:flex;flex-direction:column;line-height:1.25}
+.nf-bn b{font-size:17px}
+.nf-bn span{font-size:13px;color:rgba(255,255,255,.75)}
+.nf-p{font-size:14px;line-height:1.5;color:rgba(255,255,255,.8);margin:14px 0 16px}
+.nf-h{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86;margin:4px 0 10px}
+.nf-links{display:flex;flex-direction:column}
+.nf-links a{display:flex;align-items:center;gap:6px;min-height:32px;color:#ffffff;text-decoration:none;font-size:14.5px}
+.nf-base{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:30px;padding:16px 0 18px;border-top:1px solid rgba(255,255,255,.16);font-size:13px;color:rgba(255,255,255,.78)}
+.nf-base .k-mark{width:22px;height:22px}
+.nf-baselinks{display:flex;gap:18px}
+.nf-baselinks a{color:#ffffff;text-decoration:none}
+.nf-doors{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.nf-door{display:flex;flex-direction:column;gap:8px;min-height:200px;padding:22px;border-radius:14px;background:#24335a;color:#ffffff;text-decoration:none;border:1px solid rgba(255,255,255,.14)}
+.nf-door b{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:600;letter-spacing:-.01em}
+.nf-door span{font-size:14px;line-height:1.45;color:rgba(255,255,255,.82)}
+.nf-door .k-i{color:#c8a94a}
+.nf-door .nf-go{margin-top:auto;display:inline-flex;align-items:center;gap:6px;color:#e6cf86;font-weight:600;font-size:15px}
+.nf-door-gold{background:#c8a94a;border-color:#c8a94a;color:#1a2744}
+.nf-door-gold span{color:#1a2744}
+.nf-door-gold .k-i{color:#1a2744}
+.nf-door-gold .nf-go{color:#1a2744}
+.nf-slim{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:26px;font-size:14px}
+.nf-slim a{color:#ffffff;text-decoration:none;display:inline-flex;align-items:center;gap:4px;min-height:30px}
+.nf-light{background:#fbfaf6;color:#1a2744;border-top:3px solid #1a2744}
+.nf-trust{display:grid;grid-template-columns:1.15fr 1fr 1.1fr;gap:20px}
+.nf-card{background:#ffffff;border:1px solid #e3e2dc;border-radius:14px;padding:20px 22px}
+.nf-h2{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:17px;font-weight:600}
+.nf-fact{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid #efeee9;font-size:14px;line-height:1.4}
+.nf-fact > span{display:flex;flex-direction:column;gap:1px}
+.nf-fact .k-i{flex:none;margin-top:1px;color:#866a1e}
+.nf-mut{color:#555c6b;font-size:13.5px}
+.nf-mail{display:inline-flex;align-items:center;gap:8px;font-size:19px;font-weight:600;color:#1a2744;text-decoration:underline;text-underline-offset:4px;text-decoration-color:#866a1e}
+.nf-p2{font-size:14px;color:#555c6b;margin:6px 0 12px;line-height:1.45}
+.nf-fresh{display:flex;flex-wrap:wrap;gap:8px 28px;align-items:center;margin-top:18px;padding:12px 18px;border-radius:12px;background:#efeee8;font-size:13.5px}
+.nf-fresh > span{display:inline-flex;align-items:center;gap:8px}
+.nf-base2{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-top:18px;padding:16px 0 18px;border-top:1px solid #e3e2dc;font-size:13px;color:#555c6b}
+.nf-base2 .nf-baselinks a{color:#1a2744}
+</style>
+</helmet>
+<div style="width:1440px;height:1800px;box-sizing:border-box;padding:40px 48px;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744">
+
+  <div class="nf-top">
+    <div style="max-width:600px">
+      <div class="k-kicker">Navigation · Footer</div>
+      <h1 class="k-h1" style="margin:6px 0 10px">Footer · 3 options</h1>
+      <p class="k-body k-muted" style="margin:0">Three complete footers. All keep the Facebook link, the US Chess affiliate line and a real contact address. On phones the link columns fold into tap-to-open groups. <span class="k-sample">Sample data</span></p>
+    </div>
+    <div class="nf-legend">
+      <div class="k-label" style="margin-bottom:12px">Notes</div>
+      <div class="nf-lgrid">
+        <div class="nf-li"><span class="k-num-badge">1</span><span>The affiliate line (US Chess, since 1915) repeats on every page.</span></div>
+        <div class="nf-li"><span class="k-num-badge">2</span><span>Door lines come from live data: tonight's meetings and current dues.</span></div>
+        <div class="nf-li"><span class="k-num-badge">3</span><span>Computed, not typed: last content change, last clearinghouse sync, club schedule confirmations.</span></div>
+        <div class="nf-li"><span class="k-num-badge">4</span><span>The Monday digest is generated from the calendar; nobody writes it.</span></div>
+        <div class="nf-li"><span class="k-num-badge">5</span><span>One real inbox up front, plus help tickets for website problems.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- F1 -->
+  <section class="nf-opt" style="margin-top:0">
+    <div class="nf-lab"><span class="nf-code">F1</span><h2>Refined four columns · Play / Community / About LCA / Contact</h2><span class="k-meta">Plain links, affiliate line on every page</span></div>
+    <div class="nf-frame">
+      <footer class="nf-navy">
+        <div class="nf-in">
+          <div class="nf-cols">
+            <div>
+              <div class="nf-brand"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="nf-bn"><b>Louisiana Chess Association</b><span>Louisiana's chess community since 1915</span></span></div>
+              <p class="nf-p">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+              <div class="k-row-sm"><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Donate</a></div>
+            </div>
+            <nav aria-label="Play">
+              <h3 class="nf-h">Play</h3>
+              <div class="nf-links"><a href="#">Tournaments</a><a href="#">Tournament calendar</a><a href="#">Results &amp; crosstables</a><a href="#">Scholastic chess</a><a href="#">State champions</a><a href="#">Scoresheet scanner</a></div>
+            </nav>
+            <nav aria-label="Community">
+              <h3 class="nf-h">Community</h3>
+              <div class="nf-links"><a href="#">Find a club</a><a href="#">Club map</a><a href="#">List or update your club</a><a href="#">News</a><a href="#">LCA on Facebook<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+            </nav>
+            <nav aria-label="About LCA">
+              <h3 class="nf-h">About LCA</h3>
+              <div class="nf-links"><a href="#">About LCA</a><a href="#">Board of directors</a><a href="#">Bylaws &amp; documents</a><a href="#">Meeting minutes</a><a href="#">Annual meeting</a></div>
+            </nav>
+            <div>
+              <h3 class="nf-h">Contact</h3>
+              <div class="nf-links"><a href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>LouisianaChess@gmail.com</a><a href="#">Contact form</a><a href="#">Website help</a><a href="#">Membership help</a></div>
+            </div>
+          </div>
+          <div class="nf-base">
+            <span class="k-row-sm">Louisiana Chess Association · US Chess state affiliate · since 1915 · © 2026 <span class="k-num-badge nf-ring">1</span></span>
+            <span class="nf-baselinks"><a href="#">Privacy</a><a href="#">Accessibility</a><a href="#">Website help</a></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+  <!-- F2 -->
+  <section class="nf-opt">
+    <div class="nf-lab"><span class="nf-code">F2</span><h2>Doors footer · four big next steps, then a slim sitemap</h2><span class="k-meta">Every page ends on an action</span></div>
+    <div class="nf-frame">
+      <footer class="nf-navy">
+        <div class="nf-in">
+          <div class="nf-doors">
+            <a class="nf-door nf-door-gold" href="#"><svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg><b>Join LCA</b><span>Adult $15 · Scholastic $5 · Family $25 · Senior $10 a year. Tournament entry discounts and voting rights.</span><span class="nf-go">Join now<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+            <a class="nf-door" href="#"><svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg><b>Find a club <span class="k-num-badge nf-ring">2</span></b><span>Tonight: 6 clubs meet, from Shreveport-Bossier at 1:00 PM to Downriver in New Orleans at 7:00 PM.</span><span class="nf-go">Clubs near me<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+            <a class="nf-door" href="#"><svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 7.5 3c0 5.4-7.5 10-7.5 10z"></path></svg><b>Donate</b><span>Help keep tournaments, clubs and scholastic chess going across Louisiana. Secure card checkout.</span><span class="nf-go">Give now<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+            <a class="nf-door" href="#"><svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 20.5h10M9 20.5c0-3 1.5-5 3-6.5-1.8.4-3.4-.2-4.5-1.5L9.5 9c.6-2.4 2.6-4.5 5.5-4.5 2.8 0 4.5 2.5 4.5 6.5v9.5"></path></svg><b>Volunteer as a TD</b><span>Every rated event needs tournament directors. Start as an assistant at an upcoming LCA event.</span><span class="nf-go">Raise your hand<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></span></a>
+          </div>
+          <nav class="nf-slim" aria-label="Footer">
+            <a href="#">Tournaments</a><a href="#">Calendar</a><a href="#">Results</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a><a href="#">Board</a><a href="#">Bylaws &amp; minutes</a><a href="#">State champions</a><a href="#">Contact</a><a href="#">Website help</a><a href="#">Facebook<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          </nav>
+          <div class="nf-base">
+            <span class="k-row-sm"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>Louisiana Chess Association · US Chess state affiliate · since 1915</span>
+            <span>LouisianaChess@gmail.com</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+  <!-- F3 -->
+  <section class="nf-opt">
+    <div class="nf-lab"><span class="nf-code">F3</span><h2>Trust footer · who runs LCA, a real contact, a Monday digest, a freshness line</h2><span class="k-meta">Light footer; the grey line is computed</span></div>
+    <div class="nf-frame">
+      <footer class="nf-light">
+        <div class="nf-in">
+          <div class="nf-trust">
+            <div class="nf-card">
+              <h3 class="nf-h2">Who runs LCA</h3>
+              <div class="nf-fact"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span><b>US Chess state affiliate</b><span class="nf-mut">The official state chess association for Louisiana</span></span></div>
+              <div class="nf-fact"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg><span><b>Serving Louisiana players since 1915</b><span class="nf-mut">110+ years of tournaments, clubs and champions</span></span></div>
+              <div class="nf-fact"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg><span><b>A volunteer board elected by members</b><a class="k-link" href="#">Meet the officers and regional representatives</a></span></div>
+              <div class="nf-fact"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg><span><b>Bylaws &amp; minutes in the open</b><span class="nf-mut">Latest minutes posted Sep 14, 2026 · <a class="k-link" href="#">Read them</a></span></span></div>
+            </div>
+            <div class="nf-card">
+              <h3 class="nf-h2">Talk to a person <span class="k-num-badge">5</span></h3>
+              <a class="nf-mail" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>LouisianaChess@gmail.com</a>
+              <p class="nf-p2">The association's main inbox, for membership, tournaments and anything else.</p>
+              <div class="nf-fact"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span><b>Something broken on the site?</b><a class="k-link" href="#">Open a website help ticket</a></span></div>
+              <div class="nf-fact"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg><span><b>LCA on Facebook</b><a class="k-link" href="#">Photos and announcements</a></span></div>
+            </div>
+            <div class="nf-card">
+              <h3 class="nf-h2">The Monday digest <span class="k-num-badge">4</span></h3>
+              <p class="nf-p2">Every Monday morning: that week's club meetings and tournaments in your region. It's built from the calendar, so it's never out of date.</p>
+              <div class="k-field"><label for="nf-email">Email</label><input id="nf-email" class="k-input" placeholder="you@example.com"></div>
+              <div class="k-row-sm" style="margin-top:10px">
+                <button class="k-btn k-btn-line k-btn-sm" type="button">All regions<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+                <label class="k-check"><input type="checkbox"> Scholastic only</label>
+              </div>
+              <button class="k-btn k-btn-gold k-btn-block" type="button" style="margin-top:12px">Subscribe</button>
+              <div class="k-small k-muted" style="margin-top:8px">One email a week. Unsubscribe in one click.</div>
+            </div>
+          </div>
+          <div class="nf-fresh">
+            <span class="k-num-badge">3</span>
+            <span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg><b>Site last updated</b> Mon, Oct 5, 2026 at 6:12 AM</span>
+            <span>Calendar synced with the Gulf South clearinghouse 2 hours ago</span>
+            <span>23 of 25 clubs confirmed their meeting times in the last 90 days</span>
+          </div>
+          <div class="nf-base2">
+            <span>Louisiana Chess Association · US Chess state affiliate · since 1915 · © 2026</span>
+            <span class="nf-baselinks"><a href="#">Privacy</a><a href="#">Accessibility</a><a href="#">Bylaws &amp; minutes</a></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

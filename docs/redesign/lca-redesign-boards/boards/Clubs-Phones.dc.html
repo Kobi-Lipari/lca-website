@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clubs Phones — list, map, week, filters</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.p-board{width:1960px;height:1100px;min-height:1100px;box-sizing:border-box;background:#ecebe6;padding:22px 44px 14px;overflow:hidden;display:flex;flex-direction:column;gap:14px;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.p-top{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;min-height:52px}
+.p-title{font-size:28px;line-height:32px;font-weight:700;letter-spacing:-.01em;margin:2px 0 0}
+.p-topr{display:flex;align-items:center;gap:14px;max-width:980px}
+.p-phones{display:flex;justify-content:space-between;align-items:flex-start}
+.p-col{width:414px;flex:none;display:flex;flex-direction:column;gap:6px}
+.p-scr{position:relative;overflow:hidden}
+.p-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 10px 0 14px;min-height:60px;position:relative;z-index:3}
+.p-app .k-brand{gap:8px}
+.p-app .k-mark{width:28px;height:28px}
+.p-app .k-brand-name b{font-size:15px}
+.p-app .k-brand-name span{font-size:11px}
+.p-app .k-menubtn{display:inline-flex;min-height:44px;padding:0 10px}
+.p-nav{display:flex;align-items:center;gap:2px}
+.p-key{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;white-space:nowrap}
+.p-body{padding:16px;display:flex;flex-direction:column;gap:14px}
+.p-h1{font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:0}
+.p-h2{font-size:19px;line-height:1.25;font-weight:700;margin:0}
+.p-h3{font-size:16px;line-height:1.3;font-weight:600;margin:0}
+.p-t{font-size:14px;line-height:1.45}
+.p-m{font-size:13px;line-height:1.4;color:#555c6b}
+.p-xs{font-size:12px;line-height:1.35;color:#555c6b}
+.p-ink{color:#1a2744}
+.p-card{background:#ffffff;border:1px solid #e2e1da;border-radius:12px}
+.p-ln{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.p-r{display:flex;align-items:center;gap:8px}
+.p-st{display:flex;flex-direction:column;gap:6px}
+.p-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.p-grow{flex:1;min-width:0}
+.p-chips{display:flex;gap:8px;overflow:hidden}
+.p-scr .k-chip{min-height:44px;flex:none;white-space:nowrap}
+.p-scr .k-btn{min-height:44px}
+.p-row{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-top:1px solid #e2e1da;color:#1a2744;text-decoration:none}
+.p-dim{position:absolute;left:0;right:0;top:0;bottom:0;background:rgba(26,39,68,.5);z-index:4}
+.p-sheet{position:absolute;left:0;right:0;bottom:0;z-index:5;background:#ffffff;border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(26,39,68,.22);display:flex;flex-direction:column}
+.p-handle{width:40px;height:5px;border-radius:3px;background:#c9c8c0;margin:8px auto 2px;flex:none}
+.p-search{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 4px 0 12px;border:1px solid #c9c8c0;border-radius:10px;background:#ffffff;color:#555c6b;box-sizing:border-box}
+.p-search input{border:0;outline:0;background:transparent;font:inherit;font-size:16px;color:#1a2744;flex:1;min-width:0;padding:0;height:44px}
+.p-nb{position:absolute;z-index:6}
+.p-legend{display:flex;gap:28px;flex-wrap:wrap;align-items:center;font-size:13px;line-height:18px;color:#555c6b;margin-top:2px}
+.p-lg{display:inline-flex;align-items:center;gap:6px}
+.p-lg b{color:#1a2744;font-weight:600}
+.p-fab{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);z-index:2;box-shadow:0 6px 18px rgba(26,39,68,.3);border-radius:999px;padding:0 22px}
+.p-club{display:flex;gap:12px;padding:12px 0;border-top:1px solid #e2e1da}
+.p-when{width:74px;flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.p-when small{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#555c6b}
+.p-when b{font-size:15px;line-height:1.2;font-variant-numeric:tabular-nums}
+.p-cname{font-size:16px;line-height:1.3;font-weight:600;color:#1a2744;text-decoration:none}
+.p-cdot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+.p-pill{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border-radius:999px;background:#eef0f4;font-size:12px;font-weight:500;color:#1a2744}
+.p-mapwrap{position:absolute;left:0;right:0;top:60px;bottom:0;background:#e9e8e2}
+.p-maptop{position:absolute;left:12px;right:12px;top:72px;display:flex;gap:8px;z-index:2}
+.p-maptop .p-search{flex:1;box-shadow:0 2px 8px rgba(26,39,68,.15)}
+.p-maptop .k-btn{background:#ffffff;box-shadow:0 2px 8px rgba(26,39,68,.15)}
+.p-area{position:absolute;left:50%;top:132px;transform:translateX(-50%);z-index:2;box-shadow:0 2px 8px rgba(26,39,68,.2);border-radius:999px;background:#ffffff}
+.p-sel{border:2px solid #1a2744;border-radius:12px;padding:12px;position:relative}
+.p-week{display:flex;gap:8px;overflow:hidden}
+.p-wcol{width:172px;flex:none;display:flex;flex-direction:column;gap:6px}
+.p-whead{display:flex;justify-content:space-between;align-items:center;min-height:40px;padding:0 10px;border-radius:10px;background:#ffffff;border:1px solid #e2e1da;font-size:14px;font-weight:600;box-sizing:border-box}
+.p-whead-on{background:#1a2744;border:1px solid #1a2744;color:#ffffff}
+.p-whead-on span{font-size:12px;color:#d5d9e3;font-weight:500}
+.p-mt{display:flex;flex-direction:column;gap:1px;min-height:58px;padding:8px 10px;border:1px solid #e2e1da;border-radius:10px;background:#ffffff;color:#1a2744;text-decoration:none;box-sizing:border-box}
+.p-mt b{font-size:14px;line-height:1.25;font-variant-numeric:tabular-nums}
+.p-mt span{font-size:13px;font-weight:600;line-height:1.25}
+.p-mt small{font-size:12px;color:#555c6b;line-height:1.3}
+.p-pager{display:flex;gap:5px;align-items:center}
+.p-pager i{display:block;width:6px;height:6px;border-radius:50%;background:#c9c8c0}
+.p-pager i:first-child{background:#1a2744;width:16px;border-radius:3px}
+.p-sbody{flex:1;min-height:0;overflow:hidden;padding:4px 16px 12px;display:flex;flex-direction:column;gap:16px}
+.p-sfoot{flex:none;display:flex;gap:10px;padding:12px 16px 20px;border-top:1px solid #e2e1da;position:relative}
+.p-sg{display:flex;flex-direction:column;gap:8px}
+.p-dch{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.p-dch .k-chip{padding:0;justify-content:center;display:flex;align-items:center;min-width:0}
+.p-seg3{display:flex;width:100%}
+.p-seg3 button{flex:1;min-height:44px;font-size:13px;padding:0 4px}
+.p-tog{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding-top:8px;border-top:1px solid #e2e1da}
+.p-tog b{display:block;font-size:14px;font-weight:600}
+.p-tog small{display:block;font-size:12px;color:#555c6b}
+.p-tog input{width:22px;height:22px;margin:0;accent-color:#1a2744;flex:none}
+</style>
+</helmet>
+<div class="k-page p-board">
+
+  <div class="p-top">
+    <div>
+      <div class="k-kicker">Clubs · phone, 390 px</div>
+      <h1 class="p-title">Clubs on a phone: list, map, this week, filters</h1>
+    </div>
+    <div class="p-topr">
+      <span class="k-sample">Sample data</span>
+      <div class="k-small k-muted">Mon, Oct 5, 2026, 4:40 PM. Club names, places and meeting times are real (LCA club map data); region assignments, "Confirmed" dates, club colours and badges are sample.</div>
+    </div>
+  </div>
+
+  <div class="p-phones">
+
+    <!-- 1 · List with Map toggle -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key" href="#">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:12px">
+          <div><h2 class="p-h1">Clubs</h2><div class="p-m">25 clubs in 7 regions · sorted by next meeting</div></div>
+          <div class="p-search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input placeholder="Club, city or ZIP" aria-label="Search clubs by name, city or ZIP"></div>
+          <div class="p-chips">
+            <button class="k-chip" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Filters</button>
+            <button class="k-chip" type="button">Tonight</button>
+            <button class="k-chip" type="button">Kids welcome</button>
+            <button class="k-chip" type="button">Rated games</button>
+            <button class="k-chip" type="button">Free</button>
+          </div>
+          <div>
+            <div class="p-club">
+              <div class="p-when"><span class="k-tag k-tag-open">On now</span><small>until 5:00 PM</small></div>
+              <div class="p-grow p-st" style="gap:3px">
+                <div class="p-r" style="gap:6px"><span class="p-cdot" style="background:#7a3b69"></span><a class="p-cname" href="#">Shreveport-Bossier Chess Club</a></div>
+                <div class="p-m">Mon 1–5 PM · Gamers XP<br>Thu 1–5 PM · Pierre Bossier Mall food court</div>
+                <div class="p-xs">Shreveport · North Louisiana</div>
+                <div class="p-r p-xs" style="gap:6px">Confirmed Sep 2026 · <a class="k-link" href="#">Report outdated info</a><span class="k-num-badge">1</span></div>
+              </div>
+            </div>
+            <div class="p-club">
+              <div class="p-when"><small>Tonight</small><b>5:00 PM</b></div>
+              <div class="p-grow p-st" style="gap:3px">
+                <div class="p-r" style="gap:6px"><span class="p-cdot" style="background:#2e6f8e"></span><a class="p-cname" href="#">Mandeville Chess Club</a></div>
+                <div class="p-m">Mondays · George's Mexican Restaurant</div>
+                <div class="p-xs">Mandeville · North of Lake Pontchartrain · confirmed Sep 2026</div>
+              </div>
+            </div>
+            <div class="p-club">
+              <div class="p-when"><small>Tonight</small><b>5:30 PM</b></div>
+              <div class="p-grow p-st" style="gap:3px">
+                <div class="p-r" style="gap:6px"><span class="p-cdot" style="background:#a8442a"></span><a class="p-cname" href="#">Monroe Chess Club</a></div>
+                <div class="p-m">Mon 5:30 PM · Enochs Pub and Grill<br>Sat 10:00 AM · Books-A-Million</div>
+                <div class="p-wrap"><span class="p-pill">All ages</span></div>
+              </div>
+            </div>
+            <div class="p-club">
+              <div class="p-when"><small>Tonight</small><b>6:00 PM</b></div>
+              <div class="p-grow p-st" style="gap:3px">
+                <div class="p-r" style="gap:6px"><span class="p-cdot" style="background:#3f7a4a"></span><a class="p-cname" href="#">Houma Chess Club</a></div>
+                <div class="p-m">Mondays 6:00–8:30 PM · Terrebonne Parish North Library</div>
+                <div class="p-xs">Houma · Bayou Region</div>
+              </div>
+            </div>
+            <div class="p-club">
+              <div class="p-when"><small>Tonight</small><b>6:00 PM</b></div>
+              <div class="p-grow p-st" style="gap:3px">
+                <div class="p-r" style="gap:6px"><span class="p-cdot" style="background:#5b5f8f"></span><a class="p-cname" href="#">Picayune Chess Club</a></div>
+                <div class="p-m">Mondays 6–10 PM · IHOP, Picayune, MS</div>
+                <div class="p-wrap"><span class="p-pill">Quick-rated tonight · 1st Monday</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="k-btn k-btn-navy p-fab" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"></path></svg>Map</button>
+        <span class="k-num-badge p-nb" style="bottom:56px;left:236px">2</span>
+      </div></div>
+      <div class="k-caption">1 · List with Map toggle</div>
+      <div class="k-caption-sub">Sorted by next meeting, so every row leads with when. A floating Map button switches views and keeps your search and filters.</div>
+    </div>
+
+    <!-- 2 · Map with bottom sheet -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key" href="#">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="p-mapwrap">
+          <svg viewBox="88 52 132 265" style="width:100%;height:100%;display:block" role="img" aria-label="Map of southeast Louisiana with 16 club locations; Houma Chess Club is selected">
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#b9b8b0" stroke-width="0.6"></path>
+            <ellipse cx="153" cy="127" rx="11" ry="5.5" fill="#d6e2ec"></ellipse>
+            <text x="196" y="80" font-size="3.6" fill="#555c6b" text-anchor="middle">Mississippi</text>
+            <text x="131" y="97" font-size="3.4" fill="#555c6b" text-anchor="middle">North of Lake Pontchartrain</text>
+            <text x="119" y="149.5" font-size="3.4" fill="#555c6b" text-anchor="middle">Bayou Region</text>
+            <circle cx="108" cy="156" r="2.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="108" y="163.5" font-size="4" fill="#1a2744" font-weight="600" text-anchor="middle">Morgan City</text>
+            <circle cx="116" cy="121" r="4" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="116" y="122.4" font-size="4" fill="#ffffff" font-weight="700" text-anchor="middle">2</text>
+            <text x="116" y="114.5" font-size="4" fill="#1a2744" font-weight="600" text-anchor="middle">Baton Rouge</text>
+            <circle cx="124" cy="131" r="2.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="124" y="138" font-size="4" fill="#1a2744" font-weight="600" text-anchor="middle">Gonzales</text>
+            <circle cx="150" cy="118" r="2.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="150" y="112.5" font-size="4" fill="#1a2744" font-weight="600" text-anchor="middle">Mandeville</text>
+            <circle cx="166" cy="121" r="2.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="170" y="122.4" font-size="4" fill="#1a2744" font-weight="600">Slidell</text>
+            <circle cx="172" cy="104" r="2.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="172" y="98.5" font-size="4" fill="#1a2744" font-weight="600" text-anchor="middle">Picayune, MS</text>
+            <circle cx="146" cy="136" r="2.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="142.5" y="137.4" font-size="4" fill="#1a2744" font-weight="600" text-anchor="end">Kenner</text>
+            <circle cx="152" cy="137" r="2.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <circle cx="159" cy="140" r="4" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="159" y="141.4" font-size="4" fill="#ffffff" font-weight="700" text-anchor="middle">4</text>
+            <text x="164.5" y="141.4" font-size="4" fill="#1a2744" font-weight="600">New Orleans</text>
+            <circle cx="154" cy="147.5" r="4" fill="#1a2744" stroke="#ffffff" stroke-width="0.8"></circle>
+            <text x="154" y="148.9" font-size="4" fill="#ffffff" font-weight="700" text-anchor="middle">2</text>
+            <text x="154" y="155.5" font-size="3.6" fill="#1a2744" font-weight="600" text-anchor="middle">Gretna · Marrero</text>
+            <circle cx="136" cy="160" r="3.8" fill="#c8a94a" stroke="#1a2744" stroke-width="1"></circle>
+            <text x="136" y="168.5" font-size="4.4" fill="#1a2744" font-weight="700" text-anchor="middle">Houma</text>
+          </svg>
+        </div>
+        <div class="p-maptop">
+          <div class="p-search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input placeholder="Club, city or ZIP" aria-label="Search clubs by name, city or ZIP"></div>
+          <button class="k-btn k-btn-line" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>List</button>
+        </div>
+        <button class="k-btn k-btn-soft p-area" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg>Search this area</button>
+        <div class="p-sheet" style="height:318px" role="region" aria-label="Clubs in this area">
+          <div class="p-handle"></div>
+          <div class="p-st" style="padding:4px 16px 0;gap:10px">
+            <div class="p-ln"><div class="p-h3">16 clubs in this area</div><span class="p-xs">Drag up for the list</span></div>
+            <div class="p-sel">
+              <span class="k-num-badge p-nb" style="top:-10px;right:-8px">3</span>
+              <div class="p-ln"><span class="p-r p-xs" style="gap:6px"><span class="p-cdot" style="background:#c8a94a"></span>Selected pin</span><span class="k-tag k-tag-open">Tonight</span></div>
+              <div class="p-h2" style="margin-top:4px">Houma Chess Club</div>
+              <div class="p-t"><b>Mondays, 6:00–8:30 PM</b></div>
+              <div class="p-m">Terrebonne Parish North Library, Houma · Bayou Region</div>
+              <div class="p-r" style="margin-top:8px"><a class="k-btn k-btn-line" href="#" style="flex:1">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a><a class="k-btn k-btn-navy" href="#" style="flex:1">Club page</a></div>
+            </div>
+            <a class="p-row" href="#"><div class="p-grow"><div class="p-h3">Morgan City Chess Club</div><div class="p-m">Tue, Oct 6 · 5:30 PM · First Baptist Church</div></div><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+          </div>
+        </div>
+      </div></div>
+      <div class="k-caption">2 · Map with bottom sheet</div>
+      <div class="k-caption-sub">Pins and the sheet are linked: tap a pin and its card rises with directions. "Search this area" appears after you pan; dense towns cluster.</div>
+    </div>
+
+    <!-- 3 · This-week grid -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key" href="#">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:12px;padding-right:0">
+          <div style="padding-right:16px"><h2 class="p-h1">Where to play this week</h2><div class="p-m" style="margin-top:2px">Mon, Oct 5 – Sun, Oct 11 · 19 meetings</div></div>
+          <div class="p-chips">
+            <button class="k-chip k-chip-on" type="button">All regions</button>
+            <button class="k-chip" type="button">New Orleans Metro</button>
+            <button class="k-chip" type="button">North Louisiana</button>
+            <button class="k-chip" type="button">Bayou Region</button>
+          </div>
+          <div class="p-week">
+            <div class="p-wcol">
+              <div class="p-whead p-whead-on"><b>Mon, Oct 5</b><span>Tonight</span></div>
+              <a class="p-mt" href="#" style="position:relative"><b>1:00 PM</b><span>Shreveport-Bossier</span><small>Gamers XP · on now</small><span class="k-num-badge p-nb" style="top:-8px;right:-6px">4</span></a>
+              <a class="p-mt" href="#"><b>5:00 PM</b><span>Mandeville</span><small>George's Mexican Restaurant</small></a>
+              <a class="p-mt" href="#"><b>5:30 PM</b><span>Monroe</span><small>Enochs Pub and Grill</small></a>
+              <a class="p-mt" href="#"><b>6:00 PM</b><span>Houma</span><small>North Library</small></a>
+              <a class="p-mt" href="#"><b>6:00 PM</b><span>Picayune, MS</span><small>IHOP · quick-rated night</small></a>
+              <a class="p-mt" href="#"><b>7:00 PM</b><span>Downriver</span><small>Decatur St, New Orleans</small></a>
+            </div>
+            <div class="p-wcol">
+              <div class="p-whead"><b>Tue, Oct 6</b><span class="p-xs">4</span></div>
+              <a class="p-mt" href="#"><b>4:00 PM</b><span>Bunkie</span><small>Bunkie Library · free</small></a>
+              <a class="p-mt" href="#"><b>5:30 PM</b><span>Morgan City</span><small>First Baptist Church</small></a>
+              <a class="p-mt" href="#"><b>6:00 PM</b><span>Ruston Knights</span><small>Utility Brewing Company</small></a>
+              <a class="p-mt" href="#"><b>7:00 PM</b><span>Greater New Orleans</span><small>G/90, one round a week</small></a>
+            </div>
+            <div class="p-wcol">
+              <div class="p-whead"><b>Wed, Oct 7</b><span class="p-xs">2</span></div>
+              <a class="p-mt" href="#"><b>6:00 PM</b><span>Marrero</span><small>Chopsticks Buffet · free</small></a>
+              <a class="p-mt" href="#"><b>6:00 PM</b><span>Baton Rouge</span><small>Boba ParTea · casual</small></a>
+            </div>
+          </div>
+          <div class="p-ln" style="padding-right:16px"><span class="p-xs">Swipe for Thu–Sun</span><span class="p-pager" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>
+          <div class="p-xs" style="padding-right:16px">No listed meetings in Southwest Louisiana this week. 7 clubs haven't posted a schedule yet: <a class="k-link" href="#">see them</a>.</div>
+        </div>
+      </div></div>
+      <div class="k-caption">3 · This-week grid</div>
+      <div class="k-caption-sub">The week becomes swipeable day columns, tonight first, holding every real meeting. Region chips narrow it; gaps are said out loud.</div>
+    </div>
+
+    <!-- 4 · Filters -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key" href="#">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:12px" aria-hidden="true">
+          <div><h2 class="p-h1">Clubs</h2><div class="p-m">25 clubs in 7 regions · sorted by next meeting</div></div>
+          <div class="p-club"><div class="p-when"><small>Tonight</small><b>5:00 PM</b></div><div class="p-grow"><div class="p-h3">Mandeville Chess Club</div><div class="p-m">Mondays · George's Mexican Restaurant</div></div></div>
+          <div class="p-club"><div class="p-when"><small>Tonight</small><b>5:30 PM</b></div><div class="p-grow"><div class="p-h3">Monroe Chess Club</div><div class="p-m">Enochs Pub and Grill</div></div></div>
+        </div>
+        <div class="p-dim"></div>
+        <div class="p-sheet" style="top:84px" role="dialog" aria-label="Filter clubs">
+          <div class="p-handle"></div>
+          <div class="p-ln" style="padding:2px 8px 6px 16px"><h2 class="p-h2">Filter clubs</h2><button class="k-iconbtn" type="button" aria-label="Close filters"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+          <div class="p-sbody">
+            <div class="p-sg">
+              <div class="k-label">Days you can play</div>
+              <div class="p-dch">
+                <button class="k-chip k-chip-on" type="button" aria-pressed="true">Mon</button>
+                <button class="k-chip k-chip-on" type="button" aria-pressed="true">Tue</button>
+                <button class="k-chip" type="button" aria-pressed="false">Wed</button>
+                <button class="k-chip" type="button" aria-pressed="false">Thu</button>
+                <button class="k-chip" type="button" aria-pressed="false">Fri</button>
+                <button class="k-chip" type="button" aria-pressed="false">Sat</button>
+                <button class="k-chip" type="button" aria-pressed="false">Sun</button>
+              </div>
+            </div>
+            <div class="p-sg">
+              <div class="k-label">Time of day</div>
+              <div class="k-seg p-seg3"><button type="button">Any time</button><button type="button">Daytime</button><button class="k-seg-on" type="button">Evening, 5 PM on</button></div>
+            </div>
+            <div class="p-sg">
+              <div class="k-label">Where</div>
+              <div class="p-wrap" style="gap:8px">
+                <button class="k-chip" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Near me</button>
+                <button class="k-chip" type="button">New Orleans Metro</button>
+                <button class="k-chip" type="button">North of Lake Pontchartrain</button>
+                <button class="k-chip" type="button">North Louisiana</button>
+                <button class="k-chip" type="button">Central Louisiana</button>
+                <button class="k-chip" type="button">South Central Louisiana</button>
+                <button class="k-chip" type="button">Southwest Louisiana</button>
+                <button class="k-chip" type="button">Bayou Region</button>
+              </div>
+            </div>
+            <div class="p-sg">
+              <div class="k-label">Kind of club</div>
+              <div class="p-wrap" style="gap:8px">
+                <button class="k-chip" type="button">Rated games</button>
+                <button class="k-chip" type="button">Casual play</button>
+                <button class="k-chip" type="button">Free</button>
+                <button class="k-chip" type="button">Kids' programs</button>
+                <button class="k-chip" type="button">Beginners welcome</button>
+              </div>
+            </div>
+            <label class="p-tog"><span><b>Include clubs with no listed schedule</b><small>7 clubs haven't posted meeting times</small></span><input type="checkbox"></label>
+          </div>
+          <div class="p-sfoot">
+            <span class="k-num-badge p-nb" style="top:-12px;right:16px">5</span>
+            <button class="k-btn k-btn-line" type="button">Clear all</button>
+            <button class="k-btn k-btn-navy" type="button" style="flex:1">Show 8 clubs</button>
+          </div>
+        </div>
+      </div></div>
+      <div class="k-caption">4 · Filters</div>
+      <div class="k-caption-sub">Days, time of day, region and kind of club, with a live count on the button. Clubs that haven't posted a schedule are opt-in, not silently dropped.</div>
+    </div>
+
+  </div>
+
+  <div class="p-legend">
+    <div class="p-lg"><span class="k-num-badge">1</span><b>Freshness:</b> a "Confirmed" date and a report link on every listing</div>
+    <div class="p-lg"><span class="k-num-badge">2</span><b>Map toggle</b> floats over the list and keeps your filters</div>
+    <div class="p-lg"><span class="k-num-badge">3</span><b>Linked pin and card:</b> the gold pin is the card on screen</div>
+    <div class="p-lg"><span class="k-num-badge">4</span><b>"On now"</b> from structured meeting times</div>
+    <div class="p-lg"><span class="k-num-badge">5</span><b>Live count</b> on the button (Mon or Tue evening = 8 clubs)</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1960,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

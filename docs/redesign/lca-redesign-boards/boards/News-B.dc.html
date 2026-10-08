@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>News B — Mixed stream</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.k-tag svg{width:13px;height:13px}
+.nb-wrap{width:100%;max-width:1000px;margin:0 auto;padding:0 24px}
+.nb-top{padding:36px 0 22px}
+.nb-filter{position:sticky;top:0;z-index:5;background:#f5f5f2;border-top:1px solid #e2e1da;border-bottom:1px solid #e2e1da}
+.nb-chips{flex-wrap:nowrap;overflow-x:auto;padding:12px 0}
+.nb-pinned{border-radius:12px;padding:22px 24px;margin-top:24px}
+.nb-day{display:grid;grid-template-columns:132px minmax(0,1fr);gap:28px;padding:18px 0 4px}
+.nb-dayhead{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:3px;padding-top:6px}
+.nb-items{position:relative;display:flex;flex-direction:column;gap:14px;padding-left:28px}
+.nb-items::after{content:"";position:absolute;left:0;top:-18px;bottom:-4px;width:2px;background:#dddcd4}
+.nb-item{position:relative}
+.nb-item::before{content:"";position:absolute;left:-35px;top:20px;z-index:1;width:12px;height:12px;border-radius:50%;background:#ffffff;border:2px solid #1a2744}
+.nb-pad{padding:16px 20px}
+.nb-post{display:grid;grid-template-columns:190px minmax(0,1fr);overflow:hidden}
+.nb-post .k-img{border-radius:0;min-height:150px}
+.nb-photos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.nb-photos .k-img{height:96px}
+.nb-podium{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:6px 12px;align-items:baseline}
+.nb-res-top{display:grid;grid-template-columns:minmax(0,1fr) 176px;gap:20px;align-items:start}
+.nb-res-top img{width:176px;height:118px;object-fit:cover;border-radius:8px}
+.nb-hl a{color:#1a2744;text-decoration:none}
+.nb-hl a:hover{text-decoration:underline}
+.nb-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(400px,100%),1fr));gap:10px 28px}
+@media (max-width:760px){
+.nb-day{grid-template-columns:1fr;gap:10px}
+.nb-dayhead{position:static;flex-direction:row;gap:8px;align-items:baseline}
+.nb-items{padding-left:0}
+.nb-items::after,.nb-item::before{display:none}
+.nb-post{grid-template-columns:1fr}
+.nb-post .k-img{min-height:140px}
+.nb-res-top{grid-template-columns:1fr}
+.nb-res-top img{width:100%;height:160px}
+}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a class="k-nav-on" href="#" aria-current="page">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<div class="nb-wrap nb-top k-stack-sm">
+  <p class="k-kicker">News</p>
+  <h1 class="k-h1">What's happening in Louisiana chess</h1>
+  <p class="k-lead">LCA posts, club news, results and our Facebook page in one stream, newest first.</p>
+  <div class="k-row-sm" style="margin-top:6px"><span class="k-sample">Sample data</span><span class="k-meta">Posts, people and results are invented for this mock. Events, clubs, meeting times and dates are real.</span></div>
+</div>
+
+<div class="nb-filter">
+  <div class="nb-wrap k-between" style="gap:8px 16px">
+    <div class="k-row-sm nb-chips" role="group" aria-label="Show in the stream">
+      <button class="k-chip k-chip-on" type="button" aria-pressed="true">Everything <span class="k-chip-count">60</span></button>
+      <button class="k-chip" type="button" aria-pressed="false">LCA posts <span class="k-chip-count">14</span></button>
+      <button class="k-chip" type="button" aria-pressed="false">Results <span class="k-chip-count">9</span></button>
+      <button class="k-chip" type="button" aria-pressed="false">Club news <span class="k-chip-count">17</span></button>
+      <button class="k-chip" type="button" aria-pressed="false">From Facebook <span class="k-chip-count">16</span></button>
+      <button class="k-chip" type="button" aria-pressed="false">Announcements <span class="k-chip-count">4</span></button>
+    </div>
+    <button class="k-btn k-btn-line k-btn-sm" type="button">All clubs<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+  </div>
+</div>
+
+<main class="nb-wrap" style="padding-bottom:40px">
+
+  <article class="k-navy nb-pinned k-stack-sm" aria-labelledby="nb-pin-h">
+    <div class="k-row-sm"><span class="k-tag k-tag-gold"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3.5h6M10 3.5l-.6 6.2-2.9 3.3h11l-2.9-3.3-.6-6.2M12 13v7.5"></path></svg>Pinned</span><span class="k-label">Announcement · until Sun, Oct 11</span></div>
+    <div class="k-between" style="align-items:flex-end">
+      <div class="k-stack-sm" style="flex:1 1 380px">
+        <h2 id="nb-pin-h" class="k-h2">Lafayette Open 2026 is this weekend</h2>
+        <p class="k-meta">Sat–Sun, Oct 10–11 · Lafayette · Classical · All ages · hosted by Lafayette Chess Club</p>
+      </div>
+      <div class="k-row-sm"><a class="k-btn k-btn-gold" href="#">Event details</a><a class="k-btn k-btn-on-dark" href="#">Add to calendar</a></div>
+    </div>
+  </article>
+
+  <section class="nb-day" aria-labelledby="nb-d1">
+    <h2 id="nb-d1" class="nb-dayhead"><span class="k-label">Today</span><span class="k-h4">Tue, Oct 6</span></h2>
+    <div class="nb-items">
+      <article class="nb-item k-card nb-pad k-stack-sm">
+        <div class="k-between"><div class="k-row-sm"><span class="k-tag k-tag-ext">From Facebook</span><span class="k-meta">9:12 AM</span><span class="k-num-badge">1</span></div><a class="k-small k-link-plain" href="#">View on Facebook<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+        <p class="k-body">Driving to the Lafayette Open from New Orleans or Baton Rouge? Comment on the post to share a ride.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="nb-day" aria-labelledby="nb-d2">
+    <h2 id="nb-d2" class="nb-dayhead"><span class="k-label">Yesterday</span><span class="k-h4">Mon, Oct 5</span></h2>
+    <div class="nb-items">
+      <article class="nb-item k-card nb-pad k-stack-sm">
+        <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg>Results</span><span class="k-meta k-row-sm"><span class="k-dot" style="color:#1f6aa5"></span>Picayune Chess Club · 10:40 PM</span><span class="k-num-badge">5</span></div>
+        <h3 class="k-h4">Quick-rated Monday: Sam Nguyen goes 4 for 4</h3>
+        <p class="k-small k-muted">4 rounds at IHOP in Picayune, MS · G/20 d5 (20 minutes each, 5-second delay)</p>
+        <div class="nb-podium k-small">
+          <span class="k-meta k-mono">1st</span><span class="k-strong">Sam Nguyen <span class="k-meta k-mono">1650</span></span><span class="k-mono k-strong">4/4</span>
+          <span class="k-meta k-mono">2nd</span><span>Isaac Dupre <span class="k-meta k-mono">1688</span></span><span class="k-mono">3/4</span>
+          <span class="k-meta k-mono">3rd</span><span>Nora Hebert <span class="k-meta k-mono">1577</span></span><span class="k-mono">2½/4</span>
+        </div>
+        <a class="k-small k-link" href="#" style="align-self:flex-start">Full standings</a>
+      </article>
+
+      <article class="nb-item k-card nb-post">
+        <div class="k-img">Photo · scholastic meet</div>
+        <div class="nb-pad k-stack-sm">
+          <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA post</span><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg>Scholastic</span><span class="k-meta">4:05 PM · 2 min read</span></div>
+          <h3 class="k-h3 nb-hl"><a href="#">New Orleans Youth Chess season starts Sat, Nov 14</a></h3>
+          <p class="k-small k-muted">Scholastic meets through the spring, ending with the Grand Prix Final on Sat, May 8, 2027.</p>
+          <a class="k-small k-link" href="#" style="align-self:flex-start">Read the post</a>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="nb-day" aria-labelledby="nb-d3">
+    <h2 id="nb-d3" class="nb-dayhead"><span class="k-label">Thursday</span><span class="k-h4">Thu, Oct 1</span></h2>
+    <div class="nb-items">
+      <article class="nb-item k-card nb-pad k-stack-sm">
+        <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg>Club news</span><span class="k-meta k-row-sm"><span class="k-dot" style="color:#6b3f8f"></span>New Orleans Westbank Chess Club · 6:30 PM</span><span class="k-num-badge">3</span></div>
+        <p class="k-body">Rated games tonight and every Thursday, 7:30–11:30 PM in Gretna. Beginners welcome.</p>
+      </article>
+
+      <article class="nb-item k-card nb-pad k-stack-sm">
+        <div class="k-between"><div class="k-row-sm"><span class="k-tag k-tag-ext">From Facebook</span><span class="k-meta">7:45 PM · 3 photos</span></div><a class="k-small k-link-plain" href="#">View on Facebook<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+        <p class="k-body">Full tables at the Bunkie Library this week. Tuesdays 4–6 PM, ages 8 to 108, free to join.</p>
+        <div class="nb-photos"><div class="k-img">Photo · board 1</div><div class="k-img">Photo · club night</div><div class="k-img">Photo · library room</div></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="nb-day" aria-labelledby="nb-d4">
+    <h2 id="nb-d4" class="nb-dayhead"><span class="k-h4">Mon, Sep 28</span></h2>
+    <div class="nb-items">
+      <article class="nb-item k-card nb-pad k-stack-sm">
+        <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg>Club news</span><span class="k-meta k-row-sm"><span class="k-dot" style="color:#2b5d8a"></span>Downriver Chess Club · 11:20 AM</span><span class="k-num-badge">4</span></div>
+        <h3 class="k-h4">The Baton Rouge Classic is four weeks out</h3>
+        <div class="k-panel k-row" style="padding:14px 16px;align-items:flex-start">
+          <div class="k-date"><span>Sat</span><b>24</b><span>Oct</span></div>
+          <div class="k-stack-sm" style="flex:1 1 260px">
+            <div class="k-row-sm"><span class="k-strong">The Baton Rouge Classic</span><span class="k-tag k-tag-ext">Partner event</span></div>
+            <p class="k-small k-muted">Sat–Sun, Oct 24–25 · Baton Rouge · Classical · All ages</p>
+            <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Event details</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Register on organizer site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="nb-day" aria-labelledby="nb-d5">
+    <h2 id="nb-d5" class="nb-dayhead"><span class="k-h4">Wed, Sep 9</span></h2>
+    <div class="nb-items">
+      <article class="nb-item k-card nb-pad k-stack-sm">
+        <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA post</span><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4l6 6M12 6l6 6M13 5l-6 6 2 2 6-6M8 12l-4.5 4.5 2 2L10 14M3.5 21h9"></path></svg>Board &amp; governance</span><span class="k-meta">3 min read</span></div>
+        <h3 class="k-h3 nb-hl"><a href="#">From the annual meeting in Sulphur</a></h3>
+        <p class="k-small k-muted">Members met on Sun, Sep 6 during the State Championship. Draft minutes will be posted for comment before the board approves them.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="nb-day" aria-labelledby="nb-d6">
+    <h2 id="nb-d6" class="nb-dayhead"><span class="k-h4">Tue, Sep 8</span></h2>
+    <div class="nb-items">
+      <article class="nb-item k-card nb-pad k-stack">
+        <div class="nb-res-top">
+          <div class="k-stack-sm">
+            <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA post</span><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg>Results</span><span class="k-meta">5 min read</span></div>
+            <h3 class="k-h2 nb-hl"><a href="News-D.dc.html">Marcus Landry wins the 2026 Louisiana State Championship</a></h3>
+            <p class="k-meta">Sat–Sun, Sep 5–6 · Sulphur · By Chris Arceneaux</p>
+          </div>
+          <img src="/_blob/08f08da59fb83788378f5b6396d7732e" alt="Teens and adults playing in a banquet hall with purple chairs">
+        </div>
+        <div class="k-tablebox">
+          <table class="k-table">
+            <thead><tr><th scope="col">Section</th><th scope="col">Winner</th><th scope="col" class="k-r">Rating</th><th scope="col" class="k-r">Score</th></tr></thead>
+            <tbody>
+              <tr><td>Open</td><td class="k-strong">Marcus Landry</td><td class="k-r k-mono">2014</td><td class="k-r k-mono k-strong">4½/5</td></tr>
+              <tr><td>U1800</td><td class="k-strong">Isaac Dupre</td><td class="k-r k-mono">1688</td><td class="k-r k-mono k-strong">4½/5</td></tr>
+              <tr><td>U1400</td><td class="k-strong">Jordan Lee <span class="k-meta">(on tiebreak)</span></td><td class="k-r k-mono">1388</td><td class="k-r k-mono k-strong">4/5</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="k-row-sm"><a class="k-btn k-btn-navy k-btn-sm" href="News-D.dc.html">Read the recap</a><a class="k-btn k-btn-line k-btn-sm" href="#">Crosstable</a></div>
+      </article>
+    </div>
+  </section>
+
+  <div class="k-row" style="justify-content:center;padding:28px 0 8px">
+    <button class="k-btn k-btn-line" type="button">Show older posts (August 2026)</button>
+    <span class="k-meta">Showing 9 of 60</span>
+    <span class="k-num-badge">6</span>
+  </div>
+
+  <section class="k-panel k-stack-sm" style="margin-top:28px" aria-label="Notes on this option">
+    <div class="k-label">Notes on this option</div>
+    <div class="nb-notes">
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">1</span><span class="k-small">Facebook posts are their own type; each links out.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">2</span><span class="k-small">One stream replaces today's four places to post news.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">3</span><span class="k-small">Short posts read in full here, with no click-through.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">4</span><span class="k-small">Club items get the club color as a small dot, not text color.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">5</span><span class="k-small">Results show the top three; full tables stay on the event page.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">6</span><span class="k-small">Older posts load a month at a time; the footer stays reachable.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

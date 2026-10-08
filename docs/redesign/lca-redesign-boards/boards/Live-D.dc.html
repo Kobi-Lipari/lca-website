@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live D — Hall TV mode</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe5}
+.tv{display:flex;flex-direction:column;color:#1a2744;font-family:'Geist',ui-sans-serif,system-ui,sans-serif;overflow:hidden}
+.tv-top{height:124px;flex:none;display:flex;align-items:center;gap:32px;padding:0 48px;background:#1a2744;color:#ffffff;border-bottom:4px solid #c8a94a}
+.tv-kick{font-size:15px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;line-height:1.2}
+.tv-body{flex:1;min-height:0;display:flex}
+.tv-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:22px 40px 20px 48px}
+.tv-sec{height:68px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+.tv-grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(7,minmax(0,1fr));grid-auto-flow:column;gap:12px 36px}
+.bd{display:flex;min-height:0;background:#ffffff;border:1px solid #d3d2ca;border-radius:12px;overflow:hidden}
+.bd-n{width:92px;flex:none;display:flex;align-items:center;justify-content:center;background:#1a2744;color:#ffffff;font-size:46px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.bd-p{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:0 18px 0 20px}
+.pl{display:flex;align-items:center;gap:14px;height:40px}
+.pl + .pl{border-top:1px solid #e9e8e2}
+.c{width:32px;height:32px;flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;font-size:18px;font-weight:700;line-height:1}
+.c-w{background:#ffffff;color:#1a2744;box-shadow:inset 0 0 0 2px #1a2744}
+.c-b{background:#1a2744;color:#ffffff}
+.nm{flex:1;min-width:0;font-size:33px;font-weight:600;letter-spacing:-.01em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rt{width:72px;flex:none;text-align:right;font-family:'Geist Mono',ui-monospace,monospace;font-size:22px;color:#555c6b;font-variant-numeric:tabular-nums}
+.pt{width:60px;height:34px;flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:#eceef2;color:#1a2744;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.bye{background:#fbfaf6;border:2px dashed #b9b7ad}
+.bye .bd-p{padding:0 22px;gap:2px}
+.bye-l{display:flex;align-items:baseline;gap:10px;font-size:23px;font-weight:600;line-height:1.3;white-space:nowrap}
+.bye-l span{font-size:19px;font-weight:500;color:#555c6b}
+.tv-side{width:440px;flex:none;display:flex;flex-direction:column;gap:14px;padding:24px 36px;background:#1a2744;color:#ffffff}
+.tv-qr{width:248px;height:248px;flex:none;padding:12px;background:#ffffff;border-radius:14px}
+.tv-ph{display:inline-flex;align-items:center;height:26px;padding:0 10px;border:1.5px dashed rgba(255,255,255,.75);border-radius:6px;font-size:14px;font-weight:600;color:#ffffff;white-space:nowrap}
+.tv-r{display:flex;align-items:center;gap:14px;height:31px;font-size:19px;color:rgba(255,255,255,.86);font-variant-numeric:tabular-nums}
+.tv-r b{width:52px;font-weight:600;color:#ffffff}
+.tv-r em{margin-left:auto;font-style:normal;font-size:15px;font-weight:600}
+.tv-r-on{margin:0 -10px;padding:0 10px;border-radius:8px;background:#c8a94a;color:#1a2744}
+.tv-r-on b{color:#1a2744}
+.tv-foot{height:96px;flex:none;display:flex;align-items:center;gap:14px;padding:0 48px;background:#ffffff;border-top:1px solid #d3d2ca}
+.seg{position:relative;width:190px;height:62px;flex:none;display:flex;flex-direction:column;justify-content:center;padding:0 16px;border:1.5px solid #c9c8c0;border-radius:10px;overflow:hidden}
+.seg b{font-size:21px;line-height:1.15;font-weight:700}
+.seg span{font-size:14.5px;color:#555c6b;white-space:nowrap}
+.seg-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.seg-on span{color:rgba(255,255,255,.82)}
+.seg-on i{position:absolute;left:0;bottom:0;height:6px;background:#c8a94a}
+.seg-later{border-style:dashed;background:#fbfaf6}
+</style>
+</helmet>
+<div class="tv" style="width:1920px;height:1080px;box-sizing:border-box;background:#ecebe5">
+
+  <header class="tv-top">
+    <div style="flex:1;min-width:0;display:flex;align-items:center;gap:20px">
+      <svg class="k-mark" style="width:62px;height:62px;fill:#c8a94a" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>
+      <div style="min-width:0">
+        <div style="display:flex;align-items:center;gap:14px"><span style="font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.01em;white-space:nowrap">2027 Paul Morphy Open</span><span class="k-sample">Sample data</span></div>
+        <div style="margin-top:6px;font-size:20px;color:rgba(255,255,255,.8);white-space:nowrap">Sat–Sun, Jun 12–13 · New Orleans · 5 rounds · 96 players</div>
+      </div>
+    </div>
+    <div style="flex:none;text-align:center">
+      <div class="tv-kick" style="color:#e6cf86">Posted 6:31 PM</div>
+      <div style="margin-top:6px;font-size:60px;line-height:1;font-weight:700;letter-spacing:-.02em;white-space:nowrap">Round 3 pairings</div>
+    </div>
+    <div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:22px">
+      <div style="text-align:right">
+        <div class="tv-kick" style="color:rgba(255,255,255,.8)">Round starts</div>
+        <div style="margin-top:6px;font-size:54px;line-height:1;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap">7:00 PM</div>
+      </div>
+      <div style="flex:none;padding:10px 16px;border-radius:12px;background:#c8a94a;color:#1a2744;text-align:center;line-height:1.1">
+        <div style="font-size:30px;font-weight:700;white-space:nowrap">in 18 min</div>
+        <div style="margin-top:2px;font-size:15px;font-weight:600;white-space:nowrap">Now 6:42 PM</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="tv-body">
+    <main class="tv-main">
+      <div class="tv-sec">
+        <div style="display:flex;align-items:baseline;gap:20px;min-width:0">
+          <h1 style="font-size:64px;line-height:1;font-weight:700;letter-spacing:-.02em">U1800</h1>
+          <span style="font-size:26px;color:#3d4556;white-space:nowrap">Rated under 1800 · 28 players · 13 boards</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;font-size:20px;color:#3d4556;white-space:nowrap;padding-bottom:4px">
+          <span class="c c-w">W</span><span>White</span>
+          <span class="c c-b" style="margin-left:10px">B</span><span>Black</span>
+          <span class="pt" style="margin-left:10px">2</span><span>Points so far</span>
+        </div>
+      </div>
+
+      <div class="tv-grid">
+        <div class="bd"><div class="bd-n">1</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Camille Broussard</span><span class="rt">1744</span><span class="pt">2</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Lauren Guillory</span><span class="rt">1641</span><span class="pt">2</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">2</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Kendall Pitre</span><span class="rt">1595</span><span class="pt">2</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Isaac Dupre</span><span class="rt">1688</span><span class="pt">2</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">3</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Andre Charbonnet</span><span class="rt">1662</span><span class="pt">2</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Rachel Doucet</span><span class="rt">1509</span><span class="pt">2</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">4</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Malik Johnson</span><span class="rt">1566</span><span class="pt">1½</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Grant Melancon</span><span class="rt">1731</span><span class="pt">1½</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">5</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Olivia Landreneau</span><span class="rt">1588</span><span class="pt">1</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Minh Tran</span><span class="rt">1676</span><span class="pt">1</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">6</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Darius Washington</span><span class="rt">1658</span><span class="pt">1</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Claire Boudreaux</span><span class="rt">1552</span><span class="pt">1</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">7</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Devin Batiste</span><span class="rt">1521</span><span class="pt">1</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Sam Nguyen</span><span class="rt">1650</span><span class="pt">1</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">8</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Hannah Breaux</span><span class="rt">1618</span><span class="pt">1</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Jacob Romero</span><span class="rt">1497</span><span class="pt">1</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">9</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Elise Fontenot</span><span class="rt">1460</span><span class="pt">1</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Victor Alvarez</span><span class="rt">1604</span><span class="pt">1</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">10</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Anh Pham</span><span class="rt">1433</span><span class="pt">½</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Ethan Savoie</span><span class="rt">1540</span><span class="pt">½</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">11</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Reid Bergeron</span><span class="rt">1421</span><span class="pt">0</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Tyler Daigle</span><span class="rt">1483</span><span class="pt">0</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">12</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Simone Arcement</span><span class="rt">1472</span><span class="pt">0</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Mia LeJeune</span><span class="rt">1415</span><span class="pt">0</span></div>
+        </div></div>
+        <div class="bd"><div class="bd-n">13</div><div class="bd-p">
+          <div class="pl"><span class="c c-w">W</span><span class="nm">Gabriel Ortiz</span><span class="rt">1408</span><span class="pt">0</span></div>
+          <div class="pl"><span class="c c-b">B</span><span class="nm">Brandon Ledet</span><span class="rt">1447</span><span class="pt">0</span></div>
+        </div></div>
+        <div class="bd bye"><div class="bd-p">
+          <div class="tv-kick" style="color:#555c6b;font-size:14px">Not playing this round</div>
+          <div class="bye-l">Nora Hebert <span>requested bye · ½ point</span></div>
+          <div class="bye-l">Henry Clement <span>pairing bye · 1 point</span></div>
+        </div></div>
+      </div>
+    </main>
+
+    <aside class="tv-side">
+      <div class="tv-kick" style="color:#e6cf86">Skip the crowd</div>
+      <h2 style="margin-top:-6px;font-size:34px;line-height:1.12;font-weight:700;letter-spacing:-.01em">Your board, on your phone</h2>
+      <div class="tv-qr">
+        <svg viewBox="0 0 33 33" role="img" aria-label="QR code placeholder for louisianachess.org/morphy27" shape-rendering="crispEdges" style="width:100%;height:100%;display:block"><rect width="33" height="33" fill="#ffffff"></rect><path fill="#1a2744" d="M4 4h7v1h-7zM13 4h2v1h-2zM18 4h1v1h-1zM22 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM13 5h1v1h-1zM15 5h2v1h-2zM18 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h3v1h-3zM22 6h1v1h-1zM24 6h3v1h-3zM28 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h4v1h-4zM17 7h2v1h-2zM22 7h1v1h-1zM24 7h3v1h-3zM28 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM15 8h1v1h-1zM17 8h1v1h-1zM22 8h1v1h-1zM24 8h3v1h-3zM28 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM14 9h1v1h-1zM16 9h1v1h-1zM18 9h1v1h-1zM20 9h1v1h-1zM22 9h1v1h-1zM28 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h7v1h-7zM13 11h2v1h-2zM18 11h3v1h-3zM6 12h3v1h-3zM10 12h1v1h-1zM12 12h3v1h-3zM18 12h1v1h-1zM23 12h1v1h-1zM26 12h2v1h-2zM4 13h1v1h-1zM6 13h3v1h-3zM22 13h1v1h-1zM25 13h1v1h-1zM6 14h1v1h-1zM8 14h3v1h-3zM21 14h1v1h-1zM23 14h3v1h-3zM8 15h1v1h-1zM21 15h2v1h-2zM6 16h5v1h-5zM22 16h1v1h-1zM24 16h2v1h-2zM28 16h1v1h-1zM4 17h1v1h-1zM6 17h1v1h-1zM8 17h1v1h-1zM11 17h1v1h-1zM21 17h1v1h-1zM28 17h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM21 18h3v1h-3zM26 18h2v1h-2zM4 19h1v1h-1zM8 19h1v1h-1zM11 19h2v1h-2zM21 19h2v1h-2zM27 19h1v1h-1zM4 20h1v1h-1zM10 20h2v1h-2zM13 20h1v1h-1zM15 20h2v1h-2zM19 20h6v1h-6zM26 20h1v1h-1zM28 20h1v1h-1zM12 21h1v1h-1zM18 21h3v1h-3zM24 21h2v1h-2zM4 22h7v1h-7zM12 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM4 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM17 23h4v1h-4zM24 23h1v1h-1zM26 23h1v1h-1zM28 23h1v1h-1zM4 24h1v1h-1zM6 24h3v1h-3zM10 24h1v1h-1zM14 24h3v1h-3zM18 24h9v1h-9zM28 24h1v1h-1zM4 25h1v1h-1zM6 25h3v1h-3zM10 25h1v1h-1zM12 25h1v1h-1zM15 25h2v1h-2zM18 25h4v1h-4zM23 25h1v1h-1zM25 25h1v1h-1zM27 25h1v1h-1zM4 26h1v1h-1zM6 26h3v1h-3zM10 26h1v1h-1zM12 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM20 26h1v1h-1zM26 26h1v1h-1zM28 26h1v1h-1zM4 27h1v1h-1zM10 27h1v1h-1zM15 27h2v1h-2zM19 27h1v1h-1zM22 27h2v1h-2zM27 27h1v1h-1zM4 28h7v1h-7zM12 28h1v1h-1zM14 28h3v1h-3zM21 28h1v1h-1zM24 28h1v1h-1z"></path><g transform="translate(13.6 13.6) scale(.058)" fill="#1a2744"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></g></svg>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px"><span class="tv-ph">QR placeholder</span><span style="font-size:14px;color:rgba(255,255,255,.78)">Real code made for each event</span></div>
+      <div style="font-size:25px;font-weight:600;letter-spacing:-.01em;white-space:nowrap">louisianachess.org/morphy27</div>
+      <p style="font-size:19px;line-height:1.35;color:rgba(255,255,255,.88)">Type your name to see your board, color and opponent. Parents can follow several players.</p>
+      <div style="display:flex;align-items:center;gap:8px;font-size:17px;font-weight:500;color:#e6cf86"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>Phones off and away once clocks start</div>
+      <div style="margin-top:auto">
+        <div class="tv-kick" style="margin-bottom:6px;color:rgba(255,255,255,.8)">Rounds</div>
+        <div class="tv-r"><b>Rd 1</b><span>Sat 10:00 AM</span><em>Done</em></div>
+        <div class="tv-r"><b>Rd 2</b><span>Sat 2:30 PM</span><em>Done</em></div>
+        <div class="tv-r tv-r-on"><b>Rd 3</b><span>Sat 7:00 PM</span><em>Pairings up</em></div>
+        <div class="tv-r"><b>Rd 4</b><span>Sun 9:30 AM</span><em></em></div>
+        <div class="tv-r"><b>Rd 5</b><span>Sun 2:00 PM</span><em></em></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="tv-foot">
+    <div class="tv-kick" style="width:112px;flex:none;color:#555c6b;line-height:1.3">This screen cycles</div>
+    <div class="seg"><b>Open</b><span>Pairings · 10 boards</span></div>
+    <div class="seg seg-on"><b>U1800</b><span>Pairings · 13 boards</span><i style="width:60%"></i></div>
+    <div class="seg"><b>U1400</b><span>Pairings · 13 boards</span></div>
+    <div class="seg"><b>U1000</b><span>Pairings · 10 boards</span></div>
+    <div class="seg seg-later" style="width:270px"><b>Standings</b><span>Joins at 7:00 PM, with results</span></div>
+    <div style="margin-left:auto;text-align:right;line-height:1.35">
+      <div style="font-size:19px;font-weight:600;white-space:nowrap">Next: U1400 in 6 s</div>
+      <div style="font-size:14.5px;color:#555c6b;white-space:nowrap">15 s a page · TD keys: Space pauses, ← → step</div>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

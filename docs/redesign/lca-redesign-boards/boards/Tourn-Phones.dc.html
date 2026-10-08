@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tournaments Phones — agenda, filters, calendar</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.p-board{width:1960px;height:1100px;min-height:1100px;box-sizing:border-box;background:#ecebe6;padding:22px 44px 14px;overflow:hidden;display:flex;flex-direction:column;gap:14px;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.p-top{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;min-height:52px}
+.p-title{font-size:28px;line-height:32px;font-weight:700;letter-spacing:-.01em;margin:2px 0 0}
+.p-topr{display:flex;align-items:center;gap:14px;max-width:980px}
+.p-phones{display:flex;justify-content:space-between;align-items:flex-start}
+.p-col{width:414px;flex:none;display:flex;flex-direction:column;gap:6px}
+.p-scr{position:relative;overflow:hidden}
+.p-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 10px 0 14px;min-height:60px}
+.p-app .k-brand{gap:8px}
+.p-app .k-mark{width:28px;height:28px}
+.p-app .k-brand-name b{font-size:15px}
+.p-app .k-brand-name span{font-size:11px}
+.p-app .k-menubtn{display:inline-flex;min-height:44px;padding:0 10px}
+.p-nav{display:flex;align-items:center;gap:2px}
+.p-key{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;white-space:nowrap}
+.p-key-on{box-shadow:inset 0 -3px 0 #c8a94a}
+.p-body{padding:16px;display:flex;flex-direction:column;gap:14px}
+.p-h1{font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:0}
+.p-h2{font-size:19px;line-height:1.25;font-weight:700;margin:0}
+.p-h3{font-size:16px;line-height:1.3;font-weight:600;margin:0}
+.p-t{font-size:14px;line-height:1.45}
+.p-m{font-size:13px;line-height:1.4;color:#555c6b}
+.p-xs{font-size:12px;line-height:1.35;color:#555c6b}
+.p-ink{color:#1a2744}
+.p-card{background:#ffffff;border:1px solid #e2e1da;border-radius:12px}
+.p-pad{padding:14px}
+.p-ln{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.p-r{display:flex;align-items:center;gap:8px}
+.p-st{display:flex;flex-direction:column;gap:6px}
+.p-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.p-grow{flex:1;min-width:0}
+.p-chips{display:flex;gap:8px;overflow:hidden}
+.p-scr .k-chip{min-height:44px;flex:none;white-space:nowrap}
+.p-scr .k-btn{min-height:44px}
+.p-bar{height:6px;border-radius:3px;background:#e2e1da;overflow:hidden}
+.p-bar i{display:block;height:100%;background:#1a2744}
+.p-dim{position:absolute;left:0;right:0;top:0;bottom:0;background:rgba(26,39,68,.5)}
+.p-sheet{position:absolute;left:0;right:0;bottom:0;background:#ffffff;border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(26,39,68,.22);display:flex;flex-direction:column}
+.p-handle{width:40px;height:5px;border-radius:3px;background:#c9c8c0;margin:8px auto 2px;flex:none}
+.p-nb{position:absolute;z-index:3}
+.p-legend{display:flex;gap:28px;flex-wrap:wrap;align-items:center;font-size:13px;line-height:18px;color:#555c6b;margin-top:2px}
+.p-lg{display:inline-flex;align-items:center;gap:6px}
+.p-lg b{color:#1a2744;font-weight:600}
+.p-chipbar{padding:0 16px 10px;border-bottom:1px solid #e2e1da}
+.p-month{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.p-ev{display:flex;gap:12px;padding:12px;align-items:flex-start;color:#1a2744;text-decoration:none}
+.p-open{border:2px solid #1a2744}
+.p-sbody{flex:1;min-height:0;overflow:hidden;padding:4px 16px 12px;display:flex;flex-direction:column;gap:16px}
+.p-sfoot{flex:none;display:flex;gap:10px;padding:12px 16px 20px;border-top:1px solid #e2e1da;position:relative}
+.p-sg{display:flex;flex-direction:column;gap:8px}
+.p-seg4{display:flex;width:100%}
+.p-seg4 button{flex:1;min-height:44px;font-size:13px;padding:0 4px}
+.p-rowbtn{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:48px;padding:0 12px;border:1px solid #e2e1da;border-radius:10px;background:#ffffff;font:inherit;font-size:14px;color:#1a2744;box-sizing:border-box}
+.p-tog{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding-top:8px;border-top:1px solid #e2e1da}
+.p-tog b{display:block;font-size:14px;font-weight:600}
+.p-tog small{display:block;font-size:12px;color:#555c6b}
+.p-tog input{width:22px;height:22px;margin:0;accent-color:#1a2744;flex:none}
+.p-wk{display:grid;grid-template-columns:repeat(7,1fr);font-size:12px;font-weight:600;color:#555c6b;text-align:center;padding:4px 0 6px}
+.p-cal{display:grid;grid-template-columns:repeat(7,1fr);border-top:1px solid #e2e1da}
+.p-cd{position:relative;height:50px;padding:5px 0 0;margin:0;background:#ffffff;border-width:0 1px 1px 0;border-style:solid;border-color:#e2e1da;font:inherit;font-size:14px;font-weight:500;color:#1a2744;text-align:center;cursor:pointer}
+.p-cd:nth-child(7n){border-right-width:0}
+.p-cd span{display:inline-flex;width:26px;height:26px;align-items:center;justify-content:center;border-radius:50%}
+.p-cd-out{color:#9a9fab}
+.p-cd-today span{box-shadow:inset 0 0 0 2px #1a2744;font-weight:700}
+.p-cd-sel{background:#f4eedb}
+.p-evb{position:absolute;bottom:8px;height:6px;background:#1a2744}
+.p-evb-s{left:8px;right:-1px;border-radius:3px 0 0 3px}
+.p-evb-e{left:0;right:8px;border-radius:0 3px 3px 0}
+.p-evb-o{left:9px;right:9px;border-radius:3px;background:#ffffff;border:1.5px solid #1a2744;box-sizing:border-box}
+.p-k1{display:inline-block;width:18px;height:6px;border-radius:3px;background:#1a2744}
+.p-k2{display:inline-block;width:18px;height:6px;border-radius:3px;background:#ffffff;border:1.5px solid #1a2744;box-sizing:border-box}
+.p-k3{display:inline-block;width:14px;height:14px;border-radius:50%;box-shadow:inset 0 0 0 2px #1a2744}
+.p-sect-h,.p-sect-r{display:grid;grid-template-columns:1fr 56px 64px;gap:8px;align-items:center}
+.p-sect-h{font-size:12px;color:#555c6b;padding:0 0 6px}
+.p-sect-r{font-size:14px;min-height:34px;border-top:1px solid #e2e1da}
+.p-sect-h span:nth-child(n+2),.p-sect-r span:nth-child(n+2){text-align:right}
+.p-sect-r small{display:block;font-size:12px;color:#555c6b;line-height:1.2}
+</style>
+</helmet>
+<div class="k-page p-board">
+
+  <div class="p-top">
+    <div>
+      <div class="k-kicker">Tournaments · phone, 390 px</div>
+      <h1 class="p-title">Tournaments on a phone: agenda, filters, calendar, one card open</h1>
+    </div>
+    <div class="p-topr">
+      <span class="k-sample">Sample data</span>
+      <div class="k-small k-muted">Mon, Oct 5, 2026. Event names, dates, cities and organizers are real (Gulf South feed); entry counts, fees, sections, formats and which events register on LCA are sample. Counts on the sheet add up from the real list.</div>
+    </div>
+  </div>
+
+  <div class="p-phones">
+
+    <!-- 1 · Agenda with chips -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key p-key-on" href="#" aria-current="page">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll">
+          <div class="p-body" style="padding-bottom:12px">
+            <div class="p-ln">
+              <div><h2 class="p-h1">Tournaments</h2><div class="p-m">Louisiana and the Gulf South</div></div>
+              <div class="k-seg"><button class="k-seg-on" type="button">List</button><button type="button">Calendar</button></div>
+            </div>
+          </div>
+          <div class="p-chipbar" style="position:relative">
+            <span class="k-num-badge p-nb" style="top:-12px;left:150px">1</span>
+            <div class="p-chips">
+              <button class="k-chip" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Filters<span class="k-chip-count">1</span></button>
+              <button class="k-chip k-chip-on" type="button" aria-label="Louisiana, remove filter">Louisiana<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+              <button class="k-chip" type="button">This weekend</button>
+              <button class="k-chip" type="button">LCA-run</button>
+              <button class="k-chip" type="button">Scholastic</button>
+            </div>
+            <div class="p-ln" style="margin-top:8px">
+              <span class="p-m"><b class="p-ink">11 events</b> in Louisiana · <a class="k-link" href="#">Clear</a></span>
+              <a class="k-link p-r" href="#" style="gap:4px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Subscribe</a>
+            </div>
+          </div>
+          <div class="p-body" style="gap:10px;padding-top:12px">
+            <div class="p-month"><h3 class="p-h3">October 2026</h3><span class="p-xs">3 events</span></div>
+            <a class="p-card p-ev" href="#">
+              <div class="k-date"><b>10</b><span>Oct</span></div>
+              <div class="p-grow p-st" style="gap:5px">
+                <div class="p-h3">Lafayette Open 2026</div>
+                <div class="p-m">Sat–Sun, Oct 10–11 · Lafayette · Classical, 5 rounds</div>
+                <div class="p-wrap"><span class="k-tag k-tag-open">Registration open</span><span class="k-tag k-tag-lca">LCA event</span></div>
+                <div class="p-ln p-xs"><span><b class="p-ink">38 of 60 registered</b></span><span>22 spots left</span></div>
+                <div class="p-bar"><i style="width:63%"></i></div>
+              </div>
+            </a>
+            <a class="p-card p-ev" href="#">
+              <div class="k-date"><b>24</b><span>Oct</span></div>
+              <div class="p-grow p-st" style="gap:5px">
+                <div class="p-h3">The Baton Rouge Classic</div>
+                <div class="p-m">Sat–Sun, Oct 24–25 · Baton Rouge · Downriver Chess</div>
+                <div class="p-wrap"><span class="k-tag k-tag-open">Registration open</span><span class="k-tag k-tag-lca">LCA event</span></div>
+                <div class="p-ln p-xs"><span><b class="p-ink">21 of 60 registered</b></span><span>Early price ends Sun, Oct 18</span></div>
+                <div class="p-bar"><i style="width:35%"></i></div>
+              </div>
+            </a>
+            <div class="p-card p-ev">
+              <div class="k-date"><b>31</b><span>Oct</span></div>
+              <div class="p-grow p-st" style="gap:5px">
+                <div class="p-h3">The Casa Chess Tournament</div>
+                <div class="p-m">Sat, Oct 31 · Sulphur · Casa de Ajedrez · Dual-rated</div>
+                <div class="p-ln"><span class="k-tag k-tag-ext">Partner event</span><a class="k-link p-r" href="#" style="gap:4px;min-height:44px">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+              </div>
+            </div>
+            <div class="p-month"><h3 class="p-h3">November 2026</h3><span class="p-xs">1 event</span></div>
+            <a class="p-card p-ev" href="#">
+              <div class="k-date"><b>14</b><span>Nov</span></div>
+              <div class="p-grow p-st" style="gap:5px">
+                <div class="p-h3">New Orleans Youth Chess November Meet</div>
+                <div class="p-m">Sat, Nov 14 · New Orleans · Scholastic, K–12</div>
+                <div class="p-wrap"><span class="k-tag k-tag-soon">Opens Mon, Oct 19</span><span class="k-tag k-tag-lca">LCA event</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div></div>
+      <div class="k-caption">1 · Agenda with chips</div>
+      <div class="k-caption-sub">Month-grouped rows lead with the weekday date and status in words. Applied filters are removable chips with a live count; Subscribe adds the feed to your calendar.</div>
+    </div>
+
+    <!-- 2 · Filter sheet -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key p-key-on" href="#" aria-current="page">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:10px" aria-hidden="true">
+          <div class="p-ln">
+            <div><h2 class="p-h1">Tournaments</h2><div class="p-m">Louisiana and the Gulf South</div></div>
+            <div class="k-seg"><button class="k-seg-on" type="button" tabindex="-1">List</button><button type="button" tabindex="-1">Calendar</button></div>
+          </div>
+          <div class="p-card p-ev"><div class="k-date"><b>10</b><span>Oct</span></div><div class="p-grow"><div class="p-h3">Lafayette Open 2026</div><div class="p-m">Sat–Sun, Oct 10–11 · Lafayette</div></div></div>
+          <div class="p-card p-ev"><div class="k-date"><b>24</b><span>Oct</span></div><div class="p-grow"><div class="p-h3">The Baton Rouge Classic</div><div class="p-m">Sat–Sun, Oct 24–25 · Baton Rouge</div></div></div>
+        </div>
+        <div class="p-dim"></div>
+        <div class="p-sheet" style="top:84px" role="dialog" aria-label="Filters">
+          <div class="p-handle"></div>
+          <div class="p-ln" style="padding:2px 8px 6px 16px"><h2 class="p-h2">Filters</h2><button class="k-iconbtn" type="button" aria-label="Close filters"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+          <div class="p-sbody">
+            <div class="p-sg">
+              <div class="k-label">When</div>
+              <div class="k-seg p-seg4"><button class="k-seg-on" type="button">Any time</button><button type="button">This weekend</button><button type="button">Next 30 days</button><button type="button">Pick dates</button></div>
+            </div>
+            <div class="p-sg">
+              <div class="k-label">Where</div>
+              <div class="p-wrap" style="gap:8px">
+                <button class="k-chip k-chip-on" type="button" aria-pressed="true"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Louisiana<span class="k-chip-count">11</span></button>
+                <button class="k-chip k-chip-on" type="button" aria-pressed="true"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Mississippi<span class="k-chip-count">5</span></button>
+                <button class="k-chip" type="button" aria-pressed="false">Texas<span class="k-chip-count">3</span></button>
+                <button class="k-chip" type="button" aria-pressed="false">Alabama<span class="k-chip-count">3</span></button>
+              </div>
+              <button class="p-rowbtn" type="button"><span>Louisiana region</span><span class="p-r p-m" style="gap:4px">Any of the 7<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></button>
+            </div>
+            <div class="p-sg">
+              <div class="k-label">Type</div>
+              <div class="p-wrap" style="gap:8px">
+                <button class="k-chip" type="button">Classical<span class="k-chip-count">4</span></button>
+                <button class="k-chip" type="button">Quick<span class="k-chip-count">1</span></button>
+                <button class="k-chip" type="button">Blitz<span class="k-chip-count">1</span></button>
+                <button class="k-chip" type="button">Dual-rated<span class="k-chip-count">2</span></button>
+                <button class="k-chip" type="button">Scholastic<span class="k-chip-count">7</span></button>
+              </div>
+            </div>
+            <div class="p-sg">
+              <div class="k-label">Where you register</div>
+              <div class="p-wrap" style="gap:8px">
+                <button class="k-chip" type="button">On LCA<span class="k-chip-count">6</span></button>
+                <button class="k-chip" type="button">Organizer's site<span class="k-chip-count">10</span></button>
+              </div>
+            </div>
+            <label class="p-tog"><span><b>US Chess rated only</b><small>Hide casual and unrated events</small></span><input type="checkbox"></label>
+          </div>
+          <div class="p-sfoot">
+            <span class="k-num-badge p-nb" style="top:-12px;right:16px">2</span>
+            <button class="k-btn k-btn-line" type="button">Clear all</button>
+            <button class="k-btn k-btn-navy" type="button" style="flex:1">Show 16 events</button>
+          </div>
+        </div>
+      </div></div>
+      <div class="k-caption">2 · Filter sheet</div>
+      <div class="k-caption-sub">A bottom sheet with a count on every option and a live total on the button. Nothing reloads until you tap Show; Clear all resets in one tap.</div>
+    </div>
+
+    <!-- 3 · Calendar navigator -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key p-key-on" href="#" aria-current="page">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:12px">
+          <div class="p-ln">
+            <div><h2 class="p-h1">Tournaments</h2><div class="p-m">Louisiana · 11 events</div></div>
+            <div class="k-seg"><button type="button">List</button><button class="k-seg-on" type="button">Calendar</button></div>
+          </div>
+          <div class="p-chips">
+            <button class="k-chip" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>Filters<span class="k-chip-count">1</span></button>
+            <button class="k-chip k-chip-on" type="button" aria-label="Louisiana, remove filter">Louisiana<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+            <button class="k-chip" type="button">Jump to today</button>
+          </div>
+          <div class="p-card" style="overflow:hidden">
+            <div class="p-ln" style="padding:4px">
+              <button class="k-iconbtn" type="button" aria-label="Previous month, September"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+              <div style="text-align:center"><div class="p-h3">October 2026</div><div class="p-xs">3 events in Louisiana</div></div>
+              <button class="k-iconbtn" type="button" aria-label="Next month, November"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+            </div>
+            <div class="p-wk"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+            <div class="p-cal">
+              <button class="p-cd p-cd-out" type="button" aria-label="Mon, Sep 28"><span>28</span></button>
+              <button class="p-cd p-cd-out" type="button" aria-label="Tue, Sep 29"><span>29</span></button>
+              <button class="p-cd p-cd-out" type="button" aria-label="Wed, Sep 30"><span>30</span></button>
+              <button class="p-cd" type="button" aria-label="Thu, Oct 1"><span>1</span></button>
+              <button class="p-cd" type="button" aria-label="Fri, Oct 2"><span>2</span></button>
+              <button class="p-cd" type="button" aria-label="Sat, Oct 3"><span>3</span></button>
+              <button class="p-cd" type="button" aria-label="Sun, Oct 4"><span>4</span></button>
+              <button class="p-cd p-cd-today" type="button" aria-label="Today, Mon, Oct 5"><span>5</span></button>
+              <button class="p-cd" type="button" aria-label="Tue, Oct 6"><span>6</span></button>
+              <button class="p-cd" type="button" aria-label="Wed, Oct 7"><span>7</span></button>
+              <button class="p-cd" type="button" aria-label="Thu, Oct 8"><span>8</span></button>
+              <button class="p-cd" type="button" aria-label="Fri, Oct 9"><span>9</span></button>
+              <button class="p-cd p-cd-sel" type="button" aria-label="Sat, Oct 10, Lafayette Open 2026, selected"><span>10</span><i class="p-evb p-evb-s"></i></button>
+              <button class="p-cd p-cd-sel" type="button" aria-label="Sun, Oct 11, Lafayette Open 2026, selected"><span>11</span><i class="p-evb p-evb-e"></i></button>
+              <button class="p-cd" type="button" aria-label="Mon, Oct 12"><span>12</span></button>
+              <button class="p-cd" type="button" aria-label="Tue, Oct 13"><span>13</span></button>
+              <button class="p-cd" type="button" aria-label="Wed, Oct 14"><span>14</span></button>
+              <button class="p-cd" type="button" aria-label="Thu, Oct 15"><span>15</span></button>
+              <button class="p-cd" type="button" aria-label="Fri, Oct 16"><span>16</span></button>
+              <button class="p-cd" type="button" aria-label="Sat, Oct 17"><span>17</span></button>
+              <button class="p-cd" type="button" aria-label="Sun, Oct 18"><span>18</span></button>
+              <button class="p-cd" type="button" aria-label="Mon, Oct 19"><span>19</span></button>
+              <button class="p-cd" type="button" aria-label="Tue, Oct 20"><span>20</span></button>
+              <button class="p-cd" type="button" aria-label="Wed, Oct 21"><span>21</span></button>
+              <button class="p-cd" type="button" aria-label="Thu, Oct 22"><span>22</span></button>
+              <button class="p-cd" type="button" aria-label="Fri, Oct 23"><span>23</span></button>
+              <button class="p-cd" type="button" aria-label="Sat, Oct 24, The Baton Rouge Classic"><span>24</span><i class="p-evb p-evb-s"></i></button>
+              <button class="p-cd" type="button" aria-label="Sun, Oct 25, The Baton Rouge Classic"><span>25</span><i class="p-evb p-evb-e"></i></button>
+              <button class="p-cd" type="button" aria-label="Mon, Oct 26"><span>26</span></button>
+              <button class="p-cd" type="button" aria-label="Tue, Oct 27"><span>27</span></button>
+              <button class="p-cd" type="button" aria-label="Wed, Oct 28"><span>28</span></button>
+              <button class="p-cd" type="button" aria-label="Thu, Oct 29"><span>29</span></button>
+              <button class="p-cd" type="button" aria-label="Fri, Oct 30"><span>30</span></button>
+              <button class="p-cd" type="button" aria-label="Sat, Oct 31, The Casa Chess Tournament, partner event"><span>31</span><i class="p-evb p-evb-o"></i></button>
+              <button class="p-cd p-cd-out" type="button" aria-label="Sun, Nov 1"><span>1</span></button>
+            </div>
+            <div class="p-r p-xs" style="padding:10px 12px;gap:16px">
+              <span class="p-r" style="gap:6px"><i class="p-k1"></i>Registers on LCA</span>
+              <span class="p-r" style="gap:6px"><i class="p-k2"></i>Partner event</span>
+              <span class="p-r" style="gap:6px"><i class="p-k3"></i>Today</span>
+            </div>
+          </div>
+          <div class="p-ln"><h3 class="p-h2">Sat–Sun, Oct 10–11</h3><span class="k-num-badge">3</span></div>
+          <a class="p-card p-ev" href="#">
+            <div class="k-date k-date-navy"><b>10</b><span>Oct</span></div>
+            <div class="p-grow p-st" style="gap:5px">
+              <div class="p-h3">Lafayette Open 2026</div>
+              <div class="p-m">Lafayette · Classical, 5 rounds · 38 of 60 registered</div>
+              <div class="p-wrap"><span class="k-tag k-tag-open">Registration open</span><span class="k-tag k-tag-lca">LCA event</span></div>
+            </div>
+          </a>
+          <a class="k-link p-m" href="#">2 more that weekend, in Alabama and Mississippi</a>
+          <div class="p-ln"><h3 class="p-h2">Sat–Sun, Oct 24–25</h3></div>
+          <a class="p-card p-ev" href="#">
+            <div class="k-date"><b>24</b><span>Oct</span></div>
+            <div class="p-grow"><div class="p-h3">The Baton Rouge Classic</div><div class="p-m">Baton Rouge · 21 of 60 registered</div></div>
+          </a>
+        </div>
+      </div></div>
+      <div class="k-caption">3 · Calendar navigator</div>
+      <div class="k-caption-sub">A compact month grid with clean lines: tap a day and the agenda below jumps there. Weeks start Monday so weekend events stay on one line.</div>
+    </div>
+
+    <!-- 4 · One card expanded -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key p-key-on" href="#" aria-current="page">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:10px">
+          <div class="p-ln">
+            <div><h2 class="p-h1">Tournaments</h2><div class="p-m">All states · 16 through December</div></div>
+            <div class="k-seg"><button class="k-seg-on" type="button">List</button><button type="button">Calendar</button></div>
+          </div>
+          <div class="p-month"><h3 class="p-h3">This weekend · Sat–Sun, Oct 10–11</h3><span class="p-xs">3 events</span></div>
+          <div class="p-card p-open">
+            <div class="p-ev" style="padding-bottom:4px">
+              <div class="k-date k-date-navy"><b>10</b><span>Oct</span></div>
+              <div class="p-grow"><div class="p-h3">Lafayette Open 2026</div><div class="p-m">Sat–Sun, Oct 10–11 · Lafayette, LA</div></div>
+              <button class="k-iconbtn" type="button" aria-expanded="true" aria-label="Collapse Lafayette Open 2026"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></button>
+            </div>
+            <div class="p-st" style="gap:10px;padding:0 12px 12px">
+              <div class="p-wrap"><span class="k-tag k-tag-open">Registration open</span><span class="k-tag k-tag-lca">LCA event</span></div>
+              <div class="p-st" style="gap:4px">
+                <div class="p-r p-t"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>5 rounds, G/90+30: 90 min each + 30 sec per move</span></div>
+                <div class="p-r p-t"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>[Venue name], Lafayette</span></div>
+                <div class="p-r p-t"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg><span>Lafayette Chess Club · organizer Tommy LeBlanc</span></div>
+              </div>
+              <div style="position:relative">
+                <span class="k-num-badge p-nb" style="top:-8px;right:-6px">4</span>
+                <div class="p-sect-h"><span>Section</span><span>Entry</span><span>Spots</span></div>
+                <div class="p-sect-r"><span><b>Open</b> <small>Any rating</small></span><span>$60</span><span>4 left</span></div>
+                <div class="p-sect-r"><span><b>U1800</b> <small>Rated under 1800</small></span><span>$50</span><span>9 left</span></div>
+                <div class="p-sect-r"><span><b>U1400</b> <small>Rated under 1400</small></span><span>$40</span><span><b>3 left</b></span></div>
+                <div class="p-sect-r"><span><b>U1000</b> <small>Under 1000 or unrated</small></span><span>$30</span><span>6 left</span></div>
+                <div class="p-xs" style="padding-top:6px">LCA members pay $10 less.</div>
+              </div>
+              <div>
+                <div class="p-ln p-xs"><b class="p-ink">38 of 60 registered</b><span>Online entry closes Fri, Oct 9, 9:00 PM</span></div>
+                <div class="p-bar" style="margin-top:6px"><i style="width:63%"></i></div>
+              </div>
+              <div class="p-r"><a class="k-btn k-btn-gold" href="#" style="flex:1">Register</a><a class="k-btn k-btn-line" href="#" style="flex:1">Full details</a></div>
+              <div class="p-r" style="gap:4px"><button class="k-btn k-btn-ghost" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</button><button class="k-btn k-btn-ghost" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share</button></div>
+            </div>
+          </div>
+          <a class="p-card p-ev" href="#">
+            <div class="k-date"><b>10</b><span>Oct</span></div>
+            <div class="p-grow p-st" style="gap:4px"><div class="p-h3">Starkville Chess Tournament</div><div class="p-m">Sat, Oct 10 · Starkville, MS · Dual-rated</div><div><span class="k-tag k-tag-ext">Partner event</span></div></div>
+            <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg>
+          </a>
+          <a class="p-card p-ev" href="#">
+            <div class="k-date"><b>10</b><span>Oct</span></div>
+            <div class="p-grow p-st" style="gap:4px"><div class="p-h3">2026 National Chess Day Scholastic</div><div class="p-m">Sat, Oct 10 · Birmingham, AL · Quick</div></div>
+            <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg>
+          </a>
+        </div>
+      </div></div>
+      <div class="k-caption">4 · One card expanded</div>
+      <div class="k-caption-sub">Tap a row to open sections, fees and spots left in place, then Register or add it to your calendar without leaving the list.</div>
+    </div>
+
+  </div>
+
+  <div class="p-legend">
+    <div class="p-lg"><span class="k-num-badge">1</span><b>Applied filters</b> become removable chips, with the result count beside them</div>
+    <div class="p-lg"><span class="k-num-badge">2</span><b>Live total</b> on the button and a count on every option</div>
+    <div class="p-lg"><span class="k-num-badge">3</span><b>Today is ringed,</b> the chosen weekend is shaded, bars span multi-day events</div>
+    <div class="p-lg"><span class="k-num-badge">4</span><b>Spots left per section,</b> so a nearly full section shows before you tap Register</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1960,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clubs D — Directory cards</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.cd-hero{background:#ffffff;border-bottom:1px solid #e2e1da}
+.cd-hero-in{display:flex;flex-wrap:wrap;align-items:center;gap:28px 48px;padding-top:36px;padding-bottom:36px}
+.cd-hero-text{flex:1 1 460px;min-width:0}
+.k-search.cd-search{min-height:52px;max-width:620px}
+.cd-picker{flex:1 1 560px;min-width:0;padding:18px 20px}
+.cd-picker-in{display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;margin-top:12px}
+.cd-map{flex:0 1 250px;min-width:0}
+.cd-regions{flex:1 1 250px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cd-region{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:34px;padding:0 12px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap}
+.cd-region b{font-weight:600;font-size:13px;color:#555c6b;font-variant-numeric:tabular-nums}
+.cd-region.cd-region-on{background:#1a2744;color:#ffffff}
+.cd-region.cd-region-on b{color:rgba(255,255,255,.82)}
+.cd-bar{background:#ffffff;border-bottom:1px solid #dddcd4;position:sticky;top:0;z-index:4}
+.cd-bar-in{display:flex;flex-direction:column;gap:12px;padding-top:14px;padding-bottom:14px}
+.cd-bar-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.cd-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px;min-width:0}
+.cd-az{display:flex;flex-wrap:wrap;align-items:center;gap:4px;min-width:0}
+.cd-az a,.cd-az span.cd-l{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:6px;font-size:14px;font-weight:600;text-decoration:none;flex:none}
+.cd-az a{background:#eceef3;color:#1a2744}
+.cd-az span.cd-l{color:#a3a7b0}
+.cd-az .k-label{margin:0 6px 0 4px}
+.cd-gridhead{margin-bottom:18px}
+.cd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:16px}
+.cd-card{position:relative;display:flex;flex-direction:column;gap:12px;padding:16px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;min-width:0}
+.cd-head{display:flex;align-items:flex-start;gap:12px}
+.cd-logo{width:48px;height:48px;border-radius:10px;flex:none}
+.cd-card .k-img.cd-ph{padding:0;align-items:center;justify-content:center;font-size:11px}
+.cd-ini{display:flex;align-items:center;justify-content:center;background:#eceef3;color:#1a2744;font-size:15px;font-weight:700;letter-spacing:.03em}
+.cd-id{min-width:0;padding-top:1px}
+.cd-name{font-size:16px;line-height:1.3;font-weight:600}
+.cd-name a{color:#1a2744;text-decoration:none}
+.cd-sub{display:flex;align-items:center;gap:6px;margin-top:3px;font-size:13px;line-height:1.35;color:#555c6b}
+.cd-meet{display:flex;flex-direction:column;gap:8px}
+.cd-line{display:flex;align-items:flex-start;gap:8px}
+.cd-line svg{margin-top:3px;color:#555c6b}
+.cd-when{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:15px;line-height:1.4;font-weight:600;font-variant-numeric:tabular-nums}
+.cd-where{font-size:13.5px;line-height:1.4;color:#555c6b}
+.cd-note{font-size:13px;line-height:1.45;color:#555c6b}
+.cd-event{font-size:13px;line-height:1.45;color:#1a2744}
+.cd-event svg{color:#866a1e}
+.cd-tags{display:flex;flex-wrap:wrap;gap:6px}
+.cd-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:10px;border-top:1px solid #ecebe5}
+.cd-foot a{font-size:14px}
+.cd-stamp{display:inline-flex;align-items:center;gap:5px}
+.cd-card .cd-badge{position:absolute;top:-10px;right:-10px}
+.cd-card.cd-add{justify-content:center;background:transparent;border:1.5px dashed #b7b6ae}
+.cd-reps{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px}
+.cd-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));gap:12px 32px;margin-top:14px}
+.cd-legend div{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
+@media (max-width:760px){
+  .cd-hero-in{padding-top:24px;padding-bottom:24px}
+  .cd-picker{padding:14px}
+  .cd-regions{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .cd-region{flex:none;border:1px solid #c4c3bb;border-radius:999px}
+  .cd-chips,.cd-az{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .cd-chips .k-chip{flex:none}
+  .cd-card .cd-badge{top:-8px;right:-4px}
+}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a class="k-nav-on" href="#" aria-current="page">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<section class="cd-hero">
+  <div class="k-wrap-wide cd-hero-in">
+    <div class="cd-hero-text k-stack">
+      <p class="k-label-gold">Clubs directory</p>
+      <h1 class="k-h1">Find your chess community</h1>
+      <p class="k-lead">Clubs across Louisiana host weekly meetings, lessons, and local tournaments. Browse all of them below, or search by club, city or venue.</p>
+      <div class="k-search cd-search">
+        <svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>
+        <input aria-label="Search clubs" placeholder="Search clubs, cities or venues, e.g. library">
+      </div>
+      <p class="k-small k-muted">25 clubs in 7 regions · 18 list when they meet · 7 don't yet. <a class="k-link" href="#">Know a club's schedule? Tell us</a></p>
+      <div class="k-row-sm"><span class="k-sample">Sample data</span><span class="k-meta">Club colours, logos, region assignments and "Confirmed" months. Club names, meeting times and venues are real.</span></div>
+    </div>
+
+    <div class="cd-picker k-card">
+      <div class="k-between"><span class="k-label">Browse by region</span><span class="k-num-badge">1</span></div>
+      <div class="cd-picker-in">
+        <div class="cd-map k-hide-sm">
+          <svg viewBox="0 0 220 190" style="width:100%;height:auto;display:block;border-radius:8px" role="img" aria-label="Map of Louisiana with 25 club locations. New Orleans Metro has 8 clubs and Baton Rouge has 2.">
+            <rect x="0" y="0" width="220" height="190" fill="#eef1f4"></rect>
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744"></path>
+            <text x="181" y="99" font-size="6" fill="#555c6b">MS</text>
+            <circle cx="23" cy="30" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="66" cy="27" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="96" cy="26" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="72" cy="86" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="88" cy="100" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="28" cy="108" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="23" cy="140" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="86" cy="116" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="80" cy="136" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="124" cy="131" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="108" cy="156" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="136" cy="160" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="150" cy="118" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="166" cy="121" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="172" cy="104" r="3.2" fill="#1a2744" stroke="#ffffff"></circle>
+            <circle cx="116" cy="121" r="5.6" fill="#1a2744" stroke="#ffffff"></circle>
+            <text x="116" y="123.2" font-size="6" font-weight="700" text-anchor="middle" fill="#ffffff">2</text>
+            <circle cx="155" cy="140" r="7.4" fill="#1a2744" stroke="#ffffff"></circle>
+            <text x="155" y="142.8" font-size="7.5" font-weight="700" text-anchor="middle" fill="#ffffff">8</text>
+          </svg>
+          <p class="k-meta" style="margin-top:8px">Pins follow the filters. Picayune is just over the line in Mississippi.</p>
+        </div>
+        <nav class="cd-regions" aria-label="Filter by region">
+          <a class="cd-region cd-region-on" href="#" aria-current="true">All regions <b>25</b></a>
+          <a class="cd-region" href="#">North Louisiana <b>3</b></a>
+          <a class="cd-region" href="#">Central Louisiana <b>2</b></a>
+          <a class="cd-region" href="#">North of Lake Pontchartrain <b>3</b></a>
+          <a class="cd-region" href="#">New Orleans Metro <b>8</b></a>
+          <a class="cd-region" href="#">Southwest Louisiana <b>2</b></a>
+          <a class="cd-region" href="#">South Central Louisiana <b>5</b></a>
+          <a class="cd-region" href="#">Bayou Region <b>2</b></a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="cd-bar">
+  <div class="k-wrap-wide cd-bar-in">
+    <div class="cd-bar-row">
+      <div class="cd-chips" role="group" aria-label="Quick filters">
+        <span class="k-num-badge">2</span>
+        <button class="k-chip" type="button" aria-pressed="false">Meets today <span class="k-chip-count">6</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Weekends <span class="k-chip-count">3</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Kids welcome <span class="k-chip-count">8</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Rated play <span class="k-chip-count">3</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Free <span class="k-chip-count">2</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Lessons <span class="k-chip-count">3</span></button>
+      </div>
+      <div class="k-row-sm">
+        <span class="k-flabel" id="cd-sort">Sort</span>
+        <div class="k-seg" role="group" aria-labelledby="cd-sort">
+          <button class="k-seg-on" type="button" aria-pressed="true">A–Z</button>
+          <button type="button" aria-pressed="false">Meets soonest</button>
+          <button type="button" aria-pressed="false">Nearest</button>
+        </div>
+      </div>
+    </div>
+    <div class="cd-bar-row">
+      <nav class="cd-az" aria-label="Jump to letter">
+        <span class="k-num-badge">3</span>
+        <span class="k-label">Jump to</span>
+        <span class="cd-l" aria-hidden="true">A</span>
+        <a href="#" aria-label="Clubs starting with B">B</a>
+        <a href="#" aria-label="Clubs starting with C">C</a>
+        <a href="#" aria-label="Clubs starting with D">D</a>
+        <span class="cd-l" aria-hidden="true">E</span>
+        <span class="cd-l" aria-hidden="true">F</span>
+        <a href="#" aria-label="Clubs starting with G">G</a>
+        <a href="#" aria-label="Clubs starting with H">H</a>
+        <span class="cd-l" aria-hidden="true">I</span>
+        <span class="cd-l" aria-hidden="true">J</span>
+        <a href="#" aria-label="Clubs starting with K">K</a>
+        <a href="#" aria-label="Clubs starting with L">L</a>
+        <a href="#" aria-label="Clubs starting with M">M</a>
+        <a href="#" aria-label="Clubs starting with N">N</a>
+        <span class="cd-l" aria-hidden="true">O</span>
+        <a href="#" aria-label="Clubs starting with P">P</a>
+        <span class="cd-l" aria-hidden="true">Q</span>
+        <a href="#" aria-label="Clubs starting with R">R</a>
+        <a href="#" aria-label="Clubs starting with S">S</a>
+        <span class="cd-l" aria-hidden="true">T</span>
+        <span class="cd-l" aria-hidden="true">U</span>
+        <span class="cd-l" aria-hidden="true">V</span>
+        <span class="cd-l" aria-hidden="true">W</span>
+        <span class="cd-l" aria-hidden="true">X</span>
+        <span class="cd-l" aria-hidden="true">Y</span>
+        <span class="cd-l" aria-hidden="true">Z</span>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<main class="k-wrap-wide k-section-sm">
+  <div class="k-between cd-gridhead">
+    <div class="k-stack-sm">
+      <h2 class="k-h2">25 clubs, A–Z</h2>
+      <p class="k-meta">6 meet today, Mon, Oct 5 · 7 still need a meeting schedule · <a href="#">Report outdated info</a></p>
+    </div>
+    <div class="k-row">
+      <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Copy link to this list</a>
+      <div class="k-seg" role="group" aria-label="View">
+        <button class="k-seg-on" type="button" aria-pressed="true">Cards</button>
+        <button type="button" aria-pressed="false">Map</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cd-grid">
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">BR</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Baton Rouge Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#5b3a8e" aria-hidden="true"></span>Baton Rouge · South Central Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Sat · 10:00 AM</div><div class="cd-where">Jones Creek Branch Library</div></div></div>
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Wed · 6:00 PM, casual</div><div class="cd-where">Boba ParTea, O'Neil Lane</div></div></div>
+        <div class="cd-note">Saturdays are G/90+30 · 90 min each + 30 sec per move</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Classical</span><span class="k-tag">Casual night</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">BP</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Beauregard Parish Youth Chess</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#c8a94a" aria-hidden="true"></span>DeRidder · Southwest Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Wed · 1:00–2:00 PM</div><div class="cd-where">Summers only</div></div></div>
+        <div class="cd-note">Next summer's dates aren't posted yet.</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Youth program</span><span class="k-tag">Seasonal</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Jun 2026</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">BB</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Bluebonnet Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#4a6fd1" aria-hidden="true"></span>Baton Rouge · South Central Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">1st &amp; 3rd Sun · 4:30–5:30 PM</div><div class="cd-where">Bluebonnet Library</div></div></div>
+        <div class="cd-line cd-note"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Not this week. Next: Sun, Oct 18</span></div>
+      </div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Aug 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Bluebonnet Chess Club, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">BU</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Bunkie Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#c8a94a" aria-hidden="true"></span>Bunkie · Central Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Tue · 4:00–6:00 PM</div><div class="cd-where">Bunkie Library</div></div></div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Free to join</span><span class="k-tag">Ages 8–108</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Bunkie Chess Club, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="k-img cd-logo cd-ph">Logo</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Casa de Ajedrez</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#d4572a" aria-hidden="true"></span>Sulphur / Lake Charles · Southwest Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="k-row-sm"><span class="k-tag">Schedule not listed</span><a class="k-small k-link" href="#">Tell us</a></div>
+        <div class="cd-note">Casual play, US Chess rated tournaments, online chess and lessons.</div>
+      </div>
+      <div class="cd-line cd-event"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg><span>Hosts The Casa Chess Tournament · Sat, Oct 31</span></div>
+      <div class="cd-tags"><span class="k-tag">Rated</span><span class="k-tag">Casual</span><span class="k-tag">Lessons</span></div>
+      <div class="cd-foot"><span class="k-meta">Listing incomplete</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <span class="k-num-badge cd-badge">4</span>
+      <div class="cd-head">
+        <div class="k-img cd-logo cd-ph">Logo</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Downriver Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#2f6f8f" aria-hidden="true"></span>New Orleans · New Orleans Metro</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Mon &amp; Thu · 7:00 PM <span class="k-tag k-tag-gold">Today</span></div><div class="cd-where">Decatur St venues</div></div></div>
+        <div class="cd-note">Game 15, no delay · 15 min each. $1–2 entry with US Chess membership.</div>
+      </div>
+      <div class="cd-line cd-event"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg><span>Hosts The Baton Rouge Classic · Sat–Sun, Oct 24–25</span></div>
+      <div class="cd-tags"><span class="k-tag">Quick games</span><span class="k-tag">$1–2 entry</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <span class="k-num-badge cd-badge">5</span>
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">GZ</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Gonzales Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#c8a94a" aria-hidden="true"></span>Gonzales · South Central Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="k-row-sm"><span class="k-tag">Schedule not listed</span></div>
+        <div class="cd-note">Know when and where they meet? <a class="k-link" href="#">Tell us</a> and we'll check with the club before it goes up.</div>
+      </div>
+      <div class="cd-foot"><span class="k-meta">Listing incomplete</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">GN</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Greater New Orleans Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#6b2d5c" aria-hidden="true"></span>New Orleans · New Orleans Metro</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Tue · 7:00 PM</div><div class="cd-where">Arrive by 6:30 PM to register</div></div></div>
+        <div class="cd-note">5-round G/90 tournaments, one round a week · 90 min each</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Classical</span><span class="k-tag">Club tournaments</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Aug 2026</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">HW</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Heart of Worship Church</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#c8a94a" aria-hidden="true"></span>Opelousas · South Central Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Fri · 5:30–7:00 PM</div><div class="cd-where">Heart of Worship Church</div></div></div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Open to anyone</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Jul 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Heart of Worship Church, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">HO</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Houma Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#2e7d4f" aria-hidden="true"></span>Houma · Bayou Region</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Mon · 6:00–8:30 PM <span class="k-tag k-tag-gold">Today</span></div><div class="cd-where">Terrebonne Parish North Library</div></div></div>
+      </div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Houma Chess Club, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="k-img cd-logo cd-ph">Logo</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Knight Light Chess</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#d08a1e" aria-hidden="true"></span>New Orleans · New Orleans Metro</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="k-row-sm"><span class="k-tag">Schedule not listed</span><a class="k-small k-link" href="#">Tell us</a></div>
+        <div class="cd-note">Summer camps, after-school programs, private instruction and community tournaments.</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Youth program</span><span class="k-tag">Lessons</span><span class="k-tag">Camps</span></div>
+      <div class="cd-foot"><span class="k-meta">Listing incomplete</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="k-img cd-logo cd-ph">Logo</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Lafayette Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#b3202f" aria-hidden="true"></span>Lafayette · South Central Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="k-row-sm"><span class="k-tag">Schedule not listed</span><a class="k-small k-link" href="#">Tell us</a></div>
+        <div class="cd-note">All skill levels. Also hosts the Louisiana Open on Memorial Day weekend.</div>
+      </div>
+      <div class="cd-line cd-event"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg><span>Hosts Lafayette Open 2026 · Sat–Sun, Oct 10–11</span></div>
+      <div class="cd-tags"><span class="k-tag">All skill levels</span><span class="k-tag">Hosts tournaments</span></div>
+      <div class="cd-foot"><span class="k-meta">Listing incomplete</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">MV</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Mandeville Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#8c3b3b" aria-hidden="true"></span>Mandeville · North of Lake Pontchartrain</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Mon · 5:00 PM <span class="k-tag k-tag-gold">Today</span></div><div class="cd-where">George's Mexican Restaurant</div></div></div>
+      </div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Mandeville Chess Club, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">MR</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Marrero Chess Organization</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#b5462f" aria-hidden="true"></span>Marrero · New Orleans Metro</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Wed · 6:00–10:00 PM</div><div class="cd-where">Chopsticks Buffet</div></div></div>
+        <div class="cd-note">No entry fee. Casual games only; all welcome.</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Free</span><span class="k-tag">Casual</span><span class="k-tag">All welcome</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Aug 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Marrero Chess Organization, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="k-img cd-logo cd-ph">Logo</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Metairie Chess Academy</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#7a4fb0" aria-hidden="true"></span>Metairie · New Orleans Metro</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="k-row-sm"><span class="k-tag">Schedule not listed</span><a class="k-small k-link" href="#">Tell us</a></div>
+        <div class="cd-note">Chess instruction and play for kids of all ages.</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Youth program</span><span class="k-tag">Lessons</span></div>
+      <div class="cd-foot"><span class="k-meta">Listing incomplete</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">MO</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Monroe Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#a65e2e" aria-hidden="true"></span>Monroe · North Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Mon · 5:30 PM <span class="k-tag k-tag-gold">Today</span></div><div class="cd-where">Enochs Pub and Grill</div></div></div>
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Sat · 10:00 AM</div><div class="cd-where">Books-A-Million</div></div></div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">All ages</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">MC</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Morgan City Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#c8a94a" aria-hidden="true"></span>Morgan City · Bayou Region</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">1st, 3rd &amp; 5th Tue · 5:30 PM</div><div class="cd-where">First Baptist Church</div></div></div>
+        <div class="cd-line cd-note"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Next: Tue, Oct 6 (tomorrow)</span></div>
+      </div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Jul 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Morgan City Chess Club, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">WB</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">New Orleans Westbank Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#1f7a5a" aria-hidden="true"></span>Gretna · New Orleans Metro</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Thu · 7:30–11:30 PM</div><div class="cd-where">US Chess rated tournaments</div></div></div>
+        <div class="cd-note">Beginners welcome.</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Rated</span><span class="k-tag">Beginners welcome</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">NK</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">North Kenner Library</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#3a6ea5" aria-hidden="true"></span>Kenner · New Orleans Metro</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="k-row-sm"><span class="k-tag">Schedule not listed</span><a class="k-small k-link" href="#">Tell us</a></div>
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><div class="cd-where">Meeting Room, North Kenner Public Library</div></div>
+        <div class="cd-note">Casual chess for all ages and abilities.</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Casual</span><span class="k-tag">All ages</span></div>
+      <div class="cd-foot"><span class="k-meta">Listing incomplete</span><a class="k-link-plain" href="#" aria-label="Directions to North Kenner Library, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">PC</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Picayune Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#c8a94a" aria-hidden="true"></span>Picayune, MS · North of Lake Pontchartrain</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Mon · 6:00–10:00 PM <span class="k-tag k-tag-gold">Today</span></div><div class="cd-where">IHOP</div></div></div>
+        <div class="cd-note">1st Monday (tonight) is quick-rated: 4 rounds, G/20 d5 · 20 min each with a 5-sec delay.</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Rated 1st Monday</span><span class="k-tag">Border club</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Picayune Chess Club, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">PH</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Pineville Homeschool Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#c8a94a" aria-hidden="true"></span>Pineville · Central Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Monthly · 12:30–2:30 PM</div><div class="cd-where">Dates not listed</div></div></div>
+        <div class="cd-note">For CCHSA homeschool members.</div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Youth program</span><span class="k-tag">Homeschool</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed May 2026</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">RK</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Ruston Knights Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#1d4f91" aria-hidden="true"></span>Ruston · North Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Tue · 6:00 PM</div><div class="cd-where">Utility Brewing Company</div></div></div>
+      </div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Aug 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Ruston Knights Chess Club, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">SB</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Shreveport-Bossier Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#9b2335" aria-hidden="true"></span>Shreveport-Bossier · North Louisiana</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Mon · 1:00–5:00 PM <span class="k-tag k-tag-gold">Today</span></div><div class="cd-where">Gamers XP</div></div></div>
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Thu · 1:00–5:00 PM</div><div class="cd-where">Pierre Bossier Mall food court</div></div></div>
+      </div>
+      <div class="cd-tags"><span class="k-tag">Daytime play</span></div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Sep 2026</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="cd-logo cd-ini" aria-hidden="true">SL</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Slidell Chess Club</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#c8a94a" aria-hidden="true"></span>Slidell · North of Lake Pontchartrain</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="cd-line"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div><div class="cd-when">Fri · 7:00 PM</div><div class="cd-where">St. Luke's, 910 Cross Gates Blvd., Classroom #3</div></div></div>
+      </div>
+      <div class="cd-foot"><span class="k-meta cd-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed Jun 2026</span><a class="k-link-plain" href="#" aria-label="Directions to Slidell Chess Club, opens Google Maps">Directions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card">
+      <div class="cd-head">
+        <div class="k-img cd-logo cd-ph">Logo</div>
+        <div class="cd-id">
+          <h3 class="cd-name"><a href="#">Strategic Thoughts NOLA</a></h3>
+          <div class="cd-sub"><span class="k-dot" style="background:#2a9d8f" aria-hidden="true"></span>New Orleans · New Orleans Metro</div>
+        </div>
+      </div>
+      <div class="cd-meet">
+        <div class="k-row-sm"><span class="k-tag">Schedule not listed</span><a class="k-small k-link" href="#">Tell us</a></div>
+        <div class="cd-note">Youth chess programs in schools and NORD centers.</div>
+      </div>
+      <div class="cd-line cd-event"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg><span>Co-hosts New Orleans Youth Chess November Meet · Sat, Nov 14</span></div>
+      <div class="cd-tags"><span class="k-tag">Youth program</span><span class="k-tag">In schools</span></div>
+      <div class="cd-foot"><span class="k-meta">Listing incomplete</span><a class="k-link-plain" href="#">Club page<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a></div>
+    </article>
+
+    <article class="cd-card cd-add">
+      <svg class="k-i-xl" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg>
+      <h3 class="cd-name">Missing a club?</h3>
+      <p class="k-small k-muted">Tell us where and when it meets. We check with the organizer, then add it to the directory and the map.</p>
+      <div><a class="k-btn k-btn-line k-btn-sm" href="#">Suggest a club</a></div>
+    </article>
+
+  </div>
+</main>
+
+<section class="k-navy">
+  <div class="k-wrap-wide k-section-sm cd-reps">
+    <div class="k-stack-sm" style="flex:1 1 520px">
+      <div class="k-row-sm"><span class="k-num-badge" style="background:#c8a94a;color:#1a2744">6</span><span class="k-label">For club reps</span></div>
+      <h2 class="k-h2">Keep your club's card current</h2>
+      <p class="k-body" style="color:rgba(255,255,255,.86)"><span class="k-mono" style="color:#e6cf86">1.</span> Log in &#160; <span class="k-mono" style="color:#e6cf86">2.</span> Open Workspace › My club &#160; <span class="k-mono" style="color:#e6cf86">3.</span> Check the meeting times and press "Still accurate". Your card then reads "Confirmed Oct 2026".</p>
+    </div>
+    <div class="k-row">
+      <a class="k-btn k-btn-gold" href="#">Update your listing</a>
+      <a class="k-btn k-btn-on-dark" href="#">Email LouisianaChess@gmail.com</a>
+    </div>
+  </div>
+</section>
+
+<section class="k-wrap-wide k-section-sm">
+  <div class="k-panel">
+    <div class="k-label">About this option · Directory cards</div>
+    <div class="cd-legend">
+      <div><span class="k-num-badge">1</span><span>Region picker: the map and the region list filter the cards together. The full Google map is one click away (Cards / Map), never in a pop-up.</span></div>
+      <div><span class="k-num-badge">2</span><span>Quick chips with live counts plus a three-way sort: A–Z, meets soonest, nearest. Filters live in the URL, so "Kids welcome" can be shared as a link.</span></div>
+      <div><span class="k-num-badge">3</span><span>A–Z jump bar. Letters with no clubs are greyed out and skipped by the keyboard.</span></div>
+      <div><span class="k-num-badge">4</span><span>Card order: identity (logo slot or initials, club colour as a dot only), then when, where, the time control in plain words, and up to three tags.</span></div>
+      <div><span class="k-num-badge">5</span><span>Honest gaps: the 7 clubs without a schedule say "Schedule not listed" and offer "Tell us", instead of a blank or "See club for details".</span></div>
+      <div><span class="k-num-badge">6</span><span>Freshness loop: every card carries a "Confirmed" month; reps re-confirm in three steps; visitors can report outdated info.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Work A — Event-day console</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.wa-crumbs{display:flex;align-items:center;gap:10px;color:#c9cdd6;font-size:14px;flex-wrap:wrap}
+.wa-crumbs a{color:#ffffff;text-decoration:none}
+.wa-top{background:#1a2744;color:#ffffff}
+.wa-topin{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap}
+.wa-clock{text-align:right}
+.wa-clock b{display:block;font-size:34px;line-height:1.1;color:#ffffff}
+.wa-rail{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+.wa-rail li{border-top:4px solid #3a4a6e;padding-top:8px;font-size:12.5px;line-height:1.35;color:#c9cdd6}
+.wa-rail li b{display:block;color:#ffffff;font-size:14px}
+.wa-rail li.wa-done{border-top-color:#8fa3c9}
+.wa-rail li.wa-now{border-top-color:#c8a94a}
+.wa-rail li.wa-now b{color:#c8a94a}
+.wa-sync{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#e4e7ee;background:#24345a;border-radius:999px;padding:6px 14px 6px 6px}
+.wa-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.wa-step{background:#ffffff;border:1px solid #e3e1d8;border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.wa-step-now{border:2px solid #1a2744;box-shadow:0 6px 18px rgba(26,39,68,.08)}
+.wa-stepn{width:32px;height:32px;border-radius:50%;background:#efede6;color:#1a2744;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.wa-step-now .wa-stepn{background:#1a2744;color:#ffffff}
+.wa-big{min-height:56px;font-size:17px;width:100%;justify-content:center;margin-top:auto}
+.wa-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;align-items:start}
+.wa-counts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:14px}
+.wa-count{background:#f5f5f2;border-radius:10px;padding:10px 12px;color:#1a2744}
+.wa-count b{display:block;font-size:26px;line-height:1.1}
+.wa-ci{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;align-items:center;padding:12px 0;border-top:1px solid #eeede7;min-height:64px}
+.wa-ci-name{font-size:16px;font-weight:600;color:#1a2744}
+.wa-ci-act{display:flex;gap:8px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.wa-tap{min-height:52px;min-width:132px;justify-content:center;font-size:16px}
+.wa-res{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:12px 8px;border-top:1px solid #eeede7}
+.wa-bd{font-weight:700;font-size:20px;color:#1a2744;text-align:center;line-height:1.1}
+.wa-bd span{display:block;font-size:11px;font-weight:500;color:#555c6b;margin-top:2px}
+.wa-pl{font-size:14.5px;line-height:1.55;color:#1a2744;min-width:0}
+.wa-rbs{display:flex;gap:6px}
+.wa-rb{min-width:64px;min-height:52px;border-radius:10px;border:1px solid #c9c6ba;background:#ffffff;font:inherit;font-weight:600;font-size:16px;color:#1a2744}
+.wa-rb.wa-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.wa-flag{background:#fbf3df;border-radius:12px;border-top-color:#fbf3df}
+.wa-cw,.wa-cb{display:inline-block;width:11px;height:11px;border-radius:2px;border:1.5px solid #1a2744;margin-right:7px;vertical-align:-1px;box-sizing:border-box}
+.wa-cb{background:#1a2744}
+.wa-keypad{background:#f5f5f2;border-radius:12px;padding:14px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.wa-kbtn{min-height:48px;padding:0 16px;border-radius:10px;border:1px solid #c9c6ba;background:#ffffff;font:inherit;font-weight:600;color:#1a2744}
+.wa-printbtn{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:56px}
+.wa-printbtn>span:first-child{display:inline-flex;align-items:center;gap:10px}
+.wa-check{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;padding:9px 0;border-top:1px solid #eeede7;color:#1a2744}
+.wa-ok{color:#2f6b45;flex:none;margin-top:2px}
+.wa-bad{color:#9a3b1b;flex:none;margin-top:2px}
+.wa-wait{color:#866a1e;flex:none;margin-top:2px}
+.wa-log{font-size:13px;color:#555c6b;padding:8px 0;border-top:1px solid #eeede7}
+.wa-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 28px;font-size:13px;line-height:1.45}
+.wa-legend div{display:flex;gap:8px;align-items:flex-start}
+@media (max-width:1000px){.wa-cols{grid-template-columns:1fr}.wa-rail{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:12px}}
+@media (max-width:720px){.wa-steps{grid-template-columns:1fr}.wa-legend{grid-template-columns:1fr}.wa-res{grid-template-columns:44px minmax(0,1fr)}.wa-rbs{grid-column:1 / -1}.wa-rail{grid-template-columns:repeat(2,minmax(0,1fr))}.wa-counts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="wa-crumbs" aria-label="Breadcrumb"><a href="#">Workspace</a><span aria-hidden="true">/</span><a href="#">The Baton Rouge Classic</a><span aria-hidden="true">/</span><span>Event day</span></nav>
+    <div class="k-utility">
+      <span class="k-ulink" style="cursor:default">Chris Arceneaux · TD</span>
+      <a class="k-ulink" href="Account-C.dc.html">My LCA</a>
+      <a class="k-btn k-btn-on-dark k-btn-sm" href="#">Exit console</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="wa-top">
+    <div class="k-wrap-wide" style="padding-top:26px;padding-bottom:22px">
+      <div class="wa-topin">
+        <div>
+          <div class="k-row k-row-sm"><span class="k-label" style="color:#c8a94a">Event day · Sun, Oct 25 · 9:14 AM</span><span class="k-sample">Sample data · players, results and counts</span></div>
+          <h1 class="k-h1" style="color:#ffffff;margin:6px 0 4px">The Baton Rouge Classic</h1>
+          <div style="color:#d9dbe2;font-size:15px">Baton Rouge · 48 of 60 spots filled · 4 sections · 5 rounds · G/90+30 (90 min each + 30 sec per move)</div>
+        </div>
+        <div class="wa-clock">
+          <span class="k-label" style="color:#c9cdd6">Round 4 starts</span>
+          <b>9:30 AM</b>
+          <div style="color:#d9dbe2;font-size:14px">in 16 minutes</div>
+          <div class="k-row k-row-sm" style="justify-content:flex-end;margin-top:10px">
+            <a class="k-btn k-btn-on-dark k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"></rect><path d="M8 20h8M12 16v4"></path></svg>Hall TV</a>
+            <a class="k-btn k-btn-on-dark k-btn-sm" href="#">Public page</a>
+          </div>
+        </div>
+      </div>
+      <ol class="wa-rail" aria-label="Event progress">
+        <li class="wa-done"><b>Check-in</b>Closed Sat 9:52 AM</li>
+        <li class="wa-done"><b>Round 1</b>Done</li>
+        <li class="wa-done"><b>Round 2</b>Done</li>
+        <li class="wa-now"><b>Round 3</b>1 result to confirm</li>
+        <li class="wa-now"><b>Round 4</b>Check-in open · pair by 9:30</li>
+        <li><b>Round 5</b>2:00 PM</li>
+        <li><b>Prizes</b>After round 5</li>
+        <li><b>Rating report</b>1 issue so far</li>
+      </ol>
+      <div class="k-between" style="margin-top:18px">
+        <span class="wa-sync"><span class="k-num-badge">6</span>Saved on this tablet · synced 9:14 AM · keeps working if the venue Wi-Fi drops</span>
+        <span style="color:#c9cdd6;font-size:13px">Tablet-first: every control 48px or taller, nothing scrolls sideways</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap-wide k-section-sm">
+    <div class="k-row k-row-sm" style="margin-bottom:12px"><span class="k-num-badge">1</span><h2 class="k-h3" style="margin:0">Next step</h2><span class="k-small k-muted">Confirm, pair, publish. One big button at a time.</span></div>
+    <div class="wa-steps">
+      <div class="wa-step wa-step-now">
+        <div class="k-row k-row-sm"><span class="wa-stepn">1</span><b class="k-h4" style="margin:0">Confirm round 3 results</b></div>
+        <div class="k-row k-row-sm"><span class="k-tag k-tag-full">1 left</span><span class="k-small">23 of 24 boards in</span></div>
+        <p class="k-small" style="margin:0">Board 7 (U1800): White reported a win, Black reported a draw. Talk to both players, then tap the result.</p>
+        <a class="k-btn k-btn-gold wa-big" href="#r3">Review board 7</a>
+      </div>
+      <div class="wa-step">
+        <div class="k-row k-row-sm"><span class="wa-stepn">2</span><b class="k-h4" style="margin:0">Pair round 4</b></div>
+        <div class="k-small">43 here · 2 half-point byes · 2 not here yet · 1 withdrew</div>
+        <div class="k-small k-muted">If Isaac Dupre and Rosa Mendez aren't here when you pair:</div>
+        <div class="k-seg"><button class="k-seg-on" type="button">Leave them out (0 points)</button><button type="button">Pair them anyway</button></div>
+        <button class="k-btn k-btn-navy wa-big" type="button" disabled>Pair round 4</button>
+        <div class="k-small k-muted">Unlocks when board 7 is confirmed</div>
+      </div>
+      <div class="wa-step">
+        <div class="k-row k-row-sm"><span class="wa-stepn">3</span><b class="k-h4" style="margin:0">Publish and notify</b><span class="k-num-badge">4</span></div>
+        <div class="k-small">One tap posts round 4 pairings on the event page and hall TV, texts or emails all 47 remaining players their board and color (or bye), and updates their wallet passes.</div>
+        <label class="k-check k-small"><input type="checkbox" checked> Also print pairings by board</label>
+        <button class="k-btn k-btn-navy wa-big" type="button" disabled>Publish round 4 and notify</button>
+        <div class="k-small k-muted">Unlocks after pairing · swap boards first if you need to</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap-wide k-section-sm">
+    <div class="wa-cols">
+
+      <div class="k-card k-card-pad" id="ci">
+        <div class="k-between">
+          <div class="k-row k-row-sm"><span class="k-num-badge">2</span><h2 class="k-h3" style="margin:0">Round 4 check-in</h2></div>
+          <button class="k-btn k-btn-line" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan a card</button>
+        </div>
+        <div class="wa-counts">
+          <div class="wa-count"><b>43</b><span class="k-small">Here</span></div>
+          <div class="wa-count"><b>2</b><span class="k-small">Byes</span></div>
+          <div class="wa-count" style="background:#fbf3df"><b>2</b><span class="k-small">Not here yet</span></div>
+          <div class="wa-count"><b>1</b><span class="k-small">Withdrew</span></div>
+        </div>
+        <div class="k-field" style="margin-top:14px"><label for="wa-q">Find a player</label><input id="wa-q" class="k-input" placeholder="Name or US Chess ID" style="min-height:52px;font-size:17px"></div>
+        <div class="k-row k-row-sm" style="margin:12px 0 4px">
+          <button class="k-chip" type="button">All <span class="k-chip-count">48</span></button>
+          <button class="k-chip k-chip-on" type="button">Needs a look <span class="k-chip-count">5</span></button>
+          <button class="k-chip" type="button">Not here <span class="k-chip-count">2</span></button>
+          <button class="k-chip" type="button">Byes <span class="k-chip-count">2</span></button>
+          <button class="k-chip" type="button">US Chess flags <span class="k-chip-count">1</span></button>
+        </div>
+
+        <div class="wa-ci">
+          <div><div class="wa-ci-name">Isaac Dupre</div><div class="k-small k-muted">1688 · U1800 · 1½ pts · texted at 9:05 AM</div></div>
+          <div class="wa-ci-act"><span class="k-tag k-tag-full">Not here</span><button class="k-btn k-btn-gold wa-tap" type="button">Check in</button></div>
+        </div>
+        <div class="wa-ci">
+          <div><div class="wa-ci-name">Rosa Mendez</div><div class="k-small k-muted">1219 · U1400 · 1½ pts · texted at 9:05 AM</div><div style="margin-top:4px"><span class="k-tag k-tag-soon">US Chess ended Oct 12</span></div></div>
+          <div class="wa-ci-act"><span class="k-tag k-tag-full">Not here</span><button class="k-btn k-btn-gold wa-tap" type="button">Check in</button></div>
+        </div>
+        <div class="wa-ci">
+          <div><div class="wa-ci-name">Nora Hebert</div><div class="k-small k-muted">1577 · U1800 · 2½ pts · requested Sat</div></div>
+          <div class="wa-ci-act"><span class="k-tag k-tag-closed">Bye · ½ point</span><button class="k-btn k-btn-ghost wa-tap" type="button">Cancel bye</button></div>
+        </div>
+        <div class="wa-ci">
+          <div><div class="wa-ci-name">Theo Guidry</div><div class="k-small k-muted">1295 · U1400 · 1½ pts · requested at registration</div></div>
+          <div class="wa-ci-act"><span class="k-tag k-tag-closed">Bye · ½ point</span><button class="k-btn k-btn-ghost wa-tap" type="button">Cancel bye</button></div>
+        </div>
+        <div class="wa-ci">
+          <div><div class="wa-ci-name">Sam Nguyen</div><div class="k-small k-muted">1650 · U1800 · 1 pt · withdrew Sat 11:40 PM</div></div>
+          <div class="wa-ci-act"><span class="k-tag k-tag-closed">Withdrew</span><button class="k-btn k-btn-ghost wa-tap" type="button">Undo</button></div>
+        </div>
+        <div class="wa-ci">
+          <div><div class="wa-ci-name">Maya Robichaux</div><div class="k-small k-muted">1102 · U1400 · 3 pts · 8:47 AM · scanned the door QR (guardian)</div></div>
+          <div class="wa-ci-act"><span class="k-tag k-tag-open">Here</span><button class="k-btn k-btn-ghost wa-tap" type="button">Undo</button></div>
+        </div>
+        <div class="wa-ci">
+          <div><div class="wa-ci-name">Avery Thibodeaux</div><div class="k-small k-muted">1912 · Open · 2 pts · 8:51 AM · wallet card scanned at the desk</div></div>
+          <div class="wa-ci-act"><span class="k-tag k-tag-open">Here</span><button class="k-btn k-btn-ghost wa-tap" type="button">Undo</button></div>
+        </div>
+        <div class="wa-ci">
+          <div><div class="wa-ci-name">Jordan Lee</div><div class="k-small k-muted">1388 · U1400 · 2 pts · 8:58 AM · tapped in by the TD</div></div>
+          <div class="wa-ci-act"><span class="k-tag k-tag-open">Here</span><button class="k-btn k-btn-ghost wa-tap" type="button">Undo</button></div>
+        </div>
+        <div class="k-between" style="padding-top:14px;border-top:1px solid #eeede7">
+          <a class="k-link" href="#">Show all 48 players</a>
+          <button class="k-btn k-btn-ghost" type="button">Mark everyone left as here</button>
+        </div>
+      </div>
+
+      <div class="k-card k-card-pad" id="r3">
+        <div class="k-between">
+          <div class="k-row k-row-sm"><span class="k-num-badge">3</span><h2 class="k-h3" style="margin:0">Round 3 results</h2><span class="k-tag k-tag-soon">23 of 24 in</span></div>
+          <div class="k-seg"><button class="k-seg-on" type="button">Round 3</button><button type="button">Round 4</button></div>
+        </div>
+        <div class="k-row k-row-sm" style="margin:14px 0 6px">
+          <button class="k-chip k-chip-on" type="button">All sections</button>
+          <button class="k-chip" type="button">Open</button>
+          <button class="k-chip" type="button">U1800</button>
+          <button class="k-chip" type="button">U1400</button>
+          <button class="k-chip" type="button">U1000</button>
+          <button class="k-chip" type="button">Needs a look <span class="k-chip-count">1</span></button>
+        </div>
+        <div class="k-small k-muted" style="margin-bottom:6px">Tap a result. With a keyboard: 1 White wins, 2 draw, 3 Black wins, arrows move between boards. Press and hold for forfeits.</div>
+
+        <div class="wa-res">
+          <div class="wa-bd">1<span>Open</span></div>
+          <div class="wa-pl"><div><span class="wa-cw"></span>Marcus Landry <span class="k-muted">2014 · 2</span></div><div><span class="wa-cb"></span>Avery Thibodeaux <span class="k-muted">1912 · 2</span></div><span class="k-tag k-tag-closed">Entered by TD</span></div>
+          <div class="wa-rbs"><button class="wa-rb wa-on" type="button">1–0</button><button class="wa-rb" type="button">½–½</button><button class="wa-rb" type="button">0–1</button></div>
+        </div>
+        <div class="wa-res">
+          <div class="wa-bd">2<span>Open</span></div>
+          <div class="wa-pl"><div><span class="wa-cw"></span>Priya Shah <span class="k-muted">1803 · 1½</span></div><div><span class="wa-cb"></span>Camille Broussard <span class="k-muted">1744 · 1½</span></div><span class="k-tag k-tag-open">Both players reported</span></div>
+          <div class="wa-rbs"><button class="wa-rb" type="button">1–0</button><button class="wa-rb wa-on" type="button">½–½</button><button class="wa-rb" type="button">0–1</button></div>
+        </div>
+        <div class="wa-res wa-flag">
+          <div class="wa-bd">7<span>U1800</span></div>
+          <div class="wa-pl"><div><span class="wa-cw"></span>Devin Batiste <span class="k-muted">1521 · 2</span></div><div><span class="wa-cb"></span>Elise Fontenot <span class="k-muted">1460 · 2</span></div><span class="k-tag k-tag-full">Reports disagree</span> <span class="k-small">White says 1–0 · Black says ½–½</span></div>
+          <div class="wa-rbs"><button class="wa-rb" type="button">1–0</button><button class="wa-rb" type="button">½–½</button><button class="wa-rb" type="button">0–1</button></div>
+        </div>
+        <div class="wa-res">
+          <div class="wa-bd">8<span>U1800</span></div>
+          <div class="wa-pl"><div><span class="wa-cw"></span>Isaac Dupre <span class="k-muted">1688 · 1½</span></div><div><span class="wa-cb"></span>Nora Hebert <span class="k-muted">1577 · 1½</span></div><span class="k-tag k-tag-open">Both players reported</span></div>
+          <div class="wa-rbs"><button class="wa-rb" type="button">1–0</button><button class="wa-rb" type="button">½–½</button><button class="wa-rb wa-on" type="button">0–1</button></div>
+        </div>
+        <div class="wa-res">
+          <div class="wa-bd">14<span>U1400</span></div>
+          <div class="wa-pl"><div><span class="wa-cw"></span>Maya Robichaux <span class="k-muted">1102 · 2</span></div><div><span class="wa-cb"></span>Jordan Lee <span class="k-muted">1388 · 2</span></div><span class="k-tag k-tag-open">Both players reported</span></div>
+          <div class="wa-rbs"><button class="wa-rb wa-on" type="button">1–0</button><button class="wa-rb" type="button">½–½</button><button class="wa-rb" type="button">0–1</button></div>
+        </div>
+        <div class="wa-res">
+          <div class="wa-bd">15<span>U1400</span></div>
+          <div class="wa-pl"><div><span class="wa-cw"></span>Rosa Mendez <span class="k-muted">1219 · 1</span></div><div><span class="wa-cb"></span>Theo Guidry <span class="k-muted">1295 · 1</span></div><span class="k-tag k-tag-closed">Entered by TD</span></div>
+          <div class="wa-rbs"><button class="wa-rb" type="button">1–0</button><button class="wa-rb wa-on" type="button">½–½</button><button class="wa-rb" type="button">0–1</button></div>
+        </div>
+        <div class="k-between" style="padding-top:12px;border-top:1px solid #eeede7"><a class="k-link" href="#">Show all 24 boards</a><span class="k-small k-muted">Last change 11:12 PM Sat · Undo</span></div>
+
+        <div class="wa-keypad">
+          <div style="flex:1;min-width:240px"><b class="k-small">What players see on their phones after a game</b><div class="k-small k-muted">"Round 3 · Board 14 · you had White vs Jordan Lee." Both players tap. Matching reports go in as provisional; mismatches land here for you.</div></div>
+          <div class="k-row k-row-sm"><button class="wa-kbtn" type="button">I won</button><button class="wa-kbtn" type="button">Draw</button><button class="wa-kbtn" type="button">I lost</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap-wide k-section-sm">
+    <div class="k-grid-3" style="align-items:start">
+
+      <div class="k-card k-card-pad k-stack-sm">
+        <h2 class="k-h4" style="margin:0">Print and QR</h2>
+        <button class="k-btn k-btn-line wa-printbtn" type="button"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Pairings by board</span><span class="k-small k-muted">Round 4</span></button>
+        <button class="k-btn k-btn-line wa-printbtn" type="button"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>Alphabetical wall chart</span><span class="k-small k-muted">Round 4</span></button>
+        <button class="k-btn k-btn-line wa-printbtn" type="button"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg>Standings</span><span class="k-small k-muted">After round 3</span></button>
+        <button class="k-btn k-btn-line wa-printbtn" type="button"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Crosstable</span><span class="k-small k-muted">All sections</span></button>
+        <button class="k-btn k-btn-line wa-printbtn" type="button"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Door poster with QR</span><span class="k-small k-muted">Check-in and pairings</span></button>
+        <div class="k-small k-muted">Prints from the tablet or saves a PDF. Byes are labeled on every sheet: pairing bye (1), requested (½), absent (0).</div>
+      </div>
+
+      <div class="k-card k-card-pad k-stack-sm">
+        <h2 class="k-h4" style="margin:0">Announcements</h2>
+        <div class="k-row k-row-sm">
+          <button class="k-chip k-chip-on" type="button">Pairings are up</button>
+          <button class="k-chip" type="button">Starts in 10 min</button>
+          <button class="k-chip" type="button">Lunch break</button>
+          <button class="k-chip" type="button">Custom</button>
+        </div>
+        <div class="k-seg"><button class="k-seg-on" type="button">Everyone · 47</button><button type="button">One section</button><button type="button">Not here · 2</button></div>
+        <div class="k-row k-row-sm">
+          <label class="k-check k-small"><input type="checkbox" checked> Text</label>
+          <label class="k-check k-small"><input type="checkbox" checked> Email</label>
+          <label class="k-check k-small"><input type="checkbox" checked> Hall TV</label>
+          <label class="k-check k-small"><input type="checkbox"> Event page banner</label>
+        </div>
+        <div class="k-field"><label for="wa-msg">Message</label><textarea id="wa-msg" class="k-input" rows="3">Round 4 pairings are up. Play starts at 9:30 AM. Find your board on the wall chart or on the event page.</textarea></div>
+        <button class="k-btn k-btn-navy" type="button" style="min-height:52px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Send to 47 players</button>
+        <div>
+          <div class="wa-log">Sat 6:52 PM · "Round 3 pairings are up" · 48 people · text, email, TV</div>
+          <div class="wa-log">Sat 2:21 PM · "Round 2 starts in 10 minutes" · 48 people · text</div>
+        </div>
+      </div>
+
+      <div class="k-card k-card-pad">
+        <div class="k-row k-row-sm" style="margin-bottom:6px"><span class="k-num-badge">5</span><h2 class="k-h4" style="margin:0">Rating report check</h2></div>
+        <div class="k-small k-muted" style="margin-bottom:6px">Runs now and again after round 5, before you upload to US Chess.</div>
+        <div class="wa-check"><svg class="k-i k-i-sm wa-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>All 48 players have US Chess IDs</span></div>
+        <div class="wa-check"><svg class="k-i k-i-sm wa-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Half-point byes within the limit of 2 per player</span></div>
+        <div class="wa-check"><svg class="k-i k-i-sm wa-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Jordan Lee renewed US Chess on Tue, Oct 20 (found by the nightly check)</span></div>
+        <div class="wa-check"><svg class="k-i k-i-sm wa-bad" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg><span><b>Rosa Mendez's US Chess membership ended Oct 12.</b> US Chess will reject the report until she renews. <a class="k-link" href="#">Text her the renewal link</a></span></div>
+        <div class="wa-check"><svg class="k-i k-i-sm wa-wait" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Every game has a result: 1 open (round 3, board 7)</span></div>
+        <div class="k-stack-sm" style="margin-top:12px">
+          <button class="k-btn k-btn-line" type="button" disabled><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Export rating report files</button>
+          <div class="k-small k-muted">Opens after round 5. Prize winners calculate from final standings: <a class="k-link" href="#">preview prizes</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap-wide k-section-sm">
+    <div class="k-rule" style="margin-bottom:16px"></div>
+    <div class="wa-legend">
+      <div><span class="k-num-badge">1</span><span>The next step is always one big button: confirm results, pair, then publish and notify.</span></div>
+      <div><span class="k-num-badge">2</span><span>Check-in rows are 64px tall with one action each. Wallet-card and door-QR scans land here live.</span></div>
+      <div><span class="k-num-badge">3</span><span>Results by tap, by keyboard (1 / 2 / 3) or from the players' own phones. Disagreements wait for the director.</span></div>
+      <div><span class="k-num-badge">4</span><span>Publishing posts pairings to the event page and hall TV and tells each player their board and color.</span></div>
+      <div><span class="k-num-badge">5</span><span>The rating report check catches expired US Chess memberships, bye limits and missing results before upload.</span></div>
+      <div><span class="k-num-badge">6</span><span>Works offline: the tablet keeps a copy of the event and syncs when the venue Wi-Fi comes back.</span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

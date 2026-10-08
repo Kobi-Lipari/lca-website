@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Looks 3 — Modern Tech-Minimal sample page</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1">
+<style>
+body{margin:0;background:#ffffff}
+.k-page.mp{background:#ffffff;color:#0b1220;font-family:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.mp *,.mp *::before,.mp *::after{box-sizing:border-box}
+.mp a{color:inherit;text-decoration:none}
+.mp h1,.mp h2,.mp h3,.mp p,.mp figure,.mp dl,.mp dd,.mp ul{margin:0}
+.mp ul{padding:0;list-style:none}
+.mp button{font-family:inherit}
+.mp a:focus-visible,.mp button:focus-visible,.mp [tabindex]:focus-visible{outline:2px solid #1a2744;outline-offset:2px}
+.mp-m{font-family:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;font-variant-ligatures:none}
+.mp-serif{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400;letter-spacing:0}
+.mp-mut{color:#5b6478}
+.mp-s12{font-size:12px}
+.mp-lab{display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;line-height:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#5b6478}
+.mp-row{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.mp-i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.mp-mark{width:28px;height:28px;fill:currentColor;flex:none}
+.mp-dots{background-color:#ffffff;background-image:radial-gradient(circle,#d3d8e2 1px,transparent 1.5px);background-size:24px 24px}
+.mp-card{background:#ffffff;border:1px solid #e5e7ed;border-radius:12px;box-shadow:0 1px 2px rgba(11,18,32,.05)}
+.mp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* buttons, tags, chips: same values as the Looks-3 style tile */
+.mp-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:6px;border:1px solid transparent;font-size:14px;font-weight:500;line-height:1;white-space:nowrap;cursor:pointer}
+.mp-btn-p{background:#c8a94a;border-color:#c8a94a;color:#0b1220}
+.mp-btn-s{background:#ffffff;border-color:#e5e7ed;color:#0b1220;box-shadow:0 1px 2px rgba(11,18,32,.06)}
+.mp-btn-g{background:transparent;color:#0b1220;padding:0 8px}
+.mp-btn-sm{height:32px;padding:0 12px;font-size:13px}
+.mp-tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:500;line-height:1;white-space:nowrap}
+.mp-tag svg{width:11px;height:11px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mp-ext{background:#eef1f6;color:#1a2744}
+.mp-neutral{background:#f7f8fa;color:#5b6478;box-shadow:inset 0 0 0 1px #e5e7ed}
+.mp-gold{background:#c8a94a;color:#0b1220}
+.mp-chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:6px;border:1px solid #e5e7ed;background:#ffffff;font-size:13px;font-weight:500;color:#0b1220;white-space:nowrap;cursor:pointer}
+.mp-chip.on{background:#fbf7e9;border-color:#866a1e;color:#705718}
+.mp-chip .n{font-family:'Geist Mono',monospace;font-size:11px;color:#5b6478}
+.mp-chip .mp-i{width:14px;height:14px}
+.mp-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#0b1220}
+/* header: translucent navy only here */
+.mp-hdr{position:sticky;top:0;z-index:30;background:rgba(26,39,68,.92);color:#ffffff;-webkit-backdrop-filter:saturate(1.4) blur(12px);backdrop-filter:saturate(1.4) blur(12px)}
+.mp-nav{height:56px;display:flex;align-items:center;gap:18px}
+.mp-brand{display:flex;align-items:center;gap:10px;flex:none;color:#ffffff}
+.mp-wm{display:flex;flex-direction:column;line-height:1.15}
+.mp-wm b{font-size:14px;font-weight:600}
+.mp-wm span{font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.mp-navl{display:flex;gap:2px;flex:1}
+.mp-navl a{height:32px;display:inline-flex;align-items:center;padding:0 10px;border-radius:6px;font-size:14px;font-weight:500;color:rgba(255,255,255,.8)}
+.mp-hsearch{display:inline-flex;align-items:center;gap:8px;height:32px;width:200px;padding:0 6px 0 10px;border-radius:6px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);font-size:13px;color:rgba(255,255,255,.8);cursor:pointer}
+.mp-hsearch span{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;height:20px;padding:0 5px;display:inline-flex;align-items:center;border-radius:4px;border:1px solid rgba(255,255,255,.22)}
+.mp-util{display:flex;align-items:center;gap:4px;flex:none;margin-left:auto}
+.mp-util a.u{font-size:14px;font-weight:500;color:rgba(255,255,255,.8);padding:0 8px}
+.mp-menu{display:none;align-items:center;gap:8px;height:40px;padding:0 12px;margin-left:6px;border-radius:6px;border:1px solid rgba(255,255,255,.5);background:transparent;color:#ffffff;font-size:14px;font-weight:500;cursor:pointer}
+/* hero: 8-column grid, a-h / 8-1 coordinates, dot grid */
+.mp-hero{position:relative;overflow:hidden;border-bottom:1px solid #e5e7ed}
+.mp-hero-in{position:relative;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));padding-top:56px;padding-bottom:48px}
+.mp-files{position:absolute;left:24px;right:24px;top:20px;display:grid;grid-template-columns:repeat(8,1fr);font-family:'Geist Mono',monospace;font-size:11px;color:#5b6478}
+.mp-ranks{position:absolute;left:-30px;top:56px;bottom:48px;width:16px;display:grid;grid-template-rows:repeat(8,1fr);align-items:center;font-family:'Geist Mono',monospace;font-size:11px;color:#5b6478;text-align:center}
+.mp-hero-txt{grid-column:1 / span 5;padding-right:48px;display:flex;flex-direction:column;align-items:flex-start}
+.mp-kick{gap:12px;margin-bottom:18px}
+.mp-kick .mp-lab{color:#0b1220}
+.mp-h1{font-size:68px;line-height:.98;font-weight:700;letter-spacing:-.045em}
+.mp-lead{margin-top:16px;font-size:17px;line-height:1.5;color:#5b6478}
+.mp-facts{margin-top:22px;width:100%;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:1px;background:#e5e7ed;border:1px solid #e5e7ed;border-radius:12px;overflow:hidden}
+.mp-facts div{background:#ffffff;padding:11px 14px 12px}
+.mp-facts dt{margin-bottom:4px}
+.mp-facts dd{font-size:15px;font-weight:500;line-height:22px}
+.mp-cta{margin-top:24px}
+.mp-note{margin-top:12px;font-size:13px;color:#5b6478}
+.mp-hero-ph{grid-column:6 / span 3;display:flex;flex-direction:column;gap:8px}
+.mp-duo{position:relative;flex:1;min-height:340px;isolation:isolate;overflow:hidden;background:#ecd8a0;border-radius:12px}
+.mp-duo img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12) brightness(1.04);mix-blend-mode:multiply}
+.mp-duo::after{content:"";position:absolute;inset:0;background:#1a2744;mix-blend-mode:screen;pointer-events:none}
+.mp-cap{font-size:11px;color:#5b6478}
+/* stat line */
+.mp-stats{border-bottom:1px solid #e5e7ed;background:#ffffff}
+.mp-stats-in{display:flex;align-items:stretch;flex-wrap:wrap;min-height:64px}
+.mp-stats-lead{flex:1 1 320px;display:flex;align-items:center;gap:10px;padding:12px 0;font-size:15px;font-weight:500;color:#0b1220}
+.mp-stats-lead .mp-mark{width:20px;height:20px;color:#1a2744}
+.mp-stat{display:flex;align-items:center;gap:8px;padding:12px 28px;box-shadow:inset 1px 0 0 #e5e7ed;font-size:14px;color:#5b6478}
+.mp-stat b{font-size:22px;font-weight:500;letter-spacing:-.01em;color:#0b1220}
+/* sections */
+.mp-sec{padding-top:48px}
+.mp-sh{display:flex;align-items:center;flex-wrap:wrap;gap:12px;min-height:36px;margin-bottom:14px}
+.mp-sh h2{font-size:30px;line-height:1.2;font-weight:600;letter-spacing:-.025em}
+.mp-sh i{flex:1 1 24px;height:1px;background:#e5e7ed}
+.mp-tbox{border:1px solid #e5e7ed;border-radius:12px;overflow:hidden;background:#ffffff}
+/* upcoming: a quiet table */
+.mp-lh,.mp-lr{display:grid;grid-template-columns:176px minmax(0,1fr) 120px 150px 132px 16px;gap:16px;align-items:center;padding:0 16px}
+.mp-lh{height:32px;background:#f7f8fa;border-bottom:1px solid #e5e7ed;font-family:'Geist Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:#5b6478}
+.mp-list li{border-bottom:1px solid #e5e7ed}
+.mp-lr{min-height:56px;padding-top:8px;padding-bottom:8px}
+.mp-ld b{display:block;font-size:13px;font-weight:500;line-height:18px}
+.mp-ld small,.mp-le small{display:block;font-size:12px;line-height:16px;color:#5b6478}
+.mp-le b{display:block;font-size:14px;font-weight:500;line-height:20px}
+.mp-lc{font-size:13px}
+.mp-lt{font-size:13px;color:#5b6478}
+.mp-chev{color:#7c8496}
+.mp-tfoot{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;min-height:42px;padding:8px 16px;background:#f7f8fa;font-size:12px;color:#5b6478}
+.mp-tfoot p{display:flex;align-items:center;gap:8px}
+/* this week: agenda in plain columns */
+.mp-week{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:#e5e7ed;border:1px solid #e5e7ed;border-radius:12px;overflow:hidden}
+.mp-day{background:#ffffff;padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px}
+.mp-dh{display:flex;align-items:center;justify-content:space-between;height:24px;font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:#5b6478}
+.mp-today .mp-dh{color:#0b1220}
+.mp-mt{padding-top:10px;border-top:1px solid #e5e7ed}
+.mp-tm{display:block;font-size:13px;font-weight:500;line-height:18px}
+.mp-mt b{display:block;margin-top:2px;font-size:14px;font-weight:500;line-height:18px}
+.mp-mt small{display:block;margin-top:2px;font-size:12px;line-height:16px;color:#5b6478}
+.mp-mt small.mp-m{font-size:11.5px}
+.mp-wnote{margin-top:12px;font-size:13px;color:#5b6478}
+/* results */
+.mp-res{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+.mp-scroll{overflow-x:auto}
+table.mp-tb{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.mp-tb caption{caption-side:top;text-align:left;padding:11px 14px;font-size:15px;font-weight:600;letter-spacing:-.01em;border-bottom:1px solid #e5e7ed}
+.mp-tb th,.mp-tb td{height:42px;padding:0 10px;border-bottom:1px solid #e5e7ed;white-space:nowrap;text-align:left;font-weight:400}
+.mp-tb thead th{height:32px;font-family:'Geist Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:#5b6478;background:#f7f8fa}
+.mp-tb tbody th{font-weight:500}
+.mp-tb tbody tr:last-child th,.mp-tb tbody tr:last-child td{border-bottom:0}
+.mp-tb .r{text-align:right}
+.mp-tb .c{text-align:center}
+.mp-tb .stick{position:sticky;left:0;z-index:1;background:#ffffff}
+.mp-tb thead .stick{background:#f7f8fa}
+.mp-up{font-style:normal;color:#047857}
+.mp-pts{font-weight:600}
+.mp-rc{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:24px;padding:0 5px;border-radius:5px;font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;line-height:1}
+.mp-W{background:#e8f5ef;color:#047857}
+.mp-L{background:#fdeeec;color:#c0362c}
+.mp-D{background:#f7f8fa;color:#5b6478;box-shadow:inset 0 0 0 1px #e5e7ed}
+.mp-evs{padding:16px 18px 6px;display:flex;flex-direction:column;gap:10px}
+.mp-evs h3{font-size:16px;font-weight:600;letter-spacing:-.01em;line-height:22px}
+.mp-evs p{font-size:13px;line-height:1.5}
+.mp-tl5{display:grid;grid-template-columns:repeat(5,1fr);position:relative;margin-top:4px}
+.mp-tl5::before{content:"";position:absolute;left:6px;right:calc(20% - 6px);top:6px;height:1px;background:#c9ced8}
+.mp-tlx i{display:block;position:relative;width:13px;height:13px;border-radius:50%;background:#0b1220}
+.mp-tlx b{display:block;margin-top:8px;font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;line-height:16px}
+.mp-tlx span{display:block;font-family:'Geist Mono',monospace;font-size:11px;line-height:15px;color:#5b6478}
+.mp-evl{display:flex;flex-direction:column;border-top:1px solid #e5e7ed}
+.mp-evl a{display:flex;align-items:center;justify-content:space-between;height:40px;border-bottom:1px solid #e5e7ed;font-size:13px;font-weight:500}
+.mp-evl a:last-child{border-bottom:0}
+/* membership band */
+.mp-mem{margin-top:48px;padding:40px 0;background:#f7f8fa;border-top:1px solid #e5e7ed;border-bottom:1px solid #e5e7ed}
+.mp-mem-in{display:grid;grid-template-columns:340px minmax(0,1fr);gap:48px;align-items:center}
+.mp-mem-head h2{margin-top:8px;font-size:30px;line-height:1.2;font-weight:600;letter-spacing:-.025em}
+.mp-mem-head h2 .mp-serif{font-size:38px;line-height:1}
+.mp-mem-head p{margin-top:10px;font-size:14px;color:#5b6478}
+.mp-mem-head .mp-btn{margin-top:18px}
+.mp-plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#e5e7ed;border:1px solid #e5e7ed;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(11,18,32,.05)}
+.mp-plan{background:#ffffff;padding:14px 16px 16px}
+.mp-price{margin-top:6px;display:flex;align-items:baseline;gap:6px}
+.mp-price b{font-size:30px;font-weight:500;letter-spacing:-.02em;line-height:1.1}
+.mp-price span{font-size:13px;color:#5b6478}
+.mp-plan p.e{margin-top:6px;font-size:13px;line-height:1.4;color:#5b6478}
+.mp-fam{margin-top:12px;font-size:13px;color:#5b6478}
+.mp-fam b{font-weight:600;color:#0b1220}
+/* footer */
+.mp-foot{background:#ffffff;padding-top:40px}
+.mp-fgrid{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));gap:32px}
+.mp-fbrand{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.mp-fbrand .mp-row{gap:10px;color:#1a2744}
+.mp-fname{font-size:15px;font-weight:600;color:#0b1220}
+.mp-fbrand p{font-size:13px;color:#5b6478;max-width:320px}
+.mp-fcol{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.mp-fcol .mp-lab{margin-bottom:4px}
+.mp-fcol a{display:inline-flex;align-items:center;gap:6px;font-size:14px;line-height:22px;color:#0b1220}
+.mp-fcol a .mp-i{width:14px;height:14px;color:#5b6478}
+.mp-fbar{margin-top:32px;border-top:1px solid #e5e7ed;min-height:56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 16px;font-size:12px;color:#5b6478}
+.mp-seg{display:inline-flex;padding:2px;border:1px solid #e5e7ed;border-radius:8px;background:#f7f8fa}
+.mp-seg button{height:28px;padding:0 10px;border:0;border-radius:6px;background:transparent;font-size:12px;font-weight:500;color:#5b6478;cursor:pointer}
+.mp-seg button.on{background:#ffffff;color:#0b1220;box-shadow:0 1px 2px rgba(11,18,32,.08),0 0 0 1px #e5e7ed}
+@media (max-width:980px){
+  .mp-navl,.mp-hsearch,.mp-util a.u{display:none}
+  .mp-menu{display:inline-flex}
+  .mp-hero-txt,.mp-hero-ph{grid-column:1 / -1;padding-right:0}
+  .mp-hero-ph{margin-top:28px}
+  .mp-duo{min-height:240px}
+  .mp-week{grid-template-columns:minmax(0,1fr)}
+  .mp-res{grid-template-columns:minmax(0,1fr)}
+  .mp-mem-in{grid-template-columns:minmax(0,1fr);gap:24px}
+  .mp-fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  .mp-files,.mp-ranks{display:none}
+  .mp-hero-in{padding-top:32px;padding-bottom:32px}
+  .mp-h1{font-size:44px}
+  .mp-facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mp-util .mp-btn{height:40px}
+  .mp-stat{padding:10px 16px}
+  .mp-stats-in .mp-stat:nth-child(2){box-shadow:none;padding-left:0}
+  .mp-sh h2{font-size:24px}
+  .mp-lh{display:none}
+  .mp-lr{display:flex;flex-wrap:wrap;gap:4px 12px;padding:12px 16px}
+  .mp-ld,.mp-le{flex:1 1 100%}
+  .mp-chev{display:none}
+  .mp-plans{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mp-fgrid{grid-template-columns:minmax(0,1fr)}
+}
+</style>
+</helmet>
+<div class="k-page mp">
+
+<header class="mp-hdr">
+  <div class="k-wrap mp-nav">
+    <a class="mp-brand" href="#"><svg class="mp-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="mp-wm"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="mp-navl" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a></nav>
+    <button class="mp-hsearch" type="button"><svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search<span>⌘K</span></button>
+    <div class="mp-util">
+      <a class="u" href="#">Donate</a>
+      <a class="u" href="#">Log in</a>
+      <a class="mp-btn mp-btn-p mp-btn-sm" href="#">Join LCA</a>
+      <button class="mp-menu" type="button"><svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<section class="mp-hero mp-dots" aria-labelledby="mp-next">
+  <div class="k-wrap mp-hero-in">
+    <div class="mp-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+    <div class="mp-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+    <div class="mp-hero-txt">
+      <div class="mp-row mp-kick">
+        <span class="mp-lab">Next event · this weekend</span>
+        <span class="mp-m mp-mut mp-s12">in 5 days</span>
+        <span class="mp-tag mp-ext">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span>
+      </div>
+      <h1 class="mp-h1" id="mp-next">Lafayette Open<br>2026</h1>
+      <p class="mp-lead">Two days of classical chess, hosted by Lafayette Chess Club.</p>
+      <dl class="mp-facts">
+        <div><dt class="mp-lab">Dates</dt><dd>Sat–Sun, Oct 10–11, 2026</dd></div>
+        <div><dt class="mp-lab">City</dt><dd>Lafayette, LA</dd></div>
+        <div><dt class="mp-lab">Format</dt><dd>Classical</dd></div>
+        <div><dt class="mp-lab">Players</dt><dd>All ages</dd></div>
+      </dl>
+      <div class="mp-row mp-cta">
+        <a class="mp-btn mp-btn-p" href="#">Event details<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a class="mp-btn mp-btn-s" href="#"><svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a>
+      </div>
+      <p class="mp-note">Partner event: you register on the organizer's site, linked from the event page.</p>
+    </div>
+    <figure class="mp-hero-ph">
+      <div class="mp-duo"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Adult players at long tables in a wood-paneled tournament hall"></div>
+      <figcaption class="mp-m mp-cap">Photo · an LCA tournament</figcaption>
+    </figure>
+  </div>
+</section>
+
+<div class="mp-stats">
+  <div class="k-wrap mp-stats-in">
+    <p class="mp-stats-lead"><svg class="mp-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>Louisiana's chess community since 1915</p>
+    <p class="mp-stat"><b class="mp-m">300+</b>members</p>
+    <p class="mp-stat"><b class="mp-m">25+</b>clubs</p>
+    <p class="mp-stat"><b class="mp-m">7</b>regions</p>
+  </div>
+</div>
+
+<section class="mp-sec" aria-labelledby="mp-up">
+  <div class="k-wrap">
+    <div class="mp-sh">
+      <h2 id="mp-up">Upcoming tournaments</h2>
+      <span class="mp-m mp-mut mp-s12">next 5 of 11</span>
+      <i></i>
+      <div class="mp-row" style="gap:8px" role="group" aria-label="Quick filters">
+        <button class="mp-chip on" type="button" aria-pressed="true"><svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Louisiana <span class="n">11</span></button>
+        <button class="mp-chip" type="button" aria-pressed="false">Gulf South <span class="n">11</span></button>
+        <button class="mp-chip" type="button" aria-pressed="false">Classical <span class="n">3</span></button>
+        <button class="mp-chip" type="button" aria-pressed="false">Scholastic <span class="n">6</span></button>
+      </div>
+      <a class="mp-btn mp-btn-g" href="#">All tournaments<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </div>
+    <div class="mp-tbox">
+      <div class="mp-lh" aria-hidden="true"><span>Date</span><span>Tournament</span><span>City</span><span>Type</span><span>Status</span><span></span></div>
+      <ul class="mp-list">
+        <li><a class="mp-lr" href="#">
+          <span class="mp-ld"><b class="mp-m">Sat–Sun, Oct 10–11</b><small class="mp-m">in 5 days</small></span>
+          <span class="mp-le"><b>Lafayette Open 2026</b><small>Hosted by Lafayette Chess Club · organizer Tommy LeBlanc</small></span>
+          <span class="mp-lc">Lafayette</span>
+          <span class="mp-lt">Classical · All ages</span>
+          <span><span class="mp-tag mp-ext">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span></span>
+          <svg class="mp-i mp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+        </a></li>
+        <li><a class="mp-lr" href="#">
+          <span class="mp-ld"><b class="mp-m">Sat–Sun, Oct 24–25</b><small class="mp-m">in 19 days</small></span>
+          <span class="mp-le"><b>The Baton Rouge Classic</b><small>Organizer Downriver Chess</small></span>
+          <span class="mp-lc">Baton Rouge</span>
+          <span class="mp-lt">Classical · All ages</span>
+          <span><span class="mp-tag mp-ext">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span></span>
+          <svg class="mp-i mp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+        </a></li>
+        <li><a class="mp-lr" href="#">
+          <span class="mp-ld"><b class="mp-m">Sat, Oct 31</b><small class="mp-m">in 26 days</small></span>
+          <span class="mp-le"><b>The Casa Chess Tournament</b><small>Organizer Casa de Ajedrez</small></span>
+          <span class="mp-lc">Sulphur</span>
+          <span class="mp-lt">Dual-rated · All ages</span>
+          <span><span class="mp-tag mp-ext">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span></span>
+          <svg class="mp-i mp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+        </a></li>
+        <li><a class="mp-lr" href="#">
+          <span class="mp-ld"><b class="mp-m">Sat, Nov 14</b><small class="mp-m">in 40 days</small></span>
+          <span class="mp-le"><b>New Orleans Youth Chess November Meet</b><small>Strategic Thoughts NOLA, Crescent City Chess, Downriver Chess</small></span>
+          <span class="mp-lc">New Orleans</span>
+          <span class="mp-lt">Scholastic</span>
+          <span><span class="mp-tag mp-ext">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span></span>
+          <svg class="mp-i mp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+        </a></li>
+        <li><a class="mp-lr" href="#">
+          <span class="mp-ld"><b class="mp-m">Sat, Dec 5</b><small class="mp-m">in 61 days</small></span>
+          <span class="mp-le"><b>New Orleans Youth Chess December Meet</b><small>Strategic Thoughts NOLA, Crescent City Chess, Downriver Chess</small></span>
+          <span class="mp-lc">New Orleans</span>
+          <span class="mp-lt">Scholastic</span>
+          <span><span class="mp-tag mp-ext">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span></span>
+          <svg class="mp-i mp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+        </a></li>
+      </ul>
+      <div class="mp-tfoot">
+        <p><svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>Partner events come from the Gulf South clearinghouse feed. You register on the organizer's site.</p>
+        <a class="mp-link" href="#"><svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar feed (.ics)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mp-sec" aria-labelledby="mp-wk">
+  <div class="k-wrap">
+    <div class="mp-sh">
+      <h2 id="mp-wk">This week at the clubs</h2>
+      <span class="mp-m mp-mut mp-s12">Mon, Oct 5 – Sun, Oct 11</span>
+      <i></i>
+      <a class="mp-btn mp-btn-g" href="#">Club directory<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </div>
+    <div class="mp-week">
+      <div class="mp-day mp-today">
+        <div class="mp-dh"><span>Mon · Oct 5</span><span class="mp-tag mp-gold">Today</span></div>
+        <div class="mp-mt"><span class="mp-m mp-tm">5:00 PM</span><b>Mandeville Chess Club</b><small>George's Mexican Restaurant</small></div>
+        <div class="mp-mt"><span class="mp-m mp-tm">6:00–8:30 PM</span><b>Houma Chess Club</b><small>Terrebonne Parish North Library</small></div>
+        <div class="mp-mt"><span class="mp-m mp-tm">7:00 PM</span><b>Downriver Chess Club</b><small>Decatur St, New Orleans</small><small class="mp-m">G/15 · 15 min each</small></div>
+      </div>
+      <div class="mp-day">
+        <div class="mp-dh"><span>Tue · Oct 6</span></div>
+        <div class="mp-mt"><span class="mp-m mp-tm">6:00 PM</span><b>Ruston Knights Chess Club</b><small>Utility Brewing Company</small></div>
+        <div class="mp-mt"><span class="mp-m mp-tm">7:00 PM</span><b>Greater New Orleans Chess Club</b><small>1 round a week · arrive 6:30 PM</small><small class="mp-m">G/90 · 90 min each</small></div>
+      </div>
+      <div class="mp-day">
+        <div class="mp-dh"><span>Thu · Oct 8</span></div>
+        <div class="mp-mt"><span class="mp-row" style="gap:8px"><span class="mp-m mp-tm">7:30 PM</span><span class="mp-tag mp-neutral">US Chess rated</span></span><b>New Orleans Westbank Chess Club</b><small>Gretna · beginners welcome</small></div>
+      </div>
+      <div class="mp-day">
+        <div class="mp-dh"><span>Fri · Oct 9</span></div>
+        <div class="mp-mt"><span class="mp-m mp-tm">7:00 PM</span><b>Slidell Chess Club</b><small>St. Luke's, 910 Cross Gates Blvd., Classroom #3</small></div>
+      </div>
+      <div class="mp-day">
+        <div class="mp-dh"><span>Sat · Oct 10</span></div>
+        <div class="mp-mt"><span class="mp-m mp-tm">10:00 AM</span><b>Baton Rouge Chess Club</b><small>Jones Creek Branch Library</small><small class="mp-m">G/90+30 · 90 min + 30 sec a move</small></div>
+        <div class="mp-mt"><span class="mp-lab">Tournament · Sat–Sun</span><b>Lafayette Open 2026</b><small>Lafayette · partner event</small></div>
+      </div>
+    </div>
+    <p class="mp-wnote">Highlights only. Wednesday and Sunday meetings, and every club's full schedule, are in the club directory.</p>
+  </div>
+</section>
+
+<section class="mp-sec" aria-labelledby="mp-rs">
+  <div class="k-wrap">
+    <div class="mp-sh">
+      <h2 id="mp-rs">Latest results</h2>
+      <span class="k-sample">Sample data</span>
+      <i></i>
+      <a class="mp-btn mp-btn-g" href="#">All results<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </div>
+    <div class="mp-res">
+      <div class="mp-tbox">
+        <div class="mp-scroll" role="region" aria-label="Final standings, scrolls sideways" tabindex="0">
+          <table class="mp-tb">
+            <caption>2026 Louisiana State Championship · Final standings</caption>
+            <thead><tr><th scope="col" class="c">#</th><th scope="col" class="stick">Player</th><th scope="col" class="r">Rating</th><th scope="col" class="c">R1</th><th scope="col" class="c">R2</th><th scope="col" class="c">R3</th><th scope="col" class="c">R4</th><th scope="col" class="c">R5</th><th scope="col" class="r">Pts</th><th scope="col" class="r">Tiebreak</th></tr></thead>
+            <tbody>
+              <tr><td class="c mp-m">1</td><th scope="row" class="stick">Marcus Landry</th><td class="r mp-m">2014 <em class="mp-up">+12</em></td><td class="c"><span class="mp-rc mp-W">W21</span></td><td class="c"><span class="mp-rc mp-W">W12</span></td><td class="c"><span class="mp-rc mp-W">W6</span></td><td class="c"><span class="mp-rc mp-D">D3</span></td><td class="c"><span class="mp-rc mp-W">W2</span></td><td class="r mp-m mp-pts">4½</td><td class="r mp-m">14</td></tr>
+              <tr><td class="c mp-m">2</td><th scope="row" class="stick">Avery Thibodeaux</th><td class="r mp-m">1912 <em class="mp-up">+9</em></td><td class="c"><span class="mp-rc mp-W">W23</span></td><td class="c"><span class="mp-rc mp-W">W9</span></td><td class="c"><span class="mp-rc mp-W">W7</span></td><td class="c"><span class="mp-rc mp-W">W4</span></td><td class="c"><span class="mp-rc mp-L">L1</span></td><td class="r mp-m mp-pts">4</td><td class="r mp-m">13½</td></tr>
+              <tr><td class="c mp-m">3</td><th scope="row" class="stick">Priya Shah</th><td class="r mp-m">1803 <em class="mp-up">+21</em></td><td class="c"><span class="mp-rc mp-W">W24</span></td><td class="c"><span class="mp-rc mp-D">D8</span></td><td class="c"><span class="mp-rc mp-W">W5</span></td><td class="c"><span class="mp-rc mp-D">D1</span></td><td class="c"><span class="mp-rc mp-W">W10</span></td><td class="r mp-m mp-pts">4</td><td class="r mp-m">12½</td></tr>
+              <tr><td class="c mp-m">4</td><th scope="row" class="stick">Camille Broussard</th><td class="r mp-m">1744 <em class="mp-up">+6</em></td><td class="c"><span class="mp-rc mp-W">W18</span></td><td class="c"><span class="mp-rc mp-W">W14</span></td><td class="c"><span class="mp-rc mp-D">D11</span></td><td class="c"><span class="mp-rc mp-L">L2</span></td><td class="c"><span class="mp-rc mp-W">W9</span></td><td class="r mp-m mp-pts">3½</td><td class="r mp-m">13</td></tr>
+              <tr><td class="c mp-m">5</td><th scope="row" class="stick">Isaac Dupre</th><td class="r mp-m">1688 <em class="mp-up">+15</em></td><td class="c"><span class="mp-rc mp-D">D26</span></td><td class="c"><span class="mp-rc mp-W">W15</span></td><td class="c"><span class="mp-rc mp-L">L3</span></td><td class="c"><span class="mp-rc mp-W">W13</span></td><td class="c"><span class="mp-rc mp-W">W8</span></td><td class="r mp-m mp-pts">3½</td><td class="r mp-m">12</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mp-tfoot">
+          <a class="mp-link" href="#">Full crosstable<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+          <span class="mp-m">W/D/L + opponent's rank · tiebreak = modified median (US Chess)</span>
+        </div>
+      </div>
+      <aside class="mp-card mp-evs" aria-label="About this event">
+        <span class="mp-lab">Event</span>
+        <h3>2026 Louisiana State Championship</h3>
+        <p class="mp-mut">Labor Day weekend in Sulphur, LA. The LCA annual business meeting is held at the State Championship.</p>
+        <div class="mp-tl5">
+          <div class="mp-tlx"><i></i><b>R1</b><span>Sat</span></div>
+          <div class="mp-tlx"><i></i><b>R2</b><span>Sat</span></div>
+          <div class="mp-tlx"><i></i><b>R3</b><span>Sun</span></div>
+          <div class="mp-tlx"><i></i><b>R4</b><span>Sun</span></div>
+          <div class="mp-tlx"><i></i><b>R5</b><span>Mon</span></div>
+        </div>
+        <p class="mp-m mp-s12 mp-mut">5 rounds · G/90+30 · all rounds final</p>
+        <div class="mp-evl">
+          <a href="#">Pairings by round<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+          <a href="#">Prize winners<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="mp-mem" aria-labelledby="mp-mb">
+  <div class="k-wrap mp-mem-in">
+    <div class="mp-mem-head">
+      <span class="mp-lab">Membership · per year</span>
+      <h2 id="mp-mb">Which membership <span class="mp-serif">fits</span> you?</h2>
+      <p>Members get LCA tournament entry discounts, a member profile, voting rights and online registration.</p>
+      <a class="mp-btn mp-btn-p" href="#">Join LCA<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+    </div>
+    <div>
+      <div class="mp-plans">
+        <div class="mp-plan"><span class="mp-lab">Adult</span><p class="mp-price"><b class="mp-m">$15</b><span>/ year</span></p><p class="e">For players 18 and up</p></div>
+        <div class="mp-plan"><span class="mp-lab">Scholastic</span><p class="mp-price"><b class="mp-m">$5</b><span>/ year</span></p><p class="e">K–12 students</p></div>
+        <div class="mp-plan"><span class="mp-lab">Family</span><p class="mp-price"><b class="mp-m">$25</b><span>/ year</span></p><p class="e">You + up to 3 children</p></div>
+        <div class="mp-plan"><span class="mp-lab">Senior</span><p class="mp-price"><b class="mp-m">$10</b><span>/ year</span></p><p class="e">65 and up</p></div>
+      </div>
+      <p class="mp-fam"><b>Family math:</b> one adult plus three scholastic memberships would be $30. Family covers all four for $25.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="mp-foot">
+  <div class="k-wrap">
+    <div class="mp-fgrid">
+      <div class="mp-fbrand">
+        <a class="mp-row" href="#"><svg class="mp-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="mp-fname">Louisiana Chess Association</span></a>
+        <p>Louisiana's chess community since 1915. US Chess state affiliate.</p>
+        <a class="mp-m mp-s12" href="#">LouisianaChess@gmail.com</a>
+      </div>
+      <nav class="mp-fcol" aria-label="Play"><span class="mp-lab">Play</span><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a></nav>
+      <nav class="mp-fcol" aria-label="Association"><span class="mp-lab">Association</span><a href="#">About</a><a href="#">Board</a><a href="#">Bylaws &amp; minutes</a></nav>
+      <nav class="mp-fcol" aria-label="Help"><span class="mp-lab">Help</span><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Facebook<svg class="mp-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="mp-sr">opens in new tab</span></a></nav>
+    </div>
+    <div class="mp-fbar">
+      <span>© 2026 Louisiana Chess Association</span>
+      <div class="mp-row" style="gap:10px"><span class="mp-m">Theme</span><div class="mp-seg" role="group" aria-label="Theme"><button class="on" type="button" aria-pressed="true">System</button><button type="button" aria-pressed="false">Light</button><button type="button" aria-pressed="false">Dark</button></div></div>
+    </div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2560}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

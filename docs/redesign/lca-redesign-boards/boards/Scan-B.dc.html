@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scan B — Phone flow</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.sb-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:22px}
+.sb-row{display:flex;gap:64px;align-items:flex-start}
+.sb-col{display:flex;flex-direction:column;gap:6px;width:414px;flex:none}
+.sb-bar{flex:none;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:24px 20px 12px 26px}
+.sb-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;color:#ffffff}
+.sb-bar .k-menubtn{display:inline-flex;min-height:40px;padding:0 12px;font-size:14px}
+.sb-pad{padding:16px 18px 26px;display:flex;flex-direction:column;gap:12px;background:#ffffff}
+.sb-cam{flex:1;background:#151c2e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px 18px}
+.sb-pill{display:inline-flex;align-items:center;gap:6px;background:#ffffff;color:#2f6b45;border-radius:99px;padding:6px 12px;font-size:13px;font-weight:600}
+.sb-frame{position:relative;width:262px;height:372px}
+.sb-frame i{position:absolute;width:34px;height:34px;border:0 solid #c8a94a}
+.sb-frame i.sb-tl{top:0;left:0;border-top-width:4px;border-left-width:4px;border-top-left-radius:6px}
+.sb-frame i.sb-tr{top:0;right:0;border-top-width:4px;border-right-width:4px;border-top-right-radius:6px}
+.sb-frame i.sb-bl{bottom:0;left:0;border-bottom-width:4px;border-left-width:4px;border-bottom-left-radius:6px}
+.sb-frame i.sb-br{bottom:0;right:0;border-bottom-width:4px;border-right-width:4px;border-bottom-right-radius:6px}
+.sb-paper{position:absolute;top:18px;left:20px;right:20px;bottom:18px;background:#e9e6da;border-radius:3px;transform:rotate(-2deg);padding:14px 12px;display:flex;flex-direction:column;gap:12px}
+.sb-paper span{display:block;height:1px;background:#a9a493}
+.sb-paper span.sb-ink{height:2px;width:62%;background:#3d4d7a;opacity:.55}
+.sb-hint{margin:0;color:#ffffff;font-size:14px;text-align:center;line-height:1.45}
+.sb-ctrl{flex:none;background:#151c2e;display:flex;align-items:center;justify-content:space-between;padding:4px 26px 14px}
+.sb-shutter{width:78px;height:78px;border-radius:50%;background:#ffffff;border:5px solid #c8a94a;box-sizing:border-box;padding:0}
+.sb-cbtn{color:#ffffff;background:transparent;border:1px solid rgba(255,255,255,.65);border-radius:10px;min-height:44px;padding:0 12px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.sb-foot{flex:none;background:#151c2e;color:rgba(255,255,255,.85);font-size:13px;text-align:center;padding:2px 0 34px}
+.sb-sheet{position:relative;background:#fbfaf3;border:1px solid #d6d2c2;border-radius:6px;padding:8px 10px}
+.sb-r{display:grid;grid-template-columns:22px 1fr 1fr;height:19px;align-items:center;border-bottom:1px solid #dcd9cb}
+.sb-r b{font-size:9px;color:#8b8a80;font-weight:500;text-align:center}
+.sb-r span{position:relative;height:100%;display:flex;align-items:center;padding-left:7px;box-shadow:inset 1px 0 0 #dcd9cb;font-family:'Geist Mono',monospace;font-style:italic;font-size:12px;color:#2b3a67}
+.sb-done-row{background:#eef5f0}
+.sb-scan{position:absolute;left:0;right:0;top:170px;height:3px;background:#c8a94a;box-shadow:0 0 0 3px rgba(200,169,74,.25)}
+.sb-smudge{position:absolute;left:5px;top:3px;width:22px;height:12px;border-radius:50%;background:rgba(60,62,72,.38);filter:blur(3px)}
+.sb-steps{list-style:none;margin:0;padding:0}
+.sb-steps li{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid #ecebe4;font-size:15px;color:#1a2744}
+.sb-steps li:last-child{border-bottom:0}
+.sb-steps small{display:block;color:#555c6b;font-size:12.5px}
+.sb-prog{height:6px;border-radius:99px;background:#e6e5de;overflow:hidden;margin-top:6px}
+.sb-prog span{display:block;height:100%;width:70%;background:#1a2744}
+.sb-pgn{font-family:'Geist Mono',monospace;font-size:12.5px;line-height:1.75;color:#1a2744;background:#f5f5f2;border-radius:10px;padding:8px 12px}
+.sb-q{background:#f6e7b8;color:#664c0c;border-radius:4px;padding:1px 5px;font-weight:600}
+.sb-crop{display:grid;grid-template-columns:28px 1fr 1fr;height:44px;align-items:center;background:#fbfaf3;border:1px solid #d6d2c2;border-radius:8px;overflow:hidden}
+.sb-crop b{font-size:11px;color:#8b8a80;text-align:center;font-weight:500}
+.sb-crop span{position:relative;height:100%;display:flex;align-items:center;padding-left:10px;box-shadow:inset 1px 0 0 #dcd9cb;font-family:'Geist Mono',monospace;font-style:italic;font-size:18px;color:#2b3a67}
+.sb-crop span.sb-hl{outline:2px solid #c8a94a;outline-offset:-2px;background:#f3e6bd}
+.sb-crop .sb-smudge{left:8px;top:11px;width:30px;height:20px}
+.sb-bd{width:300px;align-self:center}
+.sb-bd > div{display:flex;align-items:center;justify-content:center}
+.pc{width:74%;height:74%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;box-sizing:border-box;font-size:14px}
+.pw{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.pb{background:#1a2744;color:#ffffff;border:2px solid #1a2744}
+.pp{width:54%;height:54%;font-size:9px}
+.lm{box-shadow:inset 0 0 0 3px #c8a94a}
+.sb-bd-s{width:176px}
+.sb-bd-s .pc{font-size:10px;border-width:1px}
+.sb-bd-s .pp{font-size:6px}
+.sb-opt{display:flex;align-items:center;gap:12px;min-height:50px;padding:5px 12px;border:1px solid #c4c3bb;border-radius:10px;background:#ffffff}
+.sb-opt input{width:18px;height:18px;accent-color:#1a2744;flex:none;margin:0}
+.sb-opt b{display:block;font-family:'Geist Mono',monospace;font-size:16px;color:#1a2744}
+.sb-opt small{display:block;font-size:12.5px;color:#555c6b}
+.sb-opt-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.sb-ok{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:#e3f0e6;color:#2f6b45;flex:none}
+.sb-sum{border:1px solid #dddcd4;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.sb-final{display:flex;gap:14px;align-items:center}
+</style>
+</helmet>
+<div style="width:1960px;height:1100px;box-sizing:border-box;background:#ecebe6;padding:28px 56px 0;overflow:hidden">
+
+  <div class="sb-head">
+    <div class="k-stack-sm">
+      <span class="k-kicker">Scanner · phone flow</span>
+      <h2 class="k-h2" style="margin:0">From photo to a checked game in four screens</h2>
+    </div>
+    <div class="k-row-sm"><span class="k-sample">Sample data · players, round, scan limit · moves are Morphy's Opera Game (1858)</span></div>
+  </div>
+
+  <div class="sb-row">
+
+    <div class="sb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="sb-bar"><span class="sb-brand"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>Scanner</span><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        <div class="sb-cam">
+          <span class="sb-pill"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Sheet found · hold still</span>
+          <div class="sb-frame" role="img" aria-label="Camera view with a guide frame around the scoresheet">
+            <div class="sb-paper"><span></span><span class="sb-ink"></span><span></span><span class="sb-ink"></span><span></span><span class="sb-ink"></span><span></span><span class="sb-ink"></span><span></span><span class="sb-ink"></span><span></span><span class="sb-ink"></span><span></span><span class="sb-ink"></span><span></span><span></span></div>
+            <i class="sb-tl"></i><i class="sb-tr"></i><i class="sb-bl"></i><i class="sb-br"></i>
+          </div>
+          <p class="sb-hint">Fit the whole sheet inside the frame.<br>Lay it flat, out of shadow. It captures on its own.</p>
+        </div>
+        <div class="sb-ctrl">
+          <button class="sb-cbtn" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Upload</button>
+          <button class="sb-shutter" type="button" aria-label="Take photo"></button>
+          <button class="sb-cbtn" type="button">Back side</button>
+        </div>
+        <div class="sb-foot">3 of 5 scans left today · members only</div>
+      </div></div>
+      <div class="k-caption">1 · Capture</div>
+      <div class="k-caption-sub">Guide frame finds the sheet and shoots when it's steady</div>
+    </div>
+
+    <div class="sb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="sb-bar"><span class="sb-brand"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>Scanner</span><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        <div class="k-phone-scroll sb-pad">
+          <div><h3 class="k-h3" style="margin:0">Reading your sheet</h3><span class="k-small k-muted">Landry vs Shah · State Championship, Round 4</span></div>
+          <div class="sb-sheet" role="img" aria-label="Your photo with a reading line passing row 9">
+            <div class="sb-r sb-done-row"><b>1</b><span>e4</span><span>e5</span></div>
+            <div class="sb-r sb-done-row"><b>2</b><span>Nf3</span><span>d6</span></div>
+            <div class="sb-r sb-done-row"><b>3</b><span>d4</span><span>Bg4</span></div>
+            <div class="sb-r sb-done-row"><b>4</b><span>dxe5</span><span>Bxf3</span></div>
+            <div class="sb-r sb-done-row"><b>5</b><span>Qxf3</span><span>dxe5</span></div>
+            <div class="sb-r sb-done-row"><b>6</b><span>Bc4</span><span>Nf6</span></div>
+            <div class="sb-r sb-done-row"><b>7</b><span>Qb3</span><span>Qe7</span></div>
+            <div class="sb-r sb-done-row"><b>8</b><span>Nc3</span><span>c6</span></div>
+            <div class="sb-r"><b>9</b><span>Bg5</span><span><em class="sb-smudge"></em>b5</span></div>
+            <div class="sb-r"><b>10</b><span>Nxb5</span><span>cxb5</span></div>
+            <div class="sb-r"><b>11</b><span>Bxb5+</span><span>Nbd7</span></div>
+            <div class="sb-r"><b>12</b><span>O-O-O</span><span>Rd8</span></div>
+            <div class="sb-scan"></div>
+          </div>
+          <ol class="sb-steps">
+            <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="color:#2f6b45"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Found the move grid<small>US Chess style sheet · 1 page</small></span></li>
+            <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="color:#2f6b45"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Read the handwriting<small>17 moves · result 1-0</small></span></li>
+            <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg><span style="flex:1">Checking every move is legal<small>Move 9 of 17</small><span class="sb-prog" style="display:block"><span></span></span></span></li>
+            <li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="color:#555c6b"><circle cx="12" cy="12" r="8"></circle></svg><span>Matching names to the Round 4 pairings<small>Waiting</small></span></li>
+          </ol>
+          <div class="sb-pgn">1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7 8. Nc3 c6 9. Bg5 <mark class="sb-q">9...?</mark></div>
+          <span class="k-small k-muted">You can leave this screen. The draft waits in My games.</span>
+        </div>
+      </div></div>
+      <div class="k-caption">2 · Reading</div>
+      <div class="k-caption-sub">Moves appear as they're read; each one is checked for legality</div>
+    </div>
+
+    <div class="sb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="sb-bar"><span class="sb-brand"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>Scanner</span><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        <div class="k-phone-scroll sb-pad">
+          <div class="k-between"><h3 class="k-h3" style="margin:0">Check 1 of 2</h3><span class="k-tag k-tag-soon">Move 9 · Black</span></div>
+          <div class="k-stack-sm">
+            <span class="k-small k-muted">From your photo</span>
+            <div class="sb-crop"><b>9</b><span>Bg5</span><span class="sb-hl"><em class="sb-smudge"></em>b5</span></div>
+          </div>
+          <div class="k-board sb-bd" role="img" aria-label="Position after 9...b5. White: king e1, queen b3, rooks a1 and h1, knight c3, bishops c4 and g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e7, rooks a8 and h8, knights b8 and f6, bishop f8, pawns a7 b5 c6 e5 f7 g7 h7. Last move b7 to b5 highlighted.">
+            <div class="k-sq-l"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+            <div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l lm"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+            <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+            <div class="k-sq-d"></div><div class="k-sq-l lm"><span class="pc pb pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+            <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+            <div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"><span class="pc pw">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+            <div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+            <div class="k-sq-d"><span class="pc pw">R</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div>
+          </div>
+          <label class="sb-opt sb-opt-on"><input type="radio" name="sb-m9" checked><span><b>b5</b><small>Fits: 10. Nxb5 captures on b5 next</small></span></label>
+          <label class="sb-opt"><input type="radio" name="sb-m9"><span><b>h5</b><small>Legal, but 10. Nxb5 would capture nothing</small></span></label>
+          <label class="sb-opt"><input type="radio" name="sb-m9"><span><b>b6</b><small>Legal, but 10. Nxb5 would capture nothing</small></span></label>
+          <button class="k-btn k-btn-gold k-btn-block" type="button">Confirm b5 · next check</button>
+        </div>
+      </div></div>
+      <div class="k-caption">3 · Fix flagged moves</div>
+      <div class="k-caption-sub">Board at that move; choices ranked by what the next moves allow</div>
+    </div>
+
+    <div class="sb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="sb-bar"><span class="sb-brand"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>Scanner</span><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        <div class="k-phone-scroll sb-pad">
+          <div class="k-row"><span class="sb-ok"><svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><div><h3 class="k-h3" style="margin:0">Game saved</h3><span class="k-small k-muted">In My games · anyone with the link can view</span></div></div>
+          <div class="sb-sum">
+            <b class="k-ink">Marcus Landry 2014 vs Priya Shah 1803</b>
+            <span class="k-small">1-0 · 17 moves · you checked 2 moves</span>
+            <span class="k-small k-muted">Louisiana State Championship 2026 · Round 4 · Board 6</span>
+          </div>
+          <div class="sb-final">
+            <div class="k-board sb-bd sb-bd-s" role="img" aria-label="Final position after 17. Rd8 checkmate. White: king c1, rook d8, bishop g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e6, bishop f8, knight b8, rook h8, pawns a7 e5 f7 g7 h7.">
+              <div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d lm"><span class="pc pw">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+              <div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+              <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+              <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+              <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+              <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+              <div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+              <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l lm"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+            </div>
+            <div class="k-stack-sm"><b class="k-ink">17. Rd8#</b><span class="k-small k-muted">Checkmate, matches the result on the sheet</span><span class="k-small k-muted">The share link previews with this board</span></div>
+          </div>
+          <a class="k-btn k-btn-navy k-btn-block" href="#">Open in lichess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          <div class="k-grid-2" style="gap:10px">
+            <button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>PGN</button>
+            <button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share link</button>
+          </div>
+          <label class="k-check"><input type="checkbox" checked><span>Link it from the Round 4 crosstable. Priya Shah can hide it.</span></label>
+          <a class="k-link k-small" href="#">Scan the next sheet</a>
+        </div>
+      </div></div>
+      <div class="k-caption">4 · Done</div>
+      <div class="k-caption-sub">Saved to My games; lichess, PGN, share link and crosstable</div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1960,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

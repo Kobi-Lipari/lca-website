@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Start Audit — Current site · Keep and fix</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.au{font-family:'Geist',system-ui,sans-serif;color:#1a2744}
+.au p,.au h2,.au h3,.au ul{margin:0}
+.au-head{display:flex;justify-content:space-between;align-items:flex-end;gap:48px}
+.au-lead{font-size:16px;line-height:1.5;color:#3b4252;max-width:860px;margin-top:10px}
+.au-tally{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.au-tr{display:flex;gap:8px;align-items:center;font-size:13px;color:#555c6b}
+.au-big{font-size:28px;font-weight:600;color:#1a2744;letter-spacing:-0.01em;line-height:1.1}
+.au-sec{display:flex;align-items:baseline;justify-content:space-between;gap:24px;border-bottom:2px solid #1a2744;padding-bottom:8px}
+.au-sec h2{font-size:20px;font-weight:600;line-height:1.2}
+.au-sec p{font-size:13px;color:#555c6b}
+.au-legend{display:flex;gap:10px;align-items:center;font-size:13px;color:#555c6b}
+.au-legend .sev{margin-left:8px}
+.sev{display:inline-block;width:46px;box-sizing:border-box;text-align:center;font-size:12px;font-weight:600;line-height:18px;border-radius:4px;border:1px solid transparent}
+.sev-h{background:#fbe5e5;color:#8a1c1c;border-color:#efc3c3}
+.sev-m{background:#fbf1d6;color:#6b4a00;border-color:#e9d59d}
+.sev-l{background:#edeff3;color:#454c5c;border-color:#d8dce4}
+.ff{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-top:14px}
+.ff-c{background:#ffffff;border:1px solid #e3e1d9;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:9px}
+.ff-top{display:flex;align-items:center;justify-content:space-between}
+.ff-t{font-size:16px;font-weight:600;line-height:1.3}
+.ff-m{font-family:'Geist Mono',ui-monospace,monospace;font-size:22px;font-weight:500;line-height:1.2}
+.ff-r{font-size:12px;line-height:1.4;color:#555c6b;margin-top:-4px}
+.ff-b{font-size:13px;line-height:1.45;color:#3b4252}
+.ff-x{font-size:13px;line-height:1.45;color:#1a2744;border-top:1px solid #ecebe4;padding-top:9px}
+.ff-x b{font-weight:600}
+.ff-f{font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;line-height:1.45;color:#555c6b;margin-top:auto}
+.au-tw{background:#ffffff;border:1px solid #e3e1d9;border-radius:12px;overflow:hidden;margin-top:14px}
+.au-t{width:100%;border-collapse:collapse;table-layout:fixed}
+.au-t thead th{background:#1a2744;color:#ffffff;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;text-align:left;padding:11px 16px}
+.au-t tbody tr{border-top:1px solid #e9e7e0}
+.au-t tbody th{vertical-align:top;text-align:left;padding:12px 16px;background:#f8f7f2;border-right:1px solid #e9e7e0}
+.au-t td{vertical-align:top;padding:12px 16px}
+.au-t td.au-k{border-right:1px solid #efede7}
+.au-a{display:block;font-size:16px;font-weight:600;line-height:1.25;color:#1a2744}
+.au-n{display:block;margin-top:6px;font-size:12px;font-weight:500;line-height:1.5;color:#555c6b}
+.au-kl,.au-fl{list-style:none;padding:0;display:flex;flex-direction:column;gap:5px}
+.au-kl li{position:relative;padding-left:20px;font-size:13px;line-height:1.4;color:#2b3346}
+.au-kl li::before{content:"";position:absolute;left:3px;top:4px;width:9px;height:5px;border:solid #1f6b46;border-width:0 0 2px 2px;transform:rotate(-45deg)}
+.au-fl li{display:grid;grid-template-columns:46px minmax(0,1fr);column-gap:10px;font-size:13px;line-height:1.4;color:#2b3346}
+.au-f{font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#555c6b}
+.au-foot{font-size:12.5px;line-height:1.5;color:#555c6b;border-top:1px solid #e3e1d9;padding-top:12px;margin-top:auto}
+</style>
+</helmet>
+<div class="au" style="width:1440px;height:4200px;box-sizing:border-box;background:#fbfaf6;padding:40px 48px;display:flex;flex-direction:column;gap:28px">
+
+  <div class="au-head">
+    <div>
+      <div class="k-kicker">Start · Audit</div>
+      <h1 class="k-h1">Current site · Keep and fix</h1>
+      <p class="au-lead">louisianachess.org as it is built today. Five things to fix first, then 17 areas: the strengths a redesign should protect, and the problems to fix, each rated and tied to the file or component where it lives. Every line comes from the codebase inventory or the UX evidence brief.</p>
+    </div>
+    <div class="au-tally">
+      <div class="au-tr"><span class="au-big">71</span>fixes</div>
+      <div class="au-tr"><span class="sev sev-h">High</span>14<span class="sev sev-m">Med</span>38<span class="sev sev-l">Low</span>19</div>
+      <div class="au-tr"><span class="au-big">59</span>strengths to keep</div>
+    </div>
+  </div>
+
+  <section>
+    <div class="au-sec"><h2>Fix first</h2><p>Accessibility and mobile debt to clear before any visual polish</p></div>
+    <div class="ff">
+
+      <div class="ff-c">
+        <div class="ff-top"><span class="k-num-badge">1</span><span class="sev sev-h">High</span></div>
+        <h3 class="ff-t">The slideshow can't be paused</h3>
+        <div class="ff-m">Every 5 s</div>
+        <p class="ff-r">WCAG 2.2.2 Pause, stop, hide · Level A</p>
+        <p class="ff-b">HeroSlideshow auto-advances with no pause control, ignores the reduce-motion setting, and its dots are 6×6 px.</p>
+        <p class="ff-x"><b>Fix:</b> a still "next event" hero that switches to "pairings are posted" while an event runs.</p>
+        <div class="ff-f">src/pages/HomePage.tsx · HeroSlideshow</div>
+      </div>
+
+      <div class="ff-c">
+        <div class="ff-top"><span class="k-num-badge">2</span><span class="sev sev-h">High</span></div>
+        <h3 class="ff-t">The focus ring is nearly invisible</h3>
+        <div class="ff-m">1.54:1</div>
+        <p class="ff-r">WCAG 1.4.11 Non-text contrast · Level AA</p>
+        <p class="ff-b">The global outline (outline-ring/50) and the button ring both measure 1.54:1, so keyboard users lose their place.</p>
+        <p class="ff-x"><b>Fix:</b> a solid 2 px navy outline with a 2 px gap on light grounds; 2 px gold on navy (6.51:1).</p>
+        <div class="ff-f">src/index.css · components/ui/button.tsx</div>
+      </div>
+
+      <div class="ff-c">
+        <div class="ff-top"><span class="k-num-badge">3</span><span class="sev sev-h">High</span></div>
+        <h3 class="ff-t">Gold text on white</h3>
+        <div class="ff-m">2.28:1</div>
+        <p class="ff-r">WCAG 1.4.3 Contrast (minimum) · Level AA</p>
+        <p class="ff-b">Gold carries meaning on white: club-colour officer titles, news dates and contact links (gold is the default club colour), club initials, the "Opening soon" dot, the "Pinned" icon.</p>
+        <p class="ff-x"><b>Fix:</b> gold as fill or accent only; a gold-ink token (#7a5c00) for gold-toned text; gold text only on navy.</p>
+        <div class="ff-f">ClubDetailPage.tsx · ClubsPage.tsx · NewsPage.tsx</div>
+      </div>
+
+      <div class="ff-c">
+        <div class="ff-top"><span class="k-num-badge">4</span><span class="sev sev-h">High</span></div>
+        <h3 class="ff-t">Status shown by colour alone</h3>
+        <div class="ff-m">Dot + hover</div>
+        <p class="ff-r">WCAG 1.4.1 Use of colour · Level A</p>
+        <p class="ff-b">Home and Tournaments show registration status as a small coloured dot; the words exist only as a hover title.</p>
+        <p class="ff-x"><b>Fix:</b> words plus colour ("Open", "Opens soon"); darken the green to emerald-700 (5.48:1).</p>
+        <div class="ff-f">StatusBadge.tsx (StatusDot) · HomePage.tsx</div>
+      </div>
+
+      <div class="ff-c">
+        <div class="ff-top"><span class="k-num-badge">5</span><span class="sev sev-h">High</span></div>
+        <h3 class="ff-t">Register is out of reach on phones</h3>
+        <div class="ff-m">Below the list</div>
+        <p class="ff-r">Mobile · the page's main action</p>
+        <p class="ff-b">The registration card lives in the sidebar, which renders after the whole player list on phones; there is no sticky register button.</p>
+        <p class="ff-x"><b>Fix:</b> a sticky bottom bar ("Register · from $40" / "Registered · View"), hidden while the keyboard is open.</p>
+        <div class="ff-f">src/pages/TournamentDetailPage.tsx</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="au-sec">
+      <h2>Area by area</h2>
+      <div class="au-legend"><span class="sev sev-h">High</span>blocks a task, breaks something, or fails WCAG A/AA<span class="sev sev-m">Med</span>slows people down or misleads<span class="sev sev-l">Low</span>polish, copy and housekeeping</div>
+    </div>
+    <div class="au-tw">
+      <table class="au-t">
+        <thead>
+          <tr><th style="width:168px">Area</th><th style="width:430px">Keep · strengths to protect</th><th>Fix · severity · where it lives</th></tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <th scope="row"><span class="au-a">Navigation</span><span class="au-n">4 keep · 5 fix<br>4 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Task-and-topic menu, sticky and visible on desktop; the evidence says keep this shape.</li>
+              <li>Role-aware More menu: Admin panel, Workspace and Board inbox show only to people with those roles.</li>
+              <li>Mobile drawer carries every link; the button reads "Open menu" / "Close menu".</li>
+              <li>Footer columns Play · Governance · Membership · Connect, and "Serving Louisiana players since 1915".</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-m">Med</span><span>Scanner takes a main slot while Membership hides under More; run a top-task check first. <span class="au-f">Navbar.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>More opens on hover but toggles on click, so hover-then-click closes it; no arrow keys. <span class="au-f">Navbar.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>From 768 to 1023 px, Scholastic, News and Scanner live only in the drawer. <span class="au-f">Navbar.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>No 404 page: NotFoundPage isn't routed, so a bad URL shows a blank page. <span class="au-f">App.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>A 28 px gold "Log out" outranks the "Profile" button; the footer shows "Join LCA" and "Log in" to members. <span class="au-f">Navbar.tsx · Footer.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Home</span><span class="au-n">3 keep · 5 fix<br>1 High · 2 Med · 2 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Next-event strip that prefers an LCA event with registration open.</li>
+              <li>Preview columns with live counts ("12 of 40 spots filled") and honest empty and error states.</li>
+              <li>The join band hides itself for active members.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>An auto-advancing slideshow with no pause (Fix first 1). <span class="au-f">HomePage.tsx · HeroSlideshow</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>The hero's "Join LCA" shows to active members, as do the footer, the Clubs band and the club page. <span class="au-f">HomePage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Columns go three-across at 640 px; the fixed 420 px hero may crowd small phones. <span class="au-f">HomePage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Next-event logic differs from the Tournaments strip; Home keeps its own 8 px status dot; 9 px stat labels. <span class="au-f">HomePage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Stats are hard-coded and copied on two pages (keep "300+ members"). <span class="au-f">HomePage.tsx · ClubsPage.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Tournaments list</span><span class="au-n">4 keep · 5 fix<br>2 High · 2 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>List view by default, Calendar as the alternative; the evidence backs list-first.</li>
+              <li>Quick chips: This weekend, Next 30 days, Scholastic, Open / adult, Clear all.</li>
+              <li>One feed of LCA and Gulf South clearinghouse events, Louisiana first, with "12 of 40 spots filled".</li>
+              <li>"Notify me when it opens" for LCA events not yet open.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>On phones the list has no height limit, and the detail pane sits below all of it with no way back. <span class="au-f">TournamentsPage.tsx</span></span></li>
+              <li><span class="sev sev-h">High</span><span>Status shown by dot colour alone (Fix first 4). <span class="au-f">TournamentsPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Emerald-600 "Registration open" at 12 px is about 3.8:1. <span class="au-f">TournamentsPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>List dates lack the weekday ("Oct 17, 2026"); no .ics export and no Event JSON-LD. <span class="au-f">TournamentsPage.tsx · TournamentDetailPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>The calendar marks only first days, with 24 px day circles and 9 px weekday labels; "Ext" ignores its flag. <span class="au-f">tournaments/MiniCalendar · AgendaList</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Tournament page</span><span class="au-n">4 keep · 5 fix<br>2 High · 2 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Sections in plain words: "Rated under 1600 (unrated welcome)", "In 8th grade or below".</li>
+              <li>Entry list grouped by section, with ratings ("OPEN · 12 players").</li>
+              <li>Closing time with the weekday: "Registration closes Fri, Oct 16, 6:00 PM Central".</li>
+              <li>A preview strip lets directors check a hidden event before it goes public.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>The Register card sits below the player list on phones (Fix first 5). <span class="au-f">TournamentDetailPage.tsx</span></span></li>
+              <li><span class="sev sev-h">High</span><span>"See pairings / results" is navy on a 15% gold tint over navy, about 1.3:1; when disabled it explains itself only on hover. <span class="au-f">TournamentDetailPage.tsx ~l.571</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Raw ISO date and 24-hour round times, no end date; the organizing club, prize list and directions never appear. <span class="au-f">TournamentDetailPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Every shared link previews alike: crawlers get the site-wide title, theme colour #0b1220 and one default image. <span class="au-f">index.html</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Two bye-round editors (main column and sidebar); the sidebar has up to six states plus the family panel. <span class="au-f">TournamentDetailPage.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Registration</span><span class="au-n">4 keep · 5 fix<br>1 High · 4 Med</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Family registration: one checkout for a parent and children without logins ("Register 3 · pay $75").</li>
+              <li>GradeConfirm asks only what's needed: an "8th grade or below" tick box.</li>
+              <li>Price lines before paying: early and member discounts, late fee, "You pay" (pricing.ts).</li>
+              <li>Waitlist with "No charge until then", and a warning if US Chess membership lapses before the event.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>Rated events stop at "Add your USCF ID to your profile before registering"; logged-out users go to /login. Bring the lookup into the form. <span class="au-f">TournamentDetailPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>"Complete payment" opens in the same tab, "Complete payment (Stripe)" in a new one. <span class="au-f">TournamentDetailPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>The confirm pop-up is hand-built: no Escape key, no focus trap. <span class="au-f">TournamentDetailPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Sign-up always lands on /dashboard, losing the way back to the event, Membership or the Scanner. <span class="au-f">RegisterPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>"Notify LCA Support" in the lookup files a ticket from unknown@unknown.com, which nobody can answer. <span class="au-f">uscf/UscfSearchInput.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Tournament day</span><span class="au-n">4 keep · 4 fix<br>1 High · 2 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Pairing engine: US Chess or FIDE-style, accelerated rounds, keep families apart, pair checked-in players only.</li>
+              <li>Standings with tiebreaks (MM, Solk, Cum, OppC), a crosstable toggle, prize winners at the end.</li>
+              <li>Pairings as a list with the latest round open; the evidence says that structure is right.</li>
+              <li>Print pages: by board, alphabetical, standings, crosstable; one section per printed page.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>Pairings have no "Find my name" box, no refresh and no "updated" time. <span class="au-f">TournamentPairingsPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Standings lack a caption and scope; tiebreak names are hover-only; the scroll area isn't labelled or keyboard-reachable; 11 px note. <span class="au-f">tournaments/StandingsTable · Crosstable</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>A round reads "Completed" as soon as any result exists; byes count from the moment of pairing. <span class="au-f">TournamentPairingsPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Player names are grey muted text (4.73:1); full strength reads better at a glance in the hall. <span class="au-f">TournamentPairingsPage.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Clubs</span><span class="au-n">4 keep · 5 fix<br>4 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Map beside the list, club-coloured pins, "Clubs near me" with distances and "Closest first".</li>
+              <li>Seven region pills plus "Search by club or city…".</li>
+              <li>Club colours and logos give each club an identity (clubColors.ts).</li>
+              <li>"Did we miss a club?" invites corrections.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-m">Med</span><span>A missing maps key shows visitors a developer note: "Add VITE_GOOGLE_MAPS_API_KEY to .env.local…". <span class="au-f">maps/LCAMap.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Old google.maps.Marker pins; move to Google's accessible Advanced Markers. <span class="au-f">maps/LCAMap.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>", LA" is hard-coded after every city, though the Picayune club is in Mississippi. <span class="au-f">ClubsPage · ClubDetailPage · HomePage · WorkspacePage · AdminClubPage</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Each club card is a clickable div that contains links. <span class="au-f">ClubsPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Gold club initials on white (Fix first 3); stat tiles with 9 px labels. <span class="au-f">ClubsPage.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Club page</span><span class="au-n">3 keep · 3 fix<br>1 High · 1 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>"Visit us": When, Where, Contact, and "No membership required to attend your first meeting."</li>
+              <li>Officers, upcoming and recent tournaments, and club news on one page.</li>
+              <li>The Join button picks navy or white text by how light the club colour is.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>Club-colour text on white, gold by default (2.28:1): officer titles, news dates, the contact link. <span class="au-f">ClubDetailPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>"Join LCA" filled with the club colour reads as joining the club, and shows to members. <span class="au-f">ClubDetailPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Raw dates on tournament rows and club news; a hand-built hero instead of PageHero. <span class="au-f">ClubDetailPage.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Scholastic</span><span class="au-n">3 keep · 3 fix<br>1 Med · 2 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>LCA events first, then regional youth events from the clearinghouse, with a note that says so.</li>
+              <li>Scholastic events are detected automatically from names and sections (scholastic.ts).</li>
+              <li>A clear ask for schools: "Contact LCA about scholastic chess".</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-m">Med</span><span>Copy errors: "to be able to qualify play", "Be on the look out". <span class="au-f">ScholasticPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>A code comment says LCA-only, but outside events show; "External · MS" ignores its flag. <span class="au-f">ScholasticPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>28 px "Register" and "View" buttons; no Donate entry, which the evidence puts here. <span class="au-f">ScholasticPage.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">News</span><span class="au-n">3 keep · 4 fix<br>1 High · 2 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>The Facebook feed is pulled server-side, so pages load no Facebook tracking; the evidence says keep it.</li>
+              <li>Posts carry a summary, a pinned flag, drafts and one clear button link.</li>
+              <li>Honest states: "No announcements yet.", "Couldn't load posts right now."</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>Rich text is unstyled: prose classes without @tailwindcss/typography (posts, governance documents, email preview, editor). <span class="au-f">package.json</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>"Pinned" is a gold pin icon on white, with no word. <span class="au-f">NewsPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Four places to post announcements: news posts, club news, Facebook, site banners. <span class="au-f">admin/PostsPanel · AnnouncementBanner</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>The subtitle still promises club news though "From the clubs" is off; the Facebook block uses a building icon. <span class="au-f">NewsPage.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Governance</span><span class="au-n">4 keep · 3 fix<br>1 Med · 2 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>One governance layout: a sidebar on desktop, pills on phones.</li>
+              <li>Board cards with photos and a "Message" button per seat; open seats ask "Interested in serving?".</li>
+              <li>Upload a .docx or .pdf and it becomes editable text, reviewed before saving.</li>
+              <li>Champions honour roll with name search and title filters.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-m">Med</span><span>The annual meeting page (Sun, Sep 6, 2026, now past) is hard-coded, linked nowhere and still shows "Join on Zoom". <span class="au-f">AnnualMeetingPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>State champions are linked only from the footer and the Tournaments header. <span class="au-f">Footer.tsx · TournamentsPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>GovLayout nests a second main landmark; the editor's Link button uses a browser prompt. <span class="au-f">governance/GovLayout · RichTextEditor</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Membership &amp; donate</span><span class="au-n">3 keep · 5 fix<br>1 High · 3 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Four simple tiers that match the server: Adult $15, Scholastic $5, Family $25, Senior $10.</li>
+              <li>Active members see "Your membership is active through [date]".</li>
+              <li>Family checkout ends with "One more step: add your children".</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>No way to donate: DonateButton is used nowhere. Add Donate to the top links, footer, confirmations and Scholastic. <span class="au-f">DonateButton.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Checkout waits on the server, then opens a new tab (window.open): a popup-blocker risk. <span class="au-f">MembershipPage.tsx · DonateButton.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Logged-out visitors must create an account before they can choose a tier. <span class="au-f">MembershipPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Every tier's benefits list is empty; the family maths isn't spelled out (with one child, Adult + Scholastic is $20). <span class="au-f">MembershipPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Tiers jump from one column to four at 1024 px; Title Case headings; the amount field is type="number". <span class="au-f">MembershipPage.tsx · DonateButton.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Account</span><span class="au-n">3 keep · 3 fix<br>2 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>My family: up to 3 children, each with US Chess ID, rating, LCA and US Chess status.</li>
+              <li>US Chess ID, rating and expiry checked nightly; "Expiring soon" 45 days out.</li>
+              <li>My Registrations covers you and your children; two-factor sign-in is available.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-m">Med</span><span>Seven stacked blocks with no in-page navigation. <span class="au-f">DashboardPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>The header promises tournament history, but there's no history section, and registrations aren't split upcoming / past. <span class="au-f">DashboardPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Membership reads "Active / Expired / Pending" here but "Member / Not a member" on the family card. <span class="au-f">family/FamilyCard.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Workspace / admin</span><span class="au-n">4 keep · 5 fix<br>2 High · 2 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Role-scoped tools: Workspace for reps, directors and auditors; an Admin panel with a view-only mode.</li>
+              <li>The manage page runs the day: check-in, walk-ins with US Chess lookup, "Offer spot", results entry.</li>
+              <li>US Chess rating report with the three DBF upload files in one .zip.</li>
+              <li>"Log in as member", an admin activity log, and member exports by status.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>A ticket reply sets status "answered", which the database rejects; the error is swallowed, inviting duplicate replies (worth verifying). <span class="au-f">AdminSupportPage.tsx</span></span></li>
+              <li><span class="sev sev-h">High</span><span>Manage page: 5 tabs, about 11 cards, 640–840 px tables that scroll sideways at the venue; the sticky tabs slide under the navbar. <span class="au-f">TournamentManagePage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>The impersonation banner looks like a gold announcement and isn't sticky. <span class="au-f">ImpersonationBanner.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>24 browser confirm / alert / prompt calls, 11 on the manage page; the wizard's Schedule step is empty. <span class="au-f">admin/TournamentWizard</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Default buttons render near-black (#171717); gold button style retyped in about 19 files; 4 bye-round pickers. <span class="au-f">ui/button.tsx · lib/brand.ts</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Scanner</span><span class="au-n">3 keep · 4 fix<br>1 High · 2 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Works end to end: up to 3 pages, every move checked against the rules, an editor that re-works the rest of the game.</li>
+              <li>A plain privacy line: "Photos are read once and never stored. Up to 20 scans per day."</li>
+              <li>Exits: Open in lichess, Copy &amp; open chess.com, Share, Email, Save PGN.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>Nothing is saved: leave the page and the game is gone. <span class="au-f">ScannerPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>No board view, though every move carries its position; the photo can't sit beside the moves while fixing them. <span class="au-f">ScannerPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>"Create an account" from the Scanner doesn't come back to it. <span class="au-f">RegisterPage.tsx</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Sign-in copy promises the game "on a board in under a minute"; there is no board. <span class="au-f">ScannerPage.tsx</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Accessibility</span><span class="au-n">3 keep · 5 fix<br>4 Med · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Banner colours were each checked for AA contrast; dismiss buttons are labelled ("Dismiss: …").</li>
+              <li>StatusBadge's light tones already use dark text (#7a5c00, emerald-800, red-700).</li>
+              <li>Shared PageHero and StatusBadge components: one place to fix headers and status site-wide.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-m">Med</span><span>No skip link, and some pages render two main landmarks (App plus GovLayout or AdminPage). <span class="au-f">App.tsx · GovLayout.tsx · AdminPage.tsx</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>The reduced-motion setting isn't checked anywhere in the code. <span class="au-f">site-wide</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Tiny text: 9 px labels, 10 px in 45 places, 11 px in 78. <span class="au-f">site-wide</span></span></li>
+              <li><span class="sev sev-m">Med</span><span>Cramped targets: 28 px primary buttons in lists, 24 px calendar days and slideshow arrows, 6 px dots. <span class="au-f">site-wide</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Five pages set no tab title; the sticky header needs scroll-padding-top; --destructive-foreground is undefined. <span class="au-f">RegisterPage · SupportPage · src/index.css</span></span></li>
+            </ul></td>
+          </tr>
+
+          <tr>
+            <th scope="row"><span class="au-a">Performance</span><span class="au-n">3 keep · 2 fix<br>1 High · 1 Low</span></th>
+            <td class="au-k"><ul class="au-kl">
+              <li>Server-side Facebook feed: no third-party embed loads with the page.</li>
+              <li>Geist is self-hosted rather than pulled from a font service.</li>
+              <li>Past tournaments load only when someone opens that tab.</li>
+            </ul></td>
+            <td><ul class="au-fl">
+              <li><span class="sev sev-h">High</span><span>Five 2048 px hero JPEGs (284–556 KB each, about 2.1 MB) load at once as CSS backgrounds; aim for under 1 MB on mobile and LCP within 2.5 s. <span class="au-f">src/assets/LCA_Slide_1–5.jpg</span></span></li>
+              <li><span class="sev sev-l">Low</span><span>Leftovers: hero.png, react.svg, vite.svg, public/icons.svg, unused tokens, and unused select, table, avatar and separator primitives. <span class="au-f">src/assets · components/ui</span></span></li>
+            </ul></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <p class="au-foot">Sources: research/codebase-inventory.md (page-by-page layout, data model and the 52 UX issues found while reading) · research/ux-evidence.md ("Current site" findings and "Where each finding is in the code") · research/clubs-brands.md (what link-preview crawlers see). File paths are under src/ in the lca-website repo unless shown otherwise. Severity is our rating from that evidence, not usage data. See also <a class="k-link" href="Sources.dc.html">Research &amp; sources</a>.</p>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4200}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Looks 4 · Swiss Grid — Style tile</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,500;125,800;125,900&amp;family=Fragment+Mono:ital@0;1">
+<style>
+body{margin:0;background:#f4f4f0}
+.sw{width:1440px;height:2400px;box-sizing:border-box;background:#f4f4f0;color:#0d0d0d;font-family:'Archivo',system-ui,sans-serif;font-stretch:100%;font-weight:400;font-size:15px;line-height:1.45;position:relative;overflow:hidden;display:flex;flex-direction:column;font-variant-numeric:lining-nums tabular-nums}
+.sw *{box-sizing:border-box}
+.sw h1,.sw h2,.sw h3,.sw p,.sw figure{margin:0;font-family:inherit}
+.sw b{font-weight:500}
+.sw a{color:inherit}
+.sw table{border-collapse:collapse;width:100%}
+.sw-x{font-stretch:125%;font-weight:800}
+.sw-xx{font-stretch:125%;font-weight:900}
+.sw-m{font-family:'Fragment Mono',ui-monospace,monospace;font-weight:400;font-stretch:100%;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.sw-g{display:grid;grid-template-columns:120px repeat(8,160px) 40px;position:relative;z-index:1}
+.sw-rank{border-top:1px solid #0d0d0d}
+.sw-rail{grid-column:1;grid-row:1/span 3;padding:16px 10px 16px 24px}
+.sw-rn{font-stretch:125%;font-weight:900;font-size:44px;line-height:1;letter-spacing:-.03em}
+.sw-h2{font-stretch:125%;font-weight:800;font-size:15px;line-height:1.15;margin-top:10px}
+.sw-rr{grid-column:10;grid-row:1/span 3;padding-top:20px;text-align:center;font-family:'Fragment Mono',monospace;font-size:11px;color:#5c5f66}
+.sw-file{font-family:'Fragment Mono',monospace;font-size:12px;color:#5c5f66;text-align:center}
+.sw-lab{font-family:'Fragment Mono',monospace;font-size:11px;line-height:1.4;letter-spacing:.05em;text-transform:uppercase;color:#5c5f66;font-variant-ligatures:none}
+.sw-lab b{font-weight:400;color:#0d0d0d}
+.sw-c{padding:18px 12px}
+.sw-vl{position:absolute;top:0;bottom:0;width:1px;background:rgba(13,13,13,.08);z-index:0}
+.sw-btn{display:flex;align-items:center;justify-content:space-between;gap:14px;height:44px;padding:0 16px;font-family:'Archivo',sans-serif;font-stretch:100%;font-size:15px;font-weight:500;border:0;border-radius:0;text-decoration:none;cursor:pointer}
+.sw-btn svg,.sw-arr{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;flex:none}
+.sw-tag{display:inline-flex;align-items:center;gap:8px;height:28px;padding:0 10px;font-size:13px;font-weight:500;line-height:1;white-space:nowrap;border:1.5px solid transparent}
+.sw-tag i{display:inline-block;width:8px;height:8px;border:1.5px solid currentColor}
+.sw-tag i.f{background:currentColor}
+.sw-tag svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square}
+.sw-sec{display:inline-flex;align-items:center;height:26px;padding:0 9px;font-family:'Fragment Mono',monospace;font-size:12px;white-space:nowrap}
+.sw-cr{font-family:'Fragment Mono',monospace;font-size:10.5px;color:#5c5f66;margin-left:10px}
+.sw-ic{width:28px;height:28px;fill:none;stroke:#0d0d0d;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter}
+.sw-pc{width:19px;height:19px;display:block}
+.pw{fill:#ffffff;stroke:#0d0d0d;stroke-width:1.6;stroke-linejoin:miter}
+.pb{fill:#0d0d0d}
+.sw-chip{height:96px;padding:10px 12px;display:flex;align-items:flex-end;font-family:'Fragment Mono',monospace;font-size:12px;border-right:1px solid #0d0d0d}
+.sw-swt{padding:10px 12px 0;font-size:13px;line-height:1.35}
+.sw-swt b{display:block;font-size:14px}
+.sw-swt span{display:block;margin-top:2px}
+.sw-swt .sw-m{font-size:11px;color:#5c5f66;margin-top:6px;line-height:1.45}
+.sw-in{display:block;width:100%;height:44px;margin-top:6px;border:2px solid #0d0d0d;border-radius:0;background:#ffffff;padding:0 12px;font-family:'Fragment Mono',monospace;font-size:15px;color:#0d0d0d;outline:2px solid #1a2744;outline-offset:2px}
+.sw-st th{font-family:'Fragment Mono',monospace;font-weight:400;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#5c5f66;text-align:left;padding:0 8px 7px;border-bottom:2px solid #0d0d0d}
+.sw-st td{padding:0 8px;height:40px;border-bottom:1px solid rgba(13,13,13,.2);font-size:15px;font-weight:500}
+.sw-st .r{text-align:right}
+.sw-st .c{text-align:center}
+.sw-st .big{font-size:22px;letter-spacing:-.01em}
+.sw-sq{display:inline-block;width:10px;height:10px;border:1.5px solid #0d0d0d;margin-right:8px}
+.sw-sq.f{background:#0d0d0d}
+.sw-xc{position:relative;width:80px;height:80px;border:1px solid #0d0d0d;background:#ffffff;display:flex;align-items:center;justify-content:center;flex:none}
+.sw-xc .cn{position:absolute;left:6px;top:6px;width:10px;height:10px;border:1.5px solid #0d0d0d}
+.sw-xc .cn.f{background:#0d0d0d}
+.sw-xc .rs{font-stretch:125%;font-weight:800;font-size:34px;line-height:1}
+.sw-xc .rs sup{font-family:'Fragment Mono',monospace;font-weight:400;font-stretch:100%;font-size:12px;vertical-align:top;margin-left:3px}
+.sw-xc .cd{position:absolute;left:6px;bottom:5px;font-family:'Fragment Mono',monospace;font-size:10px;color:#5c5f66}
+.sw-xs{width:44px;height:44px;margin-right:-1px}
+.sw-xs .rs{font-size:19px}
+.sw-xs .rs sup{font-size:9px;margin-left:1px}
+.sw-xs .cn{left:4px;top:4px;width:7px;height:7px;border-width:1.2px}
+.sw-bd{display:grid;grid-template-columns:14px repeat(8,26px);grid-template-rows:repeat(8,26px) 16px;width:222px}
+.sw-bd > div{display:flex;align-items:center;justify-content:center}
+.sw-bd .l{background:#e8e4d8}
+.sw-bd .d{background:#cfc7b2}
+.sw-bd .k{font-family:'Fragment Mono',monospace;font-size:10px;color:#5c5f66}
+.sw-bd .hl{outline:2px solid #1a2744;outline-offset:-2px}
+.sw-icb{display:flex;flex-direction:column;gap:6px}
+.sw-icb span{font-family:'Fragment Mono',monospace;font-size:10px;color:#5c5f66;line-height:1.3}
+.sw-do{display:inline-block;font-stretch:125%;font-weight:800;font-size:13px;line-height:1;padding:6px 10px;background:#0d0d0d;color:#ffffff;text-transform:uppercase}
+.sw-dont{display:inline-block;font-stretch:125%;font-weight:800;font-size:13px;line-height:1;padding:4.5px 8.5px;border:1.5px solid #0d0d0d;text-transform:uppercase}
+.sw-dd{font-size:14px;line-height:1.45;margin-top:10px}
+.sw-cap{font-family:'Fragment Mono',monospace;font-size:11px;color:#5c5f66;padding:8px 12px 0}
+</style>
+</helmet>
+<div class="sw">
+<div class="sw-vl" style="left:120px"></div><div class="sw-vl" style="left:280px"></div><div class="sw-vl" style="left:440px"></div><div class="sw-vl" style="left:600px"></div><div class="sw-vl" style="left:760px"></div><div class="sw-vl" style="left:920px"></div><div class="sw-vl" style="left:1080px"></div><div class="sw-vl" style="left:1240px"></div><div class="sw-vl" style="left:1400px"></div>
+
+<div class="sw-g" style="height:32px;align-items:center">
+<div class="sw-m" style="font-size:11px;color:#5c5f66;padding-left:24px">LCA · Look 04</div>
+<div class="sw-file">a</div><div class="sw-file">b</div><div class="sw-file">c</div><div class="sw-file">d</div><div class="sw-file">e</div><div class="sw-file">f</div><div class="sw-file">g</div><div class="sw-file">h</div><div></div>
+</div>
+
+<section class="sw-g sw-rank" style="border-top:2px solid #0d0d0d">
+<div class="sw-rail"><div class="sw-rn">8</div><div class="sw-h2">Look 04</div><div class="sw-lab" style="margin-top:8px">Rebrand<br>option</div></div>
+<div style="grid-column:2/7;grid-row:1;background:#1a2744;color:#ffffff;padding:22px 28px 26px">
+<div style="display:flex;justify-content:space-between;align-items:center"><span class="sw-lab" style="color:#dec478">a8 · Visual direction · style tile</span><span class="k-sample">Sample data</span></div>
+<h1 class="sw-xx" style="font-size:108px;line-height:.88;letter-spacing:-.045em;margin-top:26px">Swiss Grid</h1>
+<p style="font-size:18px;font-weight:500;margin-top:22px">International Typographic Style, played on the chessboard itself.</p>
+</div>
+<div style="grid-column:7/9;grid-row:1;background:#c8a94a;color:#0d0d0d;padding:22px 24px 26px">
+<div class="sw-lab" style="color:#0d0d0d">f8 · Tagline</div>
+<div class="sw-xx" style="font-size:64px;line-height:.9;letter-spacing:-.035em;margin-top:24px">a–h,<br>1–8</div>
+<p style="font-size:15px;font-weight:500;margin-top:18px">The page is the board.</p>
+</div>
+<div style="grid-column:9/10;grid-row:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+<div style="position:relative;width:128px;height:128px;outline:1px solid #0d0d0d;background:conic-gradient(#cfc7b2 0 25%,#e8e4d8 0 50%,#cfc7b2 0 75%,#e8e4d8 0) 0 0/32px 32px">
+<svg viewBox="0 0 128 128" style="position:absolute;left:0;top:0;width:128px;height:128px" aria-hidden="true"><path d="M0 128L128 0" stroke="#1a2744" stroke-width="2.5" fill="none"></path><path d="M0 64L64 0M64 128L128 64" stroke="#1a2744" stroke-width="1" stroke-dasharray="3 3" fill="none"></path></svg>
+</div>
+<span class="sw-lab">h8 · a1–h8</span>
+</div>
+<div class="sw-rr">8</div>
+<div class="sw-c" style="grid-column:2/5;grid-row:2;padding-top:18px">
+<div class="sw-lab">The idea</div>
+<p style="margin-top:8px">The 8-column page is a chessboard: sections are addressed like squares, with a–h / 1–8 along the edges as wayfinding. Wide, heavy Archivo headlines sit flush left on flat navy, gold and paper, with no gradients, shadows or curves.</p>
+</div>
+<div class="sw-c" style="grid-column:5/7;grid-row:2;padding-top:18px">
+<div class="sw-lab">Best for</div>
+<p style="margin-top:8px">A deliberate rebrand: one system that also drives tournament posters, link-preview images and results tables.</p>
+</div>
+<div class="sw-c" style="grid-column:7/10;grid-row:2;padding-top:18px">
+<div class="sw-lab">Watch out for</div>
+<p style="margin-top:8px">The most systematic of the seven, it can read cold, so test it with older members first. Wide type needs short headlines, and the green, yellow and purple logo can't live here: the mark goes one-color.</p>
+</div>
+</section>
+
+<section class="sw-g sw-rank">
+<div class="sw-rail"><div class="sw-rn">7</div><h2 class="sw-h2">Type</h2></div>
+<div class="sw-c" style="grid-column:2/7;grid-row:1">
+<div class="sw-lab">a7 · Display · <b>Archivo 900 · width 125</b></div>
+<div class="sw-xx" style="font-size:80px;line-height:.9;letter-spacing:-.04em;margin-top:12px">Lafayette Open</div>
+<div class="sw-lab" style="margin-top:22px">Headings · <b>Archivo 800 · width 125</b></div>
+<div class="sw-x" style="font-size:34px;line-height:1;letter-spacing:-.025em;margin-top:10px">Upcoming tournaments</div>
+<div class="sw-x" style="font-size:20px;line-height:1.1;letter-spacing:-.01em;margin-top:10px">This week at the clubs</div>
+</div>
+<div class="sw-c" style="grid-column:7/10;grid-row:1">
+<div class="sw-lab">f7 · Body · <b>Archivo 400 / 500 · width 100</b></div>
+<p style="font-size:16px;line-height:1.5;margin-top:10px">Five rounds of G/90+30 — 90 minutes each plus 30 seconds per move. <b>Half-point byes</b> are requested when you register.</p>
+<div class="sw-lab" style="margin-top:16px">Data · <b>Fragment Mono 400 · ligatures off</b></div>
+<div class="sw-m" style="font-size:15px;line-height:1.6;margin-top:8px">16. Qb8+ Nxb8 17. Rd8# 1–0<br>2014 · 1912 · 1803 · 4½ · 3½ · −12</div>
+<div class="sw-lab" style="margin-top:12px">Google Fonts · <b>one css2 request</b></div>
+</div>
+<div class="sw-rr">7</div>
+</section>
+
+<section class="sw-g sw-rank">
+<div class="sw-rail"><div class="sw-rn">6</div><h2 class="sw-h2">Palette</h2></div>
+<div style="grid-column:2/10;grid-row:1;padding-top:18px">
+<div style="display:grid;grid-template-columns:repeat(8,160px);border-top:1px solid #0d0d0d;border-bottom:1px solid #0d0d0d">
+<div class="sw-chip" style="display:block;padding:0"><div style="height:48px;background:#f4f4f0;padding:8px 12px">#f4f4f0</div><div style="height:48px;background:#ffffff;padding:8px 12px;border-top:1px solid rgba(13,13,13,.2)">#ffffff</div></div>
+<div class="sw-chip" style="background:#0d0d0d;color:#ffffff">#0d0d0d</div>
+<div class="sw-chip" style="background:#1a2744;color:#ffffff">#1a2744</div>
+<div class="sw-chip" style="background:#c8a94a;color:#0d0d0d">#c8a94a</div>
+<div class="sw-chip" style="background:#866a1e;color:#ffffff">#866a1e</div>
+<div class="sw-chip" style="background:#5c5f66;color:#ffffff">#5c5f66</div>
+<div class="sw-chip" style="background:#c2381f;color:#ffffff">#c2381f</div>
+<div class="sw-chip" style="display:block;padding:0;border-right:0"><div style="height:48px;background:#e8e4d8;padding:8px 12px">#e8e4d8</div><div style="height:48px;background:#cfc7b2;padding:8px 12px">#cfc7b2</div></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(8,160px)">
+<div class="sw-swt"><b>Paper · White</b><span>Ground (today's lca-cream); cards, tables</span><span class="sw-m">ink on paper<br>17.63</span></div>
+<div class="sw-swt"><b>Black</b><span>Type and rules</span><span class="sw-m">17.63 on paper</span></div>
+<div class="sw-swt"><b>Navy</b><span>Fields, header</span><span class="sw-m">13.43 on paper<br>white on it 14.81</span></div>
+<div class="sw-swt"><b>Gold</b><span>Solid fields only</span><span class="sw-m">black on it 8.54<br>navy on it 6.51</span></div>
+<div class="sw-swt"><b>Dark gold · 700</b><span>Gold-toned text on light grounds</span><span class="sw-m">5.13 on white<br>4.65 on paper</span></div>
+<div class="sw-swt"><b>Muted</b><span>Secondary text</span><span class="sw-m">5.80 on paper<br>6.40 on white</span></div>
+<div class="sw-swt"><b>Signal red</b><span>Live and alerts only</span><span class="sw-m">4.91 on paper<br>white on it 5.41</span></div>
+<div class="sw-swt"><b>Board squares</b><span>Diagrams, table heads</span><span class="sw-m">black on dark<br>square 11.54</span></div>
+</div>
+<p style="font-size:14px;padding:14px 12px 18px">Gold is a field, never a text color on light grounds (2.28 on white, 2.06 on paper), so gold-toned text uses #866a1e. <b>Color by function, Aicher-style:</b> Open sections navy · rating-limited sections gold · scholastic black · live red.</p>
+</div>
+<div class="sw-rr">6</div>
+</section>
+
+<section class="sw-g sw-rank">
+<div class="sw-rail"><div class="sw-rn">5</div><h2 class="sw-h2">Components</h2></div>
+<div style="grid-column:2/10;grid-row:1;padding-top:18px">
+<div class="sw-lab" style="padding:0 12px 8px">a5 · Header slice · <b>navy field, one-color mark, gold only as the Join field</b></div>
+<div style="background:#1a2744;color:#ffffff;height:60px;display:flex;align-items:center;gap:22px;padding:0 16px">
+<a href="#" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:#ffffff"><svg viewBox="0 0 100 100" width="30" height="30" fill="currentColor" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="sw-x" style="font-size:15px;line-height:1.05;letter-spacing:-.01em">Louisiana Chess<br><span style="font-stretch:100%;font-weight:400;font-size:12px;letter-spacing:0">Association</span></span></a>
+<nav aria-label="Main" style="display:flex;gap:22px;font-size:14px;font-weight:500;margin-left:24px;height:60px;align-items:stretch">
+<a href="#" style="display:flex;align-items:center;text-decoration:none;color:#ffffff;border-bottom:3px solid #c8a94a;padding-top:3px">Tournaments</a>
+<a href="#" style="display:flex;align-items:center;text-decoration:none;color:#ffffff">Clubs</a>
+<a href="#" style="display:flex;align-items:center;text-decoration:none;color:#ffffff">Scholastic</a>
+<a href="#" style="display:flex;align-items:center;text-decoration:none;color:#ffffff">News</a>
+<a href="#" style="display:flex;align-items:center;text-decoration:none;color:#ffffff">Membership</a>
+<a href="#" style="display:flex;align-items:center;text-decoration:none;color:#ffffff">About</a>
+</nav>
+<div style="margin-left:auto;display:flex;align-items:center;gap:20px;font-size:14px;font-weight:500">
+<a href="#" style="color:#ffffff;text-decoration:none">Donate</a><a href="#" style="color:#ffffff;text-decoration:none">Log in</a>
+<a class="sw-btn" href="#" style="height:40px;background:#c8a94a;color:#0d0d0d">Join LCA<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></a>
+</div>
+</div>
+</div>
+<div class="sw-c" style="grid-column:2/4;grid-row:2">
+<div class="sw-lab">a5 · Buttons · <b>flat, 0 radius</b></div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+<a class="sw-btn" href="#" style="background:#c8a94a;color:#0d0d0d">Register<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></a>
+<a class="sw-btn" href="#" style="background:#1a2744;color:#ffffff">Event details<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></a>
+<a class="sw-btn" href="#" style="background:transparent;color:#0d0d0d;padding:0 2px;justify-content:flex-start;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px">Add to calendar<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v14h12M15 13l4 4-4 4"></path></svg></a>
+</div>
+<div class="sw-m" style="font-size:10.5px;color:#5c5f66;margin-top:8px;line-height:1.5">Primary gold · secondary navy · ghost text with the knight-move arrow</div>
+<div style="margin-top:16px">
+<label for="sw-uscf" style="display:block;font-size:13px;font-weight:500">US Chess ID</label>
+<input id="sw-uscf" class="sw-in" placeholder="8 digits">
+<div class="sw-m" style="font-size:10.5px;color:#5c5f66;margin-top:8px">Focus: 2px navy ring, 2px offset</div>
+</div>
+</div>
+<div class="sw-c" style="grid-column:4/6;grid-row:2">
+<div class="sw-lab">c5 · Status · <b>words + color · ratio</b></div>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+<div><span class="sw-tag" style="background:#1a2744;color:#ffffff"><i class="f"></i>Registration open</span><span class="sw-cr">14.81</span></div>
+<div><span class="sw-tag" style="background:#f4f4f0;color:#1a2744;border-color:#1a2744"><i></i>Opens Oct 12</span><span class="sw-cr">13.43</span></div>
+<div><span class="sw-tag" style="background:#c8a94a;color:#0d0d0d"><i class="f"></i>Waitlist</span><span class="sw-cr">8.54</span></div>
+<div><span class="sw-tag" style="background:transparent;color:#5c5f66;border-color:#5c5f66"><i></i>Closed</span><span class="sw-cr">5.80</span></div>
+<div><span class="sw-tag" style="background:#c2381f;color:#ffffff"><i class="f"></i>Live · Round 3</span><span class="sw-cr">5.41</span></div>
+<div><span class="sw-tag" style="background:#ffffff;color:#0d0d0d;border-color:#0d0d0d">Partner event<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg></span><span class="sw-cr">19.44</span></div>
+</div>
+<div class="sw-m" style="font-size:10.5px;color:#5c5f66;margin-top:12px;line-height:1.5">Square glyph: filled = active state, open = waiting or done</div>
+</div>
+<div style="grid-column:6/10;grid-row:2;padding:18px 0">
+<div style="height:320px;background:#ffffff;outline:1px solid #0d0d0d;outline-offset:-1px;display:grid;grid-template-columns:160px 480px;grid-template-rows:160px 160px">
+<div style="background:#0d0d0d;color:#ffffff;padding:14px 16px;display:flex;flex-direction:column;justify-content:space-between">
+<span class="sw-m" style="font-size:11px;letter-spacing:.05em">SAT–SUN</span>
+<span class="sw-xx" style="font-size:44px;line-height:.9;letter-spacing:-.04em">12–13</span>
+<span class="sw-m" style="font-size:11px;letter-spacing:.05em">JUN 2027 · e5</span>
+</div>
+<div style="padding:14px 18px 12px">
+<div style="display:flex;gap:8px;align-items:center"><span class="sw-tag" style="background:#0d0d0d;color:#ffffff"><i class="f"></i>LCA event</span><span class="sw-tag" style="background:#1a2744;color:#ffffff"><i class="f"></i>Registration open</span><span class="k-sample" style="margin-left:auto">Sample data</span></div>
+<h3 class="sw-x" style="font-size:26px;line-height:1.05;letter-spacing:-.02em;margin-top:14px">2027 Paul Morphy Open</h3>
+<p style="font-size:14px;line-height:1.4;margin-top:8px">New Orleans, LA · [Venue name]<br>5 rounds · G/90+30 — 90 min each + 30 sec per move</p>
+</div>
+<div style="grid-column:1/3;border-top:1px solid #0d0d0d;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:6px">
+<span class="sw-sec" style="background:#1a2744;color:#ffffff">Open · $60</span>
+<span class="sw-sec" style="background:#c8a94a;color:#0d0d0d">U1800 · $50</span>
+<span class="sw-sec" style="background:#c8a94a;color:#0d0d0d">U1400 · $40</span>
+<span class="sw-sec" style="background:#c8a94a;color:#0d0d0d">U1000 · $30</span>
+<span class="sw-sec" style="background:#0d0d0d;color:#ffffff">Scholastic K–12</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px"><span class="sw-m" style="font-size:12px">38 of 60 registered</span><span style="flex:1;height:10px;border:1px solid #0d0d0d;display:flex"><span style="width:63%;background:#0d0d0d"></span></span><span class="sw-m" style="font-size:12px">22 spots left</span></div>
+<div style="display:flex;gap:14px;align-items:center"><a class="sw-btn" href="#" style="background:#c8a94a;color:#0d0d0d;width:200px">Register<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></a><a class="sw-btn" href="#" style="background:transparent;color:#0d0d0d;padding:0 4px;justify-content:flex-start">Details<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3v14h12M15 13l4 4-4 4"></path></svg></a><span class="sw-lab" style="margin-left:auto">Card spans 4×2 squares</span></div>
+</div>
+</div>
+</div>
+<div class="sw-rr">5</div>
+</section>
+
+<section class="sw-g sw-rank">
+<div class="sw-rail"><div class="sw-rn">4</div><h2 class="sw-h2">Chess data</h2></div>
+<div class="sw-c" style="grid-column:2/6;grid-row:1">
+<div class="sw-lab">a4 · Pairings · <b>round 5</b></div>
+<table class="sw-st" style="margin-top:10px">
+<thead><tr><th style="width:44px">Bd</th><th>White</th><th class="r" style="width:52px">Pts</th><th class="c" style="width:72px">Result</th><th>Black</th><th class="r" style="width:52px">Pts</th></tr></thead>
+<tbody><tr><td class="sw-m">1</td><td><i class="sw-sq"></i>Marcus Landry <span class="sw-m" style="color:#5c5f66;font-size:13px">2014</span></td><td class="r sw-m">3½</td><td class="c sw-x" style="font-size:17px">1–0</td><td><i class="sw-sq f"></i>Priya Shah <span class="sw-m" style="color:#5c5f66;font-size:13px">1803</span></td><td class="r sw-m">4</td></tr></tbody>
+</table>
+<div class="sw-lab" style="margin-top:20px">Standings · <b>final, top 3 · ratings large, right-aligned</b></div>
+<table class="sw-st" style="margin-top:10px">
+<thead><tr><th style="width:44px">Rk</th><th>Player</th><th class="r">Rating</th><th class="r">Pts</th><th class="r">TB</th></tr></thead>
+<tbody>
+<tr><td class="sw-m">1</td><td>Marcus Landry</td><td class="r sw-x big">2014</td><td class="r sw-xx big">4½</td><td class="r sw-m">14</td></tr>
+<tr><td class="sw-m">2</td><td>Avery Thibodeaux</td><td class="r sw-x big">1912</td><td class="r sw-xx big">4</td><td class="r sw-m">13½</td></tr>
+<tr><td class="sw-m">3</td><td>Priya Shah</td><td class="r sw-x big">1803</td><td class="r sw-xx big">4</td><td class="r sw-m">12½</td></tr>
+</tbody>
+</table>
+</div>
+<div class="sw-c" style="grid-column:6/8;grid-row:1">
+<div class="sw-lab">e4 · Crosstable · <b>true squares</b></div>
+<div style="display:flex;gap:8px;margin-top:12px">
+<div class="sw-xc"><i class="cn"></i><span class="rs">1<sup>12</sup></span><span class="cd">W12</span></div>
+<div class="sw-xc"><i class="cn f"></i><span class="rs">0<sup>4</sup></span><span class="cd">L4</span></div>
+<div class="sw-xc"><i class="cn"></i><span class="rs">½<sup>7</sup></span><span class="cd">D7</span></div>
+</div>
+<p style="font-size:13px;line-height:1.4;margin-top:10px;color:#5c5f66">1 · ½ · 0 with the opponent's number raised. Corner square: open = White, filled = Black.</p>
+<div class="sw-lab" style="margin-top:14px">Row 1 · <b>Marcus Landry</b></div>
+<div style="display:flex;margin-top:8px">
+<div class="sw-xc sw-xs"><i class="cn"></i><span class="rs">1<sup>13</sup></span></div>
+<div class="sw-xc sw-xs"><i class="cn f"></i><span class="rs">1<sup>9</sup></span></div>
+<div class="sw-xc sw-xs"><i class="cn"></i><span class="rs">1<sup>4</sup></span></div>
+<div class="sw-xc sw-xs"><i class="cn f"></i><span class="rs">½<sup>2</sup></span></div>
+<div class="sw-xc sw-xs"><i class="cn"></i><span class="rs">1<sup>3</sup></span></div>
+<div class="sw-xc sw-xs" style="width:64px;background:#0d0d0d;color:#ffffff;border-color:#0d0d0d"><span class="rs">4½</span></div>
+</div>
+</div>
+<div class="sw-c" style="grid-column:8/10;grid-row:1">
+<div class="sw-lab">g4 · Board · <b>Bauhaus pieces</b></div>
+<div class="sw-bd" style="margin-top:12px">
+<div class="k">8</div><div class="l"></div><div class="d"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h6v10h6v6H6z"></path></svg></div><div class="l"></div><div class="d hl"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14"></rect></svg></div><div class="l"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9"></rect><path d="M12 2.5l4 4-4 4-4-4z"></path></svg></div><div class="d"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7L7 5L12 10L17 5L19 7L14 12L19 17L17 19L12 14L7 19L5 17L10 12Z"></path></svg></div><div class="l"></div><div class="d"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14"></rect></svg></div>
+<div class="k">7</div><div class="d"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="l"></div><div class="d"></div><div class="l"></div><div class="d"></div><div class="l"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="d"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="l"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div>
+<div class="k">6</div><div class="l"></div><div class="d"></div><div class="l"></div><div class="d"></div><div class="l"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9"></rect><circle cx="12" cy="6.5" r="3.5"></circle></svg></div><div class="d"></div><div class="l"></div><div class="d"></div>
+<div class="k">5</div><div class="d"></div><div class="l"></div><div class="d"></div><div class="l"></div><div class="d"><svg class="sw-pc pb" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="l"></div><div class="d"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7L7 5L12 10L17 5L19 7L14 12L19 17L17 19L12 14L7 19L5 17L10 12Z"></path></svg></div><div class="l"></div>
+<div class="k">4</div><div class="l"></div><div class="d"></div><div class="l"></div><div class="d"></div><div class="l"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="d"></div><div class="l"></div><div class="d"></div>
+<div class="k">3</div><div class="d"></div><div class="l"></div><div class="d"></div><div class="l"></div><div class="d"></div><div class="l"></div><div class="d"></div><div class="l"></div>
+<div class="k">2</div><div class="l"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="d"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="l"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="d"></div><div class="l"></div><div class="d"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="l"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div><div class="d"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg></div>
+<div class="k">1</div><div class="d"></div><div class="l"></div><div class="d"><svg class="sw-pc pw" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9"></rect><path d="M12 2.5l4 4-4 4-4-4z"></path></svg></div><div class="l hl"></div><div class="d"></div><div class="l"></div><div class="d"></div><div class="l"></div>
+<div></div><div class="k">a</div><div class="k">b</div><div class="k">c</div><div class="k">d</div><div class="k">e</div><div class="k">f</div><div class="k">g</div><div class="k">h</div>
+</div>
+<p class="sw-m" style="font-size:11px;color:#5c5f66;margin-top:8px;line-height:1.45">Morphy, the Opera Game, Paris 1858 · after 17. Rd8#</p>
+</div>
+<div class="sw-rr">4</div>
+</section>
+
+<section class="sw-g sw-rank">
+<div class="sw-rail"><div class="sw-rn">3</div><h2 class="sw-h2">Motif &amp; texture</h2></div>
+<div style="grid-column:2/5;grid-row:1;margin:18px 0;height:180px;background:#1a2744;color:#ffffff;padding:16px 20px;display:flex;flex-direction:column;justify-content:space-between">
+<span class="sw-lab" style="color:#dec478">a3 · Notation as type</span>
+<span class="sw-xx" style="font-size:124px;line-height:.8;letter-spacing:-.05em">Rd8#</span>
+</div>
+<div class="sw-c" style="grid-column:5/7;grid-row:1">
+<div class="sw-lab">d3 · Bishop lines · <b>the only ornament</b></div>
+<svg viewBox="0 0 300 150" style="width:100%;height:auto;display:block;margin-top:12px" aria-hidden="true"><path d="M0 0V150M37.5 0V150M75 0V150M112.5 0V150M150 0V150M187.5 0V150M225 0V150M262.5 0V150M300 0V150M0 0H300M0 37.5H300M0 75H300M0 112.5H300M0 150H300" stroke="#0d0d0d" stroke-opacity=".16" stroke-width="1" fill="none"></path><path d="M0 150L150 0M75 150L225 0M150 150L300 0" stroke="#1a2744" stroke-width="2" fill="none"></path><path d="M300 150L150 0" stroke="#c8a94a" stroke-width="4" fill="none"></path></svg>
+</div>
+<div class="sw-c" style="grid-column:7/8;grid-row:1">
+<div class="sw-lab">f3 · Hover arrow</div>
+<svg class="sw-ic" viewBox="0 0 24 24" style="width:64px;height:64px;margin-top:14px;stroke-width:1.75" aria-hidden="true"><path d="M7 3v14h12M15 13l4 4-4 4"></path></svg>
+<p style="font-size:13px;line-height:1.35;margin-top:10px">A knight's move: two down, one across.</p>
+</div>
+<div class="sw-c" style="grid-column:8/10;grid-row:1">
+<div class="sw-lab">g3 · Clock bars · <b>progress</b></div>
+<div style="display:flex;justify-content:space-between;margin-top:12px;font-size:13px"><span>Entries</span><span class="sw-m">38 / 60</span></div>
+<div style="height:10px;border:1px solid #0d0d0d;margin-top:6px;display:flex"><span style="width:63%;background:#0d0d0d"></span></div>
+<div style="display:flex;justify-content:space-between;margin-top:12px;font-size:13px"><span>Rounds</span><span class="sw-m">Round 3 of 5 · live</span></div>
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin-top:6px"><span style="height:10px;background:#0d0d0d"></span><span style="height:10px;background:#0d0d0d"></span><span style="height:10px;background:#c2381f"></span><span style="height:10px;border:1px solid #0d0d0d"></span><span style="height:10px;border:1px solid #0d0d0d"></span></div>
+<div class="sw-lab" style="margin-top:16px">Motion · <b>wipe one column, 240ms</b></div>
+<div style="display:flex;margin-top:8px;width:160px;height:22px;border:1px solid #0d0d0d"><span style="width:80px;background:#1a2744"></span><span style="flex:1;display:flex;align-items:center;justify-content:center"><svg class="sw-arr" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></span></div>
+</div>
+<div class="sw-rr">3</div>
+</section>
+
+<section class="sw-g sw-rank">
+<div class="sw-rail"><div class="sw-rn">2</div><h2 class="sw-h2">Photo &amp; icons</h2></div>
+<div class="sw-c" style="grid-column:2/7;grid-row:1;padding-bottom:10px"><div class="sw-lab">a2 · Photo treatment · <b>square crops, two tones</b></div></div>
+<div class="sw-c" style="grid-column:7/10;grid-row:1;padding-bottom:10px"><div class="sw-lab">f2 · Icon style · <b>2px, square caps, mitred</b></div></div>
+<figure style="grid-column:2/3;grid-row:2">
+<img src="/_blob/f0a8537498574429330e3a0888e092e4" alt="Untreated photo: arched tournament hall with a wooden board in the foreground" style="width:160px;height:160px;object-fit:cover;display:block">
+<figcaption class="sw-cap">Original</figcaption>
+</figure>
+<figure style="grid-column:3/4;grid-row:2">
+<img src="/_blob/f0a8537498574429330e3a0888e092e4" alt="Same photo in high-contrast black and white" style="width:160px;height:160px;object-fit:cover;display:block;filter:grayscale(1) contrast(1.55) brightness(1.05)">
+<figcaption class="sw-cap">B&amp;W, high contrast</figcaption>
+</figure>
+<figure style="grid-column:4/5;grid-row:2">
+<div style="width:160px;height:160px;background:#1a2744;position:relative;isolation:isolate;overflow:hidden"><img src="/_blob/f0a8537498574429330e3a0888e092e4" alt="Same photo posterized to navy and paper" style="width:160px;height:160px;object-fit:cover;display:block;filter:grayscale(1) contrast(1.9) brightness(1.05);mix-blend-mode:screen"><div style="position:absolute;left:0;top:0;right:0;bottom:0;background:#f4f4f0;mix-blend-mode:multiply"></div></div>
+<figcaption class="sw-cap">Navy + paper duotone</figcaption>
+</figure>
+<div class="sw-c" style="grid-column:5/7;grid-row:2;padding-top:0">
+<p class="sw-m" style="font-size:11.5px;line-height:1.6">filter: grayscale(1) contrast(1.9) · mix-blend-mode: screen over a navy field · a paper layer set to multiply. Crop square; put the subject on a column line.</p>
+</div>
+<div class="sw-c" style="grid-column:7/10;grid-row:2;padding-top:0">
+<div style="display:grid;grid-template-columns:repeat(6,1fr);row-gap:14px">
+<div class="sw-icb"><svg class="sw-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Date</span></div>
+<div class="sw-icb"><svg class="sw-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Venue</span></div>
+<div class="sw-icb"><svg class="sw-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Time</span></div>
+<div class="sw-icb"><svg class="sw-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg><span>Players</span></div>
+<div class="sw-icb"><svg class="sw-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg><span>Prizes</span></div>
+<div class="sw-icb"><svg class="sw-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v6H4V6h6"></path></svg><span>Partner</span></div>
+<div class="sw-icb"><svg class="sw-pc pb" viewBox="0 0 24 24" style="width:28px;height:28px" aria-hidden="true"><rect x="5" y="11" width="14" height="9"></rect><path d="M12 2.5l4 4-4 4-4-4z"></path></svg><span>King · one step</span></div>
+<div class="sw-icb"><svg class="sw-pc pb" viewBox="0 0 24 24" style="width:28px;height:28px" aria-hidden="true"><rect x="5" y="11" width="14" height="9"></rect><circle cx="12" cy="6.5" r="3.5"></circle></svg><span>Queen · any line</span></div>
+<div class="sw-icb"><svg class="sw-pc pb" viewBox="0 0 24 24" style="width:28px;height:28px" aria-hidden="true"><rect x="5" y="5" width="14" height="14"></rect></svg><span>Rook · files, ranks</span></div>
+<div class="sw-icb"><svg class="sw-pc pb" viewBox="0 0 24 24" style="width:28px;height:28px" aria-hidden="true"><path d="M5 7L7 5L12 10L17 5L19 7L14 12L19 17L17 19L12 14L7 19L5 17L10 12Z"></path></svg><span>Bishop · diagonals</span></div>
+<div class="sw-icb"><svg class="sw-pc pb" viewBox="0 0 24 24" style="width:28px;height:28px" aria-hidden="true"><path d="M6 4h6v10h6v6H6z"></path></svg><span>Knight · the L</span></div>
+<div class="sw-icb"><svg class="sw-pc pb" viewBox="0 0 24 24" style="width:28px;height:28px" aria-hidden="true"><rect x="8" y="9" width="8" height="8"></rect></svg><span>Pawn · forward</span></div>
+</div>
+<p style="font-size:13px;line-height:1.4;margin-top:12px;color:#5c5f66">Pieces after Josef Hartwig's Bauhaus set (1922–24): each is shaped like its move.</p>
+</div>
+<div class="sw-rr">2</div>
+</section>
+
+<section class="sw-g sw-rank">
+<div class="sw-rail"><div class="sw-rn">1</div><h2 class="sw-h2">Do &amp; don't</h2></div>
+<div class="sw-c" style="grid-column:2/4;grid-row:1"><span class="sw-do">Do</span><p class="sw-dd">Address sections like squares ("c4 · Clubs") and keep the a–h / 1–8 coordinates quiet: Fragment Mono, 12px, muted.</p></div>
+<div class="sw-c" style="grid-column:4/6;grid-row:1"><span class="sw-do">Do</span><p class="sw-dd">Use gold only as a solid field under black (8.54) or navy (6.51) type; gold-toned text on paper is #866a1e.</p></div>
+<div class="sw-c" style="grid-column:6/8;grid-row:1"><span class="sw-dont">Don't</span><p class="sw-dd">Round corners, add shadows or gradients, or set a checkerboard behind text. The system is flat and square.</p></div>
+<div class="sw-c" style="grid-column:8/10;grid-row:1"><span class="sw-dont">Don't</span><p class="sw-dd">Use signal red for anything but live rounds and alerts, or let color carry a status alone: every tag has words.</p></div>
+<div class="sw-rr">1</div>
+</section>
+
+<div class="sw-g" style="height:32px;align-items:center;margin-top:auto;border-top:2px solid #0d0d0d">
+<div class="sw-m" style="font-size:11px;color:#5c5f66;padding-left:24px">Swiss Grid</div>
+<div class="sw-file">a</div><div class="sw-file">b</div><div class="sw-file">c</div><div class="sw-file">d</div><div class="sw-file">e</div><div class="sw-file">f</div><div class="sw-file">g</div><div class="sw-file">h</div><div></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

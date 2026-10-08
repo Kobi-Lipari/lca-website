@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live C — Standings &amp; crosstable</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.mono{font-family:'Geist Mono',monospace}
+.lb-tabs{display:flex;gap:2px;overflow-x:auto}
+.lb-tabs a{padding:10px 14px;color:#3d4454;text-decoration:none;font-weight:500;border-bottom:3px solid transparent;white-space:nowrap}
+.lb-tabs a.on{color:#1a2744;font-weight:600;border-bottom-color:#c8a94a}
+.pc{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 4px;border-radius:5px;font-family:'Geist Mono',monospace;font-weight:500;font-size:12px;line-height:1;box-sizing:border-box;flex:none}
+.pc-w{background:#ffffff;color:#1a2744;border:1.5px solid #1a2744}
+.pc-b{background:#1a2744;color:#ffffff;border:1.5px solid #1a2744}
+.rs{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:600;flex:none}
+.rs-w{background:#e2f0e5;color:#1d5a31}
+.rs-l{background:#f6e3e1;color:#8b2a21}
+.st{width:100%;min-width:1150px;border-collapse:separate;border-spacing:0;font-size:14px}
+.st th{font-size:12px;font-weight:600;color:#555c6b;text-align:left;padding:9px 8px;border-bottom:1px solid #d9d8d2;background:#fafaf7;white-space:nowrap;vertical-align:bottom}
+.st td{padding:6px 8px;border-bottom:1px solid #eeede8;background:#ffffff;white-space:nowrap;vertical-align:middle}
+.st .f1{position:sticky;left:0;z-index:1;width:56px;min-width:56px;font-weight:600;color:#1a2744}
+.st .f2{position:sticky;left:72px;z-index:1;width:226px;min-width:226px;box-shadow:inset -1px 0 0 #e3e2dc}
+.st th.f1,.st th.f2{z-index:3}
+.st .n{text-align:right;font-family:'Geist Mono',monospace;font-size:13px;color:#3d4454}
+.st th.n{font-family:Geist,system-ui,sans-serif;font-size:12px;color:#555c6b}
+.st .c{text-align:center}
+.st .pts{font-weight:500;color:#1a2744;font-size:15px}
+.st tr.grp td{border-top:2px solid #d9d8d2}
+.st tr.me td{background:#fbf3d9}
+.st .nm{font-weight:600;color:#1a2744}
+.no{display:inline-block;width:24px;font-family:'Geist Mono',monospace;font-size:12px;color:#555c6b}
+.rt{font-family:'Geist Mono',monospace;font-size:12px;color:#555c6b;margin-left:6px;font-weight:400}
+.rc{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:58px;height:24px;padding:0 6px;border-radius:6px;font-family:'Geist Mono',monospace;font-size:13px;font-weight:500;box-sizing:border-box}
+.rc-w{background:#e2f0e5;color:#1d5a31}
+.rc-l{background:#f6e3e1;color:#8b2a21}
+.rc-d{background:#ebebe7;color:#394150}
+.rc-n{background:#ffffff;color:#555c6b;border:1px dashed #a9adb6}
+.dw,.db{display:inline-block;width:8px;height:8px;border-radius:50%;box-sizing:border-box;flex:none}
+.dw{border:1.5px solid currentColor}
+.db{background:currentColor}
+.tip{position:absolute;top:100%;right:0;margin-top:6px;width:270px;background:#1a2744;color:#ffffff;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:400;line-height:1.45;white-space:normal;text-align:left;z-index:6}
+.prz{font-size:13px;font-weight:600;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+mark.hl{background:#f3e3a6;color:inherit;border-radius:2px;padding:0 1px}
+.you{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;background:#1a2744;color:#ffffff;font-size:11px;font-weight:600;vertical-align:middle}
+.rr{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #eeede8}
+.lgd{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.lgd span.i{display:inline-flex;align-items:center;gap:6px}
+</style>
+</helmet>
+<div class="k-page">
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a class="k-nav-on" href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<section style="background:#ffffff;border-bottom:1px solid #e3e2dc">
+  <div class="k-wrap" style="padding-top:22px">
+    <nav aria-label="Breadcrumb" class="k-small k-muted"><a class="k-link-plain" href="#">Tournaments</a> / <a class="k-link-plain" href="#">2027 Paul Morphy Open</a> / <span>Standings</span></nav>
+    <div class="k-between" style="margin-top:12px;align-items:flex-end;gap:16px">
+      <div>
+        <div class="k-row-sm"><span class="k-tag k-tag-gold">Final results</span><span class="k-tag k-tag-lca">LCA event</span><span class="k-sample">Sample data</span></div>
+        <h1 class="k-h1" style="margin:10px 0 0">2027 Paul Morphy Open</h1>
+        <div class="k-row k-meta" style="margin-top:8px">
+          <span style="display:inline-flex;align-items:center;gap:6px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Sat–Sun, Jun 12–13, 2027</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>[Venue name], New Orleans</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>5 rounds · G/90+30 · 90 min each + 30 sec per move</span>
+        </div>
+      </div>
+      <div class="k-row-sm k-hide-sm">
+        <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>CSV</a>
+        <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>PDF</a>
+        <a class="k-btn k-btn-line k-btn-sm" href="Live-E.dc.html"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Print wall chart</a>
+      </div>
+    </div>
+    <nav class="lb-tabs" aria-label="Live tournament pages" style="margin-top:16px">
+      <a href="Live-B.dc.html">Pairings</a><a class="on" href="#" aria-current="page">Standings &amp; crosstable</a><a href="#">Prizes</a><a href="#">Event info</a>
+    </nav>
+  </div>
+</section>
+
+<div class="k-wrap" style="padding-top:18px">
+  <section class="k-card" aria-label="Standings controls" style="padding:14px 18px">
+    <div class="k-between" style="gap:14px;align-items:flex-end">
+      <div class="k-row-sm">
+        <span class="k-small" style="font-weight:600">Section</span>
+        <div class="k-seg" role="group" aria-label="Section"><button type="button">Open</button><button class="k-seg-on" type="button" aria-pressed="true">U1800</button><button type="button">U1400</button><button type="button">U1000</button></div>
+      </div>
+      <div class="k-row-sm" style="align-items:flex-end">
+        <div class="k-field" style="width:240px"><label for="c-find">Find a player</label><input id="c-find" class="k-input" value="Batiste"></div>
+        <span class="k-small k-muted" style="padding-bottom:12px">Devin Batiste · 2nd–4th</span>
+      </div>
+    </div>
+    <div class="k-between" style="gap:14px;margin-top:12px;padding-top:12px;border-top:1px solid #eeede8">
+      <div class="k-row-sm" role="group" aria-label="Columns to show">
+        <span class="k-small" style="font-weight:600">Columns</span>
+        <button class="k-chip k-chip-on" type="button" aria-pressed="true">Rounds</button>
+        <button class="k-chip k-chip-on" type="button" aria-pressed="true">Tiebreaks</button>
+        <button class="k-chip k-chip-on" type="button" aria-pressed="true">Prizes</button>
+        <span class="k-small k-muted k-hide-sm">On phones: Place, Player, Pts and W-D-L first</span>
+      </div>
+      <div class="k-row-sm">
+        <span class="k-small" style="font-weight:600">Text size</span>
+        <div class="k-seg" role="group" aria-label="Text size"><button class="k-seg-on" type="button">A</button><button type="button">A+</button><button type="button">A++</button></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="k-wrap" style="padding-top:18px">
+  <div class="k-grid-3" style="align-items:start">
+
+    <section class="k-card k-card-pad" aria-labelledby="pw">
+      <div class="k-between"><h2 class="k-h4" id="pw" style="margin:0">Prize winners · U1800</h2><span class="k-small k-muted">Paid at the TD table</span></div>
+      <ol style="list-style:none;margin:12px 0 0;padding:0">
+        <li style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eeede8">
+          <span style="color:#866a1e;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></span>
+          <div style="flex:1"><div class="k-between"><b>1st · Isaac Dupre</b><b class="mono">$200</b></div><div class="k-small k-muted">4½ points · trophy</div></div>
+        </li>
+        <li style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eeede8">
+          <span style="color:#866a1e;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></span>
+          <div style="flex:1">
+            <div><b>2nd–4th · tied on 4 points</b></div>
+            <div class="k-small k-muted">2nd and 3rd prizes pooled: $200 ÷ 3</div>
+            <div class="k-between k-small" style="margin-top:6px"><span>Camille Broussard · 2nd-place trophy</span><span class="mono">$66.67</span></div>
+            <div class="k-between k-small" style="margin-top:3px"><span>Devin Batiste · 3rd-place trophy</span><span class="mono">$66.67</span></div>
+            <div class="k-between k-small" style="margin-top:3px"><span>Grant Melancon</span><span class="mono">$66.66</span></div>
+          </div>
+        </li>
+        <li style="display:flex;gap:10px;align-items:flex-start;padding:10px 0">
+          <span style="color:#866a1e;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg></span>
+          <div style="flex:1"><div class="k-between"><b>Best U1600 · Jacob Romero</b><b class="mono">$60</b></div><div class="k-small k-muted">3½ points · rated 1497</div></div>
+        </li>
+      </ol>
+      <p class="k-small k-muted" style="margin:8px 0 0">Devin also qualified for Best U1600, but his share of 2nd–4th is larger. Each player takes one cash prize, the largest. Trophies go by tiebreak.</p>
+    </section>
+
+    <section class="k-card k-card-pad" aria-labelledby="yr" style="border:2px solid #1a2744">
+      <div class="k-between"><h2 class="k-h4" id="yr" style="margin:0">Devin Batiste</h2><span class="k-small k-muted">Found by name · <a class="k-link" href="#">Clear</a></span></div>
+      <div style="display:flex;align-items:baseline;gap:12px;margin-top:8px;flex-wrap:wrap"><span style="font-size:34px;font-weight:700;line-height:1;letter-spacing:-.01em">2nd–4th</span><span class="k-small">4 points · 4 wins, 1 loss</span></div>
+      <div class="k-small" style="margin-top:6px"><b>$66.67</b> · 3rd-place trophy on tiebreak</div>
+      <div class="k-small" style="margin-top:3px">Rating 1521 → about 1561 <span class="k-muted">· estimate, official once US Chess rates the event</span></div>
+      <div style="margin-top:10px;font-size:14px">
+        <div class="rr"><span class="k-meta" style="width:34px">Rd 1</span><span class="rs rs-l">Lost</span><span style="flex:1">Isaac Dupre <span class="rt">1688</span></span><span class="pc pc-b">B</span></div>
+        <div class="rr"><span class="k-meta" style="width:34px">Rd 2</span><span class="rs rs-w">Won</span><span style="flex:1">Mia LeJeune <span class="rt">1415</span></span><span class="pc pc-w">W</span></div>
+        <div class="rr"><span class="k-meta" style="width:34px">Rd 3</span><span class="rs rs-w">Won</span><span style="flex:1">Sam Nguyen <span class="rt">1650</span></span><span class="pc pc-w">W</span></div>
+        <div class="rr"><span class="k-meta" style="width:34px">Rd 4</span><span class="rs rs-w">Won</span><span style="flex:1">Minh Tran <span class="rt">1676</span></span><span class="pc pc-b">B</span></div>
+        <div class="rr" style="border-bottom:0"><span class="k-meta" style="width:34px">Rd 5</span><span class="rs rs-w">Won</span><span style="flex:1">Kendall Pitre <span class="rt">1595</span></span><span class="pc pc-b">B</span></div>
+      </div>
+      <a class="k-link k-small" href="#" style="display:inline-block;margin-top:8px">Devin's player page and rating history</a>
+    </section>
+
+    <section class="k-card k-card-pad" aria-labelledby="tb">
+      <h2 class="k-h4" id="tb" style="margin:0">How ties are broken</h2>
+      <p class="k-small k-muted" style="margin:6px 0 0">US Chess order. Each step counts only if the one before is still tied.</p>
+      <ol class="k-small" style="margin:10px 0 0;padding-left:20px;display:grid;gap:7px">
+        <li><b>Modified median</b>: add your opponents' final scores, then drop the lowest (you scored over 50%), the highest (under 50%) or both (exactly 50%).</li>
+        <li><b>Solkoff</b>: the same sum, nothing dropped.</li>
+        <li><b>Cumulative</b>: add your running score after each round, so early wins count more.</li>
+        <li><b>Opponents' cumulative</b>: add up your opponents' cumulative scores.</li>
+        <li><b>Most games with Black.</b></li>
+      </ol>
+      <p class="k-small k-muted" style="margin:10px 0 0">Byes, forfeits and unplayed games count as draws in an opponent's score and as zero in your own. Tiebreaks set the order and the trophies; tied players split cash equally.</p>
+    </section>
+  </div>
+</div>
+
+<div class="k-wrap k-section-sm">
+  <section aria-labelledby="xt">
+    <div class="k-between" style="gap:12px;align-items:flex-end">
+      <div>
+        <h2 class="k-h3" id="xt" style="margin:0">U1800 final standings and crosstable</h2>
+        <div class="k-small k-muted" style="margin-top:4px">28 players · 5 rounds · average rating 1555 · final, confirmed by Chief TD Chris Arceneaux on Sun, Jun 13 at 6:12 PM</div>
+      </div>
+      <div class="k-seg" role="group" aria-label="Order"><button class="k-seg-on" type="button">By place</button><button type="button">By pairing number</button></div>
+    </div>
+    <div class="lgd k-small" style="margin-top:12px;padding:10px 14px;background:#ffffff;border:1px solid #e3e2dc;border-radius:10px">
+      <span class="i"><span class="rc rc-w">W<i class="dw"></i>17</span>won vs No. 17</span>
+      <span class="i"><span class="rc rc-l">L<i class="db"></i>3</span>lost</span>
+      <span class="i"><span class="rc rc-d">D<i class="db"></i>1</span>drew</span>
+      <span class="i"><i class="dw" style="color:#1a2744"></i>had White</span>
+      <span class="i"><i class="db" style="color:#1a2744"></i>had Black</span>
+      <span class="i"><span class="rc rc-n">H</span>half-point bye</span>
+      <span class="i"><span class="rc rc-n">B</span>full-point bye</span>
+      <span class="i"><span class="rc rc-n">U</span>didn't play</span>
+      <span class="i"><span class="rc rc-n">X20</span>won by forfeit</span>
+      <span class="i"><span class="rc rc-n">F7</span>lost by forfeit</span>
+    </div>
+    <div class="k-tablebox" role="region" aria-labelledby="xt-cap" tabindex="0" style="margin-top:12px">
+      <table class="st">
+        <caption id="xt-cap" style="caption-side:top;text-align:left;padding:10px 12px;font-size:13px;color:#555c6b">Ordered by score, then tiebreaks. Numbers in result cells are pairing numbers (No.). Place and Player stay put when you scroll sideways.</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="f1">Place</th>
+            <th scope="col" class="f2">No. · Player · rating</th>
+            <th scope="col" class="c">Rd 1</th><th scope="col" class="c">Rd 2</th><th scope="col" class="c">Rd 3</th><th scope="col" class="c">Rd 4</th><th scope="col" class="c">Rd 5</th>
+            <th scope="col" class="n">Pts</th>
+            <th scope="col" class="n">W-D-L</th>
+            <th scope="col" class="n" style="position:relative"><abbr title="Modified median" style="text-decoration:none">Mod. median</abbr> <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><div class="tip" role="tooltip"><b>Modified median</b>, the first tiebreak. Your opponents' final scores added together, dropping the lowest if you scored over 50%. Isaac: 4 + 2½ + 2½ + 3½ + 4 = 16½, minus the lowest 2½ = 14.</div></th>
+            <th scope="col" class="n"><abbr title="Solkoff" style="text-decoration:none">Solkoff</abbr></th>
+            <th scope="col" class="n"><abbr title="Cumulative" style="text-decoration:none">Cumul.</abbr></th>
+            <th scope="col" class="n"><abbr title="Opponents' cumulative" style="text-decoration:none">Opp. cumul.</abbr></th>
+            <th scope="col">Prize</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="f1">1</td><td class="f2 nm"><span class="no">3</span>Isaac Dupre<span class="rt">1688</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>17</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>7</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>11</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>5</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>1</span></td><td class="n pts">4½</td><td class="n">4-1-0</td><td class="n">14</td><td class="n">16½</td><td class="n">14½</td><td class="n">52½</td><td><span class="prz">$200 · 1st</span></td></tr>
+          <tr class="grp"><td class="f1">2–4</td><td class="f2 nm"><span class="no">1</span>Camille Broussard<span class="rt">1744</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>15</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>6</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>8</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>10</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>3</span></td><td class="n pts">4</td><td class="n">3-2-0</td><td class="n">14</td><td class="n">16½</td><td class="n">13</td><td class="n">51½</td><td><span class="prz">$66.67</span></td></tr>
+          <tr class="me"><td class="f1">2–4</td><td class="f2 nm"><span class="no">17</span>Devin <mark class="hl">Batiste</mark><span class="rt">1521</span><span class="you">Found</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>3</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>26</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>7</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>4</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>11</span></td><td class="n pts">4</td><td class="n">4-0-1</td><td class="n">12½</td><td class="n">13½</td><td class="n">10</td><td class="n">41½</td><td><span class="prz">$66.67</span></td></tr>
+          <tr><td class="f1">2–4</td><td class="f2 nm"><span class="no">2</span>Grant Melancon<span class="rt">1731</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>16</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>24</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>14</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>18</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>6</span></td><td class="n pts">4</td><td class="n">3-2-0</td><td class="n">10</td><td class="n">11½</td><td class="n">11</td><td class="n">39</td><td><span class="prz">$66.66</span></td></tr>
+          <tr class="grp"><td class="f1">5–7</td><td class="f2 nm"><span class="no">5</span>Andre Charbonnet<span class="rt">1662</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>19</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>12</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>18</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>3</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>8</span></td><td class="n pts">3½</td><td class="n">3-1-1</td><td class="n">14½</td><td class="n">16½</td><td class="n">12½</td><td class="n">52½</td><td></td></tr>
+          <tr><td class="f1">5–7</td><td class="f2 nm"><span class="no">8</span>Lauren Guillory<span class="rt">1641</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>22</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>9</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>1</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>11</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>5</span></td><td class="n pts">3½</td><td class="n">2-3-0</td><td class="n">12½</td><td class="n">14</td><td class="n">12</td><td class="n">47</td><td></td></tr>
+          <tr><td class="f1">5–7</td><td class="f2 nm"><span class="no">19</span>Jacob Romero<span class="rt">1497</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>5</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>27</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>9</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>13</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>12</span></td><td class="n pts">3½</td><td class="n">3-1-1</td><td class="n">10</td><td class="n">11½</td><td class="n">9</td><td class="n">36</td><td><span class="prz">$60 · U1600</span></td></tr>
+          <tr class="grp"><td class="f1">8–12</td><td class="f2 nm"><span class="no">6</span>Darius Washington<span class="rt">1658</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>20</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>1</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>15</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>14</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>2</span></td><td class="n pts">3</td><td class="n">3-0-2</td><td class="n">13</td><td class="n">15</td><td class="n">10</td><td class="n">42</td><td></td></tr>
+          <tr><td class="f1">8–12</td><td class="f2 nm"><span class="no">18</span>Rachel Doucet<span class="rt">1509</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>4</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>16</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>5</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>2</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>21</span></td><td class="n pts">3</td><td class="n">3-0-2</td><td class="n">12½</td><td class="n">13½</td><td class="n">10</td><td class="n">40½</td><td></td></tr>
+          <tr><td class="f1">8–12</td><td class="f2 nm"><span class="no">7</span>Sam Nguyen<span class="rt">1650</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>21</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>3</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>17</span></td><td class="c"><span class="rc rc-n">X20</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>14</span></td><td class="n pts">3</td><td class="n">2-0-2</td><td class="n">11½</td><td class="n">11½</td><td class="n">7</td><td class="n">36</td><td></td></tr>
+          <tr><td class="f1">8–12</td><td class="f2 nm"><span class="no">4</span>Minh Tran<span class="rt">1676</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>18</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>21</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>12</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>17</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>13</span></td><td class="n pts">3</td><td class="n">3-0-2</td><td class="n">11</td><td class="n">12</td><td class="n">8</td><td class="n">37</td><td></td></tr>
+          <tr><td class="f1">8–12</td><td class="f2 nm"><span class="no">10</span>Victor Alvarez<span class="rt">1604</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>24</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>14</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>22</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>1</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>16</span></td><td class="n pts">3</td><td class="n">2-2-1</td><td class="n">9½</td><td class="n">11</td><td class="n">8½</td><td class="n">36</td><td></td></tr>
+          <tr class="grp"><td class="f1">13–15</td><td class="f2 nm"><span class="no">11</span>Kendall Pitre<span class="rt">1595</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>25</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>13</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>3</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>8</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>17</span></td><td class="n pts">2½</td><td class="n">2-1-2</td><td class="n">9½</td><td class="n">14½</td><td class="n">10</td><td class="n">44½</td><td></td></tr>
+          <tr><td class="f1">13–15</td><td class="f2 nm"><span class="no">9</span>Hannah Breaux<span class="rt">1618</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>23</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>8</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>19</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>21</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>15</span></td><td class="n pts">2½</td><td class="n">2-1-2</td><td class="n">8½</td><td class="n">13</td><td class="n">7½</td><td class="n">34½</td><td></td></tr>
+          <tr><td class="f1">13–15</td><td class="f2 nm"><span class="no">15</span>Claire Boudreaux<span class="rt">1552</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>1</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>25</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>6</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>24</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>9</span></td><td class="n pts">2½</td><td class="n">2-1-2</td><td class="n">7</td><td class="n">11½</td><td class="n">6½</td><td class="n">36</td><td></td></tr>
+          <tr class="grp"><td class="f1">16–20</td><td class="f2 nm"><span class="no">12</span>Olivia Landreneau<span class="rt">1588</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>26</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>5</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>4</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>23</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>19</span></td><td class="n pts">2</td><td class="n">2-0-3</td><td class="n">10</td><td class="n">13½</td><td class="n">7</td><td class="n">35½</td><td></td></tr>
+          <tr><td class="f1">16–20</td><td class="f2 nm"><span class="no">14</span>Malik Johnson<span class="rt">1566</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>28</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>10</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>2</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>6</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>7</span></td><td class="n pts">2</td><td class="n">1-2-2</td><td class="n">9½</td><td class="n">13½</td><td class="n">8½</td><td class="n">39</td><td></td></tr>
+          <tr><td class="f1">16–20</td><td class="f2 nm"><span class="no">16</span>Ethan Savoie<span class="rt">1540</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>2</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>18</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>24</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>22</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>10</span></td><td class="n pts">2</td><td class="n">1-2-2</td><td class="n">9</td><td class="n">13</td><td class="n">6</td><td class="n">38</td><td></td></tr>
+          <tr><td class="f1">16–20</td><td class="f2 nm"><span class="no">13</span>Nora Hebert<span class="rt">1577</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>27</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>11</span></td><td class="c"><span class="rc rc-n">H</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>19</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>4</span></td><td class="n pts">2</td><td class="n">1-1-2</td><td class="n">7</td><td class="n">10½</td><td class="n">7</td><td class="n">29</td><td></td></tr>
+          <tr><td class="f1">16–20</td><td class="f2 nm"><span class="no">23</span>Brandon Ledet<span class="rt">1447</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>9</span></td><td class="c"><span class="rc rc-n">U</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>27</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>12</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>25</span></td><td class="n pts">2</td><td class="n">2-0-2</td><td class="n">4</td><td class="n">6½</td><td class="n">4</td><td class="n">17½</td><td></td></tr>
+          <tr class="grp"><td class="f1">21–23</td><td class="f2 nm"><span class="no">24</span>Anh Pham<span class="rt">1433</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>10</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>2</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>16</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>15</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>28</span></td><td class="n pts">1½</td><td class="n">0-3-2</td><td class="n">8½</td><td class="n">12½</td><td class="n">4½</td><td class="n">34½</td><td></td></tr>
+          <tr><td class="f1">21–23</td><td class="f2 nm"><span class="no">27</span>Gabriel Ortiz<span class="rt">1408</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>13</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>19</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>23</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>25</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>26</span></td><td class="n pts">1½</td><td class="n">1-1-3</td><td class="n">6</td><td class="n">9½</td><td class="n">2</td><td class="n">23</td><td></td></tr>
+          <tr><td class="f1">21–23</td><td class="f2 nm"><span class="no">28</span>Henry Clement<span class="rt">1394</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>14</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>22</span></td><td class="c"><span class="rc rc-n">B</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>26</span></td><td class="c"><span class="rc rc-d">D<i class="db"></i>24</span></td><td class="n pts">1½</td><td class="n">0-1-3</td><td class="n">4</td><td class="n">6</td><td class="n">2½</td><td class="n">19</td><td></td></tr>
+          <tr class="grp"><td class="f1">24–27</td><td class="f2 nm"><span class="no">21</span>Simone Arcement<span class="rt">1472</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>7</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>4</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>26</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>9</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>18</span></td><td class="n pts">1</td><td class="n">1-0-4</td><td class="n">9</td><td class="n">12</td><td class="n">3</td><td class="n">34½</td><td></td></tr>
+          <tr><td class="f1">24–27</td><td class="f2 nm"><span class="no">22</span>Elise Fontenot<span class="rt">1460</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>8</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>28</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>10</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>16</span></td><td class="c"><span class="rc rc-n">U</span></td><td class="n pts">1</td><td class="n">1-0-3</td><td class="n">6</td><td class="n">9½</td><td class="n">4</td><td class="n">29</td><td></td></tr>
+          <tr><td class="f1">24–27</td><td class="f2 nm"><span class="no">26</span>Mia LeJeune<span class="rt">1415</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>12</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>17</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>21</span></td><td class="c"><span class="rc rc-w">W<i class="dw"></i>28</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>27</span></td><td class="n pts">1</td><td class="n">1-0-4</td><td class="n">5½</td><td class="n">9½</td><td class="n">2</td><td class="n">24½</td><td></td></tr>
+          <tr><td class="f1">24–27</td><td class="f2 nm"><span class="no">20</span>Tyler Daigle<span class="rt">1483</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>6</span></td><td class="c"><span class="rc rc-n">U</span></td><td class="c"><span class="rc rc-w">W<i class="db"></i>25</span></td><td class="c"><span class="rc rc-n">F7</span></td><td class="c"><span class="rc rc-n">U</span></td><td class="n pts">1</td><td class="n">1-0-1</td><td class="n">½</td><td class="n">3½</td><td class="n">3</td><td class="n">11</td><td></td></tr>
+          <tr class="grp"><td class="f1">28</td><td class="f2 nm"><span class="no">25</span>Reid Bergeron<span class="rt">1421</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>11</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>15</span></td><td class="c"><span class="rc rc-l">L<i class="dw"></i>20</span></td><td class="c"><span class="rc rc-d">D<i class="dw"></i>27</span></td><td class="c"><span class="rc rc-l">L<i class="db"></i>23</span></td><td class="n pts">½</td><td class="n">0-1-4</td><td class="n">9</td><td class="n">11½</td><td class="n">1</td><td class="n">25½</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="k-small k-muted" style="margin:10px 0 0">W-D-L counts games actually played. Tyler Daigle missed Round 2, forfeited Round 4 and withdrew; Elise Fontenot withdrew before Round 5. Forfeits are not sent to US Chess for rating.</p>
+  </section>
+</div>
+
+<div class="k-wrap" style="padding-bottom:40px">
+  <section class="k-card k-card-pad" aria-labelledby="td" style="background:#fbfaf6">
+    <div class="k-between" style="gap:12px">
+      <div class="k-row-sm"><span class="k-tag k-tag-closed">Tournament directors only</span><h2 class="k-h4" id="td" style="margin:0">Close out the event</h2></div>
+      <button class="k-btn k-btn-navy" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download US Chess report</button>
+    </div>
+    <div class="k-grid-4" style="margin-top:14px">
+      <div class="k-small" style="display:flex;gap:8px"><span style="color:#1d5a31;display:flex"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>All results entered in 4 sections; 1 forfeit marked</div>
+      <div class="k-small" style="display:flex;gap:8px"><span style="color:#1d5a31;display:flex"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>US Chess memberships current for all 96 players</div>
+      <div class="k-small" style="display:flex;gap:8px"><span style="color:#1d5a31;display:flex"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Bye limits respected; no unpaired players</div>
+      <div class="k-small" style="display:flex;gap:8px"><span style="color:#1d5a31;display:flex"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Prizes worked out with ties split; ready to pay</div>
+    </div>
+    <p class="k-small k-muted" style="margin:12px 0 0">Builds the rating-report files US Chess asks for from these results. Upload them to US Chess, then mark the event as submitted here. The <a class="k-link" href="Live-E.dc.html">one-page final report</a> goes to the LCA board.</p>
+  </section>
+</div>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2560}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
