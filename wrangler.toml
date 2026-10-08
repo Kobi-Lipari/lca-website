@@ -33,3 +33,47 @@ VITE_GOOGLE_MAPS_API_KEY = "AIzaSyA0sTvidf63X8gWIqYn-NVklp-phgceW1g"
 [[r2_buckets]]
 binding = "CLUB_LOGOS"
 bucket_name = "lca-club-logos"
+
+# ---------------------------------------------------------------------------
+# Preview deployments (every branch except main)
+#
+# Branch previews get their own database. K created lca-db-preview on
+# October 8, 2026 (region ENAM). Previews must never bind lca-db: a preview
+# bound to production writes real registrations, payments and accounts.
+# The binding name stays DB so the same code reads env.DB in both places.
+#
+# Pages does not carry vars, d1_databases or r2_buckets over from the top
+# level into an environment, so everything below repeats the production
+# values on purpose. Keep the two lists in step; test/unit/wrangler-config.test.ts
+# fails if a key is missing here. SITE_URL stays the production origin, so a
+# link in any mail sent from a preview points at the live site.
+#
+# Migrate it with `npm run db:migrate:preview`, which runs
+# scripts/db/preview-guard.ts first. Secrets for previews (Stripe test keys;
+# no Resend key until test mail is wanted) are set separately in the Pages
+# dashboard under the Preview environment.
+# ---------------------------------------------------------------------------
+[env.preview]
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "lca-db-preview"
+database_id = "28e13174-3a06-47a7-ab0f-b4ac7f24af6f"
+
+[env.preview.vars]
+SITE_URL = "https://www.louisianachess.org"
+SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
+FROM_EMAIL = "noreply@louisianachess.org"
+CONTACT_EMAIL = "louisianachess@gmail.com"
+SUPPORT_EMAIL = "louisianachess@gmail.com"
+REPLY_TO_EMAIL = "louisianachess@gmail.com"
+VITE_SITE_URL = "https://www.louisianachess.org"
+VITE_SUPABASE_URL = "https://pijwjyzlzaysjwvfpcqt.supabase.co"
+VITE_SUPABASE_ANON_KEY = "sb_publishable_f19vYEFtISf2_oBdOWSHLA_h3AY2sT3"
+VITE_GOOGLE_MAPS_API_KEY = "AIzaSyA0sTvidf63X8gWIqYn-NVklp-phgceW1g"
+
+# Still the production bucket: a logo uploaded on a preview shows on the
+# live site. A separate preview bucket is a follow-up.
+[[env.preview.r2_buckets]]
+binding = "CLUB_LOGOS"
+bucket_name = "lca-club-logos"
