@@ -1,6 +1,6 @@
 # Website redesign: status
 
-Last updated: 2026-10-08 (WS01, step 5: event-mode phases)
+Last updated: 2026-10-08 (WS01, step 6: Drizzle schema and migration generator)
 
 The brief is `docs/redesign/REDESIGN_SPEC.md`. This file records, for each workstream, where it stands, what was decided, where the work differs from the brief, what is left to do, and every `verify:` item that has been checked. It is updated in every redesign PR.
 
@@ -50,7 +50,7 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 | K3b | Client library grouped by area | 17 | Planned: area-specific client library code sits under `src/areas/<area>/`; renames and import-line edits only; the build has the same route chunks. |
 | K3c | API client split by area | 18 | Planned: client API calls live per area behind an unchanged `@/lib/api`; `api-exports.test.ts` matches the exported names from before the split, and route-audit finds the same fetch paths. |
 | K3d | Components grouped by area, with boundary rules | 19 | Planned: components sit in their area folders, and `area-boundaries.test.ts` shows lint reporting an area file that imports a page. |
-| K4 | Drizzle for schema and queries | 6 | Planned: the Drizzle schema matches the migrations (`schema-drift.test.ts`, both directions), `drizzle-kit generate` reports no changes right after the pull, and `split-sql.test.ts` splits all existing migrations exactly as before. |
+| K4 | Drizzle for schema and queries | 6 | `test/unit/schema-drift.test.ts` builds the database from `migrations/*.sql` on `node:sqlite` with foreign keys on and compares every table's columns (name, affinity, NOT NULL, default, primary key), indexes and foreign keys with `getTableConfig` in both directions; it fails when a migration adds a column, table, index or foreign key that `functions/db/schema.ts` lacks, and the reverse. `drizzle-kit generate` right after the pull reports "No schema changes, nothing to migrate" (output under step 6). `test/unit/split-sql.test.ts`: all 52 migrations split exactly as before (statement count and text per file), and a trigger with `CASE ... END;` in its body stays one statement. `test/unit/db-generate-guard.test.ts`: `npm run db:generate` numbers files into `migrations/` from `0052` and refuses `DROP TABLE`, `__new_`, `PRAGMA foreign_keys` and a foreign key that loses its `ON DELETE`. `test/unit/migration-safety.test.ts` reads real drizzle-kit output. `test/integration/drizzle-smoke.test.ts`: selects, inserts and relational queries through `getDb` on Miniflare D1. |
 | K5 | Browser tests | 20 | Planned: `npm run test:a11y` builds, serves seeded local data and passes the smoke spec; the family registration and round publishing end-to-end tests are written as pending specs, run only by hand against a preview. |
 | K6 | No member pricing; the LCA membership requirement | 15 | Planned: a member and a non-member pay the same in every tier; `requires_lca_membership` round-trips through create, edit and read; another club's rep and an assigned director get 403 when changing it; no page mentions a member price. |
 
@@ -107,6 +107,56 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 - Nothing reads the module yet, so nothing visible changes and no switch is needed. WS02's endpoint, WS03's hero and WS13's event-day view import it.
 - Checks: `npm run build`, `npm run typecheck:functions` and `npm run test:all` pass (unit 841 in 37 files, up from 662: 179 new, 104 in `test/unit/eventMode.test.ts`, 74 in `test/unit/eventMode-edges.test.ts` and 1 more in `domain-boundaries.test.ts` for the new file; integration 311, unchanged). Builder tests: `test/unit/eventMode.test.ts` covers every Phase 0 phase at its boundaries, midnight, both 2026 clock changes, multi-day events, days with no round, schedules with undated rounds or rounds dated outside the event, `final`, `after`, the host time zone, the key format, and that the key for the day before day 1 differs from the key for an off day before round 2 once the round is passed. Tester tests: `test/unit/eventMode-edges.test.ts` covers events that start on the clock-change Sundays, weeks that cross a clock change, the year end, the leap day, a three-day event, round times at 6:00 AM and midnight, empty and stale data, the key's three parts, and that the module imports only from `domain/format`. `npm run lint` is at 36 errors and 4 warnings, the same as before the change, none in the files this step touches.
 
+### Step 6: Drizzle schema and migration generator
+
+- Dependencies, pinned exactly: `drizzle-orm` 0.45.3 (runtime), `drizzle-kit` 0.31.11 and `@libsql/client` 0.17.4 (development only; drizzle-kit needs it to read a local SQLite file). `@libsql/client` installed through the proxy with its native Linux package, so the `better-sqlite3` fallback was not needed. The lockfile gained 79 packages and removed none; four existing entries (`@cloudflare/workers-types`, `@types/node`, `undici-types`, `ws`) lost their `dev` flag, and `@libsql/client`, `libsql` and their dependencies are marked `devOptional` rather than `dev`, because drizzle-orm lists them as optional peers. CI uses plain `npm ci`, so nothing installs differently.
+- `splitSql` moved from `test/integration/setup.ts` to `test/shared/splitSql.ts` (no `cloudflare:test`, no `import.meta.glob`); `setup.ts` imports it and still re-exports it for `members-rebuild.test.ts`. It now tracks depth: `CASE` opens a block anywhere, `BEGIN` opens one inside `CREATE TRIGGER`, `END` closes one, and a statement ends only at a `;` at depth 0. It also copies double-quoted and backtick identifiers whole, as it already did strings. All 52 migrations give the same statements as before.
+- `test/unit/helpers/sqlite.ts` opens `node:sqlite`, runs `PRAGMA foreign_keys = ON` before the first migration, and applies `migrations/*.sql` in filename order through `splitSql`. `scripts/db/build-local-sqlite.ts` (`npm run db:local-sqlite`) uses it to write `.drizzle/introspect.sqlite` (gitignored): 52 migrations, 29 tables.
+- `drizzle.config.ts`: dialect `sqlite`, schema `functions/db/schema.ts`, output in the staging folder `drizzle/` (never `migrations/`), and `tablesFilter` leaving out `d1_migrations`, `_cf_*` and `sqlite_*`. `drizzle-kit pull` read the local file; its schema and relations became `functions/db/schema.ts` and `functions/db/relations.ts`, reviewed by hand (see Deviations, "Drizzle baseline"). `drizzle/meta` (the journal and the baseline snapshot) is kept; the pulled baseline SQL was deleted and nothing was copied into `migrations/`.
+- `functions/db/client.ts` exports `getDb(d1)`, which is `drizzle(d1, { schema })` with the tables and relations together. No runtime file imports `functions/db` yet (`test/unit/schema-drift.test.ts` checks `functions`, `src`, `domain` and `workers`).
+- `drizzle-kit generate` right after the pull, with the reviewed schema:
+
+  ```
+  No config path provided, using default 'drizzle.config.ts'
+  Reading config file '/home/user/lca-website/drizzle.config.ts'
+  29 tables
+  admin_audit_log 8 columns 3 indexes 2 fks
+  board_members 11 columns 1 indexes 0 fks
+  board_seat_assignments 7 columns 2 indexes 3 fks
+  clearinghouse 14 columns 2 indexes 0 fks
+  club_news 6 columns 1 indexes 1 fks
+  club_officers 5 columns 1 indexes 2 fks
+  clubs 13 columns 0 indexes 0 fks
+  contact_messages 7 columns 0 indexes 0 fks
+  email_campaign_recipients 9 columns 2 indexes 2 fks
+  email_campaigns 11 columns 1 indexes 1 fks
+  facebook_feed_cache 3 columns 0 indexes 0 fks
+  governance_documents 9 columns 0 indexes 0 fks
+  lca_posts 15 columns 1 indexes 2 fks
+  members 15 columns 4 indexes 2 fks
+  payments 9 columns 1 indexes 1 fks
+  registrations 12 columns 2 indexes 2 fks
+  scan_usage 3 columns 0 indexes 1 fks
+  seat_regions 2 columns 1 indexes 1 fks
+  site_announcement 7 columns 0 indexes 0 fks
+  site_announcements 12 columns 1 indexes 0 fks
+  state_champions 7 columns 1 indexes 1 fks
+  support_messages 9 columns 2 indexes 2 fks
+  support_tickets 10 columns 4 indexes 2 fks
+  tournament_attendee_reminders 5 columns 1 indexes 2 fks
+  tournament_directors 3 columns 1 indexes 2 fks
+  tournament_games 9 columns 1 indexes 3 fks
+  tournament_reminders 8 columns 2 indexes 2 fks
+  tournaments 41 columns 2 indexes 2 fks
+  uscf_rating_history 9 columns 2 indexes 1 fks
+  No schema changes, nothing to migrate 😴
+  ```
+- `scripts/db/generate.ts` (`npm run db:generate -- <name>`, with `--custom` for hand-written migrations) runs drizzle-kit, numbers its file after the highest prefix in `migrations/` (`0052` next), adds a header comment and writes it to `migrations/`, keeping the new snapshot in `drizzle/meta`. It refuses a file containing `DROP TABLE`, `__new_` or `PRAGMA foreign_keys`, and a column added with `REFERENCES` whose `ON DELETE` or `ON UPDATE` action drizzle-kit left out; it then writes nothing, restores `drizzle/` and points at `migrations/README.md`. Tried by hand on real schema changes (a new table, a rebuild of `tournaments`, a column with a cascading foreign key, a custom data migration) and every file and snapshot removed afterwards.
+- `test/unit/migration-safety.test.ts` reads drizzle-kit's style: names bare, in backticks or double quotes everywhere (`CREATE TABLE`, `REFERENCES`, `INSERT INTO`, `UPDATE`, `DROP TABLE`), `ON UPDATE` before `ON DELETE`, and `ALTER TABLE ... ADD` with or without `COLUMN`. It reports exactly what it reported before (0019, 0033 and 0040 on `members`, 14 delete actions). Fixtures from drizzle-kit 0.31.11 are in `test/unit/fixtures/drizzle-sql/`: a new table with a cascading foreign key, a column added with `REFERENCES ... ON DELETE cascade`, and the rebuild of `tournaments` (``DROP TABLE `tournaments` ``).
+- `migrations/README.md` documents the generate flow and says triggers, CHECK constraints and refused changes stay hand-written.
+- Nothing visible changes and no runtime query changes, so no switch is needed.
+- Checks (after review and fixes): `npm run build`, `npm run typecheck:functions` and `npm run test:all` pass (unit 1071 in 43 files, up from 841 in 37; integration 325 in 32 files, up from 311 in 30). Builder tests: `test/unit/split-sql.test.ts`, `schema-drift.test.ts`, `db-generate-guard.test.ts`, 9 more in `migration-safety.test.ts` and `test/integration/drizzle-smoke.test.ts`; `members-rebuild.test.ts` still passes with the moved splitter. Tester tests: `test/unit/db-generate-real-kit.test.ts` (runs the real drizzle-kit on throwaway copies), `drizzle-baseline.test.ts`, `split-sql-edges.test.ts`, more `migration-safety.test.ts` cases and `test/integration/drizzle-d1-schema.test.ts` (relations, foreign keys, defaults and the members role trigger through Drizzle on Miniflare D1). The tester found no defect. `npm run lint` is at 36 errors and 4 warnings, the same as before the change, none in the files this step touches. `scanner:check` was not run; nothing under `scanner/` or `functions/utils/scan/` changed.
+
 ### Decisions
 
 - The real preview id is in `wrangler.toml`, not a placeholder (K confirmed it on October 8). The guard still refuses a placeholder, production's id and production's name.
@@ -132,7 +182,7 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 
 Every deviation planned for WS01 is listed here now, so a checkpoint review sees them all in one place. A line for a step not yet built names that step; when the step lands it confirms or corrects its line.
 
-Recorded in steps 1 to 5:
+Recorded in steps 1 to 6:
 
 - **Remote migrations.** The brief (0.2) says K applies remote migrations. In fact `.github/workflows/migrate-db.yml` applies `migrations/**` to `lca-db --remote` on every push to `main` that touches migrations, so merging a checkpoint applies its migrations to production. The preview database is migrated only by K's `db:migrate:preview`, run from the branch before review.
 - **Preview id.** The plan was a placeholder for K to paste over; the real id went in directly on K's confirmation.
@@ -157,10 +207,23 @@ Recorded in steps 1 to 5:
 - **Minor display names (step 4)** follow `DESIGN_REPLAN_phase1`: a name is shortened when there is an active guardian link or the entry is marked under 18, not whenever the player is a household dependent.
 - **`format-edges.test.ts` lists the new format file (step 4).** Its check that `domain/format` holds exactly the step 3 files now includes `centralTime.ts`.
 
+- **Drizzle (step 6)** landed as planned: drizzle-kit writes into the staging folder `drizzle/` and `npm run db:generate` numbers each file into `migrations/`, so wrangler, `migrate-db.yml` and the test setup are unchanged. `migration-safety.test.ts` reads drizzle-kit's quoted names, `ON UPDATE` clauses and `ADD` without `COLUMN`, and the splitter tracks `BEGIN`, `CASE` and `END`.
+- **Drizzle version (step 6).** The plan named 0.45.x; 0.45.4 was published on October 8, under two weeks old, so `drizzle-orm` is pinned at 0.45.3 (September 21).
+- **Drizzle baseline (step 6).** `drizzle-kit pull` got several things wrong, so `functions/db/schema.ts` and the committed `drizzle/meta/0000_snapshot.json` were corrected by hand to match the database the migrations build (the drift test proves it):
+  - It attached all 16 CHECK constraints it found to every table, each missing its closing bracket. CHECK constraints are left out of the schema and the snapshot; they stay in the migrations.
+  - It wrote SQL defaults as quoted strings (``"sql`(datetime('now'))`"``), which would have made the text the default. They are ``sql`...` `` defaults again, `(lower(hex(randomblob(8))))` included, so expression defaults are modelled rather than left out as planned.
+  - It dropped `DEFAULT 0` on `entry_fee`, `early_discount`, `late_fee` and `member_discount`, the `DESC` on five index columns and the `WHERE ended_at IS NULL` of `idx_seat_member_current`. All are restored.
+  - Inline `UNIQUE` constraints (`lca_posts.slug` and three multi-column ones) are not modelled: SQLite backs them with unnamed indexes, and declaring them would make drizzle-kit believe in named indexes that do not exist.
+  - Its snapshot marked lone `TEXT PRIMARY KEY` columns as nullable (true in SQLite unless they say `NOT NULL`), which Drizzle cannot express, so the first `generate` wanted to rebuild every table. The snapshot now marks them `NOT NULL`, as the schema does.
+  - Relation names were made plain: `tournaments.creator`, `members.guardian` and `members.dependents`, `supportMessages.loggedByMember`, `emailCampaigns.creator`. 0/1 flags stay integers and dates stay text, as every query reads them.
+- **drizzle-kit drops foreign key actions on added columns (step 6).** For `ALTER TABLE ... ADD ... REFERENCES`, drizzle-kit 0.31.11 writes no `ON DELETE` or `ON UPDATE`, while its snapshot records them. `db:generate` refuses such a file, which the brief did not ask for. The `alter-add-fk.sql` fixture is drizzle-kit's text with ` ON DELETE cascade` written back by hand, since drizzle-kit never writes that form; its header says so.
+- **drizzle-kit exits 0 when it cannot ask about a rename (step 6).** When a column or table goes and another arrives, drizzle-kit 0.31.11 asks whether it was renamed. Without a terminal it prints "Error: Interactive prompts require a TTY terminal", writes nothing and still exits 0. `db:generate` treats any output line starting with `Error:` as a failure (it writes nothing, restores `drizzle/` and says to run it in a terminal), and from a terminal it hands drizzle-kit stdin and stdout so the question can be answered, capturing only stderr. Covered in `db-generate-guard.test.ts` (a stand-in that exits 0 with an `Error:` line) and `db-generate-real-kit.test.ts` (the real drizzle-kit on `clubs.longitude` renamed to `lng`); checked by hand under a pseudo-terminal, where the prompt appeared and the answered file was written.
+- **`--custom` keeps the new schema (step 6).** drizzle-kit's own `--custom` copies the previous snapshot, so after a hand-written schema change the next run would offer the same change again. When the schema changed, `db:generate --custom` keeps drizzle-kit's snapshot of the new schema and puts its proposed SQL in the file as comments; with no schema change it writes an empty file for a data migration.
+- **Wider checks than planned (step 6).** The drift test also compares indexes and foreign keys, and the splitter also skips over double-quoted and backtick identifiers. `BEGIN` opens a block only inside `CREATE TRIGGER`, so a stray `BEGIN TRANSACTION;` still ends at its `;`. `getDb` passes the relations with the tables so relational queries work. `npm run db:local-sqlite` is a new script.
+
 Planned for later steps:
 
 - **Member pricing ships without a switch (step 15).** This is an exception to brief 0.2's rule that every visible change ships behind a switch. The member-discount input on the tournament setup form and the "LCA members save" line are removed outright, because keeping them would advertise a price that is not charged. `tournaments.member_discount` stays in the database but is neither read nor written.
-- **Drizzle (step 6).** Drizzle writes into a staging folder, `drizzle/`, and a small script numbers each file into `migrations/`, so wrangler and the test runner are unchanged. `migration-safety.test.ts` learns drizzle-kit's quoted names, `ON UPDATE` clauses and `ADD` without `COLUMN`, and the SQL splitter tracks `BEGIN`, `CASE` and `END` so triggers with `CASE` split correctly.
 - **Old queries move to Drizzle only when changed (steps 6 to 19).** A query is converted when a step changes its SQL or the values it binds. A query whose rows are only handled differently afterwards stays as plain D1. When a converted statement shares a batch, the whole batch moves to Drizzle's `db.batch`.
 - **Sections and schedules tables (step 8).** `tournament_sections` (with `fee_regular`, optional `fee_early` and `fee_late`, and a cap), `tournament_schedules`, `tournament_schedule_rounds`, and `section_id` and `schedule_id` on registrations replace `DESIGN_REPLAN_phase1` 8.1's schedules JSON column, `tournaments.merge_round` and the cap inside the JSON. Early and late prices are worked out when read, from the tournament's own deadline and fee columns, unless a section sets its own. The `sections` and `schedules` JSON columns are kept, in today's exact shape, as copies of the tables, and nothing is dropped. `tournament_games` keeps section names in WS01; a `section_id` there is left for WS07.
 - **The sync trigger stays past checkpoint B (step 8).** Migration 0053 adds a trigger on `tournaments` that copies sections and rounds from the JSON columns into the tables. It stays after checkpoint B instead of being dropped there, because dropping it at a merge would reopen the window during a deploy when old code still writes only the JSON. It never touches caps or ids, agrees with the single writer (which writes the table first and the JSON last), and is removed together with the JSON columns.
@@ -199,6 +262,10 @@ Planned for later steps:
 - **Minor display-name trigger (step 4).** Confirmed in `DESIGN_REPLAN_phase1.md` lines 210, 256 and 352: an active guardian link or the entry's `eligibility_json`, and full names in pairings, standings, results and winners. Neither input exists in the code yet: there is no `eligibility_json`, no under-18 mark and no `member_guardians` table (only `members.guardian_id`, from `migrations/0036_family_accounts.sql`), so `publicName` takes the two facts as plain true or false values for WS06 to supply.
 - **Worker deploy paths (step 4).** Confirmed: `deploy-worker.yml` ran only on `workers/**` and `functions/utils/**`; `domain/**` is added. `workers/daily-emails/tsconfig.json` already included `../../domain` from step 3.
 - **jsdom and Node (step 2).** This container runs Node 22.22.0 and CI asks for Node `'22'`. jsdom 30.0.0 to 30.1.2 require Node 22.22.2 or later; jsdom 29.1.1 accepts 22.13 and later, so 29.1.1 is the pin. Installing the three packages added no new `npm audit` findings.
+- **Migration file set and runner (step 6).** Confirmed: 52 `.sql` files, `0001` to `0051` with two `0022` files (`0022_site_announcement.sql`, `0022_tournament_reminders_registration_notified.sql`), plus `README.md`; the next number is `0052`. `test/integration/setup.ts` globs `../../migrations/*.sql` without recursion and the splitter strips `--` comments, so drizzle-kit's `--> statement-breakpoint` lines are harmless (a test feeds it one). 0003, 0019, 0033, 0040 and 0046 rebuild tables; 0032 and 0038 also contain `DROP TABLE`. `wrangler.toml` has no `migrations_dir`, so wrangler and `migrate-db.yml` read `migrations/`.
+- **Splitter trigger handling (step 6).** Confirmed: the old splitter kept a `CREATE TRIGGER` open until the text so far ended in `END`, so `CASE ... END;` inside a trigger body ended the trigger early (`split-sql.test.ts` keeps the old splitter as a reference and shows it). No existing migration hit it: the only `CASE` is in 0003, inside an `INSERT ... SELECT`, and the two triggers (0046, redefined in 0050) have none.
+- **Introspection source (step 6).** Confirmed: no d1-http credentials here, so the schema was introspected from a local file built from the migrations, never from a remote database. Node is 22.22.0 with SQLite 3.50.4 (an ExperimentalWarning prints); Vitest loads `node:sqlite` in the unit suite, so the Miniflare fallback was not needed. Correction: in Node 22.22 `node:sqlite` turns foreign keys on by default (its `enableForeignKeyConstraints` option); SQLite itself does not, and the migrations' own `PRAGMA` lines are dropped by the splitter, so the helper switches them on itself. drizzle-kit read the file through `@libsql/client` (SQLite 3.45.1).
+- **Safety test patterns (step 6).** Confirmed: the old patterns matched only bare names, `REFERENCES x(...)` directly followed by `ON DELETE`, and `ADD COLUMN`, so all three drizzle-kit fixtures went unseen. They now match.
 
 ### Follow-ups
 
@@ -219,6 +286,12 @@ Planned for later steps:
 - **Dynamic imports (step 3).** ESLint's `no-restricted-imports` does not see `import()` or `require()` inside `domain/`; `test/unit/domain-boundaries.test.ts` scans for both.
 - **Event-mode phases in WS02 (step 5).** The endpoint computes `lastRoundResultsComplete` (a non-null result in every section's last scheduled round) and passes it with `firstRoundTimesFromSchedule(round_schedule, date, end_date)`. It builds the hide key with `phaseKey(id, phase, round)`, passing the first round of the next playing day for `week` and `dayBefore` and the first round of that day for `checkin` and `eventDay`, so a strip hidden before day 1 comes back before round 2. Its `pollSeconds` rule (20 in `checkin`, `eventDay` and the round phases, 300 otherwise), the sooner-first sort and their tests are WS02's. When WS02 or WS07 changes the inputs, only `domain/events/eventMode.ts` and its test change. `eventPhase` can join the one-definition list in `test/unit/domain-shims.test.ts` once WS02 calls it, so a second copy fails the suite.
 - **jsdom 30.** Moving to jsdom 30 needs Node 22.22.2 or later in development and in CI (`.github/workflows/ci.yml` asks for `'22'`). Not needed for WS01.
+- **drizzle-kit and added foreign keys (step 6).** Until drizzle-kit writes `ON DELETE` for a column added with `ALTER TABLE`, add such columns with `npm run db:generate -- <name> --custom` and write the clause by hand. When drizzle-kit is upgraded, run `npx drizzle-kit generate` with no schema change first; it must still report no changes.
+- **Development audit findings (step 6).** drizzle-kit brings older esbuild copies (0.18.20 through `@esbuild-kit`, and 0.25.12), which `npm audit` reports as moderate (the esbuild development server advisory). They run only on a developer's machine and are not in the built site or the functions.
+- **`db:generate` arguments (step 6, from review).** Every argument except `--custom` is taken as the migration name, so `--name add_notes` gives `0052_name_add_notes.sql` and `--help` is read as a name. Reject other `--` arguments and print the usage line.
+- **Bracketed identifiers (step 6, from testing).** `splitSql` does not treat `[name]` as quoted, so a `;` inside one would split. No migration uses them and drizzle-kit never writes them; the old splitter had the same gap.
+- **The import check (step 6).** `test/unit/schema-drift.test.ts` fails if runtime code imports `functions/db`. The first step that moves a query to Drizzle removes that check.
+- **Production and the migrations (step 6).** The schema was introspected from the migrations, not from the production database. Anything ever changed in production by hand, outside `migrations/`, is not in it.
 
 ## WS02: Information architecture and navigation
 
