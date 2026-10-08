@@ -889,3 +889,49 @@ Combined screens that do not exist on the canvas and would help K sign off. One 
 14. **Heritage accent on home:** the identity band with the thick–thin rule and official logo, and the Champions band with the seal, both in Geist, to show what Heritage looks like at zero font cost.
 15. **The Tournaments nav item with the "Live" tag** at every width, and the pairings page's "Playing today, or is your child? Find your name in the pairings below, or log in to see the board." line above the Find-your-name field for signed-out visitors.
 16. **Footer F1 with F3's trust line** and the Appearance control at 1280px, and folded into tap-to-open groups at 390px (Contact open, the rest collapsed), since the fold is described but never drawn.
+
+---
+
+## 8. Second-round decisions (October 8)
+
+K reviewed the decided boards on canvas pages 1 to 3 and approved them with the notes below: "We are good to get rocking and rolling on those first three." The brief is now `REDESIGN_SPEC.md` version 1.2: section 5 of this document is applied, with the readings below on top of it. Where this section and sections 1 to 7 disagree, this section wins.
+
+### Header (page 2)
+
+> "We are fine to put the smaller rook logo on the top right of the navbar. On the D visual of the navbar, you show when signed in that the login button is replaced with the My LCA one; we can also not show the Renew button if they have a valid LCA membership, but I like showing it if it is expired. Also, when things get tight, the Donate button should be the first thing to get squeezed out, maybe into the About section, then the title like you did, etc. I love everything else you did for this. Looks good to go."
+
+**How it was read**
+- **The rook mark is the header's brand mark** at every desktop width, on tablets and on phones, beside the two-line name "Louisiana Chess / Association". The official full-colour logo keeps the footer brand block, the homepage identity band, the About and history pages, emails, the print kit, certificates and the membership card. D1 is amended to say so. There is no cream plate in the header, which settles Q9 against its default.
+- **One header height.** With the rook mark at rest there is nothing left for the condensed-on-scroll swap to do, so the header is one 64px row and does not condense. Condensing does not earn its place for WCAG 2.4.11 either: the `--header-h` variable already feeds `scroll-padding-top`, so a focused control never sits under the header at any height. Board 3 in section 7 is no longer needed.
+- **Renew only when expired.** An active membership shows neither Join LCA nor Renew in the bar. Once a membership has expired, Renew (gold fill, navy text) takes the Join slot. The "Renew membership" to-do inside My LCA may still appear within 30 days of expiry, so the reminder is not lost. This replaces "within 30 days of expiry or once lapsed" for the bar in section 5.5.
+- **Squeeze order.** When the row is tight (in practice 1024 to 1279px, or wherever Renew and the Live tag both show), first Donate leaves the bar and becomes the About menu's last item, directly above "LCA on Facebook ↗"; then the two-line name hides, leaving the rook mark. Section padding stays 12px, and the six sections, Search, Log in or My LCA ▾, and Join LCA or Renew never leave the bar. The steps are measured by a `ResizeObserver` on the row, not set by breakpoint. "The title like you did" was read as the brand name, which the earlier board already hid at 1024 to 1279px.
+- **Acceptance criteria.** WS02 AC1 now names the rook mark, the three utility sets (signed out, active member, expired member) and the squeeze, and tests Renew plus the Live tag at 1024px. WS02 AC6 and WS12 AC6 now read: Donate is one click on tablet, and on desktop wherever the row has room for it; when the desktop row is tight it is the About menu's last item, one click after opening About; on phones it stays the first of the three buttons in the Menu sheet (two taps). WS02 AC15 names the brand link at every width, including when the name is hidden.
+- Everything else on the header board stands as drawn ("I love everything else you did for this").
+
+### Home (page 3)
+
+> "I really like that clubs section for when we have more info on the clubs, be sure to save that for later. Also, I think we should reorder the things you have: tournament spotlight is good to stay at the top, then it should be the News section, then the Where do you want to start section, then Upcoming tournaments, then Results and champions, then Membership last. I like the options you have for what is shown at the top in the tournament highlight section and for when there isn't one. Also, on your mode 9, when absolutely nothing is happening, maybe we throw the Where do you want to start section up there with our nice usual background that is at the top section (use your best judgement). Same kind of notes for the mobile."
+
+**How it was read**
+- **The clubs section is kept for later.** Home-C's this-week strip and the Week rung stay planned in WS09 behind `homeWeek`. When the strip ships it sits directly under the identity and search band.
+- **New block order, desktop and phones:** hero (the ladder) → identity and search band (stays directly under the hero) → News (three dated items plus the compact Facebook rail) → doors band ("Where do you want to start?") → upcoming six → results and champions → membership band. This replaces "Page order below the hero (the brief's order, kept)" in Q4, and WS03 AC5's phone order changes to match.
+- **The ladder stands.** K likes the hero modes and the fallbacks as drawn, so the ten rungs, their windows and their content stay as in section 4, apart from rungs 9 and 10 below.
+- **Quiet (rung 9) carries the doors.** The hero band itself carries the three doors on the usual navy hero ground with the a–h / 8–1 grid motif, headed "Find your next game in Louisiana", with the Next LCA event line beneath and the region select. The primary stays Find a club near you; the doors' links are plain links. The three soonest Louisiana events leave the quiet hero, since the upcoming six further down already lists them, and `QuietHero` now carries the regions instead of events. The doors band lower on the page is omitted in this mode, so the doors never appear twice.
+- **Clubs (rung 10) does the same,** with the seven region chips in place of the select and Find a club as the primary, including when `/api/home` fails. Every other rung keeps the doors band in its lower position. WS03 gains AC15: the doors render exactly once in every rung.
+- **Phones** follow the same order and the same quiet and clubs heroes ("same kind of notes for the mobile").
+
+### Section 6, settled
+
+Every question in section 6 is settled on its default in bold, including the two optional ones (Q4 and Q12), with two exceptions:
+- **Q9:** no cream plate; the rook mark is the header's brand mark at every width, and D1 is amended.
+- **The Renew rule:** Renew shows in the bar only once a membership has expired, not within 30 days of expiry.
+
+Q10's default (two taps on phones) stands, extended by the squeeze order above.
+
+### Where it landed in the brief (version 1.2)
+
+- Sections 1.1, 1.2 and 2.2 take the rows in sections 5.1 to 5.3, with the Header and Home rows carrying the readings above.
+- WS01, WS02 and WS03 take sections 5.4 to 5.6, with the header, Renew, squeeze, block order and doors changes above.
+- The flag table (5.7) and the deviations (5.8) sit at the end of the brief's section 0.2; `newHome` and `homeWeek` note the doors and the strip position.
+- WS12 AC6 takes section 5.9 as reworded above.
+- D1 is amended in the brief's section 5 and in the logo row of section 1.1.

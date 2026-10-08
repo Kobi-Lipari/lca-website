@@ -2,8 +2,8 @@
 
 **For:** Claude Code working in `github.com/Kobi-Lipari/lca-website`
 **Owner and reviewer:** K
-**Version:** 1.1, October 8, 2026. K's decisions on D1–D10 are folded in (section 5).
-**Design source:** the canvas "LCA Look & Feel Options" (85 artboards). Board names in this brief, such as `Event-A` or `Clubs-B`, refer to artboards on that canvas. Open the named board before building a screen.
+**Version:** 1.2, October 8, 2026. Adds K's Phase 0 design decisions (sections 1.1, 1.2, 2.2, WS01–WS03) from DESIGN_REPLAN_phase0.md and K's second-round notes; D1 amended.
+**Design source:** the canvas "LCA Look & Feel Options". Pages 1 to 3 carry the decided boards (copies in `docs/redesign/decided-boards`); the later pages still hold option boards until K picks. Board names in this brief, such as `Event-A` or `Clubs-B`, refer to artboards on that canvas. Open the named board before building a screen.
 
 This brief turns the redesign options K picked from into buildable work. It sets out:
 - the look,
@@ -11,6 +11,17 @@ This brief turns the redesign options K picked from into buildable work. It sets
 - 15 workstreams, each with data, API, frontend and acceptance criteria,
 - six phases,
 - the decisions still open, with a recommendation for each.
+
+**Changes in 1.2** (the reasoning for each is in `docs/redesign/DESIGN_REPLAN_phase0.md`, sections 1–5 and 8):
+- **Looks (1.1, WS01):** Heritage Club becomes a full scope for LCA's lasting record (About, governance, Champions) with its own fonts; Bright Scholastic's fonts and rollout move to WS11; the live tag's dot is static.
+- **Logo (D1 amended):** the rook mark is the header's brand mark at every width; the official logo keeps the footer, the homepage identity band and the other roomy placements.
+- **Header (1.2, WS02):** H1 as one 64px row with no condensing, H4's search as a Search button and panel, H5's event strip for involved people only. Renew shows only once a membership has expired. When the row is tight, Donate moves into the About menu first, then the brand name hides.
+- **Phones (1.2, WS02):** M2's bottom tab bar with M1's sheet behind Menu, and M4's banner and a docked event bar; Donate is two taps on phones.
+- **Footer (1.2, WS02):** F1's four columns, rebuilt from `nav.ts`, with the Appearance control in the base line.
+- **Search (WS02, WS03):** one combobox in the header panel, on the homepage and at `/search`; no Players group, no person names.
+- **Home (1.2, WS03):** a ten-rung hero ladder with a 30-day window; new block order (hero, identity and search band, News, doors, upcoming, results and champions, membership); in the quiet and clubs rungs the hero carries the doors.
+- **Platform (2.2, 0.2):** a per-user event-mode endpoint, `functions/utils/events.ts` moved to WS03, the Phase 0 flag list and the deviations to record.
+- **WS12 AC6** follows the new Donate placement.
 
 It is deliberately ambitious. Every workstream is meant to be built, phase by phase.
 
@@ -46,7 +57,7 @@ It is deliberately ambitious. Every workstream is meant to be built, phase by ph
 
 ### 0.2 How to work
 - **One workstream per branch.** Name branches like `redesign/ws01-design-system` and open one PR per workstream; split large ones into numbered sub-PRs. Don't start a workstream until everything in its "Depends on" line is merged.
-- **Ship behind flags.** Every user-visible change goes behind a flag in `src/lib/features.ts` (the `FEATURES` object, defaulting to `false`). K flips flags after checking the preview. Each flag gets the existing style: a short plain-English comment saying what it turns on.
+- **Ship behind flags.** Every user-visible change goes behind a flag in `src/lib/features.ts` (the `FEATURES` object, defaulting to `false`). K flips flags after checking the preview. Each flag gets the existing style: a short plain-English comment saying what it turns on. The Phase 0 flags are listed at the end of this section.
 - **Keep `REDESIGN_STATUS.md` at the repo root (new),** in the same spirit as the scanner's STATUS.md protocol. For each workstream record:
   - status, branch and PR
   - decisions taken, deviations from this brief and follow-ups
@@ -60,6 +71,32 @@ It is deliberately ambitious. Every workstream is meant to be built, phase by ph
 - **Tests.** Unit tests go in `test/unit`. Integration tests go in `test/integration` and use the `invoke()` harness in `harness.ts` and the seed factories in `factories.ts`. Every new endpoint gets an integration test, including a role-safety case. `role-safety.test.ts` and `club-permissions.test.ts` are the models to follow.
 - **Write files directly.** TSX with special characters should be written with the editor or file-write tool, not shell heredocs.
 
+**Phase 0 flags** (added in 1.2). Add these to `src/lib/features.ts`, all default `false`, each with a plain comment:
+
+| Flag | Turns on | Can go on in |
+|---|---|---|
+| `newLook` | WS01 base tokens, dark mode, focus ring, formats | Phase 0 |
+| `themeHeritage` | About, Board, Bylaws, Minutes, Annual meeting and Champions in the Heritage Club look | Phase 0 |
+| `themeScholastic` | Scholastic pages in the Bright Scholastic look | WS11 |
+| `newNav` | the six-section header, My LCA menu, footer, tablet hybrid, and on phones the app bar, tab bar and sheet (one flag, so no combination leaves a phone without navigation) | Phase 0 |
+| `siteSearch` | the header Search button, ⌘K panel and `/search` | Phase 0 |
+| `homeSearch` | the search box in the homepage band | Phase 0 |
+| `eventStrip` | the personal event strip on desktop and tablet in the week, day before, check-in, event day, final and after states (`final` = `status = 'completed'` or a non-null result in every section's last scheduled round) and, from check-in on day 1, the phone event bar and banner | Phase 0, after a preview check with a real registration |
+| `eventStripLive` | the round posted, in progress and between states (board, colour, opponent), the public "Playing today" line on pairings and standings pages, and the admin "not marked completed" nudge | WS07 |
+| `liveMarker` | the public "Live" tag on Tournaments | WS07 |
+| `newHome` | the hero ladder (event day, last call, register, announced, this week in Louisiana, quiet, clubs), the doors in the quiet and clubs heroes, and the lower blocks in the 1.2 order | Phase 0 |
+| `homeResults` | the final-standings hero for 7 days after an LCA event | Phase 0 |
+| `homeChampions` | the current champions band | Phase 0 |
+| `homeLive` | the live round hero | WS07 |
+| `homeWeek` | the week view hero and the this-week strip, which sits directly under the identity and search band | WS09 |
+| `homeRecap` | the recap card | WS10 |
+
+**Deviations from v1.1 to record in `REDESIGN_STATUS.md`** when the matching PR lands:
+- WS01: Heritage loads Libre Caslon Display and Source Serif 4 instead of reusing Instrument Serif. Baloo 2 and Nunito move to WS11.
+- WS02: the public event bar becomes a personal strip; `EventBar.tsx` becomes `EventStrip.tsx`; the "/" shortcut is dropped; the mobile layout is M2 under 768px; the header uses the rook mark at every width and no longer condenses (D1 amended); Renew shows only once a membership has expired; when the row is tight, Donate moves into the About menu, then the brand name hides; WS02 AC6 and WS12 AC6 follow that and the phone exception (Donate is two taps on phones); the footer column list changes.
+- WS03: three hero modes become ten; the window moves from 21 to 30 days with a 14-day last-call tier; results and champions ship before WS10; `functions/utils/events.ts` moves from WS04 to WS03; the blocks below the hero follow K's October 8 order; the quiet and clubs rungs carry the doors in the hero and omit the doors band.
+- WS12: AC6 reworded.
+
 ---
 
 ## 1. The picture
@@ -70,10 +107,10 @@ louisianachess.org becomes the place Louisiana chess runs on. A visitor finds a 
 | Scope | Look | How it's applied |
 |---|---|---|
 | Site-wide base | **Modern Tech-Minimal** (`Looks-3-Minimal-Tile`, `Looks-3-Minimal-Page`) | Geist and Geist Mono, with one Instrument Serif accent. Navy ink and white/near-white grounds. Gold is a fill or accent only, plus `#866a1e` for gold-toned text on light grounds. Chess character comes from coordinates (the a–h / 8–1 grid motif), notation and real data. It's the closest to today's site, since Geist is already loaded, and the most data-friendly. |
-| Event-day surfaces | **Broadcast Night** (`Looks-7-*`) | Scoped dark theme via `data-theme="live"` on pairings, standings, My board, hall TV and the event page while a round is live, plus a "Night" toggle. Never the site default. |
-| Scholastic pages | **Bright Scholastic** (`Looks-6-*`) | Scoped via `data-theme="scholastic"` on `/scholastic/*`. Navy carries all text and buttons. Colour only ever means a grade-band section: K–3, K–5, K–8 and K–12 each get one hue. |
-| Heritage pages | Accent borrowed from **Heritage Club** (`Looks-1-*`) | Serif display, thick–thin rules and small caps on About, Champions and the history timeline only. |
-| Logo and mark | The board-voted full-colour LCA logo, plus the one-colour rook-shaped Louisiana mark (today's favicon) | **Decided (D1), by space.** The official logo goes wherever there's room: desktop header, footer brand block, homepage identity band, About and history pages, emails, print kit, certificates and the membership card. The rook mark goes where space is tight: favicon, mobile and condensed headers, small badges, QR centres and social avatars. Never recolour the logo; set it on white or cream. |
+| Event-day surfaces | **Broadcast Night** (`Looks-7-*`) | Scoped dark theme via `data-theme="live"` on pairings, standings, My board, hall TV and the event page while a round is live, plus a "Night" toggle, the homepage hero's live mode (colour tokens only, no live fonts on `/`), and the header event strip's colour tokens while a round is live (Geist stays; Barlow loads only on the live routes). Never the site default. The live tag's dot is static; the word "Live" carries the meaning. |
+| Scholastic pages | **Bright Scholastic** (`Looks-6-*`) | Scoped via `data-theme="scholastic"` on `/scholastic/*` only, never on registration, checkout, shared event pages, pairings or standings (those show a grade-band chip with its words, "K–5"). Navy carries all text and buttons. Colour only ever means a grade-band section, always beside the band's words; status tags use the base status tokens. WS01 ships the token block and an axe fixture; the Baloo 2 and Nunito chunk and the rollout ship in WS11 behind `themeScholastic`, after K previews it. |
+| Heritage pages | **Heritage Club** (`Looks-1-*`) as a scope | **Rule: Minimal is for doing, Heritage is for the lasting record, Broadcast is for what is live now.** Full scope (`data-theme="heritage"` on `<main>`, heritage fonts load) on `/about` (with the history timeline), `/governance/board`, `/governance/bylaws` and `/governance/minutes` (the editors and forms inside them reset to base through `ThemeScope scope="base"`, the one permitted nesting), `/meeting` and `/champions`; later on the membership card, certificates and the final-report cover; and as a component scope for the `HonorBoard` above final standings of events with `is_state_championship = 1` and status completed. Accent only (base scope, Geist, no heritage fonts) on the homepage identity band, Champions band and Results-mode winners block, using `ThickThinRule` and `Seal`. Heritage changes headings, body type, rules, seal, grounds and gold-ink only; it never restyles `Button`, `Input`, chips, nav, `StatusBadge`, the focus ring, control radius, or date and score formats. The header and footer are always base. Everything else, including `/membership`, `/donate`, every form, the print kit and all email, stays Minimal. |
+| Logo and mark | The board-voted full-colour LCA logo, plus the one-colour rook-shaped Louisiana mark (today's favicon) | **Decided (D1, amended in 1.2).** The rook mark is the header's brand mark at every width, desktop, tablet and phone, and also goes on the favicon, small badges, QR centres and social avatars. The official logo keeps the footer brand block, homepage identity band, About and history pages, emails, print kit, certificates and the membership card. Never recolour the logo; set it on white or cream. |
 
 `Looks-Compare` shows all seven looks side by side. Editorial Sports, Swiss Grid and Louisiana Rooted are not recommended as the base:
 - **Editorial Sports** needs a writer after every event.
@@ -86,10 +123,10 @@ Louisiana Rooted's region and parish chips are worth revisiting once region data
 | Section | Build from | Borrow |
 |---|---|---|
 | Site structure | `Nav-IA` structure 1, task and topic: Tournaments · Clubs · Scholastic · News · Membership · About | Scanner moves under Tournaments ("Scoresheet scanner") and into the footer |
-| Header | `Nav-Header` H1 Refined | H2/H5 event-mode bar while an LCA round is live. H4's search becomes ⌘K (WS02). |
-| Mobile nav | `Nav-Mobile` M1 Combo | M4's "Pairings · Round N" pill on event days |
-| Footer | `Nav-Footer` F1 | F3's trust line |
-| Home | `Home-A` next-event hero (three modes) | `Home-C` this-week strip, `Home-E` doors band, `Home-D` champions band and recap card, `Home-B` search via ⌘K |
+| Header | `Nav-Header` H1 Refined, one 64px navy row led by the rook mark and the two-line name (D1), with no condensing on scroll. When the row is tight, Donate moves into the About menu first, then the name hides | H4's search as a field-shaped "Search" button (the word visible at every desktop width, ⌘K / Ctrl K from 1280px) opening the search panel; the full box lives on the homepage. H5's event strip, personalised to involved people (registered players, guardians, the event's TDs, LCA admins) with H2's "same line, other moments" lifecycle; light gold tint before and after the event, the live tokens while a round is live. No public bar; the public gets a worded "Live" tag on Tournaments. "LCA on Facebook ↗" in the About menu's footer row. |
+| Mobile nav | `Nav-Mobile` M2 bottom tab bar under 768px: Tournaments · Clubs · Log in / My LCA (to-do count) · Menu | M1's sheet behind the Menu tab, ending with Donate · Log in · Join LCA in the desktop order. M4's pill as a 56px event bar docked above the tab bar inside one `BottomDock`, and M4's banner as an in-flow `role="status"` card. 768–1023px keeps the hybrid header (with a Donate text link) and no tab bar. |
+| Footer | `Nav-Footer` F1, the board's four columns minus links to pages that do not exist (WS02, Footer) | F3's trust line and the Appearance control in the base line; columns fold to tap-to-open groups under 768px |
+| Home | `Home-A` next-event hero with a ten-rung ladder (live, event day, last call, results, register, announced, week, this week in Louisiana, quiet, clubs), personalised on the client for involved people; the quiet and clubs rungs carry the three doors in the hero | `Home-C` this-week strip (kept for WS09, when club schedules exist), `Home-E` doors band, `Home-D` champions band and recap card, `Home-B` search box in the identity and search band directly under the hero in every mode (and the header trigger everywhere else). Below the band: News, doors, upcoming six, results and champions, membership |
 | Tournaments list | `Tourn-A` agenda + chips (default) | `Tourn-C` calendar navigator, `Tourn-D` map, `Tourn-E` table behind a toggle, `Tourn-B` preview pane on wide screens |
 | Tournament page | `Event-A` sticky registration card | `Event-C` lifecycle states, `Event-B` championship layout, `Event-D` festival layout, `Event-E` partner pages |
 | Registration | `Reg-C` household checkout (core model) | `Reg-A` in-card flow on desktop, `Reg-B` one-question sheet on phones, `Reg-D` guest entry |
@@ -151,15 +188,17 @@ Louisiana Rooted's region and parish chips are worth revisiting once region data
 ### 2.2 Shared platform pieces (built once, used by several workstreams)
 | Piece | Built in | Used by |
 |---|---|---|
-| Theme scopes (`data-theme` = base / `live` / `scholastic`, plus `.dark`) and token layer | WS01 | All |
+| Theme scopes (`data-theme` = base / `heritage` / `live` / `scholastic`, plus `.dark`) and token layer; scope token blocks in `index.css`, only `@font-face` chunks lazy | WS01 | All |
 | `src/lib/format.ts` (new): `formatScore` (½), `formatDate` (with weekday), `formatTime`, `formatTimeControl` (plain-language companion) | WS01 | WS04–WS15 |
 | Navigation config `src/lib/nav.ts` (new): single source for header, mobile menu and footer | WS02 | WS02, WS03 |
-| Unified event listing `GET /api/events` over `tournaments` + `clearinghouse` | WS04 | WS03, WS04, WS11, WS13 |
+| Per-user involvement endpoint `GET /api/me/event-mode` (private, no-store, ETag) with `functions/utils/eventMode.ts` (pure phase machine) and `src/lib/eventModeCopy.ts` (one copy builder) | WS02 | WS02 strip, dock and banner; WS03 hero personalisation; WS07 (round phases via `round_publications`); WS13 event-day view |
+| Unified event query `functions/utils/events.ts` over `tournaments` + `clearinghouse` (moved out of `functions/api/clearinghouse.ts`) | WS03 | WS03 `/api/home`, WS04 `/api/events`, WS11, WS13 |
+| Unified event listing `GET /api/events` over `tournaments` + `clearinghouse`, built on `functions/utils/events.ts` from WS03 | WS04 | WS04, WS11, WS13 |
 | Server-rendered share previews (OG/Twitter meta and image) | WS04 | WS05, WS09, WS10, WS15 |
 | Household model (guardian and dependents) on top of today's children | WS06 | WS06, WS11, WS12, WS13 |
 | Signed tokens: `functions/utils/tokens.ts` (new), an HMAC over JSON with expiry, secret `SIGNING_SECRET` | WS06 | Guest manage links, waitlist claims, club confirm links, digest unsubscribe, QR check-in |
 | Notifications outbox (`notifications` table + a sender with retries) | WS07 | WS07, WS09, WS10, WS12, WS13 |
-| Live state endpoint with `ETag` | WS07 | WS02 event bar, WS03 hero, WS05, WS13 |
+| Live state endpoint with `ETag` | WS07 | WS02 event strip, WS03 hero, WS05, WS13 |
 | `follows` table (player, club, event) | WS07 | WS07, WS09, WS13 |
 | Club schedule model and occurrence expansion | WS09 | WS03 strip, WS09, WS11, WS13 |
 | `event_results` (results archive; no player pages, D9) | WS10 | WS10, WS11 series, WS13, WS15 |
@@ -203,7 +242,7 @@ Every workstream uses the same order: Why · Canvas boards · User-facing scope 
 - Base: `Looks-3-Minimal-Tile`, `Looks-3-Minimal-Page`.
 - Live: `Looks-7-Broadcast-Tile`, `Looks-7-Broadcast-Page`.
 - Scholastic: `Looks-6-Scholastic-Tile`, `Looks-6-Scholastic-Page`.
-- Heritage accent: `Looks-1-Heritage-Tile`.
+- Heritage scope: `Looks-1-Heritage-Tile`.
 - `Looks-Compare`, `Start-Audit` (the full fix list) and `Start-Principles` (the review checklist).
 
 **User-facing scope**
@@ -216,15 +255,16 @@ Every workstream uses the same order: Why · Canvas boards · User-facing scope 
   - sky `#2f6fde` / `#e3eeff`
   - grape `#6a3fc1` / `#eee6ff`
   - gold tile `#fdf1cc`
+- **Heritage tokens** (`[data-theme="heritage"]`): paper `#f7f3e8`, card `#fffdf8`, inset `#ece4d0`, ink `#1a2744`, muted `#5e5a52`, hairline `#d8cdb4` (decorative only), field border `#857d6b`, gold-ink `#705718` (`--gold-ink` resolves to this inside the scope and to `#866a1e` in base), baize `#2d5a45`, claret `#8a2b38`. Brand gold is rules, seals and text on navy only (2.05:1 on paper). The 2px radius applies to cards, tables and hero mats; controls keep the base radius. Under `.dark`, heritage keeps type, rules and seal on the Minimal dark grounds. Scopes nest one level only, base-inside-heritage being the one permitted nesting (`ThemeScope scope="base"` around editors and forms); heritage never renders inside live.
 - Take the exact values, contrast pairs and component shapes from the tile boards. Where a tile and this list disagree, the tile wins.
 - **Typography**:
   - Geist for UI.
-  - Geist Mono for chess data, with tabular figures and ligatures off.
-  - Instrument Serif as a single display accent.
+  - Geist Mono for chess data in every scope, with tabular figures and ligatures off. It is the only mono face on the site.
+  - Instrument Serif as a single display accent in the base look. It never appears inside a heritage scope.
   - Live scope adds Barlow Condensed and Barlow; JetBrains Mono only if the Looks-7 tile requires it.
-  - Scholastic scope adds Baloo 2 and Nunito.
-  - Scope fonts load only inside their scope, through a lazily imported CSS module, so the base site doesn't ship every family.
-  - Heritage pages reuse Instrument Serif with thick–thin rules and `font-variant-caps: all-small-caps`.
+  - Heritage scope adds Libre Caslon Display 400 (h1 and h2 at 32px and up, and display numerals; never ratings, scores or tables) and Source Serif 4 variable (body at 18px / 1.6 in the readers with a 70ch measure, true small-caps labels with `font-variant-caps: all-small-caps` on labels of 15px or more, lining and tabular figures). The italic face is declared but fetched only when used. Budget ≤ 110 KB woff2, latin subset. A Georgia fallback with `size-adjust` and `ascent-override` keeps CLS under 0.1. If the Fontsource subset lacks `smcp` / `c2sc`, use uppercase at 0.85em with .06–.08em tracking, never synthesised small caps.
+  - Scholastic scope adds Baloo 2 and Nunito in WS11, not here.
+  - Scope fonts load only inside their scope, through a lazily imported CSS module. All scope token blocks live in `src/index.css`, so a scope switch never flashes base colours.
 - **Chess data**:
   - `formatScore` returns "3½".
   - Ratings and scores use tabular figures.
@@ -232,7 +272,7 @@ Every workstream uses the same order: Why · Canvas boards · User-facing scope 
 - **Components**:
   - `StatusBadge` always renders a text label. Its tones map to status tokens: open, soon, full/waitlist, closed, live, partner, LCA.
   - Buttons: gold fill with navy text; never white on gold.
-  - New `FilterChip` (removable, with count), `DateBlock` (weekday + date), `LcaMark` (one-colour rook-Louisiana SVG, for tight spaces) and `LcaLogo` (the board-voted full-colour logo, for roomy placements). Decision D1 lists where each one goes.
+  - New `FilterChip` (removable, with count), `DateBlock` (weekday + date), `LcaMark` (one-colour rook-Louisiana SVG, for the header at every width and other tight spaces) and `LcaLogo` (the board-voted full-colour logo, for roomy placements). Decision D1 lists where each one goes.
   - Table primitives with a sticky first column and real `<th scope>`.
   - `PageHero` without any slideshow.
 - **Focus ring:** 2 px navy plus a 2 px offset on light grounds and gold on dark or live grounds. It must reach ≥ 3:1 in every scope.
@@ -240,6 +280,7 @@ Every workstream uses the same order: Why · Canvas boards · User-facing scope 
   - Delete the auto-advance.
   - Add a global `prefers-reduced-motion` rule that zeroes transitions and animations.
   - Any ticker or rotating element must have a visible pause control.
+  - The live tag's dot is static. Nothing pulses.
 - **Gold text clean-up:** codemod `text-lca-gold` on light grounds to `text-gold-ink`. Review icons that carry meaning, such as the NewsPage "Pinned" pin and the reminder bell.
 - **Image pipeline:**
   - Generate AVIF and WebP at 640/1024/1600 widths for `src/assets/LCA_Slide_*.jpg` and `hero.png`.
@@ -268,11 +309,13 @@ Every workstream uses the same order: Why · Canvas boards · User-facing scope 
   - `src/components/ResultCell.tsx`
   - `scripts/images.mjs` (sharp-based generator, or `vite-imagetools`)
   - `test/a11y/*.spec.ts` (Playwright + `@axe-core/playwright`)
+- New for the heritage scope: `src/styles/themes/heritage.css`, `live.css` (font imports only), `src/layouts/HeritageLayout.tsx` (lazy layout route wrapping `AboutPage`, `BoardPage`, `BylawsPage`, `MinutesPage`, `AnnualMeetingPage` and `ChampionsPage`, with `GovLayout` kept inside), `src/components/ThickThinRule.tsx`, `src/components/Seal.tsx` (SVG built from `LcaMark`), a `.small-caps` utility. `ThemeScope.tsx` accepts `heritage` and `base` (a `data-theme=""` reset, used by `GovernanceDocuments` around its form and `RichTextEditor`).
+- The gold-text guard becomes scope-aware: `#c8a94a` is never text on `#f7f3e8` or any light ground, including the phone tab bar; `#705718` is allowed inside heritage and as the About menu's "You are here" label; `#866a1e` is allowed as text at 13px or more on `#fbfaf6` and as the tab bar's current-tab bar. The allowlist is a test fixture.
 
-**Jobs & integrations:** Fontsource packages (`@fontsource-variable/geist-mono`, `@fontsource/instrument-serif`, `@fontsource/barlow-condensed`, `@fontsource/barlow`, `@fontsource-variable/baloo-2`, `@fontsource-variable/nunito`). Verify each package name on npm. Also Playwright with axe.
+**Jobs & integrations:** Fontsource packages: `@fontsource-variable/geist-mono`, `@fontsource/instrument-serif`, `@fontsource/barlow-condensed`, `@fontsource/barlow`, `@fontsource/libre-caslon-display`, `@fontsource-variable/source-serif-4`. Verify each package name on npm, and verify the latin subset keeps `smcp` / `c2sc`. `@fontsource-variable/baloo-2` and `@fontsource-variable/nunito` move to WS11. Also Playwright with axe.
 
 **Acceptance criteria**
-1. axe reports zero serious or critical violations on `/`, `/tournaments`, a tournament detail page, `/clubs`, `/membership` and `/scholastic` in the light, dark, live and scholastic scopes.
+1. axe reports zero serious or critical violations on `/`, `/tournaments`, a tournament detail page, `/clubs`, `/membership`, `/scholastic`, `/about`, `/governance/minutes` and `/champions` in the light, dark, live and heritage scopes, plus the scholastic token fixture page.
 2. A unit test fails if `text-lca-gold` or a raw `#c8a94a` text colour appears in TSX outside an allowlist of navy/dark contexts.
 3. The focus ring reaches ≥ 3:1 against its ground in every scope.
 4. Nothing on the site auto-advances. With `prefers-reduced-motion: reduce`, no animation runs.
@@ -281,12 +324,19 @@ Every workstream uses the same order: Why · Canvas boards · User-facing scope 
 7. The home LCP image is ≤ 200 KB at a 390 px viewport, and Lighthouse mobile performance is ≥ 90 on `/` (lab).
 8. Switching `data-theme` on a container swaps tokens with no layout shift.
 9. `wrangler pages deploy` on a branch uses `lca-db-preview`, never `lca-db`.
-10. The official logo appears in every roomy placement listed under D1 and the rook mark in every tight one. The logo is never recoloured.
+10. The official logo appears in every roomy placement listed under D1 and the rook mark in every placement D1 gives it, including the header at every width. The logo is never recoloured.
+11. The heritage font chunk never appears in the `/` network log. CLS on `/about` and `/governance/bylaws` stays under 0.1 across the font swap.
+12. A unit test over the route-to-scope map fails if any workspace or admin route resolves to heritage, and a render test mounts `RichTextEditor` and the `GovernanceDocuments` form inside `HeritageLayout` and asserts that the closest `data-theme` above each is `""` (their `ThemeScope scope="base"` boundary), never `heritage`. No Instrument Serif renders inside `[data-theme="heritage"]`, and Caslon is bound only to the `--font-display` token used by h1 and h2 inside the scope.
+13. Inside the heritage scope, `Button`, `Input`, `StatusBadge` and the focus ring render pixel-identical to base (visual test).
+14. The live tag's dot does not animate.
 
 **Tests:**
 - Unit: `format.ts` (scores, dates with weekday across DST, time controls).
-- Unit: the gold-text guard.
 - `StatusBadge` label rendering.
+- Unit `test/unit/themeScopes.test.ts`: the route-to-scope map (no workspace or admin route is heritage); `--gold-ink` resolves to `#705718` inside heritage and `#866a1e` in base.
+- Unit `test/unit/governanceEditors.test.tsx`: `RichTextEditor` and the `GovernanceDocuments` form rendered inside `HeritageLayout` have no heritage ancestor inside their base boundary.
+- Unit `test/unit/goldText.test.ts`: the scope-aware gold guard with its allowlist fixture (`#705718` in heritage and the "You are here" label, `#866a1e` at 13px+ on `#fbfaf6` and the tab bar's current-tab bar; `#c8a94a` never text on a light ground).
+- a11y `test/a11y/scopes.spec.ts` (Playwright + axe): AC1's pages in light, dark, live and heritage plus the scholastic fixture; CLS under 0.1 on `/about` and `/governance/bylaws` across the font swap; the heritage chunk absent from the `/` network log; the live tag's dot static; `Button`, `Input`, `StatusBadge` and the focus ring pixel-identical inside heritage (visual test).
 - Playwright and axe suite (new `npm run test:a11y`).
 
 **Depends on:** nothing. This goes first.
@@ -302,66 +352,128 @@ Every workstream uses the same order: Why · Canvas boards · User-facing scope 
 
 **Canvas boards:**
 - `Nav-IA`, structure 1 (task and topic).
-- `Nav-Header` H1, with H2/H5 for event mode.
-- `Nav-Mobile` M1, with M4's pill.
+- `Nav-Header` H1, with H4's search and H5's event strip.
+- `Nav-Mobile` M2 tab bar, with M1's sheet behind Menu and M4's banner and docked event bar.
 - `Nav-Footer` F1, with F3's trust line.
 
 **User-facing scope**
-- **Desktop (≥ 1024 px):**
-  - The official LCA logo and "Louisiana Chess Association" (the rook mark takes over when the header condenses on scroll, D1), then **Tournaments · Clubs · Scholastic · News · Membership · About ▾**.
-  - "About" opens on click, with a caret. Its items: About LCA, Board & regions, Bylaws & rules, Minutes, Annual meeting, Champions, Contact.
-  - Top right, in this order on every page: **Donate · Log in** (or **My LCA** when signed in) **· Join LCA** (gold). Members don't see "Join LCA"; they see a "Renew" prompt only when they're within 30 days of expiry.
-  - The current section is marked with `aria-current="page"` plus a visible underline.
-- **Between md and lg:** Tournaments and Clubs stay visible and everything else goes under a bordered "Menu" button. This keeps the hybrid-tier fix without overlapping the logo.
-- **Mobile (< 1024 px):** combo bar with the rook mark, an always-visible "Tournaments" link and a bordered **Menu** button. The menu is a full-height sheet:
-  - sections, with the current one expanded
-  - Donate · Log in · Join
-  - Facebook
-  - "Scoresheet scanner" under Tournaments
-- **Event mode:** while an LCA event has a published live round (WS07), a slim bar sits above the header: "Live · Paul Morphy Open · Round 3 pairings posted · View pairings →". It can be dismissed per session and announces changes with `aria-live="polite"`. On phones it becomes a persistent "Pairings · R3" pill. It never appears for partner events.
-- **Search:**
-  - ⌘K, `/` and a header search button labelled "Search" open a command palette over pages, upcoming tournaments, clubs and news. This is the Home-B search, moved into the header.
-  - The palette has its own route `/search?q=` for phones.
-- **Footer (F1):**
-  - Four columns: Play (Tournaments, Calendar, Results, Scoresheet scanner) · Community (Clubs, Scholastic, News, Facebook) · About LCA (Board, Bylaws & minutes, Champions, Annual meeting) · Contact (LouisianaChess@gmail.com, Website help, Donate).
-  - A brand block with the official logo, Join LCA and Donate.
-  - The F3 trust line: "US Chess state affiliate · Louisiana's chess community since 1915 · Bylaws & minutes · Site last updated <build date>".
+- **Desktop (≥ 1024 px):** one navy row, 64px, sticky, with no condensing on scroll (the `--header-h` scroll padding below keeps a focused control clear of it, WCAG 2.4.11). The brand link leads with the rook mark (`LcaMark`, D1) beside the two-line name "Louisiana Chess / Association", with no cream plate; it is always `aria-label="Louisiana Chess Association, home"` and its image is `aria-hidden`. Then **Tournaments · Clubs · Scholastic · News · Membership · About ▾**. "About" opens on click, with a caret. Its items: About LCA, Board & regions, Bylaws & rules, Minutes, Annual meeting, Champions, Contact (the current row: `#f3eedc` tint, title navy 600, "You are here" at 13px/600 in `#705718`); footer row "LCA on Facebook ↗". One label per destination from `nav.ts`: "Board & regions", "Bylaws & rules" and "Minutes" read the same in the header, sheet, footer, trust line and search. A field-shaped **Search** button sits left of the utilities (icon plus the visible word at 1024–1279px; 220px with a ⌘K / Ctrl K hint from 1280px; an `<a href="/search">` underneath). Top right, in this order on every page: **Donate · Log in** (or **My LCA ▾** when signed in) **· Join LCA** (gold). A member whose membership is active sees neither Join LCA nor Renew; once a membership has expired, **Renew** (gold fill, navy text) takes the Join slot. The "Renew membership" to-do inside My LCA may still appear within 30 days of expiry (see the to-do count below). The My LCA trigger carries the to-do count from `src/lib/todo.ts` (accessible name "My LCA, 2 things to do"); the menu holds the to-do items first, then My LCA, the active event line while event mode is on, Family, then Workspace / Admin / Board inbox / My region's clubs by role, then Log out. **When the row is tight** it gives way in a fixed order, measured by a `ResizeObserver` on the row rather than set by breakpoint (in practice from 1024 to 1279px, or wherever Renew and the Live tag both show): first Donate leaves the bar and becomes the About menu's last item, directly above the "LCA on Facebook ↗" footer row (the same `nav.ts` entry); then the two-line name hides, leaving the rook mark. Section padding stays 12px, and the six sections, Search, Log in or My LCA ▾, and Join LCA or Renew never leave the bar. The current section is marked with `aria-current="page"` plus a visible underline. A `--header-h` variable from a `ResizeObserver` over every sticky element in the top stack (`AnnouncementBanner` when sticky, the header, the strip in round states) feeds `scroll-padding-top`; z-order top to bottom is the search panel and menus, the header, the strip, `AnnouncementBanner`. A "Skip to content" link is the first focusable element on every page. Log in links at every width pass `state={{ from }}` to `/login`, which is what `LoginPage.tsx` reads.
+- **Tablet (768–1023 px):** the same header component: the rook mark and the two-line name, Tournaments and Clubs visible, Search, a Donate text link, Log in or My LCA ▾ (with the to-do count), and a bordered "Menu" button opening the mobile sheet as a right drawer. No tab bar. The event strip renders as one 48px line: status tag · event name · the viewer's sentence (truncated, full text in `title` and in My LCA) · primary button · the 44×44 Hide button; secondary links and the "Players see:" echo move into My LCA ▾.
+- **Phones (< 768 px):** a 56px navy app bar (rook mark and the two-line name; a 44×44 "Search" button to `/search`; the current section name when the Menu tab is current) and a bottom tab bar in `<nav aria-label="Main">`, 56px plus `env(safe-area-inset-bottom)`: **Tournaments · Clubs · Log in / My LCA (to-do count) · Menu**. Labels come from `nav.ts` and always show; the current tab is bold navy with a 3px top bar in gold-ink `#866a1e` and `aria-current="page"`. Menu opens the full-height sheet (sections with the current one expanded as "You are here"; Scoresheet scanner under Tournaments, with "This weekend" and "Results" added only when WS04 and WS10 ship their routes; Donate · Log in · Join LCA in the desktop order, with the same Join and Renew rule; role tools; Facebook · Contact · Website help; the theme switch, a shortcut to the footer's; "Hide event bar until the next update" while event mode is on, writing the same `event:phase:round` key as the bar's Hide button). One `BottomDock` holds the page action bar, the event bar and the tabs, writes `--bottom-chrome-h` from a `ResizeObserver`, and drives `<main>` padding-bottom and `scroll-padding-bottom`. The dock hides while the on-screen keyboard is open, on routes that declare `hideTabBar` (registration, checkout, success, the Stripe hand-off, scanner capture, TV, print), and under 480px of height or at high zoom, where the app bar shows the bordered Menu button instead. The to-do count is computed on the client from `/api/me` (unpaid entries for self or children for events not yet ended; an `active` membership expiring within 30 days or an `expired` one, never `pending`; a US Chess membership ending before an entered event), fetched on load and focus, never polled; volunteer queues and event-day items never count. DOM order: app bar, "Skip to content" link, `<main>`, `BottomDock`, then the portalled sheet. `index.html` gains `viewport-fit=cover`. There is no separate phone flag: `newNav` ships the app bar, tab bar and sheet with the header.
+- **Event mode:** a personal strip for LCA-run events only, shown to a signed-in registered player (including waitlisted), the guardian of a registered dependent, the event's TDs and `lca_admin`, from 6 days before day 1 until `eventEnd` + 48 hours, where `eventEnd = (end_date ?? date) 23:59` Central. Phases (`functions/utils/eventMode.ts`): `week`, `dayBefore`, `checkin` (6:00 AM until the day's first `round_schedule` time), `eventDay` (Phase 0 only, the rest of the day: "Today · event · Round 2 at 2:30 PM"), `roundPosted` / `roundInProgress` / `between` (WS07), `final` (`status = 'completed'`, or a non-null result in every section's last scheduled round) and `after` (48 hours; the TD's rating-report line until completed; the admin "not marked completed" nudge is WS07). Light gold tint `#fbf7e9` before the event, during check-in and after the final (scrolls away); `data-theme="live"` tokens with a 2px gold top rule while a round is posted, in progress or between rounds (sticky, Geist type). One line per person: status tag in words · event name · the viewer's own sentence · primary button · secondary links · a 44×44 "Hide until the next update" button. Absolute times, no countdown. TD and admin lines end with "Players see: <the public line>" and may carry one fix-it ("Round times missing: players see 'time to be announced'" → Add round times). Precedence TD > admin > player > guardian; exactly one strip, and with two events the one whose next moment is sooner; the rest in My LCA ▾. Hidden state is keyed `event:phase:round` in `localStorage` inside try/catch, with one label ("Hide until the next update") and one key for the strip, the phone bar and the sheet item, and the event stays listed in My LCA ▾. On a failed poll the strip keeps its last payload and "Updated" time, retries with backoff and hides only after three consecutive failures in a round phase; it never shows an error. A persistent visually hidden `role="status"` node announces state changes only. Buttons: "TD console" on the strip and bar for TDs and admins alike, "Open TD console" on banners, "Open check-in" only when the console deep-links to its check-in step; no "R3"-style shorthand anywhere. On phones the same data renders, from check-in on day 1, as a 56px two-line event bar docked above the tab bar (hidden on that event's own pairings and standings pages) and an in-flow `role="status"` banner inserted only on page load or at the top of the page; otherwise the bar shows a "New" tag and the dock's status node speaks (it stays silent when a banner is inserted). "Something wrong? Tell the TD" opens the support form prefilled with the event and the person's name and email, tagged with the tournament id; no personal email is shown. The public sees no strip: while `/api/live/now` returns an LCA event, the Tournaments nav item carries a text tag "Live" and (WS07, `eventStripLive`) the event's own pairings and standings pages show "Playing today, or is your child? Find your name in the pairings below, or log in to see the board." above the Find-your-name field, for LCA-run events only. It never appears for partner events or on checkout pages. The round-alert bell is hidden until WS07's email alerts exist.
+- **Search:** ⌘K / Ctrl+K and the header Search button open a search panel over tournaments (LCA and partner), clubs and regions, pages, news, results (finished LCA events) and champions (title and year only), with a role-gated "Your tools" group for signed-in volunteers and a "Look up a rating on US Chess ↗" row for name-like or ID-like queries. There is no Players group and no person name is ever matched (D9). The "/" shortcut is not bound (WCAG 2.1.4). On phones the button goes to `/search?q=`. The same combobox renders inline on the homepage (WS03). `/search?q=&type=` offers a chip per group in group order (Champions included; Your tools when signed in).
+- **Footer (F1):** four columns, every link a `nav.ts` entry by id: Play (Tournaments, Scholastic chess, State champions, Scoresheet scanner; Calendar and Results join when WS04 and WS10 ship their routes) · Community (Clubs, Club map (`/clubs`, the map section), List or update your club (the contact form with the club subject preselected), News, LCA on Facebook ↗) · About LCA (About LCA, Board & regions, Bylaws & rules, Minutes, Annual meeting) · Contact (LouisianaChess@gmail.com as a mailto link, Contact form, Membership help, Website help, Donate). The brand block keeps the official logo, Join LCA and Donate. The base line holds the F3 trust line ("US Chess state affiliate · Louisiana's chess community since 1915 · Bylaws & rules · Minutes · Site last updated <build date>") and the Appearance control ("Appearance: System · Light · Dark", a three-button radio group stored in `localStorage` inside try/catch, default System, the one theme switch that exists at every width). No Privacy or Accessibility links until those static pages exist. Under 768px each column heading becomes `<h2><button aria-expanded aria-controls>` toggling its list; all collapsed by default except Contact; the brand block and base line are always visible; no animation under reduced motion.
 - **Routes:** keep every existing URL, including `/governance/*` (the menu label "About" maps onto them) and the `/governance/rules` → `/governance/bylaws` redirect. Add `/search` and `/results` (WS10). Verify the route list in `src/App.tsx`.
+- **Under `.dark`** (every value is a WS01 token; nothing is invented in WS02):
+
+| Surface | Light | Dark |
+|---|---|---|
+| Header, app bar | `#1a2744` | `#1a2744` |
+| Tab bar, event bar | white, 1px `#d9d8d1` top border, labels navy, current-tab bar `#866a1e` | `#111a2c`, `rgba(255,255,255,.08)` top border, labels `#9aa6bf`, current `#e8ecf4` with a 3px `#c8a94a` bar |
+| Event strip, pre and post states | `#fbf7e9`, navy text, 1px `#866a1e` rule | `#1a2744`, `#e8ecf4` text, 1px `#c8a94a` rule |
+| Event strip, round states | live tokens (`#0e1526` / `#f3f5f9`) | unchanged |
+| Banner card | white card, border token | `#111a2c`, border token |
+| About and My LCA menus, Menu sheet, search panel | `--popover` white, current row `#f3eedc` | `--popover #1a2744`, `#e8ecf4` text, current and active rows `rgba(255,255,255,.1)` plus a 2px `#c8a94a` ring on the active search row |
 
 **Data model:** none.
 
-**API:**
-- `GET /api/search?q=` (new, public): ranks matches from `tournaments` (visible, upcoming), `clearinghouse` (upcoming), `clubs`, `lca_posts` (published) and a static pages list. Returns at most 20 results grouped by type, with an edge cache of 60 s per query.
-- `GET /api/live/now` (new, WS07; public): returns the current live LCA event, or 204.
+**API:** Contracts live in `functions/utils/apiTypes.ts` and are imported by both the Worker and `src/lib/api.ts`.
+- `GET /api/search?q=` (new, public): `q` of 2–64 characters, normalised (lowercase, NFD with diacritics stripped, "&" → "and", "saint" → "st", whitespace collapsed); bounded `LIKE` queries over `tournaments` (visible; upcoming for the Tournaments group, completed within 3 years for the Results group, never both), `clearinghouse` (upcoming, Louisiana first, then Gulf South with the state), `clubs` (with regions from `regions.ts`), `lca_posts` (published, 24 months) and `state_champions` (title and year, displayed as title and year). Static pages are matched on the client. At most 20 results, 5 per group, edge cache 60 s under the key `search:v1:${normalised}`. The response is identical signed in and out and contains no member, registration, email or player-name fields.
+
+```ts
+interface SearchResponse {
+  q: string
+  groups: Array<{
+    type: 'tournaments' | 'clubs' | 'news' | 'results' | 'champions'
+    label: string
+    items: Array<{
+      id: string; title: string; meta?: string; href: string
+      tag?: { label: string; tone: 'open' | 'soon' | 'closed' | 'partner' | 'lca' | 'final' }
+      external?: boolean
+    }>
+  }>
+}
+```
+
+- `GET /api/me/event-mode` (new; `requireAuthedMember`; `Cache-Control: private, no-store`; ETag with 304). Computed by `functions/utils/eventMode.ts` from `registrations`, `members.guardian_id`, `tournament_directors`, `tournaments` and, after WS07, `round_publications` and `live_state`. The client calls it only when `/api/me` shows an involvement inside a window; polls every `pollSeconds` while visible, never while hidden. Or 204.
+
+```ts
+type EventPhase =
+  | 'week' | 'dayBefore' | 'checkin' | 'eventDay'
+  | 'roundPosted' | 'roundInProgress' | 'between' | 'final' | 'after'
+
+interface EventModePlayer {
+  memberId: string; firstName: string; section: string; paid: boolean
+  waitlistPosition?: number
+  bye?: { round: number; points: '½' | '1' | '0' }
+  checkedInAt?: string
+  board?: number; color?: 'white' | 'black'; opponent?: string; opponentRating?: number
+  result?: 'won' | 'lost' | 'draw'; score?: string   // "2½", a string so ½ survives
+}
+
+interface EventModeTd {
+  registered: number; unpaid: number; waitlisted: number; checkedIn: number
+  resultsIn?: number; resultsTotal?: number; missingBoards?: number[]
+  fixits: Array<{ code: 'round_times_missing'; text: string; href: string }>
+}
+
+interface EventModeItem {
+  tournamentId: string; name: string; href: string
+  viewer: 'player' | 'guardian' | 'td' | 'admin'
+  phase: EventPhase; round?: number; roundsTotal: number
+  nextRoundStart?: string   // ISO-8601 with the America/Chicago offset
+  updatedAt: string         // same format
+  players: EventModePlayer[]   // own entry, or one row per dependent
+  td?: EventModeTd
+  playersSee: string
+  key: string               // `${tournamentId}:${phase}:${round ?? 0}`
+}
+
+interface EventModeResponse { items: EventModeItem[]; pollSeconds: 20 | 300 }
+```
+
+  `pollSeconds` is 20 in `checkin`, `eventDay`, `roundPosted`, `roundInProgress` and `between`, and 300 otherwise. Phase predicates, Phase 0: `eventEnd = (end_date ?? date) 23:59` Central; `week` = 6 days before day 1 at 6:00 AM until the day before; `dayBefore` = the calendar day before `date`; `checkin` = an event day from 6:00 AM until that day's first `round_schedule` time; `eventDay` = the rest of that day (Phase 0 only); `final` = `status = 'completed'` OR a non-null result in every section's last scheduled round; `after` = `final` until `eventEnd + 48 h`. After WS07: `checkin` ends at the round's `round_publications` row; `roundPosted`, `roundInProgress` and `between` come from `round_publications` and `live_state`; `eventDay` is never produced. Items are sorted so the event whose next moment is sooner comes first; the client renders only the first.
+- `GET /api/live/now` (new, WS07; public, edge-cached 30 s): `{ tournamentId: string; name: string; href: string; round: number; roundsTotal: number; publishedAt: string }` or 204. Live while `live_state = 'live'` and the next round in `round_schedule` starts today (America/Chicago); off from the last published round's results-complete time until the next round's day. Drives the `LiveTag`, the Popular list's "Live now" row and the homepage live hero only.
+- `GET /api/me` (change): the registrations query also selects `t.end_date, t.registration_url, t.is_visible, t.registration_status`, and `directedTournaments` also selects `end_date, registration_url`. The new fields are documented in the response so the client-side window gate and `todo.ts` can place multi-day events and exclude partner rows.
 
 **Frontend**
-- Change: `src/components/layout/Navbar.tsx`, `src/components/layout/Footer.tsx`, `src/App.tsx`.
-- New:
-  - `src/lib/nav.ts`, the single source of nav items for header, mobile sheet and footer
-  - `src/components/layout/MobileMenu.tsx`
-  - `src/components/layout/EventBar.tsx`
-  - `src/components/SearchCommand.tsx` (shadcn Command) and `src/pages/SearchPage.tsx`
-- `AnnouncementBanner` keeps its place above the nav, and the event bar stacks below it.
+- Change: `src/components/layout/Navbar.tsx`, `src/components/layout/Footer.tsx`, `src/App.tsx`, `index.html`, `functions/api/me.ts` (the four registration fields and two directed-event fields above).
+- New: `src/lib/nav.ts` (sections, sheet, tabs with icons, `hideTabBar` routes, pages and synonyms for search), `src/lib/eventModeCopy.ts`, `src/lib/todo.ts`, `src/hooks/useEventMode.ts`, `src/components/layout/SearchTrigger.tsx`, `AboutMenu.tsx`, `MyLcaMenu.tsx`, `EventStrip.tsx`, `LiveTag.tsx`, `MobileAppBar.tsx`, `BottomTabs.tsx`, `BottomDock.tsx`, `MobileMenu.tsx`, `EventDock.tsx`, `EventBanner.tsx`, `src/components/search/SearchCombobox.tsx`, `SearchPanel.tsx`, `SearchResults.tsx`, `src/pages/SearchPage.tsx`, `functions/api/me/event-mode.ts`, `functions/utils/eventMode.ts`, `functions/utils/apiTypes.ts`.
+- `AnnouncementBanner` keeps its place above the nav, and the event strip stacks below the header; `--header-h` measures all three when sticky.
 
 **Jobs & integrations:** none.
 
 **Acceptance criteria**
-1. At 1024, 1280 and 1440 px, all six sections and the three utility links are visible with nothing overlapping the logo. At 1024 px the menu doesn't wrap.
+1. At 1024, 1280 and 1440 px the rook mark, all six sections, the Search button (icon plus the word "Search" at 1024 px) and the utilities are visible with nothing overlapping and nothing wrapping: Donate · Log in · Join LCA signed out, Donate · My LCA ▾ for an active member, and Donate · My LCA ▾ · Renew once a membership has expired. Where the row is tight the squeeze runs in order (Donate into the About menu first, then the brand name hides), section padding stays 12px, and no section, Search, Log in or My LCA ▾, Join LCA or Renew ever leaves the bar. The test includes the widest case, Renew plus the Live tag at 1024 px.
 2. The About menu works with mouse and keyboard (Enter, Space, Esc, arrow keys), sets `aria-expanded` and closes on an outside click.
-3. The mobile sheet traps focus, returns focus to the Menu button on close, and closes on Esc.
-4. The event bar appears only when `/api/live/now` returns an LCA event, stays hidden after dismissal for the session, and never renders for partner events.
-5. Search returns grouped results in under 300 ms (p95, warm) for queries of 3 or more characters and can be driven entirely from the keyboard.
-6. Donate is reachable from every page in one click.
+3. The mobile sheet opened from the Menu tab traps focus, returns focus to the Menu tab on close, and closes on Esc.
+4. The event strip renders only for a signed-in registered player, guardian, TD or `lca_admin` of an LCA-run event inside its window; never for partner events, never for the public, never on checkout pages. Hiding it keys on `event:phase:round`, and a new round brings it back. The public Live tag renders only while `/api/live/now` returns an LCA event. Role-safety tests cover a guardian (own dependents only), a TD of another event, a plain member (204) and partner events (never returned).
+5. Search returns grouped results in under 300 ms (p95, warm) for queries of 2 or more characters, can be driven entirely from the keyboard in the panel, the homepage box and `/search`, and never returns a person name.
+6. Donate is one click on tablet, and on desktop wherever the row has room for it; when the desktop row is tight it is the About menu's last item, above "LCA on Facebook ↗", one click after opening About. On phones it is the first of the three buttons after the section list in the Menu sheet (two taps). WS12 AC6 is amended to match.
 7. The footer shows the contact email and a build-time "Site last updated" date.
-8. All nav labels come from `src/lib/nav.ts`; a test asserts the header, sheet and footer render the same sections.
+8. All nav labels come from `src/lib/nav.ts`; a test asserts the header and sheet render the same sections and every footer link resolves to a `nav.ts` entry (see AC11).
+9. No fixed element overlaps `<main>` content at 320, 360, 390, 768 and 1023px with the tab bar, the event bar and the Register bar in every combination; a focused control is never hidden under the header or the dock.
+10. Posting a new round while a test page is scrolled mid-page causes no layout shift; the event bar gains a "New" tag and the status region announces once.
+11. Every label rendered by the header, sheet, tabs and footer comes from `nav.ts`; the header and sheet render the same six sections in the same order; the first two tabs reuse the Tournaments and Clubs entries unchanged; the footer's links resolve to `nav.ts` entries by id; one label per destination holds across all of them ("Board & regions", "Bylaws & rules", "Minutes"); and the first tab reads "Tournaments".
+12. The strip, the event bar and the banner show no countdown, no auto-updating visible text, no pulsing element, and no "R3" or "Bd 6" shorthand.
+13. Tab from page load reaches "Skip to content" first; the tab bar is reachable after `<main>`; every footer link is reachable by keyboard at 390px with the folded columns.
+14. axe reports zero serious or critical violations in light and dark on `/`, `/tournaments` and `/search` with the event strip and the tab bar mounted.
+15. The brand link is named "Louisiana Chess Association, home" at every width, including when the two-line name is hidden.
+16. Log in from the tab, the sheet and the desktop header returns the person to the page they were on.
 
 **Tests:**
-- Integration: `/api/search` (ranking, grouping, only visible content).
-- Integration: `/api/live/now`.
-- Unit: the nav config.
-- Playwright: keyboard navigation of the About menu and the mobile sheet.
+- Unit `test/unit/eventMode.test.ts`: every phase in Phase 0 and after WS07; midnight, DST, multi-day events, `end_date` NULL; the `checkin` → `eventDay` switch each day; `final` for a completed event, for last-round results without completion, and for a completed event with no results; two events and the sooner-first rule; the `key` format.
+- Unit `test/unit/eventModeCopy.test.ts`: every role × phase line in `DESIGN_REPLAN_phase0.md` section 3 verbatim, ½, weekday dates, "7:00 PM", the "Players see:" echo equal to the player line, the button labels, no shorthand.
+- Unit `test/unit/todo.test.ts`: one case per `membership_status`, unpaid entries for ended and upcoming events, children, US Chess expiry before an entered event, the "9+" cap.
+- Unit `test/unit/nav.test.ts`: one label per destination; header and sheet sections in order; tabs reuse entries; footer links resolve by id; `hideTabBar` routes.
+- Unit `test/unit/search.test.ts`: normalisation and the cache key; the synonym table; the name-like and ID-like query rule.
+- Integration `test/integration/event-mode.test.ts`: role safety (a guardian sees only own dependents; a TD of another event sees nothing; a plain member, `lca_observer`, `lca_officer` and `lca_auditor` get 204; partner events never returned; TD counts never reach a player); ETag 304; items sorted sooner-first.
+- Integration `test/integration/search.test.ts`: grouping and caps, no event in two groups, no member, registration, email or player-name field, champions rows with no name, identical output signed in and out.
+- Integration `test/integration/me.test.ts`: the new registration and directed-event fields.
+- a11y `test/a11y/nav.spec.ts`: AC1 at three widths, including each squeeze step and Renew plus the Live tag at 1024 px; the Join and Renew slot signed out, for an active member, within 30 days of expiry (no Renew in the bar) and once expired; Donate as the About menu's last item when squeezed; About menu by keyboard; sheet focus trap; skip link first; brand link name with the name hidden and shown; axe light and dark on `/`, `/tournaments` and `/search` with the strip and tab bar mounted; footer links by keyboard at 390px and the fold's `aria-expanded`.
+- a11y `test/a11y/dock.spec.ts`: no fixed element overlaps `<main>` at 320, 360, 390, 768 and 1023px with every bar combination; no layout shift when a round is posted mid-scroll, "New" tag and a single announcement; the dock hides with the keyboard open and on `hideTabBar` routes; the landscape reflow fallback.
 
-**Depends on:** WS01. The event bar ships hidden behind a flag until WS07 lands.
+**Depends on:** WS01. `eventStrip` (week, day before, check-in, event day, final and after states) can ship in Phase 0 on today's data; `final` is `status = 'completed'` or a non-null result in every section's last scheduled round. `eventStripLive` and `liveMarker` stay off until WS07 provides `round_publications`, `live_state` and `/api/live/now`.
 **Risks & open decisions:** moving Scanner out of the top bar should be confirmed with usage data if available; the Nav-IA board recommends a quick first-click test with parents. The search index must stay small.
 
 ---
@@ -377,56 +489,97 @@ Carousels draw about 1% of clicks, mostly on slide 1, and the current slideshow 
 
 **Canvas boards:**
 - `Home-A`: structure and hero.
-- `Home-C`: this-week strip.
+- `Home-C`: this-week strip (kept for WS09, K's October 8 note).
 - `Home-E`: doors band.
 - `Home-D`: champions band and recap card.
-- `Home-B`: search, which moves into ⌘K.
-- `Home-Phones`: the mobile order.
+- `Home-B`: search, now the box in the identity and search band.
+- `Home-Phones`: the phone layout (the block order now follows K's October 8 order below, not the board's).
 
-**User-facing scope** (in page order)
-1. **Hero with three modes**, picked by data in this priority order:
-   - **Live.** An LCA event has a live round (WS07). Shows the event name, "Round 3 · pairings posted 6:31 PM", and buttons **Find my board · Pairings · Standings**, in the live theme scoped to the hero only.
-   - **Next LCA event.** One starts within 21 days with registration open. Shows an event card with weekday dates, city, time control in plain words, sections, "38 of 60 registered", the next price deadline, **Register from $30** and **Details**, plus one static photo (`<picture>`, AVIF/WebP).
-   - **Week view.** Otherwise, a "This week in Louisiana chess" hero: a Tonight panel with that day's club meetings, plus counts such as "19 club meetings at 15 clubs this week".
-   - Below the hero in every mode is an identity line: "Louisiana's chess community since 1915 · 300+ members · 25+ clubs · 7 regions". Each stat is a link (to Membership, Clubs, and Clubs filtered by region).
-2. **This-week strip** (Home-C): Mon–Sun day chips with meeting counts, today highlighted, and the weekend's tournaments (LCA and partner, labelled). It is computed from WS09 schedules; a tap opens `/clubs?view=week`.
-3. **Upcoming tournaments:** the next six as dated rows, with LCA / Partner tags, status in words and counts on LCA rows only. Links to `/tournaments`.
-4. **Doors band** (Home-E): three doors, "I want to play", "My child plays" and "I run a club or tournament". Each has three links into shared pages, using pre-filtered URLs such as `/tournaments?type=scholastic`. It is a band, not navigation, and sits below the fold.
-5. **Results & champions** (Home-D, from WS10): the latest recap card and a "Current champions" band. Both stay hidden until data exists.
-6. **News:** three latest items, dated, plus the compact `FacebookFeed`.
+**User-facing scope** (in page order, K's October 8 order, the same on desktop and phones)
+1. **Hero ladder**, picked by data on the server in this order, first match wins (full table in `DESIGN_REPLAN_phase0.md` section 4, with the quiet and clubs rungs as amended in its section 8): **Live** (WS07; live colour tokens on the hero only, no live fonts on `/`; round row in words, never "R3") · **Event day** (today is between an LCA event's `date` and `eventEnd`) · **Register, last call** (an `isOpen` or `isClosedOnline` LCA event starts within 14 days or early entry ends within 7) · **Results** (an LCA event with `eventEnd` within 7 days, `status = 'completed'` and a non-null result in every section's last scheduled round, else fall through; Heritage accent, winners by full name with ½; WS10's `event_results` once it exists) · **Register** (within 30 days or early entry within 14; Home-A's card with the primary by state: Register when `isOpen`, Join the waitlist when `isFull`, Event details when `isClosedOnline`, and a "You're entered" variant) · **Announced** (`isAnnounced`, within 60 days; "Email me when registration opens" signed in, Event details signed out) · **Week** (WS09) · **This week in Louisiana** (LCA and partner rows within 14 days, Louisiana only; partner rows only while the sync is fresh, LCA rows always) · **Quiet** (the hero itself carries Home-E's three doors on the usual navy hero ground with the a–h / 8–1 grid motif, headed "Find your next game in Louisiana", with the Next LCA event line beneath and the region select; the soonest Louisiana events are in the upcoming six further down; primary: Find a club near you) · **Clubs** (the floor when nothing matches or `/api/home` fails: the same doors hero, with the seven region chips from `regions.ts` in place of the select; primary: Find a club). In these two rungs the doors band lower on the page is omitted, so the doors never appear twice; every other rung keeps the doors band in its lower position. The doors' links are plain links, never a second primary. Registration state comes from `isOpen`, `isFull`, `isClosedOnline` and `isAnnounced` in `functions/utils/events.ts` (`DESIGN_REPLAN_phase0.md` section 2, Q4), one unit test each. Exactly one primary action per mode. Every non-LCA mode ends with a "Next LCA event" line when one is announced within 180 days ("Registration open ›", "Registration opens Fri, Jan 15 ›" or "Details ›"). Partner rows carry "Partner event · Registers on the organizer's site ↗", never Register, never a count, never the LCA hall photo; a single `EventAction` component enforces this, and any `tournaments` row with a `registration_url` counts as organizer-registered; the "Also this weekend" partner line links to the organizer's site until WS04 ships the internal partner page. Personal lines are added on the client: "You're entered" and "You finished 4th" from `/api/me`, boards and colours from `useEventMode()`. While `/api/home` loads the hero reserves 360px at 390px and 440px at 1280px with a neutral skeleton; if it fails, the hero renders the Clubs floor from `regions.ts` with no error chrome. Below the hero in every mode is the **identity and search band**: the official logo, "Louisiana's chess community since 1915 · 300+ members · 25+ clubs · 7 regions" (each stat a link), a CSS thick–thin rule, and the Home-B search box (the WS02 combobox inline, visible label, quick-pick chips hidden until WS04 and WS09 ship their filters).
+2. **This-week strip** (Home-C): Mon–Sun day chips with meeting counts, today highlighted, and the weekend's tournaments (LCA and partner, labelled). It is computed from WS09 schedules; a tap opens `/clubs?view=week`. Flagged off (`homeWeek`) until WS09 ships club schedules; when it ships it sits directly under the identity and search band. K wants this clubs view kept for when the club information is richer.
+3. **News:** three latest items, dated, plus the compact `FacebookFeed`.
+4. **Doors band** (Home-E), headed "Where do you want to start?": three doors, "I want to play", "My child plays" and "I run a club or tournament". Each has three links into shared pages, using pre-filtered URLs such as `/tournaments?type=scholastic`. It is a band, not navigation, and sits below the fold. In the quiet and clubs rungs the hero carries the three doors instead (item 1) and this band is omitted.
+5. **Upcoming tournaments:** the next six as dated rows, with LCA / Partner tags, status in words and counts on LCA rows only. Links to `/tournaments`.
+6. **Results & champions** (Home-D): the "Current champions" band ships in Phase 0 from `state_champions` with the Heritage accent, hidden when the newest title is more than 13 months old. The recap card waits for WS10.
 7. **Membership band:** Adult $15 · Scholastic $5 · Family $25 · Senior $10, then **Join LCA**.
 
 Removed: `HeroSlideshow` and the three equal columns.
 
 **Data model:** none of its own. It consumes WS04, WS07, WS09 and WS10.
 
-**API:** `GET /api/home` (new, public). It returns:
-- `{hero: {mode, ...}, week: {...}, upcoming: [...], recap, champions, news: [...]}`
-- Edge cache of 60 s, dropping to 15 s while an event is live.
-- Every block degrades to `null` when its source isn't built yet.
+**API:** `GET /api/home` (new, public). Its contract is `HomeResponse` in `functions/utils/apiTypes.ts`:
+
+```ts
+interface HeroEvent {
+  id: string; name: string; href: string; city: string
+  date: string; endDate?: string; dates: string   // "Sat–Sun, Jun 12–13"
+  organizer?: string; format?: string; sections?: string[]
+  tag: 'lca' | 'partner'; external?: boolean         // partner rows: organizer's site, new tab
+}
+interface LiveHero { mode: 'live'; event: HeroEvent; round: number; roundsTotal: number; publishedAt: string; nextRoundStart?: string
+  rounds: Array<{ round: number; state: 'final' | 'live' | 'scheduled'; startsAt?: string }> }
+interface EventDayHero { mode: 'eventDay'; event: HeroEvent; nextRound?: { round: number; startsAt: string } }
+interface RegisterHero { mode: 'register' | 'lastCall'; event: HeroEvent
+  registration: 'open' | 'full' | 'closedOnline'
+  priceFrom?: number; memberSaving?: number; registered?: number; maxPlayers?: number
+  earlyDeadline?: string; checkIn?: string; round1?: string; startsIn?: string; alsoThisWeekend?: HeroEvent }
+interface ResultsHero { mode: 'results'; event: HeroEvent; isStateChampionship: boolean
+  winners: Array<{ section: string; names: string[]; score: string }>; moreSections: number
+  facebookHref: string; recapHref?: string; photosHref?: string }
+interface AnnouncedHero { mode: 'announced'; event: HeroEvent; registrationOpensAt?: string; alsoThisWeekend?: HeroEvent }
+interface WeekHero { mode: 'week'; range: string; meetings: number; clubs: number
+  tonight: Array<{ time: string; club: string; place: string; href: string }>; weekend: HeroEvent[] }
+interface NearbyHero { mode: 'nearby'; heading: 'This weekend in Louisiana' | 'Coming up in Louisiana'; events: HeroEvent[] }
+interface QuietHero { mode: 'quiet'; regions: Array<{ slug: string; name: string }> }   // doors are static; events stay in upcoming
+interface ClubsHero { mode: 'clubs'; regions: Array<{ slug: string; name: string }> }
+interface NextLca { event: HeroEvent; status: 'open' | 'opensAt' | 'details'; opensAt?: string }
+
+interface HomeResponse {
+  hero: (LiveHero | EventDayHero | RegisterHero | ResultsHero | AnnouncedHero | WeekHero | NearbyHero | QuietHero | ClubsHero)
+    & { reason: string; nextLca?: NextLca }
+  week: WeekHero | null                       // WS09
+  upcoming: HeroEvent[]                       // Louisiana only in Phase 0, hero events excluded
+  recap: { title: string; href: string; date: string } | null   // WS10
+  champions: Array<{ year: number; title: string; name: string }> | null
+  news: Array<{ id: string; title: string; date: string; href: string }>
+}
+```
+
+No field in `HomeResponse` is personal. Mode selection is `selectHeroMode(now, data)` in `functions/utils/homeHero.ts`, in America/Chicago time, with the window constants `LAST_CALL_DAYS = 14`, `LAST_CALL_EARLY_DAYS = 7`, `REGISTER_DAYS = 30`, `REGISTER_EARLY_DAYS = 14`, `RESULTS_DAYS = 7`, `ANNOUNCED_DAYS = 60`, `NEARBY_DAYS = 14`, `NEXT_LCA_DAYS = 180`, `SYNC_STALE_DAYS = 3`. Events come from `functions/utils/events.ts` (the LCA + clearinghouse union moved out of `functions/api/clearinghouse.ts`). Partner rows are dropped when the newest `synced_at` is more than 3 days old or the start date has passed, and an admin alert is raised; LCA rows never depend on the sync. `eventEnd(t) = (t.end_date ?? t.date) 23:59` Central anchors every window. Edge cache 60 s, dropping to 15 s in the live and event-day modes. Every block degrades to `null` when its source isn't built yet.
 
 **Frontend**
 - Rewrite: `src/pages/HomePage.tsx`.
-- New: `src/components/home/HomeHero.tsx`, `ThisWeekStrip.tsx`, `UpcomingList.tsx`, `DoorsBand.tsx`, `RecapCard.tsx`, `ChampionsBand.tsx`, `MembershipBand.tsx`.
-- Reuse: `FacebookFeed variant="compact"` and `StatusBadge`.
+- New: `src/components/home/HomeHero.tsx` (one subcomponent per mode, each with a skeleton at the reserved height), `HeroEventCard.tsx` (lca, partner, compact), `NextLcaCard.tsx`, `EventAction.tsx`, `IdentitySearchBand.tsx`, `ThisWeekStrip.tsx`, `UpcomingList.tsx` (`excludeIds`), `DoorsBand.tsx` (`variant="band"` lower on the page; `variant="hero"` on the navy hero ground in the quiet and clubs rungs), `RecapCard.tsx`, `ChampionsBand.tsx`, `MembershipBand.tsx`, `src/lib/addToCalendar.ts`, `functions/utils/homeHero.ts`, `functions/utils/events.ts` (with `isOpen`, `isFull`, `isClosedOnline`, `isAnnounced` and `eventEnd`), `functions/api/home.ts`. The hero photo is `src/assets/LCA_Slide_1.jpg` through the WS01 pipeline, alt "Players at long tables in a tournament hall", unless K supplies another.
+- Reuse: `FacebookFeed variant="compact"`, `StatusBadge`, `DateBlock`, `ThickThinRule`, `Seal`, `RegistrationReminderButton`, `SearchCombobox`.
 
 **Jobs & integrations:** none.
 
 **Acceptance criteria**
-1. Mode selection is unit-tested: live, then next LCA event within 21 days with registration open, then week view.
+1. Mode selection is unit-tested for every rung, at every window boundary, for ties (earliest event), at midnight and across DST, for `end_date` NULL, for a stale sync with an LCA row in range, for a closed-online and an announced LCA event inside 30 days, for a completed event with no results, and for a last round finishing after midnight. A mode missing its data falls to the next rung, and no mode renders an empty frame.
 2. Nothing auto-advances, and the hero has exactly one primary action.
 3. Every date shows its weekday and every status is in words.
-4. Partner events never show Register buttons or counts; they link to their partner page (WS04).
-5. On a 390 px phone the order is hero, this week, upcoming, doors, results, news, membership, matching `Home-Phones`.
+4. Partner events never show Register buttons or counts in any mode; a partner-only fixture renders no "Register" text and no count. Out-of-state events never take the hero.
+5. On a 390 px phone, as on desktop, the order is hero, identity and search band, news, doors, upcoming, results and champions, membership (K's October 8 order), with the this-week strip directly under the identity and search band once WS09 ships. In the quiet and clubs rungs the doors render inside the hero and the doors band is omitted; nothing else is hidden by hero mode.
 6. LCP ≤ 2.5 s and CLS < 0.1 (lab, mobile).
-7. If WS09 or WS10 data is missing, those blocks are absent; no empty frames or placeholder text reach production.
+7. If WS07, WS09 or WS10 data is missing, those blocks are absent; no empty frames or placeholder text reach production. Partner rows are absent when the clearinghouse sync is more than 3 days old.
+8. The live hero has a visible "Pause updates" control, polls every 20 s only while the tab is visible, and shows "Updated hh:mm".
+9. Personal lines ("You're entered", "Board 6 · White", "You finished 4th") never appear in the cached `/api/home` response.
+10. The heritage font chunk never loads on `/`.
+11. The live font chunk never appears in the `/` network log, in any mode, including the live hero.
+12. While `/api/home` loads, the hero holds its reserved height and CLS stays under 0.1; when the request fails, the Clubs floor renders with no error text, and the lower blocks keep their error states.
+13. The live hero's round row and every strip, bar and banner line carry no "R3"-style shorthand; the round row reads in words with every label in the DOM.
+14. The inline search box opens its list only on click or Tab focus, never on page load, and the open list never shifts the page.
+15. The three doors render exactly once on the page in every rung: inside the hero in the quiet and clubs rungs (including the fetch-failure Clubs floor), and in the doors band in every other rung. The doors hero keeps exactly one primary action.
 
 **Tests:**
-- Unit: mode selection.
-- Integration: the `/api/home` shape, the null-degradation path and the cache headers.
+- Unit `test/unit/homeHero.test.ts`: every rung and boundary from AC1, ties, the Next LCA line's three statuses, the "Also this weekend" line, the registration-state primary per rung.
+- Unit `test/unit/events.test.ts`: `isOpen`, `isFull`, `isClosedOnline`, `isAnnounced` and `eventEnd`, one case per clause.
+- Integration `test/integration/home.test.ts`: a partner-only fixture renders no "Register" text and no count; no personal field; `null` blocks for unbuilt sources; cache headers per mode; out-of-state rows never in the hero; the Results rung with a completed, resultless event falls through.
+- a11y and visual `test/a11y/home.spec.ts` (Playwright): a snapshot of each mode at 390 and 1280px; the page order at 390 and 1280px; the doors rendered once in every mode, inside the hero for quiet and clubs; the heritage and live font chunks absent from the `/` network log; the skeleton height and CLS; the fetch-failure Clubs floor; Pause updates in the live hero; the inline search overlay's open and focus rules.
 
-**Depends on:** WS01 and WS02. The strip needs WS09 and is flagged off until then. Live mode needs WS07 and the recap and champions blocks need WS10; both are flagged.
-**Risks & open decisions:** the hero is thin between LCA events; that is exactly why the week view exists.
+**Depends on:** WS01 and WS02. The strip needs WS09 and is flagged off until then (`homeWeek`). Live mode needs WS07 (`homeLive`). The results hero (`homeResults`) and the Champions band (`homeChampions`) ship in Phase 0 from existing standings and `state_champions`; only the recap card waits for WS10 (`homeRecap`). WS03 no longer waits for WS04: it builds `functions/utils/events.ts`, which WS04 adopts.
+**Risks & open decisions:** the hero is thin between LCA events; that is exactly why the ladder's lower rungs (this week in Louisiana, quiet with the doors, clubs) exist, and why the week view returns with WS09. Review the windows after one season using hero clicks per mode.
 
 ---
 
@@ -820,7 +973,7 @@ CREATE TABLE notifications (
 
 **API**
 - `GET /api/tournaments/:id/live` (new, public): compact pairings, standings and progress plus a `version`. Returns an `ETag` and honours `If-None-Match` with 304. Edge cache 10 seconds.
-- `GET /api/live/now` (new): feeds the header event bar (WS02).
+- `GET /api/live/now` (new; contract in WS02): feeds the public "Live" tag on Tournaments (WS02) and the homepage live hero (WS03). The personal event strip reads `/api/me/event-mode`, not this endpoint.
 - `GET /api/tournaments/:id/pairings?round=&section=` and `/standings`: verify whether these exist today, under `tournaments/[id]` or as part of `TournamentPairingsPage`'s data source, and extend rather than duplicate.
 - `GET`, `POST` and `DELETE /api/me/follows` (new).
 - The publish endpoint lives in WS08.
@@ -1344,7 +1497,7 @@ ALTER TABLE members ADD COLUMN stripe_subscription_id TEXT;
 3. The lookup reveals only status and expiry month, and rate limiting kicks in after 10 lookups per IP per hour.
 4. A donation's fund metadata shows up in that fund's total after the webhook runs.
 5. A valid QR token checks a member in; forged or expired tokens are rejected.
-6. Donate is one click from every page.
+6. Donate is one click from every page on tablet, and on desktop wherever the header row has room for it; when the desktop row is tight it is the About menu's last item, one click after opening About. On phones it is the first of the three buttons after the section list in the Menu sheet (two taps).
 
 **Tests**
 - Unit: the optimizer.
@@ -1593,7 +1746,7 @@ Add the R2 binding `SCANS` (new bucket) in `wrangler.toml`.
 
 | Phase | Ships | Done when |
 |---|---|---|
-| **0 · Foundation** | WS01 → WS02 → WS03 (strip, live and recap blocks flagged off) | axe is clean on key routes; no Level-A failures; new nav live; homepage rebuilt with next-event and week modes; preview DB in place |
+| **0 · Foundation** | WS01 → WS02 → WS03 (strip, live and recap blocks flagged off) | axe is clean on key routes; no Level-A failures; new nav live; homepage rebuilt with the hero ladder; preview DB in place |
 | **1 · Events core** | WS04, WS05, WS06, plus WS13's member and parent sections | A family can find an event by chip, map or calendar, read a plain-language event page, and register three players in one payment; partner pages and share previews work |
 | **2 · Event day** | WS08 (console, setup checklist, QR check-in), then WS07 | **Pilot at one LCA event** (for example the Paul Morphy Open) with alerts limited to opted-in players; switch alerts on site-wide after the pilot review |
 | **3 · Community** | WS09, then WS10, then WS11 | All 25 clubs have schedules and confirm emails; the this-week strip turns on; first results archived; recaps drafting; scholastic hub live |
@@ -1610,7 +1763,7 @@ Sequencing notes:
 
 | ID | Decision | Settled |
 |---|---|---|
-| D1 | Logo and mark | **Both, chosen by space.** The board-voted full-colour LCA logo goes wherever there's room: desktop header, footer, homepage identity band, About and history pages, emails, print kit, certificates and the membership card. The rook-shaped Louisiana mark goes where space is tight: favicon, mobile and condensed headers, small badges, QR centres and social avatars. Never recolour the logo; set it on white or cream. |
+| D1 | Logo and mark | **Both, chosen by place (amended October 8, 2026).** The rook-shaped Louisiana mark is the header's brand mark at every width (desktop, tablet and phone, with no cream plate and no swap on scroll), and also goes on the favicon, small badges, QR centres and social avatars. The board-voted full-colour LCA logo goes to the footer brand block, homepage identity band, About and history pages, emails, print kit, certificates and the membership card. Never recolour the logo; set it on white or cream. |
 | D2 | Card processing fee | **All-in pricing (default).** The price shown is the price paid, with no separate card-fee line. LCA absorbs Stripe's fee of roughly 2.9% + 30¢ per payment. If that matters, nudge entry fees up instead of adding a line. K confirms with the board. |
 | D3 | Names of minors | **Full names.** Results, standings, winners and recaps congratulate kids by name. Only a page that lists minors and nothing else, such as a full scholastic roster, abbreviates to first name + last initial, using the per-event `public_minor_names` setting. |
 | D4 | Wallet passes | **Phase 5.** Start with the in-account card, the printable card and the QR. |
