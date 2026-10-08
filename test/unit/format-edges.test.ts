@@ -160,7 +160,7 @@ describe('plain-language rules in the source of domain/format', () => {
     .map((f) => [f, readFileSync(join(DOMAIN_FORMAT, f), 'utf8')] as const)
 
   it('finds the helper files', () => {
-    expect(sources.map(([f]) => f).sort()).toEqual(['clock.ts', 'date.ts', 'index.ts', 'score.ts', 'timeControl.ts'])
+    expect(sources.map(([f]) => f).sort()).toEqual(['centralTime.ts', 'clock.ts', 'date.ts', 'index.ts', 'score.ts', 'timeControl.ts'])
   })
 
   it.each(sources)('%s never says USCF', (_f, src) => {
