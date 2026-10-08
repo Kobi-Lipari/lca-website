@@ -1,6 +1,6 @@
 # Website redesign: status
 
-Last updated: 2026-10-08 (WS01, preview database)
+Last updated: 2026-10-08 (WS01, step 2: switches and component test setup)
 
 The brief is `docs/redesign/REDESIGN_SPEC.md`. This file records, for each workstream, where it stands, what was decided, where the work differs from the brief, what is left to do, and every `verify:` item that has been checked. It is updated in every redesign PR.
 
@@ -17,42 +17,42 @@ The brief is `docs/redesign/REDESIGN_SPEC.md`. This file records, for each works
 
 ### What each acceptance criterion and decision is proved by
 
-AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of K's October 8 structural decisions.
+AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of K's October 8 structural decisions. Each item is proved in one step. "Planned" means that step has not been built yet; the entry is replaced with the passing test, or the recorded measurement, when it lands. Step 32 checks that every row ends with a passing test or a recorded result.
 
 | Item | What it covers | Step | Proved by |
 |---|---|---|---|
-| AC1 | axe finds no serious or critical issue on the listed pages in every look | | |
-| AC2 | No light-gold text on a light ground | | |
-| AC3 | Focus ring reaches 3:1 in every look | | |
-| AC4 | Nothing auto-advances; reduced motion stops animation | | |
-| AC5 | Every status shows its label in words | | |
-| AC6 | Standings and crosstables show ½ in tabular figures | | |
-| AC7 | Home hero image size and mobile performance | | |
-| AC8 | Switching look on a container causes no layout shift | | |
+| AC1 | axe finds no serious or critical issue on the listed pages in every look | 32 | Planned: axe on all nine routes in light, dark, live and heritage, plus the scholastic fixture page, with zero serious or critical issues (`npm run test:a11y`). |
+| AC2 | No light-gold text on a light ground | 25 | Planned: `goldText.test.ts` fails on light-gold or raw `#c8a94a` text on a light ground and passes on the codebase. |
+| AC3 | Focus ring reaches 3:1 in every look | 21 | Planned: `contrast.test.ts` (WCAG formula on the token values in `index.css`) and `tokens.spec.ts` (the measured outline on a focused button in each look). |
+| AC4 | Nothing auto-advances; reduced motion stops animation | 29 | Planned: the home hero is unchanged after 60 seconds of advanced timers, no rotating timer exists outside the allowlist, and with reduced motion the page has no running animations. |
+| AC5 | Every status shows its label in words | 26 | Planned: every `StatusBadge` status renders its label in words, `StatusDot` shows words under `newLook`, and every `[data-status]` element on the fixture page has text. |
+| AC6 | Standings and crosstables show ½ in tabular figures | 27 | Planned: render tests with half-point scores show 3½ and ½, never 3.5 or 0.5, in Geist Mono with tabular figures. |
+| AC7 | Home hero image size and mobile performance | 29 | Planned: at 390 px wide and 3x density the largest image is the hero picture at 200 KB or less (gated). The Lighthouse mobile score of 90 or more is a lab measurement recorded here, plus K's run on the preview. |
+| AC8 | Switching look on a container causes no layout shift | 22 | Planned: switching the look on the fixture container changes colours while `Button`, `Input` and `StatusBadge` do not move (layout-shift observer reports 0). |
 | AC9 | Branch deploys use `lca-db-preview`, never `lca-db` | 1 | Config half: `test/unit/wrangler-config.test.ts`, with `test/unit/preview-database.test.ts` proving the npm scripts stop when the guard fails. Live half: K checks a branch deploy's bindings after the first push (not done yet). |
-| AC10 | Official logo and rook mark in their placements | | |
-| AC11 | Heritage fonts stay off `/`; no layout shift from the font swap | | |
-| AC12 | Editors and forms never render in the heritage look | | |
-| AC13 | Controls look identical inside heritage | | |
-| AC14 | The live tag's dot does not move | | |
-| K1a | Shared `domain/` folder and date, time and score formats | | |
-| K1b | Shared pricing, eligibility and minor name rules | | |
-| K1c | Event-mode phases | | |
-| K1d | Request and response contracts | | |
-| K2a | Sections and schedules tables, with the backfill | | |
-| K2b | One writer for sections | | |
-| K2c | Player registration reads the new tables | | |
-| K2d | Admin entry reads the new tables | | |
-| K2e | Server display reads the new tables | | |
-| K2f | Client display reads the new tables | | |
-| K2g | Schedules | | |
-| K3a | Server helpers grouped by area | | |
-| K3b | Client library grouped by area | | |
-| K3c | API client split by area | | |
-| K3d | Components grouped by area, with boundary rules | | |
-| K4 | Drizzle for schema and queries | | |
-| K5 | Browser tests | | |
-| K6 | No member pricing; the LCA membership requirement | | |
+| AC10 | Official logo and rook mark in their placements | 28 | Planned: with `newLook` on, the header shows the rook mark at 390, 768 and 1280 px and the footer and `/about` show the official logo, unrecoloured. Placements whose pages do not exist yet are recorded with the workstream that builds them. |
+| AC11 | Heritage fonts stay off `/`; no layout shift from the font swap | 31 | Planned: the heritage font file never appears in the `/` network log, and layout shift on `/about` and `/governance/bylaws` stays under 0.1 across the font swap. |
+| AC12 | Editors and forms never render in the heritage look | 31 | Planned: the route-to-look test fails if any workspace or admin route gets the heritage look, and the editor and the governance documents form render in the base look. |
+| AC13 | Controls look identical inside heritage | 31 | Planned: `Button`, `Input`, `StatusBadge` and the focus ring match pixel for pixel inside heritage and base (screenshots from the same run). |
+| AC14 | The live tag's dot does not move | 26 | Planned: the live tag's dot has no animation class, its computed animation is `none`, and it has no running animations. |
+| K1a | Shared `domain/` folder and date, time and score formats | 3 | Planned: `domain/` exists and is reachable from the site, the server functions and the workers; the format helpers are tested (½ for halves, weekday on every date, 12-hour times, the plain companion for time controls); lint stops `domain/` from importing the site, the server, React or the browser. |
+| K1b | Shared pricing, eligibility and minor name rules | 4 | Planned: `domain-shims.test.ts` proves pricing, section eligibility, regions, family size, membership tier prices and the minor name rule each have one definition; `mirrors.test.ts` is retired. |
+| K1c | Event-mode phases | 5 | Planned: unit tests of `domain/events/eventMode.ts` for every Phase 0 phase, midnight, both 2026 clock changes and multi-day events. |
+| K1d | Request and response contracts | 7 | **Partial: ratchet.** Planned: the contract layer and the per-endpoint contract test exist; `contract-coverage` fails for a new handler with no contract and for a contracted route still listed as pending, and the pending list can only shrink. Endpoints get contracts as later steps and workstreams touch them, not all at once (see Decisions). |
+| K2a | Sections and schedules tables, with the backfill | 8 | Planned: a migration test on `node:sqlite` with legacy fixtures shows the sections and schedules tables created and backfilled from the JSON columns with nothing dropped, and a second run adds nothing. |
+| K2b | One writer for sections | 9 | Planned: the writer audit passes; after every write the table rows match the JSON column; renames, swaps and rotations keep each entry on its section. |
+| K2c | Player registration reads the new tables | 10 | Planned: no file in the player registration path parses `tournaments.sections`; every inserted or moved registration carries its `section_id`; prices are unchanged for the same inputs. |
+| K2d | Admin entry reads the new tables | 11 | Planned: walk-ins and the waitlist no longer parse `tournaments.sections`; a walk-in row carries its `section_id`; another club's rep and a plain member get 403. |
+| K2e | Server display reads the new tables | 12 | Planned: `sections-reader-audit` passes, no server code reads the JSON column, and no handler returns a raw tournaments row. |
+| K2f | Client display reads the new tables | 13 | Planned: every page uses the contract-derived section type; `npm run check:bundle` finds no zod in the built site. |
+| K2g | Schedules | 14 | Planned: schedules are read and written only through the table and its repository (audit), and an event never has two live primary schedules. |
+| K3a | Server helpers grouped by area | 16 | Planned: server helpers sit in `functions/utils/<area>/`; the move shows only renames and import-line edits, and the unit test count is unchanged. |
+| K3b | Client library grouped by area | 17 | Planned: area-specific client library code sits under `src/areas/<area>/`; renames and import-line edits only; the build has the same route chunks. |
+| K3c | API client split by area | 18 | Planned: client API calls live per area behind an unchanged `@/lib/api`; `api-exports.test.ts` matches the exported names from before the split, and route-audit finds the same fetch paths. |
+| K3d | Components grouped by area, with boundary rules | 19 | Planned: components sit in their area folders, and `area-boundaries.test.ts` shows lint reporting an area file that imports a page. |
+| K4 | Drizzle for schema and queries | 6 | Planned: the Drizzle schema matches the migrations (`schema-drift.test.ts`, both directions), `drizzle-kit generate` reports no changes right after the pull, and `split-sql.test.ts` splits all existing migrations exactly as before. |
+| K5 | Browser tests | 20 | Planned: `npm run test:a11y` builds, serves seeded local data and passes the smoke spec; the family registration and round publishing end-to-end tests are written as pending specs, run only by hand against a preview. |
+| K6 | No member pricing; the LCA membership requirement | 15 | Planned: a member and a non-member pay the same in every tier; `requires_lca_membership` round-trips through create, edit and read; another club's rep and an assigned director get 403 when changing it; no page mentions a member price. |
 
 ### Step 1: preview database
 
@@ -63,6 +63,16 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 - Nothing in a development container or CI targets the preview database. Only K runs the preview scripts.
 - Checks: `npm run build`, `npm run typecheck:functions` and `npm run test:all` pass (unit 406, up from 326 with 80 new tests in `test/unit/wrangler-config.test.ts` and `test/unit/preview-database.test.ts`; integration 267). `npm run lint` is at 36 errors and 4 warnings, the same as before the change, none in the files this step touches.
 
+### Step 2: switches and component test setup
+
+- `src/lib/features.ts` gains the 15 Phase 0 switches from brief 0.2 (`newLook`, `themeHeritage`, `themeScholastic`, `newNav`, `siteSearch`, `homeSearch`, `eventStrip`, `eventStripLive`, `liveMarker`, `newHome`, `homeResults`, `homeChampions`, `homeLive`, `homeWeek`, `homeRecap`), every one off, each with a short comment saying what it turns on. `clubTournaments`, `tournamentQuickFilters` and `externalTags` are unchanged. Nothing reads the new switches yet, so nothing visible changes.
+- `vitest.config.ts` gains the `@` alias for `src/` (as in `vite.config.ts`), picks up `test/unit/**/*.test.tsx`, and compiles test JSX with `@vitejs/plugin-react`, the same as the site build. Tests still run in node by default; a component test asks for a browser-like DOM with a `// @vitest-environment jsdom` comment at the top of its own file, so the pairing engine, scanner and other node tests are unaffected.
+- New development packages, each pinned to an exact version at least two weeks old: `jsdom` 29.1.1 (April 30), `@testing-library/react` 16.3.3 (August 27), and `@testing-library/dom` 10.4.2 (September 13), which `@testing-library/react` needs alongside it. jsdom 30 is not used because it needs Node 22.22.2 or later; this container runs 22.22.0 and CI asks only for Node 22. No runtime dependency changes.
+- New tests: `test/unit/features.test.ts` (every Phase 0 switch exists, is a boolean and is off, which is the starting state, so turning one on means taking its name out of the test's list (the comment in `src/lib/features.ts` says so); the three earlier switches still exist as booleans; the object holds at least these 18, so later switches can be added without editing the test; the file runs in node with no DOM), `test/unit/render-smoke.test.tsx` (runs in jsdom, renders today's `StatusBadge` through `@/components/StatusBadge` without importing React, and checks its words and tone classes) and `test/unit/test-setup.test.ts` (the switch names match brief 0.2 and each switch has a comment; the test configuration keeps node as the default and has the `@` alias, the `.tsx` pattern and the React plugin; only `.tsx` files ask for jsdom; the test packages are exact-pinned development packages; and this record names the switches, counts, verify items and decisions in plain words). Later component tests follow the smoke test's pattern, including `afterEach(cleanup)`, because the test globals are off and Testing Library does not clean up on its own without them.
+- This step proves no acceptance criterion or decision by itself; it sets up the switches and the component tests that later steps use.
+- `test/unit/preview-database.test.ts` checked that only AC9 was filled in the table above, which was true after step 1. It now checks that every row names its step (1 to 32) and what proves it, that K1d says "partial: ratchet", and that AC9 keeps its step 1 entry.
+- Checks: `npm run build`, `npm run typecheck:functions` and `npm run test:all` pass (unit 477, up from 406 with 71 new tests: 20 in `features.test.ts`, 3 in `render-smoke.test.tsx` and 48 in `test-setup.test.ts`; integration 267, unchanged). `npm run lint` is at 36 errors and 4 warnings, the same as before the change, none in the files this step touches.
+
 ### Decisions
 
 - The real preview id is in `wrangler.toml`, not a placeholder (K confirmed it on October 8). The guard still refuses a placeholder, production's id and production's name.
@@ -70,8 +80,18 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 - Preview secrets are set by K in the Pages dashboard: Stripe test keys only, and no Resend key until K wants test mail. Without a Resend key every send fails, is logged, and the request carries on.
 - Previews keep the production `lca-club-logos` bucket for now.
 - The binding name stays `DB` in both places, so the code reads `env.DB` everywhere.
+- **Contracts are a ratchet** (decided October 8, before step 7). Every endpoint a WS01 step touches gets a zod contract and a contract test; a coverage test blocks any new endpoint without one; the list of endpoints still waiting for a contract can only shrink. There is no step that converts every endpoint at once, so K1d is marked "partial: ratchet" in the table above. The two page routes that serve HTML (`functions/tournaments/[id].ts` and `functions/clubs/[id].ts`) are left out of the contract list, with that reason.
+- **Dark mode** follows the device setting as soon as `newLook` is on, with the Appearance control (System, Light, Dark). There is no separate dark mode switch.
+- **Member discount** is retired in step 15. The member-discount input and the "LCA members save" line are removed without a switch, an exception to the brief's rule that visible changes ship behind one, because keeping them would advertise a price that is not charged (see Deviations). Before checkpoint B merges, K runs `SELECT id, name, member_discount FROM tournaments WHERE member_discount > 0 AND status != 'completed'` on production; the result is recorded here. The step does not wait on it.
+- **LCA membership requirement.** `requires_lca_membership` defaults to on for LCA-run events (no `club_id`). Club-run events, existing and new, start with it off, because clubs get tournament creation first, free of charge. Only the owning club's rep or an LCA admin may change it; an assigned tournament director cannot. In WS01 the column exists and the setup form shows the switch; turning a non-member away or adding the membership at checkout is WS06's, because today's registration has no way to add a membership inline, and enforcing it now would leave non-members with no way forward.
+- **Removing a section that has entries** is refused with a plain message ("3 entries are in this section. Move them to another section first."). Only an empty section can be archived.
+- **Checkpoints.** Each checkpoint is a draft PR that K merges; `migrate-db.yml` then applies its migrations to production. K runs `npm run db:migrate:preview` from the branch before reviewing each checkpoint's preview.
 
 ### Deviations from the brief
+
+Every deviation planned for WS01 is listed here now, so a checkpoint review sees them all in one place. A line for a step not yet built names that step; when the step lands it confirms or corrects its line.
+
+Recorded in steps 1 and 2:
 
 - **Remote migrations.** The brief (0.2) says K applies remote migrations. In fact `.github/workflows/migrate-db.yml` applies `migrations/**` to `lca-db --remote` on every push to `main` that touches migrations, so merging a checkpoint applies its migrations to production. The preview database is migrated only by K's `db:migrate:preview`, run from the branch before review.
 - **Preview id.** The plan was a placeholder for K to paste over; the real id went in directly on K's confirmation.
@@ -79,6 +99,37 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 - **Mail on previews.** The brief has the Resend key set separately for previews; the decision is no Resend key on previews until K asks for test mail.
 - **Brief 0.1, rule 8** ("Preview deployments share the production database") is no longer true once this step merges. The brief's text should be updated with the next brief revision.
 - **Seed script.** The brief asks for a seed script with the preview database; it exists but refuses until the sample data is written in step 20.
+- **Heritage fonts (brief 0.2).** Heritage loads Libre Caslon Display and Source Serif 4 instead of reusing Instrument Serif. Baloo 2 and Nunito, the Bright Scholastic fonts, move to WS11. WS01 ships the scholastic colour tokens and a fixture page only; `themeScholastic` stays off until WS11.
+- **Structural work first.** The brief's WS01 says "Data model: none" and "API: none". K's October 8 structural decisions put steps 3 to 19 (the shared `domain/` folder, Drizzle, contracts, the sections and schedules tables, member pricing, and the folder moves) ahead of the design tokens, so WS01 adds migrations and changes endpoints.
+- **Contracts.** K1d is met as a ratchet rather than a contract for all 88 endpoints at once (see Decisions).
+- **Event-mode phases** are a pure module at `domain/events/eventMode.ts` built in WS01 (step 5), not `functions/utils/eventMode.ts` in WS02. WS02 still builds the endpoint and the strip on top of it.
+
+Planned for later steps:
+
+- **Member pricing ships without a switch (step 15).** This is an exception to brief 0.2's rule that every visible change ships behind a switch. The member-discount input on the tournament setup form and the "LCA members save" line are removed outright, because keeping them would advertise a price that is not charged. `tournaments.member_discount` stays in the database but is neither read nor written.
+- **Shared folder and formats (step 3).** The shared folder is `domain/` at the repo root, imported as `@domain` in the site and by relative path in the server functions and workers. The date, time and score helpers live in `domain/format`, and `src/lib/format.ts` becomes a re-export of it, so the brief's path still works. zod is allowed only in `domain/contracts`, so nothing the browser imports from `domain/` brings zod into the site bundle.
+- **One definition for shared rules (step 4).** The helpers copied between the site and the server (section rules, time, pricing, regions, family size) move into `domain/`, with one-line re-exports left at their old paths. `test/unit/mirrors.test.ts` is replaced by a test that each rule has one definition, and the membership tier prices move out of `checkout.ts` into `domain/membership/tiers.ts`.
+- **Minor display names (step 4)** follow `DESIGN_REPLAN_phase1`: a name is shortened when there is an active guardian link or the entry is marked under 18, not whenever the player is a household dependent.
+- **Daily emails worker (step 4).** `npm run typecheck:functions` also checks `workers/daily-emails`, so a broken import from `domain/` fails the checks, and `deploy-worker.yml` also runs on changes to `domain/**`.
+- **Drizzle (step 6).** Drizzle writes into a staging folder, `drizzle/`, and a small script numbers each file into `migrations/`, so wrangler and the test runner are unchanged. `migration-safety.test.ts` learns drizzle-kit's quoted names, `ON UPDATE` clauses and `ADD` without `COLUMN`, and the SQL splitter tracks `BEGIN`, `CASE` and `END` so triggers with `CASE` split correctly.
+- **Old queries move to Drizzle only when changed (steps 6 to 19).** A query is converted when a step changes its SQL or the values it binds. A query whose rows are only handled differently afterwards stays as plain D1. When a converted statement shares a batch, the whole batch moves to Drizzle's `db.batch`.
+- **Sections and schedules tables (step 8).** `tournament_sections` (with `fee_regular`, optional `fee_early` and `fee_late`, and a cap), `tournament_schedules`, `tournament_schedule_rounds`, and `section_id` and `schedule_id` on registrations replace `DESIGN_REPLAN_phase1` 8.1's schedules JSON column, `tournaments.merge_round` and the cap inside the JSON. Early and late prices are worked out when read, from the tournament's own deadline and fee columns, unless a section sets its own. The `sections` and `schedules` JSON columns are kept, in today's exact shape, as copies of the tables, and nothing is dropped. `tournament_games` keeps section names in WS01; a `section_id` there is left for WS07.
+- **The sync trigger stays past checkpoint B (step 8).** Migration 0053 adds a trigger on `tournaments` that copies sections and rounds from the JSON columns into the tables. It stays after checkpoint B instead of being dropped there, because dropping it at a merge would reopen the window during a deploy when old code still writes only the JSON. It never touches caps or ids, agrees with the single writer (which writes the table first and the JSON last), and is removed together with the JSON columns.
+- **Folder moves (steps 16 to 19).** Files under `functions/api` do not move, because their paths are the URLs. Server helpers are grouped under `functions/utils/<area>/` and site code under `src/areas/<area>/`, using K's seven areas plus governance; shared platform files stay where they are. The scanner code (`functions/utils/scan`, `src/lib/scanner`) stays put so its own release checks are not set off.
+- **API client (step 18).** `src/lib/api.ts` is split by area but keeps re-exporting every name, so no importer changes in WS01. The route audit is widened to every area's `api.ts`.
+- **Big pages are not broken up in WS01 (step 19).** WS01 moves components and library code and adds lint rules for the area boundaries (imports across areas warn rather than fail). The large existing pages are broken up when WS05, WS06, WS08 and WS15 rebuild them.
+- **Browser tests (step 20).** The accessibility suite runs against a local build on seeded local data, with switches turned on through `VITE_FLAGS` only in that mode; the live site ignores the override, and a test proves it. The colours and fonts of the build with every switch off are recorded once, and later steps must not change them. The family registration and round publishing end-to-end tests are written as pending specs with a preview workflow started by hand; they can run only once WS06 and WS07 exist and the preview database is migrated and seeded.
+- **Mono figures and the focus ring (step 21).** Geist Mono applies only under the new look; with `newLook` off, monospace text keeps the device's own font, and the old focus token draws today's ring exactly.
+- **Appearance control and the rook mark (steps 21 and 28).** Until WS02 rebuilds the footer, the Appearance control (System, Light, Dark) sits in the current footer behind `newLook`, and the script that applies the choice before the page paints is included only when `newLook` is on. The current header shows the rook mark under `newLook`. The full-colour logo goes on `/about`; the AC10 placements whose pages do not exist yet (the identity band, membership card, certificates, the print kit cover and the Champions page) wait for WS03, WS10 and WS12.
+- **ScrollPanel (step 26).** Added from K's October 8 feedback: a scroll panel and a bounded table scroll area, so long screens such as tournament setup stay together. Each page adopts them when its own workstream rebuilds it.
+- **White and Black markers (step 27)** in result cells are drawn as small images, because the Geist Mono file has no ○ or ● characters.
+- **Homepage hero (step 29).** With `newLook` on, the homepage hero shows one still, responsive picture instead of the slideshow. WS03 replaces the hero entirely.
+- **`hero.png` is left out of the image pipeline (step 29)**, because nothing uses it.
+- **AC7's Lighthouse score is recorded, not enforced (step 29).** The mobile score of 90 or more is a lab measurement (`npm run perf:home`, plus K's run on the preview) written down here. The 200 KB limit on the largest image is enforced by a test.
+- **Small caps (step 30)** use uppercase at 0.85em, because the Source Serif 4 and Libre Caslon Display files have no true small capitals. Source Serif 4 uses its weight-only file (51 KB) rather than the optical-size one (122 KB), to stay under the 110 KB font budget.
+- **AC13 compares screenshots from the same run (step 31)**, base against heritage, rather than against stored reference images.
+- **AC1's live and heritage runs (step 32)** set the look on each page's `<main>` inside the test, since few routes use those looks in WS01.
+- **Role-safety tests (steps 9 to 15).** WS01 adds no new endpoints, so no new-endpoint role-safety tests are needed. The endpoints it changes gain role-safety cases instead: the admin tournament create and edit (sections and `requires_lca_membership`, including the assigned director), walk-ins and the waitlist.
 
 ### Verify items resolved
 
@@ -87,6 +138,10 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 - **Does the preview database exist.** K created it on October 8 and confirmed the id. This container is not logged in to Cloudflare and cannot check it.
 - **Who applies remote migrations.** `.github/workflows/migrate-db.yml` (push to `main` touching `migrations/**`, or manual run) lists and then applies migrations to `lca-db --remote`. Recorded as a deviation above. Nothing in any workflow targets `lca-db-preview`.
 - **Workers.** `workers/daily-emails` binds production `lca-db` and deploys only from `main` (`.github/workflows/deploy-worker.yml`). `workers/clearinghouse-sync` binds production `lca-db` and imports nothing from `functions/`. Neither is affected by the preview block.
+- **Phase 0 switch list (step 2).** Brief 0.2 lists 15 switches to add, all off, and the names match the list in step 2 exactly. Before the change `src/lib/features.ts` held `clubTournaments`, `tournamentQuickFilters` and `externalTags`, all off, and only `src/pages/TournamentsPage.tsx` reads them.
+- **Unit tests and the `@` alias (step 2).** Confirmed: `vitest.config.ts` had no alias and collected only `functions/utils/swiss/**/*.test.ts`, `src/lib/scanner/**/*.test.ts` and `test/unit/**/*.test.ts`, so no `.tsx` test could run, and the unit tests reached `src/` by relative paths (for example `mirrors.test.ts`). The alias and the `.tsx` pattern are added; existing tests keep their relative imports.
+- **JSX in test files (step 2).** Confirmed: the root `tsconfig.json` holds only references, `tsconfig.app.json` includes only `src`, and `tsconfig.functions.json` includes only `functions`, so `test/` is in no tsconfig and nothing there sets the JSX runtime. In practice, with vite 8 and vitest 4.1.10, the smoke test also passes without the React plugin, because the default compiler already uses the automatic runtime. The plugin is added anyway, so tests compile JSX the same way the site build does rather than relying on a default.
+- **jsdom and Node (step 2).** This container runs Node 22.22.0 and CI asks for Node `'22'`. jsdom 30.0.0 to 30.1.2 require Node 22.22.2 or later; jsdom 29.1.1 accepts 22.13 and later, so 29.1.1 is the pin. Installing the three packages added no new `npm audit` findings.
 
 ### Follow-ups
 
@@ -97,6 +152,8 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 - **Logins.** Previews use the production Supabase project, so a sign-in on a preview is a real account.
 - **One preview database for every branch.** A migration applied from one branch is there for all of them; only the redesign branch migrates it today.
 - **Brief text.** Update brief 0.1 rule 8 and the 0.2 line "K applies remote migrations" in the next brief revision.
+- **Member discount query.** K runs the production query under Decisions before checkpoint B merges; record the result here.
+- **jsdom 30.** Moving to jsdom 30 needs Node 22.22.2 or later in development and in CI (`.github/workflows/ci.yml` asks for `'22'`). Not needed for WS01.
 
 ## WS02: Information architecture and navigation
 

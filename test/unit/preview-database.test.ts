@@ -222,13 +222,17 @@ describe('REDESIGN_STATUS.md', () => {
     for (const r of rows) expect(r[2], `${r[1]} has no description`).not.toBe('')
   })
 
-  it('has filled in no step yet except AC9, which this slice proves', () => {
+  it('maps every item to the one step that proves it, with AC9 proved by this slice', () => {
     const rows = status
       .split('\n')
       .filter((l) => /^\| (AC\d+|K\d[a-z]?) \|/.test(l))
       .map((l) => l.split('|').map((c) => c.trim()))
-    const filled = rows.filter((r) => r[3] !== '' || r[4] !== '').map((r) => r[1])
-    expect(filled).toEqual(['AC9'])
+    for (const r of rows) {
+      expect(r[3], `${r[1]} has no step`).toMatch(/^([1-9]|[12]\d|3[0-2])$/)
+      expect(r[4], `${r[1]} says nothing about what proves it`).not.toBe('')
+    }
+    const k1d = rows.find((r) => r[1] === 'K1d') as string[]
+    expect(k1d[4]).toMatch(/partial: ratchet/i)
     const ac9 = rows.find((r) => r[1] === 'AC9') as string[]
     expect(ac9[3]).toBe('1')
     expect(ac9[4]).toContain('test/unit/wrangler-config.test.ts')
