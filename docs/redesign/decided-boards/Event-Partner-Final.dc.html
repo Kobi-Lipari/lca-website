@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Partner event page</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ep-root{width:100%;max-width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 24px 56px;background:#ecebe6;color:#1a2744}
+.ep-root *{box-sizing:border-box}
+.ep-root p{margin:0}
+.ep-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* title strip, legend, feedback */
+.ep-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.ep-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ep-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ep-meta{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1000px}
+.ep-meta b{color:#1a2744;font-weight:600}
+.ep-legend{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:20px;margin-top:20px}
+.ep-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.ep-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 26px}
+.ep-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.ep-notes b,.ep-fb b{font-weight:600}
+.ep-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
+.ep-fb ol{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ep-fb li{display:grid;grid-template-columns:22px 34px minmax(0,1fr);gap:8px;align-items:start;font-size:13px;line-height:1.45}
+.ep-tick{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;border:1.5px solid #1a2744;background:#1a2744;color:#ffffff;margin-top:1px}
+.ep-tick svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.ep-tick-off{background:#ffffff;border-color:#858b99}
+.ep-fbn{display:inline-flex;align-items:center;justify-content:center;height:22px;border-radius:6px;background:#f4ecd4;color:#664c0c;font-size:12px;font-weight:700}
+.ep-fb-k{display:block;color:#1a2744}
+.ep-fb-w{display:block;color:#3d4556}
+.ep-fb-no{color:#555c6b}
+.ep-fb-no .ep-fb-k{color:#3d4556}
+
+/* frame labels */
+.ep-sec{margin-top:40px}
+.ep-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.ep-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ep-flab h3{margin:0;font-size:17px;line-height:1.25;font-weight:600}
+.ep-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ep-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1060px;margin:12px 0 0}
+.ep-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.ep-browser .k-browser-url{max-width:820px}
+.ep-view{position:relative;background:#f5f5f2;overflow:hidden}
+
+/* header */
+.ep-hd-in{gap:0;position:relative}
+.ep-hd .k-brand{margin-right:16px}
+.ep-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ep-rook-sm{width:24px;height:24px}
+.ep-nav{gap:0}
+.ep-nav a{padding:0 10px;white-space:nowrap}
+.ep-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.ep-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ep-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ep-util{gap:12px}
+.ep-util .k-ulink{padding:0 4px}
+
+/* breadcrumb */
+.ep-crumb{padding-top:14px;padding-bottom:14px;background:#ffffff;border-bottom:1px solid #e3e2dc}
+.ep-crumb nav{display:flex;align-items:center;gap:8px;font-size:14px;color:#555c6b}
+.ep-crumb nav a{color:#1a2744;font-weight:600;text-decoration:none}
+
+/* top */
+.ep-top{background:#ffffff;border-bottom:1px solid #e3e2dc;padding:30px 0 34px}
+.ep-topin{display:flex;flex-direction:column;gap:16px;max-width:900px}
+.ep-h1{font-size:46px;line-height:1.08;font-weight:700;letter-spacing:-.02em;margin:0}
+.ep-dline{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;font-size:17px;color:#3d4556}
+.ep-dline span{display:inline-flex;align-items:center;gap:8px}
+.ep-dline b{color:#1a2744;font-weight:600}
+.ep-org{display:inline-flex;align-items:center;gap:8px;font-size:15px;color:#1a2744;padding:6px 12px 6px 10px;border-radius:8px;background:#f3f3ef;border:1px solid #e0dfd8}
+.ep-org b{font-weight:600}
+.ep-btns{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.ep-bell{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.ep-note{display:flex;align-items:flex-start;gap:10px;margin:0;padding:11px 14px;background:#fbfaf6;border:1px solid #e5e7ed;border-radius:8px;font-size:14px;line-height:1.5;color:#3d4556}
+.ep-note b{color:#1a2744;font-weight:600}
+.ep-ni{width:18px;height:18px;flex:none;margin-top:1px;fill:none;stroke:#1a2744;stroke-width:1.8;stroke-linecap:round}
+.ep-src{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:14px;color:#3d4556}
+.ep-src svg{color:#1a2744}
+.ep-ok{display:inline-flex;align-items:center;gap:6px;color:#145b3a;font-weight:600}
+.ep-ok i{display:block;width:8px;height:8px;border-radius:50%;background:#1f7a4d}
+
+/* body */
+.ep-body{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:40px;align-items:start;padding-top:32px;padding-bottom:48px}
+.ep-main{min-width:0;display:flex;flex-direction:column;gap:36px}
+.ep-side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ep-hrow{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ep-hrow .k-h2,.ep-hrow .k-h3{margin:0}
+.ep-mapgrid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:center}
+.ep-drive{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #eeece6;font-size:15px}
+.ep-row{display:grid;grid-template-columns:64px minmax(0,1fr) auto 20px;gap:16px;align-items:center;padding:14px 18px;text-decoration:none;color:inherit}
+.ep-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:64px;min-height:64px;border-radius:10px;border:1px solid #d6d5cd;background:#ffffff;line-height:1}
+.ep-date .ep-wd{font-size:11px;font-weight:600;color:#3d4556}
+.ep-date b{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-top:3px}
+.ep-date .ep-mo{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-top:3px}
+.ep-date-lca{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ep-date-lca .ep-wd,.ep-date-lca .ep-mo{color:#e6cf86}
+.ep-out{color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.ep-og{border:1px solid #dcdad2;border-radius:10px;overflow:hidden;max-width:540px}
+.ep-hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ep-hist li{display:grid;grid-template-columns:104px 1fr;gap:10px;padding:9px 0;border-top:1px solid #eeece6;font-size:14px;line-height:1.4}
+.ep-hist li:first-child{border-top:0}
+.ep-hist b{font-weight:600}
+
+/* facts card */
+.ep-facts{margin:0;padding:4px 18px}
+.ep-facts div{display:grid;grid-template-columns:108px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid #eeece6}
+.ep-facts div:last-child{border-bottom:0}
+.ep-facts dt{color:#555c6b;font-size:14px}
+.ep-facts dd{margin:0;font-size:15px;line-height:1.45;color:#1a2744}
+.ep-facts .ep-as{color:#555c6b;font-size:13px}
+.ep-nil{color:#555c6b;font-style:italic}
+.ep-fhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-bottom:1px solid #e3e1da}
+.ep-ffoot{display:flex;flex-direction:column;gap:8px;padding:16px 18px;border-top:1px solid #e3e1da}
+
+/* insets */
+.ep-insets{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+.ep-btnrow{display:flex;gap:8px;padding:14px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;flex-wrap:wrap}
+.ep-pop{position:relative;width:380px;background:#ffffff;border:1px solid #cfcec6;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.18);padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin:14px 0 0 auto}
+.ep-pop::before{content:"";position:absolute;top:-7px;right:58px;width:12px;height:12px;background:#ffffff;border-left:1px solid #cfcec6;border-top:1px solid #cfcec6;transform:rotate(45deg)}
+.ep-pop-h{font-size:16px;font-weight:700;margin:0}
+.ep-opts{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.ep-opt{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:6px 4px;border-radius:8px;font-size:14.5px}
+.ep-opt input{width:20px;height:20px;margin:2px 0 0;accent-color:#1a2744;flex:none}
+.ep-opt b{display:block;font-weight:600;line-height:1.3}
+.ep-opt small{display:block;font-size:12.5px;color:#555c6b;line-height:1.35}
+.ep-opt-new{background:#fbf5e3}
+.ep-pop-foot{font-size:12.5px;color:#555c6b;margin:0;text-align:center}
+.ep-cnote{width:420px;flex:none;border:1px dashed #b9b7ad;border-radius:12px;padding:18px 20px;background:#fbfbf8}
+.ep-cnote ul{margin:10px 0 0;padding-left:18px;font-size:14px;line-height:1.5;color:#3d4556}
+.ep-cnote li{margin-bottom:8px}
+
+/* frame B crops */
+.ep-crops{display:grid;grid-template-columns:repeat(3,440px);justify-content:space-between;row-gap:36px}
+.ep-crop{width:440px}
+.ep-cb{border-radius:12px;overflow:hidden;border:1px solid #cfcec6;background:#f5f5f2;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.ep-ct{background:#ffffff;padding:18px 20px 20px;border-bottom:1px solid #e3e2dc;display:flex;flex-direction:column;gap:11px}
+.ep-ch1{font-size:25px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:0}
+.ep-cdl{font-size:14.5px;line-height:1.45;color:#3d4556}
+.ep-cdl b{color:#1a2744;font-weight:600}
+.ep-corg{font-size:14px;color:#1a2744}
+.ep-corg b{font-weight:600}
+.ep-cbtns{display:flex;flex-direction:column;gap:8px}
+.ep-cbtns .ep-two{display:flex;gap:8px}
+.ep-cbtns .ep-two .k-btn{flex:1}
+.ep-csrc{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.45;color:#3d4556}
+.ep-csrc svg{margin-top:2px;color:#1a2744}
+.ep-cbody{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.ep-cbody .ep-facts{padding:2px 14px}
+.ep-cbody .ep-facts div{grid-template-columns:96px 1fr;gap:10px;padding:8px 0}
+.ep-cbody .ep-facts dt{font-size:13px}
+.ep-cbody .ep-facts dd{font-size:14px}
+.ep-cbody .ep-fhead{padding:10px 14px}
+.ep-cbody .ep-ffoot{padding:12px 14px}
+.ep-hl{outline:2px dashed #866a1e;outline-offset:3px;border-radius:6px}
+.ep-ccap{font-size:13.5px;line-height:1.5;color:#3d4556;margin-top:12px}
+.ep-ccap b{color:#1a2744;font-weight:600}
+.ep-warn{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;background:#fdf3e2;border:1px solid #e7c58f;font-size:13.5px;line-height:1.45;color:#5c3300}
+.ep-warn b{color:#5c3300;font-weight:700}
+.ep-warn svg{color:#7a3d00;margin-top:1px}
+.ep-info{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:8px;background:#eef1f6;border:1px solid #cdd5e2;font-size:13.5px;line-height:1.45;color:#1a2744}
+.ep-gone{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px dashed #b9b6aa;border-radius:10px;background:#fbfaf6;font-size:13px;line-height:1.4;color:#3d4556}
+.ep-admin{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;border:1.5px dashed #6b4fa0;background:#f3effa;color:#4a2f7a;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap}
+.ep-adminbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:#f3effa;border-bottom:1px solid #d9cfee;font-size:12.5px;color:#4a2f7a}
+.ep-tag-warn{background:#fdebd6;color:#7a3d00}
+.ep-dis{opacity:1;background:#f1f1ee !important;color:#555c6b !important;border-color:#c9c8c0 !important;cursor:not-allowed}
+.ep-mini{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:12px 14px}
+.ep-mini .ep-drive{font-size:14px;padding:6px 0}
+.ep-rules{width:440px;border:1px dashed #b9b7ad;border-radius:12px;padding:18px 20px;background:#fbfbf8;align-self:start}
+.ep-rules ul{margin:10px 0 0;padding-left:18px;font-size:13.5px;line-height:1.5;color:#3d4556}
+.ep-rules li{margin-bottom:8px}
+.ep-strike{text-decoration:line-through;color:#555c6b}
+
+/* footer */
+.ep-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.ep-foot .k-meta{color:rgba(255,255,255,.78)}
+.ep-foot nav a{font-size:14px}
+.ep-facts div.ep-hl{outline-offset:-2px;margin:2px -8px;padding-left:8px;padding-right:8px}
+.ep-cbody .ep-facts div.ep-hl{padding-left:8px;padding-right:8px}
+.k-row-sm .ep-hl{margin:0 6px}
+.ep-hist li.ep-hl{outline-offset:-2px;margin:0 -8px;padding-left:8px;padding-right:8px}
+.ep-warn .k-link{white-space:nowrap}
+.ep-date-r b{font-size:17px;white-space:nowrap}
+.ep-date-r{width:72px}
+.ep-row-r{grid-template-columns:72px minmax(0,1fr) auto 20px}
+</style>
+</helmet>
+<div class="ep-root">
+
+<section class="ep-doc" aria-label="About this board">
+  <div class="ep-doc-top">
+    <div>
+      <p class="k-kicker">5 · Partner event page · decided</p>
+      <h1 class="ep-title">Partner event page · decided</h1>
+      <p class="ep-meta" style="margin-top:8px"><b>Built from:</b> Event-E (facts card, drive times, Also near, Louisiana weekends, After the event, listing history, Report a problem, shared preview) · the decided header with the rook mark · the decided Tournaments list (info note, the partner preview's navy button and Remind me popover)</p>
+      <p class="ep-meta"><b>Replaces:</b> Event-E</p>
+      <p class="ep-meta"><b>Shown:</b> /tournaments/mississippi-state-championship-2026 at 1440px on Thu, Oct 8, 2026, signed out. Frame A is the page as listed, inset C the Remind me popover, Frame B eight feed mistakes.</p>
+      <p class="ep-meta"><b>Real data:</b> Mississippi State Championship, Sat–Sun, Oct 17–18, 2026, Canton, MS, run by Mississippi Chess Association, and the nearby listings, from the Gulf South Tournament Clearinghouse. Bracketed fields stand for what the feed holds.</p>
+    </div>
+    <span class="k-sample">Sample data · sync times, listing history, Frame B mistakes</span>
+  </div>
+  <div class="ep-legend">
+    <div class="ep-lbox">
+      <p class="k-label">Notes on this board</p>
+      <ol class="ep-notes"><li><span class="k-num-badge">1</span><span><b>Two-level breadcrumb, then the tags.</b> "Partner event", the feed's format and age words as chips, and "9 days away" in plain text that changes once a day. No status colour without words, no count.</span></li><li><span class="k-num-badge">2</span><span><b>"Run by Mississippi Chess Association"</b> is the organizer as the feed names it, in the same pill as an LCA event's "Run by LCA · TD" line.</span></li><li><span class="k-num-badge">3</span><span><b>One exit, in navy:</b> "Registers on the organizer's site ↗" opens a new tab. Gold stays for LCA's own Register, so a partner event never shows Register and never a count.</span></li><li><span class="k-num-badge">4</span><span><b>Add to calendar</b> downloads the dates as listed. It is disabled with "Date to be confirmed" whenever the date is TBA, month-only, unreadable or impossible (crop B3).</span></li><li><span class="k-num-badge">5</span><span><b>Remind me replaces Event-E's "Watch this listing".</b> The two date reminders plus "If this listing changes", a new reminder kind 'listing_changed' sent by the sync's diff (inset C).</span></li><li><span class="k-num-badge">6</span><span><b>The plain explanation</b> uses the info note from the decided Tournaments list: what lives on the organizer's site and why LCA lists the event.</span></li><li><span class="k-num-badge">7</span><span><b>Source line:</b> the feed, the morning sync, the last check time and "View original listing ↗". Crops B5 and B6 show it when the feed goes quiet or drops the listing.</span></li><li><span class="k-num-badge">8</span><span><b>Drive times from Louisiana cities,</b> measured from the venue. No venue: measured from the city centre and labelled so (B1). No city: map and drive times are hidden (B2).</span></li><li><span class="k-num-badge">9</span><span><b>Also near Canton</b> lists other feed events within 60 miles. Partner rows carry "Registers on the organizer's site ↗", never a count.</span></li><li><span class="k-num-badge">10</span><span><b>Louisiana weekends around it:</b> the Louisiana events the weekend before and after, partner or LCA, with status in words.</span></li><li><span class="k-num-badge">11</span><span><b>The facts card keeps the same eight rows in the same order on every partner page.</b> A blank row reads "Not in the listing yet" and is never hidden. Feed wording keeps "as listed".</span></li><li><span class="k-num-badge">12</span><span><b>After the event</b> links the US Chess crosstable automatically once the organizer submits the event for rating.</span></li><li><span class="k-num-badge">13</span><span><b>Listing history</b> comes from a new clearinghouse_history table the morning sync fills: every change to the date, venue, link or contact, and the day it was first listed.</span></li><li><span class="k-num-badge">14</span><span><b>Report a problem</b> files a 'listing_report' in WS08's help queue with this listing attached.</span></li><li><span class="k-num-badge">15</span><span><b>How this page looks when shared:</b> the server-drawn preview says "Registers on the organizer's site ↗" and shows no count. Copy link, Share to Facebook and QR code sit under it.</span></li><li><span class="k-num-badge">16</span><span><b>Frame B: eight feed mistakes,</b> each a 440px crop of the top and the facts card. The dashed gold-ink outline marks what changed from frame A; every crop still has no Register and no count.</span></li></ol>
+    </div>
+    <aside class="ep-fb" aria-labelledby="ep-fbh">
+      <p id="ep-fbh" class="k-label-gold">K's feedback, and where it landed</p>
+      <ol><li class="ep-fb-no"><span class="ep-tick ep-tick-off" role="img" aria-label="Not on this board"></span><span class="ep-fbn">5.1</span><span><b class="ep-fb-k">Entry limits overall or by section.</b><span class="ep-fb-w">Not on this board. A partner event has no limits and no count.</span></span></li><li class="ep-fb-no"><span class="ep-tick ep-tick-off" role="img" aria-label="Not on this board"></span><span class="ep-fbn">5.2</span><span><b class="ep-fb-k">Fee tiers only when the TD set them.</b><span class="ep-fb-w">Not on this board. Fees live on the organizer's site.</span></span></li><li class="ep-fb-no"><span class="ep-tick ep-tick-off" role="img" aria-label="Not on this board"></span><span class="ep-fbn">5.3</span><span><b class="ep-fb-k">Register my family for signed out or Family only.</b><span class="ep-fb-w">Not on this board. A partner event never registers on LCA.</span></span></li><li><span class="ep-tick" role="img" aria-label="Applied"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ep-fbn">5.4</span><span><b class="ep-fb-k">Partner page prepared for missing, late and wrong feed fields.</b><span class="ep-fb-w">Frame B: venue missing, city missing, date TBA, no link, stale sync, left the feed, date changed, listed twice. Frame A's facts card keeps every row (note 11).</span></span></li><li class="ep-fb-no"><span class="ep-tick ep-tick-off" role="img" aria-label="Not on this board"></span><span class="ep-fbn">5.5</span><span><b class="ep-fb-k">Festival page with Go live and a home feature.</b><span class="ep-fb-w">Not on this board.</span></span></li><li class="ep-fb-no"><span class="ep-tick ep-tick-off" role="img" aria-label="Not on this board"></span><span class="ep-fbn">5.6</span><span><b class="ep-fb-k">Merging schedules and side events are setup options.</b><span class="ep-fb-w">Not on this board.</span></span></li><li class="ep-fb-no"><span class="ep-tick ep-tick-off" role="img" aria-label="Not on this board"></span><span class="ep-fbn">5.7</span><span><b class="ep-fb-k">B's top and sub nav; A's card, who's coming, good to know.</b><span class="ep-fb-w">Not on this board. The partner page keeps Event-E's shape.</span></span></li><li class="ep-fb-no"><span class="ep-tick ep-tick-off" role="img" aria-label="Not on this board"></span><span class="ep-fbn">5.8</span><span><b class="ep-fb-k">Hotel &amp; travel, link preview, round alerts.</b><span class="ep-fb-w">Not on this board. The partner page keeps its own drive times and shared preview (notes 8, 15).</span></span></li><li class="ep-fb-no"><span class="ep-tick ep-tick-off" role="img" aria-label="Not on this board"></span><span class="ep-fbn">5.9</span><span><b class="ep-fb-k">Phones follow the desktop changes.</b><span class="ep-fb-w">Not on this board. The partner page on a phone is on Event-Phones-Final.</span></span></li></ol>
+    </aside>
+  </div>
+</section>
+
+<section class="ep-sec" aria-labelledby="ep-fa">
+  <div class="ep-flab">
+    <span class="ep-code">A</span>
+    <h2 id="ep-fa">The partner event page, as listed (Mississippi State Championship)</h2>
+    <span class="k-meta">Signed out · Thu, Oct 8, 2026 · every feed field present</span>
+  </div>
+  <div class="k-browser ep-browser">
+    <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments/mississippi-state-championship-2026</div></div>
+    <div class="ep-view">
+      <header class="k-header ep-hd">
+        <div class="k-wrap-wide k-header-in ep-hd-in">
+          <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ep-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <nav class="k-navlinks ep-nav" aria-label="Main">
+            <a class="k-nav-on" href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a>
+            <button class="ep-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+          </nav>
+          <a class="ep-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="ep-kbd" aria-hidden="true">&#8984;K</kbd></a>
+          <div class="k-utility ep-util">
+            <a class="k-ulink" href="#">Donate</a>
+            <a class="k-ulink" href="#">Log in</a>
+            <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+          </div>
+        </div>
+      </header>
+      <div class="ep-crumb">
+        <div class="k-wrap-wide k-between">
+          <nav aria-label="Breadcrumb"><a href="#">Tournaments</a><span aria-hidden="true">/</span><span aria-current="page">Mississippi State Championship</span></nav>
+        </div>
+      </div>
+
+      <section class="ep-top" aria-labelledby="ep-h1">
+        <div class="k-wrap-wide">
+          <div class="ep-topin">
+            <div class="k-row-sm" style="gap:8px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-chip" style="cursor:default">Classical</span><span class="k-chip" style="cursor:default">All ages</span><span class="k-meta" style="margin-left:4px">9 days away</span><span class="k-num-badge" style="margin-left:6px">1</span></div>
+            <h1 id="ep-h1" class="ep-h1">Mississippi State Championship</h1>
+            <div class="ep-dline">
+              <span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><b><time datetime="2026-10-17">Sat–Sun, Oct 17–18, 2026</time></b></span>
+              <span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Canton, MS · [Venue name]</span>
+            </div>
+            <div class="k-row-sm" style="gap:10px"><span class="ep-org"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg><span>Run by <b>Mississippi Chess Association</b></span></span><span class="k-num-badge">2</span></div>
+            <div class="ep-btns" style="margin-top:4px">
+              <a class="k-btn k-btn-navy k-btn-lg" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a>
+              <span class="k-num-badge">3</span>
+              <a class="k-btn k-btn-line k-btn-lg" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a>
+              <span class="k-num-badge">4</span>
+              <button class="k-btn k-btn-line k-btn-lg" type="button" aria-haspopup="dialog" aria-expanded="false"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button>
+              <span class="k-num-badge">5</span>
+            </div>
+            <div class="ep-note" role="note"><svg class="ep-ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"></circle></svg><p><b>Mississippi Chess Association takes the entries.</b> Entry fees, sections, prizes and round times are on the organizer's site. LCA lists this partner event so Louisiana players can find it, and doesn't take entries or payments for it.</p><span class="k-num-badge">6</span></div>
+            <div class="ep-src">
+              <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg>
+              <span>Listed from the Gulf South Tournament Clearinghouse · checked for changes every morning</span>
+              <span class="ep-ok"><i></i>Last checked Thu, Oct 8, 6:00 AM</span>
+              <a class="k-link" href="#" target="_blank" rel="noopener">View original listing ↗<span class="ep-vh"> (opens in a new tab)</span></a>
+              <span class="k-num-badge">7</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="k-wrap-wide ep-body">
+        <main class="ep-main">
+
+          <section class="k-card" style="padding:22px" aria-labelledby="ep-drv">
+            <div class="ep-hrow" style="margin-bottom:14px"><div class="k-row-sm" style="gap:10px"><h2 id="ep-drv" class="k-h3">Getting there from Louisiana</h2><span class="k-num-badge">8</span></div><span class="k-meta">From [Venue name], Canton, MS</span></div>
+            <div class="ep-mapgrid">
+              <svg viewBox="0 -24 240 214" style="width:100%;height:auto;display:block" role="img" aria-label="Map of Louisiana and Mississippi with Canton marked and dashed routes from Louisiana cities">
+            <path d="M116 -24L232 -24L232 116L206 118L190 122L176 118L168 112L168 90L122 90L116 75L126 60L118 45L128 30L120 10Z" fill="#eceae3" stroke="#8a8f9c"></path>
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744"></path>
+            <text x="34" y="84" font-size="7" fill="#555c6b" letter-spacing="1.5">LOUISIANA</text>
+            <text x="172" y="-12" font-size="7" fill="#555c6b" letter-spacing="1">MISSISSIPPI</text>
+            <g fill="none" stroke="#8a8f9c" stroke-dasharray="3 3">
+              <line x1="20" y1="30" x2="160" y2="25"></line>
+              <line x1="116" y1="121" x2="160" y2="25"></line>
+              <line x1="159" y1="140" x2="160" y2="25"></line>
+              <line x1="80" y1="136" x2="160" y2="25"></line>
+            </g>
+            <circle cx="20" cy="30" r="3" fill="#1a2744" stroke="#ffffff"></circle>
+            <text x="12" y="42" font-size="6.5" fill="#1a2744">Shreveport</text>
+            <circle cx="96" cy="27" r="3" fill="#1a2744" stroke="#ffffff"></circle>
+            <text x="86" y="39" font-size="6.5" fill="#1a2744">Monroe</text>
+            <circle cx="116" cy="121" r="3" fill="#1a2744" stroke="#ffffff"></circle>
+            <text x="116" y="131" font-size="6.5" fill="#1a2744" text-anchor="middle">Baton Rouge</text>
+            <circle cx="80" cy="136" r="3" fill="#1a2744" stroke="#ffffff"></circle>
+            <text x="76" y="147" font-size="6.5" fill="#1a2744" text-anchor="end">Lafayette</text>
+            <circle cx="159" cy="140" r="3" fill="#1a2744" stroke="#ffffff"></circle>
+            <text x="163" y="150" font-size="6.5" fill="#1a2744">New Orleans</text>
+            <circle cx="155" cy="39" r="2.6" fill="#555c6b" stroke="#ffffff"></circle>
+            <text x="151" y="44" font-size="6" fill="#555c6b" text-anchor="end">Jackson</text>
+            <circle cx="160" cy="25" r="5" fill="#c8a94a" stroke="#1a2744"></circle>
+            <text x="168" y="22" font-size="8" font-weight="700" fill="#1a2744">Canton</text>
+          </svg>
+              <div class="k-stack-sm">
+                <div class="ep-drive"><span>Monroe</span><b>about 2 h 15 min</b></div>
+                <div class="ep-drive"><span>New Orleans</span><b>about 3 h 10 min</b></div>
+                <div class="ep-drive"><span>Baton Rouge</span><b>about 3 h 15 min</b></div>
+                <div class="ep-drive"><span>Shreveport</span><b>about 3 h 40 min</b></div>
+                <div class="ep-drive" style="border-bottom:0"><span>Lafayette</span><b>about 4 h 15 min</b></div>
+                <p class="k-meta">Driving estimates without traffic, from Google Maps.</p>
+                <p class="k-small">[Venue name], Canton, MS · <a class="k-link" href="#">Open in Maps</a></p>
+              </div>
+            </div>
+          </section>
+
+          <section class="k-stack" aria-labelledby="ep-near">
+            <div class="ep-hrow"><div class="k-row-sm" style="gap:10px"><h2 id="ep-near" class="k-h2">Also near Canton</h2><span class="k-num-badge">9</span></div><span class="k-meta">Within 60 miles, from the same feed</span></div>
+            <div class="k-stack-sm">
+              <a class="k-card ep-row" href="#"><span class="ep-date"><span class="ep-wd">Thu</span><b>22</b><span class="ep-mo">Oct</span></span><span><b>Hillcrest QUICK Capturefest</b><br><span class="k-meta">Thu, Oct 22 · Jackson, MS · Capital City Chess Club · Quick</span></span><span class="k-row-sm" style="justify-content:flex-end"><span class="ep-out">Registers on the organizer's site ↗</span></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+              <a class="k-card ep-row" href="#"><span class="ep-date"><span class="ep-wd">Sat</span><b>24</b><span class="ep-mo">Oct</span></span><span><b>Team Scholastic Jamboree</b><br><span class="k-meta">Sat, Oct 24 · Ridgeland, MS · Mississippi Chess Association · Scholastic</span></span><span class="k-row-sm" style="justify-content:flex-end"><span class="ep-out">Registers on the organizer's site ↗</span></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+              <a class="k-card ep-row" href="#"><span class="ep-date"><span class="ep-wd">Sat</span><b>7</b><span class="ep-mo">Nov</span></span><span><b>Roosevelt Chess Classic</b><br><span class="k-meta">Sat, Nov 7 · Scott County, MS</span></span><span class="k-row-sm" style="justify-content:flex-end"><span class="ep-out">Registers on the organizer's site ↗</span></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+            </div>
+          </section>
+
+          <section class="k-stack" aria-labelledby="ep-la">
+            <div class="ep-hrow"><div class="k-row-sm" style="gap:10px"><h2 id="ep-la" class="k-h2">Louisiana weekends around it</h2><span class="k-num-badge">10</span></div><a class="k-link k-small" href="#">All Louisiana events</a></div>
+            <div class="k-stack-sm">
+              <a class="k-card ep-row ep-row-r" href="#"><span class="ep-date ep-date-r"><span class="ep-wd">Sat–Sun</span><b>10–11</b><span class="ep-mo">Oct</span></span><span><b>Lafayette Open 2026</b><br><span class="k-meta">Sat–Sun, Oct 10–11 · Lafayette, LA · Lafayette Chess Club · the weekend before</span></span><span class="k-row-sm" style="justify-content:flex-end"><span class="k-tag k-tag-ext">Partner event</span><span class="ep-out">Registers on the organizer's site ↗</span></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+              <a class="k-card ep-row ep-row-r" href="#"><span class="ep-date ep-date-lca ep-date-r"><span class="ep-wd">Sat–Sun</span><b>24–25</b><span class="ep-mo">Oct</span></span><span><b>The Baton Rouge Classic</b><br><span class="k-meta">Sat–Sun, Oct 24–25 · Baton Rouge, LA · Organized by Downriver Chess · the weekend after</span></span><span class="k-row-sm" style="justify-content:flex-end"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-open"><span class="k-dot"></span>Registration open</span></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></a>
+            </div>
+          </section>
+
+          <section class="k-card k-row" style="padding:18px 20px;gap:14px;flex-wrap:nowrap;align-items:flex-start" aria-labelledby="ep-after">
+            <svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg>
+            <div style="flex:1"><p id="ep-after" class="k-strong">After the event</p><p class="k-small k-muted">When the organizer sends the event to US Chess for rating, this page links the official crosstable automatically. We look for it every morning from Mon, Oct 19.</p></div>
+            <span class="k-num-badge">12</span>
+          </section>
+
+          <section class="k-stack-sm" aria-labelledby="ep-share">
+            <div class="k-row-sm" style="gap:10px"><p id="ep-share" class="k-label">How this page looks when shared</p><span class="k-num-badge">15</span></div>
+            <div class="ep-og">
+              <div class="k-navy" style="padding:16px 18px;height:132px;display:flex;flex-direction:column;justify-content:space-between">
+                <div class="k-row-sm"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true" style="width:28px;height:28px"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86">Partner event · listed by LCA</span></div>
+                <div><div style="color:#ffffff;font-weight:700;font-size:20px;line-height:1.2">Mississippi State Championship</div><div style="color:#e9e7df;font-size:13.5px;margin-top:4px">Sat–Sun, Oct 17–18 · Canton, MS · Mississippi Chess Association</div></div>
+              </div>
+              <div style="padding:10px 12px;background:#f5f5f2"><div class="k-meta">LOUISIANACHESS.ORG</div><div class="k-small k-strong">Registers on the organizer's site ↗</div></div>
+            </div>
+            <div class="k-row-sm" style="margin-top:4px">
+              <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"></path></svg>Copy link</button>
+              <a class="k-btn k-btn-ghost k-btn-sm" href="#">Share to Facebook</a>
+              <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>QR code</a>
+            </div>
+          </section>
+
+        </main>
+
+        <aside class="ep-side" aria-label="Event facts and listing">
+          <div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"><span class="k-num-badge">11</span></span></div><dl class="ep-facts"><div><dt>When</dt><dd>Sat–Sun, Oct 17–18, 2026<br><a class="k-link k-small" href="#">Add to calendar</a></dd></div><div><dt>Where</dt><dd>[Venue name]<br>Canton, MS · <a class="k-link k-small" href="#">Open in Maps</a></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div><dt>Entry</dt><dd>On the organizer's site</dd></div><div><dt>Source</dt><dd>Gulf South Tournament Clearinghouse<br><span class="ep-as">Last checked Thu, Oct 8, 6:00 AM</span></dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div>
+
+          <div class="k-card" style="padding:18px">
+            <div class="k-between" style="margin-bottom:8px"><div class="k-row-sm" style="gap:8px"><span class="k-strong">Listing history</span><span class="k-num-badge">13</span></div><span class="k-sample">Sample data</span></div>
+            <ul class="ep-hist">
+              <li><b>Mon, Sep 28</b><span>Venue added by the organizer</span></li>
+              <li><b>Mon, Sep 21</b><span>Entry link added</span></li>
+              <li><b>Mon, Sep 14</b><span>First listed</span></li>
+            </ul>
+            <p class="k-meta" style="margin-top:8px">Changes to the date, venue, entry link or contact appear here the morning the feed shows them.</p>
+          </div>
+
+          <div class="k-card" style="padding:18px">
+            <div class="k-stack-sm">
+              <div class="k-between"><div class="k-row-sm" style="gap:8px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg><span class="k-strong">Report a problem with this listing</span></div><span class="k-num-badge">14</span></div>
+              <div class="k-row-sm" role="group" aria-label="What's wrong?">
+                <button class="k-chip" type="button" aria-pressed="false">Wrong date or time</button>
+                <button class="k-chip" type="button" aria-pressed="false">Link doesn't work</button>
+                <button class="k-chip" type="button" aria-pressed="false">Cancelled or moved</button>
+                <button class="k-chip" type="button" aria-pressed="false">Wrong venue</button>
+                <button class="k-chip" type="button" aria-pressed="false">Something else</button>
+              </div>
+              <textarea class="k-input" rows="3" style="padding:10px 12px;min-height:84px" aria-label="What's wrong? (optional)" placeholder="What's wrong? (optional)"></textarea>
+              <div class="k-field"><label for="ep-rep">Your email, if you'd like an answer</label><input id="ep-rep" class="k-input" type="email" autocomplete="email" placeholder="you@example.com"></div>
+              <button class="k-btn k-btn-line k-btn-sm" type="button" style="align-self:flex-start">Send report</button>
+              <p class="k-meta">Goes to LCA's website help queue as a listing report, with this listing attached. A volunteer checks with the organizer and the clearinghouse.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <footer class="k-footer ep-foot">
+        <div class="k-wrap-wide ep-foot-in">
+          <div class="k-row-sm" style="gap:10px"><svg class="ep-rook ep-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+          <span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span>
+          <nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+        </div>
+      </footer>
+    </div>
+  </div>
+  <p class="ep-cap">The page as a signed-out visitor sees it. The facts card sits at the top of the sidebar and stays in view while scrolling. Everything in the main column comes from the feed or is computed from it; nothing on the page is typed by an LCA volunteer.</p>
+</section>
+
+<section class="ep-sec" aria-label="Inset">
+  <div class="ep-insets">
+    <div style="width:520px;flex:none">
+      <div class="ep-flab"><span class="ep-code">C</span><h2>Remind me, from the top buttons</h2><span class="k-meta">Signed out, so it asks for an email</span></div>
+      <div class="ep-btnrow"><a class="k-btn k-btn-navy" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><button class="k-btn k-btn-navy" type="button" aria-haspopup="dialog" aria-expanded="true"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div>
+      <div class="ep-pop" role="dialog" aria-labelledby="ep-pop-h">
+        <div class="k-between" style="gap:8px"><p id="ep-pop-h" class="ep-pop-h">Remind me</p><span class="k-meta">by email</span></div>
+        <fieldset class="ep-opts">
+          <legend class="ep-vh">Reminders for the Mississippi State Championship</legend>
+          <label class="ep-opt"><input type="checkbox" checked=""><span><b>One week before</b><small>Sat, Oct 10</small></span></label>
+          <label class="ep-opt"><input type="checkbox" checked=""><span><b>One day before</b><small>Fri, Oct 16</small></span></label>
+          <label class="ep-opt ep-opt-new"><input type="checkbox" checked=""><span><b>If this listing changes</b><small>The date, venue or entry link changes, or the listing leaves the feed</small></span></label>
+        </fieldset>
+        <div class="k-field"><label for="ep-rem">Your email</label><input id="ep-rem" class="k-input" type="email" autocomplete="email" placeholder="you@example.com"></div>
+        <button class="k-btn k-btn-navy k-btn-sm k-btn-block" type="button">Save reminders</button>
+        <p class="ep-pop-foot">Log in to manage every reminder in My LCA</p>
+      </div>
+    </div>
+    <div class="ep-cnote">
+      <p class="k-label">How Remind me differs here</p>
+      <ul>
+        <li>No "Registration opens" or "Early price ends" options: LCA doesn't know a partner event's entry dates or fees.</li>
+        <li>"If this listing changes" is a reminder of kind 'listing_changed'. The morning sync compares today's feed row with yesterday's and sends one email per change, using the same words as the Listing history row.</li>
+        <li>When the date is not confirmed, the two date reminders are greyed out and "If this listing changes" is ticked for you (crop B3).</li>
+      </ul>
+    </div>
+    <div class="ep-cnote" style="width:360px">
+      <p class="k-label">Where this board stops</p>
+      <ul>
+        <li>LCA-run and club-run event pages are on Event-Final-1 and Event-Final-2.</li>
+        <li>The partner page on a phone (facts card, source line, the "Registers on the organizer's site ↗" bar) is on Event-Phones-Final.</li>
+        <li>How a partner row reads in the Tournaments list is on Tourn-List-Final.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="ep-sec" aria-labelledby="ep-fb2">
+  <div class="ep-flab">
+    <span class="ep-code">B</span>
+    <h2 id="ep-fb2">When the feed is wrong: eight states of the top and the facts card</h2>
+    <span class="k-sample">Sample data · the mistakes are invented to show the rules</span>
+    <span class="k-num-badge">16</span>
+  </div>
+  <p class="ep-cap" style="margin:0 0 20px">The clearinghouse is a hand-kept spreadsheet, so blanks, typos and late changes are normal. Each crop is 440px wide and shows only what differs from frame A, outlined in dashed gold ink.</p>
+  <div class="ep-crops"><div class="ep-crop"><div class="ep-flab"><span class="ep-code">B1</span><h3>Venue missing</h3></div><div class="ep-cb"><div class="ep-ct"><div class="k-row-sm" style="gap:6px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-chip" style="min-height:28px;padding:0 10px;font-size:13px;cursor:default">Classical</span><span class="k-meta">9 days away</span></div><p class="ep-ch1">Mississippi State Championship</p><p class="ep-cdl"><b>Sat–Sun, Oct 17–18, 2026</b> · Canton, MS</p><p class="ep-corg">Run by <b>Mississippi Chess Association</b></p><div class="ep-cbtns"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><div class="ep-two"><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div></div><div class="ep-csrc"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg><span>Gulf South Tournament Clearinghouse · last checked Thu, Oct 8, 6:00 AM · <a class="k-link" href="#">View original listing ↗</a></span></div></div><div class="ep-cbody"><div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"></span></div><dl class="ep-facts"><div><dt>When</dt><dd>Sat–Sun, Oct 17–18, 2026<br><a class="k-link k-small" href="#">Add to calendar</a></dd></div><div class="ep-hl"><dt>Where</dt><dd><span class="ep-nil">Not in the listing yet</span><br>Canton, MS · <a class="k-link k-small" href="#">Open in Maps</a></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div><dt>Entry</dt><dd>On the organizer's site</dd></div><div><dt>Source</dt><dd>Gulf South Tournament Clearinghouse</dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div><div class="ep-mini ep-hl"><div class="k-between"><span class="k-strong">Getting there from Louisiana</span><span class="k-meta">from the city centre</span></div><div class="ep-drive"><span>Monroe</span><b>about 2 h 15 min</b></div><div class="ep-drive"><span>New Orleans</span><b>about 3 h 10 min</b></div><div class="ep-drive" style="border-bottom:0"><span>Baton Rouge</span><b>about 3 h 15 min</b></div><p class="k-meta">Measured from the centre of Canton, MS. The venue is not in the listing yet.</p></div></div></div><p class="ep-ccap"><b>Rule:</b> the Where row stays and reads "Not in the listing yet". The map pin and drive times use the city instead, labelled "from the city centre".</p></div><div class="ep-crop"><div class="ep-flab"><span class="ep-code">B2</span><h3>City missing</h3></div><div class="ep-cb"><div class="ep-ct"><div class="k-row-sm" style="gap:6px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-chip" style="min-height:28px;padding:0 10px;font-size:13px;cursor:default">Classical</span><span class="k-meta">9 days away</span></div><p class="ep-ch1">Mississippi State Championship</p><p class="ep-cdl"><b>Sat–Sun, Oct 17–18, 2026</b> · [Venue name] · <span class="ep-nil ep-hl" style="white-space:nowrap">City not in the listing yet</span></p><p class="ep-corg">Run by <b>Mississippi Chess Association</b></p><div class="ep-cbtns"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><div class="ep-two"><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div></div><div class="ep-csrc"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg><span>Gulf South Tournament Clearinghouse · last checked Thu, Oct 8, 6:00 AM · <a class="k-link" href="#">View original listing ↗</a></span></div></div><div class="ep-cbody"><div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"></span></div><dl class="ep-facts"><div><dt>When</dt><dd>Sat–Sun, Oct 17–18, 2026<br><a class="k-link k-small" href="#">Add to calendar</a></dd></div><div class="ep-hl"><dt>Where</dt><dd>[Venue name]<br><span class="ep-nil">City: Not in the listing yet</span></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div><dt>Entry</dt><dd>On the organizer's site</dd></div><div><dt>Source</dt><dd>Gulf South Tournament Clearinghouse</dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div><div class="ep-gone"><span class="k-label" style="color:#3d4556">Board note</span><span>Map, drive times and Also near are hidden: with no city there is nothing to measure from.</span></div></div></div><p class="ep-ccap"><b>Rule:</b> no city, so no map, no drive times and no Also near. Everything the feed does hold still shows: the venue name stays in the top line and the Where row, and only the city line reads "Not in the listing yet". The Louisiana weekends block still uses the date.</p></div><div class="ep-crop"><div class="ep-flab"><span class="ep-code">B3</span><h3>Date TBA, month-only or impossible</h3></div><div class="ep-cb"><div class="ep-ct"><div class="k-row-sm" style="gap:6px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-chip" style="min-height:28px;padding:0 10px;font-size:13px;cursor:default">Classical</span></div><p class="ep-ch1">Mississippi State Championship</p><p class="ep-cdl"><span class="ep-hl"><b>Date to be confirmed by the organizer</b></span> · Canton, MS · [Venue name]</p><p class="ep-corg">Run by <b>Mississippi Chess Association</b></p><div class="ep-cbtns"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><div class="ep-two"><button class="k-btn k-btn-line k-btn-sm ep-dis ep-hl" type="button" disabled="" aria-describedby="ep-b3d"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Date to be confirmed</button><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div></div><div class="ep-info" id="ep-b3d"><svg class="ep-ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"></circle></svg><span>Date to be confirmed by the organizer · we'll email you when it's set. Remind me has "If this listing changes" ticked.</span></div></div><div class="ep-cbody"><div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"></span></div><dl class="ep-facts"><div class="ep-hl"><dt>When</dt><dd>Date to be confirmed by the organizer<br><span class="ep-as">As listed: "October, TBA"</span></dd></div><div><dt>Where</dt><dd>[Venue name]<br>Canton, MS · <a class="k-link k-small" href="#">Open in Maps</a></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div><dt>Entry</dt><dd>On the organizer's site</dd></div><div><dt>Source</dt><dd>Gulf South Tournament Clearinghouse</dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div></div></div><p class="ep-ccap"><b>Rule:</b> "TBA", a month alone, an unreadable date or an end before the start all read the same way. Add to calendar is disabled and there is no "days away".</p></div><div class="ep-crop"><div class="ep-flab"><span class="ep-code">B4</span><h3>No entry link</h3></div><div class="ep-cb"><div class="ep-ct"><div class="k-row-sm" style="gap:6px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-chip" style="min-height:28px;padding:0 10px;font-size:13px;cursor:default">Classical</span><span class="k-meta">9 days away</span></div><p class="ep-ch1">Mississippi State Championship</p><p class="ep-cdl"><b>Sat–Sun, Oct 17–18, 2026</b> · Canton, MS · [Venue name]</p><p class="ep-corg">Run by <b>Mississippi Chess Association</b></p><div class="ep-cbtns"><a class="k-btn k-btn-navy k-btn-block ep-hl" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Contact the organizer</a><div class="ep-two"><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button><a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a></div></div><p class="k-small" style="color:#3d4556">No entry link in the listing yet. Contact: [Organizer contact] <span class="ep-as">as listed</span></p></div><div class="ep-cbody"><div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"></span></div><dl class="ep-facts"><div><dt>When</dt><dd>Sat–Sun, Oct 17–18, 2026<br><a class="k-link k-small" href="#">Add to calendar</a></dd></div><div><dt>Where</dt><dd>[Venue name]<br>Canton, MS · <a class="k-link k-small" href="#">Open in Maps</a></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div class="ep-hl"><dt>Entry</dt><dd><span class="ep-nil">Not in the listing yet</span> · ask the organizer</dd></div><div><dt>Source</dt><dd>Gulf South Tournament Clearinghouse</dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Contact the organizer</a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div></div></div><p class="ep-ccap"><b>Rule:</b> Contact the organizer becomes the main action, Remind me the second. A bare link like "msca.org/states" gets https:// added and is checked before the button shows; a dead link is treated as no link.</p></div><div class="ep-crop"><div class="ep-flab"><span class="ep-code">B5</span><h3>Feed stopped answering</h3></div><div class="ep-cb"><div class="ep-ct"><div class="k-row-sm" style="gap:6px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-chip" style="min-height:28px;padding:0 10px;font-size:13px;cursor:default">Classical</span><span class="k-meta">9 days away</span></div><p class="ep-ch1">Mississippi State Championship</p><p class="ep-cdl"><b>Sat–Sun, Oct 17–18, 2026</b> · Canton, MS · [Venue name]</p><p class="ep-corg">Run by <b>Mississippi Chess Association</b></p><div class="ep-cbtns"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><div class="ep-two"><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div></div><div class="ep-warn ep-hl"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l9.5 16.5h-19z"></path><path d="M12 10v4.5"></path><circle cx="12" cy="17.2" r=".9" fill="currentColor" stroke="none"></circle></svg><span><b>Last checked Mon, Oct 5</b> · the feed hasn't answered since; details may have changed. <a class="k-link" href="#">View original listing ↗</a></span></div></div><div class="ep-cbody"><div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"></span></div><dl class="ep-facts"><div><dt>When</dt><dd>Sat–Sun, Oct 17–18, 2026<br><a class="k-link k-small" href="#">Add to calendar</a></dd></div><div><dt>Where</dt><dd>[Venue name]<br>Canton, MS · <a class="k-link k-small" href="#">Open in Maps</a></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div><dt>Entry</dt><dd>On the organizer's site</dd></div><div class="ep-hl"><dt>Source</dt><dd>Gulf South Tournament Clearinghouse<br><span class="ep-as">Last checked Mon, Oct 5</span></dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div></div></div><p class="ep-ccap"><b>Rule:</b> after a morning with no answer from the feed, the source line turns into this warning, in words beside the colour. Everything else stays as last listed.</p></div><div class="ep-crop"><div class="ep-flab"><span class="ep-code">B6</span><h3>Listing left the feed</h3></div><div class="ep-cb"><div class="ep-ct"><div class="k-row-sm" style="gap:6px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-tag ep-tag-warn ep-hl">Left the feed</span></div><p class="ep-ch1">Mississippi State Championship</p><p class="ep-cdl"><b>Sat–Sun, Oct 17–18, 2026</b> · Canton, MS · [Venue name]</p><p class="ep-corg">Run by <b>Mississippi Chess Association</b></p><div class="ep-cbtns"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><div class="ep-two"><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div></div><div class="ep-warn ep-hl"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l9.5 16.5h-19z"></path><path d="M12 10v4.5"></path><circle cx="12" cy="17.2" r=".9" fill="currentColor" stroke="none"></circle></svg><span><b>This listing left the feed on Thu, Oct 8</b> · it may be cancelled or moved · check with the organizer.</span></div></div><div class="ep-cbody"><div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"></span></div><dl class="ep-facts"><div><dt>When</dt><dd>Sat–Sun, Oct 17–18, 2026<br><a class="k-link k-small" href="#">Add to calendar</a></dd></div><div><dt>Where</dt><dd>[Venue name]<br>Canton, MS · <a class="k-link k-small" href="#">Open in Maps</a></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div><dt>Entry</dt><dd>On the organizer's site</dd></div><div class="ep-hl"><dt>Source</dt><dd>Gulf South Tournament Clearinghouse<br><span class="ep-as">Not in the feed since Thu, Oct 8</span></dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div></div></div><p class="ep-ccap"><b>Rule:</b> the page stays, so shared links keep working, with the warning on top. Anyone with "If this listing changes" gets one email. Also near no longer lists it.</p></div><div class="ep-crop"><div class="ep-flab"><span class="ep-code">B7</span><h3>Date changed</h3></div><div class="ep-cb"><div class="ep-ct"><div class="k-row-sm" style="gap:6px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-tag k-tag-soon ep-hl">Date changed</span><span class="k-meta">16 days away</span></div><p class="ep-ch1">Mississippi State Championship</p><p class="ep-cdl"><span class="ep-hl"><b>Sat–Sun, Oct 24–25, 2026</b></span> · Canton, MS · [Venue name]</p><p class="ep-corg">Run by <b>Mississippi Chess Association</b></p><div class="ep-cbtns"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><div class="ep-two"><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div></div><div class="ep-csrc"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg><span>Gulf South Tournament Clearinghouse · last checked Thu, Oct 8, 6:00 AM · <a class="k-link" href="#">View original listing ↗</a></span></div></div><div class="ep-cbody"><div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"></span></div><dl class="ep-facts"><div class="ep-hl"><dt>When</dt><dd>Sat–Sun, Oct 24–25, 2026<br><span class="ep-as">Was Sat–Sun, Oct 17–18</span> · <a class="k-link k-small" href="#">Add to calendar</a></dd></div><div><dt>Where</dt><dd>[Venue name]<br>Canton, MS · <a class="k-link k-small" href="#">Open in Maps</a></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div><dt>Entry</dt><dd>On the organizer's site</dd></div><div><dt>Source</dt><dd>Gulf South Tournament Clearinghouse</dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div><div class="ep-mini"><div class="k-strong" style="margin-bottom:4px">Listing history</div><ul class="ep-hist"><li class="ep-hl"><b>Thu, Oct 8</b><span>Date changed from Sat, Oct 17 to Sat, Oct 24</span></li><li><b>Mon, Sep 28</b><span>Venue added by the organizer</span></li><li><b>Mon, Sep 14</b><span>First listed</span></li></ul></div></div></div><p class="ep-ccap"><b>Rule:</b> the new date shows everywhere, the "Date changed" tag stays for 14 days, and the history row says what moved. Reminders re-time themselves to the new date.</p></div><div class="ep-crop"><div class="ep-flab"><span class="ep-code">B8</span><h3>Listed twice in the feed (admin view)</h3></div><div class="ep-cb"><div class="ep-adminbar ep-hl"><span class="k-row-sm" style="gap:6px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"></rect><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"></path></svg><b>Admin view</b></span><span>Visitors never see this bar</span></div><div class="ep-ct"><div class="k-row-sm" style="gap:6px"><span class="k-tag k-tag-ext">Partner event</span><span class="k-chip" style="min-height:28px;padding:0 10px;font-size:13px;cursor:default">Classical</span><span class="k-meta">9 days away</span><span class="ep-admin"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"></rect><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"></path></svg>Admin only · Listed twice in the feed</span></div><p class="ep-ch1">Mississippi State Championship</p><p class="ep-cdl"><b>Sat–Sun, Oct 17–18, 2026</b> · Canton, MS · [Venue name]</p><p class="ep-corg">Run by <b>Mississippi Chess Association</b></p><div class="ep-cbtns"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><div class="ep-two"><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="ep-bell" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div></div><div class="ep-csrc"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg><span>Gulf South Tournament Clearinghouse · last checked Thu, Oct 8, 6:00 AM · <a class="k-link" href="#">View original listing ↗</a></span></div></div><div class="ep-cbody"><div class="k-card" style="padding:0;overflow:hidden"><div class="ep-fhead"><span class="k-label">Event facts</span><span class="k-row-sm"></span></div><dl class="ep-facts"><div><dt>When</dt><dd>Sat–Sun, Oct 17–18, 2026<br><a class="k-link k-small" href="#">Add to calendar</a></dd></div><div><dt>Where</dt><dd>[Venue name]<br>Canton, MS · <a class="k-link k-small" href="#">Open in Maps</a></dd></div><div><dt>Organizer</dt><dd>Mississippi Chess Association</dd></div><div><dt>Format</dt><dd>Classical <span class="ep-as">as listed</span></dd></div><div><dt>Who can play</dt><dd>All ages <span class="ep-as">as listed</span></dd></div><div><dt>Contact</dt><dd>[Organizer contact] <span class="ep-as">as listed</span></dd></div><div><dt>Entry</dt><dd>On the organizer's site</dd></div><div><dt>Source</dt><dd>Gulf South Tournament Clearinghouse</dd></div></dl><div class="ep-ffoot"><a class="k-btn k-btn-navy k-btn-block" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="ep-vh"> (opens in a new tab)</span></a><p class="k-meta">Not in this listing: sections, entry fees, prizes and round times.</p></div></div><div class="ep-mini" style="border-color:#d9cfee;background:#faf8fd"><p class="k-small" style="color:#4a2f7a"><b>Two feed rows match:</b> same name, same date, same city. Merged under this one page. <a class="k-link" href="#">Compare the rows</a> · <a class="k-link" href="#">Not a duplicate</a></p></div></div></div><p class="ep-ccap"><b>Rule:</b> a probable duplicate is merged under one page, never shown twice in the list. Only admins see the tag and the compare link; visitors see frame A.</p></div><div class="ep-rules"><p class="k-label">Rules every crop follows</p><ul>
+  <li>The facts card always has the same eight rows in the same order. A blank row reads "Not in the listing yet" in muted text and is never hidden.</li>
+  <li>Feed wording is kept, with "as listed" beside it, instead of being rewritten.</li>
+  <li>Never Register, never a count, whatever the feed holds.</li>
+  <li>Every warning says what happened in words; colour only backs it up.</li>
+  <li>Each of these states is one row in Listing history and one "If this listing changes" email.</li>
+</ul></div></div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":7700}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

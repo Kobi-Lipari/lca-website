@@ -1,10 +1,11 @@
 Decided boards (the canvas after K's October 8 choices)
 
 These artboards replaced the option boards on pages 1 to 4 of the
-"LCA Look & Feel Options" canvas. Pages 1 to 4 are decided. Pages 1 to 3
-are drawn from DESIGN_REPLAN_phase0.md; page 4 from DESIGN_REPLAN_phase1.md
-(K's two rounds of Tournaments notes, October 8). They carry the same
-numbered notes and open questions as the canvas copies. canvas.json is
+"LCA Look & Feel Options" canvas. Pages 1 to 5 are decided. Pages 1 to 3
+are drawn from DESIGN_REPLAN_phase0.md; pages 4 and 5 from
+DESIGN_REPLAN_phase1.md (K's Tournaments and Tournament page notes,
+October 8). They carry the same numbered notes and open questions as the
+canvas copies. canvas.json is
 the canvas index as published with them. Frames are capped at 8000px on
 the canvas, so tall boards are split into parts. The option boards they
 replaced are still under lca-redesign-boards/boards for comparison.
@@ -33,3 +34,15 @@ Page 4 · Tournaments list
   Tourn-Table-Final        table view, compact table with a side panel (replaces Tourn-E)
   Tourn-Phones-Final       every phone view: List B, Map A, Table A, Calendar A
                            (replaces Tourn-Phones)
+
+Page 5 · Tournament page
+  Event-Final-1            the unified page, setup: two schedules that merge
+                           (replaces Event-A, Event-B and Event-C with the next two)
+  Event-Final-2            the unified page, setup: one schedule, limits by section
+  Event-Final-States       card variants, family row, button strips, during and after
+  Event-Final-Family       the Register my family picker, the signed-out explainer, phone
+  Event-Final-Setup        the TD setup options the page reads (feeds WS08)
+  Event-Partner-Final      the partner page and its human-error states (replaces Event-E)
+  Event-Festival-Final-1   the festival page, public (replaces Event-D with part 2)
+  Event-Festival-Final-2   the festival admin panel and the home hero in festival mode
+  Event-Phones-Final       the phone frames (replaces Event-Phones)
