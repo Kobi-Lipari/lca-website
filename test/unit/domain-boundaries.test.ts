@@ -51,6 +51,42 @@ const BANNED: Array<[string, RegExp]> = [
   ['the Workers types', /^@cloudflare\/workers-types/],
 ]
 
+const ZOD = /^zod(\/|$)/
+const CONTRACTS = /^domain\/contracts(\/|$)/
+
+/**
+ * Specifiers a file loads at runtime: every specifier except those of
+ * `import type` and `export type` statements, which the compiler erases.
+ */
+function runtimeSpecifiers(source: string): string[] {
+  const erased = source.replace(/\b(?:import|export)\s+type\s[^'"]*?\sfrom\s*['"][^'"]+['"]/g, '')
+  return specifiers(erased)
+}
+
+/** Every way a domain/ file (path from the repo root) breaks the boundary, one line each. */
+function boundaryProblems(name: string, source: string): string[] {
+  const problems: string[] = []
+  const file = join(ROOT, name)
+  if (/<reference\s+types=/.test(source)) problems.push('uses a <reference types> directive')
+  for (const spec of specifiers(source)) {
+    const to = target(file, spec)
+    for (const [what, re] of BANNED) if (re.test(to)) problems.push(`${spec} reaches ${what}`)
+    // A relative import must stay inside domain/.
+    if (spec.startsWith('.') && !to.startsWith('domain/')) problems.push(`${spec} leaves domain/`)
+  }
+  // zod stays in domain/contracts, so the domain code the site imports
+  // never brings it into the site bundle, directly or through a contract.
+  if (!CONTRACTS.test(name)) {
+    for (const spec of specifiers(source)) {
+      if (ZOD.test(spec)) problems.push(`${spec} reaches zod, which belongs in domain/contracts only`)
+    }
+    for (const spec of runtimeSpecifiers(source)) {
+      if (CONTRACTS.test(target(file, spec))) problems.push(`${spec} brings zod in at runtime; use import type`)
+    }
+  }
+  return problems
+}
+
 describe('domain/ imports nothing from the site, the server, React or Cloudflare', () => {
   const files = filesUnder(DOMAIN)
 
@@ -63,17 +99,24 @@ describe('domain/ imports nothing from the site, the server, React or Cloudflare
     for (const f of files) expect(f, relative(ROOT, f)).toMatch(/\.ts$/)
   })
 
-  it.each(filesUnder(DOMAIN).map((f) => [relative(ROOT, f).split('\\').join('/'), f]))('%s', (_name, file) => {
-    const source = readFileSync(file, 'utf8')
-    expect(source).not.toMatch(/<reference\s+types=/)
-    for (const spec of specifiers(source)) {
-      const to = target(file, spec)
-      for (const [what, re] of BANNED) expect(re.test(to), `${spec} reaches ${what}`).toBe(false)
-      // A relative import must stay inside domain/.
-      if (spec.startsWith('.')) expect(to.startsWith('domain/'), `${spec} leaves domain/`).toBe(true)
-    }
+  it.each(filesUnder(DOMAIN).map((f) => [relative(ROOT, f).split('\\').join('/'), f]))('%s', (name, file) => {
+    expect(boundaryProblems(name, readFileSync(file, 'utf8'))).toEqual([])
   })
 
+  it('allows zod only under domain/contracts', () => {
+    const zod = "import { z } from 'zod'"
+    expect(boundaryProblems('domain/contracts/events.ts', zod)).toEqual([])
+    expect(boundaryProblems('domain/events/sectionRules.ts', zod)).toEqual(['zod reaches zod, which belongs in domain/contracts only'])
+    expect(boundaryProblems('domain/format/date.ts', "export * from 'zod/mini'")).toEqual(['zod/mini reaches zod, which belongs in domain/contracts only'])
+    expect(boundaryProblems('domain/registration/pricing.ts', "const z = await import('zod')")).toHaveLength(1)
+  })
+
+  it('lets the rest of domain/ take only types from domain/contracts', () => {
+    expect(boundaryProblems('domain/events/x.ts', "import type { TournamentSection } from '../contracts'")).toEqual([])
+    expect(boundaryProblems('domain/events/x.ts', "import { tournamentSectionSchema } from '../contracts/events'"))
+      .toEqual(['../contracts/events brings zod in at runtime; use import type'])
+    expect(boundaryProblems('domain/contracts/index.ts', "export * from './events'")).toEqual([])
+  })
   it('the scan sees every kind of import', () => {
     const sample = [
       "import { a } from '../../src/lib/a'",
@@ -85,6 +128,32 @@ describe('domain/ imports nothing from the site, the server, React or Cloudflare
     expect(specifiers(sample).sort()).toEqual(
       ['../../functions/utils/c', '../../src/lib/a', '@/lib/b', 'cloudflare:workers', 'react'].sort(),
     )
+  })
+})
+
+describe('the site takes only types from domain/contracts', () => {
+  /** Runtime imports of domain/contracts in a site file (path from the repo root). */
+  const contractImports = (name: string, source: string) =>
+    runtimeSpecifiers(source).filter((spec) => /^@domain\/contracts(\/|$)/.test(spec) || CONTRACTS.test(target(join(ROOT, name), spec)))
+
+  it('the check sees a value import and lets a type import through', () => {
+    expect(contractImports('src/lib/api.ts', "import { contracts } from '@domain/contracts'")).toEqual(['@domain/contracts'])
+    expect(contractImports('src/lib/api.ts', "import { z } from '../../domain/contracts/common'")).toEqual(['../../domain/contracts/common'])
+    expect(contractImports('src/lib/api.ts', "import type { TournamentListItem } from '@domain/contracts'")).toEqual([])
+  })
+
+  it('no file in src/ imports domain/contracts at runtime, or zod at all', () => {
+    const offenders = filesUnder(join(ROOT, 'src'))
+      .filter((f) => /\.tsx?$/.test(f))
+      .map((f) => relative(ROOT, f).split('\\').join('/'))
+      .flatMap((name) => {
+        const source = read(name)
+        return [
+          ...contractImports(name, source).map((spec) => `${name}: ${spec} (use import type)`),
+          ...specifiers(source).filter((spec) => ZOD.test(spec)).map((spec) => `${name}: ${spec}`),
+        ]
+      })
+    expect(offenders).toEqual([])
   })
 })
 

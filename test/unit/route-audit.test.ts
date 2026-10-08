@@ -2,26 +2,12 @@
 // Guards against this repo's most repeated bug class: api.ts calling a
 // route that no file under functions/ actually serves.
 import { describe, expect, it } from 'vitest'
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import { collectRoutes } from './routes'
 
 const FUNCTIONS_DIR = join(__dirname, '../../functions')
 const API_TS = join(__dirname, '../../src/lib/api.ts')
-
-/** Collect every route served by files under functions/api */
-function collectRoutes(dir: string, prefix: string[] = []): string[][] {
-  const routes: string[][] = []
-  for (const entry of readdirSync(dir)) {
-    const full = join(dir, entry)
-    if (statSync(full).isDirectory()) {
-      routes.push(...collectRoutes(full, [...prefix, entry]))
-    } else if (entry.endsWith('.ts') && !entry.endsWith('.test.ts') && !entry.endsWith('.d.ts')) {
-      const name = entry.replace(/\.ts$/, '')
-      routes.push(name === 'index' ? [...prefix] : [...prefix, name])
-    }
-  }
-  return routes
-}
 
 /** Extract '/api/...' fetch paths from api.ts; '${expr}' → '*' */
 function extractFetchPaths(source: string): string[] {
