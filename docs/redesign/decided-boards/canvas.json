@@ -188,6 +188,23 @@
    "x": 8760,
    "y": 0
   },
+  "Home-Final-Phones.dc.html": {
+   "h": 2750,
+   "page": "home",
+   "title": "Home · on phones (decided)",
+   "w": 1960,
+   "x": 5200,
+   "y": 0
+  },
+  "Home-Final.dc.html": {
+   "expand": "fill",
+   "h": 5450,
+   "page": "home",
+   "title": "Home · decided (A + search band, Register mode)",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
   "Live-A.dc.html": {
    "h": 1100,
    "page": "live",
@@ -298,6 +315,14 @@
    "x": 11280,
    "y": 0
   },
+  "Looks-Applied.dc.html": {
+   "h": 7050,
+   "page": "looks",
+   "title": "Where each look applies · decided",
+   "w": 1440,
+   "x": 3680,
+   "y": 0
+  },
   "Looks-Compare.dc.html": {
    "h": 1400,
    "page": "looks",
@@ -345,6 +370,30 @@
    "h": 1300,
    "page": "membership",
    "title": "Membership · D · Digital card",
+   "w": 1960,
+   "x": 5200,
+   "y": 0
+  },
+  "Nav-Footer-Final.dc.html": {
+   "h": 2850,
+   "page": "nav",
+   "title": "Footer · decided (F1 + trust line)",
+   "w": 1440,
+   "x": 7240,
+   "y": 0
+  },
+  "Nav-IA-Final.dc.html": {
+   "h": 4900,
+   "page": "nav",
+   "title": "Site structure · decided (structure 1)",
+   "w": 1440,
+   "x": 640,
+   "y": 0
+  },
+  "Nav-Mobile-Final.dc.html": {
+   "h": 4450,
+   "page": "nav",
+   "title": "Mobile nav · decided (M2 tab bar + M4 event day)",
    "w": 1960,
    "x": 5200,
    "y": 0
@@ -510,59 +559,6 @@
    "x": 5200,
    "y": 0
   },
-  "Tourn-A.dc.html": {
-   "expand": "fill",
-   "h": 3150,
-   "page": "tournaments",
-   "title": "Tournaments · A · Agenda + filter chips",
-   "w": 1440,
-   "x": 640,
-   "y": 0
-  },
-  "Tourn-B.dc.html": {
-   "expand": "fill",
-   "h": 2150,
-   "page": "tournaments",
-   "title": "Tournaments · B · List + preview pane",
-   "w": 1440,
-   "x": 2160,
-   "y": 0
-  },
-  "Tourn-C.dc.html": {
-   "expand": "fill",
-   "h": 2450,
-   "page": "tournaments",
-   "title": "Tournaments · C · Calendar as navigator",
-   "w": 1440,
-   "x": 3680,
-   "y": 0
-  },
-  "Tourn-D.dc.html": {
-   "expand": "fill",
-   "h": 2100,
-   "page": "tournaments",
-   "title": "Tournaments · D · Map view",
-   "w": 1440,
-   "x": 5200,
-   "y": 0
-  },
-  "Tourn-E.dc.html": {
-   "expand": "fill",
-   "h": 2400,
-   "page": "tournaments",
-   "title": "Tournaments · E · Power table",
-   "w": 1440,
-   "x": 6720,
-   "y": 0
-  },
-  "Tourn-Phones.dc.html": {
-   "h": 1100,
-   "page": "tournaments",
-   "title": "Tournaments · on phones",
-   "w": 1960,
-   "x": 8240,
-   "y": 0
-  },
   "Work-A.dc.html": {
    "expand": "fill",
    "h": 2800,
@@ -599,70 +595,133 @@
    "x": 5200,
    "y": 0
   },
-  "Home-Final.dc.html": {
-   "x": 640,
-   "y": 0,
-   "w": 1440,
-   "h": 5450,
-   "title": "Home · decided (A + search band, Register mode)",
-   "page": "home",
-   "expand": "fill"
-  },
-  "Home-Hero-Modes.dc.html": {
-   "x": 2160,
-   "y": 0,
-   "w": 1440,
-   "h": 9750,
-   "title": "Home · the hero in every other mode",
-   "page": "home"
-  },
-  "Home-Final-Phones.dc.html": {
-   "x": 3680,
-   "y": 0,
-   "w": 1960,
-   "h": 2750,
-   "title": "Home · on phones (decided)",
-   "page": "home"
-  },
-  "Looks-Applied.dc.html": {
-   "x": 3680,
-   "y": 0,
-   "w": 1440,
-   "h": 7050,
-   "title": "Where each look applies · decided",
-   "page": "looks"
-  },
-  "Nav-IA-Final.dc.html": {
-   "x": 640,
-   "y": 0,
-   "w": 1440,
-   "h": 4900,
-   "title": "Site structure · decided (structure 1)",
-   "page": "nav"
-  },
   "Nav-Header-Final.dc.html": {
    "x": 2160,
    "y": 0,
    "w": 1440,
-   "h": 8650,
-   "title": "Header · decided (H1 + H4 search + H5 event strip)",
+   "h": 4500,
+   "title": "Header · decided (bar, menus, signed in)",
    "page": "nav"
   },
-  "Nav-Mobile-Final.dc.html": {
+  "Nav-Header-Strip.dc.html": {
    "x": 3680,
    "y": 0,
-   "w": 1960,
-   "h": 4450,
-   "title": "Mobile nav · decided (M2 tab bar + M4 event day)",
+   "w": 1440,
+   "h": 4800,
+   "title": "Header · decided (event strip states, public view, dark)",
    "page": "nav"
   },
-  "Nav-Footer-Final.dc.html": {
-   "x": 5720,
+  "Home-Hero-Modes-1.dc.html": {
+   "x": 2160,
    "y": 0,
    "w": 1440,
-   "h": 2850,
-   "title": "Footer · decided (F1 + trust line)",
-   "page": "nav"
+   "h": 5050,
+   "title": "Home · hero modes 1 to 4 (live, event day, last call, results)",
+   "page": "home"
+  },
+  "Home-Hero-Modes-2.dc.html": {
+   "x": 3680,
+   "y": 0,
+   "w": 1440,
+   "h": 5400,
+   "title": "Home · hero modes 6 to 10 (announced, week, this week, quiet, clubs)",
+   "page": "home"
+  },
+  "Tourn-List-Final.dc.html": {
+   "x": 640,
+   "y": 0,
+   "w": 1440,
+   "h": 6350,
+   "title": "Tournaments list · decided (list and preview)",
+   "page": "tournaments"
+  },
+  "Tourn-List-States.dc.html": {
+   "x": 2160,
+   "y": 0,
+   "w": 1440,
+   "h": 2550,
+   "title": "Tournaments list · decided (Results tab, bell states)",
+   "page": "tournaments"
+  },
+  "Tourn-Calendar-1.dc.html": {
+   "x": 3680,
+   "y": 0,
+   "w": 1440,
+   "h": 4750,
+   "title": "Calendar view · option 1: Weekend by weekend",
+   "page": "tournaments"
+  },
+  "Tourn-Calendar-2.dc.html": {
+   "x": 5200,
+   "y": 0,
+   "w": 1440,
+   "h": 3050,
+   "title": "Calendar view · option 2: Month beside the list",
+   "page": "tournaments"
+  },
+  "Tourn-Calendar-3.dc.html": {
+   "x": 6720,
+   "y": 0,
+   "w": 1440,
+   "h": 4100,
+   "title": "Calendar view · option 3: Three months at a glance",
+   "page": "tournaments"
+  },
+  "Tourn-Map-1.dc.html": {
+   "x": 8240,
+   "y": 0,
+   "w": 1440,
+   "h": 3650,
+   "title": "Map view · option 1: Side by side",
+   "page": "tournaments"
+  },
+  "Tourn-Map-2.dc.html": {
+   "x": 9760,
+   "y": 0,
+   "w": 1440,
+   "h": 2900,
+   "title": "Map view · option 2: Map first, list drawer",
+   "page": "tournaments"
+  },
+  "Tourn-Map-3.dc.html": {
+   "x": 11280,
+   "y": 0,
+   "w": 1440,
+   "h": 4150,
+   "title": "Map view · option 3: Regions first",
+   "page": "tournaments"
+  },
+  "Tourn-Table-1.dc.html": {
+   "x": 640,
+   "y": 7600,
+   "w": 1440,
+   "h": 3950,
+   "title": "Table view · option 1: Clean six",
+   "page": "tournaments"
+  },
+  "Tourn-Table-2.dc.html": {
+   "x": 2160,
+   "y": 7600,
+   "w": 1440,
+   "h": 2800,
+   "title": "Table view · option 2: Month-grouped with entry bars",
+   "page": "tournaments"
+  },
+  "Tourn-Table-3.dc.html": {
+   "x": 3680,
+   "y": 7600,
+   "w": 1440,
+   "h": 3150,
+   "title": "Table view · option 3: Compact table with a side panel",
+   "page": "tournaments"
+  },
+  "Tourn-Phones-Options.dc.html": {
+   "x": 5200,
+   "y": 7600,
+   "w": 2800,
+   "h": 4650,
+   "title": "Tournaments on phones · options per view",
+   "page": "tournaments"
   }
  },
  "createdOnFiles": {
@@ -987,6 +1046,22 @@
    "x": 8760,
    "y": 1160
   },
+  "s_Home-Final": {
+   "fill": "gray",
+   "page": "home",
+   "text": "What: The whole decided homepage at 1440px, as a signed-out visitor sees it on Mon, May 17, 2027. The hero is in Register mode (rung 5) for the Paul Morphy Open, Sat–Sun, Jun 12–13, 2027, and the panel beside it shows the same card when the event is full, when online entry is closed, when you're already entered, and in last call. Under the hero, in order: the identity and search band, the this-week strip (WS09, flagged off), the upcoming six, the three doors, results with the recap card (WS10) and the Champions band, news with the Facebook rail, and membership. The decided header and F1 footer frame the page. Numbers on the page match the 12 notes at the top.\n\nBuilt from: Home-A's hero and page, Home-B's search box (now in the identity band), Home-C's this-week strip (flagged), Home-E's doors band and Home-D's Champions band, with the Heritage accent (thick–thin rule and seal) set in Geist. It replaces Home-A.\n\nOpen questions: Q11, should an open LCA event lead the homepage for 30 days (last call at 14, early-entry overrides at 14 and 7) instead of 21? Default: yes. Q14, should the Results hero and Champions band ship in Phase 0, ahead of WS10's results archive? Default: yes, each behind its own switch.",
+   "w": 760,
+   "x": 640,
+   "y": 5510
+  },
+  "s_Home-Final-Phones": {
+   "fill": "gray",
+   "page": "home",
+   "text": "What: the decided homepage at 390px, drawn as eight phones. Each phone has the 56px navy app bar (rook mark, a 44×44 Search button) and the four-tab bar (Tournaments · Clubs · Log in or My LCA · Menu). The phones show: Register, the first screen for the Paul Morphy Open; the same page scrolled to the identity and search band and the upcoming list, with a strip beside it giving the full phone order (WS03 AC5); Live, in live colours with the rounds written out and Pause updates; Results, with the Heritage accent; This weekend in Louisiana, with partner rows that open the organizer's site; Quiet, signed in, with the My LCA count; the Clubs floor; and the doors accordion with one door open at a time.\n\nBuilt from: Home-Phones A, the decided M2 app bar and tab bar, the identity and search band, and the \"At 390px\" column of the hero ladder in replan section 4. Replaces Home-Phones.\n\nOpen questions: Q11, a 30-day Register window with a 14-day last-call tier (default yes). Q3, keep the live hero public (default yes, with the personal board line only for signed-in players). Q14, ship the Results hero in Phase 0 (default yes, behind its own switch). Q10, Donate is two taps on phones (default accept).",
+   "w": 760,
+   "x": 5200,
+   "y": 2810
+  },
   "s_Live-A": {
    "fill": "gray",
    "page": "live",
@@ -1095,6 +1170,14 @@
    "x": 11280,
    "y": 2460
   },
+  "s_Looks-Applied": {
+   "fill": "gray",
+   "page": "looks",
+   "text": "What: This board shows the decided scope of each look. The rule is \"Minimal is for doing, Heritage is for the lasting record, Broadcast is for what is live right now\", with Scholastic as the one exception. A site map puts every route on a chip coloured by scope, and each chip also names its scope in words. Three slices sit under the same base header: a Heritage Bylaws page whose base buttons and status tag never change, a Minimal Tournaments list, and a Broadcast pairings page with a static Live dot. Below them are Heritage Level A (full scope) and Level B (homepage accent in Geist), token and contrast tables for all five scopes, fonts per scope with their budgets, and the Scholastic plan, kept and flagged off.\n\nBuilt from: Looks-3 Modern Tech-Minimal (base), Looks-1 Heritage Club (record pages), Looks-7 Broadcast Night (live) and Looks-6 Bright Scholastic (scholastic, later). Replaces Looks-2, Looks-4 and Looks-5, both the Tile and Page boards of each. Source: replan Note 1, Q1 and amendment 5.1.\n\nOpen questions: Q6, should Heritage load its own fonts, about 110 KB (default yes). Q7, should the /membership tier cards be Heritage (default no; only the member's card and its preview). Q8, keep Bright Scholastic for WS11, flagged off (default keep). Q13, should the event strip take the live colour tokens while a round is live (default yes).",
+   "w": 760,
+   "x": 3680,
+   "y": 7110
+  },
   "s_Looks-Compare": {
    "fill": "gray",
    "page": "looks",
@@ -1134,6 +1217,30 @@
    "w": 760,
    "x": 5200,
    "y": 1360
+  },
+  "s_Nav-Footer-Final": {
+   "fill": "gray",
+   "page": "nav",
+   "text": "What: The decided footer, drawn three ways. (A) At 1280px: the brand block (official logo on a cream plate, Join LCA, Donate), four columns of nav.ts links, with Calendar (WS04) and Results (WS10) drawn dashed because they arrive later, then the base line with the trust line and the System / Light / Dark Appearance control. (B1) At 390px, full length: the columns fold into tap-to-open groups with Contact open, and the brand block and trust line stack. (B2, B3) A dark sample: a phone scrolled to the end above the tab bar, and the brand block on a dark page.\n\nBuilt from: F1's four columns and brand block, plus F3's trust line (\"US Chess state affiliate · Louisiana's chess community since 1915 · Bylaws & rules · Minutes · Site last updated Thu, Oct 8, 2026\"). It replaces Nav-Footer (F1–F3). The labels follow the replan's footer list (section 5.5) and the one-label rule: \"Bylaws & rules\" and \"Minutes\" are two separate links, never \"Bylaws & minutes\". \"Scholastic\" and \"State champions\" match the header, and \"Contact\" leads with the LouisianaChess@gmail.com inbox. That way this board and the IA board read the same.\n\nOpen questions: None for the footer. The logo plate follows Q9's default (a cream plate on navy), which is asked on the header board. In dark mode the footer stays navy like the header. The replan's dark table doesn't list the footer, so the board says this outright.",
+   "w": 760,
+   "x": 7240,
+   "y": 2910
+  },
+  "s_Nav-IA-Final": {
+   "fill": "gray",
+   "page": "nav",
+   "text": "What: the final site map. It shows the six sections (Tournaments · Clubs · Scholastic · News · Membership · About ▾) with every page under each. Each page has its route, tagged as either \"Route today\" (checked against src/App.tsx) or \"Later\" with its workstream (This weekend and Calendar WS04, Results WS10, /search WS02, Your child's first tournament WS11, /donate and Am I a member? WS12). The board also covers the utility trio, the My LCA ▾ menu by role, the phone tabs and Menu sheet, the tablet and width summary, and footer F1's four columns with the trust line. It ends with \"Changes from today\", where the awkward six land, the one-label-per-destination table and the search Popular list.\n\nBuilt from: Nav-IA structure 1 (task and topic). It applies K's October 8 header, mobile and footer picks as written in replan section 1 note 2, Q2, Q3, Q5 and section 5.2. It replaces Nav-IA. Where the replan's own lists used two words for one page, the board picks one label: State champions, Contact, Scholastic, Clubs, LCA on Facebook ↗.\n\nOpen questions: Q10 only. On phones Donate is two taps (Menu, then Donate) and stays one click on tablet and desktop. Default: accept, and change WS02 AC6 and WS12 AC6 to match.",
+   "w": 760,
+   "x": 640,
+   "y": 4960
+  },
+  "s_Nav-Mobile-Final": {
+   "fill": "gray",
+   "page": "nav",
+   "text": "What: This is the decided mobile nav, drawn as 12 real screens. A 56px navy app bar has the rook mark, the two-line name and a 44×44 Search button. Below it is the M2 tab bar: Tournaments · Clubs · Log in or My LCA (with a to-do count) · Menu. Current tab: bold navy label with a 3px gold-ink bar. Menu opens the M1 sheet with the six sections, \"You are here\", then Donate · My LCA · Renew, role tools, the Appearance switch and \"Hide event bar until the next update\". Event day is shown for a player, a guardian, a TD and admin, the \"New\" tag and check-in. Also drawn: the Log in page, an iPhone SE showing how much screen the top and bottom bars take, the 768px hybrid header with its one-line strip, and the landscape reflow fallback. The bottom safe area is drawn on every phone.\n\nBuilt from: the M2 bottom tab bar, the M1 sheet behind the Menu tab, and M4's banner and pill. The banner becomes an in-flow card under the app bar. The pill becomes a 56px event bar docked above the tabs: live tokens in round states, light tint at check-in. Replaces Nav-Mobile (M1–M4).\n\nOpen questions: Q5 admins also get the phone banner at each round (default yes). Q10 Donate is two taps on phones, first in the sheet (default accept; WS02 AC6 and WS12 AC6 change). Q17 the pill becomes a docked bar (default docked). Q18 the phone bar starts at check-in on day 1, and event week is a card in My LCA and on Home (default yes).",
+   "w": 760,
+   "x": 5200,
+   "y": 4510
   },
   "s_News-A": {
    "fill": "gray",
@@ -1279,54 +1386,6 @@
    "x": 5200,
    "y": 2060
   },
-  "s_Tourn-A": {
-   "fill": "gray",
-   "page": "tournaments",
-   "text": "What: Month-grouped agenda (16 events Oct–Dec, LCA and Gulf South partner) with date blocks, status in words, \"X of Y registered\" with fill bars and deadlines on LCA rows, lighter partner rows that say where entry happens, one row of filter chips (When · Type · Region · Rated · LCA-run / Partner) with removable applied chips…\n\nBorrowed from: the federations research's top idea (one chip row incl. LCA-run vs clearinghouse)…\n\nTrade-off: Partner rows (12 of 16) are thin by necessity and dominate the list; Calendar and Map are only tabs here.",
-   "w": 760,
-   "x": 640,
-   "y": 3210
-  },
-  "s_Tourn-B": {
-   "fill": "gray",
-   "page": "tournaments",
-   "text": "What: Master–detail list. A compact, month-grouped list (16 events) drives a sticky preview pane with the facts, sections and fees, live per-section counts, household checkout and Register (or \"Register on organizer site\"). The selected event is kept in the URL.\n\nBorrowed from: NN/g (side panel instead of a pop-up; lists over cards for comparing), Luma (status slot plus \"N going\"…\n\nTrade-off: the two panes need about 1200px. On tablets and phones the layout falls back to list, then a full-screen sheet, so \"preview without losing your place\" only works on desktop. The pane also gets long for LCA events.",
-   "w": 760,
-   "x": 2160,
-   "y": 2210
-  },
-  "s_Tourn-C": {
-   "fill": "gray",
-   "page": "tournaments",
-   "text": "What: The rebuilt calendar works as a navigator. A 9-month season strip (counts split into LCA and partner) and a clean Monday-first month grid sit beside a week-grouped agenda. In the grid, Sat–Sun events draw as one bar, today is marked, deadline and \"entries open\" ticks show, and a gold frame marks the week in view.\n\nBorrowed from: Hund, Dowell & Mueller 2014 (a list beats a grid across month breaks, so the grid only navigates)…\n\nTrade-off: the two views must stay in sync (scroll-spy moves the grid frame, and tapping a day scrolls the list). Big weekends get busy (Oct 24 stacks three bars). On phones the grid stacks above the list and the side-by-side navigation is lost.",
-   "w": 760,
-   "x": 3680,
-   "y": 2510
-  },
-  "s_Tourn-D": {
-   "fill": "gray",
-   "page": "tournaments",
-   "text": "What: Split map view. On the left, a list sorted by estimated drive time from a typed city or ZIP (or \"Use my location\"). On the right, a Gulf South map: filled pins for LCA events, hollow pins for partner events, clusters, and 100/200/300-mile rings.\n\nBorrowed from: Baymard (split view, map beside the list, never in a pop-up), US Chess tournament search (distance from a ZIP code)…\n\nTrade-off: drive times need geocoding plus a routing API and caching, and they are still estimates. Houston and the Jackson area cluster at state zoom. On phones the map stacks above the list and eats the screen.",
-   "w": 760,
-   "x": 5200,
-   "y": 2160
-  },
-  "s_Tourn-E": {
-   "fill": "gray",
-   "page": "tournaments",
-   "text": "What: A dense, sortable power table of all 25 upcoming events. Date and Event are frozen; the other columns are City · Type · Rating · Sections · Entries/cap (with mini bars) · Status (with the next deadline) · Source. Saved views sit in a tab bar, each with email alerts, its own .ics feed and a shareable URL.\n\nBorrowed from: NAChessHub (dense list columns: date · state · city · type · rating · time control · organizer)…\n\nTrade-off: it's intimidating for newcomers and parents, so it belongs behind the view switch, not as the default. It also exposes how thin the partner listings are (\"Not listed\", \"Not in feed\"), because the feed carries no sections, fees or status.",
-   "w": 760,
-   "x": 6720,
-   "y": 2460
-  },
-  "s_Tourn-Phones": {
-   "fill": "gray",
-   "page": "tournaments",
-   "text": "What: The tournaments list on a phone in four states: a month-grouped agenda with a Louisiana chip applied (removable, \"11 events\", Subscribe); a near-full-height filter sheet (When / Where with state counts and a region row / Type / Where you register / rated-only) whose button shows the live total \"Show 16 events\"…\n\nBorrowed from: Baymard and AllTrails (filter panel with an Apply button and live count, removable applied chips)…\n\nTrade-off: The sheet covers the list while you choose (the live count compensates). The Monday-first grid breaks the US Sunday-first habit to keep weekend events on one line.",
-   "w": 760,
-   "x": 8240,
-   "y": 1160
-  },
   "s_Work-A": {
    "fill": "gray",
    "page": "workspace",
@@ -1408,7 +1467,7 @@
    "kind": "title1",
    "maxW": 8000,
    "page": "home",
-   "text": "Home · decided: A with the search band, the hero in every mode, phones",
+   "text": "Home · decided: A with the search band, the hero in every mode (two boards), phones",
    "w": 240,
    "x": 640,
    "y": -320
@@ -1444,7 +1503,7 @@
    "kind": "title1",
    "maxW": 6520,
    "page": "nav",
-   "text": "Navigation & footer · decided: structure 1, header, phones, footer",
+   "text": "Navigation & footer · decided: structure 1, header (two boards), phones, footer",
    "w": 240,
    "x": 640,
    "y": -320
@@ -1507,7 +1566,7 @@
    "kind": "title1",
    "maxW": 8000,
    "page": "tournaments",
-   "text": "Tournaments list — 5 options + phones",
+   "text": "Tournaments list · decided list, then options to pick: calendar (3), map (3), table (3), phones (3 per view)",
    "w": 240,
    "x": 640,
    "y": -320
@@ -1521,69 +1580,133 @@
    "x": 640,
    "y": -320
   },
-  "s_Home-Final": {
-   "fill": "gray",
-   "page": "home",
-   "w": 760,
-   "x": 640,
-   "y": 5510,
-   "text": "What: The whole decided homepage at 1440px, as a signed-out visitor sees it on Mon, May 17, 2027. The hero is in Register mode (rung 5) for the Paul Morphy Open, Sat–Sun, Jun 12–13, 2027, and the panel beside it shows the same card when the event is full, when online entry is closed, when you're already entered, and in last call. Under the hero, in order: the identity and search band, the this-week strip (WS09, flagged off), the upcoming six, the three doors, results with the recap card (WS10) and the Champions band, news with the Facebook rail, and membership. The decided header and F1 footer frame the page. Numbers on the page match the 12 notes at the top.\n\nBuilt from: Home-A's hero and page, Home-B's search box (now in the identity band), Home-C's this-week strip (flagged), Home-E's doors band and Home-D's Champions band, with the Heritage accent (thick–thin rule and seal) set in Geist. It replaces Home-A.\n\nOpen questions: Q11, should an open LCA event lead the homepage for 30 days (last call at 14, early-entry overrides at 14 and 7) instead of 21? Default: yes. Q14, should the Results hero and Champions band ship in Phase 0, ahead of WS10's results archive? Default: yes, each behind its own switch."
-  },
-  "s_Home-Hero-Modes": {
-   "fill": "gray",
-   "page": "home",
-   "w": 760,
-   "x": 2160,
-   "y": 9810,
-   "text": "What: The homepage header, hero and identity-and-search band, drawn once for each mode of the hero ladder, in order. The modes are Live (live colour tokens, rounds named in words, Pause updates, the personal \"You're on board 6 with White\" line), Event day, Register last call (with the four primary buttons by registration state as swatches), Results (Heritage rule and seal, winners with ½), Announced (signed in and signed out), Week (WS09), This week in Louisiana, Quiet, and the Clubs floor. Mode 5 Register points to Home-Final. Each mode has a divider giving its trigger, its flag and that frame's \"today\". Each mode has exactly one gold primary in the hero. Partner rows only ever say \"Registers on the organizer's site ↗\".\n\nBuilt from: Home-A hero with the replan's ten-rung ladder, Home-C week view, Home-D results, and Home-B search in the band. Replaces Home-B, Home-C, Home-D, Home-E and Home-F.\n\nOpen questions: Q3, whether the live hero stays public (default: public, with the personal line only for signed-in involved people). Q11, the 30-day register window with a 14-day last-call tier and early-deadline overrides (default: yes). Q14, whether Results and Champions ship in Phase 0 ahead of WS10 (default: yes, behind homeResults and homeChampions)."
-  },
-  "s_Home-Final-Phones": {
-   "fill": "gray",
-   "page": "home",
-   "w": 760,
-   "x": 3680,
-   "y": 2810,
-   "text": "What: the decided homepage at 390px, drawn as eight phones. Each phone has the 56px navy app bar (rook mark, a 44×44 Search button) and the four-tab bar (Tournaments · Clubs · Log in or My LCA · Menu). The phones show: Register, the first screen for the Paul Morphy Open; the same page scrolled to the identity and search band and the upcoming list, with a strip beside it giving the full phone order (WS03 AC5); Live, in live colours with the rounds written out and Pause updates; Results, with the Heritage accent; This weekend in Louisiana, with partner rows that open the organizer's site; Quiet, signed in, with the My LCA count; the Clubs floor; and the doors accordion with one door open at a time.\n\nBuilt from: Home-Phones A, the decided M2 app bar and tab bar, the identity and search band, and the \"At 390px\" column of the hero ladder in replan section 4. Replaces Home-Phones.\n\nOpen questions: Q11, a 30-day Register window with a 14-day last-call tier (default yes). Q3, keep the live hero public (default yes, with the personal board line only for signed-in players). Q14, ship the Results hero in Phase 0 (default yes, behind its own switch). Q10, Donate is two taps on phones (default accept)."
-  },
-  "s_Looks-Applied": {
-   "fill": "gray",
-   "page": "looks",
-   "w": 760,
-   "x": 3680,
-   "y": 7110,
-   "text": "What: This board shows the decided scope of each look. The rule is \"Minimal is for doing, Heritage is for the lasting record, Broadcast is for what is live right now\", with Scholastic as the one exception. A site map puts every route on a chip coloured by scope, and each chip also names its scope in words. Three slices sit under the same base header: a Heritage Bylaws page whose base buttons and status tag never change, a Minimal Tournaments list, and a Broadcast pairings page with a static Live dot. Below them are Heritage Level A (full scope) and Level B (homepage accent in Geist), token and contrast tables for all five scopes, fonts per scope with their budgets, and the Scholastic plan, kept and flagged off.\n\nBuilt from: Looks-3 Modern Tech-Minimal (base), Looks-1 Heritage Club (record pages), Looks-7 Broadcast Night (live) and Looks-6 Bright Scholastic (scholastic, later). Replaces Looks-2, Looks-4 and Looks-5, both the Tile and Page boards of each. Source: replan Note 1, Q1 and amendment 5.1.\n\nOpen questions: Q6, should Heritage load its own fonts, about 110 KB (default yes). Q7, should the /membership tier cards be Heritage (default no; only the member's card and its preview). Q8, keep Bright Scholastic for WS11, flagged off (default keep). Q13, should the event strip take the live colour tokens while a round is live (default yes)."
-  },
-  "s_Nav-IA-Final": {
-   "fill": "gray",
-   "page": "nav",
-   "w": 760,
-   "x": 640,
-   "y": 4960,
-   "text": "What: the final site map. It shows the six sections (Tournaments · Clubs · Scholastic · News · Membership · About ▾) with every page under each. Each page has its route, tagged as either \"Route today\" (checked against src/App.tsx) or \"Later\" with its workstream (This weekend and Calendar WS04, Results WS10, /search WS02, Your child's first tournament WS11, /donate and Am I a member? WS12). The board also covers the utility trio, the My LCA ▾ menu by role, the phone tabs and Menu sheet, the tablet and width summary, and footer F1's four columns with the trust line. It ends with \"Changes from today\", where the awkward six land, the one-label-per-destination table and the search Popular list.\n\nBuilt from: Nav-IA structure 1 (task and topic). It applies K's October 8 header, mobile and footer picks as written in replan section 1 note 2, Q2, Q3, Q5 and section 5.2. It replaces Nav-IA. Where the replan's own lists used two words for one page, the board picks one label: State champions, Contact, Scholastic, Clubs, LCA on Facebook ↗.\n\nOpen questions: Q10 only. On phones Donate is two taps (Menu, then Donate) and stays one click on tablet and desktop. Default: accept, and change WS02 AC6 and WS12 AC6 to match."
-  },
   "s_Nav-Header-Final": {
    "fill": "gray",
    "page": "nav",
    "w": 760,
    "x": 2160,
-   "y": 8710,
-   "text": "What: the decided desktop header with eight frames. (A) 1280px signed out, with the logo plate, six sections, the 220px Search button with ⌘K and Donate · Log in · Join LCA. (B) 1024px, with a width budget measured on the board. (C) The About menu open on Minutes. (D) My LCA ▾ open with to-dos first, plus the Renew variant. (E) The condensed 56px header with the rook mark and the sticky 44px live strip. (F) The event strip in every state, one row per role, with the copy from replan section 3, and the \"same line, other moments\" chip row. (G) The public view during a live round: no strip, only a \"Live\" tag on Tournaments. (H) A dark-mode sample. Measured on the board: with 12px section padding the 1280px row has only 28px spare, so 8px padding and a 12px utility gap run up to 1439px. Renew plus the Live tag at 1024px is still about 38px over, which AC1 should test.\n\nBuilt from: H1 Refined as the base. H4 search, reconciled as a field-shaped button in the bar. H5 event strip, personalised to players, guardians, the event's TDs and lca_admin. The strip uses a light tint before and after the event and live tokens during rounds. H2's \"same line, other moments\" becomes a lifecycle chip row. Replaces Nav-Header (H1–H5).\n\nOpen questions: Q1 search as a button (default: the button). Q2 no public live bar (default: none). Q3 public homepage live hero (default: public). Q9 cream logo plate (default: plate, judge by eye). Q13 live colour tokens on the strip (default: yes). Q15 light tint instead of the brand-gold band (default: yes). Q16 drop the countdown (default: drop)."
+   "y": 4560,
+   "text": "What this part shows: the decided header bar. A rests at 1280px signed out; B is the 1024px tight case with its measured width budget; C has the About menu open; D is signed in as an active member with My LCA ▾ open (Donate · My LCA ▾, no Join, no Renew), plus the expired-member Renew variant; E is the condensed header after scroll. The brand is the rook mark with the two-line name (rook mark alone at 1024px).\n\nBuilt from H1 Refined base, H4 search as a field-shaped button, H5's event strip and H2's \"same line, other moments\". Replaces Nav-Header (H1 to H5). Part 1 of 2; frames F to H continue in \"Header · decided (event strip states, public view, dark)\".\n\nK answers the open questions Q1, Q2, Q3, Q13, Q15 and Q16 by number; Q9 is settled (rook mark, no cream plate). The board changes only where an answer differs from its default."
   },
-  "s_Nav-Mobile-Final": {
+  "s_Nav-Header-Strip": {
    "fill": "gray",
    "page": "nav",
    "w": 760,
    "x": 3680,
-   "y": 4510,
-   "text": "What: This is the decided mobile nav, drawn as 12 real screens. A 56px navy app bar has the rook mark, the two-line name and a 44×44 Search button. Below it is the M2 tab bar: Tournaments · Clubs · Log in or My LCA (with a to-do count) · Menu. Current tab: bold navy label with a 3px gold-ink bar. Menu opens the M1 sheet with the six sections, \"You are here\", then Donate · My LCA · Renew, role tools, the Appearance switch and \"Hide event bar until the next update\". Event day is shown for a player, a guardian, a TD and admin, the \"New\" tag and check-in. Also drawn: the Log in page, an iPhone SE showing how much screen the top and bottom bars take, the 768px hybrid header with its one-line strip, and the landscape reflow fallback. The bottom safe area is drawn on every phone.\n\nBuilt from: the M2 bottom tab bar, the M1 sheet behind the Menu tab, and M4's banner and pill. The banner becomes an in-flow card under the app bar. The pill becomes a 56px event bar docked above the tabs: live tokens in round states, light tint at check-in. Replaces Nav-Mobile (M1–M4).\n\nOpen questions: Q5 admins also get the phone banner at each round (default yes). Q10 Donate is two taps on phones, first in the sheet (default accept; WS02 AC6 and WS12 AC6 change). Q17 the pill becomes a docked bar (default docked). Q18 the phone bar starts at check-in on day 1, and event week is a card in My LCA and on Home (default yes)."
+   "y": 4860,
+   "text": "What this part shows: F, the event strip in every state with one row per role (player, guardian, TD, admin) and the lifecycle chip row; G, the public view during a live round, with the worded Live tag on Tournaments and no strip; H, dark mode for the header, menu and strip. Notes 10 to 16 travel with these frames.\n\nContinued from \"Header · decided (bar, menus, signed in)\". Built from H5's event strip and H2's \"same line, other moments\"; together with part 1 it replaces Nav-Header (H1 to H5).\n\nK checks the strip copy for each role and state. The strip's open questions (Q2, Q3, Q13, Q15, Q16) sit with the legend in part 1."
   },
-  "s_Nav-Footer-Final": {
+  "s_Home-Hero-Modes-1": {
    "fill": "gray",
-   "page": "nav",
+   "page": "home",
    "w": 760,
-   "x": 5720,
-   "y": 2910,
-   "text": "What: The decided footer, drawn three ways. (A) At 1280px: the brand block (official logo on a cream plate, Join LCA, Donate), four columns of nav.ts links, with Calendar (WS04) and Results (WS10) drawn dashed because they arrive later, then the base line with the trust line and the System / Light / Dark Appearance control. (B1) At 390px, full length: the columns fold into tap-to-open groups with Contact open, and the brand block and trust line stack. (B2, B3) A dark sample: a phone scrolled to the end above the tab bar, and the brand block on a dark page.\n\nBuilt from: F1's four columns and brand block, plus F3's trust line (\"US Chess state affiliate · Louisiana's chess community since 1915 · Bylaws & rules · Minutes · Site last updated Thu, Oct 8, 2026\"). It replaces Nav-Footer (F1–F3). The labels follow the replan's footer list (section 5.5) and the one-label rule: \"Bylaws & rules\" and \"Minutes\" are two separate links, never \"Bylaws & minutes\". \"Scholastic\" and \"State champions\" match the header, and \"Contact\" leads with the LouisianaChess@gmail.com inbox. That way this board and the IA board read the same.\n\nOpen questions: None for the footer. The logo plate follows Q9's default (a cream plate on navy), which is asked on the header board. In dark mode the footer stays navy like the header. The replan's dark table doesn't list the footer, so the board says this outright."
+   "x": 2160,
+   "y": 5110,
+   "text": "What this part shows: the header, the hero and the identity and search band for the first four rungs of the homepage ladder (1 Live, 2 Event day, 3 Register last call, 4 Results), plus the mode 5 divider that points to Home-Final. It keeps the board's title strip with the full ten-rung ladder and all 15 notes.\n\nBuilt from: the top half of Home-Hero-Modes (Home-A hero and live inset, Home-D results, Home-B search band). Replaces: Home-B, Home-C, Home-D, Home-E and Home-F, together with part 2. The header brand is now the rook mark and two-line name, as on Tourn-List-Final.\n\nK decides: Q3 (live hero stays public), Q11 (a 30-day registration window with a 14-day last call) and Q14 (Results ship in Phase 0)."
+  },
+  "s_Home-Hero-Modes-2": {
+   "fill": "gray",
+   "page": "home",
+   "w": 760,
+   "x": 3680,
+   "y": 5460,
+   "text": "What this part shows: the header, hero and band for the lower rungs (6 Announced, 7 Week, 8 This week in Louisiana, 9 Quiet, 10 Clubs floor), with a slim title strip and notes 1, 6 and 10 to 15.\n\nBuilt from: the bottom half of Home-Hero-Modes (Home-C week view, Home-A grid motif). Replaces: Home-B to Home-F, together with part 1. The header brand is now the rook mark. Under the Quiet and Clubs dividers, a caption records the later decision: in those two modes the hero carries the three doors on navy with the grid motif, and the lower doors band is dropped (REDESIGN_SPEC.md v1.2, WS03).\n\nK checks: the signed-out Announced slot (calendar file, no reminder log-in) and that the Quiet and Clubs heroes are redrawn with the three doors."
+  },
+  "s_Tourn-List-Final": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 640,
+   "y": 6410,
+   "text": "What this part shows: the decided /tournaments list at 1440px, signed in. Frame A is the default list with The Baton Rouge Classic hovered and its bell's \"Remind me\" popover open, beside the rail (New to tournaments?, Latest results, For organizers). Frame B selects that row: the 400px preview pane replaces the rail, with the partner-event and entries-not-open pane variants below. The legend keeps notes 1 to 12 and K's feedback 1 to 7.\n\nBuilt from Tourn-A (toolbar, rows, month groups, rail) and Tourn-B (preview pane and its partner and not-open states), with the decided header. Replaces Tourn-A and Tourn-B. The Results tab and bell states (frames C and D) continue in \"Tournaments list · decided (Results tab, bell states)\".\n\nNothing to pick: this is the decided design. K confirms the rows, the rail-to-preview swap, the event= link and the hover bell's reminder options."
+  },
+  "s_Tourn-List-States": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 2160,
+   "y": 2610,
+   "text": "What this part shows: frame C, the Results tab signed out, with the State champions card on top (plain names, honor roll link) and past LCA events by month with Standings and Crosstable. Frame D crops one row three ways for the bell: signed out (asks for a log in), a partner event signed in (only the two date reminders) and after saving (filled bell, \"Reminders on · 2\", saved toast). Notes 11 and 12 come with them.\n\nContinued from \"Tournaments list · decided (list and preview)\"; together the two parts replace Tourn-A and Tourn-B. The champions card is where K's note 1 (State champions under the title) landed, and the signed-out bell is the second half of note 6.\n\nNothing to pick: K confirms champions sit at the top of Results and that the signed-out, partner and saved bell states read right."
+  },
+  "s_Tourn-Calendar-1": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 3680,
+   "y": 4810,
+   "text": "What this part shows: the board title strip and the notes for all three calendar options, then option C1, Weekend by weekend. The list is the calendar: one block per weekend from Oct 10 to Jan 3, a 13-weekend ribbon on top, quiet weekends as one line, and a deadline strip inside each weekend. Signed out, Baton Rouge Classic selected with B's preview in the rail.\n\nBuilt from Tourn-C, Tourn-A rows and rail, Tourn-B preview and the decided header. Replaces Tourn-C, Calendar as navigator. Options 2 and 3 continue in Tourn-Calendar-2 and Tourn-Calendar-3.\n\nK picks C1, C2 or C3, or one with a piece of another (for example C1's empty-weekend lines inside C2 or C3)."
+  },
+  "s_Tourn-Calendar-2": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 5200,
+   "y": 3110,
+   "text": "What this part shows: option C2, Month beside the list. A small Monday-first month grid with unlabeled bars and a season strip sits in the right rail as a navigator; the main column is a week-grouped list in Tourn-A rows. Signed out, with the signed-out bell popover open.\n\nBuilt from Tourn-C (month grid, season strip), Tourn-A rows and rail, Tourn-B preview. Replaces Tourn-C. Continued from option 1, which carries the board title strip and the full notes.\n\nK decides whether a rail month grid that only navigates is worth its place, against C1 and C3."
+  },
+  "s_Tourn-Calendar-3": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 6720,
+   "y": 4160,
+   "text": "What this part shows: option C3, Three months at a glance. A full-width overview of the three months in the When range counts tournaments per weekend, above one continuous dated list. Signed in, with the bell popover open and a partner row selected in the preview.\n\nBuilt from Tourn-C, Tourn-A rows and rail, Tourn-B preview. Replaces Tourn-C. Continued from option 1, which carries the board title strip and the full notes.\n\nK decides whether a counting overview that scrolls away earns its place, against C1 and C2."
+  },
+  "s_Tourn-Map-1": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 8240,
+   "y": 3710,
+   "text": "What this part shows: the board title strip and the full \"Notes on this board\" legend (all three options plus \"The same in all three\"), then option 1, Side by side. Tourn-D's list sits beside a sticky map, with an anchored event card, optional straight-line distance rings from a typed city or ZIP, and region counts under the map. Drawn signed in with Baton Rouge Classic selected.\n\nBuilt from Tourn-D, Tourn-A rows, Tourn-B preview, the decided header and Appendix A evidence. Replaces Tourn-D, Map view. Parts 2 and 3 continue the board.\n\nK picks 1, 2 or 3, or a mix (for example option 3's region shapes as the \"Louisiana only\" mode of option 1 or 2). This part is the one closest to the Tourn-D layout K already loves."
+  },
+  "s_Tourn-Map-2": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 9760,
+   "y": 2960,
+   "text": "What this part shows: option 2, Map first, list drawer. The map takes the full width and the list floats in a drawer on its left. Selecting an event turns the drawer into B's preview, and Back returns to the list. Drawn signed out in two states: the list drawer with a cluster popover and the signed-out bell, then a partner preview.\n\nBuilt from the same sources as part 1, reusing K's own list pattern (one thing until an event is selected). Continued from part 1; together the parts replace Tourn-D, Map view.\n\nK decides whether a big map with a drawer suits a \"where first\" scan better than side by side, and whether the \"in view\" count beside the filter total reads clearly."
+  },
+  "s_Tourn-Map-3": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 11280,
+   "y": 4210,
+   "text": "What this part shows: option 3, Regions first. Louisiana's seven regions become the map as selectable shapes with names and counts, neighbouring states are edge tabs with counts, and the list beside it groups events by region. Drawn signed in in two states: the whole map, then South Central Louisiana chosen with its pins and clubs.\n\nBuilt from the same sources as part 1. Continued from part 1; together the parts replace Tourn-D, Map view. The region outlines are approximate and need a parish-to-region table that does not exist yet.\n\nK decides whether grouping by region is worth making \"this weekend\" a List-view question, or whether the region shapes should become a \"Louisiana only\" mode inside option 1 or 2."
+  },
+  "s_Tourn-Table-1": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 640,
+   "y": 11610,
+   "text": "What this part shows: the board's title strip and the full notes legend, then option 1, Clean six: six columns (Date, Event, City, Type, Entries, Status) with Date and Event frozen, one row expanded in place, the reminder popover, and its other states (Columns menu, the table at 1024px, reminders on a partner row).\n\nBuilt from the Tourn-E power table, Tourn-A month groups and rail, Tourn-B preview pane and selected-row ring, and Nav-Header-Final frame A. Replaces Tourn-E. Part 1 of 3, split from Tourn-Table-Options; options 2 and 3 are in Tourn-Table-2 and Tourn-Table-3.\n\nFor K: pick one of the three as the Table view, or a mix (for example option 1's columns with option 3's panel). Here, judge whether Clean six is plain enough while still a power table."
+  },
+  "s_Tourn-Table-2": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 2160,
+   "y": 10460,
+   "text": "What this part shows: option 2, Month-grouped with entry bars: month headers with counts, a This weekend sub-heading, two-line LCA rows with a 120px entry bar, light one-line partner rows, a one-line peek and the signed-out bell prompt. Other states: sorted by City (the groups fold away) and how the rows are weighted.\n\nBuilt from Tourn-A's month groups and row weighting, set in the Tourn-E table. Replaces Tourn-E. Part 2 of 3, continued from Table view · option 1: Clean six, which holds the shared notes.\n\nFor K: decide whether the month groups and inline bar earn the extra height, or whether Table should differ more from the List view."
+  },
+  "s_Tourn-Table-3": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 3680,
+   "y": 10810,
+   "text": "What this part shows: option 3, Compact table with a side panel: dense 13px one-line rows with a bell gutter and a Source column, the picked row in a gold ring, and a 380px sticky panel with the preview and inline reminders. Other states: the panel at rest (Tourn-A's rail), a partner row picked, and the drawer below 1280px.\n\nBuilt from the Tourn-E table, Tourn-A's right rail and Tourn-B's preview pane and selected-row ring. Replaces Tourn-E. Part 3 of 3, continued from Table view · option 1: Clean six, which holds the shared notes.\n\nFor K: decide whether a panel that never pushes the table beats an expanded row, and whether the footer CSV link stays."
+  },
+  "s_Tourn-Phones-Options": {
+   "fill": "gray",
+   "page": "tournaments",
+   "w": 760,
+   "x": 5200,
+   "y": 12310,
+   "text": "What: Fourteen 390×844 phone frames, each with the decided app bar and tab bar. There are three options for each view: List A to C, Calendar A to C, Map A to C and Table A to C. Two shared frames follow: the filter sheet (When, Type and Region with counts, and a live \"Show 16 events\" button) and the event sheet with the reminder sheet open. A panel shows the toolbar at rest, the sticky chip bar, the three bell states and the row rules. Every option has a title strip giving its name, idea, Best for and Trade-off. Notes 1 to 28 at the top match the badges on the frames.\n\nBuilt from: Tourn-Phones, Tourn-A cards and right rail, the Tourn-B preview, the Tourn-C season strip, Tourn-D map and region counts, Tourn-E table, and the Nav-Mobile-Final app bar and tab bar. Replaces Tourn-Phones. Today on the board is Thu, Oct 8. Lafayette Open 2026 is a partner event.\n\nK's feedback applied: every frame uses the decided toolbar. Upcoming 25 | Results is at the top. List, Calendar, Map and Table are centred with Search to their right. The chips are When, Type and Region, with removable values, a live count, Clear all and Copy link. There is no Rated chip, no LCA-run chip and no subscribe card. A bell is always visible on every row. Signed in, it offers one week and one day before (ticked), plus when registration opens and before the early price ends. Signed out, it asks you to log in or create an account. Partner rows never show Register or a count. K still needs to pick one option per view (List, Calendar, Map and Table). Options can be mixed: Map A already uses List B's rows, and Map C opens into Map A or Map B."
   }
  },
  "order": [
@@ -1600,12 +1723,6 @@
   "Looks-6-Scholastic-Page.dc.html",
   "Looks-7-Broadcast-Tile.dc.html",
   "Looks-7-Broadcast-Page.dc.html",
-  "Tourn-A.dc.html",
-  "Tourn-B.dc.html",
-  "Tourn-C.dc.html",
-  "Tourn-D.dc.html",
-  "Tourn-E.dc.html",
-  "Tourn-Phones.dc.html",
   "Event-A.dc.html",
   "Event-B.dc.html",
   "Event-C.dc.html",
@@ -1657,13 +1774,27 @@
   "Scan-C.dc.html",
   "Sources.dc.html",
   "Home-Final.dc.html",
-  "Home-Hero-Modes.dc.html",
   "Home-Final-Phones.dc.html",
   "Looks-Applied.dc.html",
   "Nav-IA-Final.dc.html",
-  "Nav-Header-Final.dc.html",
   "Nav-Mobile-Final.dc.html",
-  "Nav-Footer-Final.dc.html"
+  "Nav-Footer-Final.dc.html",
+  "Nav-Header-Final.dc.html",
+  "Nav-Header-Strip.dc.html",
+  "Home-Hero-Modes-1.dc.html",
+  "Home-Hero-Modes-2.dc.html",
+  "Tourn-List-Final.dc.html",
+  "Tourn-List-States.dc.html",
+  "Tourn-Calendar-1.dc.html",
+  "Tourn-Calendar-2.dc.html",
+  "Tourn-Calendar-3.dc.html",
+  "Tourn-Map-1.dc.html",
+  "Tourn-Map-2.dc.html",
+  "Tourn-Map-3.dc.html",
+  "Tourn-Table-1.dc.html",
+  "Tourn-Table-2.dc.html",
+  "Tourn-Table-3.dc.html",
+  "Tourn-Phones-Options.dc.html"
  ],
  "pages": [
   {
