@@ -86,14 +86,19 @@ describe('the generate guard reads every spelling', () => {
 })
 
 describe('scripts/db/build-local-sqlite.ts', () => {
-  it('writes one database holding the 29 tables and both triggers, built from all 52 migrations', () => {
+  it('writes one database holding the 32 tables and the six triggers, built from all 54 migrations', () => {
     const out = join(scratch(), 'nested/introspect.sqlite')
-    expect(buildLocalSqlite(out)).toEqual({ files: 52, tables: 29 })
-    expect(migrationFiles()).toHaveLength(52)
+    expect(buildLocalSqlite(out)).toEqual({ files: 54, tables: 32 })
+    expect(migrationFiles()).toHaveLength(54)
     const db = new DatabaseSync(out, { readOnly: true })
     const names = (type: string) => (db.prepare('SELECT name FROM sqlite_master WHERE type = ? ORDER BY name').all(type) as Array<{ name: string }>).map((r) => r.name)
-    expect(names('trigger')).toEqual(['members_role_insert', 'members_role_update'])
-    expect(names('table')).toEqual(expect.arrayContaining(['members', 'tournaments', 'tournament_directors']))
+    expect(names('trigger')).toEqual([
+      'members_role_insert', 'members_role_update',
+      'registrations_fill_section_insert', 'registrations_fill_section_update',
+      'tournaments_sections_sync_insert', 'tournaments_sections_sync_update',
+    ])
+    expect(names('view')).toEqual([])
+    expect(names('table')).toEqual(expect.arrayContaining(['members', 'tournaments', 'tournament_directors', 'tournament_sections', 'tournament_schedules', 'tournament_schedule_rounds']))
     db.close()
   })
 
@@ -103,7 +108,7 @@ describe('scripts/db/build-local-sqlite.ts', () => {
     const db = new DatabaseSync(out)
     db.exec('CREATE TABLE leftover (id text)')
     db.close()
-    expect(buildLocalSqlite(out).tables).toBe(29)
+    expect(buildLocalSqlite(out).tables).toBe(32)
     const again = new DatabaseSync(out, { readOnly: true })
     expect(again.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE name = 'leftover'").get()).toEqual({ n: 0 })
     again.close()
@@ -137,7 +142,7 @@ describe('drizzle.config.ts filter, run through drizzle-kit pull', () => {
     expect(schema).toContain('sqliteTable("members"')
     expect(schema).toContain('counter_note')
     expect(schema).not.toMatch(/d1_migrations|_cf_KV|sqlite_sequence/)
-    expect((schema.match(/= sqliteTable\(/g) ?? []).length).toBe(30)
+    expect((schema.match(/= sqliteTable\(/g) ?? []).length).toBe(33)
   }, 60_000)
 })
 
@@ -186,12 +191,12 @@ describe('the runners', () => {
     expect(existsSync(join(ROOT, 'migrations/meta'))).toBe(false)
   })
 
-  it('does not change what wrangler runs: the same 52 files, one duplicate 0022 prefix, none past 0051', () => {
+  it('does not change what wrangler runs: 54 files, one duplicate 0022 prefix, the last 0053', () => {
     const sql = readdirSync(join(ROOT, 'migrations')).filter((f) => f.endsWith('.sql')).sort()
-    expect(sql).toHaveLength(52)
+    expect(sql).toHaveLength(54)
     expect(sql[0].startsWith('0001_')).toBe(true)
     expect(sql.filter((f) => f.startsWith('0022_'))).toHaveLength(2)
-    expect(sql.at(-1)?.startsWith('0051_')).toBe(true)
+    expect(sql.at(-1)).toBe('0053_sections_schedules_backfill.sql')
   })
 })
 

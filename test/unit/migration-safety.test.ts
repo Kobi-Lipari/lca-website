@@ -117,7 +117,27 @@ describe('migrations never silently delete rows through cascades', () => {
       { file: '0033_lca_auditor_role.sql', parent: 'members', lost: [...lost, 'board_seat_assignments'] },
       { file: '0040_lca_observer_role.sql', parent: 'members', lost: [...lost, 'board_seat_assignments'] },
     ])
-    expect(links()).toHaveLength(14)
+    expect(links()).toHaveLength(17)
+  })
+
+  it('lists the sections and schedules tables of 0052 as cascade children', () => {
+    const file = migrationSources().findIndex((s) => s.file === '0052_sections_schedules.sql')
+    expect(file).toBeGreaterThan(-1)
+    const added = links().filter((l) => l.since === file).map(({ child, parent, action }) => ({ child, parent, action }))
+    expect(added).toEqual(expect.arrayContaining([
+      { child: 'tournament_sections', parent: 'tournaments', action: 'CASCADE' },
+      { child: 'tournament_schedules', parent: 'tournaments', action: 'CASCADE' },
+      { child: 'tournament_schedule_rounds', parent: 'tournament_schedules', action: 'CASCADE' },
+    ]))
+    expect(added).toHaveLength(3)
+    // registrations.section_id and schedule_id have no delete action, so they add no link.
+    expect(links().filter((l) => l.child === 'registrations')).toEqual([])
+  })
+
+  it('would flag a later rebuild of tournaments for the new children too', () => {
+    const rebuild = { file: '0099_bad_rebuild.sql', text: 'DROP TABLE tournaments;' }
+    const flagged = unsafeMigrations([...migrationSources(), rebuild]).filter((u) => u.file === rebuild.file)
+    expect(flagged[0].lost).toEqual(expect.arrayContaining(['tournament_sections', 'tournament_schedules']))
   })
 })
 

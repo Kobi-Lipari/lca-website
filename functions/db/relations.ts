@@ -7,7 +7,10 @@
 // hand: tournaments.creator, members.guardian and members.dependents (the
 // guardian_id self-link), supportMessages.loggedByMember and
 // emailCampaigns.creator. Where two foreign keys point at the same table the
-// relationName pairs each side with its partner.
+// relationName pairs each side with its partner. The sections and schedules
+// relations (0052) were written by hand; an entry's row is
+// registrations.sectionRow and scheduleRow, because registrations.section is
+// already the name column.
 import { relations } from 'drizzle-orm/relations'
 import {
   adminAuditLog,
@@ -32,6 +35,9 @@ import {
   tournamentGames,
   tournamentReminders,
   tournaments,
+  tournamentScheduleRounds,
+  tournamentSchedules,
+  tournamentSections,
   uscfRatingHistory,
 } from './schema'
 
@@ -50,6 +56,32 @@ export const tournamentsRelations = relations(tournaments, ({ one, many }) => ({
   tournamentAttendeeReminders: many(tournamentAttendeeReminders),
   tournamentGames: many(tournamentGames),
   stateChampions: many(stateChampions),
+  tournamentSections: many(tournamentSections),
+  tournamentSchedules: many(tournamentSchedules),
+}))
+
+export const tournamentSectionsRelations = relations(tournamentSections, ({ one, many }) => ({
+  tournament: one(tournaments, {
+    fields: [tournamentSections.tournamentId],
+    references: [tournaments.id],
+  }),
+  registrations: many(registrations),
+}))
+
+export const tournamentSchedulesRelations = relations(tournamentSchedules, ({ one, many }) => ({
+  tournament: one(tournaments, {
+    fields: [tournamentSchedules.tournamentId],
+    references: [tournaments.id],
+  }),
+  rounds: many(tournamentScheduleRounds),
+  registrations: many(registrations),
+}))
+
+export const tournamentScheduleRoundsRelations = relations(tournamentScheduleRounds, ({ one }) => ({
+  schedule: one(tournamentSchedules, {
+    fields: [tournamentScheduleRounds.scheduleId],
+    references: [tournamentSchedules.id],
+  }),
 }))
 
 export const membersRelations = relations(members, ({ one, many }) => ({
@@ -119,6 +151,14 @@ export const registrationsRelations = relations(registrations, ({ one }) => ({
   tournament: one(tournaments, {
     fields: [registrations.tournamentId],
     references: [tournaments.id],
+  }),
+  sectionRow: one(tournamentSections, {
+    fields: [registrations.sectionId],
+    references: [tournamentSections.id],
+  }),
+  scheduleRow: one(tournamentSchedules, {
+    fields: [registrations.scheduleId],
+    references: [tournamentSchedules.id],
   }),
 }))
 

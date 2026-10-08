@@ -92,7 +92,9 @@ INSERT INTO members (id, role, full_name) VALUES ('m1', 'member', 'Ann');
 `
 
 describe('the existing migrations split exactly as before', () => {
-  const files = migrationFiles()
+  // The 52 files that existed when the splitter changed (step 6). Later
+  // files are checked by count below.
+  const files = migrationFiles().filter((f) => f < '0052')
 
   it('covers all 52 migration files, the count table included', () => {
     expect(files).toHaveLength(52)
@@ -105,6 +107,17 @@ describe('the existing migrations split exactly as before', () => {
 
   it.each(files)('%s gives the same statements as the old splitter', (file) => {
     expect(splitSql(read(file))).toEqual(legacySplitSql(read(file)))
+  })
+})
+
+describe('migrations written after the splitter changed', () => {
+  it('splits 0052 into its 11 statements and 0053 into 6, each trigger whole', () => {
+    expect(splitSql(read('0052_sections_schedules.sql'))).toHaveLength(11)
+    const backfill = splitSql(read('0053_sections_schedules_backfill.sql'))
+    expect(backfill).toHaveLength(6)
+    const triggers = backfill.filter((st) => /^CREATE TRIGGER\b/i.test(st))
+    expect(triggers).toHaveLength(4)
+    for (const t of triggers) expect(t).toMatch(/\bEND$/)
   })
 })
 

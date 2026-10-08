@@ -27,7 +27,11 @@
 //   name, so declaring them here would make drizzle-kit believe in indexes
 //   that do not exist. Named unique indexes (uniqueIndex below) are modelled.
 // - The members role triggers (members_role_insert, members_role_update,
-//   from 0046 and 0050). Triggers stay in hand-written migrations.
+//   from 0046 and 0050) and the four triggers of 0053 that keep
+//   tournament_sections, tournament_schedules and their rounds in step with
+//   the tournaments.sections and round_schedule JSON columns, and fill
+//   registrations.section_id and schedule_id, while code still writes only
+//   the JSON. Triggers stay in hand-written migrations.
 // - NULL in a TEXT primary key. SQLite allows it unless the column says NOT
 //   NULL; Drizzle marks every primary key NOT NULL. No row has a NULL id.
 //
@@ -109,6 +113,69 @@ export const tournaments = sqliteTable('tournaments', {
   index('idx_tournaments_status').on(table.status),
 ])
 
+// One row per section of a tournament (0052). tournaments.sections, the JSON
+// column, stays and stays authoritative until the code reads this table;
+// the 0053 triggers copy it here on every write. Rows are archived, never
+// deleted, so an entry or a game always finds its section. A null
+// fee_regular means the tournament's entry_fee. A null fee_early or
+// fee_late means that tier is worked out when read, from the tournament's
+// own early_deadline, early_discount, late_after and late_fee; neither is
+// ever a stored copy of those columns.
+export const tournamentSections = sqliteTable('tournament_sections', {
+  id: text().default(sql`(lower(hex(randomblob(8))))`).primaryKey(),
+  tournamentId: text('tournament_id').notNull().references(() => tournaments.id, { onDelete: 'cascade' }),
+  position: integer().default(0).notNull(),
+  name: text().notNull(),
+  feeRegular: real('fee_regular'),
+  feeEarly: real('fee_early'),
+  feeLate: real('fee_late'),
+  cap: integer(),
+  prizeFund: text('prize_fund'),
+  ratingMin: integer('rating_min'),
+  ratingMax: integer('rating_max'),
+  unratedOk: integer('unrated_ok'),
+  gradeMin: integer('grade_min'),
+  gradeMax: integer('grade_max'),
+  rulesSet: integer('rules_set').default(0).notNull(),
+  prizesJson: text('prizes_json'),
+  extraJson: text('extra_json'),
+  archivedAt: text('archived_at'),
+  createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+},
+(table) => [
+  index('idx_tournament_sections_tournament_id').on(table.tournamentId),
+  uniqueIndex('idx_tournament_sections_live_name').on(table.tournamentId, table.name).where(sql`archived_at IS NULL`),
+])
+
+// The round times of a tournament (0052). Every tournament has one live
+// primary schedule, filled from tournaments.round_schedule by the 0053
+// triggers. A null time_control means the tournament's own.
+export const tournamentSchedules = sqliteTable('tournament_schedules', {
+  id: text().default(sql`(lower(hex(randomblob(8))))`).primaryKey(),
+  tournamentId: text('tournament_id').notNull().references(() => tournaments.id, { onDelete: 'cascade' }),
+  position: integer().default(0).notNull(),
+  label: text().default('Main schedule').notNull(),
+  timeControl: text('time_control'),
+  isPrimary: integer('is_primary').default(0).notNull(),
+  mergeRound: integer('merge_round'),
+  archivedAt: text('archived_at'),
+  createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+},
+(table) => [
+  index('idx_tournament_schedules_tournament_id').on(table.tournamentId),
+  uniqueIndex('idx_tournament_schedules_primary').on(table.tournamentId).where(sql`is_primary = 1 AND archived_at IS NULL`),
+])
+
+export const tournamentScheduleRounds = sqliteTable('tournament_schedule_rounds', {
+  scheduleId: text('schedule_id').notNull().references(() => tournamentSchedules.id, { onDelete: 'cascade' }),
+  round: integer().notNull(),
+  date: text(),
+  time: text(),
+},
+(table) => [
+  primaryKey({ columns: [table.scheduleId, table.round], name: 'tournament_schedule_rounds_schedule_id_round_pk' }),
+])
+
 export const registrations = sqliteTable('registrations', {
   id: text().primaryKey(),
   tournamentId: text('tournament_id').notNull().references(() => tournaments.id),
@@ -122,10 +189,17 @@ export const registrations = sqliteTable('registrations', {
   ratingAtEntry: integer('rating_at_entry'),
   grade: text(),
   waitlistedAt: text('waitlisted_at'),
+  // Filled by the 0053 triggers from section (the name) and the primary
+  // schedule. No ON DELETE: section and schedule rows are archived, never
+  // deleted, while an entry points at them.
+  sectionId: text('section_id').references(() => tournamentSections.id),
+  scheduleId: text('schedule_id').references(() => tournamentSchedules.id),
 },
 (table) => [
   index('idx_registrations_member_id').on(table.memberId),
   index('idx_registrations_tournament_id').on(table.tournamentId),
+  index('idx_registrations_section_id').on(table.sectionId),
+  index('idx_registrations_schedule_id').on(table.scheduleId),
 ])
 
 export const clubOfficers = sqliteTable('club_officers', {

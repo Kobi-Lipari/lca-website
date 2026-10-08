@@ -46,11 +46,11 @@ To change the schema:
 
 1. Edit `functions/db/schema.ts`.
 2. Run `npm run db:generate -- <name>` (for example
-   `npm run db:generate -- tournament sections`). drizzle-kit writes its
-   file into the staging folder `drizzle/`; the script numbers it after the
-   highest prefix here (`0052` is next), adds a header and writes it here as
-   `0052_tournament_sections.sql`. Commit it together with the new snapshot
-   in `drizzle/meta`.
+   `npm run db:generate -- club notes`). drizzle-kit writes its file into
+   the staging folder `drizzle/`; the script numbers it after the highest
+   prefix here (the sections tables were `0052`; `0054` is next), adds a
+   header and writes it here as `0054_club_notes.sql`. Commit it together
+   with the new snapshot in `drizzle/meta`.
 3. Read the file, run `npm run db:migrate:local` and `npm run test:all`.
 
 The script refuses, writes nothing and puts `drizzle/` back when the file
@@ -77,7 +77,9 @@ so the next run does not offer the same change again. Write it the safe way
 
 - **Triggers.** Drizzle does not model triggers, so they live only in
   migrations (today `members_role_insert` and `members_role_update`, from
-  0046 and 0050). Write them in a `--custom` migration.
+  0046 and 0050, and the four sections and schedules triggers from 0053,
+  which keep `tournament_sections`, `tournament_schedules` and their rounds
+  in step with the JSON columns). Write them in a `--custom` migration.
 - **CHECK constraints and inline `UNIQUE` constraints.** They are in the
   migrations but not in `schema.ts` (its header says why). Changing one means
   rebuilding a table; follow the rules above.
