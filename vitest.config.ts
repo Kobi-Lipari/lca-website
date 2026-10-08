@@ -6,7 +6,8 @@
 // so the swiss and scanner tests never pay for a browser environment.
 // The React plugin compiles .tsx tests with the automatic JSX runtime (test/
 // sits in no tsconfig, so nothing else tells the compiler which runtime to
-// use), and '@' resolves to src/ exactly as it does in vite.config.ts.
+// use), and '@' resolves to src/ and '@domain' to domain/ exactly as they
+// do in vite.config.ts.
 import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vitest/config'
@@ -16,6 +17,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@domain': fileURLToPath(new URL('./domain', import.meta.url)),
     },
   },
   test: {
