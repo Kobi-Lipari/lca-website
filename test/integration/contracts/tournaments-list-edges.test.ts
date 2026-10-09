@@ -79,23 +79,28 @@ describe('GET /api/tournaments: empty and stale data', () => {
     expect(row?.end_date).toBeNull()
   })
 
-  it('reads a sections column that is not an array as an empty list of sections', async () => {
+  it('reads sections from the rows, whatever the JSON column holds', async () => {
     const odd = await seedTournament()
     const text = await seedTournament()
     const nul = await seedTournament()
+    // Text that is not a JSON list leaves the rows as they were (the 0053
+    // trigger copies only a list); an empty list archives them all.
     await env.DB.prepare(`UPDATE tournaments SET sections = '{"name":"Open"}' WHERE id = ?`).bind(odd).run()
     await env.DB.prepare(`UPDATE tournaments SET sections = 'not json' WHERE id = ?`).bind(text).run()
     await env.DB.prepare(`UPDATE tournaments SET sections = '[]' WHERE id = ?`).bind(nul).run()
     const body = await expectContract(await list(), contract.response)
-    for (const id of [odd, text, nul]) expect(body.tournaments.find((t) => t.id === id)?.sections).toEqual([])
+    for (const id of [odd, text]) {
+      expect(body.tournaments.find((t) => t.id === id)?.sections.map((s) => [s.name, s.entryFee])).toEqual([['Open', 25], ['U1200', 0]])
+    }
+    expect(body.tournaments.find((t) => t.id === nul)?.sections).toEqual([])
   })
 
   it('a section with a fee in dollars and cents keeps its decimals', async () => {
     const id = await seedTournament({ sections: [{ name: 'Open', entryFee: 12.5 }, { name: 'Free', entryFee: 0 }] })
     const body = await expectContract(await list(), contract.response)
-    expect(body.tournaments.find((t) => t.id === id)?.sections).toEqual([
-      { name: 'Open', entryFee: 12.5 },
-      { name: 'Free', entryFee: 0 },
+    expect(body.tournaments.find((t) => t.id === id)?.sections.map(({ name, entryFee, fees }) => ({ name, entryFee, fees }))).toEqual([
+      { name: 'Open', entryFee: 12.5, fees: { regular: 12.5, early: null, late: null } },
+      { name: 'Free', entryFee: 0, fees: { regular: 0, early: null, late: null } },
     ])
   })
 })

@@ -1,8 +1,9 @@
 // functions/api/tournaments.ts
-import type { Env } from '../types'
+import type { Env, TournamentRow } from '../types'
 import { handleOptions, jsonResponse } from '../utils/response'
 import { isObserver, requireAuthedMember, isResponse } from '../utils/auth'
-import { parseJsonArray } from '../utils/json'
+import { getDb } from '../db/client'
+import { loadSectionsFor, toTournamentResponse } from '../utils/events/sectionsRepo'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -44,12 +45,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     statement = context.env.DB.prepare(`${base} WHERE t.is_visible = 1 ORDER BY t.date ASC`)
   }
 
-  const { results } = await statement.all<Record<string, unknown>>()
+  const { results } = await statement.all<TournamentRow & { club_color: string | null; club_name: string | null }>()
+  const rows = results ?? []
 
-  const tournaments = (results ?? []).map((t) => {
-    const sections = parseJsonArray(t.sections as string)
-    return { ...t, sections }
-  })
+  // The live sections of every listed event, read together in lists of ids
+  // short enough for D1, never one query per event.
+  const sections = await loadSectionsFor(getDb(context.env.DB), rows.map((t) => t.id))
+  const tournaments = rows.map((t) => toTournamentResponse(t, sections.get(t.id) ?? []))
 
   return jsonResponse({ tournaments })
 }

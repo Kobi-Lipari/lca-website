@@ -164,6 +164,23 @@ describe('PATCH /api/admin/tournaments/[id] contract', () => {
     ])
   })
 
+  it('answers with round_schedule read into a list and no JSON text of the sections (step 12)', async () => {
+    const admin = await seedAdmin()
+    const tournamentId = await seedTournament()
+    const roundSchedule = [{ round: 1, date: '2026-09-12', time: '10:00' }, { round: 2, date: '2026-09-12', time: '14:00' }]
+    const res = await invoke(patchTournament, { method: 'PATCH', as: admin, params: { id: tournamentId }, body: { roundSchedule } })
+    expect(res.status).toBe(200)
+    const { tournament } = await expectContract(res, edit.response)
+    expect(tournament.round_schedule).toEqual(roundSchedule)
+    expect(tournament.sections.every((s) => typeof s === 'object')).toBe(true)
+    // The stored text is unchanged: only the answer reads it.
+    const stored = await env.DB.prepare('SELECT round_schedule FROM tournaments WHERE id = ?').bind(tournamentId).first<{ round_schedule: string }>()
+    expect(JSON.parse(stored!.round_schedule)).toEqual(roundSchedule)
+
+    const created = await invoke(createTournament, { method: 'POST', as: admin, body: wizardBody() })
+    expect((await expectContract(created, create.response)).tournament.round_schedule).toEqual([])
+  })
+
   it('answers an assigned director and the owning club rep', async () => {
     const clubId = await seedClub()
     const tournamentId = await seedTournament({ clubId })

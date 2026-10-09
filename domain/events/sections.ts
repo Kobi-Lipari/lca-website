@@ -44,10 +44,27 @@ export interface LegacySection {
   [key: string]: unknown
 }
 
-/** Prices a director sets for one tier only. null means worked out from the tournament. */
+/**
+ * Prices a director sets for one tier only. null means worked out from the
+ * tournament. `regular` marks the prices an answer showed (the regular
+ * price is entryFee): fees that carry it were sent back as they were shown,
+ * so they set nothing (sectionFeeOverrides).
+ */
 export interface SectionFeeOverrides {
+  regular?: number
   early?: number | null
   late?: number | null
+}
+
+/**
+ * The tier prices a section in a request sets: its fees, unless they carry
+ * `regular`. Every answer gives a section its worked-out prices with
+ * `regular` (savedSectionSchema), and the manage page and the setup wizard
+ * send a section back as they got it; taking those as the section's own
+ * prices would fix them where they stand, so they are ignored.
+ */
+export function sectionFeeOverrides(section: SectionInput): SectionFeeOverrides | undefined {
+  return section.fees && section.fees.regular === undefined ? section.fees : undefined
 }
 
 /**

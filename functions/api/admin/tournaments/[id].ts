@@ -1,6 +1,6 @@
 // functions/api/admin/tournaments/[id].ts
 import { eq } from 'drizzle-orm'
-import type { Env } from '../../../types'
+import type { Env, TournamentRow } from '../../../types'
 import { isResponse, requireTournamentManager, requireAdmin } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../utils/response'
 import { recordAdminAction } from '../../../utils/audit'
@@ -12,10 +12,10 @@ import {
   isSectionsConflict,
   loadSections,
   runBatch,
-  sectionResponse,
+  toTournamentResponse,
   type SectionQuery,
 } from '../../../utils/events/sectionsRepo'
-import { SECTIONS_CHANGED_MESSAGE, type TierTournament } from '../../../../domain/events/sections'
+import { SECTIONS_CHANGED_MESSAGE } from '../../../../domain/events/sections'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -167,11 +167,11 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first<Record<string, unknown>>()
-  const sections = (await loadSections(db, tournamentId)).map((s) => sectionResponse(s, tournament as unknown as TierTournament))
+  ).bind(tournamentId).first<TournamentRow>()
+  if (!tournament) return errorResponse('Tournament not found', 404)
 
   return jsonResponse({
-    tournament: { ...tournament, sections },
+    tournament: toTournamentResponse(tournament, await loadSections(db, tournamentId)),
   })
 }
 

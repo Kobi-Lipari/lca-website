@@ -37,9 +37,19 @@
 // so it changes nothing; it is still what keeps the table in step when old
 // code writes only the JSON. registrations_fill_section_update fires on
 // step 4 and resolves the new name to the same row.
+//
+// It is also where every reader gets sections (K2e): loadSections and
+// loadSectionsFor read the rows, sectionResponse gives a row the shape the
+// endpoints answer with, and toTournamentResponse turns a tournaments row
+// into an answer, so no handler returns the JSON column or parses it.
+// test/unit/sections-reader-audit.test.ts fails on a parse of the column
+// outside this file and domain/, and on a handler that answers with a
+// SELECT * row without toTournamentResponse.
 import { and, asc, count, desc, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm'
 import type { BatchItem } from 'drizzle-orm/batch'
 import type { Db } from '../../db/client'
+import type { TournamentRow } from '../../types'
+import { parseJsonArray } from '../json'
 import { registrations, tournamentGames, tournamentSections, tournaments } from '../../db/schema'
 import type { SavedSection } from '../../../domain/contracts/events'
 import {
@@ -47,6 +57,7 @@ import {
   asSectionInput,
   sectionHasEntriesMessage,
   sectionHasGamesMessage,
+  sectionFeeOverrides,
   sectionListProblem,
   tierFees,
   toLegacySection,
@@ -487,14 +498,16 @@ export async function buildSaveSections(
   input.forEach((section, position) => {
     legacy.push(toLegacySection(list[position]))
     const columns = { position, name: section.name, ...columnsFromLegacy(toLegacySection(section)), archivedAt: null }
+    // Prices shown by an answer and sent back as they were set nothing.
+    const fees = sectionFeeOverrides(section)
     const row = matches[position]
     if (row) {
       queries.push(db.update(tournamentSections)
         .set({
           ...columns,
           ...(section.cap !== undefined ? { cap: section.cap } : {}),
-          ...(section.fees?.early !== undefined ? { feeEarly: section.fees.early } : {}),
-          ...(section.fees?.late !== undefined ? { feeLate: section.fees.late } : {}),
+          ...(fees?.early !== undefined ? { feeEarly: fees.early } : {}),
+          ...(fees?.late !== undefined ? { feeLate: fees.late } : {}),
         })
         .where(eq(tournamentSections.id, row.id)))
     } else {
@@ -503,8 +516,8 @@ export async function buildSaveSections(
         tournamentId,
         ...columns,
         cap: section.cap ?? null,
-        feeEarly: section.fees?.early ?? null,
-        feeLate: section.fees?.late ?? null,
+        feeEarly: fees?.early ?? null,
+        feeLate: fees?.late ?? null,
       }))
     }
   })
@@ -568,22 +581,115 @@ export async function saveSections(
   return { ok: true }
 }
 
-/** A section as the admin endpoints return it (savedSectionSchema), priced from the tournament's own columns. */
+/**
+ * The keys of a section answer (savedSectionSchema). A key of the same name
+ * in a row's extra_json is never echoed: the answer's own value wins.
+ */
+const SAVED_SECTION_KEYS = new Set([
+  'id', 'name', 'entryFee', 'prizeFund', 'ratingMax', 'ratingMin', 'unratedOk',
+  'gradeMin', 'gradeMax', 'rulesSet', 'prizes', 'cap', 'fees',
+])
+
+/**
+ * The keys the JSON element had that no column holds (extra_json), less any
+ * that clash with a key of the answer, such as a known key stored with an
+ * unexpected type.
+ */
+function extraKeys(extra: Record<string, unknown> | null): Record<string, unknown> {
+  if (!extra) return {}
+  const out: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(extra)) {
+    if (!SAVED_SECTION_KEYS.has(key)) out[key] = value
+  }
+  return out
+}
+
+/**
+ * A section as every endpoint that returns a tournament answers it
+ * (savedSectionSchema), priced from the tournament's own columns. The
+ * fields the JSON element had keep their names and types: prizeFund,
+ * unratedOk and prizes are left out when the row has none, as the element
+ * left them out. Keys the element had that no column holds (extra_json)
+ * come back too, because the manage page sends its sections back as it
+ * loaded them and the writer keeps only the keys it is sent. The id, the
+ * cap and the three prices are added.
+ */
 export function sectionResponse(record: SectionRecord, tournament: TierTournament): SavedSection {
   const fees = tierFees(record, tournament)
   return {
+    ...extraKeys(record.extra),
     id: record.id,
     name: record.name,
     entryFee: fees.regular,
-    prizeFund: record.prizeFund,
+    ...(record.prizeFund != null ? { prizeFund: record.prizeFund } : {}),
     ratingMax: record.ratingMax,
     ratingMin: record.ratingMin,
-    unratedOk: record.unratedOk,
+    ...(record.unratedOk != null ? { unratedOk: record.unratedOk } : {}),
     gradeMin: record.gradeMin,
     gradeMax: record.gradeMax,
     rulesSet: record.rulesSet,
-    prizes: record.prizes as SavedSection['prizes'],
+    ...(record.prizes != null ? { prizes: record.prizes as SavedSection['prizes'] } : {}),
     cap: record.cap,
     fees,
   }
+}
+
+/** A tournaments row as an endpoint answers it: see toTournamentResponse. */
+export type TournamentResponse<Row extends TournamentRow = TournamentRow> =
+  Omit<Row, 'sections' | 'round_schedule'> & {
+    sections: SavedSection[]
+    round_schedule: unknown[]
+  }
+
+/**
+ * A tournaments row (SELECT *, with or without joined columns) as an
+ * endpoint answers it: the JSON text of sections and round_schedule is
+ * dropped, `sections` are the rows given (live ones, as loadSections reads
+ * them, unless the caller wants history), priced from the row, and
+ * round_schedule is the schedule given, else the column read into a list
+ * ([] when it is empty or not a JSON list) until the schedules table is
+ * read. Every other column is passed on as it is.
+ */
+export function toTournamentResponse<Row extends TournamentRow>(
+  row: Row,
+  sections: readonly SectionRecord[],
+  schedules?: readonly unknown[],
+): TournamentResponse<Row> {
+  // Both JSON columns are replaced, so neither text leaves the server.
+  const answer = {
+    ...row,
+    sections: sections.map((s) => sectionResponse(s, row)),
+    round_schedule: schedules ? [...schedules] : parseJsonArray(row.round_schedule),
+  }
+  return answer as unknown as TournamentResponse<Row>
+}
+
+/**
+ * The live sections of many tournaments, each priced from its own
+ * tournament, by tournament id (an id with no sections maps to []). For a
+ * reader whose query does not select the pricing columns: one query per
+ * list of ids, joined to tournaments, cut like loadSectionsFor.
+ */
+export async function sectionResponsesFor(db: Db, tournamentIds: readonly string[]): Promise<Map<string, SavedSection[]>> {
+  const ids = [...new Set(tournamentIds)]
+  const out = new Map<string, SavedSection[]>(ids.map((id) => [id, []]))
+  for (const part of chunks(ids, IN_LIST_SIZE)) {
+    const rows = await db
+      .select({
+        section: tournamentSections,
+        tier: {
+          entry_fee: tournaments.entryFee,
+          early_deadline: tournaments.earlyDeadline,
+          early_discount: tournaments.earlyDiscount,
+          late_after: tournaments.lateAfter,
+          late_fee: tournaments.lateFee,
+        },
+      })
+      .from(tournamentSections)
+      .innerJoin(tournaments, eq(tournaments.id, tournamentSections.tournamentId))
+      .where(and(inArray(tournamentSections.tournamentId, part), isNull(tournamentSections.archivedAt)))
+      .orderBy(...sectionOrder)
+    for (const row of rows) out.get(row.section.tournamentId)?.push(sectionResponse(toRecord(row.section), row.tier))
+  }
+  return out
 }

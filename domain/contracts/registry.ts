@@ -12,9 +12,16 @@
 // test/unit/contracts-pending.ts; when you add a contract, take its line out
 // of that list and lower the count pinned there.
 import type { ZodType } from 'zod'
+import { clubDetailResponseSchema } from './clubs'
 import {
   adminTournamentResponseSchema,
+  clearinghouseQuerySchema,
+  clearinghouseResponseSchema,
   createTournamentRequestSchema,
+  ratingReportResponseSchema,
+  registrationSettingsRequestSchema,
+  tournamentDetailResponseSchema,
+  tournamentManageResponseSchema,
   tournamentsListResponseSchema,
   updateTournamentRequestSchema,
 } from './events'
@@ -55,11 +62,26 @@ export const contracts = {
   'admin/tournaments/[id]': {
     PATCH: { request: updateTournamentRequestSchema, response: adminTournamentResponseSchema },
   },
+  'admin/tournaments/[id]/manage': {
+    GET: { response: tournamentManageResponseSchema },
+  },
+  'admin/tournaments/[id]/rating-report': {
+    GET: { response: ratingReportResponseSchema },
+  },
+  'admin/tournaments/[id]/registration': {
+    PATCH: { request: registrationSettingsRequestSchema, response: adminTournamentResponseSchema },
+  },
   'admin/tournaments/[id]/waitlist': {
     POST: { request: waitlistOfferRequestSchema, response: waitlistOfferResponseSchema },
   },
   'admin/tournaments/[id]/walk-ins': {
     POST: { request: walkInRequestSchema, response: walkInResponseSchema },
+  },
+  clearinghouse: {
+    GET: { query: clearinghouseQuerySchema, response: clearinghouseResponseSchema },
+  },
+  'clubs/[id]': {
+    GET: { response: clubDetailResponseSchema },
   },
   registrations: {
     POST: { request: createRegistrationRequestSchema, response: createRegistrationResponseSchema },
@@ -69,6 +91,9 @@ export const contracts = {
   },
   'registrations/[id]': {
     PATCH: { request: updateRegistrationRequestSchema, response: updateRegistrationResponseSchema },
+  },
+  'tournaments/[id]': {
+    GET: { response: tournamentDetailResponseSchema },
   },
 } satisfies Record<string, RouteContracts>
 

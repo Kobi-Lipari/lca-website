@@ -1,22 +1,16 @@
 // functions/api/admin/tournaments/[id]/registration.ts
-import type { Env } from '../../../../types'
+import type { Env, TournamentRow } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import { notifyRegistrationOpen } from '../../../../utils/registrationOpenNotify'
 import {
   errorResponse,
   handleOptions,
   jsonResponse,
-  parseJsonBody,
+  parseBody,
 } from '../../../../utils/response'
-
-interface RegistrationControlBody {
-  registration_status?: 'draft' | 'open' | 'closed'
-  registration_opens_at?: string | null
-  reminder_1_days_before?: number
-  reminder_1_enabled?: boolean
-  reminder_2_days_before?: number
-  reminder_2_enabled?: boolean
-}
+import { getDb } from '../../../../db/client'
+import { loadSections, toTournamentResponse } from '../../../../utils/events/sectionsRepo'
+import { registrationSettingsRequestSchema } from '../../../../../domain/contracts/events'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -26,8 +20,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const authResult = await requireTournamentManager(context.request, context.env, tournamentId)
   if (isResponse(authResult)) return authResult
 
-  const body = await parseJsonBody<RegistrationControlBody>(context.request)
-  if (!body) return errorResponse('Invalid JSON body', 400)
+  const body = await parseBody(context.request, registrationSettingsRequestSchema)
+  if (isResponse(body)) return body
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
@@ -57,7 +51,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   const updated = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first()
+  ).bind(tournamentId).first<TournamentRow>()
+  if (!updated) return errorResponse('Tournament not found', 404)
 
   // Fire the registration-open notification only on the transition INTO
   // 'open' — never on a re-save of an already-open tournament. Runs via
@@ -69,5 +64,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     context.waitUntil(notifyRegistrationOpen(context.env, tournamentId, tournament.name))
   }
 
-  return jsonResponse({ tournament: updated })
+  // The page reloads the event after saving and reads nothing from this
+  // answer; it is the tournament as every endpoint answers it.
+  return jsonResponse({ tournament: toTournamentResponse(updated, await loadSections(getDb(context.env.DB), tournamentId)) })
 }

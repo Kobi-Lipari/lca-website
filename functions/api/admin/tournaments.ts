@@ -1,13 +1,13 @@
 // functions/api/admin/tournaments.ts
-import type { Env } from '../../types'
+import type { Env, TournamentRow } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../utils/response'
 import { recordAdminAction } from '../../utils/audit'
 import { getDb } from '../../db/client'
 import { tournaments } from '../../db/schema'
 import { createTournamentRequestSchema } from '../../../domain/contracts/events'
-import { buildSaveSections, isSectionsConflict, loadSections, runBatch, sectionResponse } from '../../utils/events/sectionsRepo'
-import { SECTIONS_CHANGED_MESSAGE, type TierTournament } from '../../../domain/events/sections'
+import { buildSaveSections, isSectionsConflict, loadSections, runBatch, toTournamentResponse } from '../../utils/events/sectionsRepo'
+import { SECTIONS_CHANGED_MESSAGE } from '../../../domain/events/sections'
 
 function slugify(value: string): string {
   return value
@@ -15,6 +15,13 @@ function slugify(value: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
     .slice(0, 64)
+}
+
+/** A section of a create request, without the id it may carry. */
+function withoutId<S extends { id?: string }>(section: S): S {
+  const copy: S = { ...section }
+  delete copy.id
+  return copy
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -55,8 +62,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!club) return errorResponse('Club not found', 404)
   }
 
+  // A new event has no section rows yet, so an id sent with a section (the
+  // wizard copies the sections of an existing event as the list gave them)
+  // names another event's row: each section is added as a new one.
   const sections = body.sections?.length
-    ? body.sections
+    ? body.sections.map((s) => (typeof s === 'string' ? s : withoutId(s)))
     : [{ name: 'Open', entryFee: body.entryFee }]
 
   const id = (isAdmin && body.id?.trim()) || `${slugify(body.name)}-${Date.now().toString(36)}`
@@ -110,8 +120,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     'SELECT * FROM tournaments WHERE id = ?',
   )
     .bind(id)
-    .first<Record<string, unknown>>()
-  const savedSections = (await loadSections(db, id)).map((s) => sectionResponse(s, tournament as unknown as TierTournament))
+    .first<TournamentRow>()
+  if (!tournament) return errorResponse('Tournament not found', 404)
 
   await recordAdminAction(context.env.DB, member, {
     action: 'tournament_create',
@@ -119,5 +129,5 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     detail: { tournament_id: id },
   })
 
-  return jsonResponse({ tournament: { ...tournament, sections: savedSections } }, 201)
+  return jsonResponse({ tournament: toTournamentResponse(tournament, await loadSections(db, id)) }, 201)
 }

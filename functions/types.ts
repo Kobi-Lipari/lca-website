@@ -55,6 +55,13 @@ export interface ClubRow {
   created_at: string
 }
 
+/**
+ * A row of tournaments as `SELECT *` returns it. sections and round_schedule
+ * are the legacy JSON text, kept as a mirror of tournament_sections and
+ * tournament_schedules: no handler returns them as they are, and none reads
+ * sections from here (test/unit/sections-reader-audit.test.ts). A handler
+ * answers with toTournamentResponse in functions/utils/events/sectionsRepo.ts.
+ */
 export interface TournamentRow {
   id: string
   name: string
@@ -67,17 +74,36 @@ export interface TournamentRow {
   rounds: number
   max_players: number | null
   status: string
-  registration_status: string
-  registration_opens_at: string | null
-  reminder_1_days_before: number
-  reminder_1_enabled: number
-  reminder_2_days_before: number
-  reminder_2_enabled: number
   description: string | null
   registration_deadline: string | null
   club_id: string | null
   created_by: string | null
   created_at: string
+  registration_status: string
+  registration_opens_at: string | null
+  reminder_1_days_before: number | null
+  reminder_1_enabled: number | null
+  reminder_2_days_before: number | null
+  reminder_2_enabled: number | null
+  is_rated: number
+  is_visible: number
+  round_schedule: string | null
+  registration_closes_at: string | null
+  custom_details: string | null
+  time_control: string | null
+  registration_url: string | null
+  eligibility: string | null
+  organizer: string | null
+  pairing_system: string
+  early_deadline: string | null
+  early_discount: number
+  late_after: string | null
+  late_fee: number
+  member_discount: number
+  accelerated: number
+  keep_apart: string
+  report_settings: string | null
+  is_state_championship: number
 }
 
 export interface RegistrationRow {

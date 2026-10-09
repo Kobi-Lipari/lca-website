@@ -15,6 +15,7 @@ import {
   normalizeLegacySections,
   repeatedSectionName,
   sectionHasEntriesMessage,
+  sectionFeeOverrides,
   sectionHasGamesMessage,
   sectionListProblem,
   tierFees,
@@ -157,7 +158,8 @@ describe('sectionSchema (a section in a create or edit request)', () => {
     const parsed = sectionSchema.safeParse(body)
     expect(parsed.success).toBe(true)
     expect(parsed.data).toEqual(body)
-    expect(sectionSchema.safeParse({ name: 'Open', fees: { regular: 5 } }).success).toBe(false)
+    expect(sectionSchema.safeParse({ name: 'Open', fees: { regular: '5' } }).success).toBe(false)
+    expect(sectionSchema.safeParse({ name: 'Open', fees: { regular: 5, early: 4, late: 6, other: 1 } }).success).toBe(false)
     expect(sectionSchema.safeParse({ name: 'Open', entryFee: -1 }).success).toBe(false)
     expect(sectionSchema.safeParse({ name: 'Open', id: '' }).success).toBe(false)
   })
@@ -183,14 +185,29 @@ describe('sectionSchema (a section in a create or edit request)', () => {
     }
   })
 
-  it('the saved section schema is strict', () => {
+  it('the saved section schema is strict in its own keys, passes stored extra keys, and leaves out what the JSON element left out', () => {
     const saved = {
-      id: 'a1', name: 'Open', entryFee: 25, prizeFund: null, ratingMax: null, ratingMin: null, unratedOk: null,
-      gradeMin: null, gradeMax: null, rulesSet: false, prizes: null, cap: null, fees: { regular: 25, early: null, late: null },
+      id: 'a1', name: 'Open', entryFee: 25, ratingMax: null, ratingMin: null,
+      gradeMin: null, gradeMax: null, rulesSet: false, cap: null, fees: { regular: 25, early: null, late: null },
     }
     expect(savedSectionSchema.safeParse(saved).success).toBe(true)
-    expect(savedSectionSchema.safeParse({ ...saved, tournamentId: 't' }).success).toBe(false)
+    expect(savedSectionSchema.safeParse({ ...saved, prizeFund: '$100', unratedOk: false, prizes: { place: [{ amount: 50 }] } }).success).toBe(true)
+    // A key the JSON element carried that no column holds comes back as stored.
+    expect(savedSectionSchema.safeParse({ ...saved, note: 'Bring a clock', maxByes: 2 }).success).toBe(true)
+    expect(savedSectionSchema.safeParse({ ...saved, entryFee: '25' }).success).toBe(false)
     expect(savedSectionSchema.safeParse({ ...saved, fees: { early: null, late: null } }).success).toBe(false)
+    // A page read prizeFund, unratedOk and prizes as absent or set, never null.
+    for (const key of ['prizeFund', 'unratedOk', 'prizes']) {
+      expect(savedSectionSchema.safeParse({ ...saved, [key]: null }).success, key).toBe(false)
+    }
+  })
+
+  it('fees sent back as an answer showed them (with regular) set nothing; fees without regular are the section\'s own', () => {
+    expect(sectionFeeOverrides({ name: 'Open', fees: { regular: 30, early: 25, late: 40 } })).toBeUndefined()
+    expect(sectionFeeOverrides({ name: 'Open', fees: { early: 25 } })).toEqual({ early: 25 })
+    expect(sectionFeeOverrides({ name: 'Open', fees: { early: null, late: null } })).toEqual({ early: null, late: null })
+    expect(sectionFeeOverrides({ name: 'Open' })).toBeUndefined()
+    expect(sectionSchema.safeParse({ name: 'Open', fees: { regular: 30, early: 25, late: null } }).success).toBe(true)
   })
 })
 
