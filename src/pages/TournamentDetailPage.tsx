@@ -29,6 +29,7 @@ import { describeRules, effectiveRules, eligibilityProblem, gradeRangeText, need
 import { asksGrade, confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
 import { priceShownSection, type Price } from '@/lib/pricing'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useNow } from '@/hooks/useNow'
 import { FamilyRegistrationPanel } from '@/components/family/FamilyRegistrationPanel'
 import { PreviewBanner } from '@/components/tournaments/PreviewBanner'
 
@@ -256,9 +257,12 @@ export function TournamentDetailPage() {
   const [confirmation, setConfirmation] = useState<{
     message: string; paymentUrl: string | null; section: string
   } | null>(null)
-  // The time the price box is shown for, read once when the page opens
-  // (checkout prices the entry again on the server).
-  const [nowMs] = useState(() => Date.now())
+  // The time the prices are shown for. Checkout prices the entry on the
+  // server at the moment it is made, so this follows the clock (a timer, plus
+  // a fresh read on loading, on changing section and on opening the
+  // confirmation) and the early deadline or late fee turns over on screen as
+  // it does at checkout.
+  const [nowMs, refreshNow] = useNow()
 
   const [reminderOptedIn, setReminderOptedIn] = useState(false)
   const [togglingReminder, setTogglingReminder] = useState(false)
@@ -275,6 +279,7 @@ export function TournamentDetailPage() {
         setPairings(data.pairings ?? [])
         setMyRegistration(data.myRegistration ?? null)
         setSelectedSection(data.tournament.sections[0]?.name ?? '')
+        refreshNow()
         setNotFound(false)
         setError(null)
         if (user) {
@@ -292,7 +297,7 @@ export function TournamentDetailPage() {
       }
     }
     load()
-  }, [id, user])
+  }, [id, user, refreshNow])
 
   async function handleRegisterClick(e: FormEvent) {
     e.preventDefault()
@@ -308,6 +313,7 @@ export function TournamentDetailPage() {
     const problem = section && eligibilityProblem(section, { rating: authMember?.uscf_rating ?? null, gradeRange: parseGradeRange(range) })
     if (problem) { setRegisterError(problem); return }
     setRegisterError(null)
+    refreshNow()
     setShowModal(true)
   }
 
@@ -929,7 +935,7 @@ export function TournamentDetailPage() {
                           id="section"
                           className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                           value={selectedSection}
-                          onChange={(e) => { setSelectedSection(e.target.value); setGradeTicks(NO_TICKS) }}
+                          onChange={(e) => { setSelectedSection(e.target.value); setGradeTicks(NO_TICKS); refreshNow() }}
                           required
                         >
                           {tournament.sections.map((s) => {

@@ -5,7 +5,8 @@
 // in the site, the server handlers or the pricing module reads or writes the
 // retired member_discount, memberDiscount or isLcaMember. The contract keeps
 // member_discount in the row and memberDiscount in the edit request so the
-// current setup form and older clients keep working.
+// current setup form and older clients keep working; the one server line
+// that names it is the tournament answer setting it to 0.
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -104,10 +105,16 @@ describe('the retired member price is not read or written anywhere', () => {
 
   it('no server handler, helper or scheduled worker reads or writes it', () => {
     const hits = [...filesUnder('functions'), ...filesUnder('workers')]
-      .filter((f) => !/functions\/db\/schema\.ts$|functions\/types\.ts$/.test(f))
+      .filter((f) => !/functions\/db\/schema\.ts$|functions\/types\.ts$|functions\/utils\/events\/sectionsRepo\.ts$/.test(f))
       .filter((f) => RETIRED.test(withoutComments(readFileSync(f, 'utf8'))))
       .map((f) => relative(ROOT, f))
     expect(hits).toEqual([])
+  })
+
+  it('the tournament answer mentions it once, to answer 0 whatever the column holds', () => {
+    const lines = withoutComments(readFileSync(join(ROOT, 'functions/utils/events/sectionsRepo.ts'), 'utf8'))
+      .split('\n').filter((line) => RETIRED.test(line)).map((l) => l.trim())
+    expect(lines).toEqual(['member_discount: 0,'])
   })
 
   it('the contract keeps member_discount in the row and memberDiscount in the edit request, nowhere else', () => {

@@ -11,8 +11,11 @@
 // is never applied or advertised, and a member pays what anyone else pays.
 //
 // The clock is set with Date alone faked, so the pages read a fixed "now".
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+// The last two blocks fake setInterval too and move the clock while a page
+// stays open: the shown price follows it (on a timer, and at once on the
+// changes a person makes before confirming), as checkout does.
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
 import { savedSectionSchema } from '../../domain/contracts'
@@ -275,5 +278,185 @@ describe('the family panel prices each player from the section objects in the an
     )
     await waitFor(() => expect(api.getMyChildren).toHaveBeenCalled())
     expect(container.textContent).toBe('')
+  })
+})
+
+// Monday, October 12, 2026, noon Central: after the early deadline (Sat, Oct 10, 11:59 PM), before the late date.
+const AFTER_EARLY = new Date('2026-10-12T17:00:00Z')
+// Friday, October 16, 2026, 11:00 AM Central: an hour before the late fee starts at noon.
+const BEFORE_LATE = new Date('2026-10-16T16:00:00Z')
+
+/** Fakes the page timers as well as Date, so a test can move the clock and run the refresh timer. */
+function fakeClockAndTimers(at: Date) {
+  vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] })
+  vi.setSystemTime(at)
+}
+
+describe('the tournament page price follows the clock while the page is open', () => {
+  beforeEach(() => fakeClockAndTimers(BEFORE_EARLY))
+
+  /** The confirmation dialog, opened with the Register now button. */
+  async function openConfirmation() {
+    fireEvent.click(screen.getByRole('button', { name: 'Register now' }))
+    const heading = await screen.findByRole('heading', { name: 'Confirm registration' })
+    return heading.closest('.rounded-xl') as HTMLElement
+  }
+  const dialogValue = (dialog: HTMLElement, label: string) =>
+    within(dialog).getByText(label).parentElement!.lastElementChild!.textContent
+
+  it('opened before the early deadline and used after it: a section change shows the regular price', async () => {
+    const select = await renderDetail(tournamentAnswer(), member())
+    expect(optionTexts(select)).toEqual(['Open — $40', 'Reserve — $20', 'Free'])
+    expect(rowValue('You pay')).toBe('$40')
+
+    vi.setSystemTime(AFTER_EARLY)
+    fireEvent.change(select, { target: { value: 'Reserve' } })
+    expect(optionTexts(select)).toEqual(['Open — $50', 'Reserve — $30', 'Free'])
+    // No early line any more, so the price box (which only shows with a line) is gone.
+    expect(screen.queryByText('Early entry discount')).toBeNull()
+    expect(screen.queryByText('You pay')).toBeNull()
+    fireEvent.change(select, { target: { value: 'Open' } })
+    expect(optionTexts(select)).toEqual(['Open — $50', 'Reserve — $30', 'Free'])
+  })
+
+  it('opening the confirmation after the early deadline shows the regular price in it', async () => {
+    await renderDetail(tournamentAnswer(), member())
+    expect(rowValue('You pay')).toBe('$40')
+
+    vi.setSystemTime(AFTER_EARLY)
+    const dialog = await openConfirmation()
+    expect(within(dialog).queryByText('Early entry discount')).toBeNull()
+    expect(within(dialog).queryByText('You pay')).toBeNull()
+    expect(dialogValue(dialog, 'Entry fee')).toBe('$50')
+  })
+
+  it('the timer alone turns the price over within 30 seconds, with nothing touched', async () => {
+    const select = await renderDetail(tournamentAnswer(), member())
+    vi.setSystemTime(AFTER_EARLY)
+    act(() => { vi.advanceTimersByTime(30_000) })
+    expect(optionTexts(select)).toEqual(['Open — $50', 'Reserve — $30', 'Free'])
+    expect(screen.queryByText('You pay')).toBeNull()
+  })
+
+  it('opened before the late fee starts and used after: a section change and the confirmation show the late price', async () => {
+    vi.setSystemTime(BEFORE_LATE)
+    const select = await renderDetail(tournamentAnswer(), member())
+    expect(optionTexts(select)).toEqual(['Open — $50', 'Reserve — $30', 'Free'])
+    expect(screen.queryByText('You pay')).toBeNull()
+
+    vi.setSystemTime(AFTER_LATE)
+    fireEvent.change(select, { target: { value: 'Reserve' } })
+    expect(optionTexts(select)).toEqual(['Open — $65', 'Reserve — $45', 'Free'])
+    expect(rowValue('Late entry fee')).toBe('+$15')
+    expect(rowValue('You pay')).toBe('$45')
+
+    const dialog = await openConfirmation()
+    expect(dialogValue(dialog, 'Late entry fee')).toBe('+$15')
+    expect(dialogValue(dialog, 'You pay')).toBe('$45')
+  })
+
+  it('moving to another tournament on the same page reads the clock again, and leaving clears the timer', async () => {
+    const tournaments: Record<string, ApiTournamentDetail> = {
+      t1: tournamentAnswer(),
+      t2: tournamentAnswer({ id: 't2', name: 'Winter Open' }),
+    }
+    api.getTournament.mockImplementation(async (id: string) => ({ tournament: tournaments[id], roster: [], pairings: [], myRegistration: null }))
+    function GoToWinter() {
+      const navigate = useNavigate()
+      return <button type="button" onClick={() => navigate('/tournaments/t2')}>Go to the Winter Open</button>
+    }
+    const { unmount } = render(withAuth(member(), (
+      <MemoryRouter initialEntries={['/tournaments/t1']}>
+        <GoToWinter />
+        <Routes><Route path="/tournaments/:id" element={<TournamentDetailPage />} /></Routes>
+      </MemoryRouter>
+    )))
+    const first = (await screen.findByLabelText('Section')) as HTMLSelectElement
+    expect(optionTexts(first)).toEqual(['Open — $40', 'Reserve — $20', 'Free'])
+
+    // The route element is reused for the new id (the same select stays in
+    // the document), so the time is read again when the new event loads.
+    vi.setSystemTime(AFTER_EARLY)
+    fireEvent.click(screen.getByRole('button', { name: 'Go to the Winter Open' }))
+    await screen.findByRole('heading', { name: 'Winter Open' })
+    expect(screen.getByLabelText('Section')).toBe(first)
+    expect(optionTexts(first)).toEqual(['Open — $50', 'Reserve — $30', 'Free'])
+
+    expect(vi.getTimerCount()).toBeGreaterThan(0)
+    unmount()
+    expect(vi.getTimerCount()).toBe(0)
+  })
+})
+
+describe('the family panel total follows the clock while the page is open', () => {
+  beforeEach(() => fakeClockAndTimers(BEFORE_EARLY))
+
+  const sam: ApiChild = {
+    id: 'c1', full_name: 'Sam Player', uscf_id: '90000002', uscf_rating: 1000, membership_status: 'pending', membership_expiry: null,
+    membership_type: null, created_at: '2026-01-01',
+  }
+  async function renderPanel() {
+    api.getMyChildren.mockResolvedValue([sam])
+    render(
+      <MemoryRouter>
+        <FamilyRegistrationPanel tournament={tournamentAnswer()} selfName="Pat Player" selfUscfId="12345678" selfRating={1500} selfRegistered={false} />
+      </MemoryRouter>,
+    )
+    await screen.findByText('Register your family')
+  }
+  const tick = (name: string) => fireEvent.click(screen.getByRole('checkbox', { name }))
+  const registerButton = () => screen.getByRole('button', { name: /^Register \d/ }).textContent
+
+  it('opened before the early deadline and used after it: ticking a player and changing a section price at the regular fee', async () => {
+    await renderPanel()
+    tick('Pat Player (me)')
+    expect(registerButton()).toBe('Register 1 · pay $40')
+
+    vi.setSystemTime(AFTER_EARLY)
+    tick('Sam Player')
+    // Both at Open's regular $50, Pat included.
+    expect(registerButton()).toBe('Register 2 · pay $100')
+    fireEvent.change(screen.getByLabelText('Section for Sam Player'), { target: { value: 'Reserve' } })
+    expect(registerButton()).toBe('Register 2 · pay $80')
+    expect(optionTexts(screen.getByLabelText('Section for Sam Player'))).toEqual(['Open — $50', 'Reserve — $30', 'Free'])
+    expect(optionTexts(screen.getByLabelText('Section for Pat Player (me)'))).toEqual(['Open — $50', 'Reserve — $30', 'Free'])
+  })
+
+  it('the timer alone updates the total within 30 seconds', async () => {
+    await renderPanel()
+    tick('Pat Player (me)')
+    tick('Sam Player')
+    expect(registerButton()).toBe('Register 2 · pay $80')
+    vi.setSystemTime(AFTER_EARLY)
+    act(() => { vi.advanceTimersByTime(30_000) })
+    expect(registerButton()).toBe('Register 2 · pay $100')
+  })
+
+  it('coming back to the tab, or back to a restored page, updates the total at once with no timer tick', async () => {
+    await renderPanel()
+    tick('Pat Player (me)')
+    tick('Sam Player')
+    expect(registerButton()).toBe('Register 2 · pay $80')
+
+    vi.setSystemTime(AFTER_EARLY)
+    act(() => { document.dispatchEvent(new Event('visibilitychange')) })
+    expect(registerButton()).toBe('Register 2 · pay $100')
+
+    vi.setSystemTime(AFTER_LATE)
+    act(() => { window.dispatchEvent(new Event('pageshow')) })
+    expect(registerButton()).toBe('Register 2 · pay $130')
+  })
+
+  it('opened before the late fee starts and used after: a section change prices both players late', async () => {
+    vi.setSystemTime(BEFORE_LATE)
+    await renderPanel()
+    tick('Pat Player (me)')
+    tick('Sam Player')
+    expect(registerButton()).toBe('Register 2 · pay $100')
+
+    vi.setSystemTime(AFTER_LATE)
+    fireEvent.change(screen.getByLabelText('Section for Sam Player'), { target: { value: 'Reserve' } })
+    // Pat in Open at $65, Sam in Reserve at $45.
+    expect(registerButton()).toBe('Register 2 · pay $110')
   })
 })

@@ -16,6 +16,7 @@ import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { effectiveRules, eligibilityProblem, needsGrade } from '@/lib/sectionRules'
 import { confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
 import { priceShownSection } from '@/lib/pricing'
+import { useNow } from '@/hooks/useNow'
 
 interface Player {
   /** undefined = the signed-in member */
@@ -45,17 +46,19 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState<{ message: string; paymentUrl: string | null } | null>(null)
-  // The time the prices below are shown for, read once when the panel opens
-  // (checkout prices each entry again on the server).
-  const [nowMs] = useState(() => Date.now())
+  // The time the prices below are shown for. Checkout prices each entry on
+  // the server when it is made, so this follows the clock (a timer, plus a
+  // fresh read on loading and on every change to who is playing or where)
+  // and the total on the button is what checkout will charge.
+  const [nowMs, refreshNow] = useNow()
 
   useEffect(() => {
     let cancelled = false
     getMyChildren(tournament.id)
-      .then((list) => { if (!cancelled) setChildren(list) })
+      .then((list) => { if (!cancelled) { setChildren(list); refreshNow() } })
       .catch(() => { if (!cancelled) setChildren([]) })
     return () => { cancelled = true }
-  }, [tournament.id])
+  }, [tournament.id, refreshNow])
 
   if (!children || children.length === 0) return null
 
@@ -72,8 +75,10 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
 
   const keyOf = (p: Player) => p.memberId ?? 'self'
   const choiceOf = (p: Player): Choice => choices[keyOf(p)] ?? { selected: false, section: defaultSection, byes: [], ticks: NO_TICKS }
-  const setChoice = (p: Player, patch: Partial<Choice>) =>
+  const setChoice = (p: Player, patch: Partial<Choice>) => {
     setChoices((prev) => ({ ...prev, [keyOf(p)]: { ...choiceOf(p), ...patch } }))
+    refreshNow()
+  }
 
   const picked = players.filter((p) => choiceOf(p).selected)
   const sectionOf = (name: string) => tournament.sections.find((s) => s.name === name)

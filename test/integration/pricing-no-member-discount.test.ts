@@ -6,7 +6,9 @@
 // single entry, the family entry and a waitlist offer. Each event has a
 // member_discount set in its row, which nothing reads any more. The admin
 // create and edit still accept memberDiscount, so the current setup form
-// keeps working, and drop it.
+// keeps working, and drop it. Every answer carrying a tournament says
+// member_discount 0 whatever the column holds, so a tab still running the
+// earlier site code (which took it off the price) shows what Stripe charges.
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { onRequestPost as registerPost } from '../../functions/api/registrations'
@@ -14,6 +16,9 @@ import { onRequestPost as batchPost } from '../../functions/api/registrations/ba
 import { onRequestPost as waitlistPost } from '../../functions/api/admin/tournaments/[id]/waitlist'
 import { onRequestPost as createTournament } from '../../functions/api/admin/tournaments'
 import { onRequestPatch as patchTournament } from '../../functions/api/admin/tournaments/[id]'
+import { onRequestGet as manageGet } from '../../functions/api/admin/tournaments/[id]/manage'
+import { onRequestGet as detailGet } from '../../functions/api/tournaments/[id]'
+import { onRequestGet as listGet } from '../../functions/api/tournaments'
 import { contracts } from '../../domain/contracts'
 import { seedAdmin, seedMember, seedRegistration, seedTournament } from './factories'
 import { expectContract, invoke, resetHarness, stripeSessions } from './harness'
@@ -111,7 +116,8 @@ describe('memberDiscount is accepted and dropped by the admin create and edit', 
     expect(res.status).toBe(200)
     const { tournament } = await expectContract(res, contracts['admin/tournaments/[id]'].PATCH.response)
     expect(tournament.early_discount).toBe(4)
-    expect(tournament.member_discount).toBe(3)
+    // Stored as it was, answered as 0.
+    expect(tournament.member_discount).toBe(0)
     expect(await memberDiscountOf(tournamentId)).toBe(3)
 
     const entry = await invoke(registerPost, { method: 'POST', as: await seedMember({ membershipStatus: 'active' }), body: { tournamentId, section: 'Open' } })
@@ -127,5 +133,45 @@ describe('memberDiscount is accepted and dropped by the admin create and edit', 
     const { tournament } = await expectContract(res, contracts['admin/tournaments'].POST.response)
     expect(tournament.member_discount).toBe(0)
     expect(await memberDiscountOf(tournament.id)).toBe(0)
+  })
+})
+
+describe('an event stored with a member_discount answers 0', () => {
+  async function storedWithDiscount(): Promise<string> {
+    const tournamentId = await seedTournament({ entryFee: 25, sections: [{ name: 'Open', entryFee: 25 }] })
+    await env.DB.prepare('UPDATE tournaments SET member_discount = 5 WHERE id = ?').bind(tournamentId).run()
+    return tournamentId
+  }
+  const stored = async (tournamentId: string) =>
+    (await env.DB.prepare('SELECT member_discount FROM tournaments WHERE id = ?').bind(tournamentId).first<{ member_discount: number }>())?.member_discount
+
+  it('on the public detail, signed out and signed in, within the contract', async () => {
+    const tournamentId = await storedWithDiscount()
+    for (const as of [undefined, await seedMember({ membershipStatus: 'active' })]) {
+      const res = await invoke(detailGet, { as, params: { id: tournamentId } })
+      expect(res.status).toBe(200)
+      const { tournament } = await expectContract(res, contracts['tournaments/[id]'].GET.response)
+      expect(tournament.member_discount).toBe(0)
+      expect(tournament.entry_fee).toBe(25)
+    }
+    expect(await stored(tournamentId)).toBe(5)
+  })
+
+  it('on the public list, within the contract', async () => {
+    const tournamentId = await storedWithDiscount()
+    const res = await invoke(listGet, {})
+    expect(res.status).toBe(200)
+    const { tournaments } = await expectContract(res, contracts.tournaments.GET.response)
+    expect(tournaments.find((t) => t.id === tournamentId)?.member_discount).toBe(0)
+    expect(await stored(tournamentId)).toBe(5)
+  })
+
+  it('on the manage answer the setup page reads', async () => {
+    const tournamentId = await storedWithDiscount()
+    const res = await invoke(manageGet, { as: await seedAdmin(), params: { id: tournamentId } })
+    expect(res.status).toBe(200)
+    const { tournament } = await expectContract(res, contracts['admin/tournaments/[id]/manage'].GET.response)
+    expect(tournament.member_discount).toBe(0)
+    expect(await stored(tournamentId)).toBe(5)
   })
 })

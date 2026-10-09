@@ -652,7 +652,8 @@ export type TournamentResponse<Row extends TournamentRow = TournamentRow> =
  * them, unless the caller wants history), priced from the row,
  * round_schedule is the primary schedule's rounds in the shape the column
  * held them, and `schedules` are the live schedules given (loadSchedules).
- * Every other column is passed on as it is.
+ * member_discount is answered as 0 (retired, see below). Every other column
+ * is passed on as it is.
  */
 export function toTournamentResponse<Row extends TournamentRow>(
   row: Row,
@@ -663,6 +664,11 @@ export function toTournamentResponse<Row extends TournamentRow>(
   const live = schedules.filter((s) => s.archivedAt === null)
   const answer = {
     ...row,
+    // member_discount is retired: there is no member price and checkout
+    // never applies it, but the column still holds old amounts. Answer 0 so
+    // a page still running the earlier site code (which subtracted it) shows
+    // the price Stripe will charge. The stored value is left alone.
+    member_discount: 0,
     sections: sections.map((s) => sectionResponse(s, row)),
     round_schedule: roundScheduleResponse(live),
     schedules: live.map(scheduleResponse),
