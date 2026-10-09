@@ -84,13 +84,13 @@ describe('single entry reads the section row', () => {
 })
 
 describe('prices follow the live tournament columns', () => {
-  it('overlap: early and late tiers both open, with a member discount, charges the sum', async () => {
+  it('overlap: early and late tiers both open charges the sum, the same for a member and a guest (member_discount is not read)', async () => {
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 40 }] })
     await setTournament(tournamentId,
       `early_deadline = '2099-01-01', early_discount = 5, member_discount = 3, late_after = '2020-01-01T00:00', late_fee = 12.5`)
     const member = await invoke(registerPost, { method: 'POST', as: await seedMember({ membershipStatus: 'active' }), body: { tournamentId, section: 'Open' } })
-    expect((await member.json<Entered>()).payment.amount).toBe(44.5)
-    expect(stripeSessions.at(-1)?.amountCents).toBe(4450)
+    expect((await member.json<Entered>()).payment.amount).toBe(47.5)
+    expect(stripeSessions.at(-1)?.amountCents).toBe(4750)
     const guest = await invoke(registerPost, { method: 'POST', as: await seedMember({ membershipStatus: 'expired' }), body: { tournamentId, section: 'Open' } })
     expect((await guest.json<Entered>()).payment.amount).toBe(47.5)
   })
@@ -107,9 +107,9 @@ describe('prices follow the live tournament columns', () => {
     expect((await third.json<Entered>()).payment.amount).toBe(30)
   })
 
-  it('discounts that reach past the fee make the entry free: no checkout, a completed payment, paid at once', async () => {
+  it('a discount that reaches past the fee makes the entry free: no checkout, a completed payment, paid at once', async () => {
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 10 }] })
-    await setTournament(tournamentId, `early_deadline = '2099-01-01', early_discount = 8, member_discount = 8`)
+    await setTournament(tournamentId, `early_deadline = '2099-01-01', early_discount = 12`)
     const sessionsBefore = stripeSessions.length
     const res = await invoke(registerPost, { method: 'POST', as: await seedMember({ membershipStatus: 'active' }), body: { tournamentId, section: 'Open' } })
     expect(res.status).toBe(201)
@@ -147,7 +147,7 @@ describe('family entry reads the section rows once and prices each player', () =
     return { parent, child }
   }
 
-  it('takes each fee from the rows and the member discount only for the member', async () => {
+  it('takes each fee from the rows, the same for the member and the child who is not one', async () => {
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 25 }, { name: 'Reserve', entryFee: 15 }] })
     await setSection(tournamentId, 'Reserve', 'fee_regular = 20')
     await setTournament(tournamentId, `member_discount = 5, early_deadline = '2099-01-01', early_discount = 2`)
@@ -157,10 +157,10 @@ describe('family entry reads the section rows once and prices each player', () =
     })
     expect(res.status).toBe(201)
     const body = await res.json<{ registrations: Array<{ memberId: string; amount: number }>; total: number }>()
-    // Parent: 25 - 2 - 5. Child (not an active member): 20 - 2.
-    expect(body.registrations.map((r) => [r.memberId, r.amount])).toEqual([[parent, 18], [child, 18]])
-    expect(body.total).toBe(36)
-    expect(stripeSessions.at(-1)?.lineItems.map((l) => l.amountCents)).toEqual([1800, 1800])
+    // Parent (an active member): 25 - 2. Child (not a member): 20 - 2. The member_discount of 5 is not read.
+    expect(body.registrations.map((r) => [r.memberId, r.amount])).toEqual([[parent, 23], [child, 18]])
+    expect(body.total).toBe(41)
+    expect(stripeSessions.at(-1)?.lineItems.map((l) => l.amountCents)).toEqual([2300, 1800])
   })
 
   it('refuses a section that is only in the JSON, and writes nothing for anyone', async () => {

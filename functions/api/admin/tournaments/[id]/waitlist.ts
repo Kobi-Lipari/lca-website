@@ -9,7 +9,8 @@
 // entry's section row (tournament_sections, found by the entry's
 // section_id, else by its name) and the tournament's live pricing columns,
 // through priceEntry. A section with no row is priced at the event fee, as
-// the old reader of the sections JSON did.
+// the old reader of the sections JSON did. Membership does not change the
+// price.
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
 import { recordAdminAction } from '../../../../utils/audit'
@@ -51,7 +52,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const t = await db.prepare('SELECT * FROM tournaments WHERE id = ?').bind(tournamentId).first<{
     id: string; name: string; entry_fee: number
     early_deadline: string | null; early_discount: number | null; late_after: string | null
-    late_fee: number | null; member_discount: number | null
+    late_fee: number | null
   }>()
   if (!t) return errorResponse('Tournament not found', 404)
 
@@ -62,7 +63,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const section = rows.find((s) => reg.section_id != null && s.id === reg.section_id)
     ?? rows.find((s) => s.name === reg.section)
     ?? { feeRegular: null }
-  const amount = priceEntry(section, t, Date.now(), { isLcaMember: reg.membership_status === 'active' }).amount
+  const amount = priceEntry(section, t, Date.now()).amount
   const paymentId = `pay-${reg.id}`
   const free = amount <= 0
   await db.batch([

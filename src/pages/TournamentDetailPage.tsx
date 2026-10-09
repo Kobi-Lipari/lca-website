@@ -441,12 +441,12 @@ export function TournamentDetailPage() {
   // Withdrawn players are excluded from public display and counts
   const activeRoster = roster.filter((p) => !p.withdrawn_at)
   const isFull = !!tournament.max_players && activeRoster.length >= tournament.max_players
-  const isLcaMember = authMember?.membership_status === 'active'
   // Priced as checkout prices it: the section's own prices where it has
-  // them, else the tournament's early, member and late lines. A name with no
-  // section (none chosen yet) is priced at the event fee.
+  // them, else the tournament's early and late lines. Everyone pays the same
+  // for a section; there is no member price. A name with no section (none
+  // chosen yet) is priced at the event fee.
   const priceFor = (sectionName: string) =>
-    priceShownSection(tournament.sections.find((s) => s.name === sectionName), tournament, nowMs, { isLcaMember })
+    priceShownSection(tournament.sections.find((s) => s.name === sectionName), tournament, nowMs)
   const chosenSection = tournament.sections.find((s) => s.name === selectedSection)
   const chosenRules = chosenSection ? effectiveRules(chosenSection) : {}
   const chosenPrice = priceFor(selectedSection)
@@ -466,7 +466,6 @@ export function TournamentDetailPage() {
   const mySectionPaired = !!myRegistration && pairings.some((g) => g.section === myRegistration.section)
   const expiresBefore = isRated && authMember?.uscf_expiration && authMember.uscf_expiration.slice(0, 10) < tournament.date.slice(0, 10)
     ? authMember.uscf_expiration.slice(0, 10) : null
-  const memberDiscount = tournament.member_discount ?? 0
 
   // Group active roster by section, sorted by name within each section
   const rosterBySectionMap = new Map<string, ApiRosterPlayer[]>()
@@ -1032,7 +1031,6 @@ export function TournamentDetailPage() {
                     selfName={authMember.full_name}
                     selfUscfId={authMember.uscf_id ?? null}
                     selfRating={authMember.uscf_rating ?? null}
-                    selfIsLcaMember={isLcaMember}
                     selfRegistered={!!myRegistration || !!confirmation}
                   />
                 )}
@@ -1079,16 +1077,6 @@ export function TournamentDetailPage() {
                 )}
               </div>
             </div>
-
-            {/* LCA membership note: only when this event has a member discount */}
-            {memberDiscount > 0 && !isLcaMember && (
-              <p className="text-xs text-muted-foreground">
-                LCA members save ${memberDiscount} on entry.{' '}
-                <Link to="/membership" className="text-lca-navy hover:underline">
-                  Join LCA
-                </Link>
-              </p>
-            )}
           </div>
         </div>
       </section>

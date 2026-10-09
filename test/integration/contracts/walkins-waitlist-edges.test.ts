@@ -217,13 +217,14 @@ describe('walk-in guest, guards and body edges', () => {
 })
 
 describe('waitlist offers read the sections table', () => {
-  it('an entry into a section with no row anywhere is charged the event fee, less the member discount', async () => {
+  it('an entry into a section with no row anywhere is charged the event fee, the same for a member and a guest', async () => {
     const admin = await seedAdmin()
     const tournamentId = await seedTournament({ entryFee: 40 })
+    // Left in the row and not read: there is no member price.
     await setColumns(tournamentId, { member_discount: 5 })
     const member = await waitlisted(tournamentId, 'Ghost', { membershipStatus: 'active' })
     const guest = await waitlisted(tournamentId, 'Ghost', { membershipStatus: 'pending' })
-    expect(await expectContract(await offerSpot(admin, tournamentId, member.reg), offer.response)).toEqual({ success: true, amount: 35 })
+    expect(await expectContract(await offerSpot(admin, tournamentId, member.reg), offer.response)).toEqual({ success: true, amount: 40 })
     expect(await expectContract(await offerSpot(admin, tournamentId, guest.reg), offer.response)).toEqual({ success: true, amount: 40 })
   })
 
@@ -255,10 +256,10 @@ describe('waitlist offers read the sections table', () => {
     expect(await expectContract(await offerSpot(admin, tournamentId, reg), offer.response)).toEqual({ success: true, amount: 20 })
   })
 
-  it('a member discount larger than the fee never goes below zero, and the spot is then free and confirmed', async () => {
+  it('an early discount larger than the fee never goes below zero, and the spot is then free and confirmed', async () => {
     const admin = await seedAdmin()
     const tournamentId = await seedTournament({ entryFee: 10, sections: [{ name: 'Open', entryFee: 10 }] })
-    await setColumns(tournamentId, { member_discount: 25 })
+    await setColumns(tournamentId, { early_deadline: '2099-01-01T00:00', early_discount: 25 })
     const { memberId, reg } = await waitlisted(tournamentId, 'Open', { membershipStatus: 'active' })
     expect(await expectContract(await offerSpot(admin, tournamentId, reg), offer.response)).toEqual({ success: true, amount: 0 })
     expect(await env.DB.prepare('SELECT payment_status, waitlisted_at FROM registrations WHERE id = ?').bind(reg).first()).toEqual({ payment_status: 'paid', waitlisted_at: null })

@@ -104,6 +104,7 @@ export interface TournamentRow {
   keep_apart: string
   report_settings: string | null
   is_state_championship: number
+  requires_lca_membership: number
 }
 
 export interface RegistrationRow {

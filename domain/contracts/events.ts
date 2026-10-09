@@ -231,11 +231,14 @@ export const tournamentListItemSchema = z.strictObject({
   early_discount: dollarsSchema,
   late_after: wallClockTextSchema.nullable(),
   late_fee: dollarsSchema,
+  /** Retired: no longer read or written (there is no member price). */
   member_discount: dollarsSchema,
   accelerated: flagSchema,
   keep_apart: keepApartSchema,
   report_settings: storedJsonTextSchema.nullable(),
   is_state_championship: flagSchema,
+  /** 1: entering needs a current LCA membership (domain/membership/requirement.ts). */
+  requires_lca_membership: flagSchema,
   club_name: z.string().nullable(),
   club_color: z.string().nullable(),
 })
@@ -369,6 +372,11 @@ export const createTournamentRequestSchema = z.looseObject({
   timeControl: z.string().nullable().optional(),
   registrationClosesAt: z.string().nullable().optional(),
   customDetails: z.array(customDetailInputSchema).optional(),
+  /**
+   * Left out: on for an LCA-run event, off for a club-run one. false on an
+   * event with no club is refused (400).
+   */
+  requiresLcaMembership: z.boolean().optional(),
 })
 
 /**
@@ -407,7 +415,14 @@ export const updateTournamentRequestSchema = z.looseObject({
   earlyDiscount: z.number().nullable().optional(),
   lateAfter: z.string().nullable().optional(),
   lateFee: z.number().nullable().optional(),
+  /** Accepted so older forms keep working, and ignored: there is no member price. */
   memberDiscount: z.number().nullable().optional(),
+  /**
+   * Only an LCA admin, or the rep of the organizing club, may send it (403
+   * otherwise, an assigned director included). false on an event with no
+   * club is refused (400).
+   */
+  requiresLcaMembership: z.boolean().optional(),
   roundSchedule: z.array(z.record(z.string(), z.unknown())).nullable().optional(),
   schedules: z.array(scheduleInputSchema).optional(),
   registrationClosesAt: z.string().nullable().optional(),

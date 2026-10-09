@@ -63,7 +63,7 @@ describe('npm run check:bundle', () => {
       "import type { SavedSection } from '@domain/contracts'",
       "import { priceEntry } from '@domain/registration/pricing'",
       'export function price(section: SavedSection | undefined) {',
-      '  return priceEntry({ feeRegular: section?.fees.regular }, { entry_fee: 30 }, Date.now(), { isLcaMember: false }).amount',
+      '  return priceEntry({ feeRegular: section?.fees.regular }, { entry_fee: 30 }, Date.now()).amount',
       '}',
       '',
     ].join('\n'))

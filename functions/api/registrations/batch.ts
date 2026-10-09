@@ -67,7 +67,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       early_discount: number | null
       late_after: string | null
       late_fee: number | null
-      member_discount: number | null
     }>()
   if (!tournament) return errorResponse('Tournament not found', 404)
 
@@ -147,7 +146,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       section: section.name,
       sectionId: section.id,
       byeRounds,
-      amount: priceEntry(section, tournament, now, { isLcaMember: player.membership_status === 'active' }).amount,
+      amount: priceEntry(section, tournament, now).amount,
       grade: gradeRange ? formatGradeRange(gradeRange) : null,
     })
   }

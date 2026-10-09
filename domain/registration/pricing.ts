@@ -4,9 +4,12 @@
 // keep one-line re-exports at their old paths.
 //
 // What an entry costs right now: the section's fee, less an early-entry
-// discount (until the early deadline), less the LCA member discount, plus
-// a late fee (after the late date). Never below zero. The same function
-// prices the entry at checkout and shows the price on the tournament page.
+// discount (until the early deadline), plus a late fee (after the late
+// date). Never below zero. The same function prices the entry at checkout
+// and shows the price on the tournament page. Everyone entering the same
+// section at the same moment pays the same: there is no member price
+// (decision D11). tournaments.member_discount is still in the table but is
+// no longer read.
 //
 // priceEntry takes a section's own prices and the tournament's own pricing
 // columns, read live, so changing those columns changes the price at once.
@@ -25,7 +28,6 @@ export interface PriceTournament {
   early_discount?: number | null
   late_after?: string | null
   late_fee?: number | null
-  member_discount?: number | null
 }
 
 export interface PriceLine { label: string; amount: number }
@@ -38,8 +40,8 @@ const cents = (n: number) => Math.round(n * 100) / 100
  *
  * The base is the section's fee_regular, else the tournament's entry_fee.
  * While the early deadline has not passed, the early line takes
- * early_discount off; after the late date, the late line adds late_fee; an
- * active LCA member gets member_discount off. A section's own early or late
+ * early_discount off; after the late date, the late line adds late_fee.
+ * Nothing about the player changes the price. A section's own early or late
  * price, when set, replaces that line's amount with its difference from the
  * base, under the same label. The lines add up, the total is rounded to the
  * cent and never goes below zero, and a free section has no lines.
@@ -48,7 +50,6 @@ export function priceEntry(
   section: TierSection,
   tournament: PriceTournament,
   nowMs: number,
-  opts: { isLcaMember: boolean },
 ): Price {
   const base = section.feeRegular ?? tournament.entry_fee
   const lines: PriceLine[] = []
@@ -58,9 +59,6 @@ export function priceEntry(
         ? cents(section.feeEarly - base)
         : (tournament.early_discount ?? 0) > 0 ? -(tournament.early_discount as number) : 0
       if (amount !== 0) lines.push({ label: 'Early entry discount', amount })
-    }
-    if (opts.isLcaMember && (tournament.member_discount ?? 0) > 0) {
-      lines.push({ label: 'LCA member discount', amount: -(tournament.member_discount as number) })
     }
     if (tournament.late_after && hasPassed(tournament.late_after, nowMs)) {
       const amount = section.feeLate != null
@@ -93,14 +91,13 @@ export function priceShownSection(
   section: { fees: TierFees } | undefined,
   tournament: PriceTournament,
   nowMs: number,
-  opts: { isLcaMember: boolean },
 ): Price {
-  if (!section) return priceEntry({}, tournament, nowMs, opts)
+  if (!section) return priceEntry({}, tournament, nowMs)
   const { regular, early, late } = section.fees
   const worked = tierFees({ feeRegular: regular }, tournament)
   return priceEntry({
     feeRegular: regular,
     feeEarly: early !== worked.early ? early : null,
     feeLate: late !== worked.late ? late : null,
-  }, tournament, nowMs, opts)
+  }, tournament, nowMs)
 }

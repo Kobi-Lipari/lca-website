@@ -138,4 +138,15 @@ export const FEATURES = {
    * and the family pages in My LCA.
    */
   householdCheckout: false,
+
+  /**
+   * The "LCA membership required" switch on a club-run event's Registration
+   * tab, shown only to an LCA admin and the organizing club's rep. Club-run
+   * events start with it off. Nothing checks the setting at registration
+   * yet: that comes with the household checkout, which can add the
+   * membership in the same payment, so turning it on today would only store
+   * the choice, while the page's wording says players must hold a
+   * membership. Leave it off until that checkout ships.
+   */
+  membershipRequirementSwitch: false,
 } as const

@@ -22,6 +22,13 @@
       "when": 1791497263914,
       "tag": "0002_sections_schedules_backfill",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1791548166077,
+      "tag": "0003_requires_lca_membership",
+      "breakpoints": true
     }
   ]
 }

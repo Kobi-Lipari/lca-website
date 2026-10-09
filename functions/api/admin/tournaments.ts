@@ -9,6 +9,7 @@ import { createTournamentRequestSchema } from '../../../domain/contracts/events'
 import { buildSaveSections, isSectionsConflict, loadSections, runBatch, toTournamentResponse } from '../../utils/events/sectionsRepo'
 import { loadSchedules } from '../../utils/events/schedulesRepo'
 import { SECTIONS_CHANGED_MESSAGE } from '../../../domain/events/sections'
+import { LCA_RUN_NEEDS_MEMBERSHIP } from '../../../domain/membership/requirement'
 
 function slugify(value: string): string {
   return value
@@ -79,6 +80,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   const isRated = body.isRated !== false ? 1 : 0
+
+  // A club-run event starts without the LCA membership requirement (clubs
+  // get tournament creation first, free of charge); an LCA-run event always
+  // has it. Only an admin or a club rep reaches this point, and a rep's event
+  // is always their own club's, so either may set it.
+  if (body.requiresLcaMembership === false && !clubId) {
+    return errorResponse(LCA_RUN_NEEDS_MEMBERSHIP, 400)
+  }
+  const requiresLcaMembership = !clubId ? 1 : body.requiresLcaMembership ? 1 : 0
   const db = getDb(context.env.DB)
 
   // The row goes in with no sections (the column's default, '[]'), then
@@ -109,6 +119,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     timeControl: body.timeControl ?? null,
     registrationClosesAt: body.registrationClosesAt ?? null,
     customDetails: body.customDetails?.length ? JSON.stringify(body.customDetails) : null,
+    requiresLcaMembership,
   })
   try {
     await runBatch(db, [insert, ...plan.queries])

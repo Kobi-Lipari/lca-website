@@ -2,12 +2,13 @@
 //
 // The tournament page and the family panel price an entry from the section
 // objects a tournament answer carries, with no sections JSON passed to
-// pricing: priceShownSection(section, tournament, now, { isLcaMember }),
+// pricing: priceShownSection(section, tournament, now),
 // which passes a section's own early or late price on to priceEntry as
 // checkout does. These render both with an answer shaped like the server's
 // (section ids, cap, fees triple) and read what a person sees: the amounts in
-// the section list, the price lines, and the family total. The labels and
-// amounts are the ones the pages showed before the move.
+// the section list, the price lines, and the family total. There is no
+// member price: the fixture keeps a member_discount in the answer to show it
+// is never applied or advertised, and a member pays what anyone else pays.
 //
 // The clock is set with Date alone faked, so the pages read a fixed "now".
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
@@ -77,7 +78,7 @@ function tournamentAnswer(
     registration_deadline: null, club_id: null, created_by: null, created_at: '2026-09-01 12:00:00',
     registration_status: 'open', registration_opens_at: null, is_rated: 0, is_visible: 1, round_schedule: [], registration_closes_at: null,
     custom_details: [], time_control: null, registration_url: null, eligibility: null, organizer: null, pairing_system: 'uscf',
-    accelerated: 0, keep_apart: 'family', report_settings: null, is_state_championship: 0, club_name: null, club_color: null,
+    accelerated: 0, keep_apart: 'family', report_settings: null, is_state_championship: 0, requires_lca_membership: 1, club_name: null, club_color: null,
     waitlist_count: 0, ...over,
   } as unknown as ApiTournamentDetail
 }
@@ -114,14 +115,14 @@ const sectionTable = () =>
 const tableRows = () => Array.from(sectionTable()).map((tr) => [tr.children[0].textContent, tr.children[2].textContent])
 
 describe('the tournament page prices from the section objects in the answer', () => {
-  it('a member before the early deadline: the amounts in the list and the price lines', async () => {
+  it('a member before the early deadline: the amounts in the list and the price lines, with no member line', async () => {
     const select = await renderDetail(tournamentAnswer(), member())
-    // Open: $50 less $10 early, less $5 member. Reserve has no price of its own: the $30 event fee. Free stays free.
-    expect(optionTexts(select)).toEqual(['Open — $35', 'Reserve — $15', 'Free'])
+    // Open: $50 less $10 early; the $5 member_discount in the row is not applied. Reserve has no price of its own: the $30 event fee. Free stays free.
+    expect(optionTexts(select)).toEqual(['Open — $40', 'Reserve — $20', 'Free'])
     expect(rowValue('Entry fee')).toBe('$50')
     expect(rowValue('Early entry discount')).toBe('−$10')
-    expect(rowValue('LCA member discount')).toBe('−$5')
-    expect(rowValue('You pay')).toBe('$35')
+    expect(screen.queryByText('LCA member discount')).toBeNull()
+    expect(rowValue('You pay')).toBe('$40')
     // The Sections table shows each section's regular price from the same objects.
     expect(tableRows()).toEqual([['Open', '$50'], ['Reserve', '$30'], ['Free', 'Free']])
   })
@@ -130,17 +131,24 @@ describe('the tournament page prices from the section objects in the answer', ()
     const select = await renderDetail(tournamentAnswer(), member())
     fireEvent.change(select, { target: { value: 'Reserve' } })
     expect(rowValue('Entry fee')).toBe('$30')
-    expect(rowValue('You pay')).toBe('$15')
+    expect(rowValue('You pay')).toBe('$20')
     fireEvent.change(select, { target: { value: 'Free' } })
     expect(screen.queryByText('You pay')).toBeNull()
     expect(screen.queryByText('Early entry discount')).toBeNull()
   })
 
-  it('a signed-in non-member gets no member line, and the early line still shows', async () => {
+  it('a signed-in non-member sees the same amounts as a member, and no line about members saving', async () => {
     const select = await renderDetail(tournamentAnswer(), member({ membership_status: 'expired' }))
     expect(optionTexts(select)).toEqual(['Open — $40', 'Reserve — $20', 'Free'])
     expect(screen.queryByText('LCA member discount')).toBeNull()
+    expect(screen.queryByText(/members save/i)).toBeNull()
     expect(rowValue('You pay')).toBe('$40')
+  })
+
+  it('signed out, the amounts are the same and nothing advertises a member price', async () => {
+    const select = await renderDetail(tournamentAnswer(), null)
+    expect(optionTexts(select)).toEqual(['Open — $40', 'Reserve — $20', 'Free'])
+    expect(document.body.textContent).not.toMatch(/members save|member discount|member price/i)
   })
 
   it('after the late date the late line shows and the early line is gone', async () => {
@@ -183,10 +191,10 @@ describe('the tournament page prices from the section objects in the answer', ()
   })
 
   it('a fee with cents is shown with cents in the lines', async () => {
-    const odd = tournamentAnswer({ early_deadline: null, late_after: null, member_discount: 0.5 }, [{ name: 'Open', fee: 19.99 }])
+    const odd = tournamentAnswer({}, [{ name: 'Open', fee: 19.99 }])
     await renderDetail(odd, member())
-    expect(screen.getByText('LCA member discount').nextSibling?.textContent).toBe('−$0.50')
-    expect(rowValue('You pay')).toBe('$19.49')
+    expect(rowValue('Entry fee')).toBe('$19.99')
+    expect(rowValue('You pay')).toBe('$9.99')
   })
 })
 
@@ -196,28 +204,28 @@ describe('the family panel prices each player from the section objects in the an
     membership_type: null, created_at: '2026-01-01', ...over,
   })
 
-  async function renderPanel(tournament: ApiTournamentDetail, children: ApiChild[], selfIsLcaMember = true) {
+  async function renderPanel(tournament: ApiTournamentDetail, children: ApiChild[]) {
     api.getMyChildren.mockResolvedValue(children)
     render(
       <MemoryRouter>
-        <FamilyRegistrationPanel tournament={tournament} selfName="Pat Player" selfUscfId="12345678" selfRating={1500} selfIsLcaMember={selfIsLcaMember} selfRegistered={false} />
+        <FamilyRegistrationPanel tournament={tournament} selfName="Pat Player" selfUscfId="12345678" selfRating={1500} selfRegistered={false} />
       </MemoryRouter>,
     )
     await screen.findByText('Register your family')
   }
   const tick = (name: string) => fireEvent.click(screen.getByRole('checkbox', { name }))
 
-  it('the button totals each selected player at their own price, member or not', async () => {
+  it('the button totals each selected player at the section price, member or not', async () => {
     await renderPanel(tournamentAnswer(), [child('c1', 'Sam Player'), child('c2', 'Kit Player', { membership_status: 'active' })])
     expect((screen.getByRole('button', { name: 'Choose who is playing' }) as HTMLButtonElement).disabled).toBe(true)
-    // Open is $50, less $10 early: Pat (member) 35, Sam (not a member) 40, Kit (member) 35.
+    // Open is $50, less $10 early, for everyone: Pat 40, Sam (not a member) 40, Kit (a member) 40.
     tick('Pat Player (me)')
     tick('Sam Player')
-    expect((screen.getByRole('button', { name: 'Register 2 · pay $75' }) as HTMLButtonElement).disabled).toBe(false)
+    expect((screen.getByRole('button', { name: 'Register 2 · pay $80' }) as HTMLButtonElement).disabled).toBe(false)
     tick('Kit Player')
-    expect((screen.getByRole('button', { name: 'Register 3 · pay $110' }) as HTMLButtonElement).disabled).toBe(false)
+    expect((screen.getByRole('button', { name: 'Register 3 · pay $120' }) as HTMLButtonElement).disabled).toBe(false)
     expect(optionTexts(screen.getByLabelText('Section for Sam Player'))).toEqual(['Open — $40', 'Reserve — $20', 'Free'])
-    expect(optionTexts(screen.getByLabelText('Section for Kit Player'))).toEqual(['Open — $35', 'Reserve — $15', 'Free'])
+    expect(optionTexts(screen.getByLabelText('Section for Kit Player'))).toEqual(['Open — $40', 'Reserve — $20', 'Free'])
   })
 
   it('changing one player to the event-fee section and to the free one changes the total', async () => {
@@ -225,7 +233,7 @@ describe('the family panel prices each player from the section objects in the an
     tick('Pat Player (me)')
     tick('Sam Player')
     fireEvent.change(screen.getByLabelText('Section for Sam Player'), { target: { value: 'Reserve' } })
-    expect(screen.getByRole('button', { name: 'Register 2 · pay $55' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Register 2 · pay $60' })).toBeTruthy()
     fireEvent.change(screen.getByLabelText('Section for Pat Player (me)'), { target: { value: 'Free' } })
     expect(screen.getByRole('button', { name: 'Register 2 · pay $20' })).toBeTruthy()
     fireEvent.change(screen.getByLabelText('Section for Sam Player'), { target: { value: 'Free' } })
@@ -234,7 +242,7 @@ describe('the family panel prices each player from the section objects in the an
 
   it('prices at the late fee after the late date', async () => {
     vi.setSystemTime(AFTER_LATE)
-    await renderPanel(tournamentAnswer(), [child('c1', 'Sam Player')], false)
+    await renderPanel(tournamentAnswer(), [child('c1', 'Sam Player')])
     tick('Pat Player (me)')
     tick('Sam Player')
     expect((screen.getByRole('button', { name: 'Register 2 · pay $130' }) as HTMLButtonElement).disabled).toBe(false)
@@ -242,10 +250,10 @@ describe('the family panel prices each player from the section objects in the an
 
   it('prices a section with its own early price at that price', async () => {
     await renderPanel(tournamentAnswer({}, [{ name: 'Open', fee: 50, early: 32 }, { name: 'Reserve' }]), [child('c1', 'Sam Player')])
-    // Pat (member) 32 - 5 = 27, Sam (not a member) 32.
+    // Pat and Sam each pay the own early price, $32.
     tick('Pat Player (me)')
     tick('Sam Player')
-    expect(screen.getByRole('button', { name: 'Register 2 · pay $59' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Register 2 · pay $64' })).toBeTruthy()
   })
 
   it('sends the chosen section by name in the checkout request', async () => {

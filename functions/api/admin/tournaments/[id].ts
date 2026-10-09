@@ -25,6 +25,7 @@ import {
 } from '../../../utils/events/schedulesRepo'
 import { SECTIONS_CHANGED_MESSAGE } from '../../../../domain/events/sections'
 import { SCHEDULE_FORMS_MESSAGE, SCHEDULES_CHANGED_MESSAGE } from '../../../../domain/events/schedules'
+import { LCA_RUN_NEEDS_MEMBERSHIP } from '../../../../domain/membership/requirement'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -79,6 +80,26 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     }
     clubId = body.clubId || null
   }
+
+  // Whether entering needs an LCA membership. Only an LCA admin or the rep
+  // of the organizing club decides it; an assigned director, who reaches this
+  // handler through requireTournamentManager, may not. An LCA-run event
+  // (no club, after this save) always requires one. Written only when sent
+  // or when taking the club off forces it on, so an edit read before another
+  // save changed it cannot put the old value back.
+  let requiresLcaMembership: number | undefined
+  if (body.requiresLcaMembership !== undefined) {
+    const { member } = authResult
+    const ownsEvent = member.role === 'club_rep' && !!existing.clubId && member.club_id === existing.clubId
+    if (member.role !== 'lca_admin' && !ownsEvent) {
+      return errorResponse("Only the organizing club's rep or an LCA admin can change whether an LCA membership is required", 403)
+    }
+    if (!body.requiresLcaMembership && !clubId) {
+      return errorResponse(LCA_RUN_NEEDS_MEMBERSHIP, 400)
+    }
+    requiresLcaMembership = body.requiresLcaMembership ? 1 : 0
+  }
+  if (!clubId) requiresLcaMembership = 1
 
   const isRated = body.isRated !== undefined
     ? body.isRated ? 1 : 0
@@ -139,7 +160,9 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       earlyDiscount: body.earlyDiscount !== undefined ? Math.max(0, Number(body.earlyDiscount) || 0) : existing.earlyDiscount ?? 0,
       lateAfter: body.lateAfter !== undefined ? body.lateAfter || null : existing.lateAfter ?? null,
       lateFee: body.lateFee !== undefined ? Math.max(0, Number(body.lateFee) || 0) : existing.lateFee ?? 0,
-      memberDiscount: body.memberDiscount !== undefined ? Math.max(0, Number(body.memberDiscount) || 0) : existing.memberDiscount ?? 0,
+      // memberDiscount is accepted and ignored: there is no member price, and
+      // member_discount is no longer written.
+      requiresLcaMembership,
       accelerated,
       keepApart,
       reportSettings,

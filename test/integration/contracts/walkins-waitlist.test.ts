@@ -30,12 +30,13 @@ const offer = contracts['admin/tournaments/[id]/waitlist'].POST
 
 /**
  * The price the old reader of the sections JSON gave: the section's entryFee
- * when it is a number, else the event fee, priced through priceEntry.
+ * when it is a number, else the event fee, priced through priceEntry (which
+ * no longer has a member price, so it is the same for every player).
  */
-function oldReaderPrice(t: PriceTournament & { sections: string }, sectionName: string, isLcaMember: boolean): Price {
+function oldReaderPrice(t: PriceTournament & { sections: string }, sectionName: string): Price {
   const match = normalizeLegacySections(t.sections).find((s) => s.name === sectionName)
   const feeRegular = typeof match?.entryFee === 'number' ? match.entryFee : t.entry_fee
-  return priceEntry({ feeRegular }, t, Date.now(), { isLcaMember })
+  return priceEntry({ feeRegular }, t, Date.now())
 }
 
 /** What fetch sends: JSON.stringify drops undefined keys. */
@@ -240,7 +241,7 @@ describe('POST /api/admin/tournaments/[id]/waitlist contract', () => {
       .toEqual({ waitlisted_at: null, payment_status: 'paid' })
   })
 
-  it('prices a paid spot exactly as the old reader of the sections JSON did, from the live columns', async () => {
+  it('prices a paid spot exactly as the old reader of the sections JSON did, from the live columns, the same for a member and a guest', async () => {
     const admin = await seedAdmin()
     const pricing = [
       {},
@@ -261,7 +262,8 @@ describe('POST /api/admin/tournaments/[id]/waitlist contract', () => {
         const t = await env.DB.prepare('SELECT * FROM tournaments WHERE id = ?').bind(tournamentId).first<PriceTournament & { sections: string }>()
         for (const section of ['Open', 'Reserve', 'Side']) {
           const { memberId, reg } = await waitlisted(tournamentId, section, { membershipStatus })
-          const expected = oldReaderPrice(t!, section, membershipStatus === 'active').amount
+          // A member_discount left in the row is not read.
+          const expected = oldReaderPrice(t!, section).amount
           const res = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg } })
           const label = `${JSON.stringify(columns)} ${membershipStatus} ${section}`
           expect(res.status, label).toBe(200)

@@ -54,7 +54,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       early_discount: number | null
       late_after: string | null
       late_fee: number | null
-      member_discount: number | null
       rounds: number
       is_rated: number
     }>()
@@ -154,9 +153,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const registrationId = `reg-${body.tournamentId}-${Date.now().toString(36)}`
   const paymentId = `pay-${registrationId}`
-  const amount = priceEntry(section, tournament, Date.now(), {
-    isLcaMember: authed.member.membership_status === 'active',
-  }).amount
+  // Everyone in the section pays the same; membership never changes the price.
+  const amount = priceEntry(section, tournament, Date.now()).amount
   // Heads-up, not a block: the director may sell memberships at the door.
   const warnings: string[] = []
   if (tournament.is_rated && authed.member.uscf_expiration && authed.member.uscf_expiration.slice(0, 10) < String(tournament.date).slice(0, 10)) {

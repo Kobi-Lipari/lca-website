@@ -543,6 +543,8 @@ export async function adminCreateTournament(body: {
   timeControl?: string | null
   registrationClosesAt?: string | null
   customDetails?: ApiCustomDetail[]
+  /** Left out: on for an LCA-run event, off for a club-run one. */
+  requiresLcaMembership?: boolean
 }): Promise<Record<string, unknown>> {
   const response = await fetch('/api/admin/tournaments', {
     method: 'POST',
@@ -600,7 +602,12 @@ export async function adminUpdateTournament(
     earlyDiscount?: number | null
     lateAfter?: string | null
     lateFee?: number | null
-    memberDiscount?: number | null
+    /**
+     * Whether entering needs an LCA membership. Only an LCA admin or the
+     * organizing club's rep may send it; it cannot be false on an event
+     * with no club.
+     */
+    requiresLcaMembership?: boolean
     /** lca_admin only; null detaches the event from its club. */
     clubId?: string | null
   },

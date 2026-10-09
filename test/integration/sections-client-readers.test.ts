@@ -102,7 +102,7 @@ describe('the price the page shows is the amount the server charges', () => {
     { early_deadline: '2099-01-01', late_after: '2020-01-01', early_discount: 5, late_fee: 5, member_discount: 5 },
   ]
 
-  it('for sections with a fee, no fee of their own, and a free section, member or not', async () => {
+  it('for sections with a fee, no fee of their own, and a free section, member or not (member_discount left in the row is not read)', async () => {
     const admin = await seedAdmin()
     for (const columns of settings) {
       for (const membershipStatus of ['active', 'pending']) {
@@ -119,7 +119,8 @@ describe('the price the page shows is the amount the server charges', () => {
           await env.DB.prepare(`UPDATE registrations SET waitlisted_at = datetime('now') WHERE id = ?`).bind(reg).run()
           const label = `${JSON.stringify(columns)} ${membershipStatus} ${section.name}`
 
-          const shown = priceShownSection(section, tournament, Date.now(), { isLcaMember: membershipStatus === 'active' })
+          // The same shown price for a member and a guest: there is no member price.
+          const shown = priceShownSection(section, tournament, Date.now())
           const res = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg } })
           expect(res.status, label).toBe(200)
           expect((await res.json<{ amount: number }>()).amount, label).toBe(shown.amount)
@@ -150,7 +151,7 @@ describe('the price the page shows is the amount the server charges', () => {
       await env.DB.prepare(`UPDATE tournament_sections SET ${own} WHERE tournament_id = ?`).bind(tournamentId).run()
       const tournament = await detailOf(tournamentId)
       expect(await offerFor(tournamentId, admin), own).toBe(charged)
-      expect(priceShownSection(tournament.sections[0], tournament, Date.now(), { isLcaMember: false }).amount, own).toBe(charged)
+      expect(priceShownSection(tournament.sections[0], tournament, Date.now()).amount, own).toBe(charged)
     }
   })
 
@@ -164,7 +165,7 @@ describe('the price the page shows is the amount the server charges', () => {
     const tournament = await detailOf(tournamentId)
     expect(tournament.sections[0].fees).toEqual({ regular: 25, early: 0, late: 35 })
     expect(await offerFor(tournamentId, admin)).toBe(5)
-    expect(priceShownSection(tournament.sections[0], tournament, Date.now(), { isLcaMember: false }).amount).toBe(5)
+    expect(priceShownSection(tournament.sections[0], tournament, Date.now()).amount).toBe(5)
   })
 })
 

@@ -73,33 +73,33 @@ describe('entry pricing through the server path', () => {
   it('keeps the early discount until the end of its date in Central time, then drops it', () => {
     // A bare date closes at 11:59:59 PM Central, and the close instant itself counts as passed.
     const close = lcaTimeToMs('2026-10-16')
-    expect(priceEntry(open, t, close - 1000, { isLcaMember: false }).amount).toBe(35)
-    expect(priceEntry(open, t, close, { isLcaMember: false }).amount).toBe(40)
+    expect(priceEntry(open, t, close - 1000).amount).toBe(35)
+    expect(priceEntry(open, t, close).amount).toBe(40)
   })
 
   it('adds the late fee from Central midnight, not UTC midnight', () => {
     const midnight = lcaTimeToMs('2026-10-23T00:00')
-    expect(priceEntry(open, t, midnight - 1, { isLcaMember: false }).amount).toBe(40)
-    const late = priceEntry(open, t, midnight, { isLcaMember: false })
+    expect(priceEntry(open, t, midnight - 1).amount).toBe(40)
+    const late = priceEntry(open, t, midnight)
     expect(late.amount).toBe(50)
     expect(late.lines.map((l) => l.label)).toEqual(['Late entry fee'])
   })
 
-  it('takes the member discount only for members and uses the section fee, falling back to the event fee', () => {
+  it('uses the section fee, falling back to the event fee, and never reads the member discount left in the row', () => {
     const now = lcaTimeToMs('2026-10-20T12:00')
-    expect(priceEntry(open, t, now, { isLcaMember: true }).amount).toBe(37)
-    expect(priceEntry(reserve, t, now, { isLcaMember: true }).amount).toBe(27)
-    expect(priceEntry(reserve, t, now, { isLcaMember: false }).base).toBe(30)
+    expect(priceEntry(open, t, now).amount).toBe(40)
+    expect(priceEntry(reserve, t, now).amount).toBe(30)
+    expect(priceEntry(reserve, t, now).base).toBe(30)
   })
 
   it('never goes below zero and charges nothing extra on a free section', () => {
-    expect(priceEntry({ feeRegular: 0 }, t, lcaTimeToMs('2026-10-25T12:00'), { isLcaMember: true })).toEqual({ amount: 0, base: 0, lines: [] })
-    const cheap = { ...t, entry_fee: 2, early_discount: 5, member_discount: 5 }
-    expect(priceEntry({}, cheap, lcaTimeToMs('2026-10-10T12:00'), { isLcaMember: true }).amount).toBe(0)
+    expect(priceEntry({ feeRegular: 0 }, t, lcaTimeToMs('2026-10-25T12:00'))).toEqual({ amount: 0, base: 0, lines: [] })
+    const cheap = { ...t, entry_fee: 2, early_discount: 5 }
+    expect(priceEntry({}, cheap, lcaTimeToMs('2026-10-10T12:00')).amount).toBe(0)
   })
 
   it('prices a section with no price of its own at the event fee', () => {
-    expect(priceEntry({}, t, 0, { isLcaMember: false }).base).toBe(30)
+    expect(priceEntry({}, t, 0).base).toBe(30)
   })
 })
 
