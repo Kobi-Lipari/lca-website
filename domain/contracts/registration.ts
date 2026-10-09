@@ -1,10 +1,12 @@
 // domain/contracts/registration.ts
 // Contracts for a player's own entries: entering one player, entering a
-// family in one checkout, and changing an entry afterwards.
+// family in one checkout, and changing an entry afterwards; and for the
+// entries a director makes from the manage page: a walk-in at the door and
+// a spot offered to a player on the waitlist.
 //
 // Request schemas are loose (unknown keys pass through) and name the bodies
-// createRegistration, createBatchRegistration and updateRegistration in
-// src/lib/api.ts send. Response schemas are strict: when a migration adds a
+// createRegistration, createBatchRegistration, updateRegistration,
+// adminAddWalkIn and offerWaitlistSpot in src/lib/api.ts send. Response schemas are strict: when a migration adds a
 // column to registrations (the single entry and the edit answer with every
 // column), add it here in the same change.
 import { z } from 'zod'
@@ -140,6 +142,37 @@ export const updateRegistrationResponseSchema = z.strictObject({
   feeNote: z.string().nullable(),
 })
 
+/**
+ * POST /api/admin/tournaments/[id]/walk-ins (adminAddWalkIn). The section
+ * is a live section's name, matched exactly as typed. A rated event also
+ * needs uscfId; the handler says so in its own words.
+ */
+export const walkInRequestSchema = z.looseObject({
+  fullName: z.string({ error: "Enter the player's name." }).trim().min(1, "Enter the player's name."),
+  uscfId: z.string({ error: 'Enter a US Chess ID, or leave it blank.' }).nullable().optional(),
+  uscfRating: z.number({ error: 'Enter the rating as a number, or leave it blank.' }).nullable().optional(),
+  section: z.string({ error: 'Choose a section.' }).min(1, 'Choose a section.'),
+  /** Paid at the door (the default) or still owed. */
+  markPaid: z.boolean({ error: 'Say whether the entry fee was paid.' }).optional(),
+})
+
+/** The walk-in's entry, every column, and the guest record made for the player. */
+export const walkInResponseSchema = z.strictObject({
+  registration: registrationRowSchema,
+  guestId: idSchema,
+})
+
+/** POST /api/admin/tournaments/[id]/waitlist (offerWaitlistSpot). */
+export const waitlistOfferRequestSchema = z.looseObject({
+  registrationId: z.string({ error: 'Choose a player on the waitlist.' }).min(1, 'Choose a player on the waitlist.'),
+})
+
+/** The spot is offered; amount is what the player owes, 0 when the entry is free and confirmed at once. */
+export const waitlistOfferResponseSchema = z.strictObject({
+  success: z.literal(true),
+  amount: dollarsSchema,
+})
+
 export type RegistrationRow = z.infer<typeof registrationRowSchema>
 export type CreateRegistrationRequest = z.infer<typeof createRegistrationRequestSchema>
 export type CreateRegistrationResponse = z.infer<typeof createRegistrationResponseSchema>
@@ -147,3 +180,7 @@ export type BatchRegistrationRequest = z.infer<typeof batchRegistrationRequestSc
 export type BatchRegistrationResponse = z.infer<typeof batchRegistrationResponseSchema>
 export type UpdateRegistrationRequest = z.infer<typeof updateRegistrationRequestSchema>
 export type UpdateRegistrationResponse = z.infer<typeof updateRegistrationResponseSchema>
+export type WalkInRequest = z.infer<typeof walkInRequestSchema>
+export type WalkInResponse = z.infer<typeof walkInResponseSchema>
+export type WaitlistOfferRequest = z.infer<typeof waitlistOfferRequestSchema>
+export type WaitlistOfferResponse = z.infer<typeof waitlistOfferResponseSchema>

@@ -25,6 +25,10 @@ import {
   createRegistrationResponseSchema,
   updateRegistrationRequestSchema,
   updateRegistrationResponseSchema,
+  waitlistOfferRequestSchema,
+  waitlistOfferResponseSchema,
+  walkInRequestSchema,
+  walkInResponseSchema,
 } from './registration'
 
 export const CONTRACT_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const
@@ -50,6 +54,12 @@ export const contracts = {
   },
   'admin/tournaments/[id]': {
     PATCH: { request: updateTournamentRequestSchema, response: adminTournamentResponseSchema },
+  },
+  'admin/tournaments/[id]/waitlist': {
+    POST: { request: waitlistOfferRequestSchema, response: waitlistOfferResponseSchema },
+  },
+  'admin/tournaments/[id]/walk-ins': {
+    POST: { request: walkInRequestSchema, response: walkInResponseSchema },
   },
   registrations: {
     POST: { request: createRegistrationRequestSchema, response: createRegistrationResponseSchema },

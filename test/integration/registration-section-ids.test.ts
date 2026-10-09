@@ -1,6 +1,6 @@
 // test/integration/registration-section-ids.test.ts
-// Every entry the player endpoints write or move carries the id of its
-// section row, set by the handler itself. The two 0053 triggers that fill
+// Every entry the player endpoints and the director's walk-ins write or
+// move carries the id of its section row, set by the handler itself. The two 0053 triggers that fill
 // registrations.section_id from the name are dropped for this file only
 // (each test file has its own database), so a section_id seen here can only
 // have come from the handler; the triggers stay installed everywhere else.
@@ -9,6 +9,8 @@ import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { onRequestPost as registerPost } from '../../functions/api/registrations'
 import { onRequestPost as batchPost } from '../../functions/api/registrations/batch'
 import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
+import { onRequestPost as walkInPost } from '../../functions/api/admin/tournaments/[id]/walk-ins'
+import { onRequestPost as waitlistPost } from '../../functions/api/admin/tournaments/[id]/waitlist'
 import { seedAdmin, seedMember, seedRegistration, seedTournament } from './factories'
 import { invoke, resetHarness, stripeSessions } from './harness'
 
@@ -141,5 +143,42 @@ describe('with the entry triggers removed', () => {
     expect(move.status).toBe(400)
     expect(await move.json()).toEqual({ error: 'Invalid section' })
     expect((await entryOf(tournamentId, player))?.section).toBe('Open')
+  })
+})
+
+describe('the director\'s entries, with the entry triggers removed', () => {
+  it('a walk-in sets section_id itself, on the live row when an archived row has the same name', async () => {
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 20 }, { name: 'Reserve', entryFee: 15 }] })
+    const ids = await liveIds(tournamentId)
+    await env.DB.prepare(`INSERT INTO tournament_sections (id, tournament_id, position, name, archived_at)
+      VALUES ('old-reserve-row', ?, 9, 'Reserve', datetime('now'))`).bind(tournamentId).run()
+    const res = await invoke(walkInPost, {
+      method: 'POST', as: await seedAdmin(), params: { id: tournamentId }, body: { fullName: 'Door Player', section: 'Reserve' },
+    })
+    expect(res.status).toBe(201)
+    const { guestId } = await res.json<{ guestId: string }>()
+    expect(await entryOf(tournamentId, guestId)).toMatchObject({ section: 'Reserve', section_id: ids.Reserve, payment_status: 'paid' })
+  })
+
+  it('the waitlist prices from the row the entry points at, else the row of its name', async () => {
+    const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 25 }, { name: 'Reserve', entryFee: 15 }] })
+    const admin = await seedAdmin()
+    const offer = async (section: string, link: boolean) => {
+      const player = await seedMember({ membershipStatus: 'pending' })
+      const reg = link ? await linkedEntry(tournamentId, player, section, 'pending') : await seedRegistration({ tournamentId, memberId: player, section, paymentStatus: 'pending' })
+      await env.DB.prepare(`UPDATE registrations SET waitlisted_at = datetime('now') WHERE id = ?`).bind(reg).run()
+      const res = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg } })
+      expect(res.status).toBe(200)
+      return (await res.json<{ amount: number }>()).amount
+    }
+    expect(await offer('Open', true)).toBe(25)
+    // No section_id (the trigger that would fill it is gone): found by name.
+    expect(await offer('Reserve', false)).toBe(15)
+    // The row's own fee is what counts, not the legacy JSON's.
+    await env.DB.prepare(`UPDATE tournament_sections SET fee_regular = 18 WHERE tournament_id = ? AND name = 'Reserve'`).bind(tournamentId).run()
+    expect(await offer('Reserve', true)).toBe(18)
+    // A section archived since the player joined the waitlist keeps its own fee.
+    await env.DB.prepare(`UPDATE tournament_sections SET archived_at = datetime('now') WHERE tournament_id = ? AND name = 'Reserve'`).bind(tournamentId).run()
+    expect(await offer('Reserve', false)).toBe(18)
   })
 })

@@ -1,11 +1,12 @@
-// The player registration readers and writers (slice 10): the contracts see
-// the bodies src/lib/api.ts really sends, the three routes have left the
-// pending list, and the three handlers no longer read tournaments.sections.
+// The player registration readers and writers (slice 10) and the director's
+// walk-ins and waitlist offers (slice 11): the contracts see the bodies
+// src/lib/api.ts really sends, the routes have left the pending list, and the
+// handlers no longer read tournaments.sections.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contracts } from '../../domain/contracts'
-import { createBatchRegistration, createRegistration, updateRegistration } from '../../src/lib/api'
+import { adminAddWalkIn, createBatchRegistration, createRegistration, offerWaitlistSpot, updateRegistration } from '../../src/lib/api'
 import { PENDING_CONTRACTS } from './contracts-pending'
 
 const ROOT = join(__dirname, '../..')
@@ -63,6 +64,26 @@ describe('request contracts take the bodies api.ts sends', () => {
     }
   })
 
+  it('adminAddWalkIn and offerWaitlistSpot, as the manage page calls them', async () => {
+    const walkIn = contracts['admin/tournaments/[id]/walk-ins'].POST.request
+    const offer = contracts['admin/tournaments/[id]/waitlist'].POST.request
+    for (const body of [
+      { fullName: 'Door Player', uscfId: null, uscfRating: null, section: 'Open', markPaid: true },
+      { fullName: 'Door Player', uscfId: '12345678', uscfRating: 1500, section: 'U1200', markPaid: false },
+      { fullName: 'Door Player', section: 'Open' },
+    ]) {
+      const sent = await sentBy(() => adminAddWalkIn('t-1', body))
+      expect(sent).toMatchObject({ url: '/api/admin/tournaments/t-1/walk-ins', method: 'POST' })
+      expect(walkIn.safeParse(sent.body).success, JSON.stringify(body)).toBe(true)
+    }
+    const sent = await sentBy(() => offerWaitlistSpot('t-1', 'reg-1'))
+    expect(sent).toMatchObject({ url: '/api/admin/tournaments/t-1/waitlist', method: 'POST', body: { registrationId: 'reg-1' } })
+    expect(offer.safeParse(sent.body).success).toBe(true)
+    expect(walkIn.safeParse({ fullName: ' ', section: 'Open' }).success).toBe(false)
+    expect(walkIn.safeParse({ fullName: 'Door Player', section: 'Open', uscfRating: '1500' }).success).toBe(false)
+    expect(offer.safeParse({}).success).toBe(false)
+  })
+
   it('refuse a body of the wrong shape, with a plain message', () => {
     const noSection = single.safeParse({ tournamentId: 't-1' })
     expect(noSection.success).toBe(false)
@@ -87,6 +108,14 @@ describe('the contracts ratchet', () => {
     }
   })
 
+  it('has the walk-in and waitlist routes in the registry and out of the pending list', () => {
+    expect(Object.keys(contracts['admin/tournaments/[id]/walk-ins'])).toEqual(['POST'])
+    expect(Object.keys(contracts['admin/tournaments/[id]/waitlist'])).toEqual(['POST'])
+    for (const line of ['POST admin/tournaments/[id]/walk-ins', 'POST admin/tournaments/[id]/waitlist']) {
+      expect(PENDING_CONTRACTS, line).not.toContain(line)
+    }
+  })
+
   it('leaves the registration routes this slice did not touch on the pending list', () => {
     // pay.ts reads the amount from the payment row and is not part of this change.
     expect(PENDING_CONTRACTS.filter((l) => l.includes('registrations'))).toEqual(
@@ -100,6 +129,8 @@ describe('the registration handlers read sections from the table', () => {
     'functions/api/registrations.ts',
     'functions/api/registrations/batch.ts',
     'functions/api/registrations/[id].ts',
+    'functions/api/admin/tournaments/[id]/walk-ins.ts',
+    'functions/api/admin/tournaments/[id]/waitlist.ts',
   ]
 
   for (const file of files) {
@@ -115,6 +146,15 @@ describe('the registration handlers read sections from the table', () => {
       expect(code).toMatch(/loadSections/)
     })
   }
+
+  it('walk-ins set section_id on the entry, and the waitlist prices with priceEntry, not entryPrice', () => {
+    const walkIns = readFileSync(join(ROOT, 'functions/api/admin/tournaments/[id]/walk-ins.ts'), 'utf8')
+    expect(walkIns).toMatch(/sectionId:\s*section\.id/)
+    expect(walkIns).not.toMatch(/INSERT INTO registrations/)
+    const waitlist = readFileSync(join(ROOT, 'functions/api/admin/tournaments/[id]/waitlist.ts'), 'utf8')
+    expect(waitlist).toMatch(/\bpriceEntry\(/)
+    expect(waitlist).not.toMatch(/\bentryPrice\b/)
+  })
 
   it('the pay handler still takes its amount from the payment row, not from sections', () => {
     const code = readFileSync(join(ROOT, 'functions/api/registrations/[id]/pay.ts'), 'utf8')
