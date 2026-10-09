@@ -28,10 +28,10 @@ const EARLIER = ['clubTournaments', 'tournamentQuickFilters', 'externalTags']
 
 describe('switch list matches the brief', () => {
   const spec = read('docs/redesign/REDESIGN_SPEC.md')
-  const specKeys = [...spec.matchAll(/^\| `([a-zA-Z]+)` \| .* \| (?:Phase 0[^|]*|WS\d+) \|$/gm)].map((m) => m[1])
+  const specKeys = [...spec.matchAll(/^\| `([a-zA-Z]+)` \| .* \| (?:Phase 0[^|]*|WS\d+[^|]*) \|$/gm)].map((m) => m[1])
 
-  it('finds the 15 switches in the brief', () => {
-    expect(specKeys).toHaveLength(15)
+  it('finds the 20 switches in the brief (15 from version 1.2, 5 more from 1.3)', () => {
+    expect(specKeys).toHaveLength(20)
   })
 
   // A subset check, not an exact one: later work adds its own switches. The
@@ -189,9 +189,9 @@ describe('REDESIGN_STATUS.md, step 2', () => {
     .map((l) => l.split('|').map((c) => c.trim()))
   const row = (id: string) => rows.find((r) => r[1] === id) as string[]
 
-  it('names all 15 new switches and the earlier three in the step 2 record', () => {
+  it('names all 20 switches from the brief and the earlier three in the step 2 record', () => {
     const spec = read('docs/redesign/REDESIGN_SPEC.md')
-    const specKeys = [...spec.matchAll(/^\| `([a-zA-Z]+)` \| .* \| (?:Phase 0[^|]*|WS\d+) \|$/gm)].map((m) => m[1])
+    const specKeys = [...spec.matchAll(/^\| `([a-zA-Z]+)` \| .* \| (?:Phase 0[^|]*|WS\d+[^|]*) \|$/gm)].map((m) => m[1])
     for (const k of [...specKeys, ...EARLIER]) expect(step2, k).toContain(k)
   })
 

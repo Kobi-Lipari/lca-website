@@ -108,4 +108,34 @@ export const FEATURES = {
 
   /** The recap card on the homepage for the latest event. */
   homeRecap: false,
+
+  // Redesign, Phase 1 (brief 1.3). Off until each part is checked on a preview.
+
+  /**
+   * The Featured rung in the homepage hero: a festival an admin has pinned.
+   */
+  homeFeatured: false,
+
+  /**
+   * The new Tournaments page: the List, Calendar, Map and Table views, the
+   * filter-and-sort line, the preview pane, the bell reminders and the
+   * partner pages.
+   */
+  newTournaments: false,
+
+  /**
+   * The new event page: the sub-navigation, the registration card with the
+   * membership line, entry limits by section, schedules, side events and
+   * the Venue & travel block.
+   */
+  newEventPage: false,
+
+  /** The public festival page and the festivals admin. */
+  festivals: false,
+
+  /**
+   * The household checkout: the "Who's playing?" picker, Register my family
+   * and the family pages in My LCA.
+   */
+  householdCheckout: false,
 } as const
