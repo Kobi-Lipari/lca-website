@@ -117,7 +117,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
   const color = t.club_color || LCA_GOLD
   const regOpen = t.registration_status === 'open'
   const isPast = t.status === 'completed'
-  const sections = (t.sections ?? []) as Array<string | { name: string }>
+  const sections = t.sections ?? []
 
   return (
     <div className="p-4">
@@ -154,7 +154,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
       {sections.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {sections.map(s => {
-            const name = typeof s === 'string' ? s : s.name
+            const name = s.name
             return (
               <span key={name} className="rounded-full border border-lca-navy/20 bg-lca-navy/8 px-2 py-0.5 text-[11px] font-medium text-lca-navy">
                 {name}

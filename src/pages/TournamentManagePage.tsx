@@ -32,10 +32,10 @@ import {
   type ApiPrizeAward,
   type ApiRatingReport,
   type ApiRoundScheduleItem,
+  type ApiSectionDraft,
   type ApiStanding,
   type ApiTournamentDetail,
   type ApiTournamentGame,
-  type ApiTournamentSection,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/contexts/auth-context'
@@ -199,7 +199,9 @@ export function TournamentManagePage() {
   const [keepApart, setKeepApart] = useState<'family' | 'family_club' | 'none'>('family')
   const [timeControl, setTimeControl] = useState('')
   const [customTimeControl, setCustomTimeControl] = useState('')
-  const [sections, setSections] = useState<ApiTournamentSection[]>([])
+  // Each loaded section keeps its id while it is edited and goes back with
+  // it on save, so the server matches it by id rather than by name.
+  const [sections, setSections] = useState<ApiSectionDraft[]>([])
   const [customPreset, setCustomPreset] = useState('')
   const [customDetails, setCustomDetails] = useState<ApiCustomDetail[]>([])
 
@@ -543,7 +545,7 @@ export function TournamentManagePage() {
     setCustomTimeControl(
       s.timeControl && !TIME_CONTROL_PRESETS.includes(s.timeControl) ? s.timeControl : '',
     )
-    setSections(JSON.parse(s.sections) as ApiTournamentSection[])
+    setSections(JSON.parse(s.sections) as ApiSectionDraft[])
     setCustomDetails(JSON.parse(s.customDetails) as ApiCustomDetail[])
     setIsVisible(s.isVisible)
     setRegistrationStatus(s.registrationStatus)

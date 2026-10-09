@@ -5,7 +5,7 @@
 // platform's, and through the old server paths the callers still use.
 import { describe, expect, it } from 'vitest'
 import { hasPassed, lcaTimeToMs } from '../../functions/utils/time'
-import { entryPrice } from '../../functions/utils/pricing'
+import { priceEntry } from '../../functions/utils/pricing'
 import { eligibilityProblem, rulesFromName } from '../../functions/utils/sectionRules'
 import { isRegion, REGIONS } from '../../functions/utils/regions'
 import { FAMILY_MEMBERSHIP_CHILDREN } from '../../functions/utils/family'
@@ -62,42 +62,44 @@ describe('Central wall-clock times in workerd', () => {
 
 describe('entry pricing through the server path', () => {
   const t = {
-    entry_fee: 30, sections: '[{"name":"Open","entryFee":40},{"name":"Reserve"}]',
+    entry_fee: 30,
     early_deadline: '2026-10-16', early_discount: 5,
     late_after: '2026-10-23T00:00', late_fee: 10, member_discount: 3,
   }
+  // Open has its own fee; Reserve has none, so it takes the event fee.
+  const open = { feeRegular: 40 }
+  const reserve = { feeRegular: null }
 
   it('keeps the early discount until the end of its date in Central time, then drops it', () => {
     // A bare date closes at 11:59:59 PM Central, and the close instant itself counts as passed.
     const close = lcaTimeToMs('2026-10-16')
-    expect(entryPrice(t, 'Open', { isLcaMember: false, nowMs: close - 1000 }).amount).toBe(35)
-    expect(entryPrice(t, 'Open', { isLcaMember: false, nowMs: close }).amount).toBe(40)
+    expect(priceEntry(open, t, close - 1000, { isLcaMember: false }).amount).toBe(35)
+    expect(priceEntry(open, t, close, { isLcaMember: false }).amount).toBe(40)
   })
 
   it('adds the late fee from Central midnight, not UTC midnight', () => {
     const midnight = lcaTimeToMs('2026-10-23T00:00')
-    expect(entryPrice(t, 'Open', { isLcaMember: false, nowMs: midnight - 1 }).amount).toBe(40)
-    const late = entryPrice(t, 'Open', { isLcaMember: false, nowMs: midnight })
+    expect(priceEntry(open, t, midnight - 1, { isLcaMember: false }).amount).toBe(40)
+    const late = priceEntry(open, t, midnight, { isLcaMember: false })
     expect(late.amount).toBe(50)
     expect(late.lines.map((l) => l.label)).toEqual(['Late entry fee'])
   })
 
   it('takes the member discount only for members and uses the section fee, falling back to the event fee', () => {
     const now = lcaTimeToMs('2026-10-20T12:00')
-    expect(entryPrice(t, 'Open', { isLcaMember: true, nowMs: now }).amount).toBe(37)
-    expect(entryPrice(t, 'Reserve', { isLcaMember: true, nowMs: now }).amount).toBe(27)
-    expect(entryPrice(t, 'Reserve', { isLcaMember: false, nowMs: now }).base).toBe(30)
+    expect(priceEntry(open, t, now, { isLcaMember: true }).amount).toBe(37)
+    expect(priceEntry(reserve, t, now, { isLcaMember: true }).amount).toBe(27)
+    expect(priceEntry(reserve, t, now, { isLcaMember: false }).base).toBe(30)
   })
 
   it('never goes below zero and charges nothing extra on a free section', () => {
-    const free = { ...t, sections: '[{"name":"Open","entryFee":0}]' }
-    expect(entryPrice(free, 'Open', { isLcaMember: true, nowMs: lcaTimeToMs('2026-10-25T12:00') })).toEqual({ amount: 0, base: 0, lines: [] })
-    const cheap = { ...t, entry_fee: 2, sections: '[]', early_discount: 5, member_discount: 5 }
-    expect(entryPrice(cheap, 'Open', { isLcaMember: true, nowMs: lcaTimeToMs('2026-10-10T12:00') }).amount).toBe(0)
+    expect(priceEntry({ feeRegular: 0 }, t, lcaTimeToMs('2026-10-25T12:00'), { isLcaMember: true })).toEqual({ amount: 0, base: 0, lines: [] })
+    const cheap = { ...t, entry_fee: 2, early_discount: 5, member_discount: 5 }
+    expect(priceEntry({}, cheap, lcaTimeToMs('2026-10-10T12:00'), { isLcaMember: true }).amount).toBe(0)
   })
 
-  it('reads damaged section data as the event fee', () => {
-    expect(entryPrice({ ...t, sections: 'oops' }, 'Open', { isLcaMember: false, nowMs: 0 }).base).toBe(30)
+  it('prices a section with no price of its own at the event fee', () => {
+    expect(priceEntry({}, t, 0, { isLcaMember: false }).base).toBe(30)
   })
 })
 

@@ -11,11 +11,13 @@
 // live section only, matched by exact name, and carries its section_id; a
 // spot offered from the waitlist is priced from the section row and the
 // tournament's live pricing columns, the same amount the old reader of the
-// sections JSON gave (entryPrice is that reader, kept as the pages' adapter).
+// sections JSON gave (oldReaderPrice below is that reader, as the pages'
+// adapter priced it before it was removed).
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { contracts, errorBodySchema, fieldErrorBodySchema } from '../../../domain/contracts'
-import { entryPrice, type PricedTournament } from '../../../domain/registration/pricing'
+import { priceEntry, type Price, type PriceTournament } from '../../../domain/registration/pricing'
+import { normalizeLegacySections } from '../../../domain/events/sections'
 import { onRequestPost as walkInPost } from '../../../functions/api/admin/tournaments/[id]/walk-ins'
 import { onRequestPost as waitlistPost } from '../../../functions/api/admin/tournaments/[id]/waitlist'
 import { seedAdmin, seedClub, seedDirector, seedMember, seedRegistration, seedTournament, seedTournamentDirector } from '../factories'
@@ -25,6 +27,16 @@ beforeEach(resetHarness)
 
 const walkIn = contracts['admin/tournaments/[id]/walk-ins'].POST
 const offer = contracts['admin/tournaments/[id]/waitlist'].POST
+
+/**
+ * The price the old reader of the sections JSON gave: the section's entryFee
+ * when it is a number, else the event fee, priced through priceEntry.
+ */
+function oldReaderPrice(t: PriceTournament & { sections: string }, sectionName: string, isLcaMember: boolean): Price {
+  const match = normalizeLegacySections(t.sections).find((s) => s.name === sectionName)
+  const feeRegular = typeof match?.entryFee === 'number' ? match.entryFee : t.entry_fee
+  return priceEntry({ feeRegular }, t, Date.now(), { isLcaMember })
+}
 
 /** What fetch sends: JSON.stringify drops undefined keys. */
 const sent = <T>(body: T): T => JSON.parse(JSON.stringify(body)) as T
@@ -246,10 +258,10 @@ describe('POST /api/admin/tournaments/[id]/waitlist contract', () => {
           .bind(tournamentId).run()
         const sets = Object.keys(columns).map((k) => `${k} = ?`).join(', ')
         if (sets) await env.DB.prepare(`UPDATE tournaments SET ${sets} WHERE id = ?`).bind(...Object.values(columns), tournamentId).run()
-        const t = await env.DB.prepare('SELECT * FROM tournaments WHERE id = ?').bind(tournamentId).first<PricedTournament>()
+        const t = await env.DB.prepare('SELECT * FROM tournaments WHERE id = ?').bind(tournamentId).first<PriceTournament & { sections: string }>()
         for (const section of ['Open', 'Reserve', 'Side']) {
           const { memberId, reg } = await waitlisted(tournamentId, section, { membershipStatus })
-          const expected = entryPrice(t!, section, { isLcaMember: membershipStatus === 'active' }).amount
+          const expected = oldReaderPrice(t!, section, membershipStatus === 'active').amount
           const res = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg } })
           const label = `${JSON.stringify(columns)} ${membershipStatus} ${section}`
           expect(res.status, label).toBe(200)

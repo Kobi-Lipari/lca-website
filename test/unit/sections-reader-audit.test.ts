@@ -18,8 +18,8 @@
 //   round_schedule JSON text to the client.
 //
 // Only functions/utils/events/sectionsRepo.ts may do the first two; domain/
-// is not scanned (normalizeLegacySections lives there, for the site's own
-// readers until step 13).
+// is not scanned (normalizeLegacySections lives there; since step 13 only
+// the test factories and the tests call it).
 //
 // Like the writer audit, it is a guard on the source text, not a proof: it
 // follows a row through plain assignments in the same file, not through

@@ -27,7 +27,7 @@ import {
 import { cn } from '@/lib/utils'
 import { describeRules, effectiveRules, eligibilityProblem, gradeRangeText, needsGrade, parseGradeRange } from '@/lib/sectionRules'
 import { asksGrade, confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
-import { entryPrice, type Price } from '@/lib/pricing'
+import { priceShownSection, type Price } from '@/lib/pricing'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { FamilyRegistrationPanel } from '@/components/family/FamilyRegistrationPanel'
 import { PreviewBanner } from '@/components/tournaments/PreviewBanner'
@@ -256,6 +256,9 @@ export function TournamentDetailPage() {
   const [confirmation, setConfirmation] = useState<{
     message: string; paymentUrl: string | null; section: string
   } | null>(null)
+  // The time the price box is shown for, read once when the page opens
+  // (checkout prices the entry again on the server).
+  const [nowMs] = useState(() => Date.now())
 
   const [reminderOptedIn, setReminderOptedIn] = useState(false)
   const [togglingReminder, setTogglingReminder] = useState(false)
@@ -439,11 +442,11 @@ export function TournamentDetailPage() {
   const activeRoster = roster.filter((p) => !p.withdrawn_at)
   const isFull = !!tournament.max_players && activeRoster.length >= tournament.max_players
   const isLcaMember = authMember?.membership_status === 'active'
-  const priceFor = (sectionName: string) => entryPrice(
-    { ...tournament, sections: JSON.stringify(tournament.sections) },
-    sectionName,
-    { isLcaMember },
-  )
+  // Priced as checkout prices it: the section's own prices where it has
+  // them, else the tournament's early, member and late lines. A name with no
+  // section (none chosen yet) is priced at the event fee.
+  const priceFor = (sectionName: string) =>
+    priceShownSection(tournament.sections.find((s) => s.name === sectionName), tournament, nowMs, { isLcaMember })
   const chosenSection = tournament.sections.find((s) => s.name === selectedSection)
   const chosenRules = chosenSection ? effectiveRules(chosenSection) : {}
   const chosenPrice = priceFor(selectedSection)

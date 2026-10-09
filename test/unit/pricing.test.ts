@@ -1,34 +1,113 @@
 import { describe, expect, it } from 'vitest'
-import { entryPrice, priceEntry, type Price, type PricedTournament } from '../../functions/utils/pricing'
+import { priceEntry, priceShownSection, type Price, type PriceTournament } from '../../functions/utils/pricing'
 import { hasPassed, lcaTimeToMs } from '../../domain/format/centralTime'
+import { normalizeLegacySections, tierFees, type TierFees, type TierSection } from '../../domain/events/sections'
+
+/** A section as a tournament answer carries it, cut down to what pricing reads. */
+interface AnsweredSection { name: string; fees: TierFees }
+
+/**
+ * How the tournament page and the family entry panel price a section by its
+ * name: priceShownSection with the section from the answer. A name with no
+ * section takes the event fee.
+ */
+function pagePrice(sections: AnsweredSection[], tour: PriceTournament, name: string, opts: { isLcaMember: boolean; nowMs: number }): Price {
+  return priceShownSection(sections.find((s) => s.name === name), tour, opts.nowMs, { isLcaMember: opts.isLcaMember })
+}
 
 const t = {
   entry_fee: 0,
-  sections: JSON.stringify([{ name: 'Open', entryFee: 50 }, { name: 'Free', entryFee: 0 }]),
   early_deadline: '2026-10-10T23:59',
   early_discount: 10,
   late_after: '2026-10-16T12:00',
   late_fee: 15,
   member_discount: 5,
 }
+const sections: AnsweredSection[] = [{ name: 'Open', fees: tierFees({ feeRegular: 50 }, t) }, { name: 'Free', fees: tierFees({ feeRegular: 0 }, t) }]
 const at = (iso: string) => Date.parse(iso)
 
-describe('entry price', () => {
+describe('entry price on the tournament page', () => {
   it('applies the early discount and member discount before the early deadline', () => {
-    const p = entryPrice(t, 'Open', { isLcaMember: true, nowMs: at('2026-10-01T12:00:00Z') })
+    const p = pagePrice(sections, t, 'Open', { isLcaMember: true, nowMs: at('2026-10-01T12:00:00Z') })
     expect(p.amount).toBe(35)
     expect(p.lines.map((l) => l.label)).toEqual(['Early entry discount', 'LCA member discount'])
   })
 
   it('charges the base fee in between and the late fee after the late date (Central time)', () => {
-    expect(entryPrice(t, 'Open', { isLcaMember: false, nowMs: at('2026-10-12T12:00:00Z') }).amount).toBe(50)
+    expect(pagePrice(sections, t, 'Open', { isLcaMember: false, nowMs: at('2026-10-12T12:00:00Z') }).amount).toBe(50)
     // 11:30 AM Central on the 16th is before the noon late date.
-    expect(entryPrice(t, 'Open', { isLcaMember: false, nowMs: at('2026-10-16T16:30:00Z') }).amount).toBe(50)
-    expect(entryPrice(t, 'Open', { isLcaMember: false, nowMs: at('2026-10-16T18:00:00Z') }).amount).toBe(65)
+    expect(pagePrice(sections, t, 'Open', { isLcaMember: false, nowMs: at('2026-10-16T16:30:00Z') }).amount).toBe(50)
+    expect(pagePrice(sections, t, 'Open', { isLcaMember: false, nowMs: at('2026-10-16T18:00:00Z') }).amount).toBe(65)
   })
 
   it('keeps free sections free', () => {
-    expect(entryPrice(t, 'Free', { isLcaMember: true, nowMs: at('2026-10-01T12:00:00Z') }).amount).toBe(0)
+    expect(pagePrice(sections, t, 'Free', { isLcaMember: true, nowMs: at('2026-10-01T12:00:00Z') }).amount).toBe(0)
+  })
+})
+
+describe('priceShownSection prices the answered section as checkout prices the stored row', () => {
+  // Checkout prices the tournament_sections row (priceEntry with its own
+  // fee_regular, fee_early and fee_late); the page has only the answer, whose
+  // fees mix the section's own prices with worked-out ones (tierFees).
+  const tours: PriceTournament[] = [
+    t,
+    { ...t, entry_fee: 40 },
+    // Early and late windows overlap, and the discount is larger than the fee.
+    { entry_fee: 25, early_deadline: '2026-10-20T23:59', early_discount: 30, late_after: '2026-10-05T12:00', late_fee: 10, member_discount: 0 },
+    { entry_fee: 30, early_deadline: null, early_discount: 0, late_after: null, late_fee: 0, member_discount: 5 },
+  ]
+  const rows: TierSection[] = [
+    {},
+    { feeRegular: 50 },
+    { feeRegular: 50, feeEarly: 22 },
+    { feeRegular: 50, feeLate: 70 },
+    { feeEarly: 0, feeLate: 12 },
+    { feeRegular: 25, feeEarly: 20, feeLate: 35 },
+    { feeRegular: 0, feeEarly: 5 },
+    { feeRegular: 19.99, feeEarly: 15.5 },
+  ]
+  /** A section's own early price equal to a worked-out one that was clamped at $0: the answer reads the same either way. */
+  const ownEarlyLooksWorkedOut = (row: TierSection, tour: PriceTournament) => {
+    const worked = tierFees({ feeRegular: row.feeRegular }, tour)
+    return row.feeEarly != null && row.feeEarly === worked.early && worked.regular - (tour.early_discount ?? 0) < 0
+  }
+  const moments = ['2026-10-01T12:00:00Z', '2026-10-12T12:00:00Z', '2026-10-17T12:00:00Z', '2026-10-25T12:00:00Z'].map(at)
+
+  it('gives the same amount and lines for every row, tournament, moment and membership', () => {
+    for (const tour of tours) {
+      for (const row of rows) {
+        const answered = { fees: tierFees(row, tour) }
+        if (ownEarlyLooksWorkedOut(row, tour)) continue
+        for (const nowMs of moments) {
+          for (const isLcaMember of [true, false]) {
+            const label = JSON.stringify({ tour, row, nowMs, isLcaMember })
+            expect(priceShownSection(answered, tour, nowMs, { isLcaMember }), label).toEqual(priceEntry(row, tour, nowMs, { isLcaMember }))
+          }
+        }
+      }
+    }
+  })
+
+  it('an own early price of $0 where the worked-out one is also $0 is read as worked out (the one case the answer cannot tell apart)', () => {
+    const tour = tours[2]
+    const row = { feeEarly: 0, feeLate: 12 }
+    expect(ownEarlyLooksWorkedOut(row, tour)).toBe(true)
+    const answered = { fees: tierFees(row, tour) }
+    const nowMs = at('2026-10-10T12:00:00Z')
+    // The amount still agrees here; only the size of the early line differs (the whole discount, not the whole fee).
+    expect(priceShownSection(answered, tour, nowMs, { isLcaMember: false }).amount).toBe(priceEntry(row, tour, nowMs, { isLcaMember: false }).amount)
+    expect(priceShownSection(answered, tour, nowMs, { isLcaMember: false }).lines[0]).toEqual({ label: 'Early entry discount', amount: -30 })
+  })
+
+  it('takes the whole early discount off before the late fee, as checkout does (25 - 30 + 10 = 5)', () => {
+    const tour = tours[2]
+    const answered = { fees: tierFees({}, tour) }
+    expect(answered.fees).toEqual({ regular: 25, early: 0, late: 35 })
+    expect(priceShownSection(answered, tour, at('2026-10-10T12:00:00Z'), { isLcaMember: false }).amount).toBe(5)
+  })
+
+  it('prices at the event fee when no section is chosen', () => {
+    expect(priceShownSection(undefined, { ...t, entry_fee: 40 }, at('2026-10-12T12:00:00Z'), { isLcaMember: false })).toEqual({ amount: 40, base: 40, lines: [] })
   })
 })
 
@@ -43,6 +122,9 @@ function baseBefore(sectionsJson: string, sectionName: string, defaultFee: numbe
     return defaultFee
   }
 }
+
+/** A tournament with the legacy sections JSON, as the pages held it before. */
+interface PricedTournament extends PriceTournament { sections: string }
 
 function priceBefore(tour: PricedTournament, sectionName: string, opts: { isLcaMember: boolean; nowMs: number }): Price {
   const base = baseBefore(tour.sections, sectionName, tour.entry_fee)
@@ -129,25 +211,32 @@ describe('priceEntry', () => {
     expect(priceEntry({ feeRegular: 40 }, odd, inOverlap, { isLcaMember: true })).toEqual({ amount: 40, base: 40, lines: [] })
   })
 
-  it('prices every case exactly as checkout did before, through entryPrice', () => {
-    const sections = JSON.stringify([
+  it('prices every case exactly as checkout did before, from the sections an answer carries', () => {
+    const sectionsJson = JSON.stringify([
       { name: 'Open', entryFee: 40 }, { name: 'Reserve' }, 'Bare', { name: 'Free', entryFee: 0 }, { name: 'Odd', entryFee: 19.99 },
     ])
     const tournaments: PricedTournament[] = [
-      { ...overlap, sections },
-      { ...overlap, sections, early_deadline: null, late_after: null },
-      { ...overlap, sections, early_discount: 45, member_discount: 10 },
-      { ...overlap, sections, early_discount: 0.1, late_fee: 0.2, member_discount: 0.05 },
+      { ...overlap, sections: sectionsJson },
+      { ...overlap, sections: sectionsJson, early_deadline: null, late_after: null },
+      { ...overlap, sections: sectionsJson, early_discount: 45, member_discount: 10 },
+      { ...overlap, sections: sectionsJson, early_discount: 0.1, late_fee: 0.2, member_discount: 0.05 },
       { entry_fee: 2, sections: '[]', early_deadline: '2026-10-20', early_discount: 5, member_discount: 5 },
       { ...overlap, sections: 'oops' },
     ]
+    // The rows the 0053 backfill makes from that JSON, priced as sectionResponse
+    // answers them: fee_regular is a numeric entryFee, else null (the event fee).
+    const answered = (tour: PricedTournament): AnsweredSection[] => normalizeLegacySections(tour.sections).map((s) => ({
+      name: s.name,
+      fees: tierFees({ feeRegular: typeof s.entryFee === 'number' ? s.entryFee : null }, tour),
+    }))
     const times = ['2026-10-01T12:00', '2026-10-10T00:00', '2026-10-15T12:00', '2026-10-20', '2026-10-21T00:00'].map((v) => lcaTimeToMs(v))
     let compared = 0
     for (const tour of tournaments) {
+      const list = answered(tour)
       for (const name of ['Open', 'Reserve', 'Bare', 'Free', 'Odd', 'Missing']) {
         for (const nowMs of [...times, times[3] - 1000]) {
           for (const isLcaMember of [true, false]) {
-            expect(entryPrice(tour, name, { isLcaMember, nowMs }), `${name} at ${nowMs}`).toEqual(priceBefore(tour, name, { isLcaMember, nowMs }))
+            expect(pagePrice(list, tour, name, { isLcaMember, nowMs }), `${name} at ${nowMs}`).toEqual(priceBefore(tour, name, { isLcaMember, nowMs }))
             compared++
           }
         }

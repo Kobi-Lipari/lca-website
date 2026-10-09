@@ -18,8 +18,8 @@ import {
   adminCreateTournament,
   type ApiClubListItem,
   type ApiCustomDetail,
+  type ApiSectionDraft,
   type ApiTournamentListItem,
-  type ApiTournamentSection,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
@@ -50,7 +50,7 @@ interface WizardState {
   isRated: boolean
   maxPlayers: string
   description: string
-  sections: ApiTournamentSection[]
+  sections: ApiSectionDraft[]
   registrationClosesAt: string
   /** Admin only; '' = no organizing club. Ignored server-side for club reps. */
   clubId: string
@@ -178,8 +178,13 @@ function StepTemplate({ w, set, tournaments, onNext }: {
     if (w.templateType === 'existing' && w.existingTournamentId) {
       const src = tournaments.find((t) => t.id === w.existingTournamentId)
       if (src) {
-        const sections = (src.sections as Array<string | { name: string; entryFee: number }>).map((s) =>
-          typeof s === 'string' ? { name: s, entryFee: 0 } : s)
+        // The copies are new sections of a new event, so they leave the
+        // source's section ids behind (the server ignores ids on create).
+        const sections = src.sections.map((s) => {
+          const copy: ApiSectionDraft = { ...s }
+          delete copy.id
+          return copy
+        })
         set({
           sections,
           rounds: src.rounds,

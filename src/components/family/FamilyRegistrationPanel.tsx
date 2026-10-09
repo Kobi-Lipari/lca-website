@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { effectiveRules, eligibilityProblem, needsGrade } from '@/lib/sectionRules'
 import { confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
-import { entryPrice } from '@/lib/pricing'
+import { priceShownSection } from '@/lib/pricing'
 
 interface Player {
   /** undefined = the signed-in member */
@@ -47,6 +47,9 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState<{ message: string; paymentUrl: string | null } | null>(null)
+  // The time the prices below are shown for, read once when the panel opens
+  // (checkout prices each entry again on the server).
+  const [nowMs] = useState(() => Date.now())
 
   useEffect(() => {
     let cancelled = false
@@ -76,11 +79,12 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
     setChoices((prev) => ({ ...prev, [keyOf(p)]: { ...choiceOf(p), ...patch } }))
 
   const picked = players.filter((p) => choiceOf(p).selected)
-  const priced = { ...tournament, sections: JSON.stringify(tournament.sections) }
-  const feeOf = (p: Player, section: string) => entryPrice(priced, section, { isLcaMember: p.isLcaMember }).amount
+  const sectionOf = (name: string) => tournament.sections.find((s) => s.name === name)
+  // Priced as the tournament page and checkout price one entry.
+  const feeOf = (p: Player, section: string) =>
+    priceShownSection(sectionOf(section), tournament, nowMs, { isLcaMember: p.isLcaMember }).amount
   const total = picked.reduce((sum, p) => sum + feeOf(p, choiceOf(p).section), 0)
   const missingUscf = tournament.is_rated !== 0 ? picked.filter((p) => !p.uscfId) : []
-  const sectionOf = (name: string) => tournament.sections.find((s) => s.name === name)
   /** Rating problems; the grade box is checked separately (it sits right there). */
   const problemOf = (p: Player) => {
     const s = sectionOf(choiceOf(p).section)
@@ -108,7 +112,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
         }),
       )
       if (result.paymentUrl) {
-        window.location.href = result.paymentUrl
+        window.location.assign(result.paymentUrl)
         return
       }
       setDone({ message: result.message, paymentUrl: null })

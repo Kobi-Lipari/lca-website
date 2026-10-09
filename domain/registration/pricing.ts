@@ -8,15 +8,15 @@
 // a late fee (after the late date). Never below zero. The same function
 // prices the entry at checkout and shows the price on the tournament page.
 //
-// priceEntry is the core: it takes a section row (tournament_sections, as
-// loadSections in functions/utils/events/sectionsRepo.ts reads it) and the
-// tournament's own pricing columns, read live, so changing those columns
-// changes the price at once. entryPrice is the older form the pages still
-// call with the legacy sections JSON; it finds the section there and hands
-// it to priceEntry.
+// priceEntry takes a section's own prices and the tournament's own pricing
+// columns, read live, so changing those columns changes the price at once.
+// The server passes a section row (tournament_sections, as loadSections in
+// functions/utils/events/sectionsRepo.ts reads it); the pages pass the
+// section from the answer they loaded to priceShownSection, which works out
+// which of its prices are the section's own.
 
 import { hasPassed } from '../format/centralTime'
-import { normalizeLegacySections, type TierSection } from '../events/sections'
+import { tierFees, type TierFees, type TierSection } from '../events/sections'
 
 /** The tournament columns an entry is priced from. */
 export interface PriceTournament {
@@ -26,11 +26,6 @@ export interface PriceTournament {
   late_after?: string | null
   late_fee?: number | null
   member_discount?: number | null
-}
-
-/** A tournament with its legacy sections JSON, as the pages hold it. */
-export interface PricedTournament extends PriceTournament {
-  sections: string
 }
 
 export interface PriceLine { label: string; amount: number }
@@ -79,25 +74,33 @@ export function priceEntry(
 }
 
 /**
- * A section's regular fee from the legacy sections JSON: its entryFee when
- * that is a number, else `defaultFee`. Text that is not a list of sections
- * gives `defaultFee`.
+ * What one entry into a section costs at `nowMs`, priced from the section as
+ * an endpoint answers it (its `fees`), so the page shows what checkout
+ * charges. `section` is undefined when no section is chosen yet, and the
+ * entry is then priced at the event fee.
+ *
+ * The answer's early and late prices are either the section's own or worked
+ * out from the tournament's columns, and the two price differently: an own
+ * price replaces the line's amount, a worked-out one keeps the tournament's
+ * discount or fee (and a worked-out early price is clamped at zero, which the
+ * discount line is not). So a tier price is passed on as the section's own
+ * only when it differs from the price the tournament alone would give.
+ * An own price equal to that one prices the same either way, except an own
+ * early price of $0 where the discount is larger than the fee: the answer
+ * cannot tell it from the worked-out $0, and it is read as worked out.
  */
-export function sectionBaseFee(sectionsJson: string, sectionName: string, defaultFee: number): number {
-  const match = normalizeLegacySections(sectionsJson).find((s) => s.name === sectionName)
-  return typeof match?.entryFee === 'number' ? match.entryFee : defaultFee
-}
-
-/**
- * The price of an entry for a tournament that carries the legacy sections
- * JSON (the tournament page and the family entry panel). Prices exactly as
- * priceEntry does; a section the JSON lacks is priced at the event fee.
- */
-export function entryPrice(
-  t: PricedTournament,
-  sectionName: string,
-  opts: { isLcaMember: boolean; nowMs?: number },
+export function priceShownSection(
+  section: { fees: TierFees } | undefined,
+  tournament: PriceTournament,
+  nowMs: number,
+  opts: { isLcaMember: boolean },
 ): Price {
-  const feeRegular = sectionBaseFee(t.sections, sectionName, t.entry_fee)
-  return priceEntry({ feeRegular }, t, opts.nowMs ?? Date.now(), { isLcaMember: opts.isLcaMember })
+  if (!section) return priceEntry({}, tournament, nowMs, opts)
+  const { regular, early, late } = section.fees
+  const worked = tierFees({ feeRegular: regular }, tournament)
+  return priceEntry({
+    feeRegular: regular,
+    feeEarly: early !== worked.early ? early : null,
+    feeLate: late !== worked.late ? late : null,
+  }, tournament, nowMs, opts)
 }
