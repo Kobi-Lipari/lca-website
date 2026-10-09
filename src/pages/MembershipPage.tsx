@@ -8,6 +8,8 @@ import { useAuth } from '@/contexts/auth-context'
 import { createMembershipCheckout } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { FAMILY_MEMBERSHIP_CHILDREN } from '@/lib/family'
+import { MEMBERSHIP_TIER_PRICES } from '@domain/membership/tiers'
 
 interface MembershipTier {
   id: string
@@ -28,7 +30,7 @@ const tiers: MembershipTier[] = [
   {
     id: 'adult',
     name: 'LCA Adult Membership',
-    price: 15,
+    price: MEMBERSHIP_TIER_PRICES.adult,
     period: 'per year',
     description: 'For players 18 and up.',
     highlighted: true,
@@ -36,21 +38,21 @@ const tiers: MembershipTier[] = [
   {
     id: 'scholastic',
     name: 'LCA Scholastic Membership',
-    price: 5,
+    price: MEMBERSHIP_TIER_PRICES.scholastic,
     period: 'per year',
     description: 'For K–12 students. Same benefits as adult membership at a reduced rate to support youth chess.',
   },
   {
     id: 'family',
     name: 'LCA Family Membership',
-    price: 25,
+    price: MEMBERSHIP_TIER_PRICES.family,
     period: 'per year',
-    description: 'Covers you and up to 3 children. Add your children on your profile and they are covered automatically.',
+    description: `Covers you and up to ${FAMILY_MEMBERSHIP_CHILDREN} children. Add your children on your profile and they are covered automatically.`,
   },
   {
     id: 'senior',
     name: 'LCA Senior Membership',
-    price: 10,
+    price: MEMBERSHIP_TIER_PRICES.senior,
     period: 'per year',
     description: 'For members 65 and up. Full membership benefits at a reduced rate.',
   },

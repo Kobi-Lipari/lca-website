@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1791492328993,
+      "tag": "0000_freezing_speed",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1791497250841,
+      "tag": "0001_sections_schedules",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791497263914,
+      "tag": "0002_sections_schedules_backfill",
+      "breakpoints": true
+    }
+  ]
+}

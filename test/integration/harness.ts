@@ -1,5 +1,6 @@
 // test/integration/harness.ts
 import { env } from 'cloudflare:test'
+import { prettifyError, type output, type ZodType } from 'zod'
 import type { Env } from '../../functions/types'
 
 // ── Assertion surfaces ───────────────────────────────────────────
@@ -465,6 +466,45 @@ export async function invoke(
     json: () => response.clone().json(),
     response,
   }
+}
+
+// ── Contracts ────────────────────────────────────────────────────
+
+/** Deep equality for JSON values; key order does not matter. */
+function sameJson(a: unknown, b: unknown): boolean {
+  if (a === b) return true
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false
+  if (Array.isArray(a) !== Array.isArray(b)) return false
+  const ka = Object.keys(a)
+  const kb = Object.keys(b)
+  if (ka.length !== kb.length) return false
+  return ka.every((k) => Object.hasOwn(b, k) && sameJson((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]))
+}
+
+/**
+ * Checks an endpoint's JSON answer against its contract (domain/contracts)
+ * and returns the parsed body, typed by the schema.
+ *
+ * Strict: a missing or mistyped field fails with zod's issues printed, and
+ * so does any field the schema does not name, even if the schema was written
+ * as a loose object (the parsed copy must equal what the endpoint sent).
+ */
+export async function expectContract<S extends ZodType>(
+  result: { status: number; json: <T>() => Promise<T> },
+  schema: S,
+): Promise<output<S>> {
+  const body = await result.json<unknown>()
+  const parsed = schema.safeParse(body)
+  if (!parsed.success) {
+    throw new Error(`Response (status ${result.status}) breaks its contract:\n${prettifyError(parsed.error)}`)
+  }
+  if (!sameJson(parsed.data, body)) {
+    throw new Error(
+      `Response (status ${result.status}) carries fields its contract does not name, or the schema changed a value:\n`
+      + `sent:   ${JSON.stringify(body)}\nparsed: ${JSON.stringify(parsed.data)}`,
+    )
+  }
+  return parsed.data
 }
 
 // ── Stripe webhook signing (REAL HMAC — exercises verifyStripeSignature) ──

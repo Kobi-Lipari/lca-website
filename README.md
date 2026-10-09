@@ -119,6 +119,53 @@ that key is valid for Workers but the Pages build pipeline rejects the file
 outright, failing the deploy with `unable to read the Wrangler configuration
 file`.
 
+### Safe previews
+
+Every branch pushed to GitHub gets a Cloudflare Pages preview. Previews have
+their own database, `lca-db-preview`, bound as `DB` under `[env.preview]` in
+`wrangler.toml`, so the same code runs against it and a preview can never
+write to production's `lca-db`. Pages does not carry `[vars]`, D1 or R2
+bindings over into an environment, so that block repeats every one of them;
+`test/unit/wrangler-config.test.ts` fails if they drift apart or if the
+preview ever points at production.
+
+```bash
+npm run db:migrate:preview          # apply pending migrations to lca-db-preview
+npm run db:migrate:status:preview   # show applied vs pending (preview)
+npm run db:seed:preview             # load sample data (not written yet; it refuses)
+```
+
+Each of these runs `scripts/db/preview-guard.ts` first. The guard reads
+`wrangler.toml` and stops the command, before wrangler is called, if the
+preview id is missing or a placeholder, if it is production's id, or if the
+command would act on `lca-db`.
+
+- **Migrate the preview before reviewing it.** K runs
+  `npm run db:migrate:preview` from the branch, with his own Cloudflare
+  credentials, before reviewing each checkpoint's preview, not after the
+  merge. Once a branch adds tables the code reads, a preview bound to an
+  unmigrated database shows errors. Merging to `main` applies migrations to
+  production only (`.github/workflows/migrate-db.yml`); nothing migrates the
+  preview database automatically. The first run on the new, empty database
+  applies every migration from `0001` on.
+- **Logins are shared.** Previews use the production Supabase project, so
+  signing in on a preview uses a real account.
+- **Secrets are separate.** Set preview secrets in the Pages dashboard under
+  the Preview environment: Stripe test keys, never the live ones. Leave the
+  Resend key off previews until test mail is wanted; without it every send
+  fails and is logged, and the page that triggered it carries on. Previews
+  existed before this setup and may already hold live keys, so before the
+  first push of a redesign branch K checks the Preview environment's secrets
+  and removes any live Stripe or Resend key.
+- **Club logos are shared.** Previews still use the production
+  `lca-club-logos` bucket, so a logo uploaded on a preview shows on the live
+  site.
+- One preview database serves every branch, so a migration applied from one
+  branch is there for all of them.
+- Development containers and automated checks never target the preview
+  database: tests use a local in-memory D1, and only K runs the preview
+  scripts.
+
 ### Testing
 
 ```bash

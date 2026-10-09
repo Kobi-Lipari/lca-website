@@ -2,8 +2,10 @@
 //
 // Family accounts. A child is a members row whose guardian_id is the parent's
 // id; the parent acts for the child (registers, pays, edits bye requests).
-/** How many children one family membership covers, besides the adult. */
-export const FAMILY_MEMBERSHIP_CHILDREN = 3
+// The family size rule itself lives in domain/households/family.ts.
+import { FAMILY_MEMBERSHIP_CHILDREN } from '../../domain/households/family'
+
+export { FAMILY_MEMBERSHIP_CHILDREN }
 
 export interface ChildRow {
   id: string

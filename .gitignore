@@ -36,3 +36,7 @@ backup-*.sql
 # Database dumps
 *-backup-*.sql
 lca-db-backup-*.sql
+
+# The SQLite file drizzle-kit introspects, rebuilt from migrations/ by
+# scripts/db/build-local-sqlite.ts.
+.drizzle/

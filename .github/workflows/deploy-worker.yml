@@ -2,9 +2,9 @@ name: Deploy scheduled-jobs worker
 
 # Deploys workers/daily-emails (reminder emails, the group-email sweep,
 # membership expiry, rating snapshots) whenever it or the shared code it
-# imports from functions/utils changes on main. Cloudflare Pages deploys the
-# site on its own, but this Worker is separate and used to need a manual
-# `wrangler deploy`, so its emails could fall behind the site's.
+# imports from functions/utils or domain changes on main. Cloudflare Pages
+# deploys the site on its own, but this Worker is separate and used to need a
+# manual `wrangler deploy`, so its emails could fall behind the site's.
 #
 # Uses the same CLOUDFLARE_API_TOKEN secret as the migration workflow. The
 # token needs "Workers Scripts: Edit" on the account; if this job fails with
@@ -17,6 +17,7 @@ on:
     paths:
       - 'workers/**'
       - 'functions/utils/**'
+      - 'domain/**'
   workflow_dispatch:
 
 concurrency:

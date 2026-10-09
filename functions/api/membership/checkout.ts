@@ -3,19 +3,13 @@ import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 import { createCheckoutSession } from '../../utils/stripe'
+import { MEMBERSHIP_TIER_PRICES, isMembershipTier, type MembershipTier } from '../../../domain/membership/tiers'
 
 interface CheckoutBody {
   tier?: string
 }
 
-const TIER_PRICES: Record<string, number> = {
-  adult: 15,
-  scholastic: 5,
-  family: 25,
-  senior: 10,
-}
-
-const TIER_LABELS: Record<string, string> = {
+const TIER_LABELS: Record<MembershipTier, string> = {
   adult: 'LCA Adult Membership (1 year)',
   scholastic: 'LCA Scholastic Membership (1 year)',
   family: 'LCA Family Membership (1 year)',
@@ -33,12 +27,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // Tier is required — the old '?? "regular"' fallback wasn't a real tier
   // and rejected any request without one anyway.
-  if (!tier || TIER_PRICES[tier] === undefined) {
+  if (!isMembershipTier(tier)) {
     return errorResponse('Invalid membership tier', 400)
   }
 
   const paymentId = `pay-membership-${authed.member.id}-${Date.now().toString(36)}`
-  const amount = TIER_PRICES[tier]
+  const amount = MEMBERSHIP_TIER_PRICES[tier]
   const origin = new URL(context.request.url).origin
 
   let session: { id: string; url: string }
