@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clubs C — Region-first</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.rg-intro{padding:34px 0 28px}
+.rg-introgrid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:44px;align-items:center}
+.rg-ov{background:#e9edf2;border-radius:16px;padding:14px}
+.rg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.rg{background:#ffffff;border:1px solid #e4e2db;border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:16px}
+.rg-full{grid-column:1 / -1}
+.rg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.rg-head h2{margin:0 0 2px}
+.rg-sub{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1a2744;text-decoration:none;border:1px solid #d9d6cc;border-radius:999px;padding:7px 13px;min-height:36px;box-sizing:border-box}
+.rg-body{display:grid;grid-template-columns:170px minmax(0,1fr);gap:20px;align-items:start}
+.rg-body3{grid-template-columns:220px minmax(0,1fr) 300px}
+.rg-map{background:#e9edf2;border-radius:12px;padding:8px}
+.rg-mapnote{font-size:11.5px;color:#555c6b;margin:8px 2px 0;line-height:1.4}
+.rg-clubs2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 22px}
+.rg-club{padding:9px 0;border-bottom:1px solid #ecebe6}
+.rg-club:first-child{padding-top:0}
+.rg-club a{font-weight:600;color:#1a2744;text-decoration:none;font-size:15px}
+.rg-when{display:block;font-size:13px;font-weight:600;color:#1a2744;margin-top:2px}
+.rg-nl{color:#555c6b;font-weight:500}
+.rg-where{display:block;font-size:12.5px;color:#555c6b;margin-top:1px;line-height:1.4}
+.rg-foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.rg-side{display:flex;flex-direction:column;gap:12px}
+.rg-rep{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;background:#fbfaf6;border:1px solid #ecebe6}
+.rg-rep-open{background:#ffffff;border:1px dashed #b9b6ab}
+.rg-av{width:40px;height:40px;border-radius:50%;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
+.rg-av-open{background:#ffffff;color:#1a2744;border:1.5px dashed #1a2744;box-sizing:border-box}
+.rg-who{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;font-size:12.5px;color:#555c6b}
+.rg-who b{font-size:14.5px;color:#1a2744}
+.rg-up{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:12px;border:1px solid #ecebe6}
+.rg-ev{display:flex;gap:12px;align-items:center;text-decoration:none;color:#1a2744;font-size:13.5px;line-height:1.35}
+.rg-ev .k-meta{display:block}
+.rg-cta{background:#fbfaf6}
+.rg-steps{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+.rg-steps li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1a2744;line-height:1.45}
+.rg-stepno{width:24px;height:24px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.rg-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px 28px}
+.rg-notes p{display:flex;gap:10px;align-items:flex-start;margin:0;font-size:13.5px;color:#1a2744;line-height:1.45}
+@media (max-width:1060px){.rg-introgrid{grid-template-columns:1fr}.rg-grid{grid-template-columns:1fr}.rg-body3{grid-template-columns:200px minmax(0,1fr)}.rg-body3 .rg-side{grid-column:1 / -1}}
+@media (max-width:640px){.rg-body,.rg-body3{grid-template-columns:1fr}.rg-map{max-width:260px}.rg-clubs2{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div class="k-page">
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a class="k-nav-on" href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="rg-intro">
+  <div class="k-wrap-wide rg-introgrid">
+    <div class="k-stack">
+      <div class="k-stack-sm">
+        <span class="k-kicker">Clubs · By region</span>
+        <h1 class="k-h1">Clubs by region</h1>
+        <p class="k-lead" style="max-width:660px">LCA has seven regions, each with a volunteer seat on the board. Pick yours to see every club nearby, who represents you, and which tournaments are coming up.</p>
+      </div>
+      <div class="k-row" style="align-items:flex-end">
+        <button class="k-btn k-btn-navy" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Find my region</button>
+        <div class="k-field" style="margin:0;flex:0 1 300px"><label for="rg-city">Or type a city</label><input id="rg-city" class="k-input" placeholder="e.g. Hammond, Alexandria"></div>
+        <span class="k-num-badge">1</span>
+      </div>
+      <nav class="k-row-sm" aria-label="Jump to a region">
+        <a class="k-chip" href="#r-north">North Louisiana <span class="k-chip-count">3</span></a>
+        <a class="k-chip" href="#r-central">Central Louisiana <span class="k-chip-count">2</span></a>
+        <a class="k-chip" href="#r-northshore">North of Lake Pontchartrain <span class="k-chip-count">3</span></a>
+        <a class="k-chip" href="#r-sw">Southwest Louisiana <span class="k-chip-count">2</span></a>
+        <a class="k-chip" href="#r-nola">New Orleans Metro <span class="k-chip-count">8</span></a>
+        <a class="k-chip" href="#r-sc">South Central Louisiana <span class="k-chip-count">5</span></a>
+        <a class="k-chip" href="#r-bayou">Bayou Region <span class="k-chip-count">2</span></a>
+      </nav>
+      <div class="k-row-sm"><span class="k-sample">Sample data</span><span class="k-meta">Rep names, open seats and "checked" dates</span></div>
+    </div>
+    <div class="rg-ov">
+      <svg viewBox="0 0 220 190" style="width:100%;height:auto;display:block" role="img" aria-label="Map of Louisiana's seven LCA regions with the number of clubs in each">
+        <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744" stroke-width="0.8"></path>
+        <g fill="#1a2744" stroke="#c8a94a" stroke-width="1.2">
+          <circle cx="60" cy="40" r="8"></circle>
+          <circle cx="70" cy="95" r="8"></circle>
+          <circle cx="40" cy="128" r="8"></circle>
+          <circle cx="100" cy="128" r="8"></circle>
+          <circle cx="152" cy="104" r="8"></circle>
+          <circle cx="170" cy="150" r="8"></circle>
+          <circle cx="125" cy="172" r="8"></circle>
+        </g>
+        <g font-family="Geist, sans-serif" font-size="7.5" font-weight="700" fill="#ffffff" text-anchor="middle">
+          <text x="60" y="42.7">3</text>
+          <text x="70" y="97.7">2</text>
+          <text x="40" y="130.7">2</text>
+          <text x="100" y="130.7">5</text>
+          <text x="152" y="106.7">3</text>
+          <text x="170" y="152.7">8</text>
+          <text x="125" y="174.7">2</text>
+        </g>
+        <g font-family="Geist, sans-serif" font-size="5.6" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="1.4" paint-order="stroke" text-anchor="middle">
+          <text x="60" y="56">North Louisiana</text>
+          <text x="70" y="111">Central</text>
+          <text x="40" y="144">Southwest</text>
+          <text x="100" y="144">South Central</text>
+          <text x="152" y="120">North of the Lake</text>
+          <text x="172" y="166">New Orleans Metro</text>
+          <text x="125" y="187">Bayou Region</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section style="padding:0 0 30px">
+  <div class="k-wrap-wide rg-grid">
+
+    <article class="rg" id="r-north" aria-labelledby="h-north">
+      <div class="rg-head">
+        <div><h2 class="k-h3" id="h-north">North Louisiana</h2><span class="k-meta">3 clubs · 5 meetings this week</span></div>
+        <a class="rg-sub" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Get updates<span class="k-num-badge">4</span></a>
+      </div>
+      <div class="rg-body">
+        <div class="rg-map">
+          <svg viewBox="8 0 108 81" style="width:100%;height:auto;display:block" role="img" aria-label="North Louisiana map: clubs in Shreveport, Ruston and Monroe">
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+            <circle cx="23" cy="30" r="4" fill="#1a2744" stroke="#ffffff" stroke-width="1.2"></circle>
+            <circle cx="66" cy="27" r="4" fill="#1a2744" stroke="#ffffff" stroke-width="1.2"></circle>
+            <circle cx="96" cy="26" r="4" fill="#1a2744" stroke="#ffffff" stroke-width="1.2"></circle>
+            <g font-family="Geist, sans-serif" font-size="7" fill="#555c6b">
+              <text x="12" y="43">Shreveport</text>
+              <text x="66" y="40" text-anchor="middle">Ruston</text>
+              <text x="98" y="40" text-anchor="middle">Monroe</text>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="rg-club"><a href="#">Shreveport-Bossier Chess Club</a><span class="rg-when">Mon &amp; Thu · 1:00–5:00 PM</span><span class="rg-where">Gamers XP (Mon) · Pierre Bossier Mall food court (Thu)</span></div>
+          <div class="rg-club"><a href="#">Monroe Chess Club</a><span class="rg-when">Mon 5:30 PM · Sat 10:00 AM</span><span class="rg-where">Enochs Pub and Grill · Books-A-Million · all ages</span></div>
+          <div class="rg-club"><a href="#">Ruston Knights Chess Club</a><span class="rg-when">Tue · 6:00 PM</span><span class="rg-where">Utility Brewing Company</span></div>
+        </div>
+      </div>
+      <div class="rg-foot">
+        <div class="rg-rep"><span class="rg-av">ML</span><div class="rg-who"><span class="k-label">Regional rep</span><b>Marcus Landry</b><span>Checked these listings Sept 2026</span></div><a class="k-btn k-btn-line k-btn-sm" href="#">Message</a></div>
+        <div class="rg-up"><span class="k-label">Coming up here</span><p class="k-small" style="margin:0">No tournaments listed yet. <a class="k-link" href="#">Host one</a></p></div>
+      </div>
+    </article>
+
+    <article class="rg" id="r-central" aria-labelledby="h-central">
+      <div class="rg-head">
+        <div><h2 class="k-h3" id="h-central">Central Louisiana</h2><span class="k-meta">2 clubs · 1 meeting this week</span></div>
+        <a class="rg-sub" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Get updates</a>
+      </div>
+      <div class="rg-body">
+        <div class="rg-map">
+          <svg viewBox="40 63 80 60" style="width:100%;height:auto;display:block" role="img" aria-label="Central Louisiana map: clubs in Pineville and Bunkie">
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+            <circle cx="72" cy="86" r="3" fill="#1a2744" stroke="#ffffff" stroke-width="0.9"></circle>
+            <circle cx="88" cy="100" r="3" fill="#1a2744" stroke="#ffffff" stroke-width="0.9"></circle>
+            <g font-family="Geist, sans-serif" font-size="5.2" fill="#555c6b" text-anchor="middle">
+              <text x="72" y="79">Pineville</text>
+              <text x="88" y="110">Bunkie</text>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="rg-club"><a href="#">Bunkie Chess Club</a><span class="rg-when">Tue · 4:00–6:00 PM</span><span class="rg-where">Bunkie Library · free to join, ages 8–108</span></div>
+          <div class="rg-club"><a href="#">Pineville Homeschool Chess Club</a><span class="rg-when">Monthly · 12:30–2:30 PM</span><span class="rg-where">For CCHSA homeschool members · day of the month not listed</span></div>
+        </div>
+      </div>
+      <div class="rg-foot">
+        <div class="rg-rep rg-rep-open"><span class="rg-av rg-av-open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></span><div class="rg-who"><span class="k-label">Regional rep</span><b>Seat open</b><span class="k-tag k-tag-soon" style="align-self:flex-start;margin-top:3px">Listings need a check</span></div><a class="k-btn k-btn-gold k-btn-sm" href="#">Volunteer</a></div>
+        <div class="rg-up"><span class="k-label">Coming up here</span><p class="k-small" style="margin:0">No tournaments listed yet. <a class="k-link" href="#">Host one</a></p></div>
+      </div>
+    </article>
+
+    <article class="rg" id="r-northshore" aria-labelledby="h-northshore">
+      <div class="rg-head">
+        <div><h2 class="k-h3" id="h-northshore">North of Lake Pontchartrain</h2><span class="k-meta">3 clubs · 3 meetings this week</span></div>
+        <a class="rg-sub" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Get updates</a>
+      </div>
+      <div class="rg-body">
+        <div class="rg-map">
+          <svg viewBox="131 89.5 60 45" style="width:100%;height:auto;display:block" role="img" aria-label="North of Lake Pontchartrain map: clubs in Mandeville, Slidell and Picayune, Mississippi">
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+            <circle cx="150" cy="118" r="2.3" fill="#1a2744" stroke="#ffffff" stroke-width="0.7"></circle>
+            <circle cx="166" cy="121" r="2.3" fill="#1a2744" stroke="#ffffff" stroke-width="0.7"></circle>
+            <circle cx="172" cy="104" r="2.3" fill="#1a2744" stroke="#ffffff" stroke-width="0.7"></circle>
+            <g font-family="Geist, sans-serif" font-size="3.9" fill="#555c6b" text-anchor="middle">
+              <text x="150" y="125.2">Mandeville</text>
+              <text x="168" y="129.6">Slidell</text>
+              <text x="172" y="99">Picayune, MS</text>
+            </g>
+          </svg>
+        </div>
+        <div>
+          <div class="rg-club"><a href="#">Mandeville Chess Club</a><span class="rg-when">Mon · 5:00 PM</span><span class="rg-where">George's Mexican Restaurant</span></div>
+          <div class="rg-club"><a href="#">Picayune Chess Club</a><span class="rg-when">Mon · 6:00–10:00 PM</span><span class="rg-where">IHOP, Picayune, MS · rated quick games on the 1st Monday</span></div>
+          <div class="rg-club"><a href="#">Slidell Chess Club</a><span class="rg-when">Fri · 7:00 PM</span><span class="rg-where">St. Luke's, 910 Cross Gates Blvd., Classroom #3</span></div>
+        </div>
+      </div>
+      <div class="rg-foot">
+        <div class="rg-rep"><span class="rg-av">NH</span><div class="rg-who"><span class="k-label">Regional rep</span><b>Nora Hebert</b><span>Checked these listings Aug 2026</span></div><a class="k-btn k-btn-line k-btn-sm" href="#">Message</a></div>
+        <div class="rg-up"><span class="k-label">Coming up here</span><p class="k-small" style="margin:0">No tournaments listed yet. <a class="k-link" href="#">Host one</a></p></div>
+      </div>
+    </article>
+
+    <article class="rg" id="r-sw" aria-labelledby="h-sw">
+      <div class="rg-head">
+        <div><h2 class="k-h3" id="h-sw">Southwest Louisiana</h2><span class="k-meta">2 clubs · no meetings this week</span></div>
+        <a class="rg-sub" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Get updates</a>
+      </div>
+      <div class="rg-body">
+        <div class="rg-map">
+          <svg viewBox="0 97 64 48" style="width:100%;height:auto;display:block" role="img" aria-label="Southwest Louisiana map: clubs in DeRidder and Sulphur / Lake Charles">
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+            <circle cx="28" cy="108" r="2.4" fill="#1a2744" stroke="#ffffff" stroke-width="0.7"></circle>
+            <circle cx="24" cy="140" r="2.4" fill="#ffffff" stroke="#1a2744" stroke-width="0.8"></circle>
+            <g font-family="Geist, sans-serif" font-size="4.2" fill="#555c6b" text-anchor="middle">
+              <text x="28" y="116.8">DeRidder</text>
+              <text x="24" y="134">Lake Charles</text>
+            </g>
+          </svg>
+          <p class="rg-mapnote">Hollow pin: schedule not listed</p>
+        </div>
+        <div>
+          <div class="rg-club"><a href="#">Casa de Ajedrez</a><span class="rg-when rg-nl">Schedule not listed</span><span class="rg-where">Sulphur / Lake Charles · casual play, US Chess rated tournaments, online chess and lessons</span></div>
+          <div class="rg-club"><a href="#">Beauregard Parish Youth Chess</a><span class="rg-when">Wednesdays in summer · 1:00–2:00 PM</span><span class="rg-where">DeRidder · youth chess, off-season now</span></div>
+        </div>
+      </div>
+      <div class="rg-foot">
+        <div class="rg-rep rg-rep-open"><span class="rg-av rg-av-open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></span><div class="rg-who"><span class="k-label">Regional rep</span><b>Seat open</b><span class="k-tag k-tag-soon" style="align-self:flex-start;margin-top:3px">Listings need a check</span></div><a class="k-btn k-btn-gold k-btn-sm" href="#">Volunteer</a></div>
+        <div class="rg-up">
+          <span class="k-label">Coming up here</span>
+          <a class="rg-ev" href="#"><span class="k-date"><b>31</b><span>Oct</span></span><span><b>The Casa Chess Tournament</b><span class="k-meta">Sat, Oct 31 · Sulphur · dual-rated · all ages</span></span></a>
+          <a class="rg-ev" href="#"><span class="k-date"><b>17</b><span>Apr</span></span><span><b>SWLA Regional Scholastic</b><span class="k-meta">Sat, Apr 17, 2027 · Sulphur · scholastic</span></span></a>
+        </div>
+      </div>
+    </article>
+
+    <article class="rg rg-full" id="r-nola" aria-labelledby="h-nola">
+      <div class="rg-head">
+        <div><h2 class="k-h3" id="h-nola">New Orleans Metro</h2><span class="k-meta">8 clubs and programs · 5 meetings this week</span></div>
+        <a class="rg-sub" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Get updates</a>
+      </div>
+      <div class="rg-body rg-body3">
+        <div class="rg-map">
+          <svg viewBox="126 118 56 42" style="width:100%;height:auto;display:block" role="img" aria-label="New Orleans Metro map: clubs in Kenner, Metairie, New Orleans, Gretna and Marrero">
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+            <circle cx="146" cy="136" r="1.6" fill="#ffffff" stroke="#1a2744" stroke-width="0.55"></circle>
+            <circle cx="152" cy="137" r="1.6" fill="#ffffff" stroke="#1a2744" stroke-width="0.55"></circle>
+            <circle cx="156" cy="139" r="1.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.5"></circle>
+            <circle cx="160" cy="140.5" r="1.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.5"></circle>
+            <circle cx="157" cy="145" r="1.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.5"></circle>
+            <circle cx="152" cy="146.5" r="1.6" fill="#1a2744" stroke="#ffffff" stroke-width="0.5"></circle>
+            <g font-family="Geist, sans-serif" font-size="2.75" fill="#555c6b" text-anchor="middle">
+              <text x="146" y="141.8">Kenner</text>
+              <text x="151" y="133">Metairie</text>
+              <text x="162.5" y="139.5" text-anchor="start">New Orleans</text>
+              <text x="159" y="150.2">Gretna</text>
+              <text x="148.5" y="152">Marrero</text>
+            </g>
+          </svg>
+          <p class="rg-mapnote">Knight Light Chess and Strategic Thoughts NOLA run programs at several sites, so they have no pin.</p>
+        </div>
+        <div class="rg-clubs2">
+          <div class="rg-club"><a href="Club-A.dc.html">Downriver Chess Club</a><span class="rg-when">Mon &amp; Thu · 7:00 PM</span><span class="rg-where">Decatur St · rated 15-minute games · $1–2 entry</span></div>
+          <div class="rg-club"><a href="#">North Kenner Library</a><span class="rg-when rg-nl">Schedule not listed</span><span class="rg-where">Kenner · casual chess for all ages and abilities</span></div>
+          <div class="rg-club"><a href="#">Greater New Orleans Chess Club</a><span class="rg-when">Tue · 7:00 PM</span><span class="rg-where">5-round tournaments, one 90-minute round a week</span></div>
+          <div class="rg-club"><a href="#">Metairie Chess Academy</a><span class="rg-when rg-nl">Schedule not listed</span><span class="rg-where">Metairie · instruction and play for kids</span></div>
+          <div class="rg-club"><a href="#">Marrero Chess Organization</a><span class="rg-when">Wed · 6:00–10:00 PM</span><span class="rg-where">Chopsticks Buffet · free, casual, all welcome</span></div>
+          <div class="rg-club"><a href="#">Knight Light Chess</a><span class="rg-when rg-nl">Schedule not listed</span><span class="rg-where">Camps, after-school programs, lessons, community tournaments</span></div>
+          <div class="rg-club"><a href="#">New Orleans Westbank Chess Club</a><span class="rg-when">Thu · 7:30–11:30 PM</span><span class="rg-where">Gretna · rated tournaments · beginners welcome</span></div>
+          <div class="rg-club"><a href="#">Strategic Thoughts NOLA</a><span class="rg-when rg-nl">Schedule not listed</span><span class="rg-where">Youth chess in schools and NORD centers</span></div>
+        </div>
+        <div class="rg-side">
+          <div class="rg-rep"><span class="rg-av">ID</span><div class="rg-who"><span class="k-label">Regional rep</span><b>Isaac Dupre</b><span>Checked these listings Sept 2026</span></div><a class="k-btn k-btn-line k-btn-sm" href="#">Message</a></div>
+          <div class="rg-up">
+            <span class="k-label">Coming up here <span class="k-num-badge">5</span></span>
+            <a class="rg-ev" href="#"><span class="k-date"><b>14</b><span>Nov</span></span><span><b>New Orleans Youth Chess November Meet</b><span class="k-meta">Sat, Nov 14 · scholastic</span></span></a>
+            <a class="rg-ev" href="#"><span class="k-date"><b>16</b><span>Jan</span></span><span><b>Ken Ferguson Memorial Open</b><span class="k-meta">Sat–Mon, Jan 16–18, 2027 · Downriver Chess</span></span></a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="rg rg-full" id="r-sc" aria-labelledby="h-sc">
+      <div class="rg-head">
+        <div><h2 class="k-h3" id="h-sc">South Central Louisiana</h2><span class="k-meta">5 clubs · 3 meetings this week</span></div>
+        <a class="rg-sub" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Get updates</a>
+      </div>
+      <div class="rg-body rg-body3">
+        <div class="rg-map">
+          <svg viewBox="70 102 64 48" style="width:100%;height:auto;display:block" role="img" aria-label="South Central Louisiana map: clubs in Baton Rouge, Gonzales, Opelousas and Lafayette">
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+            <circle cx="113" cy="119" r="1.8" fill="#1a2744" stroke="#ffffff" stroke-width="0.6"></circle>
+            <circle cx="118" cy="124" r="1.8" fill="#1a2744" stroke="#ffffff" stroke-width="0.6"></circle>
+            <circle cx="86" cy="116" r="1.8" fill="#1a2744" stroke="#ffffff" stroke-width="0.6"></circle>
+            <circle cx="124" cy="131" r="1.8" fill="#ffffff" stroke="#1a2744" stroke-width="0.6"></circle>
+            <circle cx="80" cy="136" r="1.8" fill="#ffffff" stroke="#1a2744" stroke-width="0.6"></circle>
+            <g font-family="Geist, sans-serif" font-size="3.1" fill="#555c6b" text-anchor="middle">
+              <text x="111" y="114">Baton Rouge</text>
+              <text x="124" y="137.5">Gonzales</text>
+              <text x="80" y="142.5">Lafayette</text>
+              <text x="86" y="111.5">Opelousas</text>
+            </g>
+          </svg>
+          <p class="rg-mapnote">Hollow pins: schedule not listed</p>
+        </div>
+        <div class="rg-clubs2">
+          <div class="rg-club"><a href="Club-B.dc.html">Baton Rouge Chess Club</a><span class="rg-when">Sat 10:00 AM · Wed 6:00 PM</span><span class="rg-where">Jones Creek Branch Library (Sat) · casual night at Boba ParTea (Wed)</span></div>
+          <div class="rg-club"><a href="#">Lafayette Chess Club</a><span class="rg-when rg-nl">Schedule not listed</span><span class="rg-where">All skill levels · hosts the Louisiana Open and the Lafayette Open</span></div>
+          <div class="rg-club"><a href="#">Bluebonnet Chess Club</a><span class="rg-when">1st &amp; 3rd Sun · 4:30–5:30 PM</span><span class="rg-where">Baton Rouge · Bluebonnet Library</span></div>
+          <div class="rg-club"><a href="Club-C.dc.html">Gonzales Chess Club</a><span class="rg-when rg-nl">Schedule not listed</span><span class="rg-where">Gonzales area · <a class="k-link" href="Club-C.dc.html" style="font-size:12.5px;font-weight:500">help complete it</a></span></div>
+          <div class="rg-club"><a href="#">Heart of Worship Church</a><span class="rg-when">Fri · 5:30–7:00 PM</span><span class="rg-where">Opelousas · open to anyone</span></div>
+        </div>
+        <div class="rg-side">
+          <div class="rg-rep"><span class="rg-av">CB</span><div class="rg-who"><span class="k-label">Regional rep <span class="k-num-badge">3</span></span><b>Camille Broussard</b><span>Checked these listings Sept 2026</span></div><a class="k-btn k-btn-line k-btn-sm" href="#">Message</a></div>
+          <div class="rg-up">
+            <span class="k-label">Coming up here</span>
+            <a class="rg-ev" href="#"><span class="k-date"><b>10</b><span>Oct</span></span><span><b>Lafayette Open 2026</b><span class="k-meta">Sat–Sun, Oct 10–11 · Lafayette · this weekend</span></span></a>
+            <a class="rg-ev" href="#"><span class="k-date"><b>24</b><span>Oct</span></span><span><b>The Baton Rouge Classic</b><span class="k-meta">Sat–Sun, Oct 24–25 · Baton Rouge · Downriver Chess</span></span></a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="rg" id="r-bayou" aria-labelledby="h-bayou">
+      <div class="rg-head">
+        <div><h2 class="k-h3" id="h-bayou">Bayou Region</h2><span class="k-meta">2 clubs · 2 meetings this week</span></div>
+        <a class="rg-sub" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Get updates</a>
+      </div>
+      <div class="rg-body">
+        <div class="rg-map">
+          <svg viewBox="98 140 48 36" style="width:100%;height:auto;display:block" role="img" aria-label="Bayou Region map: clubs in Houma and Morgan City">
+            <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#1a2744" stroke-width="1.2" vector-effect="non-scaling-stroke"></path>
+            <circle cx="136" cy="160" r="1.8" fill="#1a2744" stroke="#ffffff" stroke-width="0.6"></circle>
+            <circle cx="108" cy="156" r="1.8" fill="#1a2744" stroke="#ffffff" stroke-width="0.6"></circle>
+            <g font-family="Geist, sans-serif" font-size="3.1" fill="#555c6b" text-anchor="middle">
+              <text x="136" y="155">Houma</text>
+              <text x="109" y="151.5">Morgan City</text>
+            </g>
+          </svg>
+          <p class="rg-mapnote">Mini-map cropped to this region <span class="k-num-badge">2</span></p>
+        </div>
+        <div>
+          <div class="rg-club"><a href="#">Houma Chess Club</a><span class="rg-when">Mon · 6:00–8:30 PM</span><span class="rg-where">Terrebonne Parish North Library</span></div>
+          <div class="rg-club"><a href="#">Morgan City Chess Club</a><span class="rg-when">1st, 3rd &amp; 5th Tue · 5:30 PM</span><span class="rg-where">First Baptist Church</span></div>
+        </div>
+      </div>
+      <div class="rg-foot">
+        <div class="rg-rep"><span class="rg-av">TG</span><div class="rg-who"><span class="k-label">Regional rep</span><b>Theo Guidry</b><span>Checked these listings Jul 2026</span></div><a class="k-btn k-btn-line k-btn-sm" href="#">Message</a></div>
+        <div class="rg-up"><span class="k-label">Coming up here</span><p class="k-small" style="margin:0">No tournaments listed yet. <a class="k-link" href="#">Host one</a></p></div>
+      </div>
+    </article>
+
+    <article class="rg rg-cta" aria-labelledby="h-start">
+      <span class="k-label">No club near you?</span>
+      <h2 class="k-h3" id="h-start" style="margin:0">Start one, and it goes on this page</h2>
+      <ol class="rg-steps">
+        <li><span class="rg-stepno">1</span><span>Pick a regular night and a public place. Several clubs here meet in libraries, cafés and church halls.</span></li>
+        <li><span class="rg-stepno">2</span><span>Add the club with its schedule. It shows up in your region, on the map and on the weekly grid.</span></li>
+        <li><span class="rg-stepno">3</span><span>Your regional rep helps you plan a first event and spread the word.</span></li>
+      </ol>
+      <div class="k-row"><a class="k-btn k-btn-gold" href="#">Start a club</a><a class="k-btn k-btn-line" href="#">Volunteer as a regional rep</a></div>
+      <p class="k-meta" style="margin:0">Two regional seats are open right now: Central Louisiana and Southwest Louisiana.</p>
+    </article>
+
+  </div>
+</section>
+
+<section style="padding:0 0 40px">
+  <div class="k-wrap-wide">
+    <div class="k-card k-card-pad k-stack-sm">
+      <span class="k-label">Notes on this option</span>
+      <div class="rg-notes">
+        <p><span class="k-num-badge">1</span>"Find my region" uses location once, or a typed city. Region chips and the overview map jump to each section.</p>
+        <p><span class="k-num-badge">2</span>Each mini-map is cropped to its region. Hollow pins mean "schedule not listed", and programs with no single venue get no pin.</p>
+        <p><span class="k-num-badge">3</span>Every region shows its board seat: the rep with a Message button, or "Seat open" with Volunteer. Open seats also flag listings that need a check.</p>
+        <p><span class="k-num-badge">4</span>"Get updates" emails you when a club or tournament is added in that region.</p>
+        <p><span class="k-num-badge">5</span>Upcoming tournaments for each region come from LCA events and the Gulf South clearinghouse feed.</p>
+        <p>Region assignments are blank in live data today. This option needs every club assigned to a region first.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2600}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

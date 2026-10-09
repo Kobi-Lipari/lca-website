@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Work C — Admin home &amp; queues</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.wc-body{padding:24px 0 32px}
+.wc-side{flex:1 1 248px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 10px 14px;position:sticky;top:16px}
+.wc-side-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 10px 10px}
+.wc-nav{display:flex;align-items:center;gap:10px;min-height:38px;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14.5px;font-weight:500}
+.wc-nav.wc-on{background:#1a2744;color:#ffffff}
+.wc-cnt{margin-left:auto;font-size:12px;font-weight:700;background:#efefea;color:#1a2744;border-radius:99px;padding:2px 8px;line-height:1.3}
+.wc-nav .k-tag{margin-left:auto}
+.wc-group{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding:14px 10px 4px}
+.wc-titlerow{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px}
+.wc-search{flex:0 1 460px;min-width:260px}
+.wc-stat{display:flex;flex-direction:column;gap:2px;padding:12px 16px;border:1px solid #dddcd4;border-radius:12px;background:#ffffff;text-decoration:none;color:#1a2744}
+.wc-stat b{font-size:28px;line-height:1.1;font-weight:700}
+.wc-stat.wc-stat-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.wc-item b{display:block;color:#1a2744}
+.wc-strip{background:#1a2744;color:#ffffff;border-radius:8px;padding:10px 14px;font-size:14px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.wc-strip a{color:#c8a94a;font-weight:600}
+.wc-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wc-health{list-style:none;margin:0;padding:0}
+.wc-health li{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:9px 0;border-bottom:1px solid #ecebe4}
+.wc-health li:last-child{border-bottom:0}
+.wc-health li b{font-size:14.5px;color:#1a2744}
+.wc-health li .k-tag{grid-row:1 / span 2;grid-column:2;align-self:center}
+.wc-dd{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:500;font-family:inherit}
+.wc-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:12px 28px}
+.wc-legend div{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:#1a2744}
+.wc-nowrap{white-space:nowrap}
+@media (max-width:760px){.wc-side{position:static}.wc-two{grid-template-columns:1fr}.wc-legend{grid-template-columns:1fr}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#" aria-current="page">Admin</a>
+      <a class="k-ulink" href="#">My LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main class="wc-body">
+  <div class="k-wrap-wide k-split" style="align-items:flex-start">
+
+    <nav class="wc-side" aria-label="Admin sections">
+      <div class="wc-side-h"><b class="k-ink">Admin</b><span class="k-num-badge">6</span></div>
+      <a class="wc-nav wc-on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg>Home</a>
+      <div class="wc-group">Queues</div>
+      <a class="wc-nav" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>Needs attention<span class="wc-cnt">12</span></a>
+      <a class="wc-nav" href="#">Support tickets<span class="wc-cnt">4</span></a>
+      <a class="wc-nav" href="#">Board inbox<span class="wc-cnt">2</span></a>
+      <a class="wc-nav" href="#">Pending approvals<span class="wc-cnt">3</span></a>
+      <a class="wc-nav" href="#">Failed emails<span class="wc-cnt">2</span></a>
+      <a class="wc-nav" href="#">Club listings<span class="wc-cnt">1</span></a>
+      <div class="wc-group k-hide-sm">Communicate</div>
+      <a class="wc-nav k-hide-sm" href="#">Group email &amp; history</a>
+      <a class="wc-nav k-hide-sm" href="#">Site banner<span class="k-tag k-tag-live">Live</span></a>
+      <a class="wc-nav k-hide-sm" href="#">News posts</a>
+      <div class="wc-group k-hide-sm">People</div>
+      <a class="wc-nav k-hide-sm" href="#">Members &amp; export</a>
+      <a class="wc-nav k-hide-sm" href="#">Board seats</a>
+      <a class="wc-nav k-hide-sm" href="#">Roles &amp; access</a>
+      <a class="wc-nav k-hide-sm" href="#">Log in as a member</a>
+      <div class="wc-group k-hide-sm">Events &amp; clubs</div>
+      <a class="wc-nav k-hide-sm" href="#">Tournaments</a>
+      <a class="wc-nav k-hide-sm" href="#">Clubs</a>
+      <a class="wc-nav k-hide-sm" href="#">State champions</a>
+      <div class="wc-group k-hide-sm">Records</div>
+      <a class="wc-nav k-hide-sm" href="#">Audit log</a>
+      <a class="wc-nav k-hide-sm" href="#">Governance documents</a>
+      <div class="wc-group k-hide-sm">System</div>
+      <a class="wc-nav k-hide-sm" href="#">Automations &amp; health</a>
+    </nav>
+
+    <div class="k-main k-stack-lg">
+
+      <div class="k-stack">
+        <div class="wc-titlerow">
+          <div class="k-stack-sm">
+            <div class="k-row-sm"><span class="k-kicker">Mon, Oct 5, 2026</span><span class="k-sample">Sample data · queue items, names, counts, times</span></div>
+            <h1 class="k-h1" style="margin:0">Admin home</h1>
+          </div>
+          <div class="k-field wc-search"><label for="wc-q">Jump to</label><input id="wc-q" class="k-input" placeholder="A member, tournament, club, ticket or email · press /"></div>
+        </div>
+        <div class="k-row-sm">
+          <a class="k-btn k-btn-gold k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Post a site banner</a>
+          <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Email a group</a>
+          <a class="k-btn k-btn-line k-btn-sm" href="Work-D.dc.html"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>New tournament</a>
+          <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>Log in as a member</a>
+          <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Export members</a>
+        </div>
+      </div>
+
+      <div class="k-stack-sm">
+        <div class="k-row-sm"><span class="k-num-badge">2</span><span class="k-label">Open items · click a count to filter the queue</span></div>
+        <div class="k-grid-4">
+          <a class="wc-stat" href="#"><span class="k-label">Support tickets</span><b>4</b><span class="k-small k-muted">oldest waiting 3 days</span></a>
+          <a class="wc-stat" href="#"><span class="k-label">Board inbox</span><b>2</b><span class="k-small k-muted">1 sent to the full board</span></a>
+          <a class="wc-stat" href="#"><span class="k-label">Pending approvals</span><b>3</b><span class="k-small k-muted">tournament, club news, club rep</span></a>
+          <a class="wc-stat" href="#"><span class="k-label">Failed emails</span><b>2</b><span class="k-small k-muted">in the last 24 hours</span></a>
+        </div>
+      </div>
+
+      <div class="k-split">
+        <section class="k-main k-card k-card-pad k-stack" aria-labelledby="wc-queue">
+          <div class="k-between">
+            <div class="k-row-sm"><span class="k-num-badge">1</span><h2 id="wc-queue" class="k-h2" style="margin:0">Needs attention</h2><span class="wc-cnt">12</span></div>
+            <label class="k-check k-small"><input type="checkbox" checked><span>Email me this queue weekdays at 7:00 AM</span></label>
+          </div>
+          <div class="k-row-sm">
+            <span class="k-chip k-chip-on">All <span class="k-chip-count">12</span></span>
+            <span class="k-chip">Assigned to me <span class="k-chip-count">2</span></span>
+            <span class="k-chip">Waiting 2+ days <span class="k-chip-count">3</span></span>
+            <span class="k-chip">Approvals <span class="k-chip-count">3</span></span>
+            <span class="k-chip">Support <span class="k-chip-count">4</span></span>
+            <span class="k-chip">Board inbox <span class="k-chip-count">2</span></span>
+            <span class="k-chip">Failed emails <span class="k-chip-count">2</span></span>
+          </div>
+          <div class="k-tablebox">
+            <table class="k-table">
+              <thead><tr><th>Item</th><th>Type</th><th>Waiting</th><th>Owner</th><th class="k-r">Action</th></tr></thead>
+              <tbody>
+                <tr><td class="wc-item"><b>Houma Fall Quads</b><span class="k-small k-muted">New club tournament · Paul Comeaux, club rep</span></td><td><span class="k-tag k-tag-gold">Approval</span></td><td class="k-small wc-nowrap">5 h</td><td class="k-small"><a class="k-link" href="#">Assign</a></td><td class="k-r"><button class="k-btn k-btn-navy k-btn-sm" type="button">Review</button></td></tr>
+                <tr><td class="wc-item"><b>"Fall quads start Mon, Oct 19"</b><span class="k-small k-muted">Club news suggested for LCA News · Houma Chess Club</span></td><td><span class="k-tag k-tag-gold">Approval</span></td><td class="k-small wc-nowrap">5 h</td><td class="k-small"><a class="k-link" href="#">Assign</a></td><td class="k-r"><button class="k-btn k-btn-navy k-btn-sm" type="button">Review</button></td></tr>
+                <tr><td class="wc-item"><b>Club rep request · Ruston Knights Chess Club</b><span class="k-small k-muted">[Member name] asks to manage the club listing</span></td><td><span class="k-tag k-tag-gold">Approval</span></td><td class="k-small wc-nowrap">1 day</td><td class="k-small">You</td><td class="k-r"><button class="k-btn k-btn-navy k-btn-sm" type="button">Review</button></td></tr>
+                <tr><td class="wc-item"><b>Can't add my son to our family account</b><span class="k-small k-muted">Danielle Robichaux · support ticket</span></td><td><span class="k-tag">Support</span></td><td class="k-small wc-nowrap">2 days</td><td class="k-small">You</td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">Reply</button></td></tr>
+                <tr><td class="wc-item"><b>US Chess ID lookup can't find me</b><span class="k-small k-muted">Jordan Lee · support ticket</span></td><td><span class="k-tag">Support</span></td><td><span class="k-tag k-tag-soon">3 days</span></td><td class="k-small"><a class="k-link" href="#">Assign</a></td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">Reply</button></td></tr>
+                <tr><td class="wc-item"><b>Wrong section on my registration</b><span class="k-small k-muted">Isaac Dupre · support ticket</span></td><td><span class="k-tag">Support</span></td><td class="k-small wc-nowrap">1 day</td><td class="k-small">Chris Arceneaux</td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">Open</button></td></tr>
+                <tr><td class="wc-item"><b>Receipt for my membership renewal</b><span class="k-small k-muted">Sam Nguyen · support ticket</span></td><td><span class="k-tag">Support</span></td><td class="k-small wc-nowrap">4 h</td><td class="k-small"><a class="k-link" href="#">Assign</a></td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">Reply</button></td></tr>
+                <tr><td class="wc-item"><b>Bid to host the 2027 State Championship</b><span class="k-small k-muted">[Club or organizer] · board inbox</span></td><td><span class="k-tag">Board inbox</span></td><td><span class="k-tag k-tag-soon">4 days</span></td><td class="k-small">Full board</td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">Open</button></td></tr>
+                <tr><td class="wc-item"><b>Question about the annual meeting minutes</b><span class="k-small k-muted">Marcus Landry · board inbox</span></td><td><span class="k-tag">Board inbox</span></td><td class="k-small wc-nowrap">1 day</td><td class="k-small">[Secretary]</td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">Open</button></td></tr>
+                <tr><td class="wc-item"><b>Membership receipt bounced</b><span class="k-small k-muted">To n***@[domain] · mailbox full</span></td><td><span class="k-tag k-tag-full">Failed email</span></td><td class="k-small wc-nowrap">6 h</td><td class="k-small"><a class="k-link" href="#">Assign</a></td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">Fix and resend</button></td></tr>
+                <tr><td class="wc-item"><b>Group email: "Lafayette Open this weekend"</b><span class="k-small k-muted">3 addresses bounced · 2 marked as spam</span></td><td><span class="k-tag k-tag-full">Failed email</span></td><td class="k-small wc-nowrap">2 h</td><td class="k-small"><a class="k-link" href="#">Assign</a></td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">See addresses</button></td></tr>
+                <tr><td class="wc-item"><b>6 club listings have no meeting time</b><span class="k-small k-muted">Gonzales Chess Club, Casa de Ajedrez, Metairie Chess Academy, North Kenner Library, Knight Light Chess, Strategic Thoughts NOLA</span></td><td><span class="k-tag">Club listings</span></td><td class="k-small wc-nowrap">ongoing</td><td class="k-small"><a class="k-link" href="#">Assign</a></td><td class="k-r"><button class="k-btn k-btn-line k-btn-sm" type="button">Nudge reps</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <span class="k-small k-muted">Failures stay in this list until someone resolves them; nothing important appears only as a pop-up.</span>
+        </section>
+
+        <aside class="k-side k-stack-lg" style="flex:1 1 330px" aria-label="Site controls">
+          <section class="k-card k-card-pad k-stack" aria-labelledby="wc-banner">
+            <div class="k-between"><div class="k-row-sm"><span class="k-num-badge">3</span><h2 id="wc-banner" class="k-h3" style="margin:0">Site banner</h2></div><span class="k-tag k-tag-live">Live now</span></div>
+            <div class="wc-strip"><span>Lafayette Open this weekend · Sat–Sun, Oct 10–11</span><a href="#">Details</a></div>
+            <div class="k-field"><label for="wc-msg">Message</label><input id="wc-msg" class="k-input" value="Lafayette Open this weekend · Sat–Sun, Oct 10–11"></div>
+            <div class="wc-two">
+              <div class="k-stack-sm"><span class="k-label">Tone</span><div class="k-seg" role="group" aria-label="Tone"><button class="k-seg-on" type="button">Info</button><button type="button">Urgent</button></div></div>
+              <div class="k-stack-sm"><span class="k-label">Show to</span><div class="k-seg" role="group" aria-label="Audience"><button class="k-seg-on" type="button">All</button><button type="button">Members</button></div></div>
+            </div>
+            <div class="wc-two">
+              <div class="k-field"><label for="wc-from">Starts</label><input id="wc-from" class="k-input" value="Mon, Oct 5 · 8:00 AM"></div>
+              <div class="k-field"><label for="wc-to">Ends by itself</label><input id="wc-to" class="k-input" value="Sun, Oct 11 · 6:00 PM"></div>
+            </div>
+            <div class="k-row-sm"><button class="k-btn k-btn-navy k-btn-sm" type="button">Save banner</button><button class="k-btn k-btn-line k-btn-sm" type="button">Take down now</button></div>
+          </section>
+
+          <section class="k-card k-card-pad k-stack-sm" aria-labelledby="wc-auto">
+            <div class="k-between"><div class="k-row-sm"><span class="k-num-badge">4</span><h2 id="wc-auto" class="k-h3" style="margin:0">Automations</h2></div><span class="k-small k-gold-ink k-strong">1 needs a look</span></div>
+            <ul class="wc-health">
+              <li><b>Gulf South event sync</b><span class="k-small k-muted">Ran 5:00 AM · 22 events checked</span><span class="k-tag k-tag-open">OK</span></li>
+              <li><b>Daily emails</b><span class="k-small k-muted">Ran 6:00 AM · 41 sent, 2 failed</span><span class="k-tag k-tag-soon">Check</span></li>
+              <li><b>Stripe payments</b><span class="k-small k-muted">Last webhook 8:14 AM</span><span class="k-tag k-tag-open">OK</span></li>
+              <li><b>Facebook feed</b><span class="k-small k-muted">Refreshed 7:00 AM</span><span class="k-tag k-tag-open">OK</span></li>
+              <li><b>Club "still accurate" emails</b><span class="k-small k-muted">Next run Mon, Oct 12 · 4 clubs due</span><span class="k-tag">Scheduled</span></li>
+            </ul>
+            <span class="k-small k-muted">A missed run joins the queue and the morning email.</span>
+          </section>
+        </aside>
+      </div>
+
+      <div class="k-split">
+        <section class="k-main k-card k-card-pad k-stack" aria-labelledby="wc-audit">
+          <div class="k-between">
+            <h2 id="wc-audit" class="k-h2" style="margin:0">Audit log</h2>
+            <div class="k-row-sm">
+              <button class="wc-dd" type="button">Everyone<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+              <button class="wc-dd" type="button">All actions<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+              <a class="k-link k-small" href="#">Download CSV</a>
+            </div>
+          </div>
+          <div class="k-tablebox">
+            <table class="k-table">
+              <thead><tr><th>When</th><th>Who</th><th>What</th></tr></thead>
+              <tbody>
+                <tr><td class="k-small wc-nowrap">Today 9:12 AM</td><td class="k-small">You</td><td class="k-small">Logged in as Jordan Lee · reason: "Support: US Chess ID lookup" · ended 9:20 AM</td></tr>
+                <tr><td class="k-small wc-nowrap">Today 8:40 AM</td><td class="k-small">Paul Comeaux</td><td class="k-small">Submitted "Houma Fall Quads" for review</td></tr>
+                <tr><td class="k-small wc-nowrap">Today 8:02 AM</td><td class="k-small">You</td><td class="k-small">Posted site banner "Lafayette Open this weekend" (ends Sun, Oct 11)</td></tr>
+                <tr><td class="k-small wc-nowrap">Sun 6:15 PM</td><td class="k-small">Chris Arceneaux</td><td class="k-small">Exported members: New Orleans Metro, name and email only</td></tr>
+                <tr><td class="k-small wc-nowrap">Sat 2:30 PM</td><td class="k-small">You</td><td class="k-small">Marked board seat "Bayou Region representative" vacant</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="k-side k-card k-card-pad k-stack" style="flex:1 1 330px" aria-labelledby="wc-as">
+          <div class="k-row-sm"><span class="k-num-badge">5</span><h2 id="wc-as" class="k-h3" style="margin:0">Log in as a member</h2></div>
+          <div class="k-field"><label for="wc-who">Member</label><input id="wc-who" class="k-input" placeholder="Name, email or US Chess ID"></div>
+          <div class="k-field"><label for="wc-why">Reason (saved to the audit log)</label><input id="wc-why" class="k-input" placeholder="e.g. Support: family account"></div>
+          <button class="k-btn k-btn-navy k-btn-block" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg>View the site as this member</button>
+          <span class="k-small k-muted">A banner stays on screen throughout. Payments and password changes are blocked while you view as someone else.</span>
+        </section>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<section class="k-wrap-wide" style="padding-bottom:32px" aria-label="Notes">
+  <div class="k-callout">
+    <div class="wc-legend">
+      <div><span class="k-num-badge">1</span><span>One queue for every inbox (approvals, support, board inbox, failed emails, club listing gaps) with owner and waiting time, plus a weekday 7:00 AM digest.</span></div>
+      <div><span class="k-num-badge">2</span><span>Counts double as filters; no vanity stats on the admin home.</span></div>
+      <div><span class="k-num-badge">3</span><span>Banners carry a start and an end, so they take themselves down.</span></div>
+      <div><span class="k-num-badge">4</span><span>Automations panel: last run of each Worker and webhook; a missed run becomes a queue item.</span></div>
+      <div><span class="k-num-badge">5</span><span>"Log in as" asks for a reason, logs both names and blocks payments.</span></div>
+      <div><span class="k-num-badge">6</span><span>Grouped sidebar: queues first, then communicate, people, events and clubs, records, system.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2150}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

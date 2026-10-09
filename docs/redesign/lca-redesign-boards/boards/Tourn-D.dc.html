@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tourn D — Map view</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.td-x svg{width:14px;height:14px}
+.td-filters{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end}
+.td-from{min-width:280px}
+.td-main{display:grid;grid-template-columns:460px minmax(0,1fr);gap:24px;align-items:start}
+.td-list{padding:0;overflow:hidden}
+.td-lhead{padding:12px 18px;border-bottom:1px solid #e6e5df;gap:10px}
+.td-ghead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0;padding:10px 18px 7px;background:#f7f6f1;border-bottom:1px solid #e6e5df;font-size:14px;font-weight:600;color:#1a2744}
+.td-rows{list-style:none;margin:0;padding:0}
+.td-row{display:grid;grid-template-columns:80px minmax(0,1fr);gap:14px;align-items:start;padding:11px 18px;border-bottom:1px solid #eeede8;color:#1a2744;text-decoration:none}
+.td-row:hover{background:#fafaf7}
+.td-on{background:#fbf6e6;box-shadow:inset 0 0 0 2px #c8a94a}
+.td-drive{display:flex;flex-direction:column;line-height:1.25}
+.td-drive b{font-family:"Geist Mono",ui-monospace,monospace;font-size:14px;font-weight:500}
+.td-drive span{font-size:12px;color:#555c6b}
+.td-what{display:flex;flex-direction:column;gap:4px;min-width:0}
+.td-name{font-size:15px;font-weight:600}
+.td-sub{font-size:13px;color:#555c6b}
+.td-far .td-row{padding:8px 18px;align-items:center}
+.td-far .td-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.td-far .td-what{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+.td-farline{display:flex;flex-direction:column;min-width:0}
+.td-mapcol{position:sticky;top:16px}
+.td-mapwrap{position:relative;border:1px solid #dcdbd4;border-radius:12px;overflow:hidden;background:#e6ecf3}
+.td-mapwrap svg.td-map{display:block;width:100%;height:auto}
+.td-zoom{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:6px}
+.td-zoom .k-iconbtn{background:#ffffff}
+.td-scope{position:absolute;left:12px;bottom:12px;background:#ffffff;border-radius:10px}
+.td-callout{position:absolute;left:14px;top:14px;width:280px}
+.td-legend{display:flex;flex-wrap:wrap;gap:8px 18px;padding:10px 4px 0;font-size:12px;color:#555c6b}
+.td-legend span{display:inline-flex;align-items:center;gap:6px}
+.td-regions{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.td-reg{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;min-height:40px;padding:6px 10px;border:1px solid #e0dfd8;border-radius:8px;background:#ffffff;font:inherit;font-size:13px;color:#1a2744;text-align:left;cursor:pointer}
+.td-reg b{font-size:15px}
+.td-zero{color:#555c6b;background:#fbfaf6}
+.td-notes{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:10px 28px}
+.td-notes li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1a2744}
+@media (max-width:1000px){.td-main{grid-template-columns:1fr}.td-mapcol{position:static;order:-1}}
+@media (max-width:640px){.td-callout{position:static;width:auto;margin:12px}.td-regions{grid-template-columns:1fr}.td-notes{grid-template-columns:1fr}.td-from{min-width:0;width:100%}.td-scope{display:none}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#" class="k-nav-on" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="k-wrap-wide k-section-sm">
+  <div class="k-between">
+    <div class="k-stack-sm">
+      <h1 class="k-h1">Tournaments</h1>
+      <p class="k-lead">What's within driving distance? Louisiana events and partner events across the Gulf South, sorted by how far you'd travel.</p>
+    </div>
+    <div class="k-row">
+      <span class="k-sample">Sample data</span>
+      <div class="k-seg" role="group" aria-label="View">
+        <button type="button" aria-pressed="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>List</button>
+        <button type="button" aria-pressed="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</button>
+        <button type="button" class="k-seg-on" aria-pressed="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"></path></svg>Map</button>
+        <button type="button" aria-pressed="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Table</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="k-wrap-wide">
+  <div class="k-card k-card-pad k-stack-sm">
+    <div class="td-filters">
+      <div class="k-field td-from"><label for="td-from">Distances from</label><input id="td-from" class="k-input" value="New Orleans, LA 70119"></div>
+      <button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Use my location</button>
+      <div class="k-stack-sm">
+        <span class="k-label">Drive time</span>
+        <div class="k-seg" role="group" aria-label="Maximum drive time">
+          <button type="button" aria-pressed="false">1 hr</button>
+          <button type="button" aria-pressed="false">2 hr</button>
+          <button type="button" class="k-seg-on" aria-pressed="true">4 hr</button>
+          <button type="button" aria-pressed="false">Any</button>
+        </div>
+      </div>
+      <div class="k-row-sm" role="group" aria-label="Filters">
+        <button class="k-chip k-chip-on" type="button" aria-haspopup="true" aria-expanded="false">When: Next 3 months <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">Type <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">Region <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">Rated <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">LCA-run / Partner <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-pressed="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg>Show clubs</button>
+      </div>
+    </div>
+    <p class="k-small k-muted">Your location is only used to sort by drive time, and it isn't saved. A city or ZIP works just as well. <span class="k-num-badge">1</span></p>
+    <div class="k-row-sm">
+      <span class="k-strong" aria-live="polite">9 within 4 hours</span>
+      <span class="k-meta">· 7 farther away</span>
+      <button class="k-chip td-x" type="button" aria-label="Remove filter: Next 3 months">Next 3 months <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+      <button class="k-chip td-x" type="button" aria-label="Remove filter: within 4 hours of New Orleans">Within 4 hr of New Orleans <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+      <a class="k-link k-small" href="#">Clear all</a>
+    </div>
+  </div>
+</section>
+
+<section class="k-wrap-wide k-section-sm">
+  <div class="td-main">
+
+    <div class="k-card td-list">
+      <div class="td-lhead k-between">
+        <span class="k-small k-muted">Drive times are estimates <span class="k-num-badge">2</span></span>
+        <button class="k-btn k-btn-ghost k-btn-sm" type="button">Sort: Drive time <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+      </div>
+
+      <h2 class="td-ghead"><span>Within 4 hours</span><span class="k-meta">9 events</span></h2>
+      <ol class="td-rows">
+        <li><a class="td-row" href="#">
+          <span class="td-drive"><b>In town</b><span>New Orleans</span></span>
+          <span class="td-what"><span class="td-name">New Orleans Youth Chess November Meet</span><span class="td-sub">Sat, Nov 14 · New Orleans · Scholastic (K–12)</span><span class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-soon">Opens Mon, Oct 12</span></span></span>
+        </a></li>
+        <li><a class="td-row" href="#">
+          <span class="td-drive"><b>In town</b><span>New Orleans</span></span>
+          <span class="td-what"><span class="td-name">New Orleans Youth Chess December Meet</span><span class="td-sub">Sat, Dec 5 · New Orleans · Scholastic (K–12)</span><span class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-soon">Opens Mon, Nov 16</span></span></span>
+        </a></li>
+        <li><a class="td-row td-on" href="#" aria-current="true">
+          <span class="td-drive"><b>1 h 15 m</b><span>80 mi</span></span>
+          <span class="td-what"><span class="td-name">The Baton Rouge Classic <span class="k-num-badge">3</span></span><span class="td-sub">Sat–Sun, Oct 24–25 · Baton Rouge, LA · Classical</span><span class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-open">Registration open</span><span class="k-small">23 of 60</span></span></span>
+        </a></li>
+        <li><a class="td-row" href="#">
+          <span class="td-drive"><b>2 h 10 m</b><span>135 mi</span></span>
+          <span class="td-what"><span class="td-name">Lafayette Open 2026</span><span class="td-sub">Sat–Sun, Oct 10–11 · Lafayette, LA · Classical</span><span class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-open">Registration open</span><span class="k-small">52 of 60</span></span></span>
+        </a></li>
+        <li><a class="td-row" href="#">
+          <span class="td-drive"><b>2 h 50 m</b><span>185 mi</span></span>
+          <span class="td-what"><span class="td-name">Hillcrest QUICK Capturefest</span><span class="td-sub">Thu, Oct 22 · Jackson, MS · Quick · Capital City Chess Club</span><span class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-small k-muted">Entry on organizer site</span></span></span>
+        </a></li>
+        <li><a class="td-row" href="#">
+          <span class="td-drive"><b>3 h</b><span>195 mi</span></span>
+          <span class="td-what"><span class="td-name">Team Scholastic Jamboree</span><span class="td-sub">Sat, Oct 24 · Ridgeland, MS · Scholastic · Mississippi Chess Association</span><span class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-small k-muted">Entry on organizer site</span></span></span>
+        </a></li>
+        <li><a class="td-row" href="#">
+          <span class="td-drive"><b>3 h 10 m</b><span>205 mi</span></span>
+          <span class="td-what"><span class="td-name">Mississippi State Championship</span><span class="td-sub">Sat–Sun, Oct 17–18 · Canton, MS · Classical</span><span class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-small k-muted">Entry on organizer site</span></span></span>
+        </a></li>
+        <li><a class="td-row" href="#">
+          <span class="td-drive"><b>3 h 15 m</b><span>195 mi</span></span>
+          <span class="td-what"><span class="td-name">Roosevelt Chess Classic</span><span class="td-sub">Sat, Nov 7 · Scott County, MS</span><span class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-small k-muted">Entry on organizer site</span></span></span>
+        </a></li>
+        <li><a class="td-row" href="#">
+          <span class="td-drive"><b>3 h 20 m</b><span>215 mi</span></span>
+          <span class="td-what"><span class="td-name">The Casa Chess Tournament</span><span class="td-sub">Sat, Oct 31 · Sulphur, LA · Dual-rated · Casa de Ajedrez</span><span class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-small k-muted">Entry on organizer site</span></span></span>
+        </a></li>
+      </ol>
+
+      <h2 class="td-ghead"><span>Farther than 4 hours</span><span class="k-meta">7 events · faded on the map</span></h2>
+      <ol class="td-rows td-far">
+        <li><a class="td-row" href="#"><span class="td-drive"><b>4 h 40 m</b></span><span class="td-what"><span class="td-farline"><span class="td-name">Starkville Chess Tournament</span><span class="td-sub">Sat, Oct 10 · Starkville, MS</span></span><span class="k-tag k-tag-ext">Partner event</span></span></a></li>
+        <li><a class="td-row" href="#"><span class="td-drive"><b>5 h</b></span><span class="td-what"><span class="td-farline"><span class="td-name">2026 National Chess Day Scholastic</span><span class="td-sub">Sat, Oct 10 · Birmingham, AL</span></span><span class="k-tag k-tag-ext">Partner event</span></span></a></li>
+        <li><a class="td-row" href="#"><span class="td-drive"><b>5 h 15 m</b></span><span class="td-what"><span class="td-farline"><span class="td-name">Texas Fall FIDE Premier</span><span class="td-sub">Fri–Sun, Oct 16–18 · Houston, TX</span></span><span class="k-tag k-tag-ext">Partner event</span></span></a></li>
+        <li><a class="td-row" href="#"><span class="td-drive"><b>5 h 15 m</b></span><span class="td-what"><span class="td-farline"><span class="td-name">HG – Lone Star US Chess &amp; FIDE Championship</span><span class="td-sub">Fri–Sun, Oct 23–25 · Houston, TX</span></span><span class="k-tag k-tag-ext">Partner event</span></span></a></li>
+        <li><a class="td-row" href="#"><span class="td-drive"><b>5 h 15 m</b></span><span class="td-what"><span class="td-farline"><span class="td-name">Lone Star FIDE</span><span class="td-sub">Fri–Sun, Nov 20–22 · Houston, TX</span></span><span class="k-tag k-tag-ext">Partner event</span></span></a></li>
+        <li><a class="td-row" href="#"><span class="td-drive"><b>5 h 30 m</b></span><span class="td-what"><span class="td-farline"><span class="td-name">2026 Dothan Open</span><span class="td-sub">Sat, Nov 14 · Dothan, AL</span></span><span class="k-tag k-tag-ext">Partner event</span></span></a></li>
+        <li><a class="td-row" href="#"><span class="td-drive"><b>6 h 20 m</b></span><span class="td-what"><span class="td-farline"><span class="td-name">Halloween Classic</span><span class="td-sub">Sat, Oct 31 · Huntsville, AL</span></span><span class="k-tag k-tag-ext">Partner event</span></span></a></li>
+      </ol>
+    </div>
+
+    <div class="td-mapcol k-stack">
+      <div>
+        <div class="td-mapwrap">
+          <svg class="td-map" viewBox="0 0 720 470" role="img" aria-labelledby="td-map-t td-map-d">
+            <title id="td-map-t">Map of Louisiana and nearby Gulf South states with tournament pins</title>
+            <desc id="td-map-d">16 tournaments in the next 3 months. Selected: The Baton Rouge Classic in Baton Rouge. Dashed rings show 100, 200 and 300 miles from New Orleans.</desc>
+            <rect x="0" y="0" width="720" height="470" fill="#e6ecf3"></rect>
+            <g fill="#f7f6f1" stroke="#c3c7cf" stroke-width="1">
+              <path d="M-11.9 -7.0L123.6 -7.0L123.6 116.2L95.5 105.0L59.7 99.4L29.9 101.5L-11.9 101.5Z"></path>
+              <path d="M123.6 -7.0L123.6 116.2L146.9 122.5L146.9 159.6L318.3 161.0L319.4 140.0L322.4 112.0L334.4 84.0L355.3 56.0L369.6 21.0L385.1 -7.0Z"></path>
+              <path d="M385.1 -7.0L369.6 21.0L650.2 22.4L653.8 -7.0Z"></path>
+              <path d="M653.8 -7.0L650.2 22.4L675.9 170.1L686.7 210.0L682.5 245.0L683.7 301.0L695.0 321.3L722.5 322.0L722.5 -7.0Z"></path>
+              <path d="M531.4 301.0L683.7 301.0L695.0 321.3L722.5 322.0L722.5 367.5L692.6 386.4L665.8 393.4L647.9 364.0L615.0 344.4L579.2 343.0L555.3 347.9L536.2 351.4Z"></path>
+              <path d="M495.6 21.0L650.2 22.4L675.9 170.1L686.7 210.0L682.5 245.0L683.7 301.0L531.4 301.0L536.2 351.4L510.5 354.2L513.5 329.0L504.5 323.4L501.6 346.5L483.7 344.4L479.5 238.0Z"></path>
+              <path d="M495.6 21.0L369.6 21.0L355.3 56.0L334.4 84.0L322.4 112.0L319.4 140.0L318.3 161.0L320.6 178.5L325.4 199.5L322.4 220.5L304.5 234.5L295.6 259.0L298.6 280.0L290.2 301.0L404.2 301.0L404.2 311.5L410.8 332.5L416.8 358.4L429.9 350.0L450.8 343.0L471.7 345.8L483.7 344.4L479.5 238.0Z"></path>
+              <path d="M-11.9 101.5L29.9 101.5L59.7 99.4L95.5 105.0L123.6 116.2L146.9 122.5L146.9 159.6L146.9 234.5L161.2 262.5L176.1 287.0L174.4 315.0L167.2 343.0L166.0 367.5L158.8 392.0L143.3 395.5L119.4 406.0L101.5 420.0L83.6 434.0L59.7 451.5L29.9 469.0L-11.9 490.0Z"></path>
+            </g>
+            <path d="M146.9 159.6L318.3 161.0L320.6 178.5L325.4 199.5L322.4 220.5L304.5 234.5L295.6 259.0L298.6 280.0L290.2 301.0L404.2 301.0L404.2 311.5L410.8 332.5L416.8 358.4L426.9 374.5L421.0 392.0L432.9 409.5L447.8 427.0L435.9 438.9L423.9 430.5L403.0 420.0L385.1 430.5L373.2 434.0L349.3 434.0L328.4 427.0L310.5 420.0L292.6 402.5L268.7 400.4L244.8 402.5L215.0 392.0L188.1 387.1L158.8 392.0L166.0 367.5L167.2 343.0L174.4 315.0L176.1 287.0L161.2 262.5L146.9 234.5Z" fill="#ffffff" stroke="#1a2744" stroke-width="1.6"></path>
+            <ellipse cx="382" cy="358" rx="21" ry="8" fill="#e6ecf3" stroke="#c3c7cf"></ellipse>
+            <g font-size="11" font-weight="600" letter-spacing="2" fill="#8a8f9c">
+              <text x="40" y="250">TEXAS</text>
+              <text x="178" y="262">LOUISIANA</text>
+              <text x="338" y="100">MISSISSIPPI</text>
+              <text x="540" y="210">ALABAMA</text>
+              <text x="252" y="150" font-size="10" letter-spacing="1">ARKANSAS</text>
+              <text x="590" y="326">FLORIDA</text>
+              <text x="470" y="13" font-size="9">TENNESSEE</text>
+              <text x="692" y="160" font-size="9">GA</text>
+            </g>
+            <g fill="none" stroke="#1a2744" stroke-opacity="0.35" stroke-dasharray="4 5">
+              <circle cx="383.9" cy="374.5" r="101.4"></circle>
+              <circle cx="383.9" cy="374.5" r="202.9"></circle>
+              <circle cx="383.9" cy="374.5" r="304.3"></circle>
+            </g>
+            <g font-size="10" fill="#555c6b">
+              <text x="390" y="269">100 mi</text>
+              <text x="392" y="168">200 mi</text>
+              <text x="392" y="66">300 mi</text>
+            </g>
+            <g fill="#8a8f9c" font-size="10">
+              <circle cx="261.5" cy="195.3" r="2.2"></circle><text x="267" y="199">Monroe</text>
+              <circle cx="241.8" cy="279.3" r="2.2"></circle><text x="248" y="283">Alexandria</text>
+              <circle cx="430.5" cy="277.9" r="2.2"></circle><text x="436" y="281">Hattiesburg</text>
+              <circle cx="505.1" cy="322.7" r="2.2"></circle><text x="511" y="326">Mobile</text>
+            </g>
+            <g opacity="0.45">
+              <circle cx="458.6" cy="129.5" r="6.5" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+              <circle cx="579.2" cy="124.6" r="6.5" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+              <circle cx="591.7" cy="39.9" r="6.5" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+              <circle cx="663.4" cy="285.6" r="6.5" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+              <circle cx="67.5" cy="387.8" r="11" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+              <text x="67.5" y="391.8" font-size="11" font-weight="700" fill="#1a2744" text-anchor="middle">3</text>
+              <g font-size="11" fill="#1a2744">
+                <text x="468" y="133.5">Starkville</text>
+                <text x="589" y="128.6">Birmingham</text>
+                <text x="601" y="44">Huntsville</text>
+                <text x="663.4" y="272" text-anchor="middle">Dothan</text>
+                <text x="67.5" y="414" text-anchor="middle">Houston</text>
+              </g>
+            </g>
+            <circle cx="186.3" cy="354.2" r="6.5" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+            <circle cx="267.5" cy="355.6" r="7" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+            <circle cx="383.9" cy="374.5" r="11" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle>
+            <text x="383.9" y="378.5" font-size="11" font-weight="700" fill="#ffffff" text-anchor="middle">2</text>
+            <circle cx="381.5" cy="200" r="11" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+            <text x="381.5" y="204" font-size="11" font-weight="700" fill="#1a2744" text-anchor="middle">3</text>
+            <circle cx="419.8" cy="205.8" r="6.5" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle>
+            <g font-size="11" font-weight="600" fill="#1a2744">
+              <text x="186.3" y="376" text-anchor="middle">Sulphur</text>
+              <text x="267.5" y="377" text-anchor="middle">Lafayette</text>
+              <text x="399" y="392">New Orleans</text>
+              <text x="366" y="204" text-anchor="end">Jackson area</text>
+              <text x="430" y="210">Scott County</text>
+            </g>
+            <circle cx="319.4" cy="339.5" r="16" fill="none" stroke="#c8a94a" stroke-width="3" stroke-opacity="0.6"></circle>
+            <circle cx="319.4" cy="339.5" r="9" fill="#c8a94a" stroke="#1a2744" stroke-width="2.5"></circle>
+            <text x="319.4" y="318" font-size="12" font-weight="700" fill="#1a2744" text-anchor="middle">Baton Rouge</text>
+          </svg>
+
+          <div class="td-zoom">
+            <button class="k-iconbtn" type="button" aria-label="Zoom in"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+            <button class="k-iconbtn" type="button" aria-label="Zoom out"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+          </div>
+          <div class="k-seg td-scope" role="group" aria-label="Map area">
+            <button type="button" class="k-seg-on" aria-pressed="true">Gulf South</button>
+            <button type="button" aria-pressed="false">Louisiana only</button>
+          </div>
+
+          <div class="td-callout k-card k-card-raised k-card-pad k-stack-sm">
+            <div class="k-between"><span class="k-tag k-tag-lca">LCA event</span><button class="k-iconbtn" type="button" aria-label="Close event card"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+            <h3 class="k-h4">The Baton Rouge Classic</h3>
+            <p class="k-small">Sat–Sun, Oct 24–25 · Baton Rouge, LA</p>
+            <p class="k-small"><b>23 of 60 registered</b> · early price until Sun, Oct 18</p>
+            <p class="k-small k-muted">About 1 h 15 min from New Orleans</p>
+            <div class="k-row-sm"><a class="k-btn k-btn-gold k-btn-sm" href="#">Register</a><a class="k-btn k-btn-line k-btn-sm" href="#">Details</a></div>
+          </div>
+        </div>
+
+        <div class="td-legend">
+          <span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="#1a2744" stroke="#ffffff" stroke-width="1.5"></circle></svg>LCA event · register here</span>
+          <span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle></svg>Partner event · organizer's site</span>
+          <span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="#c8a94a" stroke="#1a2744" stroke-width="2"></circle></svg>Selected</span>
+          <span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5" fill="#ffffff" stroke="#1a2744" stroke-width="2" opacity="0.45"></circle></svg>Faded: beyond your drive time <span class="k-num-badge">4</span></span>
+          <span><svg width="22" height="16" viewBox="0 0 22 16" aria-hidden="true"><path d="M1 8h20" stroke="#1a2744" stroke-opacity="0.5" stroke-dasharray="3 3"></path></svg>Rings: 100 / 200 / 300 miles in a straight line</span>
+        </div>
+      </div>
+
+      <div class="k-grid-2">
+        <div class="k-card k-card-pad k-stack-sm">
+          <div class="k-between"><h2 class="k-h4">Louisiana regions, next 3 months</h2><span class="k-num-badge">5</span></div>
+          <ul class="td-regions">
+            <li><button class="td-reg" type="button"><span>New Orleans Metro</span><b>2</b></button></li>
+            <li><button class="td-reg" type="button"><span>South Central Louisiana</span><b>2</b></button></li>
+            <li><button class="td-reg" type="button"><span>Southwest Louisiana</span><b>1</b></button></li>
+            <li><button class="td-reg td-zero" type="button"><span>North of Lake Pontchartrain</span><b>0</b></button></li>
+            <li><button class="td-reg td-zero" type="button"><span>Bayou Region</span><b>0</b></button></li>
+            <li><button class="td-reg td-zero" type="button"><span>Central Louisiana</span><b>0</b></button></li>
+            <li><button class="td-reg td-zero" type="button"><span>North Louisiana</span><b>0</b></button></li>
+          </ul>
+          <p class="k-small k-muted">No tournaments yet in North or Central Louisiana. The <a class="k-link" href="#">Shreveport-Bossier, Monroe, Ruston and Bunkie clubs</a> meet every week.</p>
+        </div>
+
+        <div class="k-card k-card-pad k-stack-sm">
+          <div class="k-between"><h2 class="k-h4">Tell me about new events nearby</h2><span class="k-num-badge">6</span></div>
+          <p class="k-small">Email me when a tournament is posted within <b>4 hours</b> of <b>New Orleans, LA 70119</b>.</p>
+          <div class="k-field"><label for="td-mail">Email</label><input id="td-mail" class="k-input" placeholder="you@example.com"></div>
+          <label class="k-check"><input type="checkbox" checked> Include partner events from nearby states</label>
+          <button class="k-btn k-btn-gold" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Create alert</button>
+          <p class="k-small k-muted">One short email per new listing. Stop with one click.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="k-wrap-wide k-section-sm">
+  <div class="k-card k-card-pad k-stack-sm">
+    <h2 class="k-h4">Notes on this option</h2>
+    <ol class="td-notes">
+      <li><span class="k-num-badge">1</span><span>Location is asked for only after a tap on "Use my location", with the reason shown. A city or ZIP works too, and nothing is stored.</span></li>
+      <li><span class="k-num-badge">2</span><span>Drive times come from a cached distance lookup and are labelled as estimates. The rings are straight-line miles.</span></li>
+      <li><span class="k-num-badge">3</span><span>List and map are one view: hovering a row lifts its pin, and tapping a pin scrolls the list to it.</span></li>
+      <li><span class="k-num-badge">4</span><span>Pins beyond the chosen drive time fade instead of disappearing, so long trips stay visible.</span></li>
+      <li><span class="k-num-badge">5</span><span>Region counts show the gaps: nothing scheduled in North or Central Louisiana yet.</span></li>
+      <li><span class="k-num-badge">6</span><span>Radius alerts: an email when a new listing lands inside your drive time.</span></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Event C — Before, during, after</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.ec-hd{background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:10px 18px}
+.ec-body{padding:18px 20px 110px}
+.ec-bar{height:8px;border-radius:4px;background:#e6e4dc;overflow:hidden}
+.ec-bar i{display:block;height:100%;background:#1a2744;border-radius:4px}
+.ec-tabs{display:flex;gap:2px;border-bottom:1px solid #dcdad2;overflow:hidden;white-space:nowrap;align-items:center}
+.ec-tab{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;font-weight:600;font-size:14px;color:#555c6b;text-decoration:none;border-bottom:3px solid transparent;box-sizing:border-box}
+.ec-tab-on{color:#1a2744;border-bottom-color:#c8a94a}
+.ec-sec{display:grid;grid-template-columns:150px 1fr 64px 44px;gap:12px;align-items:center;padding:9px 12px;background:#ffffff;border:1px solid #e3e1da;border-radius:10px;font-size:14px}
+.ec-sch{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:7px 0;border-bottom:1px solid #eeece6;font-size:14px}
+.ec-sticky{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;background:#ffffff;border-top:1px solid #dcdad2;box-shadow:0 -6px 18px rgba(26,39,68,.08)}
+.ec-pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.3);font-size:13px;color:#ffffff}
+.ec-note{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:10px 12px;background:#ffffff;border:1px solid #e3e1da;border-radius:10px;font-size:14px;line-height:1.4}
+.ec-win{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ec-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 32px}
+.ec-t{font-size:13px}
+.ec-t td,.ec-t th{padding-top:7px;padding-bottom:7px}
+</style>
+</helmet>
+<div style="width:1960px;height:2000px;box-sizing:border-box;background:#ecebe6;padding:34px 40px;overflow:hidden;position:relative">
+
+  <div class="k-between" style="align-items:flex-end;margin-bottom:20px">
+    <div style="max-width:1380px">
+      <div class="k-label">Tournament page · option C</div>
+      <h1 class="k-h1" style="margin:6px 0 8px">Before, during, after: one page that follows the event clock</h1>
+      <p class="k-body k-muted" style="margin:0">The same address for the 2027 Paul Morphy Open at three moments. Nobody edits the page by hand: closing entries, the first pairing and the last result each switch the top block, the main button, the tabs and the phone bar.</p>
+    </div>
+    <span class="k-sample">Sample data</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,600px);gap:40px">
+
+    <!-- ===== BEFORE ===== -->
+    <div>
+      <div style="margin-bottom:12px">
+        <div class="k-between"><div class="k-row-sm"><span class="k-tag k-tag-open">Registration open</span><b>Before</b><span class="k-meta">Tue, Jun 1, 2027</span></div><span class="k-num-badge">1</span></div>
+        <div style="height:6px;border-radius:3px;background:#1a2744;margin:10px 0 6px"></div>
+        <div class="k-meta">Until entries close Thu, Jun 10 · late fee from Mon, Jun 7</div>
+      </div>
+      <div class="k-browser" style="width:600px;height:1540px;position:relative;overflow:hidden;background:#f5f5f2;box-sizing:border-box">
+        <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments/2027-paul-morphy-open</div></div>
+        <div class="ec-hd">
+          <span class="k-row-sm"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><b>Louisiana Chess</b></span>
+          <button class="k-btn k-btn-on-dark k-btn-sm" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+        </div>
+        <div class="ec-body k-stack">
+          <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-open">Registration open</span></div>
+          <div>
+            <h2 class="k-h2" style="margin:0 0 6px">2027 Paul Morphy Open</h2>
+            <div class="k-small">Sat–Sun, Jun 12–13, 2027 · New Orleans · [Venue name]</div>
+          </div>
+          <div class="k-row-sm">
+            <span class="k-chip">US Chess rated</span><span class="k-chip">5 rounds</span><span class="k-chip">G/90+30 · 90 min each + 30 sec per move</span><span class="k-chip">Half-point byes</span>
+          </div>
+          <div class="k-card" style="padding:16px">
+            <div class="k-stack-sm">
+              <div class="k-between" style="align-items:flex-end">
+                <div><div class="k-label">Round 1 in</div><div style="font-size:34px;font-weight:700;line-height:1.1">11 days</div></div>
+                <div style="text-align:right"><div class="k-small"><b>38 of 60</b> registered</div><div class="ec-bar" style="width:180px;margin-top:6px"><i style="width:63%"></i></div></div>
+              </div>
+              <div class="k-small">Today $30–$60 · late fee from Mon, Jun 7 · LCA members $10 less</div>
+              <a class="k-btn k-btn-gold k-btn-block" href="#">Register · from $30</a>
+            </div>
+          </div>
+          <nav class="ec-tabs" aria-label="Event pages">
+            <a class="ec-tab ec-tab-on" href="#">Overview</a><a class="ec-tab" href="#">Sections</a><a class="ec-tab" href="#">Entries <span class="k-chip-count">38</span></a><a class="ec-tab" href="#">Venue</a><a class="ec-tab" href="#">Rules</a><span class="k-meta" style="margin-left:auto">Pairings from Jun 12</span>
+          </nav>
+          <section class="k-stack-sm">
+            <h3 class="k-h4" style="margin:0">Sections</h3>
+            <div class="ec-sec"><div><b>Open</b><div class="k-meta">all ratings · $75 late</div></div><div class="ec-bar"><i style="width:53%"></i></div><div class="k-small k-r">8 of 15</div><div class="k-strong k-r">$60</div></div>
+            <div class="ec-sec"><div><b>U1800</b><div class="k-meta">under 1800 · $65 late</div></div><div class="ec-bar"><i style="width:73%"></i></div><div class="k-small k-r">11 of 15</div><div class="k-strong k-r">$50</div></div>
+            <div class="ec-sec"><div><b>U1400</b><div class="k-meta">under 1400 · $55 late</div></div><div class="ec-bar"><i style="width:80%"></i></div><div class="k-small k-r">12 of 15</div><div class="k-strong k-r">$40</div></div>
+            <div class="ec-sec"><div><b>U1000</b><div class="k-meta">under 1000, unrated · $45 late</div></div><div class="ec-bar"><i style="width:47%"></i></div><div class="k-small k-r">7 of 15</div><div class="k-strong k-r">$30</div></div>
+          </section>
+          <section class="k-stack-sm">
+            <div class="k-between"><h3 class="k-h4" style="margin:0">Who's coming</h3><a class="k-link k-small" href="#">All 38</a></div>
+            <div class="k-tablebox">
+              <table class="k-table ec-t">
+                <thead><tr><th>Player</th><th class="k-r">Rating</th><th>Section</th></tr></thead>
+                <tbody>
+                  <tr><td><b>Marcus Landry</b></td><td class="k-r k-mono">2014</td><td>Open</td></tr>
+                  <tr><td><b>Henri Doucet</b></td><td class="k-r k-mono">1975</td><td>Open</td></tr>
+                  <tr><td><b>Avery Thibodeaux</b></td><td class="k-r k-mono">1912</td><td>Open</td></tr>
+                  <tr><td><b>Tasha Guillory</b></td><td class="k-r k-mono">1835</td><td>Open</td></tr>
+                  <tr><td><b>Priya Shah</b></td><td class="k-r k-mono">1803</td><td>Open</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          <section class="k-stack-sm">
+            <h3 class="k-h4" style="margin:0">Schedule</h3>
+            <div class="k-card" style="padding:6px 14px">
+              <div class="ec-sch"><b>Sat 9:30 AM</b><span>Check-in closes</span></div>
+              <div class="ec-sch"><b>Sat 10:00 AM</b><span>Round 1</span></div>
+              <div class="ec-sch"><b>Sat 2:30 PM</b><span>Round 2</span></div>
+              <div class="ec-sch"><b>Sat 7:00 PM</b><span>Round 3</span></div>
+              <div class="ec-sch"><b>Sun 9:30 AM</b><span>Round 4</span></div>
+              <div class="ec-sch" style="border-bottom:0"><b>Sun 2:00 PM</b><span>Round 5, then prizes</span></div>
+            </div>
+          </section>
+          <section class="k-stack-sm">
+            <h3 class="k-h4" style="margin:0">Venue</h3>
+            <div class="k-map" style="height:140px"><div class="k-pin k-pin-gold" style="left:52%;top:46%"></div></div>
+            <div class="k-small">[Venue name] · New Orleans · <a class="k-link" href="#">Open in Maps</a></div>
+          </section>
+        </div>
+        <div class="ec-sticky">
+          <div><div class="k-strong">From $30 · regular price</div><div class="k-meta">38 of 60 registered · 11 days to go</div></div>
+          <div class="k-row-sm"><span class="k-num-badge">2</span><a class="k-btn k-btn-gold" href="#">Register</a></div>
+        </div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">1 · Before: sell the event</div>
+      <div class="k-caption-sub">Today's price, how full each section is and who's coming. The phone bar carries Register.</div>
+    </div>
+
+    <!-- ===== DURING ===== -->
+    <div>
+      <div style="margin-bottom:12px">
+        <div class="k-row-sm"><span class="k-tag k-tag-live">Live · Round 3</span><b>During</b><span class="k-meta">Sat, Jun 12, 2027 · 7:40 PM</span></div>
+        <div style="height:6px;border-radius:3px;background:#c8a94a;margin:10px 0 6px"></div>
+        <div class="k-meta">From the first pairing (Sat 9:45 AM) until the last result is entered</div>
+      </div>
+      <div class="k-browser" style="width:600px;height:1540px;position:relative;overflow:hidden;background:#f5f5f2;box-sizing:border-box">
+        <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments/2027-paul-morphy-open</div></div>
+        <div class="ec-hd">
+          <span class="k-row-sm"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><b>Louisiana Chess</b></span>
+          <button class="k-btn k-btn-on-dark k-btn-sm" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+        </div>
+        <div class="k-between" style="background:#c8a94a;color:#1a2744;padding:8px 20px;font-weight:600;font-size:14px"><span>Live now · Paul Morphy Open · Round 3</span><span>Site-wide banner</span></div>
+        <div class="ec-body k-stack">
+          <div class="k-row-sm"><span class="k-tag k-tag-live">Live · Round 3</span><span class="k-meta">Started 7:00 PM · Round 4 Sun 9:30 AM</span></div>
+          <div>
+            <h2 class="k-h2" style="margin:0 0 6px">2027 Paul Morphy Open</h2>
+            <div class="k-small">Sat–Sun, Jun 12–13 · New Orleans · 58 players · entries closed</div>
+          </div>
+          <div class="k-navy" style="border-radius:14px;padding:18px">
+            <div class="k-between"><span class="k-label-gold">Your board · Round 3 · Jordan Lee</span><span class="k-num-badge">3</span></div>
+            <div style="font-size:30px;font-weight:700;margin-top:6px;color:#ffffff">Board 3 · you have White</div>
+            <div style="color:#e9e7df">vs Theo Guidry (1295) · U1400 · Room B</div>
+            <div class="k-row-sm" style="margin-top:12px"><span class="ec-pill">Your score 1.5 of 2</span><span class="ec-pill">Round 1 win · Round 2 draw</span></div>
+          </div>
+          <div class="k-card k-between" style="padding:12px 14px;gap:12px">
+            <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg><span class="k-small">We'll email and notify you when Round 4 pairings post, about 10 minutes after the last Round 3 game ends.</span></div>
+            <span class="k-tag k-tag-open">Alerts on</span>
+          </div>
+          <nav class="ec-tabs" aria-label="Event pages">
+            <a class="ec-tab ec-tab-on" href="#">Pairings</a><a class="ec-tab" href="#">Standings</a><a class="ec-tab" href="#">Crosstable</a><a class="ec-tab" href="#">Entries</a><a class="ec-tab" href="#">Info</a>
+          </nav>
+          <div class="k-between">
+            <div class="k-seg" role="group" aria-label="Section"><button type="button">Open</button><button type="button">U1800</button><button type="button" class="k-seg-on">U1400</button><button type="button">U1000</button></div>
+            <span class="k-meta">Round 3 · 2 of 7 boards done</span>
+          </div>
+          <div class="k-search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input class="k-input" placeholder="Find a player by name" aria-label="Find a player"></div>
+          <div class="k-tablebox">
+            <table class="k-table ec-t">
+              <thead><tr><th class="k-c">Bd</th><th>White</th><th class="k-c">Result</th><th>Black</th></tr></thead>
+              <tbody>
+                <tr><td class="k-c">1</td><td><b>Rosa Mendez</b> 1219 <span class="k-meta">(2)</span></td><td class="k-c k-meta">playing</td><td><b>Grace Melancon</b> 1342 <span class="k-meta">(2)</span></td></tr>
+                <tr><td class="k-c">2</td><td><b>Maya Robichaux</b> 1102 <span class="k-meta">(2)</span></td><td class="k-c"><b>0–1</b></td><td><b>Owen Theriot</b> 1310 <span class="k-meta">(1.5)</span></td></tr>
+                <tr class="k-tr-me"><td class="k-c">3</td><td><b>Jordan Lee</b> 1388 <span class="k-meta">(1.5)</span></td><td class="k-c k-meta">playing</td><td><b>Theo Guidry</b> 1295 <span class="k-meta">(1.5)</span></td></tr>
+                <tr><td class="k-c">4</td><td><b>Lucy Pham</b> 1276 <span class="k-meta">(1)</span></td><td class="k-c"><b>½–½</b></td><td><b>Eli Boudreaux</b> 1254 <span class="k-meta">(1)</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <a class="k-link k-small" href="#">Show boards 5–7</a>
+          <section class="k-stack-sm">
+            <div class="k-between"><h3 class="k-h4" style="margin:0">Notes from the TD</h3><span class="k-num-badge">4</span></div>
+            <div class="ec-note"><b>7:38 PM</b><span>Chris Arceneaux, TD: the skittles room stays open until 11:00 PM. Round 4 pairings post tonight.</span></div>
+            <div class="ec-note"><b>6:58 PM</b><span>U1000 Round 3 re-paired after a late withdrawal. Please check your board.</span></div>
+            <div class="ec-note"><b>2:41 PM</b><span>Round 2 in the Open section started 10 minutes late.</span></div>
+          </section>
+          <section class="k-stack-sm">
+            <div class="k-between"><h3 class="k-h4" style="margin:0">Standings after Round 2 · U1400</h3><a class="k-link k-small" href="#">Full standings</a></div>
+            <div class="k-tablebox">
+              <table class="k-table ec-t">
+                <thead><tr><th class="k-c">#</th><th>Player</th><th class="k-r">Rating</th><th class="k-r">Pts</th></tr></thead>
+                <tbody>
+                  <tr><td class="k-c">1</td><td>Rosa Mendez</td><td class="k-r k-mono">1219</td><td class="k-r"><b>2</b></td></tr>
+                  <tr><td class="k-c">2</td><td>Grace Melancon</td><td class="k-r k-mono">1342</td><td class="k-r"><b>2</b></td></tr>
+                  <tr><td class="k-c">3</td><td>Maya Robichaux</td><td class="k-r k-mono">1102</td><td class="k-r"><b>2</b></td></tr>
+                  <tr class="k-tr-me"><td class="k-c">4</td><td>Jordan Lee</td><td class="k-r k-mono">1388</td><td class="k-r"><b>1.5</b></td></tr>
+                  <tr><td class="k-c">5</td><td>Theo Guidry</td><td class="k-r k-mono">1295</td><td class="k-r"><b>1.5</b></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+        <div class="ec-sticky">
+          <div><div class="k-strong">Round 3 · Board 3 · White</div><div class="k-meta">vs Theo Guidry · Room B</div></div>
+          <a class="k-btn k-btn-navy" href="#">My board</a>
+        </div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">2 · During: my board first</div>
+      <div class="k-caption-sub">Registration shrinks to "entries closed"; my board, pairings, TD notes and alerts take the top.</div>
+    </div>
+
+    <!-- ===== AFTER ===== -->
+    <div>
+      <div style="margin-bottom:12px">
+        <div class="k-row-sm"><span class="k-tag k-tag-closed">Final results</span><b>After</b><span class="k-meta">Mon, Jun 14, 2027</span></div>
+        <div style="height:6px;border-radius:3px;background:#8a8f9c;margin:10px 0 6px"></div>
+        <div class="k-meta">From the last result entered · stays as the permanent record</div>
+      </div>
+      <div class="k-browser" style="width:600px;height:1540px;position:relative;overflow:hidden;background:#f5f5f2;box-sizing:border-box">
+        <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments/2027-paul-morphy-open</div></div>
+        <div class="ec-hd">
+          <span class="k-row-sm"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><b>Louisiana Chess</b></span>
+          <button class="k-btn k-btn-on-dark k-btn-sm" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+        </div>
+        <div class="ec-body k-stack">
+          <div class="k-row-sm"><span class="k-tag k-tag-closed">Final results</span><span class="k-meta">Rated · US Chess report sent Mon, Jun 14</span></div>
+          <div>
+            <h2 class="k-h2" style="margin:0 0 6px">2027 Paul Morphy Open</h2>
+            <div class="k-small">Sat–Sun, Jun 12–13 · New Orleans · 58 players · 4 sections</div>
+          </div>
+          <img src="/_blob/f0a8537498574429330e3a0888e092e4" alt="Players of all ages at boards in an arched hall, a wooden board in the foreground" style="width:100%;height:200px;object-fit:cover;border-radius:12px;display:block">
+          <div class="k-between k-meta"><span>Photo placement · album of 24 photos</span><a class="k-link" href="#">See all photos</a></div>
+          <div class="ec-win">
+            <div class="k-card" style="padding:12px 14px"><div class="k-label-gold">Open · 1st · $300</div><div class="k-strong">Marcus Landry</div><div class="k-meta">4.5 of 5 · rated 2014</div></div>
+            <div class="k-card" style="padding:12px 14px"><div class="k-label-gold">U1800 · 1st · $200</div><div class="k-strong">Camille Broussard</div><div class="k-meta">4 of 5 · on tiebreak · 1744</div></div>
+            <div class="k-card" style="padding:12px 14px"><div class="k-label-gold">U1400 · 1st · $150</div><div class="k-strong">Theo Guidry</div><div class="k-meta">4.5 of 5 · rated 1295</div></div>
+            <div class="k-card" style="padding:12px 14px"><div class="k-label-gold">U1000 · 1st · $125 + trophy</div><div class="k-strong">Leo Robichaux</div><div class="k-meta">4 of 5 · unrated</div></div>
+          </div>
+          <div class="k-small">Biggest upset ($50): Devin Batiste (1521) beat Camille Broussard (1744). <a class="k-link" href="#">All prize winners</a></div>
+          <article class="k-card" style="padding:16px">
+            <div class="k-between"><span class="k-label">Recap</span><span class="k-num-badge">5</span></div>
+            <h3 class="k-h4" style="margin:6px 0">Landry takes the Morphy Open; Guidry's 4.5 tops U1400</h3>
+            <p class="k-small" style="margin:0 0 6px">Marcus Landry drew Round 3 and won the rest to finish half a point clear. [A volunteer's paragraph, quotes and photo picks.]</p>
+            <div class="k-meta">By [Volunteer name] · Mon, Jun 14 · started from the results template</div>
+          </article>
+          <section class="k-stack-sm">
+            <div class="k-between"><h3 class="k-h4" style="margin:0">Crosstable · Open</h3><span class="k-row-sm"><a class="k-link k-small" href="#">All sections</a><span class="k-num-badge">6</span></span></div>
+            <div class="k-tablebox">
+              <table class="k-table ec-t">
+                <thead><tr><th class="k-c">#</th><th>Player</th><th class="k-c">R1</th><th class="k-c">R2</th><th class="k-c">R3</th><th class="k-c">R4</th><th class="k-c">R5</th><th class="k-r">Pts</th></tr></thead>
+                <tbody>
+                  <tr><td class="k-c">1</td><td><b>Marcus Landry</b> <span class="k-meta">2014</span></td><td class="k-c"><span class="k-res k-res-w">W8</span></td><td class="k-c"><span class="k-res k-res-w">W6</span></td><td class="k-c"><span class="k-res k-res-d">D2</span></td><td class="k-c"><span class="k-res k-res-w">W5</span></td><td class="k-c"><span class="k-res k-res-w">W3</span></td><td class="k-r"><b>4.5</b></td></tr>
+                  <tr><td class="k-c">2</td><td><b>Tasha Guillory</b> <span class="k-meta">1835</span></td><td class="k-c"><span class="k-res k-res-w">W12</span></td><td class="k-c"><span class="k-res k-res-w">W4</span></td><td class="k-c"><span class="k-res k-res-d">D1</span></td><td class="k-c"><span class="k-res k-res-d">D3</span></td><td class="k-c"><span class="k-res k-res-w">W5</span></td><td class="k-r"><b>4</b></td></tr>
+                  <tr><td class="k-c">3</td><td><b>Priya Shah</b> <span class="k-meta">1803</span></td><td class="k-c"><span class="k-res k-res-w">W7</span></td><td class="k-c"><span class="k-res k-res-d">D5</span></td><td class="k-c"><span class="k-res k-res-w">W4</span></td><td class="k-c"><span class="k-res k-res-d">D2</span></td><td class="k-c"><span class="k-res k-res-l">L1</span></td><td class="k-r"><b>3</b></td></tr>
+                  <tr><td class="k-c">4</td><td><b>Henri Doucet</b> <span class="k-meta">1975</span></td><td class="k-c"><span class="k-res k-res-w">W11</span></td><td class="k-c"><span class="k-res k-res-l">L2</span></td><td class="k-c"><span class="k-res k-res-l">L3</span></td><td class="k-c"><span class="k-res k-res-w">W10</span></td><td class="k-c"><span class="k-res k-res-w">W9</span></td><td class="k-r"><b>3</b></td></tr>
+                  <tr><td class="k-c">5</td><td><b>Avery Thibodeaux</b> <span class="k-meta">1912</span></td><td class="k-c"><span class="k-res k-res-w">W10</span></td><td class="k-c"><span class="k-res k-res-d">D3</span></td><td class="k-c"><span class="k-res k-res-w">W6</span></td><td class="k-c"><span class="k-res k-res-l">L1</span></td><td class="k-c"><span class="k-res k-res-l">L2</span></td><td class="k-r"><b>2.5</b></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="k-meta">W8 = won against #8. 12 players · <a class="k-link" href="#">Official ratings on US Chess</a></div>
+          </section>
+          <div class="k-card k-between" style="padding:14px 16px;gap:10px">
+            <div><div class="k-strong">14 top-board games</div><div class="k-meta">Entered with the scoresheet scanner</div></div>
+            <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">View on lichess</a><a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>PGN</a></div>
+          </div>
+          <div class="k-card" style="padding:14px 16px">
+            <div class="k-label">Next LCA event</div>
+            <div class="k-between" style="margin-top:4px;gap:10px">
+              <div><div class="k-strong">2027 Louisiana State Championship</div><div class="k-meta">Sat–Mon, Sep 4–6 · Baton Rouge · early price until Sun, Jul 25</div></div>
+              <a class="k-btn k-btn-gold k-btn-sm" href="Event-B.dc.html">See event</a>
+            </div>
+          </div>
+        </div>
+        <div class="ec-sticky">
+          <div><div class="k-strong">Final results</div><div class="k-meta">Landry wins the Open with 4.5 of 5</div></div>
+          <a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share results</a>
+        </div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">3 · After: the permanent record</div>
+      <div class="k-caption-sub">Winners, recap, photos, crosstable and games; the next LCA event is offered.</div>
+    </div>
+
+  </div>
+
+  <div class="ec-legend k-small" style="margin-top:22px">
+    <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">1</span><span>State is computed from data: entries closed, first pairing posted, last result entered. No manual switch.</span></div>
+    <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">2</span><span>One phone bar, three jobs: Register, then My board, then Share results.</span></div>
+    <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">3</span><span>My board for the logged-in player, also sent as a round alert.</span></div>
+    <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">4</span><span>TD notes post from the manage page to the event page and to followers.</span></div>
+    <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">5</span><span>The recap starts as a results template (winners, upsets); a volunteer adds words and photos.</span></div>
+    <div class="k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><span class="k-num-badge">6</span><span>Crosstable and scanner games stay on the page as the event's record.</span></div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1960,"height":2000}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

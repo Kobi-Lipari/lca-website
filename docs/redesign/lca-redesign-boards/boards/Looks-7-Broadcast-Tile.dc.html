@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Looks 7 — Broadcast Night tile</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&amp;family=Barlow:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Big+Shoulders+Display:wght@800;900">
+<style>
+body{margin:0}
+.t7{display:flex;flex-direction:column;font-family:'Barlow',system-ui,sans-serif;color:#f3f5f9;font-size:16px;line-height:1.45;font-variant-numeric:lining-nums tabular-nums}
+.t7 *{box-sizing:border-box}
+.t7 h1,.t7 h2,.t7 h3,.t7 p,.t7 ul,.t7 figure{margin:0}
+.t7 ul{padding:0;list-style:none}
+.t7 a{color:#f3f5f9}
+.t7-px{padding-left:64px;padding-right:64px}
+.t7-sec{padding-top:24px;padding-bottom:24px;border-top:1px solid rgba(255,255,255,.08)}
+.t7-last{flex:1}
+.t7-head{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:14px}
+.t7-h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;line-height:34px;letter-spacing:.03em;text-transform:uppercase;display:flex;align-items:center;gap:12px}
+.t7-h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;line-height:30px;letter-spacing:.03em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.t7-n{min-width:30px;height:30px;padding:0 6px;border-radius:4px;background:#c8a94a;color:#070b14;display:inline-flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;line-height:1;flex:none}
+.t7-meta{font-size:14px;line-height:20px;color:#8e9ab2;text-align:right;max-width:780px}
+.t7-lab{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;line-height:16px;letter-spacing:.14em;text-transform:uppercase;color:#8e9ab2;margin-bottom:8px}
+.t7-panel{background:#0e1526;border:1px solid rgba(255,255,255,.08);border-radius:4px}
+.t7-mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.t7-muted{color:#8e9ab2}
+.t7-ico{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:square;stroke-linejoin:miter;flex:none}
+.t7-note{font-size:13px;line-height:18px;color:#8e9ab2}
+.t7-live{display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 10px;border-radius:3px;background:#ff4757;color:#070b14;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;line-height:1;white-space:nowrap}
+.t7-live i{width:8px;height:8px;border-radius:50%;background:#070b14;display:inline-block}
+@media (prefers-reduced-motion:no-preference){.t7-live i{animation:t7pulse 1.4s ease-in-out infinite}}
+@keyframes t7pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.t7-status{height:46px;flex:none;display:flex;align-items:center;gap:14px;background:#0e1526;border-bottom:1px solid rgba(255,255,255,.08);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.t7-rbox{display:inline-flex;align-items:center;justify-content:center;height:26px;min-width:34px;padding:0 6px;border-radius:3px;background:#c8a94a;color:#070b14;font-weight:800}
+.t7-st-s{margin-left:auto}
+.t7-intro{padding-top:30px;padding-bottom:28px}
+.t7-introgrid{display:grid;grid-template-columns:1fr 460px;gap:48px;align-items:end}
+.t7-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:116px;line-height:104px;text-transform:uppercase}
+.t7-tagline{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:28px;line-height:36px;letter-spacing:.24em;text-transform:uppercase;color:#c8a94a;margin-top:8px;display:flex;align-items:center;gap:14px}
+.t7-tagline::before{content:"";width:40px;height:4px;background:#c8a94a}
+.t7-idea{margin-top:22px}
+.t7-idea p{font-size:18px;line-height:27px;max-width:800px}
+.t7-side{display:flex;flex-direction:column;gap:12px}
+.t7-ib{padding:14px 18px}
+.t7-ibh{display:flex;align-items:center;gap:8px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;line-height:24px;letter-spacing:.04em;text-transform:uppercase;color:#e5c768;margin-bottom:4px}
+.t7-ib p{font-size:15px;line-height:22px}
+.t7-typegrid{display:grid;grid-template-columns:1.25fr 1fr 1fr 1.1fr;gap:16px}
+.t7-tc{padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.t7-tc .t7-lab{margin-bottom:0}
+.t7-s-disp{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:46px;line-height:46px;text-transform:uppercase}
+.t7-s-disp2{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:22px;line-height:26px;letter-spacing:.08em;text-transform:uppercase;color:#c8a94a}
+.t7-wts{display:flex;gap:18px;font-family:'Barlow Condensed',sans-serif;font-size:20px;line-height:24px;margin-top:auto;color:#8e9ab2}
+.t7-s-banner{font-family:'Big Shoulders Display',sans-serif;font-weight:900;font-size:78px;line-height:76px;text-transform:uppercase;color:#e5c768}
+.t7-s-body{font-size:16px;line-height:24px}
+.t7-s-fig{font-size:15px;line-height:22px;margin-top:auto;color:#8e9ab2}
+.t7-s-fig b{color:#f3f5f9;font-weight:600}
+.t7-s-mono{font-size:19px;line-height:27px;font-weight:500}
+.t7-s-mono2{font-size:16px;line-height:22px;color:#8e9ab2}
+.t7-pal{display:grid;grid-template-columns:380px 1fr;gap:24px}
+.t7-e1{background:#070b14;border:1px solid rgba(255,255,255,.16);border-radius:4px;padding:14px}
+.t7-e2{background:#0e1526;border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:14px;margin-top:12px}
+.t7-e3{background:#1a2744;border-radius:4px;padding:14px;margin-top:12px}
+.t7-el{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-weight:600;font-size:15px}
+.t7-el .t7-mono{font-size:13px;color:#8e9ab2}
+.t7-swg{display:grid;grid-template-columns:repeat(5,1fr);gap:14px 12px}
+.t7-sw{display:flex;flex-direction:column;font-size:13px;line-height:17px}
+.t7-sw b{font-weight:600;font-size:14px;line-height:18px}
+.t7-sw .t7-mono{font-size:12px;color:#8e9ab2}
+.t7-chip{height:46px;border-radius:4px;border:1px solid rgba(255,255,255,.16);margin-bottom:8px;display:flex;align-items:center;padding:0 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase;color:#070b14}
+.t7-comp{display:grid;grid-template-columns:410px 1fr 440px;gap:28px;align-items:start}
+.t7-btns{display:grid;grid-template-columns:auto auto;gap:12px 14px;justify-content:start;margin-bottom:18px}
+.t7-bx{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.t7-bx>span{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8e9ab2}
+.t7-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 18px;border-radius:4px;border:1px solid transparent;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;line-height:1;white-space:nowrap}
+.t7 a.t7-btn-gold{background:#c8a94a;color:#070b14}
+.t7 a.t7-btn-line{background:transparent;border-color:#5f6d89;color:#f3f5f9}
+.t7 a.t7-btn-ghost{background:transparent;color:#e5c768;padding:0 6px;text-decoration:underline;text-underline-offset:5px}
+.t7 a.t7-btn-focus{background:#c8a94a;color:#070b14;outline:2px solid #c8a94a;outline-offset:2px}
+.t7-btn-sm{min-height:44px;padding:0 14px;font-size:16px}
+.t7-tags{display:flex;flex-wrap:wrap;gap:8px}
+.t7-tag{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:3px;border:1px solid currentColor;background:#0e1526;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;line-height:1;white-space:nowrap}
+.t7-tag .t7-ico{width:15px;height:15px}
+.t7-t-open{color:#34d399}
+.t7-t-soon{color:#f3f5f9;background:#1a2744;border-color:#5f6d89}
+.t7-t-full{color:#c8a94a}
+.t7-t-closed{color:#8e9ab2;border-color:#5f6d89}
+.t7-t-ext{color:#a7b0c2;border-color:#5f6d89}
+.t7-t-lca{background:#c8a94a;color:#070b14;border-color:#c8a94a}
+.t7-field label{display:block;font-weight:600;font-size:15px;line-height:20px;margin-bottom:6px}
+.t7-inwrap{position:relative}
+.t7-inwrap .t7-ico{position:absolute;left:12px;top:14px;color:#8e9ab2}
+.t7-input{width:100%;height:48px;border:1px solid #5f6d89;border-radius:4px;background:#0e1526;padding:0 12px 0 40px;font-family:'Barlow',sans-serif;font-size:17px;color:#f3f5f9;outline:2px solid #c8a94a;outline-offset:2px}
+.t7-hint{font-size:13px;line-height:18px;color:#8e9ab2;margin:8px 0 16px}
+.t7-hs{border:1px solid rgba(255,255,255,.12);border-radius:4px;overflow:hidden}
+.t7-hbar{display:flex;align-items:center;gap:14px;padding:0 14px;height:56px;background:#070b14;white-space:nowrap;overflow:hidden}
+.t7-hmark{color:#c8a94a;display:flex}
+.t7-hmark svg{width:30px;height:30px;fill:currentColor}
+.t7-hname{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.04em;text-transform:uppercase;margin-right:4px}
+.t7-hnav{font-weight:500;font-size:15px;line-height:53px;color:#f3f5f9}
+.t7-hnav-on{box-shadow:inset 0 -3px 0 #c8a94a}
+.t7-hstat{display:flex;align-items:center;gap:10px;height:40px;padding:0 14px;background:#0e1526;border-top:1px solid rgba(255,255,255,.08);font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;overflow:hidden}
+.t7-ev{background:#0e1526;border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:16px 18px 18px}
+.t7-evtop{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.t7-evtitle{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:34px;line-height:36px;text-transform:uppercase}
+.t7-evmeta{font-size:15px;line-height:21px;color:#8e9ab2;margin:4px 0 14px}
+.t7-pbs{display:flex;flex-direction:column;gap:6px}
+.t7-pb{position:relative;display:grid;grid-template-columns:30px 12px minmax(0,1fr) auto 92px;align-items:center;gap:10px;height:42px;padding-left:8px;background:#1a2744;border-radius:4px;overflow:hidden}
+.t7-pb b{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t7-bdno{display:inline-flex;align-items:center;justify-content:center;width:30px;height:24px;border-radius:3px;background:#c8a94a;color:#070b14;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;line-height:1}
+.t7-sq{width:12px;height:12px;border-radius:2px;display:inline-block;flex:none}
+.t7-sq-w{background:#f3f5f9}
+.t7-sq-b{background:#070b14;box-shadow:0 0 0 1px #8e9ab2}
+.t7-rt{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;color:#8e9ab2}
+.t7-clock{align-self:stretch;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;font-size:16px;background:#0e1526;color:#f3f5f9}
+.t7-clock-on{background:#c8a94a;color:#070b14;font-weight:700}
+.t7-cbar{position:absolute;left:0;right:0;bottom:0;height:4px;display:flex;justify-content:flex-end;background:#0e1526}
+.t7-cbar i{display:block;height:4px;background:#e5c768}
+.t7-evfoot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px}
+.t7-evnext{font-size:14px;color:#8e9ab2;margin-left:auto}
+.t7-chess{display:grid;grid-template-columns:1.15fr 1fr 290px;gap:30px;align-items:start}
+.t7-prow{display:grid;grid-template-columns:30px minmax(0,1fr) 62px minmax(0,1fr);align-items:center;gap:10px;height:44px;border-bottom:1px solid rgba(255,255,255,.08)}
+.t7-prows{border-top:1px solid rgba(255,255,255,.08);margin-bottom:18px}
+.t7-pw,.t7-pbk{display:flex;align-items:center;gap:8px;min-width:0}
+.t7-pbk{justify-content:flex-end}
+.t7-pw b,.t7-pbk b{font-weight:600;font-size:15px;white-space:nowrap}
+.t7-pres{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:15px;text-align:center}
+.t7-inplay{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:#ff4757;text-align:center}
+.t7-st{width:100%;border-collapse:collapse}
+.t7-st th{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#8e9ab2;text-align:left;padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.16)}
+.t7-st td{padding:0 8px;height:44px;border-bottom:1px solid rgba(255,255,255,.08);font-size:15px}
+.t7-st .t7-r{text-align:right}
+.t7-rk{display:inline-flex;align-items:center;justify-content:center;width:28px;height:24px;border-radius:3px;border:1px solid #5f6d89;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;font-weight:700}
+.t7-rk1{background:#c8a94a;border-color:#c8a94a;color:#070b14}
+.t7-pts{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px}
+.t7-xrow{display:flex;align-items:center;gap:6px;margin-bottom:18px}
+.t7-xn{font-weight:600;font-size:15px;width:96px;flex:none}
+.t7-x{position:relative;width:52px;height:38px;display:inline-flex;align-items:center;justify-content:center;border-radius:3px;background:#0e1526;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:14px;border-bottom:3px solid currentColor;flex:none}
+.t7-x .t7-sq{position:absolute;left:4px;top:4px;width:7px;height:7px}
+.t7-xw{color:#34d399}.t7-xl{color:#ff6b6b}.t7-xd{color:#a7b0c2}
+.t7-xtot{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;margin-left:6px}
+.t7-delta{display:flex;flex-direction:column;gap:0;margin-bottom:18px;border-top:1px solid rgba(255,255,255,.08)}
+.t7-delta li{display:flex;justify-content:space-between;align-items:center;height:36px;border-bottom:1px solid rgba(255,255,255,.08);font-size:15px}
+.t7-up{color:#34d399}.t7-dn{color:#ff6b6b}
+.t7-bbar{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;background:#0e1526;border:1px solid rgba(255,255,255,.08);border-radius:4px;font-size:14px;white-space:nowrap}
+.t7-bbar b{font-weight:600}
+.t7-tm{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;letter-spacing:.1em;text-transform:uppercase;background:#c8a94a;color:#070b14;padding:4px 8px;border-radius:3px}
+.t7-bmid{display:flex;gap:6px;margin:6px 0}
+.t7-eval{position:relative;width:14px;height:208px;background:#070b14;border:1px solid #5f6d89;border-radius:2px;overflow:hidden;flex:none}
+.t7-eval i{position:absolute;left:0;right:0;bottom:0;height:96%;background:#f3f5f9}
+.t7-board{display:grid;grid-template-columns:repeat(8,26px);grid-template-rows:repeat(8,26px);border-radius:2px;overflow:hidden}
+.t7-board i{display:flex;align-items:center;justify-content:center;font-style:normal}
+.t7-l{background:#a7b0c2}.t7-d{background:#5f6d89}
+.t7-hl{box-shadow:inset 0 0 0 2px #e5c768}
+.t7-pwh,.t7-pbl{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;line-height:1}
+.t7-pwh{background:#f3f5f9;color:#070b14}
+.t7-pbl{background:#070b14;color:#f3f5f9;box-shadow:0 0 0 1px #8e9ab2}
+.t7-trio{display:grid;grid-template-columns:1.2fr 1fr .85fr;gap:36px}
+.t7-ticker{display:flex;align-items:center;gap:16px;height:40px;background:#0e1526;border:1px solid rgba(255,255,255,.08);border-radius:4px;white-space:nowrap;overflow:hidden;font-size:14px;margin-bottom:14px}
+.t7-tk{display:inline-flex;align-items:center;height:100%;padding:0 12px;background:#c8a94a;color:#070b14;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;flex:none}
+.t7-ticker span b{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;margin:0 4px}
+.t7-motrow{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.t7-cdemo{position:relative;flex:1;height:34px;background:#1a2744;border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;overflow:hidden}
+.t7-photos{display:grid;grid-template-columns:1fr 118px;gap:14px;align-items:start}
+.t7-ph-t{position:relative;height:172px;border-radius:4px;overflow:hidden;background:#1a2744}
+.t7-ph-t img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1) contrast(1.2) brightness(.7);mix-blend-mode:luminosity}
+.t7-shade{position:absolute;left:0;right:0;bottom:0;height:44px;background:#070b14;opacity:.72}
+.t7-phl{position:absolute;left:10px;bottom:9px}
+.t7-ph-o img{width:118px;height:88px;object-fit:cover;display:block;border-radius:4px}
+.t7-phcap{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#8e9ab2;margin-top:6px}
+.t7-phnote{grid-column:1/-1;margin-top:8px}
+.t7-icons{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.t7-icon{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;line-height:16px}
+.t7-itile{width:52px;height:52px;border-radius:4px;background:#0e1526;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:#c8a94a}
+.t7-itile svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:square;stroke-linejoin:miter}
+.t7-dd{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.t7-ddc{background:#0e1526;border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:14px 16px}
+.t7-ddh{display:inline-flex;align-items:center;gap:6px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.t7-do{color:#34d399}.t7-dont{color:#ff6b6b}
+.t7-ddc p{font-size:15px;line-height:22px}
+.t7-end{height:6px;flex:none;background:#c8a94a}
+</style>
+</helmet>
+<div class="t7" style="width:1440px;height:2400px;box-sizing:border-box;background:#070b14">
+<div class="t7-status t7-px">
+<span class="t7-live"><i></i>Live</span><span class="t7-rbox">R3</span><span>Look 7 of 7 · event-day theme</span><span class="t7-muted">Round 3 in progress · pairings posted 6:42 PM</span><span class="k-sample t7-st-s">Sample data</span>
+</div>
+
+<section class="t7-px t7-intro">
+<div class="t7-introgrid">
+<div>
+<h1 class="t7-title">Broadcast Night</h1>
+<p class="t7-tagline">Live mode</p>
+<div class="t7-idea"><div class="t7-lab">The idea</div><p>A dark, data-first theme borrowed from elite chess broadcasts: player bars, clock bars, board numbers and a results ticker, with gold as the live accent on navy-black. It switches on for event days, so pairings and standings stay readable on a phone in a dim hall, and the same page can go up on the wall as a hall display.</p></div>
+</div>
+<div class="t7-side">
+<div class="t7-panel t7-ib"><div class="t7-ibh"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Best for</div><p>Tournament-day pages: live pairings, standings and crosstables, round-ready alerts, the check-in desk and the hall TV view of the pairings page.</p></div>
+<div class="t7-panel t7-ib"><div class="t7-ibh"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>Watch out for</div><p>Long reading tires on dark, so news, bylaws and forms stay light. Never white text on live red (3.34). No engine bars on games in progress. Factual broadcast tone, not esports hype.</p></div>
+</div>
+</div>
+</section>
+
+<section class="t7-sec t7-px">
+<div class="t7-head"><h2 class="t7-h2"><span class="t7-n">2</span>Type</h2><span class="t7-meta">Google Fonts, one css2 link: Barlow Condensed + Barlow + JetBrains Mono, with Big Shoulders Display for round banners only</span></div>
+<div class="t7-typegrid">
+<div class="t7-panel t7-tc"><div class="t7-lab">Display · Barlow Condensed · 800 / 700 / 600</div><div class="t7-s-disp">Lafayette Open 2026</div><div class="t7-s-disp2">Round 3 · Board 1</div><div class="t7-wts"><span style="font-weight:600">Aa 600</span><span style="font-weight:700">Aa 700</span><span style="font-weight:800">Aa 800</span></div></div>
+<div class="t7-panel t7-tc"><div class="t7-lab">Banner only · Big Shoulders Display · 900</div><div class="t7-s-banner">Round 5</div><div class="t7-note">No tabular figures: banners only, never in columns.</div></div>
+<div class="t7-panel t7-tc"><div class="t7-lab">Body · Barlow · 400 / 500 / 600</div><p class="t7-s-body">Results post as the TD enters them, and standings re-sort after each round with US Chess tiebreaks.</p><p class="t7-s-fig"><b>Tabular figures</b> 2014 · 1803 · 4½</p></div>
+<div class="t7-panel t7-tc"><div class="t7-lab">Data · JetBrains Mono · 400 / 500 / 700</div><div class="t7-mono t7-s-mono">16. Qb8+!! Nxb8<br>17. Rd8# 1–0</div><div class="t7-mono t7-s-mono2">1:12:40 · 0:58:05</div><div class="t7-note">Ligatures off, so "!!" stays two marks.</div></div>
+</div>
+</section>
+
+<section class="t7-sec t7-px">
+<div class="t7-head"><h2 class="t7-h2"><span class="t7-n">3</span>Palette</h2><span class="t7-meta">WCAG 2.x ratios from the research, measured on the #070b14 background unless noted; panel and navy figures computed with the same formula</span></div>
+<div class="t7-pal">
+<div class="t7-e1"><div class="t7-el"><span>Background</span><span class="t7-mono">#070b14</span></div>
+<div class="t7-e2"><div class="t7-el"><span>Panel</span><span class="t7-mono">#0e1526</span></div>
+<div class="t7-e3"><div class="t7-el"><span>Raised · brand navy</span><span class="t7-mono">#1a2744</span></div><p class="t7-note" style="margin-top:8px">Elevation comes from lighter surfaces, never shadows. Borders are white at 8%. Muted text still reads 5.23 up here.</p></div>
+</div>
+</div>
+<div class="t7-swg">
+<div class="t7-sw"><div class="t7-chip" style="background:#f3f5f9">Aa</div><b>Ink</b><span class="t7-mono">#f3f5f9</span><span>Text · 18.03</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#8e9ab2">Aa</div><b>Muted</b><span class="t7-mono">#8e9ab2</span><span>Secondary · 6.95 (6.43 on panel)</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#c8a94a">Join</div><b>Gold</b><span class="t7-mono">#c8a94a</span><span>Live accent · 8.65, dark text on it 8.65</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#e5c768">R3</div><b>Bright gold</b><span class="t7-mono">#e5c768</span><span>Highlights · 11.90</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#0e1526;border:2px solid #5f6d89;color:#f3f5f9">Input</div><b>Field border</b><span class="t7-mono">#5f6d89</span><span>Inputs only · 3.50 on panel</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#ff4757">Live</div><b>Live red</b><span class="t7-mono">#ff4757</span><span>5.90 as text; dark text on it 5.90; white 3.34, never</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#c81e32;color:#ffffff">Live</div><b>Live, white text</b><span class="t7-mono">#c81e32</span><span>White on it 5.69</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#34d399">W</div><b>Win</b><span class="t7-mono">#34d399</span><span>10.24 · always with "W"</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#ff6b6b">L</div><b>Loss</b><span class="t7-mono">#ff6b6b</span><span>7.09 · always with "L"</span></div>
+<div class="t7-sw"><div class="t7-chip" style="background:#a7b0c2">D</div><b>Draw</b><span class="t7-mono">#a7b0c2</span><span>8.35 on panel · with "D"</span></div>
+</div>
+</div>
+</section>
+
+<section class="t7-sec t7-px">
+<div class="t7-head"><h2 class="t7-h2"><span class="t7-n">4</span>Components</h2><span class="t7-meta">4px corners · 8% white hairlines · gold buttons with dark text · gold focus ring, 2px with 2px offset</span></div>
+<div class="t7-comp">
+<div>
+<div class="t7-lab">Buttons</div>
+<div class="t7-btns">
+<div class="t7-bx"><span>Primary</span><a class="t7-btn t7-btn-gold" href="#">Event details</a></div>
+<div class="t7-bx"><span>Secondary</span><a class="t7-btn t7-btn-line" href="#"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a></div>
+<div class="t7-bx"><span>Ghost</span><a class="t7-btn t7-btn-ghost" href="#">Full crosstable<svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
+<div class="t7-bx"><span>Focused</span><a class="t7-btn t7-btn-focus" href="#">Event details</a></div>
+</div>
+<div class="t7-lab">Status tags · words + color</div>
+<div class="t7-tags">
+<span class="t7-tag t7-t-open"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Registration open</span>
+<span class="t7-tag t7-t-soon"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Opens Mon, Oct 12</span>
+<span class="t7-tag t7-t-full">Waitlist</span>
+<span class="t7-tag t7-t-closed">Closed</span>
+<span class="t7-live"><i></i>Live · Round 3</span>
+<span class="t7-tag t7-t-ext"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Partner event</span>
+<span class="t7-tag t7-t-lca">LCA event</span>
+</div>
+</div>
+<div>
+<div class="t7-field"><label for="t7q">Find a player or board</label><div class="t7-inwrap"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="t7q" class="t7-input" value="Landry"></div><div class="t7-hint">Shown focused. Border #5f6d89 is 3.50 on panel, enough for a control edge.</div></div>
+<div class="t7-lab">Header slice · with status line</div>
+<div class="t7-hs">
+<div class="t7-hbar"><span class="t7-hmark"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="t7-hname">Louisiana Chess</span><span class="t7-hnav t7-hnav-on">Tournaments</span><span class="t7-hnav">Clubs</span><span class="t7-hnav">Scholastic</span></div>
+<div class="t7-hstat"><span class="t7-live"><i></i>Live · R3</span><span>Lafayette Open 2026</span><span class="t7-muted">pairings posted 6:42 PM</span></div>
+</div>
+</div>
+<article class="t7-ev">
+<div class="t7-evtop"><span class="t7-live"><i></i>Live · Round 3</span><span class="t7-tag t7-t-ext">Partner event</span></div>
+<h3 class="t7-evtitle">Lafayette Open 2026</h3>
+<p class="t7-evmeta">Sat–Sun, Oct 10–11, 2026 · Lafayette, LA · Classical · All ages</p>
+<div class="t7-pbs">
+<div class="t7-pb"><span class="t7-bdno">1</span><i class="t7-sq t7-sq-b"></i><b>Priya Shah</b><span class="t7-rt">1803</span><span class="t7-clock t7-clock-on">0:58:05</span><span class="t7-cbar"><i style="width:64%"></i></span></div>
+<div class="t7-pb"><span class="t7-bdno">1</span><i class="t7-sq t7-sq-w"></i><b>Marcus Landry</b><span class="t7-rt">2014</span><span class="t7-clock">1:12:40</span><span class="t7-cbar"><i style="width:80%"></i></span></div>
+</div>
+<div class="t7-evfoot"><a class="t7-btn t7-btn-gold t7-btn-sm" href="#">Live pairings</a><a class="t7-btn t7-btn-line t7-btn-sm" href="#">Standings</a><span class="t7-evnext">Round 4 · Sun 9:30 AM</span></div>
+</article>
+</div>
+</section>
+
+<section class="t7-sec t7-px">
+<div class="t7-head"><h2 class="t7-h2"><span class="t7-n">5</span>Chess data</h2><span class="t7-meta">Board number, White, result, Black · ratings in muted mono · results always a letter plus a color</span></div>
+<div class="t7-chess">
+<div>
+<div class="t7-lab">Pairings · Round 3 · Open</div>
+<div class="t7-prows">
+<div class="t7-prow"><span class="t7-bdno">1</span><span class="t7-pw"><i class="t7-sq t7-sq-w"></i><b>Marcus Landry</b><span class="t7-rt">2014</span></span><span class="t7-inplay">In play</span><span class="t7-pbk"><span class="t7-rt">1803</span><b>Priya Shah</b><i class="t7-sq t7-sq-b"></i></span></div>
+<div class="t7-prow"><span class="t7-bdno">2</span><span class="t7-pw"><i class="t7-sq t7-sq-w"></i><b>Avery Thibodeaux</b><span class="t7-rt">1912</span></span><span class="t7-pres">1–0</span><span class="t7-pbk"><span class="t7-rt">1688</span><b>Isaac Dupre</b><i class="t7-sq t7-sq-b"></i></span></div>
+<div class="t7-prow"><span class="t7-bdno">3</span><span class="t7-pw"><i class="t7-sq t7-sq-w"></i><b>Sam Nguyen</b><span class="t7-rt">1650</span></span><span class="t7-pres">½–½</span><span class="t7-pbk"><span class="t7-rt">1744</span><b>Camille Broussard</b><i class="t7-sq t7-sq-b"></i></span></div>
+</div>
+<div class="t7-lab">Standings · after round 5</div>
+<table class="t7-st">
+<thead><tr><th>Rk</th><th>Player</th><th class="t7-r">Rtg</th><th class="t7-r">Pts</th><th class="t7-r">TB</th></tr></thead>
+<tbody>
+<tr><td><span class="t7-rk t7-rk1">1</span></td><td>Marcus Landry</td><td class="t7-r t7-rt">2014</td><td class="t7-r t7-pts">4½</td><td class="t7-r t7-mono">13½</td></tr>
+<tr><td><span class="t7-rk">2</span></td><td>Avery Thibodeaux</td><td class="t7-r t7-rt">1912</td><td class="t7-r t7-pts">4</td><td class="t7-r t7-mono">13</td></tr>
+<tr><td><span class="t7-rk">3</span></td><td>Priya Shah</td><td class="t7-r t7-rt">1803</td><td class="t7-r t7-pts">4</td><td class="t7-r t7-mono">12½</td></tr>
+</tbody>
+</table>
+</div>
+<div>
+<div class="t7-lab">Crosstable cells · fixed width, outcome-colored</div>
+<div class="t7-xrow"><span class="t7-xn">Nora Hebert</span><span class="t7-x t7-xw"><i class="t7-sq t7-sq-w"></i>W12</span><span class="t7-x t7-xl"><i class="t7-sq t7-sq-b"></i>L4</span><span class="t7-x t7-xd"><i class="t7-sq t7-sq-w"></i>D7</span><span class="t7-x t7-xw"><i class="t7-sq t7-sq-b"></i>W9</span><span class="t7-x t7-xw"><i class="t7-sq t7-sq-w"></i>W3</span><span class="t7-xtot">3½</span></div>
+<div class="t7-lab">Rating change · sign first, no arrows</div>
+<ul class="t7-delta">
+<li><span>Marcus Landry</span><b class="t7-mono t7-up">+9</b></li>
+<li><span>Isaac Dupre</span><b class="t7-mono t7-up">+14</b></li>
+<li><span>Priya Shah</span><b class="t7-mono t7-dn">−6</b></li>
+</ul>
+<div class="t7-lab">Clock bar · 4px, shrinks from the left</div>
+<div class="t7-cdemo"><span>Board 4 · White</span><span>0:41:18</span><span class="t7-cbar"><i style="width:46%"></i></span></div>
+</div>
+<div>
+<div class="t7-lab">Board · Opera Game, Paris 1858</div>
+<div class="t7-bbar"><i class="t7-sq t7-sq-b"></i><b>Duke Karl / Count Isouard</b></div>
+<div class="t7-bmid">
+<div class="t7-eval" aria-label="Evaluation: White mates in 2"><i></i></div>
+<div class="t7-board" role="img" aria-label="Opera Game after 15...Nxd7, White to move">
+<i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"><b class="t7-pbl">K</b></i><i class="t7-d"><b class="t7-pbl">B</b></i><i class="t7-l"></i><i class="t7-d"><b class="t7-pbl">R</b></i>
+<i class="t7-d"><b class="t7-pbl">P</b></i><i class="t7-l"></i><i class="t7-d"></i><i class="t7-l t7-hl"><b class="t7-pbl">N</b></i><i class="t7-d"></i><i class="t7-l"><b class="t7-pbl">P</b></i><i class="t7-d"><b class="t7-pbl">P</b></i><i class="t7-l"><b class="t7-pbl">P</b></i>
+<i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"><b class="t7-pbl">Q</b></i><i class="t7-d t7-hl"></i><i class="t7-l"></i><i class="t7-d"></i>
+<i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"><b class="t7-pbl">P</b></i><i class="t7-l"></i><i class="t7-d"><b class="t7-pwh">B</b></i><i class="t7-l"></i>
+<i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"><b class="t7-pwh">P</b></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"></i>
+<i class="t7-d"></i><i class="t7-l"><b class="t7-pwh">Q</b></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"></i>
+<i class="t7-l"><b class="t7-pwh">P</b></i><i class="t7-d"><b class="t7-pwh">P</b></i><i class="t7-l"><b class="t7-pwh">P</b></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"><b class="t7-pwh">P</b></i><i class="t7-l"><b class="t7-pwh">P</b></i><i class="t7-d"><b class="t7-pwh">P</b></i>
+<i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"><b class="t7-pwh">K</b></i><i class="t7-l"><b class="t7-pwh">R</b></i><i class="t7-d"></i><i class="t7-l"></i><i class="t7-d"></i><i class="t7-l"></i>
+</div>
+</div>
+<div class="t7-bbar"><i class="t7-sq t7-sq-w"></i><b>Paul Morphy</b><span class="t7-tm">To move</span></div>
+<p class="t7-note" style="margin-top:8px">16. Qb8+!! Nxb8 17. Rd8#. Gold squares mark the last move, 15...Nxd7. Eval bar (#2) only because the game is finished and annotated.</p>
+</div>
+</div>
+</section>
+
+<section class="t7-sec t7-px">
+<div class="t7-trio">
+<div>
+<h3 class="t7-h3"><span class="t7-n">6</span>Motif &amp; texture</h3>
+<div class="t7-ticker"><span class="t7-tk">Results R3</span><span>Bd 2 Thibodeaux<b class="t7-up">1–0</b>Dupre</span><span>Bd 3 Nguyen<b>½–½</b>Broussard</span><span>Bd 4 Hebert<b class="t7-dn">0–1</b>Mendez</span></div>
+<div class="t7-motrow"><span class="t7-bdno">1</span><span class="t7-bdno">2</span><span class="t7-bdno">3</span><span class="t7-bdno">4</span><span class="t7-bdno">12</span><span class="t7-live"><i></i>Live</span><span class="t7-rbox">R3</span></div>
+<p class="t7-note">Gold board-number boxes, LIVE and the round ahead of every title, player bars where the gold clock marks the side to move, 4px clock bars, hairlines at 8% white. Numbers roll when a result lands and standings slide when they re-sort; all motion stops under reduced motion.</p>
+</div>
+<div>
+<h3 class="t7-h3"><span class="t7-n">7</span>Photo treatment</h3>
+<div class="t7-photos">
+<figure class="t7-ph-t"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Tournament hall, treated: low-key navy monochrome"><span class="t7-shade"></span><span class="t7-live t7-phl"><i></i>Live · R3</span></figure>
+<figure class="t7-ph-o"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="The same photo, untreated"><div class="t7-phcap">Original</div></figure>
+<p class="t7-note t7-phnote">Treated: grayscale · contrast 1.2 · brightness .7 · luminosity blend over brand navy #1a2744, plus a solid dark band for labels. Low-key and moody; faces fall into shadow.</p>
+</div>
+</div>
+<div>
+<h3 class="t7-h3"><span class="t7-n">8</span>Icon style</h3>
+<div class="t7-icons">
+<div class="t7-icon"><span class="t7-itile"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"></rect><path d="M8 20h8M12 16v4"></path></svg></span>Hall TV</div>
+<div class="t7-icon"><span class="t7-itile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg></span>Round ready</div>
+<div class="t7-icon"><span class="t7-itile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>Clocks</div>
+<div class="t7-icon"><span class="t7-itile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg></span>Pairings</div>
+<div class="t7-icon"><span class="t7-itile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></span>Live update</div>
+<div class="t7-icon"><span class="t7-itile"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></span>Prizes</div>
+</div>
+<p class="t7-note">24px grid · 1.75px stroke · square caps, mitred joins · gold on panel (8.00).</p>
+</div>
+</div>
+</section>
+
+<section class="t7-sec t7-px t7-last">
+<div class="t7-head"><h2 class="t7-h2"><span class="t7-n">9</span>Do and don't</h2></div>
+<div class="t7-dd">
+<div class="t7-ddc"><div class="t7-ddh t7-do"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</div><p>Lead with status: LIVE and the round come before the event title, as on Lichess broadcasts.</p></div>
+<div class="t7-ddc"><div class="t7-ddh t7-do"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</div><p>Put dark text on live red (5.90), or switch to #c81e32 when the text must be white (5.69).</p></div>
+<div class="t7-ddc"><div class="t7-ddh t7-dont"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don't</div><p>Show an engine evaluation bar on a game still in progress. Finished, annotated games only.</p></div>
+<div class="t7-ddc"><div class="t7-ddh t7-dont"><svg class="t7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don't</div><p>Go esports: no hype copy, glows or flashing. Numbers roll and rows re-sort quietly.</p></div>
+</div>
+</section>
+<div class="t7-end"></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

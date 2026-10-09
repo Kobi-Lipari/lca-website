@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Account B — Family first</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.ab-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8}
+.ab-people{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+.ab-pchip{display:inline-flex;align-items:center;gap:8px;background:#ffffff;border:1px solid #e3e1d8;border-radius:999px;padding:5px 14px 5px 5px;font-size:14px;color:#1a2744}
+.ab-av{width:42px;height:42px;border-radius:50%;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex:none;box-sizing:border-box}
+.ab-av-sm{width:30px;height:30px;font-size:12px}
+.ab-av-gold{background:#c8a94a;color:#1a2744}
+.ab-av-line{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.ab-person{padding:20px;display:flex;flex-direction:column;gap:12px}
+.ab-ph{display:flex;gap:12px;align-items:center}
+.ab-kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:13.5px;padding:12px 0;border-top:1px solid #eeede7;border-bottom:1px solid #eeede7}
+.ab-kv dt{color:#555c6b}
+.ab-kv dd{margin:0;text-align:right;color:#1a2744}
+.ab-entry{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid #eeede7}
+.ab-bar{height:8px;border-radius:4px;background:#eceae2;overflow:hidden;margin:6px 0 4px}
+.ab-bar i{display:block;height:100%;background:#1a2744}
+.ab-empty{border:1px dashed #c9c6ba;border-radius:10px;padding:14px;font-size:13.5px;line-height:1.45}
+.ab-lanes-wrap{overflow-x:auto;margin-top:18px}
+.ab-lanes{display:grid;grid-template-columns:150px repeat(2,minmax(0,1fr)) 92px repeat(2,minmax(0,1fr)) 110px;gap:8px;min-width:880px}
+.ab-h{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#555c6b;padding:0 4px 2px}
+.ab-c{border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.4;background:#f5f5f2;min-height:76px;box-sizing:border-box;color:#1a2744}
+.ab-c-live{background:#ffffff;border:2px solid #1a2744}
+.ab-c-next{background:transparent;border:1px dashed #c9c6ba;color:#555c6b}
+.ab-c-break{background:#efede6;color:#555c6b;text-align:center;display:flex;align-items:center;justify-content:center}
+.ab-who{display:flex;gap:10px;align-items:center;font-weight:600;color:#1a2744}
+.ab-now{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid #eeede7}
+.ab-reg{display:flex;align-items:center;gap:12px;padding:14px 0 10px;border-top:1px solid #eeede7}
+.ab-reg input[type=checkbox]{width:22px;height:22px;flex:none;margin:0}
+.ab-sub{margin:0 0 0 34px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding-bottom:12px}
+.ab-total{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-top:16px;border-top:2px solid #1a2744}
+.ab-seats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.ab-seat{border:1px solid #e3e1d8;border-radius:10px;padding:10px 6px;text-align:center;font-size:12.5px;display:flex;flex-direction:column;align-items:center;gap:6px;color:#1a2744}
+.ab-seat-open{border-style:dashed;color:#555c6b}
+.ab-price{display:flex;gap:10px;align-items:flex-start;background:#f6efd9;border-radius:10px;padding:12px;font-size:13.5px;line-height:1.45;color:#1a2744}
+.ab-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 28px;font-size:13px;line-height:1.45}
+.ab-legend div{display:flex;gap:8px;align-items:flex-start}
+@media (max-width:720px){.ab-now{grid-template-columns:1fr}.ab-legend{grid-template-columns:1fr}.ab-seats{grid-template-columns:repeat(2,minmax(0,1fr))}.ab-sub{margin-left:0}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#" aria-current="page" style="display:inline-flex;align-items:center;gap:6px;font-weight:600"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>My LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="ab-band">
+    <div class="k-wrap k-section-sm">
+      <div class="k-between" style="align-items:flex-end">
+        <div>
+          <div class="k-row k-row-sm"><span class="k-kicker">My LCA · Family</span><span class="k-sample">Sample data · family, IDs, entries and results</span></div>
+          <h1 class="k-h1" style="margin:6px 0 0">The Robichaux family</h1>
+          <div class="ab-people">
+            <span class="ab-pchip"><span class="ab-av ab-av-sm">DR</span>Danielle <span class="k-muted">(you)</span></span>
+            <span class="ab-pchip"><span class="ab-av ab-av-sm ab-av-gold">MR</span>Maya · 1102</span>
+            <span class="ab-pchip"><span class="ab-av ab-av-sm ab-av-line">LR</span>Leo · unrated</span>
+            <span class="k-small k-muted">Family membership · valid through Sun, Mar 14, 2027</span>
+          </div>
+        </div>
+        <div class="k-row k-row-sm">
+          <a class="k-btn k-btn-gold" href="#reg">Register the family</a>
+          <a class="k-btn k-btn-line" href="#add"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a child</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap k-section-sm">
+    <h2 class="k-h3" style="margin:0 0 12px">Needs attention · 2</h2>
+    <div class="k-grid-2">
+      <div class="k-card k-card-pad" style="display:flex;gap:14px;align-items:flex-start">
+        <span class="ab-av ab-av-line">LR</span>
+        <div class="k-stack-sm" style="flex:1">
+          <div class="k-row k-row-sm"><span class="k-tag k-tag-full">Needs a US Chess ID</span><span class="k-small k-muted">before Sat, Nov 14</span></div>
+          <div><b>Leo needs a US Chess ID for the New Orleans Youth Chess November Meet.</b> <span class="k-small">Find his ID by name if he already has one, or get one at US Chess and add it here.</span></div>
+          <div class="k-row k-row-sm"><a class="k-btn k-btn-gold k-btn-sm" href="#">Look up by name</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Get one at US Chess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+        </div>
+      </div>
+      <div class="k-card k-card-pad" style="display:flex;gap:14px;align-items:flex-start">
+        <span class="ab-av ab-av-gold">MR</span>
+        <div class="k-stack-sm" style="flex:1">
+          <div class="k-row k-row-sm"><span class="k-tag k-tag-soon">Waiting on the director</span><span class="k-small k-muted">requested Fri, Oct 2</span></div>
+          <div><b>Maya's ½-point bye for round 5 at The Baton Rouge Classic.</b> <span class="k-small">We'll email you as soon as the director answers.</span></div>
+          <div class="k-row k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">View request</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Cancel it</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap k-section-sm">
+    <h2 class="k-h2" style="margin:0 0 14px;display:flex;align-items:center;gap:10px"><span class="k-num-badge">1</span>Everyone at a glance</h2>
+    <div class="k-grid-3">
+
+      <div class="k-card ab-person">
+        <div class="ab-ph">
+          <span class="ab-av ab-av-gold">MR</span>
+          <div style="flex:1;min-width:0"><div class="k-h4" style="margin:0">Maya Robichaux</div><div class="k-small k-muted">Scholastic · on the Family plan</div></div>
+          <button class="k-iconbtn" type="button" aria-label="Show Maya's check-in QR"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg></button>
+        </div>
+        <dl class="ab-kv">
+          <dt>US Chess ID</dt><dd class="k-mono">30522917</dd>
+          <dt>Regular rating</dt><dd>1102</dd>
+          <dt>US Chess through</dt><dd>Jan 31, 2027</dd>
+        </dl>
+        <div class="k-label">Coming up</div>
+        <div class="ab-entry">
+          <div class="k-date"><b>24</b><span>Oct</span></div>
+          <div style="flex:1"><b>The Baton Rouge Classic</b><div class="k-small k-muted">Sat–Sun, Oct 24–25 · U1400 · 5 rounds</div><div class="k-row k-row-sm" style="margin-top:6px"><span class="k-tag k-tag-open">Paid</span><span class="k-tag k-tag-soon">Bye requested · R5</span></div></div>
+        </div>
+        <div class="ab-entry" style="border-bottom:0">
+          <div class="k-date"><b>14</b><span>Nov</span></div>
+          <div style="flex:1"><b>New Orleans Youth Chess November Meet</b><div class="k-small k-muted">Sat, Nov 14 · K–8 section</div><div class="k-row k-row-sm" style="margin-top:6px"><span class="k-tag k-tag-open">Paid</span></div></div>
+        </div>
+        <div>
+          <div class="k-between k-small"><span>Events played</span><b>9</b></div>
+          <div class="ab-bar"><i style="width:90%"></i></div>
+          <div class="k-small k-muted">One more for her 10th-event milestone · last result 3 / 4 at the May Meet</div>
+        </div>
+        <div class="k-row k-row-sm"><a class="k-link k-small" href="#">Change section</a><a class="k-link k-small" href="#">Byes</a><a class="k-link k-small" href="#">Withdraw</a><a class="k-link k-small" href="#">Results</a></div>
+      </div>
+
+      <div class="k-card ab-person">
+        <div class="ab-ph">
+          <span class="ab-av ab-av-line">LR</span>
+          <div style="flex:1;min-width:0"><div class="k-h4" style="margin:0">Leo Robichaux</div><div class="k-small k-muted">Scholastic · on the Family plan</div></div>
+          <button class="k-iconbtn" type="button" aria-label="Show Leo's check-in QR"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg></button>
+        </div>
+        <dl class="ab-kv">
+          <dt>US Chess ID</dt><dd><span class="k-tag k-tag-full">None yet</span></dd>
+          <dt>Regular rating</dt><dd>Unrated</dd>
+          <dt>Needed by</dt><dd>Sat, Nov 14</dd>
+        </dl>
+        <div class="k-label">Coming up</div>
+        <div class="ab-entry" style="border-bottom:0">
+          <div class="k-date"><b>14</b><span>Nov</span></div>
+          <div style="flex:1"><b>New Orleans Youth Chess November Meet</b><div class="k-small k-muted">Sat, Nov 14 · K–3 section · you confirmed he's in 3rd grade or below</div><div class="k-row k-row-sm" style="margin-top:6px"><span class="k-tag k-tag-open">Paid</span><span class="k-tag k-tag-full">Needs US Chess ID</span></div></div>
+        </div>
+        <div class="ab-empty" style="background:#fbfaf6"><b>First event coming up.</b> Leo earns his first-event milestone on Sat, Nov 14, then 5th and 10th.</div>
+        <div class="k-row k-row-sm" style="margin-top:auto"><a class="k-link k-small" href="#">Add US Chess ID</a><a class="k-link k-small" href="#">Change section</a><a class="k-link k-small" href="#">Withdraw</a></div>
+      </div>
+
+      <div class="k-card ab-person">
+        <div class="ab-ph">
+          <span class="ab-av">DR</span>
+          <div style="flex:1;min-width:0"><div class="k-h4" style="margin:0">Danielle Robichaux <span class="k-muted" style="font-weight:400">(you)</span></div><div class="k-small k-muted">Adult · holds the Family plan</div></div>
+          <button class="k-iconbtn" type="button" aria-label="Show your check-in QR"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg></button>
+        </div>
+        <dl class="ab-kv">
+          <dt>US Chess ID</dt><dd class="k-mono">30419872</dd>
+          <dt>Regular rating</dt><dd>Unrated</dd>
+          <dt>US Chess through</dt><dd>Mar 31, 2027</dd>
+        </dl>
+        <div class="k-label">Coming up</div>
+        <div class="ab-empty">Nothing entered for you. <b>Playing too?</b> The Blitz at the Ken Ferguson Memorial runs Sun, Jan 17, the same day as the scholastic.<div style="margin-top:10px"><a class="k-btn k-btn-line k-btn-sm" href="#reg">Add me to the family checkout</a></div></div>
+        <div class="ab-empty">Help at the November Meet's check-in table? Volunteer days count toward milestones too.<div style="margin-top:10px"><a class="k-link k-small" href="#">Sign up to help</a></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap k-section-sm">
+    <div class="k-card k-card-pad">
+      <div class="k-between" style="align-items:flex-start">
+        <div>
+          <div class="k-row k-row-sm"><span class="k-num-badge">2</span><span class="k-kicker">Family day view</span><span class="k-tag k-tag-live">Live on event days</span></div>
+          <h2 class="k-h3" style="margin:8px 0 2px">Sat, Nov 14 · New Orleans Youth Chess November Meet</h2>
+          <div class="k-small k-muted">[Venue name], New Orleans · preview: on the day this fills in round by round</div>
+        </div>
+        <div class="k-stack-sm" style="align-items:flex-end">
+          <label class="k-check k-small"><input type="checkbox" checked> Text me when each round is paired</label>
+          <a class="k-link k-small" href="#">Share this view with another guardian</a>
+        </div>
+      </div>
+      <div class="ab-lanes-wrap">
+        <div class="ab-lanes">
+          <div class="ab-h"></div>
+          <div class="ab-h">Round 1 · 9:30 AM</div>
+          <div class="ab-h">Round 2 · 11:00 AM</div>
+          <div class="ab-h">Lunch</div>
+          <div class="ab-h">Round 3 · 1:30 PM</div>
+          <div class="ab-h">Round 4 · 3:00 PM</div>
+          <div class="ab-h">Awards</div>
+
+          <div class="ab-c" style="background:transparent;padding-left:0"><div class="ab-who"><span class="ab-av ab-av-sm ab-av-gold">MR</span>Maya</div><div class="k-small k-muted" style="margin-top:4px">K–8 · 1 / 1</div></div>
+          <div class="ab-c"><span class="k-tag k-tag-open">Won</span><div style="margin-top:6px">Board 6 · Black</div><div class="k-small k-muted">vs Rosa Mendez</div></div>
+          <div class="ab-c ab-c-live"><span class="k-tag k-tag-live">Playing now</span><div style="margin-top:6px"><b>Board 4 · White</b></div><div class="k-small k-muted">vs Elise Fontenot · [Room name]</div></div>
+          <div class="ab-c ab-c-break k-small">12:15–1:15 PM</div>
+          <div class="ab-c ab-c-next">Paired after round 2</div>
+          <div class="ab-c ab-c-next">Paired after round 3</div>
+          <div class="ab-c ab-c-break k-small">About 4:30 PM</div>
+
+          <div class="ab-c" style="background:transparent;padding-left:0"><div class="ab-who"><span class="ab-av ab-av-sm ab-av-line">LR</span>Leo</div><div class="k-small k-muted" style="margin-top:4px">K–3 · 0 / 1</div></div>
+          <div class="ab-c"><span class="k-tag k-tag-closed">Lost</span><div style="margin-top:6px">Board 9 · White</div><div class="k-small k-muted">First rated game</div></div>
+          <div class="ab-c ab-c-live"><span class="k-tag k-tag-live">Playing now</span><div style="margin-top:6px"><b>Board 12 · Black</b></div><div class="k-small k-muted">[Room name]</div></div>
+          <div class="ab-c ab-c-break k-small">12:15–1:15 PM</div>
+          <div class="ab-c ab-c-next">Paired after round 2</div>
+          <div class="ab-c ab-c-next">Paired after round 3</div>
+          <div class="ab-c ab-c-break k-small">About 4:30 PM</div>
+        </div>
+      </div>
+      <div class="ab-now">
+        <div class="k-small"><b>Right now:</b> both are playing round 2. Maya started 11:02 AM, Leo 11:04 AM.</div>
+        <div class="k-small"><b>Next text:</b> round 3 pairings, about 1:15 PM, with each child's board and color.</div>
+        <div class="k-small"><a class="k-link" href="#">Pairings and standings</a> · <a class="k-link" href="#">Both check-in codes</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap k-section-sm">
+    <div class="k-split">
+      <div class="k-main">
+        <div class="k-card k-card-pad" id="reg">
+          <div class="k-row k-row-sm"><span class="k-num-badge">3</span><h2 class="k-h3" style="margin:0">Register the family</h2></div>
+          <p class="k-small k-muted" style="margin:6px 0 14px">Pick one event day, check who's playing, pay once.</p>
+          <button class="k-btn k-btn-line k-btn-block" type="button" style="justify-content:space-between"><span><b>Ken Ferguson Memorial weekend</b> · New Orleans · Sun, Jan 17, 2027</span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+
+          <div class="ab-reg" style="margin-top:16px">
+            <input type="checkbox" checked aria-label="Register Maya">
+            <span class="ab-av ab-av-sm ab-av-gold">MR</span>
+            <div style="flex:1;min-width:0"><b>Maya</b><div class="k-small k-muted">Ken Ferguson Memorial Scholastic</div></div>
+            <button class="k-btn k-btn-soft k-btn-sm" type="button">K–8 · suggested<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+            <b class="k-num" style="width:56px;text-align:right">$25</b>
+          </div>
+          <div class="ab-sub"><label class="k-check k-small"><input type="checkbox" checked> In 8th grade or below?</label><span class="k-small k-muted">Byes: none</span></div>
+
+          <div class="ab-reg">
+            <input type="checkbox" checked aria-label="Register Leo">
+            <span class="ab-av ab-av-sm ab-av-line">LR</span>
+            <div style="flex:1;min-width:0"><b>Leo</b><div class="k-small k-muted">Ken Ferguson Memorial Scholastic</div></div>
+            <button class="k-btn k-btn-soft k-btn-sm" type="button">K–3<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+            <b class="k-num" style="width:56px;text-align:right">$25</b>
+          </div>
+          <div class="ab-sub"><label class="k-check k-small"><input type="checkbox" checked> In 3rd grade or below?</label><span class="k-tag k-tag-full">Needs a US Chess ID before Jan 17</span></div>
+
+          <div class="ab-reg">
+            <input type="checkbox" aria-label="Register Danielle">
+            <span class="ab-av ab-av-sm">DR</span>
+            <div style="flex:1;min-width:0"><b>Danielle (you)</b><div class="k-small k-muted">Blitz at the Ken Ferguson Memorial · same venue</div></div>
+            <button class="k-btn k-btn-soft k-btn-sm" type="button">Open<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+            <b class="k-num k-muted" style="width:56px;text-align:right">$20</b>
+          </div>
+          <div class="ab-sub"><span class="k-small k-muted">Not included · tick the box to add yourself</span></div>
+
+          <div class="ab-total">
+            <div><div class="k-h4" style="margin:0">2 players · $50</div><div class="k-small k-muted">Member prices applied. One Stripe payment; each player gets a confirmation and a pass.</div></div>
+            <a class="k-btn k-btn-gold k-btn-lg" href="#">Pay $50</a>
+          </div>
+        </div>
+      </div>
+
+      <aside class="k-side k-stack">
+        <div class="k-card k-card-pad k-stack-sm">
+          <div class="k-between"><h2 class="k-h4" style="margin:0">Family membership</h2><span class="k-tag k-tag-open">Active</span></div>
+          <div class="k-small">$25 a year · you + up to 3 children · valid through Sun, Mar 14, 2027 · auto-renew on</div>
+          <div class="ab-seats">
+            <div class="ab-seat"><span class="ab-av ab-av-sm">DR</span>Danielle</div>
+            <div class="ab-seat"><span class="ab-av ab-av-sm ab-av-gold">MR</span>Maya</div>
+            <div class="ab-seat"><span class="ab-av ab-av-sm ab-av-line">LR</span>Leo</div>
+            <div class="ab-seat ab-seat-open"><span class="ab-av ab-av-sm" style="background:#f1efe8;color:#555c6b">+</span>Open spot</div>
+          </div>
+          <div class="ab-price"><span class="k-num-badge">5</span><div><b>Price check.</b> Separately: Adult $15 + Scholastic $5 + $5 = $25, the same. Family saves $5 once a third child joins. If only the kids play, two Scholastic memberships ($10) cost less. <a class="k-link" href="#">Compare at renewal</a></div></div>
+          <div class="k-row k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="Member-D.dc.html">Family card</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Add all passes to Wallet</a></div>
+        </div>
+
+        <div class="k-card k-card-pad k-stack-sm">
+          <h2 class="k-h4" style="margin:0">Guardians and event-day texts</h2>
+          <div class="k-small"><b>Danielle Robichaux</b> · account owner</div>
+          <div class="k-small k-muted">Add another guardian. They get their own login and can register, pay and see the day view for Maya and Leo.</div>
+          <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Invite a guardian</a>
+          <div class="k-rule"></div>
+          <div class="k-small">Texts go to (985) 555-0187 · <a class="k-link" href="#">Change</a></div>
+          <div class="k-small k-muted">Emergency contact for scholastic events: asked once, reused on every entry.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="k-wrap k-section-sm">
+    <div class="k-grid-2">
+      <div class="k-card k-card-pad k-stack" id="add">
+        <div class="k-row k-row-sm"><span class="k-num-badge">4</span><h2 class="k-h3" style="margin:0">Add a child</h2></div>
+        <p class="k-small k-muted" style="margin:0">Children don't get their own login. You register and pay for them, and their passes live on your phone.</p>
+        <div class="k-grid-2">
+          <div class="k-field"><label for="ab-fn">First name</label><input id="ab-fn" class="k-input" placeholder="First name"></div>
+          <div class="k-field"><label for="ab-ln">Last name</label><input id="ab-ln" class="k-input" value="Robichaux"></div>
+        </div>
+        <div class="k-field"><label for="ab-id">US Chess ID (optional)</label><input id="ab-id" class="k-input" placeholder="8-digit ID"><div class="k-hint">No ID yet? <a class="k-link" href="#">Look up by name</a>, or add it later.</div></div>
+        <label class="k-check"><input type="checkbox"> In 8th grade or below?</label>
+        <div class="k-hint" style="margin-top:-8px">Only used to show which scholastic sections fit. We never ask for a grade or birthday.</div>
+        <div class="k-row k-row-sm"><button class="k-btn k-btn-navy" type="button">Add to the family</button><span class="k-small k-muted">Uses the last child spot on your Family plan</span></div>
+      </div>
+
+      <div class="k-card k-card-pad">
+        <div class="k-between" style="margin-bottom:10px"><h2 class="k-h3" style="margin:0">Family results</h2><a class="k-link k-small" href="#">All results</a></div>
+        <div class="k-tablebox">
+          <table class="k-table">
+            <thead><tr><th>Date</th><th>Who</th><th>Event</th><th class="k-r">Score</th></tr></thead>
+            <tbody>
+              <tr><td>Sat, May 9, 2026</td><td>Maya</td><td>New Orleans Youth Chess May Meet · K–8</td><td class="k-r k-num">3 / 4</td></tr>
+              <tr><td>Sat, Apr 18, 2026</td><td>Maya</td><td>LCA State Scholastic Championship · K–8</td><td class="k-r k-num">2½ / 5</td></tr>
+              <tr><td>Sat, Mar 21, 2026</td><td>Maya</td><td>New Orleans Youth Chess March Meet · K–5</td><td class="k-r k-num">3 / 4</td></tr>
+              <tr><td>Sat, Dec 6, 2025</td><td>Maya</td><td>New Orleans Youth Chess December Meet · K–5</td><td class="k-r k-num">2 / 4</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="k-small k-muted" style="margin-top:10px">Leo's first result will appear after Sat, Nov 14.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-wrap k-section-sm">
+    <div class="k-rule" style="margin-bottom:16px"></div>
+    <div class="ab-legend">
+      <div><span class="k-num-badge">1</span><span>A card per person: next events, section, payment, US Chess status and milestone, all on one screen.</span></div>
+      <div><span class="k-num-badge">2</span><span>Family day view: on event days each child's round, board, color and result side by side, with a text when rounds pair.</span></div>
+      <div><span class="k-num-badge">3</span><span>Register the family: one event day, a suggested section for each player, one payment.</span></div>
+      <div><span class="k-num-badge">4</span><span>Adding a child takes a name. The US Chess ID is optional and eligibility is a checkbox, never a grade or birthday.</span></div>
+      <div><span class="k-num-badge">5</span><span>An honest price check says when the Family plan does and doesn't save money.</span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3150}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

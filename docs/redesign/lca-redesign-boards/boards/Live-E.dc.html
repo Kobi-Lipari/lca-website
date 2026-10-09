@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Live E — Print &amp; QR kit</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.mono{font-family:'Geist Mono',monospace}
+.col{width:560px;flex:none}
+.sheet{width:560px;height:725px;background:#ffffff;box-shadow:0 1px 2px rgba(0,0,0,.10),0 10px 28px rgba(26,39,68,.10);box-sizing:border-box;padding:26px 32px;position:relative;overflow:hidden;color:#141a2a}
+.sh-top{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:#3d4454;border-bottom:1px solid #141a2a;padding-bottom:7px}
+.sh-top b{color:#141a2a}
+.sh-title{font-size:21px;font-weight:700;margin-top:10px;letter-spacing:-.01em;color:#141a2a}
+.sh-meta{font-size:11px;color:#3d4454;margin-top:3px}
+.sh-foot{position:absolute;left:32px;right:32px;bottom:14px;display:flex;justify-content:space-between;font-size:9.5px;color:#3d4454;border-top:1px solid #c9c9c4;padding-top:6px}
+.pt{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px}
+.pt th{font-size:9px;font-weight:700;text-align:left;padding:4px;border-bottom:1.5px solid #141a2a;color:#141a2a;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.pt td{padding:2.5px 4px;border-bottom:.5px solid #dedcd6;color:#141a2a;white-space:nowrap}
+.pt tbody tr:nth-child(even) td{background:#f4f4f1}
+.pt .r{text-align:right}
+.pt .c{text-align:center}
+.pt .m{font-family:'Geist Mono',monospace;font-size:10px}
+.pt .b{font-weight:600}
+.bb td{padding:7px 3px;font-size:11.5px}
+.wc td{padding:2.5px 3px}
+.dw,.db{display:inline-block;width:6px;height:6px;border-radius:50%;box-sizing:border-box;margin-left:2px;vertical-align:1px}
+.dw{border:1px solid #141a2a}
+.db{background:#141a2a}
+.circ{display:inline-flex;gap:3px;font-family:'Geist Mono',monospace;font-size:9px;color:#555c6b}
+.circ span{border:1px solid #b4b7bf;border-radius:9px;padding:1px 4px}
+.dl{display:grid;grid-template-columns:96px 1fr;gap:4px 10px;font-size:11px;margin-top:10px}
+.dl dt{color:#3d4454;margin:0}
+.dl dd{margin:0;font-weight:500}
+.band{background:#ffffff;border:1px solid #d9d8d2;border-radius:14px;padding:18px 22px;box-sizing:border-box}
+.chiplist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chiplist span{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:16px;background:#f5f5f2;border:1px solid #e3e2dc;font-size:14px}
+</style>
+</helmet>
+<div style="width:3600px;height:1300px;box-sizing:border-box;background:#ecebe6;padding:26px 22px 0;font-family:Geist,system-ui,sans-serif;color:#1a2744;overflow:hidden">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;height:72px">
+    <div>
+      <div class="k-label">Live E — Print &amp; QR kit</div>
+      <div style="font-size:28px;font-weight:700;letter-spacing:-.01em;margin-top:6px">Tournament-day print kit · 2027 Paul Morphy Open</div>
+      <div class="k-meta" style="margin-top:4px;display:flex;align-items:center;gap:10px">Every sheet is built from the same live data as the pairings page: one click per round, letter size, readable in black and white <span class="k-sample">Sample data</span></div>
+    </div>
+    <div class="k-row-sm">
+      <button class="k-btn k-btn-navy" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Print Round 3 set · 4 sheets</button>
+      <button class="k-btn k-btn-line" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download all as PDF</button>
+      <a class="k-btn k-btn-line" href="Live-D.dc.html"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"></rect><path d="M8 20h8M12 16v4"></path></svg>Hall TV mode</a>
+      <a class="k-btn k-btn-line" href="Live-B.dc.html">Live pairings page</a>
+    </div>
+  </div>
+
+  <div style="display:flex;justify-content:space-between;margin-top:26px">
+
+    <div class="col">
+      <div class="sheet" style="padding:0">
+        <div style="background:#1a2744;color:#ffffff;padding:16px 32px;display:flex;align-items:center;gap:12px">
+          <span style="color:#c8a94a;display:flex"><svg class="k-mark k-mark-lg" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>
+          <div><div style="font-weight:700;font-size:15px">Louisiana Chess Association</div><div style="font-size:11px;color:#d6dae3">US Chess state affiliate · since 1915</div></div>
+        </div>
+        <div style="padding:20px 32px 0">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#866a1e">US Chess rated · 5 rounds · G/90+30</div>
+          <div style="font-size:36px;font-weight:700;line-height:1.05;margin-top:6px;letter-spacing:-.01em;color:#141a2a">2027 Paul Morphy Open</div>
+          <div style="font-size:14px;margin-top:6px;color:#141a2a">Sat–Sun, Jun 12–13 · [Venue name], New Orleans</div>
+          <div style="display:flex;gap:20px;align-items:center;margin-top:18px">
+            <svg viewBox="0 0 120 120" style="width:196px;height:196px;flex:none" role="img" aria-label="QR code placeholder for louisianachess.org/morphy27">
+              <defs><pattern id="e-qr1" width="12" height="12" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="4" height="4" fill="#141a2a"></rect><rect x="8" y="4" width="4" height="4" fill="#141a2a"></rect><rect x="4" y="8" width="4" height="4" fill="#141a2a"></rect></pattern></defs>
+              <rect x="0" y="0" width="120" height="120" fill="#ffffff" stroke="#141a2a"></rect>
+              <rect x="8" y="8" width="104" height="104" fill="url(#e-qr1)" opacity="0.4"></rect>
+              <rect x="8" y="8" width="28" height="28" fill="#141a2a"></rect><rect x="13" y="13" width="18" height="18" fill="#ffffff"></rect><rect x="17" y="17" width="10" height="10" fill="#141a2a"></rect>
+              <rect x="84" y="8" width="28" height="28" fill="#141a2a"></rect><rect x="89" y="13" width="18" height="18" fill="#ffffff"></rect><rect x="93" y="17" width="10" height="10" fill="#141a2a"></rect>
+              <rect x="8" y="84" width="28" height="28" fill="#141a2a"></rect><rect x="13" y="89" width="18" height="18" fill="#ffffff"></rect><rect x="17" y="93" width="10" height="10" fill="#141a2a"></rect>
+              <rect x="28" y="51" width="64" height="18" rx="3" fill="#ffffff" stroke="#141a2a"></rect>
+              <text x="60" y="63" font-size="8" text-anchor="middle" fill="#141a2a">QR placeholder</text>
+            </svg>
+            <div>
+              <div style="font-size:23px;font-weight:700;line-height:1.15;color:#141a2a">Find your board on your phone</div>
+              <div style="font-size:13px;margin-top:8px;line-height:1.45;color:#141a2a">Scan, type your name, and see your board, colour and opponent. No app, no login.</div>
+              <div class="mono" style="font-size:14px;margin-top:10px;font-weight:500;color:#141a2a">louisianachess.org/morphy27</div>
+            </div>
+          </div>
+          <div style="margin-top:18px;border-top:2px solid #141a2a;padding-top:10px;color:#141a2a">
+            <div style="font-weight:700;font-size:13px">Rounds</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;margin-top:6px;font-size:13px">
+              <div>Rd 1 · Sat 10:00 AM</div><div>Rd 4 · Sun 9:30 AM</div>
+              <div>Rd 2 · Sat 2:30 PM</div><div>Rd 5 · Sun 2:00 PM</div>
+              <div>Rd 3 · Sat 7:00 PM</div><div></div>
+            </div>
+          </div>
+          <div style="font-size:12.5px;margin-top:14px;line-height:1.45;color:#141a2a">Pairings go up here, on the hall TV and on your phone about 30 minutes before each round. Report results at the TD table or on your phone.</div>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;background:#1a2744;color:#ffffff;padding:12px 32px;display:flex;justify-content:space-between;align-items:center;font-size:12px">
+          <b style="color:#c8a94a">Phones off and away once clocks start</b><span>Chief TD: Chris Arceneaux</span>
+        </div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">1 · Hall poster with QR</div>
+      <div class="k-caption-sub">Door, TD table and skittles room; one code for the whole event</div>
+    </div>
+
+    <div class="col">
+      <div class="sheet">
+        <div class="sh-top"><span><b>2027 Paul Morphy Open</b> · Louisiana Chess Association</span><span><b>U1800 · Round 3</b> · Sat 7:00 PM</span></div>
+        <div class="sh-title">Pairings A–Z: find your name</div>
+        <div class="sh-meta">Posted 6:31 PM · Pts = points before this round · then go to your board number</div>
+        <table class="pt">
+          <thead><tr><th>Name</th><th class="r">Pts</th><th class="c">Board</th><th>Colour</th><th>Opponent</th></tr></thead>
+          <tbody>
+            <tr><td class="b">Alvarez, Victor</td><td class="r">1</td><td class="c b">9</td><td>Black</td><td>Elise Fontenot</td></tr>
+            <tr><td class="b">Arcement, Simone</td><td class="r">0</td><td class="c b">12</td><td>White</td><td>Mia LeJeune</td></tr>
+            <tr><td class="b">Batiste, Devin</td><td class="r">1</td><td class="c b">7</td><td>White</td><td>Sam Nguyen</td></tr>
+            <tr><td class="b">Bergeron, Reid</td><td class="r">0</td><td class="c b">11</td><td>White</td><td>Tyler Daigle</td></tr>
+            <tr><td class="b">Boudreaux, Claire</td><td class="r">1</td><td class="c b">6</td><td>Black</td><td>Darius Washington</td></tr>
+            <tr><td class="b">Breaux, Hannah</td><td class="r">1</td><td class="c b">8</td><td>White</td><td>Jacob Romero</td></tr>
+            <tr><td class="b">Broussard, Camille</td><td class="r">2</td><td class="c b">1</td><td>White</td><td>Lauren Guillory</td></tr>
+            <tr><td class="b">Charbonnet, Andre</td><td class="r">2</td><td class="c b">3</td><td>White</td><td>Rachel Doucet</td></tr>
+            <tr><td class="b">Clement, Henry</td><td class="r">0</td><td class="c b">Bye</td><td colspan="2">Pairing bye (odd number of players), 1 point</td></tr>
+            <tr><td class="b">Daigle, Tyler</td><td class="r">0</td><td class="c b">11</td><td>Black</td><td>Reid Bergeron</td></tr>
+            <tr><td class="b">Doucet, Rachel</td><td class="r">2</td><td class="c b">3</td><td>Black</td><td>Andre Charbonnet</td></tr>
+            <tr><td class="b">Dupre, Isaac</td><td class="r">2</td><td class="c b">2</td><td>Black</td><td>Kendall Pitre</td></tr>
+            <tr><td class="b">Fontenot, Elise</td><td class="r">1</td><td class="c b">9</td><td>White</td><td>Victor Alvarez</td></tr>
+            <tr><td class="b">Guillory, Lauren</td><td class="r">2</td><td class="c b">1</td><td>Black</td><td>Camille Broussard</td></tr>
+            <tr><td class="b">Hebert, Nora</td><td class="r">1</td><td class="c b">Bye</td><td colspan="2">Requested bye, ½ point</td></tr>
+            <tr><td class="b">Johnson, Malik</td><td class="r">1½</td><td class="c b">4</td><td>White</td><td>Grant Melancon</td></tr>
+            <tr><td class="b">Landreneau, Olivia</td><td class="r">1</td><td class="c b">5</td><td>White</td><td>Minh Tran</td></tr>
+            <tr><td class="b">Ledet, Brandon</td><td class="r">0</td><td class="c b">13</td><td>Black</td><td>Gabriel Ortiz</td></tr>
+            <tr><td class="b">LeJeune, Mia</td><td class="r">0</td><td class="c b">12</td><td>Black</td><td>Simone Arcement</td></tr>
+            <tr><td class="b">Melancon, Grant</td><td class="r">1½</td><td class="c b">4</td><td>Black</td><td>Malik Johnson</td></tr>
+            <tr><td class="b">Nguyen, Sam</td><td class="r">1</td><td class="c b">7</td><td>Black</td><td>Devin Batiste</td></tr>
+            <tr><td class="b">Ortiz, Gabriel</td><td class="r">0</td><td class="c b">13</td><td>White</td><td>Brandon Ledet</td></tr>
+            <tr><td class="b">Pham, Anh</td><td class="r">½</td><td class="c b">10</td><td>White</td><td>Ethan Savoie</td></tr>
+            <tr><td class="b">Pitre, Kendall</td><td class="r">2</td><td class="c b">2</td><td>White</td><td>Isaac Dupre</td></tr>
+            <tr><td class="b">Romero, Jacob</td><td class="r">1</td><td class="c b">8</td><td>Black</td><td>Hannah Breaux</td></tr>
+            <tr><td class="b">Savoie, Ethan</td><td class="r">½</td><td class="c b">10</td><td>Black</td><td>Anh Pham</td></tr>
+            <tr><td class="b">Tran, Minh</td><td class="r">1</td><td class="c b">5</td><td>Black</td><td>Olivia Landreneau</td></tr>
+            <tr><td class="b">Washington, Darius</td><td class="r">1</td><td class="c b">6</td><td>White</td><td>Claire Boudreaux</td></tr>
+          </tbody>
+        </table>
+        <div class="sh-foot"><span class="mono">louisianachess.org/morphy27</span><span>28 players · page 1 of 1</span></div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">2 · Pairings A–Z</div>
+      <div class="k-caption-sub">Posted by the door so people find their name fast; byes say why</div>
+    </div>
+
+    <div class="col">
+      <div class="sheet">
+        <div class="sh-top"><span><b>2027 Paul Morphy Open</b> · Louisiana Chess Association</span><span><b>U1800 · Round 3</b> · Sat 7:00 PM</span></div>
+        <div class="sh-title">Pairings by board</div>
+        <div class="sh-meta">Posted 6:31 PM · ratings and points before this round · circle the result when your game ends</div>
+        <table class="pt bb">
+          <thead><tr><th class="c">Bd</th><th>White</th><th class="r">Pts</th><th class="c">Result</th><th>Black</th><th class="r">Pts</th></tr></thead>
+          <tbody>
+            <tr><td class="c b">1</td><td>Camille Broussard <span class="m">1744</span></td><td class="r">2</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Lauren Guillory <span class="m">1641</span></td><td class="r">2</td></tr>
+            <tr><td class="c b">2</td><td>Kendall Pitre <span class="m">1595</span></td><td class="r">2</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Isaac Dupre <span class="m">1688</span></td><td class="r">2</td></tr>
+            <tr><td class="c b">3</td><td>Andre Charbonnet <span class="m">1662</span></td><td class="r">2</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Rachel Doucet <span class="m">1509</span></td><td class="r">2</td></tr>
+            <tr><td class="c b">4</td><td>Malik Johnson <span class="m">1566</span></td><td class="r">1½</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Grant Melancon <span class="m">1731</span></td><td class="r">1½</td></tr>
+            <tr><td class="c b">5</td><td>Olivia Landreneau <span class="m">1588</span></td><td class="r">1</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Minh Tran <span class="m">1676</span></td><td class="r">1</td></tr>
+            <tr><td class="c b">6</td><td>Darius Washington <span class="m">1658</span></td><td class="r">1</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Claire Boudreaux <span class="m">1552</span></td><td class="r">1</td></tr>
+            <tr><td class="c b">7</td><td>Devin Batiste <span class="m">1521</span></td><td class="r">1</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Sam Nguyen <span class="m">1650</span></td><td class="r">1</td></tr>
+            <tr><td class="c b">8</td><td>Hannah Breaux <span class="m">1618</span></td><td class="r">1</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Jacob Romero <span class="m">1497</span></td><td class="r">1</td></tr>
+            <tr><td class="c b">9</td><td>Elise Fontenot <span class="m">1460</span></td><td class="r">1</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Victor Alvarez <span class="m">1604</span></td><td class="r">1</td></tr>
+            <tr><td class="c b">10</td><td>Anh Pham <span class="m">1433</span></td><td class="r">½</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Ethan Savoie <span class="m">1540</span></td><td class="r">½</td></tr>
+            <tr><td class="c b">11</td><td>Reid Bergeron <span class="m">1421</span></td><td class="r">0</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Tyler Daigle <span class="m">1483</span></td><td class="r">0</td></tr>
+            <tr><td class="c b">12</td><td>Simone Arcement <span class="m">1472</span></td><td class="r">0</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Mia LeJeune <span class="m">1415</span></td><td class="r">0</td></tr>
+            <tr><td class="c b">13</td><td>Gabriel Ortiz <span class="m">1408</span></td><td class="r">0</td><td class="c"><span class="circ"><span>1–0</span><span>½–½</span><span>0–1</span></span></td><td>Brandon Ledet <span class="m">1447</span></td><td class="r">0</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;border:1px solid #141a2a;padding:9px 12px;font-size:11.5px;line-height:1.5">
+          <b>Not playing this round</b><br>
+          Hebert, Nora — requested bye, ½ point<br>
+          Clement, Henry — pairing bye (odd number of players), 1 point
+        </div>
+        <div style="margin-top:10px;font-size:11px;line-height:1.5;color:#141a2a">The winner circles the result; for a draw, both players initial it. Results reported on a phone show up here as "reported" until the TD confirms them.</div>
+        <div class="sh-foot"><span class="mono">louisianachess.org/morphy27</span><span>TD copy · page 1 of 1</span></div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">3 · Pairings by board</div>
+      <div class="k-caption-sub">At the TD table, with ratings, points and circle-the-result columns</div>
+    </div>
+
+    <div class="col">
+      <div class="sheet">
+        <div class="sh-top"><span><b>2027 Paul Morphy Open</b> · Louisiana Chess Association</span><span><b>U1800</b> · after Round 2</span></div>
+        <div class="sh-title">Standings after Round 2</div>
+        <div class="sh-meta">Posted 6:31 PM with the Round 3 pairings · unofficial until the last round ends</div>
+        <table class="pt">
+          <thead><tr><th>Place</th><th>Name</th><th class="r">Rtg</th><th class="r">Pts</th><th class="r">MM</th><th class="r">Solk</th><th class="r">Cum</th><th class="r">Opp C</th></tr></thead>
+          <tbody>
+            <tr><td>1–6</td><td class="b">Broussard, Camille</td><td class="r m">1744</td><td class="r b">2</td><td class="r">1</td><td class="r">2</td><td class="r">3</td><td class="r">3</td></tr>
+            <tr><td>1–6</td><td class="b">Dupre, Isaac</td><td class="r m">1688</td><td class="r b">2</td><td class="r">1</td><td class="r">2</td><td class="r">3</td><td class="r">3</td></tr>
+            <tr><td>1–6</td><td class="b">Charbonnet, Andre</td><td class="r m">1662</td><td class="r b">2</td><td class="r">1</td><td class="r">2</td><td class="r">3</td><td class="r">3</td></tr>
+            <tr><td>1–6</td><td class="b">Guillory, Lauren</td><td class="r m">1641</td><td class="r b">2</td><td class="r">1</td><td class="r">2</td><td class="r">3</td><td class="r">3</td></tr>
+            <tr><td>1–6</td><td class="b">Doucet, Rachel</td><td class="r m">1509</td><td class="r b">2</td><td class="r">1</td><td class="r">1½</td><td class="r">3</td><td class="r">2</td></tr>
+            <tr><td>1–6</td><td class="b">Pitre, Kendall</td><td class="r m">1595</td><td class="r b">2</td><td class="r">1</td><td class="r">1</td><td class="r">3</td><td class="r">2</td></tr>
+            <tr><td>7–8</td><td class="b">Johnson, Malik</td><td class="r m">1566</td><td class="r b">1½</td><td class="r">1</td><td class="r">1</td><td class="r">2½</td><td class="r">1½</td></tr>
+            <tr><td>7–8</td><td class="b">Melancon, Grant</td><td class="r m">1731</td><td class="r b">1½</td><td class="r">½</td><td class="r">1</td><td class="r">2</td><td class="r">2</td></tr>
+            <tr><td>9–19</td><td class="b">Washington, Darius</td><td class="r m">1658</td><td class="r b">1</td><td class="r">0</td><td class="r">2½</td><td class="r">2</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Breaux, Hannah</td><td class="r m">1618</td><td class="r b">1</td><td class="r">0</td><td class="r">2½</td><td class="r">2</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Landreneau, Olivia</td><td class="r m">1588</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">2</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Nguyen, Sam</td><td class="r m">1650</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">2</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Hebert, Nora</td><td class="r m">1577</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">2</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Alvarez, Victor</td><td class="r m">1604</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">1½</td><td class="r">3½</td></tr>
+            <tr><td>9–19</td><td class="b">Tran, Minh</td><td class="r m">1676</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">1</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Boudreaux, Claire</td><td class="r m">1552</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">1</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Batiste, Devin</td><td class="r m">1521</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">1</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Romero, Jacob</td><td class="r m">1497</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">1</td><td class="r">3</td></tr>
+            <tr><td>9–19</td><td class="b">Fontenot, Elise</td><td class="r m">1460</td><td class="r b">1</td><td class="r">0</td><td class="r">2</td><td class="r">1</td><td class="r">3</td></tr>
+            <tr><td>20–21</td><td class="b">Savoie, Ethan</td><td class="r m">1540</td><td class="r b">½</td><td class="r">1½</td><td class="r">3½</td><td class="r">1</td><td class="r">5</td></tr>
+            <tr><td>20–21</td><td class="b">Pham, Anh</td><td class="r m">1433</td><td class="r b">½</td><td class="r">1</td><td class="r">2½</td><td class="r">1</td><td class="r">3½</td></tr>
+            <tr><td>22–28</td><td class="b">Bergeron, Reid</td><td class="r m">1421</td><td class="r b">0</td><td class="r">1</td><td class="r">3</td><td class="r">0</td><td class="r">4</td></tr>
+            <tr><td>22–28</td><td class="b">Clement, Henry</td><td class="r m">1394</td><td class="r b">0</td><td class="r">1</td><td class="r">2½</td><td class="r">0</td><td class="r">3½</td></tr>
+            <tr><td>22–28</td><td class="b">Arcement, Simone</td><td class="r m">1472</td><td class="r b">0</td><td class="r">1</td><td class="r">2</td><td class="r">0</td><td class="r">3</td></tr>
+            <tr><td>22–28</td><td class="b">Ortiz, Gabriel</td><td class="r m">1408</td><td class="r b">0</td><td class="r">1</td><td class="r">2</td><td class="r">0</td><td class="r">3</td></tr>
+            <tr><td>22–28</td><td class="b">LeJeune, Mia</td><td class="r m">1415</td><td class="r b">0</td><td class="r">1</td><td class="r">2</td><td class="r">0</td><td class="r">3</td></tr>
+            <tr><td>22–28</td><td class="b">Ledet, Brandon</td><td class="r m">1447</td><td class="r b">0</td><td class="r">0</td><td class="r">1</td><td class="r">0</td><td class="r">2</td></tr>
+            <tr><td>22–28</td><td class="b">Daigle, Tyler</td><td class="r m">1483</td><td class="r b">0</td><td class="r">0</td><td class="r">1</td><td class="r">0</td><td class="r">2</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;font-size:9.5px;line-height:1.45;color:#3d4454">Ties broken in order: Modified median (MM), Solkoff (Solk), Cumulative (Cum), Opponents' cumulative (Opp C), then most games with Black.</div>
+        <div class="sh-foot"><span class="mono">louisianachess.org/morphy27</span><span>page 1 of 1</span></div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">4 · Standings</div>
+      <div class="k-caption-sub">Posted with the next round's pairings; tiebreaks named in full at the foot</div>
+    </div>
+
+    <div class="col">
+      <div class="sheet">
+        <div class="sh-top"><span><b>2027 Paul Morphy Open</b> · Louisiana Chess Association</span><span><b>U1800</b> · final</span></div>
+        <div class="sh-title">Wall chart</div>
+        <div class="sh-meta">Listed by pairing number (rating order at the start). W17 = beat No. 17. Hollow dot = White, filled dot = Black.</div>
+        <table class="pt wc">
+          <thead><tr><th class="r">No.</th><th>Name</th><th class="r">Rtg</th><th class="c">Rd 1</th><th class="c">Rd 2</th><th class="c">Rd 3</th><th class="c">Rd 4</th><th class="c">Rd 5</th><th class="r">Total</th></tr></thead>
+          <tbody>
+            <tr><td class="r">1</td><td class="b">Broussard, Camille</td><td class="r m">1744</td><td class="c m">W15<i class="dw"></i></td><td class="c m">W6<i class="db"></i></td><td class="c m">D8<i class="dw"></i></td><td class="c m">W10<i class="db"></i></td><td class="c m">D3<i class="dw"></i></td><td class="r b">4</td></tr>
+            <tr><td class="r">2</td><td class="b">Melancon, Grant</td><td class="r m">1731</td><td class="c m">D16<i class="db"></i></td><td class="c m">W24<i class="dw"></i></td><td class="c m">D14<i class="db"></i></td><td class="c m">W18<i class="dw"></i></td><td class="c m">W6<i class="db"></i></td><td class="r b">4</td></tr>
+            <tr><td class="r">3</td><td class="b">Dupre, Isaac</td><td class="r m">1688</td><td class="c m">W17<i class="dw"></i></td><td class="c m">W7<i class="db"></i></td><td class="c m">W11<i class="db"></i></td><td class="c m">W5<i class="dw"></i></td><td class="c m">D1<i class="db"></i></td><td class="r b">4½</td></tr>
+            <tr><td class="r">4</td><td class="b">Tran, Minh</td><td class="r m">1676</td><td class="c m">L18<i class="db"></i></td><td class="c m">W21<i class="dw"></i></td><td class="c m">W12<i class="db"></i></td><td class="c m">L17<i class="dw"></i></td><td class="c m">W13<i class="dw"></i></td><td class="r b">3</td></tr>
+            <tr><td class="r">5</td><td class="b">Charbonnet, Andre</td><td class="r m">1662</td><td class="c m">W19<i class="dw"></i></td><td class="c m">W12<i class="db"></i></td><td class="c m">W18<i class="dw"></i></td><td class="c m">L3<i class="db"></i></td><td class="c m">D8<i class="dw"></i></td><td class="r b">3½</td></tr>
+            <tr><td class="r">6</td><td class="b">Washington, Darius</td><td class="r m">1658</td><td class="c m">W20<i class="db"></i></td><td class="c m">L1<i class="dw"></i></td><td class="c m">W15<i class="dw"></i></td><td class="c m">W14<i class="db"></i></td><td class="c m">L2<i class="dw"></i></td><td class="r b">3</td></tr>
+            <tr><td class="r">7</td><td class="b">Nguyen, Sam</td><td class="r m">1650</td><td class="c m">W21<i class="dw"></i></td><td class="c m">L3<i class="dw"></i></td><td class="c m">L17<i class="db"></i></td><td class="c m">X20</td><td class="c m">W14<i class="dw"></i></td><td class="r b">3</td></tr>
+            <tr><td class="r">8</td><td class="b">Guillory, Lauren</td><td class="r m">1641</td><td class="c m">W22<i class="db"></i></td><td class="c m">W9<i class="dw"></i></td><td class="c m">D1<i class="db"></i></td><td class="c m">D11<i class="dw"></i></td><td class="c m">D5<i class="db"></i></td><td class="r b">3½</td></tr>
+            <tr><td class="r">9</td><td class="b">Breaux, Hannah</td><td class="r m">1618</td><td class="c m">W23<i class="dw"></i></td><td class="c m">L8<i class="db"></i></td><td class="c m">L19<i class="dw"></i></td><td class="c m">W21<i class="db"></i></td><td class="c m">D15<i class="dw"></i></td><td class="r b">2½</td></tr>
+            <tr><td class="r">10</td><td class="b">Alvarez, Victor</td><td class="r m">1604</td><td class="c m">D24<i class="db"></i></td><td class="c m">D14<i class="dw"></i></td><td class="c m">W22<i class="db"></i></td><td class="c m">L1<i class="dw"></i></td><td class="c m">W16<i class="db"></i></td><td class="r b">3</td></tr>
+            <tr><td class="r">11</td><td class="b">Pitre, Kendall</td><td class="r m">1595</td><td class="c m">W25<i class="dw"></i></td><td class="c m">W13<i class="db"></i></td><td class="c m">L3<i class="dw"></i></td><td class="c m">D8<i class="db"></i></td><td class="c m">L17<i class="dw"></i></td><td class="r b">2½</td></tr>
+            <tr><td class="r">12</td><td class="b">Landreneau, Olivia</td><td class="r m">1588</td><td class="c m">W26<i class="db"></i></td><td class="c m">L5<i class="dw"></i></td><td class="c m">L4<i class="dw"></i></td><td class="c m">W23<i class="db"></i></td><td class="c m">L19<i class="dw"></i></td><td class="r b">2</td></tr>
+            <tr><td class="r">13</td><td class="b">Hebert, Nora</td><td class="r m">1577</td><td class="c m">W27<i class="dw"></i></td><td class="c m">L11<i class="dw"></i></td><td class="c m">H</td><td class="c m">D19<i class="db"></i></td><td class="c m">L4<i class="db"></i></td><td class="r b">2</td></tr>
+            <tr><td class="r">14</td><td class="b">Johnson, Malik</td><td class="r m">1566</td><td class="c m">W28<i class="db"></i></td><td class="c m">D10<i class="db"></i></td><td class="c m">D2<i class="dw"></i></td><td class="c m">L6<i class="dw"></i></td><td class="c m">L7<i class="db"></i></td><td class="r b">2</td></tr>
+            <tr><td class="r">15</td><td class="b">Boudreaux, Claire</td><td class="r m">1552</td><td class="c m">L1<i class="db"></i></td><td class="c m">W25<i class="dw"></i></td><td class="c m">L6<i class="db"></i></td><td class="c m">W24<i class="dw"></i></td><td class="c m">D9<i class="db"></i></td><td class="r b">2½</td></tr>
+            <tr><td class="r">16</td><td class="b">Savoie, Ethan</td><td class="r m">1540</td><td class="c m">D2<i class="dw"></i></td><td class="c m">L18<i class="db"></i></td><td class="c m">D24<i class="db"></i></td><td class="c m">W22<i class="dw"></i></td><td class="c m">L10<i class="dw"></i></td><td class="r b">2</td></tr>
+            <tr><td class="r">17</td><td class="b">Batiste, Devin</td><td class="r m">1521</td><td class="c m">L3<i class="db"></i></td><td class="c m">W26<i class="dw"></i></td><td class="c m">W7<i class="dw"></i></td><td class="c m">W4<i class="db"></i></td><td class="c m">W11<i class="db"></i></td><td class="r b">4</td></tr>
+            <tr><td class="r">18</td><td class="b">Doucet, Rachel</td><td class="r m">1509</td><td class="c m">W4<i class="dw"></i></td><td class="c m">W16<i class="dw"></i></td><td class="c m">L5<i class="db"></i></td><td class="c m">L2<i class="db"></i></td><td class="c m">W21<i class="dw"></i></td><td class="r b">3</td></tr>
+            <tr><td class="r">19</td><td class="b">Romero, Jacob</td><td class="r m">1497</td><td class="c m">L5<i class="db"></i></td><td class="c m">W27<i class="dw"></i></td><td class="c m">W9<i class="db"></i></td><td class="c m">D13<i class="dw"></i></td><td class="c m">W12<i class="db"></i></td><td class="r b">3½</td></tr>
+            <tr><td class="r">20</td><td class="b">Daigle, Tyler</td><td class="r m">1483</td><td class="c m">L6<i class="dw"></i></td><td class="c m">U</td><td class="c m">W25<i class="db"></i></td><td class="c m">F7</td><td class="c m">U</td><td class="r b">1</td></tr>
+            <tr><td class="r">21</td><td class="b">Arcement, Simone</td><td class="r m">1472</td><td class="c m">L7<i class="db"></i></td><td class="c m">L4<i class="db"></i></td><td class="c m">W26<i class="dw"></i></td><td class="c m">L9<i class="dw"></i></td><td class="c m">L18<i class="db"></i></td><td class="r b">1</td></tr>
+            <tr><td class="r">22</td><td class="b">Fontenot, Elise</td><td class="r m">1460</td><td class="c m">L8<i class="dw"></i></td><td class="c m">W28<i class="db"></i></td><td class="c m">L10<i class="dw"></i></td><td class="c m">L16<i class="db"></i></td><td class="c m">U</td><td class="r b">1</td></tr>
+            <tr><td class="r">23</td><td class="b">Ledet, Brandon</td><td class="r m">1447</td><td class="c m">L9<i class="db"></i></td><td class="c m">U</td><td class="c m">W27<i class="db"></i></td><td class="c m">L12<i class="dw"></i></td><td class="c m">W25<i class="dw"></i></td><td class="r b">2</td></tr>
+            <tr><td class="r">24</td><td class="b">Pham, Anh</td><td class="r m">1433</td><td class="c m">D10<i class="dw"></i></td><td class="c m">L2<i class="db"></i></td><td class="c m">D16<i class="dw"></i></td><td class="c m">L15<i class="db"></i></td><td class="c m">D28<i class="dw"></i></td><td class="r b">1½</td></tr>
+            <tr><td class="r">25</td><td class="b">Bergeron, Reid</td><td class="r m">1421</td><td class="c m">L11<i class="db"></i></td><td class="c m">L15<i class="db"></i></td><td class="c m">L20<i class="dw"></i></td><td class="c m">D27<i class="dw"></i></td><td class="c m">L23<i class="db"></i></td><td class="r b">½</td></tr>
+            <tr><td class="r">26</td><td class="b">LeJeune, Mia</td><td class="r m">1415</td><td class="c m">L12<i class="dw"></i></td><td class="c m">L17<i class="db"></i></td><td class="c m">L21<i class="db"></i></td><td class="c m">W28<i class="dw"></i></td><td class="c m">L27<i class="db"></i></td><td class="r b">1</td></tr>
+            <tr><td class="r">27</td><td class="b">Ortiz, Gabriel</td><td class="r m">1408</td><td class="c m">L13<i class="db"></i></td><td class="c m">L19<i class="db"></i></td><td class="c m">L23<i class="dw"></i></td><td class="c m">D25<i class="db"></i></td><td class="c m">W26<i class="dw"></i></td><td class="r b">1½</td></tr>
+            <tr><td class="r">28</td><td class="b">Clement, Henry</td><td class="r m">1394</td><td class="c m">L14<i class="dw"></i></td><td class="c m">L22<i class="dw"></i></td><td class="c m">B</td><td class="c m">L26<i class="db"></i></td><td class="c m">D24<i class="db"></i></td><td class="r b">1½</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:7px;font-size:9.5px;line-height:1.45;color:#3d4454">W win · L loss · D draw · H half-point bye · B full-point bye · U not played · X won by forfeit · F lost by forfeit</div>
+        <div class="sh-foot"><span class="mono">louisianachess.org/morphy27</span><span>Print at 11×17 for the wall · page 1 of 1</span></div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">5 · Wall chart (crosstable)</div>
+      <div class="k-caption-sub">Pairing-number order; shapes, not colour, mark White and Black</div>
+    </div>
+
+    <div class="col">
+      <div class="sheet">
+        <div class="sh-top"><span style="display:inline-flex;align-items:center;gap:6px"><span style="color:#1a2744;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true" style="width:16px;height:16px"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><b>Louisiana Chess Association</b></span><span>For the board and the records</span></div>
+        <div class="sh-title">Final report · 2027 Paul Morphy Open</div>
+        <div class="sh-meta">Generated Sun, Jun 13, 6:20 PM from the live results</div>
+        <dl class="dl">
+          <dt>Dates</dt><dd>Sat–Sun, Jun 12–13, 2027</dd>
+          <dt>Venue</dt><dd>[Venue name], New Orleans</dd>
+          <dt>Chief TD</dt><dd>Chris Arceneaux</dd>
+          <dt>Format</dt><dd>US Chess rated · 5 rounds · G/90+30</dd>
+          <dt>Entries</dt><dd>96 · Open 21 · U1800 28 · U1400 27 · U1000 20</dd>
+          <dt>LCA members</dt><dd>71 of 96 players</dd>
+        </dl>
+        <table class="pt" style="margin-top:14px">
+          <thead><tr><th>Section</th><th>Winner</th><th class="r">Score</th><th class="r">1st prize</th></tr></thead>
+          <tbody>
+            <tr><td class="b">Open</td><td>Marcus Landry <span class="m">2014</span></td><td class="r">4½</td><td class="r m">$300</td></tr>
+            <tr><td class="b">U1800</td><td>Isaac Dupre <span class="m">1688</span></td><td class="r">4½</td><td class="r m">$200</td></tr>
+            <tr><td class="b">U1400</td><td>Jordan Lee <span class="m">1388</span></td><td class="r">4½</td><td class="r m">$160</td></tr>
+            <tr><td class="b">U1000</td><td>Lily Tran <span class="m">988</span></td><td class="r">5</td><td class="r m">$100</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;font-size:11px;line-height:1.5">
+          <b>U1800 prizes in full.</b> 2nd–4th tied on 4 and shared 2nd + 3rd: Camille Broussard $66.67, Devin Batiste $66.67, Grant Melancon $66.66. Best U1600: Jacob Romero $60 (Devin took the larger tied share; one cash prize each).
+        </div>
+        <div style="margin-top:12px;border-top:1px solid #141a2a;padding-top:8px">
+          <div style="font-size:11px;font-weight:700">For the treasurer</div>
+          <dl class="dl" style="margin-top:6px">
+            <dt>Prizes paid</dt><dd>$1,710 of $1,710 advertised</dd>
+            <dt>Entry fees</dt><dd>[Amount from Stripe report]</dd>
+            <dt>Venue and costs</dt><dd>[Amount]</dd>
+          </dl>
+        </div>
+        <div style="margin-top:10px;border-top:1px solid #141a2a;padding-top:8px">
+          <div style="font-size:11px;font-weight:700">US Chess and incidents</div>
+          <dl class="dl" style="margin-top:6px">
+            <dt>Rating report</dt><dd>Files made Sun 6:20 PM · uploaded [date] · event ID [pending]</dd>
+            <dt>U1800 notes</dt><dd>1 forfeit (Rd 4) · 2 withdrawals · 1 requested bye · 1 pairing bye</dd>
+            <dt>Incidents</dt><dd>[Appeals, rulings or notes from the TD]</dd>
+          </dl>
+        </div>
+        <div style="position:absolute;left:32px;right:32px;bottom:44px;display:flex;gap:24px;font-size:11px">
+          <div style="flex:1;border-bottom:1px solid #141a2a;padding-bottom:2px">Chief TD</div>
+          <div style="width:130px;border-bottom:1px solid #141a2a;padding-bottom:2px">Date</div>
+        </div>
+        <div class="sh-foot"><span class="mono">louisianachess.org/morphy27</span><span>page 1 of 1</span></div>
+      </div>
+      <div class="k-caption" style="margin-top:12px">6 · One-page final report</div>
+      <div class="k-caption-sub">For the LCA board, the treasurer and the records; blanks stay bracketed</div>
+    </div>
+
+  </div>
+
+  <div style="display:flex;gap:26px;margin-top:26px;height:262px">
+    <section class="band" style="flex:1.55" aria-labelledby="e-when">
+      <h2 class="k-h4" id="e-when" style="margin:0">When to print what</h2>
+      <div style="display:flex;gap:26px;margin-top:16px">
+        <div style="flex:1;display:flex;gap:12px"><span class="k-num-badge">1</span><div><b>Friday night</b><div class="k-small" style="margin-top:4px">Hall poster × 3: door, TD table, skittles room. Tape a copy of the QR beside the hall TV.</div></div></div>
+        <div style="flex:1;display:flex;gap:12px"><span class="k-num-badge">2</span><div><b>Each round, when it's paired</b><div class="k-small" style="margin-top:4px">By board × 1 per section for the TD table, A–Z × 1 by the door. The QR, hall TV and email alerts cover most players, so print less.</div></div></div>
+        <div style="flex:1;display:flex;gap:12px"><span class="k-num-badge">3</span><div><b>After each round</b><div class="k-small" style="margin-top:4px">Standings, posted next to the new pairings. Circled results from sheet 3 are typed in, or confirmed if reported by phone.</div></div></div>
+        <div style="flex:1;display:flex;gap:12px"><span class="k-num-badge">4</span><div><b>Sunday, after the last round</b><div class="k-small" style="margin-top:4px">Wall chart for the hall, then the final report as a PDF to the LCA board and treasurer.</div></div></div>
+      </div>
+    </section>
+
+    <section class="band" style="flex:1" aria-labelledby="e-rules">
+      <h2 class="k-h4" id="e-rules" style="margin:0">Built into every sheet</h2>
+      <div class="chiplist">
+        <span>Letter, 100% scale</span><span>One section per page</span><span>Rows never split across pages</span><span>Readable in black and white</span><span>½, never 0.5</span><span>Names at 12 pt or larger</span><span>Same QR on every sheet</span><span>Byes say why</span>
+      </div>
+    </section>
+
+    <section class="band" style="flex:1;display:flex;gap:22px;align-items:center" aria-labelledby="e-cards">
+      <div style="width:250px;height:190px;flex:none;border:1.5px solid #141a2a;border-radius:6px;background:#ffffff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#141a2a">
+        <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase">U1800</div>
+        <div style="font-size:46px;font-weight:700;line-height:1">Board 7</div>
+        <svg viewBox="0 0 60 60" style="width:58px;height:58px" role="img" aria-label="Small QR placeholder for board 7">
+          <defs><pattern id="e-qr2" width="9" height="9" patternUnits="userSpaceOnUse"><rect x="0" y="0" width="3" height="3" fill="#141a2a"></rect><rect x="6" y="3" width="3" height="3" fill="#141a2a"></rect><rect x="3" y="6" width="3" height="3" fill="#141a2a"></rect></pattern></defs>
+          <rect x="0" y="0" width="60" height="60" fill="#ffffff" stroke="#141a2a"></rect>
+          <rect x="4" y="4" width="52" height="52" fill="url(#e-qr2)" opacity="0.4"></rect>
+          <rect x="4" y="4" width="14" height="14" fill="#141a2a"></rect><rect x="42" y="4" width="14" height="14" fill="#141a2a"></rect><rect x="4" y="42" width="14" height="14" fill="#141a2a"></rect>
+        </svg>
+        <div style="font-size:10px">Scan to report this board's result</div>
+      </div>
+      <div>
+        <h2 class="k-h4" id="e-cards" style="margin:0">Optional: board cards</h2>
+        <p class="k-small" style="margin:8px 0 0">A folded card on each table with the board number and its own QR. Scanning it opens that board's result form already filled in; the opponent or the TD confirms.</p>
+        <p class="k-small k-muted" style="margin:8px 0 0">Printed once per event, reused every round.</p>
+      </div>
+    </section>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":3600,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

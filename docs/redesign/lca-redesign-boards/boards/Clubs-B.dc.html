@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clubs B — Where to play this week</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.wk-hero{padding:34px 0 22px}
+.wk-weeknav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wk-weeknav b{font-size:16px;color:#1a2744;padding:0 4px}
+.wk-tonight{background:#1a2744;color:#ffffff;border-radius:18px;padding:26px 28px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:30px;align-items:start}
+.wk-tlabel{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#c8a94a}
+.wk-tonight h2{color:#ffffff;margin:6px 0 16px}
+.wk-tcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.wk-tcard{background:#24345a;border-radius:12px;padding:12px 14px;color:#ffffff;text-decoration:none;display:flex;flex-direction:column;gap:3px}
+.wk-tcard .t{font-size:17px;font-weight:700;color:#c8a94a;font-variant-numeric:tabular-nums}
+.wk-tcard b{font-size:15px;font-weight:600}
+.wk-tcard .p{font-size:12.5px;color:#c9d0de}
+.wk-tcard .g{font-size:12px;font-weight:600;color:#e3cf8f}
+.wk-mapnote{font-size:12px;color:#c9d0de;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.wk-key{display:inline-flex;align-items:center;gap:6px}
+.wk-dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+.wk-chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.wk-chips .k-label{width:64px;flex:none}
+.wk-box{overflow-x:auto;border-radius:14px;border:1px solid #e4e2db;background:#ffffff}
+.wk-table{width:100%;min-width:1080px;border-collapse:separate;border-spacing:0;table-layout:fixed}
+.wk-table th,.wk-table td{border-right:1px solid #ecebe6;border-bottom:1px solid #ecebe6;vertical-align:top;text-align:left;padding:10px;white-space:normal}
+.wk-table th:last-child,.wk-table td:last-child{border-right:0}
+.wk-table tbody tr:last-child th,.wk-table tbody tr:last-child td{border-bottom:0}
+.wk-table thead th{background:#fbfaf6;color:#1a2744;font-size:12.5px;font-weight:500;padding:12px 10px}
+.wk-table thead th b{display:block;font-size:15px;font-weight:700;margin-bottom:4px}
+.wk-table tbody th{width:96px;background:#fbfaf6;color:#1a2744;font-size:13.5px;font-weight:600}
+.wk-table tbody th span{display:block;font-weight:400;color:#555c6b;font-size:12px;margin-top:2px}
+.wk-table .wk-on{background:#fbf6e6}
+.wk-table thead th.wk-on{background:#f6ecc9}
+.wk-count{display:block;color:#555c6b;font-size:12px;margin-top:4px}
+.wk-it{display:block;text-decoration:none;color:#1a2744;background:#ffffff;border:1px solid #e4e2db;border-radius:10px;padding:7px 10px 8px;margin-bottom:8px}
+.wk-it:last-child{margin-bottom:0}
+.wk-it .t{display:block;font-size:12.5px;font-weight:700;font-variant-numeric:tabular-nums;color:#1a2744}
+.wk-it b{display:block;font-size:14px;font-weight:600;line-height:1.25}
+.wk-it .c{display:block;font-size:12px;color:#555c6b;line-height:1.3}
+.wk-it .g{display:block;margin-top:3px;font-size:11.5px;font-weight:600;color:#866a1e}
+.wk-it .k-tag{margin-top:5px}
+.wk-off{display:block;border:1px dashed #b9b6ab;border-radius:10px;padding:8px 10px;color:#555c6b;font-size:12.5px;line-height:1.35}
+.wk-ev{display:flex;gap:10px;align-items:center;background:#1a2744;color:#ffffff;border-radius:10px;padding:9px 12px;text-decoration:none;font-size:13px}
+.wk-ev b{color:#c8a94a}
+.wk-list{display:flex;flex-direction:column;gap:10px;margin:12px 0 0}
+.wk-list p{margin:0;font-size:13.5px;color:#1a2744;line-height:1.4}
+.wk-list span{display:block;font-size:12.5px;color:#555c6b}
+.wk-how{display:grid;grid-template-columns:1.15fr 0.85fr 1fr;gap:22px;align-items:start}
+.wk-sched{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid #e4e2db;border-radius:10px;font-size:13.5px}
+.wk-sched b{font-variant-numeric:tabular-nums}
+.wk-feed{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:#1a2744;line-height:1.4}
+.wk-feed svg{flex:none;margin-top:1px}
+.wk-mail{border:1px solid #e4e2db;border-radius:12px;overflow:hidden;background:#ffffff}
+.wk-mailhead{background:#fbfaf6;border-bottom:1px solid #e4e2db;padding:10px 14px;font-size:12.5px;color:#555c6b;line-height:1.5}
+.wk-mailbody{padding:16px;font-size:14px;color:#1a2744;line-height:1.5}
+.wk-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px 28px}
+.wk-notes p{display:flex;gap:10px;align-items:flex-start;margin:0;font-size:13.5px;color:#1a2744;line-height:1.45}
+@media (max-width:1000px){.wk-tonight{grid-template-columns:1fr}.wk-how{grid-template-columns:1fr}}
+@media (max-width:720px){.wk-tonight{padding:20px 16px}.wk-chips .k-label{width:100%}}
+</style>
+</helmet>
+<div class="k-page">
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a class="k-nav-on" href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="wk-hero">
+  <div class="k-wrap-wide k-between" style="align-items:flex-end;gap:20px">
+    <div class="k-stack-sm" style="max-width:700px">
+      <span class="k-kicker">Clubs · This week</span>
+      <h1 class="k-h1">Where to play this week</h1>
+      <p class="k-lead">Every club meeting in Louisiana from Monday to Sunday, built from each club's own schedule.</p>
+    </div>
+    <div class="k-stack-sm" style="align-items:flex-end">
+      <div class="wk-weeknav">
+        <button class="k-iconbtn" type="button" aria-label="Previous week"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+        <b>Mon, Oct 5 – Sun, Oct 11</b>
+        <button class="k-iconbtn" type="button" aria-label="Next week"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+      </div>
+      <div class="k-row-sm">
+        <a class="k-btn k-btn-line k-btn-sm" href="Clubs-A.dc.html"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>List and map</a>
+        <a class="k-btn k-btn-navy k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Subscribe to this calendar</a>
+      </div>
+      <div class="k-row-sm"><span class="k-sample">Sample data</span><span class="k-meta">Clock time and the rep's name</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="k-wrap-wide">
+    <div class="wk-tonight">
+      <div>
+        <div class="k-row-sm"><span class="wk-tlabel">Tonight · Mon, Oct 5 · it's 4:10 PM</span><span class="k-num-badge">1</span></div>
+        <h2 class="k-h2">6 clubs meet today</h2>
+        <div class="wk-tcards">
+          <a class="wk-tcard" href="#"><span class="t">On now · until 5:00 PM</span><b>Shreveport-Bossier Chess Club</b><span class="p">Gamers XP · Shreveport</span></a>
+          <a class="wk-tcard" href="#"><span class="t">5:00 PM</span><b>Mandeville Chess Club</b><span class="p">George's Mexican Restaurant · Mandeville</span></a>
+          <a class="wk-tcard" href="#"><span class="t">5:30 PM</span><b>Monroe Chess Club</b><span class="p">Enochs Pub and Grill · Monroe</span></a>
+          <a class="wk-tcard" href="#"><span class="t">6:00 PM</span><b>Houma Chess Club</b><span class="p">Terrebonne Parish North Library · Houma</span></a>
+          <a class="wk-tcard" href="#"><span class="t">6:00 PM</span><b>Picayune Chess Club</b><span class="p">IHOP · Picayune, MS</span><span class="g">Tonight: rated quick games, 4 rounds of 20 min + 5-sec delay</span></a>
+          <a class="wk-tcard" href="Club-A.dc.html"><span class="t">7:00 PM</span><b>Downriver Chess Club</b><span class="p">Decatur St · New Orleans</span><span class="g">Rated · 15-minute games</span></a>
+        </div>
+      </div>
+      <div>
+        <svg viewBox="0 0 220 190" style="width:100%;height:auto;display:block" role="img" aria-label="Map of Louisiana. Gold pins mark the six clubs meeting tonight; navy dots mark clubs meeting later this week.">
+          <path d="M10 10L120 10L128 30L118 45L126 60L116 75L122 90L168 90L170 115L176 130L186 138L200 140L210 152L205 160L212 172L196 168L188 178L176 168L165 174L150 166L138 170L120 162L100 165L80 160L60 162L40 158L18 160L14 140L16 110L10 90L12 60Z" fill="#ffffff" stroke="#c8a94a" stroke-width="0.8"></path>
+          <g fill="#1a2744">
+            <circle cx="66" cy="27" r="2.2"></circle>
+            <circle cx="88" cy="100" r="2.2"></circle>
+            <circle cx="86" cy="116" r="2.2"></circle>
+            <circle cx="113" cy="119" r="2.2"></circle>
+            <circle cx="108" cy="156" r="2.2"></circle>
+            <circle cx="166" cy="121" r="2.2"></circle>
+            <circle cx="152" cy="147" r="2.2"></circle>
+            <circle cx="157" cy="145" r="2.2"></circle>
+          </g>
+          <g fill="#c8a94a" stroke="#1a2744" stroke-width="0.9">
+            <circle cx="23" cy="30" r="4"></circle>
+            <circle cx="96" cy="26" r="4"></circle>
+            <circle cx="150" cy="118" r="4"></circle>
+            <circle cx="172" cy="104" r="4"></circle>
+            <circle cx="136" cy="160" r="4"></circle>
+            <circle cx="159" cy="140" r="4"></circle>
+          </g>
+          <g font-family="Geist, sans-serif" font-size="5.4" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="1.6" paint-order="stroke" text-anchor="middle">
+            <text x="25" y="41">Shreveport</text>
+            <text x="96" y="37">Monroe</text>
+            <text x="146" y="110">Mandeville</text>
+            <text x="190" y="106">Picayune</text>
+            <text x="136" y="172">Houma</text>
+            <text x="171" y="154">New Orleans</text>
+          </g>
+        </svg>
+        <div class="wk-mapnote">
+          <span class="wk-key"><span class="wk-dot" style="background:#c8a94a"></span>Meets tonight</span>
+          <span class="wk-key"><span class="wk-dot" style="background:#1a2744;box-shadow:0 0 0 2px #ffffff"></span>Later this week</span>
+          <a href="Clubs-A.dc.html" style="color:#ffffff">Open the full map</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:22px 0 0">
+  <div class="k-wrap-wide">
+    <div class="k-card k-card-pad" style="display:flex;flex-direction:column;gap:12px">
+      <div class="wk-chips" role="group" aria-label="Filter by region">
+        <span class="k-label">Region</span>
+        <button class="k-chip k-chip-on" type="button">All regions <span class="k-chip-count">19</span></button>
+        <button class="k-chip" type="button">North Louisiana <span class="k-chip-count">5</span></button>
+        <button class="k-chip" type="button">Central Louisiana <span class="k-chip-count">1</span></button>
+        <button class="k-chip" type="button">North of Lake Pontchartrain <span class="k-chip-count">3</span></button>
+        <button class="k-chip" type="button">New Orleans Metro <span class="k-chip-count">5</span></button>
+        <button class="k-chip" type="button">Southwest Louisiana <span class="k-chip-count">0</span></button>
+        <button class="k-chip" type="button">South Central Louisiana <span class="k-chip-count">3</span></button>
+        <button class="k-chip" type="button">Bayou Region <span class="k-chip-count">2</span></button>
+        <span class="k-num-badge">2</span>
+      </div>
+      <div class="wk-chips" role="group" aria-label="Filter by type of play and time">
+        <span class="k-label">Show</span>
+        <button class="k-chip" type="button">Rated play</button>
+        <button class="k-chip" type="button">Casual games</button>
+        <button class="k-chip" type="button">Kids welcome</button>
+        <button class="k-chip" type="button">Free</button>
+        <div class="k-seg" role="group" aria-label="Time of day"><button class="k-seg-on" type="button">Any time</button><button type="button">Daytime</button><button type="button">Evenings</button></div>
+        <span class="k-meta">Counts are meetings this week.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:18px 0 0">
+  <div class="k-wrap-wide">
+    <div class="k-between" style="margin-bottom:10px">
+      <h2 class="k-h3" style="margin:0">19 meetings at 15 clubs this week <span class="k-num-badge">3</span></h2>
+      <span class="k-meta">Select a meeting for directions and Add to calendar</span>
+    </div>
+    <div class="wk-box">
+      <table class="wk-table">
+        <caption class="k-hide-sm" style="caption-side:bottom;text-align:left;padding:10px 12px;font-size:12px;color:#555c6b">Times as each club lists them. The Monday column is today.</caption>
+        <thead>
+          <tr>
+            <th scope="col" style="width:96px"><span class="k-meta">Week of Oct 5</span></th>
+            <th scope="col" class="wk-on"><b>Mon, Oct 5</b><span class="k-tag k-tag-gold">Tonight</span><span class="wk-count">6 meetings</span></th>
+            <th scope="col"><b>Tue, Oct 6</b><span class="wk-count">4 meetings</span></th>
+            <th scope="col"><b>Wed, Oct 7</b><span class="wk-count">2 meetings</span></th>
+            <th scope="col"><b>Thu, Oct 8</b><span class="wk-count">3 meetings</span></th>
+            <th scope="col"><b>Fri, Oct 9</b><span class="wk-count">2 meetings</span></th>
+            <th scope="col"><b>Sat, Oct 10</b><span class="wk-count">2 meetings + a tournament</span></th>
+            <th scope="col"><b>Sun, Oct 11</b><span class="wk-count">No club meetings</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Tournaments<span>in Louisiana</span></th>
+            <td class="wk-on"></td><td></td><td></td><td></td><td></td>
+            <td colspan="2"><a class="wk-ev" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg><span><b>Lafayette Open 2026</b> · Sat–Sun, Oct 10–11 · Lafayette · Classical · All ages</span></a><span class="k-num-badge" style="margin-top:8px">5</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Morning<span>before noon</span></th>
+            <td class="wk-on"></td><td></td><td></td><td></td><td></td>
+            <td>
+              <a class="wk-it" href="Club-B.dc.html"><span class="t">10:00 AM</span><b>Baton Rouge</b><span class="c">Jones Creek Branch Library</span><span class="g">Long games: 90 min + 30 sec a move</span></a>
+              <a class="wk-it" href="#"><span class="t">10:00 AM</span><b>Monroe</b><span class="c">Books-A-Million</span><span class="g">All ages</span></a>
+            </td>
+            <td></td>
+          </tr>
+          <tr>
+            <th scope="row">Afternoon<span>noon to 5 PM</span></th>
+            <td class="wk-on"><a class="wk-it" href="#"><span class="t">1:00–5:00 PM</span><b>Shreveport-Bossier</b><span class="c">Gamers XP</span><span class="k-tag k-tag-live">On now</span></a></td>
+            <td><a class="wk-it" href="#"><span class="t">4:00–6:00 PM</span><b>Bunkie</b><span class="c">Bunkie Library</span><span class="g">Free · ages 8–108</span></a></td>
+            <td></td>
+            <td><a class="wk-it" href="#"><span class="t">1:00–5:00 PM</span><b>Shreveport-Bossier</b><span class="c">Pierre Bossier Mall food court</span></a></td>
+            <td></td>
+            <td></td>
+            <td><span class="wk-off"><b>Bluebonnet</b> meets the 1st and 3rd Sunday. Oct 11 is the 2nd, so next is Sun, Oct 18.</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Evening<span>5 PM and later</span></th>
+            <td class="wk-on">
+              <a class="wk-it" href="#"><span class="t">5:00 PM</span><b>Mandeville</b><span class="c">George's Mexican Restaurant</span></a>
+              <a class="wk-it" href="#"><span class="t">5:30 PM</span><b>Monroe</b><span class="c">Enochs Pub and Grill</span></a>
+              <a class="wk-it" href="#"><span class="t">6:00–8:30 PM</span><b>Houma</b><span class="c">Terrebonne Parish North Library</span></a>
+              <a class="wk-it" href="#"><span class="t">6:00–10:00 PM</span><b>Picayune (MS)</b><span class="c">IHOP</span><span class="g">Rated quick night (1st Mon)</span></a>
+              <a class="wk-it" href="Club-A.dc.html"><span class="t">7:00 PM</span><b>Downriver</b><span class="c">Decatur St, New Orleans</span><span class="g">Rated · 15-min games</span></a>
+            </td>
+            <td>
+              <a class="wk-it" href="#"><span class="t">5:30 PM</span><b>Morgan City</b><span class="c">First Baptist Church</span><span class="g">1st Tuesday · meets</span></a>
+              <a class="wk-it" href="#"><span class="t">6:00 PM</span><b>Ruston Knights</b><span class="c">Utility Brewing Company</span></a>
+              <a class="wk-it" href="#"><span class="t">7:00 PM</span><b>Greater New Orleans</b><span class="c">Tournament round, 90 min each</span><span class="g">Arrive by 6:30 PM</span></a>
+            </td>
+            <td>
+              <a class="wk-it" href="#"><span class="t">6:00–10:00 PM</span><b>Marrero</b><span class="c">Chopsticks Buffet</span><span class="g">Free · casual</span></a>
+              <a class="wk-it" href="Club-B.dc.html"><span class="t">6:00 PM</span><b>Baton Rouge</b><span class="c">Boba ParTea, O'Neil Lane</span><span class="g">Casual night</span></a>
+            </td>
+            <td>
+              <a class="wk-it" href="Club-A.dc.html"><span class="t">7:00 PM</span><b>Downriver</b><span class="c">Decatur St, New Orleans</span></a>
+              <a class="wk-it" href="#"><span class="t">7:30–11:30 PM</span><b>Westbank</b><span class="c">Gretna</span><span class="g">Rated · beginners welcome</span></a>
+            </td>
+            <td>
+              <a class="wk-it" href="#"><span class="t">5:30–7:00 PM</span><b>Heart of Worship</b><span class="c">Opelousas</span><span class="g">Open to anyone</span></a>
+              <a class="wk-it" href="#"><span class="t">7:00 PM</span><b>Slidell</b><span class="c">St. Luke's, Classroom #3</span></a>
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="k-meta" style="margin:10px 2px 0">Picayune's rated night, Morgan City's Tuesday and Bluebonnet's skipped Sunday all come from each club's repeat rule. <span class="k-num-badge">4</span></p>
+  </div>
+</section>
+
+<section style="padding:30px 0 0">
+  <div class="k-wrap-wide">
+    <div class="k-grid-3">
+      <div class="k-card k-card-pad">
+        <span class="k-label">Off this week</span>
+        <div class="wk-list">
+          <p><b>Bluebonnet Chess Club</b> · Baton Rouge<span>1st and 3rd Sunday, 4:30–5:30 PM · next Sun, Oct 18</span></p>
+        </div>
+      </div>
+      <div class="k-card k-card-pad">
+        <span class="k-label">Monthly or seasonal</span>
+        <div class="wk-list">
+          <p><b>Pineville Homeschool Chess Club</b><span>Monthly, 12:30–2:30 PM · CCHSA homeschool members · date not listed</span></p>
+          <p><b>Beauregard Parish Youth Chess</b> · DeRidder<span>Wednesdays in summer, 1:00–2:00 PM · off-season now</span></p>
+        </div>
+      </div>
+      <div class="k-card k-card-pad">
+        <div class="k-between"><span class="k-label">Schedule not listed · 7</span><a class="k-link k-small" href="#">Add their times</a></div>
+        <p class="k-small" style="margin:12px 0 0;line-height:1.6">North Kenner Library · Metairie Chess Academy · Knight Light Chess · Strategic Thoughts NOLA · <a class="k-link" href="Club-C.dc.html">Gonzales Chess Club</a> · Lafayette Chess Club · Casa de Ajedrez</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:34px 0 0">
+  <div class="k-wrap-wide">
+    <div class="k-card k-card-pad k-stack">
+      <div class="k-between" style="align-items:flex-end">
+        <div class="k-stack-sm" style="max-width:760px">
+          <span class="k-label">For club reps</span>
+          <h2 class="k-h2" style="margin:0">How the grid stays right <span class="k-num-badge">6</span></h2>
+          <p class="k-body" style="margin:0">Reps enter meetings as a schedule, not a sentence. This page, every "next meeting" date and the calendar feeds are all worked out from it.</p>
+        </div>
+        <span class="k-sample">Sample data</span>
+      </div>
+      <div class="wk-how">
+        <div class="k-stack-sm">
+          <span class="k-label">1 · Schedule editor (club rep view)</span>
+          <div class="k-panel k-stack-sm" style="padding:16px;border-radius:12px">
+            <b class="k-ink">Downriver Chess Club · meetings</b>
+            <div class="wk-sched"><span class="k-tag">Every week</span><span><b>Mon · 7:00 PM</b> · Turtle Bay, 1119 Decatur St</span><a class="k-link k-small" href="#">Edit</a></div>
+            <div class="wk-sched"><span class="k-tag">Every week</span><span><b>Thu · 7:00 PM</b> · [Thursday venue], Decatur St</span><a class="k-link k-small" href="#">Edit</a></div>
+            <div class="k-stack-sm">
+              <span class="k-meta">Repeats</span>
+              <div class="k-seg" role="group" aria-label="Repeat rule" style="flex-wrap:wrap;max-width:100%"><button class="k-seg-on" type="button">Every week</button><button type="button">1st &amp; 3rd</button><button type="button">1st, 3rd &amp; 5th</button><button type="button">Monthly</button><button type="button">Summer only</button></div>
+            </div>
+            <div class="wk-sched"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg><span>Skip rule from the club's own page: no play on Saints game nights or major holidays</span><a class="k-link k-small" href="#">Mark a date off</a></div>
+            <div class="k-row-sm"><button class="k-btn k-btn-navy k-btn-sm" type="button">Save schedule</button><button class="k-btn k-btn-ghost k-btn-sm" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a meeting</button></div>
+          </div>
+        </div>
+        <div class="k-stack-sm">
+          <span class="k-label">2 · Worked out from it</span>
+          <div class="k-stack-sm" style="padding-top:6px">
+            <p class="wk-feed" style="margin:0"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>This week's grid and the Tonight panel</p>
+            <p class="wk-feed" style="margin:0"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>"Next meeting" on every club row and club page</p>
+            <p class="wk-feed" style="margin:0"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar feeds for one club, one region or the whole state, in Google, Apple or Outlook</p>
+            <p class="wk-feed" style="margin:0"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"></path></svg>A "Play tonight" strip on the home page</p>
+            <p class="wk-feed" style="margin:0"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>A marked-off date shows on the grid as "Off tonight"</p>
+          </div>
+        </div>
+        <div class="k-stack-sm">
+          <span class="k-label">3 · Every 90 days: "Still accurate?"</span>
+          <div class="wk-mail">
+            <div class="wk-mailhead">From: LCA Clubs<br>To: Paul Comeaux, club rep<br><b style="color:#1a2744">Is Downriver still meeting Mon &amp; Thu at 7:00 PM?</b></div>
+            <div class="wk-mailbody">
+              <p style="margin:0 0 12px">Players use your listing to decide where to go tonight. One click tells them it's still right.</p>
+              <div class="k-row-sm"><a class="k-btn k-btn-gold k-btn-sm" href="#">Yes, still accurate</a><a class="k-btn k-btn-line k-btn-sm" href="#">Something changed</a></div>
+              <p class="k-meta" style="margin:12px 0 0">No answer in 30 days: the listing shows "Needs check" and the regional rep gets a note.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding:30px 0 40px">
+  <div class="k-wrap-wide">
+    <div class="k-card k-card-pad k-stack-sm">
+      <span class="k-label">Notes on this option</span>
+      <div class="wk-notes">
+        <p><span class="k-num-badge">1</span>The page answers "where can I play tonight?" first, with a small map of tonight's clubs.</p>
+        <p><span class="k-num-badge">2</span>The region pills count this week's meetings, so an empty region is obvious before you click it.</p>
+        <p><span class="k-num-badge">3</span>The timetable is a real table with days as columns and time of day as rows. Today's column is tinted and "On now" follows the clock.</p>
+        <p><span class="k-num-badge">4</span>Repeat rules handle 1st/3rd/5th weeks, monthly and summer-only clubs, so nobody shows up to a skipped Sunday.</p>
+        <p><span class="k-num-badge">5</span>Tournaments that week sit in the same grid and link to the event page.</p>
+        <p><span class="k-num-badge">6</span>Structured schedules plus a 90-day "still accurate?" email keep the grid current with almost no admin work.</p>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2450}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Where each look applies · decided</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Libre+Caslon+Display&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&amp;family=Barlow+Condensed:wght@600;700&amp;family=Baloo+2:wght@700;800&amp;display=swap">
+<style>
+body{margin:0;background:#f5f5f2}
+.la{width:1440px;background:#f5f5f2;color:#1a2744;font-family:'Geist',ui-sans-serif,system-ui,sans-serif}
+.la *,.la *::before,.la *::after{box-sizing:border-box}
+.la-in{padding-left:56px;padding-right:56px}
+.la-mono{font-family:'Geist Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;font-variant-ligatures:none}
+
+/* title strip and legend */
+.la-doc{background:#fbfaf6;border-bottom:1px solid #dddcd4;padding-top:36px;padding-bottom:30px}
+.la-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin-top:6px}
+.la-ml{font-size:15px;line-height:1.5;color:#3d4556}
+.la-ml b{color:#1a2744;font-weight:600}
+.la-legend{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:24px;margin-top:22px}
+.la-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 26px}
+.la-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.la-q{border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;background:#ffffff;padding:18px 20px}
+.la-q ol{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.la-q li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.la-qn{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:24px;padding:0 6px;border-radius:6px;background:#f4ecd4;color:#664c0c;font-size:12px;font-weight:700;flex:none}
+.la-def{display:block;margin-top:3px;font-weight:600;color:#145b3a}
+
+/* section heads */
+.la-sec{padding-top:44px}
+.la-sh{display:flex;align-items:center;gap:12px}
+.la-sh h2{font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.la-sh i{flex:1;height:1px;background:#dddcd4}
+.la-sub{font-size:15px;line-height:1.5;color:#3d4556;margin-top:6px;max-width:980px}
+
+/* rule */
+.la-rule{background:#1a2744;color:#ffffff;border-radius:14px;padding:30px 34px;margin-top:18px}
+.la-rule-q{font-size:30px;line-height:1.25;font-weight:600;letter-spacing:-.015em;max-width:1120px}
+.la-rule-q em{font-style:normal;color:#e6cf86}
+.la-four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:16px}
+.la-lk{border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;min-height:250px}
+.la-lk h3{font-size:22px;line-height:1.15}
+.la-lk p{font-size:14px;line-height:1.5}
+.la-lk ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.5}
+.la-lk-min{background:#ffffff;border:1px solid #e5e7ed;color:#0b1220}
+.la-lk-min h3{font-weight:700;letter-spacing:-.02em}
+.la-lk-her{background:#f7f3e8;border:1px solid #d8cdb4;border-radius:2px;color:#1a2744;font-family:'Source Serif 4',Georgia,serif}
+.la-lk-her h3{font-family:'Libre Caslon Display',Georgia,serif;font-weight:400;font-size:34px;line-height:1}
+.la-lk-live{background:#070b14;border:1px solid #1a2744;border-radius:8px;color:#f3f5f9}
+.la-lk-live h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;line-height:1;text-transform:uppercase;letter-spacing:.01em}
+.la-lk-sch{background:#fffaf1;border:2px dashed #1f7a55;border-radius:16px;color:#1a2744}
+.la-lk-sch h3{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:26px;line-height:1.05}
+.la-who{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase}
+.la-test{margin-top:auto;padding-top:10px;font-size:13px;line-height:1.45}
+.la-sc{font-variant-caps:all-small-caps;letter-spacing:.08em;font-weight:600}
+
+/* site map */
+.la-map{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;margin-top:18px}
+.la-col h3{font-size:15px;font-weight:700;padding:0 2px 8px;border-bottom:2px solid #1a2744;margin-bottom:8px}
+.la-col h3 span{font-weight:500;color:#555c6b;font-size:12.5px}
+.la-chips{display:flex;flex-direction:column;gap:7px}
+.la-c{display:block;border-radius:8px;padding:8px 10px 8px;font-size:13px;line-height:1.3;overflow:hidden}
+.la-c b{display:block;font-weight:600;font-size:13.5px}
+.la-c .la-mono{display:block;font-size:11px;color:#555c6b;margin-top:1px;overflow-wrap:anywhere;word-spacing:-2px}
+.la-c .la-sw{display:inline-block;margin-top:5px;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.25}
+.la-c-min{background:#ffffff;border:1px solid #c4c3bb}
+.la-c-min .la-sw{color:#3d4555}
+.la-c-her{background:#f7f3e8;border:1px solid #857d6b;box-shadow:inset 0 3px 0 #1a2744,inset 0 5px 0 #f7f3e8,inset 0 6px 0 #1a2744;padding-top:12px}
+.la-c-her .la-mono{color:#5e5a52}
+.la-c-her .la-sw{color:#705718}
+.la-c-acc{background:#ffffff;border:1px solid #c4c3bb;border-left:5px solid #1a2744}
+.la-c-acc .la-sw{color:#705718}
+.la-c-live{background:#070b14;border:1px solid #1a2744;color:#f3f5f9}
+.la-c-live .la-mono{color:#8e9ab2}
+.la-c-live .la-sw{color:#e5c768}
+.la-c-when{background:#ffffff;border:1px solid #c4c3bb;padding:0}
+.la-c-when>span{display:block;padding:8px 10px 7px}
+.la-c-when>strong{display:block;background:#070b14;color:#e5c768;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 10px;line-height:1.3}
+.la-c-sch{background:#fffaf1;border:2px dashed #1f7a55}
+.la-c-sch .la-sw{color:#1f7a55}
+.la-c-nest{display:block;margin-top:6px;padding:4px 7px;border-radius:6px;background:#ffffff;border:1px dashed #858b99;font-size:11px;font-weight:600;color:#3d4555}
+.la-c-later{border-style:dashed}
+.la-map2{display:grid;grid-template-columns:minmax(0,2.1fr) minmax(0,1.3fr) minmax(0,1.6fr);gap:20px;margin-top:22px}
+.la-grp h3{font-size:15px;font-weight:700;padding:0 2px 8px;border-bottom:2px solid #1a2744;margin-bottom:8px}
+.la-grp h3 span{font-weight:500;color:#555c6b;font-size:12.5px}
+.la-chips-g{display:grid;gap:7px}
+.la-key{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-top:16px;padding:14px 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.la-key-i{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;line-height:1.3}
+.la-key-i i{display:block;width:30px;height:20px;border-radius:5px;flex:none}
+
+/* slices */
+.la-slices{display:grid;grid-template-columns:600px minmax(0,1fr) minmax(0,1fr);gap:24px;margin-top:18px;align-items:start}
+.la-frame{border-radius:12px;border:1px solid #cfcec6;background:#ffffff;overflow:hidden;box-shadow:0 16px 40px rgba(16,24,43,.10)}
+.la-bar{display:flex;align-items:center;gap:6px;height:30px;padding:0 10px;background:#eeede8;border-bottom:1px solid #d9d8d1}
+.la-bar i{display:block;width:9px;height:9px;border-radius:50%;background:#cfcdc4}
+.la-url{flex:1;margin-left:6px;height:20px;border-radius:6px;background:#ffffff;border:1px solid #dad9d2;font-size:11px;color:#555c6b;display:flex;align-items:center;padding:0 8px;white-space:nowrap;overflow:hidden}
+.la-hd{display:flex;align-items:center;gap:8px;height:60px;padding:0 12px;background:#1a2744;color:#ffffff;overflow:hidden;white-space:nowrap}
+.la-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6;color:#1a2744;flex:none;line-height:1}
+.la-plate b{font-size:14px;font-weight:700;letter-spacing:.02em}
+.la-plate small{font-size:7.5px;font-weight:600;color:#555c6b;margin-top:3px;white-space:nowrap}
+.la-hnav{display:flex;align-items:center;gap:0;flex:none}
+.la-hnav a{display:inline-flex;align-items:center;gap:3px;height:44px;padding:0 5px;color:#ffffff;text-decoration:none;font-size:11.5px;font-weight:500}
+.la-hd-z{display:flex;align-items:center;gap:8px;width:654px;flex:none;padding:0 12px;transform:scale(.91);transform-origin:0 50%}
+.la-hnav-t a{padding:0 3.5px;font-size:10.5px}
+.la-hnav a[aria-current="page"]{color:#e6cf86;box-shadow:inset 0 -2px 0 #c8a94a}
+.la-hs{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:32px;padding:0 8px;font-size:11px;font-weight:500;text-decoration:none;border-radius:7px;border:1px solid rgba(255,255,255,.42);background:rgba(255,255,255,.08);color:#ffffff;flex:none}
+.la-hu{display:inline-flex;align-items:center;min-height:32px;padding:0 4px;color:#ffffff;font-size:11px;font-weight:500;text-decoration:none;flex:none}
+.la-hj{display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:7px;background:#c8a94a;color:#1a2744;font-size:11.5px;font-weight:600;text-decoration:none;flex:none}
+.la-livetag{display:inline-flex;align-items:center;gap:4px;padding:2px 6px;border-radius:5px;background:#ff4757;color:#070b14;font-size:10.5px;font-weight:700;line-height:1.2}
+.la-livetag:before{content:"";display:block;width:6px;height:6px;border-radius:50%;background:#070b14}
+.la-crop{position:relative}
+.la-crop:after{content:"";position:absolute;top:0;right:0;width:48px;height:60px;background:linear-gradient(90deg,rgba(26,39,68,0),#1a2744)}
+.la-cropnote{position:absolute;right:8px;top:21px;z-index:1;font-size:10px;font-weight:600;color:rgba(255,255,255,.8)}
+.la-cap{margin-top:12px}
+.la-cap h3{font-size:17px;font-weight:700}
+.la-cap p{font-size:13.5px;line-height:1.5;color:#3d4556;margin-top:4px}
+.la-base{position:relative;display:inline-flex;outline:2px dashed #c0362c;outline-offset:3px;border-radius:9px}
+.la-base-l{position:absolute;top:-22px;left:-2px;font-family:'Geist',sans-serif;font-size:10.5px;font-weight:700;color:#c0362c;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;font-variant-caps:normal}
+.la-annot{margin-top:12px;border:2px solid #c0362c;border-radius:12px;background:#ffffff;padding:14px 16px}
+.la-annot h3{font-size:16px;font-weight:700;color:#8f1d24}
+.la-annot ul{margin:6px 0 0;padding-left:18px;font-size:13.5px;line-height:1.5}
+
+/* heritage slice */
+.la-her{background:#f7f3e8;color:#1a2744;font-family:'Source Serif 4',Georgia,serif;font-variant-numeric:lining-nums tabular-nums;padding:22px 26px 26px}
+.la-her .la-lab{font-size:15px;font-weight:600;font-variant-caps:all-small-caps;letter-spacing:.09em;color:#5e5a52;line-height:1.2}
+.la-her h1{font-family:'Libre Caslon Display',Georgia,serif;font-weight:400;font-size:40px;line-height:1;margin-top:6px}
+.la-tt{height:6px;border-top:3px solid #1a2744;border-bottom:1px solid #1a2744}
+.la-tt-g{height:6px;border-top:3px solid #c8a94a;border-bottom:1px solid #c8a94a}
+.la-her p{font-size:16px;line-height:1.6;max-width:70ch}
+.la-art{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;align-items:start;margin-top:18px;padding-top:16px;border-top:1px solid #d8cdb4}
+.la-art h2{font-size:21px;font-weight:600;line-height:1.2;margin-top:2px}
+.la-ed{margin-top:22px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px;font-family:'Geist',sans-serif;color:#1a2744}
+.la-ed-h{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+
+/* minimal slice */
+.la-min{background:#ffffff;color:#0b1220;padding:18px 18px 20px}
+.la-min h1{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.la-trow{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid #e5e7ed}
+.la-dt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:52px;height:64px;border-radius:9px;border:1px solid #d6d5cd;line-height:1}
+.la-dt span{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.la-dt b{font-size:20px;font-weight:700}
+.la-dt-n{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.la-dt-n span{color:#e6cf86}
+.la-t{font-size:15px;font-weight:600;line-height:1.3}
+.la-m{font-size:12.5px;line-height:1.45;color:#5b6478}
+
+/* live slice */
+.la-strip{display:flex;flex-direction:column;gap:6px;padding:8px 12px 9px;background:#0e1526;border-top:2px solid #c8a94a;border-bottom:1px solid #1a2744;color:#f3f5f9;font-size:12.5px;line-height:1.35}
+.la-strip-r{display:flex;align-items:center;gap:10px}
+.la-strip a{color:#f3f5f9}
+.la-strip .la-sbtn{display:inline-flex;align-items:center;min-height:32px;padding:0 10px;border-radius:7px;background:#c8a94a;color:#070b14;font-size:12px;font-weight:600;text-decoration:none}
+.la-strip button{margin-left:auto;min-height:32px;min-width:32px;padding:0 8px;border-radius:7px;border:1px solid #5f6d89;background:transparent;color:#f3f5f9;font-size:12px;font-weight:600;cursor:pointer;flex:none}
+.la-live{background:#070b14;color:#f3f5f9;padding:18px 16px 20px}
+.la-live h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:28px;line-height:1;text-transform:uppercase;letter-spacing:.01em}
+.la-lmut{color:#8e9ab2}
+.la-ltag{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:5px;background:#ff4757;color:#070b14;font-size:12px;font-weight:700;line-height:1.2}
+.la-ltag:before{content:"";display:block;width:7px;height:7px;border-radius:50%;background:#070b14}
+.la-linp{width:100%;min-height:44px;padding:0 12px;border:1px solid #5f6d89;border-radius:8px;background:#0e1526;color:#f3f5f9;font:inherit;font-size:15px}
+.la-linp::placeholder{color:#8e9ab2}
+.la-pr{border-top:1px solid rgba(255,255,255,.08);padding:10px 0}
+.la-pr-h{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:600;color:#8e9ab2;letter-spacing:.04em}
+.la-pl{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:8px;align-items:center;margin-top:5px;font-size:14px}
+.la-pl .la-mono{font-size:12.5px;color:#8e9ab2}
+.la-cw{display:block;width:11px;height:11px;border-radius:2px;background:#f3f5f9}
+.la-cb{display:block;width:11px;height:11px;border-radius:2px;background:#070b14;box-shadow:inset 0 0 0 1.5px #f3f5f9}
+.la-res{font-size:12px;font-weight:600;padding:3px 8px;border-radius:5px;background:#1a2744;color:#f3f5f9;white-space:nowrap}
+.la-res-w{color:#34d399}
+.la-me{background:#0e1526;border-radius:8px;box-shadow:inset 3px 0 0 #c8a94a;padding:10px 10px 10px 12px;margin:0 -8px;border-top:0}
+.la-you{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:4px;background:#c8a94a;color:#070b14;font-size:11px;font-weight:700}
+.la-night{display:inline-flex;border:1px solid #5f6d89;border-radius:8px;overflow:hidden}
+.la-night button{min-height:34px;padding:0 12px;border:0;background:transparent;color:#f3f5f9;font-size:12.5px;font-weight:600;cursor:pointer}
+.la-night button[aria-pressed="true"]{background:#c8a94a;color:#070b14}
+
+/* heritage levels */
+.la-lv{display:grid;grid-template-columns:440px minmax(0,1fr);gap:24px;margin-top:18px;align-items:start}
+.la-lva{background:#f7f3e8;border:1px solid #d8cdb4;border-radius:2px;padding:22px 24px;font-family:'Source Serif 4',Georgia,serif}
+.la-lva h3{font-family:'Libre Caslon Display',Georgia,serif;font-weight:400;font-size:34px;line-height:1}
+.la-lva ol{margin:12px 0 0;padding:0;list-style:none}
+.la-lva li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:baseline;padding:8px 0;border-top:1px solid #d8cdb4;font-size:16px;line-height:1.35}
+.la-lva li .la-mono{font-size:11.5px;color:#5e5a52}
+.la-lvb{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:22px 24px}
+.la-lvb h3{font-size:22px;font-weight:700;letter-spacing:-.01em}
+.la-idb{border:1px solid #dddcd4;border-radius:10px;background:#ffffff;padding:18px 20px;margin-top:12px}
+.la-idl{font-size:16px;line-height:1.45;font-weight:500}
+.la-idl a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.la-ch{background:#1a2744;color:#ffffff;border-radius:10px;overflow:hidden;margin-top:14px}
+.la-ch-in{display:grid;grid-template-columns:96px minmax(0,1fr);gap:24px;align-items:center;padding:20px 22px 22px}
+.la-cg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:12px}
+.la-cc{display:flex;flex-direction:column;gap:3px;padding-top:10px;border-top:1px solid rgba(255,255,255,.28)}
+.la-cl{font-size:11.5px;line-height:1.25;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.la-cn{font-size:17px;font-weight:600}
+.la-on{font-size:12.5px;line-height:1.4;color:rgba(255,255,255,.8)}
+
+/* tokens */
+.la-tok{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:18px;align-items:start}
+.la-tb{border:1px solid #dddcd4;border-radius:12px;background:#ffffff;overflow:hidden}
+.la-tb-h{padding:12px 14px 10px;border-bottom:1px solid #dddcd4}
+.la-tb-h h3{font-size:16px;font-weight:700}
+.la-tb-h p{font-size:12.5px;line-height:1.4;color:#555c6b;margin-top:2px}
+.la-tb table{width:100%;border-collapse:collapse;font-size:12.5px}
+.la-tb th{text-align:left;padding:7px 10px;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;background:#fbfbf8;border-bottom:1px solid #e2e1da}
+.la-tb td{padding:6px 10px;border-bottom:1px solid #ecebe5;vertical-align:middle;line-height:1.3}
+.la-tb tr:last-child td{border-bottom:0}
+.la-tn{display:flex;align-items:center;gap:7px;font-weight:600}
+.la-tn i{display:block;width:16px;height:16px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(13,13,13,.18);flex:none}
+.la-hex{font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px;white-space:nowrap}
+.la-cr{white-space:nowrap}
+.la-cr b{font-weight:700}
+.la-fail{color:#8f1d24;font-weight:600}
+.la-pass{color:#145b3a;font-weight:600}
+.la-tb-note{padding:9px 12px;background:#fbfbf8;border-top:1px solid #e2e1da;font-size:12px;line-height:1.45;color:#3d4556}
+
+/* fonts */
+.la-ft{margin-top:18px}
+.la-ft table{width:100%;border-collapse:collapse;font-size:14px;background:#ffffff}
+.la-ft th{text-align:left;padding:10px 14px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;background:#fbfbf8;border-bottom:1px solid #d6d5cd}
+.la-ft td{padding:12px 14px;border-bottom:1px solid #ecebe5;vertical-align:top;line-height:1.45}
+.la-ft tr:last-child td{border-bottom:0}
+.la-spec{font-size:22px;line-height:1.15;margin-bottom:4px}
+.la-bud{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:700;white-space:nowrap}
+.la-bud-ok{background:#e1f0e7;color:#145b3a}
+.la-bud-lim{background:#f5ecd2;color:#664c0c}
+.la-bud-off{background:#eceef2;color:#3d4555}
+
+/* scholastic */
+.la-sch{display:grid;grid-template-columns:400px minmax(0,1fr);gap:24px;margin-top:18px;align-items:start}
+.la-schc{background:#fffaf1;border:2px solid #f1e3c4;border-radius:20px;padding:20px 22px;position:relative}
+.la-schc h3{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:28px;line-height:1.05}
+.la-gb{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700}
+.la-off{position:absolute;top:14px;right:14px}
+.la-flag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;border:1px dashed #7a6a3a;background:#fffaf0;color:#664c0c;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap}
+.la-list{margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.55}
+.la-list li{margin-top:4px}
+.la-dec{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.la-foot{padding-top:40px;padding-bottom:48px}
+</style>
+</helmet>
+<div class="la" style="min-height:7050px">
+
+<!-- Title strip and legend -->
+<section class="la-doc" aria-label="About this board">
+  <div class="la-in">
+    <div class="k-between" style="align-items:flex-start;flex-wrap:nowrap">
+      <div style="flex:1;min-width:0">
+        <p class="k-kicker">Looks · decided scoping · Phase 0</p>
+        <h1 class="la-title">Where each look applies · decided</h1>
+        <p class="la-ml" style="margin-top:8px"><b>Built from:</b> Looks-3 Modern Tech-Minimal (base) · Looks-1 Heritage Club (record pages) · Looks-7 Broadcast Night (live) · Looks-6 Bright Scholastic (scholastic, later)</p>
+        <p class="la-ml"><b>Replaces:</b> Looks-2-Editorial-Tile · Looks-2-Editorial-Page · Looks-4-Swiss-Tile · Looks-4-Swiss-Page · Looks-5-Louisiana-Tile · Looks-5-Louisiana-Page</p>
+        <p class="la-ml"><b>Source:</b> design replan, Note 1, Q1 and amendment 5.1 (section 1.1 of the brief, the look)</p>
+      </div>
+      <div class="k-stack-sm" style="align-items:flex-end;width:300px;flex:none;text-align:right">
+        <span class="k-sample" style="white-space:nowrap">Sample data · players, ratings, counts, dates</span>
+        <span class="k-meta">Routes, tokens, contrast ratios and font budgets are real: they come from the brief, the tiles and the replan.</span>
+      </div>
+    </div>
+    <div class="la-legend">
+      <div class="k-panel">
+        <p class="k-label">Notes on this board</p>
+        <ol class="la-notes">
+          <li><span class="k-num-badge">1</span><span><b>One rule an engineer can apply without asking.</b> A page with a form, a filter, a queue, a deadline or a payment is Minimal. Official, permanent or ceremonial content that changes a few times a year is Heritage.</span></li>
+          <li><span class="k-num-badge">2</span><span><b>Every route, by scope.</b> Each chip names its scope in words; the colour only repeats it. A unit test over the route-to-scope map keeps workspace and admin out of Heritage.</span></li>
+          <li><span class="k-num-badge">3</span><span><b>Header and footer are always the base look,</b> on every page and in every scope, including Heritage and Broadcast.</span></li>
+          <li><span class="k-num-badge">4</span><span><b>Controls never change.</b> Inside Heritage, Button, Input, chips, StatusBadge words and colours, the focus ring and the control radius are the base components. Only type, rules, the seal and grounds change.</span></li>
+          <li><span class="k-num-badge">5</span><span><b>Editors and forms reset to base</b> through ThemeScope scope="base" (data-theme=""), the one permitted nesting. Heritage never renders inside live.</span></li>
+          <li><span class="k-num-badge">6</span><span><b>Minimal is for doing.</b> Lists, filters, Register and checkout. Partner events never get Register or a count; they register on the organizer's site.</span></li>
+          <li><span class="k-num-badge">7</span><span><b>Broadcast while a round is live:</b> pairings, standings, My board, hall TV and the event page. The Live dot is static; the word "Live" carries the meaning.</span></li>
+          <li><span class="k-num-badge">8</span><span><b>Heritage Level A, full scope:</b> six routes today, keepsakes later, and the HonorBoard above final standings of a completed state championship.</span></li>
+          <li><span class="k-num-badge">9</span><span><b>Heritage Level B, accent only,</b> on the homepage: thick–thin rule, official logo and seal, all in Geist. No heritage font is ever fetched on /.</span></li>
+          <li><span class="k-num-badge">10</span><span><b>One token layer.</b> --gold-ink resolves to #705718 inside Heritage and #866a1e in base. Under .dark, Heritage keeps its type, rules and seal on the Minimal dark grounds.</span></li>
+          <li><span class="k-num-badge">11</span><span><b>Fonts load only inside their scope,</b> lazily. Heritage is at most 110 KB of woff2. Geist Mono is the only mono face, in every scope.</span></li>
+          <li><span class="k-num-badge">12</span><span><b>Bright Scholastic is kept,</b> for /scholastic/* only, built in WS11 behind themeScholastic (off). Until then /scholastic is Minimal.</span></li>
+        </ol>
+      </div>
+      <aside class="la-q" aria-labelledby="la-qh">
+        <p id="la-qh" class="k-label-gold">Open questions for K</p>
+        <ol>
+          <li><span class="la-qn">Q6</span><span>Heritage loads its own fonts (about 110 KB, on six pages) instead of reusing Instrument Serif.<span class="la-def">Default: yes. Instrument Serif has no small caps, text weights or ½.</span></span></li>
+          <li><span class="la-qn">Q7</span><span>Should /membership's tier cards be Heritage, as the tile's "best for membership" suggests?<span class="la-def">Default: no. The chooser and checkout stay Minimal; only the member's card and its preview are Heritage.</span></span></li>
+          <li><span class="la-qn">Q8</span><span>Keep Bright Scholastic planned for /scholastic/*, built in WS11 and flagged off until K previews it.<span class="la-def">Default: keep it.</span></span></li>
+          <li><span class="la-qn">Q13</span><span>The header event strip takes the live colour tokens (not the live fonts) while a round is live.<span class="la-def">Default: yes, so "live" reads on the one surface every page shares.</span></span></li>
+        </ol>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- 1 · The rule -->
+<section class="la-sec la-in" aria-labelledby="la-s1">
+  <div class="la-sh"><span class="k-num-badge">1</span><h2 id="la-s1">The rule</h2><i></i></div>
+  <div class="la-rule">
+    <p class="k-label" style="color:#e6cf86">Scope rule · one sentence</p>
+    <p class="la-rule-q" style="margin-top:8px"><em>Minimal</em> is for doing, <em>Heritage</em> is for the lasting record, <em>Broadcast</em> is for what is live right now.</p>
+    <p style="font-size:16px;line-height:1.5;color:rgba(255,255,255,.86);margin-top:10px;max-width:1080px">The one exception: <b style="color:#ffffff">Bright Scholastic</b> stays planned for /scholastic/* only, and ships later. The header and footer are always the base look, on every page.</p>
+  </div>
+  <div class="la-four">
+    <div class="la-lk la-lk-min">
+      <span class="la-who" style="color:#5b6478">Base · site-wide · Looks-3</span>
+      <h3>Modern Tech-Minimal</h3>
+      <p>For everything a person uses or acts on: finding, filtering, registering, paying, managing.</p>
+      <ul><li>Geist and Geist Mono, one Instrument Serif accent</li><li>Navy ink on white, gold as a fill only</li><li>Light and dark, toggleable</li></ul>
+      <p class="la-test"><b>Test:</b> does the page have a form, a filter, a queue, a deadline or a payment? Then it is Minimal.</p>
+    </div>
+    <div class="la-lk la-lk-her">
+      <span class="la-sc" style="font-size:15px;color:#705718">Record · six pages · Looks-1</span>
+      <h3>Heritage Club</h3>
+      <p>For LCA's permanent record: who runs it, its rules, its titles, its keepsakes.</p>
+      <ul><li>Caslon headlines, Source Serif 4 body</li><li>Thick–thin rules, the seal, small-caps labels</li><li>Paper grounds; controls stay base</li></ul>
+      <p class="la-test"><b>Test:</b> is it official, permanent or ceremonial, and does it change a few times a year? Then it is Heritage.</p>
+    </div>
+    <div class="la-lk la-lk-live">
+      <span class="la-who" style="color:#e5c768">Live · event day · Looks-7</span>
+      <h3>Broadcast Night</h3>
+      <p>For what is live right now: a round is in progress at an LCA event.</p>
+      <ul><li>Dark live tokens, gold accent</li><li>Barlow only on live routes; Geist in the header strip</li><li>Static Live dot, the word carries it</li></ul>
+      <p class="la-test"><b>Test:</b> is a round live, or has the person turned on Night? Then it is Broadcast.</p>
+    </div>
+    <div class="la-lk la-lk-sch">
+      <span class="la-who" style="color:#1f7a55">Exception · later · Looks-6</span>
+      <h3>Bright Scholastic</h3>
+      <p>Kept for /scholastic/* only. Not decided by K, so planned and flagged off, never silently dropped.</p>
+      <ul><li>Built in WS11 behind themeScholastic</li><li>WS01 ships only its tokens and an axe fixture</li><li>Until then /scholastic is Minimal</li></ul>
+      <p class="la-test"><b>Never on</b> registration, checkout, shared event pages, pairings or standings.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · Site map -->
+<section class="la-sec la-in" aria-labelledby="la-s2">
+  <div class="la-sh"><span class="k-num-badge">2</span><h2 id="la-s2">Every route, by scope</h2><i></i></div>
+  <p class="la-sub">Nav-IA structure 1 (Tournaments · Clubs · Scholastic · News · Membership · About), plus the homepage, signed-in pages and tools. Every chip says its scope in words.</p>
+  <div class="la-key" aria-label="Legend">
+    <span class="la-key-i"><i style="background:#ffffff;border:1px solid #c4c3bb"></i><b>Minimal</b> base look</span>
+    <span class="la-key-i"><i style="background:#f7f3e8;border:1px solid #857d6b;box-shadow:inset 0 3px 0 #1a2744,inset 0 5px 0 #f7f3e8,inset 0 6px 0 #1a2744"></i><b>Heritage · full</b> Level A, heritage fonts load</span>
+    <span class="la-key-i"><i style="background:#ffffff;border:1px solid #c4c3bb;border-left:5px solid #1a2744"></i><b>Heritage accent</b> Level B, Geist only</span>
+    <span class="la-key-i"><i style="background:#070b14"></i><b>Broadcast</b> live tokens</span>
+    <span class="la-key-i"><i style="background:linear-gradient(#ffffff 0 55%,#070b14 55%);border:1px solid #c4c3bb"></i><b>Broadcast while a round is live</b> Minimal otherwise</span>
+    <span class="la-key-i"><i style="background:#fffaf1;border:2px dashed #1f7a55"></i><b>Scholastic later</b> WS11, flag off</span>
+    <span class="la-key-i"><i style="background:#ffffff;border:1px dashed #858b99"></i><b>Form inside Heritage</b> resets to base</span>
+  </div>
+  <div class="la-map">
+    <div class="la-col">
+      <h3>Home <span>/</span></h3>
+      <div class="la-chips">
+        <span class="la-c la-c-acc"><b>Homepage</b><span class="la-mono">/</span><span class="la-sw">Minimal + Heritage accent</span></span>
+        <span class="la-c la-c-acc"><b>Identity band</b><span class="la-mono">under every hero</span><span class="la-sw">Heritage accent</span></span>
+        <span class="la-c la-c-acc"><b>Champions band</b><span class="la-mono">/api/champions</span><span class="la-sw">Heritage accent</span></span>
+        <span class="la-c la-c-acc"><b>Results winners block</b><span class="la-mono">results hero</span><span class="la-sw">Heritage accent</span></span>
+        <span class="la-c la-c-live"><b>Live hero</b><span class="la-mono">rung 1 · WS07</span><span class="la-sw">Broadcast colours, no live fonts</span></span>
+        <span class="la-c la-c-min"><b>Search</b><span class="la-mono">/search</span><span class="la-sw">Minimal</span></span>
+      </div>
+    </div>
+    <div class="la-col">
+      <h3>Tournaments</h3>
+      <div class="la-chips">
+        <span class="la-c la-c-min"><b>Tournaments</b><span class="la-mono">/tournaments</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-when"><span><b>Event page</b><span class="la-mono">/tournaments/:id</span></span><strong>Broadcast while a round is live</strong></span>
+        <span class="la-c la-c-min"><b>Register and checkout</b><span class="la-mono">/tournaments/:id</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-when"><span><b>Pairings and standings</b><span class="la-mono">/tournaments/:id/</span><span class="la-mono">pairings</span></span><strong>Broadcast while live · Night toggle</strong></span>
+        <span class="la-c la-c-when"><span><b>My board · hall TV</b><span class="la-mono">event day views</span></span><strong>Broadcast while a round is live</strong></span>
+        <span class="la-c la-c-min"><b>Results</b><span class="la-mono">final standings, crosstables</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-her la-c-later"><b>HonorBoard</b><span class="la-mono">above final standings of a completed state championship</span><span class="la-sw">Heritage component scope · WS10</span><span class="la-c-nest">Standings table beneath: base</span></span>
+        <span class="la-c la-c-min"><b>Hall print kit</b><span class="la-mono">/tournaments/:id/print</span><span class="la-sw">Minimal · large-type print</span></span>
+        <span class="la-c la-c-min"><b>Run a tournament</b><span class="la-mono">TD resources</span><span class="la-sw">Minimal</span></span>
+      </div>
+    </div>
+    <div class="la-col">
+      <h3>Clubs</h3>
+      <div class="la-chips">
+        <span class="la-c la-c-min"><b>Find a club</b><span class="la-mono">/clubs</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>Club page</b><span class="la-mono">/clubs/:id</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>Start or list a club</b><span class="la-mono">contact form</span><span class="la-sw">Minimal</span></span>
+      </div>
+    </div>
+    <div class="la-col">
+      <h3>Scholastic</h3>
+      <div class="la-chips">
+        <span class="la-c la-c-sch"><b>Scholastic hub</b><span class="la-mono">/scholastic</span><span class="la-sw">Minimal now · Scholastic in WS11, flag off</span></span>
+        <span class="la-c la-c-sch la-c-later"><b>Your child's first tournament</b><span class="la-mono">/scholastic/* · later</span><span class="la-sw">Scholastic in WS11, flag off</span></span>
+        <span class="la-c la-c-min"><b>Scholastic events</b><span class="la-mono">shared event pages</span><span class="la-sw">Minimal · grade-band chip "K–5"</span></span>
+        <span class="la-c la-c-sch la-c-later"><b>Youth programs &amp; coaches</b><span class="la-mono">/scholastic/* · later</span><span class="la-sw">Scholastic in WS11, flag off</span></span>
+      </div>
+    </div>
+    <div class="la-col">
+      <h3>News</h3>
+      <div class="la-chips">
+        <span class="la-c la-c-min"><b>News</b><span class="la-mono">/news</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>News post</b><span class="la-mono">/news/:slug</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>From our Facebook page</b><span class="la-mono">fetched on the server</span><span class="la-sw">Minimal</span></span>
+      </div>
+    </div>
+    <div class="la-col">
+      <h3>Membership</h3>
+      <div class="la-chips">
+        <span class="la-c la-c-min"><b>Join or renew</b><span class="la-mono">/membership</span><span class="la-sw">Minimal · card preview Heritage (Q7)</span></span>
+        <span class="la-c la-c-min"><b>Am I a member?</b><span class="la-mono">lookup</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>Donate</b><span class="la-mono">/donate</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-her la-c-later"><b>Membership card</b><span class="la-mono">card face and print</span><span class="la-mono">WS12</span><span class="la-sw">Heritage · full</span></span>
+      </div>
+    </div>
+    <div class="la-col">
+      <h3>About <span>▾</span></h3>
+      <div class="la-chips">
+        <span class="la-c la-c-her"><b>About LCA</b><span class="la-mono">/about</span><span class="la-mono">with the history timeline</span><span class="la-sw">Heritage · full</span></span>
+        <span class="la-c la-c-her"><b>Board &amp; regions</b><span class="la-mono">/governance/board</span><span class="la-sw">Heritage · full</span></span>
+        <span class="la-c la-c-her"><b>Bylaws &amp; rules</b><span class="la-mono">/governance/bylaws</span><span class="la-sw">Heritage · full</span><span class="la-c-nest">Editor and form: base</span></span>
+        <span class="la-c la-c-her"><b>Minutes</b><span class="la-mono">/governance/minutes</span><span class="la-sw">Heritage · full</span><span class="la-c-nest">Editor and form: base</span></span>
+        <span class="la-c la-c-her"><b>Annual meeting</b><span class="la-mono">/meeting</span><span class="la-sw">Heritage · full</span></span>
+        <span class="la-c la-c-her"><b>Champions</b><span class="la-mono">/champions</span><span class="la-mono">/state-champions redirects here</span><span class="la-sw">Heritage · full</span></span>
+        <span class="la-c la-c-min"><b>Contact LCA</b><span class="la-mono">/contact · has a form</span><span class="la-sw">Minimal</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="la-map2">
+    <div class="la-grp">
+      <h3>Signed in and tools <span>never Heritage, asserted by a unit test</span></h3>
+      <div class="la-chips-g" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+        <span class="la-c la-c-min"><b>Log in · Create account</b><span class="la-mono">/login · /register</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>My LCA</b><span class="la-mono">/dashboard</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>Workspace</b><span class="la-mono">/workspace</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>Admin</b><span class="la-mono">/admin/*</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>Board inbox · My region's clubs</b><span class="la-mono">/board/inbox · /manage/club</span><span class="la-sw">Minimal</span></span>
+        <span class="la-c la-c-min"><b>Scoresheet scanner</b><span class="la-mono">/scanner · footer, Tools</span><span class="la-sw">Minimal</span></span>
+      </div>
+    </div>
+    <div class="la-grp">
+      <h3>On every page <span>and every message</span></h3>
+      <div class="la-chips-g">
+        <span class="la-c la-c-min"><b>Header and footer</b><span class="la-mono">all routes</span><span class="la-sw">Minimal, always</span></span>
+        <span class="la-c la-c-when"><span><b>Header event strip</b><span class="la-mono">involved people only</span></span><strong>Live colours while a round is live (Q13)</strong></span>
+        <span class="la-c la-c-min"><b>All email</b><span class="la-mono">one layout, official logo, system fonts</span><span class="la-sw">Minimal · notices may add a CSS thick–thin rule</span></span>
+      </div>
+    </div>
+    <div class="la-grp">
+      <h3>Keepsakes, built later <span>Heritage · full</span></h3>
+      <div class="la-chips-g" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+        <span class="la-c la-c-her la-c-later"><b>Certificates</b><span class="la-mono">champions, section winners · WS10</span><span class="la-sw">Heritage · full</span></span>
+        <span class="la-c la-c-her la-c-later"><b>Final report cover</b><span class="la-mono">state championship · WS07 print kit</span><span class="la-sw">Heritage · full</span></span>
+        <span class="la-c la-c-her la-c-later"><b>Membership card</b><span class="la-mono">and printable version · WS12</span><span class="la-sw">Heritage · full</span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Three slices -->
+<section class="la-sec la-in" aria-labelledby="la-s3">
+  <div class="la-sh"><span class="k-num-badge">3</span><h2 id="la-s3">The three looks in place</h2><i></i></div>
+  <p class="la-sub">Real slices at reduced scale. Each sits under the same base header; only what is inside &lt;main&gt; changes scope.</p>
+  <div class="la-slices">
+
+    <!-- (a) Heritage -->
+    <div>
+      <div class="la-frame">
+        <div class="la-bar"><i></i><i></i><i></i><span class="la-url">louisianachess.org/governance/bylaws</span><span class="k-num-badge" style="width:22px;height:22px;font-size:11px;margin-left:6px">3</span></div>
+        <header class="la-hd" aria-label="Base header" style="padding:0"><div class="la-hd-z">
+          <a href="#" aria-label="Louisiana Chess Association, home" style="display:flex"><span class="la-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span></a>
+          <nav class="la-hnav la-hnav-t" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#" aria-current="page">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="width:11px;height:11px"><path d="M6 9l6 6 6-6"></path></svg></a></nav>
+          <a class="la-hs" href="#" style="margin-left:auto"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="width:12px;height:12px"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</a>
+          <a class="la-hu" href="#">Donate</a><a class="la-hu" href="#">Log in</a>
+          <a class="la-hj" href="#">Join LCA</a>
+        </div></header>
+        <main class="la-her" data-theme="heritage">
+          <div class="k-between" style="align-items:flex-start">
+            <p class="la-lab">About · Bylaws &amp; rules</p>
+            <span class="k-sample" style="font-family:'Geist',sans-serif">Sample data · adoption date, text</span>
+          </div>
+          <h1>Bylaws &amp; rules</h1>
+          <div class="la-tt" style="margin-top:14px" role="presentation"></div>
+          <div class="k-row-sm" style="gap:10px;margin-top:34px;font-family:'Geist',sans-serif">
+            <span class="la-base"><span class="la-base-l">base StatusBadge</span><span class="k-tag k-tag-open">Current version</span></span>
+            <span style="font-family:'Source Serif 4',Georgia,serif;font-size:15px;color:#5e5a52">Adopted by the members, Sun, Aug 31, 2025 · Sulphur</span>
+          </div>
+          <p style="margin-top:14px">These bylaws govern the Louisiana Chess Association, the US Chess state affiliate for Louisiana. Members amend them by vote at the annual meeting, held at the State Championship each Labor Day weekend.</p>
+          <div class="la-art">
+            <svg width="64" height="64" viewBox="0 0 200 200" role="img" aria-label="Seal: Louisiana Chess Association, since 1915">
+              <defs><path id="la-seal1" d="M26 100a74 74 0 1 1 148 0a74 74 0 1 1-148 0"></path></defs>
+              <circle cx="100" cy="100" r="98" fill="#1a2744"></circle>
+              <circle cx="100" cy="100" r="91" fill="none" stroke="#c8a94a" stroke-width="2.5"></circle>
+              <circle cx="100" cy="100" r="60" fill="none" stroke="#c8a94a" stroke-width="2"></circle>
+              <text fill="#c8a94a" font-family="Source Serif 4, Georgia, serif" font-size="12.5" font-weight="600" letter-spacing="2.6"><textPath href="#la-seal1">LOUISIANA CHESS ASSOCIATION · SINCE 1915 ·</textPath></text>
+              <g transform="translate(64.6 64) scale(.68)" fill="#f7f3e8"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></g>
+            </svg>
+            <div>
+              <p class="la-lab">Article I</p>
+              <h2>Name and purpose</h2>
+              <p style="margin-top:6px">The name of this organization is the Louisiana Chess Association. It promotes chess across Louisiana for players of every age and strength, and holds the state championships.</p>
+            </div>
+          </div>
+          <div class="k-row" style="gap:18px;margin-top:30px;font-family:'Geist',sans-serif">
+            <span class="la-base"><span class="la-base-l">base Button</span><a class="k-btn k-btn-navy" href="#">Download the bylaws (PDF)</a></span>
+            <span class="la-base"><span class="la-base-l">base Button · focus ring</span><a class="k-btn k-btn-line" href="#" style="outline:2px solid #1a2744;outline-offset:2px">Compare versions</a></span>
+          </div>
+          <div class="la-ed" data-theme="">
+            <div class="la-ed-h"><span>Editor · admins only · ThemeScope scope="base"</span><span class="k-num-badge" style="width:22px;height:22px;font-size:11px">5</span></div>
+            <div class="k-field" style="margin-top:10px">
+              <label for="la-chg">Change summary</label>
+              <input id="la-chg" class="k-input" type="text" value="Article IV: regions renumbered after the 2025 vote">
+            </div>
+            <div class="k-row" style="margin-top:10px;gap:8px">
+              <button class="k-btn k-btn-gold k-btn-sm" type="button">Save draft</button>
+              <button class="k-btn k-btn-ghost k-btn-sm" type="button">Cancel</button>
+              <span class="k-meta">The rich-text editor loads here, in Geist, on white.</span>
+            </div>
+          </div>
+        </main>
+      </div>
+      <div class="la-annot">
+        <div class="k-row-sm"><span class="k-num-badge" style="background:#c0362c">4</span><h3>Controls never change</h3></div>
+        <ul>
+          <li>Dashed red outlines mark base components: the same Button, StatusBadge words and colours, focus ring and 8px control radius as the Minimal slice beside it (WCAG 3.2.4).</li>
+          <li>Heritage changes only headings and body type, one thick–thin rule per section, the seal, small-caps labels of 15px and up, paper grounds and gold-ink. The 2px radius is for cards, tables and hero mats.</li>
+        </ul>
+      </div>
+      <div class="la-cap"><h3>(a) Heritage · Bylaws &amp; rules</h3><p>Paper ground, Libre Caslon Display headline (32px and up only), Source Serif 4 body, small-caps labels, the seal built from the rook mark. The reader body ships at 18px / 1.6 with a 70ch measure.</p></div>
+    </div>
+
+    <!-- (b) Minimal -->
+    <div>
+      <div class="la-frame">
+        <div class="la-bar"><i></i><i></i><i></i><span class="la-url">louisianachess.org/tournaments</span></div>
+        <header class="la-hd la-crop" aria-label="Base header, cropped">
+          <a href="#" aria-label="Louisiana Chess Association, home" style="display:flex"><span class="la-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span></a>
+          <nav class="la-hnav" aria-label="Main"><a href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a></nav>
+        </header>
+        <main class="la-min">
+          <div class="k-between"><h1>Tournaments</h1><span class="k-num-badge" style="width:22px;height:22px;font-size:11px">6</span></div>
+          <p class="la-m" style="margin-top:4px">Louisiana and the Gulf South · soonest first</p>
+          <div class="k-field" style="margin-top:12px">
+            <label for="la-tq" style="font-size:13px">Find a tournament</label>
+            <div class="k-search" style="min-height:44px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="la-tq" type="search" placeholder="City, event or month" style="font-size:14px"></div>
+          </div>
+          <div class="k-row-sm" style="margin-top:10px">
+            <button class="k-chip k-chip-on" type="button" aria-pressed="true" style="min-height:32px;padding:0 11px;font-size:13px">All</button>
+            <button class="k-chip" type="button" aria-pressed="false" style="min-height:32px;padding:0 11px;font-size:13px">LCA events</button>
+            <button class="k-chip" type="button" aria-pressed="false" style="min-height:32px;padding:0 11px;font-size:13px">Scholastic</button>
+          </div>
+          <div style="margin-top:12px">
+            <div class="la-trow">
+              <span class="la-dt"><span>Sat</span><b>10</b><span>Oct</span></span>
+              <div>
+                <p class="la-t">Lafayette Open 2026</p>
+                <p class="la-m">Sat–Sun, Oct 10–11, 2026 · Lafayette, LA</p>
+                <div class="k-row-sm" style="margin-top:5px"><span class="k-tag k-tag-ext">Partner event</span></div>
+                <a class="k-link" href="#" style="display:inline-block;font-size:13px;margin-top:6px">Registers on the organizer's site ↗</a>
+              </div>
+            </div>
+            <div class="la-trow">
+              <span class="la-dt"><span>Sat</span><b>24</b><span>Oct</span></span>
+              <div>
+                <p class="la-t">The Baton Rouge Classic</p>
+                <p class="la-m">Sat–Sun, Oct 24–25, 2026 · Baton Rouge, LA</p>
+                <div class="k-row-sm" style="margin-top:5px"><span class="k-tag k-tag-ext">Partner event</span></div>
+                <a class="k-link" href="#" style="display:inline-block;font-size:13px;margin-top:6px">Registers on the organizer's site ↗</a>
+              </div>
+            </div>
+            <div class="la-trow">
+              <span class="la-dt la-dt-n"><span>Sat</span><b>10</b><span>Apr</span></span>
+              <div>
+                <p class="la-t">2027 State Scholastic Championship</p>
+                <p class="la-m">Sat, Apr 10, 2027 · K–12, sections by grade</p>
+                <div class="k-row-sm" style="margin-top:5px"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-soon">Opens Mon, Jan 4</span></div>
+                <a class="k-btn k-btn-line k-btn-sm" href="#" style="margin-top:8px">Event details</a>
+              </div>
+            </div>
+            <div class="la-trow">
+              <span class="la-dt la-dt-n"><span>Sat</span><b>12</b><span>Jun</span></span>
+              <div>
+                <p class="la-t">2027 Paul Morphy Open</p>
+                <p class="la-m">Sat–Sun, Jun 12–13, 2027 · New Orleans, LA</p>
+                <div class="k-row-sm" style="margin-top:5px"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-open">Registration open</span></div>
+                <p class="la-m" style="margin-top:5px"><b style="color:#0b1220">42</b> of 120 registered · early entry ends Tue, Jun 1</p><span class="k-sample" style="padding:1px 7px;font-size:11px;margin-top:4px">Sample data</span>
+                <a class="k-btn k-btn-gold k-btn-sm" href="#" style="margin-top:8px">Register</a>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+      <div class="la-cap"><h3>(b) Minimal · Tournaments</h3><p>Same base header, cropped at the right. Filters, a search field, Register and counts: a page for doing. LCA events carry Register and a count; partner events say where they register and never get either.</p></div>
+    </div>
+
+    <!-- (c) Broadcast -->
+    <div>
+      <div class="la-frame" style="background:#070b14">
+        <div class="la-bar"><i></i><i></i><i></i><span class="la-url" style="font-size:10px;padding:0 6px">louisianachess.org/tournaments/morphy27/pairings</span></div>
+        <header class="la-hd la-crop" aria-label="Base header, cropped">
+          <a href="#" aria-label="Louisiana Chess Association, home" style="display:flex"><span class="la-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span></a>
+          <nav class="la-hnav" aria-label="Main"><a href="#" aria-current="page">Tournaments <span class="la-livetag">Live</span></a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a></nav>
+        </header>
+        <section class="la-strip" aria-label="Your event: Paul Morphy Open">
+          <p><span class="la-ltag" style="font-size:11px;padding:2px 7px;white-space:nowrap">Live · Round 3</span> in progress · Board 6, White · Updated 7:04 PM</p>
+          <div class="la-strip-r">
+            <a href="#" style="font-weight:600">Paul Morphy Open</a>
+            <a class="la-sbtn" href="#">My board</a>
+            <a href="#">Standings</a>
+            <button type="button" aria-label="Hide until the next update"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="width:13px;height:13px"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+          </div>
+        </section>
+        <main class="la-live" data-theme="live">
+          <div class="k-between" style="align-items:flex-start"><h1>2027 Paul Morphy Open</h1><span class="k-num-badge" style="width:22px;height:22px;font-size:11px;background:#c8a94a;color:#070b14">7</span></div>
+          <p class="la-lmut" style="font-size:13px;margin-top:6px">Sat, Jun 12, 2027 · New Orleans · U1800 section</p>
+          <div class="k-row-sm" style="margin-top:10px;gap:8px"><span class="la-ltag">Live · Round 3</span><span class="la-lmut" style="font-size:12.5px">in progress · started 7:00 PM · Updated 7:04 PM</span></div>
+          <div class="k-field" style="margin-top:12px">
+            <label for="la-fn" style="color:#f3f5f9;font-size:13px">Find your name</label>
+            <input id="la-fn" class="la-linp" type="search" placeholder="A few letters of a name">
+          </div>
+          <div style="margin-top:12px">
+            <div class="la-pr">
+              <div class="la-pr-h"><span>Board 4</span><span class="la-res la-res-w">1–0 · White won</span></div>
+              <div class="la-pl"><i class="la-cw" aria-label="White"></i><span>Isaac Dupre</span><span class="la-mono">1688 · 2 pts</span></div>
+              <div class="la-pl"><i class="la-cb" aria-label="Black"></i><span>Camille Broussard</span><span class="la-mono">1744 · 2 pts</span></div>
+            </div>
+            <div class="la-pr">
+              <div class="la-pr-h"><span>Board 5</span><span class="la-res">½–½ · Draw</span></div>
+              <div class="la-pl"><i class="la-cw" aria-label="White"></i><span>Mia LeJeune</span><span class="la-mono">1415 · 1½ pts</span></div>
+              <div class="la-pl"><i class="la-cb" aria-label="Black"></i><span>Maya Robichaux</span><span class="la-mono">1102 · 1½ pts</span></div>
+            </div>
+            <div class="la-pr la-me">
+              <div class="la-pr-h"><span>Board 6</span><span class="la-res">Playing</span></div>
+              <div class="la-pl"><i class="la-cw" aria-label="White"></i><span>Devin Batiste<span class="la-you">You</span></span><span class="la-mono">1521 · 1 pt</span></div>
+              <div class="la-pl"><i class="la-cb" aria-label="Black"></i><span>Sam Nguyen</span><span class="la-mono">1650 · 1 pt</span></div>
+            </div>
+          </div>
+          <div class="k-between" style="margin-top:14px">
+            <span class="k-sample" style="padding:2px 8px;font-size:11px">Sample data · pairings</span>
+            <div class="la-night" role="group" aria-label="Appearance"><button type="button" aria-pressed="false">Day</button><button type="button" aria-pressed="true">Night</button></div>
+          </div>
+        </main>
+      </div>
+      <div class="la-cap"><h3>(c) Broadcast · Pairings, round live</h3><p>Same base header, cropped. Live tokens on &lt;main&gt;, Barlow Condensed for the event name on this live route only. The Live dot is static. The strip under the header is for involved people only, in live colours with a 2px gold top rule, in Geist (Q13); on the pairings page it drops its Pairings link. The public sees the worded "Live" tag on Tournaments.</p></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 4 · Heritage levels -->
+<section class="la-sec la-in" aria-labelledby="la-s4">
+  <div class="la-sh"><span class="k-num-badge">4</span><h2 id="la-s4">Heritage has two levels</h2><i></i></div>
+  <p class="la-sub">Full scope where the record lives; an accent with zero font cost on the busiest page. The heritage font chunk must never appear in the / network log (acceptance test).</p>
+  <div class="la-lv">
+    <div class="la-lva" data-theme="heritage">
+      <div class="k-between"><p class="la-sc" style="font-size:15px;color:#705718">Level A · data-theme="heritage" on &lt;main&gt;</p><span class="k-num-badge">8</span></div>
+      <h3 style="margin-top:8px">Full scope</h3>
+      <div class="la-tt" style="margin-top:12px" role="presentation"></div>
+      <ol>
+        <li><span>About LCA, with the history timeline</span><span class="la-mono">/about</span></li>
+        <li><span>Board &amp; regions</span><span class="la-mono">/governance/board</span></li>
+        <li><span>Bylaws &amp; rules <span style="font-size:13px;color:#5e5a52">editor resets to base</span></span><span class="la-mono">/governance/bylaws</span></li>
+        <li><span>Minutes <span style="font-size:13px;color:#5e5a52">editor resets to base</span></span><span class="la-mono">/governance/minutes</span></li>
+        <li><span>Annual meeting</span><span class="la-mono">/meeting</span></li>
+        <li><span>Champions, the honor roll</span><span class="la-mono">/champions</span></li>
+        <li><span>Membership card and printable card</span><span class="la-mono">WS12</span></li>
+        <li><span>Champion and section-winner certificates</span><span class="la-mono">WS10</span></li>
+        <li><span>State championship final report cover</span><span class="la-mono">WS07</span></li>
+        <li><span>HonorBoard above final standings, state championship completed only</span><span class="la-mono">WS10</span></li>
+      </ol>
+      <p style="font-size:14px;line-height:1.5;color:#5e5a52;margin-top:12px">A lazy HeritageLayout route wraps the six pages and keeps GovLayout inside. Flag: themeHeritage, off by default.</p>
+    </div>
+    <div class="la-lvb">
+      <div class="k-between"><p class="k-label">Level B · base scope, Geist, no heritage fonts</p><span class="k-num-badge">9</span></div>
+      <h3 style="margin-top:8px">Accent only, on the homepage</h3>
+      <p class="k-small k-muted" style="margin-top:4px">ThickThinRule and Seal primitives from WS01. Navy rule on light grounds, gold rule on navy. Also used by the Results-mode winners block.</p>
+      <div class="la-idb" aria-label="Identity band">
+        <p class="k-label" style="margin-bottom:10px">Identity band · under every hero mode</p>
+        <div class="k-row" style="gap:14px">
+          <span class="la-plate" role="img" aria-label="Louisiana Chess Association official logo" style="border:1px solid #dddcd4"><b>LCA</b><small>official logo</small></span>
+          <p class="la-idl">Louisiana's chess community <a href="#">since 1915</a> · <a href="#">300+ members</a> · <a href="#">25+ clubs</a> · <a href="#">7 regions</a></p>
+        </div>
+        <div class="la-tt" style="margin-top:14px" role="presentation"></div>
+        <p class="k-meta" style="margin-top:8px">CSS thick–thin rule, 3px + 1px navy. The search box follows directly below in the same band.</p>
+      </div>
+      <div class="la-ch" aria-labelledby="la-chh">
+        <div class="la-tt-g" role="presentation"></div>
+        <div class="la-ch-in">
+          <svg width="96" height="96" viewBox="0 0 200 200" role="img" aria-label="Seal: Louisiana Chess Association, since 1915">
+            <defs><path id="la-seal2" d="M26 100a74 74 0 1 1 148 0a74 74 0 1 1-148 0"></path></defs>
+            <circle cx="100" cy="100" r="98" fill="#1a2744"></circle>
+            <circle cx="100" cy="100" r="91" fill="none" stroke="#c8a94a" stroke-width="2"></circle>
+            <circle cx="100" cy="100" r="60" fill="none" stroke="#c8a94a" stroke-width="1.5"></circle>
+            <text fill="#c8a94a" font-family="Geist, ui-sans-serif, sans-serif" font-size="12.5" font-weight="600" letter-spacing="2.4"><textPath href="#la-seal2">LOUISIANA CHESS ASSOCIATION · SINCE 1915 ·</textPath></text>
+            <g transform="translate(64.6 64) scale(.68)" fill="#f7f3e8"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></g>
+          </svg>
+          <div>
+            <div class="k-between">
+              <div><p class="la-cl">Current state champions</p><p id="la-chh" style="font-size:22px;font-weight:700;margin-top:4px;letter-spacing:-.01em">Louisiana's reigning title holders</p></div>
+              <a class="k-link-plain" href="#" style="color:#ffffff;font-size:14px">State champions honor roll ›</a>
+            </div>
+            <div class="la-cg">
+              <div class="la-cc"><span class="la-cl">State Champion · 2026</span><span class="la-cn">Marcus Landry</span><span class="la-on">4½ of 5 · Sulphur</span><span class="la-on">Sat–Mon, Sep 5–7, 2026</span></div>
+              <div class="la-cc"><span class="la-cl">State Scholastic Champion · 2026</span><span class="la-cn">Priya Shah</span><span class="la-on">K–12 section</span></div>
+              <div class="la-cc"><span class="la-cl">Paul Morphy Open · 2026</span><span class="la-cn">Avery Thibodeaux</span><span class="la-on">Open section · New Orleans</span></div>
+            </div>
+            <p class="la-on" style="margin-top:12px">Champions band in Geist: gold thick–thin rule and seal on navy, gold text on navy only. <span class="k-sample" style="padding:1px 7px;font-size:11px">Sample data · names</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · Tokens -->
+<section class="la-sec la-in" aria-labelledby="la-s5">
+  <div class="la-sh"><span class="k-num-badge">10</span><h2 id="la-s5">Tokens per scope, with contrast</h2><i></i></div>
+  <p class="la-sub">All scope token blocks live in src/index.css (about 40 lines each), so switching scope never flashes base colours. Ratios are WCAG 2.x, text on the scope's ground unless the row says otherwise. Where a tile and the brief disagree, the tile wins.</p>
+  <div class="la-tok">
+
+    <div class="la-tb">
+      <div class="la-tb-h"><h3>Base · light</h3><p>Default scope, no data-theme. From Looks-3.</p></div>
+      <table>
+        <thead><tr><th>Token</th><th>Hex</th><th>Contrast pair</th></tr></thead>
+        <tbody>
+          <tr><td><span class="la-tn"><i style="background:#ffffff"></i>Ground</span></td><td class="la-hex">#ffffff</td><td class="la-cr">page</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#f7f8fa"></i>Subtle</span></td><td class="la-hex">#f7f8fa</td><td class="la-cr">muted on it <b>5.58</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#0b1220"></i>Ink</span></td><td class="la-hex">#0b1220</td><td class="la-cr"><b>18.72</b> on white</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#1a2744"></i>Navy</span></td><td class="la-hex">#1a2744</td><td class="la-cr"><b>14.81</b> on white</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#5b6478"></i>Muted</span></td><td class="la-hex">#5b6478</td><td class="la-cr"><b>5.93</b> on white</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#7c8496"></i>Field border</span></td><td class="la-hex">#7c8496</td><td class="la-cr"><b>3.75</b> control edge</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#c8a94a"></i>Gold</span></td><td class="la-hex">#c8a94a</td><td class="la-cr">fill · navy on it <b>6.51</b> · <span class="la-fail">2.28 as text, never</span></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#866a1e"></i>Gold-ink</span></td><td class="la-hex">#866a1e</td><td class="la-cr"><b>5.13</b> on white</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#047857"></i>OK</span></td><td class="la-hex">#047857</td><td class="la-cr"><b>5.48</b> on white</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#c0362c"></i>Bad</span></td><td class="la-hex">#c0362c</td><td class="la-cr"><b>5.52</b> on white</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="la-tb">
+      <div class="la-tb-h"><h3>Base · dark</h3><p>.dark on &lt;html&gt;, a separate switch. Follows prefers-color-scheme.</p></div>
+      <table>
+        <thead><tr><th>Token</th><th>Hex</th><th>Contrast pair</th></tr></thead>
+        <tbody>
+          <tr><td><span class="la-tn"><i style="background:#0b1220"></i>Ground</span></td><td class="la-hex">#0b1220</td><td class="la-cr">page</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#111a2c"></i>Surface</span></td><td class="la-hex">#111a2c</td><td class="la-cr">ink on it <b>14.68</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#1a2744"></i>Raised</span></td><td class="la-hex">#1a2744</td><td class="la-cr">ink on it <b>12.51</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#e8ecf4"></i>Ink</span></td><td class="la-hex">#e8ecf4</td><td class="la-cr"><b>15.81</b> on ground</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#9aa6bf"></i>Muted</span></td><td class="la-hex">#9aa6bf</td><td class="la-cr"><b>7.65</b> · <b>6.05</b> on raised</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#5f6d89"></i>Field border</span></td><td class="la-hex">#5f6d89</td><td class="la-cr"><b>3.60</b> control edge</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#c8a94a"></i>Gold</span></td><td class="la-hex">#c8a94a</td><td class="la-cr"><b>8.23</b> as text, allowed</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#3ecf8e"></i>OK</span></td><td class="la-hex">#3ecf8e</td><td class="la-cr"><b>9.38</b> on ground</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#ff6b6b"></i>Bad</span></td><td class="la-hex">#ff6b6b</td><td class="la-cr"><b>6.75</b> on ground</td></tr>
+        </tbody>
+      </table>
+      <div class="la-tb-note">Heritage under .dark uses these grounds and keeps its type, rules and seal. No second dark palette.</div>
+    </div>
+
+    <div class="la-tb" style="border-color:#d8cdb4">
+      <div class="la-tb-h" style="background:#f7f3e8;border-color:#d8cdb4"><h3>Heritage</h3><p>[data-theme="heritage"]. From Looks-1. 2px radius on cards, tables, mats only.</p></div>
+      <table>
+        <thead><tr><th>Token</th><th>Hex</th><th>Contrast pair</th></tr></thead>
+        <tbody>
+          <tr><td><span class="la-tn"><i style="background:#f7f3e8"></i>Paper</span></td><td class="la-hex">#f7f3e8</td><td class="la-cr">ink on it <b>13.36</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#fffdf8"></i>Card</span></td><td class="la-hex">#fffdf8</td><td class="la-cr">ink on it <b>14.57</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#ece4d0"></i>Inset</span></td><td class="la-hex">#ece4d0</td><td class="la-cr">muted on it <b>5.42</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#5e5a52"></i>Muted</span></td><td class="la-hex">#5e5a52</td><td class="la-cr"><b>6.19</b> on paper</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#d8cdb4"></i>Hairline</span></td><td class="la-hex">#d8cdb4</td><td class="la-cr">decorative only</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#857d6b"></i>Field border</span></td><td class="la-hex">#857d6b</td><td class="la-cr"><b>3.68</b> control edge</td></tr>
+          <tr style="background:#fbf5e3"><td><span class="la-tn"><i style="background:#705718"></i>Gold-ink</span></td><td class="la-hex">#705718</td><td class="la-cr"><b>6.18</b> on paper · base <span class="la-fail">#866a1e is 4.63</span></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#c8a94a"></i>Gold</span></td><td class="la-hex">#c8a94a</td><td class="la-cr">rules, seals · <b>6.51</b> on navy · <span class="la-fail">2.05 paper</span></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#2d5a45"></i>Baize</span></td><td class="la-hex">#2d5a45</td><td class="la-cr"><b>7.12</b> · card on it <b>7.77</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#8a2b38"></i>Claret</span></td><td class="la-hex">#8a2b38</td><td class="la-cr"><b>7.63</b> · white on it <b>8.46</b></td></tr>
+        </tbody>
+      </table>
+      <div class="la-tb-note">--gold-ink is one token: #705718 inside the scope, #866a1e in base. No component hard-codes either. The gold-text guard test becomes scope-aware.</div>
+    </div>
+
+    <div class="la-tb" style="border-color:#1a2744">
+      <div class="la-tb-h" style="background:#070b14;color:#f3f5f9;border-color:#1a2744"><h3>Live</h3><p style="color:#8e9ab2">[data-theme="live"]. From Looks-7. Also the strip and the home live hero, colours only.</p></div>
+      <table>
+        <thead><tr><th>Token</th><th>Hex</th><th>Contrast pair</th></tr></thead>
+        <tbody>
+          <tr><td><span class="la-tn"><i style="background:#070b14"></i>Ground</span></td><td class="la-hex">#070b14</td><td class="la-cr">page</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#0e1526"></i>Panel</span></td><td class="la-hex">#0e1526</td><td class="la-cr">ink on it <b>16.67</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#f3f5f9"></i>Ink</span></td><td class="la-hex">#f3f5f9</td><td class="la-cr"><b>18.03</b> on ground</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#8e9ab2"></i>Muted</span></td><td class="la-hex">#8e9ab2</td><td class="la-cr"><b>6.95</b> · <b>6.43</b> on panel</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#5f6d89"></i>Field border</span></td><td class="la-hex">#5f6d89</td><td class="la-cr"><b>3.50</b> on panel</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#c8a94a"></i>Gold</span></td><td class="la-hex">#c8a94a</td><td class="la-cr"><b>8.65</b> · dark text on it <b>8.65</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#e5c768"></i>Gold-hi</span></td><td class="la-hex">#e5c768</td><td class="la-cr"><b>11.90</b> on ground</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#ff4757"></i>Live red</span></td><td class="la-hex">#ff4757</td><td class="la-cr">dark text on it <b>5.90</b> · <span class="la-fail">white 3.34, never</span></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#34d399"></i>Win</span></td><td class="la-hex">#34d399</td><td class="la-cr"><b>10.24</b> · always with the word</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#ff6b6b"></i>Loss</span></td><td class="la-hex">#ff6b6b</td><td class="la-cr"><b>7.09</b> · always with the word</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#a7b0c2"></i>Draw</span></td><td class="la-hex">#a7b0c2</td><td class="la-cr"><b>8.35</b> on panel</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="la-tb" style="border-color:#f1e3c4">
+      <div class="la-tb-h" style="background:#fffaf1;border-color:#f1e3c4"><h3>Scholastic · WS01 tokens only</h3><p>[data-theme="scholastic"]. From Looks-6; the tile's hues win over the brief's list.</p></div>
+      <table>
+        <thead><tr><th>Token</th><th>Hex</th><th>Contrast pair</th></tr></thead>
+        <tbody>
+          <tr><td><span class="la-tn"><i style="background:#fffaf1"></i>Cream</span></td><td class="la-hex">#fffaf1</td><td class="la-cr">navy on it <b>14.25</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#4f5b75"></i>Muted</span></td><td class="la-hex">#4f5b75</td><td class="la-cr"><b>6.55</b> on cream</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#fdf1cc"></i>Gold tile</span></td><td class="la-hex">#fdf1cc</td><td class="la-cr">#705718 on it <b>6.08</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#866a1e"></i>Gold-ink</span></td><td class="la-hex">#866a1e</td><td class="la-cr"><b>4.93</b> on cream</td></tr>
+          <tr><td><span class="la-tn"><i style="background:#b23e1a"></i>K–3 coral</span></td><td class="la-hex">#b23e1a</td><td class="la-cr">white <b>5.84</b> · on #ffe4da <b>4.83</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#1f7a55"></i>K–5 mint</span></td><td class="la-hex">#1f7a55</td><td class="la-cr">white <b>5.29</b> · on #dcf5e9 <b>4.60</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#2563c9"></i>K–8 sky</span></td><td class="la-hex">#2563c9</td><td class="la-cr">white <b>5.67</b> · on #e3eeff <b>4.84</b></td></tr>
+          <tr><td><span class="la-tn"><i style="background:#6a3fc1"></i>K–12 grape</span></td><td class="la-hex">#6a3fc1</td><td class="la-cr">white <b>6.79</b> · on #eee6ff <b>5.62</b></td></tr>
+        </tbody>
+      </table>
+      <div class="la-tb-note">Navy carries all text and buttons. A hue only ever means a grade band, beside the band's words. Status tags use the base status tokens.</div>
+    </div>
+
+    <div class="la-tb" style="padding:16px 18px;align-self:stretch">
+      <h3 style="font-size:16px;font-weight:700">Rules every scope keeps</h3>
+      <ul class="la-list" style="font-size:13.5px">
+        <li>Status is words plus colour, never colour alone.</li>
+        <li>Brand gold #c8a94a is never text on a light ground. It is a fill with navy text, a rule, a seal, or text on navy and dark grounds.</li>
+        <li>Gold-toned text on light grounds uses --gold-ink.</li>
+        <li>Field borders stay at 3:1 or more against their ground.</li>
+        <li>The 2px navy focus ring is the same everywhere (gold on live).</li>
+        <li>Scopes nest one level only. Base inside Heritage is the one permitted nesting. Heritage never renders inside live.</li>
+        <li>Nothing animates. The live dot is static.</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<!-- 6 · Fonts -->
+<section class="la-sec la-in" aria-labelledby="la-s6">
+  <div class="la-sh"><span class="k-num-badge">11</span><h2 id="la-s6">Fonts per scope, with budgets</h2><i></i></div>
+  <p class="la-sub">Scope fonts load only inside their scope, through a lazily imported CSS module. Only the @font-face chunks are lazy; the colour tokens are always present.</p>
+  <div class="la-ft k-tablebox">
+    <table>
+      <thead><tr><th style="width:190px">Scope</th><th style="width:330px">Specimen</th><th>Faces</th><th style="width:260px">Loads</th><th style="width:200px">Budget</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><b>Base</b> · every page</td>
+          <td><p class="la-spec" style="font-weight:600;letter-spacing:-.02em">Paul Morphy Open</p><p class="la-mono" style="font-size:14px">1847 · 3½ · ½–½ · G/90+30</p></td>
+          <td>Geist for UI. Geist Mono for every number, ½ and notation, in every scope, tabular figures, ligatures off. Instrument Serif as the base look's one display accent, never inside Heritage.</td>
+          <td>Everywhere, including /. Already loaded today.</td>
+          <td><span class="la-bud la-bud-ok">LCP ≤ 2.5 s on /</span></td>
+        </tr>
+        <tr style="background:#fbf8ef">
+          <td><b>Heritage</b> · Level A pages</td>
+          <td><p class="la-spec" style="font-family:'Libre Caslon Display',Georgia,serif;font-size:30px">Bylaws &amp; rules</p><p style="font-family:'Source Serif 4',Georgia,serif;font-size:16px"><span class="la-sc" style="font-size:15px">Article I</span> · Name and purpose</p></td>
+          <td>Libre Caslon Display 400 for h1 and h2 at 32px and up, and display numerals ("1915", "300+"). Source Serif 4 variable for body, true small caps, lining and tabular figures; the italic is declared but fetched only when used. A Georgia fallback with size-adjust keeps CLS under 0.1.</td>
+          <td>Lazily, inside the scope only. <b>Never on /</b>, tested on the network log.</td>
+          <td><span class="la-bud la-bud-lim">≤ 110 KB woff2, latin</span><p class="k-meta" style="margin-top:4px">Over budget: drop the italic file first.</p></td>
+        </tr>
+        <tr>
+          <td><b>Live</b> · live routes</td>
+          <td><p class="la-spec" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.01em">Live · Round 3</p><p class="la-mono" style="font-size:14px">Board 6 · 1521 · 1½</p></td>
+          <td>Barlow Condensed and Barlow. JetBrains Mono only if the Looks-7 tile requires it; Geist Mono covers the data.</td>
+          <td>Pairings, standings, My board, hall TV, event page while live. Not on /, not in the header strip (Geist stays).</td>
+          <td><span class="la-bud la-bud-off">Never on /</span></td>
+        </tr>
+        <tr>
+          <td><b>Scholastic</b> · /scholastic/*</td>
+          <td><p class="la-spec" style="font-family:'Baloo 2',sans-serif;font-weight:800">Every pawn can promote</p></td>
+          <td>Baloo 2 and Nunito. Moved out of WS01.</td>
+          <td>In WS11, behind themeScholastic. Phase 0 loads none.</td>
+          <td><span class="la-bud la-bud-off">0 KB in Phase 0</span></td>
+        </tr>
+        <tr>
+          <td><b>Not loaded</b></td>
+          <td><p class="k-meta">IBM Plex Mono · Instrument Serif inside Heritage</p></td>
+          <td>Plex Mono from the Heritage tile would split the one ResultCell and StandingsTable design. Instrument Serif has no small caps, text weights, tabular figures or ½.</td>
+          <td>Nowhere.</td>
+          <td><span class="la-bud la-bud-off">0 KB</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 7 · Scholastic note -->
+<section class="la-sec la-in la-foot" aria-labelledby="la-s7">
+  <div class="la-sh"><span class="k-num-badge">12</span><h2 id="la-s7">Bright Scholastic: kept, built later, flagged off</h2><i></i></div>
+  <div class="la-sch">
+    <div class="la-schc" data-theme="scholastic">
+      <span class="la-flag la-off">Flag themeScholastic · off</span>
+      <p style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#4f5b75">Preview · WS11</p>
+      <h3 style="margin-top:6px;max-width:260px">Your child's first tournament</h3>
+      <p style="font-size:14px;line-height:1.5;margin-top:6px;color:#1a2744">Find your child's section by grade band. Each colour always sits beside the band's words.</p>
+      <div class="k-row-sm" style="margin-top:12px;gap:8px">
+        <span class="la-gb" style="background:#ffe4da;color:#b23e1a">K–3</span>
+        <span class="la-gb" style="background:#dcf5e9;color:#1f7a55">K–5</span>
+        <span class="la-gb" style="background:#e3eeff;color:#2563c9">K–8</span>
+        <span class="la-gb" style="background:#eee6ff;color:#6a3fc1">K–12</span>
+      </div>
+      <div class="k-row-sm" style="margin-top:12px;gap:8px"><span class="k-tag k-tag-open">Registration open</span><span class="k-meta" style="color:#4f5b75">status tags stay base</span></div>
+    </div>
+    <div>
+      <p class="la-sub" style="margin-top:0">K did not mention Bright Scholastic in the notes of Thu, Oct 8. That was read as "not decided", not "dropped", so nothing is silently removed and Phase 0 spends nothing on it.</p>
+      <div class="la-dec">
+        <div class="k-card-pad" style="padding:16px 18px">
+          <p class="k-label">Phase 0 · WS01</p>
+          <ul class="la-list"><li>The scholastic token block in index.css</li><li>An axe fixture, so WS01 acceptance item 1 keeps its scholastic entry</li><li>/scholastic renders Minimal</li></ul>
+        </div>
+        <div class="k-card-pad" style="padding:16px 18px">
+          <p class="k-label">Phase 3 · WS11</p>
+          <ul class="la-list"><li>Baloo 2 and Nunito chunk</li><li>Rollout on /scholastic/*: the hub and the first-tournament guide</li><li>Turned on only after K previews it</li></ul>
+        </div>
+        <div class="k-card-pad" style="padding:16px 18px">
+          <p class="k-label">Never scholastic</p>
+          <ul class="la-list"><li>Registration and checkout</li><li>Shared event pages, pairings, standings</li><li>Those show a grade-band chip with its words, "K–5"</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":7050}}'>class Component extends DCLogic { renderVals() { return {}; } }</script>
+</body>
+</html>

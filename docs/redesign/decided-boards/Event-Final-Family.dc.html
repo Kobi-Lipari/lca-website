@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Register my family · decided</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ef-root{width:1440px;box-sizing:border-box;padding:36px 40px 56px;background:#ecebe6;color:#1a2744;overflow:hidden}
+.ef-root *{box-sizing:border-box}
+.tl-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.tl-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.tl-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.tl-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.tl-meta-line{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1000px}
+.tl-meta-line b{color:#1a2744;font-weight:600}
+.tl-legend{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px;margin-top:20px;align-items:start}
+.tl-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.tl-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 26px}
+.tl-notes li,.es-fb li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.tl-notes b,.es-fb b{font-weight:600}
+.es-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
+.es-fb ol{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:11px}
+.es-tick{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;flex:none;margin-top:-1px}
+.es-tick svg{width:15px;height:15px;fill:none;stroke:#ffffff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.es-fb-on .es-tick{background:#1a2744;border:1.5px solid #1a2744}
+.es-fb-off .es-tick{background:#ffffff;border:1.5px solid #858b99}
+.es-fb-off{color:#555c6b}
+.es-fb-off b{color:#3d4556}
+.es-fb-key{font-size:12.5px;line-height:1.45;color:#555c6b;margin:12px 0 0;padding-top:10px;border-top:1px solid #ecebe5}
+.ef-sec{margin-top:34px}
+.tl-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.tl-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.tl-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ef-frame{background:#f5f5f2;border:1px solid #d9d8d1;border-radius:14px;padding:28px 40px 34px}
+.ef-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1080px;margin:0 0 20px}
+.ef-cap b{color:#1a2744}
+.ef-g{display:grid;grid-template-columns:600px minmax(0,1fr);gap:48px;align-items:start}
+.ef-rcol{display:flex;flex-direction:column;gap:20px;min-width:0}
+.ef-mk{position:absolute;left:-40px;top:14px}
+.ef-mkr{position:absolute;right:-14px;top:-14px}
+
+/* the sheet */
+.ef-sheet{position:relative;width:600px;background:#ffffff;border:1px solid #cfcec6;border-radius:16px;box-shadow:0 24px 54px rgba(16,24,43,.16)}
+.ef-shead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 20px 14px 24px;border-bottom:1px solid #e3e2dc}
+.ef-steps{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:#555c6b}
+.ef-steps li{display:flex;align-items:center;gap:6px}
+.ef-steps i{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;border:1.5px solid #858b99;font-style:normal;font-size:11px;font-weight:700;color:#3d4556}
+.ef-steps .on{color:#1a2744;font-weight:600}
+.ef-steps .on i{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ef-sbody{position:relative;padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px}
+.ef-h{margin:0;font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.01em}
+.ef-ev{margin:4px 0 0;font-size:14.5px;line-height:1.4;color:#3d4556}
+.ef-ev b{color:#1a2744;font-weight:600}
+.ef-intro{margin:0;font-size:15px;line-height:1.5;color:#1a2744}
+.ef-memline{display:flex;gap:10px;align-items:flex-start;padding:11px 14px;background:#fbfaf6;border:1px solid #e5e7ed;border-radius:8px;font-size:13.5px;line-height:1.5;color:#3d4556;position:relative}
+.ef-memline b{color:#1a2744;font-weight:600}
+.tl-ni{width:18px;height:18px;flex:none;margin-top:1px;fill:none;stroke:#1a2744;stroke-width:1.8;stroke-linecap:round}
+.ef-plist{display:flex;flex-direction:column;gap:12px}
+.ef-person{position:relative;border:1px solid #d6d5cd;border-radius:12px;background:#ffffff}
+.ef-person.on{border:2px solid #1a2744}
+.ef-ptop{display:flex;gap:12px;align-items:flex-start;padding:14px 16px}
+.ef-play{display:flex;flex-direction:column;align-items:center;gap:4px;width:48px;flex:none;font-size:11.5px;font-weight:600;color:#3d4556;padding-top:2px}
+.ef-cb{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:5px;border:1.5px solid #858b99;background:#ffffff;flex:none}
+.ef-cb svg{width:16px;height:16px;fill:none;stroke:#ffffff;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.ef-cb.on{background:#1a2744;border-color:#1a2744}
+.ef-cb.dis{background:#efefea;border-color:#b9b7ad}
+.ef-cb.err{border:2px solid #b3202f}
+.ef-av{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:#1a2744;color:#ffffff;font-weight:700;font-size:14px;flex:none}
+.ef-av-gold{background:#c8a94a;color:#1a2744}
+.ef-av-grey{background:#e6e5de;color:#3d4556}
+.ef-pmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.ef-pname{font-size:16.5px;line-height:1.3;font-weight:600}
+.ef-pmeta{font-size:13px;line-height:1.4;color:#555c6b}
+.ef-forms{display:flex;flex-direction:column;gap:2px;margin-top:5px;padding:7px 10px;border-radius:8px;background:#f5f6f9;font-size:13px;line-height:1.4;color:#3d4556}
+.ef-forms b{color:#1a2744;font-weight:600}
+.ef-edit{font-size:13.5px;white-space:nowrap;flex:none;margin-top:2px}
+.ef-pbody{display:flex;flex-direction:column;gap:12px;padding:0 16px 16px 76px}
+.ef-off-note{margin:0;padding:0 16px 14px 76px;font-size:13px;color:#555c6b}
+.ef-flabel{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1a2744;margin:0 0 6px}
+.ef-req{font-size:12px;font-weight:600;color:#555c6b}
+.ef-select{display:flex;align-items:center;gap:10px;min-height:46px;padding:7px 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:14.5px;line-height:1.35}
+.ef-select .ef-sv{flex:1;min-width:0}
+.ef-select .ef-sv b{font-weight:600}
+.ef-select .ef-sv small{display:block;font-size:12.5px;color:#555c6b}
+.ef-select .k-i{color:#1a2744}
+.ef-hint{margin:6px 0 0;font-size:12.5px;line-height:1.45;color:#555c6b}
+.ef-hint a{color:#1a2744;font-weight:600}
+.ef-elig{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid #d6d5cd;border-radius:10px;background:#fbfaf6}
+.ef-elig b{display:block;font-size:14.5px;font-weight:600;line-height:1.35}
+.ef-elig small{display:block;font-size:12.5px;line-height:1.4;color:#555c6b;margin-top:2px}
+.ef-addon{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.4;color:#3d4556}
+.ef-addon b{color:#1a2744;font-weight:600}
+.ef-addrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1.5px dashed #b9b7ad;border-radius:12px;background:#fbfbf8}
+.ef-addrow p{margin:0;font-size:14.5px}
+.ef-cap9{margin:0;font-size:13px;line-height:1.45;color:#555c6b}
+.ef-confirm{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border:1px solid #d6d5cd;border-radius:10px;font-size:14.5px;line-height:1.4;font-weight:500}
+.ef-total{border:1px solid #d6d5cd;border-radius:12px;background:#fbfaf6;padding:12px 16px}
+.ef-tl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:7px 0;border-bottom:1px solid #e9e8e1;font-size:14.5px;line-height:1.35}
+.ef-tl small{display:block;font-size:12.5px;color:#555c6b}
+.ef-tl b{font-variant-numeric:tabular-nums}
+.ef-tsum{display:flex;align-items:baseline;justify-content:space-between;padding:10px 0 4px;font-size:18px;font-weight:700}
+.ef-tsum span:last-child{font-size:22px;font-variant-numeric:tabular-nums}
+.ef-tnote{margin:2px 0 0;font-size:12.5px;line-height:1.45;color:#555c6b}
+.ef-next{margin:8px 0 0;font-size:13px;line-height:1.45;color:#555c6b;text-align:center}
+
+/* insets */
+.ef-inset{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px}
+.ef-ihead{display:flex;align-items:center;gap:10px;margin:0 0 4px}
+.ef-ihead b{font-size:15px;font-weight:600}
+.ef-icode{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 6px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700;flex:none}
+.ef-isub{margin:0 0 12px;font-size:13px;line-height:1.45;color:#555c6b}
+.ef-trig{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid #e2e1da;border-radius:10px;background:#ffffff}
+.ef-trig-cut{padding:6px 12px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;background:repeating-linear-gradient(135deg,#f3f2ed 0 6px,#fbfbf8 6px 12px);border:1px dashed #b9b7ad;border-radius:8px 8px 0 0;border-bottom:0}
+.ef-famhint{margin:0;font-size:13px;line-height:1.4;color:#3d4556;text-align:center}
+.ef-lb{border:1px solid #858b99;border-radius:10px;box-shadow:0 14px 30px rgba(16,24,43,.14);overflow:hidden;background:#ffffff}
+.ef-lbsel{display:flex;align-items:center;gap:10px;min-height:44px;padding:7px 12px;border-bottom:1px solid #d6d5cd;background:#ffffff;font-size:14px}
+.ef-lbg{padding:8px 12px 4px;font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;background:#f5f5f2;border-top:1px solid #e9e8e1;display:flex;justify-content:space-between;gap:10px}
+.ef-lbg span{text-transform:none;letter-spacing:0;font-size:12px}
+.ef-lbo{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:14px;line-height:1.35;border-top:1px solid #f0efea}
+.ef-lbo small{display:block;font-size:12.5px;color:#555c6b}
+.ef-lbo .ef-lbp{margin-left:auto;text-align:right;white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums}
+.ef-lbo.sel{background:#eef0f5;box-shadow:inset 3px 0 0 #1a2744}
+.ef-lbo .ef-ck{width:18px;flex:none;color:#1a2744}
+.ef-lbf{padding:9px 12px;font-size:12.5px;line-height:1.45;color:#555c6b;border-top:1px solid #e9e8e1;background:#fbfbf8}
+.ef-lbf a{color:#1a2744;font-weight:600}
+.ef-in2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ef-fl{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:600}
+.ef-input{display:flex;align-items:center;min-height:42px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;font-weight:400}
+.ef-input.err{border:2px solid #b3202f}
+.ef-input.ph{color:#6b7180}
+.ef-err{display:flex;gap:8px;align-items:flex-start;margin:8px 0 0;font-size:13.5px;line-height:1.4;color:#8f1d24;font-weight:600}
+.ef-err .k-i-sm{margin-top:2px;stroke:#b3202f}
+.ef-btnrow{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.ef-states{display:flex;flex-direction:column;gap:10px}
+.ef-srow{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid #e2e1da;border-radius:10px;background:#ffffff}
+.ef-srow .ef-pname{font-size:15px}
+.ef-lock{display:inline-flex;align-items:center;gap:6px;margin-top:4px;padding:3px 8px;border-radius:6px;background:#eceef2;color:#2b3446;font-size:12.5px;font-weight:600}
+.ef-lock-warn{background:#f5ecd2;color:#664c0c}
+.ef-swhat{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 3px}
+.ef-btn-dis{display:flex;align-items:center;justify-content:center;min-height:52px;width:100%;border-radius:8px;background:#e6e5de;color:#4b5263;font-size:16px;font-weight:600;border:1px solid #d6d5cd}
+.ef-ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.5;color:#3d4556}
+.ef-ul li{margin-bottom:6px}
+.ef-ul b{color:#1a2744}
+
+/* explainer */
+.ef-xsteps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ef-xsteps li{display:flex;flex-direction:column;gap:6px;padding:12px;border:1px solid #e2e1da;border-radius:10px;background:#fbfaf6}
+.ef-xn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:13px;font-weight:700}
+.ef-xsteps b{font-size:15px;line-height:1.3}
+.ef-xsteps span{font-size:13px;line-height:1.45;color:#3d4556}
+.ef-prev{border:1px solid #d6d5cd;border-radius:12px;overflow:hidden;background:#ffffff}
+.ef-prevtop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 14px;background:#f5f5f2;border-bottom:1px solid #e3e2dc;font-size:12.5px;color:#3d4556}
+.ef-prevtop b{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b}
+.ef-prow{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid #f0efea;font-size:14px;line-height:1.35}
+.ef-prow .ef-av{width:30px;height:30px;font-size:11.5px}
+.ef-prow small{display:block;font-size:12.5px;color:#555c6b}
+.ef-prow .ef-pp{margin-left:auto;font-weight:600;font-variant-numeric:tabular-nums}
+.ef-prow .ef-cb{width:20px;height:20px}
+.ef-prow .ef-cb svg{width:13px;height:13px}
+.ef-psum{display:flex;justify-content:space-between;padding:10px 14px;font-weight:700;font-size:15px;background:#fbfaf6}
+.ef-xbtns{display:flex;flex-direction:column;gap:10px}
+.ef-xbtns .k-btn{width:100%}
+.ef-xsub{margin:-4px 0 0;font-size:13px;line-height:1.4;color:#3d4556;text-align:center}
+.ef-xlink{text-align:center;font-size:14.5px;margin:2px 0 0}
+
+/* phones */
+.ef-phones{display:grid;grid-template-columns:repeat(3,410px);gap:37px;align-items:start}
+.ef-pcol{position:relative;display:flex;flex-direction:column;gap:12px}
+.mf-phone{width:390px;height:844px;box-sizing:content-box;border:10px solid #10182b;border-radius:52px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2);flex:none}
+.mf-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#f5f5f2}
+.mf-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 40px;font-size:15px;font-weight:600;position:relative}
+.mf-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.mf-statr{display:flex;align-items:center;gap:6px}
+.mf-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.mf-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.mf-sig i:nth-child(1){height:4px}
+.mf-sig i:nth-child(2){height:6px}
+.mf-sig i:nth-child(3){height:8.5px}
+.mf-sig i:nth-child(4){height:11px}
+.mf-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px;opacity:.95}
+.mf-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.mf-safe{height:34px;position:relative;background:#ffffff}
+.mf-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.ef-phead{flex:none;height:60px;background:#1a2744;color:#ffffff;display:flex;align-items:center;gap:8px;padding:0 10px}
+.ef-pclose{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:9px;border:1.5px solid rgba(255,255,255,.6);color:#ffffff;flex:none}
+.ef-ptitle{display:flex;flex-direction:column;line-height:1.2;min-width:0}
+.ef-ptitle b{font-size:15.5px;font-weight:700}
+.ef-ptitle span{font-size:12.5px;color:rgba(255,255,255,.82)}
+.ef-pmainp{flex:1;min-height:0;overflow:hidden;position:relative}
+.ef-ppad{padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.ef-pmainp .ef-ppad{padding-bottom:16px}
+.ef-ppad.ef-end{gap:8px;padding-top:10px}
+.ef-ppad.ef-end .ef-scrolled{margin-bottom:-4px}
+.ef-ph1{margin:0;font-size:23px;line-height:1.15;font-weight:700;letter-spacing:-.01em}
+.ef-pev{margin:3px 0 0;font-size:13.5px;line-height:1.4;color:#3d4556}
+.ef-ptxt{margin:0;font-size:14px;line-height:1.45}
+.ef-mperson{border:1px solid #d6d5cd;border-radius:12px;background:#ffffff;padding:12px;display:flex;flex-direction:column;gap:10px}
+.ef-mperson.on{border:2px solid #1a2744}
+.ef-mtop{display:flex;gap:10px;align-items:flex-start}
+.ef-mtop .ef-cb{margin-top:8px}
+.ef-mtop .ef-av{width:36px;height:36px;font-size:13px}
+.ef-mperson .ef-forms{font-size:12.5px}
+.ef-mperson .ef-select{font-size:14px}
+.ef-dock{flex:none;height:72px;display:flex;align-items:center;gap:12px;padding:0 16px;background:#ffffff;border-top:1px solid #d9d8d1;box-shadow:0 -6px 16px rgba(16,24,43,.06)}
+.ef-dock .ef-dsum{display:flex;flex-direction:column;line-height:1.25}
+.ef-dock .ef-dsum b{font-size:17px;font-variant-numeric:tabular-nums}
+.ef-dock .ef-dsum small{font-size:12px;color:#555c6b}
+.ef-dock .k-btn{margin-left:auto}
+.ef-scrolled{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;border:1px dashed #8a7a4a;background:#fffaf0;color:#664c0c;font-size:11.5px;font-weight:600}
+.ef-dim{position:absolute;inset:0;background:rgba(16,24,43,.55)}
+.ef-bsheet{position:absolute;left:0;right:0;bottom:0;background:#ffffff;border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(16,24,43,.25);display:flex;flex-direction:column}
+.ef-grab{width:40px;height:5px;border-radius:3px;background:#c4c3bb;margin:8px auto 4px}
+.ef-bhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 16px 10px}
+.ef-bhead b{font-size:17px}
+.ef-radio{display:inline-flex;width:20px;height:20px;border-radius:50%;border:1.5px solid #858b99;flex:none;align-items:center;justify-content:center}
+.ef-radio.on{border:6px solid #1a2744}
+.ef-pcap{display:flex;flex-direction:column;gap:4px;max-width:410px}
+.ef-pcap b{font-size:15px;font-weight:600}
+.ef-pcap span{font-size:13.5px;line-height:1.45;color:#555c6b}
+.ef-shead2{flex-wrap:wrap;align-items:center;padding:10px 16px 12px 24px;row-gap:2px}
+.ef-shead2 .ef-steps{flex-basis:100%;margin:0;gap:4px 12px;font-size:12.5px}
+.ef-trigs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ef-trigs .k-btn{padding:0 10px}
+.ef-states2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ef-states2 .ef-srow{flex-direction:column;gap:6px}
+.ef-states2 .ef-lock{align-items:flex-start}
+.ef-states2 .ef-lock .k-i-sm{margin-top:2px}
+.ef-xsteps .ef-xn{color:#ffffff;font-size:13px;font-weight:700;line-height:1}
+.ef-pclose{background:transparent;padding:0;cursor:pointer}
+.ef-plan{margin:3px 0 0;font-size:13px;line-height:1.4;color:#3d4556}
+.ef-plan b{color:#1a2744;font-weight:600}
+.ef-strack{position:absolute;right:5px;top:96px;bottom:14px;width:6px;border-radius:3px;background:#eeede8}
+.ef-strack i{position:absolute;left:0;right:0;top:0;height:22%;border-radius:3px;background:#a9a79e}
+.ef-strack-p{position:absolute;right:3px;top:8px;bottom:8px;width:4px;border-radius:2px;background:rgba(16,24,43,.06)}
+.ef-strack-p i{position:absolute;left:0;right:0;height:26%;border-radius:2px;background:#9a988f}
+.ef-lim{display:flex;flex-direction:column;gap:10px}
+.ef-lim .ef-addrow{padding:10px 12px}
+.ef-lim .ef-addrow p{font-size:14px}
+.ef-linkdis{color:#6b7180;font-weight:600;text-decoration:none;cursor:not-allowed}
+.ef-mlrow{display:flex;flex-direction:column;gap:2px;padding:9px 11px;border-radius:8px;background:#f5f6f9;font-size:13px;line-height:1.4;color:#3d4556}
+.ef-mlrow b{color:#1a2744;font-weight:600}
+.ef-mtop .ef-pname{flex:1;min-width:0;font-size:15px!important}
+.ef-mtop .ef-edit{margin-top:9px;font-size:13.5px}
+.ef-mtop .ef-pname small{font-weight:500;color:#3d4556}
+.ef-row2{display:grid;grid-template-columns:410px minmax(0,1fr);gap:37px;align-items:start;margin-top:34px}
+.ef-crop{position:relative;width:410px;height:560px;border:10px solid #10182b;border-top:0;border-radius:0 0 52px 52px;overflow:hidden;background:#f5f5f2;box-shadow:0 24px 50px rgba(16,24,43,.2)}
+.ef-crop .ef-cutlab{position:absolute;left:0;right:0;top:0;z-index:3;padding:5px 12px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;background:repeating-linear-gradient(135deg,#f3f2ed 0 6px,#fbfbf8 6px 12px);border-bottom:1px dashed #b9b7ad}
+.ef-crop .ef-bsheet{border-radius:18px 18px 0 0}
+.ef-bbody{padding:0 16px 14px;display:flex;flex-direction:column;gap:10px}
+.ef-rules{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;position:relative}
+.ef-cmp{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
+.ef-cmp .ef-mperson{padding:10px}
+.ef-cmpcap{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 6px}
+.ef-cmp .ef-old{opacity:.55}
+.ef-memreq{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:8px;background:#f5f6f9;font-size:12.5px;line-height:1.4;color:#3d4556;text-align:left}
+.ef-memreq b{color:#1a2744;font-weight:600}
+.ef-memreq a{font-weight:600}
+</style>
+</helmet>
+<div class="ef-root" style="height:6400px">
+<section class="tl-doc" aria-label="About this board"><div class="tl-doc-top"><div><p class="k-kicker">5 · Register my family · decided</p><h1 class="tl-title">Register my family · decided</h1>
+<p class="tl-meta-line" style="margin-top:8px"><b>Built from:</b> Reg-C (the household checkout: who's playing, sections per player, the grade yes or no), Account-B (the family account: dependent profiles under a guardian) and Event-A (the registration card's family row)</p>
+<p class="tl-meta-line"><b>Replaces:</b> nothing (new)</p>
+<p class="tl-meta-line"><b>K's feedback applied:</b> the tick boxes at the right, one line each on where it landed here</p>
+<p class="tl-meta-line"><b>Shown:</b> the 2027 Louisiana State Championship (Sat–Mon, Sep 4–6, 2027, Baton Rouge), two schedules and side events on, overall limit. Danielle Robichaux holds a Family membership with Maya and Leo on it.</p></div>
+<span class="k-sample">Sample data · event, family, ratings, counts</span></div>
+<div class="tl-legend"><div class="tl-lbox"><p class="k-label">Notes on this board</p><ol class="tl-notes"><li><span class="k-num-badge">1</span><span><b>Who opens it.</b> A signed-in member with an active Family membership. Everyone else signed in meets the same picker as step 1 of Register.</span></li><li><span class="k-num-badge">2</span><span><b>Only the membership is shared.</b> It covers you and up to 3 children. There is one entry price per section and tier, no member price; every player pays their own section's fee.</span></li><li><span class="k-num-badge">3</span><span><b>Everyone starts unticked.</b> Ticking Playing opens that person's selects.</span></li><li><span class="k-num-badge">4</span><span><b>Names as the TD sees them,</b> with the public form for a child ("Maya R." before the event). Edit name uses the existing guardian-scoped PATCH.</span></li><li><span class="k-num-badge">5</span><span><b>Only sections this person can enter,</b> side events included, each with its one price and its count. The hint says what is hidden and why.</span></li><li><span class="k-num-badge">6</span><span><b>The grade box</b> appears once a scholastic section is picked: required, one yes or no.</span></li><li><span class="k-num-badge">7</span><span><b>The schedule select</b> only with two schedules, and only for a main-event section.</span></li><li><span class="k-num-badge">8</span><span><b>Add a family member:</b> names and an optional US Chess ID, no email. The row says how many plan spots are left. Up to 9 players an order.</span></li><li><span class="k-num-badge">9</span><span><b>Continue stays disabled</b> until each ticked person has a section and the names are confirmed.</span></li><li><span class="k-num-badge">10</span><span><b>The running total is entry fees only.</b> Step 3 adds an LCA membership for anyone without one; no card fees are added at payment.</span></li><li><span class="k-num-badge">11</span><span><b>Duplicate name,</b> drawn once: "That name is already in your family".</span></li><li><span class="k-num-badge">12</span><span><b>Row states:</b> registered by the other guardian, name locked, not on the plan (a Scholastic membership is added in step 3), a tenth player.</span></li><li><span class="k-num-badge">13</span><span><b>Signed out, the button explains first:</b> three steps and the picker with sample names, badged.</span></li><li><span class="k-num-badge">14</span><span><b>Three ways on,</b> each one back to this picker: join, create a login, or Log in.</span></li><li><span class="k-num-badge">15</span><span><b>Phone: a full-screen sheet,</b> tab bar hidden, a 72px bar with the total and Continue. No price or count under a select and no detail line under a name: the rating sits beside the name, the public name moves into Edit name (F4).</span></li><li><span class="k-num-badge">16</span><span><b>The select opens as a bottom sheet</b> with the same groups, prices, counts and hint: the one place on the phone that shows them.</span></li><li><span class="k-num-badge">17</span><span><b>The family limit is enforced.</b> A Family plan covers 3 children: "1 spot left", then "plan is full" (a 4th child still joins with a Scholastic membership), and at 8 profiles the link is disabled.</span></li><li><span class="k-num-badge">18</span><span><b>The sheet scrolls inside itself.</b> The steps stay at the top and the list scrolls beneath; on phones the total and Continue bar stays at the bottom. Drawn here at full length.</span></li></ol></div>
+<aside class="es-fb" aria-labelledby="ef-fbh"><p id="ef-fbh" class="k-label-gold">K's feedback, and where it landed</p><ol><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.1 Entry limits overall or by section.</b> Each option carries its own count: "3 entered" (overall limit), "14 of 60" (the Scholastic's own cap).</span></li><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.2 Fee tiers only when the TD set them.</b> Today's tier only; the total names it: "Early prices until Sun, Jul 25".</span></li><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.3 Register my family: signed out or Family only.</b> The whole board: D (Family member), E (signed out), F (phone).</span></li><li class="es-fb-off"><span class="es-tick" role="img" aria-label="Not on this board"></span><span><b>5.4 Partner page ready for bad feed fields.</b> Not on this board (Event-Partner-Final).</span></li><li class="es-fb-off"><span class="es-tick" role="img" aria-label="Not on this board"></span><span><b>5.5 Festival page with Go live and home feature.</b> Not on this board (Event-Festival-Final).</span></li><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.6 Schedules and side events as setup options.</b> Leo's schedule select; the Scholastic and the Blitz inside the picker.</span></li><li class="es-fb-off"><span class="es-tick" role="img" aria-label="Not on this board"></span><span><b>5.7 B's top and sub nav, A's card.</b> Not on this board (Event-Final-1 and -2); only the card's family row, in E1.</span></li><li class="es-fb-off"><span class="es-tick" role="img" aria-label="Not on this board"></span><span><b>5.8 Venue &amp; travel summary in the sidebar, link preview, round alerts.</b> Not on this board (Event-Final-States, frame 5).</span></li><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.9 Phones follow the desktop.</b> Frame F: the same picker at 390px.</span></li><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.10 One entry price; LCA membership required, added at checkout.</b> Options read "K–8 · $25 · 14 of 60 entered"; the total is entry fees only and step 3 adds a membership for anyone without one. E1 carries the card's membership line.</span></li><li class="es-fb-off"><span class="es-tick" role="img" aria-label="Not on this board"></span><span><b>5.11 Venue &amp; travel as one block, venue card in the sidebar.</b> Not on this board (Event-Final-1, -2, -States frame 5, -Setup and -Phones).</span></li><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.12 Family picker wording, phone trims, family limit.</b> E reads "Everyone on the plan gets a LCA membership"; F drops prices, counts and detail lines; D7 draws 1 spot left, plan full and list full.</span></li><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.13 Setup scrolls in a container; sheets scroll inside themselves.</b> D and F show the sheet's own scroll; the setup form is on Event-Final-Setup.</span></li><li class="es-fb-on"><span class="es-tick" role="img" aria-label="Applied here"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>5.14 One receipt per payer, one confirmation per player.</b> E's step 3 says so; the receipts themselves are on the page 6 boards.</span></li></ol>
+<p class="es-fb-key">Filled box: applied on this board. Empty box: applied on another page 5 board, named in the line.</p></aside></div></section>
+<section class="ef-sec" aria-labelledby="ef-fd"><div class="tl-flab"><span class="tl-code">D</span><h2 id="ef-fd">Register my family · Who's playing? (signed in, Family membership)</h2><span class="k-meta">Sheet, 600px · step 1 of the household checkout · Danielle Robichaux</span><span class="k-sample">Sample data</span></div>
+<div class="ef-frame"><div class="ef-g"><div class="ef-sheet" role="dialog" aria-modal="true" aria-labelledby="ef-dh">
+<div class="ef-shead ef-shead2"><p class="k-label-gold">Register my family</p><button class="k-iconbtn" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button><ol class="ef-steps" aria-label="Steps"><li class="on" aria-current="step"><i>1</i>Who's playing</li><li><i>2</i>Byes and US Chess IDs</li><li><i>3</i>Check your answers</li><li><i>4</i>Pay</li></ol></div>
+<div class="ef-strack" aria-hidden="true"><i></i></div><span class="k-num-badge" style="position:absolute;right:-40px;top:110px">18</span>
+<div class="ef-sbody"><span class="k-num-badge ef-mk">1</span>
+<div><h2 id="ef-dh" class="ef-h">Who's playing?</h2><p class="ef-ev"><b>2027 Louisiana State Championship</b> · Sat–Mon, Sep 4–6, 2027 · Baton Rouge</p></div>
+<p class="ef-intro">Tick everyone who is playing, choose a section for each, and check each name. Names appear on pairings and results exactly as shown here.</p>
+<div class="ef-memline" role="note"><svg class="tl-ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg><span><b>Your Family membership is the only thing shared:</b> it covers you and up to 3 children. Every player pays their own entry fee, set by the section they enter.</span><span class="k-num-badge ef-mk" style="left:-64px;top:8px">2</span></div>
+<div class="ef-plist"><div class="ef-person"><span class="k-num-badge ef-mk">3</span><div class="ef-ptop"><span class="ef-play"><span class="ef-cb" role="checkbox" aria-checked="false" aria-label="Danielle Robichaux is playing"></span>Playing</span><span class="ef-av ef-av-gold" aria-hidden="true">DR</span><div class="ef-pmain"><span class="ef-pname">Danielle Robichaux (you)</span><span class="ef-pmeta">Rating 1210 · US Chess ID ending 4410 · Family plan</span></div><a class="k-link ef-edit" href="#">Edit name</a></div><p class="ef-off-note">Not playing. Tick Playing to pick a section.</p></div><div class="ef-person on"><span class="k-num-badge ef-mk">4</span><div class="ef-ptop"><span class="ef-play"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Maya Robichaux is playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Playing</span><span class="ef-av" aria-hidden="true">MR</span><div class="ef-pmain"><span class="ef-pname">Maya Robichaux</span><span class="ef-pmeta">Rating 1102 · US Chess ID ending 7731 · Family plan</span></div><a class="k-link ef-edit" href="#">Edit name</a></div>
+<div class="ef-pbody"><div class="ef-forms" style="margin-top:-6px"><span><b>Pairings, results and the US Chess report:</b> Maya Robichaux</span><span><b>Shown publicly as Maya R.</b> on the entrants list before the event</span></div><div style="position:relative"><span class="k-num-badge ef-mk" style="left:-116px;top:24px">5</span><p class="ef-flabel">Section for Maya <span class="ef-req">Required</span></p><div class="ef-select" role="combobox" aria-expanded="false" aria-label="Section for Maya"><span class="ef-sv"><b>Labor Day Scholastic · K–8 · $25</b><small>14 of 60 entered · Sat, Sep 4 · 9:30 AM</small></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div><p class="ef-hint">Not shown: U1000 (1102 is over 1000). <a href="#">Show K–3, U1800 and Championship</a></p></div>
+<div class="ef-elig" style="position:relative"><span class="k-num-badge ef-mk" style="left:-116px;top:8px">6</span><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Maya is in 8th grade or below"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>Maya is in 8th grade or below</b><small>Required for K–8. One yes or no. We never ask for a grade or a birthdate.</small></span></div>
+<div class="ef-addon"><span class="ef-cb" role="checkbox" aria-checked="false" aria-label="Also add the State Blitz Championship for Maya"></span><span><b>Also play the State Blitz Championship</b> · Sun, Sep 5 · 9:00 PM · $20 · 6 of 40 entered</span></div></div></div><div class="ef-person on"><div class="ef-ptop"><span class="ef-play"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Leo Robichaux is playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Playing</span><span class="ef-av" aria-hidden="true">LR</span><div class="ef-pmain"><span class="ef-pname">Leo Robichaux</span><span class="ef-pmeta">Unrated · US Chess ID ending 2286 · Family plan</span></div><a class="k-link ef-edit" href="#">Edit name</a></div>
+<div class="ef-pbody"><div class="ef-forms" style="margin-top:-6px"><span><b>Pairings, results and the US Chess report:</b> Leo Robichaux</span><span><b>Shown publicly as Leo R.</b> on the entrants list before the event</span></div><div><p class="ef-flabel">Section for Leo <span class="ef-req">Required</span></p><div class="ef-select" role="combobox" aria-expanded="false" aria-label="Section for Leo"><span class="ef-sv"><b>U1000 · $30</b><small>3 entered · rated under 1000, or unrated</small></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div><p class="ef-hint">Also open: Labor Day Scholastic K–3, K–8 and K–12. <a href="#">Show U1400 and up</a></p></div>
+<div style="position:relative"><span class="k-num-badge ef-mk" style="left:-116px;top:24px">7</span><p class="ef-flabel">Schedule for Leo <span class="ef-req">Required</span></p><div class="ef-select" role="combobox" aria-expanded="false" aria-label="Schedule for Leo"><span class="ef-sv"><b>2-day · starts Sun, Sep 5 at 8:00 AM</b><small>Rounds 1–3 at G/45+10, then everyone merges at Round 4</small></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div><p class="ef-hint">G/45+10: 45 min each + 10 sec per move. The other choice: 3-day, all rounds G/90+30 from Sat, Sep 4. Same prizes.</p></div></div></div></div>
+<div style="position:relative"><span class="k-num-badge ef-mk" style="left:-64px;top:12px">8</span><div class="ef-addrow"><div><p><span class="k-muted">Someone missing?</span> <a class="k-link" href="#">Add a family member</a></p><p class="ef-plan"><b>Your Family plan covers 3 children</b> · 1 spot left</p></div><span class="k-meta">No email or login needed</span></div><p class="ef-cap9" style="margin-top:8px">One order holds up to 9 players. Register the rest in a second order.</p></div>
+<div class="ef-confirm" style="position:relative"><span class="k-num-badge ef-mk" style="left:-64px;top:10px">9</span><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Names confirmed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span>These names are spelled the way they should appear on pairings and results <span class="ef-req">Required</span></span></div>
+<div class="ef-total" style="position:relative" aria-live="polite"><span class="k-num-badge ef-mk" style="left:-64px;top:12px">10</span><p class="k-label">Your total</p>
+<div class="ef-tl"><span>Maya · Labor Day Scholastic K–8<small>Entry fee</small></span><b>$25</b></div>
+<div class="ef-tl"><span>Leo · U1000 · 2-day schedule<small>Entry fee, early price</small></span><b>$30</b></div>
+<div class="ef-tsum"><span>2 players</span><span>$55</span></div>
+<p class="ef-tnote">Entry fees only. Anyone without an LCA membership gets one added in step 3. No card fees are added at payment. Early prices until Sun, Jul 25.</p></div>
+<div><a class="k-btn k-btn-gold k-btn-lg k-btn-block" href="#">Continue with 2 players · $55</a><p class="ef-next">Next: byes and US Chess IDs, then Check your answers, then pay once by card with Stripe.</p></div>
+</div></div><div class="ef-rcol"><div class="ef-inset"><span class="k-num-badge ef-mkr">5</span><div class="ef-ihead"><span class="ef-icode">D2</span><b>Maya's section select, open</b></div><p class="ef-isub">Grouped by event; side events sit in the same list. Each option shows its one price and its own count: "Labor Day Scholastic · K–8 · $25 · 14 of 60 entered".</p>
+<div class="ef-lb" role="listbox" aria-label="Section for Maya"><div class="ef-lbsel"><span style="flex:1"><b>Labor Day Scholastic · K–8 · $25</b></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div>
+<div class="ef-lbg">Labor Day Scholastic · side event <span>Sat, Sep 4 · 9:30 AM · 14 of 60 entered</span></div>
+<div class="ef-lbo sel" role="option" aria-selected="true"><span class="ef-ck"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span>K–8<small>Grade 8 or below</small></span><span class="ef-lbp">$25</span></div>
+<div class="ef-lbo" role="option" aria-selected="false"><span class="ef-ck"></span><span>K–12<small>Grade 12 or below</small></span><span class="ef-lbp">$25</span></div>
+<div class="ef-lbg">2027 Louisiana State Championship <span>Sat–Mon, Sep 4–6</span></div>
+<div class="ef-lbo" role="option" aria-selected="false"><span class="ef-ck"></span><span>U1400<small>Rated under 1400 · 5 entered</small></span><span class="ef-lbp">$40</span></div>
+<div class="ef-lbf">Not shown: U1000 (1102 is over 1000). <a href="#">Show K–3, U1800 and Championship</a></div></div></div><div class="ef-inset"><span class="k-num-badge ef-mkr">11</span><div class="ef-ihead"><span class="ef-icode">D3</span><b>Edit name, with the duplicate-name error</b></div><p class="ef-isub">Drawn once. Danielle opened Edit name on Leo's row and typed his sister's name.</p>
+<div class="ef-in2"><label class="ef-fl">First name<span class="ef-input err" aria-invalid="true">Maya</span></label><label class="ef-fl">Last name<span class="ef-input">Robichaux</span></label></div>
+<p class="ef-err" role="alert"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5v.5"></path></svg><span>That name is already in your family. Check the spelling, or tick Maya's row above instead.</span></p>
+<p class="ef-hint">Changes the name on pairings, results and the US Chess report. Publicly before the event it shows as first name and last initial.</p>
+<div class="ef-btnrow"><a class="k-btn k-btn-navy k-btn-sm" href="#">Save name</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Cancel</a></div></div><div class="ef-inset"><span class="k-num-badge ef-mkr">12</span><div class="ef-ihead"><span class="ef-icode">D4</span><b>Row states</b></div><p class="ef-isub">How a row reads when it cannot be ticked or edited as usual.</p>
+<div class="ef-states ef-states2">
+<div class="ef-srow"><span class="ef-cb dis" role="checkbox" aria-checked="false" aria-disabled="true" aria-label="Maya Robichaux, already registered"></span><div class="ef-pmain"><p class="ef-swhat">Locked: registered by the other guardian</p><span class="ef-pname">Maya Robichaux</span><span class="ef-lock"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Already registered by Marc R. for K–8</span></div></div>
+<div class="ef-srow"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Leo Robichaux is playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><div class="ef-pmain"><p class="ef-swhat">Edit name locked</p><span class="ef-pname">Leo Robichaux</span><span class="ef-lock"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Checked in. Ask the director to fix the name.</span></div></div>
+<div class="ef-srow"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Nora Robichaux is playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><div class="ef-pmain"><p class="ef-swhat">In the household, not on the plan</p><span class="ef-pname">Nora Robichaux</span><span class="ef-lock ef-lock-warn"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5v.5"></path></svg>Not on your Family plan. A Scholastic membership ($5 a year) is added in step 3.</span></div></div>
+<div class="ef-srow"><span class="ef-cb dis" role="checkbox" aria-checked="false" aria-disabled="true" aria-label="Tenth player, cannot be added"></span><div class="ef-pmain"><p class="ef-swhat">A tenth player</p><span class="ef-pname">10th person ticked</span><span class="ef-lock"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5v.5"></path></svg>One order holds up to 9 players. Register the rest in a second order.</span></div></div>
+</div></div><div class="ef-inset"><span class="k-num-badge ef-mkr">8</span><div class="ef-ihead"><span class="ef-icode">D5</span><b>Add a family member, open</b></div><p class="ef-isub">A child joins the household in place; the new row arrives ticked.</p>
+<div class="ef-in2"><label class="ef-fl">First name<span class="ef-input ph">First name</span></label><label class="ef-fl">Last name<span class="ef-input">Robichaux</span></label></div>
+<label class="ef-fl" style="margin-top:10px"><span>US Chess ID <span class="ef-req">Optional</span></span><span class="ef-input ph">8 digits, if they have one</span></label>
+<p class="ef-hint">No email or login needed. You manage their entries from My LCA.</p>
+<div class="ef-btnrow"><a class="k-btn k-btn-navy k-btn-sm" href="#">Add to my family</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Cancel</a></div></div><div class="ef-inset"><span class="k-num-badge ef-mkr">9</span><div class="ef-ihead"><span class="ef-icode">D6</span><b>Continue pressed before the names were confirmed</b></div>
+<div class="ef-confirm" style="margin-top:10px;border-color:#b3202f"><span class="ef-cb err" role="checkbox" aria-checked="false" aria-label="Names confirmed"></span><span>These names are spelled the way they should appear on pairings and results</span></div>
+<p class="ef-err" role="alert"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v6M12 16.5v.5"></path></svg><span>Check the names, then tick the box to confirm them.</span></p>
+<div class="ef-btn-dis" style="margin-top:12px" aria-disabled="true">Continue with 2 players · $55</div>
+<p class="ef-hint">Disabled until each ticked person has a section and the names are confirmed.</p></div><div class="ef-inset"><span class="k-num-badge ef-mkr">17</span><div class="ef-ihead"><span class="ef-icode">D7</span><b>The family limit</b></div><p class="ef-isub">A Family plan covers 3 children. The main sheet reads "1 spot left"; these are the two states after it.</p><div class="ef-lim"><div><p class="ef-swhat">Plan full (3 children)</p><div class="ef-addrow"><div><p><span class="k-muted">Someone missing?</span> <a class="k-link" href="#">Add a family member</a></p><p class="ef-plan"><b>Your Family plan is full (3 children).</b> A 4th child is added with a Scholastic membership, $5 a year</p></div></div></div><div><p class="ef-swhat">Family list full (8 profiles)</p><div class="ef-addrow" style="background:#f3f2ed"><div><p><span class="k-muted">Someone missing?</span> <span class="ef-linkdis" role="link" aria-disabled="true">Add a family member</span></p><p class="ef-plan"><b>Your family list is full (8)</b></p></div></div></div></div></div></div></div></div></section>
+<section class="ef-sec" aria-labelledby="ef-fe"><div class="tl-flab"><span class="tl-code">E</span><h2 id="ef-fe">The explainer a signed-out viewer gets from the same button</h2><span class="k-meta">Sheet, 600px · "How family registration works"</span></div>
+<div class="ef-frame"><div class="ef-g"><div class="ef-sheet" role="dialog" aria-modal="true" aria-labelledby="ef-eh">
+<div class="ef-shead"><div><p class="k-label-gold">Register my family</p><p class="k-meta" style="margin-top:6px">2027 Louisiana State Championship · Sat–Mon, Sep 4–6, 2027</p></div><button class="k-iconbtn" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<div class="ef-sbody"><span class="k-num-badge ef-mk">13</span>
+<div><h2 id="ef-eh" class="ef-h">How family registration works</h2><p class="ef-ev">One checkout for you and your children, with a Family membership. Children don't need their own login or email.</p></div>
+<ol class="ef-xsteps"><li><span class="ef-xn">1</span><b>Pick who's playing</b><span>Tick each person in your family. Add a child with just a first and last name.</span></li><li><span class="ef-xn">2</span><b>Pick a section for each</b><span>Each person sees only the sections they can enter, each with its entry fee.</span></li><li><span class="ef-xn">3</span><b>Pay once</b><span>One card payment with Stripe. One receipt to you, and a confirmation for each player.</span></li></ol>
+<div class="ef-prev" aria-label="Preview of the picker with sample names"><div class="ef-prevtop"><b>Preview · Who's playing?</b><span class="k-sample">Sample names</span></div>
+<div class="ef-prow"><span class="ef-cb on" role="checkbox" aria-checked="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-av" aria-hidden="true">MR</span><span>Maya Robichaux<small>Labor Day Scholastic · K–8 · grade 8 or below</small></span><span class="ef-pp">$25</span></div>
+<div class="ef-prow"><span class="ef-cb on" role="checkbox" aria-checked="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-av" aria-hidden="true">LR</span><span>Leo Robichaux<small>U1000 · 2-day schedule</small></span><span class="ef-pp">$30</span></div>
+<div class="ef-prow"><span class="ef-cb" role="checkbox" aria-checked="false"></span><span class="ef-av ef-av-grey" aria-hidden="true">DR</span><span>Danielle Robichaux (you)<small>Not playing this time</small></span></div>
+<div class="ef-psum"><span>2 players</span><span>$55</span></div></div>
+<div class="ef-xbtns" style="position:relative"><span class="k-num-badge ef-mk" style="left:-64px;top:8px">14</span><a class="k-btn k-btn-gold k-btn-lg" href="#">Get a Family membership · $25 a year</a><p class="ef-xsub">Everyone on the plan gets a LCA membership</p><a class="k-btn k-btn-line k-btn-lg" href="#">Start: create your login</a><p class="ef-xlink">I already have a login: <a class="k-link" href="#">Log in</a></p></div>
+</div></div><div class="ef-rcol"><div class="ef-inset"><span class="k-num-badge ef-mkr">1</span><div class="ef-ihead"><span class="ef-icode">E1</span><b>Where both sheets open: the card's family row</b></div><p class="ef-isub">Sidebar card on desktop, inline under the title on phones. Signed out it opens this explainer; with a Family membership it opens frame D. No one else sees the button. The membership line under it is the card's; one price for everyone, so both read "from $30".</p>
+<div class="ef-trigs"><div><p class="ef-swhat">Signed out</p><div class="ef-trig"><a class="k-btn k-btn-gold k-btn-block" href="#">Register · from $30</a><a class="k-btn k-btn-line k-btn-block" href="#">Register my family</a><p class="ef-famhint">One checkout for you and your children. <a class="k-link" href="#">See how it works</a></p><p class="ef-memreq"><span><b>LCA membership required to enter</b> · $15 a year, added at checkout if you don't have one</span><a class="k-link" href="#">Join LCA</a></p></div></div>
+<div><p class="ef-swhat">Signed in, Family membership</p><div class="ef-trig"><a class="k-btn k-btn-gold k-btn-block" href="#">Register · from $30</a><a class="k-btn k-btn-line k-btn-block" href="#">Register my family</a><p class="ef-famhint">Maya and Leo are on your Family plan.</p><p class="ef-memreq"><span>Your LCA membership is active through Tue, Mar 14, 2028</span></p></div></div></div></div><div class="ef-inset"><span class="k-num-badge ef-mkr">14</span><div class="ef-ihead"><span class="ef-icode">E2</span><b>Where each button goes</b></div>
+<ul class="ef-ul" style="margin-top:8px"><li><b>Get a Family membership · $25 a year:</b> the join page with Family picked, then straight back to "Who's playing?" for this event, with you and up to 3 children covered.</li><li><b>Start: create your login:</b> email and password, then the choice of Family membership or Register without one. Without one, the same picker is step 1 of Register, and step 3 adds a membership for each player who needs one.</li><li><b>Log in:</b> back to this event. With an active Family membership the picker opens; otherwise Register opens at the same picker.</li><li><b>Close:</b> back to the page, nothing saved.</li></ul></div></div></div></div></section>
+<section class="ef-sec" aria-labelledby="ef-ff"><div class="tl-flab"><span class="tl-code">F</span><h2 id="ef-ff">The picker on a phone</h2><span class="k-meta">390 × 844 · same content as frame D</span><span class="k-sample">Sample data</span></div>
+<div class="ef-frame" style="padding:28px 28px 34px 40px"><div class="ef-phones"><div class="ef-pcol"><span class="k-num-badge ef-mk" style="left:-34px;top:120px">15</span><div class="mf-phone"><div class="mf-scr"><div class="mf-status" aria-hidden="true"><span>4:40</span><span class="mf-island"></span><span class="mf-statr"><span class="mf-sig"><i></i><i></i><i></i><i></i></span><span class="mf-batt"><i></i></span></span></div><div class="ef-phead"><button class="ef-pclose" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button><span class="ef-ptitle"><b>Register my family</b><span>Step 1 of 4 · Who's playing</span></span></div><main class="ef-pmainp"><div class="ef-ppad">
+<div><h2 class="ef-ph1">Who's playing?</h2><p class="ef-pev">2027 Louisiana State Championship · Sat–Mon, Sep 4–6, 2027 · Baton Rouge</p></div>
+<div class="ef-memline" style="font-size:12.5px;padding:9px 11px" role="note"><svg class="tl-ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg><span><b>Your Family membership is the only thing shared:</b> it covers you and up to 3 children. Every player pays their own entry fee, set by the section they enter.</span></div>
+<div class="ef-mperson"><div class="ef-mtop"><span class="ef-cb" role="checkbox" aria-checked="false" aria-label="Danielle Robichaux is playing"></span><span class="ef-av ef-av-gold" aria-hidden="true">DR</span><span class="ef-pname" style="font-size:15.5px;margin-top:7px">Danielle Robichaux (you)</span><a class="k-link ef-edit" href="#">Edit name</a></div></div>
+<div class="ef-mperson on"><div class="ef-mtop"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Maya Robichaux is playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-av" aria-hidden="true">MR</span><span class="ef-pname" style="font-size:15.5px;margin-top:7px">Maya Robichaux <small>· 1102</small></span><a class="k-link ef-edit" href="#">Edit name</a></div>
+<div><p class="ef-flabel">Section for Maya <span class="ef-req">Required</span></p><div class="ef-select" role="combobox" aria-expanded="false" aria-label="Section for Maya"><span class="ef-sv"><b>Scholastic · K–8</b></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div></div>
+<div class="ef-elig"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Maya is in 8th grade or below"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b style="font-size:14px">Maya is in 8th grade or below</b><small>One yes or no. Never a grade or birthdate.</small></span></div>
+<div class="ef-addon" style="font-size:13px"><span class="ef-cb" role="checkbox" aria-checked="false" aria-label="Also add the State Blitz Championship for Maya"></span><span><b>Also play the State Blitz Championship</b> · Sun, Sep 5 · 9:00 PM</span></div></div>
+</div><div class="ef-strack-p" aria-hidden="true"><i style="top:0"></i></div></main><div class="ef-dock"><span class="ef-dsum"><b>2 players · $55</b><small>Entry fees · no card fees</small></span><a class="k-btn k-btn-gold" href="#">Continue</a></div><div class="mf-safe"><span class="mf-homeind"></span></div></div></div><div class="ef-pcap"><b>F1 · The picker, top</b><span>Full-screen sheet over the event page. Close at the left; the tab bar is hidden while it is open.</span></div></div><div class="ef-pcol"><div class="mf-phone"><div class="mf-scr"><div class="mf-status" aria-hidden="true"><span>4:40</span><span class="mf-island"></span><span class="mf-statr"><span class="mf-sig"><i></i><i></i><i></i><i></i></span><span class="mf-batt"><i></i></span></span></div><div class="ef-phead"><button class="ef-pclose" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button><span class="ef-ptitle"><b>Register my family</b><span>Step 1 of 4 · Who's playing</span></span></div><main class="ef-pmainp"><div class="ef-ppad ef-end">
+<span class="ef-scrolled">Scrolled down</span>
+<div class="ef-mperson on"><div class="ef-mtop"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Leo Robichaux is playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-av" aria-hidden="true">LR</span><span class="ef-pname" style="font-size:15.5px;margin-top:7px">Leo Robichaux <small>· unrated</small></span><a class="k-link ef-edit" href="#">Edit name</a></div>
+<div><p class="ef-flabel">Section for Leo <span class="ef-req">Required</span></p><div class="ef-select" role="combobox" aria-expanded="false" aria-label="Section for Leo"><span class="ef-sv"><b>U1000</b></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div></div>
+<div><p class="ef-flabel">Schedule for Leo <span class="ef-req">Required</span></p><div class="ef-select" role="combobox" aria-expanded="false" aria-label="Schedule for Leo"><span class="ef-sv"><b>2-day · from Sun, Sep 5</b><small>Rounds 1–3 at G/45+10, then merge</small></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div></div></div>
+<div class="ef-addrow" style="padding:10px 12px"><div><p style="font-size:14px"><span class="k-muted">Someone missing?</span> <a class="k-link" href="#">Add a family member</a></p><p class="ef-plan" style="font-size:12.5px">Your Family plan covers 3 children · 1 spot left</p></div></div>
+<p class="ef-cap9" style="margin-top:-4px">One order holds up to 9 players.</p>
+<div class="ef-confirm" style="font-size:13.5px;padding:8px 12px"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Names confirmed"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span>These names are spelled the way they should appear on pairings and results</span></div>
+<div class="ef-total" style="padding:10px 12px"><div class="ef-tl" style="font-size:13.5px"><span>Maya · Scholastic K–8</span><b>$25</b></div><div class="ef-tl" style="font-size:13.5px"><span>Leo · U1000 · 2-day</span><b>$30</b></div><p class="ef-tnote">Entry fees only. Anyone without an LCA membership gets one added in step 3. No card fees are added at payment.</p></div>
+</div><div class="ef-strack-p" aria-hidden="true"><i style="bottom:0"></i></div></main><div class="ef-dock"><span class="ef-dsum"><b>2 players · $55</b><small>Entry fees · no card fees</small></span><a class="k-btn k-btn-gold" href="#">Continue</a></div><div class="mf-safe"><span class="mf-homeind"></span></div></div></div><div class="ef-pcap"><b>F2 · The picker, scrolled to the end</b><span>The list scrolls inside the sheet; the bar keeps the running total and Continue in reach. Continue stays disabled until the names box is ticked.</span></div></div><div class="ef-pcol"><span class="k-num-badge ef-mk" style="left:-34px;top:520px">16</span><div class="mf-phone"><div class="mf-scr"><div class="mf-status" aria-hidden="true"><span>4:40</span><span class="mf-island"></span><span class="mf-statr"><span class="mf-sig"><i></i><i></i><i></i><i></i></span><span class="mf-batt"><i></i></span></span></div><div class="ef-phead"><button class="ef-pclose" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button><span class="ef-ptitle"><b>Register my family</b><span>Step 1 of 4 · Who's playing</span></span></div><main class="ef-pmainp"><div class="ef-ppad">
+<div><h2 class="ef-ph1">Who's playing?</h2><p class="ef-pev">2027 Louisiana State Championship · Sat–Mon, Sep 4–6, 2027</p></div>
+<div class="ef-mperson on"><div class="ef-mtop"><span class="ef-cb on" role="checkbox" aria-checked="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-av" aria-hidden="true">MR</span><div class="ef-pmain"><span class="ef-pname" style="font-size:15.5px">Maya Robichaux <small>· 1102</small></span></div></div></div>
+</div><div class="ef-dim" aria-hidden="true"></div>
+<div class="ef-bsheet" role="dialog" aria-label="Section for Maya"><span class="ef-grab"></span><div class="ef-bhead"><b>Section for Maya</b><a class="k-btn k-btn-navy k-btn-sm" href="#">Done</a></div>
+<div class="ef-lbg">Labor Day Scholastic <span>Sat, Sep 4 · 14 of 60</span></div>
+<div class="ef-lbo sel" role="option" aria-selected="true"><span class="ef-radio on"></span><span>K–8<small>Grade 8 or below</small></span><span class="ef-lbp">$25</span></div>
+<div class="ef-lbo" role="option" aria-selected="false"><span class="ef-radio"></span><span>K–12<small>Grade 12 or below</small></span><span class="ef-lbp">$25</span></div>
+<div class="ef-lbg">State Championship <span>Sat–Mon, Sep 4–6</span></div>
+<div class="ef-lbo" role="option" aria-selected="false"><span class="ef-radio"></span><span>U1400<small>Rated under 1400 · 5 entered</small></span><span class="ef-lbp">$40</span></div>
+<div class="ef-lbf">Not shown: U1000 (1102 is over 1000). <a href="#">Show K–3, U1800 and Championship</a></div>
+<div class="mf-safe"><span class="mf-homeind"></span></div></div>
+</main></div></div><div class="ef-pcap"><b>F3 · Maya's section select, open</b><span>A bottom sheet with the same groups, one price per option, the counts and the hidden-sections hint. The closed select leaves prices and counts out; this sheet keeps them.</span></div></div></div><div class="ef-row2"><div class="ef-pcol"><span class="k-num-badge ef-mk" style="left:-34px;top:200px">15</span><div class="ef-crop"><span class="ef-cutlab">Phone, lower part of the screen</span><div class="ef-pmainp" style="position:absolute;inset:0"><div class="ef-ppad" style="padding-top:40px"><div class="ef-mperson on"><div class="ef-mtop"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Maya Robichaux is playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-av" aria-hidden="true">MR</span><span class="ef-pname" style="font-size:15.5px;margin-top:7px">Maya Robichaux <small>· 1102</small></span></div></div></div><div class="ef-dim" aria-hidden="true"></div><div class="ef-bsheet" role="dialog" aria-label="Edit Maya's name"><span class="ef-grab"></span><div class="ef-bhead"><b>Edit name</b><a class="k-btn k-btn-ghost k-btn-sm" href="#">Cancel</a></div><div class="ef-bbody"><div class="ef-in2"><label class="ef-fl">First name<span class="ef-input">Maya</span></label><label class="ef-fl">Last name<span class="ef-input">Robichaux</span></label></div><div class="ef-mlrow"><span><b>Pairings, results and the US Chess report:</b> Maya Robichaux</span><span><b>Shown publicly as Maya R.</b> on the entrants list before the event</span></div><p class="ef-hint" style="margin:0">Rating 1102 · US Chess ID ending 7731 · Family plan</p><a class="k-btn k-btn-navy k-btn-block" href="#">Save name</a></div><div class="mf-safe"><span class="mf-homeind"></span></div></div></div></div><div class="ef-pcap"><b>F4 · Edit name, as a bottom sheet</b><span>The public-name line and the detail line live here on a phone, out of the list.</span></div></div><div class="ef-rules"><span class="k-num-badge ef-mkr">15</span><div class="ef-ihead"><span class="ef-icode">F5</span><b>What the phone row leaves out, and where it went</b></div><p class="ef-isub">K: preserve space, and the small detail lines were too small to read. The row keeps one essential beside the name.</p><div class="ef-cmp"><div><p class="ef-cmpcap">Before (removed)</p><div class="ef-mperson on ef-old" aria-hidden="true"><div class="ef-mtop"><span class="ef-cb on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-av">MR</span><div class="ef-pmain"><span class="ef-pname" style="font-size:15px">Maya Robichaux</span><span class="ef-pmeta" style="font-size:12px">Rating 1102 · ID ending 7731 · Family plan</span></div></div><div class="ef-forms" style="margin-top:0;font-size:12px"><span><b>Pairings and results:</b> Maya Robichaux</span><span><b>Shown publicly as Maya R.</b> before the event</span></div><div class="ef-select" style="font-size:13.5px"><span class="ef-sv"><b>Scholastic · K–8</b><small>$25 · 14 of 60</small></span></div></div></div><div><p class="ef-cmpcap">Now</p><div class="ef-mperson on"><div class="ef-mtop"><span class="ef-cb on" role="checkbox" aria-checked="true" aria-label="Maya Robichaux is playing"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="ef-av" aria-hidden="true">MR</span><span class="ef-pname" style="font-size:15px;margin-top:7px">Maya Robichaux <small>· 1102</small></span><a class="k-link ef-edit" href="#">Edit name</a></div><div class="ef-select" style="font-size:13.5px"><span class="ef-sv"><b>Scholastic · K–8</b></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></div></div></div></div><ul class="ef-ul" style="margin-top:14px"><li><b>Beside the name:</b> the rating ("Maya Robichaux · 1102", "Leo Robichaux · unrated"), or "(you)" for the account holder.</li><li><b>Under a select:</b> nothing. The price shows in the open sheet (F3) and in the total; the count shows in the open sheet.</li><li><b>Public name and ID:</b> in Edit name (F4). Desktop keeps them in the row.</li><li><b>Family limit:</b> the add row keeps "Your Family plan covers 3 children · 1 spot left" (F2); full and disabled read as in D7.</li></ul></div></div></div></section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

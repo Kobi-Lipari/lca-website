@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>News A — Feature + list</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.na-hero{background:#1a2744;color:#ffffff;border-bottom:3px solid #c8a94a}
+.na-hero .k-lead{color:rgba(255,255,255,.86)}
+.na-hero .k-search{width:min(340px,100%);border-color:#ffffff}
+.k-tag svg{width:13px;height:13px}
+.na-pinlabel{display:inline-flex;align-items:center;gap:6px}
+.na-feature{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);overflow:hidden}
+.na-feature img{width:100%;height:100%;min-height:440px;object-fit:cover}
+.na-feature-body{padding:30px 32px 28px}
+.na-hl{font-size:31px;line-height:1.12;font-weight:700;letter-spacing:-.015em}
+.na-hl a,.na-item h4 a{color:#1a2744;text-decoration:none}
+.na-hl a:hover,.na-item h4 a:hover{text-decoration:underline}
+.na-mini{display:grid;grid-template-columns:60px minmax(0,1fr) auto;gap:8px 12px;align-items:baseline}
+.na-item{display:grid;grid-template-columns:64px minmax(0,1fr) 168px;gap:20px;padding:18px 0;border-top:1px solid #e2e1da;align-items:start}
+.na-item .k-stack-sm{gap:6px}
+.na-thumb{height:100px}
+.na-month{padding:22px 0 8px}
+.na-fb{list-style:none;margin:0;padding:0}
+.na-fb li{padding:16px 20px;border-top:1px solid #ecebe5}
+.na-notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(400px,100%),1fr));gap:10px 28px}
+@media (max-width:860px){.na-feature{grid-template-columns:1fr}.na-feature img{min-height:0;height:230px}.na-feature-body{padding:22px 20px}.na-hl{font-size:26px}}
+@media (max-width:760px){.na-item{grid-template-columns:64px minmax(0,1fr);gap:14px}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a class="k-nav-on" href="#" aria-current="page">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<section class="na-hero">
+  <div class="k-wrap-wide k-section-sm k-between" style="align-items:flex-end">
+    <div class="k-stack-sm" style="max-width:720px">
+      <h1 class="k-h1">News &amp; updates</h1>
+      <p class="k-lead">Results, announcements and club news from across Louisiana.</p>
+    </div>
+    <div class="k-row">
+      <div class="k-search" role="search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input type="search" aria-label="Search news" placeholder="Search news"></div>
+      <a class="k-btn k-btn-on-dark" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Email updates</a>
+    </div>
+  </div>
+</section>
+
+<main class="k-wrap-wide k-stack-lg" style="padding-top:22px;padding-bottom:48px">
+
+  <div class="k-row-sm"><span class="k-sample">Sample data</span><span class="k-meta">Stories, people, quotes and results are invented for this mock. Events, clubs, meeting times and prices are real.</span></div>
+
+  <section class="k-stack-sm" aria-labelledby="na-pinned-h">
+    <h2 id="na-pinned-h" class="k-label-gold na-pinlabel"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3.5h6M10 3.5l-.6 6.2-2.9 3.3h11l-2.9-3.3-.6-6.2M12 13v7.5"></path></svg>Pinned</h2>
+    <div class="k-grid-2">
+      <article class="k-card-pad k-between" style="align-items:flex-start">
+        <div class="k-stack-sm" style="flex:1 1 300px">
+          <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-meta">Pinned until Sun, Oct 11</span><span class="k-num-badge">1</span></div>
+          <h3 class="k-h3">Lafayette Open 2026 is this weekend</h3>
+          <p class="k-small k-muted">Sat–Sun, Oct 10–11 · Lafayette · Classical · All ages</p>
+        </div>
+        <a class="k-btn k-btn-navy k-btn-sm" href="#">Event details</a>
+      </article>
+      <article class="k-card-pad k-between" style="align-items:flex-start">
+        <div class="k-stack-sm" style="flex:1 1 300px">
+          <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA</span><span class="k-meta">Pinned through Thu, Dec 31</span></div>
+          <h3 class="k-h3">Join or renew your LCA membership online</h3>
+          <p class="k-small k-muted">Adult $15 · Scholastic $5 · Family $25 · Senior $10 a year</p>
+        </div>
+        <a class="k-btn k-btn-gold k-btn-sm" href="#">Membership</a>
+      </article>
+    </div>
+  </section>
+
+  <article class="k-card na-feature" aria-labelledby="na-feat-h">
+    <img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Adult players at long tables in a wood-paneled tournament hall">
+    <div class="na-feature-body k-stack">
+      <div class="k-row-sm"><span class="k-tag k-tag-gold">Featured</span><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg>Results</span></div>
+      <h2 id="na-feat-h" class="na-hl"><a href="News-D.dc.html">Marcus Landry wins the 2026 Louisiana State Championship</a></h2>
+      <p class="k-body k-muted">A last-round draw on board 1 was enough. Landry finished alone on 4½/5 in Sulphur over Labor Day weekend.</p>
+      <p class="k-meta">Tue, Sep 8, 2026 · By Chris Arceneaux · 5 min read</p>
+      <div class="k-panel k-stack-sm" style="padding:16px 18px">
+        <div class="k-between"><span class="k-label">Section winners</span><span class="k-num-badge">2</span></div>
+        <div class="na-mini">
+          <span class="k-meta">Open</span><span class="k-strong">Marcus Landry <span class="k-meta k-mono">2014</span></span><span class="k-mono k-strong">4½/5</span>
+          <span class="k-meta">U1800</span><span class="k-strong">Isaac Dupre <span class="k-meta k-mono">1688</span></span><span class="k-mono k-strong">4½/5</span>
+          <span class="k-meta">U1400</span><span class="k-strong">Jordan Lee <span class="k-meta k-mono">1388</span></span><span class="k-mono k-strong">4/5</span>
+        </div>
+      </div>
+      <div class="k-row">
+        <a class="k-btn k-btn-navy" href="News-D.dc.html">Read the recap<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a class="k-btn k-btn-line" href="#">Final standings</a>
+      </div>
+    </div>
+  </article>
+
+  <div class="k-split">
+    <section class="k-main" aria-labelledby="na-latest-h">
+      <div class="k-between">
+        <h2 id="na-latest-h" class="k-h2">Latest</h2>
+        <button class="k-btn k-btn-ghost k-btn-sm" type="button">Newest first<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+      </div>
+      <div class="k-row-sm" role="group" aria-label="Filter by category" style="margin-top:14px">
+        <button class="k-chip k-chip-on" type="button" aria-pressed="true">All <span class="k-chip-count">24</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Results <span class="k-chip-count">6</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Announcements <span class="k-chip-count">7</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Club news <span class="k-chip-count">5</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Scholastic <span class="k-chip-count">4</span></button>
+        <button class="k-chip" type="button" aria-pressed="false">Board &amp; governance <span class="k-chip-count">2</span></button>
+        <span class="k-num-badge">3</span>
+      </div>
+
+      <h3 class="k-label na-month">October 2026</h3>
+
+      <article class="na-item">
+        <div class="k-date"><span>Mon</span><b>5</b><span>Oct</span></div>
+        <div class="k-stack-sm">
+          <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg>Scholastic</span><span class="k-meta">LCA news desk · 2 min read</span></div>
+          <h4 class="k-h3"><a href="#">New Orleans Youth Chess season starts Sat, Nov 14</a></h4>
+          <p class="k-small k-muted">The November Meet opens a season of scholastic meets that ends with the Grand Prix Final on Sat, May 8, 2027. Run by Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess.</p>
+        </div>
+        <div class="k-img na-thumb k-hide-sm">Photo · youth meet</div>
+      </article>
+
+      <article class="na-item">
+        <div class="k-date"><span>Thu</span><b>1</b><span>Oct</span></div>
+        <div class="k-stack-sm">
+          <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg>Club news</span><span class="k-meta k-row-sm"><span class="k-dot" style="color:#6b3f8f"></span>New Orleans Westbank Chess Club</span></div>
+          <h4 class="k-h3"><a href="#">Rated Thursdays continue at the Westbank club in Gretna</a></h4>
+          <p class="k-small k-muted">US Chess rated games every Thursday, 7:30–11:30 PM. Beginners welcome.</p>
+        </div>
+      </article>
+
+      <h3 class="k-label na-month">September 2026</h3>
+
+      <article class="na-item">
+        <div class="k-date"><span>Wed</span><b>30</b><span>Sep</span></div>
+        <div class="k-stack-sm">
+          <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg>Results</span><span class="k-meta k-row-sm"><span class="k-dot" style="color:#2f6f5e"></span>Greater New Orleans Chess Club</span></div>
+          <h4 class="k-h3"><a href="#">Devin Batiste takes the Greater New Orleans September G/90</a></h4>
+          <p class="k-small k-muted">Five Tuesday rounds, one a week (G/90 · 90 minutes each). Batiste finished on 4½/5, half a point ahead of Elise Fontenot. <a class="k-link" href="#">Standings</a></p>
+        </div>
+      </article>
+
+      <article class="na-item">
+        <div class="k-date"><span>Mon</span><b>28</b><span>Sep</span></div>
+        <div class="k-stack-sm">
+          <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg>Club news</span><span class="k-meta k-row-sm"><span class="k-dot" style="color:#9b2b35"></span>Baton Rouge Chess Club</span></div>
+          <h4 class="k-h3"><a href="#">Two ways to play in Baton Rouge every week</a></h4>
+          <p class="k-small k-muted">Classical Saturdays at 10 AM at Jones Creek Branch Library (G/90+30 · 90 minutes each + 30 seconds per move), casual Wednesdays at 6 PM at Boba ParTea on O'Neil Lane.</p>
+        </div>
+        <div class="k-img na-thumb k-hide-sm">Photo · library club room</div>
+      </article>
+
+      <article class="na-item">
+        <div class="k-date"><span>Tue</span><b>22</b><span>Sep</span></div>
+        <div class="k-stack-sm">
+          <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4a1 1 0 0 0 1 1h2l6 4V5L7 9H5a1 1 0 0 0-1 1zM16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11"></path></svg>Announcement</span><span class="k-meta">LCA news desk · 1 min read</span></div>
+          <h4 class="k-h3"><a href="#">Ken Ferguson Memorial weekend set for Sat–Mon, Jan 16–18, 2027</a></h4>
+          <p class="k-small k-muted">Downriver Chess brings the Ken Ferguson Memorial Open back to New Orleans, with a blitz and a scholastic on Sun, Jan 17. Registration is on the organizer's site.</p>
+        </div>
+      </article>
+
+      <article class="na-item">
+        <div class="k-date"><span>Wed</span><b>9</b><span>Sep</span></div>
+        <div class="k-stack-sm">
+          <div class="k-row-sm"><span class="k-tag"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4l6 6M12 6l6 6M13 5l-6 6 2 2 6-6M8 12l-4.5 4.5 2 2L10 14M3.5 21h9"></path></svg>Board &amp; governance</span><span class="k-meta">LCA board · 3 min read</span></div>
+          <h4 class="k-h3"><a href="#">From the annual meeting in Sulphur</a></h4>
+          <p class="k-small k-muted">Members met on Sun, Sep 6 during the State Championship. Draft minutes will be posted for comment before the board approves them.</p>
+        </div>
+      </article>
+
+      <div class="k-row" style="justify-content:center;padding-top:20px;border-top:1px solid #e2e1da">
+        <button class="k-btn k-btn-line" type="button">Load 10 more</button>
+        <span class="k-meta">Showing 6 of 24 · newest first</span>
+        <span class="k-num-badge">4</span>
+      </div>
+    </section>
+
+    <aside class="k-side k-stack" aria-label="More from LCA">
+      <section class="k-card" aria-labelledby="na-fb-h">
+        <div class="k-between" style="padding:16px 20px">
+          <div>
+            <h2 id="na-fb-h" class="k-h4">From our Facebook page</h2>
+            <p class="k-meta">Louisiana Chess Association</p>
+          </div>
+          <span class="k-num-badge">5</span>
+        </div>
+        <ul class="na-fb">
+          <li class="k-stack-sm">
+            <p class="k-meta">Tue, Oct 6 · 9:12 AM</p>
+            <p class="k-small">Driving to the Lafayette Open from New Orleans or Baton Rouge? Comment below to share a ride.</p>
+            <a class="k-small k-link-plain" href="#">View on Facebook<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          </li>
+          <li class="k-stack-sm">
+            <p class="k-meta">Thu, Oct 1 · 7:45 PM · Photos</p>
+            <div class="k-img" style="height:112px">Photo · Bunkie Library club night</div>
+            <p class="k-small">Full tables at the Bunkie Library this week. Tuesdays 4–6 PM, ages 8 to 108, free to join.</p>
+            <a class="k-small k-link-plain" href="#">View on Facebook<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          </li>
+        </ul>
+        <div class="k-stack-sm" style="padding:16px 20px;border-top:1px solid #ecebe5">
+          <a class="k-btn k-btn-line k-btn-block" href="#">See all posts on Facebook<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          <p class="k-meta">Pulled in by our server, so no Facebook plugin loads on this page.</p>
+        </div>
+      </section>
+
+      <section class="k-card-pad k-stack-sm" aria-labelledby="na-post-h">
+        <h2 id="na-post-h" class="k-h4">Run a club?</h2>
+        <p class="k-small k-muted">Post club news from Workspace. It shows here and on your club page, marked with your club color.</p>
+        <a class="k-btn k-btn-soft k-btn-sm" href="#" style="align-self:flex-start">Post club news</a>
+      </section>
+
+      <section class="k-card-pad k-stack-sm" aria-labelledby="na-arch-h">
+        <h2 id="na-arch-h" class="k-h4">Archive</h2>
+        <div class="k-row-sm"><a class="k-chip" href="#">2026</a><a class="k-chip" href="#">2025</a><a class="k-chip" href="#">2024</a></div>
+        <a class="k-small k-link-plain" href="#">Older news on the old LCA site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+      </section>
+    </aside>
+  </div>
+
+  <section class="k-panel k-stack-sm" aria-label="Notes on this option">
+    <div class="k-label">Notes on this option</div>
+    <div class="na-notes">
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">1</span><span class="k-small">Pins expire on a date the editor sets, so an old announcement can't sit on top for months.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">2</span><span class="k-small">Teasers carry the winners and scores; full tables stay on the results page.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">3</span><span class="k-small">One row of category chips with counts. The choice lives in the URL, so a filtered view can be shared.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">4</span><span class="k-small">"Load 10 more" instead of endless scrolling keeps the footer reachable.</span></div>
+      <div class="k-row-sm" style="flex-wrap:nowrap;align-items:flex-start"><span class="k-num-badge">5</span><span class="k-small">Today's server-side Facebook feed, kept as a rail. Every post links out to Facebook.</span></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2460}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scholastic Phones — parents at the venue</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.p-board{width:1960px;height:1100px;min-height:1100px;box-sizing:border-box;background:#ecebe6;padding:22px 44px 14px;overflow:hidden;display:flex;flex-direction:column;gap:14px;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.p-top{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;min-height:52px}
+.p-title{font-size:28px;line-height:32px;font-weight:700;letter-spacing:-.01em;margin:2px 0 0}
+.p-topr{display:flex;align-items:center;gap:14px;max-width:980px}
+.p-phones{display:flex;justify-content:space-between;align-items:flex-start}
+.p-col{width:414px;flex:none;display:flex;flex-direction:column;gap:6px}
+.p-scr{position:relative;overflow:hidden}
+.p-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:0 10px 0 14px;min-height:60px}
+.p-app .k-brand{gap:8px}
+.p-app .k-mark{width:28px;height:28px}
+.p-app .k-brand-name b{font-size:15px}
+.p-app .k-brand-name span{font-size:11px}
+.p-app .k-menubtn{display:inline-flex;min-height:44px;padding:0 10px}
+.p-nav{display:flex;align-items:center;gap:2px}
+.p-key{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;white-space:nowrap}
+.p-body{padding:16px;display:flex;flex-direction:column;gap:14px}
+.p-h1{font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:0}
+.p-h2{font-size:19px;line-height:1.25;font-weight:700;margin:0}
+.p-h3{font-size:16px;line-height:1.3;font-weight:600;margin:0}
+.p-t{font-size:14px;line-height:1.45}
+.p-m{font-size:13px;line-height:1.4;color:#555c6b}
+.p-xs{font-size:12px;line-height:1.35;color:#555c6b}
+.p-ink{color:#1a2744}
+.p-w{color:#ffffff}
+.p-wm{color:#d5d9e3}
+.p-card{background:#ffffff;border:1px solid #e2e1da;border-radius:12px}
+.p-ln{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.p-r{display:flex;align-items:center;gap:8px}
+.p-st{display:flex;flex-direction:column;gap:6px}
+.p-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.p-grow{flex:1;min-width:0}
+.p-chips{display:flex;gap:8px;overflow:hidden}
+.p-scr .k-chip{min-height:44px;flex:none;white-space:nowrap}
+.p-scr .k-btn{min-height:44px}
+.p-search{display:flex;align-items:center;gap:8px;min-height:48px;padding:0 4px 0 12px;border:1px solid #c9c8c0;border-radius:10px;background:#ffffff;color:#555c6b;box-sizing:border-box}
+.p-search input{border:0;outline:0;background:transparent;font:inherit;font-size:16px;color:#1a2744;flex:1;min-width:0;padding:0;height:44px}
+.p-nb{position:absolute;z-index:3}
+.p-legend{display:flex;gap:28px;flex-wrap:wrap;align-items:center;font-size:13px;line-height:18px;color:#555c6b;margin-top:2px}
+.p-lg{display:inline-flex;align-items:center;gap:6px}
+.p-lg b{color:#1a2744;font-weight:600}
+.p-note{display:flex;gap:10px;align-items:flex-start;padding:12px;border-radius:10px;background:#eef0f4;font-size:13px;line-height:1.45;color:#1a2744}
+.p-pill{display:inline-flex;align-items:center;min-height:24px;padding:0 8px;border-radius:999px;background:#eef0f4;font-size:12px;font-weight:500;color:#1a2744}
+.p-livebar{padding:12px 16px 14px;display:flex;flex-direction:column;gap:6px}
+.p-kid{display:flex;align-items:center;gap:12px;min-height:56px;padding:6px 14px;border-top:1px solid #e2e1da}
+.p-brd{text-align:right;flex:none}
+.p-brd b{display:block;font-size:16px}
+.p-alert{display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 14px;border-top:1px solid #e2e1da;background:#f7f7f4;border-radius:0 0 12px 12px;position:relative}
+.p-alert input{width:22px;height:22px;accent-color:#1a2744;flex:none;margin:0}
+.p-alert b{display:block;font-size:14px;font-weight:600}
+.p-alert small{display:block;font-size:12px;color:#555c6b}
+.p-tl{list-style:none;margin:0;padding:0;position:relative}
+.p-tl::before{content:"";position:absolute;left:87px;top:10px;bottom:14px;width:2px;background:#e2e1da}
+.p-tl li{display:grid;grid-template-columns:76px 24px 1fr;align-items:start;min-height:46px;position:relative}
+.p-tl-t{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;padding-top:1px}
+.p-tl-dot{width:12px;height:12px;border-radius:50%;border:2px solid #1a2744;background:#ffffff;margin:3px 0 0 6px;position:relative;z-index:1;box-sizing:border-box}
+.p-tl b{display:block;font-size:14px;font-weight:600;line-height:1.35}
+.p-tl small{display:block;font-size:12px;color:#555c6b;line-height:1.35}
+.p-tl-done{color:#555c6b}
+.p-tl-done .p-tl-dot{background:#1a2744}
+.p-tl-now .p-tl-dot{background:#c8a94a;border:2px solid #1a2744;width:14px;height:14px;margin:2px 0 0 5px;box-shadow:0 0 0 4px rgba(200,169,74,.35)}
+.p-seg2{display:flex;width:100%}
+.p-seg2 button{flex:1;min-height:44px}
+.p-chk{display:flex;align-items:flex-start;gap:12px;min-height:52px;padding:10px 14px;border-top:1px solid #e2e1da;box-sizing:border-box}
+.p-chk:first-of-type{border-top:0}
+.p-chk input{width:22px;height:22px;margin:1px 0 0;accent-color:#1a2744;flex:none}
+.p-chk b{display:block;font-size:14px;font-weight:600}
+.p-chk small{display:block;font-size:12px;color:#555c6b;line-height:1.35}
+.p-acc{border-top:1px solid #e2e1da}
+.p-acc:first-child{border-top:0}
+.p-acch{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:0 14px;border:0;background:transparent;font:inherit;color:#1a2744;text-align:left;cursor:pointer}
+.p-acch b{font-size:15px;font-weight:600}
+.p-acch span{flex:1;font-size:13px;color:#555c6b}
+.p-accb{padding:0 14px 12px;font-size:14px;line-height:1.45}
+.p-prog{padding:14px;display:flex;flex-direction:column;gap:6px}
+.p-gp{border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.p-gpl{display:grid;grid-template-columns:repeat(4,1fr);position:relative}
+.p-gpl::before{content:"";position:absolute;left:12%;right:12%;top:5px;height:2px;background:rgba(255,255,255,.3)}
+.p-gps{display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;text-align:center}
+.p-gps i{display:block;width:12px;height:12px;border-radius:50%;background:#1a2744;border:2px solid #c8a94a;box-sizing:border-box}
+.p-gps-next i{background:#c8a94a}
+.p-gps b{font-size:13px;color:#ffffff;font-weight:600}
+.p-gps small{font-size:11px;color:#d5d9e3}
+.p-ev{display:flex;gap:12px;padding:12px;align-items:flex-start;color:#1a2744;text-decoration:none}
+</style>
+</helmet>
+<div class="k-page p-board">
+
+  <div class="p-top">
+    <div>
+      <div class="k-kicker">Scholastic · phone, 390 px</div>
+      <h1 class="p-title">Scholastic on a phone: for parents at the venue</h1>
+    </div>
+    <div class="p-topr">
+      <span class="k-sample">Sample data</span>
+      <div class="k-small k-muted">Phone 1 is the morning of Sat, Nov 14, 10:22 AM; phones 2–4 are Mon, Oct 5. Programs, events, dates and organizers are real; the day's times, results, boards, checklist and the Robichaux family are sample.</div>
+    </div>
+  </div>
+
+  <div class="p-phones">
+
+    <!-- 1 · Tournament day, live -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key" href="#">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll">
+          <div class="k-navy p-livebar" style="border-top:1px solid rgba(255,255,255,.15)">
+            <div class="p-ln"><span class="k-tag k-tag-live">Live · Round 2</span><span class="p-r p-xs p-wm" style="gap:0">Updated 1 min ago<button class="k-iconbtn" type="button" aria-label="Refresh" style="color:#ffffff"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></button></span></div>
+            <div class="p-h2 p-w">New Orleans Youth Chess November Meet</div>
+            <div class="p-xs p-wm">Sat, Nov 14 · [Venue name], New Orleans · 4 rounds, G/30+5</div>
+          </div>
+          <div class="p-body" style="gap:12px">
+            <div class="p-card" style="position:relative">
+              <span class="k-num-badge p-nb" style="top:-10px;right:-8px">1</span>
+              <div class="p-ln" style="padding:12px 14px 6px"><span class="p-h3">Your players</span><span class="p-xs">Round 2 is on now</span></div>
+              <div class="p-kid"><div class="p-grow"><div class="p-h3">Maya Robichaux</div><div class="p-xs">K–8 · Round 1: won</div></div><div class="p-brd"><b>Board 14</b><span class="p-xs">plays White</span></div></div>
+              <div class="p-kid"><div class="p-grow"><div class="p-h3">Leo Robichaux</div><div class="p-xs">K–3 · Round 1: draw</div></div><div class="p-brd"><b>Board 31</b><span class="p-xs">plays Black</span></div></div>
+              <label class="p-alert"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg><span class="p-grow"><b>Alert me when Round 3 pairings post</b><small>Phone notification and email</small></span><input type="checkbox" checked><span class="k-num-badge p-nb" style="top:-10px;right:-8px">2</span></label>
+            </div>
+            <div class="p-ln"><h3 class="p-h2">Today's schedule</h3><span class="p-xs">Later times are estimates</span></div>
+            <ol class="p-tl">
+              <li class="p-tl-done"><span class="p-tl-t">7:45 AM</span><span class="p-tl-dot"></span><div><b>Check-in</b><small>Closed 8:30 AM · you checked in both at 8:02 AM</small></div></li>
+              <li class="p-tl-done"><span class="p-tl-t">9:00 AM</span><span class="p-tl-dot"></span><div><b>Round 1</b><small>After the 8:45 AM players' meeting</small></div></li>
+              <li class="p-tl-now"><span class="p-tl-t p-ink">10:16 AM</span><span class="p-tl-dot"></span><div><b>Round 2 · now</b><small>Most games end by about 11:20 AM</small></div></li>
+              <li><span class="p-tl-t">~11:30 AM</span><span class="p-tl-dot"></span><div><b>Round 3</b><small>Pairings post as soon as Round 2 ends</small></div></li>
+              <li><span class="p-tl-t">12:15 PM</span><span class="p-tl-dot"></span><div><b>Lunch break</b><small>Bring lunch or buy it on site</small></div></li>
+              <li><span class="p-tl-t">~1:00 PM</span><span class="p-tl-dot"></span><div><b>Round 4</b></div></li>
+              <li><span class="p-tl-t">~2:15 PM</span><span class="p-tl-dot"></span><div><b>Awards</b><small>Main hall · trophies for the top 5 in each section</small></div></li>
+            </ol>
+          </div>
+        </div>
+      </div></div>
+      <div class="k-caption">1 · Tournament day, live</div>
+      <div class="k-caption-sub">The morning of the meet: each child's board and colour, the round in progress, and an alert when the next pairings post.</div>
+    </div>
+
+    <!-- 2 · What to bring -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key" href="#">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:12px">
+          <div>
+            <div class="p-xs">Scholastic · your child's first tournament</div>
+            <h2 class="p-h1" style="margin-top:2px">What to bring</h2>
+            <div class="p-m" style="margin-top:2px">For Sat, Nov 14 · New Orleans Youth Chess November Meet. Ticks are saved for your family.</div>
+          </div>
+          <div class="k-seg p-seg2"><button class="k-seg-on" type="button">Maya · K–8</button><button type="button">Leo · K–3</button></div>
+          <div class="p-card" style="position:relative">
+            <span class="k-num-badge p-nb" style="top:-10px;right:-8px">3</span>
+            <label class="p-chk"><input type="checkbox" checked><span><b>US Chess membership is current</b><small>Checked when you registered</small></span></label>
+            <label class="p-chk"><input type="checkbox" checked><span><b>Chess set and board, if you have one</b><small>Put Maya's name on the bag</small></span></label>
+            <label class="p-chk"><input type="checkbox"><span><b>Pencil</b><small>Older players may write down their moves</small></span></label>
+            <label class="p-chk"><input type="checkbox"><span><b>Water, snacks and lunch</b><small>The lunch break is around 12:15 PM</small></span></label>
+          </div>
+          <div class="p-note"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span><b>Phones and smartwatches</b> stay off and in a bag during games. Parents wait outside the playing room.</span></div>
+          <h3 class="p-h2">Words you'll hear today</h3>
+          <div class="p-card">
+            <div class="p-acc"><button class="p-acch" type="button" aria-expanded="true"><b>G/30+5</b><span>the time control</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></button><div class="p-accb">Each player gets 30 minutes for the whole game, plus 5 seconds added after every move.</div></div>
+            <div class="p-acc"><button class="p-acch" type="button" aria-expanded="false"><b>Pairings</b><span>who plays whom, on which board</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+            <div class="p-acc"><button class="p-acch" type="button" aria-expanded="false"><b>Bye</b><span>sitting out a round</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+            <div class="p-acc"><button class="p-acch" type="button" aria-expanded="false"><b>Touch-move</b><span>touch a piece, you must move it</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="k-caption">2 · What to bring</div>
+      <div class="k-caption-sub">A per-child checklist for the night before, then the words parents hear at the venue, in plain English.</div>
+    </div>
+
+    <!-- 3 · Find a youth program -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key" href="#">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:12px">
+          <div><h2 class="p-h1">Find a youth program</h2><div class="p-m" style="margin-top:2px">Classes, camps and clubs for K–12 players across Louisiana.</div></div>
+          <div class="p-r" style="gap:8px"><div class="p-search p-grow"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input value="New Orleans" aria-label="City or ZIP"></div><button class="k-btn k-btn-line" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Near me</button></div>
+          <div class="p-chips"><button class="k-chip" type="button">After school</button><button class="k-chip" type="button">Camps</button><button class="k-chip" type="button">In schools</button><button class="k-chip" type="button">Homeschool</button><button class="k-chip" type="button">Lessons</button></div>
+          <div class="p-m"><b class="p-ink">7 results</b> · nearest to New Orleans first</div>
+          <div class="p-note" style="position:relative;padding:10px 12px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span>LCA lists these programs; it doesn't vet or certify them. Ask each one how children are supervised.</span><span class="k-num-badge p-nb" style="top:-10px;right:-8px">4</span></div>
+          <div class="p-card p-prog">
+            <div class="p-ln"><a class="p-h3 p-ink" href="#" style="text-decoration:none">Knight Light Chess</a><span class="p-xs">New Orleans</span></div>
+            <div class="p-m">Summer camps, after-school programs, private lessons and community tournaments.</div>
+            <div class="p-wrap"><span class="p-pill">After school</span><span class="p-pill">Camps</span><span class="p-pill">Lessons</span></div>
+            <div class="p-ln"><span class="p-xs">Schedule not listed</span><a class="k-link p-m" href="#">Contact</a></div>
+          </div>
+          <div class="p-card p-prog">
+            <div class="p-ln"><a class="p-h3 p-ink" href="#" style="text-decoration:none">Strategic Thoughts NOLA</a><span class="p-xs">New Orleans</span></div>
+            <div class="p-m">Youth chess programs in schools and NORD centers. Co-runs the New Orleans Youth Chess meets.</div>
+            <div class="p-wrap"><span class="p-pill">In schools</span><span class="p-pill">NORD centers</span></div>
+            <div class="p-ln"><span class="p-xs">Schedule not listed</span><a class="k-link p-m" href="#">Contact</a></div>
+          </div>
+          <div class="p-card p-prog">
+            <div class="p-ln"><a class="p-h3 p-ink" href="#" style="text-decoration:none">Metairie Chess Academy</a><span class="p-xs">Metairie</span></div>
+            <div class="p-m">Chess instruction and play for kids of all ages.</div>
+            <div class="p-wrap"><span class="p-pill">Lessons</span></div>
+            <div class="p-ln"><span class="p-xs">Schedule not listed</span><a class="k-link p-m" href="#">Contact</a></div>
+          </div>
+          <div class="p-card p-prog">
+            <div class="p-ln"><a class="p-h3 p-ink" href="#" style="text-decoration:none">North Kenner Library</a><span class="p-xs">Kenner</span></div>
+            <div class="p-m">Casual chess for all ages and abilities in the library's meeting room.</div>
+          </div>
+        </div>
+      </div></div>
+      <div class="k-caption">3 · Find a youth program</div>
+      <div class="k-caption-sub">Real programs by city and kind (after school, camps, homeschool), honest about missing schedules and about what LCA does and doesn't check.</div>
+    </div>
+
+    <!-- 4 · Upcoming scholastic events -->
+    <div class="p-col">
+      <div class="k-phone"><div class="k-phone-screen p-scr">
+        <div class="p-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <div class="p-nav"><a class="p-key" href="#">Tournaments</a><button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+        </div>
+        <div class="k-phone-scroll p-body" style="gap:12px">
+          <div><h2 class="p-h1">Scholastic events</h2><div class="p-m" style="margin-top:2px">K–12 tournaments, who runs each one, and where you register.</div></div>
+          <div class="p-chips"><button class="k-chip k-chip-on" type="button">Louisiana<span class="k-chip-count">7</span></button><button class="k-chip" type="button">Nearby states<span class="k-chip-count">2</span></button><button class="k-chip" type="button">Grand Prix<span class="k-chip-count">4</span></button></div>
+          <div class="p-gp k-navy">
+            <div class="p-ln"><span class="p-h3 p-w">New Orleans Youth Chess Grand Prix</span><span class="p-xs p-wm">2026–27</span></div>
+            <div class="p-gpl">
+              <div class="p-gps p-gps-next"><i></i><b>Sat, Nov 14</b><small>Next</small></div>
+              <div class="p-gps"><i></i><b>Sat, Dec 5</b><small>Meet</small></div>
+              <div class="p-gps"><i></i><b>Sat, Mar 20</b><small>Meet</small></div>
+              <div class="p-gps"><i></i><b>Sat, May 8</b><small>Final</small></div>
+            </div>
+            <div class="p-xs p-wm">Points from each meet count toward the Grand Prix Final in May.</div>
+          </div>
+          <div class="p-card p-ev">
+            <div class="k-date"><b>14</b><span>Nov</span></div>
+            <div class="p-grow p-st" style="gap:5px">
+              <a class="p-h3 p-ink" href="#" style="text-decoration:none">New Orleans Youth Chess November Meet</a>
+              <div class="p-m">Sat, Nov 14 · New Orleans · Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</div>
+              <div class="p-wrap"><span class="k-tag k-tag-soon">Opens Mon, Oct 19</span><span class="k-tag k-tag-lca">LCA event</span></div>
+              <button class="k-btn k-btn-line" type="button" style="align-self:flex-start"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Remind me when it opens</button>
+            </div>
+          </div>
+          <a class="p-card p-ev" href="#">
+            <div class="k-date"><b>5</b><span>Dec</span></div>
+            <div class="p-grow p-st" style="gap:5px">
+              <div class="p-h3">New Orleans Youth Chess December Meet</div>
+              <div class="p-m">Sat, Dec 5 · New Orleans · K–12 · K–8 · K–5 · K–3</div>
+              <div><span class="k-tag k-tag-lca">LCA event</span></div>
+            </div>
+          </a>
+          <div class="p-card p-ev" style="position:relative">
+            <span class="k-num-badge p-nb" style="top:-10px;right:-8px">5</span>
+            <div class="k-date"><b>17</b><span>Jan</span></div>
+            <div class="p-grow p-st" style="gap:5px">
+              <div class="p-h3">Ken Ferguson Memorial Scholastic</div>
+              <div class="p-m">Sun, Jan 17, 2027 · New Orleans · run by Downriver Chess</div>
+              <div class="p-ln"><span class="k-tag k-tag-ext">Partner event</span><a class="k-link p-r p-m" href="#" style="gap:4px;min-height:44px">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></div>
+            </div>
+          </div>
+          <a class="p-card p-ev" href="#">
+            <div class="k-date"><b>20</b><span>Mar</span></div>
+            <div class="p-grow p-st" style="gap:5px">
+              <div class="p-h3">New Orleans Youth Chess March Meet</div>
+              <div class="p-m">Sat, Mar 20, 2027 · New Orleans</div>
+            </div>
+          </a>
+          <div class="p-card p-ev">
+            <div class="k-date"><b>17</b><span>Apr</span></div>
+            <div class="p-grow"><div class="p-h3">SWLA Regional Scholastic Tournament</div><div class="p-m">Sat, Apr 17, 2027 · Sulphur · Casa de Ajedrez · partner event</div></div>
+          </div>
+          <div class="p-card p-ev">
+            <div class="k-date"><b>Apr</b><span>2027</span></div>
+            <div class="p-grow"><div class="p-h3">LCA State Scholastic Championship</div><div class="p-m">April 2027 · [Date and city to be announced]</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="k-caption">4 · Upcoming scholastic events</div>
+      <div class="k-caption-sub">The Grand Prix series on one line, then every scholastic event with who runs it and where you register.</div>
+    </div>
+
+  </div>
+
+  <div class="p-legend">
+    <div class="p-lg"><span class="k-num-badge">1</span><b>Day-of view:</b> each child's board and colour, with an update time</div>
+    <div class="p-lg"><span class="k-num-badge">2</span><b>Round-ready alert</b> by phone notification and email</div>
+    <div class="p-lg"><span class="k-num-badge">3</span><b>Checklist per child,</b> saved to the family account</div>
+    <div class="p-lg"><span class="k-num-badge">4</span><b>Honest listing:</b> LCA lists programs but doesn't certify them</div>
+    <div class="p-lg"><span class="k-num-badge">5</span><b>Partner events</b> say who runs them and link to their site</div>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1960,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

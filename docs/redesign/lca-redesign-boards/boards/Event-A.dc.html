@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Event A — Sticky registration card</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.ev-crumb{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:#555c6b}
+.ev-crumb a{color:#1a2744;font-weight:500}
+.ev-layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;grid-template-areas:"title card" "main card";column-gap:40px;align-items:start}
+.ev-title{grid-area:title;min-width:0;padding:28px 0 32px}
+.ev-card{grid-area:card;position:sticky;top:16px;margin-top:28px;min-width:0}
+.ev-main{grid-area:main;min-width:0}
+.ev-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px}
+.ev-fact{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:12px 14px}
+.ev-fact b{display:block;font-size:16px;line-height:1.3;margin-top:6px}
+.ev-fact small{display:block;font-size:13px;line-height:1.4;color:#555c6b;margin-top:2px}
+.ev-jump a{text-decoration:none}
+.ev-g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:16px}
+.ev-g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:14px}
+.ev-sec{padding:36px 0;border-top:1px solid #e2e1da}
+.ev-bar{height:8px;border-radius:99px;background:#e6e5de;overflow:hidden}
+.ev-bar i{display:block;height:100%;border-radius:99px;background:#1a2744}
+.ev-bar i.ev-hot{background:#b45309}
+.ev-dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0;font-size:14px}
+.ev-dl dt{color:#555c6b}
+.ev-dl dd{margin:0;font-weight:500}
+.ev-ladder{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ev-ladder li{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #e2e1da;border-radius:10px}
+.ev-ladder li.ev-now{background:#fbf5e3;border:1.5px solid #866a1e}
+.ev-ladder b{display:flex;align-items:center;gap:8px;font-size:14px}
+.ev-ladder small{display:block;font-size:12.5px;color:#555c6b}
+.ev-price{margin-left:auto;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.ev-agenda{list-style:none;margin:0;padding:0}
+.ev-agenda li{display:grid;grid-template-columns:84px 1fr;gap:12px;padding:7px 0;border-top:1px solid #ecebe5;font-size:15px}
+.ev-agenda li:first-child{border-top:0}
+.ev-time{font-family:'Geist Mono',ui-monospace,monospace;font-size:13.5px;color:#3d4556;padding-top:1px;font-variant-numeric:tabular-nums}
+.ev-states{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+.ev-states div{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13.5px;color:#3d4556}
+.ev-ico{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:#eceef3;color:#1a2744}
+.ev-notes{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:12px 28px}
+.ev-notes li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5}
+.ev-mbar{display:none}
+@media (max-width:980px){.ev-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"title" "card" "main"}.ev-card{position:static;margin:0 0 28px}}
+@media (max-width:760px){.ev-mbar{display:flex;position:sticky;bottom:0;z-index:20;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}.ev-title{padding-top:20px}.ev-facts{grid-template-columns:1fr 1fr}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#" class="k-nav-on" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main class="k-wrap">
+<div class="ev-layout">
+
+  <div class="ev-title">
+    <nav class="ev-crumb" aria-label="Breadcrumb"><a href="#">Tournaments</a><span aria-hidden="true">/</span><span>2027 Paul Morphy Open</span></nav>
+    <div class="k-row-sm" style="margin-top:18px"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-open">Registration open</span><span class="k-sample">Sample data · dates, fees, prizes and players</span></div>
+    <h1 class="k-display" style="margin-top:14px">2027 Paul Morphy Open</h1>
+    <p class="k-lead" style="margin-top:10px">Five rated rounds in the city where Paul Morphy was born.</p>
+    <div class="k-row" style="margin-top:16px;column-gap:22px;row-gap:8px">
+      <span class="k-row-sm k-strong"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><time datetime="2027-06-12">Sat–Sun, Jun 12–13, 2027</time></span>
+      <span class="k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>[Venue name], New Orleans, LA</span>
+      <span class="k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg>Run by LCA · TD Chris Arceneaux</span>
+    </div>
+
+    <div class="ev-facts" style="margin-top:22px">
+      <div class="ev-fact"><span class="k-label">Rating</span><b>US Chess rated</b><small>Counts toward your official rating</small></div>
+      <div class="ev-fact"><span class="k-label">Format</span><b>5 rounds, Swiss</b><small>No knockouts: everyone plays 5</small></div>
+      <div class="ev-fact"><span class="k-num-badge" style="position:absolute;top:10px;right:10px">2</span><span class="k-label">Time control</span><b class="k-mono">G/90+30</b><small>90 min each + 30 sec per move</small></div>
+      <div class="ev-fact"><span class="k-label">Byes</span><b>½-point byes</b><small>Skip a round, still score ½</small></div>
+      <div class="ev-fact"><span class="k-label">Sections</span><b>4 sections</b><small>Open · U1800 · U1400 · U1000</small></div>
+      <div class="ev-fact"><span class="k-label">Prize fund</span><b>$1,500</b><small>Based on 60 paid entries</small></div>
+    </div>
+
+    <div class="k-row-sm" style="margin-top:16px">
+      <a class="k-btn k-btn-soft k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a>
+      <a class="k-btn k-btn-soft k-btn-sm" href="#share"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share</a>
+      <a class="k-btn k-btn-soft k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Contact the TD</a>
+      <a class="k-btn k-btn-soft k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Printable flyer</a>
+    </div>
+
+    <nav class="k-row-sm ev-jump" aria-label="On this page" style="margin-top:20px">
+      <span class="k-meta" style="margin-right:4px">On this page</span>
+      <a class="k-chip" href="#sections">Sections</a>
+      <a class="k-chip" href="#schedule">Schedule &amp; prizes</a>
+      <a class="k-chip" href="#entries">Who's coming <span class="k-chip-count">38</span></a>
+      <a class="k-chip" href="#venue">Venue</a>
+      <a class="k-chip" href="#good">Good to know</a>
+    </nav>
+  </div>
+
+  <aside class="ev-card" aria-label="Registration">
+    <div class="k-card-raised" style="overflow:hidden">
+      <div class="k-navy" style="padding:16px 20px">
+        <div class="k-between"><span class="k-tag k-tag-open">Registration open</span><span class="k-num-badge" style="background:#c8a94a;color:#1a2744">1</span></div>
+        <p style="margin-top:10px;font-size:14px;color:rgba(255,255,255,.86)">Online entry closes Thu, Jun 10 at 11:59 PM Central</p>
+      </div>
+      <div class="k-stack" style="padding:18px 20px 20px">
+        <div>
+          <div class="k-between"><p class="k-h3"><span class="k-num">38 of 60</span> registered</p><span class="k-meta">22 left</span></div>
+          <div class="ev-bar" style="margin-top:10px" role="img" aria-label="38 of 60 places taken"><i style="width:63%"></i></div>
+        </div>
+        <div class="k-stack-sm">
+          <span class="k-flabel">Section</span>
+          <div class="k-seg" role="group" aria-label="Section" style="display:flex;width:100%"><button type="button" style="flex:1;padding:0 6px">Open</button><button type="button" class="k-seg-on" aria-pressed="true" style="flex:1;padding:0 6px">U1800</button><button type="button" style="flex:1;padding:0 6px">U1400</button><button type="button" style="flex:1;padding:0 6px">U1000</button></div>
+          <p class="k-hint">Rated under 1800 · <b style="color:#7a3d00">1 spot left</b></p>
+        </div>
+        <div class="k-stack-sm">
+          <span class="k-flabel">Entry fee</span>
+          <ol class="ev-ladder" aria-label="U1800 entry fee by date">
+            <li class="ev-now"><div><b>Early <span class="k-tag k-tag-gold">Now</span></b><small>Until Fri, May 28</small></div><span class="ev-price">$40</span></li>
+            <li><div><b>Regular</b><small>Sat, May 29 – Sun, Jun 6</small></div><span class="ev-price">$50</span></li>
+            <li><div><b>Late</b><small>Mon, Jun 7 – Thu, Jun 10</small></div><span class="ev-price">$65</span></li>
+          </ol>
+        </div>
+        <div class="k-panel k-row-sm" style="padding:12px 14px;flex-wrap:nowrap;align-items:flex-start"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg><p class="k-small"><b>LCA members pay $10 less</b> at every step, so $30 today. <a class="k-link" href="#">Join LCA · $15/yr</a></p></div>
+        <div class="k-between"><span class="k-strong">You pay today</span><span class="k-h2 k-num">$40</span></div>
+        <a class="k-btn k-btn-gold k-btn-lg k-btn-block" href="#">Register · $40</a>
+        <a class="k-btn k-btn-line k-btn-block" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>Register my family</a>
+        <p class="k-meta">Next: confirm your US Chess ID and byes, check your answers, then pay by card with Stripe in this tab. You see the full total before paying.</p>
+      </div>
+      <div class="k-rule"></div>
+      <div class="k-row-sm" style="padding:8px 10px;justify-content:space-between">
+        <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</a>
+        <a class="k-btn k-btn-ghost k-btn-sm" href="#share"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share</a>
+        <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Ask the TD</a>
+      </div>
+    </div>
+    <div class="k-card-pad" style="margin-top:14px;padding:16px 18px">
+      <p class="k-label">The same button at other times</p>
+      <div class="ev-states">
+        <div><span class="k-tag k-tag-soon">Opens Mon, Mar 1</span><span>Remind me</span></div>
+        <div><span class="k-tag k-tag-full">Waitlist · 2 waiting</span><span>Join the waitlist</span></div>
+        <div><span class="k-tag k-tag-open">You're registered</span><span>Manage my entry</span></div>
+        <div><span class="k-tag k-tag-live">Live · Round 3</span><span>Find my board</span></div>
+        <div><span class="k-tag k-tag-closed">Final results</span><span>See standings</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="ev-main">
+
+    <section id="sections" class="ev-sec">
+      <div class="k-between">
+        <div class="k-row-sm"><span class="k-num-badge">3</span><h2 class="k-h2">Sections</h2></div>
+        <a class="k-link k-small" href="#">Which section fits me?</a>
+      </div>
+      <p class="k-muted" style="margin-top:8px">You only play people near your strength. Enter any section whose limit is above your rating.</p>
+      <div class="ev-g2" style="margin-top:20px">
+        <article class="k-card-pad k-stack-sm">
+          <div class="k-between"><h3 class="k-h3">Open</h3><span class="k-tag k-tag-open">6 spots left</span></div>
+          <p class="k-small">Open to everyone, any rating.</p>
+          <div class="ev-bar" role="img" aria-label="9 of 15 places taken"><i style="width:60%"></i></div>
+          <div class="k-between k-meta"><span>9 of 15 entered</span><span>Top rating 2014</span></div>
+          <dl class="ev-dl" style="margin-top:4px"><dt>Entry</dt><dd>$50 early · $60 · $75 late</dd><dt>Prizes</dt><dd>$300 · $200 · $100</dd></dl>
+        </article>
+        <article class="k-card-pad k-stack-sm">
+          <div class="k-between"><h3 class="k-h3">U1800</h3><span class="k-tag k-tag-full">1 spot left</span></div>
+          <p class="k-small">Rated under 1800.</p>
+          <div class="ev-bar" role="img" aria-label="19 of 20 places taken"><i class="ev-hot" style="width:95%"></i></div>
+          <div class="k-between k-meta"><span>19 of 20 entered</span><span>Then a waitlist, no charge</span></div>
+          <dl class="ev-dl" style="margin-top:4px"><dt>Entry</dt><dd>$40 early · $50 · $65 late</dd><dt>Prizes</dt><dd>$200 · $120 · $80</dd></dl>
+        </article>
+        <article class="k-card-pad k-stack-sm">
+          <div class="k-between"><h3 class="k-h3">U1400</h3><span class="k-tag k-tag-open">8 spots left</span></div>
+          <p class="k-small">Rated under 1400.</p>
+          <div class="ev-bar" role="img" aria-label="7 of 15 places taken"><i style="width:47%"></i></div>
+          <div class="k-between k-meta"><span>7 of 15 entered</span><span>Top rating 1388</span></div>
+          <dl class="ev-dl" style="margin-top:4px"><dt>Entry</dt><dd>$30 early · $40 · $55 late</dd><dt>Prizes</dt><dd>$150 · $100</dd></dl>
+        </article>
+        <article class="k-card-pad k-stack-sm">
+          <div class="k-between"><h3 class="k-h3">U1000</h3><span class="k-tag k-tag-open">7 spots left</span></div>
+          <p class="k-small">Rated under 1000, or unrated. A good first event.</p>
+          <div class="ev-bar" role="img" aria-label="3 of 10 places taken"><i style="width:30%"></i></div>
+          <div class="k-between k-meta"><span>3 of 10 entered</span><span>Unrated welcome</span></div>
+          <dl class="ev-dl" style="margin-top:4px"><dt>Entry</dt><dd>$20 early · $30 · $45 late</dd><dt>Prizes</dt><dd>$125 · $75 · trophies to top 3</dd></dl>
+        </article>
+      </div>
+      <p class="k-small" style="margin-top:14px">Bringing a K–12 player who would rather play other kids? <a class="k-link" href="#">The Morphy Scholastic runs the same Saturday</a>.</p>
+    </section>
+
+    <section id="schedule" class="ev-sec">
+      <h2 class="k-h2">Schedule &amp; prizes</h2>
+      <div class="ev-g2" style="margin-top:20px;align-items:start">
+        <div class="k-card-pad">
+          <div class="k-between"><h3 class="k-h4">Round times</h3><span class="k-meta">Central time</span></div>
+          <p class="k-label" style="margin-top:14px">Sat, Jun 12</p>
+          <ul class="ev-agenda" style="margin-top:4px">
+            <li><span class="ev-time">8:45 AM</span><span>Check-in, until 9:30 AM</span></li>
+            <li><span class="ev-time">10:00 AM</span><span class="k-strong">Round 1</span></li>
+            <li><span class="ev-time">2:30 PM</span><span class="k-strong">Round 2</span></li>
+            <li><span class="ev-time">7:00 PM</span><span class="k-strong">Round 3</span></li>
+          </ul>
+          <p class="k-label" style="margin-top:14px">Sun, Jun 13</p>
+          <ul class="ev-agenda" style="margin-top:4px">
+            <li><span class="ev-time">9:30 AM</span><span class="k-strong">Round 4</span></li>
+            <li><span class="ev-time">2:00 PM</span><span class="k-strong">Round 5</span></li>
+            <li><span class="ev-time">6:30 PM</span><span>Prizes and awards (about)</span></li>
+          </ul>
+          <a class="k-link-plain k-small" href="#" style="margin-top:12px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add all 5 rounds to my calendar</a>
+        </div>
+        <div class="k-card-pad">
+          <div class="k-between"><h3 class="k-h4">Prizes</h3><span class="k-tag k-tag-gold">$1,500 prize fund</span></div>
+          <table class="k-table" style="margin-top:10px">
+            <thead><tr><th scope="col">Section</th><th scope="col" class="k-r">1st</th><th scope="col" class="k-r">2nd</th><th scope="col" class="k-r">3rd</th></tr></thead>
+            <tbody>
+              <tr><td class="k-strong">Open</td><td class="k-r k-mono">$300</td><td class="k-r k-mono">$200</td><td class="k-r k-mono">$100</td></tr>
+              <tr><td class="k-strong">U1800</td><td class="k-r k-mono">$200</td><td class="k-r k-mono">$120</td><td class="k-r k-mono">$80</td></tr>
+              <tr><td class="k-strong">U1400</td><td class="k-r k-mono">$150</td><td class="k-r k-mono">$100</td><td class="k-r k-muted">–</td></tr>
+              <tr><td class="k-strong">U1000</td><td class="k-r k-mono">$125</td><td class="k-r k-mono">$75</td><td class="k-r k-muted">–</td></tr>
+            </tbody>
+          </table>
+          <p class="k-meta" style="margin-top:12px">Based on 60 paid entries. Trophies for the top 3 in U1000; $50 for the biggest upset in any section. Tied players share the money for the places they tie for.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="entries" class="ev-sec">
+      <div class="k-between">
+        <div class="k-row-sm"><span class="k-num-badge">4</span><h2 class="k-h2">Who's coming</h2></div>
+        <span class="k-meta">Updated Tue, May 18, 2:14 PM · May 2027 ratings</span>
+      </div>
+      <p style="margin-top:8px"><b>38 registered</b>, highest rating first: Marcus Landry, Avery Thibodeaux and 36 others.</p>
+      <div class="k-between" style="margin-top:16px">
+        <div class="k-row-sm" role="group" aria-label="Filter by section">
+          <button class="k-chip k-chip-on" type="button">All <span class="k-chip-count">38</span></button>
+          <button class="k-chip" type="button">Open <span class="k-chip-count">9</span></button>
+          <button class="k-chip" type="button">U1800 <span class="k-chip-count">19</span></button>
+          <button class="k-chip" type="button">U1400 <span class="k-chip-count">7</span></button>
+          <button class="k-chip" type="button">U1000 <span class="k-chip-count">3</span></button>
+        </div>
+        <div class="k-search" style="min-height:44px;width:min(240px,100%)"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input aria-label="Find a player by name" placeholder="Find a name"></div>
+      </div>
+      <div class="k-tablebox" style="margin-top:14px" role="region" aria-label="Registered players" tabindex="0">
+        <table class="k-table">
+          <caption>Registered players, sorted by rating</caption>
+          <thead><tr><th scope="col" class="k-r">#</th><th scope="col">Player</th><th scope="col" class="k-r">Rating</th><th scope="col">Section</th><th scope="col">Club</th></tr></thead>
+          <tbody>
+            <tr><td class="k-r k-mono k-muted">1</td><td class="k-strong">Marcus Landry</td><td class="k-r k-mono">2014</td><td>Open</td><td><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-dot" style="color:#2e6b4f"></span>Downriver Chess Club</span></td></tr>
+            <tr><td class="k-r k-mono k-muted">2</td><td class="k-strong">Avery Thibodeaux</td><td class="k-r k-mono">1912</td><td>Open</td><td><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-dot" style="color:#b3202f"></span>Lafayette Chess Club</span></td></tr>
+            <tr><td class="k-r k-mono k-muted">3</td><td class="k-strong">Henri Boudreaux</td><td class="k-r k-mono">1867</td><td>Open</td><td><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-dot" style="color:#5b3f99"></span>Baton Rouge Chess Club</span></td></tr>
+            <tr><td class="k-r k-mono k-muted">4</td><td class="k-strong">Priya Shah</td><td class="k-r k-mono">1803</td><td>Open</td><td><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-dot" style="color:#1f5f9e"></span>Greater New Orleans Chess Club</span></td></tr>
+            <tr><td class="k-r k-mono k-muted">5</td><td class="k-strong">Camille Broussard</td><td class="k-r k-mono">1744</td><td>U1800</td><td><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-dot" style="color:#c26a12"></span>New Orleans Westbank Chess Club</span></td></tr>
+            <tr><td class="k-r k-mono k-muted">6</td><td class="k-strong">Isaac Dupre</td><td class="k-r k-mono">1688</td><td>U1800</td><td><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-dot" style="color:#2b7a78"></span>Houma Chess Club</span></td></tr>
+            <tr><td class="k-r k-mono k-muted">7</td><td class="k-strong">Sam Nguyen</td><td class="k-r k-mono">1650</td><td>U1800</td><td><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-dot" style="color:#2e6b4f"></span>Downriver Chess Club</span></td></tr>
+            <tr><td class="k-r k-mono k-muted">8</td><td class="k-strong">Andre Mouton</td><td class="k-r k-mono">1602</td><td>U1800</td><td><span class="k-row-sm" style="flex-wrap:nowrap"><span class="k-dot" style="color:#b3202f"></span>Lafayette Chess Club</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="k-between" style="margin-top:12px">
+        <a class="k-btn k-btn-soft" href="#">Show all 38 players</a>
+        <span class="k-meta">US Chess IDs and membership checks are shown to the TD only.</span>
+      </div>
+    </section>
+
+    <section id="venue" class="ev-sec">
+      <h2 class="k-h2">Venue &amp; getting there</h2>
+      <div class="ev-g2" style="margin-top:20px;align-items:start">
+        <div class="k-map" style="height:260px" role="img" aria-label="Map showing [Venue name] in New Orleans">
+          <svg viewBox="0 0 400 260" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><path d="M0 214C70 186 120 246 200 226S330 170 400 196" fill="none" stroke="#c7d5e4" stroke-width="22"></path><path d="M0 112L400 84M70 0L118 260M262 0L240 260M0 36L400 54M0 168L400 138" fill="none" stroke="#ffffff" stroke-width="6"></path></svg>
+          <span class="k-pin k-pin-on" style="left:50%;top:42%"></span>
+          <span style="position:absolute;left:50%;top:42%;transform:translate(16px,-50%);background:#ffffff;border:1px solid #d6d5cd;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:600;white-space:nowrap">[Venue name]</span>
+          <span class="k-label" style="position:absolute;left:12px;bottom:10px">Map</span>
+        </div>
+        <div class="k-stack">
+          <div>
+            <p class="k-h4">[Venue name]</p>
+            <p class="k-muted">[Street address], New Orleans, LA [ZIP]</p>
+            <a class="k-link-plain k-small" href="#" style="margin-top:6px">Open in Maps<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          </div>
+          <dl class="ev-dl">
+            <dt>Parking</dt><dd>[Where to park and what it costs]</dd>
+            <dt>Getting in</dt><dd>[Entrance, floor and step-free route]</dd>
+            <dt>Food</dt><dd>[Places to eat between rounds]</dd>
+            <dt>Hotel</dt><dd>[Hotel name] · [Hotel rate] until [date]</dd>
+          </dl>
+        </div>
+      </div>
+      <div class="k-panel" style="margin-top:16px;padding:14px 16px">
+        <p class="k-strong">Warm up at a New Orleans club the week before</p>
+        <div class="k-row" style="margin-top:6px;column-gap:20px;row-gap:4px">
+          <a class="k-link-plain k-small" href="#">Downriver Chess Club · Mon &amp; Thu, 7:00 PM</a>
+          <a class="k-link-plain k-small" href="#">Greater New Orleans Chess Club · Tue, 7:00 PM</a>
+          <a class="k-link-plain k-small" href="#">New Orleans Westbank Chess Club · Thu, 7:30 PM, rated</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="good" class="ev-sec">
+      <div class="k-between">
+        <div class="k-row-sm"><span class="k-num-badge">5</span><h2 class="k-h2">Good to know</h2></div>
+        <a class="k-link k-small" href="#">Full rules and FAQ</a>
+      </div>
+      <div class="ev-g3" style="margin-top:20px">
+        <div class="k-card-pad k-stack-sm"><span class="ev-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><h3 class="k-h4">Time control</h3><p class="k-small">G/90+30: 90 minutes each, plus 30 seconds after every move. A game can run about 4 hours.</p></div>
+        <div class="k-card-pad k-stack-sm"><span class="ev-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg></span><h3 class="k-h4">US Chess membership</h3><p class="k-small">Required, and current on Jun 12. We check your US Chess ID as you enter and warn you if it lapses.</p></div>
+        <div class="k-card-pad k-stack-sm"><span class="ev-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6.5" r="2.5"></circle><path d="M9.5 10h5M10.5 10l-1 6h5l-1-6M7.5 20.5h9l-1-3.5h-7z"></path></svg></span><h3 class="k-h4">Byes</h3><p class="k-small">Can't make a round? Take a ½-point bye in Rounds 1–4. Ask when you register or before Round 2.</p></div>
+        <div class="k-card-pad k-stack-sm"><span class="ev-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg></span><h3 class="k-h4">Arriving</h3><p class="k-small">Check in by 9:30 AM Saturday. Not at your board 30 minutes after a round starts? That game is a forfeit.</p></div>
+        <div class="k-card-pad k-stack-sm"><span class="ev-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></span><h3 class="k-h4">Withdrawing</h3><p class="k-small">Full refund until Wed, Jun 9. After that, your fee becomes credit toward another LCA event.</p></div>
+        <div class="k-card-pad k-stack-sm"><span class="ev-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg></span><h3 class="k-h4">Discounts</h3><p class="k-small">LCA members pay $10 less. Codes: FAMILY for siblings; LUNCH, $10 off for free or reduced-price lunch.</p></div>
+      </div>
+    </section>
+
+    <section id="share" class="ev-sec">
+      <div class="k-row-sm"><span class="k-num-badge">6</span><h2 class="k-h2">Share this tournament</h2></div>
+      <div class="ev-g2" style="margin-top:20px;align-items:start">
+        <div class="k-stack">
+          <p>Post it in your club's group chat or on Facebook. The link shows this tournament's own card, not the generic LCA logo.</p>
+          <div class="k-row-sm">
+            <button class="k-btn k-btn-navy k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Copy link</button>
+            <a class="k-btn k-btn-line k-btn-sm" href="#">Facebook</a>
+            <a class="k-btn k-btn-line k-btn-sm" href="#">Text a friend</a>
+            <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>QR code</a>
+          </div>
+          <div class="k-field"><label for="ev-link">Link</label><input id="ev-link" class="k-input" value="louisianachess.org/tournaments/2027-paul-morphy-open" readonly></div>
+        </div>
+        <div>
+          <p class="k-label" style="margin-bottom:8px">How the link looks when shared</p>
+          <figure style="margin:0;max-width:340px;border:1px solid #d6d5cd;border-radius:12px;overflow:hidden;background:#ffffff">
+            <div class="k-navy" style="aspect-ratio:14/10;padding:20px;display:flex;flex-direction:column;justify-content:space-between">
+              <div class="k-row-sm"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span style="font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#e6cf86">Louisiana Chess Association</span></div>
+              <div><p style="font-size:26px;font-weight:700;line-height:1.1">2027 Paul Morphy Open</p><p style="margin-top:8px;font-size:15px;color:rgba(255,255,255,.86)">Sat–Sun, Jun 12–13 · New Orleans</p></div>
+              <div class="k-row-sm"><span class="k-tag k-tag-gold">US Chess rated</span><span class="k-tag" style="background:rgba(255,255,255,.14);color:#ffffff">4 sections · 5 rounds</span></div>
+            </div>
+            <figcaption style="padding:12px 14px">
+              <p class="k-meta" style="text-transform:uppercase;letter-spacing:.06em">louisianachess.org</p>
+              <p class="k-strong" style="margin-top:2px">2027 Paul Morphy Open · New Orleans</p>
+              <p class="k-small k-muted">Sat–Sun, Jun 12–13 · US Chess rated · 38 of 60 registered</p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<section class="ev-sec" style="padding-bottom:56px" aria-label="Notes on this option">
+  <p class="k-label" style="margin-bottom:14px">Notes on this option</p>
+  <ol class="ev-notes">
+    <li><span class="k-num-badge">1</span><span>The card stays in view: how full, today's price (later prices dated), member price, Register. On phones it sits under the title, plus a sticky "Register · from $20" bar.</span></li>
+    <li><span class="k-num-badge">2</span><span>Key facts as tiles. Every piece of chess shorthand gets a plain-words line under it.</span></li>
+    <li><span class="k-num-badge">3</span><span>Section cards answer which one, how much and how full before anyone opens the form.</span></li>
+    <li><span class="k-num-badge">4</span><span>Entries sorted by rating, with section counts and an update stamp. ID and membership checks stay TD-only.</span></li>
+    <li><span class="k-num-badge">5</span><span>The rules people trip on, in one strip: time, membership, byes, forfeits, refunds, discounts.</span></li>
+    <li><span class="k-num-badge">6</span><span>The page serves its own preview tags, so a shared link shows this event instead of the site-wide card.</span></li>
+  </ol>
+</section>
+</main>
+
+<div class="ev-mbar" role="region" aria-label="Register">
+  <div><p style="font-weight:700">Register · from $20</p><p style="font-size:13px;color:rgba(255,255,255,.82)">38 of 60 · entry closes Thu, Jun 10</p></div>
+  <a class="k-btn k-btn-gold" href="#">Register</a>
+</div>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4600}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

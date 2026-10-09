@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>News D — Tournament recap template</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bwrap{display:grid;grid-template-columns:16px minmax(0,1fr);gap:4px 6px;max-width:360px;width:100%}
+.ranks{display:grid;grid-template-rows:repeat(8,1fr);font-size:11px;color:#555c6b;align-items:center;text-align:center}
+.files{display:grid;grid-template-columns:repeat(8,1fr);font-size:11px;color:#555c6b;text-align:center}
+.bd{grid-template-rows:repeat(8,1fr)}
+.bd > div{display:flex;align-items:center;justify-content:center}
+.pw,.pb{display:inline-flex;align-items:center;justify-content:center;width:68%;aspect-ratio:1/1;border-radius:50%;font-weight:700;font-size:14px;line-height:1}
+.pw{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.pb{background:#1a2744;color:#ffffff;border:2px solid #ffffff;box-shadow:0 0 0 1px #1a2744}
+.hl{background:#e6cf86}
+.hl2{background:#f1e4b8}
+.ph{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:150px 150px;gap:10px}
+.ph img{width:100%;height:100%;object-fit:cover;border-radius:10px;display:block}
+.ph .big{grid-row:span 2}
+.more{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:4px;border-radius:10px;background:#1a2744;color:#ffffff;text-decoration:none;font-weight:600;font-size:14px;text-align:center;padding:10px}
+.fact{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;padding:8px 0;border-top:1px solid #e4e2d8;font-size:14px}
+.fact:first-of-type{border-top:0}
+.pl{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #e4e2d8}
+.nb{display:flex;gap:10px;align-items:flex-start}
+.moves{font-family:'Geist Mono',ui-monospace,monospace;font-size:13.5px;line-height:1.9;color:#1a2744;margin:0}
+@media (max-width:760px){.g2{grid-template-columns:1fr}.ph{grid-template-columns:1fr 1fr;grid-template-rows:none;grid-auto-rows:140px}.ph .big{grid-row:auto;grid-column:span 2}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a class="k-nav-on" href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<section class="k-gold-band">
+  <div class="k-wrap" style="padding-top:14px;padding-bottom:14px">
+    <div class="k-between">
+      <div class="k-row-sm" style="flex:1 1 640px">
+        <span class="k-num-badge">1</span>
+        <span class="k-tag k-tag-soon">Draft · TD view</span>
+        <span class="k-small"><b>Filled in from final standings</b> on Mon, Sep 7 at 9:14 PM: headline, winners, standings, crosstable and US Chess report links. <b>Still yours:</b> the story, key game, photos and quotes.</span>
+      </div>
+      <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Edit draft</a><a class="k-btn k-btn-navy k-btn-sm" href="#">Publish recap</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="k-section-sm">
+  <div class="k-wrap k-stack">
+    <nav class="k-row-sm k-small" aria-label="Breadcrumb"><a class="k-link" href="News-C.dc.html">News</a><span class="k-muted">/</span><a class="k-link" href="#">Results</a></nav>
+    <div class="k-row-sm"><span class="k-kicker">Results · Louisiana State Championship 2026</span><span class="k-sample">Sample data</span></div>
+    <h1 class="k-display" style="max-width:1000px">Marcus Landry wins the 2026 Louisiana State Championship</h1>
+    <div class="k-row k-small">
+      <span>By Chris Arceneaux, chief TD</span><span class="k-muted">·</span><span>Tue, Sep 8, 2026</span><span class="k-muted">·</span><span>4 min read</span>
+      <a class="k-link" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share</a>
+    </div>
+    <div class="k-row-sm">
+      <span class="k-chip">Sat–Mon, Sep 5–7, 2026</span>
+      <span class="k-chip">Sulphur, LA · [Venue name]</span>
+      <span class="k-chip">5 rounds · G/90+30 (90 min each + 30 sec per move)</span>
+      <span class="k-chip">4 sections · 64 players</span>
+      <span class="k-chip">US Chess rated</span>
+    </div>
+  </div>
+</section>
+
+<section class="k-section-sm">
+  <div class="k-wrap">
+    <div class="k-split">
+      <article class="k-main k-stack-lg">
+
+        <div class="k-stack-sm">
+          <img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at long tables in a wood-paneled tournament hall" style="width:100%;height:360px;object-fit:cover;border-radius:12px;display:block">
+          <span class="k-small k-muted">[Photo caption: round and board] · Photo: [Photographer name]</span>
+        </div>
+
+        <div class="k-stack">
+          <p class="k-lead" style="margin:0">Marcus Landry won the 2026 Louisiana State Championship with 4½/5, giving up only a fourth-round draw to Avery Thibodeaux. Sixty-four players in four sections spent Labor Day weekend at the board in Sulphur, where members also held LCA's annual business meeting on Sunday.</p>
+          <p class="k-body k-muted" style="margin:0">[The TD's story: the decisive games, the upsets, the race for class prizes, and thanks to the host and volunteers.]</p>
+        </div>
+
+        <section class="k-stack" aria-labelledby="h-win">
+          <div class="k-between">
+            <div class="k-row-sm"><h2 class="k-h2" id="h-win">Section winners</h2><span class="k-num-badge">2</span></div>
+            <a class="k-link k-small" href="#">All prize winners</a>
+          </div>
+          <div class="g2">
+            <div class="k-card-pad k-stack-sm">
+              <div class="k-between"><span class="k-label-gold">Open · State Champion</span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg></div>
+              <div class="k-between"><a class="k-h3 k-link-plain" href="#">Marcus Landry</a><span class="k-num k-strong">4½/5</span></div>
+              <span class="k-small k-muted">Rating 2014 · state title and $300</span>
+              <span class="k-small" style="border-top:1px solid #e4e2d8;padding-top:8px">2nd Avery Thibodeaux 4 · 3rd Priya Shah 4</span>
+            </div>
+            <div class="k-card-pad k-stack-sm">
+              <div class="k-between"><span class="k-label-gold">U1800</span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></div>
+              <div class="k-between"><a class="k-h3 k-link-plain" href="#">Nora Hebert</a><span class="k-num k-strong">4½/5</span></div>
+              <span class="k-small k-muted">Rating 1577 · $150</span>
+              <span class="k-small" style="border-top:1px solid #e4e2d8;padding-top:8px">2nd Devin Batiste 4 · 3rd Elise Fontenot 3½</span>
+            </div>
+            <div class="k-card-pad k-stack-sm">
+              <div class="k-between"><span class="k-label-gold">U1400</span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></div>
+              <div class="k-between"><a class="k-h3 k-link-plain" href="#">Jordan Lee</a><span class="k-num k-strong">5/5</span></div>
+              <span class="k-small k-muted">Rating 1388 · perfect score · $120</span>
+              <span class="k-small" style="border-top:1px solid #e4e2d8;padding-top:8px">2nd Theo Guidry 4 · 3rd Rosa Mendez 3½</span>
+            </div>
+            <div class="k-card-pad k-stack-sm">
+              <div class="k-between"><span class="k-label-gold">U1000</span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></div>
+              <div class="k-between"><a class="k-h3 k-link-plain" href="#">Leo Robichaux</a><span class="k-num k-strong">4½/5</span></div>
+              <span class="k-small k-muted">Unrated before this event · trophy and $80</span>
+              <span class="k-small" style="border-top:1px solid #e4e2d8;padding-top:8px">2nd [Player name] 4 · 3rd [Player name] 3½</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="k-stack" aria-labelledby="h-std">
+          <div class="k-between">
+            <h2 class="k-h2" id="h-std">Final standings</h2>
+            <div class="k-seg" role="group" aria-label="Section">
+              <button type="button" class="k-seg-on">Open</button><button type="button">U1800</button><button type="button">U1400</button><button type="button">U1000</button>
+            </div>
+          </div>
+          <div class="k-tablebox">
+            <table class="k-table">
+              <caption>Open · top 6 of 16 · each round shows the result and the opponent's final place</caption>
+              <thead>
+                <tr><th class="k-c">#</th><th>Player</th><th class="k-r">Rating</th><th class="k-c">Rd 1</th><th class="k-c">Rd 2</th><th class="k-c">Rd 3</th><th class="k-c">Rd 4</th><th class="k-c">Rd 5</th><th class="k-r">Total</th><th class="k-r">Tiebreak</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="k-c">1</td><td><a class="k-link-plain k-strong" href="#">Marcus Landry</a></td><td class="k-r k-num">2014</td><td class="k-c"><span class="k-res k-res-w">W9</span></td><td class="k-c"><span class="k-res k-res-w">W5</span></td><td class="k-c"><span class="k-res k-res-w">W3</span></td><td class="k-c"><span class="k-res k-res-d">D2</span></td><td class="k-c"><span class="k-res k-res-w">W4</span></td><td class="k-r k-num"><b>4½</b></td><td class="k-r k-num">15.5</td></tr>
+                <tr><td class="k-c">2</td><td><a class="k-link-plain k-strong" href="#">Avery Thibodeaux</a></td><td class="k-r k-num">1912</td><td class="k-c"><span class="k-res k-res-w">W10</span></td><td class="k-c"><span class="k-res k-res-d">D4</span></td><td class="k-c"><span class="k-res k-res-w">W6</span></td><td class="k-c"><span class="k-res k-res-d">D1</span></td><td class="k-c"><span class="k-res k-res-w">W7</span></td><td class="k-r k-num"><b>4</b></td><td class="k-r k-num">14.0</td></tr>
+                <tr><td class="k-c">3</td><td><a class="k-link-plain k-strong" href="#">Priya Shah</a></td><td class="k-r k-num">1803</td><td class="k-c"><span class="k-res k-res-w">W11</span></td><td class="k-c"><span class="k-res k-res-w">W6</span></td><td class="k-c"><span class="k-res k-res-l">L1</span></td><td class="k-c"><span class="k-res k-res-w">W5</span></td><td class="k-c"><span class="k-res k-res-w">W8</span></td><td class="k-r k-num"><b>4</b></td><td class="k-r k-num">13.5</td></tr>
+                <tr><td class="k-c">4</td><td><a class="k-link-plain k-strong" href="#">Camille Broussard</a></td><td class="k-r k-num">1744</td><td class="k-c"><span class="k-res k-res-w">W12</span></td><td class="k-c"><span class="k-res k-res-d">D2</span></td><td class="k-c"><span class="k-res k-res-w">W7</span></td><td class="k-c"><span class="k-res k-res-w">W8</span></td><td class="k-c"><span class="k-res k-res-l">L1</span></td><td class="k-r k-num"><b>3½</b></td><td class="k-r k-num">14.5</td></tr>
+                <tr><td class="k-c">5</td><td><a class="k-link-plain k-strong" href="#">Isaac Dupre</a></td><td class="k-r k-num">1688</td><td class="k-c"><span class="k-res k-res-w">W13</span></td><td class="k-c"><span class="k-res k-res-l">L1</span></td><td class="k-c"><span class="k-res k-res-w">W8</span></td><td class="k-c"><span class="k-res k-res-l">L3</span></td><td class="k-c"><span class="k-res k-res-w">W9</span></td><td class="k-r k-num"><b>3</b></td><td class="k-r k-num">13.0</td></tr>
+                <tr><td class="k-c">6</td><td><a class="k-link-plain k-strong" href="#">Sam Nguyen</a></td><td class="k-r k-num">1650</td><td class="k-c"><span class="k-res k-res-w">W14</span></td><td class="k-c"><span class="k-res k-res-l">L3</span></td><td class="k-c"><span class="k-res k-res-l">L2</span></td><td class="k-c"><span class="k-res k-res-w">W7</span></td><td class="k-c"><span class="k-res k-res-w">W10</span></td><td class="k-r k-num"><b>3</b></td><td class="k-r k-num">11.5</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="k-row-sm">
+            <a class="k-btn k-btn-line k-btn-sm" href="#">Full crosstable, all sections</a>
+            <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Print standings</a>
+            <a class="k-btn k-btn-line k-btn-sm" href="#">US Chess rating report<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          </div>
+          <span class="k-small k-muted">Tiebreak is modified median, the first US Chess tiebreak. Ratings are pre-event.</span>
+        </section>
+
+        <section class="k-stack" aria-labelledby="h-game">
+          <div class="k-between">
+            <div class="k-row-sm"><h2 class="k-h2" id="h-game">Game of the event</h2><span class="k-num-badge">3</span></div>
+            <span class="k-tag k-tag-soon">Placeholder position</span>
+          </div>
+          <div class="k-callout k-small">Template stand-in: Paul Morphy's Opera Game (Paris, 1858), final position after 17.Rd8#. A published recap shows the top-board game, from the Scoresheet Scanner or an uploaded PGN.</div>
+          <div class="k-split">
+            <div class="k-stack-sm" style="flex:1 1 340px;min-width:0;max-width:380px">
+              <div class="bwrap">
+                <div class="ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+                <div class="k-board bd" role="img" aria-label="Final position. White: king c1, rook d8, bishop g5, pawns a2, b2, c2, e4, f2, g2, h2. Black: king e8, queen e6, knight b8, bishop f8, rook h8, pawns a7, e5, f7, g7, h7. Black is checkmated.">
+                  <div class="k-sq-l"></div><div class="k-sq-d"><span class="pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d hl"><span class="pw">R</span></div><div class="k-sq-l"><span class="pb">K</span></div><div class="k-sq-d"><span class="pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pb">R</span></div>
+                  <div class="k-sq-d"><span class="pb">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pb">P</span></div><div class="k-sq-d"><span class="pb">P</span></div><div class="k-sq-l"><span class="pb">P</span></div>
+                  <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+                  <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pb">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pw">B</span></div><div class="k-sq-l"></div>
+                  <div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pw">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+                  <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+                  <div class="k-sq-l"><span class="pw">P</span></div><div class="k-sq-d"><span class="pw">P</span></div><div class="k-sq-l"><span class="pw">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pw">P</span></div><div class="k-sq-l"><span class="pw">P</span></div><div class="k-sq-d"><span class="pw">P</span></div>
+                  <div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pw">K</span></div><div class="k-sq-l hl2"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+                </div>
+                <div></div>
+                <div class="files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+              </div>
+              <div class="k-row-sm">
+                <button class="k-iconbtn" type="button" aria-label="First move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7M6 5v14"></path></svg></button>
+                <button class="k-iconbtn" type="button" aria-label="Previous move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+                <button class="k-iconbtn" type="button" aria-label="Next move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+                <button class="k-iconbtn" type="button" aria-label="Last move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7M18 5v14"></path></svg></button>
+                <span class="k-small k-muted">White pieces: ringed · Black: filled</span>
+              </div>
+            </div>
+            <div class="k-main k-stack-sm" style="flex:1 1 300px">
+              <b class="k-h4">Paul Morphy vs. Duke Karl of Brunswick and Count Isouard</b>
+              <span class="k-small k-muted">Paris, 1858 · white wins (1–0)</span>
+              <p class="moves">1.e4 e5 2.Nf3 d6 3.d4 Bg4 4.dxe5 Bxf3 5.Qxf3 dxe5 6.Bc4 Nf6 7.Qb3 Qe7 8.Nc3 c6 9.Bg5 b5 10.Nxb5 cxb5 11.Bxb5+ Nbd7 12.O-O-O Rd8 13.Rxd7 Rxd7 14.Rd1 Qe6 15.Bxd7+ Nxd7 16.Qb8+ Nxb8 <b>17.Rd8#</b> 1–0</p>
+              <p class="k-small">[TD's note on the critical moment, two or three sentences.]</p>
+              <div class="k-row-sm">
+                <a class="k-btn k-btn-navy k-btn-sm" href="#">Analyze on Lichess<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+                <a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PGN</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="k-stack" aria-labelledby="h-ph">
+          <div class="k-between">
+            <div class="k-row-sm"><h2 class="k-h2" id="h-ph">Photos</h2><span class="k-num-badge">6</span></div>
+            <a class="k-link k-small" href="#">Full album on Facebook</a>
+          </div>
+          <div class="ph">
+            <img class="big" src="/_blob/08f08da59fb83788378f5b6396d7732e" alt="Teens and adults playing in a banquet hall with purple chairs">
+            <img src="/_blob/f0a8537498574429330e3a0888e092e4" alt="A wooden board in the foreground of an arched hall, players of mixed ages behind">
+            <img src="/_blob/519850ba3a2be161147035bd9cd8e6d0" alt="Kids and teens at white-tablecloth tables">
+            <img src="/_blob/1476184199d88f4150fb553f3fa38fe1" alt="Rows of kids in grey chairs, a boy in a red shirt in front">
+            <a class="more" href="#"><svg class="k-i k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>More photos on Facebook</a>
+          </div>
+          <span class="k-small k-muted">Photos: [Photographer name]. Parents can ask for any photo of their child to be taken down, and it comes down the same day.</span>
+        </section>
+
+        <section class="g2" aria-label="Quotes">
+          <blockquote class="k-card-pad k-stack-sm" style="margin:0">
+            <p class="k-h4" style="margin:0;font-weight:500">“The draw with Avery in round four was the hardest game I played all year. After that I just tried to stay solid.”</p>
+            <span class="k-small k-muted">Marcus Landry, 2026 State Champion</span>
+          </blockquote>
+          <blockquote class="k-card-pad k-stack-sm" style="margin:0">
+            <p class="k-h4" style="margin:0;font-weight:500">“Sixty-four players, four sections, and every round started on time. Thank you, Sulphur.”</p>
+            <span class="k-small k-muted">Chris Arceneaux, chief TD</span>
+          </blockquote>
+        </section>
+
+        <p class="k-small k-muted" style="margin:0">Spot a mistake in the results? <a class="k-link" href="#">Tell the TD</a> and we will correct the standings and this recap together.</p>
+      </article>
+
+      <aside class="k-side k-stack">
+        <div class="k-card-pad k-stack-sm">
+          <h2 class="k-h4">Louisiana State Championship 2026</h2>
+          <div class="fact"><span class="k-muted">When</span><span>Sat–Mon, Sep 5–7, 2026</span></div>
+          <div class="fact"><span class="k-muted">Where</span><span>Sulphur, LA · [Venue name]</span></div>
+          <div class="fact"><span class="k-muted">Format</span><span>5 rounds · G/90+30</span></div>
+          <div class="fact"><span class="k-muted">Sections</span><span>Open · U1800 · U1400 · U1000</span></div>
+          <div class="fact"><span class="k-muted">Chief TD</span><span>Chris Arceneaux</span></div>
+          <div class="fact"><span class="k-muted">Also</span><span>LCA annual business meeting, Sun, Sep 6</span></div>
+          <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Event page</a><a class="k-btn k-btn-line k-btn-sm" href="#">Crosstable</a></div>
+        </div>
+
+        <div class="k-card-pad k-stack-sm">
+          <div class="k-between"><h2 class="k-h4">Players in this recap</h2><span class="k-num-badge">4</span></div>
+          <p class="k-small k-muted">Each name opens a player page with results and rating history. Follow to hear about their next event.</p>
+          <div class="pl"><span class="k-small"><a class="k-link-plain k-strong" href="#">Marcus Landry</a> · 2014</span><a class="k-btn k-btn-line k-btn-sm" href="#">Follow</a></div>
+          <div class="pl"><span class="k-small"><a class="k-link-plain k-strong" href="#">Nora Hebert</a> · 1577</span><a class="k-btn k-btn-line k-btn-sm" href="#">Follow</a></div>
+          <div class="pl"><span class="k-small"><a class="k-link-plain k-strong" href="#">Jordan Lee</a> · 1388</span><a class="k-btn k-btn-soft k-btn-sm" href="#">Following</a></div>
+          <div class="pl"><span class="k-small"><a class="k-link-plain k-strong" href="#">Leo Robichaux</a> · new rating soon</span><a class="k-btn k-btn-line k-btn-sm" href="#">Follow</a></div>
+        </div>
+
+        <div class="k-card-pad k-stack-sm">
+          <div class="k-between"><h2 class="k-h4">When this recap is shared</h2><span class="k-num-badge">5</span></div>
+          <div style="border:1px solid #dddcd4;border-radius:10px;overflow:hidden">
+            <div class="k-img" style="height:150px;border-radius:0">Share image · winner, event, date</div>
+            <div class="k-stack-sm" style="padding:12px">
+              <span class="k-meta">LOUISIANACHESS.ORG</span>
+              <b class="k-small k-strong">Marcus Landry wins the 2026 Louisiana State Championship</b>
+              <span class="k-small k-muted">Final standings, photos and the top-board game from Labor Day weekend in Sulphur.</span>
+            </div>
+          </div>
+          <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Copy link</a><a class="k-btn k-btn-line k-btn-sm" href="#">Share to Facebook</a></div>
+        </div>
+
+        <div class="k-card-pad k-stack-sm">
+          <h2 class="k-h4">Up next</h2>
+          <div class="pl"><span class="k-small"><b>Lafayette Open</b><br><span class="k-muted">Sat–Sun, Oct 10–11 · Lafayette</span></span><span class="k-tag k-tag-ext">Partner event</span></div>
+          <div class="pl"><span class="k-small"><b>The Baton Rouge Classic</b><br><span class="k-muted">Sat–Sun, Oct 24–25 · Baton Rouge</span></span><span class="k-tag k-tag-ext">Partner event</span></div>
+          <a class="k-link k-small" href="News-C.dc.html">Get results and recaps by email</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="k-section-sm">
+  <div class="k-wrap">
+    <div class="k-callout k-stack">
+      <span class="k-label">Notes</span>
+      <div class="k-grid-2 k-small">
+        <div class="nb"><span class="k-num-badge">1</span><span>When a TD finalizes standings, the site drafts this recap; the TD adds the story, game and photos, then publishes.</span></div>
+        <div class="nb"><span class="k-num-badge">2</span><span>Winner cards and prize lines come straight from the prize winners data, so they always match the crosstable.</span></div>
+        <div class="nb"><span class="k-num-badge">3</span><span>The key game loads from the Scoresheet Scanner or a PGN, with replay controls and a Lichess analysis link.</span></div>
+        <div class="nb"><span class="k-num-badge">4</span><span>Every name links to a player page with results and rating history; parents can follow a child.</span></div>
+        <div class="nb"><span class="k-num-badge">5</span><span>Server-rendered share tags and a generated image make Facebook and group-chat links show the recap.</span></div>
+        <div class="nb"><span class="k-num-badge">6</span><span>Photos from the uploaded set; the full album stays on Facebook, and take-down requests are honored the same day.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3750}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

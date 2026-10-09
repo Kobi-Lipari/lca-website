@@ -29,6 +29,9 @@ backup-*.sql
 # committed, so it is excepted rather than the whole directory ignored.
 .claude/*
 !.claude/launch.json
+!.claude/settings.json
+!.claude/agents/
+!.claude/workflows/
 
 # Database dumps
 *-backup-*.sql

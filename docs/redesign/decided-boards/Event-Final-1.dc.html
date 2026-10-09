@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tournament page · setup: two schedules that merge</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ef-root{width:100%;max-width:1440px;margin:0 auto;box-sizing:border-box;background:#f5f5f2;color:#1a2744}
+.ef-root *{box-sizing:border-box}
+.ef-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ef-wrap{width:100%;max-width:1440px;margin:0 auto;padding:0 40px}
+
+/* title strip, legend, K's checklist (from Tourn-List-Final) */
+.ef-board{background:#ecebe6;padding:36px 40px 40px}
+.tl-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.tl-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.tl-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.tl-meta-line{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1040px}
+.tl-meta-line b{color:#1a2744;font-weight:600}
+.ef-same{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:7px 12px;border-radius:8px;background:#1a2744;color:#ffffff;font-size:14.5px;font-weight:600}
+.ef-same i{display:block;width:8px;height:8px;border-radius:50%;background:#c8a94a}
+.tl-legend{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:20px;margin-top:20px;align-items:start}
+.tl-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.tl-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 26px}
+.tl-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.tl-notes b{font-weight:600}
+.tl-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
+.ef-fb{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ef-fb li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.42}
+.ef-fb b{font-weight:600}
+.ef-fb em{font-style:normal;display:block;color:#3d4556;margin-top:2px}
+.ef-fb .ef-off em{color:#555c6b}
+.ef-tick{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1a2744;border:2px solid #1a2744;color:#ffffff;flex:none;margin-top:1px}
+.ef-tick svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.ef-tick-off{background:#ffffff;border:2px dashed #858b99}
+.ef-fbn{font-weight:700;color:#1a2744;margin-right:4px}
+.ef-fbkey{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid #ecebe5;font-size:12.5px;color:#555c6b}
+.ef-fbkey span{display:inline-flex;align-items:center;gap:6px}
+.ef-fbkey .ef-tick{width:16px;height:16px;margin:0}
+.ef-fbkey .ef-tick svg{width:10px;height:10px}
+
+/* note badges on the design */
+.ef-b{box-shadow:0 0 0 3px #ffffff;flex:none}
+.ef-bd{box-shadow:0 0 0 3px #1a2744;background:#c8a94a;color:#1a2744;flex:none}
+.ef-rel{position:relative}
+.ef-abs{position:absolute;z-index:6}
+
+/* header (decided H1, signed out) */
+.ef-hd-in{gap:0;min-height:68px}
+.ef-hd .k-brand{margin-right:16px}
+.ef-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ef-rook-sm{width:24px;height:24px}
+.ef-nav{gap:0}
+.ef-nav a{padding:0 10px;white-space:nowrap}
+.ef-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.ef-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ef-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ef-util{gap:12px}
+.ef-util .k-ulink{padding:0 4px}
+
+/* breadcrumb */
+.ef-crumb{display:flex;align-items:center;gap:8px;font-size:14px;color:#555c6b;min-height:48px}
+.ef-crumb a{color:#1a2744;font-weight:500}
+
+/* top band (Event-B) */
+.ef-band{background:#1a2744;color:#ffffff;padding:40px 0 40px}
+.ef-hero{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:40px;align-items:end}
+.ef-tags{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.ef-tag-open{background:#e1f0e7;color:#145b3a}
+.ef-sample-d{background:#fffaf0}
+.ef-kick{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e6cf86;margin:16px 0 0}
+.ef-h1{font-size:54px;line-height:1.05;font-weight:700;letter-spacing:-.02em;color:#ffffff;margin:8px 0 0}
+.ef-dateline{display:flex;flex-wrap:wrap;align-items:center;gap:8px 22px;margin:14px 0 0;font-size:18px;line-height:1.4;color:#ffffff}
+.ef-dateline span{display:inline-flex;align-items:center;gap:8px}
+.ef-dateline .k-i{color:#e6cf86}
+.ef-org{display:flex;align-items:center;gap:8px;margin:8px 0 0;font-size:15.5px;color:rgba(255,255,255,.86)}
+.ef-org .k-i{color:#e6cf86}
+.ef-org b{color:#ffffff;font-weight:600}
+.ef-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:24px}
+.ef-tile{position:relative;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:11px 13px 12px}
+.ef-tile .ef-tl{display:block;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.ef-tile b{display:block;font-size:16px;line-height:1.3;font-weight:600;margin-top:5px;color:#ffffff}
+.ef-tile small{display:block;font-size:13px;line-height:1.4;color:rgba(255,255,255,.8);margin-top:2px}
+.ef-kcard{background:#ffffff;color:#1a2744;border-radius:12px;padding:22px 22px 20px;box-shadow:0 18px 40px rgba(0,0,0,.25);position:relative}
+.ef-days{display:flex;align-items:flex-end;gap:18px;margin-top:6px}
+.ef-big{font-size:60px;line-height:1;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ef-bar{height:8px;border-radius:99px;background:#e6e5de;overflow:hidden}
+.ef-bar i{display:block;height:100%;border-radius:99px;background:#1a2744}
+.ef-kbtns{display:flex;gap:8px;margin-top:16px}
+.ef-kbtns .k-btn-gold{flex:1}
+
+/* sub nav (Event-B) */
+.ef-sub{background:#ffffff;border-bottom:1px solid #dcdad2;box-shadow:0 1px 0 rgba(26,39,68,.04)}
+.ef-subin{display:flex;align-items:center;gap:2px;height:48px}
+.ef-tab{display:inline-flex;align-items:center;gap:6px;height:48px;padding:0 12px;font-weight:600;font-size:14.5px;color:#3d4556;text-decoration:none;border-bottom:2px solid transparent;white-space:nowrap}
+.ef-tab-on{color:#1a2744;border-bottom-color:#866a1e}
+.ef-tab .k-chip-count{font-size:12px;color:#555c6b}
+.ef-tab-off{color:#5c6270;font-weight:500;cursor:default}
+.ef-tab-off small{font-size:12.5px;color:#5c6270;font-weight:500}
+.ef-tab-ext svg{width:14px;height:14px}
+.ef-sep{width:1px;height:22px;background:#dddcd4;margin:0 6px;flex:none}
+
+/* body */
+.ef-body{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:40px;align-items:start;padding-top:32px;padding-bottom:56px}
+.ef-main{min-width:0}
+.ef-sec{padding:0 0 40px;margin-bottom:40px;border-bottom:1px solid #e2e1da;scroll-margin-top:124px}
+.ef-sec:last-child{border-bottom:0;margin-bottom:0}
+.ef-sh{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.ef-sh h2{margin:0}
+.ef-sh .ef-l{display:flex;align-items:center;gap:10px}
+.ef-intro{font-size:16px;line-height:1.55;color:#3d4556;margin:8px 0 0;max-width:760px}
+
+/* schedule (Event-B, two schedules) */
+.ef-dayg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px;align-items:start}
+.ef-day{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 14px 16px}
+.ef-dayh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:0 0 10px}
+.ef-dayh b{font-size:15px;font-weight:700}
+.ef-dayh span{font-size:12.5px;color:#555c6b}
+.ef-slots{display:flex;flex-direction:column;gap:6px}
+.ef-slot{display:grid;grid-template-columns:68px minmax(0,1fr);gap:8px;align-items:start;padding:8px 10px;border-radius:8px;font-size:14px;line-height:1.35}
+.ef-slot > b{font-family:"Geist Mono",ui-monospace,monospace;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;padding-top:1px;white-space:nowrap}
+.ef-slot > span{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.ef-s3{background:#eef0f5}
+.ef-s2{background:#f8f1dc}
+.ef-sall{background:#ffffff;border:1.5px solid #1a2744}
+.ef-smerge{background:#1a2744;color:#ffffff}
+.ef-sx{background:#ffffff;border:1px dashed #9a9789}
+.ef-st{font-style:normal;display:inline-flex;align-items:center;padding:2px 7px;border-radius:5px;font-size:11.5px;font-weight:700;line-height:1.3;white-space:nowrap}
+.ef-t3{background:#d9deea;color:#1a2744}
+.ef-t2{background:#ecd9a0;color:#3f3106}
+.ef-tall{background:#1a2744;color:#ffffff}
+.ef-tmerge{background:#c8a94a;color:#1a2744}
+.ef-tx{background:#ffffff;color:#3d4556;border:1px dashed #858b99}
+.ef-tm{background:#f4ecd4;color:#664c0c}
+.ef-skey{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;margin-top:16px;padding:14px 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.ef-skey div{display:flex;gap:10px;align-items:flex-start}
+.ef-skey b{color:#1a2744;font-weight:600}
+.ef-cal{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:14px}
+
+/* sections & prizes (Event-B form) */
+.ef-g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:20px}
+.ef-scard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:6px}
+.ef-scard h3{margin:0;font-size:18px;line-height:1.25;font-weight:700}
+.ef-who{font-size:13.5px;color:#3d4556;margin:0}
+.ef-fee{display:flex;align-items:baseline;gap:8px;margin-top:6px}
+.ef-fee b{font-size:30px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.ef-steps{list-style:none;margin:0;padding:0;font-size:13px;line-height:1.45;color:#555c6b}
+.ef-cnt{display:flex;align-items:center;gap:8px;margin:6px 0 2px;padding:6px 0;border-top:1px solid #ecebe5;border-bottom:1px solid #ecebe5;font-size:14px}
+.ef-cnt b{font-weight:700}
+.ef-prz{font-size:13.5px;line-height:1.45;margin:0}
+.ef-prz b{font-weight:600}
+.ef-title-line{font-size:13px;line-height:1.4;color:#866a1e;font-weight:600;margin:0}
+.ef-callout{margin-top:14px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px;font-size:14px;line-height:1.55;color:#3d4556}
+.ef-callout b{color:#1a2744}
+
+/* side events */
+.ef-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px;align-items:stretch}
+.ef-ecard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:7px}
+.ef-ecard h3{margin:0;font-size:17px;line-height:1.3;font-weight:700}
+.ef-ecard p{margin:0;font-size:14px;line-height:1.45}
+.ef-ecard .ef-m{color:#555c6b;font-size:13px}
+.ef-ecard .ef-push{margin-top:auto;padding-top:6px}
+.ef-meet{background:#fbfaf6;border-style:dashed;border-color:#b9b6aa}
+
+/* who's coming */
+.ef-chips{display:flex;flex-wrap:wrap;gap:8px}
+.ef-whohead{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:16px}
+.ef-tbl td.ef-n{color:#555c6b;font-family:"Geist Mono",ui-monospace,monospace;font-size:13.5px}
+.ef-tbl td.ef-rt{font-family:"Geist Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.ef-note{display:flex;align-items:flex-start;gap:10px;margin:14px 0 0;padding:11px 14px;background:#fbfaf6;border:1px solid #e5e7ed;border-radius:8px;font-size:13px;line-height:1.5;color:#3d4556}
+.ef-note b{color:#1a2744;font-weight:600}
+.ef-ni{width:18px;height:18px;flex:none;margin-top:1px;fill:none;stroke:#1a2744;stroke-width:1.8;stroke-linecap:round}
+
+/* venue & travel */
+.ef-vgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;margin-top:20px;align-items:start}
+.ef-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 16px;margin:0;font-size:14px;line-height:1.45}
+.ef-dl dt{color:#555c6b}
+.ef-dl dd{margin:0;font-weight:500}
+.ef-travel{margin-top:22px;padding:20px;border-radius:12px;background:#fbfaf6;border:1px solid #dddcd4}
+.ef-travel-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ef-tg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:14px}
+.ef-tcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:7px}
+.ef-tcard p{margin:0}
+.ef-klab{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#866a1e}
+.ef-drive{display:grid;grid-template-columns:1fr auto;gap:4px 16px;font-size:14px}
+.ef-drive span:nth-child(even){font-family:"Geist Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right}
+.ef-vsub{display:flex;align-items:center;gap:10px;margin:0 0 2px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.ef-vsub::after{content:"";flex:1;height:1px;background:#dddcd4}
+.ef-hotel{margin-top:16px;padding:18px 20px;border-radius:12px;background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #866a1e;display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:16px;align-items:center}
+.ef-hotel p{margin:0}
+.ef-hico{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;background:#f4ecd4;color:#664c0c}
+.ef-vline{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45;margin:0}
+.ef-vline .k-i{flex:none;margin-top:1px;color:#555c6b}
+.ef-vhot{padding-top:10px;border-top:1px solid #ecebe5}
+
+/* good to know */
+.ef-gk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
+.ef-gcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.ef-gcard h3{margin:0;font-size:16px;font-weight:600}
+.ef-gcard p{margin:0;font-size:14px;line-height:1.5}
+.ef-ico{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:#eceef3;color:#1a2744}
+
+/* sidebar */
+.ef-side{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ef-rc{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;box-shadow:0 10px 30px rgba(26,39,68,.08);overflow:hidden}
+.ef-rch{background:#1a2744;color:#ffffff;padding:16px 20px}
+.ef-rch p{margin:10px 0 0;font-size:14px;color:rgba(255,255,255,.86)}
+.ef-rcb{padding:18px 20px 20px;display:flex;flex-direction:column;gap:16px}
+.ef-flabel{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:14px;font-weight:600;margin:0 0 7px}
+.ef-flabel span:not(.k-num-badge){font-weight:400;font-size:12.5px;color:#555c6b}
+.ef-seg{display:grid;border:1px solid #858b99;border-radius:10px;overflow:hidden;background:#ffffff}
+.ef-seg button{min-height:42px;padding:0 6px;border:0;border-left:1px solid #c9c8c0;background:#ffffff;font:inherit;font-size:14px;font-weight:600;color:#1a2744;cursor:pointer;white-space:nowrap}
+.ef-seg button:first-child{border-left:0}
+.ef-seg button[aria-pressed="true"]{background:#1a2744;color:#ffffff}
+.ef-seg4{grid-template-columns:1.55fr 1fr 1fr 1fr}
+.ef-seg2{grid-template-columns:1fr 1fr}
+.ef-hint{font-size:13px;line-height:1.45;color:#555c6b;margin:7px 0 0}
+.ef-hint b{color:#1a2744;font-weight:600}
+.ef-schl{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:13px;line-height:1.4;color:#555c6b}
+.ef-schl li{display:flex;gap:8px;align-items:flex-start}
+.ef-schl li b{color:#1a2744;font-weight:600}
+.ef-schl .ef-on{color:#1a2744}
+.ef-ladder{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.ef-ladder li{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #e2e1da;border-radius:10px}
+.ef-ladder li.ef-now{background:#fbf5e3;border:1.5px solid #866a1e}
+.ef-ladder b{display:flex;align-items:center;gap:8px;font-size:14px}
+.ef-ladder small{display:block;font-size:12.5px;color:#555c6b}
+.ef-price{margin-left:auto;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.ef-mem{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:10px;background:#efefea;font-size:14px;line-height:1.45}
+.ef-mem p{margin:0}
+.ef-sidel{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;margin:0}
+.ef-pay{display:flex;justify-content:space-between;align-items:baseline}
+.ef-pay b{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+.ef-fam{display:flex;flex-direction:column;gap:6px}
+.ef-acts{display:flex;justify-content:space-between;padding:8px 10px;border-top:1px solid #e2e1da}
+.ef-scard2{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:9px}
+.ef-scard2 p{margin:0}
+.ef-og{border:1px solid #d6d5cd;border-radius:10px;overflow:hidden;background:#ffffff}
+.ef-ogimg{background:#1a2744;color:#ffffff;padding:16px 18px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
+.ef-ogimg .ef-rook{width:24px;height:24px;fill:#c8a94a}
+.ef-ogk{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#e6cf86}
+.ef-ogt{font-size:20px;line-height:1.15;font-weight:700;margin:0}
+.ef-ogd{font-size:13px;color:rgba(255,255,255,.86);margin:5px 0 0}
+.ef-ogcap{padding:10px 12px 12px;background:#f5f5f2;border-top:1px solid #e2e1da}
+.ef-ogcap p{margin:0}
+
+/* footer */
+.ef-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.ef-foot .k-meta{color:rgba(255,255,255,.78)}
+.ef-foot nav a{font-size:14px}
+
+/* annex: details at 1:1 */
+.ef-annex{background:#ecebe6;padding:40px 40px 48px}
+.ef-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px}
+.ef-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ef-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ef-minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:24px;background:#f5f5f2;border:1px solid #d9d8d1;border-radius:14px}
+.ef-mini{margin:0;display:flex;flex-direction:column;gap:12px}
+.ef-mini figcaption p{margin:0}
+.ef-pop{position:relative;width:312px;background:#ffffff;border:1px solid #cfcec6;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.22);padding:14px 16px;display:flex;flex-direction:column;gap:10px;margin:12px 0 0 auto}
+.ef-pop::before{content:"";position:absolute;top:-7px;right:44px;width:12px;height:12px;background:#ffffff;border-left:1px solid #cfcec6;border-top:1px solid #cfcec6;transform:rotate(45deg)}
+.ef-pop-h{font-size:16px;font-weight:700;margin:0}
+.ef-opts{border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.ef-opt{display:flex;gap:10px;align-items:flex-start;min-height:44px;padding:6px 4px;border-radius:8px;font-size:14.5px}
+.ef-opt input{width:20px;height:20px;margin:2px 0 0;accent-color:#1a2744;flex:none}
+.ef-opt b{display:block;font-weight:600;line-height:1.3}
+.ef-opt small{display:block;font-size:12.5px;color:#555c6b;line-height:1.35}
+.ef-opt-off b{color:#6b7180}
+.ef-pop-foot{font-size:12.5px;color:#555c6b;margin:0;text-align:center}
+.ef-stage{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px}
+.ef-cut{font-size:12.5px;color:#555c6b;text-align:center;border-top:1px dashed #b9b7ad;padding-top:8px;margin-top:4px}
+</style>
+</helmet>
+<div class="ef-root">
+
+<!-- ============ Title strip, legend, K's checklist ============ -->
+<div class="ef-board">
+<section class="tl-doc" aria-label="About this board">
+  <div class="tl-doc-top">
+    <div>
+      <p class="k-kicker">5 · Tournament page · decided · setup: two schedules that merge</p>
+      <h1 class="tl-title">Unified tournament page · Setup: two schedules that merge (2027 Louisiana State Championship)</h1>
+      <p class="tl-meta-line" style="margin-top:8px"><b>Built from:</b> Event-B (navy top band with the key-facts card, sub nav, "Two schedules, one championship", Sections &amp; prizes, Side events, the sidebar's link preview) and Event-A (organizer line, fact tiles with plain words, the registration card, Who's coming, Venue, Good to know) · Event-D's Visit block for the Getting here detail · K's Thu, Oct 8 changes: one entry price with the LCA membership required, and Venue &amp; travel as one block with the hotel at the bottom · the decided header and footer</p>
+      <p class="tl-meta-line"><b>Replaces:</b> Event-A, Event-B and Event-C</p>
+      <p class="tl-meta-line"><b>Setup on this frame:</b> Schedules on (3-day and 2-day, merge at Round 4) · Side events on (Labor Day Scholastic, State Blitz Championship, annual business meeting as kind "meeting") · Venue &amp; travel with Travel details on and a hotel added · championship title set · overall entry limit 160 · three fee tiers (early, regular, at the door), one price per section per tier · LCA membership required to enter (LCA-run event)</p>
+      <p class="tl-meta-line"><b>Shown:</b> /tournaments/2027-louisiana-state-championship at 1440px on Thu, Oct 8, 2026, signed out (Donate · Log in · Join LCA). No Round alerts block, since nobody is registered here.</p>
+      <p class="ef-same"><i></i>Same page. The TD's setup picks the layout.</p>
+    </div>
+    <span class="k-sample">Sample data · State Championship counts, fees, prizes, players, times</span>
+  </div>
+  <div class="tl-legend">
+    <div class="tl-lbox">
+      <p class="k-label">Notes on this board</p>
+      <ol class="tl-notes">
+        <li><span class="k-num-badge">1</span><span><b>Top band from Event-B.</b> Tags with status in words, the kicker from the setup's tagline, the H1, the date line with weekdays, the organizer line, then seven fact tiles (4 + 3), each with its plain-words companion. The 2-day tile shows only because there is more than one schedule.</span></li>
+        <li><span class="k-num-badge">2</span><span><b>Key-facts card.</b> "331 days" is plain text that changes once a day; nothing ticks. "Register · from $30" is the lowest entry fee today (U1000, early). There is one price for everyone; there is no member price. Remind me opens the page 4 reminder options (frame A below). This button follows the lifecycle on the states board.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>Sub nav, 48px, sticky under the header.</b> Current item navy with a 2px gold-ink underline. "Venue &amp; travel" always, with or without travel details or a hotel. "Past champions ↗" only because the setup names a title; it opens the honor roll filtered to it. Pairings and Standings are muted, aria-disabled text until Sat, Sep 4.</span></li>
+        <li><span class="k-num-badge">4</span><span><b>Two schedules, so the multi-schedule form.</b> Schedule leads the main column: day by day, every row tagged 3-day, 2-day or Everyone in words, the merge row, the business meeting and side events as rows, and the time-control key per schedule.</span></li>
+        <li><span class="k-num-badge">5</span><span><b>Sections &amp; prizes in Event-B's form,</b> overall limit: each section reads "9 entered" with no pill, no bar and no waitlist line. One amount per tier: the fee now, then the dated later steps, since the setup has all three tiers. No member price.</span></li>
+        <li><span class="k-num-badge">6</span><span><b>Side events (setup).</b> Child tournaments with their own count and cap, added to the same checkout. The business meeting is a side event of kind "meeting": Members vote · RSVP · Meeting page, no fee.</span></li>
+        <li><span class="k-num-badge">7</span><span><b>Who's coming, no clubs.</b> Section chips are filter toggles over one table (#, Player, Rating, Section). Players under 18 show as first name and last initial; unrated players sort last. Once Round 1 starts, Standings replaces this block.</span></li>
+        <li><span class="k-num-badge">8</span><span><b>Venue &amp; travel is one block (K, Thu, Oct 8).</b> The venue first: address, Open in Maps, Parking, Getting in, Food. Then Getting here, because the TD turned on Travel details: the TD's drive times, the nearest airport, Between rounds. Then the optional Hotel at the bottom, because the setup adds one: host hotel, LCA rate, block held until Fri, Aug 13, Book in the LCA block ↗. With both off it is just the venue part.</span></li>
+        <li><span class="k-num-badge">9</span><span><b>Registration card from Event-A.</b> Drawn after this viewer picked U1800 and 3-day; before any pick the ladder shows ranges and the button reads "Register · from $30" (frame C). Overall limit, so the count line stays "23 of 160 registered · 137 left" whatever section is picked.</span></li>
+        <li><span class="k-num-badge">10</span><span><b>Schedule picker,</b> only with more than one schedule. One plain line for each. The choice is saved as registrations.schedule_id.</span></li>
+        <li><span class="k-num-badge">11</span><span><b>Register my family,</b> shown because the viewer is signed out, with the line "One checkout for you and your children. See how it works". Both open the sheet "How family registration works" (Event-Final-Family, frame E). Signed in, only an active Family membership sees this button; everyone else gets "Register", whose first step is the same picker.</span></li>
+        <li><span class="k-num-badge">12</span><span><b>Sidebar below the card:</b> the Venue &amp; travel summary card, where the Hotel &amp; travel card used to be: venue, city, Open in Maps, one parking line, the host hotel line (a hotel is set here) and "Full venue &amp; travel" to #venue. Then the link preview (K's pick) with Copy link · Share to Facebook · QR code. No Round alerts block for a signed-out viewer.</span></li>
+        <li><span class="k-num-badge">13</span><span><b>One entry price; the LCA membership is required to enter.</b> The line that carried the member discount now reads "LCA membership required to enter · $15 a year, added at checkout if you don't have one". A signed-in member sees "Your LCA membership is active through Tue, Mar 14, 2028"; on a club-run event with the requirement switched off the line is absent. "You pay today" is the entry fee alone; the line under the buttons says the full total, any membership included, shows before paying.</span></li>
+        <li><span class="k-num-badge">14</span><span><b>Good to know: Membership</b> replaces Discounts: required to enter, added at checkout if needed, Family plans cover you and up to 3 children. Side event cards show one fee each.</span></li>
+      </ol>
+    </div>
+    <aside class="tl-fb" aria-labelledby="ef-fbh">
+      <p id="ef-fbh" class="k-label-gold">K's feedback, and where it landed</p>
+      <ol class="ef-fb">
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.1</span><b>Entry limits overall or by section, set in setup.</b><em>Overall limit here: "9 entered" per section, no bar; the card reads 23 of 160 (notes 5, 9). By section is on Event-Final-2.</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.2</span><b>Fee tiers only when the TD set them.</b><em>All three set, so the ladder shows Early, Regular and At the door, one amount each. The one-fee line is on the states board.</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.3</span><b>Register my family only signed out or on a Family membership.</b><em>Signed out here, so it shows with "See how it works", which opens "How family registration works" (note 11). The picker is on Event-Final-Family.</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.4</span><b>Partner page ready for bad feed fields.</b><em>Not on this board · Event-Partner-Final.</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.5</span><b>Festival page, Go live, home feature.</b><em>Not on this board · Event-Festival-Final.</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.6</span><b>Merging schedules and side events are setup options.</b><em>Both on: Schedule leads, the card gains the schedule picker and the side events line, Side events gets its block (notes 4, 6, 10).</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.7</span><b>B's top and sub nav, A's card, Who's coming and Good to know; past champions in the sub nav only.</b><em>All here. Past champions ↗ is a sub nav link, never a block (notes 1, 3, 7).</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.8</span><b>Travel in the sidebar and the venue block, link preview, round alerts.</b><em>Now folded into Venue &amp; travel (5.11): the sidebar carries the venue summary card with the host hotel line; link preview in the sidebar; no round alerts, since the viewer is signed out (notes 8, 12).</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.9</span><b>Phones follow the desktop changes.</b><em>Not on this board · Event-Phones-Final.</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.10</span><b>One entry price; LCA membership required to enter, added at checkout; club-run events may switch it off.</b><em>No member price in the section cards, side events, the card or Good to know; the card's membership line and Good to know's Membership say it once (notes 5, 13, 14).</em></span></li>
+        <li><span class="ef-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="ef-fbn">5.11</span><b>Venue &amp; travel is one block with an optional hotel at the bottom; the sidebar carries the venue summary card.</b><em>Venue, Getting here, then Hotel; the summary card sits where Hotel &amp; travel was (notes 8, 12).</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.12</span><b>Family picker wording, phone picker trimmed, family limit enforced.</b><em>Not on this board · Event-Final-Family and Event-Phones-Final. The button here opens them (note 11).</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.13</span><b>The setup form scrolls in its own container; sheets scroll inside themselves.</b><em>Not on this board · Event-Final-Setup. This page scrolls as one; the sidebar stays sticky beside it.</em></span></li>
+        <li class="ef-off"><span class="ef-tick ef-tick-off" role="img" aria-label="Not on this board"></span><span><span class="ef-fbn">5.14</span><b>Receipts: one receipt per payer, one confirmation per player.</b><em>Not on this board · page 6, the checkout.</em></span></li>
+      </ol>
+      <div class="ef-fbkey"><span><span class="ef-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Applied here</span><span><span class="ef-tick ef-tick-off" aria-hidden="true"></span>Not on this board</span></div>
+    </aside>
+  </div>
+</section>
+</div>
+
+<!-- ============ The page ============ -->
+<header class="k-header ef-hd">
+  <div class="ef-wrap k-header-in ef-hd-in">
+    <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ef-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks ef-nav" aria-label="Main"><a class="k-nav-on" href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ef-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav>
+    <a class="ef-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="ef-kbd" aria-hidden="true">&#8984;K</kbd></a>
+    <div class="k-utility ef-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+  </div>
+</header>
+
+<div class="ef-wrap">
+  <nav class="ef-crumb" aria-label="Breadcrumb"><a href="#">Tournaments</a><span aria-hidden="true">/</span><span aria-current="page">2027 Louisiana State Championship</span></nav>
+</div>
+
+<main>
+<section class="ef-band" id="overview" aria-labelledby="ef-h1">
+  <div class="ef-wrap ef-hero">
+    <div>
+      <div class="ef-tags">
+        <span class="k-tag k-tag-gold">LCA event</span>
+        <span class="k-tag ef-tag-open"><span class="k-dot"></span>Registration open</span>
+        <span class="k-sample ef-sample-d">Sample data</span>
+        <span class="k-num-badge ef-bd">1</span>
+      </div>
+      <p class="ef-kick">State flagship · Labor Day weekend</p>
+      <h1 class="ef-h1" id="ef-h1">2027 Louisiana State Championship</h1>
+      <p class="ef-dateline">
+        <span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><time datetime="2027-09-04"><b>Sat–Mon, Sep 4–6, 2027</b></time></span>
+        <span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Baton Rouge · [Venue name]</span>
+      </p>
+      <p class="ef-org"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21V5.5L12 3l8 2.5V21M9 21v-5h6v5M8 9h.01M12 9h.01M16 9h.01M8 13h.01M12 13h.01M16 13h.01"></path></svg><span><b>Run by LCA</b> · TD Chris Arceneaux</span></p>
+      <div class="ef-tiles">
+        <div class="ef-tile"><span class="ef-tl">Rating</span><b>US Chess rated</b><small>Counts toward your official rating</small></div>
+        <div class="ef-tile"><span class="ef-tl">Format</span><b>6 rounds</b><small>Swiss, everyone plays all 6</small></div>
+        <div class="ef-tile"><span class="ef-tl">Time control</span><b class="k-mono">G/90+30</b><small>90 min each + 30 sec per move</small></div>
+        <div class="ef-tile"><span class="ef-tl">Schedules</span><b>3-day or 2-day schedule</b><small>Everyone merges at Round 4</small></div>
+        <div class="ef-tile"><span class="ef-tl">Byes</span><b>Up to 2 half-point byes</b><small>Skip a round, still score ½</small></div>
+        <div class="ef-tile"><span class="ef-tl">Sections</span><b>4 sections</b><small>Championship · U1800 · U1400 · U1000</small></div>
+        <div class="ef-tile"><span class="ef-tl">Prize fund</span><b>$3,000 prize fund</b><small>Based on 120 paid entries</small></div>
+      </div>
+    </div>
+    <div class="ef-kcard" aria-label="Key facts">
+      <div class="k-between"><span class="k-label">Round 1 starts in</span><span class="k-num-badge ef-b">2</span></div>
+      <div class="ef-days">
+        <div><div class="ef-big">331</div><div class="k-meta">days</div></div>
+        <div class="k-small" style="padding-bottom:6px"><b>Round 1 · Sat, Sep 4 · 10:00 AM</b><br>Early price until Sun, Jul 25</div>
+      </div>
+      <div class="ef-bar" style="margin:16px 0 6px" role="img" aria-label="23 of 160 places taken"><i style="width:14%"></i></div>
+      <div class="k-between k-small"><span><b>23 of 160</b> registered</span><span class="k-muted">4 sections</span></div>
+      <div class="ef-kbtns">
+        <a class="k-btn k-btn-gold" href="#">Register · from $30</a>
+        <button class="k-btn k-btn-line" type="button" aria-haspopup="dialog" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ef-sub">
+  <div class="ef-wrap">
+    <nav class="ef-subin" aria-label="On this tournament">
+      <a class="ef-tab ef-tab-on" href="#overview" aria-current="location">Overview</a>
+      <a class="ef-tab" href="#schedule">Schedule</a>
+      <a class="ef-tab" href="#sections">Sections &amp; prizes</a>
+      <a class="ef-tab" href="#whos-coming">Who's coming <span class="k-chip-count">(23)</span></a>
+      <a class="ef-tab" href="#venue">Venue &amp; travel</a>
+      <a class="ef-tab" href="#good-to-know">Good to know</a>
+      <a class="ef-tab ef-tab-ext" href="/state-champions?title=state-championship">Past champions ↗</a>
+      <span class="ef-sep" role="presentation"></span>
+      <span class="ef-tab ef-tab-off" role="link" aria-disabled="true">Pairings <small>(from Sat, Sep 4)</small></span>
+      <span class="ef-tab ef-tab-off" role="link" aria-disabled="true">Standings <small>(from Sat, Sep 4)</small></span>
+      <span class="k-num-badge ef-b" style="margin-left:auto">3</span>
+    </nav>
+  </div>
+</div>
+
+<div class="ef-wrap ef-body">
+  <div class="ef-main">
+
+    <!-- Schedule, multi-schedule form -->
+    <section class="ef-sec" id="schedule" aria-labelledby="ef-sch">
+      <div class="ef-sh"><div class="ef-l"><span class="k-num-badge ef-b">4</span><h2 class="k-h2" id="ef-sch">Two schedules, one championship</h2></div><span class="k-meta">Central time</span></div>
+      <p class="ef-intro">Play all three days, or start Sunday with three faster rounds. Both schedules meet at Round 4 and everyone plays Rounds 4 to 6 together.</p>
+      <div class="ef-dayg">
+        <div class="ef-day">
+          <p class="ef-dayh"><b>Sat, Sep 4</b><span>3-day starts</span></p>
+          <div class="ef-slots">
+            <div class="ef-slot ef-s3"><b>8:00 AM</b><span>Check-in, until 9:30 AM <em class="ef-st ef-t3">3-day</em></span></div>
+            <div class="ef-slot ef-sx"><b>8:30 AM</b><span>LCA annual business meeting <em class="ef-st ef-tm">Meeting</em></span></div>
+            <div class="ef-slot ef-sx"><b>9:30 AM</b><span>Labor Day Scholastic, Rounds 1–5 <em class="ef-st ef-tx">Side event</em></span></div>
+            <div class="ef-slot ef-s3"><b>10:00 AM</b><span>Round 1 <em class="ef-st ef-t3">3-day</em></span></div>
+            <div class="ef-slot ef-s3"><b>4:00 PM</b><span>Round 2 <em class="ef-st ef-t3">3-day</em></span></div>
+          </div>
+        </div>
+        <div class="ef-day">
+          <p class="ef-dayh"><b>Sun, Sep 5</b><span>2-day starts</span></p>
+          <div class="ef-slots">
+            <div class="ef-slot ef-s2"><b>7:00 AM</b><span>Check-in, until 7:40 AM <em class="ef-st ef-t2">2-day</em></span></div>
+            <div class="ef-slot ef-s2"><b>8:00 AM</b><span>Round 1 <em class="ef-st ef-t2">2-day</em></span></div>
+            <div class="ef-slot ef-s3"><b>10:00 AM</b><span>Round 3 <em class="ef-st ef-t3">3-day</em></span></div>
+            <div class="ef-slot ef-s2"><b>10:30 AM</b><span>Round 2 <em class="ef-st ef-t2">2-day</em></span></div>
+            <div class="ef-slot ef-s2"><b>1:00 PM</b><span>Round 3 <em class="ef-st ef-t2">2-day</em></span></div>
+            <div class="ef-slot ef-smerge"><b>4:00 PM</b><span><strong>Round 4 · schedules merge</strong> <em class="ef-st ef-tmerge">Everyone</em></span></div>
+            <div class="ef-slot ef-sx"><b>9:00 PM</b><span>State Blitz Championship <em class="ef-st ef-tx">Side event</em></span></div>
+          </div>
+        </div>
+        <div class="ef-day">
+          <p class="ef-dayh"><b>Mon, Sep 6</b><span>Labor Day</span></p>
+          <div class="ef-slots">
+            <div class="ef-slot ef-sall"><b>9:00 AM</b><span>Round 5 <em class="ef-st ef-tall">Everyone</em></span></div>
+            <div class="ef-slot ef-sall"><b>2:30 PM</b><span>Round 6 <em class="ef-st ef-tall">Everyone</em></span></div>
+            <div class="ef-slot ef-sx"><b>7:00 PM</b><span>Awards, about this time · State Champion crowned</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ef-skey" aria-label="Key to the schedule">
+        <div><em class="ef-st ef-t3">3-day</em><span><b>3-day schedule:</b> all 6 rounds at G/90+30, 90 minutes each plus 30 seconds per move. Starts Sat, Sep 4.</span></div>
+        <div><em class="ef-st ef-t2">2-day</em><span><b>2-day schedule:</b> Rounds 1–3 at G/45+10, 45 minutes each plus 10 seconds per move, on Sun, Sep 5. Then G/90+30.</span></div>
+        <div><em class="ef-st ef-tall">Everyone</em><span><b>Rounds 4–6</b> are paired as one field, whichever schedule you started on.</span></div>
+        <div><em class="ef-st ef-tx">Side event</em><span><b>Side events and the meeting</b> are separate entries; add them in the same checkout.</span></div>
+      </div>
+      <div class="ef-cal">
+        <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add the 3-day rounds to my calendar</a>
+        <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add the 2-day rounds to my calendar</a>
+      </div>
+    </section>
+
+    <!-- Sections & prizes, multi-schedule form -->
+    <section class="ef-sec" id="sections" aria-labelledby="ef-sp">
+      <div class="ef-sh"><div class="ef-l"><span class="k-num-badge ef-b">5</span><h2 class="k-h2" id="ef-sp">Sections &amp; prizes</h2></div><a class="k-link k-small" href="#">Which section fits me?</a></div>
+      <p class="ef-intro">$3,000 prize fund, based on 120 paid entries. Early prices shown; they rise on Mon, Jul 26 and again at the door on Sat, Sep 4. One price for everyone; an LCA membership is required to enter. Unrated players may enter any section.</p>
+      <div class="ef-g4">
+        <article class="ef-scard">
+          <h3>Championship</h3>
+          <p class="ef-who">All ratings</p>
+          <div class="ef-fee"><b>$60</b><span class="k-meta">early price</span></div>
+          <ul class="ef-steps"><li>$75 from Mon, Jul 26</li><li>$90 at the door, Sat, Sep 4</li></ul>
+          <p class="ef-cnt"><b>9 entered</b></p>
+          <p class="ef-prz"><b>Prizes</b> $600 · $400 · $200</p>
+          <p class="ef-title-line">State Champion title to the top Louisiana resident</p>
+        </article>
+        <article class="ef-scard">
+          <h3>U1800</h3>
+          <p class="ef-who">Rated under 1800</p>
+          <div class="ef-fee"><b>$50</b><span class="k-meta">early price</span></div>
+          <ul class="ef-steps"><li>$65 from Mon, Jul 26</li><li>$80 at the door, Sat, Sep 4</li></ul>
+          <p class="ef-cnt"><b>6 entered</b></p>
+          <p class="ef-prz"><b>Prizes</b> $300 · $200 · $100</p>
+          <p class="ef-prz k-muted">Top U1600: $100</p>
+        </article>
+        <article class="ef-scard">
+          <h3>U1400</h3>
+          <p class="ef-who">Rated under 1400</p>
+          <div class="ef-fee"><b>$40</b><span class="k-meta">early price</span></div>
+          <ul class="ef-steps"><li>$55 from Mon, Jul 26</li><li>$70 at the door, Sat, Sep 4</li></ul>
+          <p class="ef-cnt"><b>5 entered</b></p>
+          <p class="ef-prz"><b>Prizes</b> $250 · $150 · $100</p>
+          <p class="ef-prz k-muted">Top U1200: $100</p>
+        </article>
+        <article class="ef-scard">
+          <h3>U1000</h3>
+          <p class="ef-who">Rated under 1000, or unrated</p>
+          <div class="ef-fee"><b>$30</b><span class="k-meta">early price</span></div>
+          <ul class="ef-steps"><li>$45 from Mon, Jul 26</li><li>$60 at the door, Sat, Sep 4</li></ul>
+          <p class="ef-cnt"><b>3 entered</b></p>
+          <p class="ef-prz"><b>Prizes</b> $150 · $100 · $50</p>
+          <p class="ef-prz k-muted">Trophies to the top 3 · top unrated $100</p>
+        </article>
+      </div>
+      <div class="ef-callout"><b>Both schedules play for the same prizes.</b> Byes: up to 2 half-point byes, asked for before Round 2 is paired (none in Round 6). The biggest upset in any section wins $100. Tied players share the money for the places they tie for. <a class="k-link" href="#">All prizes and rules</a></div>
+    </section>
+
+    <!-- Side events (setup) -->
+    <section class="ef-sec" id="side-events" aria-labelledby="ef-se">
+      <div class="ef-sh"><div class="ef-l"><span class="k-num-badge ef-b">6</span><h2 class="k-h2" id="ef-se">Side events</h2></div></div>
+      <p class="ef-intro">Add them to the same registration and pay once.</p>
+      <div class="ef-g3">
+        <article class="ef-ecard">
+          <div class="k-row-sm"><span class="k-tag">Side event</span><span class="k-tag">Scholastic</span></div>
+          <h3>Labor Day Scholastic</h3>
+          <p>Sat, Sep 4 · 9:30 AM · K–12, K–8 and K–3 sections</p>
+          <p>5 rounds at G/30+5, 30 minutes each plus 5 seconds per move. US Chess rated.</p>
+          <div class="ef-fee" style="margin-top:2px"><b style="font-size:22px">$25</b><span class="k-meta">entry</span></div>
+          <div class="ef-bar" role="img" aria-label="14 of 60 places taken"><i style="width:23%"></i></div>
+          <p><b>14 of 60</b> registered</p>
+          <p class="ef-m">Each player ticks one box for their grade, like "In 8th grade or below".</p>
+          <div class="ef-push"><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add to my registration</button></div>
+        </article>
+        <article class="ef-ecard">
+          <div class="k-row-sm"><span class="k-tag">Side event</span><span class="k-tag">Blitz</span></div>
+          <h3>State Blitz Championship</h3>
+          <p>Sun, Sep 5 · 9:00 PM · one section, all ratings</p>
+          <p>8 games at G/5+2, 5 minutes each plus 2 seconds per move. US Chess blitz rated.</p>
+          <div class="ef-fee" style="margin-top:2px"><b style="font-size:22px">$20</b><span class="k-meta">entry</span></div>
+          <div class="ef-bar" role="img" aria-label="6 of 40 places taken"><i style="width:15%"></i></div>
+          <p><b>6 of 40</b> registered</p>
+          <p class="ef-m">State Blitz Champion title to the top Louisiana resident.</p>
+          <div class="ef-push"><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add to my registration</button></div>
+        </article>
+        <article class="ef-ecard ef-meet">
+          <div class="k-row-sm"><span class="k-tag ef-tm">Members vote</span></div>
+          <h3>LCA annual business meeting</h3>
+          <p>Sat, Sep 4 · 8:30 AM · [Room name], before Round 1</p>
+          <p>Open to everyone; LCA members vote. The agenda posts Fri, Aug 20.</p>
+          <div class="ef-fee" style="margin-top:2px"><b style="font-size:22px">Free</b></div>
+          <p><b>31</b> plan to attend</p>
+          <p class="ef-m">Last year's minutes and the bylaws are on the meeting page.</p>
+          <div class="ef-push k-row-sm"><button class="k-btn k-btn-line k-btn-sm" type="button">RSVP</button><a class="k-link k-small" href="#">Meeting page</a></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Who's coming -->
+    <section class="ef-sec" id="whos-coming" aria-labelledby="ef-wc">
+      <div class="ef-sh"><div class="ef-l"><span class="k-num-badge ef-b">7</span><h2 class="k-h2" id="ef-wc">Who's coming</h2></div><span class="k-meta">Updated Thu, Oct 8, 9:40 AM · October 2026 ratings</span></div>
+      <p class="ef-intro" style="color:#1a2744"><b>23 registered</b>, highest rating first.</p>
+      <div class="ef-whohead">
+        <div class="ef-chips" role="group" aria-label="Filter by section">
+          <button class="k-chip k-chip-on" type="button" aria-pressed="true">All <span class="k-chip-count">23</span></button>
+          <button class="k-chip" type="button" aria-pressed="false">Championship <span class="k-chip-count">9</span></button>
+          <button class="k-chip" type="button" aria-pressed="false">U1800 <span class="k-chip-count">6</span></button>
+          <button class="k-chip" type="button" aria-pressed="false">U1400 <span class="k-chip-count">5</span></button>
+          <button class="k-chip" type="button" aria-pressed="false">U1000 <span class="k-chip-count">3</span></button>
+        </div>
+        <div class="k-search" style="min-height:44px;width:220px;flex:none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input aria-label="Find a player by name" placeholder="Find a name"></div>
+      </div>
+      <div class="k-tablebox" style="margin-top:14px" role="region" aria-label="Registered players">
+        <table class="k-table ef-tbl">
+          <caption class="ef-vh">Registered players, highest rating first</caption>
+          <thead><tr><th scope="col" class="k-r" style="width:64px">#</th><th scope="col">Player</th><th scope="col" class="k-r" style="width:120px">Rating</th><th scope="col" style="width:220px">Section</th></tr></thead>
+          <tbody>
+            <tr><td class="k-r ef-n">1</td><td class="k-strong">Marcus Landry</td><td class="k-r ef-rt">2014</td><td>Championship</td></tr>
+            <tr><td class="k-r ef-n">2</td><td class="k-strong">Avery Thibodeaux</td><td class="k-r ef-rt">1912</td><td>Championship</td></tr>
+            <tr><td class="k-r ef-n">3</td><td class="k-strong">Henri Boudreaux</td><td class="k-r ef-rt">1867</td><td>Championship</td></tr>
+            <tr><td class="k-r ef-n">4</td><td class="k-strong">Priya S.</td><td class="k-r ef-rt">1803</td><td>Championship</td></tr>
+            <tr><td class="k-r ef-n">5</td><td class="k-strong">Camille Broussard</td><td class="k-r ef-rt">1744</td><td>U1800</td></tr>
+            <tr><td class="k-r ef-n">6</td><td class="k-strong">Isaac Dupre</td><td class="k-r ef-rt">1688</td><td>U1800</td></tr>
+            <tr><td class="k-r ef-n">7</td><td class="k-strong">Sam Nguyen</td><td class="k-r ef-rt">1650</td><td>U1800</td></tr>
+            <tr><td class="k-r ef-n">8</td><td class="k-strong">Theo G.</td><td class="k-r ef-rt">1602</td><td>Championship</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="k-between" style="margin-top:12px">
+        <a class="k-btn k-btn-soft" href="#">Show all 23 players</a>
+        <span class="k-meta">US Chess IDs and membership checks are shown to the TD only.</span>
+      </div>
+      <div class="ef-note" role="note"><svg class="ef-ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"></circle></svg><p style="margin:0"><b>Players under 18 show as first name and last initial</b> (Priya S., Theo G.); directors and admins see full names. Unrated players are listed last. Results, standings and winners keep full names.</p></div>
+    </section>
+
+    <!-- Venue & travel -->
+    <section class="ef-sec" id="venue" aria-labelledby="ef-vt">
+      <div class="ef-sh"><div class="ef-l"><span class="k-num-badge ef-b">8</span><h2 class="k-h2" id="ef-vt">Venue &amp; travel</h2></div></div>
+      <div class="ef-vgrid">
+        <div class="k-map" style="height:250px" role="img" aria-label="Map showing [Venue name] in Baton Rouge">
+          <svg viewBox="0 0 400 250" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><path d="M60 0C40 70 90 120 70 180S40 230 50 250" fill="none" stroke="#c7d5e4" stroke-width="22"></path><path d="M0 112L400 84M150 0L178 250M300 0L282 250M0 40L400 58M0 190L400 160" fill="none" stroke="#ffffff" stroke-width="6"></path></svg>
+          <span class="k-pin k-pin-on" style="left:56%;top:44%"></span>
+          <span style="position:absolute;left:56%;top:44%;transform:translate(16px,-50%);background:#ffffff;border:1px solid #d6d5cd;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:600;white-space:nowrap">[Venue name]</span>
+          <span class="k-pin" style="left:72%;top:26%"></span>
+          <span style="position:absolute;left:72%;top:26%;transform:translate(14px,-50%);background:#ffffff;border:1px solid #d6d5cd;border-radius:6px;padding:3px 8px;font-size:12.5px;font-weight:600;white-space:nowrap">Host hotel</span>
+          <span class="k-meta" style="position:absolute;left:10px;bottom:10px">Mississippi River</span>
+        </div>
+        <div class="k-stack">
+          <div>
+            <p class="k-h4">[Venue name]</p>
+            <p class="k-muted" style="margin-top:2px">[Street address], Baton Rouge, LA [ZIP]</p>
+            <a class="k-link-plain k-small" href="#" style="margin-top:6px">Open in Maps<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+          </div>
+          <dl class="ef-dl">
+            <dt>Parking</dt><dd>[Where to park and what it costs]</dd>
+            <dt>Getting in</dt><dd>[Entrance, floor and step-free route]</dd>
+            <dt>Food</dt><dd>[Places to eat between rounds]</dd>
+          </dl>
+        </div>
+      </div>
+      <div class="ef-travel" id="travel">
+        <div class="ef-travel-h"><h3 class="k-h3" style="margin:0">Getting here</h3></div>
+        <div class="ef-tg">
+          <div class="ef-tcard">
+            <span class="ef-klab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"></path></svg>Drive</span>
+            <p class="k-small k-strong">Drive times to Baton Rouge, as entered by the TD</p>
+            <div class="ef-drive">
+              <span>New Orleans</span><span>1 hr 20 min</span>
+              <span>Lafayette</span><span>1 hr</span>
+              <span>Lake Charles</span><span>2 hr</span>
+              <span>Alexandria</span><span>1 hr 45 min</span>
+              <span>Shreveport</span><span>3 hr 45 min</span>
+            </div>
+          </div>
+          <div class="ef-tcard">
+            <span class="ef-klab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 13.5l19-7-3 13-6.5-4.5-3 4v-5.5l9.5-6.5"></path></svg>Fly in</span>
+            <p class="k-small"><b>Nearest airport:</b> Baton Rouge Metropolitan (BTR), [n] minutes from the venue.</p>
+            <p class="k-small"><b>More flights:</b> New Orleans (MSY), about 1 hr 15 min by car.</p>
+          </div>
+          <div class="ef-tcard" style="grid-column:1 / -1">
+            <span class="ef-klab"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Between rounds</span>
+            <p class="k-small">Close by: [Café], [Restaurant], [Grocery]. The skittles room is open all weekend for casual games and post-mortems. Food stays outside the playing hall.</p>
+          </div>
+        </div>
+      </div>
+      <div class="ef-hotel" id="hotel" aria-labelledby="ef-hot">
+        <span class="ef-hico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"></path><circle cx="7" cy="11.5" r="2"></circle></svg></span>
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+          <h3 class="k-h4" id="ef-hot" style="margin:0">Hotel</h3>
+          <p class="k-strong">[Host hotel name] · LCA rate [Hotel rate] a night</p>
+          <p class="k-small k-muted">Block held until Fri, Aug 13 · [n]-minute walk to the playing hall</p>
+        </div>
+        <a class="k-btn k-btn-line k-btn-sm" href="#" target="_blank" rel="noopener">Book in the LCA block ↗<span class="ef-vh"> (opens the hotel's site in a new tab)</span></a>
+      </div>
+    </section>
+
+    <!-- Good to know -->
+    <section class="ef-sec" id="good-to-know" aria-labelledby="ef-gtk">
+      <div class="ef-sh"><div class="ef-l"><span class="k-num-badge ef-b">14</span><h2 class="k-h2" id="ef-gtk">Good to know</h2></div><a class="k-link k-small" href="#">Full rules and FAQ</a></div>
+      <div class="ef-gk">
+        <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><h3>Time control</h3><p>G/90+30: 90 minutes each, plus 30 seconds after every move; a game can run about 4 hours. The 2-day schedule plays Rounds 1–3 at G/45+10.</p></div>
+        <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg></span><h3>US Chess membership</h3><p>Required, and current on Sat, Sep 4. We check your US Chess ID as you enter and warn you if it lapses.</p></div>
+        <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="6.5" r="2.5"></circle><path d="M9.5 10h5M10.5 10l-1 6h5l-1-6M7.5 20.5h9l-1-3.5h-7z"></path></svg></span><h3>Byes</h3><p>Can't make a round? Take up to 2 half-point byes, each worth ½, in Rounds 1–5. Ask when you register or before Round 2 is paired.</p></div>
+        <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg></span><h3>Arriving</h3><p>3-day players check in by 9:30 AM on Sat, Sep 4; 2-day players by 7:40 AM on Sun, Sep 5. Not at your board 30 minutes after a round starts? That game is a forfeit.</p></div>
+        <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></span><h3>Withdrawing</h3><p>Full refund until Thu, Sep 2. After that, your fee becomes credit toward another LCA event.</p></div>
+        <div class="ef-gcard"><span class="ef-ico"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"></path></svg></span><h3>Membership</h3><p>An LCA membership is required to enter and is added at checkout if you need one. Family plans cover you and up to 3 children. <a class="k-link" href="#">Join LCA</a></p></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ Sidebar ============ -->
+  <aside class="ef-side" aria-label="Register and plan">
+    <div class="ef-rc" aria-label="Registration">
+      <div class="ef-rch">
+        <div class="k-between"><span class="k-tag ef-tag-open"><span class="k-dot"></span>Registration open</span><span class="k-num-badge ef-bd">9</span></div>
+        <p>Online entry closes Thu, Sep 2 at 11:59 PM Central</p>
+      </div>
+      <div class="ef-rcb">
+        <div>
+          <div class="k-between"><p class="k-h3" style="margin:0"><span class="k-num">23 of 160</span> registered</p><span class="k-meta">137 left</span></div>
+          <div class="ef-bar" style="margin-top:10px" role="img" aria-label="23 of 160 places taken"><i style="width:14%"></i></div>
+        </div>
+        <div>
+          <p class="ef-flabel">Section</p>
+          <div class="ef-seg ef-seg4" role="group" aria-label="Section"><button type="button" aria-pressed="false">Championship</button><button type="button" aria-pressed="true">U1800</button><button type="button" aria-pressed="false">U1400</button><button type="button" aria-pressed="false">U1000</button></div>
+          <p class="ef-hint"><b>Rated under 1800</b> · 6 entered</p>
+        </div>
+        <div class="ef-rel">
+          <p class="ef-flabel">Schedule <span class="k-num-badge ef-b">10</span></p>
+          <div class="ef-seg ef-seg2" role="group" aria-label="Schedule"><button type="button" aria-pressed="true">3-day</button><button type="button" aria-pressed="false">2-day</button></div>
+          <ul class="ef-schl">
+            <li class="ef-on"><b>3-day:</b> all rounds G/90+30, from Sat, Sep 4</li>
+            <li><b>2-day:</b> Rounds 1–3 on Sun, Sep 5 at G/45+10, then merge</li>
+          </ul>
+        </div>
+        <div>
+          <p class="ef-flabel">Entry fee <span>U1800</span></p>
+          <ol class="ef-ladder" aria-label="U1800 entry fee by date">
+            <li class="ef-now"><div><b>Early <span class="k-tag k-tag-gold">Now</span></b><small>Until Sun, Jul 25</small></div><span class="ef-price">$50</span></li>
+            <li><div><b>Regular</b><small>Mon, Jul 26 – Thu, Sep 2</small></div><span class="ef-price">$65</span></li>
+            <li><div><b>At the door</b><small>Sat, Sep 4</small></div><span class="ef-price">$80</span></li>
+          </ol>
+        </div>
+        <div class="ef-mem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M6 15.5c.6-1.3 1.7-2 3-2s2.4.7 3 2M14.5 10h4M14.5 13h3"></path></svg><p style="flex:1"><b>LCA membership required to enter</b> · $15 a year, added at checkout if you don't have one. <a class="k-link" href="#">Join LCA</a></p><span class="k-num-badge ef-b">13</span></div>
+        <p class="ef-sidel"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg><span>Add the Scholastic or Blitz in the same checkout.</span></p>
+        <div class="ef-pay"><span class="k-strong">You pay today</span><b>$50</b></div>
+        <a class="k-btn k-btn-gold k-btn-lg k-btn-block" href="#">Register · $50</a>
+        <div class="ef-fam">
+          <div class="k-row-sm" style="flex-wrap:nowrap"><a class="k-btn k-btn-line k-btn-block" href="#" aria-haspopup="dialog"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>Register my family</a><span class="k-num-badge ef-b">11</span></div>
+          <p class="k-hint" style="margin:0;text-align:center">One checkout for you and your children. <a class="k-link" href="#" aria-haspopup="dialog">See how it works</a></p>
+        </div>
+        <p class="k-meta" style="margin:0">Next: confirm your US Chess ID and byes, check your answers, then pay by card with Stripe in this tab. You see the full total, any membership included, before paying.</p>
+      </div>
+      <div class="ef-acts">
+        <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</a>
+        <button class="k-btn k-btn-ghost k-btn-sm" type="button" aria-haspopup="dialog"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5.5" r="2.5"></circle><circle cx="6" cy="12" r="2.5"></circle><circle cx="18" cy="18.5" r="2.5"></circle><path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1"></path></svg>Share</button>
+        <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Ask the TD</a>
+      </div>
+    </div>
+
+    <div class="ef-scard2" aria-label="Venue and travel">
+      <div class="k-between"><span class="k-label">Venue &amp; travel</span><span class="k-num-badge ef-b">12</span></div>
+      <div>
+        <p class="k-strong">[Venue name]</p>
+        <p class="k-small k-muted">Baton Rouge</p>
+      </div>
+      <a class="k-link-plain k-small" href="#" style="align-self:flex-start">Open in Maps<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+      <p class="ef-vline"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="3"></rect><path d="M9.5 16.5v-9h3.2a2.8 2.8 0 0 1 0 5.6H9.5"></path></svg><span>Parking: [Where to park and what it costs]</span></p>
+      <p class="ef-vline ef-vhot"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"></path><circle cx="7" cy="11.5" r="2"></circle></svg><span><b>Host hotel:</b> [Host hotel name] · LCA rate · <a class="k-link" href="#" target="_blank" rel="noopener">Book in the LCA block ↗<span class="ef-vh"> (opens in a new tab)</span></a></span></p>
+      <a class="k-link k-small" href="#venue" style="align-self:flex-start">Full venue &amp; travel</a>
+    </div>
+
+    <div class="ef-scard2" aria-label="Link preview">
+      <span class="k-label">How the link looks when shared</span>
+      <figure class="ef-og" style="margin:0">
+        <div class="ef-ogimg">
+          <div class="k-row-sm"><svg class="ef-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ef-ogk">State flagship · Labor Day weekend</span></div>
+          <div><p class="ef-ogt">2027 Louisiana State Championship</p><p class="ef-ogd">Sat–Mon, Sep 4–6, 2027 · Baton Rouge · 23 registered</p></div>
+        </div>
+        <figcaption class="ef-ogcap">
+          <p class="k-meta" style="text-transform:uppercase;letter-spacing:.06em">louisianachess.org</p>
+          <p class="k-small k-strong">Register · from $30</p>
+        </figcaption>
+      </figure>
+      <div class="k-row-sm">
+        <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Copy link</button>
+        <a class="k-btn k-btn-ghost k-btn-sm" href="#">Share to Facebook</a>
+        <a class="k-btn k-btn-ghost k-btn-sm" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>QR code</a>
+      </div>
+    </div>
+  </aside>
+</div>
+</main>
+
+<footer class="k-footer ef-foot">
+  <div class="ef-wrap ef-foot-in">
+    <div class="k-row-sm" style="gap:10px"><svg class="ef-rook ef-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+    <span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span>
+    <nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+  </div>
+</footer>
+
+<!-- ============ Details at 1:1 ============ -->
+<section class="ef-annex" aria-labelledby="ef-ax">
+  <div class="ef-flab"><span class="ef-code">A–C</span><h2 id="ef-ax">Details from this page, at the same scale</h2><span class="k-meta">Remind me from the top card, and the card before a section is picked</span></div>
+  <div class="ef-minis">
+    <figure class="ef-mini">
+      <figcaption><p class="k-caption">A · Remind me, signed out (this viewer)</p><p class="k-meta">Asks for a log in instead of showing options, as on page 4.</p></figcaption>
+      <div class="ef-stage">
+        <div class="ef-kbtns" style="margin-top:0"><span class="k-btn k-btn-gold">Register · from $30</span><button class="k-btn k-btn-navy" type="button" aria-haspopup="dialog" aria-expanded="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div>
+        <div class="ef-pop" role="dialog" aria-labelledby="ef-pa-h">
+          <p id="ef-pa-h" class="ef-pop-h">Log in to get reminders</p>
+          <p class="k-small k-muted" style="margin:0">We'll email you before the early price ends on Sun, Jul 25, and one week and one day before the 2027 Louisiana State Championship.</p>
+          <div class="k-row-sm"><a class="k-btn k-btn-navy k-btn-sm" href="#">Log in</a><a class="k-btn k-btn-line k-btn-sm" href="#">Create an account</a></div>
+          <p class="ef-pop-foot">You come back to this page with the menu open.</p>
+        </div>
+      </div>
+    </figure>
+    <figure class="ef-mini">
+      <figcaption><p class="k-caption">B · Remind me, after logging in</p><p class="k-meta">The page 4 options, dated for this event. Options that no longer apply say why.</p></figcaption>
+      <div class="ef-stage">
+        <div class="ef-kbtns" style="margin-top:0"><span class="k-btn k-btn-gold">Register · from $30</span><button class="k-btn k-btn-navy" type="button" aria-haspopup="dialog" aria-expanded="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9a6 6 0 0 1 12 0c0 6.5 2.5 8.5 2.5 8.5h-17S6 15.5 6 9z"></path><path d="M10.2 20.5a2 2 0 0 0 3.6 0"></path></svg>Remind me</button></div>
+        <div class="ef-pop" role="dialog" aria-labelledby="ef-pb-h">
+          <div class="k-between" style="gap:8px"><p id="ef-pb-h" class="ef-pop-h">Remind me</p><span class="k-meta">by email</span></div>
+          <fieldset class="ef-opts"><legend class="ef-vh">Reminders for the 2027 Louisiana State Championship</legend>
+            <label class="ef-opt ef-opt-off"><input type="checkbox" disabled=""><span><b>Registration opens</b><small>Already open, nothing to send</small></span></label>
+            <label class="ef-opt"><input type="checkbox"><span><b>Early price ends Sun, Jul 25</b><small>Reminder on Fri, Jul 23</small></span></label>
+            <label class="ef-opt"><input type="checkbox" checked=""><span><b>One week before</b><small>Sat, Aug 28</small></span></label>
+            <label class="ef-opt"><input type="checkbox" checked=""><span><b>One day before</b><small>Fri, Sep 3, with check-in times</small></span></label>
+          </fieldset>
+          <button class="k-btn k-btn-navy k-btn-sm k-btn-block" type="button">Save reminders</button>
+          <p class="ef-pop-foot">Manage every reminder in My LCA</p>
+        </div>
+      </div>
+    </figure>
+    <figure class="ef-mini">
+      <figcaption><p class="k-caption">C · The card before a section is picked</p><p class="k-meta">None picked at first, so the ladder shows each step's range and the button keeps the viewer-neutral price.</p></figcaption>
+      <div class="ef-stage" style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <p class="ef-flabel">Section</p>
+          <div class="ef-seg ef-seg4" role="group" aria-label="Section"><button type="button" aria-pressed="false">Championship</button><button type="button" aria-pressed="false">U1800</button><button type="button" aria-pressed="false">U1400</button><button type="button" aria-pressed="false">U1000</button></div>
+          <p class="ef-hint">Pick a section to see your price. <a class="k-link" href="#">Which section fits me?</a></p>
+        </div>
+        <ol class="ef-ladder" aria-label="Entry fee by date, all sections">
+          <li class="ef-now"><div><b>Early <span class="k-tag k-tag-gold">Now</span></b><small>Until Sun, Jul 25</small></div><span class="ef-price">$30–$60</span></li>
+          <li><div><b>Regular</b><small>Mon, Jul 26 – Thu, Sep 2</small></div><span class="ef-price">$45–$75</span></li>
+          <li><div><b>At the door</b><small>Sat, Sep 4</small></div><span class="ef-price">$60–$90</span></li>
+        </ol>
+        <span class="k-btn k-btn-gold k-btn-block">Register · from $30</span>
+        <p class="ef-cut">Schedule picker, membership line and the rest as drawn above</p>
+      </div>
+    </figure>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":7450}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

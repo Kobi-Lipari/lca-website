@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Looks 3 — Modern Tech-Minimal style tile</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Instrument+Serif:ital@0;1">
+<style>
+body{margin:0;background:#ffffff}
+.t{width:1440px;height:2400px;box-sizing:border-box;position:relative;overflow:hidden;background:#ffffff;color:#0b1220;font-family:'Geist',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.t *,.t *::before,.t *::after{box-sizing:border-box}
+.t a{color:inherit;text-decoration:none}
+.t-m{font-family:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums;font-variant-ligatures:none}
+.t-serif{font-family:'Instrument Serif',Georgia,serif;font-style:italic;font-weight:400}
+.t-mut{color:#5b6478}
+.t-s11{font-size:11px}.t-s12{font-size:12px}.t-s13{font-size:13px}
+.t-lab{display:block;font-family:'Geist Mono',ui-monospace,monospace;font-size:11px;line-height:14px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#5b6478;margin-bottom:8px}
+.t-row{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.t-between{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.t-px{padding-left:64px;padding-right:64px}
+.t-sec{padding-top:30px}
+.t-sh{display:flex;align-items:center;gap:12px;height:28px;margin-bottom:14px}
+.t-sh .t-m{font-size:12px;color:#5b6478}
+.t-sh h2{font-size:19px;font-weight:600;letter-spacing:-.015em}
+.t-sh i{flex:1;height:1px;background:#e5e7ed}
+.t-dots{background-color:#ffffff;background-image:radial-gradient(circle,#d3d8e2 1px,transparent 1.5px);background-size:24px 24px}
+.t-card{background:#ffffff;border:1px solid #e5e7ed;border-radius:12px;box-shadow:0 1px 2px rgba(11,18,32,.05)}
+.t-i{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+/* top bar + intro */
+.t-top{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 64px;border-bottom:1px solid #e5e7ed;font-family:'Geist Mono',ui-monospace,monospace;font-size:12px;color:#5b6478}
+.t-top b{font-weight:500;color:#0b1220}
+.t-intro{position:relative;height:322px;padding:44px 64px 0;display:grid;grid-template-columns:1fr 540px;gap:48px;border-bottom:1px solid #e5e7ed}
+.t-files{position:absolute;left:64px;right:64px;top:14px;display:grid;grid-template-columns:repeat(8,1fr);font-family:'Geist Mono',monospace;font-size:11px;color:#5b6478}
+.t-ranks{position:absolute;left:30px;top:44px;bottom:22px;display:grid;grid-template-rows:repeat(8,1fr);font-family:'Geist Mono',monospace;font-size:11px;color:#5b6478}
+.t-kick{font-size:12px;color:#5b6478;margin-bottom:16px}
+.t-h1{font-size:74px;line-height:.96;font-weight:700;letter-spacing:-.045em}
+.t-tl{margin-top:18px;font-size:30px;line-height:1.15;font-weight:500;letter-spacing:-.02em;color:#5b6478}
+.t-tl .t-serif{font-size:40px;color:#0b1220;letter-spacing:0}
+.t-idea{padding:16px 20px;display:flex;flex-direction:column;gap:10px;align-self:start}
+.t-idea .t-lab{margin-bottom:3px}
+.t-idea p{font-size:13.5px;line-height:1.5}
+/* type */
+.t-type{border-top:1px solid #e5e7ed}
+.t-tr{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:center;padding:11px 0;border-bottom:1px solid #e5e7ed}
+.t-tm .t-lab{margin-bottom:4px}
+.t-tm b{display:block;font-size:14px;font-weight:600;line-height:20px}
+.t-disp-row{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.t-disp{font-size:62px;line-height:1;font-weight:700;letter-spacing:-.045em}
+.t-acc{width:310px;padding-left:24px;box-shadow:inset 1px 0 0 #e5e7ed}
+.t-acc .t-lab{margin-bottom:2px}
+.t-acc-s{font-size:24px;font-weight:500;letter-spacing:-.02em;line-height:1.2}
+.t-acc-s .t-serif{font-size:32px;letter-spacing:0}
+.t-hrow{display:flex;align-items:baseline;gap:28px;flex-wrap:wrap}
+.t-ha{font-size:30px;font-weight:600;letter-spacing:-.025em;line-height:1.2}
+.t-hb{font-size:21px;font-weight:600;letter-spacing:-.015em}
+.t-hc{font-size:16px;font-weight:600}
+.t-brow{display:flex;align-items:center;justify-content:space-between;gap:32px}
+.t-body{font-size:16px;line-height:1.6;max-width:640px}
+.t-ui{display:flex;flex-direction:column;gap:2px;width:310px;padding-left:24px;box-shadow:inset 1px 0 0 #e5e7ed}
+.t-d1{font-size:24px;font-weight:500;letter-spacing:-.01em;line-height:1.25}
+.t-d2{display:flex;gap:22px;font-size:15px;margin-top:6px}
+.t-d2 em{font-style:normal;color:#047857}
+/* palette */
+.t-pal{display:grid;grid-template-columns:repeat(12,1fr);gap:8px}
+.t-sw i{display:block;height:54px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(11,18,32,.1)}
+.t-sw b{display:block;margin-top:6px;font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;line-height:15px}
+.t-sw span{display:block;font-size:12px;font-weight:500;line-height:15px}
+.t-sw em{display:block;font-style:normal;font-family:'Geist Mono',monospace;font-size:11px;line-height:15px;color:#5b6478}
+.t-dark{margin-top:12px;background:#0b1220;border-radius:12px;padding:14px 18px 16px}
+.t-dark .t-lab{color:#9aa6bf}
+.t-dark .t-sw i{box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.t-dark .t-sw b,.t-dark .t-sw span{color:#e8ecf4}
+.t-dark .t-sw em{color:#9aa6bf}
+.t-dsample{grid-column:span 2;background:#111a2c;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);padding:10px 12px;display:flex;flex-direction:column;gap:8px;color:#e8ecf4}
+.t-goldnote{margin-top:10px;font-size:13px;line-height:1.5;color:#0b1220}
+.t-goldnote b{font-weight:600}
+.t-dg{color:#866a1e;font-weight:600}
+/* buttons, tags, inputs */
+.t-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 16px;border-radius:6px;border:1px solid transparent;font-family:'Geist',sans-serif;font-size:14px;font-weight:500;line-height:1;white-space:nowrap;cursor:pointer}
+.t-btn-p{background:#c8a94a;border-color:#c8a94a;color:#0b1220}
+.t-btn-s{background:#ffffff;border-color:#e5e7ed;color:#0b1220;box-shadow:0 1px 2px rgba(11,18,32,.06)}
+.t-btn-g{background:transparent;color:#0b1220;padding:0 8px}
+.t-btn-sm{height:32px;padding:0 12px;font-size:13px}
+.t-focus{box-shadow:0 0 0 2px #ffffff,0 0 0 4px #1a2744}
+.t-tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:500;line-height:1;white-space:nowrap}
+.t-tag svg{width:8px;height:8px;flex:none}
+.t-tag svg.x{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.t-tag svg.mk{width:11px;height:11px;fill:currentColor}
+.t-open{background:#e8f5ef;color:#047857}
+.t-soon{background:#fbf7e9;color:#705718}
+.t-full{background:#fdeeec;color:#c0362c}
+.t-closed{background:#f7f8fa;color:#5b6478;box-shadow:inset 0 0 0 1px #e5e7ed}
+.t-live{background:#c0362c;color:#ffffff}
+.t-ext{background:#eef1f6;color:#1a2744}
+.t-lca{background:#1a2744;color:#ffffff}
+.t-kbd{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:5px;border:1px solid #e5e7ed;background:#f7f8fa;font-family:'Geist Mono',monospace;font-size:11px;color:#0b1220;box-shadow:0 1px 0 #e5e7ed}
+.t-field label{display:block;font-size:13px;font-weight:500;margin-bottom:6px}
+.t-input{display:flex;align-items:center;gap:8px;height:40px;padding:0 12px;border:1px solid #7c8496;border-radius:6px;background:#ffffff;font-size:14px;color:#5b6478}
+.t-input.k{border-color:#e5e7ed;box-shadow:0 1px 2px rgba(11,18,32,.05)}
+.t-hint{margin-top:6px;font-size:12px;color:#5b6478}
+.t-chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:6px;border:1px solid #e5e7ed;background:#ffffff;font-size:13px;font-weight:500;color:#0b1220;white-space:nowrap}
+.t-chip.on{background:#fbf7e9;border-color:#866a1e;color:#705718}
+.t-chip .n{font-family:'Geist Mono',monospace;font-size:11px;color:#5b6478}
+.t-bar{height:4px;border-radius:2px;background:#e5e7ed;overflow:hidden}
+.t-bar i{display:block;height:100%;background:#1a2744;border-radius:2px}
+/* header slice */
+.t-hs{border:1px solid #e5e7ed;border-radius:12px;overflow:hidden}
+.t-nav{height:56px;display:flex;align-items:center;gap:18px;padding:0 16px;background:rgba(26,39,68,.92);color:#ffffff;backdrop-filter:saturate(1.4) blur(12px)}
+.t-brand{display:flex;align-items:center;gap:10px;flex:none;color:#ffffff}
+.t-mark{width:28px;height:28px;fill:currentColor;flex:none}
+.t-wm{display:flex;flex-direction:column;line-height:1.15}
+.t-wm b{font-size:14px;font-weight:600}
+.t-wm span{font-family:'Geist Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.72)}
+.t-navl{display:flex;gap:2px;flex:1}
+.t-navl a{height:32px;display:inline-flex;align-items:center;padding:0 10px;border-radius:6px;font-size:14px;font-weight:500;color:rgba(255,255,255,.8)}
+.t-navl a.on{color:#ffffff;background:rgba(255,255,255,.1)}
+.t-hsearch{display:inline-flex;align-items:center;gap:8px;height:32px;width:200px;padding:0 6px 0 10px;border-radius:6px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);font-size:13px;color:rgba(255,255,255,.8)}
+.t-hsearch span{margin-left:auto;font-family:'Geist Mono',monospace;font-size:11px;height:20px;padding:0 5px;display:inline-flex;align-items:center;border-radius:4px;border:1px solid rgba(255,255,255,.22)}
+.t-util{display:flex;align-items:center;gap:4px;flex:none}
+.t-util a.u{font-size:14px;font-weight:500;color:rgba(255,255,255,.8);padding:0 8px}
+.t-hs-under{height:30px;display:flex;align-items:center;padding:0 16px;font-family:'Geist Mono',monospace;font-size:11px;color:#5b6478}
+.t-comp{display:grid;grid-template-columns:380px 400px 1fr;gap:32px;margin-top:16px}
+.t-ev{padding:18px 20px}
+.t-ev-t{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:26px;margin-top:10px}
+.t-ev-meta{display:flex;gap:16px;margin-top:6px;font-size:13px;color:#5b6478}
+.t-ev-meta span{display:inline-flex;align-items:center;gap:6px}
+.t-ev-cap{margin-top:14px;font-size:13px}
+.t-ev-cap .t-bar{margin-top:6px}
+.t-ev-ft{margin-top:14px}
+.t-lrow{display:grid;grid-template-columns:86px 1fr auto;align-items:center;gap:12px;height:56px;padding:0 14px;margin-top:10px}
+.t-lrow b{display:block;font-size:14px;font-weight:500;line-height:18px}
+.t-lrow small{display:block;font-size:12px;color:#5b6478;line-height:16px}
+/* chess data */
+.t-chess{display:grid;grid-template-columns:500px 440px 1fr;gap:32px}
+.t-tbox{border:1px solid #e5e7ed;border-radius:12px;overflow:hidden;background:#ffffff}
+table.t-tb{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.t-tb th{height:32px;padding:0 10px;text-align:left;font-family:'Geist Mono',monospace;font-size:10.5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:#5b6478;background:#f7f8fa;border-bottom:1px solid #e5e7ed;white-space:nowrap}
+.t-tb td{height:40px;padding:0 10px;border-bottom:1px solid #e5e7ed;white-space:nowrap}
+.t-tb tbody tr:last-child td{border-bottom:0}
+.t-tb .r{text-align:right}
+.t-tb .c{text-align:center}
+.t-tb tr.me td{background:#fbf7e9;height:44px}
+.t-pl{display:inline-flex;align-items:center;gap:8px}
+.t-sqw,.t-sqb{display:inline-block;width:10px;height:10px;border-radius:2px;box-shadow:inset 0 0 0 1.5px #0b1220;flex:none}
+.t-sqb{background:#0b1220}
+.t-up{font-style:normal;color:#047857}
+.t-dn{font-style:normal;color:#5b6478}
+.t-P{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;background:#eef1f6;color:#1a2744;font-family:'Geist Mono',monospace;font-size:10px;font-weight:500;vertical-align:1px}
+.t-res{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:5px;font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;line-height:1}
+.t-w{background:#e8f5ef;color:#047857}
+.t-l{background:#fdeeec;color:#c0362c}
+.t-d{background:#f7f8fa;color:#5b6478;box-shadow:inset 0 0 0 1px #e5e7ed}
+.t-h{background:#fbf7e9;color:#705718}
+.t-xrow{display:flex;align-items:center;gap:6px;height:44px;padding:0 12px;margin-top:8px}
+.t-xrow .nm{flex:1;font-size:13px;font-weight:500}
+.t-tl5{display:grid;grid-template-columns:repeat(5,1fr);position:relative}
+.t-tl5::before{content:"";position:absolute;left:6px;right:calc(20% - 6px);top:6px;height:1px;background:#c9ced8}
+.t-tlx i{display:block;position:relative;width:13px;height:13px;border-radius:50%;background:#ffffff;box-shadow:inset 0 0 0 1.5px #7c8496}
+.t-tlx.done i{background:#0b1220;box-shadow:none}
+.t-tlx.now i{background:#c8a94a;box-shadow:0 0 0 3px #f7eccf}
+.t-tlx b{display:block;margin-top:8px;font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;line-height:16px}
+.t-tlx span{display:block;font-family:'Geist Mono',monospace;font-size:11px;line-height:15px;color:#5b6478}
+.t-bw{display:grid;grid-template-columns:14px 240px;grid-template-rows:240px 18px;column-gap:6px}
+.t-rk{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;font-family:'Geist Mono',monospace;font-size:10px;color:#5b6478;text-align:right}
+.t-fl{grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);font-family:'Geist Mono',monospace;font-size:10px;color:#5b6478;text-align:center;align-items:end}
+.t-board{position:relative;width:240px;height:240px;box-shadow:0 0 0 1px #d3d8e2;background:repeating-conic-gradient(#e5e7ed 0 25%,#ffffff 0 50%) 0 0/60px 60px}
+.t-hl{position:absolute;width:12.5%;height:12.5%}
+.t-pc{position:absolute;width:12.5%;height:12.5%;display:flex;align-items:center;justify-content:center}
+.t-pc b{display:flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:50%;font-family:'Geist Mono',monospace;font-size:11px;font-weight:500;line-height:1}
+.t-pw b{background:#ffffff;color:#0b1220;box-shadow:inset 0 0 0 1.5px #0b1220}
+.t-pb b{background:#0b1220;color:#ffffff}
+.t-pp b{width:9px;height:9px}
+.t-pb.t-chk b{box-shadow:0 0 0 2px #ffffff,0 0 0 3.5px #c0362c}
+.t-cap{margin-top:8px;font-size:12px;line-height:1.45;color:#5b6478;max-width:270px}
+/* motif, photo, icons, do/don't */
+.t-trio{display:grid;grid-template-columns:460px 440px 1fr;gap:32px}
+.t-h3{display:flex;align-items:center;gap:10px;height:26px;margin-bottom:12px}
+.t-h3 .t-m{font-size:12px;color:#5b6478}
+.t-h3 h3{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.t-mini{display:grid;grid-template-columns:12px 128px;grid-template-rows:128px 14px;column-gap:6px;flex:none}
+.t-mini-g{width:128px;height:128px;border:1px solid #e5e7ed;border-radius:4px;background-image:radial-gradient(circle,#aab2c2 1.1px,transparent 1.6px);background-size:16px 16px}
+.t-mini .t-rk,.t-mini .t-fl{font-size:9.5px}
+.t-duo{position:relative;isolation:isolate;overflow:hidden;background:#ecd8a0;border-radius:12px}
+.t-duo img{display:block;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.12) brightness(1.04);mix-blend-mode:multiply}
+.t-duo::after{content:"";position:absolute;inset:0;background:#1a2744;mix-blend-mode:screen;pointer-events:none}
+.t-orig img{display:block;width:112px;height:76px;object-fit:cover;border-radius:6px}
+.t-icons{display:grid;grid-template-columns:repeat(6,44px);gap:12px}
+.t-ic{text-align:center}
+.t-ic i{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #e5e7ed;border-radius:8px;box-shadow:0 1px 2px rgba(11,18,32,.04)}
+.t-ic svg{width:22px;height:22px;fill:none;stroke:#0b1220;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.t-ic span{display:block;margin-top:6px;font-family:'Geist Mono',monospace;font-size:10px;color:#5b6478;white-space:nowrap}
+.t-dd{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.t-ddc{border:1px solid #e5e7ed;border-radius:12px;padding:14px 16px}
+.t-ddh{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;margin-bottom:6px}
+.t-ddh svg{width:18px;height:18px;border-radius:50%;padding:3px;fill:none;stroke:#ffffff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.t-ok svg{background:#047857}
+.t-no svg{background:#c0362c}
+.t-ddc p{font-size:13px;line-height:1.45}
+</style>
+</helmet>
+<div class="t">
+
+  <div class="t-top">
+    <div class="t-row" style="gap:10px"><span>LCA Look &amp; Feel Options</span><span>/</span><span>Look 3 of 7</span><span>/</span><b>Modern Tech-Minimal · style tile</b></div>
+    <div class="t-row"><span>Geist · Geist Mono · Instrument Serif · Google Fonts</span><span class="k-sample">Sample data</span></div>
+  </div>
+
+  <section class="t-intro t-dots">
+    <div class="t-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+    <div class="t-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+    <div>
+      <div class="t-m t-kick">03 / 07 · Visual direction</div>
+      <h1 class="t-h1">Modern<br>Tech-Minimal</h1>
+      <p class="t-tl">the club, <span class="t-serif">engineered</span></p>
+    </div>
+    <div class="t-card t-idea">
+      <div><span class="t-lab">The idea</span><p>Keep Geist and tighten the system: white or near-black surfaces, 1px borders, a faint 8-column grid, and gold saved for the main action and the current selection. The chess comes from the data: notation, clocks, board coordinates and registration counts in Geist Mono.</p></div>
+      <div><span class="t-lab">Best for</span><p>The site-wide base, at the lowest migration cost: today's Tailwind/shadcn tokens map straight across. Tournament pages that read like a dashboard.</p></div>
+      <div><span class="t-lab">Watch out for</span><p>It can look like generic software marketing. Without notation, clocks and coordinates, nothing on the page says chess or Louisiana.</p></div>
+    </div>
+  </section>
+
+  <section class="t-sec t-px">
+    <div class="t-sh"><span class="t-m">02</span><h2>Type</h2><i></i><span class="t-m">one css2 request · Geist is already the site font</span></div>
+    <div class="t-type">
+      <div class="t-tr">
+        <div class="t-tm"><span class="t-lab">Display</span><b>Geist 700 · 62–80px · −0.045em</b></div>
+        <div class="t-disp-row">
+          <div class="t-disp">Lafayette Open 2026</div>
+          <div class="t-acc"><span class="t-lab">Accent · Instrument Serif italic</span><div class="t-acc-s">the club, <span class="t-serif">engineered</span></div><span class="t-m t-s11 t-mut">one word per page · never on scores (no ½)</span></div>
+        </div>
+      </div>
+      <div class="t-tr">
+        <div class="t-tm"><span class="t-lab">Headings</span><b>Geist 600 · 30 / 21 / 16px</b></div>
+        <div class="t-hrow"><span class="t-ha">Upcoming tournaments</span><span class="t-hb">This week at the clubs</span><span class="t-hc">Sections &amp; fees</span></div>
+      </div>
+      <div class="t-tr">
+        <div class="t-tm"><span class="t-lab">Body &amp; UI</span><b>Geist 400 / 500 · 16 / 14 / 13px</b></div>
+        <div class="t-brow">
+          <p class="t-body">Classical games give each player 90 minutes plus 30 seconds per move (G/90+30). Sections, byes and fees are listed before you register, never after.</p>
+          <div class="t-ui"><span style="font-size:14px;font-weight:500">Register for the Open section</span><span class="t-s13 t-mut">Updated 2 min ago · Lafayette, LA</span></div>
+        </div>
+      </div>
+      <div class="t-tr">
+        <div class="t-tm"><span class="t-lab">Data · mono</span><b>Geist Mono 400 / 500 · 13–24px</b></div>
+        <div>
+          <div class="t-m t-d1">16.Qb8+ Nxb8 17.Rd8#</div>
+          <div class="t-m t-d2"><span>1847 <em>+18</em></span><span>3½</span><span>½–½</span><span>−12</span><span>G/90+30</span><span>Bd 7</span><span>2:30 PM</span><span class="t-mut">0123456789 · no ligatures · tabular</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="t-sec t-px">
+    <div class="t-sh"><span class="t-m">03</span><h2>Palette</h2><i></i><span class="t-m">contrast on #ffffff (light) and #0b1220 (dark) · WCAG 2.x</span></div>
+    <span class="t-lab">Light · default</span>
+    <div class="t-pal">
+      <div class="t-sw"><i style="background:#ffffff"></i><b>#ffffff</b><span>Background</span><em>page</em></div>
+      <div class="t-sw"><i style="background:#f7f8fa"></i><b>#f7f8fa</b><span>Subtle</span><em>rows, panels</em></div>
+      <div class="t-sw"><i style="background:#e5e7ed"></i><b>#e5e7ed</b><span>Border</span><em>decorative</em></div>
+      <div class="t-sw"><i style="background:#7c8496"></i><b>#7c8496</b><span>Field border</span><em>3.75:1</em></div>
+      <div class="t-sw"><i style="background:#0b1220"></i><b>#0b1220</b><span>Ink</span><em>18.72:1</em></div>
+      <div class="t-sw"><i style="background:#5b6478"></i><b>#5b6478</b><span>Muted text</span><em>5.93:1</em></div>
+      <div class="t-sw"><i style="background:#1a2744"></i><b>#1a2744</b><span>Navy</span><em>14.81:1</em></div>
+      <div class="t-sw"><i style="background:rgba(26,39,68,.9)"></i><b>navy 90%</b><span>Nav glass</span><em>white 10.85:1</em></div>
+      <div class="t-sw"><i style="background:#c8a94a"></i><b>#c8a94a</b><span>Gold</span><em>fill · 2.28:1</em></div>
+      <div class="t-sw"><i style="background:#866a1e"></i><b>#866a1e</b><span>Dark gold</span><em>text · 5.13:1</em></div>
+      <div class="t-sw"><i style="background:#047857"></i><b>#047857</b><span>Success</span><em>5.48:1</em></div>
+      <div class="t-sw"><i style="background:#c0362c"></i><b>#c0362c</b><span>Danger</span><em>5.52:1</em></div>
+    </div>
+    <div class="t-dark">
+      <span class="t-lab">Dark · follows prefers-color-scheme, starts from the site's #0b1220</span>
+      <div class="t-pal">
+        <div class="t-sw"><i style="background:#0b1220"></i><b>#0b1220</b><span>Background</span><em>page</em></div>
+        <div class="t-sw"><i style="background:#111a2c"></i><b>#111a2c</b><span>Surface</span><em>cards</em></div>
+        <div class="t-sw"><i style="background:#1a2744"></i><b>#1a2744</b><span>Raised</span><em>popovers</em></div>
+        <div class="t-sw"><i style="background:rgba(255,255,255,.08)"></i><b>white 8%</b><span>Border</span><em>1.22 · decor</em></div>
+        <div class="t-sw"><i style="background:#5f6d89"></i><b>#5f6d89</b><span>Field border</span><em>3.60:1</em></div>
+        <div class="t-sw"><i style="background:#e8ecf4"></i><b>#e8ecf4</b><span>Ink</span><em>15.81:1</em></div>
+        <div class="t-sw"><i style="background:#9aa6bf"></i><b>#9aa6bf</b><span>Muted text</span><em>7.65:1</em></div>
+        <div class="t-sw"><i style="background:#c8a94a"></i><b>#c8a94a</b><span>Gold</span><em>text · 8.23:1</em></div>
+        <div class="t-sw"><i style="background:#3ecf8e"></i><b>#3ecf8e</b><span>Success</span><em>9.38:1</em></div>
+        <div class="t-sw"><i style="background:#ff6b6b"></i><b>#ff6b6b</b><span>Danger</span><em>6.75:1</em></div>
+        <div class="t-dsample">
+          <div class="t-between"><span class="t-m" style="font-size:13px">1847 <span style="color:#3ecf8e">+18</span></span><span class="t-tag" style="background:#ff6b6b;color:#0b1220">Live · Round 3</span></div>
+          <span class="t-btn t-btn-p t-btn-sm" style="align-self:flex-start">Join LCA</span>
+        </div>
+      </div>
+    </div>
+    <p class="t-goldnote"><b>Gold rule.</b> Brand gold #c8a94a is 2.28:1 on white, so on light grounds it is a fill, a rule or a selection mark, always carrying #0b1220 or navy text (8.23 / 6.51:1). Gold-toned text on white uses <span class="t-dg">dark gold #866a1e (5.13:1)</span>; on dark grounds brand gold carries text itself.</p>
+  </section>
+
+  <section class="t-sec t-px">
+    <div class="t-sh"><span class="t-m">04</span><h2>Components</h2><i></i><span class="t-m">radius 6px controls · 12px cards · 1px borders · hairline shadows</span></div>
+    <div class="t-hs">
+      <div class="t-nav">
+        <a class="t-brand" href="#"><svg class="t-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="t-wm"><b>Louisiana Chess</b><span>Association</span></span></a>
+        <nav class="t-navl" aria-label="Main"><a class="on" href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a></nav>
+        <span class="t-hsearch"><svg class="t-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search<span>⌘K</span></span>
+        <span class="t-util"><a class="u" href="#">Donate</a><a class="u" href="#">Log in</a><a class="t-btn t-btn-p t-btn-sm" href="#">Join LCA</a></span>
+      </div>
+      <div class="t-hs-under t-dots">sticky header · navy at 90% with a 12px backdrop blur · current section = white on a 10% white pill</div>
+    </div>
+    <div class="t-comp">
+      <div>
+        <span class="t-lab">Buttons</span>
+        <div class="t-row">
+          <a class="t-btn t-btn-p" href="#">Join LCA</a>
+          <a class="t-btn t-btn-s" href="#"><svg class="t-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a>
+          <a class="t-btn t-btn-g" href="#">View all<svg class="t-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        </div>
+        <div class="t-row" style="margin-top:10px">
+          <a class="t-btn t-btn-p t-btn-sm t-focus" href="#">Register</a>
+          <span class="t-m t-s11 t-mut">focus · 2px navy ring, 2px offset · 32px small / 40px default</span>
+        </div>
+        <span class="t-lab" style="margin-top:18px">Status · always words + colour</span>
+        <div class="t-row" style="gap:8px">
+          <span class="t-tag t-open"><svg viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="3.5" fill="currentColor"></circle></svg>Registration open</span>
+          <span class="t-tag t-soon"><svg viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 1.4"></circle></svg>Opens Mon, Oct 12</span>
+          <span class="t-tag t-full"><svg viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="3.2" fill="none" stroke="currentColor" stroke-width="1.4"></circle><path d="M4 .8a3.2 3.2 0 0 1 0 6.4z" fill="currentColor"></path></svg>Waitlist</span>
+          <span class="t-tag t-closed"><svg viewBox="0 0 8 8" aria-hidden="true"><rect x="1" y="3.2" width="6" height="1.6" fill="currentColor"></rect></svg>Closed</span>
+          <span class="t-tag t-live"><svg viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="3" fill="currentColor"></circle></svg>Live · Round 3</span>
+          <span class="t-tag t-ext">Partner event<svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span>
+          <span class="t-tag t-lca"><svg class="mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>LCA event</span>
+        </div>
+      </div>
+      <div>
+        <span class="t-lab">Input</span>
+        <div class="t-field">
+          <label for="t-uscf">US Chess ID</label>
+          <div class="t-input"><span class="t-m">8 digits, e.g. from your membership card</span></div>
+          <div class="t-hint">We fill in your name, rating and membership expiry.</div>
+        </div>
+        <span class="t-lab" style="margin-top:16px">Search · ⌘K anywhere</span>
+        <div class="t-input k"><svg class="t-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Find a tournament, club or player</span><span class="t-kbd" style="margin-left:auto">⌘K</span></div>
+        <span class="t-lab" style="margin-top:16px">Quick filters · selected = gold</span>
+        <div class="t-row" style="gap:8px">
+          <span class="t-chip on"><svg class="t-i" style="width:14px;height:14px" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>This month</span>
+          <span class="t-chip">Classical <span class="n">2</span></span>
+          <span class="t-chip">Scholastic <span class="n">2</span></span>
+          <span class="t-chip">Near me</span>
+        </div>
+      </div>
+      <div>
+        <span class="t-lab">Event card · list row</span>
+        <article class="t-card t-ev">
+          <div class="t-between"><span class="t-m t-s12 t-mut">SAT–SUN · JUN 12–13, 2027</span><span class="t-tag t-lca"><svg class="mk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>LCA event</span></div>
+          <h3 class="t-ev-t">2027 Paul Morphy Open</h3>
+          <div class="t-ev-meta"><span><svg class="t-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>New Orleans</span><span><svg class="t-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>G/90+30 · 90 min + 30 sec a move</span></div>
+          <div class="t-ev-cap"><div class="t-between"><span><b style="font-weight:600">38 of 60</b> registered</span><span class="t-m t-s12 t-mut">early entry ends Fri, May 28</span></div><div class="t-bar"><i style="width:63%"></i></div></div>
+          <div class="t-between t-ev-ft"><span class="t-tag t-open"><svg viewBox="0 0 8 8" aria-hidden="true"><circle cx="4" cy="4" r="3.5" fill="currentColor"></circle></svg>Registration open</span><span class="t-row" style="gap:6px"><a class="t-btn t-btn-g t-btn-sm" href="#">Details</a><a class="t-btn t-btn-p t-btn-sm" href="#">Register · $40</a></span></div>
+        </article>
+        <div class="t-card t-lrow">
+          <span class="t-m t-s12">Sat, Oct 31</span>
+          <div><b>The Casa Chess Tournament</b><small>Sulphur · Dual-rated · All ages</small></div>
+          <span class="t-tag t-ext">Partner event<svg class="x" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="t-sec t-px">
+    <div class="t-sh"><span class="t-m">05</span><h2>Chess data</h2><i></i><span class="t-m">Geist tabular figures at 13px · right-aligned numbers · hairlines, no zebra</span></div>
+    <div class="t-chess">
+      <div>
+        <span class="t-lab">Pairings row · Round 3, your board</span>
+        <div class="t-tbox">
+          <table class="t-tb">
+            <thead><tr><th class="c">Bd</th><th>White</th><th class="r">Rtg</th><th class="c">Result</th><th>Black</th><th class="r">Rtg</th></tr></thead>
+            <tbody><tr class="me"><td class="c t-m">7</td><td><span class="t-pl"><span class="t-sqw"></span>Sam Nguyen <span class="t-m t-mut">1½</span></span></td><td class="r t-m">1650</td><td class="c t-m">1–0</td><td><span class="t-pl"><span class="t-sqb"></span>Devin Batiste <span class="t-m t-mut">1½</span></span></td><td class="r t-m">1521</td></tr></tbody>
+          </table>
+        </div>
+        <span class="t-lab" style="margin-top:18px">Crosstable cells · letter + colour + opponent</span>
+        <div class="t-row" style="gap:6px"><span class="t-res t-w">W12</span><span class="t-res t-l">L4</span><span class="t-res t-d">D7</span><span class="t-res t-h">H</span><span class="t-m t-s11 t-mut" style="margin-left:6px">won vs #12 · lost to #4 · drew #7 · ½-pt bye</span></div>
+        <div class="t-card t-xrow"><span class="t-m t-s12 t-mut">1</span><span class="nm">Marcus Landry</span><span class="t-res t-w">W18</span><span class="t-res t-w">W9</span><span class="t-res t-w">W2</span><span class="t-res t-d">D3</span><span class="t-res t-w">W4</span><b class="t-m" style="width:30px;text-align:right">4½</b></div>
+        <span class="t-lab" style="margin-top:18px">Ratings</span>
+        <div class="t-row t-m" style="gap:22px;font-size:14px"><span>1847 <em class="t-up">+18</em></span><span>1521 <em class="t-dn">−12</em></span><span>1102 <span class="t-P">P</span></span><span class="t-s11 t-mut">P = provisional · loss stays plain ink</span></div>
+      </div>
+      <div>
+        <span class="t-lab">Standings · final</span>
+        <div class="t-tbox">
+          <table class="t-tb">
+            <thead><tr><th class="c">#</th><th>Player</th><th class="r">Rating</th><th class="r">Pts</th><th class="r">Med.</th><th class="r">Solk.</th></tr></thead>
+            <tbody>
+              <tr><td class="c t-m">1</td><td>Marcus Landry</td><td class="r t-m">2014 <em class="t-up">+12</em></td><td class="r t-m" style="font-weight:600">4½</td><td class="r t-m">13½</td><td class="r t-m">17</td></tr>
+              <tr><td class="c t-m">2</td><td>Avery Thibodeaux</td><td class="r t-m">1912 <em class="t-up">+9</em></td><td class="r t-m" style="font-weight:600">4</td><td class="r t-m">14</td><td class="r t-m">18½</td></tr>
+              <tr><td class="c t-m">3</td><td>Priya Shah <span class="t-P">P</span></td><td class="r t-m">1803 <em class="t-up">+21</em></td><td class="r t-m" style="font-weight:600">4</td><td class="r t-m">12½</td><td class="r t-m">16</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="t-m t-s11 t-mut" style="margin-top:6px">Tiebreaks: modified median, then Solkoff (US Chess)</div>
+        <span class="t-lab" style="margin-top:16px">Round schedule as a timeline</span>
+        <div class="t-tl5">
+          <div class="t-tlx done"><i></i><b>R1</b><span>Sat 10:00 AM</span></div>
+          <div class="t-tlx done"><i></i><b>R2</b><span>2:30 PM</span></div>
+          <div class="t-tlx now"><i></i><b>R3 · live</b><span>7:00 PM</span></div>
+          <div class="t-tlx"><i></i><b>R4</b><span>Sun 9:30 AM</span></div>
+          <div class="t-tlx"><i></i><b>R5</b><span>2:00 PM</span></div>
+        </div>
+      </div>
+      <div>
+        <span class="t-lab">Board · Opera Game, 1858</span>
+        <div class="t-bw">
+          <div class="t-rk" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+          <div class="t-board" role="img" aria-label="Final position of Morphy's Opera Game after 17.Rd8 mate">
+            <div class="t-hl" style="left:37.5%;top:87.5%;background:#f7eccf"></div>
+            <div class="t-hl" style="left:37.5%;top:0%;background:#ecd8a0"></div>
+            <span class="t-pc t-pb" style="left:12.5%;top:0%"><b>N</b></span>
+            <span class="t-pc t-pw" style="left:37.5%;top:0%"><b>R</b></span>
+            <span class="t-pc t-pb t-chk" style="left:50%;top:0%"><b>K</b></span>
+            <span class="t-pc t-pb" style="left:62.5%;top:0%"><b>B</b></span>
+            <span class="t-pc t-pb" style="left:87.5%;top:0%"><b>R</b></span>
+            <span class="t-pc t-pb t-pp" style="left:0%;top:12.5%"><b></b></span>
+            <span class="t-pc t-pb t-pp" style="left:62.5%;top:12.5%"><b></b></span>
+            <span class="t-pc t-pb t-pp" style="left:75%;top:12.5%"><b></b></span>
+            <span class="t-pc t-pb t-pp" style="left:87.5%;top:12.5%"><b></b></span>
+            <span class="t-pc t-pb" style="left:50%;top:25%"><b>Q</b></span>
+            <span class="t-pc t-pb t-pp" style="left:50%;top:37.5%"><b></b></span>
+            <span class="t-pc t-pw" style="left:75%;top:37.5%"><b>B</b></span>
+            <span class="t-pc t-pw t-pp" style="left:50%;top:50%"><b></b></span>
+            <span class="t-pc t-pw t-pp" style="left:0%;top:75%"><b></b></span>
+            <span class="t-pc t-pw t-pp" style="left:12.5%;top:75%"><b></b></span>
+            <span class="t-pc t-pw t-pp" style="left:25%;top:75%"><b></b></span>
+            <span class="t-pc t-pw t-pp" style="left:62.5%;top:75%"><b></b></span>
+            <span class="t-pc t-pw t-pp" style="left:75%;top:75%"><b></b></span>
+            <span class="t-pc t-pw t-pp" style="left:87.5%;top:75%"><b></b></span>
+            <span class="t-pc t-pw" style="left:25%;top:87.5%"><b>K</b></span>
+          </div>
+          <div class="t-fl" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+        </div>
+        <p class="t-cap">Morphy, Paris 1858: <span class="t-m" style="color:#0b1220">17.Rd8#</span>. Last move tinted gold-200, the mated king ringed in danger red.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="t-sec t-px">
+    <div class="t-trio">
+      <div>
+        <div class="t-h3"><span class="t-m">06</span><h3>Motif &amp; texture</h3></div>
+        <div style="display:flex;gap:22px">
+          <div class="t-mini">
+            <div class="t-rk" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+            <div class="t-mini-g"></div>
+            <div class="t-fl" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:14px">
+            <div><div class="t-between t-s12"><span>Registration closes in</span><span class="t-m">2d 4h</span></div><div class="t-bar" style="margin-top:6px"><i style="width:72%"></i></div></div>
+            <div><div class="t-between t-s12"><span>Clock bar, low on time</span><span class="t-m">0:42</span></div><div class="t-bar" style="margin-top:6px"><i style="width:9%;background:#c0362c"></i></div></div>
+            <div class="t-row" style="gap:6px"><span class="t-kbd">⌘</span><span class="t-kbd">K</span><span class="t-s12 t-mut" style="margin-left:4px">search, from any page</span></div>
+            <span class="t-m t-s11 t-mut">8×8 dot grid with a–h / 1–8 on its edges · 4px clock-style bars</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="t-h3"><span class="t-m">07</span><h3>Photo treatment</h3></div>
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div class="t-duo" style="width:296px;height:166px"><img src="/_blob/f0a8537498574429330e3a0888e092e4" alt="Players at boards in an arched tournament hall, navy-to-gold duotone"></div>
+          <div class="t-orig"><img src="/_blob/f0a8537498574429330e3a0888e092e4" alt="The same photo, untreated"><span class="t-m t-s11 t-mut" style="display:block;margin-top:6px">original</span><span class="t-s12 t-mut" style="display:block;margin-top:6px;line-height:1.4">One duotone: navy #1a2744 to light gold #ecd8a0</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="t-h3"><span class="t-m">08</span><h3>Icon style</h3></div>
+        <div class="t-icons">
+          <div class="t-ic"><i><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg></i><span>date</span></div>
+          <div class="t-ic"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg></i><span>venue</span></div>
+          <div class="t-ic"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></i><span>clock</span></div>
+          <div class="t-ic"><i><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></i><span>results</span></div>
+          <div class="t-ic"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg></i><span>entries</span></div>
+          <div class="t-ic"><i><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></i><span>search</span></div>
+        </div>
+        <p class="t-m t-s11 t-mut" style="margin-top:14px;line-height:1.5">Lucide set · 1.5px stroke · round caps and joins<br>16px inline · 20px buttons · 24px empty states</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="t-sec t-px">
+    <div class="t-dd">
+      <div class="t-ddc"><div class="t-ddh t-ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</div><p>Set every number in Geist Mono or tabular Geist: ratings, 3½, clocks, board numbers. The data is the decoration.</p></div>
+      <div class="t-ddc"><div class="t-ddh t-ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Do</div><p>Spend gold once per screen: the main action or the current selection. Everything else is ink, navy and 1px lines.</p></div>
+      <div class="t-ddc"><div class="t-ddh t-no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don't</div><p>Add gradient heroes, glass cards or stock "tech" illustrations. That is when it turns into SaaS marketing.</p></div>
+      <div class="t-ddc"><div class="t-ddh t-no"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Don't</div><p>Set scores in Instrument Serif (no ½, no tabular figures) or put gold text on white (2.28:1).</p></div>
+    </div>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

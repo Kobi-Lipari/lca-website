@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Looks 7 — Broadcast Night page</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&amp;family=Barlow:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Big+Shoulders+Display:wght@800;900">
+<style>
+body{margin:0}
+.k-page.p7{background:#070b14;color:#f3f5f9;font-family:'Barlow',system-ui,sans-serif;font-size:16px;line-height:1.5;font-variant-numeric:lining-nums tabular-nums}
+.p7 *{box-sizing:border-box}
+.k-page.p7 h1,.k-page.p7 h2,.k-page.p7 h3,.k-page.p7 p,.k-page.p7 ul,.k-page.p7 ol,.k-page.p7 figure{margin:0}
+.k-page.p7 ul,.k-page.p7 ol{padding:0;list-style:none}
+.k-page.p7 a{color:#f3f5f9}
+.k-page.p7 a:focus-visible,.k-page.p7 button:focus-visible{outline:2px solid #c8a94a;outline-offset:2px}
+.p7-mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0}
+.p7-muted{color:#8e9ab2}
+.p7-ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:square;stroke-linejoin:miter;flex:none}
+.p7-live{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:3px;background:#ff4757;color:#070b14;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;line-height:1;white-space:nowrap}
+.p7-live i{width:8px;height:8px;border-radius:50%;background:#070b14;display:inline-block}
+@media (prefers-reduced-motion:no-preference){.p7-live i{animation:p7pulse 1.4s ease-in-out infinite}}
+@keyframes p7pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.p7-rbox{display:inline-flex;align-items:center;justify-content:center;height:28px;min-width:34px;padding:0 6px;border-radius:3px;background:#c8a94a;color:#070b14;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px}
+.p7-header{background:#070b14;border-bottom:1px solid rgba(255,255,255,.08)}
+.p7-hin{display:flex;align-items:center;gap:28px;min-height:68px}
+.k-page.p7 .p7-brand{display:flex;align-items:center;gap:12px;text-decoration:none;flex:none}
+.p7-mark{color:#c8a94a;display:flex}
+.p7-mark svg{width:36px;height:36px;fill:currentColor}
+.p7-bname{display:flex;flex-direction:column;line-height:1}
+.p7-bname b{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;letter-spacing:.04em;text-transform:uppercase}
+.p7-bname span{font-family:'Barlow Condensed',sans-serif;font-weight:500;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:#8e9ab2;margin-top:3px}
+.p7-nav{display:flex;gap:22px}
+.k-page.p7 .p7-nav a{font-weight:500;font-size:16px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.k-page.p7 .p7-nav a:hover{box-shadow:inset 0 -3px 0 #c8a94a}
+.p7-util{margin-left:auto;display:flex;align-items:center;gap:6px}
+.k-page.p7 .p7-ulink{font-weight:500;font-size:15px;text-decoration:none;padding:0 10px;min-height:44px;display:inline-flex;align-items:center}
+.k-page.p7 .p7-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:4px;border:1px solid transparent;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;line-height:1;white-space:nowrap;cursor:pointer}
+.k-page.p7 .p7-btn-gold{background:#c8a94a;color:#070b14}
+.k-page.p7 .p7-btn-line{background:transparent;border-color:#5f6d89;color:#f3f5f9}
+.k-page.p7 .p7-btn-sm{min-height:44px;padding:0 14px;font-size:16px}
+.p7-menubtn{display:none;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid #5f6d89;border-radius:4px;background:transparent;color:#f3f5f9;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:.06em;text-transform:uppercase}
+.p7-statusline{background:#0e1526;border-bottom:1px solid rgba(255,255,255,.08)}
+.p7-sin{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;min-height:52px;padding-top:6px;padding-bottom:6px}
+.p7-sl{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:17px;letter-spacing:.05em;text-transform:uppercase}
+.p7-mode{margin-left:auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:14px;color:#8e9ab2}
+.p7-toggle{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:1px solid #5f6d89;border-radius:4px;background:transparent;color:#f3f5f9;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.p7-toggle i{position:relative;width:30px;height:16px;border-radius:999px;background:#c8a94a;display:inline-block}
+.p7-toggle i::after{content:"";position:absolute;right:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#070b14}
+.p7-hero{padding:36px 0 0}
+.p7-herogrid{display:grid;grid-template-columns:1fr 1.05fr;gap:36px;align-items:stretch}
+.p7-herokick{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}
+.p7-tag{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:3px;border:1px solid #5f6d89;background:#0e1526;color:#a7b0c2;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;line-height:1;white-space:nowrap}
+.p7-tag .p7-ico{width:15px;height:15px}
+.p7-nextlab{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#8e9ab2}
+.p7-h1{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:92px;line-height:86px;text-transform:uppercase}
+.p7-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;margin:22px 0 24px;border-top:1px solid rgba(255,255,255,.08)}
+.p7-facts li{padding:11px 0;border-bottom:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:2px}
+.p7-fl{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#8e9ab2}
+.p7-facts b{font-weight:600;font-size:18px;line-height:24px}
+.p7-btnrow{display:flex;flex-wrap:wrap;gap:12px}
+.p7-rounds{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;margin-top:26px}
+.p7-rd{display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:17px;color:#8e9ab2}
+.p7-rd i{display:block;height:4px;background:#1a2744}
+.p7-rd-done i{background:#8e9ab2}
+.p7-rd-live i{background:#ff4757}
+.p7-rd b{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:#f3f5f9}
+.p7-media{position:relative;border-radius:4px;overflow:hidden;background:#1a2744;min-height:470px}
+.p7-media img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1) contrast(1.2) brightness(.72);mix-blend-mode:luminosity}
+.p7-b1{position:absolute;left:16px;right:16px;bottom:16px;background:#070b14;border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:12px}
+.p7-b1head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.08em;text-transform:uppercase}
+.p7-b1head .p7-muted{margin-left:auto;font-family:'Barlow',sans-serif;font-size:13px;letter-spacing:0;text-transform:none}
+.p7-bdno{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 5px;border-radius:3px;background:#c8a94a;color:#070b14;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;line-height:1}
+.p7-pbs{display:flex;flex-direction:column;gap:6px}
+.p7-pb{position:relative;display:grid;grid-template-columns:12px minmax(0,1fr) auto auto 96px;align-items:center;gap:10px;height:44px;padding-left:12px;background:#1a2744;border-radius:4px;overflow:hidden}
+.p7-pb b{font-weight:600;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p7-sq{width:12px;height:12px;border-radius:2px;display:inline-block;flex:none}
+.p7-sq-w{background:#f3f5f9}
+.p7-sq-b{background:#070b14;box-shadow:0 0 0 1px #8e9ab2}
+.p7-rt{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;color:#8e9ab2}
+.p7-tm{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#e5c768}
+.p7-clock{align-self:stretch;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;font-size:17px;background:#0e1526}
+.p7-clock-on{background:#c8a94a;color:#070b14;font-weight:700}
+.p7-cbar{position:absolute;left:0;right:0;bottom:0;height:4px;display:flex;justify-content:flex-end;background:#0e1526}
+.p7-cbar i{display:block;height:4px;background:#e5c768}
+.p7-stats{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,.08);margin-top:32px;border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+.p7-stats li{padding:14px 20px;background:#070b14;display:flex;align-items:baseline;gap:10px}
+.p7-stats li:first-child{padding-left:0}
+.p7-stats b{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:34px;line-height:38px;color:#e5c768}
+.p7-stats span{font-size:15px;color:#8e9ab2}
+.p7-sec{padding:48px 0;border-top:1px solid rgba(255,255,255,.08)}
+.p7-sec-first{border-top:0}
+.p7-sechead{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 24px;margin-bottom:16px}
+.p7-h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:40px;line-height:42px;text-transform:uppercase}
+.p7-sub{font-size:15px;line-height:21px;color:#8e9ab2;margin-top:4px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.k-page.p7 .p7-more{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:.08em;text-transform:uppercase;color:#e5c768;text-decoration:none;min-height:44px;display:inline-flex;align-items:center;gap:6px}
+.p7-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.p7-chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:4px;border:1px solid #5f6d89;background:transparent;color:#f3f5f9;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.p7-chip em{font-style:normal;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;color:#8e9ab2}
+.p7-chip-on{background:#c8a94a;border-color:#c8a94a;color:#070b14}
+.p7-chip-on em{color:#070b14}
+.p7-scroll{overflow-x:auto}
+.p7-table{width:100%;border-collapse:collapse}
+.p7-table th{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#8e9ab2;text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.16);white-space:nowrap}
+.p7-table td{padding:11px 12px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:middle}
+.p7-table .p7-r{text-align:right}
+.p7-table .p7-c{text-align:center}
+.p7-tr-live td{background:#0e1526}
+.p7-date{font-family:'Barlow Condensed',sans-serif;line-height:1.05;white-space:nowrap}
+.p7-date span{display:block;font-weight:600;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#8e9ab2}
+.p7-date b{display:block;font-weight:700;font-size:24px;text-transform:uppercase}
+.p7-evn{display:block;font-weight:600;font-size:17px;line-height:22px}
+.p7-evo{display:block;font-size:14px;line-height:19px;color:#8e9ab2}
+.p7-type{display:inline-flex;align-items:center;height:26px;padding:0 8px;border-radius:3px;background:#1a2744;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:14px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.p7-stack{display:flex;flex-wrap:wrap;gap:6px}
+.k-page.p7 .p7-evlink{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-weight:500;font-size:15px;white-space:nowrap;color:#e5c768}
+.p7-sched{display:flex;flex-direction:column;gap:6px}
+.p7-srow{display:grid;grid-template-columns:120px 1fr;gap:6px;align-items:stretch}
+.p7-sday{background:#1a2744;border-radius:4px;display:flex;flex-direction:column;justify-content:center;padding:8px 14px;font-family:'Barlow Condensed',sans-serif;line-height:1.05}
+.p7-sday b{font-weight:800;font-size:24px;text-transform:uppercase;letter-spacing:.04em}
+.p7-sday span{font-weight:600;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#8e9ab2}
+.p7-slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.p7-slot{background:#0e1526;border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:9px 14px;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-items:baseline}
+.p7-t{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:15px;color:#e5c768;grid-row:span 2}
+.p7-slot b{font-weight:600;font-size:16px;line-height:21px}
+.p7-slot small{font-size:14px;line-height:19px;color:#8e9ab2}
+.p7-rated{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:3px;border:1px solid #34d399;color:#34d399;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}
+.p7-stand td{height:58px}
+.p7-rk{display:inline-flex;align-items:center;justify-content:center;width:30px;height:26px;border-radius:3px;border:1px solid #5f6d89;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:14px;font-weight:700}
+.p7-rk1{background:#c8a94a;border-color:#c8a94a;color:#070b14}
+.p7-pn{font-weight:600;font-size:17px;white-space:nowrap}
+.p7-x{display:inline-flex;align-items:center;justify-content:center;width:46px;height:30px;border-radius:3px;background:#0e1526;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:13px;border-bottom:3px solid currentColor}
+.p7-xw{color:#34d399}.p7-xl{color:#ff6b6b}.p7-xd{color:#a7b0c2}
+.p7-score{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px}
+.p7-stick{position:sticky;left:0;background:#070b14;z-index:1}
+.p7-stick2{left:54px}
+.p7-member{padding:48px 0;border-top:1px solid rgba(255,255,255,.08);background:#0e1526}
+.p7-tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+.p7-tier{background:#0e1526;padding:18px 20px 20px;display:flex;flex-direction:column;gap:2px}
+.p7-tname{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#8e9ab2}
+.p7-price{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:56px;line-height:60px}
+.p7-price small{font-family:'Barlow',sans-serif;font-weight:500;font-size:15px;color:#8e9ab2;margin-left:6px}
+.p7-tdesc{font-size:15px}
+.p7-footer{background:#070b14;border-top:1px solid rgba(255,255,255,.08)}
+.p7-fin{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 28px;padding-top:28px;padding-bottom:32px}
+.p7-fbrand{display:flex;align-items:center;gap:12px}
+.p7-fbrand svg{width:34px;height:34px;fill:#c8a94a;flex:none}
+.p7-fbrand b{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:.04em;text-transform:uppercase}
+.p7-fbrand span{display:block;font-size:14px;color:#8e9ab2}
+.p7-flinks{display:flex;flex-wrap:wrap;gap:0 20px}
+.k-page.p7 .p7-flinks a{font-size:15px;min-height:44px;display:inline-flex;align-items:center;text-underline-offset:4px}
+@media (max-width:1180px){.p7-nav{display:none}.p7-menubtn{display:inline-flex}}
+@media (max-width:980px){.p7-herogrid{grid-template-columns:1fr}.p7-media{min-height:400px}.p7-slots{grid-template-columns:1fr}}
+@media (max-width:760px){
+.k-page.p7 .p7-ulink{display:none}
+.p7-bname span{display:none}
+.p7-mode{margin-left:0}
+.p7-h1{font-size:58px;line-height:56px}
+.p7-h2{font-size:30px;line-height:34px}
+.p7-rounds{grid-template-columns:repeat(3,minmax(0,1fr))}
+.p7-stats{grid-template-columns:1fr 1fr}
+.p7-stats li:nth-child(3){padding-left:0}
+.p7-srow{grid-template-columns:1fr}
+.p7-evt thead{display:none}
+.p7-evt,.p7-evt tbody{display:block}
+.p7-evt tr{display:grid;grid-template-columns:92px minmax(0,1fr);column-gap:12px;row-gap:6px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.p7-evt td{padding:0;border:0}
+.p7-evt .p7-c-date{grid-row:span 4}
+.p7-tr-live td{background:transparent}
+.p7-stand .p7-hide{display:none}
+}
+</style>
+</helmet>
+<div class="k-page p7">
+<header class="p7-header">
+<div class="k-wrap-wide p7-hin">
+<a class="p7-brand" href="#"><span class="p7-mark"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="p7-bname"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="p7-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a></nav>
+<div class="p7-util"><a class="p7-ulink" href="#">Donate</a><a class="p7-ulink" href="#">Log in</a><a class="p7-btn p7-btn-gold p7-btn-sm" href="#">Join LCA</a><button class="p7-menubtn" type="button"><svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button></div>
+</div>
+<div class="p7-statusline">
+<div class="k-wrap-wide p7-sin">
+<span class="p7-live"><i></i>Live</span><span class="p7-rbox">R3</span>
+<span class="p7-sl">Lafayette Open 2026 · <span class="p7-muted">Round 3 in progress · pairings posted 6:42 PM</span></span>
+<div class="p7-mode"><span>Event-day preview: Sat, Oct 10, 8:15 PM</span><span class="k-sample">Sample data</span><button class="p7-toggle" type="button" aria-pressed="true"><i></i>Night mode</button></div>
+</div>
+</div>
+</header>
+
+<main>
+<section class="p7-hero">
+<div class="k-wrap-wide">
+<div class="p7-herogrid">
+<div>
+<div class="p7-herokick"><span class="p7-live"><i></i>Live · Round 3</span><span class="p7-tag"><svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg>Partner event</span><span class="p7-nextlab">Next event</span></div>
+<h1 class="p7-h1">Lafayette Open 2026</h1>
+<ul class="p7-facts">
+<li><span class="p7-fl">Dates</span><b>Sat–Sun, Oct 10–11, 2026</b></li>
+<li><span class="p7-fl">City</span><b>Lafayette, LA</b></li>
+<li><span class="p7-fl">Format</span><b>Classical · All ages</b></li>
+<li><span class="p7-fl">Hosted by</span><b>Lafayette Chess Club</b></li>
+</ul>
+<div class="p7-btnrow"><a class="p7-btn p7-btn-gold" href="#">Event details<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><a class="p7-btn p7-btn-line" href="#"><svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a></div>
+<ol class="p7-rounds" aria-label="Round schedule">
+<li class="p7-rd p7-rd-done"><i></i><b>R1 · Final</b>Sat 10:00 AM</li>
+<li class="p7-rd p7-rd-done"><i></i><b>R2 · Final</b>Sat 2:30 PM</li>
+<li class="p7-rd p7-rd-live"><i></i><b>R3 · Live</b>Sat 7:00 PM</li>
+<li class="p7-rd"><i></i><b>R4</b>Sun 9:30 AM</li>
+<li class="p7-rd"><i></i><b>R5</b>Sun 2:00 PM</li>
+</ol>
+</div>
+<figure class="p7-media">
+<img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Wood-paneled tournament hall with players at long tables, low-key navy monochrome">
+<div class="p7-b1">
+<div class="p7-b1head"><span class="p7-bdno">1</span><span>Board 1 · Round 3</span><span class="p7-muted">No engine bar while games are in play</span></div>
+<div class="p7-pbs">
+<div class="p7-pb"><i class="p7-sq p7-sq-b"></i><b>Priya Shah</b><span class="p7-rt">1803</span><span class="p7-tm">To move</span><span class="p7-clock p7-clock-on">0:58:05</span><span class="p7-cbar"><i style="width:64%"></i></span></div>
+<div class="p7-pb"><i class="p7-sq p7-sq-w"></i><b>Marcus Landry</b><span class="p7-rt">2014</span><span></span><span class="p7-clock">1:12:40</span><span class="p7-cbar"><i style="width:80%"></i></span></div>
+</div>
+</div>
+</figure>
+</div>
+<ul class="p7-stats"><li><span>Louisiana's chess community</span><b>since 1915</b></li><li><b>300+</b><span>members</span></li><li><b>25+</b><span>clubs</span></li><li><b>7</b><span>regions</span></li></ul>
+</div>
+</section>
+
+<section class="p7-sec p7-sec-first">
+<div class="k-wrap-wide">
+<div class="p7-sechead"><div><h2 class="p7-h2">Upcoming tournaments</h2><p class="p7-sub">Gulf South calendar · partner events register on the organizer's site</p></div><a class="p7-more" href="#">All tournaments<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
+<div class="p7-chips"><button class="p7-chip p7-chip-on" type="button">Louisiana <em>11</em></button><button class="p7-chip" type="button">Scholastic <em>6</em></button><button class="p7-chip" type="button">Classical <em>3</em></button><button class="p7-chip" type="button">Dual-rated <em>1</em></button><button class="p7-chip" type="button">Blitz <em>1</em></button><button class="p7-chip" type="button">Gulf South <em>11</em></button></div>
+<div class="p7-scroll">
+<table class="p7-table p7-evt">
+<thead><tr><th>Date</th><th>Event</th><th>City</th><th>Type</th><th>Status</th><th class="p7-r">Register</th></tr></thead>
+<tbody>
+<tr class="p7-tr-live"><td class="p7-c-date"><div class="p7-date"><span>Sat–Sun</span><b>Oct 10–11</b></div></td><td><span class="p7-evn">Lafayette Open 2026</span><span class="p7-evo">Organizer Tommy LeBlanc</span></td><td>Lafayette, LA</td><td><span class="p7-type">Classical</span></td><td><div class="p7-stack"><span class="p7-live"><i></i>Live · Round 3</span><span class="p7-tag">Partner event</span></div></td><td class="p7-r"><a class="p7-evlink" href="#">Organizer's site<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></td></tr>
+<tr><td class="p7-c-date"><div class="p7-date"><span>Sat–Sun</span><b>Oct 24–25</b></div></td><td><span class="p7-evn">The Baton Rouge Classic</span><span class="p7-evo">Downriver Chess</span></td><td>Baton Rouge, LA</td><td><span class="p7-type">Classical</span></td><td><span class="p7-tag">Partner event</span></td><td class="p7-r"><a class="p7-evlink" href="#">Organizer's site<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></td></tr>
+<tr><td class="p7-c-date"><div class="p7-date"><span>Sat</span><b>Oct 31</b></div></td><td><span class="p7-evn">The Casa Chess Tournament</span><span class="p7-evo">Casa de Ajedrez</span></td><td>Sulphur, LA</td><td><span class="p7-type">Dual-rated</span></td><td><span class="p7-tag">Partner event</span></td><td class="p7-r"><a class="p7-evlink" href="#">Organizer's site<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></td></tr>
+<tr><td class="p7-c-date"><div class="p7-date"><span>Sat</span><b>Nov 14</b></div></td><td><span class="p7-evn">New Orleans Youth Chess November Meet</span><span class="p7-evo">Strategic Thoughts NOLA, Crescent City Chess, Downriver Chess</span></td><td>New Orleans</td><td><span class="p7-type">Scholastic</span></td><td><span class="p7-tag">Partner event</span></td><td class="p7-r"><a class="p7-evlink" href="#">Organizer's site<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></td></tr>
+<tr><td class="p7-c-date"><div class="p7-date"><span>Sat</span><b>Dec 5</b></div></td><td><span class="p7-evn">New Orleans Youth Chess December Meet</span><span class="p7-evo">Strategic Thoughts NOLA, Crescent City Chess, Downriver Chess</span></td><td>New Orleans</td><td><span class="p7-type">Scholastic</span></td><td><span class="p7-tag">Partner event</span></td><td class="p7-r"><a class="p7-evlink" href="#">Organizer's site<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section class="p7-sec">
+<div class="k-wrap-wide">
+<div class="p7-sechead"><div><h2 class="p7-h2">This week at the clubs</h2><p class="p7-sub">Weekly meetings from the LCA club map · Mon, Oct 5 to Sat, Oct 10</p></div><a class="p7-more" href="#">All clubs and the map<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
+<div class="p7-sched">
+<div class="p7-srow"><div class="p7-sday"><b>Mon</b><span>Oct 5</span></div><ul class="p7-slots">
+<li class="p7-slot"><span class="p7-t">5:00 PM</span><b>Mandeville Chess Club</b><small>George's Mexican Restaurant</small></li>
+<li class="p7-slot"><span class="p7-t">6:00 PM</span><b>Houma Chess Club</b><small>Terrebonne Parish North Library</small></li>
+<li class="p7-slot"><span class="p7-t">7:00 PM</span><b>Downriver Chess Club</b><small>Game 15, no delay</small></li>
+</ul></div>
+<div class="p7-srow"><div class="p7-sday"><b>Tue</b><span>Oct 6</span></div><ul class="p7-slots">
+<li class="p7-slot"><span class="p7-t">6:00 PM</span><b>Ruston Knights Chess Club</b><small>Utility Brewing Company</small></li>
+<li class="p7-slot"><span class="p7-t">7:00 PM</span><b>Greater New Orleans Chess Club</b><small>G/90, one round a week</small></li>
+</ul></div>
+<div class="p7-srow"><div class="p7-sday"><b>Thu</b><span>Oct 8</span></div><ul class="p7-slots">
+<li class="p7-slot"><span class="p7-t">7:30 PM</span><b>New Orleans Westbank Chess Club<span class="p7-rated">US Chess rated</span></b><small>Gretna · beginners welcome</small></li>
+</ul></div>
+<div class="p7-srow"><div class="p7-sday"><b>Fri</b><span>Oct 9</span></div><ul class="p7-slots">
+<li class="p7-slot"><span class="p7-t">7:00 PM</span><b>Slidell Chess Club</b><small>St. Luke's, Classroom #3</small></li>
+</ul></div>
+<div class="p7-srow"><div class="p7-sday"><b>Sat</b><span>Oct 10</span></div><ul class="p7-slots">
+<li class="p7-slot"><span class="p7-t">10:00 AM</span><b>Baton Rouge Chess Club</b><small>Jones Creek Branch Library</small></li>
+</ul></div>
+</div>
+</div>
+</section>
+
+<section class="p7-sec">
+<div class="k-wrap-wide">
+<div class="p7-sechead"><div><h2 class="p7-h2">Latest results</h2><p class="p7-sub">2026 Louisiana State Championship · Final standings <span class="k-sample">Sample data</span></p></div><a class="p7-more" href="#">Full crosstable<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
+<div class="p7-scroll">
+<table class="p7-table p7-stand">
+<thead><tr><th class="p7-c p7-stick">Rk</th><th class="p7-stick p7-stick2">Player</th><th class="p7-r">Rating</th><th class="p7-c p7-hide">R1</th><th class="p7-c p7-hide">R2</th><th class="p7-c p7-hide">R3</th><th class="p7-c p7-hide">R4</th><th class="p7-c p7-hide">R5</th><th class="p7-r">Score</th><th class="p7-r">Tiebreak</th></tr></thead>
+<tbody>
+<tr><td class="p7-c p7-stick"><span class="p7-rk p7-rk1">1</span></td><td class="p7-stick p7-stick2"><span class="p7-pn">Marcus Landry</span></td><td class="p7-r p7-rt">2014</td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W9</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W14</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W3</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xd">D2</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W7</span></td><td class="p7-r p7-score">4½</td><td class="p7-r p7-mono">13½</td></tr>
+<tr><td class="p7-c p7-stick"><span class="p7-rk">2</span></td><td class="p7-stick p7-stick2"><span class="p7-pn">Avery Thibodeaux</span></td><td class="p7-r p7-rt">1912</td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W10</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W4</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xd">D6</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xd">D1</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W8</span></td><td class="p7-r p7-score">4</td><td class="p7-r p7-mono">13</td></tr>
+<tr><td class="p7-c p7-stick"><span class="p7-rk">3</span></td><td class="p7-stick p7-stick2"><span class="p7-pn">Priya Shah</span></td><td class="p7-r p7-rt">1803</td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W11</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W15</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xl">L1</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W5</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W6</span></td><td class="p7-r p7-score">4</td><td class="p7-r p7-mono">12½</td></tr>
+<tr><td class="p7-c p7-stick"><span class="p7-rk">4</span></td><td class="p7-stick p7-stick2"><span class="p7-pn">Camille Broussard</span></td><td class="p7-r p7-rt">1744</td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W12</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xl">L2</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W8</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W6</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xd">D5</span></td><td class="p7-r p7-score">3½</td><td class="p7-r p7-mono">12</td></tr>
+<tr><td class="p7-c p7-stick"><span class="p7-rk">5</span></td><td class="p7-stick p7-stick2"><span class="p7-pn">Isaac Dupre</span></td><td class="p7-r p7-rt">1688</td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W13</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W16</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xw">W7</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xl">L3</span></td><td class="p7-c p7-hide"><span class="p7-x p7-xd">D4</span></td><td class="p7-r p7-score">3½</td><td class="p7-r p7-mono">11½</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section class="p7-member">
+<div class="k-wrap-wide">
+<div class="p7-sechead"><div><h2 class="p7-h2">Membership</h2><p class="p7-sub">LCA tournament entry discounts, a member profile, voting rights and online registration.</p></div><a class="p7-btn p7-btn-gold" href="#">Join LCA<svg class="p7-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
+<div class="p7-tiers">
+<div class="p7-tier"><span class="p7-tname">Adult</span><b class="p7-price">$15<small>per year</small></b><span class="p7-tdesc">For players 18 and up</span></div>
+<div class="p7-tier"><span class="p7-tname">Scholastic</span><b class="p7-price">$5<small>per year</small></b><span class="p7-tdesc">K–12 students</span></div>
+<div class="p7-tier"><span class="p7-tname">Family</span><b class="p7-price">$25<small>per year</small></b><span class="p7-tdesc">You + up to 3 children</span></div>
+<div class="p7-tier"><span class="p7-tname">Senior</span><b class="p7-price">$10<small>per year</small></b><span class="p7-tdesc">65 and up</span></div>
+</div>
+</div>
+</section>
+</main>
+
+<footer class="p7-footer">
+<div class="k-wrap-wide p7-fin">
+<div class="p7-fbrand"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><div><b>Louisiana Chess Association</b><span>US Chess state affiliate · since 1915 · LouisianaChess@gmail.com</span></div></div>
+<nav class="p7-flinks" aria-label="Footer"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a><a href="#">Facebook</a></nav>
+</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

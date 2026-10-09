@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tourn E — Power table</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.te-views{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px;border:1px solid #e0dfd8;border-radius:12px;background:#ffffff}
+.te-view{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:6px 14px;border:0;border-radius:8px;background:transparent;font:inherit;font-size:14px;font-weight:500;color:#1a2744;cursor:pointer}
+.te-view-on{background:#1a2744;color:#ffffff}
+.te-add{margin-left:auto}
+.te-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.te-q{flex:1 1 260px;max-width:340px}
+.te-right{margin-left:auto}
+.te-batch{padding-top:12px;border-top:1px solid #e6e5df}
+.te-bleed{max-width:1440px;margin:0 auto;padding:0 24px;box-sizing:border-box}
+.te-dl{display:block;margin-top:3px;font-size:11px;color:#555c6b;white-space:nowrap}
+.te-t{min-width:1300px;border-collapse:separate;border-spacing:0;font-size:13px}
+.te-t > thead > tr > th{position:sticky;top:0;z-index:1;height:40px;padding:0 10px;background:#f3f2ed;border-bottom:1px solid #dcdbd4;font-size:12px;font-weight:600;color:#555c6b;text-align:left;white-space:nowrap}
+.te-t > tbody > tr > td{padding:6px 10px;height:26px;background:#ffffff;border-bottom:1px solid #eeede8;white-space:nowrap;vertical-align:middle;color:#1a2744}
+.te-t > thead > tr > .te-fz1,.te-t > tbody > tr > .te-fz1{position:sticky;left:0;z-index:2;box-sizing:border-box;width:170px;min-width:170px;max-width:170px}
+.te-t > thead > tr > .te-fz2,.te-t > tbody > tr > .te-fz2{position:sticky;left:170px;z-index:2;box-sizing:border-box;width:310px;min-width:310px;max-width:310px;overflow:hidden;text-overflow:ellipsis;box-shadow:8px 0 8px -8px rgba(26,39,68,.35)}
+.te-t > thead > tr > .te-fz1,.te-t > thead > tr > .te-fz2{z-index:3}
+.te-t > tbody > tr.te-sel > td{background:#fbf6e6}
+.te-t > tbody > tr.te-exprow > td{background:#fbfaf6;padding:0;height:auto;white-space:normal}
+.te-sort{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0;border:0;background:transparent;font:inherit;font-weight:600;color:inherit;cursor:pointer}
+.te-sort-on{color:#1a2744}
+.te-dc{display:inline-flex;align-items:center;gap:8px}
+.te-name{font-weight:600;color:#1a2744;text-decoration:none}
+.te-exp{display:inline-grid;place-items:center;width:24px;height:24px;margin-right:4px;padding:0;border:0;border-radius:6px;background:transparent;color:#555c6b;cursor:pointer;vertical-align:middle}
+.te-na{color:#8a8f9c}
+.te-cap{display:inline-flex;align-items:center;gap:8px;font-family:"Geist Mono",ui-monospace,monospace}
+.te-mini{display:inline-block;width:46px;height:6px;border-radius:99px;background:#e9e8e2;overflow:hidden}
+.te-mini i{display:block;height:100%;background:#1a2744}
+.te-expin{position:sticky;left:0;max-width:1320px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;padding:14px 16px 16px 52px}
+.te-panels{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:24px;align-items:start}
+.te-clashform{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto auto;gap:12px;align-items:end}
+.te-load{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:8px;align-items:end;height:118px;border-bottom:1px solid #dcdbd4;padding-bottom:6px}
+.te-wk{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%}
+.te-n{font-size:12px;font-weight:600;color:#1a2744}
+.te-b{display:block;width:100%;max-width:30px;background:#1a2744;border-radius:4px 4px 0 0}
+.te-wk-me .te-b{background:#c8a94a}
+.te-wk-me .te-n{color:#866a1e}
+.te-zero .te-b{background:#c3c7cf}
+.te-ldates{display:grid;grid-template-columns:repeat(11,minmax(0,1fr));gap:8px;margin-top:6px;font-size:11px;line-height:1.3;color:#555c6b;text-align:center}
+.te-ldates .te-free{color:#1a2744;font-weight:600}
+.te-ldates .te-mine{color:#866a1e;font-weight:600}
+.te-feed{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#555c6b;background:#f3f2ed;border-radius:6px;padding:6px 8px;word-break:break-all;margin:0}
+.te-notes{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:10px 28px}
+.te-notes li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1a2744}
+@media (max-width:1000px){.te-panels{grid-template-columns:1fr}.te-clashform{grid-template-columns:1fr 1fr}.te-right{margin-left:0}}
+@media (max-width:640px){.te-expin{grid-template-columns:1fr;padding-left:16px;max-width:360px}.te-clashform{grid-template-columns:1fr}.te-q{max-width:none}.te-notes{grid-template-columns:1fr}.te-t > thead > tr > .te-fz2,.te-t > tbody > tr > .te-fz2{width:200px;min-width:200px;max-width:200px}.te-add{margin-left:0}.te-ldates,.te-load{gap:3px}}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a href="#" class="k-nav-on" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">My LCA</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="k-wrap-wide k-section-sm">
+  <div class="k-between">
+    <div class="k-stack-sm">
+      <h1 class="k-h1">Tournaments</h1>
+      <p class="k-lead">Every upcoming event in one sortable table, for regulars and directors. Save a view, get alerts, export it.</p>
+    </div>
+    <div class="k-stack-sm" style="align-items:flex-end">
+      <div class="k-row">
+        <span class="k-sample">Sample data</span>
+        <div class="k-seg" role="group" aria-label="View">
+          <button type="button" aria-pressed="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>List</button>
+          <button type="button" aria-pressed="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</button>
+          <button type="button" aria-pressed="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"></path></svg>Map</button>
+          <button type="button" class="k-seg-on" aria-pressed="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Table</button>
+        </div>
+      </div>
+      <span class="k-small k-muted">Signed in as Chris Arceneaux · Tournament director</span>
+    </div>
+  </div>
+</section>
+
+<section class="k-wrap-wide k-stack">
+  <div class="te-views" role="group" aria-label="Saved views">
+    <button class="te-view te-view-on" type="button" aria-pressed="true">All upcoming <span class="k-chip-count">25</span></button>
+    <button class="te-view" type="button" aria-pressed="false">LCA-run <span class="k-chip-count">12</span></button>
+    <button class="te-view" type="button" aria-pressed="false">Scholastic <span class="k-chip-count">10</span></button>
+    <button class="te-view" type="button" aria-pressed="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Classical within 4 hr <span class="k-chip-count">4</span><span class="vh">(email alerts on)</span></button>
+    <button class="te-view" type="button" aria-pressed="false">My TD events <span class="k-chip-count">2</span></button>
+    <span class="k-num-badge">1</span>
+    <button class="k-btn k-btn-ghost k-btn-sm te-add" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Save current view</button>
+  </div>
+
+  <div class="k-card k-card-pad k-stack-sm">
+    <div class="te-tools">
+      <div class="k-field te-q"><label for="te-q" class="vh">Filter rows</label><input id="te-q" class="k-input" placeholder="Filter by name, city or organizer"></div>
+      <div class="k-row-sm" role="group" aria-label="Filters">
+        <button class="k-chip k-chip-on" type="button" aria-haspopup="true" aria-expanded="false">When: All upcoming <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">Type <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip k-chip-on" type="button" aria-haspopup="true" aria-expanded="false">Region: Louisiana + nearby <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">Rated <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">LCA-run / Partner <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+      </div>
+      <div class="k-row-sm te-right">
+        <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Columns · 9 of 12</button>
+        <div class="k-seg" role="group" aria-label="Row density">
+          <button type="button" class="k-seg-on" aria-pressed="true">Compact</button>
+          <button type="button" aria-pressed="false">Comfortable</button>
+        </div>
+        <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>CSV</button>
+        <button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>.ics feed</button>
+      </div>
+    </div>
+    <div class="te-batch k-between">
+      <div class="k-row-sm"><span class="k-strong" aria-live="polite">25 events</span><span class="k-meta">· sorted by date, earliest first · partner listings synced from the Gulf South calendar [time]</span></div>
+      <div class="k-row-sm">
+        <span class="k-strong">3 selected</span>
+        <button class="k-btn k-btn-navy k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add 3 to my calendar</button>
+        <button class="k-btn k-btn-line k-btn-sm" type="button">Export selected</button>
+        <button class="k-btn k-btn-ghost k-btn-sm" type="button">Clear</button>
+        <span class="k-num-badge">4</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="k-section-sm">
+  <div class="te-bleed">
+  <div class="k-tablebox">
+    <table class="k-table te-t">
+      <caption class="vh">All upcoming tournaments, sorted by date</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="te-fz1" aria-sort="ascending"><span class="te-dc"><input type="checkbox" aria-label="Select all 25 events"><button class="te-sort te-sort-on" type="button">Date <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button></span></th>
+          <th scope="col" class="te-fz2"><button class="te-sort" type="button">Event <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg></button> <span class="k-num-badge">2</span></th>
+          <th scope="col"><button class="te-sort" type="button">City <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg></button></th>
+          <th scope="col"><button class="te-sort" type="button">Type <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg></button></th>
+          <th scope="col"><button class="te-sort" type="button">Rating <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg></button></th>
+          <th scope="col">Sections</th>
+          <th scope="col"><button class="te-sort" type="button">Entries / cap <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg></button></th>
+          <th scope="col"><button class="te-sort" type="button">Status <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg></button></th>
+          <th scope="col"><button class="te-sort" type="button">Source <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"></path></svg></button></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="te-sel">
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" checked aria-label="Select Lafayette Open 2026"><time datetime="2026-10-10">Sat–Sun, Oct 10–11</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="true" aria-label="Hide details for Lafayette Open 2026"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button><a class="te-name" href="#">Lafayette Open 2026</a></td>
+          <td>Lafayette, LA</td><td>All ages</td><td>Classical</td><td>Open · U1800 · U1400 · U1000</td>
+          <td><span class="te-cap"><span class="te-mini"><i style="width:86.7%"></i></span>52 / 60</span></td>
+          <td><span class="k-tag k-tag-open">Registration open</span><span class="te-dl">Entry closes Thu, Oct 8, 11:59 PM</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr class="te-exprow">
+          <td colspan="9">
+            <div class="te-expin">
+              <div class="k-tablebox">
+                <table class="k-table">
+                  <caption class="vh">Lafayette Open 2026 sections</caption>
+                  <thead><tr><th scope="col">Section</th><th scope="col">Who can play</th><th scope="col" class="k-r">Entry</th><th scope="col" class="k-r">LCA member</th><th scope="col" class="k-r">Registered</th><th scope="col" class="k-r">Waitlist</th></tr></thead>
+                  <tbody>
+                    <tr><td>Open</td><td>Everyone</td><td class="k-r">$60</td><td class="k-r">$55</td><td class="k-r">9</td><td class="k-r">0</td></tr>
+                    <tr><td>U1800</td><td>Rated under 1800</td><td class="k-r">$50</td><td class="k-r">$45</td><td class="k-r">14</td><td class="k-r">0</td></tr>
+                    <tr><td>U1400</td><td>Rated under 1400</td><td class="k-r">$40</td><td class="k-r">$35</td><td class="k-r">16</td><td class="k-r">0</td></tr>
+                    <tr><td>U1000</td><td>Under 1000 or unrated</td><td class="k-r">$30</td><td class="k-r">$25</td><td class="k-r">13</td><td class="k-r">0</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="k-stack-sm">
+                <div class="k-between"><span class="k-label">Lafayette Chess Club · organizer Tommy LeBlanc</span><span class="k-num-badge">3</span></div>
+                <p class="k-small">5 rounds of G/90+30 (90 min each + 30 sec per move) · Sat 10:00 AM, 2:30 PM, 7:00 PM · Sun 9:30 AM, 2:00 PM · [Venue name], Lafayette</p>
+                <p class="k-small">$1,500 prize fund based on 60 entries · 8 spots left</p>
+                <div class="k-row-sm"><a class="k-btn k-btn-gold k-btn-sm" href="#">Register</a><a class="k-btn k-btn-line k-btn-sm" href="#">Entries list</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Event page</a></div>
+                <p class="k-small k-muted">You direct this event: <a class="k-link" href="#">Manage</a> · <a class="k-link" href="#">Check-in</a> · <a class="k-link" href="#">Pairings</a></p>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select 2026 National Chess Day Scholastic"><time datetime="2026-10-10">Sat, Oct 10</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for 2026 National Chess Day Scholastic"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">2026 National Chess Day Scholastic</a></td>
+          <td>Birmingham, AL</td><td>Scholastic</td><td>Quick</td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Starkville Chess Tournament"><time datetime="2026-10-10">Sat, Oct 10</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Starkville Chess Tournament"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Starkville Chess Tournament</a></td>
+          <td>Starkville, MS</td><td><span class="te-na">Not listed</span></td><td>Dual</td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Texas Fall FIDE Premier"><time datetime="2026-10-16">Fri–Sun, Oct 16–18</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Texas Fall FIDE Premier"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Texas Fall FIDE Premier</a></td>
+          <td>Houston, TX</td><td><span class="te-na">Not listed</span></td><td>Classical</td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Mississippi State Championship"><time datetime="2026-10-17">Sat–Sun, Oct 17–18</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Mississippi State Championship"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Mississippi State Championship</a></td>
+          <td>Canton, MS</td><td><span class="te-na">Not listed</span></td><td>Classical</td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Hillcrest QUICK Capturefest"><time datetime="2026-10-22">Thu, Oct 22</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Hillcrest QUICK Capturefest"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Hillcrest QUICK Capturefest</a></td>
+          <td>Jackson, MS</td><td><span class="te-na">Not listed</span></td><td>Quick</td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select HG – Lone Star US Chess and FIDE Championship"><time datetime="2026-10-23">Fri–Sun, Oct 23–25</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for HG – Lone Star US Chess and FIDE Championship"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#" title="HG – Lone Star US Chess &amp; FIDE Championship">HG – Lone Star US Chess &amp; FIDE Championship</a></td>
+          <td>Houston, TX</td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr class="te-sel">
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" checked aria-label="Select The Baton Rouge Classic"><time datetime="2026-10-24">Sat–Sun, Oct 24–25</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for The Baton Rouge Classic"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">The Baton Rouge Classic</a></td>
+          <td>Baton Rouge, LA</td><td>All ages</td><td>Classical</td><td>Open · U1800 · U1400 · U1000</td>
+          <td><span class="te-cap"><span class="te-mini"><i style="width:38.3%"></i></span>23 / 60</span></td>
+          <td><span class="k-tag k-tag-open">Registration open</span><span class="te-dl">Early price ends Sun, Oct 18</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Team Scholastic Jamboree"><time datetime="2026-10-24">Sat, Oct 24</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Team Scholastic Jamboree"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Team Scholastic Jamboree</a></td>
+          <td>Ridgeland, MS</td><td>Scholastic</td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select The Casa Chess Tournament"><time datetime="2026-10-31">Sat, Oct 31</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for The Casa Chess Tournament"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">The Casa Chess Tournament</a></td>
+          <td>Sulphur, LA</td><td>All ages</td><td>Dual</td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Halloween Classic"><time datetime="2026-10-31">Sat, Oct 31</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Halloween Classic"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Halloween Classic</a></td>
+          <td>Huntsville, AL</td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Roosevelt Chess Classic"><time datetime="2026-11-07">Sat, Nov 7</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Roosevelt Chess Classic"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Roosevelt Chess Classic</a></td>
+          <td>Scott County, MS</td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select New Orleans Youth Chess November Meet"><time datetime="2026-11-14">Sat, Nov 14</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for New Orleans Youth Chess November Meet"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">New Orleans Youth Chess November Meet</a></td>
+          <td>New Orleans, LA</td><td>Scholastic</td><td>Dual</td><td>K–12 · K–8 · K–5 · K–3</td>
+          <td><span class="te-na">cap 120</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Mon, Oct 12</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select 2026 Dothan Open"><time datetime="2026-11-14">Sat, Nov 14</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for 2026 Dothan Open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">2026 Dothan Open</a></td>
+          <td>Dothan, AL</td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Lone Star FIDE"><time datetime="2026-11-20">Fri–Sun, Nov 20–22</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Lone Star FIDE"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Lone Star FIDE</a></td>
+          <td>Houston, TX</td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select New Orleans Youth Chess December Meet"><time datetime="2026-12-05">Sat, Dec 5</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for New Orleans Youth Chess December Meet"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">New Orleans Youth Chess December Meet</a></td>
+          <td>New Orleans, LA</td><td>Scholastic</td><td>Dual</td><td>K–12 · K–8 · K–5 · K–3</td>
+          <td><span class="te-na">cap 120</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Mon, Nov 16</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr class="te-sel">
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" checked aria-label="Select Ken Ferguson Memorial Open"><time datetime="2027-01-16">Sat–Mon, Jan 16–18</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Ken Ferguson Memorial Open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Ken Ferguson Memorial Open</a></td>
+          <td>New Orleans, LA</td><td>All ages</td><td>Classical</td><td>Open · U1800 · U1400 · U1000</td>
+          <td><span class="te-na">cap 80</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Tue, Dec 1</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Blitz at the Ken Ferguson Memorial"><time datetime="2027-01-17">Sun, Jan 17</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Blitz at the Ken Ferguson Memorial"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Blitz at the Ken Ferguson Memorial</a></td>
+          <td>New Orleans, LA</td><td>All ages</td><td>Blitz</td><td>One section</td>
+          <td><span class="te-na">cap 40</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Tue, Dec 1</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Ken Ferguson Memorial Scholastic"><time datetime="2027-01-17">Sun, Jan 17</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Ken Ferguson Memorial Scholastic"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Ken Ferguson Memorial Scholastic</a></td>
+          <td>New Orleans, LA</td><td>Scholastic</td><td>Dual</td><td>K–12 · K–8 · K–5</td>
+          <td><span class="te-na">cap 100</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Tue, Dec 1</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select LCA Tournament of Champions Qualifier"><time datetime="2027-02-13">Sat, Feb 13</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for LCA Tournament of Champions Qualifier"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">LCA Tournament of Champions Qualifier</a></td>
+          <td>[City]</td><td>Scholastic</td><td>Classical</td><td>K–12 · K–8 · K–5</td>
+          <td><span class="te-na">—</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Mon, Jan 4</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select New Orleans Youth Chess March Meet"><time datetime="2027-03-20">Sat, Mar 20</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for New Orleans Youth Chess March Meet"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">New Orleans Youth Chess March Meet</a></td>
+          <td>New Orleans, LA</td><td>Scholastic</td><td>Dual</td><td>K–12 · K–8 · K–5 · K–3</td>
+          <td><span class="te-na">cap 120</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Mon, Feb 15</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select SWLA Regional Scholastic Tournament"><time datetime="2027-04-17">Sat, Apr 17</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for SWLA Regional Scholastic Tournament"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">SWLA Regional Scholastic Tournament</a></td>
+          <td>Sulphur, LA</td><td>Scholastic</td><td><span class="te-na">Not listed</span></td><td><span class="te-na">Not in feed</span></td>
+          <td><span class="te-na">—</span></td>
+          <td><a class="k-link k-small" href="#">Organizer site <svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="vh">(opens in a new tab)</span></a></td>
+          <td><span class="k-tag k-tag-ext">Partner event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select LCA State Scholastic Championship"><time datetime="2027-04-24">Sat–Sun, Apr 24–25</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for LCA State Scholastic Championship"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">LCA State Scholastic Championship</a></td>
+          <td>[City]</td><td>Scholastic</td><td>Classical</td><td>K–12 · K–8 · K–5 · K–3</td>
+          <td><span class="te-na">—</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Mon, Mar 1</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select New Orleans Youth Chess May Meet, Grand Prix Final"><time datetime="2027-05-08">Sat, May 8</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for New Orleans Youth Chess May Meet, Grand Prix Final"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#" title="New Orleans Youth Chess May Meet — Grand Prix Final">New Orleans Youth Chess May Meet — Grand Prix Final</a></td>
+          <td>New Orleans, LA</td><td>Scholastic</td><td>Dual</td><td>K–12 · K–8 · K–5 · K–3</td>
+          <td><span class="te-na">cap 120</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Mon, Apr 12</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+        <tr>
+          <td class="te-fz1"><span class="te-dc"><input type="checkbox" aria-label="Select Paul Morphy Open"><time datetime="2027-06-12">Sat–Sun, Jun 12–13</time></span></td>
+          <td class="te-fz2"><button class="te-exp" type="button" aria-expanded="false" aria-label="Show details for Paul Morphy Open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><a class="te-name" href="#">Paul Morphy Open</a></td>
+          <td>[City]</td><td>All ages</td><td>Classical</td><td>Open · U1800 · U1400 · U1000</td>
+          <td><span class="te-na">—</span></td>
+          <td><span class="k-tag k-tag-soon">Opens Mon, Apr 5</span></td>
+          <td><span class="k-tag k-tag-lca">LCA event</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="k-small k-muted" style="margin-top:10px">Hidden columns: Organizer · Venue · Contact. Deadlines sit under each status. Partner rows show only what the Gulf South listing carries; sections, fees and entries for those events are on the organizer's site.</p>
+  </div>
+</section>
+
+<section class="k-wrap-wide k-section-sm">
+  <div class="te-panels">
+
+    <div class="k-card k-card-pad k-stack">
+      <div class="k-between"><h2 class="k-h3">Check a date before you announce it</h2><span class="k-num-badge">6</span></div>
+      <p class="k-small k-muted">For directors. Compares your date with every LCA and partner listing within driving range.</p>
+      <div class="te-clashform">
+        <div class="k-field"><label for="te-date">Date</label><input id="te-date" class="k-input" value="Sat, Nov 14, 2026"></div>
+        <div class="k-field"><label for="te-near">Near</label><input id="te-near" class="k-input" value="New Orleans, LA"></div>
+        <div class="k-stack-sm">
+          <span class="k-label">Within</span>
+          <div class="k-seg" role="group" aria-label="Drive time">
+            <button type="button" aria-pressed="false">2 hr</button>
+            <button type="button" class="k-seg-on" aria-pressed="true">4 hr</button>
+            <button type="button" aria-pressed="false">6 hr</button>
+          </div>
+        </div>
+        <button class="k-btn k-btn-navy" type="button">Check date</button>
+      </div>
+      <div class="k-callout k-stack-sm">
+        <p class="k-body"><b>Clash on Sat, Nov 14:</b> New Orleans Youth Chess November Meet · New Orleans · scholastic · LCA event.</p>
+        <p class="k-small k-muted">Same weekend, outside 4 hr: 2026 Dothan Open (Dothan, AL · about 5 h 30 min).</p>
+      </div>
+      <div>
+        <span class="k-label">Events within 4 hr of New Orleans, weekend by weekend</span>
+        <div class="te-load" role="img" aria-label="Events within 4 hours of New Orleans by weekend. Oct 10: 1. Oct 17: 1. Oct 24: 2. Oct 31: 1. Nov 7: 1. Nov 14: 1, your date. Nov 21: 0. Nov 28: 0. Dec 5: 1. Dec 12: 0. Dec 19: 0.">
+          <div class="te-wk"><span class="te-n">1</span><span class="te-b" style="height:24px"></span></div>
+          <div class="te-wk"><span class="te-n">1</span><span class="te-b" style="height:24px"></span></div>
+          <div class="te-wk"><span class="te-n">2</span><span class="te-b" style="height:48px"></span></div>
+          <div class="te-wk"><span class="te-n">1</span><span class="te-b" style="height:24px"></span></div>
+          <div class="te-wk"><span class="te-n">1</span><span class="te-b" style="height:24px"></span></div>
+          <div class="te-wk te-wk-me"><span class="te-n">1</span><span class="te-b" style="height:24px"></span></div>
+          <div class="te-wk te-zero"><span class="te-n">0</span><span class="te-b" style="height:3px"></span></div>
+          <div class="te-wk te-zero"><span class="te-n">0</span><span class="te-b" style="height:3px"></span></div>
+          <div class="te-wk"><span class="te-n">1</span><span class="te-b" style="height:24px"></span></div>
+          <div class="te-wk te-zero"><span class="te-n">0</span><span class="te-b" style="height:3px"></span></div>
+          <div class="te-wk te-zero"><span class="te-n">0</span><span class="te-b" style="height:3px"></span></div>
+        </div>
+        <div class="te-ldates" aria-hidden="true">
+          <span>Oct 10</span><span>Oct 17</span><span>Oct 24</span><span>Oct 31</span><span>Nov 7</span><span class="te-mine">Nov 14<br>your date</span><span class="te-free">Nov 21<br>open</span><span class="te-free">Nov 28<br>open</span><span>Dec 5</span><span class="te-free">Dec 12<br>open</span><span class="te-free">Dec 19<br>open</span>
+        </div>
+      </div>
+      <p class="k-small"><b>Open Saturdays within 4 hr:</b> Nov 21 (Lone Star FIDE in Houston is about 5 h 15 min away) · Nov 28 (Thanksgiving weekend) · Dec 12 · Dec 19</p>
+      <div class="k-row-sm"><a class="k-btn k-btn-gold" href="#">Start an event on Sat, Nov 21</a><span class="k-small k-muted">Opens the tournament wizard with the date filled in.</span></div>
+    </div>
+
+    <div class="k-card k-card-pad k-stack">
+      <div class="k-between"><h2 class="k-h3">Saved view: Classical within 4 hr</h2><span class="k-num-badge">5</span></div>
+      <p class="k-small k-muted">Rating: Classical · within 4 hr of 70119 · LCA and partner events · sorted by date · 4 events today</p>
+      <div class="k-stack-sm">
+        <span class="k-label">Email me</span>
+        <div class="k-seg" role="group" aria-label="Alert frequency">
+          <button type="button" class="k-seg-on" aria-pressed="true">When a new event matches</button>
+          <button type="button" aria-pressed="false">Weekly</button>
+          <button type="button" aria-pressed="false">Off</button>
+        </div>
+      </div>
+      <div class="k-stack-sm">
+        <span class="k-label">Calendar feed for this view</span>
+        <p class="te-feed">webcal://louisianachess.org/cal/v/[view-id].ics</p>
+      </div>
+      <div class="k-stack-sm">
+        <span class="k-label">Share this view</span>
+        <p class="te-feed">louisianachess.org/tournaments?view=table&amp;rating=classical&amp;drive=4h&amp;from=70119</p>
+      </div>
+      <div class="k-row-sm">
+        <button class="k-btn k-btn-line k-btn-sm" type="button">Copy link</button>
+        <button class="k-btn k-btn-line k-btn-sm" type="button">Rename</button>
+        <button class="k-btn k-btn-ghost k-btn-sm" type="button">Delete view</button>
+      </div>
+      <p class="k-small k-muted">Columns, sort and density are remembered for you on every device.</p>
+    </div>
+
+  </div>
+</section>
+
+<section class="k-wrap-wide k-section-sm">
+  <div class="k-card k-card-pad k-stack-sm">
+    <h2 class="k-h4">Notes on this option</h2>
+    <ol class="te-notes">
+      <li><span class="k-num-badge">1</span><span>Saved views are named URLs. Share one, bookmark it, or attach email alerts and a calendar feed.</span></li>
+      <li><span class="k-num-badge">2</span><span>Date and Event stay frozen while the other columns scroll sideways on narrower screens.</span></li>
+      <li><span class="k-num-badge">3</span><span>Click a row to expand sections, fees and live counts in place. Directors see Manage, Check-in and Pairings for their own events.</span></li>
+      <li><span class="k-num-badge">4</span><span>Checkboxes for batch actions: add several events to a calendar at once, or export them.</span></li>
+      <li><span class="k-num-badge">5</span><span>Columns, sort and density are remembered per person, on every device.</span></li>
+      <li><span class="k-num-badge">6</span><span>Date-clash check: directors see every listing within driving range, weekend by weekend, before announcing a date.</span></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

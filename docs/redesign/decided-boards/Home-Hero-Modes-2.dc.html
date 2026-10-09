@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Home · hero modes 6 to 10 (announced, week, this week, quiet, clubs)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#e9e8e1}
+.hm-root{width:1440px;background:#e9e8e1;padding-bottom:72px}
+.hm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hm-nbg{background:#c8a94a;color:#1a2744}
+/* title strip + legend */
+.hm-top{background:#fbfaf6;padding:44px 40px 32px;border-bottom:1px solid #dddcd4}
+.hm-built{display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 14px;margin-top:16px;font-size:15px;line-height:1.5;max-width:1100px}
+.hm-built dt{font-weight:600;color:#555c6b}
+.hm-built dd{margin:0}
+.hm-ladder{list-style:none;margin:24px 0 0;padding:0;display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:8px}
+.hm-ladder li{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:10px 10px 11px;font-size:12.5px;line-height:1.35;color:#555c6b}
+.hm-ladder li b{display:block;font-size:14px;color:#1a2744;margin:4px 0 2px}
+.hm-ladder li code{font-family:'Geist Mono',monospace;font-size:11.5px;color:#3d4556}
+.hm-ladder li.hm-off{background:#f1f0ea;border-style:dashed}
+.hm-ln{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700}
+.hm-legend{background:#fbfaf6;padding:26px 40px 34px;border-bottom:1px solid #dddcd4}
+.hm-lgrid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:40px}
+.hm-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px}
+.hm-notes li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
+.hm-qs{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.hm-qs li{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.45}
+.hm-qs li b{display:block;margin-bottom:2px}
+.hm-qs li em{font-style:normal;font-weight:600;color:#145b3a}
+/* dividers + frames */
+.hm-mode{padding:0 40px;margin-top:52px}
+.hm-div{display:flex;align-items:flex-start;gap:16px;padding-bottom:14px;margin-bottom:16px;border-bottom:2px solid #1a2744}
+.hm-rung{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:20px;font-weight:700;flex:none}
+.hm-dmain{flex:1;min-width:0}
+.hm-dname{font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.hm-dtrig{font-size:15px;line-height:1.5;color:#3d4556;margin-top:4px;max-width:820px}
+.hm-dtrig b{color:#1a2744}
+.hm-dmeta{display:grid;grid-template-columns:auto auto auto;gap:4px 22px;margin:4px 0 0;font-size:13px;flex:none}
+.hm-dmeta dt{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.hm-dmeta dd{margin:2px 0 0;font-weight:600;color:#1a2744;max-width:190px}
+.hm-dmeta code{font-family:'Geist Mono',monospace;font-size:13px;background:#ffffff;border:1px solid #dddcd4;border-radius:5px;padding:1px 6px}
+.hm-frame{background:#f5f5f2;border:1px solid #c9c8c0;border-radius:14px;overflow:hidden;box-shadow:0 18px 44px rgba(16,24,43,.12)}
+/* header */
+.hm-header .k-header-in{position:relative}
+.hm-logo{display:flex;flex-direction:column;align-items:center;gap:2px;flex:none}
+.hm-logo i{font-style:normal;font-size:9px;line-height:1;color:#b9c0cd;white-space:nowrap}
+.hm-logo-lt i{color:#6b7180}
+.hm-plate{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6}
+.hm-plate b{font-size:14px;font-weight:700;letter-spacing:.04em;color:#1a2744}
+.hm-plate-ln{border:1px solid #d6d5cd}
+.hm-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.07);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.hm-sbtn:hover{color:#ffffff}
+.hm-sbtn kbd{margin-left:auto;font-family:'Geist Mono',monospace;font-size:12px;line-height:1;padding:4px 6px;border:1px solid rgba(255,255,255,.4);border-radius:5px;color:rgba(255,255,255,.88)}
+.hm-mylca{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.6);background:transparent;color:#ffffff;font-size:14px;font-weight:600;cursor:pointer}
+.hm-hbadge{position:absolute;left:-14px;top:6px}
+.tl-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.hm-decided{margin:-4px 0 16px;padding:10px 14px;background:#fbfaf6;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:10px;font-size:14.5px;line-height:1.5;color:#1a2744}
+.hm-decided b{font-weight:600}
+/* band */
+.hm-band{background:#fbfaf6;border-top:1px solid #dddcd4}
+.hm-band-in{position:relative;padding-top:18px;padding-bottom:22px}
+.hm-bandbadge{position:absolute;left:-14px;top:18px}
+.hm-idrow{display:flex;align-items:center;gap:14px}
+.hm-idline{font-size:17px;line-height:1.4;font-weight:600}
+.hm-tt{height:6px;border-top:3px solid #1a2744;border-bottom:1px solid #1a2744;margin:14px 0 14px}
+.hm-sform label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.hm-sbox{display:flex;align-items:center;gap:10px;height:56px;padding:0 6px 0 16px;border:1px solid #858b99;border-radius:10px;background:#ffffff;color:#555c6b}
+.hm-sbox input{flex:1;min-width:0;border:0;outline:0;background:transparent;font:inherit;font-size:16px;color:#1a2744}
+.hm-sbox input::placeholder{color:#6b7180}
+/* shared hero bits */
+.hm-in{position:relative;padding-top:40px;padding-bottom:44px}
+.hm-title{font-size:46px;line-height:1.06;font-weight:700;letter-spacing:-.018em}
+.hm-ph{position:relative;overflow:hidden;background:#1a2744;color:#ffffff}
+.hm-photo{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover}
+.hm-tint{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(17,27,49,.8)}
+.hm-nv{position:relative;overflow:hidden;background:#1a2744;color:#ffffff}
+.hm-nv .k-meta,.hm-ph .k-meta{color:rgba(255,255,255,.8)}
+.hm-ph .hm-card .k-meta,.hm-nv .hm-rows .k-meta{color:#555c6b}
+.hm-sub{font-size:18px;line-height:1.5;color:rgba(255,255,255,.88)}
+.hm-tl{color:#ffffff;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.hm-tl:hover{color:#e6cf86}
+.hm-ext{color:#1a2744;font-weight:600;font-size:14px;text-decoration:underline;text-decoration-color:#858b99;text-underline-offset:3px}
+.hm-me{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:10px 14px;border:1.5px dashed #c8a94a;border-radius:10px}
+.hm-me small{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.hm-pill{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:13px;font-weight:700}
+/* motif */
+.hm-motif{position:absolute;display:grid;grid-template-columns:16px 1fr;grid-template-rows:1fr auto;gap:6px;pointer-events:none}
+.hm-mr{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;text-align:center;font-family:'Geist Mono',monospace;font-size:12px;color:rgba(255,255,255,.4)}
+.hm-mf{display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-family:'Geist Mono',monospace;font-size:12px;color:rgba(255,255,255,.4)}
+.hm-mb{aspect-ratio:1/1;border:1px solid rgba(255,255,255,.2);background-image:repeating-conic-gradient(rgba(255,255,255,.075) 0 25%,transparent 0 50%);background-size:25% 25%}
+.hm-motif-r{right:24px;top:28px;width:360px}
+.hm-field{position:absolute;top:0;right:0;bottom:0;width:512px;pointer-events:none}
+.hm-field i{position:absolute;top:0;right:0;bottom:30px;left:0;background-image:repeating-conic-gradient(rgba(255,255,255,.065) 0 25%,transparent 0 50%);background-size:128px 128px;background-position:right top;-webkit-mask-image:linear-gradient(to left,#000 30%,transparent);mask-image:linear-gradient(to left,#000 30%,transparent)}
+.hm-field b{font-weight:400}
+.hm-field span{position:absolute;right:0;bottom:8px;width:512px;display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-family:'Geist Mono',monospace;font-size:12px;color:rgba(255,255,255,.4)}
+/* 1 live */
+.hm-live{background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a}
+.hm-live .hm-mu{color:rgba(243,245,249,.78)}
+.hm-ltag{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:6px;background:#ff4757;color:#070b14;font-size:13px;font-weight:700;line-height:1.2}
+.hm-livegrid{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:40px;align-items:start}
+.hm-lcard{background:#161f36;border:1px solid rgba(243,245,249,.16);border-radius:12px;padding:22px}
+.hm-lcard label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;color:#f3f5f9}
+.hm-llinks{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:14px;font-size:15px;color:rgba(243,245,249,.6)}
+.hm-llinks a{color:#f3f5f9;font-weight:600;text-underline-offset:4px}
+.hm-rrow{display:flex;align-items:flex-end;gap:16px;margin-top:28px}
+.hm-rwrap{flex:1;min-width:0}
+.hm-rh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(243,245,249,.78);margin-bottom:8px}
+.hm-rounds{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.hm-rounds li{border:1px solid rgba(243,245,249,.26);border-radius:10px;padding:9px 12px;font-size:14px;line-height:1.35;color:rgba(243,245,249,.86)}
+.hm-rounds li b{display:block;font-size:15px;color:#f3f5f9}
+.hm-rounds li.hm-rnow{border:2px solid #ff4757;background:rgba(255,71,87,.12);color:#f3f5f9;font-weight:600}
+.hm-rounds li.hm-rnext{border-style:dashed}
+.hm-upd{display:flex;align-items:center;gap:12px;flex:none}
+.hm-pause{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid rgba(243,245,249,.6);background:transparent;color:#f3f5f9;font-size:14px;font-weight:600;cursor:pointer}
+.hm-live .hm-me{border-color:#c8a94a}
+.hm-live .hm-me small{color:#e6cf86}
+/* 2 event day */
+.hm-edl{font-size:20px;line-height:1.4;color:rgba(255,255,255,.9);margin-top:10px}
+.hm-edl b{color:#ffffff}
+/* 3 last call */
+.hm-l3{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:end}
+.hm-card{padding:30px;color:#1a2744}
+.hm-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 32px;margin-top:22px}
+.hm-fact{display:flex;gap:12px;align-items:flex-start}
+.hm-fact>svg{color:#866a1e;margin-top:1px}
+.hm-fact b{display:block;font-size:17px;line-height:1.35;font-weight:600}
+.hm-bar{height:10px;border-radius:999px;background:#e6e5de;overflow:hidden;margin-top:10px}
+.hm-bar i{display:block;height:100%;border-radius:999px;background:#1a2744}
+.hm-inset{border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:20px;background:rgba(14,21,38,.55)}
+.hm-sw{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:12px 0;border-top:1px solid rgba(255,255,255,.18)}
+.hm-sw:first-of-type{border-top:0}
+.hm-sw p{grid-column:1/-1;font-size:12.5px;color:rgba(255,255,255,.75);font-family:'Geist Mono',monospace}
+/* 4 results */
+.hm-res{background:#fbfaf6;color:#1a2744}
+.hm-rgrid{display:grid;grid-template-columns:132px minmax(0,1fr) 560px;gap:32px;align-items:start}
+.hm-win{list-style:none;margin:0;padding:0}
+.hm-win li{display:grid;grid-template-columns:118px minmax(0,1fr) auto;gap:4px 14px;align-items:baseline;padding:12px 18px;border-top:1px solid #e2e1da}
+.hm-win li:first-child{border-top:0}
+.hm-win .hm-sec{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.hm-win .hm-nm{font-size:17px;font-weight:600}
+.hm-win .hm-sc{font-family:'Geist Mono',monospace;font-size:15px;font-weight:500;white-space:nowrap}
+.hm-res .hm-me{border-color:#866a1e}
+.hm-res .hm-me small{color:#866a1e}
+/* 6 announced */
+.hm-l6{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:end}
+.hm-bigdate{display:flex;flex-direction:column;align-items:center;justify-content:center;width:132px;height:148px;border-radius:14px;background:#1a2744;color:#ffffff;line-height:1;flex:none}
+.hm-bigdate span{font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#e6cf86}
+.hm-bigdate b{font-size:60px;font-weight:700;letter-spacing:-.03em;margin:8px 0 6px}
+.hm-bigdate em{font-style:normal;font-size:13px;color:rgba(255,255,255,.8);margin-top:6px}
+/* 7 week */
+.hm-l7{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 540px;gap:32px;align-items:start}
+.hm-tn{background:#ffffff;color:#1a2744;border-radius:12px;overflow:hidden;border:1px solid #dddcd4}
+.hm-tnh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 18px;background:#24335a;color:#ffffff}
+.hm-tnh b{font-size:16px}
+.hm-tnh span{font-size:13px;color:#e6cf86}
+.hm-tnr{display:grid;grid-template-columns:118px minmax(0,1fr);gap:12px;padding:11px 18px;border-top:1px solid #ecebe5;font-size:14.5px;line-height:1.35}
+.hm-tnr:first-of-type{border-top:0}
+.hm-tnr .k-mono{font-weight:600}
+.hm-nv .hm-tn .k-meta{color:#555c6b}
+.hm-tnf{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 18px;border-top:1px solid #ecebe5;background:#fbfbf8}
+/* 8 + 9 rows */
+.hm-l8{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:36px;align-items:start}
+.hm-rows{background:#ffffff;color:#1a2744;border-radius:12px;border:1px solid #dddcd4;overflow:hidden}
+.hm-row{display:grid;grid-template-columns:76px minmax(0,1fr) 250px;gap:18px;align-items:center;padding:16px 20px;border-top:1px solid #ecebe5}
+.hm-row:first-child{border-top:0}
+.hm-rst{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.hm-next{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:18px;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.22);font-size:15px}
+.hm-next a{color:#ffffff;font-weight:600;text-decoration:none}
+.hm-next a:hover{color:#e6cf86}
+.hm-var{background:#ffffff;color:#1a2744;border-radius:12px;border:1px solid #dddcd4;padding:18px}
+.hm-var h3{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.hm-vi{padding:12px 0;border-top:1px solid #ecebe5;font-size:14px;line-height:1.45}
+.hm-vi:first-of-type{border-top:0}
+.hm-l9{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 700px;gap:40px;align-items:start}
+.hm-nlca{background:#ffffff;color:#1a2744;border-radius:12px;border:1px solid #dddcd4;padding:18px 20px;display:grid;grid-template-columns:72px minmax(0,1fr);gap:16px;align-items:center}
+.hm-soon{background:#ffffff;color:#1a2744;border-radius:12px;border:1px solid #dddcd4;overflow:hidden;margin-top:14px}
+.hm-soonh{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;border-bottom:1px solid #ecebe5}
+.hm-sr9{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;padding:12px 18px;border-top:1px solid #ecebe5;align-items:center}
+.hm-sr9:first-of-type{border-top:0}
+.hm-sel{display:flex;flex-direction:column;gap:6px;max-width:420px}
+.hm-sel label{font-size:14px;font-weight:600;color:#ffffff}
+.hm-sel select{min-height:48px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:16px}
+/* 10 clubs */
+.hm-l10{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:40px;align-items:center;min-height:330px}
+.hm-chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;max-width:760px}
+.hm-chips .k-chip{min-height:44px;text-decoration:none}
+.hm-m5{display:flex;align-items:center;gap:18px;padding:22px 24px;border:2px dashed #858b99;border-radius:14px;background:#fbfaf6}
+</style>
+</helmet>
+<div class="hm-root" style="width:1440px;height:5400px">
+
+<section class="hm-top" aria-labelledby="hm-title" style="padding:36px 40px 30px">
+  <h1 id="hm-title" class="k-h1">Home · hero modes 6 to 10 (announced, week, this week, quiet, clubs)</h1>
+  <p class="hm-dtrig" style="margin-top:6px;max-width:none">Continued from Home · hero modes 1 to 4 (live, event day, last call, results)</p>
+  <p class="k-label" style="margin-top:20px">Notes on this board</p>
+  <ol class="hm-notes">
+      <li><span class="k-num-badge">1</span><span>Header: the decided bar with the Search button (Nav-Header-Final). It is identical in every mode; signed in, the utilities read Donate · My LCA.</span></li>
+      <li><span class="k-num-badge">6</span><span>Identity and search band: the same fixed place under every mode, so the box never moves between visits and search never becomes the hero. Quick-pick chips stay hidden until WS04 and WS09 ship their filters. One gold primary per hero: the band's Search button and the header's Join LCA are site chrome, the same in every mode, as on Home-Final.</span></li>
+      <li><span class="k-num-badge">10</span><span>Announced: signed in gets the reminder; signed out gets Event details and a calendar file that collects nothing, never "Log in to get a reminder". No venue is stored yet, so the city line is dropped, not printed as a placeholder.</span></li>
+      <li><span class="k-num-badge">11</span><span>Grid motif (a–h, 8–1, 0 KB) on partner and quiet modes. A partner event never wears LCA's hall photo.</span></li>
+      <li><span class="k-num-badge">12</span><span>Partner rows: the "Partner event" tag and "Registers on the organizer's site ↗", never Register and never a count. They drop out when the feed is more than 3 days old.</span></li>
+      <li><span class="k-num-badge">13</span><span>The Next LCA event line ends every non-LCA mode, status in words. It is omitted when nothing is announced within 180 days, as on the Week frame (Mon, Oct 5), and on the Clubs floor, which has no event data.</span></li>
+      <li><span class="k-num-badge">14</span><span>Quiet is the usual homepage, so it carries real dated events however far away, and clubs, which meet every week and suit beginners and kids.</span></li>
+      <li><span class="k-num-badge">15</span><span>Clubs floor: never blank. It is also what the client shows when /api/home fails, drawn from the static regions list with no error message.</span></li>
+  </ol>
+</section>
+
+<section class="hm-mode" aria-label="Mode 6, Announced">
+<div class="hm-div">
+  <span class="hm-rung" aria-hidden="true">6</span>
+  <div class="hm-dmain">
+    <h2 class="hm-dname">Mode 6 · Announced</h2>
+    <p class="hm-dtrig"><b>Trigger:</b> a visible LCA event that is neither open nor closed online, starting within 60 days.</p>
+  </div>
+  <dl class="hm-dmeta">
+    <div><dt>Flag</dt><dd><code>newHome</code></dd></div>
+    <div><dt>Today on this frame</dt><dd>Mon, Jan 4, 2027 · signed in</dd></div>
+    <div><dt>Ground</dt><dd>Hall photo · LCA-run</dd></div>
+  </dl>
+</div>
+<div class="hm-frame">
+<header class="k-header hm-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#" aria-expanded="false">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></nav>
+    <a class="hm-sbtn" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd aria-hidden="true">⌘K</kbd></a>
+    <div class="k-utility"><a class="k-ulink" href="#">Donate</a><button class="hm-mylca" type="button" aria-expanded="false">My LCA<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+  </div>
+</header>
+<section class="hm-ph" aria-labelledby="hm-h6">
+  <img class="hm-photo" src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at long tables in a tournament hall">
+  <div class="hm-tint"></div>
+  <div class="k-wrap-wide hm-in">
+    <div class="hm-l6">
+      <article class="k-card-raised hm-card" style="display:flex;gap:28px;align-items:flex-start">
+        <div class="hm-bigdate" aria-hidden="true"><span>Sat</span><b>13</b><span>Feb</span><em>2027</em></div>
+        <div style="flex:1;min-width:0">
+          <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-soon">Opens Fri, Jan 15</span></div>
+          <h1 id="hm-h6" class="k-h1" style="margin-top:10px">2027 LCA TOC Qualifier</h1>
+          <p class="k-body k-muted" style="margin-top:4px">K–12 qualifier for the national Tournament of Champions · Sat, Feb 13, 2027 · in 40 days</p>
+          <p class="k-h3" style="margin-top:16px">Registration opens Fri, Jan 15</p>
+          <div class="k-row" style="margin-top:18px">
+            <button class="k-btn k-btn-gold k-btn-lg" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Email me when registration opens</button>
+            <a class="k-btn k-btn-line k-btn-lg" href="#">Event details</a>
+          </div>
+          <p class="k-meta" style="margin-top:10px">One email on the day registration opens. Without an opening date the line reads "Registration not open yet" and no date is invented.</p>
+        </div>
+      </article>
+      <aside aria-label="Signed out, same slot">
+        <div class="hm-pill"><span class="k-num-badge">10</span>Signed out, same slot</div>
+        <div class="hm-inset k-stack-sm" style="margin-top:10px">
+          <p class="k-h4">2027 LCA TOC Qualifier</p>
+          <p class="k-small" style="color:rgba(255,255,255,.86)">Sat, Feb 13, 2027 · Registration opens Fri, Jan 15</p>
+          <a class="k-btn k-btn-gold k-btn-block" href="#" style="margin-top:6px">Event details</a>
+          <button class="k-btn k-btn-on-dark k-btn-block" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to my calendar</button>
+          <p class="k-meta">Saves a calendar file on this device. Nothing is collected.</p>
+          <p class="k-meta">Never "Log in to get a reminder" as the primary.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+<section class="hm-band" aria-label="About LCA and search">
+  <div class="k-wrap-wide hm-band-in">
+    <div class="hm-idrow">
+      <span class="hm-logo hm-logo-lt" aria-hidden="true"><span class="hm-plate hm-plate-ln"><b>LCA</b></span><i>official logo</i></span>
+      <p class="hm-idline">Louisiana's chess community since 1915 · <a class="k-link" href="#">300+ members</a> · <a class="k-link" href="#">25+ clubs</a> · <a class="k-link" href="#">7 regions</a></p>
+    </div>
+    <div class="hm-tt" role="presentation"></div>
+    <form class="hm-sform" role="search" action="#">
+      <label for="hm-q6">Search tournaments, clubs and news</label>
+      <div class="hm-sbox"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hm-q6" type="search" placeholder="Try a city, a club or a month"><button class="k-btn k-btn-gold" type="submit">Search</button></div>
+    </form>
+  </div>
+</section>
+</div></section>
+<section class="hm-mode" aria-label="Mode 7, Week">
+<div class="hm-div">
+  <span class="hm-rung" aria-hidden="true">7</span>
+  <div class="hm-dmain">
+    <h2 class="hm-dname">Mode 7 · Week</h2>
+    <p class="hm-dtrig"><b>Trigger:</b> club schedules exist (WS09). Until WS09 ships, the ladder skips this mode; free-text meeting times are never parsed into a "Tonight" panel.</p>
+  </div>
+  <dl class="hm-dmeta">
+    <div><dt>Flag</dt><dd><code>homeWeek</code></dd></div>
+    <div><dt>Today on this frame</dt><dd>Mon, Oct 5, 2026 · 4:10 PM</dd></div>
+    <div><dt>Ground</dt><dd>Grid motif · no photo</dd></div>
+  </dl>
+</div>
+<div class="hm-frame">
+<header class="k-header hm-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#" aria-expanded="false">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></nav>
+    <a class="hm-sbtn" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd aria-hidden="true">⌘K</kbd></a>
+    <div class="k-utility"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+  </div>
+</header>
+<section class="hm-nv" aria-labelledby="hm-h7">
+  <div class="hm-field" aria-hidden="true"><i></i><span><b>a</b><b>b</b><b>c</b><b>d</b><b>e</b><b>f</b><b>g</b><b>h</b></span></div>
+  <div class="k-wrap-wide hm-in">
+    <div class="hm-l7">
+      <div>
+        <div class="k-row-sm"><span class="k-label" style="color:#e6cf86">Mon, Oct 5 – Sun, Oct 11</span><span class="k-num-badge hm-nbg">11</span></div>
+        <h1 id="hm-h7" class="hm-title" style="margin-top:10px">This week in Louisiana chess</h1>
+        <p class="hm-sub" style="margin-top:10px"><b style="color:#ffffff">19 club meetings at 15 clubs</b> · one tournament this weekend</p>
+        <div class="k-row" style="margin-top:22px">
+          <a class="k-btn k-btn-gold k-btn-lg" href="#">Find a club tonight</a>
+          <a class="hm-tl" href="#">The full week</a>
+        </div>
+        <div class="hm-rows" style="margin-top:26px">
+          <div style="padding:12px 20px;border-bottom:1px solid #ecebe5" class="k-label">This weekend</div>
+          <div class="hm-row" style="grid-template-columns:76px minmax(0,1fr) 230px">
+            <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat–Sun</span><b style="font-size:20px">10–11</b><span>Oct</span></div>
+            <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">Lafayette Open 2026</a><p class="k-small k-muted">Lafayette · Lafayette Chess Club · Classical, long games · All ages</p></div>
+            <div class="hm-rst"><span class="k-tag k-tag-ext">Partner event</span><a class="hm-ext" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="hm-sr"> (opens in new tab)</span></a></div>
+          </div>
+        </div>
+        <p class="k-meta" style="margin-top:12px">No Next LCA event line here: nothing is announced within 180 days of Mon, Oct 5.</p>
+      </div>
+      <div class="hm-tn">
+        <div class="hm-tnh"><b>Tonight · Mon, Oct 5</b><span>as of 4:10 PM</span></div>
+        <div class="hm-tnr"><span class="k-mono">1:00–5:00 PM</span><span><b>Shreveport-Bossier Chess Club</b><br><span class="k-muted">Gamers XP · Shreveport</span></span></div>
+        <div class="hm-tnr"><span class="k-mono">5:00 PM</span><span><b>Mandeville Chess Club</b><br><span class="k-muted">George's Mexican Restaurant · Mandeville</span></span></div>
+        <div class="hm-tnr"><span class="k-mono">5:30 PM</span><span><b>Monroe Chess Club</b><br><span class="k-muted">Enochs Pub and Grill · Monroe</span></span></div>
+        <div class="hm-tnr"><span class="k-mono">6:00 PM</span><span><b>Picayune Chess Club</b><br><span class="k-muted">IHOP · Picayune, MS · quick-rated night</span></span></div>
+        <div class="hm-tnr"><span class="k-mono">7:00 PM</span><span><b>Downriver Chess Club</b><br><span class="k-muted">Decatur St · New Orleans · Game 15</span></span></div>
+        <div class="hm-tnf"><span class="k-meta">First five of tonight's meetings</span><a class="k-link-plain k-small" href="#">All of tonight ›</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="hm-band" aria-label="About LCA and search">
+  <div class="k-wrap-wide hm-band-in">
+    <div class="hm-idrow">
+      <span class="hm-logo hm-logo-lt" aria-hidden="true"><span class="hm-plate hm-plate-ln"><b>LCA</b></span><i>official logo</i></span>
+      <p class="hm-idline">Louisiana's chess community since 1915 · <a class="k-link" href="#">300+ members</a> · <a class="k-link" href="#">25+ clubs</a> · <a class="k-link" href="#">7 regions</a></p>
+    </div>
+    <div class="hm-tt" role="presentation"></div>
+    <form class="hm-sform" role="search" action="#">
+      <label for="hm-q7">Search tournaments, clubs and news</label>
+      <div class="hm-sbox"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hm-q7" type="search" placeholder="Try a city, a club or a month"><button class="k-btn k-btn-gold" type="submit">Search</button></div>
+    </form>
+  </div>
+</section>
+</div></section>
+<section class="hm-mode" aria-label="Mode 8, This week in Louisiana">
+<div class="hm-div">
+  <span class="hm-rung" aria-hidden="true">8</span>
+  <div class="hm-dmain">
+    <h2 class="hm-dname">Mode 8 · This week in Louisiana</h2>
+    <p class="hm-dtrig"><b>Trigger:</b> Louisiana events, LCA or partner, start within 14 days. Partner rows count only while the feed is fresh; LCA rows always. The usual state before WS09.</p>
+  </div>
+  <dl class="hm-dmeta">
+    <div><dt>Flag</dt><dd><code>newHome</code></dd></div>
+    <div><dt>Today on this frame</dt><dd>Mon, Oct 19, 2026</dd></div>
+    <div><dt>Ground</dt><dd>Grid motif · no photo</dd></div>
+  </dl>
+</div>
+<div class="hm-frame">
+<header class="k-header hm-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#" aria-expanded="false">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></nav>
+    <a class="hm-sbtn" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd aria-hidden="true">⌘K</kbd></a>
+    <div class="k-utility"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+  </div>
+</header>
+<section class="hm-nv" aria-labelledby="hm-h8">
+  <div class="hm-field" aria-hidden="true"><i></i><span><b>a</b><b>b</b><b>c</b><b>d</b><b>e</b><b>f</b><b>g</b><b>h</b></span></div>
+  <div class="k-wrap-wide hm-in">
+    <div class="hm-l8">
+      <div>
+        <h1 id="hm-h8" class="hm-title">This weekend in Louisiana</h1>
+        <p class="hm-sub" style="margin-top:8px">The next three Louisiana tournaments, soonest first</p>
+        <div class="hm-rows" style="margin-top:22px">
+          <div class="hm-row">
+            <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat–Sun</span><b style="font-size:20px">24–25</b><span>Oct</span></div>
+            <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">The Baton Rouge Classic</a><p class="k-small k-muted">Baton Rouge · Downriver Chess · Classical, long games · All ages</p></div>
+            <div class="hm-rst"><span class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-num-badge">12</span></span><a class="hm-ext" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="hm-sr"> (opens in new tab)</span></a></div>
+          </div>
+          <div class="hm-row">
+            <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat</span><b>31</b><span>Oct</span></div>
+            <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">The Casa Chess Tournament</a><p class="k-small k-muted">Sulphur · Casa de Ajedrez · Dual-rated: counts for regular and quick US Chess ratings · All ages</p></div>
+            <div class="hm-rst"><span class="k-tag k-tag-ext">Partner event</span><a class="hm-ext" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="hm-sr"> (opens in new tab)</span></a></div>
+          </div>
+          <div class="hm-row">
+            <div class="k-date" style="width:76px"><span style="margin:0 0 3px">Sat</span><b>14</b><span>Nov</span></div>
+            <div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none">New Orleans Youth Chess November Meet</a><p class="k-small k-muted">New Orleans · Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess · Scholastic, kids and teens</p></div>
+            <div class="hm-rst"><span class="k-tag k-tag-ext">Partner event</span><a class="hm-ext" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="hm-sr"> (opens in new tab)</span></a></div>
+          </div>
+        </div>
+        <div class="k-row" style="margin-top:20px">
+          <a class="k-btn k-btn-gold k-btn-lg" href="#">All tournaments</a>
+          <a class="hm-tl" href="#">Or play this week at one of 25+ clubs →</a>
+        </div>
+        <div class="hm-next"><span class="k-tag k-tag-lca" style="background:#ffffff;color:#1a2744">LCA</span><a href="#">Next LCA event: State Scholastic Championship · Sat, Apr 10 · Registration opens Fri, Jan 15 ›</a><span class="k-num-badge hm-nbg">13</span></div>
+      </div>
+      <aside class="hm-var" aria-label="The same mode on other days" style="margin-top:118px">
+        <h3>Same mode, other days</h3>
+        <div class="hm-vi"><b>"Coming up in Louisiana"</b> is the heading when the soonest event is 8 to 14 days away. The mode needs one event inside 14 days; the rows are then the next three, soonest first.</div>
+        <div class="hm-vi"><b>An LCA row</b> carries the "LCA event" tag, status in words and its count, and links to the event page. An open LCA event inside 14 days takes Last call instead, so here LCA mostly shows in the Next LCA event line.</div>
+        <div class="hm-vi"><b>Feed over 3 days old:</b> partner rows drop out. With no LCA row left in range, the ladder falls through to Quiet, then Clubs.</div>
+      </aside>
+    </div>
+  </div>
+</section>
+<section class="hm-band" aria-label="About LCA and search">
+  <div class="k-wrap-wide hm-band-in">
+    <div class="hm-idrow">
+      <span class="hm-logo hm-logo-lt" aria-hidden="true"><span class="hm-plate hm-plate-ln"><b>LCA</b></span><i>official logo</i></span>
+      <p class="hm-idline">Louisiana's chess community since 1915 · <a class="k-link" href="#">300+ members</a> · <a class="k-link" href="#">25+ clubs</a> · <a class="k-link" href="#">7 regions</a></p>
+    </div>
+    <div class="hm-tt" role="presentation"></div>
+    <form class="hm-sform" role="search" action="#">
+      <label for="hm-q8">Search tournaments, clubs and news</label>
+      <div class="hm-sbox"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hm-q8" type="search" placeholder="Try a city, a club or a month"><button class="k-btn k-btn-gold" type="submit">Search</button></div>
+    </form>
+  </div>
+</section>
+</div></section>
+<section class="hm-mode" aria-label="Mode 9, Quiet">
+<div class="hm-div">
+  <span class="hm-rung" aria-hidden="true">9</span>
+  <div class="hm-dmain">
+    <h2 class="hm-dname">Mode 9 · Quiet</h2>
+    <p class="hm-dtrig"><b>Trigger:</b> nothing starts within 14 days (partner rows count only while the feed is fresh; LCA rows always). With LCA running three to six events a year, this is the usual homepage.</p>
+  </div>
+  <dl class="hm-dmeta">
+    <div><dt>Flag</dt><dd><code>newHome</code></dd></div>
+    <div><dt>Today on this frame</dt><dd>Tue, Dec 8, 2026</dd></div>
+    <div><dt>Ground</dt><dd>Grid motif · no photo</dd></div>
+  </dl>
+</div>
+<p class="hm-decided"><b>Decided after this board:</b> in these two modes the hero band carries the three doors (I want to play · My child plays · I run a club or tournament) on the navy ground with the grid motif, and the doors band lower on the page is omitted; see REDESIGN_SPEC.md v1.2, WS03.</p>
+<div class="hm-frame">
+<header class="k-header hm-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#" aria-expanded="false">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></nav>
+    <a class="hm-sbtn" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd aria-hidden="true">⌘K</kbd></a>
+    <div class="k-utility"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+  </div>
+</header>
+<section class="hm-nv" aria-labelledby="hm-h9">
+  <div class="hm-field" aria-hidden="true"><i></i><span><b>a</b><b>b</b><b>c</b><b>d</b><b>e</b><b>f</b><b>g</b><b>h</b></span></div>
+  <div class="k-wrap-wide hm-in">
+    <div class="hm-l9">
+      <div>
+        <h1 id="hm-h9" class="hm-title" style="max-width:600px">Find your next game in Louisiana</h1>
+        <p class="hm-sub" style="margin-top:12px;max-width:600px">Clubs meet every week, and most welcome beginners and kids. Pick your region to see where and when.</p>
+        <div class="hm-sel" style="margin-top:22px"><label for="hm-reg">Your region</label><select id="hm-reg"><option>All regions</option><option>North Louisiana</option><option>Central Louisiana</option><option>North of Lake Pontchartrain</option><option>New Orleans Metro</option><option>Southwest Louisiana</option><option>South Central Louisiana</option><option>Bayou Region</option></select></div>
+        <div class="k-row" style="margin-top:16px">
+          <a class="k-btn k-btn-gold k-btn-lg" href="#">Find a club near you</a>
+          <a class="hm-tl" href="#">All tournaments</a>
+          <span class="k-num-badge hm-nbg">14</span>
+        </div>
+      </div>
+      <div style="position:relative">
+        <div class="hm-nlca">
+          <div class="k-date k-date-navy" style="width:72px"><span style="margin:0 0 3px;color:#e6cf86">Sat</span><b>13</b><span>Feb</span></div>
+          <div style="min-width:0">
+            <div class="k-row-sm"><span class="k-label-gold">Next LCA event</span><span class="k-tag k-tag-lca">LCA event</span></div>
+            <a class="k-h4" href="#" style="display:block;margin-top:4px;text-decoration:none">2027 LCA TOC Qualifier</a>
+            <p class="k-small k-muted">Sat, Feb 13, 2027 · K–12 · in 67 days</p>
+            <a class="k-link k-small" href="#" style="display:inline-block;margin-top:4px">Registration opens Fri, Jan 15 ›</a>
+          </div>
+        </div>
+        <div class="hm-soon">
+          <div class="hm-soonh"><span class="k-label">Soonest in Louisiana</span><a class="k-link-plain k-small" href="#">All tournaments ›</a></div>
+          <div class="hm-sr9"><div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none;font-size:16px">Ken Ferguson Memorial Open</a><p class="k-small k-muted">Sat–Mon, Jan 16–18 · in 39 days · New Orleans · Downriver Chess</p></div><div class="hm-rst" style="align-items:flex-end"><span class="k-tag k-tag-ext">Partner event</span><a class="hm-ext" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="hm-sr"> (opens in new tab)</span></a></div></div>
+          <div class="hm-sr9"><div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none;font-size:16px">Ken Ferguson Memorial Scholastic</a><p class="k-small k-muted">Sun, Jan 17 · in 40 days · New Orleans · Downriver Chess</p></div><div class="hm-rst" style="align-items:flex-end"><span class="k-tag k-tag-ext">Partner event</span><a class="hm-ext" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="hm-sr"> (opens in new tab)</span></a></div></div>
+          <div class="hm-sr9"><div style="min-width:0"><a class="k-h4" href="#" style="text-decoration:none;font-size:16px">New Orleans Youth Chess March Meet</a><p class="k-small k-muted">Sat, Mar 20 · in 102 days · New Orleans · Scholastic</p></div><div class="hm-rst" style="align-items:flex-end"><span class="k-tag k-tag-ext">Partner event</span><a class="hm-ext" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="hm-sr"> (opens in new tab)</span></a></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="hm-band" aria-label="About LCA and search">
+  <div class="k-wrap-wide hm-band-in">
+    <div class="hm-idrow">
+      <span class="hm-logo hm-logo-lt" aria-hidden="true"><span class="hm-plate hm-plate-ln"><b>LCA</b></span><i>official logo</i></span>
+      <p class="hm-idline">Louisiana's chess community since 1915 · <a class="k-link" href="#">300+ members</a> · <a class="k-link" href="#">25+ clubs</a> · <a class="k-link" href="#">7 regions</a></p>
+    </div>
+    <div class="hm-tt" role="presentation"></div>
+    <form class="hm-sform" role="search" action="#">
+      <label for="hm-q9">Search tournaments, clubs and news</label>
+      <div class="hm-sbox"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hm-q9" type="search" placeholder="Try a city, a club or a month"><button class="k-btn k-btn-gold" type="submit">Search</button></div>
+    </form>
+  </div>
+</section>
+</div></section>
+<section class="hm-mode" aria-label="Mode 10, Clubs">
+<div class="hm-div">
+  <span class="hm-rung" aria-hidden="true">10</span>
+  <div class="hm-dmain">
+    <h2 class="hm-dname">Mode 10 · Clubs (the floor)</h2>
+    <p class="hm-dtrig"><b>Trigger:</b> nothing above matches, including a stale or empty partner feed with no LCA rows in range. The client also renders it when /api/home fails.</p>
+  </div>
+  <dl class="hm-dmeta">
+    <div><dt>Flag</dt><dd><code>newHome</code></dd></div>
+    <div><dt>Today on this frame</dt><dd>Any day · or /api/home failed</dd></div>
+    <div><dt>Ground</dt><dd>Grid motif · no photo</dd></div>
+  </dl>
+</div>
+<p class="hm-decided"><b>Decided after this board:</b> in these two modes the hero band carries the three doors (I want to play · My child plays · I run a club or tournament) on the navy ground with the grid motif, and the doors band lower on the page is omitted; see REDESIGN_SPEC.md v1.2, WS03.</p>
+<div class="hm-frame">
+<header class="k-header hm-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#" aria-expanded="false">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></nav>
+    <a class="hm-sbtn" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd aria-hidden="true">⌘K</kbd></a>
+    <div class="k-utility"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+  </div>
+</header>
+<section class="hm-nv" aria-labelledby="hm-h10">
+  <div class="k-wrap-wide hm-in">
+    <div class="hm-l10">
+      <div>
+        <div class="k-row-sm"><span class="k-num-badge hm-nbg">15</span></div>
+        <h1 id="hm-h10" class="hm-title" style="margin-top:10px">25+ clubs meet across Louisiana</h1>
+        <p class="hm-sub" style="margin-top:10px;max-width:640px">Most meet every week, and beginners and kids are welcome at most of them. Pick a region to see where and when.</p>
+        <nav class="hm-chips" aria-label="Clubs by region"><a class="k-chip" href="#">North Louisiana</a><a class="k-chip" href="#">Central Louisiana</a><a class="k-chip" href="#">North of Lake Pontchartrain</a><a class="k-chip" href="#">New Orleans Metro</a><a class="k-chip" href="#">Southwest Louisiana</a><a class="k-chip" href="#">South Central Louisiana</a><a class="k-chip" href="#">Bayou Region</a></nav>
+        <div class="k-row" style="margin-top:24px"><a class="k-btn k-btn-gold k-btn-lg" href="#">Find a club</a></div>
+      </div>
+      <div style="position:relative;height:330px"><div class="hm-motif" aria-hidden="true" style="right:0;top:0;width:330px"><div class="hm-mr"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div><div class="hm-mb"></div><div></div><div class="hm-mf"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div></div>
+    </div>
+  </div>
+</section>
+<section class="hm-band" aria-label="About LCA and search">
+  <div class="k-wrap-wide hm-band-in">
+    <div class="hm-idrow">
+      <span class="hm-logo hm-logo-lt" aria-hidden="true"><span class="hm-plate hm-plate-ln"><b>LCA</b></span><i>official logo</i></span>
+      <p class="hm-idline">Louisiana's chess community since 1915 · <a class="k-link" href="#">300+ members</a> · <a class="k-link" href="#">25+ clubs</a> · <a class="k-link" href="#">7 regions</a></p>
+    </div>
+    <div class="hm-tt" role="presentation"></div>
+    <form class="hm-sform" role="search" action="#">
+      <label for="hm-q10">Search tournaments, clubs and news</label>
+      <div class="hm-sbox"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="hm-q10" type="search" placeholder="Try a city, a club or a month"><button class="k-btn k-btn-gold" type="submit">Search</button></div>
+    </form>
+  </div>
+</section>
+</div></section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5400}}'>class Component extends DCLogic { renderVals() { return {}; } }</script>
+</body>
+</html>

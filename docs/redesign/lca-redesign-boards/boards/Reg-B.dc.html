@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reg B — Step by step on a phone</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.rb-board{width:2400px;height:1100px;box-sizing:border-box;background:#ecebe6;padding:24px 40px 22px;overflow:hidden;display:flex;flex-direction:column;gap:20px}
+.rb-phones{display:flex;align-items:flex-start}
+.rb-col{width:414px;flex:none;display:flex;flex-direction:column;gap:10px}
+.rb-arrow{width:62px;flex:none;height:868px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#1a2744;text-align:center}
+.rb-arrow small{font-size:12px;font-weight:600;line-height:1.3;color:#555c6b}
+.rb-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px;min-height:60px}
+.rb-app .k-menubtn{display:inline-flex}
+.rb-stepbar{flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 16px;min-height:46px;border-bottom:1px solid #e2e1da;background:#fbfaf6}
+.rb-content{padding:18px 18px 20px;display:flex;flex-direction:column;gap:16px}
+.rb-q{font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin-top:2px}
+.rb-foot{flex:none;padding:14px 18px 22px;border-top:1px solid #e2e1da;background:#ffffff;display:flex;flex-direction:column;gap:8px}
+.rb-opt{display:flex;align-items:flex-start;gap:12px;padding:14px;border:1px solid #c9c8c0;border-radius:12px;background:#ffffff;font-size:15px;line-height:1.4;color:#1a2744}
+.rb-opt input{width:22px;height:22px;margin:0;accent-color:#1a2744;flex:none}
+.rb-on{border:2px solid #1a2744;padding:13px;background:#f6f7fa}
+.rb-oc{flex:1;min-width:0}
+.rb-o1{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:16px;font-weight:600}
+.rb-oc small{display:block;font-size:13px;color:#555c6b;margin-top:2px}
+.rb-help{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;padding:0 14px;border:0;background:transparent;font-size:15px;font-weight:600;color:#1a2744;text-align:left;cursor:pointer}
+.rb-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rb-tile{display:flex;align-items:center;gap:8px;min-height:46px;padding:0 11px;border:1px solid #c9c8c0;border-radius:10px;background:#ffffff;font-size:15px;font-weight:600;line-height:1.2;color:#1a2744;white-space:nowrap}
+.rb-tile input{width:18px;height:18px;margin:0;accent-color:#1a2744;flex:none}
+.rb-tile small{font-size:13px;font-weight:500;color:#555c6b}
+.rb-tile-on{border:2px solid #1a2744;padding:0 10px;background:#f6f7fa}
+.rb-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid #e2e1da}
+.rb-val{font-size:15px;font-weight:600;line-height:1.4}
+.rb-line{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:5px 0}
+.rb-line b{font-weight:600;font-variant-numeric:tabular-nums}
+.rb-total{display:flex;justify-content:space-between;align-items:baseline;border-top:2px solid #1a2744;margin-top:6px;padding-top:9px}
+.rb-warn{border-radius:12px;background:#fbf3dc;border:1px solid #e3cf8f;padding:12px 14px;color:#4a3708;font-size:14px;line-height:1.45}
+.rb-warn a{color:#4a3708}
+.rb-done{background:#145b3a;color:#ffffff;border-radius:14px;padding:18px}
+.rb-next{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid #e2e1da;font-size:14px;line-height:1.45}
+.rb-next:last-child{border-bottom:0}
+.rb-ic{width:34px;height:34px;border-radius:50%;background:#f4ecd4;color:#1a2744;display:inline-flex;align-items:center;justify-content:center;flex:none}
+</style>
+</helmet>
+<div class="rb-board">
+
+  <div class="k-between" style="align-items:flex-end;gap:24px">
+    <div class="k-stack-sm" style="gap:6px">
+      <div class="k-kicker">Registration · Option B</div>
+      <div class="k-h1">Step by step (phone)</div>
+    </div>
+    <div class="k-stack-sm" style="align-items:flex-end;gap:8px">
+      <span class="k-sample">Sample data</span>
+      <div class="k-small k-muted">One question per screen. Back keeps every answer; Check your answers comes before paying. Event: <b class="k-ink">2027 Paul Morphy Open</b> · Sat–Sun, Jun 12–13, 2027 · New Orleans</div>
+    </div>
+  </div>
+
+  <div class="rb-phones">
+
+    <!-- 1 Who's playing -->
+    <div class="rb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="rb-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+        </div>
+        <div class="rb-stepbar">
+          <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Event page</a>
+          <span class="k-meta">Step 1 of 4</span>
+        </div>
+        <div class="k-phone-scroll rb-content">
+          <div class="k-card-pad" style="padding:12px 14px">
+            <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-open">Registration open</span></div>
+            <div class="k-h4" style="margin-top:8px">2027 Paul Morphy Open</div>
+            <div class="k-meta">Sat–Sun, Jun 12–13, 2027 · New Orleans · 5 rounds · G/90+30 (90 min each + 30 sec per move)</div>
+          </div>
+          <div>
+            <div class="rb-q">Who's playing?</div>
+            <div class="k-meta" style="margin-top:6px">Signed in as Jordan Lee</div>
+          </div>
+          <div class="k-stack-sm" style="gap:10px">
+            <label class="rb-opt rb-on"><input type="radio" name="b1" checked><span class="rb-oc"><span class="rb-o1">Me · Jordan Lee</span><small>Rating 1388 · US Chess ID 12904471</small></span></label>
+            <label class="rb-opt"><input type="radio" name="b1"><span class="rb-oc"><span class="rb-o1">My child</span><small>Children on your account need no login of their own</small></span></label>
+            <label class="rb-opt"><input type="radio" name="b1"><span class="rb-oc"><span class="rb-o1">Someone else</span><small>A friend or student. You'll need their US Chess ID or name.</small></span></label>
+          </div>
+          <div class="k-meta">Entering more than one player? You can add another on the Check your answers screen.</div>
+        </div>
+        <div class="rb-foot"><button class="k-btn k-btn-gold k-btn-lg k-btn-block" type="button">Continue</button></div>
+      </div></div>
+      <div class="k-caption">1 · Who's playing?</div>
+      <div class="k-caption-sub">One question per screen. A child or someone else is a choice here, not a separate flow.</div>
+    </div>
+
+    <div class="rb-arrow"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+
+    <!-- 2 Section -->
+    <div class="rb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="rb-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+        </div>
+        <div class="rb-stepbar">
+          <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Back</a>
+          <span class="k-meta">Step 2 of 4</span>
+        </div>
+        <div class="k-phone-scroll rb-content">
+          <div>
+            <div class="k-meta">2027 Paul Morphy Open · Jordan Lee</div>
+            <div class="rb-q">Which section?</div>
+          </div>
+          <div class="k-card" style="overflow:hidden">
+            <button class="rb-help" type="button" aria-expanded="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span>Which section fits me?</span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="margin-left:auto"><path d="M5 15l7-7 7 7"></path></svg></button>
+            <div class="k-small" style="padding:0 14px 14px;color:#3d4556">Sections group players by US Chess rating so games are close. You're rated <b class="k-ink">1388</b>: U1400 gives the most even games; U1800 and Open mean stronger opponents and bigger prizes.</div>
+          </div>
+          <div class="k-stack-sm" style="gap:10px">
+            <label class="rb-opt rb-on"><input type="radio" name="b2" checked><span class="rb-oc"><span class="rb-o1"><span>U1400</span><span class="k-num">$25</span></span><small>Rated under 1400 · 10 entered so far</small></span></label>
+            <label class="rb-opt"><input type="radio" name="b2"><span class="rb-oc"><span class="rb-o1"><span>U1800</span><span class="k-num">$35</span></span><small>Rated under 1800 · 11 entered so far</small></span></label>
+            <label class="rb-opt"><input type="radio" name="b2"><span class="rb-oc"><span class="rb-o1"><span>Open</span><span class="k-num">$45</span></span><small>Anyone · 9 entered so far</small></span></label>
+          </div>
+          <div class="k-panel" style="padding:12px 14px"><div class="k-small"><b>Not open to you:</b> U1000 (under 1000) and K–8 Scholastic (8th grade or below).</div></div>
+          <div class="k-meta">Prices include your early-entry and LCA member discounts.</div>
+        </div>
+        <div class="rb-foot"><button class="k-btn k-btn-gold k-btn-lg k-btn-block" type="button">Continue</button></div>
+      </div></div>
+      <div class="k-caption">2 · Which section?</div>
+      <div class="k-caption-sub">Only the sections Jordan can enter, priced for him. "Which section fits me?" answers in plain words.</div>
+    </div>
+
+    <div class="rb-arrow"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+
+    <!-- 3 Byes and options -->
+    <div class="rb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="rb-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+        </div>
+        <div class="rb-stepbar">
+          <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Back</a>
+          <span class="k-meta">Step 3 of 4</span>
+        </div>
+        <div class="k-phone-scroll rb-content" style="gap:14px">
+          <div>
+            <div class="k-meta">2027 Paul Morphy Open · U1400</div>
+            <div class="rb-q">Byes and US Chess</div>
+          </div>
+          <div class="k-stack-sm">
+            <div class="k-h4">Will you miss a round?</div>
+            <div class="k-meta">A half-point bye scores ½ point for a round you skip. Optional, up to 2.</div>
+            <div class="rb-tiles">
+              <label class="rb-tile"><input type="checkbox">Rd 1 <small>Sat 10:00 AM</small></label>
+              <label class="rb-tile"><input type="checkbox">Rd 2 <small>Sat 2:30 PM</small></label>
+              <label class="rb-tile rb-tile-on"><input type="checkbox" checked>Rd 3 <small>Sat 7:00 PM</small></label>
+              <label class="rb-tile"><input type="checkbox">Rd 4 <small>Sun 9:30 AM</small></label>
+            </div>
+            <div class="k-meta">No byes in round 5 (Sun 2:00 PM).</div>
+          </div>
+          <div class="k-rule"></div>
+          <div class="k-stack-sm">
+            <div class="k-h4">Your US Chess membership</div>
+            <div class="k-seg" role="group" aria-label="Look up by"><button class="k-seg-on" type="button">By ID</button><button type="button">By name</button></div>
+            <div class="k-row-sm" style="flex-wrap:nowrap"><input class="k-input k-mono" type="text" inputmode="numeric" aria-label="US Chess ID" value="12904471"><button class="k-btn k-btn-line" type="button">Check</button></div>
+            <div class="k-card" style="padding:11px 14px">
+              <div class="k-between"><b class="k-strong">Jordan Lee</b><span class="k-meta">Checked just now</span></div>
+              <div class="k-meta">Louisiana · rating 1388 · expires <b class="k-ink">Sat, Jun 5, 2027</b></div>
+            </div>
+            <div class="rb-warn"><b>Expires before this event.</b> Games are only rated if your membership is current on Sat, Jun 12. You can still register now. <a class="k-link" href="#">Renew at US Chess ↗</a></div>
+          </div>
+        </div>
+        <div class="rb-foot"><button class="k-btn k-btn-gold k-btn-lg k-btn-block" type="button">Continue</button></div>
+      </div></div>
+      <div class="k-caption">3 · Byes and options</div>
+      <div class="k-caption-sub">Byes by round and start time. The US Chess ID is checked inline; an expiry warns, it never blocks.</div>
+    </div>
+
+    <div class="rb-arrow"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></div>
+
+    <!-- 4 Check your answers -->
+    <div class="rb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="rb-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+        </div>
+        <div class="rb-stepbar">
+          <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Back</a>
+          <span class="k-meta">Step 4 of 4</span>
+        </div>
+        <div class="k-phone-scroll rb-content" style="gap:12px">
+          <div>
+            <div class="k-meta">2027 Paul Morphy Open</div>
+            <div class="rb-q">Check your answers</div>
+          </div>
+          <div>
+            <div class="rb-row"><div><div class="k-meta">Player</div><div class="rb-val">Jordan Lee · 1388</div></div><a class="k-link k-small" href="#">Change</a></div>
+            <div class="rb-row"><div><div class="k-meta">Section</div><div class="rb-val">U1400</div></div><a class="k-link k-small" href="#">Change</a></div>
+            <div class="rb-row"><div><div class="k-meta">Byes</div><div class="rb-val">Round 3 · Sat 7:00 PM</div></div><a class="k-link k-small" href="#">Change</a></div>
+            <div class="rb-row"><div><div class="k-meta">US Chess</div><div class="rb-val">ID 12904471 · expires Sat, Jun 5</div><div class="k-meta">Renew before the event</div></div><a class="k-link k-small" href="#">Change</a></div>
+          </div>
+          <a class="k-link-plain k-small" href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add another player</a>
+          <div class="k-panel" style="padding:12px 14px">
+            <div class="rb-line"><span>U1400 entry</span><b>$40</b></div>
+            <div class="rb-line"><span>Early entry, until Fri, May 28</span><b>−$10</b></div>
+            <div class="rb-line"><span>LCA member discount</span><b>−$5</b></div>
+            <div class="rb-total"><span class="k-small k-strong">Total, all fees included</span><b class="k-h3 k-num">$25</b></div>
+          </div>
+          <div class="k-meta">Receipt to jordan.lee@example.com. Withdraw by Thu, Jun 10 for a full refund.</div>
+        </div>
+        <div class="rb-foot">
+          <button class="k-btn k-btn-gold k-btn-lg k-btn-block" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg>Pay $25</button>
+          <div class="k-meta k-center">Opens Stripe's secure checkout in this tab</div>
+        </div>
+      </div></div>
+      <div class="k-caption">4 · Check your answers</div>
+      <div class="k-caption-sub">Every answer has a Change link that returns here. The full total shows before Stripe.</div>
+    </div>
+
+    <div class="rb-arrow"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg><small>Stripe,<br>same tab</small></div>
+
+    <!-- 5 Confirmation -->
+    <div class="rb-col">
+      <div class="k-phone"><div class="k-phone-screen">
+        <div class="rb-app k-navy">
+          <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+          <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+        </div>
+        <div class="k-phone-scroll rb-content">
+          <div class="rb-done">
+            <div class="k-row-sm"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span style="font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase">Payment received</span></div>
+            <div class="rb-q" style="margin-top:8px">You're registered</div>
+            <div style="font-size:15px;margin-top:6px;line-height:1.45">2027 Paul Morphy Open · U1400<br>$25 paid · receipt sent to jordan.lee@example.com</div>
+          </div>
+          <div class="k-h3">What happens next</div>
+          <div>
+            <div class="rb-next"><span class="rb-ic"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg></span><span><span class="k-row-sm"><b class="k-strong">Renew your US Chess membership</b><span class="k-tag k-tag-soon">To do</span></span><span class="k-meta">It expires Sat, Jun 5. We'll remind you Tue, Jun 1. <a class="k-link" href="#">Renew at US Chess ↗</a></span></span></div>
+            <div class="rb-next"><span class="rb-ic"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><span><b class="k-strong">Check in Sat, Jun 12, 8:30–9:30 AM</b><br><span class="k-meta">[Venue name], New Orleans · <a class="k-link" href="#">Directions</a></span></span></div>
+            <div class="rb-next"><span class="rb-ic"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg></span><span><b class="k-strong">Round 1 at 10:00 AM</b><br><span class="k-meta">Pairings appear on the event page and by email about 30 minutes before each round.</span></span></div>
+            <div class="rb-next"><span class="rb-ic"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b class="k-strong">You sit out round 3</b><br><span class="k-meta">Sat 7:00 PM, scoring ½ point.</span></span></div>
+          </div>
+          <a class="k-btn k-btn-line k-btn-block" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a>
+          <div class="k-between"><a class="k-small k-link" href="#">Change byes or withdraw</a><a class="k-small k-link" href="#">Who's coming (39)</a></div>
+        </div>
+      </div></div>
+      <div class="k-caption">5 · Confirmation</div>
+      <div class="k-caption-sub">Back from Stripe in the same tab: what happens next, in order, with the one to-do first.</div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2400,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

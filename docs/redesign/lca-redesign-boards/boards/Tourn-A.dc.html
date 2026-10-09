@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tournaments A — Agenda + filter chips</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0}
+.ta-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.ta-hero{background:#ffffff;border-bottom:1px solid #dddcd4}
+.ta-hero-in{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px;padding:30px 0 22px}
+.ta-intro{flex:1 1 440px;min-width:0;display:flex;flex-direction:column;gap:10px}
+.ta-feed{flex:0 1 440px;min-width:0;display:flex;flex-direction:column;gap:12px;padding:18px 20px;border:1px solid #dddcd4;border-radius:12px;background:#fbfaf6}
+.ta-tabsrow{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.ta-tabs{display:flex;align-items:flex-end;gap:4px}
+.ta-tab{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 14px;border-bottom:3px solid transparent;color:#555c6b;font-size:15px;font-weight:600;text-decoration:none}
+.ta-tab-on{color:#1a2744;border-bottom-color:#c8a94a}
+.ta-tools{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:8px}
+.ta-search{flex:0 1 320px;min-width:0;min-height:44px}
+.ta-seg button{display:inline-flex;align-items:center;gap:6px}
+.ta-filters{position:sticky;top:0;z-index:5;background:#ffffff;border-bottom:1px solid #dddcd4}
+.ta-chiprow{display:flex;align-items:center;gap:12px;padding:14px 0 8px}
+.ta-chips{display:flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0;overflow-x:auto;padding:2px 0}
+.ta-chips .k-chip{min-height:40px}
+.ta-applied{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:4px 0 14px}
+.ta-x{background:#eceef3;border-color:#eceef3}
+.ta-push{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px}
+.ta-body{padding:22px 0 48px}
+.ta-key{display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px;margin-bottom:18px}
+.ta-key span.k-meta{display:inline-flex;align-items:center;gap:8px}
+.ta-month{margin-bottom:28px}
+.ta-mhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;padding:2px 0 12px}
+.ta-list{overflow:hidden}
+.ta-sub{padding:9px 20px;border-bottom:1px solid #ecebe5;background:#fbfbf8;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.ta-row{display:grid;grid-template-columns:72px minmax(0,1fr) 216px;gap:10px 20px;align-items:start;padding:18px 20px;border-bottom:1px solid #ecebe5}
+.ta-row:last-child{border-bottom:0}
+.ta-row-p{padding-top:12px;padding-bottom:12px}
+.ta-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:72px;min-height:72px;padding:8px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;color:#1a2744;line-height:1;text-align:center}
+.ta-date b{font-size:21px;font-weight:700;letter-spacing:-.02em}
+.ta-wd,.ta-mo{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.ta-date-lca{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ta-date-lca .ta-wd,.ta-date-lca .ta-mo{color:#e6cf86}
+.ta-date-p{min-height:56px;padding:6px 2px;background:#fbfbf8}
+.ta-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ta-name{font-size:18px;line-height:1.3;font-weight:600}
+.ta-name a{color:#1a2744;text-decoration:none}
+.ta-row-p .ta-name{font-size:16px}
+.ta-line{font-size:14px;line-height:1.5;color:#555c6b}
+.ta-line b{color:#1a2744;font-weight:600}
+.ta-line .k-tag{margin-right:6px}
+.ta-side{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0}
+.ta-cnt{font-size:14px;color:#1a2744}
+.ta-meter{width:100%;height:6px;border-radius:99px;background:#e6e5de;overflow:hidden}
+.ta-meter i{display:block;height:100%;border-radius:99px;background:#1a2744}
+.ta-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
+.ta-end{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px}
+.ta-gloss{margin:0}
+.ta-gloss dt{font-size:14px;font-weight:600;color:#1a2744}
+.ta-gloss dd{margin:2px 0 10px;font-size:14px;line-height:1.5;color:#555c6b}
+.ta-legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:14px 32px;margin-top:14px}
+.ta-legend p{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.5}
+@media (max-width:760px){
+.ta-row{grid-template-columns:60px minmax(0,1fr);padding:16px}
+.ta-date{width:60px;min-height:64px}
+.ta-side{grid-column:1 / -1}
+.ta-chiprow{flex-wrap:wrap}
+.ta-tools{flex:1 1 100%}
+.ta-search{flex:1 1 100%}
+.ta-push{margin-left:0}
+}
+</style>
+</helmet>
+<div class="k-page">
+
+<header class="k-header">
+  <div class="k-wrap-wide k-header-in">
+    <a class="k-brand" href="#"><span style="color:#ffffff;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-brand-name"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks" aria-label="Main">
+      <a class="k-nav-on" href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><a href="#">About</a>
+    </nav>
+    <div class="k-utility">
+      <a class="k-ulink" href="#">Donate</a>
+      <a class="k-ulink" href="#">Log in</a>
+      <a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a>
+      <button class="k-menubtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg>Menu</button>
+    </div>
+  </div>
+</header>
+
+<section class="ta-hero">
+  <div class="k-wrap">
+    <div class="ta-hero-in">
+      <div class="ta-intro">
+        <div class="k-row-sm"><span class="k-label-gold">Play in Louisiana</span><span class="k-sample">Sample data: entry counts, sections, fees, and which events register on LCA</span></div>
+        <h1 class="k-h1">Tournaments</h1>
+        <p class="k-lead">LCA events and Gulf South regional tournaments — all in one place.</p>
+        <div class="k-row"><a class="k-link" href="#">State champions</a><a class="k-link" href="#">Your first tournament</a></div>
+      </div>
+      <div class="ta-feed">
+        <div class="k-between"><span class="k-label">Get these dates in your calendar</span><span class="k-num-badge" aria-hidden="true">6</span></div>
+        <div class="k-row-sm">
+          <a class="k-btn k-btn-navy" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Subscribe (.ics)</a>
+          <a class="k-btn k-btn-line" href="#">Add to Google Calendar</a>
+        </div>
+        <p class="k-hint">Updates itself when events change. Follows your filters below, or <a href="#">LCA events only</a>.</p>
+      </div>
+    </div>
+    <div class="ta-tabsrow">
+      <nav class="ta-tabs" aria-label="Tournament lists">
+        <a class="ta-tab ta-tab-on" href="#" aria-current="page">Upcoming <span class="k-chip-count">25</span></a>
+        <a class="ta-tab" href="#">Results</a>
+      </nav>
+      <div class="ta-tools">
+      <div class="k-search ta-search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input id="ta-q" aria-label="Search tournaments" placeholder="Search name, city or organizer"></div>
+      <div class="k-seg ta-seg" role="group" aria-label="View as">
+        <button class="k-seg-on" type="button" aria-pressed="true"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>List</button>
+        <button type="button" aria-pressed="false"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Calendar</button>
+        <button type="button" aria-pressed="false"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6 9 4zM9 4v14M15 6v14"></path></svg>Map</button>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ta-filters">
+  <div class="k-wrap">
+    <div class="ta-chiprow">
+      <span class="k-label k-hide-sm">Filter</span>
+      <div class="ta-chips" role="group" aria-label="Filter tournaments">
+        <button class="k-chip k-chip-on" type="button" aria-haspopup="true" aria-expanded="false">When: Next 3 months<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">Type<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip k-chip-on" type="button" aria-haspopup="true" aria-expanded="false">Region: Louisiana + nearby<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">Rated<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+        <button class="k-chip" type="button" aria-haspopup="true" aria-expanded="false">LCA-run / Partner<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+      </div>
+      <span class="k-num-badge k-hide-sm" aria-hidden="true">1</span>
+      <div class="ta-push">
+        <button class="k-btn k-btn-ghost k-btn-sm" type="button">Sort: Soonest first<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+      </div>
+    </div>
+    <div class="ta-applied">
+      <p class="k-h4" aria-live="polite">16 tournaments</p>
+      <button class="k-chip ta-x" type="button">Next 3 months<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg><span class="ta-vh">Remove this filter</span></button>
+      <button class="k-chip ta-x" type="button">Louisiana + nearby states<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg><span class="ta-vh">Remove this filter</span></button>
+      <button class="k-btn k-btn-ghost k-btn-sm" type="button" style="text-decoration:underline">Clear all</button>
+      <span class="k-num-badge" aria-hidden="true">2</span>
+      <div class="ta-push">
+        <button class="k-btn k-btn-ghost k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Copy link to this view</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main class="k-wrap ta-body">
+  <div class="k-split">
+    <div class="k-main">
+
+      <div class="ta-key">
+        <p class="k-small"><b>Tue, Oct 6 – Wed, Jan 6</b> · 4 register on LCA · 12 partner listings</p>
+        <span class="k-meta"><span class="k-tag k-tag-lca">LCA event</span>Register right here on louisianachess.org</span>
+        <span class="k-meta"><span class="k-tag k-tag-ext">Partner event</span>From the Gulf South Tournament Clearinghouse — you enter on the organizer's site</span>
+      </div>
+
+      <section class="ta-month" aria-labelledby="ta-oct">
+        <div class="ta-mhead"><h2 id="ta-oct" class="k-h3">October 2026</h2><span class="k-meta">11 tournaments · 2 register on LCA</span><span class="k-num-badge" aria-hidden="true">5</span></div>
+        <div class="k-card ta-list">
+          <div class="ta-sub">This weekend · Sat–Sun, Oct 10–11</div>
+
+          <article class="ta-row">
+            <time class="ta-date ta-date-lca" datetime="2026-10-10"><span class="ta-wd">Sat–Sun</span><b>10–11</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">Lafayette Open 2026</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-lca">LCA event</span>Lafayette, LA · Hosted by Lafayette Chess Club</p>
+              <p class="ta-line"><b>Classical</b> · All ages · US Chess rated · 5 rounds of <b>G/90+30</b> (90 min each + 30 sec per move)</p>
+              <p class="ta-line"><b>Sections</b> Open · U1800 · U1400 · U1000 · entry $30–$60</p>
+              <p class="ta-line">Online entry closes Thu, Oct 8 at 11:59 PM</p>
+            </div>
+            <div class="ta-side">
+              <div class="k-row-sm"><span class="k-tag k-tag-open">Registration open</span><span class="k-num-badge" aria-hidden="true">3</span></div>
+              <p class="ta-cnt"><b>52 of 60</b> registered · 8 spots left</p>
+              <div class="ta-meter" aria-hidden="true"><i style="width:87%"></i></div>
+              <div class="ta-acts"><a class="k-btn k-btn-gold" href="#">Register<span class="ta-vh"> for Lafayette Open 2026</span></a><a class="k-btn k-btn-soft" href="#">Details</a></div>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-10"><span class="ta-wd">Sat</span><b>10</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">2026 National Chess Day Scholastic</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Birmingham, AL · Caesar Chess · Quick · Scholastic</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-10"><span class="ta-wd">Sat</span><b>10</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">Starkville Chess Tournament</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Starkville, MS · MSCA – Beth Thrasher · Dual-rated</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <div class="ta-sub">Later in October</div>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-16"><span class="ta-wd">Fri–Sun</span><b>16–18</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">Texas Fall FIDE Premier</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Houston, TX · Dallas Chess Club · Classical · FIDE</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-17"><span class="ta-wd">Sat–Sun</span><b>17–18</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="Event-E.dc.html">Mississippi State Championship</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Canton, MS · Mississippi Chess Association · Classical</p>
+            </div>
+            <div class="ta-side">
+              <div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a><span class="k-num-badge" aria-hidden="true">4</span></div>
+              <span class="k-meta">Sections, fees and entries are on the organizer's site</span>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-22"><span class="ta-wd">Thu</span><b>22</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">Hillcrest QUICK Capturefest</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Jackson, MS · Capital City Chess Club · Quick</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-23"><span class="ta-wd">Fri–Sun</span><b>23–25</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">HG – Lone Star US Chess &amp; FIDE Championship</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Houston, TX · Healthy Gurukul · US Chess &amp; FIDE</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <article class="ta-row">
+            <time class="ta-date ta-date-lca" datetime="2026-10-24"><span class="ta-wd">Sat–Sun</span><b>24–25</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">The Baton Rouge Classic</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-lca">LCA event</span>Baton Rouge, LA · Organized by Downriver Chess</p>
+              <p class="ta-line"><b>Classical</b> · All ages · US Chess rated · 5 rounds of <b>G/90+30</b></p>
+              <p class="ta-line"><b>Sections</b> Open · U1800 · U1400 · U1000 · entry $30–$60</p>
+              <p class="ta-line">Early-entry price ends Sun, Oct 18 · then $10 more</p>
+            </div>
+            <div class="ta-side">
+              <span class="k-tag k-tag-open">Registration open</span>
+              <p class="ta-cnt"><b>23 of 60</b> registered</p>
+              <div class="ta-meter" aria-hidden="true"><i style="width:38%"></i></div>
+              <div class="ta-acts"><a class="k-btn k-btn-gold" href="#">Register<span class="ta-vh"> for The Baton Rouge Classic</span></a><a class="k-btn k-btn-soft" href="#">Details</a></div>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-24"><span class="ta-wd">Sat</span><b>24</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">Team Scholastic Jamboree</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Ridgeland, MS · Mississippi Chess Association · Scholastic</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-31"><span class="ta-wd">Sat</span><b>31</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">The Casa Chess Tournament</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Sulphur, LA · Casa de Ajedrez · Dual-rated · All ages</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-10-31"><span class="ta-wd">Sat</span><b>31</b><span class="ta-mo">Oct</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">Halloween Classic</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Huntsville, AL · Caesar Chess</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="ta-month" aria-labelledby="ta-nov">
+        <div class="ta-mhead"><h2 id="ta-nov" class="k-h3">November 2026</h2><span class="k-meta">4 tournaments · 1 registers on LCA</span></div>
+        <div class="k-card ta-list">
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-11-07"><span class="ta-wd">Sat</span><b>7</b><span class="ta-mo">Nov</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">Roosevelt Chess Classic</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Scott County, MS</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <article class="ta-row">
+            <time class="ta-date ta-date-lca" datetime="2026-11-14"><span class="ta-wd">Sat</span><b>14</b><span class="ta-mo">Nov</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">New Orleans Youth Chess November Meet</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-lca">LCA event</span>New Orleans · Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</p>
+              <p class="ta-line"><b>Scholastic</b> (K–12) · US Chess rated · 4 rounds of <b>G/30+5</b> (30 min each + 5 sec per move)</p>
+              <p class="ta-line"><b>Sections</b> K–12 · K–8 · K–5 · K–3</p>
+            </div>
+            <div class="ta-side">
+              <span class="k-tag k-tag-soon">Opens Mon, Oct 12</span>
+              <p class="ta-cnt">Registration opens in 6 days</p>
+              <div class="ta-acts"><button class="k-btn k-btn-line" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Notify me</button><a class="k-btn k-btn-soft" href="#">Details</a></div>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-11-14"><span class="ta-wd">Sat</span><b>14</b><span class="ta-mo">Nov</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">2026 Dothan Open</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Dothan, AL · Caesar Chess</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+
+          <article class="ta-row ta-row-p">
+            <time class="ta-date ta-date-p" datetime="2026-11-20"><span class="ta-wd">Fri–Sun</span><b>20–22</b><span class="ta-mo">Nov</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">Lone Star FIDE</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-ext">Partner event</span>Houston, TX · Texas Chess Center · FIDE</p>
+            </div>
+            <div class="ta-side">
+              <a class="k-btn k-btn-line k-btn-sm" href="#">Organizer's site<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg><span class="ta-vh"> (opens in a new tab)</span></a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="ta-month" aria-labelledby="ta-dec">
+        <div class="ta-mhead"><h2 id="ta-dec" class="k-h3">December 2026</h2><span class="k-meta">1 tournament · registers on LCA</span></div>
+        <div class="k-card ta-list">
+          <article class="ta-row">
+            <time class="ta-date ta-date-lca" datetime="2026-12-05"><span class="ta-wd">Sat</span><b>5</b><span class="ta-mo">Dec</span></time>
+            <div class="ta-main">
+              <h3 class="ta-name"><a href="#">New Orleans Youth Chess December Meet</a></h3>
+              <p class="ta-line"><span class="k-tag k-tag-lca">LCA event</span>New Orleans · Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</p>
+              <p class="ta-line"><b>Scholastic</b> (K–12) · US Chess rated · 4 rounds of <b>G/30+5</b></p>
+              <p class="ta-line"><b>Sections</b> K–12 · K–8 · K–5 · K–3</p>
+            </div>
+            <div class="ta-side">
+              <span class="k-tag k-tag-soon">Opens Mon, Nov 16</span>
+              <div class="ta-acts"><button class="k-btn k-btn-line" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Notify me</button><a class="k-btn k-btn-soft" href="#">Details</a></div>
+            </div>
+          </article>
+          <div class="ta-end" style="border-top:1px solid #ecebe5">
+            <p class="k-small k-muted">That's everything through Wed, Jan 6.</p>
+            <button class="k-btn k-btn-line k-btn-sm" type="button">Show 9 more, through June 2027</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <aside class="k-side-narrow k-stack" aria-label="Help and related links">
+      <section class="k-card-pad k-stack-sm" aria-labelledby="ta-gl">
+        <div class="k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><h2 id="ta-gl" class="k-h4">New to tournaments?</h2></div>
+        <dl class="ta-gloss">
+          <dt>Classical · Quick · Blitz</dt>
+          <dd>How long games last. Classical runs one or two long days, Quick about an afternoon, Blitz a few minutes per player.</dd>
+          <dt>G/90+30</dt>
+          <dd>Each player has 90 minutes, and 30 seconds are added after every move.</dd>
+          <dt>Section</dt>
+          <dd>You play people near your strength. U1400 means players rated under 1400.</dd>
+          <dt>US Chess rated</dt>
+          <dd>Results count toward your rating, so you'll need a US Chess membership.</dd>
+          <dt>Partner event</dt>
+          <dd>Run by another organizer. You enter and pay on their site.</dd>
+        </dl>
+        <a class="k-link" href="#">Your first tournament, step by step</a>
+      </section>
+
+      <section class="k-card-pad k-stack-sm" aria-labelledby="ta-res">
+        <div class="k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg><span class="k-label">Latest results</span></div>
+        <h2 id="ta-res" class="k-h4">2026 Louisiana State Championship</h2>
+        <div class="k-row-sm"><span class="k-tag k-tag-closed">Finished</span><span class="k-meta">Labor Day weekend · Sulphur</span></div>
+        <a class="k-link-plain k-small" href="#">Standings and crosstable<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <hr class="k-rule">
+        <a class="k-link-plain k-small" href="#">All results<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+        <a class="k-link-plain k-small" href="#">State champions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </section>
+
+      <section class="k-card-pad k-stack-sm" aria-labelledby="ta-sub">
+        <span class="k-label">For organizers</span>
+        <h2 id="ta-sub" class="k-h4">Running a tournament in Louisiana?</h2>
+        <p class="k-small k-muted">Send the date, city and a link. An LCA volunteer checks it before it appears on this list.</p>
+        <a class="k-btn k-btn-line" href="#">Submit an event</a>
+      </section>
+    </aside>
+  </div>
+
+  <section class="k-card-pad" style="margin-top:36px" aria-labelledby="ta-notes">
+    <h2 id="ta-notes" class="k-h4">Notes on this option</h2>
+    <div class="ta-legend">
+      <p><span class="k-num-badge" aria-hidden="true">1</span><span>One row of filter chips, worded the way players talk. A chip that's on shows its value ("When: Next 3 months"); each opens a short multi-select.</span></p>
+      <p><span class="k-num-badge" aria-hidden="true">2</span><span>What's applied is always visible: removable chips, the live count and Clear all. Filters live in the URL, so "Copy link" shares this exact view.</span></p>
+      <p><span class="k-num-badge" aria-hidden="true">3</span><span>LCA rows give status in words, "X of Y registered" with a fill bar and the deadline. Register is the only gold button in a row.</span></p>
+      <p><span class="k-num-badge" aria-hidden="true">4</span><span>Partner rows are lighter and invent nothing: the feed has no sections, fees or status, so the row says where entry happens and flags the new tab.</span></p>
+      <p><span class="k-num-badge" aria-hidden="true">5</span><span>Month headings carry counts and pin under the filter bar while you scroll; "This weekend" gets its own sub-heading.</span></p>
+      <p><span class="k-num-badge" aria-hidden="true">6</span><span>One calendar feed (.ics or Google) that follows the current filters, with an LCA-events-only option.</span></p>
+    </div>
+  </section>
+</main>
+
+<footer class="k-footer">
+  <div class="k-wrap-wide k-section-sm k-between">
+    <div class="k-row"><span style="color:#c8a94a;display:flex"><svg class="k-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span class="k-meta">Louisiana Chess Association · US Chess state affiliate · since 1915</span></div>
+    <div class="k-row k-small"><a href="#">Contact LCA</a><a href="#">Website help</a><a href="#">Bylaws &amp; minutes</a><a href="#">Donate</a></div>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3150}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
