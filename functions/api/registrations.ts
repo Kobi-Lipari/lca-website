@@ -1,44 +1,28 @@
 // functions/api/registrations.ts
+//
+// One player enters an event (createRegistration). The sections come from
+// the tournament_sections table (live rows only, so a removed section takes
+// no new entries), and every entry written here carries its section_id. The
+// 0053 trigger that fills section_id from the name stays installed as a
+// safety net and leaves an id set here alone.
+import { sql } from 'drizzle-orm'
 import type { Env } from '../types'
 import { isResponse, requireAuthedMember } from '../utils/auth'
 import { createCheckoutSession } from '../utils/stripe'
-import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../utils/response'
+import { errorResponse, handleOptions, jsonResponse, parseBody } from '../utils/response'
 import { sendRegistrationConfirmations } from '../utils/registrationEmails'
 import { resolveSiteUrl } from '../utils/site'
 import { hasPassed } from '../utils/time'
-import { eligibilityProblem, formatGradeRange, parseGradeRange, type SectionWithRules } from '../utils/sectionRules'
-import { entryPrice } from '../utils/pricing'
+import { eligibilityProblem, formatGradeRange, parseGradeRange } from '../utils/sectionRules'
+import { priceEntry } from '../utils/pricing'
+import { getDb } from '../db/client'
+import { payments, registrations } from '../db/schema'
+import { loadSections, sectionWithRules } from '../utils/events/sectionsRepo'
+import { createRegistrationRequestSchema } from '../../domain/contracts/registration'
+import { formatDate } from '../../domain/format'
 
-interface RegistrationBody {
-  tournamentId?: string
-  section?: string
-  byeRounds?: number[]
-  /**
-   * The grade range the player confirmed they're in, "min-max" with K = 0
-   * (e.g. "0-8" for "8th grade or below"). We never ask the actual grade.
-   */
-  gradeRange?: string
-  /** Join the waitlist when the event is full. */
-  waitlist?: boolean
-}
-
-function parseSections(sectionsJson: string): SectionWithRules[] {
-  try {
-    const parsed = JSON.parse(sectionsJson) as Array<SectionWithRules | string>
-    return parsed.map((s) => (typeof s === 'string' ? { name: s } : s))
-  } catch {
-    return []
-  }
-}
-
-function parseSectionNames(sectionsJson: string): string[] {
-  try {
-    const parsed = JSON.parse(sectionsJson) as Array<{ name: string } | string>
-    return parsed.map((s) => (typeof s === 'string' ? s : s.name))
-  } catch {
-    return []
-  }
-}
+/** The player's rating as it is now, read inside the insert, as before. */
+const ratingOf = (memberId: string) => sql`(SELECT uscf_rating FROM members WHERE id = ${memberId})`
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -46,10 +30,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const authed = await requireAuthedMember(context.request, context.env)
   if (isResponse(authed)) return authed
 
-  const body = await parseJsonBody<RegistrationBody>(context.request)
-  if (!body?.tournamentId || !body.section) {
-    return errorResponse('tournamentId and section are required', 400)
-  }
+  // The grade range is the one the player confirmed they're in, "min-max"
+  // with K = 0 (e.g. "0-8" for "8th grade or below"). We never ask the
+  // actual grade.
+  const body = await parseBody(context.request, createRegistrationRequestSchema)
+  if (isResponse(body)) return body
+  const db = getDb(context.env.DB)
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
@@ -60,7 +46,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       status: string
       registration_status: string
       registration_closes_at: string | null
-      sections: string
       entry_fee: number
       max_players: number | null
       name: string
@@ -86,20 +71,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse('Registration is closed for this tournament', 400)
   }
 
-  // Rated tournament requires USCF ID
+  // A rated tournament needs the player's US Chess ID
   if (tournament.is_rated && !authed.member.uscf_id) {
-    return errorResponse('A USCF ID is required to register for rated tournaments', 400)
+    return errorResponse('A US Chess ID is required to enter a rated tournament.', 400)
   }
 
-  const validSections = parseSectionNames(tournament.sections)
-  if (!validSections.includes(body.section)) {
+  const section = (await loadSections(db, tournament.id)).find((s) => s.name === body.section)
+  if (!section) {
     return errorResponse('Invalid section', 400)
   }
 
   // Section eligibility (rating, grade). Directors can still place anyone by hand.
-  const section = parseSections(tournament.sections).find((s) => s.name === body.section) as SectionWithRules
   const gradeRange = parseGradeRange(body.gradeRange ?? null)
-  const problem = eligibilityProblem(section, { rating: authed.member.uscf_rating ?? null, gradeRange })
+  const problem = eligibilityProblem(sectionWithRules(section), { rating: authed.member.uscf_rating ?? null, gradeRange })
   if (problem) return errorResponse(problem, 400)
   const gradeText = gradeRange ? formatGradeRange(gradeRange) : null
 
@@ -134,12 +118,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       }
       // Waitlist: no charge until the director offers a spot.
       const waitId = `reg-${body.tournamentId}-${Date.now().toString(36)}`
-      await context.env.DB.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade, waitlisted_at)
-         VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, datetime('now'))`,
-      ).bind(waitId, body.tournamentId, authed.member.id, body.section,
-        body.byeRounds?.length ? JSON.stringify(body.byeRounds) : null,
-        authed.member.uscf_rating ?? null, gradeText).run()
+      await db.insert(registrations).values({
+        id: waitId,
+        tournamentId: tournament.id,
+        memberId: authed.member.id,
+        section: section.name,
+        sectionId: section.id,
+        paymentStatus: 'pending',
+        byeRounds: body.byeRounds?.length ? JSON.stringify(body.byeRounds) : null,
+        ratingAtEntry: authed.member.uscf_rating ?? null,
+        grade: gradeText,
+        waitlistedAt: sql`datetime('now')`,
+      })
       return jsonResponse({
         registration: { id: waitId, waitlisted: true },
         paymentUrl: null,
@@ -164,33 +154,40 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const registrationId = `reg-${body.tournamentId}-${Date.now().toString(36)}`
   const paymentId = `pay-${registrationId}`
-  const amount = entryPrice(tournament, body.section, {
+  const amount = priceEntry(section, tournament, Date.now(), {
     isLcaMember: authed.member.membership_status === 'active',
   }).amount
   // Heads-up, not a block: the director may sell memberships at the door.
   const warnings: string[] = []
   if (tournament.is_rated && authed.member.uscf_expiration && authed.member.uscf_expiration.slice(0, 10) < String(tournament.date).slice(0, 10)) {
-    warnings.push(`Your US Chess membership expires ${authed.member.uscf_expiration.slice(0, 10)}, before this event. Renew it at uschess.org so your games can be rated.`)
+    warnings.push(`Your US Chess membership expires ${formatDate(authed.member.uscf_expiration.slice(0, 10), { year: true })}, before this event. Renew it at uschess.org so your games can be rated.`)
   }
+
+  // The entry row, the same on the free and the paid path but for its payment status.
+  const entry = (paymentStatus: 'paid' | 'pending') => db.insert(registrations).values({
+    id: registrationId,
+    tournamentId: tournament.id,
+    memberId: authed.member.id,
+    section: section.name,
+    sectionId: section.id,
+    paymentStatus,
+    byeRounds: byeRounds.length > 0 ? JSON.stringify(byeRounds) : null,
+    ratingAtEntry: ratingOf(authed.member.id),
+    grade: gradeText,
+  })
 
   // ── Free section: no Stripe involved, registered & paid immediately ──────
   if (amount <= 0) {
-    await context.env.DB.batch([
-      context.env.DB.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
-         VALUES (?1, ?2, ?3, ?4, 'paid', ?5, (SELECT uscf_rating FROM members WHERE id = ?3), ?6)`,
-      ).bind(
-        registrationId,
-        body.tournamentId,
-        authed.member.id,
-        body.section,
-        byeRounds.length > 0 ? JSON.stringify(byeRounds) : null,
-        gradeText,
-      ),
-      context.env.DB.prepare(
-        `INSERT INTO payments (id, member_id, amount, type, reference_id, status)
-         VALUES (?, ?, 0, 'tournament', ?, 'completed')`,
-      ).bind(paymentId, authed.member.id, registrationId),
+    await db.batch([
+      entry('paid'),
+      db.insert(payments).values({
+        id: paymentId,
+        memberId: authed.member.id,
+        amount: 0,
+        type: 'tournament',
+        referenceId: registrationId,
+        status: 'completed',
+      }),
     ])
 
     const registration = await context.env.DB.prepare(
@@ -240,22 +237,17 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     )
   }
 
-  await context.env.DB.batch([
-    context.env.DB.prepare(
-      `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
-       VALUES (?1, ?2, ?3, ?4, 'pending', ?5, (SELECT uscf_rating FROM members WHERE id = ?3), ?6)`,
-    ).bind(
-      registrationId,
-      body.tournamentId,
-      authed.member.id,
-      body.section,
-      byeRounds.length > 0 ? JSON.stringify(byeRounds) : null,
-      gradeText,
-    ),
-    context.env.DB.prepare(
-      `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
-       VALUES (?, ?, ?, 'tournament', ?, 'pending', ?)`,
-    ).bind(paymentId, authed.member.id, amount, registrationId, session.id),
+  await db.batch([
+    entry('pending'),
+    db.insert(payments).values({
+      id: paymentId,
+      memberId: authed.member.id,
+      amount,
+      type: 'tournament',
+      referenceId: registrationId,
+      status: 'pending',
+      stripeSessionId: session.id,
+    }),
   ])
 
   const registration = await context.env.DB.prepare(

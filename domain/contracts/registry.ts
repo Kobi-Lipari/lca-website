@@ -18,6 +18,14 @@ import {
   tournamentsListResponseSchema,
   updateTournamentRequestSchema,
 } from './events'
+import {
+  batchRegistrationRequestSchema,
+  batchRegistrationResponseSchema,
+  createRegistrationRequestSchema,
+  createRegistrationResponseSchema,
+  updateRegistrationRequestSchema,
+  updateRegistrationResponseSchema,
+} from './registration'
 
 export const CONTRACT_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const
 export type ContractMethod = (typeof CONTRACT_METHODS)[number]
@@ -42,6 +50,15 @@ export const contracts = {
   },
   'admin/tournaments/[id]': {
     PATCH: { request: updateTournamentRequestSchema, response: adminTournamentResponseSchema },
+  },
+  registrations: {
+    POST: { request: createRegistrationRequestSchema, response: createRegistrationResponseSchema },
+  },
+  'registrations/batch': {
+    POST: { request: batchRegistrationRequestSchema, response: batchRegistrationResponseSchema },
+  },
+  'registrations/[id]': {
+    PATCH: { request: updateRegistrationRequestSchema, response: updateRegistrationResponseSchema },
   },
 } satisfies Record<string, RouteContracts>
 

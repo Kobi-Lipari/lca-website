@@ -4,4 +4,5 @@
 // types (`import type`), so zod never reaches the site bundle.
 export * from './common'
 export * from './events'
+export * from './registration'
 export * from './registry'

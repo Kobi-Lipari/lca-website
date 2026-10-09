@@ -9,41 +9,28 @@
 // director's payment toggles, "pay now" on one pending entry, withdrawals)
 // works per player. Only the Stripe checkout is shared: every paid entry's
 // payment row carries the same session id, and the webhook settles them all.
+//
+// The sections are read once, from the tournament_sections table (live rows
+// only, so a removed section takes no new entries), and every entry written
+// here carries its section_id.
+import { sql } from 'drizzle-orm'
+import type { BatchItem } from 'drizzle-orm/batch'
 import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { canActFor } from '../../utils/family'
 import { createCheckoutSession } from '../../utils/stripe'
-import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
+import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../utils/response'
 import { sendRegistrationConfirmations } from '../../utils/registrationEmails'
 import { resolveSiteUrl } from '../../utils/site'
 import { hasPassed } from '../../utils/time'
-import { eligibilityProblem, formatGradeRange, parseGradeRange, type SectionWithRules } from '../../utils/sectionRules'
-import { entryPrice } from '../../utils/pricing'
-
-interface BatchEntry {
-  /** Omitted = the signed-in member themselves. */
-  memberId?: string
-  section?: string
-  byeRounds?: number[]
-  /** Grade range the player confirmed, "min-max" (K = 0); see registrations.ts. */
-  gradeRange?: string
-}
-
-interface BatchBody {
-  tournamentId?: string
-  entries?: BatchEntry[]
-}
+import { eligibilityProblem, formatGradeRange, parseGradeRange } from '../../utils/sectionRules'
+import { priceEntry } from '../../utils/pricing'
+import { getDb } from '../../db/client'
+import { payments, registrations } from '../../db/schema'
+import { loadSections, runBatch, sectionWithRules } from '../../utils/events/sectionsRepo'
+import { batchRegistrationRequestSchema } from '../../../domain/contracts/registration'
 
 const MAX_ENTRIES = 9
-
-function parseSections(sectionsJson: string): SectionWithRules[] {
-  try {
-    const parsed = JSON.parse(sectionsJson) as Array<SectionWithRules | string>
-    return parsed.map((s) => (typeof s === 'string' ? { name: s } : s))
-  } catch {
-    return []
-  }
-}
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -53,10 +40,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const payer = authed.member
   const db = context.env.DB
 
-  const body = await parseJsonBody<BatchBody>(context.request)
-  const entries = body?.entries ?? []
-  if (!body?.tournamentId || entries.length === 0) {
-    return errorResponse('tournamentId and at least one entry are required', 400)
+  // Each entry is one player: memberId omitted means the signed-in member,
+  // and gradeRange is the range they confirmed, "min-max" (K = 0).
+  const body = await parseBody(context.request, batchRegistrationRequestSchema)
+  if (isResponse(body)) return body
+  const entries = body.entries
+  if (entries.length === 0) {
+    return errorResponse('Choose at least one player.', 400)
   }
   if (entries.length > MAX_ENTRIES) {
     return errorResponse(`At most ${MAX_ENTRIES} players can be registered at once`, 400)
@@ -69,7 +59,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       name: string
       registration_status: string
       registration_closes_at: string | null
-      sections: string
       entry_fee: number
       max_players: number | null
       rounds: number
@@ -89,7 +78,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return errorResponse('Registration is closed for this tournament', 400)
   }
 
-  const sections = parseSections(tournament.sections)
+  const orm = getDb(db)
+  const sections = await loadSections(orm, tournament.id)
+  const now = Date.now()
   const maxByes = tournament.rounds - 1
 
   // ── Validate every entry before writing anything ──────────────────────────
@@ -98,6 +89,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     memberId: string
     name: string
     section: string
+    sectionId: string
     byeRounds: number[]
     amount: number
     grade: string | null
@@ -120,13 +112,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     if (!player) return errorResponse('Player not found', 404)
 
     if (tournament.is_rated && !player.uscf_id) {
-      return errorResponse(`${player.full_name} needs a USCF ID to enter a rated tournament. Add it on your profile.`, 400)
+      return errorResponse(`${player.full_name} needs a US Chess ID to enter a rated tournament. Add it on your profile.`, 400)
     }
 
     const section = sections.find((s) => s.name === entry.section)
     if (!section) return errorResponse(`Choose a valid section for ${player.full_name}`, 400)
     const gradeRange = parseGradeRange(entry.gradeRange ?? null)
-    const problem = eligibilityProblem(section, { rating: player.uscf_rating, gradeRange })
+    const problem = eligibilityProblem(sectionWithRules(section), { rating: player.uscf_rating, gradeRange })
     if (problem) return errorResponse(`${player.full_name}: ${problem}`, 400)
 
     const byeRounds = entry.byeRounds ?? []
@@ -153,8 +145,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       memberId,
       name: player.full_name,
       section: section.name,
+      sectionId: section.id,
       byeRounds,
-      amount: entryPrice(tournament, section.name, { isLcaMember: player.membership_status === 'active' }).amount,
+      amount: priceEntry(section, tournament, now, { isLcaMember: player.membership_status === 'active' }).amount,
       grade: gradeRange ? formatGradeRange(gradeRange) : null,
     })
   }
@@ -208,36 +201,33 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   // ── Write every registration + payment together ──────────────────────────
-  const statements: D1PreparedStatement[] = []
+  const statements: BatchItem<'sqlite'>[] = []
   for (const r of rows) {
     const free = r.amount <= 0
     statements.push(
-      db.prepare(
-        `INSERT INTO registrations (id, tournament_id, member_id, section, payment_status, bye_rounds, rating_at_entry, grade)
-         VALUES (?1, ?2, ?3, ?4, ?5, ?6, (SELECT uscf_rating FROM members WHERE id = ?3), ?7)`,
-      ).bind(
-        r.registrationId,
-        tournament.id,
-        r.memberId,
-        r.section,
-        free ? 'paid' : 'pending',
-        r.byeRounds.length > 0 ? JSON.stringify(r.byeRounds) : null,
-        r.grade,
-      ),
-      db.prepare(
-        `INSERT INTO payments (id, member_id, amount, type, reference_id, status, stripe_session_id)
-         VALUES (?, ?, ?, 'tournament', ?, ?, ?)`,
-      ).bind(
-        r.paymentId,
-        r.memberId,
-        free ? 0 : r.amount,
-        r.registrationId,
-        free ? 'completed' : 'pending',
-        free ? null : session?.id ?? null,
-      ),
+      orm.insert(registrations).values({
+        id: r.registrationId,
+        tournamentId: tournament.id,
+        memberId: r.memberId,
+        section: r.section,
+        sectionId: r.sectionId,
+        paymentStatus: free ? 'paid' : 'pending',
+        byeRounds: r.byeRounds.length > 0 ? JSON.stringify(r.byeRounds) : null,
+        ratingAtEntry: sql`(SELECT uscf_rating FROM members WHERE id = ${r.memberId})`,
+        grade: r.grade,
+      }),
+      orm.insert(payments).values({
+        id: r.paymentId,
+        memberId: r.memberId,
+        amount: free ? 0 : r.amount,
+        type: 'tournament',
+        referenceId: r.registrationId,
+        status: free ? 'completed' : 'pending',
+        stripeSessionId: free ? null : session?.id ?? null,
+      }),
     )
   }
-  await db.batch(statements)
+  await runBatch(orm, statements)
 
   // Free entries are confirmed now; paid ones when Stripe reports payment.
   const confirmedNow = rows.filter((r) => r.amount <= 0).map((r) => r.registrationId)

@@ -56,6 +56,7 @@ import {
   type SectionRecord,
   type TierTournament,
 } from '../../../domain/events/sections'
+import type { SectionWithRules } from '../../../domain/events/sectionRules'
 
 export type SectionQuery = BatchItem<'sqlite'>
 
@@ -240,6 +241,25 @@ export async function loadSectionsFor(
     for (const row of rows) out.get(row.tournamentId)?.push(toRecord(row))
   }
   return out
+}
+
+/**
+ * A section row in the form the entry rules take (eligibilityProblem in
+ * domain/events/sectionRules.ts): the same answer the legacy JSON element
+ * gave, because a column left null reads as a key left out.
+ */
+export function sectionWithRules(record: SectionRecord): SectionWithRules {
+  return {
+    name: record.name,
+    ...(record.feeRegular != null ? { entryFee: record.feeRegular } : {}),
+    ...(record.prizeFund != null ? { prizeFund: record.prizeFund } : {}),
+    ratingMax: record.ratingMax,
+    ratingMin: record.ratingMin,
+    ...(record.unratedOk != null ? { unratedOk: record.unratedOk } : {}),
+    gradeMin: record.gradeMin,
+    gradeMax: record.gradeMax,
+    rulesSet: record.rulesSet,
+  }
 }
 
 /** The columns of a row that the legacy JSON element decides. */

@@ -14,7 +14,7 @@
 // only, or move to the coverage test's excluded list with that reason, is
 // decided when each is next changed.
 
-export const PENDING_COUNT = 121
+export const PENDING_COUNT = 118
 
 export const PENDING_CONTRACTS: readonly string[] = [
   'GET admin/announcement',
@@ -122,10 +122,7 @@ export const PENDING_CONTRACTS: readonly string[] = [
   'GET post-images/[id]', // serves an image
   'GET posts',
   'GET posts/[slug]',
-  'POST registrations',
-  'PATCH registrations/[id]',
   'POST registrations/[id]/pay',
-  'POST registrations/batch',
   'POST scan',
   'POST stripe/webhook', // Stripe's event body, signature checked on the raw text
   'GET support',
