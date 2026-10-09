@@ -6,6 +6,7 @@ import { computeStandings, tournamentPrizes } from '../../../../utils/tournament
 import { parseJsonArray } from '../../../../utils/json'
 import { getDb } from '../../../../db/client'
 import { loadSections, toTournamentResponse } from '../../../../utils/events/sectionsRepo'
+import { loadSchedules } from '../../../../utils/events/schedulesRepo'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -21,8 +22,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (!tournament) return errorResponse('Tournament not found', 404)
 
   // The live sections, which the setup edits and sends back: an archived
-  // one is not listed, so a save never brings it back by accident.
-  const answer = toTournamentResponse(tournament, await loadSections(getDb(context.env.DB), tournamentId))
+  // one is not listed, so a save never brings it back by accident. The
+  // round times come from the live schedules.
+  const db = getDb(context.env.DB)
+  const answer = toTournamentResponse(tournament, await loadSections(db, tournamentId), await loadSchedules(db, tournamentId))
 
   const customDetails = parseJsonArray(tournament.custom_details)
 

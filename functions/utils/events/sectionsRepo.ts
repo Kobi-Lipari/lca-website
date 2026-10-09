@@ -44,14 +44,17 @@
 // into an answer, so no handler returns the JSON column or parses it.
 // test/unit/sections-reader-audit.test.ts fails on a parse of the column
 // outside this file and domain/, and on a handler that answers with a
-// SELECT * row without toTournamentResponse.
+// SELECT * row without toTournamentResponse. The round schedule in that
+// answer comes from the schedule rows (schedulesRepo.ts, K2g), never from
+// the round_schedule column.
 import { and, asc, count, desc, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm'
 import type { BatchItem } from 'drizzle-orm/batch'
 import type { Db } from '../../db/client'
 import type { TournamentRow } from '../../types'
-import { parseJsonArray } from '../json'
 import { registrations, tournamentGames, tournamentSections, tournaments } from '../../db/schema'
-import type { SavedSection } from '../../../domain/contracts/events'
+import type { SavedSection, Schedule, ScheduleRound } from '../../../domain/contracts/events'
+import type { ScheduleRecord } from '../../../domain/events/schedules'
+import { roundScheduleResponse, scheduleResponse } from './schedulesRepo'
 import {
   SECTION_NAME_MAX,
   asSectionInput,
@@ -638,28 +641,31 @@ export function sectionResponse(record: SectionRecord, tournament: TierTournamen
 export type TournamentResponse<Row extends TournamentRow = TournamentRow> =
   Omit<Row, 'sections' | 'round_schedule'> & {
     sections: SavedSection[]
-    round_schedule: unknown[]
+    round_schedule: ScheduleRound[]
+    schedules: Schedule[]
   }
 
 /**
  * A tournaments row (SELECT *, with or without joined columns) as an
  * endpoint answers it: the JSON text of sections and round_schedule is
  * dropped, `sections` are the rows given (live ones, as loadSections reads
- * them, unless the caller wants history), priced from the row, and
- * round_schedule is the schedule given, else the column read into a list
- * ([] when it is empty or not a JSON list) until the schedules table is
- * read. Every other column is passed on as it is.
+ * them, unless the caller wants history), priced from the row,
+ * round_schedule is the primary schedule's rounds in the shape the column
+ * held them, and `schedules` are the live schedules given (loadSchedules).
+ * Every other column is passed on as it is.
  */
 export function toTournamentResponse<Row extends TournamentRow>(
   row: Row,
   sections: readonly SectionRecord[],
-  schedules?: readonly unknown[],
+  schedules: readonly ScheduleRecord[],
 ): TournamentResponse<Row> {
   // Both JSON columns are replaced, so neither text leaves the server.
+  const live = schedules.filter((s) => s.archivedAt === null)
   const answer = {
     ...row,
     sections: sections.map((s) => sectionResponse(s, row)),
-    round_schedule: schedules ? [...schedules] : parseJsonArray(row.round_schedule),
+    round_schedule: roundScheduleResponse(live),
+    schedules: live.map(scheduleResponse),
   }
   return answer as unknown as TournamentResponse<Row>
 }

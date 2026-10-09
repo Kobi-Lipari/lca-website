@@ -8,7 +8,8 @@
 // (unchanged in this step) read what they read before. Lists read the
 // sections of every event together, never one query per event. The manage
 // page and the setup wizard send sections back as they got them, and that
-// changes nothing it should not.
+// changes nothing it should not. Every one of them answers round_schedule as
+// the primary schedule's rounds and the live schedules beside it (K2g).
 import { env } from 'cloudflare:test'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { contracts, fieldErrorBodySchema } from '../../../domain/contracts'
@@ -515,5 +516,95 @@ describe('lists read every event\'s sections together', () => {
       expect(body.tournaments).toEqual([])
     })
     expect(sectionQueries(sql)).toEqual([])
+  })
+})
+
+describe('every answer reads the round times from the schedule rows (K2g)', () => {
+  const day = (round: number, date: string, time: string) => ({ round, date, time })
+  const main = [day(1, '2026-10-23', '19:00'), day(2, '2026-10-24', '10:00'), day(3, '2026-10-24', '16:00'), day(4, '2026-10-25', '10:00')]
+  const fast = [day(1, '2026-10-24', '09:00'), day(2, '2026-10-24', '12:30')]
+
+  /** A visible 4-round club event with a main schedule, a 2-day one that merges at round 3, and an archived one. */
+  async function seedSchedules() {
+    const admin = await seedAdmin()
+    const clubId = await seedClub()
+    const tournamentId = await seedTournament({ clubId, rounds: 4 })
+    const primaryId = (await env.DB.prepare('SELECT id FROM tournament_schedules WHERE tournament_id = ? AND is_primary = 1')
+      .bind(tournamentId).first<{ id: string }>())!.id
+    const patch = (body: unknown) => invoke(tournamentPatch, { method: 'PATCH', as: admin, params: { id: tournamentId }, body })
+    expect((await patch({ schedules: [
+      { id: primaryId, label: '3-day', isPrimary: true, rounds: main },
+      { label: 'Old', isPrimary: false, mergeRound: 2, rounds: [day(1, '2026-10-24', '08:00')] },
+    ] })).status).toBe(200)
+    expect((await patch({ schedules: [
+      { id: primaryId, label: '3-day', isPrimary: true, rounds: main },
+      { label: '2-day', isPrimary: false, mergeRound: 3, rounds: fast },
+    ] })).status).toBe(200)
+    const rows = (await env.DB.prepare('SELECT id, label, archived_at FROM tournament_schedules WHERE tournament_id = ?')
+      .bind(tournamentId).all<{ id: string; label: string; archived_at: string | null }>()).results
+    expect(rows.find((r) => r.label === 'Old')?.archived_at).not.toBeNull()
+    const fastId = rows.find((r) => r.label === '2-day')!.id
+    const expected = [
+      { id: primaryId, label: '3-day', timeControl: null, isPrimary: true, mergeRound: null, rounds: main },
+      { id: fastId, label: '2-day', timeControl: null, isPrimary: false, mergeRound: 3, rounds: fast },
+    ]
+    return { admin, tournamentId, expected }
+  }
+
+  it('the list, the event page, the manage page, the registration settings save and the admin edit', async () => {
+    const { admin, tournamentId, expected } = await seedSchedules()
+    const list = await expectContract(await invoke(tournamentsGet, { path: '/api/tournaments' }), contracts['tournaments'].GET.response)
+    const detail = await expectContract(await invoke(tournamentGet, { params: { id: tournamentId } }), contracts['tournaments/[id]'].GET.response)
+    const manage = await expectContract(await invoke(manageGet, { as: admin, params: { id: tournamentId } }), contracts['admin/tournaments/[id]/manage'].GET.response)
+    const settings = await expectContract(
+      await invoke(registrationSettingsPatch, { method: 'PATCH', as: admin, params: { id: tournamentId }, body: {} }),
+      contracts['admin/tournaments/[id]/registration'].PATCH.response,
+    )
+    const edit = await expectContract(
+      await invoke(tournamentPatch, { method: 'PATCH', as: admin, params: { id: tournamentId }, body: {} }),
+      contracts['admin/tournaments/[id]'].PATCH.response,
+    )
+    const answers = {
+      list: list.tournaments.find((t) => t.id === tournamentId)!,
+      detail: detail.tournament,
+      manage: manage.tournament,
+      settings: settings.tournament,
+      edit: edit.tournament,
+    }
+    for (const [endpoint, tournament] of Object.entries(answers)) {
+      expect(tournament.schedules, endpoint).toEqual(expected)
+      expect(tournament.round_schedule, endpoint).toEqual(main)
+    }
+  })
+
+  it('round_schedule follows the rows, not the JSON column, when the two disagree', async () => {
+    const { tournamentId } = await seedSchedules()
+    // The rounds change in the table alone (no trigger fires on the rounds table).
+    const primaryId = (await env.DB.prepare('SELECT id FROM tournament_schedules WHERE tournament_id = ? AND is_primary = 1 AND archived_at IS NULL')
+      .bind(tournamentId).first<{ id: string }>())!.id
+    await env.DB.prepare(`UPDATE tournament_schedule_rounds SET time = '11:00' WHERE schedule_id = ? AND round = 2`).bind(primaryId).run()
+    const body = await expectContract(await invoke(tournamentGet, { params: { id: tournamentId } }), contracts['tournaments/[id]'].GET.response)
+    expect(body.tournament.round_schedule[1]).toEqual(day(2, '2026-10-24', '11:00'))
+  })
+
+  it('GET /api/tournaments reads every event\'s schedules together: one query per 90 events, each under the limit', async () => {
+    const ids = Array.from({ length: 150 }, (_, i) => `sched-${String(i).padStart(3, '0')}`)
+    await env.DB.batch(ids.map((id, i) => env.DB.prepare(
+      `INSERT INTO tournaments (id, name, location, date, entry_fee, sections, rounds, round_schedule) VALUES (?, ?, 'Kenner, LA', '2026-10-24', 20, '["Open"]', 4, ?)`,
+    ).bind(id, `Event ${i}`, JSON.stringify([day(1, '2026-10-24', `${String(8 + (i % 10)).padStart(2, '0')}:00`)]))))
+    let body: { tournaments: Array<{ id: string; round_schedule: unknown; schedules: Array<{ isPrimary: boolean }> }> } | undefined
+    const sql = await preparedDuring(async () => {
+      body = await expectContract(await invoke(tournamentsGet, { path: '/api/tournaments' }), contracts['tournaments'].GET.response)
+    })
+    const listed = body!.tournaments.length
+    expect(listed).toBeGreaterThanOrEqual(150)
+    const queries = sql.filter((q) => /\btournament_schedules\b/.test(q))
+    expect(queries).toHaveLength(Math.ceil(listed / 90))
+    for (const q of queries) expect((q.match(/\?/g) ?? []).length).toBeLessThanOrEqual(100)
+    for (const [i, id] of ids.entries()) {
+      const t = body!.tournaments.find((x) => x.id === id)!
+      expect(t.schedules.map((s) => s.isPrimary)).toEqual([true])
+      expect(t.round_schedule).toEqual([day(1, '2026-10-24', `${String(8 + (i % 10)).padStart(2, '0')}:00`)])
+    }
   })
 })

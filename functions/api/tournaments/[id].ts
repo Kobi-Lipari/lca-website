@@ -6,6 +6,7 @@ import { computeStandings, tournamentPrizes } from '../../utils/tournament-manag
 import { parseJsonArray } from '../../utils/json'
 import { getDb } from '../../db/client'
 import { loadSections, toTournamentResponse } from '../../utils/events/sectionsRepo'
+import { loadSchedules } from '../../utils/events/schedulesRepo'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -34,8 +35,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   // The live sections: an archived one takes no entries, so the page
-  // offering entry never lists it. Prizes are read from the same rows.
-  const answer = toTournamentResponse(tournament, await loadSections(getDb(context.env.DB), tournamentId))
+  // offering entry never lists it. Prizes are read from the same rows. The
+  // round times come from the live schedules.
+  const db = getDb(context.env.DB)
+  const answer = toTournamentResponse(tournament, await loadSections(db, tournamentId), await loadSchedules(db, tournamentId))
 
   const customDetails = parseJsonArray(tournament.custom_details)
 

@@ -110,13 +110,73 @@ export const savedSectionSchema = z.object({
 const storedJsonTextSchema = z.string()
 
 /**
- * A JSON list column read into an array (round_schedule, and custom_details
- * where an endpoint parses it): the objects as the setup stored them. The
- * setup's request contract takes any objects here, so only that is
- * promised; the schedules table gives the rounds their own shape in a
- * later step. Text that is not a JSON list reads as [].
+ * A JSON list column read into an array (custom_details where an endpoint
+ * parses it): the objects as the setup stored them. The setup's request
+ * contract takes any objects here, so only that is promised. Text that is
+ * not a JSON list reads as [].
  */
 const storedJsonListSchema = z.array(z.record(z.string(), z.unknown()))
+
+/**
+ * One round of a schedule in an answer (scheduleRoundResponse in
+ * functions/utils/events/schedulesRepo.ts), from tournament_schedule_rounds.
+ * date and time are the text the setup wrote, as it wrote it ("2026-10-24",
+ * "19:00"); a blank or a time not set yet is ''. Times are never
+ * reformatted on the server.
+ */
+export const scheduleRoundSchema = z.strictObject({
+  round: z.number().int().min(1),
+  date: z.string(),
+  time: z.string(),
+})
+
+/**
+ * A schedule in an answer: a live row of tournament_schedules with its
+ * rounds, by round. Every event has exactly one primary (the main
+ * schedule). Another schedule plays its own rounds 1 to mergeRound - 1 and
+ * merges into the primary at mergeRound (domain/events/schedules.ts).
+ * timeControl null means the tournament's own.
+ */
+export const scheduleSchema = z.strictObject({
+  id: idSchema,
+  label: z.string(),
+  timeControl: z.string().nullable(),
+  isPrimary: z.boolean(),
+  mergeRound: z.number().int().min(2).nullable(),
+  rounds: z.array(scheduleRoundSchema),
+})
+
+/**
+ * 80 is SCHEDULE_LABEL_MAX in domain/events/schedules.ts;
+ * test/unit/schedules-domain.test.ts holds the two equal.
+ */
+const scheduleLabelSchema = z.string()
+  .min(1, 'Give the schedule a name.')
+  .max(80, 'Schedule names can be at most 80 characters.')
+  .refine((label) => label.trim() !== '', 'Give the schedule a name.')
+
+/**
+ * A schedule in an edit request (ScheduleInput in domain/events/schedules.ts):
+ * the whole list of live schedules, as an answer gave them or as the setup
+ * builds them. An id names the row being edited; a primary without one is
+ * the event's existing primary, and any other schedule without one is new.
+ * label and timeControl left out keep the row's. The merge round and the
+ * rounds each schedule must list are checked against the event's round
+ * count by validateSchedules, which answers 400 in words. Loose, like every
+ * request schema.
+ */
+export const scheduleInputSchema = z.looseObject({
+  id: idSchema.optional(),
+  label: scheduleLabelSchema.optional(),
+  timeControl: z.string().nullable().optional(),
+  isPrimary: z.boolean(),
+  mergeRound: z.number().int().nullable().optional(),
+  rounds: z.array(z.looseObject({
+    round: z.number().int().min(1),
+    date: z.string().nullable().optional(),
+    time: z.string().nullable().optional(),
+  })),
+})
 
 /**
  * Wall-clock text from the setup form (a deadline or an opening time). The
@@ -127,9 +187,10 @@ const wallClockTextSchema = z.string()
 
 /**
  * One row of GET /api/tournaments: every column of tournaments, with the
- * live sections from tournament_sections and round_schedule read into an
- * array (toTournamentResponse in functions/utils/events/sectionsRepo.ts),
- * plus the club's name and colour from the join. custom_details and
+ * live sections from tournament_sections, round_schedule as the primary
+ * schedule's rounds and the live schedules from tournament_schedules
+ * (toTournamentResponse in functions/utils/events/sectionsRepo.ts), plus
+ * the club's name and colour from the join. custom_details and
  * report_settings stay raw JSON text on this endpoint.
  */
 export const tournamentListItemSchema = z.strictObject({
@@ -157,7 +218,8 @@ export const tournamentListItemSchema = z.strictObject({
   reminder_2_enabled: flagSchema.nullable(),
   is_rated: flagSchema,
   is_visible: flagSchema,
-  round_schedule: storedJsonListSchema,
+  round_schedule: z.array(scheduleRoundSchema),
+  schedules: z.array(scheduleSchema),
   registration_closes_at: wallClockTextSchema.nullable(),
   custom_details: storedJsonTextSchema.nullable(),
   time_control: z.string().nullable(),
@@ -270,9 +332,9 @@ export const sectionListItemSchema = z.union([sectionNameSchema, sectionSchema])
 /**
  * A tournament as the admin create and edit endpoints and the registration
  * settings save return it: every column of tournaments, with its live
- * sections from the table, ids included, and round_schedule read into an
- * array (toTournamentResponse). custom_details and report_settings stay
- * raw JSON text.
+ * sections from the table, ids included, round_schedule as the primary
+ * schedule's rounds and the live schedules (toTournamentResponse).
+ * custom_details and report_settings stay raw JSON text.
  */
 export const adminTournamentSchema = tournamentListItemSchema
   .omit({ club_name: true, club_color: true })
@@ -313,6 +375,13 @@ export const createTournamentRequestSchema = z.looseObject({
  * PATCH /api/admin/tournaments/[id] (adminUpdateTournament). A key left out
  * keeps the column; null clears it where the column allows. sections: null
  * also keeps the sections, as before.
+ *
+ * The round times come in one of two forms, never both (400). roundSchedule
+ * is what the setup form sends today: the main schedule's rounds, any
+ * objects, read as the legacy JSON is read (normalizeRoundSchedule in
+ * domain/events/schedules.ts); null clears them. schedules is the whole
+ * list of live schedules, a second one with its merge round included; no
+ * screen sends it yet (the setup redesign, WS08, will).
  */
 export const updateTournamentRequestSchema = z.looseObject({
   name: z.string().nullable().optional(),
@@ -340,6 +409,7 @@ export const updateTournamentRequestSchema = z.looseObject({
   lateFee: z.number().nullable().optional(),
   memberDiscount: z.number().nullable().optional(),
   roundSchedule: z.array(z.record(z.string(), z.unknown())).nullable().optional(),
+  schedules: z.array(scheduleInputSchema).optional(),
   registrationClosesAt: z.string().nullable().optional(),
   customDetails: z.array(customDetailInputSchema).optional(),
   timeControl: z.string().nullable().optional(),
@@ -406,8 +476,8 @@ export const prizeAwardSchema = z.strictObject({
 /**
  * The tournament as GET /api/tournaments/[id] answers it: every column,
  * the live sections from the table (archived ones are not offered for
- * entry), round_schedule and custom_details read into arrays, and how many
- * players wait for a spot.
+ * entry), round_schedule and the schedules from the schedule tables,
+ * custom_details read into an array, and how many players wait for a spot.
  */
 export const tournamentDetailSchema = adminTournamentSchema
   .omit({ custom_details: true })
@@ -639,6 +709,9 @@ export type TournamentsListResponse = z.infer<typeof tournamentsListResponseSche
 export type SectionRequest = z.infer<typeof sectionSchema>
 export type SectionListItemRequest = z.infer<typeof sectionListItemSchema>
 export type SavedSection = z.infer<typeof savedSectionSchema>
+export type ScheduleRound = z.infer<typeof scheduleRoundSchema>
+export type Schedule = z.infer<typeof scheduleSchema>
+export type ScheduleRequest = z.infer<typeof scheduleInputSchema>
 export type AdminTournament = z.infer<typeof adminTournamentSchema>
 export type AdminTournamentResponse = z.infer<typeof adminTournamentResponseSchema>
 export type CreateTournamentRequest = z.infer<typeof createTournamentRequestSchema>

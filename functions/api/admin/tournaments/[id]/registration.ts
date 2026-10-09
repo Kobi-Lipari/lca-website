@@ -10,6 +10,7 @@ import {
 } from '../../../../utils/response'
 import { getDb } from '../../../../db/client'
 import { loadSections, toTournamentResponse } from '../../../../utils/events/sectionsRepo'
+import { loadSchedules } from '../../../../utils/events/schedulesRepo'
 import { registrationSettingsRequestSchema } from '../../../../../domain/contracts/events'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -66,5 +67,6 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   // The page reloads the event after saving and reads nothing from this
   // answer; it is the tournament as every endpoint answers it.
-  return jsonResponse({ tournament: toTournamentResponse(updated, await loadSections(getDb(context.env.DB), tournamentId)) })
+  const db = getDb(context.env.DB)
+  return jsonResponse({ tournament: toTournamentResponse(updated, await loadSections(db, tournamentId), await loadSchedules(db, tournamentId)) })
 }

@@ -150,11 +150,11 @@ describe('GET /api/tournaments: dates and ties', () => {
 })
 
 describe('GET /api/tournaments: the contract and the table agree', () => {
-  it('names every column of tournaments, plus club_name and club_color', async () => {
+  it('names every column of tournaments, plus club_name and club_color and the schedules from their table', async () => {
     const { results } = await env.DB.prepare(`PRAGMA table_info(tournaments)`).all<{ name: string }>()
     const columns = results.map((r) => r.name)
     const named = Object.keys(tournamentListItemSchema.shape)
-    expect([...named].sort()).toEqual([...columns, 'club_name', 'club_color'].sort())
+    expect([...named].sort()).toEqual([...columns, 'club_name', 'club_color', 'schedules'].sort())
   })
 
   it('every column the database default fills passes its schema', async () => {

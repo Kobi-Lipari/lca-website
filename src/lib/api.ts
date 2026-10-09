@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import type { RawScan } from '@/lib/scanner/types'
 // Types only: a runtime import of the contracts would bring zod into the site
 // bundle, which npm run check:bundle refuses.
-import type { SavedSection, TournamentDetailResponse, TournamentListItem } from '@domain/contracts'
+import type { SavedSection, Schedule, ScheduleRound, TournamentDetailResponse, TournamentListItem } from '@domain/contracts'
 
 export interface ApiMember {
   id: string
@@ -270,11 +270,20 @@ export interface ApiPrizeAward {
  */
 export type ApiTournamentListItem = TournamentListItem
 
-export interface ApiRoundScheduleItem {
-  round: number
-  date: string
-  time: string
-}
+/**
+ * One round of the main schedule as every tournament answer gives it in
+ * round_schedule (scheduleRoundSchema): the round number and the date and
+ * time text the setup wrote, '' when not set. The manage page sends the
+ * same shape back as roundSchedule.
+ */
+export type ApiRoundScheduleItem = ScheduleRound
+
+/**
+ * A live schedule of a tournament (scheduleSchema): the main one, and any
+ * schedule that merges into it at mergeRound. Every tournament answer
+ * carries them in `schedules`; no page reads them yet.
+ */
+export type ApiSchedule = Schedule
 
 export interface ApiCustomDetail {
   title: string
@@ -301,14 +310,14 @@ export interface ApiClubListItem {
  * A tournament as the event page (GET /api/tournaments/[id]) and the manage
  * page (GET /api/admin/tournaments/[id]/manage) load it
  * (tournamentDetailSchema): the list item's columns without the club join,
- * with custom_details read into a list. Only the event page gets
- * waitlist_count. The contract promises the two lists only as objects; these
- * are the shapes the setup form writes into them.
+ * with custom_details read into a list and round_schedule the main
+ * schedule's rounds. Only the event page gets waitlist_count. The contract
+ * promises custom_details only as objects; this is the shape the setup form
+ * writes into it.
  */
-export type ApiTournamentDetail = Omit<TournamentDetailResponse['tournament'], 'waitlist_count' | 'custom_details' | 'round_schedule'> & {
+export type ApiTournamentDetail = Omit<TournamentDetailResponse['tournament'], 'waitlist_count' | 'custom_details'> & {
   waitlist_count?: number
   custom_details: ApiCustomDetail[]
-  round_schedule: ApiRoundScheduleItem[]
 }
 
 export interface ApiRosterPlayer {

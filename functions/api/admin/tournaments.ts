@@ -7,6 +7,7 @@ import { getDb } from '../../db/client'
 import { tournaments } from '../../db/schema'
 import { createTournamentRequestSchema } from '../../../domain/contracts/events'
 import { buildSaveSections, isSectionsConflict, loadSections, runBatch, toTournamentResponse } from '../../utils/events/sectionsRepo'
+import { loadSchedules } from '../../utils/events/schedulesRepo'
 import { SECTIONS_CHANGED_MESSAGE } from '../../../domain/events/sections'
 
 function slugify(value: string): string {
@@ -129,5 +130,5 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     detail: { tournament_id: id },
   })
 
-  return jsonResponse({ tournament: toTournamentResponse(tournament, await loadSections(db, id)) }, 201)
+  return jsonResponse({ tournament: toTournamentResponse(tournament, await loadSections(db, id), await loadSchedules(db, id)) }, 201)
 }

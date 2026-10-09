@@ -4,6 +4,7 @@ import { handleOptions, jsonResponse } from '../utils/response'
 import { isObserver, requireAuthedMember, isResponse } from '../utils/auth'
 import { getDb } from '../db/client'
 import { loadSectionsFor, toTournamentResponse } from '../utils/events/sectionsRepo'
+import { loadSchedulesFor } from '../utils/events/schedulesRepo'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -48,10 +49,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { results } = await statement.all<TournamentRow & { club_color: string | null; club_name: string | null }>()
   const rows = results ?? []
 
-  // The live sections of every listed event, read together in lists of ids
-  // short enough for D1, never one query per event.
-  const sections = await loadSectionsFor(getDb(context.env.DB), rows.map((t) => t.id))
-  const tournaments = rows.map((t) => toTournamentResponse(t, sections.get(t.id) ?? []))
+  // The live sections and schedules of every listed event, read together
+  // in lists of ids short enough for D1, never one query per event.
+  const db = getDb(context.env.DB)
+  const ids = rows.map((t) => t.id)
+  const sections = await loadSectionsFor(db, ids)
+  const schedules = await loadSchedulesFor(db, ids)
+  const tournaments = rows.map((t) => toTournamentResponse(t, sections.get(t.id) ?? [], schedules.get(t.id) ?? []))
 
   return jsonResponse({ tournaments })
 }
