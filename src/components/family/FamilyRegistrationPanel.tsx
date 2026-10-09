@@ -15,7 +15,8 @@ import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { effectiveRules, eligibilityProblem, needsGrade } from '@/lib/sectionRules'
 import { confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
-import { entryPrice } from '@/lib/pricing'
+import { priceShownSection } from '@/lib/pricing'
+import { useNow } from '@/hooks/useNow'
 
 interface Player {
   /** undefined = the signed-in member */
@@ -23,7 +24,6 @@ interface Player {
   name: string
   uscfId: string | null
   rating: number | null
-  isLcaMember: boolean
 }
 
 interface Choice {
@@ -34,12 +34,11 @@ interface Choice {
   ticks: GradeTicks
 }
 
-export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, selfRating = null, selfIsLcaMember = false, selfRegistered }: {
+export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, selfRating = null, selfRegistered }: {
   tournament: ApiTournamentDetail
   selfName: string
   selfUscfId: string | null
   selfRating?: number | null
-  selfIsLcaMember?: boolean
   selfRegistered: boolean
 }) {
   const [children, setChildren] = useState<ApiChild[] | null>(null)
@@ -47,14 +46,19 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState<{ message: string; paymentUrl: string | null } | null>(null)
+  // The time the prices below are shown for. Checkout prices each entry on
+  // the server when it is made, so this follows the clock (a timer, plus a
+  // fresh read on loading and on every change to who is playing or where)
+  // and the total on the button is what checkout will charge.
+  const [nowMs, refreshNow] = useNow()
 
   useEffect(() => {
     let cancelled = false
     getMyChildren(tournament.id)
-      .then((list) => { if (!cancelled) setChildren(list) })
+      .then((list) => { if (!cancelled) { setChildren(list); refreshNow() } })
       .catch(() => { if (!cancelled) setChildren([]) })
     return () => { cancelled = true }
-  }, [tournament.id])
+  }, [tournament.id, refreshNow])
 
   if (!children || children.length === 0) return null
 
@@ -63,24 +67,26 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
 
   const entered = children.filter((c) => c.registration)
   const players: Player[] = [
-    ...(selfRegistered ? [] : [{ name: `${selfName} (me)`, uscfId: selfUscfId, rating: selfRating, isLcaMember: selfIsLcaMember }]),
+    ...(selfRegistered ? [] : [{ name: `${selfName} (me)`, uscfId: selfUscfId, rating: selfRating }]),
     ...children.filter((c) => !c.registration).map((c) => ({
       memberId: c.id, name: c.full_name, uscfId: c.uscf_id, rating: c.uscf_rating,
-      isLcaMember: c.membership_status === 'active',
     })),
   ]
 
   const keyOf = (p: Player) => p.memberId ?? 'self'
   const choiceOf = (p: Player): Choice => choices[keyOf(p)] ?? { selected: false, section: defaultSection, byes: [], ticks: NO_TICKS }
-  const setChoice = (p: Player, patch: Partial<Choice>) =>
+  const setChoice = (p: Player, patch: Partial<Choice>) => {
     setChoices((prev) => ({ ...prev, [keyOf(p)]: { ...choiceOf(p), ...patch } }))
+    refreshNow()
+  }
 
   const picked = players.filter((p) => choiceOf(p).selected)
-  const priced = { ...tournament, sections: JSON.stringify(tournament.sections) }
-  const feeOf = (p: Player, section: string) => entryPrice(priced, section, { isLcaMember: p.isLcaMember }).amount
-  const total = picked.reduce((sum, p) => sum + feeOf(p, choiceOf(p).section), 0)
-  const missingUscf = tournament.is_rated !== 0 ? picked.filter((p) => !p.uscfId) : []
   const sectionOf = (name: string) => tournament.sections.find((s) => s.name === name)
+  // Priced as the tournament page and checkout price one entry: by the
+  // section alone, the same for every player.
+  const feeOf = (section: string) => priceShownSection(sectionOf(section), tournament, nowMs).amount
+  const total = picked.reduce((sum, p) => sum + feeOf(choiceOf(p).section), 0)
+  const missingUscf = tournament.is_rated !== 0 ? picked.filter((p) => !p.uscfId) : []
   /** Rating problems; the grade box is checked separately (it sits right there). */
   const problemOf = (p: Player) => {
     const s = sectionOf(choiceOf(p).section)
@@ -108,7 +114,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
         }),
       )
       if (result.paymentUrl) {
-        window.location.href = result.paymentUrl
+        window.location.assign(result.paymentUrl)
         return
       }
       setDone({ message: result.message, paymentUrl: null })
@@ -168,7 +174,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
                       className="w-full rounded-md border bg-background px-2.5 py-1.5 text-sm"
                       value={c.section} onChange={(e) => setChoice(p, { section: e.target.value, ticks: NO_TICKS })}>
                       {tournament.sections.map((s) => {
-                        const fee = feeOf(p, s.name)
+                        const fee = feeOf(s.name)
                         return <option key={s.name} value={s.name}>{s.name}{fee > 0 ? ` — $${fee}` : ''}</option>
                       })}
                     </select>

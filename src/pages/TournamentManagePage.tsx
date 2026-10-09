@@ -32,12 +32,13 @@ import {
   type ApiPrizeAward,
   type ApiRatingReport,
   type ApiRoundScheduleItem,
+  type ApiSectionDraft,
   type ApiStanding,
   type ApiTournamentDetail,
   type ApiTournamentGame,
-  type ApiTournamentSection,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { FEATURES } from '@/lib/features'
 import { useAuth } from '@/contexts/auth-context'
 import { canUseMailing, isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
 import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
@@ -103,6 +104,7 @@ interface FormSnapshot {
   registrationStatus: string
   registrationClosesAt: string
   pricing: string // JSON
+  requiresMembership: boolean
   rounds: string
   roundSchedule: string // JSON
 }
@@ -177,7 +179,7 @@ export function TournamentManagePage() {
   // can't see; if the app has a useAuth() hook exposing member.role, swap it in.
   const [myRole, setMyRole] = useState<string | null>(null)
   // Back links go to the admin panel for admins, the workspace for reps/directors.
-  const { role: authRole } = useAuth()
+  const { role: authRole, member: authMember } = useAuth()
   // Someone directing an event with an ordinary member account works from the workspace.
   const backHref = authRole === 'member' ? '/workspace?tab=events' : toolsHomeFor(authRole, 'tournaments')
   // LCA Officers see events like an observer but without the mailing tools.
@@ -199,7 +201,9 @@ export function TournamentManagePage() {
   const [keepApart, setKeepApart] = useState<'family' | 'family_club' | 'none'>('family')
   const [timeControl, setTimeControl] = useState('')
   const [customTimeControl, setCustomTimeControl] = useState('')
-  const [sections, setSections] = useState<ApiTournamentSection[]>([])
+  // Each loaded section keeps its id while it is edited and goes back with
+  // it on save, so the server matches it by id rather than by name.
+  const [sections, setSections] = useState<ApiSectionDraft[]>([])
   const [customPreset, setCustomPreset] = useState('')
   const [customDetails, setCustomDetails] = useState<ApiCustomDetail[]>([])
 
@@ -207,7 +211,10 @@ export function TournamentManagePage() {
   const [isVisible, setIsVisible] = useState(true)
   const [registrationStatus, setRegistrationStatus] = useState('draft')
   const [registrationClosesAt, setRegistrationClosesAt] = useState('')
-  const [pricing, setPricing] = useState({ earlyDeadline: '', earlyDiscount: '', lateAfter: '', lateFee: '', memberDiscount: '' })
+  const [pricing, setPricing] = useState({ earlyDeadline: '', earlyDiscount: '', lateAfter: '', lateFee: '' })
+  // Whether entering needs a current LCA membership. Only a club-run event
+  // can switch it off, and only an LCA admin or that club's rep may change it.
+  const [requiresMembership, setRequiresMembership] = useState(true)
   const [waitlist, setWaitlist] = useState<ApiManageRosterPlayer[]>([])
   const [offering, setOffering] = useState<string | null>(null)
 
@@ -312,8 +319,8 @@ export function TournamentManagePage() {
       earlyDiscount: money(t.early_discount),
       lateAfter: (t.late_after ?? '').slice(0, 16),
       lateFee: money(t.late_fee),
-      memberDiscount: money(t.member_discount),
     }
+    const nRequiresMembership = t.requires_lca_membership !== 0
     const nRounds = String(t.rounds ?? 5)
     const nRoundSchedule = normalizeSchedule(t.round_schedule ?? [], Number(nRounds))
 
@@ -339,6 +346,7 @@ export function TournamentManagePage() {
     setRegistrationStatus(nRegistrationStatus)
     setRegistrationClosesAt(nRegistrationClosesAt)
     setPricing(nPricing)
+    setRequiresMembership(nRequiresMembership)
     setRounds(nRounds)
     setRoundSchedule(nRoundSchedule)
 
@@ -362,6 +370,7 @@ export function TournamentManagePage() {
       registrationStatus: nRegistrationStatus,
       registrationClosesAt: nRegistrationClosesAt,
       pricing: JSON.stringify(nPricing),
+      requiresMembership: nRequiresMembership,
       rounds: nRounds,
       roundSchedule: JSON.stringify(nRoundSchedule),
     })
@@ -508,11 +517,17 @@ export function TournamentManagePage() {
     JSON.stringify(sections) !== snap.sections ||
     JSON.stringify(customDetails) !== snap.customDetails
   )
+  // The membership switch: club-run events only (an LCA-run event always
+  // requires a membership), for an LCA admin or the organizing club's rep.
+  const showMembershipSwitch = FEATURES.membershipRequirementSwitch &&
+    !!tournament?.club_id &&
+    (authRole === 'lca_admin' || (authRole === 'club_rep' && authMember?.club_id === tournament.club_id))
   const registrationDirty = !!snap && (
     isVisible !== snap.isVisible ||
     registrationStatus !== snap.registrationStatus ||
     registrationClosesAt !== snap.registrationClosesAt ||
-    JSON.stringify(pricing) !== snap.pricing
+    JSON.stringify(pricing) !== snap.pricing ||
+    requiresMembership !== snap.requiresMembership
   )
   const scheduleDirty = !!snap && (
     rounds !== snap.rounds ||
@@ -543,7 +558,7 @@ export function TournamentManagePage() {
     setCustomTimeControl(
       s.timeControl && !TIME_CONTROL_PRESETS.includes(s.timeControl) ? s.timeControl : '',
     )
-    setSections(JSON.parse(s.sections) as ApiTournamentSection[])
+    setSections(JSON.parse(s.sections) as ApiSectionDraft[])
     setCustomDetails(JSON.parse(s.customDetails) as ApiCustomDetail[])
     setIsVisible(s.isVisible)
     setRegistrationStatus(s.registrationStatus)
@@ -621,8 +636,11 @@ export function TournamentManagePage() {
       if (pricing.earlyDiscount !== was.earlyDiscount) body.earlyDiscount = amt(pricing.earlyDiscount)
       if (pricing.lateAfter !== was.lateAfter) body.lateAfter = pricing.lateAfter || null
       if (pricing.lateFee !== was.lateFee) body.lateFee = amt(pricing.lateFee)
-      if (pricing.memberDiscount !== was.memberDiscount) body.memberDiscount = amt(pricing.memberDiscount)
     }
+    // Sent only when changed: the server refuses the field from anyone but an
+    // LCA admin or the organizing club's rep, which an assigned director
+    // saving other settings must never trip over.
+    if (requiresMembership !== s.requiresMembership) body.requiresLcaMembership = requiresMembership
     const statusChanged = registrationStatus !== s.registrationStatus
     if (Object.keys(body).length === 0 && !statusChanged) return
 
@@ -1525,12 +1543,12 @@ export function TournamentManagePage() {
               </div>
               <div className="space-y-3 border-t pt-5">
                 <div>
-                  <Label>Discounts and late fee</Label>
+                  <Label>Early-entry discount and late fee</Label>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Optional. Applied to every section's entry fee at checkout, never below free. Times are Central.
                   </p>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <Label htmlFor="p-early" className="text-xs">Early-entry discount ($)</Label>
                     <Input id="p-early" type="number" min={0} placeholder="0" value={pricing.earlyDiscount}
@@ -1547,12 +1565,6 @@ export function TournamentManagePage() {
                       onChange={(e) => setPricing((p) => ({ ...p, lateAfter: e.target.value }))} />
                     <p className="text-[11px] text-muted-foreground">From this time on.</p>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="p-member" className="text-xs">LCA member discount ($)</Label>
-                    <Input id="p-member" type="number" min={0} placeholder="0" value={pricing.memberDiscount}
-                      onChange={(e) => setPricing((p) => ({ ...p, memberDiscount: e.target.value }))} />
-                    <p className="text-[11px] text-muted-foreground">For players with a current LCA membership.</p>
-                  </div>
                 </div>
                 {Number(pricing.earlyDiscount) > 0 && !pricing.earlyDeadline && (
                   <p className="text-xs text-amber-700">Set when early entry ends, or the discount won't apply.</p>
@@ -1561,6 +1573,27 @@ export function TournamentManagePage() {
                   <p className="text-xs text-amber-700">Set when the late fee starts, or it won't apply.</p>
                 )}
               </div>
+              {showMembershipSwitch && (
+                <div className="space-y-2 border-t pt-5">
+                  <Label>LCA membership</Label>
+                  <label className="flex items-start gap-2 text-sm text-lca-navy">
+                    <input
+                      type="checkbox"
+                      className="mt-0.5"
+                      checked={requiresMembership}
+                      onChange={(e) => setRequiresMembership(e.target.checked)}
+                    />
+                    <span>
+                      Players need a current LCA membership to enter
+                      <span className="block text-xs text-muted-foreground">
+                        {requiresMembership
+                          ? 'Required: every player must hold an LCA membership on the day of the event.'
+                          : 'Not required: anyone may enter, member or not.'}
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              )}
               <Button
                 type="button"
                 className={goldButtonClass}

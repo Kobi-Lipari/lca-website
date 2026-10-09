@@ -6,7 +6,7 @@
 // section from the roster.
 import { useState } from 'react'
 
-import type { ApiTournamentSection } from '@/lib/api'
+import type { ApiSectionDraft } from '@/lib/api'
 import { describeRules, effectiveRules, gradeLabel, rulesFromName } from '@/lib/sectionRules'
 import { cn } from '@/lib/utils'
 
@@ -14,15 +14,15 @@ const GRADES = Array.from({ length: 13 }, (_, g) => g)
 const numOrNull = (v: string) => (v.trim() === '' || !Number.isFinite(Number(v)) ? null : Math.round(Number(v)))
 
 export function SectionRulesEditor({ section, onChange }: {
-  section: ApiTournamentSection
-  onChange: (next: ApiTournamentSection) => void
+  section: ApiSectionDraft
+  onChange: (next: ApiSectionDraft) => void
 }) {
   const [open, setOpen] = useState(false)
   const rules = effectiveRules(section)
   const fromName = !section.rulesSet
 
   /** Any edit pins the rules, so renaming the section no longer changes them. */
-  function set(patch: Partial<ApiTournamentSection>) {
+  function set(patch: Partial<ApiSectionDraft>) {
     onChange({
       ...section,
       ratingMax: rules.ratingMax ?? null,

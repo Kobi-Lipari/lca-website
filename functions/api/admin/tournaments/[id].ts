@@ -1,50 +1,46 @@
 // functions/api/admin/tournaments/[id].ts
-import type { Env } from '../../../types'
+import { eq } from 'drizzle-orm'
+import type { Env, TournamentRow } from '../../../types'
 import { isResponse, requireTournamentManager, requireAdmin } from '../../../utils/auth'
-import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
-import { parseJsonArray } from '../../../utils/json'
+import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../utils/response'
 import { recordAdminAction } from '../../../utils/audit'
-
-interface UpdateTournamentBody {
-  name?: string
-  location?: string
-  venue?: string | null
-  date?: string
-  endDate?: string | null
-  entryFee?: number
-  sections?: Array<{ name: string; entryFee: number; prizeFund?: string }>
-  rounds?: number
-  maxPlayers?: number | null
-  status?: string
-  description?: string | null
-  registrationDeadline?: string | null
-  isRated?: boolean
-  pairingSystem?: string
-  /** Accelerated pairings for rounds 1–2. */
-  accelerated?: boolean
-  /** 'family' | 'family_club' | 'none' */
-  keepApart?: string
-  /** Marks the event as a state championship (badge, champions page). */
-  isStateChampionship?: boolean
-  /** US Chess upload details; see migration 0045. */
-  reportSettings?: Record<string, unknown> | null
-  /** Pricing: Central date/times and dollar amounts. null clears. */
-  earlyDeadline?: string | null
-  earlyDiscount?: number | null
-  lateAfter?: string | null
-  lateFee?: number | null
-  memberDiscount?: number | null
-  isVisible?: boolean
-  roundSchedule?: Array<{ round: number; date: string; time: string }>
-  registrationClosesAt?: string | null
-  customDetails?: Array<{ title: string; body: string }>
-  timeControl?: string | null
-  /** lca_admin only — which club organizes the event. null detaches it. */
-  clubId?: string | null
-}
+import { getDb } from '../../../db/client'
+import { tournaments } from '../../../db/schema'
+import { updateTournamentRequestSchema } from '../../../../domain/contracts/events'
+import {
+  buildSaveSections,
+  isSectionsConflict,
+  loadSections,
+  runBatch,
+  toTournamentResponse,
+  type SectionQuery,
+} from '../../../utils/events/sectionsRepo'
+import {
+  buildSaveSchedules,
+  isSchedulesConflict,
+  loadSchedules,
+  schedulesFitRoundsGuard,
+  schedulesProblemForRounds,
+  type SaveSchedulesInput,
+} from '../../../utils/events/schedulesRepo'
+import { SECTIONS_CHANGED_MESSAGE } from '../../../../domain/events/sections'
+import { SCHEDULE_FORMS_MESSAGE, SCHEDULES_CHANGED_MESSAGE } from '../../../../domain/events/schedules'
+import { LCA_RUN_NEEDS_MEMBERSHIP } from '../../../../domain/membership/requirement'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
+/**
+ * Edits a tournament (adminUpdateTournament). A key left out keeps its
+ * column. The tournament's own columns and, when sections or round times
+ * are sent, every section and schedule write go in one D1 batch; the
+ * sections go through their one writer, sectionsRepo, which refuses
+ * repeated names and removing a section that still has entries or games,
+ * and the round times through theirs, schedulesRepo, which refuses a merge
+ * round outside the event's rounds, before anything is written. If the
+ * sections or the schedules change between reading them and the batch
+ * (another save at the same moment), the batch fails as a whole and the
+ * answer is 409.
+ */
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const tournamentId = context.params.id as string
   const authResult = await requireTournamentManager(
@@ -54,24 +50,24 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   )
   if (isResponse(authResult)) return authResult
 
-  const existing = await context.env.DB.prepare(
-    'SELECT * FROM tournaments WHERE id = ?',
-  )
-    .bind(tournamentId)
-    .first<Record<string, unknown>>()
+  const db = getDb(context.env.DB)
+  const [existing] = await db.select().from(tournaments).where(eq(tournaments.id, tournamentId))
 
   if (!existing) return errorResponse('Tournament not found', 404)
 
-  const body = await parseJsonBody<UpdateTournamentBody>(context.request)
-  if (!body) return errorResponse('Invalid JSON body', 400)
+  const body = await parseBody(context.request, updateTournamentRequestSchema)
+  if (isResponse(body)) return body
 
   if (body.status && !['upcoming', 'active', 'completed'].includes(body.status)) {
     return errorResponse('Invalid status', 400)
   }
+  if (body.roundSchedule !== undefined && body.schedules !== undefined) {
+    return errorResponse(SCHEDULE_FORMS_MESSAGE, 400)
+  }
 
   // Reassigning the organizing club moves the event between reps' scopes, so
   // only an admin may do it. Checked before any write happens.
-  let clubId = existing.club_id as string | null
+  let clubId = existing.clubId
   if (body.clubId !== undefined) {
     if (authResult.member.role !== 'lca_admin') {
       return errorResponse('Only LCA admins can change the organizing club', 403)
@@ -85,88 +81,132 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     clubId = body.clubId || null
   }
 
-  const sections = body.sections != null
-    ? JSON.stringify(body.sections)
-    : (existing.sections as string)
+  // Whether entering needs an LCA membership. Only an LCA admin or the rep
+  // of the organizing club decides it; an assigned director, who reaches this
+  // handler through requireTournamentManager, may not. An LCA-run event
+  // (no club, after this save) always requires one. Written only when sent
+  // or when taking the club off forces it on, so an edit read before another
+  // save changed it cannot put the old value back.
+  let requiresLcaMembership: number | undefined
+  if (body.requiresLcaMembership !== undefined) {
+    const { member } = authResult
+    const ownsEvent = member.role === 'club_rep' && !!existing.clubId && member.club_id === existing.clubId
+    if (member.role !== 'lca_admin' && !ownsEvent) {
+      return errorResponse("Only the organizing club's rep or an LCA admin can change whether an LCA membership is required", 403)
+    }
+    if (!body.requiresLcaMembership && !clubId) {
+      return errorResponse(LCA_RUN_NEEDS_MEMBERSHIP, 400)
+    }
+    requiresLcaMembership = body.requiresLcaMembership ? 1 : 0
+  }
+  if (!clubId) requiresLcaMembership = 1
 
   const isRated = body.isRated !== undefined
     ? body.isRated ? 1 : 0
-    : existing.is_rated
+    : existing.isRated
 
   const pairingSystem = body.pairingSystem === undefined
-    ? (existing.pairing_system ?? 'uscf')
+    ? (existing.pairingSystem ?? 'uscf')
     : body.pairingSystem === 'fide' ? 'fide' : 'uscf'
 
   const accelerated = body.accelerated === undefined ? (existing.accelerated ?? 0) : body.accelerated ? 1 : 0
   const keepApart = body.keepApart === undefined
-    ? (existing.keep_apart ?? 'family')
+    ? (existing.keepApart ?? 'family')
     : ['family', 'family_club', 'none'].includes(body.keepApart) ? body.keepApart : 'family'
 
   const isVisible = body.isVisible !== undefined
     ? body.isVisible ? 1 : 0
-    : existing.is_visible
-
-  const roundSchedule = body.roundSchedule !== undefined
-    ? JSON.stringify(body.roundSchedule)
-    : existing.round_schedule
+    : existing.isVisible
 
   const customDetails = body.customDetails !== undefined
     ? JSON.stringify(body.customDetails)
-    : existing.custom_details
+    : existing.customDetails
 
   const registrationClosesAt = body.registrationClosesAt !== undefined
     ? body.registrationClosesAt
-    : existing.registration_closes_at
+    : existing.registrationClosesAt
 
   const timeControl = body.timeControl !== undefined
     ? body.timeControl
-    : existing.time_control
+    : existing.timeControl
 
-  await context.env.DB.prepare(
-    `UPDATE tournaments SET
-      name = ?, location = ?, venue = ?, date = ?, end_date = ?,
-      entry_fee = ?, sections = ?, rounds = ?, max_players = ?,
-      status = ?, description = ?, registration_deadline = ?,
-      is_rated = ?, is_visible = ?, round_schedule = ?,
-      registration_closes_at = ?, custom_details = ?, time_control = ?,
-      club_id = ?, pairing_system = ?,
-      early_deadline = ?, early_discount = ?, late_after = ?, late_fee = ?, member_discount = ?,
-      accelerated = ?, keep_apart = ?, report_settings = ?, is_state_championship = ?
-     WHERE id = ?`,
-  ).bind(
-    body.name ?? existing.name,
-    body.location ?? existing.location,
-    body.venue !== undefined ? body.venue : existing.venue,
-    body.date ?? existing.date,
-    body.endDate !== undefined ? body.endDate : existing.end_date,
-    body.entryFee ?? existing.entry_fee,
-    sections,
-    body.rounds ?? existing.rounds,
-    body.maxPlayers !== undefined ? body.maxPlayers : existing.max_players,
-    body.status ?? existing.status,
-    body.description !== undefined ? body.description : existing.description,
-    body.registrationDeadline !== undefined ? body.registrationDeadline : existing.registration_deadline,
-    isRated,
-    isVisible,
-    roundSchedule ?? null,
-    registrationClosesAt ?? null,
-    customDetails ?? null,
-    timeControl ?? null,
-    clubId,
-    pairingSystem,
-    body.earlyDeadline !== undefined ? body.earlyDeadline || null : existing.early_deadline ?? null,
-    body.earlyDiscount !== undefined ? Math.max(0, Number(body.earlyDiscount) || 0) : existing.early_discount ?? 0,
-    body.lateAfter !== undefined ? body.lateAfter || null : existing.late_after ?? null,
-    body.lateFee !== undefined ? Math.max(0, Number(body.lateFee) || 0) : existing.late_fee ?? 0,
-    body.memberDiscount !== undefined ? Math.max(0, Number(body.memberDiscount) || 0) : existing.member_discount ?? 0,
-    accelerated,
-    keepApart,
-    body.reportSettings === undefined
-      ? (existing.report_settings ?? null)
-      : body.reportSettings === null ? null : JSON.stringify(body.reportSettings).slice(0, 8000),
-    body.isStateChampionship === undefined ? (existing.is_state_championship ?? 0) : body.isStateChampionship ? 1 : 0,
-    tournamentId,
-  ).run()
+  const reportSettings = body.reportSettings === undefined
+    ? (existing.reportSettings ?? null)
+    : body.reportSettings === null ? null : JSON.stringify(body.reportSettings).slice(0, 8000)
+
+  const queries: SectionQuery[] = [
+    db.update(tournaments).set({
+      name: body.name ?? existing.name,
+      location: body.location ?? existing.location,
+      venue: body.venue !== undefined ? body.venue : existing.venue,
+      date: body.date ?? existing.date,
+      endDate: body.endDate !== undefined ? body.endDate : existing.endDate,
+      entryFee: body.entryFee ?? existing.entryFee,
+      // Left out, the round count is not written at all, so an edit read
+      // before another save changed it cannot put the old count back.
+      rounds: body.rounds ?? undefined,
+      maxPlayers: body.maxPlayers !== undefined ? body.maxPlayers : existing.maxPlayers,
+      status: body.status ?? existing.status,
+      description: body.description !== undefined ? body.description : existing.description,
+      registrationDeadline: body.registrationDeadline !== undefined ? body.registrationDeadline : existing.registrationDeadline,
+      isRated,
+      isVisible,
+      registrationClosesAt: registrationClosesAt ?? null,
+      customDetails: customDetails ?? null,
+      timeControl: timeControl ?? null,
+      clubId,
+      pairingSystem,
+      earlyDeadline: body.earlyDeadline !== undefined ? body.earlyDeadline || null : existing.earlyDeadline ?? null,
+      earlyDiscount: body.earlyDiscount !== undefined ? Math.max(0, Number(body.earlyDiscount) || 0) : existing.earlyDiscount ?? 0,
+      lateAfter: body.lateAfter !== undefined ? body.lateAfter || null : existing.lateAfter ?? null,
+      lateFee: body.lateFee !== undefined ? Math.max(0, Number(body.lateFee) || 0) : existing.lateFee ?? 0,
+      // memberDiscount is accepted and ignored: there is no member price, and
+      // member_discount is no longer written.
+      requiresLcaMembership,
+      accelerated,
+      keepApart,
+      reportSettings,
+      isStateChampionship: body.isStateChampionship === undefined ? (existing.isStateChampionship ?? 0) : body.isStateChampionship ? 1 : 0,
+    }).where(eq(tournaments.id, tournamentId)),
+  ]
+
+  // sections: null, like leaving it out, keeps the sections as they are.
+  if (body.sections != null) {
+    const plan = await buildSaveSections(db, tournamentId, body.sections, { reportSettings })
+    if (!plan.ok) return errorResponse(plan.error, 400)
+    queries.push(...plan.queries)
+  }
+
+  // The round times, after the sections, so round_schedule is the batch's
+  // last write. Left out, the schedules stay as they are. Whenever this save
+  // writes the schedules or the round count, a guard as the batch runs checks
+  // every second schedule still merges within the event's rounds, in case
+  // another save landed between the reads here and the batch (409).
+  const roundCount = body.rounds ?? existing.rounds
+  let schedules: SaveSchedulesInput | null = null
+  if (body.roundSchedule !== undefined) schedules = { roundSchedule: body.roundSchedule }
+  if (body.schedules !== undefined) schedules = { schedules: body.schedules }
+  if (schedules) {
+    const plan = await buildSaveSchedules(db, tournamentId, schedules, { roundCount })
+    if (!plan.ok) return errorResponse(plan.error, 400)
+    // The plan ends with the round_schedule JSON; the guard goes just before
+    // it, once the schedule rows are final.
+    queries.push(...plan.queries.slice(0, -1), schedulesFitRoundsGuard(db, tournamentId), ...plan.queries.slice(-1))
+  } else if (body.rounds != null) {
+    if (roundCount !== existing.rounds) {
+      const problem = await schedulesProblemForRounds(db, tournamentId, roundCount)
+      if (problem) return errorResponse(problem, 400)
+    }
+    queries.push(schedulesFitRoundsGuard(db, tournamentId))
+  }
+
+  try {
+    await runBatch(db, queries)
+  } catch (err) {
+    if (isSectionsConflict(err)) return errorResponse(SECTIONS_CHANGED_MESSAGE, 409)
+    if (isSchedulesConflict(err)) return errorResponse(SCHEDULES_CHANGED_MESSAGE, 409)
+    throw err
+  }
 
   if (body.status && body.status !== existing.status && (body.status === 'completed' || existing.status === 'completed')) {
     await recordAdminAction(context.env.DB, authResult.member, {
@@ -176,7 +216,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     })
   }
 
-  if (Number(isVisible) !== Number(existing.is_visible)) {
+  if (Number(isVisible) !== Number(existing.isVisible)) {
     await recordAdminAction(context.env.DB, authResult.member, {
       action: isVisible ? 'tournament_publish' : 'tournament_unpublish',
       targetLabel: String(body.name ?? existing.name),
@@ -186,14 +226,11 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first()
-
-  const parsedSections = parseJsonArray(
-    (tournament as Record<string, unknown>).sections,
-  )
+  ).bind(tournamentId).first<TournamentRow>()
+  if (!tournament) return errorResponse('Tournament not found', 404)
 
   return jsonResponse({
-    tournament: { ...(tournament as object), sections: parsedSections },
+    tournament: toTournamentResponse(tournament, await loadSections(db, tournamentId), await loadSchedules(db, tournamentId)),
   })
 }
 

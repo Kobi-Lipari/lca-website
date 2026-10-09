@@ -8,7 +8,7 @@ import { PageHero } from '@/components/PageHero'
 import { StatusBadge } from '@/components/StatusBadge'
 import { TOURNAMENT_STATUS } from '@/lib/tournamentStatus'
 import { formatDate, type UnifiedTournament } from '@/lib/clearinghouse'
-import { isScholasticTournament, sectionName } from '@/lib/scholastic'
+import { isScholasticTournament } from '@/lib/scholastic'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA, GOLD_BUTTON as GOLD } from '@/lib/brand'
@@ -51,7 +51,7 @@ function ScholasticCard({ t }: { t: UnifiedTournament }) {
           {sections.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {sections.map((s) => {
-                const name = sectionName(s)
+                const name = s.name
                 return (
                   <span
                     key={name}

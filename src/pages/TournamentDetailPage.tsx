@@ -27,8 +27,9 @@ import {
 import { cn } from '@/lib/utils'
 import { describeRules, effectiveRules, eligibilityProblem, gradeRangeText, needsGrade, parseGradeRange } from '@/lib/sectionRules'
 import { asksGrade, confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
-import { entryPrice, type Price } from '@/lib/pricing'
+import { priceShownSection, type Price } from '@/lib/pricing'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { useNow } from '@/hooks/useNow'
 import { FamilyRegistrationPanel } from '@/components/family/FamilyRegistrationPanel'
 import { PreviewBanner } from '@/components/tournaments/PreviewBanner'
 
@@ -256,6 +257,12 @@ export function TournamentDetailPage() {
   const [confirmation, setConfirmation] = useState<{
     message: string; paymentUrl: string | null; section: string
   } | null>(null)
+  // The time the prices are shown for. Checkout prices the entry on the
+  // server at the moment it is made, so this follows the clock (a timer, plus
+  // a fresh read on loading, on changing section and on opening the
+  // confirmation) and the early deadline or late fee turns over on screen as
+  // it does at checkout.
+  const [nowMs, refreshNow] = useNow()
 
   const [reminderOptedIn, setReminderOptedIn] = useState(false)
   const [togglingReminder, setTogglingReminder] = useState(false)
@@ -272,6 +279,7 @@ export function TournamentDetailPage() {
         setPairings(data.pairings ?? [])
         setMyRegistration(data.myRegistration ?? null)
         setSelectedSection(data.tournament.sections[0]?.name ?? '')
+        refreshNow()
         setNotFound(false)
         setError(null)
         if (user) {
@@ -289,7 +297,7 @@ export function TournamentDetailPage() {
       }
     }
     load()
-  }, [id, user])
+  }, [id, user, refreshNow])
 
   async function handleRegisterClick(e: FormEvent) {
     e.preventDefault()
@@ -305,6 +313,7 @@ export function TournamentDetailPage() {
     const problem = section && eligibilityProblem(section, { rating: authMember?.uscf_rating ?? null, gradeRange: parseGradeRange(range) })
     if (problem) { setRegisterError(problem); return }
     setRegisterError(null)
+    refreshNow()
     setShowModal(true)
   }
 
@@ -438,12 +447,12 @@ export function TournamentDetailPage() {
   // Withdrawn players are excluded from public display and counts
   const activeRoster = roster.filter((p) => !p.withdrawn_at)
   const isFull = !!tournament.max_players && activeRoster.length >= tournament.max_players
-  const isLcaMember = authMember?.membership_status === 'active'
-  const priceFor = (sectionName: string) => entryPrice(
-    { ...tournament, sections: JSON.stringify(tournament.sections) },
-    sectionName,
-    { isLcaMember },
-  )
+  // Priced as checkout prices it: the section's own prices where it has
+  // them, else the tournament's early and late lines. Everyone pays the same
+  // for a section; there is no member price. A name with no section (none
+  // chosen yet) is priced at the event fee.
+  const priceFor = (sectionName: string) =>
+    priceShownSection(tournament.sections.find((s) => s.name === sectionName), tournament, nowMs)
   const chosenSection = tournament.sections.find((s) => s.name === selectedSection)
   const chosenRules = chosenSection ? effectiveRules(chosenSection) : {}
   const chosenPrice = priceFor(selectedSection)
@@ -463,7 +472,6 @@ export function TournamentDetailPage() {
   const mySectionPaired = !!myRegistration && pairings.some((g) => g.section === myRegistration.section)
   const expiresBefore = isRated && authMember?.uscf_expiration && authMember.uscf_expiration.slice(0, 10) < tournament.date.slice(0, 10)
     ? authMember.uscf_expiration.slice(0, 10) : null
-  const memberDiscount = tournament.member_discount ?? 0
 
   // Group active roster by section, sorted by name within each section
   const rosterBySectionMap = new Map<string, ApiRosterPlayer[]>()
@@ -927,7 +935,7 @@ export function TournamentDetailPage() {
                           id="section"
                           className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                           value={selectedSection}
-                          onChange={(e) => { setSelectedSection(e.target.value); setGradeTicks(NO_TICKS) }}
+                          onChange={(e) => { setSelectedSection(e.target.value); setGradeTicks(NO_TICKS); refreshNow() }}
                           required
                         >
                           {tournament.sections.map((s) => {
@@ -1029,7 +1037,6 @@ export function TournamentDetailPage() {
                     selfName={authMember.full_name}
                     selfUscfId={authMember.uscf_id ?? null}
                     selfRating={authMember.uscf_rating ?? null}
-                    selfIsLcaMember={isLcaMember}
                     selfRegistered={!!myRegistration || !!confirmation}
                   />
                 )}
@@ -1076,16 +1083,6 @@ export function TournamentDetailPage() {
                 )}
               </div>
             </div>
-
-            {/* LCA membership note: only when this event has a member discount */}
-            {memberDiscount > 0 && !isLcaMember && (
-              <p className="text-xs text-muted-foreground">
-                LCA members save ${memberDiscount} on entry.{' '}
-                <Link to="/membership" className="text-lca-navy hover:underline">
-                  Join LCA
-                </Link>
-              </p>
-            )}
           </div>
         </div>
       </section>

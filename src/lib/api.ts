@@ -2,6 +2,9 @@
 
 import { supabase } from '@/lib/supabase'
 import type { RawScan } from '@/lib/scanner/types'
+// Types only: a runtime import of the contracts would bring zod into the site
+// bundle, which npm run check:bundle refuses.
+import type { SavedSection, Schedule, ScheduleRound, TournamentDetailResponse, TournamentListItem } from '@domain/contracts'
 
 export interface ApiMember {
   id: string
@@ -210,19 +213,24 @@ export interface ApiClubNews {
 
 export type TournamentStatus = 'upcoming' | 'active' | 'completed'
 
-export interface ApiTournamentSection {
-  name: string
-  entryFee: number
-  prizeFund?: string
-  /** Entry rules; see lib/sectionRules. Absent = taken from the name. */
-  ratingMax?: number | null
-  ratingMin?: number | null
-  unratedOk?: boolean
-  gradeMin?: number | null
-  gradeMax?: number | null
-  rulesSet?: boolean
-  prizes?: ApiSectionPrizes
-}
+/**
+ * One section as every endpoint that returns a tournament answers it
+ * (savedSectionSchema in domain/contracts/events.ts): a row of
+ * tournament_sections with its id, cap and prices under the field names the
+ * pages always read. The entry rules follow lib/sectionRules: they come from
+ * the name unless rulesSet is true. fees are the regular, early and late
+ * prices to show; entryFee equals fees.regular.
+ */
+export type ApiTournamentSection = SavedSection
+
+/**
+ * A section while the setup wizard or the manage page edits it, and as they
+ * send it back. One loaded from the server keeps its id, so a save matches it
+ * by id and a renamed section keeps its entries and pairings; one added in
+ * the form has only a name and a fee until it is saved. Echoed fees carrying
+ * `regular` are ignored by the server (sectionSchema).
+ */
+export type ApiSectionDraft = Partial<ApiTournamentSection> & Pick<ApiTournamentSection, 'name' | 'entryFee'>
 
 export interface ApiPrizeSlot {
   amount?: number
@@ -255,52 +263,27 @@ export interface ApiPrizeAward {
 }
 
 /**
- * A tournament as the list endpoints return it.
- *
- * /api/tournaments selects t.* plus the joined club colour and name, so the
- * response has always carried far more than the eight fields this used to
- * declare. Pages needing registration_status or club_color reached for a
- * cast to any to get at them, which is how a type that under-declares its
- * own response spreads casts through every caller.
- *
- * Optional fields are the ones a row may genuinely leave null, not fields
- * whose presence is uncertain.
+ * A tournament as GET /api/tournaments returns it (tournamentListItemSchema):
+ * every column of tournaments, the live sections with their ids, the round
+ * schedule as a list, and the club's name and colour from the join.
+ * custom_details stays the stored JSON text on this endpoint.
  */
-export interface ApiTournamentListItem {
-  id: string
-  name: string
-  date: string
-  end_date?: string | null
-  location: string
-  venue?: string | null
-  entry_fee: number
-  sections: Array<string | { name: string; entryFee: number }>
-  rounds: number
-  status: TournamentStatus
-  registration_status?: string | null
-  registration_opens_at?: string | null
-  registration_closes_at?: string | null
-  registration_url?: string | null
-  max_players?: number | null
-  description?: string | null
-  eligibility?: string | null
-  organizer?: string | null
-  time_control?: string | null
-  /** Raw stored JSON string on the list endpoint (not parsed there). */
-  custom_details?: unknown
-  is_rated?: number
-  is_visible?: number
-  club_id?: string | null
-  /** Joined from clubs, not a column on tournaments. */
-  club_name?: string | null
-  club_color?: string | null
-}
+export type ApiTournamentListItem = TournamentListItem
 
-export interface ApiRoundScheduleItem {
-  round: number
-  date: string
-  time: string
-}
+/**
+ * One round of the main schedule as every tournament answer gives it in
+ * round_schedule (scheduleRoundSchema): the round number and the date and
+ * time text the setup wrote, '' when not set. The manage page sends the
+ * same shape back as roundSchedule.
+ */
+export type ApiRoundScheduleItem = ScheduleRound
+
+/**
+ * A live schedule of a tournament (scheduleSchema): the main one, and any
+ * schedule that merges into it at mergeRound. Every tournament answer
+ * carries them in `schedules`; no page reads them yet.
+ */
+export type ApiSchedule = Schedule
 
 export interface ApiCustomDetail {
   title: string
@@ -323,43 +306,18 @@ export interface ApiClubListItem {
   longitude?: number | null
 }
 
-export interface ApiTournamentDetail {
-  id: string
-  name: string
-  /** 'uscf' (default) or 'fide' */
-  pairing_system?: 'uscf' | 'fide'
-  /** 1 = accelerated pairings in rounds 1–2 */
-  accelerated?: number
-  /** 1 = a state championship */
-  is_state_championship?: number
-  keep_apart?: 'family' | 'family_club' | 'none'
-  date: string
-  end_date: string | null
-  location: string
-  venue: string | null
-  entry_fee: number
-  sections: ApiTournamentSection[]
-  rounds: number
-  max_players: number | null
-  status: TournamentStatus
-  description: string | null
-  registration_deadline: string | null
-  registration_status: string
-  registration_closes_at: string | null
-  club_id: string | null
-  created_by: string | null
-  created_at: string
-  is_rated: number
-  is_visible: number
-  round_schedule: ApiRoundScheduleItem[]
-  custom_details: ApiCustomDetail[]
-  time_control: string | null
-  early_deadline?: string | null
-  early_discount?: number | null
-  late_after?: string | null
-  late_fee?: number | null
-  member_discount?: number | null
+/**
+ * A tournament as the event page (GET /api/tournaments/[id]) and the manage
+ * page (GET /api/admin/tournaments/[id]/manage) load it
+ * (tournamentDetailSchema): the list item's columns without the club join,
+ * with custom_details read into a list and round_schedule the main
+ * schedule's rounds. Only the event page gets waitlist_count. The contract
+ * promises custom_details only as objects; this is the shape the setup form
+ * writes into it.
+ */
+export type ApiTournamentDetail = Omit<TournamentDetailResponse['tournament'], 'waitlist_count' | 'custom_details'> & {
   waitlist_count?: number
+  custom_details: ApiCustomDetail[]
 }
 
 export interface ApiRosterPlayer {
@@ -574,7 +532,7 @@ export async function adminCreateTournament(body: {
   entryFee: number
   venue?: string | null
   endDate?: string | null
-  sections?: ApiTournamentSection[]
+  sections?: ApiSectionDraft[]
   rounds?: number
   maxPlayers?: number | null
   status?: TournamentStatus
@@ -585,6 +543,8 @@ export async function adminCreateTournament(body: {
   timeControl?: string | null
   registrationClosesAt?: string | null
   customDetails?: ApiCustomDetail[]
+  /** Left out: on for an LCA-run event, off for a club-run one. */
+  requiresLcaMembership?: boolean
 }): Promise<Record<string, unknown>> {
   const response = await fetch('/api/admin/tournaments', {
     method: 'POST',
@@ -621,7 +581,12 @@ export async function adminUpdateTournament(
     date?: string
     endDate?: string | null
     entryFee?: number
-    sections?: ApiTournamentSection[]
+    /**
+     * Every section, in order. Each one loaded from the server keeps its id,
+     * so a renamed section keeps its entries and pairings; a section left
+     * out is removed, which the server refuses while it has entries.
+     */
+    sections?: ApiSectionDraft[]
     rounds?: number
     maxPlayers?: number | null
     status?: TournamentStatus
@@ -637,7 +602,12 @@ export async function adminUpdateTournament(
     earlyDiscount?: number | null
     lateAfter?: string | null
     lateFee?: number | null
-    memberDiscount?: number | null
+    /**
+     * Whether entering needs an LCA membership. Only an LCA admin or the
+     * organizing club's rep may send it; it cannot be false on an event
+     * with no club.
+     */
+    requiresLcaMembership?: boolean
     /** lca_admin only; null detaches the event from its club. */
     clubId?: string | null
   },

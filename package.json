@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "check:bundle": "node --no-warnings --experimental-strip-types scripts/check-bundle.ts",
     "preview": "vite preview",
     "pages:dev": "npm run build && wrangler pages dev dist --show-interactive-dev-session=false",
     "db:migrate:local": "wrangler d1 migrations apply lca-db --local",

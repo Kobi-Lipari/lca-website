@@ -6,7 +6,7 @@
 import { useState } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 
-import type { ApiPrizeClass, ApiPrizeSlot, ApiSectionPrizes, ApiTournamentSection } from '@/lib/api'
+import type { ApiPrizeClass, ApiPrizeSlot, ApiSectionDraft, ApiSectionPrizes } from '@/lib/api'
 import { gradeLabel } from '@/lib/sectionRules'
 
 const ordinal = (n: number) => {
@@ -63,8 +63,8 @@ function SlotsEditor({ slots, onChange, namer }: {
 }
 
 export function PrizesEditor({ section, onChange }: {
-  section: ApiTournamentSection
-  onChange: (next: ApiTournamentSection) => void
+  section: ApiSectionDraft
+  onChange: (next: ApiSectionDraft) => void
 }) {
   const [open, setOpen] = useState(false)
   const prizes = section.prizes ?? {}

@@ -1,6 +1,7 @@
 import type { Env } from '../types'
 import { handleOptions, jsonResponse } from '../utils/response'
-import { parseJsonArray } from '../utils/json'
+import { getDb } from '../db/client'
+import { sectionResponsesFor } from '../utils/events/sectionsRepo'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -32,7 +33,6 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       1 AS is_lca,
       t.registration_status,
       t.entry_fee,
-      t.sections,
       t.rounds,
       t.status,
       t.is_rated,
@@ -83,13 +83,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     ? await chStmt.bind(...chBindings).all<Record<string, unknown>>()
     : await chStmt.all<Record<string, unknown>>()
 
-  // 3. Process LCA rows
-  const lcaTournaments = (lcaRows.results ?? []).map(t => {
-    const sections = parseJsonArray(t.sections as string)
-    if (state && state !== 'all' && t.state !== state) return null
-    if (upcoming === 'true' && t.status === 'completed') return null
-    return { ...t, sections, is_lca: 1, source: 'lca' }
-  }).filter(Boolean)
+  // 3. Process LCA rows. The live sections of the events kept are read
+  // together, in lists of ids short enough for D1, never one per event.
+  const lcaKept = (lcaRows.results ?? []).filter((t) => {
+    if (state && state !== 'all' && t.state !== state) return false
+    if (upcoming === 'true' && t.status === 'completed') return false
+    return true
+  })
+  const lcaSections = await sectionResponsesFor(getDb(context.env.DB), lcaKept.map((t) => t.id as string))
+  const lcaTournaments = lcaKept.map((t) => ({
+    ...t, sections: lcaSections.get(t.id as string) ?? [], is_lca: 1, source: 'lca',
+  }))
 
   // 4. Process clearinghouse rows
   const chTournaments = (chRows.results ?? []).map(t => ({
