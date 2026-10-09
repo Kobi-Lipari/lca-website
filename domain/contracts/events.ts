@@ -125,6 +125,195 @@ export const tournamentListItemSchema = z.strictObject({
   club_color: z.string().nullable(),
 })
 
+/** A prize slot as the setup sends it. Loose, like every request schema. */
+const prizeSlotInputSchema = z.looseObject({
+  amount: z.number().optional(),
+  label: z.string().optional(),
+})
+
+/** A section's prize list as the setup sends it (PrizesEditor). */
+const sectionPrizesInputSchema = z.looseObject({
+  place: z.array(prizeSlotInputSchema).optional(),
+  classes: z.array(z.looseObject({
+    label: z.string(),
+    ratingMax: z.number().nullable().optional(),
+    ratingMin: z.number().nullable().optional(),
+    unratedOnly: z.boolean().optional(),
+    unratedOk: z.boolean().optional(),
+    gradeMin: z.number().nullable().optional(),
+    gradeMax: z.number().nullable().optional(),
+    prizes: z.array(prizeSlotInputSchema),
+  })).optional(),
+})
+
+/**
+ * 80 is SECTION_NAME_MAX in domain/events/sections.ts (contracts import only
+ * zod and their own files); test/unit/sections-domain.test.ts holds the two
+ * equal.
+ */
+const sectionNameSchema = z.string()
+  .min(1, 'Give the section a name.')
+  .max(80, 'Section names can be at most 80 characters.')
+  .refine((name) => name.trim() !== '', 'Give the section a name.')
+
+/**
+ * A known key of a section in a request. A value of the type its column
+ * takes must be valid for the column. A value of any other type is accepted
+ * as it is and kept in extra_json (columnsFromLegacy in sectionsRepo, like
+ * the 0053 sync trigger), because events saved before these contracts can
+ * hold one and the setup sends the stored list back as it found it.
+ */
+const legacyKey = (typed: z.ZodType, columnTakes: (v: unknown) => boolean) =>
+  z.union([typed, z.unknown().refine((v) => !columnTakes(v))]).optional()
+
+const isNumber = (v: unknown) => typeof v === 'number'
+const isText = (v: unknown) => typeof v === 'string'
+const isFlag = (v: unknown) => typeof v === 'boolean'
+const isObject = (v: unknown) => typeof v === 'object' && v !== null
+
+/**
+ * One section in a create or edit request (SectionInput in
+ * domain/events/sections.ts). The keys today's setup form sends, plus an
+ * optional id (the row being edited; without one the section is matched by
+ * name), a cap and the early and late prices, which go to the table only.
+ * The keys the form sends follow legacyKey above; id, cap and fees are new
+ * and strict. Loose: other keys are kept in the legacy JSON, as before.
+ */
+export const sectionSchema = z.looseObject({
+  name: sectionNameSchema,
+  entryFee: legacyKey(dollarsSchema.nullable(), isNumber),
+  prizeFund: legacyKey(z.string().nullable(), isText),
+  ratingMax: legacyKey(z.number().nullable(), isNumber),
+  ratingMin: legacyKey(z.number().nullable(), isNumber),
+  unratedOk: legacyKey(z.boolean().nullable(), isFlag),
+  gradeMin: legacyKey(z.number().nullable(), isNumber),
+  gradeMax: legacyKey(z.number().nullable(), isNumber),
+  rulesSet: legacyKey(z.boolean().nullable(), isFlag),
+  prizes: legacyKey(sectionPrizesInputSchema.nullable(), isObject),
+  id: idSchema.optional(),
+  cap: z.number().int().positive().nullable().optional(),
+  fees: z.strictObject({
+    early: dollarsSchema.nullable().optional(),
+    late: dollarsSchema.nullable().optional(),
+  }).optional(),
+})
+
+/**
+ * One element of the sections list in a create or edit request: a section,
+ * or a bare name, as very old events stored it (listedSectionSchema). The
+ * setup sends the stored list back with what it adds, so a list can mix the
+ * two (SectionListItem in domain/events/sections.ts).
+ */
+export const sectionListItemSchema = z.union([sectionNameSchema, sectionSchema])
+
+/**
+ * A section as the admin endpoints return it: a live row of
+ * tournament_sections, in order, under today's field names plus its id, its
+ * cap and its prices. entryFee and fees.regular are the price an entry pays
+ * at the regular rate (the section's own, else the tournament's entry fee);
+ * fees.early and fees.late are the early and late prices, the section's own
+ * or worked out from the tournament (tierFees in domain/events/sections.ts),
+ * null when the event has no such price.
+ */
+export const savedSectionSchema = z.strictObject({
+  id: idSchema,
+  name: z.string(),
+  entryFee: dollarsSchema,
+  prizeFund: z.string().nullable(),
+  ratingMax: z.number().nullable(),
+  ratingMin: z.number().nullable(),
+  unratedOk: z.boolean().nullable(),
+  gradeMin: z.number().nullable(),
+  gradeMax: z.number().nullable(),
+  rulesSet: z.boolean(),
+  prizes: sectionPrizesSchema.nullable(),
+  cap: z.number().int().positive().nullable(),
+  fees: z.strictObject({
+    regular: dollarsSchema,
+    early: dollarsSchema.nullable(),
+    late: dollarsSchema.nullable(),
+  }),
+})
+
+/**
+ * A tournament as the admin create and edit endpoints return it: every
+ * column of tournaments, with its live sections from the table, ids
+ * included. custom_details, round_schedule and report_settings stay raw
+ * JSON text.
+ */
+export const adminTournamentSchema = tournamentListItemSchema
+  .omit({ club_name: true, club_color: true, sections: true })
+  .extend({ sections: z.array(savedSectionSchema) })
+
+export const adminTournamentResponseSchema = z.strictObject({
+  tournament: adminTournamentSchema,
+})
+
+const customDetailInputSchema = z.looseObject({ title: z.string(), body: z.string() })
+
+/**
+ * POST /api/admin/tournaments (adminCreateTournament in src/lib/api.ts).
+ * Every field is optional here: the handler answers a missing name,
+ * location, date or entry fee, and an unknown status, with its own words.
+ */
+export const createTournamentRequestSchema = z.looseObject({
+  id: z.string().nullable().optional(),
+  name: z.string().nullable().optional(),
+  location: z.string().nullable().optional(),
+  venue: z.string().nullable().optional(),
+  date: z.string().nullable().optional(),
+  endDate: z.string().nullable().optional(),
+  entryFee: z.number().nullable().optional(),
+  sections: z.array(sectionListItemSchema).nullable().optional(),
+  rounds: z.number().int().nullable().optional(),
+  maxPlayers: z.number().int().nullable().optional(),
+  status: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  registrationDeadline: z.string().nullable().optional(),
+  clubId: z.string().nullable().optional(),
+  isRated: z.boolean().optional(),
+  timeControl: z.string().nullable().optional(),
+  registrationClosesAt: z.string().nullable().optional(),
+  customDetails: z.array(customDetailInputSchema).optional(),
+})
+
+/**
+ * PATCH /api/admin/tournaments/[id] (adminUpdateTournament). A key left out
+ * keeps the column; null clears it where the column allows. sections: null
+ * also keeps the sections, as before.
+ */
+export const updateTournamentRequestSchema = z.looseObject({
+  name: z.string().nullable().optional(),
+  location: z.string().nullable().optional(),
+  venue: z.string().nullable().optional(),
+  date: z.string().nullable().optional(),
+  endDate: z.string().nullable().optional(),
+  entryFee: z.number().nullable().optional(),
+  sections: z.array(sectionListItemSchema).nullable().optional(),
+  rounds: z.number().int().nullable().optional(),
+  maxPlayers: z.number().int().nullable().optional(),
+  status: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  registrationDeadline: z.string().nullable().optional(),
+  isRated: z.boolean().optional(),
+  isVisible: z.boolean().optional(),
+  pairingSystem: z.string().optional(),
+  accelerated: z.boolean().optional(),
+  keepApart: z.string().optional(),
+  isStateChampionship: z.boolean().optional(),
+  reportSettings: z.record(z.string(), z.unknown()).nullable().optional(),
+  earlyDeadline: z.string().nullable().optional(),
+  earlyDiscount: z.number().nullable().optional(),
+  lateAfter: z.string().nullable().optional(),
+  lateFee: z.number().nullable().optional(),
+  memberDiscount: z.number().nullable().optional(),
+  roundSchedule: z.array(z.record(z.string(), z.unknown())).nullable().optional(),
+  registrationClosesAt: z.string().nullable().optional(),
+  customDetails: z.array(customDetailInputSchema).optional(),
+  timeControl: z.string().nullable().optional(),
+  clubId: z.string().nullable().optional(),
+})
+
 /** GET /api/tournaments. Public; signed-in managers also see their drafts. */
 export const tournamentsListResponseSchema = z.strictObject({
   tournaments: z.array(tournamentListItemSchema),
@@ -134,3 +323,10 @@ export type TournamentStatus = z.infer<typeof tournamentStatusSchema>
 export type TournamentSection = z.infer<typeof tournamentSectionSchema>
 export type TournamentListItem = z.infer<typeof tournamentListItemSchema>
 export type TournamentsListResponse = z.infer<typeof tournamentsListResponseSchema>
+export type SectionRequest = z.infer<typeof sectionSchema>
+export type SectionListItemRequest = z.infer<typeof sectionListItemSchema>
+export type SavedSection = z.infer<typeof savedSectionSchema>
+export type AdminTournament = z.infer<typeof adminTournamentSchema>
+export type AdminTournamentResponse = z.infer<typeof adminTournamentResponseSchema>
+export type CreateTournamentRequest = z.infer<typeof createTournamentRequestSchema>
+export type UpdateTournamentRequest = z.infer<typeof updateTournamentRequestSchema>

@@ -16,8 +16,8 @@
 // schema leaves out on purpose (CHECK constraints, inline UNIQUE constraints,
 // triggers) is listed in its header comment and not compared.
 import { describe, expect, it } from 'vitest'
-import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { is, SQL } from 'drizzle-orm'
 import { getTableConfig, integer, primaryKey, SQLiteSyncDialect, SQLiteTable, sqliteTable, text } from 'drizzle-orm/sqlite-core'
@@ -282,21 +282,5 @@ describe('test/unit/helpers/sqlite.ts', () => {
     expect(() => db.exec(`INSERT INTO tournament_directors (tournament_id, member_id) VALUES ('t1', 'nobody')`)).toThrow(/FOREIGN KEY/)
     db.exec(`DELETE FROM tournaments WHERE id = 't1'`)
     expect(db.prepare('SELECT COUNT(*) AS n FROM tournament_directors').get()).toEqual({ n: 0 })
-  })
-})
-
-describe('no runtime code imports functions/db yet', () => {
-  const ROOT = join(__dirname, '../..')
-  const walk = (dir: string): string[] => readdirSync(dir).flatMap((f) => {
-    const p = join(dir, f)
-    if (f === 'node_modules' || f === 'dist') return []
-    return statSync(p).isDirectory() ? walk(p) : /\.(ts|tsx|js|mjs)$/.test(f) ? [p] : []
-  })
-
-  it('finds no import of functions/db outside it in functions, src, domain or workers', () => {
-    const files = ['functions', 'src', 'domain', 'workers'].flatMap((d) => walk(join(ROOT, d)))
-      .filter((p) => !relative(ROOT, p).startsWith('functions/db/'))
-    const importers = files.filter((p) => /from\s+['"][^'"]*(?:functions\/db|\/db\/(?:schema|client|relations))['"]/.test(readFileSync(p, 'utf8')))
-    expect(importers.map((p) => relative(ROOT, p))).toEqual([])
   })
 })

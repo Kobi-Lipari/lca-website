@@ -1,7 +1,9 @@
 // test/integration/sections-triggers.test.ts
 //
-// The 0053 triggers in the Workers runtime, driven by the handlers as they
-// are today, none of which knows the sections and schedules tables exist:
+// The 0053 triggers in the Workers runtime, driven by the handlers. Step 9
+// moved the admin POST and PATCH onto the one section writer
+// (functions/utils/events/sectionsRepo.ts); the triggers stay installed and
+// must agree with it. The other handlers still know nothing of the tables:
 //
 // - registrations.ts (free, paid and waitlist entries), registrations/batch.ts,
 //   the director's walk-ins and the section move in registrations/[id].ts get
@@ -97,8 +99,11 @@ describe('tournaments made by the factory and the admin POST', () => {
       },
     })
     expect(withSections.status).toBe(201)
-    const { tournament } = await withSections.json<{ tournament: { id: string; sections: string } }>()
-    expect(JSON.parse(tournament.sections)).toEqual([{ name: 'Open', entryFee: 30, prizeFund: '$800' }, { name: 'U1400', entryFee: 20 }])
+    // The response carries the section rows, ids included (step 9); the JSON column keeps today's shape.
+    const { tournament } = await withSections.json<{ tournament: { id: string; sections: Array<{ id: string; name: string }> } }>()
+    const stored = await env.DB.prepare('SELECT sections FROM tournaments WHERE id = ?').bind(tournament.id).first<{ sections: string }>()
+    expect(JSON.parse(stored?.sections as string)).toEqual([{ name: 'Open', entryFee: 30, prizeFund: '$800' }, { name: 'U1400', entryFee: 20 }])
+    expect(tournament.sections.map((s) => [s.id, s.name])).toEqual((await live(tournament.id)).map((r) => [r.id, r.name]))
     expect((await live(tournament.id)).map((r) => [r.name, r.fee_regular, r.prize_fund])).toEqual([['Open', 30, '$800'], ['U1400', 20, null]])
     expect(await roundsOf(tournament.id)).toEqual([])
 
@@ -176,7 +181,7 @@ describe('entries written by the unchanged handlers', () => {
   })
 })
 
-describe('the soak case: the unchanged admin PATCH edits sections and rounds', () => {
+describe('the soak case: the admin PATCH edits sections and rounds', () => {
   it('adds, renames and removes sections and replaces the rounds; the rows follow the JSON and new entries link', async () => {
     const admin = await seedAdmin()
     const created = await invoke(createTournament, {
@@ -207,9 +212,12 @@ describe('the soak case: the unchanged admin PATCH edits sections and rounds', (
     // A cap set by the later setup page; the sync must never touch it.
     await env.DB.prepare('UPDATE tournament_sections SET cap = 40 WHERE id = ?').bind(openId).run()
     const u1600Player = await seedMember({ uscfRating: 1500 })
-    await seedRegistration({ tournamentId, memberId: u1600Player, section: 'U1600' })
+    const u1600Entry = await seedRegistration({ tournamentId, memberId: u1600Player, section: 'U1600' })
+    // A section with entries cannot be removed (decision 7), so the player
+    // has withdrawn; a withdrawn entry keeps its section.
+    await env.DB.prepare(`UPDATE registrations SET withdrawn_at = datetime('now') WHERE id = ?`).bind(u1600Entry).run()
 
-    // Old code renames U1600 to U1800 by sending the new name; Reserve goes
+    // The setup form renames U1600 to U1800 by sending the new name; Reserve goes
     // and Scholastic arrives; the round times change.
     const sections = [{ name: 'Open', entryFee: 35, prizeFund: '$900' }, { name: 'U1800', entryFee: 25 }, { name: 'Scholastic', entryFee: 0 }]
     const roundSchedule = [
@@ -239,7 +247,7 @@ describe('the soak case: the unchanged admin PATCH edits sections and rounds', (
     // The primary rounds match round_schedule.
     expect(await roundsOf(tournamentId)).toEqual(roundSchedule)
 
-    // The entry made under the old name keeps its (now archived) section.
+    // The withdrawn entry made under the old name keeps its (now archived) section.
     expect((await entryOf(tournamentId, u1600Player))?.section_id).toBe(u1600Id)
 
     // An entry into the new section links to it.

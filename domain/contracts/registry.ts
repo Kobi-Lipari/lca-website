@@ -12,7 +12,12 @@
 // test/unit/contracts-pending.ts; when you add a contract, take its line out
 // of that list and lower the count pinned there.
 import type { ZodType } from 'zod'
-import { tournamentsListResponseSchema } from './events'
+import {
+  adminTournamentResponseSchema,
+  createTournamentRequestSchema,
+  tournamentsListResponseSchema,
+  updateTournamentRequestSchema,
+} from './events'
 
 export const CONTRACT_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const
 export type ContractMethod = (typeof CONTRACT_METHODS)[number]
@@ -31,6 +36,12 @@ export type RouteContracts = Partial<Record<ContractMethod, MethodContract>>
 export const contracts = {
   tournaments: {
     GET: { response: tournamentsListResponseSchema },
+  },
+  'admin/tournaments': {
+    POST: { request: createTournamentRequestSchema, response: adminTournamentResponseSchema },
+  },
+  'admin/tournaments/[id]': {
+    PATCH: { request: updateTournamentRequestSchema, response: adminTournamentResponseSchema },
   },
 } satisfies Record<string, RouteContracts>
 
