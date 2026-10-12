@@ -27,7 +27,7 @@ import {
   type ApiRegistration,
   type ApiSupportTicket,
 } from '@/lib/api'
-import { ROLE_LABELS, canAccessAdmin } from '@/lib/roles'
+import { ROLE_LABELS, canAccessAdmin } from '@/areas/admin/roles'
 import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'

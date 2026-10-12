@@ -40,7 +40,7 @@ import {
 import { cn } from '@/lib/utils'
 import { FEATURES } from '@/lib/features'
 import { useAuth } from '@/contexts/auth-context'
-import { canUseMailing, isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
+import { canUseMailing, isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
 import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 import { StandingsTable } from '@/components/tournaments/StandingsTable'
 import { ResultsEntry } from '@/components/tournaments/ResultsEntry'

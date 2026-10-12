@@ -1,4 +1,4 @@
-// src/lib/mapLocation.ts
+// src/areas/clubs/mapLocation.ts
 //
 // Reading a map location out of whatever someone pastes on a club's admin
 // page.

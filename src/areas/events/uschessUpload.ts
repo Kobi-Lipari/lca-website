@@ -1,4 +1,4 @@
-// src/lib/uschessUpload.ts
+// src/areas/events/uschessUpload.ts
 //
 // The three files US Chess takes for a rating report upload, built in the
 // browser from the site's rating report:

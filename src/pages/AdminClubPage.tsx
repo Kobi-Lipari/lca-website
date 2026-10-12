@@ -24,7 +24,7 @@ import {
   type ApiClubNews,
 } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
-import { isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
+import { isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
 import { ClubLocationPicker } from '@/components/maps/ClubLocationPicker'
 import { resizeImageToFit } from '@/lib/resizeImage'

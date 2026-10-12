@@ -11,7 +11,7 @@
 //                 card) and reports marker clicks back with onSelect.
 //   mode="single" one club's page: a small fixed map with directions.
 import { useEffect, useRef, useState } from 'react'
-import { CLUB_MAP_PINS, type ClubMapPin } from '@/lib/clubMapData'
+import { CLUB_MAP_PINS, type ClubMapPin } from '@/areas/clubs/clubMapData'
 import { LCA } from '@/lib/brand'
 
 declare global {

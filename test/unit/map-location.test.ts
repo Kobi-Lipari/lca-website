@@ -1,6 +1,6 @@
 // test/unit/map-location.test.ts
 import { describe, expect, it } from 'vitest'
-import { parseLocation } from '../../src/lib/mapLocation'
+import { parseLocation } from '../../src/areas/clubs/mapLocation'
 
 describe('reading a pasted map location', () => {
   it('takes plain coordinates', () => {

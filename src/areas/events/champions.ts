@@ -1,4 +1,4 @@
-// src/lib/champions.ts — reading pasted champion lines (Admin → State champions).
+// src/areas/events/champions.ts — reading pasted champion lines (Admin → State champions).
 
 export interface PastedChampion { year: number; title: string; champion: string; notes: string | null }
 

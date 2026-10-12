@@ -4,7 +4,7 @@ import { ShieldAlert, UserCog, CreditCard, Building2, Eye, EyeOff, Trophy, Globe
 
 import { Button } from '@/components/ui/button'
 import { adminGetAuditLog, type ApiAuditEntry } from '@/lib/api'
-import { ROLE_LABELS } from '@/lib/roles'
+import { ROLE_LABELS } from '@/areas/admin/roles'
 import { cn } from '@/lib/utils'
 import { ADMIN_SCROLL } from '@/lib/brand'
 

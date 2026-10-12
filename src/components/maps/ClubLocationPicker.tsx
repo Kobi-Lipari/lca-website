@@ -12,9 +12,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MAP_STYLES, findPinByName, fitLouisiana, loadMapsScript } from '@/components/maps/LCAMap'
 import { LCA } from '@/lib/brand'
-import { parseLocation, round6 } from '@/lib/mapLocation'
+import { parseLocation, round6 } from '@/areas/clubs/mapLocation'
 
-import type { LatLng } from '@/lib/mapLocation'
+import type { LatLng } from '@/areas/clubs/mapLocation'
 
 const PIN =
   'data:image/svg+xml;charset=UTF-8,' +

@@ -1,5 +1,5 @@
 import { LCA } from '@/lib/brand'
-// src/lib/clubColors.ts
+// src/areas/clubs/clubColors.ts
 
 // Returns a CSS rgba string at the given opacity from a hex color
 export function clubColorTint(hex: string, opacity = 0.1): string {

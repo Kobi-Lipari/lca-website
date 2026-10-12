@@ -1,4 +1,4 @@
-// src/lib/scholastic.ts
+// src/areas/events/scholastic.ts
 //
 // One definition of "scholastic" for the whole site. Previously forked:
 // ScholasticPage matched section names on the LCA feed while TournamentsPage

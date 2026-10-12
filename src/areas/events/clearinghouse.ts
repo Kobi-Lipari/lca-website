@@ -1,4 +1,4 @@
-// src/lib/clearinghouse.ts
+// src/areas/events/clearinghouse.ts
 //
 // Shared types + helpers for the unified tournament feed
 // (GET /api/clearinghouse — LCA events merged with Gulf South external

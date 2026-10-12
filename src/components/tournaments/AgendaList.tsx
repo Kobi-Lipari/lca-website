@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { cn } from '@/lib/utils'
-import type { UnifiedTournament } from '@/lib/clearinghouse'
+import type { UnifiedTournament } from '@/areas/events/clearinghouse'
 import { LCA } from '@/lib/brand'
 
 const LCA_GOLD = LCA.gold

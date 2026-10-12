@@ -13,7 +13,7 @@ import { adminUpdateTournament, type ApiRatingReport } from '@/lib/api'
 import {
   buildUploadFiles, defaultSettings, settingsProblems, zipFiles,
   type RatingSystem, type SendCrosstable, type UploadSettings,
-} from '@/lib/uschessUpload'
+} from '@/areas/events/uschessUpload'
 
 const SYSTEMS: Array<[RatingSystem, string]> = [
   ['R', 'Regular'], ['D', 'Dual (regular and quick)'], ['Q', 'Quick'], ['B', 'Blitz'],

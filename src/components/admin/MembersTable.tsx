@@ -12,7 +12,7 @@ import type {
   ApiClubListItem,
   ApiSeatHolder,
 } from '@/lib/api'
-import { MEMBER_ROLES, ROLE_LABELS, type MemberRole } from '@/lib/roles'
+import { MEMBER_ROLES, ROLE_LABELS, type MemberRole } from '@/areas/admin/roles'
 import { cn } from '@/lib/utils'
 import { ADMIN_SCROLL } from '@/lib/brand'
 

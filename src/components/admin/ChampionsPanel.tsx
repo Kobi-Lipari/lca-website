@@ -14,7 +14,7 @@ import {
 } from '@/lib/api'
 import { GOLD_BUTTON as GOLD, ADMIN_SCROLL } from '@/lib/brand'
 import { useViewOnly } from '@/lib/viewOnly'
-import { parsePasted } from '@/lib/champions'
+import { parsePasted } from '@/areas/events/champions'
 
 const EMPTY = { year: String(new Date().getFullYear()), title: '', champion: '', notes: '' }
 

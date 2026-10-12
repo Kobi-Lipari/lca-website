@@ -1,4 +1,4 @@
-// src/lib/tournamentStatus.ts
+// src/areas/events/tournamentStatus.ts
 //
 // Lives outside StatusBadge so that module exports components and nothing
 // else — a module mixing the two loses Fast Refresh for everything in it.

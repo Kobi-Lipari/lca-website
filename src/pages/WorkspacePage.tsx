@@ -24,7 +24,7 @@ import {
   type ApiClubDetail,
   type ApiTournamentListItem,
 } from '@/lib/api'
-import { ROLE_LABELS, WORKSPACE_ROLES } from '@/lib/roles'
+import { ROLE_LABELS, WORKSPACE_ROLES } from '@/areas/admin/roles'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'

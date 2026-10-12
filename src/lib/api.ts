@@ -573,7 +573,7 @@ export async function adminUpdateTournament(
     accelerated?: boolean
     keepApart?: 'family' | 'family_club' | 'none'
     isStateChampionship?: boolean
-    /** US Chess upload details (lib/uschessUpload UploadSettings). */
+    /** US Chess upload details (areas/events/uschessUpload UploadSettings). */
     reportSettings?: Record<string, unknown> | null
     name?: string
     location?: string

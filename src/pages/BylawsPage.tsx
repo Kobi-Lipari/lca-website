@@ -3,7 +3,7 @@ import { GovLayout } from '@/components/governance/GovLayout'
 import { GovernanceDocuments } from '@/components/governance/GovernanceDocuments'
 import { useAuth } from '@/contexts/auth-context'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { canEditGovernance } from '@/lib/roles'
+import { canEditGovernance } from '@/areas/admin/roles'
 
 export function BylawsPage() {
   usePageTitle('Bylaws & Rules')

@@ -48,7 +48,7 @@ import {
   type ApiSeatHolder,
   type ApiTournamentListItem,
 } from '@/lib/api'
-import { canUseMailing, type MemberRole } from '@/lib/roles'
+import { canUseMailing, type MemberRole } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
