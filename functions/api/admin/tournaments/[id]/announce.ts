@@ -9,7 +9,7 @@ import {
 } from '../../../../utils/response'
 import { sendEmail, tournamentAnnouncementEmail } from '../../../../utils/email'
 import { resolveSiteUrl } from '../../../../utils/site'
-import { recordAdminAction } from '../../../../utils/audit'
+import { recordAdminAction } from '../../../../utils/admin/audit'
 
 interface AnnounceBody {
   subject?: string

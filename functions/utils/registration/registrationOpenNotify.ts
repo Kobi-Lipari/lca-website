@@ -1,4 +1,4 @@
-// functions/utils/registrationOpenNotify.ts
+// functions/utils/registration/registrationOpenNotify.ts
 //
 // Called from functions/api/admin/tournaments/[id]/registration.ts, only on
 // the transition into registration_status = 'open'. Emails everyone who
@@ -8,8 +8,8 @@
 // same table. Both flags are set here, so a subscriber told right away isn't
 // told again the next morning.
 
-import { registrationOpenReminderEmail, sendEmail, type EmailEnv } from './email'
-import { resolveSiteUrl, type SiteEnv } from './site'
+import { registrationOpenReminderEmail, sendEmail, type EmailEnv } from '../email'
+import { resolveSiteUrl, type SiteEnv } from '../site'
 
 interface NotifyEnv extends SiteEnv, EmailEnv {
   DB: D1Database

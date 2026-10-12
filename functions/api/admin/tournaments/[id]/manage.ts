@@ -2,7 +2,7 @@
 import type { Env, TournamentRow } from '../../../../types'
 import { isResponse, requireTournamentView } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
-import { computeStandings, tournamentPrizes } from '../../../../utils/tournament-manage'
+import { computeStandings, tournamentPrizes } from '../../../../utils/events/tournament-manage'
 import { parseJsonArray } from '../../../../utils/json'
 import { getDb } from '../../../../db/client'
 import { loadSections, toTournamentResponse } from '../../../../utils/events/sectionsRepo'

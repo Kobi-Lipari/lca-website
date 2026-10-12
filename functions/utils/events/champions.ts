@@ -1,4 +1,4 @@
-// functions/utils/champions.ts — validation shared by the champions endpoints.
+// functions/utils/events/champions.ts — validation shared by the champions endpoints.
 
 export interface ChampionInput {
   year?: number | string

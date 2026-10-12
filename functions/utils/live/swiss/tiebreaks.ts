@@ -1,4 +1,4 @@
-// functions/utils/swiss/tiebreaks.ts
+// functions/utils/live/swiss/tiebreaks.ts
 //
 // Standings with US Chess tiebreaks (Rule 34E), in the rulebook's order:
 //   1. Modified Median   2. Solkoff   3. Cumulative   4. Opponents' Cumulative

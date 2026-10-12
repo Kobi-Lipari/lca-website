@@ -454,7 +454,7 @@ const gameRowShape = {
 
 /**
  * One player's line in the standings (computeStandings in
- * functions/utils/tournament-manage.ts), per section, in final order.
+ * functions/utils/events/tournament-manage.ts), per section, in final order.
  */
 export const standingSchema = z.strictObject({
   member_id: idSchema,
@@ -477,7 +477,7 @@ export const standingSchema = z.strictObject({
   }),
 })
 
-/** One player's prize (PrizeAward in functions/utils/prizes.ts). */
+/** One player's prize (PrizeAward in functions/utils/events/prizes.ts). */
 export const prizeAwardSchema = z.strictObject({
   member_id: idSchema,
   section: z.string(),

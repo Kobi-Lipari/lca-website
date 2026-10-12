@@ -1,5 +1,5 @@
-// functions/utils/audit.ts
-import type { MemberRow } from '../types'
+// functions/utils/admin/audit.ts
+import type { MemberRow } from '../../types'
 
 /**
  * Privileged actions worth being able to reconstruct afterwards.

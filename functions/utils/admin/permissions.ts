@@ -1,5 +1,5 @@
-// functions/utils/permissions.ts
-import type { MemberRow } from '../types'
+// functions/utils/admin/permissions.ts
+import type { MemberRow } from '../../types'
 
 /**
  * Ordered least to most privileged, which is also the order they are offered

@@ -1,5 +1,5 @@
-import type { Env, MemberRow } from '../types'
-import { syncSupabaseUserMetadata } from './supabase'
+import type { Env, MemberRow } from '../../types'
+import { syncSupabaseUserMetadata } from '../supabase'
 
 export async function getMemberById(
   db: D1Database,

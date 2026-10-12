@@ -9,7 +9,7 @@ import {
 } from '../../../utils/response'
 import { trySendEmail, supportReplyNotificationEmail } from '../../../utils/email'
 import { resolveSiteUrl } from '../../../utils/site'
-import { recordAdminAction } from '../../../utils/audit'
+import { recordAdminAction } from '../../../utils/admin/audit'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 

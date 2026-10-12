@@ -1,4 +1,4 @@
-// functions/utils/swiss/engine.ts
+// functions/utils/live/swiss/engine.ts
 //
 // Swiss pairing engine. US Chess rules by default (Rule 29), with a
 // FIDE-style option.

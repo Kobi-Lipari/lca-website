@@ -253,7 +253,7 @@ export interface ApiSectionPrizes {
   classes?: ApiPrizeClass[]
 }
 
-/** One player's prize, worked out by the server (functions/utils/prizes). */
+/** One player's prize, worked out by the server (functions/utils/events/prizes). */
 export interface ApiPrizeAward {
   member_id: string
   section: string

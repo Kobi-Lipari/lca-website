@@ -1,4 +1,4 @@
-// functions/utils/membershipActivation.ts
+// functions/utils/membership/membershipActivation.ts
 //
 // Turning a paid membership into an active one, in one place.
 //
@@ -12,7 +12,7 @@
 // Both the webhook and the success page now call this, so a membership
 // activates on whichever arrives first.
 
-import { syncFamilyCoverage } from './family'
+import { syncFamilyCoverage } from '../family'
 
 /**
  * A year on from whichever is later: today, or the membership already held.

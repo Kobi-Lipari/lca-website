@@ -1,4 +1,4 @@
-// functions/utils/ratingSnapshots.ts
+// functions/utils/membership/ratingSnapshots.ts
 //
 // Records each member's US Chess rating once a day, so it can be charted.
 //
@@ -12,7 +12,7 @@
 // from no code path, which is why every member's rating column was empty even
 // for those who had supplied an id.
 
-import { fetchUscfMemberDetail, type UscfSystemRating } from './uscf'
+import { fetchUscfMemberDetail, type UscfSystemRating } from '../uscf'
 
 /** Systems worth recording. The online variants move rarely and chart badly. */
 const TRACKED_SYSTEMS = new Set(['R', 'Q', 'B'])

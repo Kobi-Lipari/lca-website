@@ -2,7 +2,7 @@
 // advertise one: no page, no price line, no email and no server message.
 // This scans the text of the site (src/), the pricing labels
 // (domain/registration), the server (functions/, which holds the email
-// templates in functions/utils/registrationEmails.ts and emailLayout.ts and
+// templates in functions/utils/registration/registrationEmails.ts and emailLayout.ts and
 // every refusal a page shows) and the scheduled workers (workers/, the
 // reminder emails), with code comments taken out, for wording such as
 // "member price", "member discount" or "LCA members save".
@@ -67,7 +67,7 @@ describe('no wording advertises a member price', () => {
     expect(rel).toContain('src/pages/MembershipPage.tsx')
     expect(rel).toContain('src/components/family/FamilyRegistrationPanel.tsx')
     expect(rel).toContain('domain/registration/pricing.ts')
-    expect(rel).toContain('functions/utils/registrationEmails.ts')
+    expect(rel).toContain('functions/utils/registration/registrationEmails.ts')
     expect(rel).toContain('functions/utils/emailLayout.ts')
     expect(rel).toContain('workers/daily-emails/src/index.ts')
     expect(files.length).toBeGreaterThan(200)

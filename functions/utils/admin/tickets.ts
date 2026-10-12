@@ -1,17 +1,17 @@
-// functions/utils/tickets.ts
+// functions/utils/admin/tickets.ts
 //
 // One code path for opening a ticket, whatever the entry point — the contact
 // form and the support form both land here, so routing, notification and
 // reply-to behaviour can't drift between them.
 
-import type { Env } from '../types'
+import type { Env } from '../../types'
 import {
   trySendEmail,
   staffTicketNotificationEmail,
   supportTicketConfirmationEmail,
   boardSeatNotificationEmail,
-} from './email'
-import { resolveSiteUrl, type SiteEnv } from './site'
+} from '../email'
+import { resolveSiteUrl, type SiteEnv } from '../site'
 
 export interface SeatRow {
   id: string

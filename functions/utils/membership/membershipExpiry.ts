@@ -1,4 +1,4 @@
-// functions/utils/membershipExpiry.ts
+// functions/utils/membership/membershipExpiry.ts
 //
 // membership_status was only ever written at the moment of payment, so a
 // membership went 'active' and stayed 'active' for good. The admin members

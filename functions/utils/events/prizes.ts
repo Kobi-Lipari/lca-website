@@ -1,4 +1,4 @@
-// functions/utils/prizes.ts
+// functions/utils/events/prizes.ts
 //
 // Who wins what, the US Chess way (rules 32B–32C):
 //

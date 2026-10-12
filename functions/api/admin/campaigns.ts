@@ -1,14 +1,14 @@
 // functions/api/admin/campaigns.ts
 import type { Env } from '../../types'
 import { isResponse, requireMailer } from '../../utils/auth'
-import { resolveRecipients, drainCampaign, type CampaignFilter, type ResolvedRecipient } from '../../utils/campaigns'
+import { resolveRecipients, drainCampaign, type CampaignFilter, type ResolvedRecipient } from '../../utils/admin/campaigns'
 import {
   errorResponse,
   handleOptions,
   jsonResponse,
   parseJsonBody,
 } from '../../utils/response'
-import { recordAdminAction } from '../../utils/audit'
+import { recordAdminAction } from '../../utils/admin/audit'
 
 interface CreateCampaignBody {
   subject?: string

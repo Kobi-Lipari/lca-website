@@ -2,13 +2,13 @@
 import type { Env } from '../../types'
 import { jsonResponse, errorResponse } from '../../utils/response'
 import { verifyStripeSignature } from '../../utils/stripe'
-import { activateMembershipPayment } from '../../utils/membershipActivation'
-import { sendRegistrationConfirmations } from '../../utils/registrationEmails'
+import { activateMembershipPayment } from '../../utils/membership/membershipActivation'
+import { sendRegistrationConfirmations } from '../../utils/registration/registrationEmails'
 import { resolveSiteUrl } from '../../utils/site'
 
 /** Re-exported so the route keeps its published surface; the implementation
  *  now lives with the activation logic that uses it. */
-export { renewalExpiry } from '../../utils/membershipActivation'
+export { renewalExpiry } from '../../utils/membership/membershipActivation'
 
 /**
  * The part of a Stripe event this handler reads.

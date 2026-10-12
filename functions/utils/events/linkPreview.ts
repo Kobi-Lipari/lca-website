@@ -1,4 +1,4 @@
-// functions/utils/linkPreview.ts
+// functions/utils/events/linkPreview.ts
 //
 // Link previews for pages people share — mostly tournaments and clubs posted
 // to Facebook. Crawlers (Facebook, iMessage, Slack, Discord) read the HTML
@@ -8,7 +8,7 @@
 // The page functions call context.next() to get the normal SPA shell, then
 // pass it through here. Anything that goes wrong just returns the shell
 // untouched, which still carries the site-wide defaults from index.html.
-import { resolveSiteUrl, type SiteEnv } from './site'
+import { resolveSiteUrl, type SiteEnv } from '../site'
 
 export interface LinkPreview {
   title: string

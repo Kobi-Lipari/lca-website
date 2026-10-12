@@ -1,7 +1,7 @@
-// functions/utils/campaigns.ts
-import { DEFAULT_FROM, DEFAULT_REPLY_TO } from './email'
-import { renderEmail } from './emailLayout'
-import { resolveSiteUrl, type SiteEnv } from './site'
+// functions/utils/admin/campaigns.ts
+import { DEFAULT_FROM, DEFAULT_REPLY_TO } from '../email'
+import { renderEmail } from '../emailLayout'
+import { resolveSiteUrl, type SiteEnv } from '../site'
 
 /**
  * The bindings the campaign send path needs.

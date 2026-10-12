@@ -1,4 +1,4 @@
-// functions/utils/registrationEmails.ts
+// functions/utils/registration/registrationEmails.ts
 //
 // "You're registered" emails. Sent once an entry is actually confirmed:
 // straight away for free sections, and from the Stripe webhook for paid ones
@@ -8,7 +8,7 @@
 // parent's, so a parent who enters three children (and maybe themselves)
 // gets one email listing everyone, not four.
 
-import { registrationConfirmationEmail, trySendEmail, type ConfirmedEntry, type EmailEnv } from './email'
+import { registrationConfirmationEmail, trySendEmail, type ConfirmedEntry, type EmailEnv } from '../email'
 
 interface EntryRow {
   id: string

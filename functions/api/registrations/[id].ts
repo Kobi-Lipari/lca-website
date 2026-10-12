@@ -20,7 +20,7 @@ import {
   jsonResponse,
   parseBody,
 } from '../../utils/response'
-import { recordAdminAction, type AuditEntry } from '../../utils/audit'
+import { recordAdminAction, type AuditEntry } from '../../utils/admin/audit'
 import { escapeHtml, trySendEmail } from '../../utils/email'
 import { getDb } from '../../db/client'
 import { payments, registrations, tournaments } from '../../db/schema'

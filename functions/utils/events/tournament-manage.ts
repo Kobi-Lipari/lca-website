@@ -1,8 +1,8 @@
-// functions/utils/tournament-manage.ts
-import type { GameResult } from './swiss/engine'
-import { computeStandings as standingsFor, type Tiebreaks } from './swiss/tiebreaks'
+// functions/utils/events/tournament-manage.ts
+import type { GameResult } from '../live/swiss/engine'
+import { computeStandings as standingsFor, type Tiebreaks } from '../live/swiss/tiebreaks'
 import { awardPrizes, type PrizeAward, type SectionPrizes } from './prizes'
-import { parseGradeRange, type GradeRange } from './sectionRules'
+import { parseGradeRange, type GradeRange } from '../sectionRules'
 
 interface GameRow {
   id: string
@@ -34,7 +34,7 @@ interface StandingRow {
 
 /**
  * Standings per section, ordered by score then US Chess tiebreaks
- * (utils/swiss/tiebreaks). Withdrawn players are included: their played
+ * (utils/live/swiss/tiebreaks). Withdrawn players are included: their played
  * results stand.
  */
 export function computeStandings(

@@ -4,7 +4,7 @@
 // title, summary and picture — so sharing a post to Facebook shows it
 // properly. Drafts and unknown slugs keep the site-wide default preview.
 import type { Env } from '../types'
-import { withLinkPreview } from '../utils/linkPreview'
+import { withLinkPreview } from '../utils/events/linkPreview'
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const shell = await context.next()
