@@ -1,9 +1,12 @@
 // functions/api/admin/tournaments/[id]/manage.ts
-import type { Env } from '../../../../types'
+import type { Env, TournamentRow } from '../../../../types'
 import { isResponse, requireTournamentView } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
 import { computeStandings, tournamentPrizes } from '../../../../utils/tournament-manage'
 import { parseJsonArray } from '../../../../utils/json'
+import { getDb } from '../../../../db/client'
+import { loadSections, toTournamentResponse } from '../../../../utils/events/sectionsRepo'
+import { loadSchedules } from '../../../../utils/events/schedulesRepo'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -14,15 +17,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   const tournament = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first<Record<string, unknown>>()
+  ).bind(tournamentId).first<TournamentRow>()
 
   if (!tournament) return errorResponse('Tournament not found', 404)
 
-  const sections = parseJsonArray(tournament.sections as string)
+  // The live sections, which the setup edits and sends back: an archived
+  // one is not listed, so a save never brings it back by accident. The
+  // round times come from the live schedules.
+  const db = getDb(context.env.DB)
+  const answer = toTournamentResponse(tournament, await loadSections(db, tournamentId), await loadSchedules(db, tournamentId))
 
-  const roundSchedule = parseJsonArray(tournament.round_schedule as string)
-
-  const customDetails = parseJsonArray(tournament.custom_details as string)
+  const customDetails = parseJsonArray(tournament.custom_details)
 
   const rosterRaw = await context.env.DB.prepare(
     `SELECT r.id as registration_id, r.member_id, r.section, r.payment_status,
@@ -68,15 +73,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   return jsonResponse({
     tournament: {
-      ...tournament,
-      sections,
-      round_schedule: roundSchedule,
+      ...answer,
       custom_details: customDetails,
     },
     roster,
     games: games.results ?? [],
     standings,
-    prizes: await tournamentPrizes(context.env.DB, tournamentId, sections, standings),
+    prizes: await tournamentPrizes(context.env.DB, tournamentId, answer.sections, standings),
     directors: directors.results ?? [],
   })
 }

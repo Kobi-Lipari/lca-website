@@ -71,12 +71,37 @@ describe('GET /api/tournaments contract', () => {
     expect(fullRow?.club_name).toBe('Kenner Chess Club')
     expect(fullRow?.club_color).toBe('#1a2744')
     expect(fullRow?.end_date).toBe('2026-09-13')
-    // custom_details and round_schedule stay raw JSON text on this endpoint.
-    expect(typeof fullRow?.round_schedule).toBe('string')
+    // round_schedule is read into a list; custom_details stays raw JSON text
+    // on this endpoint (the setup wizard parses it when it copies an event).
+    expect(fullRow?.round_schedule).toEqual([{ round: 1, date: '2026-09-12', time: '10:00' }])
+    expect(typeof fullRow?.custom_details).toBe('string')
+    // The section comes from tournament_sections: every field the JSON had,
+    // plus its id, cap and prices (early less $5, late plus $10).
+    const row = await env.DB.prepare('SELECT id FROM tournament_sections WHERE tournament_id = ?').bind(full).first<{ id: string }>()
+    expect(fullRow?.sections).toEqual([{
+      id: row?.id,
+      name: 'U1600',
+      entryFee: 30,
+      prizeFund: '$200 based on 20',
+      ratingMax: 1599,
+      ratingMin: null,
+      unratedOk: true,
+      gradeMin: null,
+      gradeMax: null,
+      rulesSet: true,
+      prizes: {
+        place: [{ amount: 100, label: '1st' }, { label: 'Trophy' }],
+        classes: [{ label: 'Top U1000', ratingMax: 999, prizes: [{ amount: 25 }] }],
+      },
+      cap: null,
+      fees: { regular: 30, early: 25, late: 40 },
+    }])
     const bareRow = body.tournaments.find((t) => t.id === bare)
     expect(bareRow?.club_name).toBeNull()
     expect(bareRow?.venue).toBeNull()
-    expect(bareRow?.sections).toEqual(['Open', { name: 'Reserve', entryFee: 0 }])
+    expect(bareRow?.round_schedule).toEqual([])
+    // A section stored as a bare name is an object now, priced at the event's fee.
+    expect(bareRow?.sections.map((s) => [s.name, s.entryFee, s.fees.regular])).toEqual([['Open', 25, 25], ['Reserve', 0, 0]])
   })
 
   it('holds for an admin, a club rep and a director, who also see drafts', async () => {

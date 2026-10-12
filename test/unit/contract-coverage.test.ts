@@ -197,8 +197,10 @@ describe('contract coverage fails when it should', () => {
   ].join('\n'))
   write(scratch, 'utils/helper.ts', 'export const helper = 1')
 
+  // The scratch folder holds only the tournaments list, so only its contract applies.
+  const scratchRegistry = { tournaments: contracts.tournaments }
   const synthetic = (overrides: Partial<Coverage> = {}): string[] =>
-    coverageProblems({ ...listEndpoints(scratch), registry: contracts, pending: [], excluded: {}, ...overrides })
+    coverageProblems({ ...listEndpoints(scratch), registry: scratchRegistry, pending: [], excluded: {}, ...overrides })
 
   it('sees the synthetic handler on disk', () => {
     expect(statSync(join(scratch, 'api/new-thing/[id].ts')).isFile()).toBe(true)
@@ -220,7 +222,7 @@ describe('contract coverage fails when it should', () => {
   })
 
   it('fails when a registry entry names a method the file does not export', () => {
-    const registry = { ...contracts, tournaments: { ...contracts.tournaments, POST: contracts.tournaments.GET } }
+    const registry = { ...scratchRegistry, tournaments: { ...contracts.tournaments, POST: contracts.tournaments.GET } }
     expect(synthetic({ registry, pending: ['GET new-thing/[id]'] })).toEqual([
       "registry: 'tournaments' has a POST contract, but no file under functions/api exports onRequestPost for it",
     ])

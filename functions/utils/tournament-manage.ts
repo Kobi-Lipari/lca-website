@@ -91,27 +91,21 @@ export function computeStandings(
   return out
 }
 
-export function parseTournamentSections(sectionsJson: string): unknown[] {
-  try {
-    return JSON.parse(sectionsJson) as unknown[]
-  } catch {
-    return []
-  }
-}
-
 /**
  * Prize winners for a tournament, from the prizes the director set on each
- * section. Grades are looked up here rather than carried on the standings,
- * so the public standings never expose a child's grade.
+ * section. `sections` are the tournament's sections as an answer gives them
+ * (sectionResponse in utils/events/sectionsRepo.ts, read from
+ * tournament_sections). Grades are looked up here rather than carried on
+ * the standings, so the public standings never expose a child's grade.
  */
 export async function tournamentPrizes(
   db: D1Database,
   tournamentId: string,
-  sections: unknown[],
+  sections: ReadonlyArray<{ name: string; prizes?: unknown }>,
   standings: Array<{ member_id: string; section: string; score: number; rating: number | null }>,
 ): Promise<PrizeAward[]> {
-  const withPrizes = (sections as Array<{ name?: string; prizes?: SectionPrizes }>)
-    .filter((s): s is { name: string; prizes: SectionPrizes } => !!s && typeof s === 'object' && !!s.name && !!s.prizes)
+  const withPrizes = sections
+    .filter((s): s is { name: string; prizes: SectionPrizes } => !!s.name && typeof s.prizes === 'object' && s.prizes !== null)
   if (withPrizes.length === 0 || standings.length === 0) return []
   const needsGrades = withPrizes.some((s) => s.prizes.classes?.some((c) => c.gradeMin != null || c.gradeMax != null))
   const grades = new Map<string, GradeRange | null>()

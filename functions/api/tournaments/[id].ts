@@ -1,9 +1,12 @@
 // functions/api/tournaments/[id].ts
-import type { Env } from '../../types'
+import type { Env, TournamentRow } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { isObserver, requireAuthedMember, isResponse } from '../../utils/auth'
 import { computeStandings, tournamentPrizes } from '../../utils/tournament-manage'
 import { parseJsonArray } from '../../utils/json'
+import { getDb } from '../../db/client'
+import { loadSections, toTournamentResponse } from '../../utils/events/sectionsRepo'
+import { loadSchedules } from '../../utils/events/schedulesRepo'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -14,7 +17,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     'SELECT * FROM tournaments WHERE id = ?',
   )
     .bind(tournamentId)
-    .first<Record<string, unknown>>()
+    .first<TournamentRow>()
 
   if (!tournament) return errorResponse('Tournament not found', 404)
 
@@ -31,11 +34,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (!isPrivileged) return errorResponse('Tournament not found', 404)
   }
 
-  const sections = parseJsonArray(tournament.sections as string)
+  // The live sections: an archived one takes no entries, so the page
+  // offering entry never lists it. Prizes are read from the same rows. The
+  // round times come from the live schedules.
+  const db = getDb(context.env.DB)
+  const answer = toTournamentResponse(tournament, await loadSections(db, tournamentId), await loadSchedules(db, tournamentId))
 
-  const roundSchedule = parseJsonArray(tournament.round_schedule as string)
-
-  const customDetails = parseJsonArray(tournament.custom_details as string)
+  const customDetails = parseJsonArray(tournament.custom_details)
 
   let myRegistration: Record<string, unknown> | null = null
   try {
@@ -102,14 +107,12 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   )
   // Prize winners are published once the event is finished.
   const prizes = tournament.status === 'completed'
-    ? await tournamentPrizes(context.env.DB, tournamentId, sections, standings)
+    ? await tournamentPrizes(context.env.DB, tournamentId, answer.sections, standings)
     : []
 
   return jsonResponse({
     tournament: {
-      ...tournament,
-      sections,
-      round_schedule: roundSchedule,
+      ...answer,
       custom_details: customDetails,
       is_rated: tournament.is_rated ?? 1,
       waitlist_count: waitlist?.n ?? 0,

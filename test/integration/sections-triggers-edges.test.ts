@@ -1,7 +1,8 @@
 // test/integration/sections-triggers-edges.test.ts
 //
-// More of the 0053 triggers in the Workers runtime, through the handlers as
-// they are today (none knows the new tables exist):
+// More of the 0053 triggers in the Workers runtime, through the handlers
+// (since step 9 the admin POST and PATCH write through the one section
+// writer, and the triggers must agree with it):
 //
 // - who may change the rows: the admin POST, PATCH and DELETE turn away the
 //   wrong role (401 or 403) and leave every row as it was
@@ -126,12 +127,15 @@ describe('replays, reorders, removals and returns through the admin PATCH', () =
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 10 }, { name: 'Reserve', entryFee: 5 }] })
     const ids = Object.fromEntries((await live(tournamentId)).map((s) => [s.name, s.id]))
     const player = await seedMember()
-    await seedRegistration({ tournamentId, memberId: player, section: 'Reserve' })
+    const entry = await seedRegistration({ tournamentId, memberId: player, section: 'Reserve' })
 
     await patch(admin, tournamentId, { sections: [{ name: 'Reserve', entryFee: 5 }, { name: 'Open', entryFee: 10 }] })
     expect((await live(tournamentId)).map((s) => [s.name, s.position, s.id])).toEqual([['Reserve', 0, ids.Reserve], ['Open', 1, ids.Open]])
 
-    await patch(admin, tournamentId, { sections: [] })
+    // Only an empty section can be removed (decision 7); a withdrawn entry does not count.
+    expect((await patch(admin, tournamentId, { sections: [] })).status).toBe(400)
+    await env.DB.prepare(`UPDATE registrations SET withdrawn_at = datetime('now') WHERE id = ?`).bind(entry).run()
+    expect((await patch(admin, tournamentId, { sections: [] })).status).toBe(200)
     expect(await live(tournamentId)).toEqual([])
     expect((await archived(tournamentId)).map((s) => s.name).sort()).toEqual(['Open', 'Reserve'])
     expect((await entryOf(tournamentId, player))?.section_id).toBe(ids.Reserve)
@@ -142,13 +146,18 @@ describe('replays, reorders, removals and returns through the admin PATCH', () =
     expect((await entryOf(tournamentId, player))?.section_id).toBe(ids.Reserve)
   })
 
-  it('a section removed while it has entries is archived, never deleted, and a fresh entry cannot be made into it', async () => {
+  it('a section with entries cannot be removed; once they withdraw it is archived, never deleted, and a fresh entry cannot be made into it', async () => {
     const admin = await seedAdmin()
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 0 }, { name: 'Gone', entryFee: 0 }] })
     const player = await seedMember()
-    await seedRegistration({ tournamentId, memberId: player, section: 'Gone' })
+    const entry = await seedRegistration({ tournamentId, memberId: player, section: 'Gone' })
     const goneId = (await live(tournamentId)).find((s) => s.name === 'Gone')?.id
-    await patch(admin, tournamentId, { sections: [{ name: 'Open', entryFee: 0 }] })
+    const refused = await patch(admin, tournamentId, { sections: [{ name: 'Open', entryFee: 0 }] })
+    expect(refused.status).toBe(400)
+    expect(await refused.json()).toEqual({ error: '1 entry is in the Gone section. Move it to another section first.' })
+    expect(await archived(tournamentId)).toEqual([])
+    await env.DB.prepare(`UPDATE registrations SET withdrawn_at = datetime('now') WHERE id = ?`).bind(entry).run()
+    expect((await patch(admin, tournamentId, { sections: [{ name: 'Open', entryFee: 0 }] })).status).toBe(200)
     expect((await archived(tournamentId)).map((s) => s.id)).toEqual([goneId])
     expect((await entryOf(tournamentId, player))?.section_id).toBe(goneId)
     const other = await seedMember({ uscfRating: 900 })

@@ -297,7 +297,7 @@ export function HomePage() {
           </div>
           <h2 className="text-2xl font-bold sm:text-3xl">Become an LCA member</h2>
           <p className="mt-3 text-sm leading-relaxed text-white/70">
-            Support chess in Louisiana and unlock member benefits including discounted tournament entry, your official membership profile, and access to events across the state.
+            Support chess in Louisiana and unlock member benefits including entry to LCA-run tournaments across the state and your official membership profile.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className={goldButtonClass}>

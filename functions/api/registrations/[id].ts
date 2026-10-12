@@ -1,4 +1,12 @@
 // functions/api/registrations/[id].ts
+//
+// Changes one entry: byes, section, withdrawal, check-in and payment status
+// (updateRegistration). Sections come from the tournament_sections table; a
+// section change moves the entry by name and section_id together, so the
+// 0053 trigger that re-resolves section_id from the name stays out of it.
+// The entry update and any repriced payment are written in one batch.
+import { eq } from 'drizzle-orm'
+import type { BatchItem } from 'drizzle-orm/batch'
 import type { Env } from '../../types'
 import {
   isResponse,
@@ -10,34 +18,14 @@ import {
   errorResponse,
   handleOptions,
   jsonResponse,
-  parseJsonBody,
+  parseBody,
 } from '../../utils/response'
 import { recordAdminAction, type AuditEntry } from '../../utils/audit'
 import { escapeHtml, trySendEmail } from '../../utils/email'
-
-interface UpdateRegistrationBody {
-  byeRounds?: unknown
-  section?: string
-  paymentStatus?: string
-  withdrawn?: boolean
-  checkedIn?: boolean
-}
-
-const PAYMENT_STATUSES = ['paid', 'pending', 'refunded'] as const
-
-function parseSectionList(sectionsJson: string): Array<{ name: string; entryFee?: number }> {
-  try {
-    const parsed = JSON.parse(sectionsJson) as Array<{ name: string; entryFee?: number } | string>
-    return parsed.map((s) => (typeof s === 'string' ? { name: s } : s))
-  } catch {
-    return []
-  }
-}
-
-function sectionFee(sectionsJson: string, name: string, fallback: number): number {
-  const match = parseSectionList(sectionsJson).find((s) => s.name === name)
-  return match?.entryFee ?? fallback
-}
+import { getDb } from '../../db/client'
+import { payments, registrations, tournaments } from '../../db/schema'
+import { loadSections, runBatch } from '../../utils/events/sectionsRepo'
+import { updateRegistrationRequestSchema } from '../../../domain/contracts/registration'
 
 function parseStoredByes(raw: string | null): number[] {
   if (!raw) return []
@@ -71,6 +59,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     tournament_id: string
     member_id: string
     section: string
+    section_id: string | null
     payment_status: string
     bye_rounds: string | null
     withdrawn_at: string | null
@@ -96,8 +85,8 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     return errorResponse('Forbidden', 403)
   }
 
-  const body = await parseJsonBody<UpdateRegistrationBody>(context.request)
-  if (!body) return errorResponse('Invalid JSON body', 400)
+  const body = await parseBody(context.request, updateRegistrationRequestSchema)
+  if (isResponse(body)) return body
 
   if (
     body.byeRounds === undefined &&
@@ -109,19 +98,18 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     return errorResponse('No editable fields provided', 400)
   }
 
-  const tournament = await context.env.DB.prepare(
-    'SELECT name, rounds, sections, entry_fee FROM tournaments WHERE id = ?',
-  ).bind(registration.tournament_id).first<{
-    name: string
-    rounds: number
-    sections: string
-    entry_fee: number
-  }>()
+  const db = getDb(context.env.DB)
+  const [tournament] = await db.select({
+    name: tournaments.name,
+    rounds: tournaments.rounds,
+    entryFee: tournaments.entryFee,
+  }).from(tournaments).where(eq(tournaments.id, registration.tournament_id))
 
   if (!tournament) return errorResponse('Tournament not found', 404)
 
-  const setClauses: string[] = []
-  const binds: unknown[] = []
+  const changes: Partial<typeof registrations.$inferInsert> = {}
+  // A repriced payment, written in the same batch as the entry.
+  const paymentQueries: BatchItem<'sqlite'>[] = []
   let feeNote: string | undefined
   let selfWithdrawal = false
   // Written to the activity log only after the update succeeds.
@@ -154,8 +142,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     if (!body.withdrawn && !registration.withdrawn_at) {
       return errorResponse('This player is not withdrawn', 400)
     }
-    setClauses.push('withdrawn_at = ?')
-    binds.push(body.withdrawn ? new Date().toISOString() : null)
+    changes.withdrawnAt = body.withdrawn ? new Date().toISOString() : null
     auditEntries.push({
       action: body.withdrawn ? 'registration_withdraw' : 'registration_reinstate',
       targetMemberId: registration.member_id,
@@ -172,17 +159,13 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     if (body.checkedIn && registration.withdrawn_at) {
       return errorResponse('Reinstate this player before checking them in', 400)
     }
-    setClauses.push('checked_in_at = ?')
-    binds.push(body.checkedIn ? new Date().toISOString() : null)
+    changes.checkedInAt = body.checkedIn ? new Date().toISOString() : null
   }
 
   // ── Payment status (manager only) ─────────────────────────────────────────
   if (body.paymentStatus !== undefined) {
     if (!isManager) {
       return errorResponse('Only a tournament manager can change payment status', 403)
-    }
-    if (!PAYMENT_STATUSES.includes(body.paymentStatus as (typeof PAYMENT_STATUSES)[number])) {
-      return errorResponse('Invalid payment status', 400)
     }
     // Directors and club reps record cash at the door. Refunds, and anything
     // touching a card payment, stay with admins: marking a card payment
@@ -203,8 +186,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       }
     }
     if (body.paymentStatus !== registration.payment_status) {
-      setClauses.push('payment_status = ?')
-      binds.push(body.paymentStatus)
+      changes.paymentStatus = body.paymentStatus
       auditEntries.push({
         action: 'payment_change',
         targetMemberId: registration.member_id,
@@ -228,10 +210,15 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       return errorResponse('Reinstate this player before changing their section', 400)
     }
 
-    const validNames = parseSectionList(tournament.sections).map((s) => s.name)
-    if (!validNames.includes(body.section)) {
+    // Only a live section takes entries; the entry's current one may since
+    // have been archived, so it is looked up among all of them.
+    const sections = await loadSections(db, registration.tournament_id, { includeArchived: true })
+    const target = sections.find((s) => s.archivedAt === null && s.name === body.section)
+    if (!target) {
       return errorResponse('Invalid section', 400)
     }
+    const current = sections.find((s) => s.id === registration.section_id)
+      ?? sections.find((s) => s.name === registration.section)
 
     // Can't move a player who has already been paired — it would corrupt
     // standings and prior-game history in the old section.
@@ -250,12 +237,12 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       )
     }
 
-    setClauses.push('section = ?')
-    binds.push(body.section)
+    changes.section = target.name
+    changes.sectionId = target.id
 
     // Reconcile the payment: the payment row was created at the old section's fee.
-    const oldFee = sectionFee(tournament.sections, registration.section, tournament.entry_fee)
-    const newFee = sectionFee(tournament.sections, body.section, tournament.entry_fee)
+    const oldFee = current?.feeRegular ?? tournament.entryFee
+    const newFee = target.feeRegular ?? tournament.entryFee
 
     if (oldFee !== newFee) {
       const payment = await context.env.DB.prepare(
@@ -263,9 +250,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       ).bind(registrationId).first<{ id: string; status: string }>()
 
       if (payment?.status === 'pending') {
-        await context.env.DB.prepare(
-          'UPDATE payments SET amount = ? WHERE id = ?',
-        ).bind(newFee, payment.id).run()
+        paymentQueries.push(db.update(payments).set({ amount: newFee }).where(eq(payments.id, payment.id)))
       } else if (payment) {
         feeNote = `Entry fee changed from $${oldFee} to $${newFee} but payment is already ${payment.status}. Reconcile manually in the Stripe dashboard.`
       }
@@ -316,14 +301,14 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
       }
     }
 
-    setClauses.push('bye_rounds = ?')
-    binds.push(newByes.length > 0 ? JSON.stringify(newByes) : null)
+    changes.byeRounds = newByes.length > 0 ? JSON.stringify(newByes) : null
   }
 
-  if (setClauses.length > 0) {
-    await context.env.DB.prepare(
-      `UPDATE registrations SET ${setClauses.join(', ')} WHERE id = ?`,
-    ).bind(...binds, registrationId).run()
+  if (Object.keys(changes).length > 0) {
+    await runBatch(db, [
+      ...paymentQueries,
+      db.update(registrations).set(changes).where(eq(registrations.id, registrationId)),
+    ])
     for (const entry of auditEntries) await recordAdminAction(context.env.DB, actor, entry)
   }
 

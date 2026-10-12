@@ -4,6 +4,8 @@
 // exactly one write path per operation.
 import type { Env } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
+import { getDb } from '../../db/client'
+import { sectionResponsesFor } from '../../utils/events/sectionsRepo'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -31,13 +33,15 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   // Hidden (draft) tournaments must not leak onto public club pages — they
   // previously showed here with links that 404'd on the detail endpoint.
   const tournaments = await context.env.DB.prepare(
-    `SELECT id, name, date, end_date, status, entry_fee, sections, rounds
+    `SELECT id, name, date, end_date, status, entry_fee, rounds
      FROM tournaments
      WHERE club_id = ? AND is_visible = 1
      ORDER BY date DESC`,
   )
     .bind(clubId)
-    .all()
+    .all<{ id: string; name: string; date: string; end_date: string | null; status: string; entry_fee: number; rounds: number }>()
+  // The live sections of all of them, read together from tournament_sections.
+  const sections = await sectionResponsesFor(getDb(context.env.DB), tournaments.results.map((t) => t.id))
 
   const news = await context.env.DB.prepare(
     `SELECT id, title, excerpt, news_date
@@ -52,7 +56,16 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   return jsonResponse({
     club,
     officers: officers.results,
-    tournaments: tournaments.results,
+    tournaments: tournaments.results.map((t) => ({
+      id: t.id,
+      name: t.name,
+      date: t.date,
+      end_date: t.end_date,
+      status: t.status,
+      entry_fee: t.entry_fee,
+      sections: sections.get(t.id) ?? [],
+      rounds: t.rounds,
+    })),
     news: news.results,
   })
 }

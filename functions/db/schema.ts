@@ -102,11 +102,16 @@ export const tournaments = sqliteTable('tournaments', {
   earlyDiscount: real('early_discount').default(0).notNull(),
   lateAfter: text('late_after'),
   lateFee: real('late_fee').default(0).notNull(),
+  // Retired (there is no member price): neither read nor written since 0054,
+  // kept so no data is dropped.
   memberDiscount: real('member_discount').default(0).notNull(),
   accelerated: integer().default(0).notNull(),
   keepApart: text('keep_apart').default('family').notNull(),
   reportSettings: text('report_settings'),
   isStateChampionship: integer('is_state_championship').default(0).notNull(),
+  // Entering needs a current LCA membership (domain/membership/requirement.ts).
+  // On by default; club-run events start with it off (0054).
+  requiresLcaMembership: integer('requires_lca_membership').default(1).notNull(),
 },
 (table) => [
   index('idx_tournaments_club_id').on(table.clubId),

@@ -2,8 +2,8 @@
 //
 // Drizzle through getDb (functions/db/client.ts) on the Miniflare D1 binding
 // the rest of the suite uses, with the database built from migrations/*.sql
-// by setup.ts. No endpoint uses Drizzle yet, so there is no route to call and
-// no role-safety case to add; this only proves the query builder, the
+// by setup.ts. The admin tournament endpoints use it since step 9 (see
+// sections-writer.test.ts); this only proves the query builder, the
 // relational API and the D1 driver work together in the Workers runtime.
 import { env } from 'cloudflare:test'
 import { beforeEach, describe, expect, it } from 'vitest'

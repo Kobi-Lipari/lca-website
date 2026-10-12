@@ -3,6 +3,7 @@
 // Shared types + helpers for the unified tournament feed
 // (GET /api/clearinghouse — LCA events merged with Gulf South external
 // events). Used by TournamentsPage and ScholasticPage.
+import type { ApiTournamentSection } from '@/lib/api'
 
 export interface UnifiedTournament {
   id: string
@@ -21,7 +22,8 @@ export interface UnifiedTournament {
   source: 'lca' | 'clearinghouse'
   registration_status?: string | null
   entry_fee?: number | null
-  sections?: Array<string | { name: string }>
+  /** LCA events: the live sections, as every tournament answer gives them. Partner events: []. */
+  sections?: ApiTournamentSection[]
   rounds?: number | null
   status?: string | null
   is_rated?: number | null
