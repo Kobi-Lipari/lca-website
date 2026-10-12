@@ -331,7 +331,7 @@ AC1 to AC14 are the brief's WS01 acceptance criteria. K1a to K6 are the parts of
 
 ### Checkpoint B: steps 9 to 15
 
-Ready for the pull request description. Checkpoint B moves tournament sections and schedules off their JSON columns and onto the tables checkpoint A created, then removes member pricing.
+**Merged into `main` as `748a5ef` on Monday, October 12, 2026 at 10:29 PM UTC** (pull request 104, a merge commit on head `b41ac45`). `migrate-db.yml` applied 0054 to production at 10:29:51 PM UTC on its first attempt; `d1_migrations` now ends at `0054_requires_lca_membership.sql`. The Pages production build and the daily-emails worker deploy both succeeded. The post-deploy query for club events with the requirement on returned no rows (production has no club-run event), and the one LCA-run event has it on. The public site answered afterwards; its only event is hidden, so there was no public row to inspect. Checkpoint B moves tournament sections and schedules off their JSON columns and onto the tables checkpoint A created, then removes member pricing.
 
 - **Step 9:** one writer for sections (`sectionsRepo.ts`), rename by id, the refusal to remove a section that has entries or games, 409 when a save raced another, and the first Drizzle use in the admin tournament create and edit.
 - **Step 10:** player registration (single, family and entry edit) reads the section rows, sets `section_id` itself, refuses archived sections, and answers malformed bodies with `{ error, fields }`.
@@ -392,7 +392,7 @@ Ready for the pull request description. Checkpoint B moves tournament sections a
      ```sql
      SELECT t.id FROM tournaments t WHERE (SELECT COUNT(*) FROM tournament_sections s WHERE s.tournament_id = t.id AND s.archived_at IS NULL) <> (SELECT COUNT(DISTINCT json_extract(e.value,'$.name')) + COUNT(DISTINCT CASE e.type WHEN 'text' THEN e.value END) FROM json_each(CASE WHEN json_valid(t.sections) AND json_type(t.sections)='array' THEN t.sections END) e WHERE COALESCE(CASE e.type WHEN 'text' THEN e.value WHEN 'object' THEN json_extract(e.value,'$.name') END,'') <> '');
      ```
-- **Merging checkpoint B.**
+- **Merging checkpoint B** (done as recorded above; the notes below stay for the record and for a rollback).
   - Merge when no event is running and no director is editing.
   - The 0054 window: from the moment the new Pages build goes live until 0054 is on production, event creation (the wizard and a club rep) and every save on an LCA-run event answer 500. That covers Details, Registration pricing and visibility, Schedule, Start or Finish event, US Chess upload settings and the admin page's club change. On the real database, club-run events may fail too. Nothing is half-written, because each save is one batch. Player registration, family entry, walk-ins, waitlist offers, check-in and the public pages keep working.
   - Watch `migrate-db.yml` apply 0054 and re-run it at once if it fails. The GitHub Actions Cloudflare token and account ID were replaced on Friday, October 9, 2026 and checked at 2:25 PM UTC with a manual run on `main` (run 37944035297): it reached `lca-db` and found no migrations to apply.
