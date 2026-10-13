@@ -7,6 +7,11 @@
 // every existing class in the app spells the hex out, and mixing the two
 // styles is worse than either. The point here is that the button treatment
 // and the accent rules live in one file instead of seven.
+//
+// The new look (the newLook switch) works from the semantic tokens in
+// src/index.css instead: text-ink, bg-ground, text-gold-ink (#866a1e, the
+// gold for text on a light ground) and the rest, which change with dark mode
+// and each look. New code uses those; these literals are today's look.
 
 /** Brand colors. Contrast ratios below are against white unless stated. */
 /** Typed as string, not as const: these are a palette, and a literal type

@@ -44,13 +44,14 @@ const SWITCHES = {
 
   /**
    * The Heritage Club look on About, Board, Bylaws, Minutes, Annual meeting
-   * and Champions.
+   * and Champions. It shows only when newLook is on as well.
    */
   themeHeritage: false,
 
   /**
    * The Bright Scholastic look on the Scholastic pages. Off until the
    * Scholastic fonts are added and the look has been checked on a preview.
+   * It shows only when newLook is on as well.
    */
   themeScholastic: false,
 

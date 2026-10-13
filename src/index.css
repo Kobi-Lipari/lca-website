@@ -2,8 +2,16 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+/* The only monospace face. It is used only through --font-mono-face, which
+ * names it only under the new look, so with newLook off nothing loads it. */
+@import "@fontsource-variable/geist-mono";
+/* The one display accent of the new look (font-accent). */
+@import "@fontsource/instrument-serif/400.css";
 
-@custom-variant dark (&:is(.dark *));
+/* The class on <html> as well as its descendants, so a dark: utility on the
+ * root element itself applies too. :where keeps the variant's specificity at
+ * zero, as the shadcn default does. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * LCA brand palette.
@@ -14,9 +22,9 @@
  * and the /NN opacity modifiers — so the colors stop being spelled out in
  * hundreds of arbitrary-value classes.
  *
- * These are the palette, deliberately named for what they are. Semantic
- * tokens (surface, ink, accent) are what a dark theme will need on top of
- * them, and naming those is a design decision, not a rename.
+ * These are the palette, deliberately named for what they are. The semantic
+ * tokens (ground, surface, ink and the rest) are defined further down, with
+ * a value for today's look and one for each of the new looks.
  */
 @theme {
     --color-lca-navy: #1a2744;
@@ -27,6 +35,45 @@
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Geist Variable', sans-serif;
+    /* font-mono reads the token, so it is the device's own monospace stack
+     * in today's look and Geist Mono only under the new look. */
+    --font-mono: var(--font-mono-face);
+    --font-accent: 'Instrument Serif', Georgia, serif;
+
+    /* The semantic tokens as utilities: text-ink, bg-ground, border-hairline,
+     * text-gold-ink, bg-status-open-tint and so on. Each utility reads the
+     * token where it is used, so it follows the look of its scope. */
+    --color-ground: var(--ground);
+    --color-surface: var(--surface);
+    --color-surface-2: var(--surface-2);
+    --color-raised: var(--raised);
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-hairline: var(--hairline);
+    --color-field: var(--field);
+    --color-ok: var(--ok);
+    --color-bad: var(--bad);
+    --color-gold: var(--gold);
+    --color-gold-ink: var(--gold-ink);
+    --color-gold-on-dark: var(--gold-on-dark);
+    --color-focus: var(--focus);
+    --color-status-open: var(--status-open);
+    --color-status-open-tint: var(--status-open-tint);
+    --color-status-soon: var(--status-soon);
+    --color-status-soon-tint: var(--status-soon-tint);
+    --color-status-full: var(--status-full);
+    --color-status-full-tint: var(--status-full-tint);
+    --color-status-waitlist: var(--status-waitlist);
+    --color-status-waitlist-tint: var(--status-waitlist-tint);
+    --color-status-closed: var(--status-closed);
+    --color-status-closed-tint: var(--status-closed-tint);
+    --color-status-live: var(--status-live);
+    --color-status-live-tint: var(--status-live-tint);
+    --color-status-partner: var(--status-partner);
+    --color-status-partner-tint: var(--status-partner-tint);
+    --color-status-lca: var(--status-lca);
+    --color-status-lca-tint: var(--status-lca-tint);
+
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -100,6 +147,48 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    /*
+     * The semantic tokens, at today's values. The site reads them only
+     * through the utilities above, and while newLook is off every one of
+     * them gives what the page shows today: --focus is the same half-strength
+     * ring that ring-ring/50 draws, and --font-mono-face is Tailwind's own
+     * monospace stack. They live here, at the root, because the @theme
+     * inline utilities need every token to exist everywhere.
+     * test/unit/tokens.test.ts holds each one to today's value.
+     */
+    --ground: oklch(1 0 0);
+    --surface: #fff;
+    --surface-2: oklch(0.97 0 0);
+    --raised: oklch(1 0 0);
+    --ink: #1a2744;
+    --ink-muted: oklch(0.556 0 0);
+    --hairline: oklch(0.922 0 0);
+    --field: oklch(0.922 0 0);
+    --ok: oklch(43.2% 0.095 166.913);
+    --bad: oklch(0.577 0.245 27.325);
+    --gold: #c8a94a;
+    --gold-ink: #c8a94a;
+    --gold-on-dark: #c8a94a;
+    --focus: color-mix(in oklab, var(--ring) 50%, transparent);
+    --font-mono-face: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    /* Status: the light tones StatusBadge draws today. */
+    --status-open: oklch(43.2% 0.095 166.913);
+    --status-open-tint: oklch(95% 0.052 163.051);
+    --status-soon: #7a5c00;
+    --status-soon-tint: color-mix(in oklab, #c8a94a 20%, transparent);
+    --status-full: oklch(50.5% 0.213 27.518);
+    --status-full-tint: oklch(93.6% 0.032 17.717);
+    --status-waitlist: oklch(50.5% 0.213 27.518);
+    --status-waitlist-tint: oklch(93.6% 0.032 17.717);
+    --status-closed: oklch(0.556 0 0);
+    --status-closed-tint: oklch(0.97 0 0);
+    --status-live: oklch(50.5% 0.213 27.518);
+    --status-live-tint: oklch(93.6% 0.032 17.717);
+    --status-partner: oklch(42.4% 0.199 265.638);
+    --status-partner-tint: oklch(97% 0.014 254.604);
+    --status-lca: #1a2744;
+    --status-lca-tint: color-mix(in oklab, #c8a94a 20%, transparent);
 }
 
 .dark {
@@ -134,6 +223,284 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+}
+
+/*
+ * The new look (the newLook switch). src/main.tsx sets data-look="new" on
+ * <html> when the switch is on, and the script that build adds to the page
+ * head sets it, and the .dark class, before the first paint. Without the
+ * attribute none of the rules below match, so today's look is untouched.
+ *
+ * Base: Looks-3 Minimal, light and dark. Scopes, set with data-theme on a
+ * container: live (Looks-7 Broadcast), scholastic (Looks-6 Bright
+ * Scholastic) and heritage (Looks-1 Heritage Club); data-theme="" puts the
+ * base look back inside another scope. The values come from the Looks tile
+ * boards in docs/redesign/lca-redesign-boards/boards.
+ *
+ * Each scope selector is written once per look, because a token that points
+ * at another token (var()) is worked out on the element that declares it.
+ */
+:root[data-look="new"],
+:root[data-look="new"] [data-theme=""] {
+    color-scheme: light;
+    --ground: #fff;
+    --surface: #fff;
+    --surface-2: #f7f8fa;
+    --raised: #fff;
+    --ink: #1a2744;
+    --ink-muted: #5b6478;
+    --hairline: #e5e7ed;
+    --field: #7c8496;
+    --ok: #047857;
+    --bad: #c0362c;
+    --gold: #c8a94a;
+    --gold-ink: #866a1e;
+    --gold-on-dark: #c8a94a;
+    --focus: #1a2744;
+    --font-mono-face: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --status-open: #047857;
+    --status-open-tint: #e8f5ef;
+    --status-soon: #705718;
+    --status-soon-tint: #fbf7e9;
+    --status-full: #c0362c;
+    --status-full-tint: #fdeeec;
+    --status-waitlist: #c0362c;
+    --status-waitlist-tint: #fdeeec;
+    --status-closed: #5b6478;
+    --status-closed-tint: #f7f8fa;
+    --status-live: #fff;
+    --status-live-tint: #c0362c;
+    --status-partner: #1a2744;
+    --status-partner-tint: #eef1f6;
+    --status-lca: #fff;
+    --status-lca-tint: #1a2744;
+}
+
+/* Dark: the Looks-3 dark palette. It follows the device setting unless the
+ * visitor picks Light or Dark in the Appearance control. */
+:root[data-look="new"].dark,
+:root[data-look="new"].dark [data-theme=""] {
+    color-scheme: dark;
+    --ground: #0b1220;
+    --surface: #111a2c;
+    --surface-2: #0b1220;
+    --raised: #1a2744;
+    --ink: #e8ecf4;
+    --ink-muted: #9aa6bf;
+    --hairline: rgb(255 255 255 / 8%);
+    --field: #5f6d89;
+    --ok: #3ecf8e;
+    --bad: #ff6b6b;
+    --gold-ink: #c8a94a;
+    --focus: #c8a94a;
+    --status-open: #3ecf8e;
+    --status-open-tint: #0d2b22;
+    --status-soon: #c8a94a;
+    --status-soon-tint: #2a2412;
+    --status-full: #ff6b6b;
+    --status-full-tint: #3a1619;
+    --status-waitlist: #ff6b6b;
+    --status-waitlist-tint: #3a1619;
+    --status-closed: #9aa6bf;
+    --status-closed-tint: #1a2744;
+    --status-live: #fff;
+    --status-live-tint: #c0362c;
+    --status-partner: #e8ecf4;
+    --status-partner-tint: #1a2744;
+    --status-lca: #0b1220;
+    --status-lca-tint: #c8a94a;
+}
+
+/* Live (Looks-7 Broadcast Night): always dark, light or dark mode alike.
+ * Live red carries dark text only; white on it is 3.34:1. */
+:root[data-look="new"] [data-theme="live"] {
+    color-scheme: dark;
+    --ground: #070b14;
+    --surface: #0e1526;
+    --surface-2: #070b14;
+    --raised: #1a2744;
+    --ink: #f3f5f9;
+    --ink-muted: #8e9ab2;
+    --hairline: rgb(255 255 255 / 8%);
+    --field: #5f6d89;
+    --ok: #34d399;
+    --bad: #ff6b6b;
+    --gold: #c8a94a;
+    --gold-ink: #c8a94a;
+    --gold-on-dark: #c8a94a;
+    --gold-hi: #e5c768;
+    --live: #ff4757;
+    --live-strong: #c81e32;
+    --win: #34d399;
+    --loss: #ff6b6b;
+    --draw: #a7b0c2;
+    --focus: #c8a94a;
+    --status-open: #34d399;
+    --status-open-tint: #0e1526;
+    --status-soon: #f3f5f9;
+    --status-soon-tint: #1a2744;
+    --status-full: #c8a94a;
+    --status-full-tint: #0e1526;
+    --status-waitlist: #c8a94a;
+    --status-waitlist-tint: #0e1526;
+    --status-closed: #8e9ab2;
+    --status-closed-tint: #0e1526;
+    --status-live: #070b14;
+    --status-live-tint: #ff4757;
+    --status-partner: #a7b0c2;
+    --status-partner-tint: #0e1526;
+    --status-lca: #070b14;
+    --status-lca-tint: #c8a94a;
+}
+
+/* Scholastic (Looks-6 Bright Scholastic): a light look in either mode.
+ * Navy carries all text and buttons, a section hue only ever marks a grade
+ * band beside its words, and status tags keep the base status tokens. */
+:root[data-look="new"] [data-theme="scholastic"] {
+    color-scheme: light;
+    --ground: #fffaf1;
+    --surface: #fff;
+    --surface-2: #fffaf1;
+    --raised: #fff;
+    --ink: #1a2744;
+    --ink-muted: #4f5b75;
+    --hairline: #efe5cf;
+    --field: #7c8496;
+    --ok: #047857;
+    --bad: #c0362c;
+    --gold: #c8a94a;
+    --gold-ink: #866a1e;
+    --gold-on-dark: #c8a94a;
+    --gold-tile: #fdf1cc;
+    --coral: #b23e1a;
+    --coral-tile: #ffe4da;
+    --mint: #1f7a55;
+    --mint-tile: #dcf5e9;
+    --sky: #2563c9;
+    --sky-tile: #e3eeff;
+    --grape: #6a3fc1;
+    --grape-tile: #eee6ff;
+    --focus: #1a2744;
+    --status-open: #047857;
+    --status-open-tint: #e8f5ef;
+    --status-soon: #705718;
+    --status-soon-tint: #fbf7e9;
+    --status-full: #c0362c;
+    --status-full-tint: #fdeeec;
+    --status-waitlist: #c0362c;
+    --status-waitlist-tint: #fdeeec;
+    --status-closed: #5b6478;
+    --status-closed-tint: #f7f8fa;
+    --status-live: #fff;
+    --status-live-tint: #c0362c;
+    --status-partner: #1a2744;
+    --status-partner-tint: #eef1f6;
+    --status-lca: #fff;
+    --status-lca-tint: #1a2744;
+}
+
+/* Heritage (Looks-1 Heritage Club): grounds, ink, rules and gold-ink only.
+ * It never restyles buttons, fields, status tags or the focus ring, so the
+ * status tokens and --focus stay as the base sets them. Brand gold is for
+ * rules, seals and text on navy only (2.05:1 on paper). */
+:root[data-look="new"] [data-theme="heritage"] {
+    --ground: #f7f3e8;
+    --surface: #fffdf8;
+    --surface-2: #ece4d0;
+    --raised: #fffdf8;
+    --ink: #1a2744;
+    --ink-muted: #5e5a52;
+    --hairline: #d8cdb4;
+    --field: #857d6b;
+    --gold-ink: #705718;
+    --baize: #2d5a45;
+    --claret: #8a2b38;
+}
+
+/* Heritage in dark mode keeps its type, rules and seal on the Minimal dark
+ * grounds. */
+:root[data-look="new"].dark [data-theme="heritage"] {
+    --ground: #0b1220;
+    --surface: #111a2c;
+    --surface-2: #0b1220;
+    --raised: #1a2744;
+    --ink: #e8ecf4;
+    --ink-muted: #9aa6bf;
+    --hairline: rgb(255 255 255 / 8%);
+    --field: #5f6d89;
+    --gold-ink: #c8a94a;
+}
+
+/* The shadcn variables point at the semantic tokens, only in the new look.
+ * Repeated on every scope so a component inside a scope gets that scope's
+ * colours. This also outranks the stock .dark block above. */
+:root[data-look="new"],
+:root[data-look="new"] [data-theme] {
+    --background: var(--ground);
+    --foreground: var(--ink);
+    --card: var(--surface);
+    --card-foreground: var(--ink);
+    --popover: var(--raised);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: var(--ground);
+    --secondary: var(--surface-2);
+    --secondary-foreground: var(--ink);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--ink-muted);
+    --accent: var(--surface-2);
+    --accent-foreground: var(--ink);
+    --destructive: var(--bad);
+    --border: var(--hairline);
+    --input: var(--field);
+    --ring: var(--focus);
+    --sidebar: var(--surface-2);
+    --sidebar-foreground: var(--ink);
+    --sidebar-primary: var(--ink);
+    --sidebar-primary-foreground: var(--ground);
+    --sidebar-accent: var(--surface);
+    --sidebar-accent-foreground: var(--ink);
+    --sidebar-border: var(--hairline);
+    --sidebar-ring: var(--focus);
+}
+
+/*
+ * Focus, new look only: one ring for every control, a 2px line in --focus
+ * with a 2px gap, navy on light grounds and gold on dark and live grounds.
+ * It sits outside the layers on purpose, so it wins over the outline-none
+ * and ring utilities the shadcn components carry; their own focus glow is
+ * switched off while the ring shows, so a control never draws two.
+ */
+:root[data-look="new"] :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-ring-offset-shadow: 0 0 #0000;
+}
+
+/* Inside a navy band (today's header, footer and page heroes, until they
+ * are rebuilt) the ground is dark, so the ring turns gold. A dark ground that
+ * is not a bg-lca-navy box, such as a photo with a tint laid over it, says so
+ * with data-ground="dark" on the element that holds its controls. */
+:root[data-look="new"] .bg-lca-navy :focus-visible,
+:root[data-look="new"] [data-ground="dark"] :focus-visible {
+    outline-color: var(--gold-on-dark);
+}
+
+/* Motion, new look only: with reduced motion asked for, nothing moves. A
+ * zero-length animation still fires its end event, which the dialogs wait
+ * for before they close. */
+@media (prefers-reduced-motion: reduce) {
+    :root[data-look="new"] *,
+    :root[data-look="new"] *::before,
+    :root[data-look="new"] *::after {
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 @layer base {
