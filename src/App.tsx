@@ -44,6 +44,13 @@ const TournamentPairingsPage = lazy(() => import('@/pages/TournamentPairingsPage
 const TournamentPrintPage = lazy(() => import('@/pages/TournamentPrintPage').then(m => ({ default: m.TournamentPrintPage })))
 const WorkspacePage = lazy(() => import('@/pages/WorkspacePage').then(m => ({ default: m.WorkspacePage })))
 const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => ({ default: m.TournamentsPage })))
+// The accessibility test build's fixture page (vite build --mode a11y, see
+// test/a11y). The build replaces import.meta.env.MODE with the mode's name,
+// so every other build drops this import, the route below and the page's
+// file; test/unit/feature-overrides.test.ts checks the site build for both.
+const ScopeFixturePage = import.meta.env.MODE === 'a11y'
+  ? lazy(() => import('@/pages/fixtures/ScopeFixturePage').then(m => ({ default: m.ScopeFixturePage })))
+  : null
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -124,6 +131,10 @@ function App() {
             <Route path="/admin/:section" element={<RoleProtectedRoute roles={ADMIN_PANEL_ROLES} fallbackToToolsHome><AdminPage /></RoleProtectedRoute>} />
             <Route path="/admin/clubs/:id" element={<RoleProtectedRoute requireClubMatch><AdminClubPage /></RoleProtectedRoute>} />
             <Route path="/admin/tournaments/:id" element={<RoleProtectedRoute roles={['lca_admin', 'lca_observer', 'lca_officer', 'club_rep', 'tournament_director']} allowDirectors requireTournamentAccess><TournamentManagePage /></RoleProtectedRoute>} />
+            {/* ── Accessibility test build only (see ScopeFixturePage above) ── */}
+            {import.meta.env.MODE === 'a11y' && ScopeFixturePage && (
+              <Route path="/__fixtures/:name" element={<ScopeFixturePage />} />
+            )}
           </Routes>
         </Suspense>
       </main>

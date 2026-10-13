@@ -1,7 +1,9 @@
 // src/components/layout/Footer.tsx
 import { Link } from 'react-router-dom'
+import { AppearanceControl } from '@/components/AppearanceControl'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import lcaLogo from '@/assets/lca-logo.webp'
+import { FEATURES } from '@/lib/features'
 
 // Every link points somewhere DISTINCT. When pages grow filters/anchors
 // (e.g. /tournaments?filter=past), add richer links back then — no fake
@@ -108,9 +110,15 @@ export function Footer() {
           <p className="text-sm text-white/50">
             © {year} Louisiana Chess Association. All rights reserved.
           </p>
-          <p className="text-sm text-white/40">
-            
-          </p>
+          {/* The Appearance control, under the new look only, until the
+              footer is rebuilt; the empty line keeps today's layout. */}
+          {FEATURES.newLook ? (
+            <AppearanceControl />
+          ) : (
+            <p className="text-sm text-white/40">
+              
+            </p>
+          )}
         </div>
       </div>
     </footer>
