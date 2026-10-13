@@ -132,7 +132,7 @@ preview ever points at production.
 ```bash
 npm run db:migrate:preview          # apply pending migrations to lca-db-preview
 npm run db:migrate:status:preview   # show applied vs pending (preview)
-npm run db:seed:preview             # load sample data (not written yet; it refuses)
+npm run db:seed:preview             # load the synthetic sample data in scripts/seed/fixtures.sql
 ```
 
 Each of these runs `scripts/db/preview-guard.ts` first. The guard reads
@@ -174,6 +174,44 @@ npm run test:integration    # integration tests (real Workers runtime + D1)
 npm run typecheck:functions # typecheck the Pages Functions backend
 npm run build                # production build
 ```
+
+#### Browser tests (not part of `npm test`)
+
+```bash
+npm run test:a11y   # accessibility suite: two local builds, axe and the colour baseline
+npm run test:e2e    # end-to-end tests against a branch preview (E2E_BASE_URL)
+```
+
+`npm run test:a11y` needs nothing but `npm ci` and a Playwright Chromium
+(`npx playwright install chromium` once; set `PW_CHROMIUM_PATH` to use a
+Chromium you already have). It builds the site twice with
+`vite build --mode a11y`, into `dist-a11y-on` (with the `newLook` and
+`themeHeritage` switches on) and `dist-a11y-off` (none on), builds a local
+database in `.wrangler/a11y` from the migrations and
+`scripts/seed/fixtures.sql` (synthetic data only), and serves each build with
+`wrangler pages dev` on ports 8801 and 8802 using the fake values in
+`.dev.vars.a11y`, with the Stripe, Resend, Facebook and scanning keys bound
+empty, so your own `.dev.vars` is overridden. Nothing it runs touches a
+remote database. With every key empty, a call to a real service is refused,
+but a checkout or an email can still send that refused request to Stripe or
+Resend. The specs are in `test/a11y`: `smoke.spec.ts` runs axe on the
+homepage of both builds (issues the site already has are listed in
+`known-violations.json` until the full sweep fixes them), and `baseline.ts`
+checks that today's colours and fonts still match `baseline.json`
+(`A11Y_BASELINE=record npm run test:a11y` rewrites it, on purpose only).
+Pull requests run it in CI's Accessibility job.
+
+`VITE_FLAGS` (a comma-separated list of switch names) is read only by that
+`--mode a11y` build. Every other build uses the values in
+`src/lib/features.ts` as written, and the `/__fixtures/:name` test page
+exists only in the `a11y` build.
+
+`npm run test:e2e` runs `test/e2e` against the preview named by
+`E2E_BASE_URL`; it refuses an empty address and any `louisianachess.org`
+address. The specs wait (as `test.fixme`) for the household checkout and
+round publishing. `.github/workflows/e2e-preview.yml` runs them only when
+started by hand, after its form confirms that the preview is migrated and
+seeded, holds Stripe test keys, and has those features.
 
 ---
 

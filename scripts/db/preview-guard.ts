@@ -11,7 +11,8 @@
 //   - the command is about to act on lca-db, or on a database the preview
 //     block does not bind
 //
-// With --seed <file> it also stops when the seed file does not exist yet.
+// With --seed <file> it also stops when the seed file is missing. The seed
+// db:seed:preview loads is scripts/seed/fixtures.sql: synthetic data only.
 //
 // Usage (see package.json):
 //   node --no-warnings --experimental-strip-types scripts/db/preview-guard.ts \

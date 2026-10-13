@@ -20,12 +20,18 @@ const routes = [...APP.matchAll(LAZY)].map((m) => ({ specifier: m[1], name: m[2]
 /** The file a '@/...' specifier names, as the build resolves it. */
 const fileFor = (specifier: string) => join(ROOT, specifier.replace(/^@\//, 'src/')) + '.tsx'
 
+/** The accessibility test build's fixture page, the one lazy page outside src/pages itself. */
+const FIXTURE = '@/pages/fixtures/ScopeFixturePage'
+
 describe('every lazy route in src/App.tsx resolves', () => {
   it('reads each lazy() call in App.tsx', () => {
     // A lazy() call in another shape would be missed, so the counts must agree.
     expect(routes.length).toBe((APP.match(/\blazy\(/g) ?? []).length)
-    expect(routes.length).toBe(33)
-    for (const r of routes) expect(r.specifier, r.name).toMatch(/^@\/pages\/\w+$/)
+    const pages = routes.filter((r) => r.specifier !== FIXTURE)
+    expect(pages.length).toBe(33)
+    for (const r of pages) expect(r.specifier, r.name).toMatch(/^@\/pages\/\w+$/)
+    // The fixture page is loaded only in that build (see feature-overrides.test.ts).
+    expect(routes.filter((r) => r.specifier === FIXTURE)).toEqual([{ specifier: FIXTURE, name: 'ScopeFixturePage' }])
   })
 
   it.each(routes.map((r) => [r.specifier, r.name]))('%s exports %s', async (specifier, name) => {
