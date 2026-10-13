@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tournament day · decided · hall TV</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.tv-root{width:1920px;box-sizing:border-box;padding:40px 0 64px;background:#ecebe6;color:#1a2744}
+.tv-root *{box-sizing:border-box}
+.tv-root h1,.tv-root h2,.tv-root h3,.tv-root p{margin:0}
+.tv-pad{padding:0 56px}
+
+/* title strip and legend (decided-board pattern) */
+.tl-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:26px 28px 28px}
+.tl-title{font-size:36px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.tl-meta-line{font-size:15px;line-height:1.5;color:#3d4556;margin:3px 0 0;max-width:1180px}
+.tl-meta-line b{color:#1a2744;font-weight:600}
+.doc-top{display:grid;grid-template-columns:minmax(0,1fr) 520px;gap:32px;align-items:start}
+.tl-legend{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:22px;margin-top:22px}
+.tl-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.tl-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 28px}
+.tl-notes li,.tl-fb li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
+.tl-notes b,.tl-fb b{font-weight:600}
+.tl-grp{grid-column:1 / -1;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-top:4px}
+.tl-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
+.tl-fb ol{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.tl-fbk{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 5px;border-radius:6px;background:#f4ecd4;color:#664c0c;font-size:12px;font-weight:700;flex:none}
+.tl-fb-sub{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:16px 0 0}
+.tl-fb-r1{font-size:13px;line-height:1.5;color:#555c6b;margin:6px 0 0}
+.lp-grey{background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.lp-grey p{font-size:13px;line-height:1.45;color:#2b3446;margin:0}
+.lp-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.lp-grey ol{margin:0;padding-left:18px;font-size:13px;line-height:1.45;color:#2b3446}
+.lp-grey li{margin-bottom:4px}
+
+/* frame labels */
+.tl-sec{margin-top:44px}
+.tl-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 8px}
+.tl-flab h2{margin:0;font-size:22px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.tl-code{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:30px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:14px}
+.tl-cap{font-size:15px;line-height:1.5;color:#3d4556;max-width:1400px;margin:0 0 16px}
+.tvb{position:absolute;z-index:6;width:38px;height:38px;font-size:16px;box-shadow:0 0 0 3px #ffffff}
+.rel{position:relative}
+
+/* hall TV (from Live-D) */
+.tv{position:relative;display:flex;flex-direction:column;color:#1a2744;font-family:'Geist',ui-sans-serif,system-ui,sans-serif;overflow:hidden;width:1920px;height:1080px;background:#ecebe5}
+.tv-top{height:124px;flex:none;display:flex;align-items:center;gap:32px;padding:0 48px;background:#1a2744;color:#ffffff;border-bottom:4px solid #c8a94a}
+.tv-kick{font-size:15px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;line-height:1.2}
+.tv-body{flex:1;min-height:0;display:flex}
+.tv-main{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:22px 40px 20px 48px}
+.tv-sec{position:relative;height:68px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;gap:24px}
+.tv-grid{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(7,minmax(0,1fr));grid-auto-flow:column;gap:12px 36px}
+.bd{display:flex;min-height:0;background:#ffffff;border:1px solid #d3d2ca;border-radius:12px;overflow:hidden}
+.bd-n{width:92px;flex:none;display:flex;align-items:center;justify-content:center;background:#1a2744;color:#ffffff;font-size:46px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.bd-p{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:0 18px 0 20px}
+.pl{display:flex;align-items:center;gap:14px;height:40px}
+.pl + .pl{border-top:1px solid #e9e8e2}
+.c{height:32px;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 7px 0 6px;border-radius:6px;font-size:18px;font-weight:700;line-height:1}
+.c i{display:block;width:12px;height:12px;border-radius:50%;flex:none}
+.c-w{background:#ffffff;color:#1a2744;box-shadow:inset 0 0 0 2px #1a2744}
+.c-w i{border:2.5px solid #1a2744;background:#ffffff}
+.c-b{background:#1a2744;color:#ffffff}
+.c-b i{background:#ffffff}
+.nm{flex:1;min-width:0;font-size:33px;font-weight:600;letter-spacing:-.01em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rt{width:72px;flex:none;text-align:right;font-family:'Geist Mono',ui-monospace,monospace;font-size:22px;color:#555c6b;font-variant-numeric:tabular-nums}
+.pt{width:60px;height:34px;flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:#eceef2;color:#1a2744;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.bye{background:#fbfaf6;border:2px dashed #b9b7ad}
+.bye .bd-p{padding:0 22px;gap:2px}
+.bye-l{display:flex;align-items:baseline;gap:10px;font-size:23px;font-weight:600;line-height:1.3;white-space:nowrap}
+.bye-l span{font-size:19px;font-weight:500;color:#555c6b}
+.tv-side{position:relative;width:440px;flex:none;display:flex;flex-direction:column;gap:14px;padding:24px 36px;background:#1a2744;color:#ffffff}
+.tv-qr{width:248px;height:248px;flex:none;padding:12px;background:#ffffff;border-radius:14px}
+.tv-ph{display:inline-flex;align-items:center;height:26px;padding:0 10px;border:1.5px dashed rgba(255,255,255,.75);border-radius:6px;font-size:14px;font-weight:600;color:#ffffff;white-space:nowrap}
+.tv-r{display:flex;align-items:center;gap:14px;height:31px;font-size:19px;color:rgba(255,255,255,.86);font-variant-numeric:tabular-nums}
+.tv-r b{width:52px;font-weight:600;color:#ffffff}
+.tv-r em{margin-left:auto;font-style:normal;font-size:15px;font-weight:600}
+.tv-r-on{margin:0 -10px;padding:0 10px;border-radius:8px;background:#c8a94a;color:#1a2744}
+.tv-r-on b{color:#1a2744}
+.tv-foot{position:relative;height:96px;flex:none;display:flex;align-items:center;gap:14px;padding:0 48px;background:#ffffff;border-top:1px solid #d3d2ca}
+.seg{position:relative;width:190px;height:62px;flex:none;display:flex;flex-direction:column;justify-content:center;padding:0 16px;border:1.5px solid #c9c8c0;border-radius:10px;overflow:hidden}
+.seg b{font-size:21px;line-height:1.15;font-weight:700}
+.seg span{font-size:14.5px;color:#555c6b;white-space:nowrap}
+.seg-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.seg-on span{color:rgba(255,255,255,.82)}
+.seg-on i{position:absolute;left:0;bottom:0;height:6px;background:#c8a94a}
+.seg-later{border-style:dashed;background:#fbfaf6}
+.legend{display:flex;align-items:center;gap:12px;font-size:20px;color:#3d4556;white-space:nowrap}
+
+/* frame B: all sections on one screen */
+.tv-b .tv-main{padding:20px 40px 18px 48px}
+.all{position:relative;flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:20px 36px}
+.sx{position:relative;min-height:0;display:flex;flex-direction:column;gap:8px}
+.sx-h{height:48px;flex:none;display:flex;align-items:flex-end;gap:14px;padding-bottom:2px;border-bottom:3px solid #1a2744}
+.sx-h h2{font-size:40px;line-height:1;font-weight:700;letter-spacing:-.02em;padding-bottom:4px}
+.sx-sub{font-size:21px;color:#3d4556;white-space:nowrap;padding-bottom:6px}
+.sx-meta{margin-left:auto;font-size:21px;font-weight:600;color:#1a2744;white-space:nowrap;padding-bottom:6px}
+.sx-list{display:flex;flex-direction:column;gap:8px}
+.sx .bd{height:78px;flex:none}
+.sx .bd-n{width:76px;font-size:40px}
+.sx .pl{height:36px}
+.sx .nm{font-size:30px}
+.sx .pt{height:32px;width:56px;font-size:22px}
+.sx .bye-l{font-size:22px}
+.tv-b .tv-foot{height:84px}
+
+/* TD settings panel */
+.ins{display:grid;grid-template-columns:960px minmax(0,1fr);gap:32px;align-items:start}
+.tdp{position:relative;background:#ffffff;border:1px solid #d3d2ca;border-radius:16px;box-shadow:0 14px 34px rgba(16,24,43,.08);overflow:visible}
+.tdp-h{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;border-bottom:1px solid #e6e5de}
+.tdp-t{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:700;letter-spacing:-.01em}
+.tdp-b{padding:20px 22px 22px;display:flex;flex-direction:column;gap:22px}
+.fs{position:relative;border:0;margin:0;padding:0}
+.fs-l{font-size:16px;font-weight:700;margin:0 0 10px}
+.opt{position:relative;display:grid;grid-template-columns:24px 112px minmax(0,1fr);gap:16px;align-items:center;padding:14px 16px;border:1.5px solid #c4c3bb;border-radius:12px;background:#ffffff}
+.opt + .opt{margin-top:10px}
+.opt-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744;background:#f6f7fa}
+.rad{width:22px;height:22px;border-radius:50%;border:2px solid #858b99;background:#ffffff}
+.opt-on .rad{border-color:#1a2744;background:#1a2744;box-shadow:inset 0 0 0 4px #ffffff}
+.opt-off{background:#f3f3ef;border-style:dashed}
+.opt-off .rad{background:#e4e3dd;border-color:#a3a6ae}
+.opt h3{font-size:17px;line-height:1.3;font-weight:600}
+.opt p{font-size:14px;line-height:1.45;color:#3d4556;margin-top:3px}
+.thumb{width:112px;height:63px;border-radius:6px;background:#ecebe5;border:1px solid #c9c8c0;overflow:hidden;display:flex;flex-direction:column}
+.thumb .t-top{height:11px;background:#1a2744;border-bottom:2px solid #c8a94a;flex:none}
+.thumb .t-body{flex:1;display:flex;min-height:0}
+.thumb .t-main{flex:1;padding:4px 4px 4px 5px;display:grid;gap:2px 4px}
+.thumb .t-side{width:24px;background:#1a2744;flex:none}
+.thumb .t-bd{background:#ffffff;border-radius:1.5px;border-left:3px solid #1a2744}
+.thumb .t-sh{background:#1a2744;height:2px;align-self:end}
+.thumb .t-foot{height:7px;background:#ffffff;border-top:1px solid #c9c8c0;flex:none}
+.sel{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 10px 0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;font-weight:600;color:#1a2744;white-space:nowrap}
+.sel-off{border-style:dashed;color:#555c6b;background:#f3f3ef}
+.sug{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;background:#f4ecd4;color:#5e4300;font-size:13px;font-weight:700;white-space:nowrap;vertical-align:2px;margin-left:8px}
+.why{display:flex;gap:10px;align-items:flex-start;margin-top:10px;padding:10px 14px;border-radius:10px;background:#f6f1e1;color:#3e300a;font-size:14px;line-height:1.45}
+.why svg{margin-top:2px;color:#664c0c}
+.chk{display:flex;gap:12px;align-items:flex-start}
+.box{width:22px;height:22px;flex:none;border-radius:5px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.box svg{width:16px;height:16px;stroke-width:2.6}
+.chk h3{font-size:16px;line-height:1.35;font-weight:600}
+.chk p{font-size:14px;line-height:1.45;color:#3d4556;margin-top:2px}
+.keys{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;margin:0;padding:0;list-style:none}
+.keys li{display:flex;align-items:center;gap:10px;font-size:14.5px;color:#2b3446}
+kbd{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:28px;padding:0 8px;border:1px solid #9fa3ad;border-bottom-width:3px;border-radius:6px;background:#fbfbf8;font-family:'Geist Mono',monospace;font-size:13px;font-weight:500;color:#1a2744;flex:none}
+.tdp-f{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 22px;border-top:1px solid #e6e5de;background:#fafaf7;border-radius:0 0 16px 16px}
+.st{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;line-height:1.2}
+.st-agree{background:#e2f0e5;color:#1d5a31}
+.st-none{background:#f0efea;color:#4a5160}
+.cap2{font-size:14px;line-height:1.5;color:#3d4556;margin-top:10px}
+</style>
+</helmet>
+<div class="tv-root" style="width:1920px;height:4450px">
+
+<div class="tv-pad">
+<section class="tl-doc" aria-label="About this board">
+  <div class="doc-top">
+    <div>
+      <p class="k-kicker">7 · Tournament day · decided design · hall TV</p>
+      <h1 class="tl-title">Tournament day · decided · hall TV</h1>
+      <p class="tl-meta-line" style="margin-top:8px"><b>Built from:</b> Live-D at 1920 by 1080: one section's pairings in two big columns, the round start with its countdown and posted time, byes in words, the QR to the phone view, the round timeline and the cycling queue with the TD keys · new from K's notes: an "All on one screen" layout for small events and the TD's Hall TV settings</p>
+      <p class="tl-meta-line"><b>Replaces:</b> Live-D (hall TV mode)</p>
+      <p class="tl-meta-line"><b>K's feedback applied:</b> page 7, Fri, Oct 9, 2026, items T1 to T4 below: keep Hall TV as drawn, show every section on one screen when the TD picks it, suggest that layout for small fields, and show only results the TD has confirmed</p>
+      <p class="tl-meta-line"><b>Shown:</b> frame A, the 2027 Paul Morphy Open, Sat, Jun 12, 2027, 6:42 PM, Round 3, cycling through four sections (96 players) · frame B, The Baton Rouge Classic, Sat, Oct 24, 2026, 2:18 PM, Round 2, all four sections on one screen (26 players) · inset B1, the TD's Hall TV settings for that event, and the same control at a 96-player event (B2). Both frames are the real 1920 by 1080 size; the TV page has no site header or footer, so the decided header chrome does not appear here.</p>
+      <p class="tl-meta-line" style="margin-top:10px"><span class="k-sample">Sample data · players, ratings, pairings, posting times, the short links</span> <span class="k-meta" style="margin-left:8px">The Baton Rouge Classic's dates, sections and round times are the real listing (Tourn-List-Final).</span></p>
+    </div>
+    <aside class="lp-grey" aria-label="Board note">
+      <p><b>What</b>The decided hall TV: Live-D's cycling screen kept as frame A, a new "All on one screen" layout for small events as frame B, and the TD's switch between them, suggested automatically at 30 players or fewer.</p>
+      <p><b>Built from</b>Live-D, with The Baton Rouge Classic's real sections and schedule for frame B.</p>
+      <p><b>K's feedback applied</b>T1 Hall TV kept as drawn; T2 every section on one screen as a TD option; T3 suggested for small fields; T4 only results the TD has confirmed reach the screen.</p>
+      <div><p><b>Open for K</b></p>
+        <ol>
+          <li>The suggestion uses 30 players or fewer, and the layout holds at most 16 boards. Is 30 the right line, or should it follow the board count only?</li>
+          <li>In "All on one screen", once results are confirmed, the screen alternates all-section pairings and all-section standings every 15 seconds. Keep that, or show standings only when the TD presses S?</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+  <div class="tl-legend">
+    <div class="tl-lbox">
+      <p class="k-label">Notes on this board</p>
+      <ol class="tl-notes">
+        <li class="tl-grp">Frame A · one section at a time, cycling</li>
+        <li><span class="k-num-badge">1</span><span><b>One section, two big columns,</b> as Live-D drew it: board number, colour, name at 33px, rating, points going in. Readable from 3 metres (WS07 AC5).</span></li>
+        <li><span class="k-num-badge">2</span><span><b>White and Black by shape and letter,</b> not tint alone: a hollow circle and W on an outlined box, a filled circle and B on a dark box. The key sits in the section header.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>Round start, countdown and the time posted</b> stay at the top right: "7:00 PM · in 18 min · Now 6:42 PM".</span></li>
+        <li><span class="k-num-badge">4</span><span><b>QR to the phone view,</b> "Your board, on your phone", with the short link in words for anyone who cannot scan. Marked as a placeholder; a real code is made for each event.</span></li>
+        <li><span class="k-num-badge">5</span><span><b>Rounds with day and time,</b> status in words beside the gold highlight (Done, Pairings up).</span></li>
+        <li><span class="k-num-badge">6</span><span><b>The cycling queue:</b> every section in order, the one on screen filled with a progress bar, "Next: U1400 in 6 s", 15 seconds a page, and the TD keys.</span></li>
+        <li><span class="k-num-badge">7</span><span><b>Standings join only after the TD confirms results.</b> A player's report never reaches the TV; "Reported, awaiting TD" is for the two players only.</span></li>
+        <li class="tl-grp">Frame B · all sections on one screen</li>
+        <li><span class="k-num-badge">8</span><span><b>Every section at once,</b> two across, each with its own header (name, rating band, players, which boards). Board numbers run on from section to section, as on the hall tables. Names stay at 30px; no cycling, so nobody waits.</span></li>
+        <li><span class="k-num-badge">9</span><span><b>Byes inside their own section,</b> in words: pairing bye · 1 point.</span></li>
+        <li><span class="k-num-badge">10</span><span><b>Same countdown, QR and rounds</b> as frame A, so the two layouts read as one product.</span></li>
+        <li><span class="k-num-badge">11</span><span><b>The footer says what the screen is doing:</b> all four sections, no cycling, standings next once the TD confirms, and the key that switches layouts.</span></li>
+        <li class="tl-grp">Inset B1 and B2 · the TD's Hall TV settings</li>
+        <li><span class="k-num-badge">12</span><span><b>Show sections:</b> "One at a time, cycling every 15 seconds" or "All on one screen", each with a small picture of the layout.</span></li>
+        <li><span class="k-num-badge">13</span><span><b>Suggested automatically at 30 players or fewer,</b> with the reason in words. The TD can pick either, any time; the TV changes within 20 seconds.</span></li>
+        <li><span class="k-num-badge">14</span><span><b>Show standings after results come in,</b> on by default. Only results the TD has confirmed count.</span></li>
+        <li><span class="k-num-badge">15</span><span><b>The keys</b> for the laptop driving the TV, listed where the TD sets the screen up.</span></li>
+        <li><span class="k-num-badge">16</span><span><b>Too many boards for one screen:</b> at a 96-player event the choice is greyed out with the reason in words, and cycling is suggested.</span></li>
+      </ol>
+    </div>
+    <aside class="tl-fb" aria-labelledby="tv-fbh">
+      <p id="tv-fbh" class="k-label-gold">K's feedback, and where it landed</p>
+      <p class="tl-fb-sub" style="margin-top:10px">Page 7 · Fri, Oct 9 · applied on this board</p>
+      <ol>
+        <li><span class="tl-fbk">T1</span><span><b>"I love the Hall TV mode! Great idea for throwing it up on a tv ... good inclusion."</b> Kept as Live-D drew it, now frame A (notes 1 to 6).</span></li>
+        <li><span class="tl-fbk">T2</span><span><b>"Be sure to have it be able to show all sections on the same screen if the td wants to (this should be an option)."</b> Frame B (notes 8 to 11), chosen in the TD's settings, inset B1 (note 12).</span></li>
+        <li><span class="tl-fbk">T3</span><span><b>"A lot of times there will not be enough players to warrant splitting it like this."</b> "All on one screen" is suggested when the event has 30 players or fewer (note 13); a big event keeps cycling (inset B2, note 16).</span></li>
+        <li><span class="tl-fbk">T4</span><span><b>A report "should not determine the match result, this should help steer the TD."</b> The TV shows standings only from results the TD has confirmed (notes 7 and 14).</span></li>
+      </ol>
+      <p class="tl-fb-sub" style="margin-top:20px">Not on this board</p>
+      <p class="tl-fb-r1">The Text size menu ("Aa", Small · Medium · Large) is for phones and the pairings page; the TV is sized for reading across a room and has no text size control. Find your board and the pinned board are on Live-Final-Phones; Report your result and the TD's Reported results queue on Live-Final-Pairings; the Download menu, the print titles and the US Chess report on the results and print boards.</p>
+    </aside>
+  </div>
+</section>
+</div>
+
+<!-- ======================= FRAME A ======================= -->
+<section class="tl-sec" aria-labelledby="fa">
+  <div class="tv-pad">
+    <div class="tl-flab">
+      <span class="tl-code">A</span>
+      <h2 id="fa">One section at a time, cycling · a 96-player event</h2>
+      <span class="k-meta">2027 Paul Morphy Open · Sat, Jun 12, 2027 · 6:42 PM · Round 3 · U1800 on screen · 1920 by 1080</span>
+    </div>
+    <p class="tl-cap">Live-D as drawn. The screen shows one section at a time and moves on every 15 seconds; the footer shows the queue. This is the default above 30 players.</p>
+  </div>
+<div class="tv">
+
+  <header class="tv-top">
+    <div style="flex:1;min-width:0;display:flex;align-items:center;gap:20px">
+      <svg class="k-mark" style="width:62px;height:62px;fill:#c8a94a" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>
+      <div style="min-width:0">
+        <div style="display:flex;align-items:center;gap:14px"><span style="font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.01em;white-space:nowrap">2027 Paul Morphy Open</span><span class="k-sample">Sample data</span></div>
+        <div style="margin-top:6px;font-size:20px;color:rgba(255,255,255,.8);white-space:nowrap">Sat–Sun, Jun 12–13, 2027 · New Orleans · 5 rounds · 96 players</div>
+      </div>
+    </div>
+    <div style="flex:none;text-align:center">
+      <div class="tv-kick" style="color:#e6cf86">Posted 6:31 PM</div>
+      <div style="margin-top:6px;font-size:60px;line-height:1;font-weight:700;letter-spacing:-.02em;white-space:nowrap">Round 3 pairings</div>
+    </div>
+    <div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:22px;position:relative"><span class="k-num-badge tvb" style="top:-18px;right:-34px">3</span>
+      <div style="text-align:right">
+        <div class="tv-kick" style="color:rgba(255,255,255,.8)">Round starts</div>
+        <div style="margin-top:6px;font-size:54px;line-height:1;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap">7:00 PM</div>
+      </div>
+      <div style="flex:none;padding:10px 16px;border-radius:12px;background:#c8a94a;color:#1a2744;text-align:center;line-height:1.1">
+        <div style="font-size:30px;font-weight:700;white-space:nowrap">in 18 min</div>
+        <div style="margin-top:2px;font-size:15px;font-weight:600;white-space:nowrap">Now 6:42 PM</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="tv-body">
+    <main class="tv-main">
+      <div class="tv-sec">
+        <div style="display:flex;align-items:baseline;gap:20px;min-width:0">
+          <h1 style="font-size:64px;line-height:1;font-weight:700;letter-spacing:-.02em">U1800</h1>
+          <span style="font-size:26px;color:#3d4556;white-space:nowrap">Rated under 1800 · 28 players · 13 boards</span>
+        </div>
+        <div class="legend" style="padding-bottom:4px;position:relative"><span class="c c-w"><i></i>W</span><span>White</span><span class="c c-b" style="margin-left:10px"><i></i>B</span><span>Black</span><span class="pt" style="margin-left:10px">2</span><span>Points so far</span><span class="k-num-badge tvb" style="top:-30px;left:-30px">2</span></div>
+      </div>
+
+      <div class="tv-grid"><span class="k-num-badge tvb" style="top:-14px;left:-20px">1</span>
+        <div class="bd"><div class="bd-n">1</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Camille Broussard</span><span class="rt">1744</span><span class="pt">2</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Lauren Guillory</span><span class="rt">1641</span><span class="pt">2</span></div></div></div>
+        <div class="bd"><div class="bd-n">2</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Kendall Pitre</span><span class="rt">1595</span><span class="pt">2</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Isaac Dupre</span><span class="rt">1688</span><span class="pt">2</span></div></div></div>
+        <div class="bd"><div class="bd-n">3</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Andre Charbonnet</span><span class="rt">1662</span><span class="pt">2</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Rachel Doucet</span><span class="rt">1509</span><span class="pt">2</span></div></div></div>
+        <div class="bd"><div class="bd-n">4</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Malik Johnson</span><span class="rt">1566</span><span class="pt">1½</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Grant Melancon</span><span class="rt">1731</span><span class="pt">1½</span></div></div></div>
+        <div class="bd"><div class="bd-n">5</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Olivia Landreneau</span><span class="rt">1588</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Minh Tran</span><span class="rt">1676</span><span class="pt">1</span></div></div></div>
+        <div class="bd"><div class="bd-n">6</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Darius Washington</span><span class="rt">1658</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Claire Boudreaux</span><span class="rt">1552</span><span class="pt">1</span></div></div></div>
+        <div class="bd"><div class="bd-n">7</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Devin Batiste</span><span class="rt">1521</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Sam Nguyen</span><span class="rt">1650</span><span class="pt">1</span></div></div></div>
+        <div class="bd"><div class="bd-n">8</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Hannah Breaux</span><span class="rt">1618</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Jacob Romero</span><span class="rt">1497</span><span class="pt">1</span></div></div></div>
+        <div class="bd"><div class="bd-n">9</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Elise Fontenot</span><span class="rt">1460</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Victor Alvarez</span><span class="rt">1604</span><span class="pt">1</span></div></div></div>
+        <div class="bd"><div class="bd-n">10</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Anh Pham</span><span class="rt">1433</span><span class="pt">½</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Ethan Savoie</span><span class="rt">1540</span><span class="pt">½</span></div></div></div>
+        <div class="bd"><div class="bd-n">11</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Reid Bergeron</span><span class="rt">1421</span><span class="pt">0</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Tyler Daigle</span><span class="rt">1483</span><span class="pt">0</span></div></div></div>
+        <div class="bd"><div class="bd-n">12</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Simone Arcement</span><span class="rt">1472</span><span class="pt">0</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Mia LeJeune</span><span class="rt">1415</span><span class="pt">0</span></div></div></div>
+        <div class="bd"><div class="bd-n">13</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Gabriel Ortiz</span><span class="rt">1408</span><span class="pt">0</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Brandon Ledet</span><span class="rt">1447</span><span class="pt">0</span></div></div></div>
+        <div class="bd bye"><div class="bd-p">
+          <div class="tv-kick" style="color:#555c6b;font-size:14px">Not playing this round</div>
+          <div class="bye-l">Nora Hebert <span>requested bye · ½ point</span></div>
+          <div class="bye-l">Henry Clement <span>pairing bye · 1 point</span></div>
+        </div></div>
+      </div>
+    </main>
+
+    <aside class="tv-side"><span class="k-num-badge tvb" style="top:108px;right:22px">4</span>
+      <div class="tv-kick" style="color:#e6cf86">Skip the crowd</div>
+      <h2 style="margin:-6px 0 0;font-size:34px;line-height:1.12;font-weight:700;letter-spacing:-.01em">Your board, on your phone</h2>
+      <div class="tv-qr">
+        <svg viewBox="0 0 33 33" role="img" aria-label="QR code placeholder for louisianachess.org/morphy27" shape-rendering="crispEdges" style="width:100%;height:100%;display:block"><rect width="33" height="33" fill="#ffffff"></rect><path fill="#1a2744" d="M4 4h7v1h-7zM13 4h2v1h-2zM18 4h1v1h-1zM22 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM13 5h1v1h-1zM15 5h2v1h-2zM18 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h3v1h-3zM22 6h1v1h-1zM24 6h3v1h-3zM28 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h4v1h-4zM17 7h2v1h-2zM22 7h1v1h-1zM24 7h3v1h-3zM28 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM15 8h1v1h-1zM17 8h1v1h-1zM22 8h1v1h-1zM24 8h3v1h-3zM28 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM14 9h1v1h-1zM16 9h1v1h-1zM18 9h1v1h-1zM20 9h1v1h-1zM22 9h1v1h-1zM28 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h7v1h-7zM13 11h2v1h-2zM18 11h3v1h-3zM6 12h3v1h-3zM10 12h1v1h-1zM12 12h3v1h-3zM18 12h1v1h-1zM23 12h1v1h-1zM26 12h2v1h-2zM4 13h1v1h-1zM6 13h3v1h-3zM22 13h1v1h-1zM25 13h1v1h-1zM6 14h1v1h-1zM8 14h3v1h-3zM21 14h1v1h-1zM23 14h3v1h-3zM8 15h1v1h-1zM21 15h2v1h-2zM6 16h5v1h-5zM22 16h1v1h-1zM24 16h2v1h-2zM28 16h1v1h-1zM4 17h1v1h-1zM6 17h1v1h-1zM8 17h1v1h-1zM11 17h1v1h-1zM21 17h1v1h-1zM28 17h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM21 18h3v1h-3zM26 18h2v1h-2zM4 19h1v1h-1zM8 19h1v1h-1zM11 19h2v1h-2zM21 19h2v1h-2zM27 19h1v1h-1zM4 20h1v1h-1zM10 20h2v1h-2zM13 20h1v1h-1zM15 20h2v1h-2zM19 20h6v1h-6zM26 20h1v1h-1zM28 20h1v1h-1zM12 21h1v1h-1zM18 21h3v1h-3zM24 21h2v1h-2zM4 22h7v1h-7zM12 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM4 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM17 23h4v1h-4zM24 23h1v1h-1zM26 23h1v1h-1zM28 23h1v1h-1zM4 24h1v1h-1zM6 24h3v1h-3zM10 24h1v1h-1zM14 24h3v1h-3zM18 24h9v1h-9zM28 24h1v1h-1zM4 25h1v1h-1zM6 25h3v1h-3zM10 25h1v1h-1zM12 25h1v1h-1zM15 25h2v1h-2zM18 25h4v1h-4zM23 25h1v1h-1zM25 25h1v1h-1zM27 25h1v1h-1zM4 26h1v1h-1zM6 26h3v1h-3zM10 26h1v1h-1zM12 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM20 26h1v1h-1zM26 26h1v1h-1zM28 26h1v1h-1zM4 27h1v1h-1zM10 27h1v1h-1zM15 27h2v1h-2zM19 27h1v1h-1zM22 27h2v1h-2zM27 27h1v1h-1zM4 28h7v1h-7zM12 28h1v1h-1zM14 28h3v1h-3zM21 28h1v1h-1zM24 28h1v1h-1z"></path><g transform="translate(13.6 13.6) scale(.058)" fill="#1a2744"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></g></svg>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px"><span class="tv-ph">QR placeholder</span><span style="font-size:14px;color:rgba(255,255,255,.78)">Real code made for each event</span></div>
+      <div style="font-size:25px;font-weight:600;letter-spacing:-.01em;white-space:nowrap">louisianachess.org/morphy27</div>
+      <p style="margin:0;font-size:19px;line-height:1.35;color:rgba(255,255,255,.88)">Type your name to see your board, color and opponent. Parents can follow several players.</p>
+      <div style="display:flex;align-items:center;gap:8px;font-size:17px;font-weight:500;color:#e6cf86"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>Phones off and away once clocks start</div>
+      <div style="margin-top:auto;position:relative"><span class="k-num-badge tvb" style="top:-10px;left:88px">5</span>
+        <div class="tv-kick" style="margin-bottom:6px;color:rgba(255,255,255,.8)">Rounds</div>
+        <div class="tv-r"><b>Rd 1</b><span>Sat 10:00 AM</span><em>Done</em></div>
+        <div class="tv-r"><b>Rd 2</b><span>Sat 2:30 PM</span><em>Done</em></div>
+        <div class="tv-r tv-r-on"><b>Rd 3</b><span>Sat 7:00 PM</span><em>Pairings up</em></div>
+        <div class="tv-r"><b>Rd 4</b><span>Sun 9:30 AM</span><em></em></div>
+        <div class="tv-r"><b>Rd 5</b><span>Sun 2:00 PM</span><em></em></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="tv-foot"><span class="k-num-badge tvb" style="top:-20px;left:20px">6</span>
+    <div class="tv-kick" style="width:112px;flex:none;color:#555c6b;line-height:1.3">This screen cycles</div>
+    <div class="seg"><b>Open</b><span>Pairings · 10 boards</span></div>
+    <div class="seg seg-on"><b>U1800</b><span>Pairings · 13 boards</span><i style="width:60%"></i></div>
+    <div class="seg"><b>U1400</b><span>Pairings · 13 boards</span></div>
+    <div class="seg"><b>U1000</b><span>Pairings · 10 boards</span></div>
+    <div class="seg seg-later" style="width:300px;overflow:visible"><b>Standings</b><span>Joins once the TD confirms results</span><span class="k-num-badge tvb" style="top:-20px;right:-16px;color:#ffffff;font-size:16px">7</span></div>
+    <div style="margin-left:auto;text-align:right;line-height:1.35">
+      <div style="font-size:19px;font-weight:600;white-space:nowrap">Next: U1400 in 6 s</div>
+      <div style="font-size:14.5px;color:#555c6b;white-space:nowrap">15 s a page · TD keys: Space pauses, ← → step, A all on one screen</div>
+    </div>
+  </footer>
+
+</div>
+</section>
+
+<!-- ======================= FRAME B ======================= -->
+<section class="tl-sec" aria-labelledby="fb">
+  <div class="tv-pad">
+    <div class="tl-flab">
+      <span class="tl-code">B</span>
+      <h2 id="fb">All sections on one screen · a 26-player event</h2>
+      <span class="k-meta">The Baton Rouge Classic · Sat, Oct 24, 2026 · 2:18 PM · Round 2 · Open, U1800, U1400, U1000 · 1920 by 1080</span>
+    </div>
+    <p class="tl-cap">New, from K's note. Four sections with two to four boards each fit on one screen at TV size, so nothing cycles and every player finds their board at a glance. The countdown, QR and rounds are the same as frame A.</p>
+  </div>
+<div class="tv tv-b">
+
+  <header class="tv-top">
+    <div style="flex:1;min-width:0;display:flex;align-items:center;gap:20px">
+      <svg class="k-mark" style="width:62px;height:62px;fill:#c8a94a" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>
+      <div style="min-width:0">
+        <div style="display:flex;align-items:center;gap:14px"><span style="font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.01em;white-space:nowrap">The Baton Rouge Classic</span><span class="k-sample">Sample data</span></div>
+        <div style="margin-top:6px;font-size:20px;color:rgba(255,255,255,.8);white-space:nowrap">Sat–Sun, Oct 24–25, 2026 · Baton Rouge · 5 rounds · 26 players</div>
+      </div>
+    </div>
+    <div style="flex:none;text-align:center">
+      <div class="tv-kick" style="color:#e6cf86">Posted 2:09 PM</div>
+      <div style="margin-top:6px;font-size:60px;line-height:1;font-weight:700;letter-spacing:-.02em;white-space:nowrap">Round 2 pairings</div>
+    </div>
+    <div style="flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:22px;position:relative"><span class="k-num-badge tvb" style="top:-18px;right:-34px">10</span>
+      <div style="text-align:right">
+        <div class="tv-kick" style="color:rgba(255,255,255,.8)">Round starts</div>
+        <div style="margin-top:6px;font-size:54px;line-height:1;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap">2:30 PM</div>
+      </div>
+      <div style="flex:none;padding:10px 16px;border-radius:12px;background:#c8a94a;color:#1a2744;text-align:center;line-height:1.1">
+        <div style="font-size:30px;font-weight:700;white-space:nowrap">in 12 min</div>
+        <div style="margin-top:2px;font-size:15px;font-weight:600;white-space:nowrap">Now 2:18 PM</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="tv-body">
+    <main class="tv-main">
+      <div class="all">
+      <section class="sx" aria-label="Open pairings"><span class="k-num-badge tvb" style="top:-18px;left:-44px">8</span>
+        <div class="sx-h"><h2>Open</h2><span class="sx-sub">Open to all ratings</span><span class="sx-meta">6 players · boards 1 to 3</span></div>
+        <div class="sx-list">
+          <div class="bd"><div class="bd-n">1</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Marcus Landry</span><span class="rt">2104</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Neil Robichaux</span><span class="rt">1987</span><span class="pt">1</span></div></div></div>
+          <div class="bd"><div class="bd-n">2</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Jean-Paul Fontenot</span><span class="rt">2011</span><span class="pt">½</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Kevin Tran</span><span class="rt">1942</span><span class="pt">½</span></div></div></div>
+          <div class="bd"><div class="bd-n">3</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Luke Arceneaux</span><span class="rt">1898</span><span class="pt">0</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Ravi Menon</span><span class="rt">1876</span><span class="pt">0</span></div></div></div>
+        </div>
+      </section>
+      <section class="sx" aria-label="U1800 pairings"><span class="k-num-badge tvb" style="bottom:30px;right:-14px">9</span>
+        <div class="sx-h"><h2>U1800</h2><span class="sx-sub">Rated under 1800</span><span class="sx-meta">7 players · boards 4 to 6</span></div>
+        <div class="sx-list">
+          <div class="bd"><div class="bd-n">4</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Camille Broussard</span><span class="rt">1744</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Hugo Melancon</span><span class="rt">1702</span><span class="pt">1</span></div></div></div>
+          <div class="bd"><div class="bd-n">5</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Jamal Pierre</span><span class="rt">1610</span><span class="pt">½</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Tessa Gaspard</span><span class="rt">1655</span><span class="pt">1</span></div></div></div>
+          <div class="bd"><div class="bd-n">6</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Caleb Doucet</span><span class="rt">1589</span><span class="pt">½</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Lily Hebert</span><span class="rt">1532</span><span class="pt">0</span></div></div></div>
+          <div class="bd bye"><div class="bd-p"><div class="tv-kick" style="color:#555c6b;font-size:14px">Not playing this round</div><div class="bye-l">Nathan Bourque <span>pairing bye · 1 point</span></div></div></div>
+        </div>
+      </section>
+      <section class="sx" aria-label="U1400 pairings">
+        <div class="sx-h"><h2>U1400</h2><span class="sx-sub">Rated under 1400</span><span class="sx-meta">8 players · boards 7 to 10</span></div>
+        <div class="sx-list">
+          <div class="bd"><div class="bd-n">7</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Daniel Thibodeaux</span><span class="rt">1388</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Priya Shah</span><span class="rt">1342</span><span class="pt">1</span></div></div></div>
+          <div class="bd"><div class="bd-n">8</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Jordan Mire</span><span class="rt">1295</span><span class="pt">½</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Ella Comeaux</span><span class="rt">1301</span><span class="pt">1</span></div></div></div>
+          <div class="bd"><div class="bd-n">9</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Ben Lafleur</span><span class="rt">1244</span><span class="pt">½</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Ava Theriot</span><span class="rt">1210</span><span class="pt">0</span></div></div></div>
+          <div class="bd"><div class="bd-n">10</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Grace Babin</span><span class="rt">1152</span><span class="pt">0</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Noah Hidalgo</span><span class="rt">1188</span><span class="pt">0</span></div></div></div>
+        </div>
+      </section>
+      <section class="sx" aria-label="U1000 pairings">
+        <div class="sx-h"><h2>U1000</h2><span class="sx-sub">Rated under 1000</span><span class="sx-meta">5 players · boards 11 and 12</span></div>
+        <div class="sx-list">
+          <div class="bd"><div class="bd-n">11</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Theo Guidry</span><span class="rt">940</span><span class="pt">1</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Isabella Cormier</span><span class="rt">872</span><span class="pt">1</span></div></div></div>
+          <div class="bd"><div class="bd-n">12</div><div class="bd-p"><div class="pl"><span class="c c-w"><i></i>W</span><span class="nm">Zoe Landry</span><span class="rt">760</span><span class="pt">0</span></div><div class="pl"><span class="c c-b"><i></i>B</span><span class="nm">Mason Begnaud</span><span class="rt">815</span><span class="pt">1</span></div></div></div>
+          <div class="bd bye"><div class="bd-p"><div class="tv-kick" style="color:#555c6b;font-size:14px">Not playing this round</div><div class="bye-l">Eli Domingue <span>pairing bye · 1 point</span></div></div></div>
+        </div>
+      </section>
+      </div>
+    </main>
+
+    <aside class="tv-side">
+      <div class="tv-kick" style="color:#e6cf86">Skip the crowd</div>
+      <h2 style="margin:-6px 0 0;font-size:34px;line-height:1.12;font-weight:700;letter-spacing:-.01em">Your board, on your phone</h2>
+      <div class="tv-qr">
+        <svg viewBox="0 0 33 33" role="img" aria-label="QR code placeholder for louisianachess.org/brclassic" shape-rendering="crispEdges" style="width:100%;height:100%;display:block"><rect width="33" height="33" fill="#ffffff"></rect><path fill="#1a2744" d="M4 4h7v1h-7zM13 4h2v1h-2zM18 4h1v1h-1zM22 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM13 5h1v1h-1zM15 5h2v1h-2zM18 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h3v1h-3zM22 6h1v1h-1zM24 6h3v1h-3zM28 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h4v1h-4zM17 7h2v1h-2zM22 7h1v1h-1zM24 7h3v1h-3zM28 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM15 8h1v1h-1zM17 8h1v1h-1zM22 8h1v1h-1zM24 8h3v1h-3zM28 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM14 9h1v1h-1zM16 9h1v1h-1zM18 9h1v1h-1zM20 9h1v1h-1zM22 9h1v1h-1zM28 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h7v1h-7zM13 11h2v1h-2zM18 11h3v1h-3zM6 12h3v1h-3zM10 12h1v1h-1zM12 12h3v1h-3zM18 12h1v1h-1zM23 12h1v1h-1zM26 12h2v1h-2zM4 13h1v1h-1zM6 13h3v1h-3zM22 13h1v1h-1zM25 13h1v1h-1zM6 14h1v1h-1zM8 14h3v1h-3zM21 14h1v1h-1zM23 14h3v1h-3zM8 15h1v1h-1zM21 15h2v1h-2zM6 16h5v1h-5zM22 16h1v1h-1zM24 16h2v1h-2zM28 16h1v1h-1zM4 17h1v1h-1zM6 17h1v1h-1zM8 17h1v1h-1zM11 17h1v1h-1zM21 17h1v1h-1zM28 17h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM21 18h3v1h-3zM26 18h2v1h-2zM4 19h1v1h-1zM8 19h1v1h-1zM11 19h2v1h-2zM21 19h2v1h-2zM27 19h1v1h-1zM4 20h1v1h-1zM10 20h2v1h-2zM13 20h1v1h-1zM15 20h2v1h-2zM19 20h6v1h-6zM26 20h1v1h-1zM28 20h1v1h-1zM12 21h1v1h-1zM18 21h3v1h-3zM24 21h2v1h-2zM4 22h7v1h-7zM12 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h1v1h-1zM4 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM17 23h4v1h-4zM24 23h1v1h-1zM26 23h1v1h-1zM28 23h1v1h-1zM4 24h1v1h-1zM6 24h3v1h-3zM10 24h1v1h-1zM14 24h3v1h-3zM18 24h9v1h-9zM28 24h1v1h-1zM4 25h1v1h-1zM6 25h3v1h-3zM10 25h1v1h-1zM12 25h1v1h-1zM15 25h2v1h-2zM18 25h4v1h-4zM23 25h1v1h-1zM25 25h1v1h-1zM27 25h1v1h-1zM4 26h1v1h-1zM6 26h3v1h-3zM10 26h1v1h-1zM12 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM20 26h1v1h-1zM26 26h1v1h-1zM28 26h1v1h-1zM4 27h1v1h-1zM10 27h1v1h-1zM15 27h2v1h-2zM19 27h1v1h-1zM22 27h2v1h-2zM27 27h1v1h-1zM4 28h7v1h-7zM12 28h1v1h-1zM14 28h3v1h-3zM21 28h1v1h-1zM24 28h1v1h-1z"></path><g transform="translate(13.6 13.6) scale(.058)" fill="#1a2744"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></g></svg>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px"><span class="tv-ph">QR placeholder</span><span style="font-size:14px;color:rgba(255,255,255,.78)">Real code made for each event</span></div>
+      <div style="font-size:25px;font-weight:600;letter-spacing:-.01em;white-space:nowrap">louisianachess.org/brclassic</div>
+      <p style="margin:0;font-size:19px;line-height:1.35;color:rgba(255,255,255,.88)">Type your name to see your board, color and opponent. Parents can follow several players.</p>
+      <div style="display:flex;align-items:center;gap:8px;font-size:17px;font-weight:500;color:#e6cf86"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>Phones off and away once clocks start</div>
+      <div style="margin-top:auto;position:relative">
+        <div class="tv-kick" style="margin-bottom:6px;color:rgba(255,255,255,.8)">Rounds</div>
+        <div class="tv-r"><b>Rd 1</b><span>Sat 10:00 AM</span><em>Done</em></div>
+        <div class="tv-r tv-r-on"><b>Rd 2</b><span>Sat 2:30 PM</span><em>Pairings up</em></div>
+        <div class="tv-r"><b>Rd 3</b><span>Sat 7:00 PM</span><em></em></div>
+        <div class="tv-r"><b>Rd 4</b><span>Sun 9:30 AM</span><em></em></div>
+        <div class="tv-r"><b>Rd 5</b><span>Sun 2:00 PM</span><em></em></div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="tv-foot"><span class="k-num-badge tvb" style="top:-20px;left:20px">11</span>
+    <div style="flex:none;line-height:1.3">
+      <div class="tv-kick" style="color:#555c6b">All sections on this screen</div>
+      <div style="font-size:19px;font-weight:600;white-space:nowrap">4 sections · 12 boards · no cycling</div>
+    </div>
+    <div class="legend" style="margin-left:28px;font-size:19px"><span class="c c-w"><i></i>W</span><span>White</span><span class="c c-b" style="margin-left:10px"><i></i>B</span><span>Black</span><span class="pt" style="margin-left:10px">2</span><span>Points so far</span></div>
+    <div class="seg seg-later" style="width:400px;margin-left:28px"><b>Standings next</b><span>All sections, once the TD confirms Round 2 results</span></div>
+    <div style="margin-left:auto;text-align:right;line-height:1.35">
+      <div style="font-size:19px;font-weight:600;white-space:nowrap">Set by the TD</div>
+      <div style="font-size:14.5px;color:#555c6b;white-space:nowrap">TD keys: A one section at a time, S standings now</div>
+    </div>
+  </footer>
+
+</div>
+</section>
+
+<!-- ======================= INSETS ======================= -->
+<section class="tl-sec tv-pad" aria-labelledby="fi">
+  <div class="tl-flab">
+    <span class="tl-code">B1</span>
+    <h2 id="fi">The TD's Hall TV settings · The Baton Rouge Classic</h2>
+    <span class="k-meta">TD console, event day tools · Sat, Oct 24, 2026 · 2:05 PM · signed in as the event's TD</span>
+  </div>
+  <p class="tl-cap">One card in the TD console (WS08). It decides what frame A or frame B shows. B2, to the right, is the same choice at a 96-player event.</p>
+
+  <div class="ins">
+    <div class="tdp" aria-label="Hall TV settings">
+      <div class="tdp-h">
+        <div>
+          <div class="tdp-t"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2"></rect><path d="M8 20h8"></path></svg>Hall TV</div>
+          <p class="k-meta" style="margin-top:4px;font-size:14px">The Baton Rouge Classic · 26 players · 4 sections · Round 2 pairings posted 2:09 PM</p>
+        </div>
+        <span class="k-btn k-btn-navy">Open the TV screen <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M17 13.5V19H5V7h5.5"></path></svg></span>
+      </div>
+      <div class="tdp-b">
+        <div class="fs" role="radiogroup" aria-labelledby="ss">
+          <p id="ss" class="fs-l">Show sections</p>
+          <div class="opt">
+            <span class="rad" aria-hidden="true"></span>
+            <div class="thumb" aria-hidden="true"><div class="t-top"></div><div class="t-body"><div class="t-main" style="grid-template-columns:1fr 1fr;grid-template-rows:4px repeat(4,1fr)"><span class="t-sh" style="grid-column:1 / -1;width:40%"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span></div><div class="t-side"></div></div><div class="t-foot"></div></div>
+            <div>
+              <h3>One at a time, cycling every <span class="sel" style="height:34px;margin:0 2px">15 seconds <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></h3>
+              <p>One section fills the screen in two big columns; the footer shows which comes next. Best for big events.</p>
+            </div>
+          </div>
+          <div class="opt opt-on"><span class="k-num-badge tvb" style="top:-16px;left:-18px">12</span>
+            <span class="rad" aria-hidden="true"></span>
+            <div class="thumb" aria-hidden="true"><div class="t-top"></div><div class="t-body"><div class="t-main" style="grid-template-columns:1fr 1fr;grid-template-rows:2px 1fr 1fr 2px 1fr 1fr"><span class="t-sh"></span><span class="t-sh"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-sh"></span><span class="t-sh"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span><span class="t-bd"></span></div><div class="t-side"></div></div><div class="t-foot"></div></div>
+            <div>
+              <h3>All on one screen <span class="sug">Suggested</span></h3>
+              <p>Every section at once, each under its own header. Nothing cycles. Holds up to 16 boards at TV size.</p>
+            </div>
+          </div>
+          <div class="why rel" style="padding-right:56px"><span class="k-num-badge tvb" style="top:8px;right:10px">13</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span><b>Suggested because this event has 26 players.</b> We suggest All on one screen whenever an event has 30 players or fewer. Pick either one; the TV changes within 20 seconds.</span></div>
+        </div>
+
+        <div class="chk rel" style="padding-right:56px"><span class="k-num-badge tvb" style="top:-4px;right:10px">14</span>
+          <span class="box" aria-hidden="true"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>
+          <div>
+            <h3>Show standings after results come in</h3>
+            <p>Once you confirm a round's results, standings join the screen. Results players have reported but you have not confirmed never appear on the TV.</p>
+          </div>
+        </div>
+
+        <div class="rel" style="padding-right:56px"><span class="k-num-badge tvb" style="top:-8px;right:10px">15</span>
+          <p class="fs-l">Keys on the TV screen</p>
+          <ul class="keys">
+            <li><kbd>A</kbd>All on one screen, or one at a time</li>
+            <li><kbd>Space</kbd>Pause or resume cycling</li>
+            <li><kbd>←</kbd><kbd>→</kbd>Step back or forward a section</li>
+            <li><kbd>S</kbd>Show standings now</li>
+            <li><kbd>F</kbd>Full screen on or off</li>
+            <li><kbd>Esc</kbd>Leave full screen</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tdp-f">
+        <span class="st st-agree"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Saved · the TV is showing All on one screen</span>
+        <span class="k-meta" style="font-size:14px">Saved for this event only. The next event starts from its own suggestion.</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="tl-flab" style="margin-bottom:10px">
+        <span class="tl-code">B2</span>
+        <h2 style="font-size:19px">The same choice at a 96-player event</h2>
+      </div>
+      <p class="k-meta" style="font-size:14px;margin-bottom:12px">2027 Paul Morphy Open · 96 players · 4 sections · 46 boards</p>
+      <div class="tdp" style="padding:18px 18px 20px">
+        <p class="fs-l">Show sections</p>
+        <div class="opt opt-on" style="grid-template-columns:24px minmax(0,1fr)">
+          <span class="rad" aria-hidden="true"></span>
+          <div>
+            <h3>One at a time, cycling every 15 seconds <span class="sug">Suggested</span></h3>
+            <p>U1800 alone has 13 boards, so each section gets the whole screen.</p>
+          </div>
+        </div>
+        <div class="opt opt-off rel" style="grid-template-columns:24px minmax(0,1fr)"><span class="k-num-badge tvb" style="top:-16px;right:-16px">16</span>
+          <span class="rad" aria-hidden="true"></span>
+          <div>
+            <h3 style="color:#3d4556">All on one screen <span class="st st-none" style="margin-left:8px;vertical-align:2px">Not available</span></h3>
+            <p>46 boards will not fit on one screen at a size people can read from across the room. The most it holds is 16.</p>
+          </div>
+        </div>
+      </div>
+      <div class="tdp" style="margin-top:22px;padding:16px 18px">
+        <p class="fs-l" style="margin-bottom:6px">How the suggestion is made</p>
+        <ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.55;color:#2b3446">
+          <li>30 players or fewer: All on one screen is suggested.</li>
+          <li>More than 30 players, or more than 16 boards in a round: One at a time is suggested.</li>
+          <li>More than 16 boards: All on one screen is not available, and the card says why.</li>
+          <li>Withdrawals and late entries can change the count; the suggestion follows, but never switches the TV by itself once the TD has chosen.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1920,"height":4450}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

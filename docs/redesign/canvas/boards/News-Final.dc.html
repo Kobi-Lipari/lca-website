@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>News · decided</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.nw-root{width:100%;max-width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 40px 56px;background:#ecebe6;color:#1a2744}
+.nw-root *{box-sizing:border-box}
+.nw-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* title strip */
+.nw-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.nw-doc-top{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:28px;align-items:start}
+.nw-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.nw-ml{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0}
+.nw-ml b{color:#1a2744;font-weight:600}
+.nw-grey{background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.nw-grey p{font-size:12.5px;line-height:1.45;color:#2b3446;margin:0}
+.nw-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.nw-grey ol{margin:0;padding-left:18px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.nw-grey li{margin-bottom:3px}
+.nw-legend{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px;margin-top:20px}
+.nw-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.nw-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 24px}
+.nw-notes li,.nw-fb li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.nw-notes b,.nw-fb b{font-weight:600}
+.nw-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
+.nw-fb ol{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:11px}
+.nw-fbk{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:#f4ecd4;color:#664c0c;font-size:12px;font-weight:700;flex:none}
+.nw-fbq{display:block;font-style:italic;color:#3d4556}
+/* frames */
+.nw-sec{margin-top:40px}
+.nw-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.nw-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.nw-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.nw-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1100px;margin:12px 0 0}
+.nw-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.nw-browser .k-browser-url{max-width:820px}
+.nw-view{position:relative;background:#f5f5f2;overflow:hidden}
+.nw-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+/* decided header */
+.tl-hd-in{gap:0;position:relative}
+.tl-hd .k-brand{margin-right:16px}
+.tl-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.tl-rook-sm{width:24px;height:24px}
+.tl-nav{gap:0}
+.tl-nav a{padding:0 10px;white-space:nowrap}
+.tl-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.tl-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.tl-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.tl-util{gap:12px}
+.tl-util .k-ulink{padding:0 4px}
+.tl-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.tl-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.tl-foot .k-meta{color:rgba(255,255,255,.78)}
+.tl-foot nav a{font-size:14px}
+/* page head */
+.nw-phead{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.nw-titlerow{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-top:26px;padding-bottom:22px}
+.nw-titlerow .k-h1{margin:0}
+.nw-subline{font-size:17px;line-height:1.5;color:#3d4556;margin:6px 0 0;max-width:760px}
+.nw-hright{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.nw-search{width:340px;min-height:46px}
+.nw-body{padding-top:26px;padding-bottom:44px}
+.nw-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px;align-items:start}
+.nw-col{min-width:0}
+.nw-shead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.nw-shead .k-h2{margin:0}
+.nw-shead-l{display:flex;align-items:center;gap:12px}
+.nw-from{display:flex;align-items:center;gap:10px}
+.nw-from .k-seg button{min-height:38px;padding:0 14px}
+.nw-chips{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.nw-chips .k-chip{min-height:38px}
+/* pinned */
+.nw-pin{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center;margin-top:18px;padding:16px 20px;background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #1a2744;border-radius:12px}
+.nw-pinlab{display:inline-flex;align-items:center;gap:6px}
+.nw-pin h3{margin:0;font-size:19px;line-height:1.3;font-weight:600}
+.nw-out{color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;line-height:1.35;white-space:nowrap}
+/* latest rows */
+.nw-month{display:flex;align-items:center;gap:12px;margin:22px 0 10px}
+.nw-month .k-h3{margin:0}
+.nw-list{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden}
+.nw-row{position:relative;display:grid;grid-template-columns:64px minmax(0,1fr) 150px;gap:18px;padding:16px 20px;border-bottom:1px solid #ecebe5;align-items:start}
+.nw-row:last-child{border-bottom:0}
+.nw-row .k-date{width:64px;min-height:64px}
+.nw-row .k-date b{font-size:22px}
+.nw-row .k-date span:first-child{margin-top:0;margin-bottom:4px}
+.nw-rmain{display:flex;flex-direction:column;gap:6px;min-width:0}
+.nw-rtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.nw-rh{margin:0;font-size:18px;line-height:1.3;font-weight:600}
+.nw-rh a{color:#1a2744;text-decoration:none}
+.nw-rp{margin:0;font-size:14.5px;line-height:1.5;color:#3d4556}
+.nw-fbtext{margin:0;font-size:15.5px;line-height:1.5;color:#1a2744}
+.nw-rlinks{display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:14px}
+.nw-thumb{height:96px;width:150px;font-size:12px}
+.nw-thumbimg{width:150px;height:96px;object-fit:cover;border-radius:10px;display:block}
+.nw-src{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:600;line-height:1.3;white-space:nowrap;text-decoration:none}
+.nw-src-fb{background:#ffffff;color:#1a2744;border:1px solid #9aa6bd}
+.nw-src-fb svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nw-src-lca{background:#1a2744;color:#ffffff;border:1px solid #1a2744;letter-spacing:.04em}
+.nw-firstfb{font-size:13px;color:#555c6b}
+.nw-firstfb a{color:#1a2744;font-weight:600}
+.nw-more{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px;padding:14px 18px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.nw-years{display:flex;align-items:center;gap:8px;font-size:14px}
+.nw-years .k-chip{min-height:34px;padding:0 12px}
+.nw-rb{position:absolute;right:-12px;top:12px}
+/* rail */
+.nw-rail{display:flex;flex-direction:column;gap:16px}
+.nw-rcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.nw-rcard h2{margin:0}
+.nw-share{border:1px solid #dddcd4;border-radius:10px;overflow:hidden;background:#ffffff}
+.nw-share img{display:block;width:100%;height:176px;object-fit:cover}
+.nw-share-in{padding:10px 12px 12px;background:#f2f3f5;display:flex;flex-direction:column;gap:3px}
+.nw-share-dom{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.nw-share-t{font-size:14.5px;font-weight:700;line-height:1.3;color:#1a2744;margin:0}
+.nw-share-d{font-size:13px;line-height:1.4;color:#555c6b;margin:0}
+.nw-oneline{font-size:14.5px;line-height:1.5;color:#1a2744;margin:0}
+/* recent tournaments */
+.nw-block{margin-top:44px;padding-top:22px;border-top:2px solid #1a2744}
+.nw-bhead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:16px}
+.nw-bhead .k-h2{margin:0}
+.nw-bsub{margin:6px 0 0;font-size:15px;line-height:1.5;color:#3d4556;max-width:760px}
+.nw-tgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.nw-tcard{display:flex;flex-direction:column;overflow:hidden;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;position:relative}
+.nw-tphoto{display:block;width:100%;height:200px;object-fit:cover}
+.nw-tph{height:200px;border-radius:0;font-size:13px}
+.nw-tnone{height:200px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:18px 20px;background:#1a2744;color:#ffffff;border-bottom:3px solid #c8a94a}
+.nw-tnone b{font-size:22px;line-height:1.2;font-weight:700}
+.nw-tnone span{font-size:13px;color:#e6cf86;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.nw-tbody{padding:16px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.nw-th{margin:0;font-size:19px;line-height:1.3;font-weight:700}
+.nw-th a{color:#1a2744;text-decoration:none}
+.nw-win{margin:0;padding:10px 12px;background:#f6f6f2;border-radius:8px;font-size:14px;line-height:1.55;color:#1a2744}
+.nw-win .k-label{display:block;margin-bottom:3px}
+.nw-win i{font-style:normal;color:#555c6b}
+.nw-tacts{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:auto;padding-top:4px}
+.nw-tb{position:absolute;top:12px;right:12px}
+/* clubs */
+.nw-cgrid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:32px;align-items:start}
+.nw-crow{display:grid;grid-template-columns:112px minmax(0,1fr) 230px;gap:18px;padding:16px 20px;border-bottom:1px solid #ecebe5;align-items:start}
+.nw-crow:last-child{border-bottom:0}
+.nw-cdate{font-size:14px;font-weight:600;color:#3d4556;padding-top:2px}
+.nw-club{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#1a2744}
+.nw-cdot{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none}
+.nw-cside{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.nw-ctools{display:flex;align-items:center;gap:10px}
+.nw-post{background:#fbfaf6;border:1px dashed #b9b7ad;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.nw-post h3{margin:0}
+.nw-steps{margin:0;padding-left:20px;font-size:14px;line-height:1.5;color:#3d4556}
+.nw-steps li{margin-bottom:4px}
+/* workspace */
+.ws-bar{background:#ffffff;border-bottom:1px solid #dddcd4}
+.ws-top{padding-top:16px}
+.ws-crumb{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:#555c6b}
+.ws-crumb a{color:#1a2744}
+.ws-h1{font-size:32px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:0}
+.ws-tabs{display:flex;gap:2px;margin-top:14px}
+.ws-tabs a{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 14px;font-size:14.5px;font-weight:600;color:#3d4556;text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ws-tabs a.ws-tab-on{color:#1a2744;border-bottom:3px solid #866a1e}
+.ws-cnt{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:20px;padding:0 6px;border-radius:999px;background:#eceef3;color:#1a2744;font-size:12px;font-weight:700}
+.ws-new{display:inline-flex;align-items:center;padding:2px 7px;border-radius:6px;background:#e8edf4;color:#2d3a52;font-size:11.5px;font-weight:600;line-height:1.2}
+.ws-body{padding-top:22px;padding-bottom:36px}
+.ws-note{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:10px;background:#f6f7fa;border:1px solid #d9dde6;font-size:14.5px;line-height:1.5;color:#1a2744;margin-bottom:20px}
+.ws-note b{font-weight:600}
+.ws-grid{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:28px;align-items:start}
+.ws-form{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden}
+.ws-fsec{padding:18px 22px;border-bottom:1px solid #ecebe5;display:flex;flex-direction:column;gap:10px;position:relative}
+.ws-fh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ws-fh h3{margin:0;font-size:17px;font-weight:600}
+.ws-fl{font-size:14px;font-weight:600;color:#1a2744}
+.ws-fl small{font-weight:500;color:#555c6b;font-size:13px}
+.ws-in{display:flex;align-items:center;min-height:46px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:16px;line-height:1.3}
+.ws-ta{padding:12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:15px;line-height:1.55;min-height:110px}
+.ws-dd{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:15px;font-weight:500;font-family:inherit;width:100%;text-align:left}
+.ws-hint{margin:0;font-size:13px;line-height:1.45;color:#555c6b}
+.ws-from{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:6px;background:#e1f0e7;color:#145b3a;font-size:12px;font-weight:600}
+.ws-wins{border:1px solid #e6e5de;border-radius:10px;overflow:hidden}
+.ws-win{display:grid;grid-template-columns:90px minmax(0,1fr) 70px;gap:12px;padding:10px 14px;border-bottom:1px solid #f0efe9;font-size:15px;align-items:center;background:#fbfbf8}
+.ws-win:last-child{border-bottom:0}
+.ws-win span{font-size:13px;font-weight:600;color:#555c6b}
+.ws-win em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.ws-photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.ws-ph{position:relative;height:120px;border-radius:10px;overflow:hidden}
+.ws-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ws-ph .k-img{height:100%;border-radius:10px;font-size:12px}
+.ws-cover{position:absolute;left:8px;top:8px;background:#1a2744;color:#ffffff;font-size:11.5px;font-weight:700;padding:3px 7px;border-radius:5px}
+.ws-add{height:120px;border:2px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;font-size:13.5px;font-weight:600;color:#1a2744;padding:8px}
+.ws-add small{font-weight:500;color:#555c6b;font-size:12px;line-height:1.35}
+.ws-links{display:flex;flex-wrap:wrap;gap:8px}
+.ws-lnk{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;background:#f6f6f2;border:1px solid #e3e2dc;font-size:13.5px;color:#1a2744}
+.ws-lnk code{font-family:"Geist Mono",ui-monospace,monospace;font-size:12.5px;color:#3d4556}
+.ws-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px;background:#fbfbf8}
+.ws-side{display:flex;flex-direction:column;gap:16px}
+.ws-scard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;position:relative}
+.ws-scard .nw-tphoto,.ws-scard .nw-tph{height:150px}
+.ws-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ws-check li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
+.ws-check svg{width:18px;height:18px;flex:none;margin-top:1px;fill:none;stroke:#145b3a;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ws-locked{display:flex;align-items:center;gap:2px;border-bottom:1px solid #e2e1da}
+.ws-locked a{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 10px;font-size:13.5px;font-weight:600;color:#3d4556;text-decoration:none}
+.ws-locked .ws-off{color:#6b7180}
+.ws-locked svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+/* admin list */
+.ws-tool{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.ws-table{width:100%;border-collapse:collapse;background:#ffffff;font-size:14.5px}
+.ws-table th{text-align:left;padding:10px 14px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;border-bottom:1px solid #d6d5cd;background:#fbfbf8;white-space:nowrap}
+.ws-table td{padding:12px 14px;border-bottom:1px solid #ecebe5;vertical-align:top;line-height:1.45}
+.ws-table tr.ws-sel td{background:#fbf7e9}
+.ws-table tr.ws-exp td{background:#fbf7e9;padding:0 14px 18px}
+.ws-table .ws-acts{white-space:nowrap;text-align:right}
+.ws-hidden td{color:#6b7180}
+.ws-promote{border:2px solid #c8a94a;border-radius:12px;background:#ffffff;padding:18px 20px;display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px}
+.ws-pf{display:flex;flex-direction:column;gap:12px}
+.ws-g2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
+.ws-st{display:inline-flex;align-items:flex-start;gap:6px;font-size:13px;font-weight:600;color:#1a2744}
+.ws-st i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#1a2744;flex:none;margin-top:5px}
+.ws-st-on i{background:#1e7a4c}
+.ws-st-off i{background:#9aa1b0}
+.nw-years a.k-chip{text-decoration:none}
+.ws-acts .k-row-sm{flex-wrap:nowrap}
+/* phones */
+.np-row{display:flex;gap:40px;align-items:flex-start;padding:28px 32px;background:#f5f5f2;border:1px solid #d9d8d1;border-radius:14px}
+.np-col{display:flex;gap:22px;align-items:flex-start;flex:1;min-width:0}
+.np-cap{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;padding-top:6px}
+.np-cap p{margin:0;font-size:13.5px;line-height:1.5;color:#3d4556}
+.np-cap b{color:#1a2744;font-weight:600}
+.hp-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:56px;padding:0 10px 0 16px;background:#1a2744;color:#ffffff}
+.hp-brand{display:flex;align-items:center;gap:9px;color:#ffffff;text-decoration:none;min-height:44px}
+.hp-rook{width:28px;height:28px;fill:#ffffff;flex:none}
+.hp-bn{display:flex;flex-direction:column;line-height:1.12}
+.hp-bn b{font-size:14px;font-weight:700}
+.hp-bn span{font-size:11px;font-weight:500;color:rgba(255,255,255,.8)}
+.hp-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.55);border-radius:9px;color:#ffffff;box-sizing:border-box}
+.hp-i20{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.hp-tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);height:56px;background:#ffffff;border-top:1px solid #d9d8d1}
+.hp-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;border:0;background:transparent;padding:0;color:#555c6b;text-decoration:none;font-size:12px;font-weight:500;line-height:1.1;cursor:pointer;font-family:inherit}
+.hp-tab-on{color:#1a2744;font-weight:700}
+.hp-tab-on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.hp-safe{flex:none;height:24px;background:#ffffff;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;box-sizing:border-box}
+.hp-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+.np-main{flex:1;min-height:0;overflow:hidden;background:#f5f5f2;position:relative}
+.np-head{background:#ffffff;padding:14px 16px 12px;border-bottom:1px solid #e3e2dc;display:flex;flex-direction:column;gap:10px}
+.np-h1{font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:0}
+.np-chips{display:flex;gap:6px;overflow:hidden;white-space:nowrap;margin-right:-16px}
+.np-chips .k-chip{min-height:36px;padding:0 12px;font-size:13.5px;flex:none}
+.np-body{padding:12px 14px 20px;display:flex;flex-direction:column;gap:10px}
+.np-pin{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #1a2744;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.np-pin b{font-size:15px;line-height:1.3}
+.np-mon{font-size:15px;font-weight:600;margin:4px 0 0}
+.np-list{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;overflow:hidden}
+.np-item{padding:11px 12px;border-bottom:1px solid #ecebe5;display:flex;flex-direction:column;gap:5px}
+.np-item:last-child{border-bottom:0}
+.np-when{font-size:12.5px;font-weight:600;color:#3d4556}
+.np-tags{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.np-tags .k-tag{padding:3px 7px;font-size:11.5px}
+.np-tags .nw-src{padding:2px 7px;font-size:11.5px}
+.np-t{margin:0;font-size:14.5px;line-height:1.45;color:#1a2744}
+.np-h{margin:0;font-size:15.5px;line-height:1.3;font-weight:600}
+.np-img{height:120px;border-radius:8px;font-size:11.5px}
+/* phone workspace */
+.np-wsbar{background:#ffffff;border-bottom:1px solid #dddcd4;padding:10px 16px 0;display:flex;flex-direction:column;gap:6px}
+.np-back{font-size:13px;font-weight:600;color:#1a2744;text-decoration:none}
+.np-wsh{font-size:18px;line-height:1.2;font-weight:700;margin:0}
+.np-wstabs{display:flex;gap:0;overflow:hidden;white-space:nowrap;margin:0 -16px;padding:0 6px}
+.np-wstabs a{display:inline-flex;align-items:center;gap:5px;height:42px;padding:0 10px;font-size:13.5px;font-weight:600;color:#3d4556;text-decoration:none;border-bottom:3px solid transparent;flex:none}
+.np-wstabs a.on{color:#1a2744;border-bottom-color:#866a1e}
+.np-sec{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:11px 12px;display:flex;flex-direction:column;gap:7px}
+.np-sec h3{margin:0;font-size:14.5px;font-weight:600}
+.np-in{border:1px solid #858b99;border-radius:8px;padding:9px 10px;font-size:14.5px;line-height:1.35;color:#1a2744;background:#ffffff}
+.np-wl{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:4px 8px;font-size:13.5px;align-items:baseline}
+.np-wl span{font-size:12px;font-weight:600;color:#555c6b}
+.np-wl em{font-style:normal;font-weight:600;font-variant-numeric:tabular-nums}
+.np-phs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.np-phs > *{height:78px;border-radius:8px;overflow:hidden;position:relative}
+.np-phs img{width:100%;height:100%;object-fit:cover;display:block}
+.np-phs .k-img{height:100%;font-size:11px;padding:6px 8px}
+.np-add{border:2px dashed #b9b7ad;background:#fbfbf8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:600;color:#1a2744;text-align:center}
+.np-actbar{flex:none;display:grid;grid-template-columns:1fr 1.4fr;gap:8px;padding:8px 14px;background:#ffffff;border-top:1px solid #dddcd4;box-shadow:0 -6px 18px rgba(16,24,43,.08)}
+.np-actbar .k-btn{min-height:44px}
+</style>
+</helmet>
+<div class="nw-root">
+<section class="nw-doc" aria-label="About this board">
+<div class="nw-doc-top">
+<div>
+<p class="k-kicker">11 · News &amp; stories · decided design</p>
+<h1 class="nw-title">News · decided</h1>
+<p class="nw-ml" style="margin-top:8px"><b>Built from:</b> News-A (Latest: month groups, dated rows, category chips with counts, the pin with an end date, Load 10 more, the yearly archive) · News-C ("From the clubs" with club colour dots, the email digest) · News-D (the TD draft bar, now the Recap tab, and the share card) · the decided header and footer from Tourn-List-Final.</p>
+<p class="nw-ml"><b>Replaces:</b> News-A, News-B, News-C and News-D. Dropped: A's big featured story, B's mixed stream, C's five fixed sections, D's full recap page with standings and the key game (those stay on each event's results page).</p>
+<p class="nw-ml"><b>K's feedback applied (Fri, Oct 9):</b> A as the base; Facebook as the main source; recent tournaments as highlights that link to the results pages; a Recap tab on the tournament once it is complete; C's "From the clubs", fed from club pages. The seven items are on the right, each with where it landed.</p>
+<p class="nw-ml"><b>Shown:</b> frame A, /news at 1440px on Fri, Oct 9, 2026, signed out. Frame B, the tournament's Recap tab in Workspace on Mon, Sep 7, 2026 at 9:20 PM. Part 2 (News-Final-2) has frame C, Workspace › News promoting a Facebook post on Mon, Sep 28, 2026, and the two phones.</p>
+<p class="nw-ml" style="margin-top:8px"><span class="k-sample">Sample data: story text, Facebook post text, winners and scores, photo captions, counts, representative names</span></p>
+</div>
+<aside class="nw-grey" aria-label="Board note">
+<p><b>What</b>One News page. Latest mixes the LCA Facebook page's posts with site stories, each marked by source. Recent tournaments shows three highlight cards that link to each event's results page. From the clubs carries news posted from club pages.</p>
+<p><b>Built from</b>News-A, with News-C's From the clubs and digest and News-D's draft bar (now the Recap tab) and share card.</p>
+<p><b>K's feedback applied</b>Items 1 to 7 on the right.</p>
+<div><p><b>Open for K</b></p><ol><li>Assumed: the regional representative for a club's region posts that club's news (page 9 retired the club-manager role).</li><li>Assumed: the yearly LCA schedule gets a "Season at a glance" strip on the Tournaments page, not here.</li><li>Should Publish recap also post to the LCA Facebook page by itself? Drawn: it opens Facebook's share window.</li><li>Should a club post also show in Latest? Drawn: only in From the clubs.</li></ol></div>
+</aside>
+</div>
+<div class="nw-legend">
+<div class="nw-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="nw-notes">
+<li><span class="k-num-badge">1</span><span><b>One pin, with an end date.</b> "Pinned until Sun, Oct 11" is set by the editor and the pin drops off by itself. A partner event's pin says "Registers on the organizer's site ↗", never Register.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Category chips with counts,</b> plus From: All · Facebook · LCA. Both live in the address, so a filtered view can be shared.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Facebook first.</b> Posts on the LCA Facebook page are pulled in by our server (no Facebook plugin) and listed in Latest with their own text and photo, marked "From our Facebook page ↗". Site stories are marked LCA.</span></li>
+<li><span class="k-num-badge">4</span><span><b>A promoted post</b> (part 2, frame C) becomes a site story with a headline and its own page, and keeps "First posted on our Facebook page ↗".</span></li>
+<li><span class="k-num-badge">5</span><span><b>"Load 10 more"</b> keeps the footer reachable. Browse by year opens /news/2026, /news/2025 and so on; older years point to the old site.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Highlights, not results.</b> Three cards, newest finished LCA event first: headline, one line of section winners, one photo, and Full results, which opens the event's existing results page. No standings or crosstables on News.</span></li>
+<li><span class="k-num-badge">7</span><span><b>Each card is written in the event's Recap tab</b> (frame B). Before the director publishes, the card shows the headline and winners from the final standings, and the photo slot falls back to the event name on navy (third card).</span></li>
+<li><span class="k-num-badge">8</span><span><b>From the clubs</b> lists posts written on a club page's management side, with the club's colour dot and name. Each post also shows on its club page and in the weekly email.</span></li>
+<li><span class="k-num-badge">9</span><span><b>"Post your club's news"</b> speaks to whoever keeps the club page. Assumed here: the region's representative posts for the club (open for K).</span></li>
+<li><span class="k-num-badge">10</span><span><b>Share to Facebook.</b> Every story and recap has a share-ready card (image, title, one line) made when it is published, so a link posted on Facebook shows the picture.</span></li>
+<li><span class="k-num-badge">11</span><span><b>Email digest,</b> Mondays at 8:00 AM: new stories and recaps, upcoming LCA events and club news. One-click unsubscribe.</span></li>
+<li><span class="k-num-badge">12</span><span><b>The Recap tab opens when the event is complete,</b> that is, when the director finalizes standings. Before that it shows greyed with "Opens when standings are final".</span></li>
+<li><span class="k-num-badge">13</span><span><b>Filled in from the final standings:</b> a suggested headline and the section winners. Winners are read-only here; a correction made in Pairings &amp; results flows through.</span></li>
+<li><span class="k-num-badge">14</span><span><b>The director's part:</b> a few lines (up to 400 characters) and up to four photos, one marked for the card, from a phone or from the LCA Facebook page's recent posts. Photos publish only with the consent box ticked.</span></li>
+<li><span class="k-num-badge">15</span><span><b>Publish recap</b> fills the card in Recent tournaments, adds a Results row to Latest and "Read the recap" to the results page, makes the share card and goes in the next email. Share to Facebook is offered straight after.</span></li>
+</ol>
+</div>
+<aside class="nw-fb" aria-labelledby="nw-fbh">
+<p id="nw-fbh" class="k-label-gold">K's feedback, and where it landed</p>
+<ol>
+<li><span class="nw-fbk">1</span><span><b class="nw-fbq">"I like A best."</b>The page is News-A: Latest, the pin with an end date, Load 10 more and the archive (notes 1, 2, 5). A's featured story is gone; Recent tournaments does that job.</span></li>
+<li><span class="nw-fbk">2</span><span><b class="nw-fbq">"We do have results pages... just highlights of recent ones."</b>Recent tournaments: three highlight cards, each with Full results to the existing results page (note 6).</span></li>
+<li><span class="nw-fbk">3</span><span><b class="nw-fbq">"Some sort of admin tab... after it's complete... add the headline."</b>The Recap tab in Workspace, frame B (notes 12 to 15), and on a phone in part 2 (note 18).</span></li>
+<li><span class="nw-fbk">4</span><span><b class="nw-fbq">"The bulk of posting will likely be done from the Facebook."</b>Facebook posts sit in Latest with a source mark (note 3), Promote to story (note 4, and part 2 note 16), share-ready cards (note 10), recap photos from Facebook posts (note 14), and a Follow card in the rail.</span></li>
+<li><span class="nw-fbk">5</span><span><b class="nw-fbq">"I like the latest section of A."</b>Kept as Latest, top of the page (notes 2, 5).</span></li>
+<li><span class="nw-fbk">6</span><span><b class="nw-fbq">"The from the clubs section that C has."</b>Its own section under Recent tournaments, with club colour dots (note 8).</span></li>
+<li><span class="nw-fbk">7</span><span><b class="nw-fbq">"Each club, in their page management, to post their own news."</b>Posted from the club page's management side, with the "Post your club's news" prompt (note 9). Who posts is open for K.</span></li>
+</ol>
+</aside>
+</div>
+</section>
+<section class="nw-sec" aria-labelledby="nw-fa">
+<div class="nw-flab"><span class="nw-code">A</span><h2 id="nw-fa">The News page, signed out · Fri, Oct 9, 2026</h2><span class="k-meta">Latest with the rail, then Recent tournaments, then From the clubs</span></div>
+<div class="k-browser nw-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/news</div></div>
+<div class="nw-view">
+<header class="k-header tl-hd"><div class="k-wrap-wide k-header-in tl-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks tl-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a class="k-nav-on" href="#" aria-current="page">News</a><a href="#">Membership</a><button class="tl-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="tl-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="tl-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility tl-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div></div></header>
+<main>
+<div class="nw-phead"><div class="k-wrap-wide nw-titlerow">
+<div><h2 class="k-h1">News</h2><p class="nw-subline">Stories, tournament highlights and club news from across Louisiana. Most of it starts on our Facebook page, so those posts are here too.</p></div>
+<div class="nw-hright"><span class="k-sample">Sample data</span><div class="k-search nw-search" role="search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input type="search" aria-label="Search news" placeholder="Search news"></div></div>
+</div></div>
+
+<div class="k-wrap-wide nw-body">
+<div class="nw-grid">
+<section class="nw-col" aria-labelledby="nw-latest">
+<div class="nw-shead">
+<div class="nw-shead-l"><h2 class="k-h2" id="nw-latest">Latest</h2><span class="k-meta">31 posts this year · newest first</span></div>
+<div class="nw-from"><span class="k-meta">From</span><div class="k-seg" role="group" aria-label="Source"><button type="button" class="k-seg-on" aria-pressed="true">All</button><button type="button" aria-pressed="false">Facebook</button><button type="button" aria-pressed="false">LCA</button></div></div>
+</div>
+<div class="nw-chips" role="group" aria-label="Filter by category">
+<button class="k-chip k-chip-on" type="button" aria-pressed="true">All <span class="k-chip-count">31</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Results <span class="k-chip-count">6</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Announcements <span class="k-chip-count">11</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Clubs <span class="k-chip-count">7</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Scholastic <span class="k-chip-count">4</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Board <span class="k-chip-count">3</span></button>
+<span class="k-num-badge nw-b">2</span>
+</div>
+
+<article class="nw-pin" aria-label="Pinned">
+<div class="k-stack-sm">
+<div class="k-row-sm"><span class="k-label nw-pinlab"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3.5h6M10 3.5l-.6 6.2-2.9 3.3h11l-2.9-3.3-.6-6.2M12 13v7.5"></path></svg>Pinned until Sun, Oct 11</span><span class="k-tag k-tag-ext">Partner event</span><span class="nw-src nw-src-lca">LCA</span></div>
+<h3>Lafayette Open 2026 is this weekend, Sat–Sun, Oct 10–11</h3>
+<p class="k-small k-muted" style="margin:0">Lafayette · Lafayette Chess Club · Classical · All ages</p>
+</div>
+<div class="k-row-sm"><a class="nw-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="nw-vh"> (opens in a new tab)</span></a><span class="k-num-badge nw-b">1</span></div>
+</article>
+
+<div class="nw-month"><h3 class="k-h3">October 2026</h3><span class="k-meta">3 posts</span></div>
+<div class="nw-list">
+<article class="nw-row">
+<div class="k-date"><span>Tue</span><b>6</b><span>Oct</span></div>
+<div class="nw-rmain">
+<div class="nw-rtop"><span class="k-tag">Announcement</span><a class="nw-src nw-src-fb" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>From our Facebook page ↗</a><span class="k-meta">9:12 AM</span><span class="k-num-badge nw-b">3</span></div>
+<p class="nw-fbtext">Driving to the Lafayette Open from New Orleans or Baton Rouge? Comment on this post to share a ride.</p>
+<div class="nw-rlinks"><a class="k-link" href="#">Comment on Facebook ↗</a></div>
+</div>
+<div></div>
+</article>
+<article class="nw-row">
+<div class="k-date"><span>Mon</span><b>5</b><span>Oct</span></div>
+<div class="nw-rmain">
+<div class="nw-rtop"><span class="k-tag">Scholastic</span><span class="nw-src nw-src-lca">LCA</span><span class="k-meta">2 min read</span></div>
+<h3 class="nw-rh"><a href="#">New Orleans Youth Chess season starts Sat, Nov 14</a></h3>
+<p class="nw-rp">The November Meet opens a season of scholastic meets that ends with the Grand Prix Final on Sat, May 8, 2027. Registration opens Mon, Oct 12.</p>
+</div>
+<div class="k-img nw-thumb">Photo · youth meet</div>
+</article>
+<article class="nw-row">
+<div class="k-date"><span>Thu</span><b>1</b><span>Oct</span></div>
+<div class="nw-rmain">
+<div class="nw-rtop"><span class="k-tag">Clubs</span><a class="nw-src nw-src-fb" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>From our Facebook page ↗</a><span class="k-meta">7:45 PM · 6 photos</span></div>
+<p class="nw-fbtext">Full tables at the Bunkie Library this week. Tuesdays 4:00 PM to 6:00 PM, ages 8 to 108, free to join.</p>
+</div>
+<div class="k-img nw-thumb">Photo · Bunkie club night</div>
+</article>
+</div>
+
+<div class="nw-month"><h3 class="k-h3">September 2026</h3><span class="k-meta">5 posts shown</span></div>
+<div class="nw-list">
+<article class="nw-row">
+<div class="k-date"><span>Mon</span><b>28</b><span>Sep</span></div>
+<div class="nw-rmain">
+<div class="nw-rtop"><span class="k-tag">Board</span><span class="nw-src nw-src-lca">LCA</span><span class="k-meta">1 min read</span><span class="k-num-badge nw-b">4</span></div>
+<h3 class="nw-rh"><a href="#">Two regional representative seats are open</a></h3>
+<p class="nw-rp">Central Louisiana and Southwest Louisiana. LCA admins look after those clubs until the seats are filled. Tell the board if you'd like to help.</p>
+<p class="nw-firstfb" style="margin:0">First posted on <a href="#">our Facebook page ↗</a></p>
+</div>
+<div></div>
+</article>
+<article class="nw-row">
+<div class="k-date"><span>Tue</span><b>22</b><span>Sep</span></div>
+<div class="nw-rmain">
+<div class="nw-rtop"><span class="k-tag">Announcement</span><span class="nw-src nw-src-lca">LCA</span><span class="k-tag k-tag-ext">Partner event</span></div>
+<h3 class="nw-rh"><a href="#">Ken Ferguson Memorial weekend set for Sat–Mon, Jan 16–18, 2027</a></h3>
+<p class="nw-rp">Downriver Chess brings the Ken Ferguson Memorial Open back to New Orleans, with a blitz and a scholastic on Sun, Jan 17.</p>
+<div class="nw-rlinks"><a class="nw-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="nw-vh"> (opens in a new tab)</span></a></div>
+</div>
+<div></div>
+</article>
+<article class="nw-row">
+<div class="k-date"><span>Wed</span><b>9</b><span>Sep</span></div>
+<div class="nw-rmain">
+<div class="nw-rtop"><span class="k-tag">Board</span><span class="nw-src nw-src-lca">LCA</span><span class="k-meta">3 min read</span></div>
+<h3 class="nw-rh"><a href="#">From the annual meeting in Sulphur</a></h3>
+<p class="nw-rp">Members met on Sun, Sep 6 during the State Championship. Draft minutes will be posted for comment before the board approves them.</p>
+</div>
+<div></div>
+</article>
+<article class="nw-row">
+<div class="k-date"><span>Tue</span><b>8</b><span>Sep</span></div>
+<div class="nw-rmain">
+<div class="nw-rtop"><span class="k-tag">Results</span><span class="nw-src nw-src-lca">LCA</span><span class="k-meta">Recap</span></div>
+<h3 class="nw-rh"><a href="#">Marcus Landry wins the 2026 Louisiana State Championship</a></h3>
+<p class="nw-rp">4½ of 5 in Sulphur over Labor Day weekend, with only a fourth-round draw against Avery Thibodeaux.</p>
+<div class="nw-rlinks"><a class="k-link" href="#">Read the recap</a><a class="k-link" href="#">Full results</a></div>
+</div>
+<img class="nw-thumbimg" src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Adult players at long tables in a wood-paneled tournament hall">
+</article>
+<article class="nw-row">
+<div class="k-date"><span>Sun</span><b>6</b><span>Sep</span></div>
+<div class="nw-rmain">
+<div class="nw-rtop"><span class="k-tag">Results</span><a class="nw-src nw-src-fb" href="#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>From our Facebook page ↗</a><span class="k-meta">2:15 PM · 24 photos</span></div>
+<p class="nw-fbtext">Round 3 of the State Championship is underway in Sulphur. 64 players in six sections, and the annual meeting starts at 7:00 PM.</p>
+</div>
+<div class="k-img nw-thumb">Photo · round 3, Sulphur</div>
+</article>
+</div>
+
+<div class="nw-more">
+<div class="k-row-sm"><button class="k-btn k-btn-line" type="button">Load 10 more</button><span class="k-meta">Showing 8 of 31</span></div>
+<div class="nw-years"><span class="k-meta">Browse by year</span><a class="k-chip" href="#">2026</a><a class="k-chip" href="#">2025</a><a class="k-chip" href="#">2024</a><a class="k-link k-small" href="#">Older, on the old site ↗</a><span class="k-num-badge nw-b">5</span></div>
+</div>
+</section>
+
+<aside class="nw-rail" aria-label="Share and follow">
+<section class="nw-rcard" aria-labelledby="nw-sh-h">
+<div class="k-between"><h2 id="nw-sh-h" class="k-h4">Share to Facebook</h2><span class="k-num-badge nw-b">10</span></div>
+<p class="nw-oneline">Every story and recap has a share-ready card with its image and title, so a link posted on Facebook shows the picture.</p>
+<div class="nw-share" aria-label="How a shared recap looks on Facebook">
+<img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Share image: players at long tables in the tournament hall">
+<div class="nw-share-in"><span class="nw-share-dom">louisianachess.org</span><p class="nw-share-t">Marcus Landry wins the 2026 Louisiana State Championship</p><p class="nw-share-d">Section winners and photos from Labor Day weekend in Sulphur.</p></div>
+</div>
+<a class="k-btn k-btn-navy k-btn-block" href="#">Share to Facebook</a>
+<p class="k-meta" style="margin:0">On every story and recap page. Opens Facebook's own share window.</p>
+</section>
+
+<section class="nw-rcard" aria-labelledby="nw-dg-h">
+<div class="k-between"><h2 id="nw-dg-h" class="k-h4">News by email</h2><span class="k-num-badge nw-b">11</span></div>
+<p class="k-small" style="margin:0">One email on Mondays at 8:00 AM: new stories and recaps, upcoming LCA events and club news.</p>
+<div class="k-field"><label for="nw-em">Email</label><input id="nw-em" class="k-input" placeholder="you@example.com"></div>
+<label class="k-check k-small"><input type="checkbox" checked> Include news from the clubs</label>
+<a class="k-btn k-btn-gold k-btn-block" href="#">Sign me up</a>
+<p class="k-meta" style="margin:0">Unsubscribe in one click from any email. Members can also turn it on in My LCA.</p>
+</section>
+
+<section class="nw-rcard" aria-labelledby="nw-fbf-h">
+<h2 id="nw-fbf-h" class="k-h4">Most of our news starts on Facebook</h2>
+<p class="k-small" style="margin:0">Follow the LCA page for photos on tournament weekends and quick notices.</p>
+<a class="k-btn k-btn-line k-btn-block" href="#">LCA on Facebook ↗</a>
+</section>
+</aside>
+</div>
+
+<section class="nw-block" aria-labelledby="nw-rt">
+<div class="nw-bhead">
+<div><div class="k-row-sm"><h2 class="k-h2" id="nw-rt">Recent tournaments</h2><span class="k-num-badge nw-b">6</span></div><p class="nw-bsub">Highlights from finished LCA events. Standings and crosstables stay on each event's results page.</p></div>
+<a class="k-link k-small" href="#">All results on Tournaments</a>
+</div>
+<div class="nw-tgrid">
+<article class="nw-tcard">
+<img class="nw-tphoto" src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Adult players at long tables in a wood-paneled tournament hall">
+<div class="nw-tbody">
+<div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-closed">Finished</span></div>
+<p class="k-meta" style="margin:0">Sat–Mon, Sep 5–7, 2026 · Sulphur · 64 players</p>
+<h3 class="nw-th"><a href="#">Marcus Landry wins the 2026 Louisiana State Championship</a></h3>
+<p class="nw-win"><span class="k-label">Section winners</span>Open&nbsp;Marcus Landry 4½ <i>·</i> U1800&nbsp;Devin Batiste 4½ <i>·</i> U1400&nbsp;Sam Nguyen and Leo Robichaux 4, tied <i>·</i> U1000&nbsp;Theo Guidry 4½ <i>·</i> 2 more sections</p>
+<p class="k-small k-muted" style="margin:0">Only a fourth-round draw stood between Landry and a perfect score. Members also held the annual meeting on Sunday.</p>
+<div class="nw-tacts"><a class="k-btn k-btn-navy k-btn-sm" href="#">Full results</a><a class="k-link k-small" href="#">Read the recap</a></div>
+</div>
+</article>
+<article class="nw-tcard">
+<div class="k-img nw-tph">Photo · Open section, round 5</div>
+<div class="nw-tbody">
+<div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-closed">Finished</span></div>
+<p class="k-meta" style="margin:0">Sat–Sun, Jun 13–14, 2026 · New Orleans</p>
+<h3 class="nw-th"><a href="#">Camille Broussard takes the Paul Morphy Open</a></h3>
+<p class="nw-win"><span class="k-label">Section winners</span>Open&nbsp;Camille Broussard 4½ <i>·</i> U1800&nbsp;Nora Hebert 4 <i>·</i> U1400&nbsp;Jordan Lee 4½ <i>·</i> U1000&nbsp;Leo Robichaux 4</p>
+<p class="k-small k-muted" style="margin:0">Four sections in Morphy's city, with the Morphy Scholastic the same weekend.</p>
+<div class="nw-tacts"><a class="k-btn k-btn-navy k-btn-sm" href="#">Full results</a><a class="k-link k-small" href="#">Read the recap</a></div>
+</div>
+</article>
+<article class="nw-tcard">
+<div class="nw-tnone"><span>State Scholastic · 2026</span><b>Louisiana State Scholastic Championship</b></div>
+<span class="k-num-badge nw-b nw-tb">7</span>
+<div class="nw-tbody">
+<div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-closed">Finished</span></div>
+<p class="k-meta" style="margin:0">Sat, Apr 18, 2026 · [City]</p>
+<h3 class="nw-th"><a href="#">Priya Shah wins K–12 at the State Scholastic</a></h3>
+<p class="nw-win"><span class="k-label">Section winners</span>K–12&nbsp;Priya Shah 5 <i>·</i> K–8&nbsp;Theo Guidry 4½ <i>·</i> K–5 and K–3 on the results page</p>
+<div class="nw-tacts"><a class="k-btn k-btn-navy k-btn-sm" href="#">Full results</a></div>
+</div>
+</article>
+</div>
+</section>
+
+<section class="nw-block" aria-labelledby="nw-fc">
+<div class="nw-bhead">
+<div><div class="k-row-sm"><h2 class="k-h2" id="nw-fc">From the clubs</h2><span class="k-num-badge nw-b">8</span></div><p class="nw-bsub">News posted from club pages, marked with each club's colour. It also shows on the club's own page.</p></div>
+<div class="nw-ctools"><button class="k-chip" type="button" aria-haspopup="true">All regions<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button><a class="k-link k-small" href="#">All club news</a></div>
+</div>
+<div class="nw-cgrid">
+<div class="nw-list">
+<article class="nw-crow">
+<div class="nw-cdate">Mon, Oct 5</div>
+<div class="nw-rmain"><span class="nw-club"><span class="nw-cdot" style="background:#2f6f9f"></span>Picayune Chess Club</span><h3 class="nw-rh"><a href="#">Quick-rated nights stay on first Mondays</a></h3><p class="nw-rp">Next one Mon, Nov 2 at 6:00 PM at IHOP. Four rounds, G/20 d5 (20 minutes each, 5-second delay).</p></div>
+<div class="nw-cside"><a class="k-link k-small" href="#">Club page</a></div>
+</article>
+<article class="nw-crow">
+<div class="nw-cdate">Thu, Oct 1</div>
+<div class="nw-rmain"><span class="nw-club"><span class="nw-cdot" style="background:#b5532c"></span>Casa de Ajedrez</span><h3 class="nw-rh"><a href="#">The Casa Chess Tournament is Sat, Oct 31 in Sulphur</a></h3><p class="nw-rp">US Chess and FIDE rated, all ages.</p></div>
+<div class="nw-cside"><span class="k-tag k-tag-ext">Partner event</span><a class="nw-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="nw-vh"> (opens in a new tab)</span></a></div>
+</article>
+<article class="nw-crow">
+<div class="nw-cdate">Thu, Oct 1</div>
+<div class="nw-rmain"><span class="nw-club"><span class="nw-cdot" style="background:#6b3f8f"></span>New Orleans Westbank Chess Club</span><h3 class="nw-rh"><a href="#">Rated Thursdays continue in Gretna</a></h3><p class="nw-rp">US Chess rated games every Thursday, 7:30 PM to 11:30 PM. Beginners welcome.</p></div>
+<div class="nw-cside"><a class="k-link k-small" href="#">Club page</a></div>
+</article>
+<article class="nw-crow">
+<div class="nw-cdate">Tue, Sep 29</div>
+<div class="nw-rmain"><span class="nw-club"><span class="nw-cdot" style="background:#7a4a9a"></span>Bunkie Chess Club</span><h3 class="nw-rh"><a href="#">New players welcome on Tuesdays</a></h3><p class="nw-rp">4:00 PM to 6:00 PM at the Bunkie Library. Ages 8 to 108, free to join.</p></div>
+<div class="nw-cside"><a class="k-link k-small" href="#">Club page</a></div>
+</article>
+<article class="nw-crow">
+<div class="nw-cdate">Mon, Sep 28</div>
+<div class="nw-rmain"><span class="nw-club"><span class="nw-cdot" style="background:#2f6b4f"></span>Baton Rouge Chess Club</span><h3 class="nw-rh"><a href="#">Wednesday casual nights: what to expect</a></h3><p class="nw-rp">How a casual night at Boba ParTea works, from finding a free board to joining a game already going.</p></div>
+<div class="nw-cside"><a class="k-link k-small" href="#">Club page</a></div>
+</article>
+</div>
+<aside class="nw-post" aria-labelledby="nw-pc-h">
+<div class="k-between"><h3 id="nw-pc-h" class="k-h4">Post your club's news</h3><span class="k-num-badge nw-b">9</span></div>
+<p class="k-small" style="margin:0">Keep a club page? Post from its Manage tab. Your post shows here with the club's colour, on the club page, and in Monday's email.</p>
+<ol class="nw-steps"><li>Open your club page and choose Manage.</li><li>News, then New post: a title, a few lines, a photo if you have one.</li><li>Publish. It appears here straight away.</li></ol>
+<a class="k-btn k-btn-gold" href="#" style="align-self:flex-start">Post your club's news</a>
+<p class="k-meta" style="margin:0">Drawn for whoever keeps the club page. Assumed here: the region's LCA representative (open for K).</p>
+</aside>
+</div>
+</section>
+</div>
+</main>
+<footer class="k-footer tl-foot"><div class="k-wrap-wide tl-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="tl-rook tl-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div></div>
+<p class="nw-cap">Latest is one list for both sources, so Facebook posts are never a side widget: a mirrored post shows its own words with no invented headline, and an editor can promote it (part 2, frame C). Recent tournaments holds the three newest finished LCA events, and each card's Full results opens the event's results page under Tournaments. From the clubs sits last because it changes most slowly. Partner events in any section say "Registers on the organizer's site ↗" and never carry Register or a count.</p>
+</section>
+<section class="nw-sec" aria-labelledby="nw-fbb">
+<div class="nw-flab"><span class="nw-code">B</span><h2 id="nw-fbb">The tournament's Recap tab · Workspace, signed in as the director</h2><span class="k-meta">Mon, Sep 7, 2026, 9:20 PM, six minutes after standings were finalized</span></div>
+<div class="k-browser nw-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/workspace/tournaments/2026-louisiana-state-championship/recap</div></div>
+<div class="nw-view">
+<header class="k-header tl-hd"><div class="k-wrap-wide k-header-in tl-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks tl-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="tl-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="tl-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="tl-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility tl-util"><a class="k-ulink" href="#">Donate</a><button class="tl-my" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<div class="ws-bar"><div class="k-wrap-wide ws-top k-stack">
+<div class="k-between"><nav class="ws-crumb" aria-label="Breadcrumb"><a href="#">Workspace</a><span aria-hidden="true">/</span><a href="#">Tournaments</a><span aria-hidden="true">/</span><a href="#">2026 Louisiana State Championship</a><span aria-hidden="true">/</span><span aria-current="page">Recap</span></nav><span class="k-sample">Sample data</span></div>
+<div class="k-between" style="align-items:flex-end">
+<div class="k-stack-sm">
+<div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-closed"><span class="k-dot"></span>Finished · standings final</span><span class="k-tag">64 players · 6 sections</span></div>
+<h1 class="ws-h1">2026 Louisiana State Championship</h1>
+<span class="k-small k-muted">Sat–Mon, Sep 5–7, 2026 · Sulphur · Standings finalized Mon, Sep 7 at 9:14 PM by Chris Arceneaux, tournament director</span>
+</div>
+<a class="k-btn k-btn-line" href="#">View results page ↗</a>
+</div>
+<nav class="ws-tabs" aria-label="This tournament"><a href="#">Setup</a><a href="#">Entries <span class="ws-cnt">64</span></a><a href="#">Pairings &amp; results</a><a class="ws-tab-on" href="#" aria-current="page">Recap <span class="ws-new">New</span></a><span class="k-num-badge nw-b" style="align-self:center;margin-left:6px">12</span></nav>
+</div></div>
+
+<main class="k-wrap-wide ws-body">
+<div class="ws-note"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6"></path><circle cx="12" cy="7.6" r="1.1" fill="currentColor" stroke="none"></circle></svg><span><b>This tab opened when you finalized standings.</b> The headline and section winners are filled in from them. Add a few lines and a photo or two, then publish. It becomes the highlight card on News and the recap linked from the results page.</span></div>
+<div class="ws-grid">
+<div class="ws-form">
+<section class="ws-fsec" aria-labelledby="ws-hl">
+<div class="ws-fh"><h3 id="ws-hl">Headline</h3><span class="ws-from"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Filled in from final standings</span><span class="k-num-badge nw-b" style="margin-left:auto">13</span></div>
+<div class="ws-in">Marcus Landry wins the 2026 Louisiana State Championship</div>
+<p class="ws-hint">Suggested from the Open winner and the event name. Change it freely. 56 of 90 characters.</p>
+</section>
+<section class="ws-fsec" aria-labelledby="ws-sw">
+<div class="ws-fh"><h3 id="ws-sw">Section winners</h3><span class="ws-from"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>From final standings</span></div>
+<div class="ws-wins">
+<div class="ws-win"><span>Open</span><b>Marcus Landry</b><em>4½/5</em></div>
+<div class="ws-win"><span>U1800</span><b>Devin Batiste</b><em>4½/5</em></div>
+<div class="ws-win"><span>U1400</span><b>Sam Nguyen and Leo Robichaux, tied</b><em>4/5</em></div>
+<div class="ws-win"><span>U1000</span><b>Theo Guidry</b><em>4½/5</em></div>
+<div class="ws-win"><span>+2</span><b style="font-weight:500;color:#3d4556">2 more sections, listed on the results page</b><em></em></div>
+</div>
+<p class="ws-hint">Read-only here. To correct a name or score, fix it in <a class="k-link" href="#">Pairings &amp; results</a>; this list and the published card update with it.</p>
+</section>
+<section class="ws-fsec" aria-labelledby="ws-ln">
+<div class="ws-fh"><h3 id="ws-ln">A few lines</h3><span class="k-tag k-tag-soon">Yours to add</span><span class="k-num-badge nw-b" style="margin-left:auto">14</span></div>
+<div class="ws-ta">Only a fourth-round draw stood between Landry and a perfect score. Members also held the annual meeting on Sunday. Thank you to everyone who made Labor Day weekend in Sulphur run on time.</div>
+<p class="ws-hint">Two or three sentences. They show on the card and at the top of the recap. 186 of 400 characters.</p>
+</section>
+<section class="ws-fsec" aria-labelledby="ws-ph">
+<div class="ws-fh"><h3 id="ws-ph">Photos</h3><span class="k-meta">2 of 4 · the first one is the card photo</span></div>
+<div class="ws-photos">
+<div class="ws-ph"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at long tables in the Sulphur tournament hall"><span class="ws-cover">Card photo</span></div>
+<div class="ws-ph"><div class="k-img">Photo · round 5, board 1</div></div>
+<div class="ws-add"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add photos<small>From this computer or a phone</small></div>
+<div class="ws-add"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"></path></svg>From our Facebook page<small>Pick from the LCA page's posts this weekend</small></div>
+</div>
+<label class="k-check k-small"><input type="checkbox" checked> Everyone pictured agreed to be photographed, and a parent agreed for anyone under 18.</label>
+<p class="ws-hint">Required before photos publish. The recap shows "Ask us to take a photo down" with the LCA contact address.</p>
+</section>
+<section class="ws-fsec" aria-labelledby="ws-lk">
+<div class="ws-fh"><h3 id="ws-lk">Links on the card</h3><span class="ws-from"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Added for you</span></div>
+<div class="ws-links"><span class="ws-lnk">Full results <code>/tournaments/2026-louisiana-state-championship/results</code></span><span class="ws-lnk">US Chess rating report ↗</span></div>
+</section>
+<div class="ws-foot">
+<span class="k-row-sm"><span class="k-tag k-tag-soon">Draft · not published</span><span class="k-meta">Saved 9:20 PM</span></span>
+<span class="k-row-sm"><button class="k-btn k-btn-line" type="button">Save draft</button><button class="k-btn k-btn-gold" type="button">Publish recap</button><span class="k-num-badge nw-b">15</span></span>
+</div>
+</div>
+
+<aside class="ws-side" aria-label="Preview">
+<section class="ws-scard" aria-labelledby="ws-pv1">
+<p id="ws-pv1" class="k-label">On News · Recent tournaments</p>
+<article class="nw-tcard">
+<img class="nw-tphoto" src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at long tables in the tournament hall" style="height:150px">
+<div class="nw-tbody" style="padding:14px 16px 16px;gap:8px">
+<div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-closed">Finished</span></div>
+<h3 class="nw-th" style="font-size:17px">Marcus Landry wins the 2026 Louisiana State Championship</h3>
+<p class="nw-win" style="font-size:13px">Open&nbsp;Marcus Landry 4½ <i>·</i> U1800&nbsp;Devin Batiste 4½ <i>·</i> U1400&nbsp;Sam Nguyen and Leo Robichaux 4, tied <i>·</i> U1000&nbsp;Theo Guidry 4½ <i>·</i> 2 more sections</p>
+<div class="nw-tacts"><span class="k-btn k-btn-navy k-btn-sm">Full results</span><span class="k-link k-small">Read the recap</span></div>
+</div>
+</article>
+</section>
+<section class="ws-scard" aria-labelledby="ws-pv2">
+<p id="ws-pv2" class="k-label">When shared on Facebook</p>
+<div class="nw-share">
+<img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Share image: players at long tables in the tournament hall" style="height:150px">
+<div class="nw-share-in"><span class="nw-share-dom">louisianachess.org</span><p class="nw-share-t">Marcus Landry wins the 2026 Louisiana State Championship</p><p class="nw-share-d">Only a fourth-round draw stood between Landry and a perfect score.</p></div>
+</div>
+</section>
+<section class="ws-scard" aria-labelledby="ws-pv3">
+<p id="ws-pv3" class="k-label">Publishing also</p>
+<ul class="ws-check">
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Adds a Results row to Latest on News</span></li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Adds "Read the recap" to the results page</span></li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Goes in Monday's news email</span></li>
+<li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Then offers Share to Facebook, with this card</span></li>
+</ul>
+</section>
+<section class="ws-scard" aria-labelledby="ws-pv4">
+<p id="ws-pv4" class="k-label">Before the event is complete</p>
+<div class="ws-locked"><a href="#">Setup</a><a href="#">Entries</a><a href="#">Pairings &amp; results</a><a class="ws-off" href="#" aria-disabled="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Recap</a></div>
+<p class="ws-hint" style="margin:0">Greyed, with "Opens when standings are final" on hover or focus. An upcoming event such as The Baton Rouge Classic (Sat–Sun, Oct 24–25) shows it this way.</p>
+</section>
+</aside>
+</div>
+</main>
+</div></div>
+<p class="nw-cap">The Recap tab is the tournament's own after-event job, so the director never goes looking for a news editor. The site does the dull part (headline, winners, links, share card) and leaves the human part: a few lines and a photo. Nothing here repeats the results page; the card always points back to it.</p>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
