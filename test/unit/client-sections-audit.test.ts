@@ -112,13 +112,13 @@ describe('the pricing adapter over the sections JSON string is gone', () => {
   it('no page or component hands pricing a JSON string of sections', () => {
     // (The manage page keeps a JSON snapshot of its own form state to tell what changed; it prices nothing.)
     const pricing = filesUnder('src').filter((file) => /\b(priceEntry|priceShownSection)\(/.test(withoutComments(text(file))))
-    expect(pricing).toEqual(['src/components/family/FamilyRegistrationPanel.tsx', 'src/pages/TournamentDetailPage.tsx'])
+    expect(pricing).toEqual(['src/areas/households/components/FamilyRegistrationPanel.tsx', 'src/pages/TournamentDetailPage.tsx'])
     const hits = pricing.filter((file) => /sections\s*:\s*JSON\.stringify\(|JSON\.stringify\([^)]*\.sections\b/.test(withoutComments(text(file))))
     expect(hits).toEqual([])
   })
 
   it('the two pages that price an entry call priceShownSection with the answered section and the tournament', () => {
-    for (const file of ['src/pages/TournamentDetailPage.tsx', 'src/components/family/FamilyRegistrationPanel.tsx']) {
+    for (const file of ['src/pages/TournamentDetailPage.tsx', 'src/areas/households/components/FamilyRegistrationPanel.tsx']) {
       const code = withoutComments(text(file))
       expect(code, file).toMatch(/priceShownSection\([^,]*?sections?\b[^,]*,\s*tournament\s*,/)
       expect(code, file).not.toMatch(/\bpriceEntry\(/)
@@ -155,7 +155,7 @@ describe('the site types come from the contracts', () => {
   })
 
   it('the setup screens and the editors edit sections as ApiSectionDraft, which keeps the id', () => {
-    for (const file of ['src/components/admin/TournamentWizard.tsx', 'src/pages/TournamentManagePage.tsx', 'src/components/tournaments/SectionRulesEditor.tsx', 'src/components/tournaments/PrizesEditor.tsx']) {
+    for (const file of ['src/areas/admin/components/TournamentWizard.tsx', 'src/pages/TournamentManagePage.tsx', 'src/areas/events/components/SectionRulesEditor.tsx', 'src/areas/events/components/PrizesEditor.tsx']) {
       expect(withoutComments(text(file)), file).toContain('ApiSectionDraft')
     }
     expect(api).toMatch(/export type ApiSectionDraft = Partial<ApiTournamentSection> & Pick<ApiTournamentSection, 'name' \| 'entryFee'>/)
@@ -167,7 +167,7 @@ describe('the site types come from the contracts', () => {
   })
 
   it('the wizard copies a template event without its section ids', () => {
-    const wizard = withoutComments(text('src/components/admin/TournamentWizard.tsx'))
+    const wizard = withoutComments(text('src/areas/admin/components/TournamentWizard.tsx'))
     expect(wizard).toMatch(/delete copy\.id/)
   })
 })

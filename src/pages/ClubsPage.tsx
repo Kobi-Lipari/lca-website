@@ -8,7 +8,7 @@ import { PageHero } from '@/components/PageHero'
 import { clubColorTint } from '@/areas/clubs/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { LCAMap, clubLocation, directionsUrl } from '@/components/maps/LCAMap'
+import { LCAMap, clubLocation, directionsUrl } from '@/areas/clubs/components/LCAMap'
 import { LCA } from '@/lib/brand'
 import { REGIONS } from '@/lib/regions'
 

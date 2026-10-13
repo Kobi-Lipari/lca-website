@@ -65,7 +65,7 @@ describe('no wording advertises a member price', () => {
     expect(rel).toContain('src/pages/TournamentManagePage.tsx')
     expect(rel).toContain('src/pages/HomePage.tsx')
     expect(rel).toContain('src/pages/MembershipPage.tsx')
-    expect(rel).toContain('src/components/family/FamilyRegistrationPanel.tsx')
+    expect(rel).toContain('src/areas/households/components/FamilyRegistrationPanel.tsx')
     expect(rel).toContain('domain/registration/pricing.ts')
     expect(rel).toContain('functions/utils/registration/registrationEmails.ts')
     expect(rel).toContain('functions/utils/emailLayout.ts')

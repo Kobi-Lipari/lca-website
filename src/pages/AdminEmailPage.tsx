@@ -5,7 +5,7 @@ import {
   Eye, EyeOff, FlaskConical, X, UserPlus, Search,
 } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
-import { RichTextEditor } from '@/components/governance/RichTextEditor'
+import { RichTextEditor } from '@/areas/governance/components/RichTextEditor'
 import { MultiSelectDropdown } from '@/components/MultiSelectDropdown'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/auth-context'
-import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
+import UscfSearchInput, { type UscfPlayerResult } from '@/areas/membership/components/UscfSearchInput'
 import { cn } from '@/lib/utils'
 
 const goldButtonClass =

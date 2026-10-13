@@ -28,12 +28,12 @@ import {
   type ApiSupportTicket,
 } from '@/lib/api'
 import { ROLE_LABELS, canAccessAdmin } from '@/areas/admin/roles'
-import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
+import UscfSearchInput, { type UscfPlayerResult } from '@/areas/membership/components/UscfSearchInput'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { FamilyCard } from '@/components/family/FamilyCard'
-import { UsChessBadge, UsChessMembershipDetail, usChessState } from '@/components/uscf/UsChessMembership'
+import { FamilyCard } from '@/areas/households/components/FamilyCard'
+import { UsChessBadge, UsChessMembershipDetail, usChessState } from '@/areas/membership/components/UsChessMembership'
 
 type MembershipStatus = 'active' | 'expired' | 'pending'
 

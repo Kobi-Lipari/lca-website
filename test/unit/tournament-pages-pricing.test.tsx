@@ -35,7 +35,7 @@ vi.mock('@/lib/supabase', () => ({ supabase: {} }))
 vi.mock('@/lib/api', async (importOriginal) => ({ ...(await importOriginal<typeof import('@/lib/api')>()), ...api }))
 
 const { TournamentDetailPage } = await import('@/pages/TournamentDetailPage')
-const { FamilyRegistrationPanel } = await import('@/components/family/FamilyRegistrationPanel')
+const { FamilyRegistrationPanel } = await import('@/areas/households/components/FamilyRegistrationPanel')
 
 // Thursday, October 1, 2026, noon Central: before the early deadline below.
 const BEFORE_EARLY = new Date('2026-10-01T17:00:00Z')

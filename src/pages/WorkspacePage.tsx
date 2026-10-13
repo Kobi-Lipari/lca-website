@@ -13,8 +13,8 @@ import { Building2, ExternalLink, Search, Trophy, Users } from 'lucide-react'
 
 import { PageHero } from '@/components/PageHero'
 import { Button } from '@/components/ui/button'
-import { MembersTable } from '@/components/admin/MembersTable'
-import { TournamentList } from '@/components/admin/TournamentList'
+import { MembersTable } from '@/areas/admin/components/MembersTable'
+import { TournamentList } from '@/areas/admin/components/TournamentList'
 import { useAuth } from '@/contexts/auth-context'
 import {
   adminGetClub,
