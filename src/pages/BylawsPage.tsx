@@ -1,9 +1,9 @@
 // src/pages/BylawsPage.tsx
-import { GovLayout } from '@/components/governance/GovLayout'
-import { GovernanceDocuments } from '@/components/governance/GovernanceDocuments'
+import { GovLayout } from '@/areas/governance/components/GovLayout'
+import { GovernanceDocuments } from '@/areas/governance/components/GovernanceDocuments'
 import { useAuth } from '@/contexts/auth-context'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { canEditGovernance } from '@/lib/roles'
+import { canEditGovernance } from '@/areas/admin/roles'
 
 export function BylawsPage() {
   usePageTitle('Bylaws & Rules')

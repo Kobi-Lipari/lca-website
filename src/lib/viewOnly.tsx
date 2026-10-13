@@ -6,7 +6,7 @@
 import type { ReactNode } from 'react'
 
 import { useAuth } from '@/contexts/auth-context'
-import { isViewOnlyAdmin } from '@/lib/roles'
+import { isViewOnlyAdmin } from '@/areas/admin/roles'
 
 export function useViewOnly(): boolean {
   const { role } = useAuth()

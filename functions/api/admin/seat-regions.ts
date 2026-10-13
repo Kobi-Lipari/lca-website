@@ -4,7 +4,7 @@
 // holds the seat manages every club in those regions (club page, officers,
 // news, logo, roster). Admin only, like every other change to a seat.
 import type { Env } from '../../types'
-import { recordAdminAction } from '../../utils/audit'
+import { recordAdminAction } from '../../utils/admin/audit'
 import { isResponse, requireAdmin } from '../../utils/auth'
 import { isRegion } from '../../utils/regions'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'

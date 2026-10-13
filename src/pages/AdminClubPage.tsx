@@ -24,9 +24,9 @@ import {
   type ApiClubNews,
 } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
-import { isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
+import { isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
-import { ClubLocationPicker } from '@/components/maps/ClubLocationPicker'
+import { ClubLocationPicker } from '@/areas/clubs/components/ClubLocationPicker'
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'

@@ -1,7 +1,7 @@
 // functions/api/admin/members/[id]/membership.ts
 import type { Env, MemberRow } from '../../../../types'
 import { jsonResponse, errorResponse, handleOptions } from '../../../../utils/response'
-import { recordAdminAction } from '../../../../utils/audit'
+import { recordAdminAction } from '../../../../utils/admin/audit'
 import { requireAdmin, isResponse } from '../../../../utils/auth'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()

@@ -7,7 +7,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../utils/response'
-import { createTicket, siteUrlFromRequest } from '../utils/tickets'
+import { createTicket, siteUrlFromRequest } from '../utils/admin/tickets'
 
 interface CreateTicketBody {
   name: string
@@ -21,7 +21,7 @@ interface CreateTicketBody {
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 /**
- * Ticket creation now lives in utils/tickets.ts, shared with /api/contact.
+ * Ticket creation now lives in utils/admin/tickets.ts, shared with /api/contact.
  * The inline INSERTs and notification mail that used to be here diverged from
  * the contact endpoint's copy — one helper means reply-to, seat routing and
  * holder notification behave identically no matter which form was used.

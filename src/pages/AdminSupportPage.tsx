@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { MessageSquare, RefreshCw, Trash2 } from 'lucide-react'
-import { ConfirmDialog } from '@/components/admin/ConfirmDialog'
+import { ConfirmDialog } from '@/areas/admin/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'

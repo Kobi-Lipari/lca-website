@@ -1,7 +1,7 @@
 // functions/api/admin/tournaments/[id]/registration.ts
 import type { Env, TournamentRow } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
-import { notifyRegistrationOpen } from '../../../../utils/registrationOpenNotify'
+import { notifyRegistrationOpen } from '../../../../utils/registration/registrationOpenNotify'
 import {
   errorResponse,
   handleOptions,

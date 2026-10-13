@@ -1,13 +1,13 @@
 // functions/api/admin/tournaments/[id]/generate-pairings.ts
 //
 // Pairs the next round of one section with the Swiss engine
-// (utils/swiss/engine): US Chess rules unless the tournament is set to
+// (utils/live/swiss/engine): US Chess rules unless the tournament is set to
 // FIDE-style. Everything is written in one batch, so a failure leaves no
 // half-paired round behind.
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
-import { recordAdminAction } from '../../../../utils/audit'
-import { acceleratedTopGroup, pairRound, type PairingSystem, type SwissGame, type SwissPlayer } from '../../../../utils/swiss/engine'
+import { recordAdminAction } from '../../../../utils/admin/audit'
+import { acceleratedTopGroup, pairRound, type PairingSystem, type SwissGame, type SwissPlayer } from '../../../../utils/live/swiss/engine'
 import {
   errorResponse,
   handleOptions,

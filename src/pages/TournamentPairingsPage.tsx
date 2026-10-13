@@ -13,10 +13,10 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { StandingsTable } from '@/components/tournaments/StandingsTable'
-import { Crosstable } from '@/components/tournaments/Crosstable'
-import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
-import { PreviewBanner } from '@/components/tournaments/PreviewBanner'
+import { StandingsTable } from '@/areas/live/components/StandingsTable'
+import { Crosstable } from '@/areas/live/components/Crosstable'
+import { PrizeWinners } from '@/areas/events/components/PrizeWinners'
+import { PreviewBanner } from '@/areas/events/components/PreviewBanner'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -5,7 +5,7 @@
 // name, date, place and spots left. Hidden drafts keep the generic preview.
 // Nested paths (/tournaments/:id/pairings) are not matched by this file.
 import type { Env } from '../types'
-import { formatPreviewDate, withLinkPreview } from '../utils/linkPreview'
+import { formatPreviewDate, withLinkPreview } from '../utils/events/linkPreview'
 
 interface TournamentPreviewRow {
   name: string

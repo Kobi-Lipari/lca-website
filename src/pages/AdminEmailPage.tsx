@@ -5,7 +5,7 @@ import {
   Eye, EyeOff, FlaskConical, X, UserPlus, Search,
 } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
-import { RichTextEditor } from '@/components/governance/RichTextEditor'
+import { RichTextEditor } from '@/areas/governance/components/RichTextEditor'
 import { MultiSelectDropdown } from '@/components/MultiSelectDropdown'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -51,7 +51,7 @@ const SITE_URL_DISPLAY = (
   import.meta.env.VITE_SITE_URL ?? 'https://www.louisianachess.org'
 ).replace(/^https?:\/\//, '')
 
-/** Visual mirror of functions/utils/campaigns.ts → wrapBrandedEmail().
+/** Visual mirror of functions/utils/admin/campaigns.ts → wrapBrandedEmail().
  *  Preview only — the actual email HTML is generated server-side. If you
  *  change the backend template's colors/spacing, update this one too. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

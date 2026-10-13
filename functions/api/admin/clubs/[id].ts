@@ -10,7 +10,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../../../utils/response'
-import { recordAdminAction } from '../../../utils/audit'
+import { recordAdminAction } from '../../../utils/admin/audit'
 
 interface UpdateClubBody {
   name?: string

@@ -5,7 +5,7 @@ import { ChevronDown, Menu, UserCircle, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
-import { WORKSPACE_ROLES, canAccessAdmin } from '@/lib/roles'
+import { WORKSPACE_ROLES, canAccessAdmin } from '@/areas/admin/roles'
 import { cn } from '@/lib/utils'
 import lcaLogo from '@/assets/lca-logo.webp'
 

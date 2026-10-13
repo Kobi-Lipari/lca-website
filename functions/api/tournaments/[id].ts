@@ -2,7 +2,7 @@
 import type { Env, TournamentRow } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { isObserver, requireAuthedMember, isResponse } from '../../utils/auth'
-import { computeStandings, tournamentPrizes } from '../../utils/tournament-manage'
+import { computeStandings, tournamentPrizes } from '../../utils/events/tournament-manage'
 import { parseJsonArray } from '../../utils/json'
 import { getDb } from '../../db/client'
 import { loadSections, toTournamentResponse } from '../../utils/events/sectionsRepo'
@@ -26,7 +26,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     try {
       const authed = await requireAuthedMember(context.request, context.env)
       if (!isResponse(authed)) {
-        const { canManageTournament } = await import('../../utils/permissions')
+        const { canManageTournament } = await import('../../utils/admin/permissions')
         isPrivileged = isObserver(authed.member) ||
           await canManageTournament(context.env.DB, authed.member, tournamentId)
       }

@@ -11,7 +11,7 @@ import { emailBehavior, emailOutbox, flushWaitUntil, invoke, resetHarness } from
 import { seedAdmin, seedClub, seedMember } from './factories'
 
 import { onRequestPost as campaignsPost } from '../../functions/api/admin/campaigns'
-import { processCampaign, sweepPendingCampaigns } from '../../functions/utils/campaigns'
+import { processCampaign, sweepPendingCampaigns } from '../../functions/utils/admin/campaigns'
 
 beforeEach(resetHarness)
 

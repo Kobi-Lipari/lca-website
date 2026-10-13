@@ -110,7 +110,7 @@ describe('vitest.config.ts', () => {
   it('collects .ts and .tsx unit tests and keeps the earlier locations', () => {
     expect(test.include).toEqual(
       expect.arrayContaining([
-        'functions/utils/swiss/**/*.test.ts',
+        'functions/utils/live/swiss/**/*.test.ts',
         'src/lib/scanner/**/*.test.ts',
         'test/unit/**/*.test.ts',
         'test/unit/**/*.test.tsx',

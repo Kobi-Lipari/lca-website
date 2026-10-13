@@ -13,8 +13,8 @@ import { Building2, ExternalLink, Search, Trophy, Users } from 'lucide-react'
 
 import { PageHero } from '@/components/PageHero'
 import { Button } from '@/components/ui/button'
-import { MembersTable } from '@/components/admin/MembersTable'
-import { TournamentList } from '@/components/admin/TournamentList'
+import { MembersTable } from '@/areas/admin/components/MembersTable'
+import { TournamentList } from '@/areas/admin/components/TournamentList'
 import { useAuth } from '@/contexts/auth-context'
 import {
   adminGetClub,
@@ -24,7 +24,7 @@ import {
   type ApiClubDetail,
   type ApiTournamentListItem,
 } from '@/lib/api'
-import { ROLE_LABELS, WORKSPACE_ROLES } from '@/lib/roles'
+import { ROLE_LABELS, WORKSPACE_ROLES } from '@/areas/admin/roles'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'

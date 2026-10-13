@@ -1,7 +1,7 @@
 import type { Env } from '../../../types'
 import { jsonResponse } from '../../../utils/response'
 import { requireGovernanceEditor, isResponse } from '../../../utils/auth'
-import { recordAdminAction } from '../../../utils/audit'
+import { recordAdminAction } from '../../../utils/admin/audit'
 
 interface GovernanceDocumentBody {
   category?: string

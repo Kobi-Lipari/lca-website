@@ -5,9 +5,9 @@ import {
   updateMemberProfile,
   upsertMemberFromAuth,
   validateFullName,
-} from '../utils/members'
+} from '../utils/admin/members'
 import { isValidUscfId, refreshUscfSoon } from '../utils/uscf'
-import { getDirectedTournamentIds } from '../utils/permissions'
+import { getDirectedTournamentIds } from '../utils/admin/permissions'
 import { listChildren } from '../utils/family'
 import {
   errorResponse,

@@ -13,10 +13,10 @@ import {
   type ApiClubOfficer,
   type ApiClubTournament,
 } from '@/lib/api'
-import { clubColorTint } from '@/lib/clubColors'
+import { clubColorTint } from '@/areas/clubs/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { LCAMap } from '@/components/maps/LCAMap'
+import { LCAMap } from '@/areas/clubs/components/LCAMap'
 import { LCA } from '@/lib/brand'
 
 const LCA_GOLD = LCA.gold

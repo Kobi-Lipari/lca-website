@@ -26,12 +26,12 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { describeRules, effectiveRules, eligibilityProblem, gradeRangeText, needsGrade, parseGradeRange } from '@/lib/sectionRules'
-import { asksGrade, confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/components/tournaments/GradeConfirm'
+import { asksGrade, confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/areas/events/components/GradeConfirm'
 import { priceShownSection, type Price } from '@/lib/pricing'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useNow } from '@/hooks/useNow'
-import { FamilyRegistrationPanel } from '@/components/family/FamilyRegistrationPanel'
-import { PreviewBanner } from '@/components/tournaments/PreviewBanner'
+import { FamilyRegistrationPanel } from '@/areas/households/components/FamilyRegistrationPanel'
+import { PreviewBanner } from '@/areas/events/components/PreviewBanner'
 
 const statusConfig: Record<TournamentStatus, { label: string; className: string }> = {
   upcoming: { label: 'Upcoming', className: 'bg-lca-gold/20 text-lca-gold' },

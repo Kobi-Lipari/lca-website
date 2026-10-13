@@ -2,7 +2,7 @@
 import type { Env, TournamentRow } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../utils/response'
-import { recordAdminAction } from '../../utils/audit'
+import { recordAdminAction } from '../../utils/admin/audit'
 import { getDb } from '../../db/client'
 import { tournaments } from '../../db/schema'
 import { createTournamentRequestSchema } from '../../../domain/contracts/events'

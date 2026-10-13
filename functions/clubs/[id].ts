@@ -3,7 +3,7 @@
 // Serves the normal app shell for /clubs/:id with the club's own link
 // preview: name, city and meeting time, and its logo when one is uploaded.
 import type { Env } from '../types'
-import { withLinkPreview } from '../utils/linkPreview'
+import { withLinkPreview } from '../utils/events/linkPreview'
 
 interface ClubPreviewRow {
   name: string

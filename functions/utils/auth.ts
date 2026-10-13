@@ -3,9 +3,9 @@ import { createClient } from '@supabase/supabase-js'
 import type { User } from '@supabase/supabase-js'
 
 import type { Env, MemberRow } from '../types'
-import { getMemberById, upsertMemberFromAuth } from './members'
+import { getMemberById, upsertMemberFromAuth } from './admin/members'
 import { errorResponse, jsonResponse } from './response'
-import { isMemberRole, type MemberRole } from './permissions'
+import { isMemberRole, type MemberRole } from './admin/permissions'
 
 /**
  * Authenticator Assurance Level carried by the access token.
@@ -297,7 +297,7 @@ export async function requireClubRep(
 
   // Admins, the club's own rep, and the regional representative whose seat
   // covers the club's region.
-  const { canManageClub } = await import('./permissions')
+  const { canManageClub } = await import('./admin/permissions')
   if (await canManageClub(env.DB, authed.member, clubId)) return authed
 
   return errorResponse('Forbidden', 403)
@@ -311,7 +311,7 @@ export async function requireTournamentManager(
   const authed = await requireAuthedMember(request, env)
   if (authed instanceof Response) return authed
 
-  const { canManageTournament } = await import('./permissions')
+  const { canManageTournament } = await import('./admin/permissions')
   const allowed = await canManageTournament(
     env.DB,
     authed.member,

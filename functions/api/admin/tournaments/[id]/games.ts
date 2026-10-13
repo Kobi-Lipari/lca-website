@@ -8,7 +8,7 @@
 // Rematches are allowed but reported.
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentManager } from '../../../../utils/auth'
-import { recordAdminAction } from '../../../../utils/audit'
+import { recordAdminAction } from '../../../../utils/admin/audit'
 import {
   errorResponse,
   handleOptions,
