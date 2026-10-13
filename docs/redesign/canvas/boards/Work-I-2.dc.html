@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · I-2 · The way in, the backstop, the states (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.wi-root{width:1440px;box-sizing:border-box;padding:32px 0 48px;background:#ecebe6;color:#1a2744}
+.wi-root *{box-sizing:border-box}
+.wi-pad{margin:0 32px}
+.wi-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.wi-title{font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 4px}
+.wi-ml{font-size:14px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1100px}
+.wi-ml b{color:#1a2744;font-weight:600}
+.wi-kq{margin:12px 0 0;padding:10px 14px;border-left:4px solid #c8a94a;background:#ffffff;border-radius:0 8px 8px 0;font-size:14px;line-height:1.5;color:#1a2744;max-width:1100px}
+.wi-legend{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.wi-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.wi-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 22px}
+.wi-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.wi-notes b{font-weight:600}
+.wi-fl2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start;margin-top:14px}
+.wi-frameline{margin:0;padding:12px 14px;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;font-size:13px;line-height:1.5;color:#3d4556}
+.wi-frameline b{color:#1a2744}
+.wi-crumbs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.wi-c3{border:1px solid #e3e2dc;border-radius:8px;background:#ffffff;padding:8px 10px;font-size:13px;line-height:1.4}
+.wi-c3 span{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.wi-c3 small{display:block;font-size:12px;color:#555c6b;margin-top:2px}
+.wi-top{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:24px;align-items:start}
+.wi-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+.wi-grey p{margin:0;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wi-grey b{display:block;color:#1a2744;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px}
+.wi-grey ul{margin:2px 0 0;padding-left:18px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wi-grey li{margin-bottom:4px}
+
+.wi-sec{margin-top:28px}
+.wi-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 32px 12px}
+.wi-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.wi-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.wi-browser{border-radius:0;border-left:0;border-right:0;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.wi-view{background:#f5f5f2;position:relative}
+
+/* header (decided chrome) */
+.wi-hd-in{gap:0;position:relative;padding:0 24px;max-width:none}
+.wi-hd .k-brand{margin-right:16px}
+.wi-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.wi-rook-sm{width:24px;height:24px}
+.wi-nav{gap:0}
+.wi-nav a{padding:0 10px;white-space:nowrap}
+.wi-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.wi-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.wi-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.wi-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+
+.wi-crumb{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:0 40px;background:#ffffff;border-bottom:1px solid #ecebe5}
+.wi-crumb nav{display:flex;align-items:center;gap:8px;font-size:14px;color:#555c6b}
+.wi-crumb nav a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wi-crumb nav b{color:#1a2744;font-weight:600}
+.wi-back{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:#1a2744;font-size:14px;font-weight:600;text-decoration:none}
+
+/* admin shell */
+.wi-shell{display:grid;grid-template-columns:220px 1100px;gap:40px;padding:24px 40px 32px;align-items:start}
+.wi-side{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 8px 12px;position:relative}
+.wi-side-h{padding:4px 10px 10px;border-bottom:1px solid #ecebe5;margin-bottom:4px}
+.wi-side-h b{display:block;font-size:18px;font-weight:700}
+.wi-side-h a{display:inline-flex;align-items:center;gap:4px;min-height:32px;font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wi-grp{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding:12px 10px 3px}
+.wi-sn{display:flex;align-items:center;gap:8px;min-height:34px;padding:4px 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;font-weight:500;line-height:1.25;border-left:3px solid transparent}
+.wi-sn small{display:block;font-size:12px;color:#555c6b;font-weight:400}
+.wi-sn-on{background:#f3eedc;border-left-color:#866a1e;font-weight:700}
+.wi-cnt{margin-left:auto;font-size:12px;font-weight:700;background:#1a2744;color:#ffffff;border-radius:99px;padding:2px 8px;line-height:1.3}
+.wi-sn .k-tag{margin-left:auto}
+.wi-sn-amber{margin-left:auto;font-size:11.5px;font-weight:600;color:#664c0c;background:#f5ecd2;border-radius:6px;padding:2px 6px;white-space:nowrap}
+.wi-side-f{margin-top:10px;padding:10px 10px 2px;border-top:1px solid #ecebe5;font-size:12.5px;line-height:1.4;color:#3d4556;display:flex;gap:8px;align-items:flex-start}
+.wi-side-f b{color:#1a2744}
+
+.wi-main{min-width:0;display:flex;flex-direction:column;gap:16px}
+.wi-today{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap;min-height:48px;padding:8px 14px 8px 20px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:13.5px;line-height:1.4;color:#3d4556;position:relative}
+.wi-today .k-label{color:#1a2744}
+.wi-today a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.wi-sep{color:#9aa1b0}
+.wi-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px}
+.wi-titlerow{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.wi-titlerow h1{margin:0;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;display:flex;align-items:center;gap:12px}
+.wi-titlerow h1 .wi-tsub{font-weight:500;color:#555c6b;font-size:22px}
+.wi-jump{width:420px;flex:none}
+.wi-jump .k-input{font-size:15px}
+.wi-tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;position:relative}
+.wi-tile{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #dddcd4;border-radius:10px;background:#ffffff;color:#1a2744;text-decoration:none;min-height:92px}
+.wi-tile b{font-size:26px;line-height:1.1;font-weight:700}
+.wi-tile .k-label{font-size:11px;letter-spacing:.06em}
+.wi-tile span.wi-ts{font-size:12.5px;line-height:1.3;color:#555c6b}
+.wi-tile-zero{background:#fbfbf8}
+.wi-tile-zero b{color:#6b7180}
+.wi-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.wi-bar .k-chip{min-height:36px}
+.wi-sort{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid #c4c3bb;border-radius:8px;background:#ffffff;font-size:13.5px;font-weight:600;color:#1a2744}
+.wi-sort span{font-weight:500;color:#555c6b}
+.wi-dig{font-size:14px;align-items:center}
+.wi-dig input{margin:0}
+
+.wi-table{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:visible;position:relative}
+.wi-tr{display:grid;grid-template-columns:minmax(0,1fr) 136px 112px 176px 180px;gap:14px;align-items:center;min-height:64px;padding:8px 16px;border-bottom:1px solid #ecebe5;position:relative}
+.wi-tr.wi-last{border-bottom:0}
+.wi-th{min-height:38px;padding-top:0;padding-bottom:0;background:#fbfbf8;border-radius:12px 12px 0 0;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b}
+.wi-item{min-width:0;display:flex;flex-direction:column;gap:2px}
+.wi-item b{font-size:14.5px;font-weight:600;line-height:1.3;color:#1a2744}
+.wi-item span{font-size:13px;line-height:1.35;color:#555c6b}
+.wi-src{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:6px;font-size:12px;font-weight:600;line-height:1.2;white-space:nowrap}
+.wi-src::before{content:"";width:7px;height:7px;border-radius:2px;background:currentColor;flex:none}
+.wi-s-appr{background:#f3eedc;color:#5c4a12}
+.wi-s-sup{background:#e8edf4;color:#2d3a52}
+.wi-s-board{background:#ece8f3;color:#3f2f63}
+.wi-s-fail{background:#fdebd6;color:#7a3d00}
+.wi-s-club{background:#e1f0e7;color:#145b3a}
+.wi-wait{font-size:14px;color:#1a2744}
+.wi-late{display:inline-flex;flex-direction:column;padding:4px 8px;border-radius:6px;background:#f5ecd2;color:#664c0c;font-size:14px;font-weight:700;line-height:1.2}
+.wi-late small{font-size:11.5px;font-weight:600}
+.wi-own{font-size:14px;line-height:1.3;color:#1a2744}
+.wi-own small{display:block;font-size:12px;color:#555c6b}
+.wi-assign{display:inline-flex;align-items:center;gap:4px;font-size:14px}
+.wi-act{display:flex;justify-content:flex-end}
+.wi-b40{min-height:40px;padding:0 14px;font-size:14px}
+.wi-rbadge{position:absolute;left:-14px;top:50%;margin-top:-14px;box-shadow:0 0 0 3px #ffffff;z-index:3}
+.wi-tfoot{padding:12px 16px;background:#fbfbf8;border-top:1px solid #ecebe5;border-radius:0 0 12px 12px;font-size:13px;line-height:1.5;color:#3d4556}
+.wi-badge{position:absolute;z-index:5;box-shadow:0 0 0 3px #ffffff}
+
+.wi-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.wi-foot .k-meta{color:rgba(255,255,255,.78)}
+
+/* lower rows */
+.wi-row{display:grid;gap:20px;margin:0 32px;align-items:start}
+.wi-inset{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;position:relative}
+.wi-ihead{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fbfbf8;border-bottom:1px solid #ecebe5;font-size:13px;color:#555c6b;line-height:1.35}
+.wi-ihead b{color:#1a2744;font-size:14px}
+.wi-icode{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 7px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700;flex:none}
+.wi-ibody{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.wi-ibody .k-input{min-height:40px;font-size:14px}
+.wi-ibody .k-field label{font-size:13.5px}
+.wi-icap{margin:0;font-size:13px;line-height:1.45;color:#555c6b}
+.wi-icap b{color:#1a2744}
+.wi-dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0;border:1px solid #e3e2dc;border-radius:10px;overflow:hidden}
+.wi-dl dt,.wi-dl dd{margin:0;padding:8px 12px;font-size:13.5px;line-height:1.4;border-bottom:1px solid #ecebe5}
+.wi-dl dt{background:#fbfbf8;color:#555c6b;font-weight:600}
+.wi-dl dd{color:#1a2744}
+.wi-dl .wi-dlast{border-bottom:0}
+.wi-ok{background:#e1f0e7;color:#145b3a}
+.wi-hl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 0;border-bottom:1px solid #ecebe5;align-items:center}
+.wi-hl:last-child{border-bottom:0}
+.wi-hl b{font-size:14px}
+.wi-hl span.k-meta{grid-column:1}
+.wi-hl .k-tag{grid-row:1 / span 2;grid-column:2}
+.wi-card{border:1px solid #e3e2dc;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:#ffffff}
+.wi-card h3{margin:0;font-size:15.5px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wi-bnr{background:#1a2744;color:#ffffff;border-radius:8px;padding:8px 12px;font-size:13.5px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.wi-bnr a{color:#e6cf86;font-weight:600}
+.wi-switch{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.wi-switch i{display:inline-block;width:38px;height:22px;border-radius:99px;background:#1a2744;position:relative}
+.wi-switch i::after{content:"";position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#ffffff}
+
+.wi-thumb{border:1px solid #cfcec6;border-radius:10px;overflow:hidden;background:#f5f5f2}
+.wi-tcrumb{padding:6px 10px;font-size:11.5px;color:#3d4556;background:#ffffff;border-bottom:1px solid #ecebe5}
+.wi-backstop{background:#fbf7e9;border-bottom:1px solid #866a1e;padding:7px 10px;font-size:12px;color:#1a2744}
+.wi-cons{background:#1a2744;color:#ffffff;padding:10px 12px}
+
+.wi-menu{border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 10px 24px rgba(16,24,43,.12);padding:6px;background:#ffffff}
+.wi-mi{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px;padding:4px 10px;border-radius:8px;font-size:14px;font-weight:500}
+.wi-mi small{font-size:12px;color:#555c6b;font-weight:400}
+.wi-mi-on{box-shadow:inset 0 0 0 2px #c8a94a;background:#fbf7e9;font-weight:600}
+.wi-msep{height:1px;background:#e3e2dc;margin:4px}
+.wi-mlab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding:6px 10px 2px}
+.wi-sect{border:1px solid #dddcd4;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:#ffffff}
+.wi-sect h4{margin:0;font-size:17px;font-weight:700}
+.wi-mtag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#eceef3;color:#1a2744;font-size:11.5px;font-weight:600;white-space:nowrap}
+.wi-st{display:flex;flex-direction:column;gap:10px}
+.wi-mini{border:1px solid #e3e2dc;border-radius:10px;background:#f5f5f2;padding:12px;display:flex;flex-direction:column;gap:8px}
+.wi-mt{display:grid;grid-template-columns:minmax(0,1fr) 116px 104px 84px;gap:8px;align-items:center;padding:7px 10px;background:#ffffff;border-bottom:1px solid #ecebe5;font-size:12.5px;line-height:1.3}
+.wi-mt:last-child{border-bottom:0}
+.wi-mtiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.wi-mtile{background:#ffffff;border:1px solid #e3e2dc;border-radius:7px;padding:5px 7px;font-size:10.5px;line-height:1.25;color:#555c6b}
+.wi-mtile b{display:block;font-size:16px;color:#1a2744}
+</style>
+</helmet>
+<div class="wi-root" style="width:1440px;height:1600px">
+
+<section class="wi-doc wi-pad" aria-label="About this board">
+<div class="wi-top"><div style="min-width:0">
+  <div class="k-between"><p class="k-kicker" style="margin:0">15 · Workspace and admin · round 2 · option I · part 2 of 2</p><span class="k-sample">Sample data · queue items, names, counts, times</span></div>
+  <h1 class="wi-title">Admin · I-2 · The way in, the backstop, the states (round 2)</h1>
+  <p class="wi-ml"><b>Built from:</b> Work-C's Log in as, Account-Q-2's backstop strip and menu row, Work-A's console band · Round 2 · <b>Frame:</b> Int-A, swappable · <b>Replaces:</b> Work-C, with Work-J (one is picked)</p>
+  <p class="wi-ml"><b>K's feedback applied:</b> the screens joined to the whole, with options for each: how an admin gets into Admin from My LCA and back, and how the queue home reads empty and busy.</p>
+  <p class="wi-ml"><b>Shown:</b> Denise Fontenot, LCA admin (Sample data), Mon, Oct 5, 2026; the backstop on event day, Sat, Oct 24, 2026. Part 1 (Work-I) draws /admin itself.</p>
+</div>
+<aside class="wi-grey" aria-label="Board note">
+  <p><b>What</b>Part 2 of Work-I: the backstop into a TD's console, Log in as under Members, the way in from My LCA and back, and the queue home empty and busy.</p>
+  <p><b>Built from</b>Work-C, Account-Q-2, Work-A's band, the decided My LCA menu (Nav-Header-Final).</p>
+  <p><b>K's feedback applied</b>One door in (the menu row and the LCA admin section), one way back (Back to My LCA), the same queue at 0 or 40 items.</p>
+  <div><p><b>Open for K</b></p><ul><li>Exit console from the backstop: back to Admin › Tournaments (drawn) or to My LCA?</li></ul></div>
+</aside>
+</div>
+<div class="wi-legend">
+  <div class="wi-lbox">
+    <p class="k-label" style="margin:0">Notes on this board</p>
+    <ol class="wi-notes">
+      <li><span class="k-num-badge">1</span><span><b>The home stays the queue in every state.</b> Empty, it says so and names the last change; the tiles stay at 0 and the Today strip still shows.</span></li>
+      <li><span class="k-num-badge">2</span><span><b>Counts double as filters</b> when the queue is busy: "Waiting 2+ days · 14" in words, 20 rows a page, "Show 20 more".</span></li>
+      <li><span class="k-num-badge">5</span><span><b>Log in as lives under Members,</b> not on the home; it asks for a reason that goes to the audit log.</span></li>
+      <li><span class="k-num-badge">6</span><span><b>Admin only, with a second factor:</b> one menu row "Admin · 12 need attention", after the personal rows. Officers never see it.</span></li>
+    </ol>
+    <div class="wi-fl2"><p class="wi-frameline"><b>Frame.</b> Drawn inside Int-A (My LCA as the hub). The frame is swappable: under Int-B Admin stays a separate area reached from the header; under Int-C it is a card on Your work. Admin itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C. Notes 3 and 4 are on part 1.</p>
+    <div class="wi-crumbs3">
+      <div class="wi-c3"><span>Int-A · baseline</span>My LCA › Admin<small>From the menu row or the LCA admin section</small></div>
+      <div class="wi-c3"><span>Int-B</span>My LCA › Admin<small>From the header only, never a rail row</small></div>
+      <div class="wi-c3"><span>Int-C</span>My LCA › Your work › Admin<small>From the Admin card on Your work</small></div>
+    </div></div>
+  </div>
+</div>
+</section>
+
+<section class="wi-sec" aria-labelledby="wi-fc">
+  <div class="wi-flab"><span class="wi-code">C</span><h2 id="wi-fc">The backstop, Log in as, and the way in and back</h2><span class="k-meta">Insets at 1:1</span></div>
+  <div class="wi-row" style="grid-template-columns:390px 360px minmax(0,1fr);">
+    <div class="wi-inset">
+      <div class="wi-ihead"><span class="wi-icode">I3</span><span><b>The backstop</b> · an admin in a TD's console</span></div>
+      <div class="wi-ibody">
+        <div class="wi-thumb">
+          <div class="wi-tcrumb">My LCA › Admin › Tournaments › The Baton Rouge Classic › Event day</div>
+          <div class="wi-backstop"><b>You're here as an LCA admin</b> · The Baton Rouge Classic · Event day</div>
+          <div class="wi-cons">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+              <div><div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:#e6cf86">EVENT DAY · SAT, OCT 24</div><div style="font-size:15px;font-weight:700;margin-top:2px">The Baton Rouge Classic</div><div style="font-size:11px;color:#d5dbe7;margin-top:2px">Baton Rouge · 4 sections · 5 rounds · G/90+30</div></div>
+              <span style="font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.7);border-radius:5px;padding:3px 7px;white-space:nowrap">Exit console</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:12px;font-size:10px;line-height:1.3;color:#d5dbe7">
+              <div style="border-top:2px solid #ffffff;padding-top:3px">Check-in<br>Closed</div><div style="border-top:2px solid #ffffff;padding-top:3px">Round 1<br>Done</div><div style="border-top:2px solid #ffffff;padding-top:3px">Round 2<br>Done</div><div style="border-top:2px solid #c8a94a;padding-top:3px;color:#ffffff">Round 3<br>8 of 13 confirmed</div><div style="border-top:2px solid rgba(255,255,255,.3);padding-top:3px">Close-out<br>After round 5</div>
+            </div>
+          </div>
+        </div>
+        <p class="wi-icap"><b>Exit console</b> returns to Admin › Tournaments, not to My LCA: the admin came in through Admin. Any TD room or My region opens this way (D6, D17).</p>
+      </div>
+    </div>
+    <div class="wi-inset">
+      <span class="k-num-badge wi-badge" style="right:12px;top:8px">5</span><div class="wi-ihead"><span class="wi-icode">I4</span><span><b>Members › Log in as a member</b></span></div>
+      <div class="wi-ibody">
+        <div class="k-field"><label for="wi-who">Member</label><input id="wi-who" class="k-input" placeholder="Name, email or US Chess ID"></div>
+        <div class="k-field"><label for="wi-why">Reason (saved to the audit log)</label><input id="wi-why" class="k-input" placeholder="e.g. Support: family account"></div>
+        <button class="k-btn k-btn-navy k-btn-block" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg>View the site as this member</button>
+        <p class="wi-icap">A banner stays on screen; payments and password changes are blocked.</p>
+      </div>
+    </div>
+    <div class="wi-inset">
+      <div class="wi-ihead"><span class="wi-icode">W</span><span><b>Way in from My LCA, and back</b></span></div>
+      <div class="wi-ibody" style="display:grid;grid-template-columns:minmax(0,1fr) 248px;gap:14px;align-items:start">
+        <div class="k-stack-sm" style="gap:10px">
+          <span class="k-label">The LCA admin section on My LCA</span>
+          <div class="wi-sect">
+            <span class="wi-mtag" style="align-self:flex-start">Admin</span>
+            <h4>LCA admin</h4>
+            <span style="font-size:14px;font-weight:600">Needs attention · 12 · oldest 9 days</span>
+            <span class="k-meta">Support 4 · Board inbox 2 · Approvals 3 · Failed emails 2 · Club reports 1 · Listing reports 0</span>
+            <a class="k-btn k-btn-navy k-btn-sm" href="#" style="align-self:flex-start">Open Admin</a>
+          </div>
+          <p class="wi-icap"><b>The way back:</b> "Back to My LCA" in the crumb line and under the sidebar title. The crumb reads My LCA › Admin; the word Workspace appears nowhere.</p>
+        </div>
+        <div class="k-stack-sm" style="gap:6px">
+          <span class="k-label">The My LCA ▾ menu</span>
+          <div class="wi-menu">
+            <div class="wi-mi">My LCA</div>
+            <div class="wi-mi">Membership card</div>
+            <div class="wi-msep"></div>
+            <div class="wi-mi wi-mi-on"><span style="white-space:nowrap">Admin · 12 need attention</span><span class="k-num-badge">6</span></div>
+            <div class="wi-msep"></div>
+            <div class="wi-mi">Log out</div>
+          </div>
+          <span class="k-meta">No to-do rows: nothing personal is due, so the trigger shows no count. The Admin row comes after the personal rows.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wi-sec" aria-labelledby="wi-fc2">
+  <div class="wi-flab"><span class="wi-code">D</span><h2 id="wi-fc2">The home's states</h2><span class="k-meta">The main column only, at about 1:2</span></div>
+  <div class="wi-row" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+    <div class="wi-inset">
+      <span class="k-num-badge wi-badge" style="right:12px;top:8px">1</span><div class="wi-ihead"><span class="wi-icode">S1</span><span><b>Empty</b> · the queue is clear</span></div>
+      <div class="wi-ibody">
+        <div class="wi-mini">
+          <div style="font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #e3e2dc;border-radius:7px;padding:6px 9px"><b class="k-ink">Today</b> · Mon, Oct 5, 2026 · Daily emails ran 6:00 AM · 43 sent, none failed · No site banner · Gulf South sync 5:00 AM · OK</div>
+          <div style="font-size:17px;font-weight:700">Needs attention · 0</div>
+          <div class="wi-mtiles"><div class="wi-mtile">Support<b>0</b></div><div class="wi-mtile">Board inbox<b>0</b></div><div class="wi-mtile">Approvals<b>0</b></div><div class="wi-mtile">Failed emails<b>0</b></div><div class="wi-mtile">Club reports<b>0</b></div><div class="wi-mtile">Listing reports<b>0</b></div></div>
+          <div style="background:#ffffff;border:1px solid #e3e2dc;border-radius:8px;padding:14px 14px;font-size:14px;line-height:1.45"><b>The queue is empty.</b><br><span class="k-meta">Last change: you marked the Bayou Region seat vacant, Sat, Oct 3, 2:30 PM.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="wi-inset">
+      <div class="wi-ihead"><span class="wi-icode">S2</span><span><b>Busy</b> · 40 items</span></div>
+      <div class="wi-ibody">
+        <div class="wi-mini">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:17px;font-weight:700">Needs attention · 40 · oldest 12 days</span><span class="k-chip" style="min-height:32px;font-size:13px">Waiting 2+ days <span class="k-chip-count" style="color:#664c0c">14</span></span><span class="k-num-badge">2</span></div>
+          <div style="border:1px solid #e3e2dc;border-radius:8px;overflow:hidden">
+            <div class="wi-mt"><span><b>Casa de Ajedrez · visitor report</b></span><span class="wi-src wi-s-club" style="font-size:11px">Club report</span><span class="wi-late" style="font-size:12px">12 days<small>over a week</small></span><span style="text-align:right">Assign</span></div>
+            <div class="wi-mt"><span><b>Champions: missing years</b></span><span class="wi-src wi-s-board" style="font-size:11px">Board inbox</span><span class="wi-late" style="font-size:12px">8 days<small>over a week</small></span><span style="text-align:right">[Secretary]</span></div>
+            <div class="wi-mt"><span><b>US Chess ID lookup can't find me</b></span><span class="wi-src wi-s-sup" style="font-size:11px">Support</span><span>6 days</span><span style="text-align:right">Assign</span></div>
+            <div class="wi-mt"><span class="k-meta">17 more rows on this page</span><span></span><span></span><span></span></div>
+          </div>
+          <div class="k-between"><span class="k-meta">Showing 20 of 40</span><button class="k-btn k-btn-line k-btn-sm" type="button">Show 20 more</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

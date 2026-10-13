@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Int-A · The hub and its rooms, part 2</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744;background:#ecebe6}
+.ia-root{width:1440px;box-sizing:border-box;padding:40px 48px 56px;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ia-c{font-family:"Geist Mono",ui-monospace,monospace;font-size:.9em}
+.ia-title{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;background:#1a2744;color:#ffffff;border-radius:14px;padding:22px 26px;border-bottom:4px solid #c8a94a}
+.ia-kick{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#e6cf86}
+.ia-title h1{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:6px 0 12px}
+.ia-tmeta{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;line-height:1.42;max-width:1040px;margin:0}
+.ia-tmeta dt{font-weight:600;color:#e6cf86}
+.ia-tmeta dd{margin:0;color:#ffffff}
+.ia-tside{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none;width:250px}
+.ia-tside p{font-size:13px;line-height:1.45;color:rgba(255,255,255,.8);text-align:right;margin:0}
+.ia-sample{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap}
+.ia-legend{display:grid;grid-template-columns:1fr 480px;gap:20px;margin-top:20px;align-items:start}
+.ia-lbox{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:18px 20px}
+.ia-lh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.ia-lgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px 24px;margin-top:12px}
+.ia-lgrid3{grid-template-columns:1fr 1fr 1fr}
+.ia-li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.42}
+.ia-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#c8a94a;color:#1a2744;font-size:13px;font-weight:700;flex:none;line-height:1}
+.ia-rel{position:relative}
+.ia-mk{position:absolute;z-index:6;box-shadow:0 0 0 3px #ffffff}
+.ia-q{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.42;margin-top:10px}
+.ia-qn{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 6px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;flex:none}
+.ia-def{color:#145b3a;font-weight:600}
+.ia-body{font-size:13.5px;line-height:1.45;margin:8px 0 0;color:#1a2744}
+.ia-it{font-size:13px;line-height:1.45;font-style:italic;color:#3d4556;margin:12px 0 0}
+.ia-key{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-top:10px}
+.ia-key > div{display:flex;align-items:center;gap:10px;font-size:12.5px;line-height:1.35;color:#3d4556}
+.ia-key .ia-tg{min-width:112px;justify-content:center;box-sizing:border-box}
+.ia-tg{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:600;line-height:1.2;white-space:nowrap;border:1px solid transparent;flex:none}
+.ia-tg-today{background:#ffffff;border-color:#145b3a;color:#145b3a}
+.ia-tg-dec{background:#1a2744;color:#ffffff}
+.ia-tg-new{background:#c8a94a;color:#1a2744}
+.ia-tg-prop{background:#ffffff;border-color:#b7791f;color:#8a5a00}
+.ia-tg-adm{background:#ffffff;border-color:#a12d2d;color:#a12d2d}
+.ia-tg-role{background:#ffffff;border-color:#8a8f9c;color:#3d4556}
+.ia-tg-red{background:#e3e2dc;color:#3d4556}
+.ia-tg-later{background:#f5ecd2;color:#664c0c}
+.ia-tg-unpaid{background:#f5ecd2;color:#664c0c}
+.ia-tg-first{background:#fdebd6;color:#7a3d00}
+.ia-tg-live{background:#ff4757;color:#070b14;font-weight:700}
+.ia-sec{margin-top:36px}
+.ia-lab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 6px}
+.ia-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ia-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;box-sizing:border-box}
+.ia-sub{font-size:13.5px;color:#3d4556;line-height:1.45;margin:0 0 14px;max-width:1100px}
+.ia-note{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;background:#e3e2dc;border:1px solid #cfcec6;border-radius:12px;padding:16px 20px;margin-top:36px}
+.ia-note h4{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#3d4556}
+.ia-note p{margin:0;font-size:13px;line-height:1.45;color:#1a2744}
+.ia-acols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.ia-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ia-cell{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.ia-chd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:12px 14px 10px}
+.ia-chd b{font-size:14px;font-weight:700;display:block;line-height:1.3}
+.ia-who{font-size:12.5px;color:#555c6b;line-height:1.35;display:block;margin-top:2px}
+.ia-who2{font-size:12px;color:#3d4556;line-height:1.35;display:block;margin-top:3px}
+.ia-mbar{background:#1a2744;height:68px;box-sizing:border-box;padding:8px 10px 7px;display:flex;flex-direction:column;justify-content:space-between;border-bottom:3px solid #c8a94a}
+.ia-mrow1{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.9);font-size:10.5px;font-weight:500;white-space:nowrap}
+.ia-mrow1 svg{width:18px;height:18px;fill:#ffffff;flex:none;margin-right:2px}
+.ia-mrow1 .ia-on{color:#e6cf86;box-shadow:inset 0 -1px 0 #c8a94a}
+.ia-mrow2{display:flex;align-items:center;gap:10px}
+.ia-msearch{flex:1;height:24px;box-sizing:border-box;border:1px solid rgba(255,255,255,.4);border-radius:6px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.92);font-size:11px;display:flex;align-items:center;padding:0 8px;gap:6px}
+.ia-msearch svg{width:12px;height:12px;fill:none;stroke:#ffffff;stroke-width:2}
+.ia-mdon{color:#ffffff;font-size:12px;font-weight:500}
+.ia-trig{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:6px;background:rgba(255,255,255,.16);color:#ffffff;font-size:12.5px;font-weight:600;border:0;font-family:inherit}
+.ia-pill{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:11px;font-weight:700;box-sizing:border-box}
+.ia-stage{background:#f5f5f2;padding:6px 10px 10px;display:flex;flex-direction:column;align-items:flex-end;border-bottom:1px solid #ecebe5}
+.ia-menu{width:100%;max-width:390px;box-sizing:border-box;background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 14px 30px rgba(16,24,43,.16);padding:6px;position:relative}
+.ia-mr{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:3px 10px;border-radius:8px;box-sizing:border-box}
+.ia-mt{font-size:13.5px;font-weight:600;color:#1a2744;line-height:1.3;display:block}
+.ia-ms{font-size:11.5px;color:#555c6b;line-height:1.35;display:block;margin-top:1px}
+.ia-rt{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#3d4556;background:#f3f2ed;border-radius:4px;padding:0 4px;white-space:nowrap}
+.ia-mr-todo{background:#fbf7e9;margin-bottom:3px}
+.ia-mr-hov{background:#f3eedc}
+.ia-mr-dash{border:1px dashed #8a8f9c;margin-top:2px}
+.ia-mg{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:7px 10px 3px;display:flex;justify-content:space-between;align-items:center}
+.ia-msep{height:1px;background:#ecebe5;margin:5px 4px}
+.ia-cap{font-size:12.5px;line-height:1.42;color:#3d4556;padding:9px 14px 12px;margin:0}
+.ia-tcard{padding:14px 16px 16px}
+.ia-tcard h3{margin:0 0 6px;font-size:15px;font-weight:700}
+.ia-tcard p{margin:6px 0 0;font-size:13px;line-height:1.45;color:#1a2744}
+.ia-rules{margin:6px 0 0;padding:0 0 0 18px;font-size:13px;line-height:1.45}
+.ia-rules li{margin-top:3px}
+.ia-wtab{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.4;margin-top:8px}
+.ia-wtab th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:6px 8px;background:#fbfbf8;border-bottom:1px solid #d6d5cd}
+.ia-wtab td{padding:7px 8px;border-bottom:1px solid #ecebe5;vertical-align:top}
+.ia-wtab tr:last-child td{border-bottom:0}
+.ia-wtab s{text-decoration-color:#8f1d24}
+/* phone */
+.ia-phone{width:390px;margin:0 auto;border:10px solid #10182b;border-radius:34px;overflow:hidden;background:#ffffff}
+.ia-pbar{display:flex;align-items:center;gap:9px;height:56px;padding:0 6px 0 14px;background:#1a2744}
+.ia-pbar svg.ia-rk{width:24px;height:24px;fill:#ffffff;flex:none}
+.ia-pbn{display:flex;flex-direction:column;line-height:1.05}
+.ia-pbn b{font-size:14px;color:#ffffff;font-weight:700}
+.ia-pbn span{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#d9c27c;font-weight:600}
+.ia-psrch{margin-left:auto;width:40px;height:40px;border-radius:8px;border:1px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center}
+.ia-psrch svg{width:16px;height:16px;fill:none;stroke:#ffffff;stroke-width:2}
+.ia-sheet{padding:8px 14px 10px}
+.ia-secs{display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:14px}
+.ia-secs span{display:flex;justify-content:space-between;align-items:center;height:28px;border-bottom:1px solid #ecebe5;font-size:12.5px;font-weight:600}
+.ia-secs span i{font-style:normal;color:#555c6b;font-weight:400}
+.ia-pbtns{display:flex;gap:8px;margin:10px 0 4px}
+.ia-pbtns span{flex:1;display:flex;align-items:center;justify-content:center;height:34px;border-radius:8px;font-size:14px;font-weight:600}
+.ia-pb-line{border:1px solid #1a2744;color:#1a2744}
+.ia-pb-navy{background:#1a2744;color:#ffffff}
+.ia-prow{display:flex;justify-content:space-between;align-items:center;min-height:28px;border-bottom:1px solid #ecebe5;font-size:12.5px;font-weight:600}
+.ia-prow small{font-size:12px;color:#555c6b;font-weight:400}
+.ia-prow-plain{font-weight:500}
+.ia-pseg{display:inline-flex;border:1px solid #858b99;border-radius:7px;overflow:hidden;font-size:12px}
+.ia-pseg span{padding:3px 8px}
+.ia-pseg span.on{background:#1a2744;color:#ffffff}
+.ia-ptabs{display:grid;grid-template-columns:repeat(4,1fr);height:56px;border-top:1px solid #d9d8d1;background:#ffffff}
+.ia-ptab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;color:#3d4556;font-weight:500}
+.ia-ptab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ia-ptab-on{color:#1a2744;font-weight:700}
+.ia-ptab-on::before{content:"";position:absolute;top:-1px;left:14px;right:14px;height:3px;background:#866a1e;border-radius:0 0 2px 2px}
+.ia-ptab .ia-pc{position:absolute;top:5px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+/* B */
+.ia-bgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+.ia-card{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px 14px;min-width:0}
+.ia-chead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid #ecebe5}
+.ia-apill{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:7px;background:#1a2744;color:#ffffff;font-size:14px;font-weight:600;line-height:1;white-space:nowrap}
+.ia-csub{font-size:12.5px;color:#555c6b;line-height:1.35;width:100%}
+.ia-pages{list-style:none;margin:0;padding:0}
+.ia-pages li{padding:8px 0;border-bottom:1px solid #f0efea}
+.ia-pages li:last-child{border-bottom:0}
+.ia-l1{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ia-l1 b{font-size:14.5px;font-weight:600;line-height:1.3}
+.ia-l2{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-top:3px;font-size:12.5px;line-height:1.4;color:#555c6b}
+.ia-cfoot{font-size:12.5px;line-height:1.45;color:#555c6b;margin:8px 0 0;padding-top:9px;border-top:1px solid #ecebe5}
+.ia-strip{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:14px 18px;margin-top:16px}
+.ia-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin-top:10px}
+.ia-sgrid > div{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45}
+.ia-e{display:grid;grid-template-columns:760px minmax(0,1fr);gap:24px;align-items:start}
+.ia-dots{list-style:none;margin:0;padding:16px 20px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.ia-dots li{position:relative;padding:4px 0 4px 18px;font-size:13.5px;line-height:1.45}
+.ia-dots li::before{content:"";position:absolute;left:2px;top:11px;width:7px;height:7px;border-radius:50%;background:#1a2744}
+.ia-bk{border:1px solid #d9d8d1;border-radius:12px;overflow:hidden;background:#ffffff}
+.ia-amber{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px;background:#fbf7e9;border-bottom:1px solid #866a1e;font-size:13px;line-height:1.35;color:#1a2744;box-sizing:border-box}
+.ia-amber b{font-weight:600}
+.ia-amber a{color:#1a2744;font-weight:600;margin-left:auto;white-space:nowrap}
+.ia-cband{display:flex;align-items:center;gap:12px;height:52px;padding:0 14px;background:#1a2744;color:rgba(255,255,255,.9);font-size:13px}
+.ia-cband .ia-x{margin-left:auto;display:inline-flex;align-items:center;height:36px;padding:0 12px;border:1px solid rgba(255,255,255,.7);border-radius:8px;color:#ffffff;font-weight:600;font-size:13px;white-space:nowrap}
+.ia-cfill{height:34px;background:#f5f5f2;display:flex;align-items:center;padding:0 14px;font-size:12px;color:#555c6b}
+.ia-b3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.ia-bcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ia-brow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:16px;align-items:start;margin-top:16px}
+.ia-brow .ia-strip{margin-top:0}
+.ia-sgrid1{grid-template-columns:1fr}
+.ia-ctab{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;line-height:1.4;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden;table-layout:fixed}
+.ia-ctab th{text-align:left;font-size:12px;font-weight:600;color:#ffffff;background:#1a2744;padding:9px 12px;vertical-align:middle}
+.ia-ctab td{padding:6px 10px;border-top:1px solid #ecebe5;vertical-align:top}
+.ia-ctab tr:nth-child(even) td{background:#fbfaf6}
+.ia-ctab td:first-child{font-weight:600;font-size:13px}
+.ia-ctab td:first-child small{display:block;font-weight:400;font-size:11.5px;color:#555c6b;margin-top:2px}
+.ia-ctab tr.ia-grey td{color:#555c6b;background:#f1f0eb}
+.ia-ctab .ia-rt{font-size:11px}
+.ia-d{display:grid;grid-template-columns:870px minmax(0,1fr);gap:24px;align-items:start}
+.ia-bands{display:flex;flex-direction:column;gap:10px}
+.ia-bandrow{display:grid;grid-template-columns:104px minmax(0,1fr);gap:12px;align-items:start}
+.ia-bl{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding-top:20px;line-height:1.3}
+.ia-band{display:flex;align-items:center;gap:12px;min-height:56px;padding:0 12px;border-radius:10px;box-sizing:border-box;font-size:13.5px;white-space:nowrap}
+.ia-band-navy{background:#1a2744;color:rgba(255,255,255,.92)}
+.ia-band-navy a{color:#ffffff}
+.ia-band-light{background:#fbfaf6;border:1px solid #d9d8d1;color:#1a2744}
+.ia-band-done{background:#e8f3ec;border:1px solid #145b3a;color:#1a2744}
+.ia-crumb a{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.ia-crumb .sep{opacity:.7;margin:0 5px}
+.ia-band .ia-mid{font-size:12px;color:rgba(255,255,255,.85);margin-left:auto;white-space:nowrap}
+.ia-band .ia-exit{display:inline-flex;align-items:center;height:44px;padding:0 12px;border:1px solid rgba(255,255,255,.75);border-radius:8px;color:#ffffff;font-weight:600;font-size:14px;white-space:nowrap}
+.ia-band .ia-back{margin-left:auto;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#866a1e;text-decoration-thickness:2px;text-underline-offset:4px;white-space:nowrap}
+.ia-bsub{font-size:12px;color:#555c6b;margin:4px 0 0 2px;line-height:1.4}
+.ia-evs{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 0 0 14px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;border-radius:8px;font-size:13.5px;white-space:nowrap;margin-top:16px}
+.ia-evs b{font-weight:700;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:3px}
+.ia-evs .ia-dim{color:#b9c2d3}
+.ia-evs .ia-tdc{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ia-evs a{color:#f3f5f9}
+.ia-evs .ia-hidebtn{margin-left:auto;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-left:1px solid rgba(243,245,249,.2)}
+.ia-evs .ia-hidebtn svg{width:16px;height:16px;fill:none;stroke:#f3f5f9;stroke-width:2}
+.ia-flow{display:flex;flex-direction:column;align-items:stretch;gap:0;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px}
+.ia-fbox{border:1.5px solid #1a2744;border-radius:9px;padding:8px 12px;font-size:13px;line-height:1.4;background:#ffffff}
+.ia-fbox b{font-weight:700}
+.ia-farr{display:flex;align-items:center;gap:8px;height:26px;padding-left:22px;font-size:12px;color:#555c6b}
+.ia-farr::before{content:"\2193";font-size:16px;color:#1a2744;font-weight:700}
+.ia-fret{display:flex;align-items:center;gap:8px;margin-top:8px;padding:7px 10px;border-radius:8px;background:#e8f3ec;border:1px solid #145b3a;font-size:12.5px;color:#1a2744}
+.ia-fret::before{content:"\21BA";font-size:16px;font-weight:700}
+.ia-flines p{margin:8px 0 0;font-size:13px;line-height:1.45}
+.ia-keyrow{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:10px 16px;margin:0 0 14px;font-size:12.5px;color:#3d4556}
+.ia-keyrow > span{display:inline-flex;align-items:center;gap:7px}
+.ia-b2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.ia-l1a{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.ia-legend2{display:grid;grid-template-columns:1fr 600px;gap:20px;margin-top:20px;align-items:start}
+.ia-legend2 .ia-li{font-size:13px}
+.ia-legend2 .ia-body{font-size:13px;line-height:1.42}
+.ia-b2 .ia-pages li.ia-g3{display:grid;grid-template-columns:282px minmax(0,1fr) auto;gap:2px 12px;align-items:baseline;padding:5px 0}
+.ia-b2 .ia-l1a{flex-direction:row;flex-wrap:wrap;align-items:baseline;gap:1px 8px}
+.ia-b2 .ia-l1a b{font-size:14px}
+.ia-l2n{font-size:12px;line-height:1.38;color:#555c6b}
+.ia-l3{justify-self:end}
+.ia-flow{padding:12px 14px}
+.ia-fbox{padding:6px 10px;font-size:12.5px}
+.ia-farr{height:22px}
+.ia-flines p{margin:6px 0 0;font-size:12.5px;line-height:1.42}
+.ia-strip .ia-sgrid{grid-template-columns:1fr 1fr 1fr;gap:8px 20px}
+.ia-strip .ia-sgrid > div{font-size:12.5px;line-height:1.42}
+.ia-keyrow{padding:8px 14px;gap:6px 14px;margin-bottom:12px}
+.ia-band-navy{font-size:13px}
+.ia-band-navy .ia-crumb .sep{margin:0 3px}
+.ia-ctab{font-size:12px;line-height:1.36}
+.ia-b2 .ia-l1a b{font-size:13.5px}
+.ia-b2 .ia-pages li.ia-g3{padding:4px 0}
+.ia-cfoot{margin-top:6px;padding-top:7px;font-size:12px}
+.ia-legend3{display:grid;grid-template-columns:1fr 470px;gap:16px;margin-top:20px;align-items:stretch}
+.ia-key2{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;margin-top:10px}
+.ia-key2 > div{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.3;color:#3d4556}
+.ia-key2 .ia-tg{min-width:96px;justify-content:center;box-sizing:border-box}
+.ia-legend3 .ia-li{font-size:13px}
+.ia-flow .ia-fbox{padding:5px 10px}
+.ia-flines p{font-size:12px}
+.ia-tkey{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;width:440px}
+.ia-tkey > div{display:flex;flex-direction:row;align-items:center;gap:6px;white-space:nowrap;font-size:11.5px;line-height:1.25;color:rgba(255,255,255,.82)}
+.ia-b2l{display:flex;flex-direction:column;gap:3px}
+.ia-mid2{font-size:12px;color:rgba(255,255,255,.8)}
+.ia-title .ia-tg-dec{border-color:rgba(255,255,255,.5)}
+
+</style>
+</helmet>
+<div class="ia-root" style="width:1440px">
+<div class="ia-title"><div>
+<div class="ia-kick">Integration · Round 2 · Option Int-A · part 2 of 2 · the routes, what sits inline, the way back</div>
+<h1>The hub and its rooms, part 2</h1>
+<dl class="ia-tmeta">
+<dt>Built from</dt><dd>Account-C, Nav-IA-Final, Work-A to D · Round 2 · Frame: Int-A, swappable</dd>
+<dt>Replaces</dt><dd>Nothing yet; Int-A, B and C are the options</dd>
+<dt>K&#8217;s feedback applied</dt><dd>A good default · every section in full · roles hosted in My LCA · options for each</dd>
+</dl></div>
+<div class="ia-tside" style="width:440px"><span class="ia-sample">Sample data · counts in the table</span><div class="ia-tkey"><div><span class="ia-tg ia-tg-today">Route today</span><span>in src/App.tsx now</span></div><div><span class="ia-tg ia-tg-dec">Decided · WS08</span><span>the brief builds it</span></div><div><span class="ia-tg ia-tg-new">New in Int-A</span><span>this option adds it</span></div><div><span class="ia-tg ia-tg-prop">Proposed</span><span>open for K, the default</span></div><div><span class="ia-tg ia-tg-adm">Admin only</span><span>lca_admin only</span></div><div><span class="ia-tg ia-tg-role">By role</span><span>shown only to holders</span></div><div><span class="ia-tg ia-tg-red">Redirect</span><span>old URL, new home</span></div></div></div></div>
+<div class="ia-lbox" style="margin-top:20px;padding:14px 20px"><div class="ia-lh">Notes on this board · the same six as part 1, short; the trade-off and the grey note are on part 1</div><div class="ia-lgrid ia-lgrid3" style="gap:8px 24px;margin-top:10px"><div class="ia-li"><span class="k-num-badge ia-n">1</span><span>A plain member sees the You section only: no chips, no role rows (full note on part 1).</span></div><div class="ia-li"><span class="k-num-badge ia-n">2</span><span>Each grant adds one section: one-tap decisions inline, one button to its room.</span></div><div class="ia-li"><span class="k-num-badge ia-n">3</span><span>The rooms keep the decided paths; no title, menu row or crumb says Workspace.</span></div><div class="ia-li"><span class="k-num-badge ia-n">4</span><span>Admin stays at /admin, lca_admin only; officers and the president get rooms.</span></div><div class="ia-li"><span class="k-num-badge ia-n">5</span><span>The menu keeps the WS02 order; room rows are named, with counts in words.</span></div><div class="ia-li"><span class="k-num-badge ia-n">6</span><span>No mode switch: the strip and the menu deep-link to the console; Exit console comes back.</span></div></div></div>
+<section class="ia-sec" aria-labelledby="ia-b" style="margin-top:24px"><div class="ia-lab"><span class="ia-code">B</span><h2 id="ia-b">The route map: My LCA, the rooms, the board, Admin, and where old URLs land</h2></div>
+<div class="ia-b2"><div class="ia-bcol"><div class="ia-card"><span class="k-num-badge ia-n ia-mk" style="top:14px;left:-14px">2</span><div class="ia-chead"><span class="ia-apill">My LCA</span><span class="ia-rt">/dashboard</span><span class="ia-tg ia-tg-today">Route today</span></div><ul class="ia-pages"><li class="ia-g3"><span class="ia-l1a"><b>Today</b><span class="ia-rt">#today</span></span><span class="ia-l2n">the list across roles; headed plainly Today when one role holds every item</span><span class="ia-l3"><span class="ia-tg ia-tg-new">New in Int-A</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>You</b><span class="ia-rt">#you</span></span><span class="ia-l2n">the membership line, the card, Next up, reminders, receipts, History, Settings</span><span class="ia-l3"></span></li><li class="ia-g3"><span class="ia-l1a"><b>Family</b><span class="ia-rt">#family</span></span><span class="ia-l2n">child cards, the guardians panel, the event-day view</span><span class="ia-l3"><span class="ia-tg ia-tg-today">Route today</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Events you direct</b><span class="ia-rt">#directing</span></span><span class="ia-l2n"></span><span class="ia-l3"><span class="ia-tg ia-tg-new">New in Int-A</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Your region</b><span class="ia-rt">#region</span></span><span class="ia-l2n"></span><span class="ia-l3"><span class="ia-tg ia-tg-new">New in Int-A</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Board</b><span class="ia-rt">#board</span></span><span class="ia-l2n">with LCA office as its second half</span><span class="ia-l3"><span class="ia-tg ia-tg-new">New in Int-A</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>LCA admin</b><span class="ia-rt">#admin</span></span><span class="ia-l2n">a summary only</span><span class="ia-l3"><span class="ia-tg ia-tg-new">New in Int-A</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Member lookup</b><span class="ia-rt">#lookup</span></span><span class="ia-l2n"></span><span class="ia-l3"><span class="ia-tg ia-tg-new">New in Int-A</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>A child&#8217;s page</b><span class="ia-rt">/me/players/:memberId</span></span><span class="ia-l2n">the view Maya would see, with the strip &#8220;you manage this profile&#8221;</span><span class="ia-l3"><span class="ia-tg ia-tg-later">Later · WS06</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Security</b><span class="ia-rt">/account/security</span></span><span class="ia-l2n">App.tsx line 116</span><span class="ia-l3"><span class="ia-tg ia-tg-today">Route today</span></span></li></ul><p class="ia-cfoot">The On this page rail and the menu&#8217;s room rows jump to these anchors; nothing else lives under <span class="ia-c">/dashboard</span>.</p></div><div class="ia-card"><span class="k-num-badge ia-n ia-mk" style="top:-12px;left:-12px">4</span><div class="ia-chead"><span class="ia-apill">Admin</span><span class="ia-tg ia-tg-adm">Admin only</span><span class="ia-csub">lca_admin with a second factor</span></div><ul class="ia-pages"><li class="ia-g3"><span class="ia-l1a"><b>Needs attention</b><span class="ia-rt">/admin</span></span><span class="ia-l2n">the merged queue over six sources (WS08)</span><span class="ia-l3"></span></li><li class="ia-g3"><span class="ia-l1a"><b>Sections</b><span class="ia-rt">/admin/:section</span></span><span class="ia-l2n">Members · Tournaments · Clubs · Content · Board · Email · Site · Audit (today People · Events · Communications · System, AdminPage.tsx lines 68 to 87)</span><span class="ia-l3"></span></li><li class="ia-g3"><span class="ia-l1a"><b>A club</b><span class="ia-rt">/admin/clubs/:id</span></span><span class="ia-l2n"></span><span class="ia-l3"><span class="ia-tg ia-tg-today">Route today</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>A tournament</b><span class="ia-rt">/admin/tournaments/:id</span></span><span class="ia-l2n">TournamentManagePage.tsx</span><span class="ia-l3"><span class="ia-tg ia-tg-today">Route today</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Season</b><span class="ia-rt">/admin/season</span></span><span class="ia-l2n">replan 4.6</span><span class="ia-l3"><span class="ia-tg ia-tg-later">Later · WS11</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>News and Festivals</b><span class="ia-rt">/admin/news, /admin/festivals</span></span><span class="ia-l2n"></span><span class="ia-l3"><span class="ia-tg ia-tg-later">Later · WS10, WS05</span></span></li></ul><p class="ia-cfoot">mfaRequired sends an admin to <span class="ia-c">/account/security</span> first (RoleProtectedRoute.tsx line 86). Nobody else opens it; it is reached from its summary section and the menu row.</p></div></div><div class="ia-bcol"><div class="ia-card"><span class="k-num-badge ia-n ia-mk" style="top:-12px;right:-10px">3</span><div class="ia-chead"><span class="ia-apill">Rooms</span><span class="ia-csub">named for what they are; the word Workspace never shows</span></div><ul class="ia-pages"><li class="ia-g3"><span class="ia-l1a"><b>Setup</b><span class="ia-rt">/workspace/tournaments/new</span></span><span class="ia-l2n">admins and the region&#8217;s representative (P2.19)</span><span class="ia-l3"><span class="ia-tg ia-tg-dec">Decided · WS08</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Setup</b><span class="ia-rt">/workspace/tournaments/:id/setup</span></span><span class="ia-l2n">no member discount, the membership switch, Where in the room</span><span class="ia-l3"><span class="ia-tg ia-tg-dec">Decided · WS08</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Event day</b><span class="ia-rt">/workspace/tournaments/:id/live</span></span><span class="ia-l2n">tablet-first; reported results, close-out, Hall TV, the rating report step</span><span class="ia-l3"><span class="ia-tg ia-tg-dec">Decided · WS08</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Recap</b><span class="ia-rt">/workspace/tournaments/:id/recap</span></span><span class="ia-l2n">replan 4.6</span><span class="ia-l3"><span class="ia-tg ia-tg-dec">Decided · 4.6</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>My region</b><span class="ia-rt">/workspace/region</span></span><span class="ia-l2n">replan 4.2 · the region&#8217;s clubs; no members list</span><span class="ia-l3"><span class="ia-tg ia-tg-dec">Decided · WS09</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>A club</b><span class="ia-rt">/workspace/region/clubs/:id</span></span><span class="ia-l2n">Listing · Tonight · News · Events</span><span class="ia-l3"><span class="ia-tg ia-tg-dec">Decided · WS09</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Member lookup</b><span class="ia-rt">/workspace/lookup</span></span><span class="ia-l2n">today /workspace?tab=lookup; the directory slice only</span><span class="ia-l3"><span class="ia-tg ia-tg-new">New in Int-A</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Support tickets</b><span class="ia-rt">/workspace/tickets</span></span><span class="ia-l2n">today /admin/support (AdminSupportPage.tsx)</span><span class="ia-l3"><span class="ia-tg ia-tg-prop">Proposed</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Email the members</b><span class="ia-rt">/workspace/email</span></span><span class="ia-l2n">the president; today /admin/email (AdminEmailPage.tsx)</span><span class="ia-l3"><span class="ia-tg ia-tg-prop">Proposed</span></span></li></ul><p class="ia-cfoot">Each room is a full-width page under the same header, crumb My LCA &#8250; ... first. WS08 and WS09 keep their paths; their chrome copy drops the word Workspace.</p></div><div class="ia-card"><div class="ia-chead"><span class="ia-apill">Board</span><span class="ia-csub">a seat&#8217;s inbox</span></div><ul class="ia-pages"><li class="ia-g3"><span class="ia-l1a"><b>Board inbox</b><span class="ia-rt">/board/inbox</span></span><span class="ia-l2n">BoardInboxPage.tsx · a ticket opens inside it; the seat filter stays for admins</span><span class="ia-l3"><span class="ia-tg ia-tg-today">Route today</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Documents</b><span class="ia-rt">/about/bylaws, /about/minutes</span></span><span class="ia-l2n">an Edit control in place behind requireGovernanceEditor</span><span class="ia-l3"><span class="ia-tg ia-tg-dec">Decided · WS14</span></span></li><li class="ia-g3"><span class="ia-l1a"><b>Next meeting</b></span><span class="ia-l2n">in the Board section · WS14&#8217;s meetings table and next-meeting card</span><span class="ia-l3"><span class="ia-tg ia-tg-dec">Decided · WS14</span></span></li></ul><p class="ia-cfoot">A seat is a grant, never an account type (<span class="ia-c">auth.ts</span> line 329): rows come with the seat and go with its term.</p></div></div></div>
+<div class="ia-strip"><div class="ia-lh">Redirects and retirements <span style="text-transform:none;letter-spacing:0;font-weight:500;color:#3d4556;font-size:13px">· Nav-IA-Final&#8217;s route table changes in two rows, Workspace and My region&#8217;s clubs. Everything else on it stands.</span></div><div class="ia-sgrid">
+<div><span class="ia-tg ia-tg-red">Redirect</span><span><span class="ia-rt">/workspace</span> &#8594; <span class="ia-rt">/dashboard#today</span> (confirm, Q2)</span></div>
+<div><span class="ia-tg ia-tg-red">Redirect</span><span><span class="ia-rt">/workspace?tab=events</span> &#8594; <span class="ia-rt">/dashboard#directing</span> · <span class="ia-rt">/workspace?tab=lookup</span> &#8594; <span class="ia-rt">/workspace/lookup</span></span></div>
+<div><span class="ia-tg ia-tg-red">Redirect</span><span><span class="ia-rt">/admin/tournaments/:id</span> for a non-admin &#8594; <span class="ia-rt">/workspace/tournaments/:id/setup</span> (today a one-event director lands on an admin-shaped URL; TournamentManagePage.tsx backHref, line 184)</span></div>
+<div><span class="ia-tg ia-tg-red">Redirect</span><span><span class="ia-rt">/admin/clubs/:id</span> for a non-admin &#8594; <span class="ia-rt">/workspace/region/clubs/:id</span></span></div>
+<div><span class="ia-tg ia-tg-red">Redirect</span><span><span class="ia-rt">/manage/club</span> (App.tsx line 117, src/pages/ManageClubPage.tsx) &#8594; goes with club_rep under P2.18, or <span class="ia-rt">/workspace/region/clubs/:id</span> scoped to the one club if K keeps the role</span></div>
+<div><span class="ia-tg ia-tg-red">Redirect</span><span><span class="ia-rt">/admin/support</span> and <span class="ia-rt">/admin/email</span> for officers and the president &#8594; <span class="ia-rt">/workspace/tickets</span> and <span class="ia-rt">/workspace/email</span> (Proposed, Q3); for admins they stay</span></div>
+</div></div></section>
+<section class="ia-sec" aria-labelledby="ia-cc" style="margin-top:28px"><div class="ia-lab"><span class="ia-code">C</span><h2 id="ia-cc">What My LCA holds inline, what opens a room, what stays admin-only</h2></div>
+<p class="ia-sub" style="max-width:none">The rule (Q9, the default): Pay, Approve or Decline a bye, Email both a reminder, Still accurate per club and Add to calendar happen on My LCA; a form, a table, a reply or several steps opens the room.</p>
+<div class="ia-rel"><span class="k-num-badge ia-n ia-mk" style="top:-12px;left:-12px">2</span><table class="ia-ctab"><colgroup><col style="width:128px"><col style="width:470px"><col style="width:330px"><col></colgroup>
+<thead><tr><th scope="col">Section</th><th scope="col">Inline on My LCA · one tap</th><th scope="col">Opens the room</th><th scope="col">Admin only · never on My LCA <span class="ia-tg ia-tg-adm" style="margin-left:6px">Admin only</span></th></tr></thead>
+<tbody><tr class=""><td>You<small>everyone signed in</small></td><td>The membership line in words (Adult · valid through Mon, Oct 26, 2026 · Renew or turn on auto-renew); the card with its QR; Today; Next up with the four-step tracker and Pay · Change section · Byes · Withdraw; reminders with Change and Stop; past payments with Send me this receipt again (D14); History; the Settings cards</td><td>None: the event page and the checkout are public pages; <span class="ia-rt">/account/security</span> for two-factor</td><td>Changing a role, a membership status or expiry by hand, deleting an account, Log in as, the members export, refunds (/admin &#8250; Members, requireAdmin with aal2). A member asks through Website help.</td></tr><tr class=""><td>Family<small>a guardian</small></td><td>One card per child, the chips Everyone · Maya · Leo, the guardians panel (Invite, Approve or Decline, Remove, Leave, Send me copies), Add a family member, the Family day view on event day</td><td>Open Maya&#8217;s page &#8594; <span class="ia-rt">/me/players/:memberId</span> (WS06); Register all &#8594; the household checkout; both return to <span class="ia-rt">/dashboard#family</span></td><td>Moving a profile between households, merging duplicates, a US Chess ID already on another profile, overriding a guardian link, refunds: an admin ticket, never a parent&#8217;s control. A walk-in child is added by the TD at the desk.</td></tr><tr class=""><td>Events you direct<small>per event named on</small></td><td>Per event the counts (38 of 60 registered, by section), flags in words, the next step as a sentence, Approve or Decline a bye request, Email both a reminder for expiring US Chess memberships</td><td>Setup &#8594; <span class="ia-rt">/:id/setup</span> · Event day &#8594; <span class="ia-rt">/:id/live</span> · Recap &#8594; <span class="ia-rt">/:id/recap</span> · the rating report step inside the console</td><td>Creating the event and naming its directors (today admin or club_rep; under P2.19 the representative too), the membership switch, deleting an event, the Tournaments list, Festivals, the Season, refunds, group email.</td></tr><tr class=""><td>Your region<small>a regional seat</small></td><td>The clubs to check with Still accurate and Update, open reports with their age, Confirm all still accurate, the club event in LCA review line</td><td>Open My region &#8594; <span class="ia-rt">/workspace/region</span> · a club &#8594; <span class="ia-rt">/workspace/region/clubs/:id</span> · Add a club event &#8594; <span class="ia-rt">/workspace/tournaments/new?club=:id</span> · the seat&#8217;s inbox &#8594; <span class="ia-rt">/board/inbox</span></td><td>Creating, renaming, re-regioning or deleting a club, seats and seat regions (/admin &#8250; Board seats), approving the submitted club event, the open-seat fallback (P2.16), members, money, email.</td></tr><tr class=""><td>Board<small>a seat</small></td><td>The inbox preview (unread count, the three newest subjects with sender kind and weekday date, waiting 4 days in words), the next meeting with Add to calendar and the agenda when posted, the governance documents list; no votes</td><td>Reply &#8594; <span class="ia-rt">/board/inbox</span> (a ticket opens inside it)</td><td>Who holds each seat and its regions, deleting a ticket (requireAdmin), everything under Members, Site, Audit.</td></tr><tr class=""><td>LCA office<small>lca_officer, lca_observer</small></td><td>Support tickets · 4 open · oldest 3 days · Answer; Documents you keep · Treasurer&#8217;s report, September · Draft · Edit; the one-field lookup; the president: Email the members · last sent Thu, Oct 8 · 41 sent, 2 failed · Write an email</td><td>Answer &#8594; <span class="ia-rt">/workspace/tickets</span> <span class="ia-tg ia-tg-prop">Proposed</span> · Edit &#8594; the About tabs in place · the lookup &#8594; <span class="ia-rt">/workspace/lookup</span> · Write an email &#8594; <span class="ia-rt">/workspace/email</span> <span class="ia-tg ia-tg-prop">Proposed</span></td><td>Every write outside tickets and governance documents: roles, memberships, delete, Log in as, export, payments, the audit log, site settings, seats, club and tournament writes. The view-only /admin is withdrawn (Q3).</td></tr><tr class=""><td>LCA admin<small>lca_admin</small></td><td>Needs attention · 12 · oldest 3 days by source in words (Support 4 · Board inbox 2 · Approvals 3 · Failed emails 2 · Club reports 1 · Listing reports 0), the items assigned to this admin by name, the automations line (Daily emails · 2 failed · Check), the live site banner line, three shortcuts: New tournament · Post a site banner · Log in as a member</td><td>Open Admin &#8594; <span class="ia-rt">/admin</span> and its sections; any TD room or My region as the backstop, with the strip</td><td>The whole of /admin. My LCA never shows another person&#8217;s data beyond the summary counts; no members table, email composer or audit log inline.</td></tr><tr class=""><td>Member lookup<small>lca_auditor, officers, the TD role</small></td><td>The field Name or US Chess ID; a result reads the name and Active through Sun, Mar 14, 2027 or Expired Wed, Sep 30, 2026, nothing else; never an item in Today</td><td>Open the full lookup &#8594; <span class="ia-rt">/workspace/lookup</span> (the directory slice only)</td><td>The export and any contact detail (email, phone, address); the auditor never writes.</td></tr><tr class="ia-grey"><td>Your club<small>club_rep · only if K keeps the role (question 20)</small></td><td>The page&#8217;s completeness in words (Missing a photo and a contact), Checked Sep 2026 with Still accurate, the search-result preview</td><td>Edit club page &#8594; <span class="ia-rt">/workspace/region/clubs/:id</span> scoped to the one club · Post club news · View public page</td><td>Create, rename, region, delete; the designation itself; naming directors and creating events unless K keeps them with the club&#8217;s rep.</td></tr></tbody></table></div></section>
+<section class="ia-sec" aria-labelledby="ia-d" style="margin-top:28px"><div class="ia-lab"><span class="ia-code">D</span><h2 id="ia-d">The way there and back</h2></div>
+<div class="ia-d"><div class="ia-bands">
+<div class="ia-bandrow"><span class="ia-bl">Console</span><div class="ia-band ia-band-navy"><span class="ia-b2l"><span class="ia-crumb"><a href="#">My LCA</a><span class="sep">&#8250;</span><a href="#">Events you direct</a><span class="sep">&#8250;</span><a href="#">The Baton Rouge Classic</a><span class="sep">&#8250;</span><a href="#">Event day</a></span><span class="ia-mid2">Sun, Oct 25 · 9:14 AM · Round 4 pairs at 9:30 AM</span></span><span class="ia-exit" style="margin-left:auto">Exit console</span></div></div>
+<div class="ia-bandrow"><span class="ia-bl">My region</span><div class="ia-band ia-band-light"><span class="ia-crumb"><a href="#">My LCA</a><span class="sep">&#8250;</span><a href="#">My region</a><span class="sep">&#8250;</span><a href="#">Bunkie Chess Club</a></span><a class="ia-back" href="#">Back to My LCA</a></div></div>
+<div class="ia-bandrow"><span class="ia-bl">Board inbox</span><div><div class="ia-band ia-band-light"><span class="ia-crumb"><a href="#">My LCA</a><span class="sep">&#8250;</span><a href="#">Board inbox</a></span><a class="ia-back" href="#">Back to My LCA</a></div><p class="ia-bsub">Seat: Treasurer · the seat filter shows only for admins</p></div></div>
+<div class="ia-bandrow"><span class="ia-bl">After finishing</span><div><div class="ia-band ia-band-done"><span><b style="font-weight:600">Done</b> · Round 4 published and 26 players told</span><a class="ia-back" href="#">Back to My LCA</a></div><p class="ia-bsub">The same line after Confirm all still accurate (Done · 9 clubs confirmed Mon, Nov 2 · Back to My LCA) and after Mark as submitted to US Chess (Done · marked submitted Sun, Nov 1 · Back to My LCA).</p></div></div>
+</div>
+<div class="ia-rel"><span class="k-num-badge ia-n ia-mk" style="top:-12px;right:-10px">5</span><div class="ia-flow">
+<div class="ia-fbox"><b>My LCA</b> · the section, Events you direct <span class="ia-rt">/dashboard#directing</span></div>
+<div class="ia-farr">its button</div>
+<div class="ia-fbox"><b>Event day</b> · the button on the event&#8217;s row</div>
+<div class="ia-farr">opens the room</div>
+<div class="ia-fbox"><b>The room: Event day</b> <span class="ia-rt">/workspace/tournaments/:id/live</span></div>
+<div class="ia-fret">Exit console &#8594; <span class="ia-rt">/dashboard#directing</span></div>
+<div class="ia-flines"><p><b>Ways in:</b> a section&#8217;s primary button (Setup, Event day, Open My region, Open board inbox, Open Admin), a Today item&#8217;s action, a room row in the menu, the strip&#8217;s TD console button.</p><p><b>Ways back:</b> Exit console in the console&#8217;s band; Back to My LCA in every other room; Done · Back to My LCA after a finishing action; every crumb a link.</p><p><b>Between rooms:</b> the menu&#8217;s room rows, never through Admin.</p></div>
+</div></div></div>
+<div class="ia-rel"><span class="k-num-badge ia-n ia-mk" style="top:-2px;left:-12px">6</span><div class="ia-evs" aria-label="Your event: The Baton Rouge Classic"><span class="ia-tg ia-tg-live">Live · Round 3</span><b>The Baton Rouge Classic</b><span class="ia-dim">Round 3 · 12 of 13 results confirmed · 1 to confirm · Round 4 pairs at 9:30 AM</span><span class="ia-tdc">TD console</span><a href="#">Pairings</a><span class="ia-dim">·</span><a href="#">Standings</a><span class="ia-dim">Updated 9:14 AM</span><span class="ia-hidebtn" aria-label="Hide until the next update"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div></div>
+<p class="ia-body" style="margin-top:8px;font-size:13px">A TD at the venue never passes through the hub: the strip&#8217;s TD console button deep-links to <span class="ia-c">/workspace/tournaments/:id/live</span> (WS02 event mode). The menu&#8217;s event line does the same.</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

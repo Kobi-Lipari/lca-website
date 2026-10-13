@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scanner · P · Into the tournament: From the game, stack upload (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.sp-root{box-sizing:border-box;padding:20px 0 24px;background:#ecebe6;color:#1a2744}
+.sp-root *{box-sizing:border-box}
+
+.sp-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 18px}
+.sp-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.sp-title{font-size:24px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.sp-ml{font-size:13.5px;line-height:1.45;color:#3d4556;margin:3px 0 0}
+.sp-ml b{color:#1a2744;font-weight:600}
+.sp-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.sp-grey{flex:none;width:490px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.sp-grey > div > p + p{margin-top:8px}
+.sp-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.sp-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.sp-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.sp-grey li{margin-bottom:4px}
+.sp-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 14px;margin-top:14px}
+.sp-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
+.sp-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.42;color:#2b3446}
+.sp-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.sp-notes b{font-weight:600;color:#1a2744}
+.sp-from{display:inline-block;font-size:11.5px;font-weight:600;color:#555c6b;background:#f0efea;border-radius:5px;padding:0 6px;margin-left:2px}
+.sp-flab{display:flex;align-items:center;gap:12px;margin:24px 40px 10px}
+.sp-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.sp-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.sp-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.sp-time{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-size:12.5px;font-weight:600;color:#1a2744;background:#ffffff;border:1px solid #cfcec6;border-radius:999px;padding:4px 10px}
+.sp-time .k-i-sm{width:14px;height:14px}
+.sp-nb{width:24px;height:24px;font-size:12px}
+.sp-mk{position:absolute;z-index:5;box-shadow:0 0 0 3px #ffffff}
+.sp-rel{position:relative}
+.sp-anno{display:flex;gap:8px;align-items:flex-start;border:1px dashed #9a988e;border-radius:10px;background:#fbfbf8;padding:7px 10px;font-size:12.5px;line-height:1.45;color:#3d4556;margin:0}
+.sp-anno b{color:#1a2744;font-weight:600}
+.sp-open{display:inline-flex;align-items:center;gap:6px;border:1px dashed #8a7a4a;background:#fffaf0;color:#5e4300;border-radius:8px;padding:4px 9px;font-size:12px;font-weight:600;line-height:1.35}
+.sp-open b{font-weight:700}
+
+.sp-hd-in{gap:0;min-height:64px}
+.sp-hd .k-brand{margin-right:16px}
+.sp-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.sp-rook-sm{width:24px;height:24px}
+.sp-nav{gap:0}
+.sp-nav a{padding:0 10px;white-space:nowrap}
+.sp-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.sp-sbtn{display:inline-flex;align-items:center;gap:8px;width:200px;height:40px;padding:0 8px 0 12px;margin-right:14px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.sp-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.sp-util{gap:10px}
+.sp-util .k-ulink{padding:0 4px}
+.sp-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500;cursor:pointer}
+
+.sp-bd{flex:none}
+.sp-bd > div{display:flex;align-items:center;justify-content:center}
+.pc{width:76%;height:76%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;box-sizing:border-box}
+.pw{background:#ffffff;color:#1a2744;border:1.5px solid #1a2744}
+.pb{background:#1a2744;color:#ffffff;border:1.5px solid #1a2744}
+.pp{width:56%;height:56%}
+.lm{box-shadow:inset 0 0 0 2px #c8a94a}
+.sp-bd-64{width:64px;border-width:1px}.sp-bd-64 .pc{font-size:0;border-width:1px}
+.sp-bd-96{width:96px;border-width:1px}.sp-bd-96 .pc{font-size:6px;border-width:1px}.sp-bd-96 .pp{font-size:0}
+.sp-bd-120{width:120px;border-width:1px}.sp-bd-120 .pc{font-size:7.5px;border-width:1px}.sp-bd-120 .pp{font-size:0}
+.sp-bd-160{width:160px}.sp-bd-160 .pc{font-size:10px}.sp-bd-160 .pp{font-size:6px}
+.sp-bd-300{width:300px}.sp-bd-300 .pc{font-size:15px;border-width:2px}.sp-bd-300 .pp{font-size:9px}.sp-bd-300 .lm{box-shadow:inset 0 0 0 3px #c8a94a}
+
+.sp-frame{width:1440px;background:#f5f5f2;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+/* band */
+.sp-band{background:#ffffff;border-bottom:1px solid #dddcd4}
+.sp-band-in{padding:14px 24px 16px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.sp-band h1{margin:4px 0 8px;font-size:32px}
+.sp-steps{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.sp-steps li{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid #dddcd4;font-size:14px;color:#555c6b;background:#ffffff}
+.sp-steps li.sp-done{color:#2f6b45;border-color:#b9d3c1;background:#f1f7f2}
+.sp-steps li.sp-now{color:#ffffff;background:#1a2744;border-color:#1a2744;font-weight:600}
+.sp-bandr{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.sp-count{font-size:14px;color:#1a2744;font-weight:500}
+.sp-count b{font-weight:700}
+/* frame A body */
+.sp-body{padding:18px 24px 22px}
+.sp-plab{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+.sp-plab h2{margin:0;font-size:18px;font-weight:600}
+.sp-cards{display:grid;grid-template-columns:minmax(0,1fr) 470px minmax(0,1fr);gap:24px;align-items:start}
+.sp-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px 16px;display:flex;flex-direction:column;gap:10px;position:relative}
+.sp-card h3{margin:0;font-size:19px;line-height:1.3;font-weight:600}
+.sp-hrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sp-line{font-size:13.5px;line-height:1.45;color:#3d4556;margin:0}
+.sp-line b{color:#1a2744;font-weight:600}
+.sp-seg{display:flex;border:1px solid #b5b8c0;border-radius:10px;overflow:hidden;background:#f3f3f0}
+.sp-seg span{flex:1 1 auto;display:flex;align-items:center;justify-content:center;gap:5px;min-height:40px;padding:0 8px;white-space:nowrap;font-size:13px;font-weight:600;color:#6b7180;border-left:1px solid #d8d8d2}
+.sp-seg span:first-child{border-left:0}
+.sp-seg span.on{background:#3d4a68;color:#ffffff}
+.sp-ok{display:flex;align-items:center;gap:10px;background:#eef6f0;border:1px solid #c4dfcc;border-radius:10px;padding:9px 12px;font-size:14px;color:#1d5a31}
+.sp-ok b{font-weight:700}
+.sp-ok .k-link{margin-left:auto;color:#1a2744;font-size:13.5px}
+.sp-tickc{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#2f6b45;color:#ffffff;flex:none}
+.sp-tickc .k-i{width:15px;height:15px;stroke-width:2.4}
+.sp-chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.sp-chk li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.4;color:#1a2744}
+.sp-chk .k-i{color:#2f6b45;margin-top:1px}
+.sp-xt{width:100%;border-collapse:collapse;font-size:13px}
+.sp-xt th{padding:7px 5px;font-size:11.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#555c6b;background:#fbfbf8;border-bottom:1px solid #d6d5cd;text-align:center}
+.sp-xt th.l,.sp-xt td.l{text-align:left}
+.sp-xt td{padding:7px 5px;border-bottom:1px solid #ecebe5;text-align:center;font-family:"Geist Mono",ui-monospace,monospace;font-size:12.5px}
+.sp-xt td.l{font-family:Geist,system-ui,sans-serif;font-size:13px;font-weight:600}
+.sp-xt tr:last-child td{border-bottom:0}
+.sp-xt tr.me td{background:#fbf5e3}
+.sp-xt td.r4{font-weight:700;box-shadow:inset 0 0 0 2px #1a2744;background:#ffffff}
+.sp-xt tr.me td.r4{background:#fffdf6}
+.sp-you{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;color:#5e4300;background:#f4ecd4;border-radius:4px;padding:1px 5px;vertical-align:1px}
+.sp-press{position:relative;display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:8px;min-height:44px;border-radius:8px;background:#b39643;border:1px solid #9c8238;color:#1a2744;font-weight:700;font-size:15px;box-shadow:inset 0 3px 6px rgba(16,24,43,.28)}
+.sp-pressed{font-size:12px;font-weight:600;color:#1a2744}
+.sp-pressnote{font-size:12px;color:#555c6b;text-align:center;margin:-6px 0 0}
+.sp-linked{display:flex;align-items:center;gap:10px;background:#eef6f0;border:1px solid #c4dfcc;border-radius:10px;padding:8px 8px 8px 12px;font-size:14px;color:#1d5a31}
+.sp-linked b{font-weight:700}
+.sp-linked .k-btn{margin-left:auto;min-height:34px}
+.sp-share{display:flex;gap:12px;align-items:center;border:1px solid #c4c3bb;border-radius:10px;padding:10px;background:#ffffff}
+.sp-share .k-stack-sm{gap:3px}
+.sp-share b{font-size:15px}
+.sp-share span{font-size:12.5px;color:#555c6b;line-height:1.35}
+.sp-fld{display:flex;gap:8px}
+.sp-fld .k-input{min-height:40px;font-size:12.5px;padding:0 9px;font-family:"Geist Mono",ui-monospace,monospace}
+.sp-btns{display:flex;flex-wrap:wrap;gap:8px}
+.sp-btns .k-btn{min-height:38px;padding:0 12px;font-size:14px}
+.sp-btns .k-btn-ghost{padding:0 8px}
+/* under-strip */
+.sp-under{display:grid;grid-template-columns:300px minmax(0,1fr) 300px;gap:30px;margin-top:26px;align-items:start}
+.sp-ptitle{font-size:14px;font-weight:700;color:#1a2744;margin:0 0 8px}
+.sp-phone{width:300px;border:10px solid #10182b;border-bottom-width:0;border-radius:38px 38px 0 0;overflow:hidden;background:#ffffff;box-shadow:0 18px 36px rgba(16,24,43,.18)}
+.sp-pbar{display:flex;align-items:center;justify-content:space-between;background:#1a2744;color:#ffffff;padding:16px 14px 10px 18px}
+.sp-pbar span{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14.5px}
+.sp-pbar .sp-rook{width:22px;height:22px}
+.sp-pmenu{display:inline-flex;align-items:center;gap:5px;border:1px solid rgba(255,255,255,.6);border-radius:8px;padding:5px 9px;font-size:12.5px;font-weight:600}
+.sp-pmenu .k-i{width:15px;height:15px}
+.sp-ppad{padding:12px 14px 16px;display:flex;flex-direction:column;gap:10px}
+.sp-ppad .k-check{font-size:13.5px;line-height:1.4}
+.sp-ppad .k-check input{width:18px;height:18px}
+.sp-pfin{display:flex;gap:12px;align-items:center}
+.sp-pfin b{display:block;font-size:15px}
+.sp-pfin span{font-size:12.5px;color:#555c6b}
+.sp-todo{border:1px solid #dddcd4;border-radius:10px;padding:11px 12px;display:flex;flex-direction:column;gap:9px}
+.sp-todo p{margin:0;font-size:13.5px;line-height:1.45;color:#1a2744}
+.sp-todo .k-btn{min-height:38px;font-size:13.5px;padding:0 10px}
+.sp-mailchip{display:flex;align-items:center;gap:6px;background:#efefea;border-radius:8px;padding:6px 9px;font-size:12.5px;color:#2b3446}
+.sp-mid{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:24px;margin-top:18px;align-items:start}
+.sp-midr{display:flex;flex-direction:column;gap:10px}
+.sp-mg{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden}
+.sp-mg-h{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fbfbf8;border-bottom:1px solid #ecebe5}
+.sp-mg-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;padding:14px;align-items:start}
+.sp-mg-row b{font-size:16px}
+.sp-mg-row .sp-line{margin-top:2px}
+.sp-mini-attach{margin-top:10px;border:1px solid #dddcd4;border-radius:10px;padding:9px 11px;display:flex;align-items:center;gap:10px;font-size:13.5px;color:#1a2744;flex-wrap:wrap}
+.sp-mini-attach .k-btn{min-height:32px;padding:0 10px;font-size:13px}
+.sp-cap{font-size:14px;line-height:1.5;color:#1a2744;background:#ffffff;border-left:4px solid #1a2744;border-radius:0 10px 10px 0;padding:12px 14px;margin:0}
+/* footer */
+.sp-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:18px;padding-bottom:20px}
+.sp-foot .k-meta{color:rgba(255,255,255,.78)}
+.sp-foot nav a{font-size:14px}
+.sp-playcol{display:flex;align-items:center;gap:14px;font-size:14px}
+.sp-playcol b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.sp-playcol a.on{text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+/* frame B: results page browser */
+.sp-browser{margin:0 40px;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.sp-browser .k-browser-url{max-width:760px}
+.sp-view{position:relative;background:#f5f5f2}
+.sp-rhead{background:#ffffff;border-bottom:1px solid #e3e2dc;padding:16px 24px 0}
+.sp-crumb{font-size:13px;color:#555c6b}
+.sp-crumb a{color:#1a2744;text-decoration:none;font-weight:600}
+.sp-rtitle{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-top:8px}
+.sp-rtitle h3{margin:6px 0 0;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.01em}
+.sp-rtabs{display:flex;gap:2px;margin-top:12px}
+.sp-rtabs a{padding:10px 14px;color:#3d4454;text-decoration:none;font-weight:500;font-size:15px;border-bottom:3px solid transparent}
+.sp-rtabs a.on{color:#1a2744;font-weight:600;border-bottom-color:#c8a94a}
+.sp-rbody{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:24px;padding:18px 24px 24px;align-items:start}
+.sp-ctl{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sp-key{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:grid;grid-template-columns:160px minmax(0,1fr);gap:18px;position:relative;margin-top:14px}
+.sp-key h4{margin:0;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#866a1e}
+.sp-key .who{font-size:19px;font-weight:700;margin:6px 0 2px;line-height:1.3}
+.sp-key .who span{font-weight:500;color:#555c6b;font-size:15px}
+.sp-tdchip{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.sp-tdchip span{display:inline-flex;align-items:center;gap:6px;border:1.5px dashed #1a2744;border-radius:8px;padding:5px 10px;font-size:13px;font-weight:600;color:#1a2744;background:#fbfbf8}
+.sp-tdchip small{font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #dddcd4;border-radius:6px;padding:3px 8px;box-shadow:0 4px 12px rgba(16,24,43,.12)}
+.sp-ct{width:100%;border-collapse:collapse;background:#ffffff}
+.sp-ct th{padding:9px 8px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;background:#fbfbf8;border-bottom:1px solid #d6d5cd;text-align:center;white-space:nowrap}
+.sp-ct th.l,.sp-ct td.l{text-align:left}
+.sp-ct td{padding:7px 8px;border-bottom:1px solid #ecebe5;text-align:center;vertical-align:top}
+.sp-ct td.l{vertical-align:middle;font-size:15px;font-weight:600}
+.sp-ct td.n{vertical-align:middle;font-family:"Geist Mono",ui-monospace,monospace;font-size:14px;color:#3d4556}
+.sp-ct td.t{vertical-align:middle;font-weight:700;font-size:15px}
+.sp-ct tr.me td{background:#fbf5e3}
+.sp-cc{display:flex;flex-direction:column;align-items:center;gap:0;line-height:1.25}
+.sp-cc b{font-family:"Geist Mono",ui-monospace,monospace;font-weight:500;font-size:14px;color:#1a2744}
+.sp-cc i{font-style:normal;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#555c6b}
+.sp-cc a{font-size:12.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#1a2744;text-decoration-thickness:1.5px;text-underline-offset:2px;display:inline-flex;align-items:center;gap:3px}
+.sp-cc a .k-i-sm{width:11px;height:11px}
+.sp-cc-on{background:#eef1f7;border-radius:6px;padding:2px 6px;box-shadow:inset 0 0 0 1.5px #1a2744}
+.sp-ell td{padding:4px 8px;color:#555c6b;font-size:13px;background:#fbfbf8}
+.sp-ctkey{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:#3d4556;margin-top:10px}
+.sp-ctkey b{color:#1a2744}
+.sp-sheet{background:#ffffff;border:1px solid #c9c8c0;border-radius:14px;box-shadow:-16px 0 40px rgba(16,24,43,.16);padding:14px 18px 16px;display:flex;flex-direction:column;gap:9px;position:relative;margin-top:-6px}
+.sp-sheet h4{margin:0;font-size:19px;font-weight:700}
+.sp-mv{width:100%;border-collapse:collapse;font-size:13px}
+.sp-mv td{padding:2px 6px;font-family:"Geist Mono",ui-monospace,monospace;color:#1a2744;border-bottom:1px solid #f0efe9}
+.sp-mv td.no{color:#555c6b;font-family:Geist,system-ui,sans-serif;font-size:12px;width:24px;text-align:right}
+.sp-mv td.sp{box-shadow:inset 1px 0 0 #dddcd4}
+.sp-mv td.cur{background:#1a2744;color:#ffffff;border-radius:4px}
+.sp-mv th{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;text-align:left;padding:4px 6px;border-bottom:1px solid #d6d5cd}
+.sp-navb{display:flex;align-items:center;gap:6px}
+.sp-navb .k-iconbtn{width:38px;height:38px}
+/* recap */
+.sp-recaps{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:20px 40px 0}
+.sp-rc{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;position:relative}
+.sp-rc h3{margin:0;font-size:17px;font-weight:600}
+.sp-fl{font-size:12.5px;font-weight:600;color:#3d4556;margin:0 0 3px}
+.sp-ta{border:1px solid #858b99;border-radius:8px;padding:8px 10px;font-size:13.5px;line-height:1.45;color:#1a2744}
+.sp-ta small{display:block;text-align:right;font-size:12px;color:#555c6b;margin-top:2px}
+.sp-photos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.sp-photos > *{height:58px;border-radius:8px}
+.sp-photos img{width:100%;object-fit:cover;display:block}
+.sp-photos .k-img{font-size:11.5px;padding:6px 8px}
+.sp-sel{display:flex;align-items:center;justify-content:space-between;border:1px solid #858b99;border-radius:8px;min-height:40px;padding:0 10px;font-size:14px;color:#1a2744;background:#ffffff}
+.sp-pub{border:1px solid #ecebe5;border-radius:10px;overflow:hidden}
+.sp-pub img{display:block;width:100%;height:120px;object-fit:cover}
+.sp-pub-in{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.sp-pub-in h4{margin:0;font-size:20px;font-weight:700;line-height:1.25}
+.sp-pub-in p{margin:0;font-size:14px;line-height:1.5;color:#2b3446}
+.sp-win{font-size:13.5px;color:#1a2744;background:#f5f5f2;border-radius:8px;padding:7px 10px}
+</style>
+</helmet>
+<div class="sp-root" style="width:1440px;height:2900px">
+<section class="sp-doc" aria-label="About this board">
+<div class="sp-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker" style="margin:0">16 · Scoresheet scanner · part 7 of 8, into the tournament · option P · board 1 of 2</p><span class="sp-round">ROUND 2</span></div>
+<h1 class="sp-title">Scanner · P · Into the tournament: From the game, stack upload</h1>
+<p class="sp-ml" style="margin-top:8px"><b>Built from:</b> Scan-A (Attach to the crosstable box, Share &amp; export card, panel 6&#39;s tile grid, step strip) · Scan-B screen 4 (crosstable tick) · Scan-C note 4 (a read result is a suggestion) · the decided crosstable and Reported results queue (Live-Final-Standings, Live-Final-Pairings-2) · decided header and footer.</p>
+<p class="sp-ml"><b>Replaces:</b> Scan-A&#39;s Attach box and panel 6, Scan-B screen 4&#39;s crosstable line. Dropped: &quot;3 of 5 scans left&quot; (now 17 of 20), bare &quot;Scanned&quot; tiles, linking with a flag open, a board inside a recap.</p>
+<p class="sp-ml"><b>Round 2 · K&#39;s feedback applied (Tue, Oct 13):</b> one scanner in parts, two options per part; nothing from A, B or C is turned down.</p><p class="sp-ml"><b>Option P, at a glance:</b> the way in is the game (Save &amp; share, My games), the cell says Game, and the TD uploads Round 4 as one stack. Scan-Q starts from the crosstable cell (&quot;Add your game&quot;); its TD photographs each sheet at the board.</p>
+<p class="sp-ml"><b>Shown:</b> Sun, Sep 6, 2026, 8:15 PM, Marcus at Save &amp; share on a laptop, then the results page. Board 2 (Scan-P-2): phones, the 4:10 PM round scan, the recap, every state.</p>
+<p class="sp-ml" style="margin-top:8px"><span class="k-sample">Sample data · players, round, scan count, event allowance, guardian, TD, rows 1, 2 and 4 · moves are Morphy&#39;s Opera Game (1858)</span></p>
+</div>
+<aside class="sp-grey" aria-label="Board note">
+<div><p><b>What</b>Option P for part 7: the player links a checked game from Save &amp; share or My games, the crosstable cell says Game, and the director feeds a round in as one stack.</p><p><b>Built from</b>Scan-A&#39;s Attach box, Share &amp; export and panel 6; Scan-B screen 4; Scan-C note 4; the decided crosstable and queue.</p><p><b>K&#39;s feedback applied</b>One scanner in parts, with options per part; same game, steps, count and privacy rules as every part.</p></div>
+<div><p><b>Open for K</b></p><ol><li>Who links (player, TD or both); opponent agrees first or hides after; email or a My LCA line. Drawn: both, hide after, email.</li><li>Photo kept 30 days unless saved, or gone within the hour. Drawn: 30 days.</li><li>Should Public exist (D9)? Drawn: linking sets Public.</li><li>A junior on a game page: full name (D3) or Priya S. (D15). Drawn: full.</li><li>Recaps: a text link only, though WS10 lists a key game slot.</li></ol></div>
+</aside>
+</div>
+<div class="sp-lbox"><p class="k-label">Notes on this board</p><ol class="sp-notes"><li><span class="k-num-badge">1</span><span><b>The attach card lives on the Save &amp; share step and in My games.</b> Linking makes it public, as the crosstable is, and an under-18&#39;s game waits for a guardian&#39;s OK. The opponent or a guardian can hide it from their row. <span class="sp-from">Scan-A Attach box · Scan-B screen 4 tick</span></span></li><li><span class="k-num-badge">2</span><span><b>The sheet&#39;s result is cross-checked against the crosstable, in words.</b> A difference goes to the TD with Tell the TD prefilled; the player never changes a result. <span class="sp-from">Scan-A game checks · Scan-C note 4</span></span></li><li><span class="k-num-badge">3</span><span><b>Each crosstable cell with a game says Game, in words,</b> and opens it in a side sheet. The directors pick the Key game from linked games. <span class="sp-from">new this round</span></span></li><li><span class="k-num-badge">4</span><span><b>The recap carries at most a text link to the results page.</b> No board inside a recap (replan 3.6); the link lands on the Key game block. Board 2. <span class="sp-from">replan 3.6 and 4.3</span></span></li><li><span class="k-num-badge">5</span><span><b>The TD uploads the round as one batch.</b> Each tile names its state in words beside its colour; a read result enters the queue as &quot;Scoresheet says&quot;, never as a result. Board 2. <span class="sp-from">Scan-A panel 6 · Scan-C note 4</span></span></li><li><span class="k-num-badge">6</span><span><b>Bulk scans draw on the event&#39;s allowance, shown in words,</b> not on a member&#39;s 20 a day (&quot;17 of 20 scans left today&quot;). Board 2. <span class="sp-from">Scan-A count, redrawn</span></span></li></ol></div>
+</section>
+<div class="sp-flab"><span class="sp-code">A</span><h2>The player links the game, at Save &amp; share</h2><span class="sp-time"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Sun, Sep 6 · 8:15 PM · laptop</span><span class="sp-urlchip">louisianachess.org/scanner · Save &amp; share</span></div>
+<div class="sp-frame">
+<header class="k-header sp-hd"><div class="k-wrap-wide k-header-in sp-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="sp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks sp-nav" aria-label="Main"><a class="k-nav-on" href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="sp-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="sp-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="sp-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility sp-util"><a class="k-ulink" href="#">Donate</a><button class="sp-my" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+
+<div class="sp-band"><div class="sp-band-in">
+<div>
+<p class="k-kicker" style="margin:0">Scoresheet scanner · members only · Into the tournament · Option P</p>
+<h1 class="k-h1">Link your game to the tournament</h1>
+<ol class="sp-steps" aria-label="Progress"><li class="sp-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Photo</li><li class="sp-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Read · 17 moves</li><li class="sp-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Check · every move checked</li><li class="sp-now" aria-current="step">Save &amp; share</li></ol>
+</div>
+<div class="sp-bandr">
+<span class="k-sample">Sample data · players, round, scan count, event allowance · moves are Morphy&#39;s Opera Game (1858)</span>
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan another sheet</a>
+<span class="sp-count"><b>17 of 20</b> scans left today · resets at midnight</span>
+</div>
+</div></div>
+<div class="sp-body">
+<div class="sp-cards">
+<section class="sp-card" aria-labelledby="sv-h">
+<div class="sp-hrow"><h3 id="sv-h">Save to My games</h3><span class="k-tag k-tag-open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Saved</span></div>
+<div class="k-stack-sm" style="gap:6px">
+<span class="k-label">Who can see it</span>
+<div class="sp-seg" role="group" aria-label="Who can see it, locked while linked" aria-disabled="true"><span>Only me</span><span>Anyone with the link</span><span class="on"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Public</span></div>
+<p class="sp-line">Public, because it is linked from the crosstable. Unlink to change this.</p>
+</div>
+<div class="k-stack-sm" style="gap:6px">
+<span class="k-label">Whose game</span>
+<div class="k-row-sm"><span class="k-chip k-chip-on">You</span><span class="k-meta">A guardian would see You · Priya</span></div>
+</div>
+<div class="k-stack-sm" style="gap:4px">
+<label class="k-check" style="font-size:14.5px"><input type="checkbox" checked="checked"><span>Keep the scoresheet photo with this game</span></label>
+<p class="sp-line" style="padding-left:30px">Photo kept with the game. Otherwise it is deleted Tue, Oct 6.</p>
+</div>
+<div class="sp-ok"><span class="sp-tickc"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>Saved to My games</b> · 8:14 PM</span><a class="k-link" href="#">Open My games</a></div>
+<p class="sp-open" style="align-self:flex-start">Open for K · how long the photo is kept</p>
+</section>
+<section class="sp-card" aria-labelledby="at-h" style="border:2px solid #1a2744">
+<span class="k-num-badge sp-nb sp-mk" style="top:-12px;left:-12px">1</span>
+<div class="sp-hrow"><h3 id="at-h">Attach to the crosstable</h3><span class="k-tag k-tag-open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Linked</span></div>
+<p class="sp-line">Louisiana State Championship 2026 · Open · Round 4 · Board 6 · Sun, Sep 6 · <b>matched from the pairings</b></p>
+<div class="k-tablebox"><table class="sp-xt">
+<thead><tr><th>#</th><th class="l">Player</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>Pts</th></tr></thead>
+<tbody>
+<tr class="me"><td>3</td><td class="l">Marcus Landry<span class="sp-you">You</span></td><td>L15</td><td>W7</td><td>W9</td><td class="r4">W12</td><td>D2</td><td>3½</td></tr>
+<tr><td>12</td><td class="l">Priya Shah</td><td>W20</td><td>D11</td><td>W14</td><td class="r4">L3</td><td>W8</td><td>3½</td></tr>
+</tbody></table></div>
+<ul class="sp-chk sp-rel">
+<li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Every move checked, 17 of 17. Linking opens only then.</span></li>
+<li><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>The sheet says 1-0. The crosstable says 1-0. They match.</span><span class="k-num-badge sp-nb" style="margin-left:auto">2</span></li>
+</ul>
+<label class="k-check" style="font-size:14.5px"><input type="checkbox" checked="checked"><span>Link this game from both players&#39; Round 4 results (W12 and L3)</span></label>
+<div class="k-stack-sm" style="gap:4px">
+<p class="sp-line">Linking makes the game public, because the crosstable is public.</p>
+<p class="sp-line">Priya Shah&#39;s guardian gets an email and can hide the game from Priya&#39;s row. You can unlink at any time from My games.</p>
+</div>
+<div class="sp-press" role="img" aria-label="Link the game button, drawn pressed"><span>Link the game</span><span class="sp-pressed">Drawn pressed, 8:15 PM</span></div>
+<div class="sp-linked"><span class="sp-tickc"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>Linked from both rows</b> · 8:15 PM</span><button class="k-btn k-btn-ghost k-btn-sm" type="button">Unlink</button></div>
+</section>
+<section class="sp-card" aria-labelledby="sh-h">
+<h3 id="sh-h">Share &amp; export</h3>
+<div class="sp-share"><div class="k-board sp-bd sp-bd-96 " role="img" aria-label="Final position after 17. Rd8 checkmate. White: king c1, rook d8, bishop g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e6, bishop f8, knight b8, rook h8, pawns a7 e5 f7 g7 h7. Last move d1 to d8 marked."><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d lm"><span class="pc pw">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l lm"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div></div><div class="k-stack-sm"><b class="k-ink">Landry vs Shah · 1-0</b><span>17 moves · 17. Rd8# · Louisiana State Championship 2026, Round 4</span><span>LOUISIANACHESS.ORG</span></div></div>
+<p class="sp-line">How the game link previews when shared: final position, players, result.</p>
+<div class="sp-fld"><input class="k-input" value="louisianachess.org/g/landry-shah-r4" aria-label="Game link"><button class="k-btn k-btn-line k-btn-sm" type="button">Copy</button></div>
+<div class="sp-btns">
+<a class="k-btn k-btn-navy" href="#">Open in lichess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+<button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PGN</button>
+<button class="k-btn k-btn-ghost" type="button">Copy PGN</button>
+<button class="k-btn k-btn-ghost" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="1.5"></rect><path d="M4 7l8 6 8-6"></path></svg>Email</button>
+</div>
+<a class="k-link k-small" href="#" style="align-self:flex-start">Scan the next sheet</a>
+</section></div>
+
+<div class="sp-mid">
+<div class="sp-mg">
+<div class="sp-mg-h"><span class="k-label">My LCA › My games · the same card, later</span><span class="k-meta">Any device</span></div>
+<div class="sp-mg-row">
+<div class="k-board sp-bd sp-bd-64 " role="img" aria-label="Final position after 17. Rd8 checkmate. White: king c1, rook d8, bishop g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e6, bishop f8, knight b8, rook h8, pawns a7 e5 f7 g7 h7. Last move d1 to d8 marked."><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d lm"><span class="pc pw">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l lm"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div></div>
+<div>
+<b>vs Priya Shah · won</b>
+<p class="sp-line">Louisiana State Championship 2026, Round 4, Board 6 · Sun, Sep 6 · Public · Checked</p>
+<div class="sp-mini-attach"><span class="k-tag k-tag-open"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Linked</span><span>On the crosstable from both rows · W12 and L3</span><span style="margin-left:auto;display:flex;gap:6px"><button class="k-btn k-btn-line" type="button">Review</button><button class="k-btn k-btn-line" type="button">Share</button><button class="k-btn k-btn-ghost" type="button">Unlink</button></span></div>
+</div>
+</div>
+</div>
+<div class="sp-midr">
+<p class="sp-cap">The opponent, or their guardian, can hide the game from their own row. The owner&#39;s copy stays.</p>
+<p class="sp-anno"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span><b>Had Priya&#39;s guardian scanned it,</b> the game would be filed under Priya, Only me by default, and the link box would read &quot;Sharing a junior&#39;s game needs a guardian&#39;s OK&quot; until Anita allows it. Phones and the guardian&#39;s view are on board 2.</span></p>
+</div>
+</div>
+</div>
+
+<footer class="k-footer sp-foot">
+<div class="k-wrap-wide sp-foot-in">
+<div class="k-row-sm" style="gap:10px"><svg class="sp-rook sp-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+<div class="sp-playcol"><b>Play</b><a href="#">Tournaments</a><a class="on" href="#">Scoresheet scanner</a></div>
+<span class="k-meta">US Chess state affiliate · Louisiana&#39;s chess community since 1915</span>
+<nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+</div>
+</footer>
+</div>
+<div class="sp-flab" style="margin-top:22px"><span class="sp-code">B</span><h2>On the public results page: the Key game block, the Game cells and the game sheet</h2><span class="sp-time"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Sun, Sep 6 · 8:16 PM · Marcus signed in</span><span class="sp-urlchip">Recap: board 2</span></div>
+<div class="k-browser sp-browser">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/tournaments/louisiana-state-championship-2026/pairings</div></div>
+<div class="sp-view">
+<header class="k-header sp-hd"><div class="k-wrap-wide k-header-in sp-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="sp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks sp-nav" aria-label="Main"><a class="k-nav-on" href="#" aria-current="page">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="sp-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="sp-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="sp-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility sp-util"><a class="k-ulink" href="#">Donate</a><button class="sp-my" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<section class="sp-rhead">
+<nav class="sp-crumb" aria-label="Breadcrumb"><a href="#">Tournaments</a> / <a href="#">Louisiana State Championship 2026</a> / <span>Results</span></nav>
+<div class="sp-rtitle"><h3>Louisiana State Championship 2026</h3><div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-closed">Final</span><span class="k-meta">Sun, Sep 6, 2026 · 5 rounds</span></div></div>
+<nav class="sp-rtabs" aria-label="Event pages"><a href="#">Pairings</a><a class="on" href="#" aria-current="page">Results</a><a href="#">Prizes</a><a href="#">Event info</a></nav>
+</section>
+<div class="sp-rbody">
+<div>
+<div class="sp-ctl">
+<div class="k-row" style="gap:14px"><div class="k-seg" role="group" aria-label="View"><button type="button">Standings</button><button class="k-seg-on" type="button" aria-pressed="true">Crosstable</button></div><span class="k-chip k-chip-on">Open</span><span class="k-chip">Reserve</span></div>
+<span class="k-small" style="color:#3d4556"><b>Final</b> · after Round 5 · Sun, Sep 6</span>
+</div>
+<section class="sp-key" aria-labelledby="kg-h">
+<span class="k-num-badge sp-nb sp-mk" style="top:-12px;left:-12px">3</span>
+<div class="k-board sp-bd sp-bd-160 " role="img" aria-label="Final position after 17. Rd8 checkmate. White: king c1, rook d8, bishop g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e6, bishop f8, knight b8, rook h8, pawns a7 e5 f7 g7 h7. Last move d1 to d8 marked."><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d lm"><span class="pc pw">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l lm"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div></div>
+<div>
+<h4 id="kg-h">Key game</h4><span class="k-meta">Chosen by the event&#39;s directors</span>
+<p class="who">Marcus Landry <span>2014</span> vs Priya Shah <span>1803</span> · 1-0</p>
+<p class="sp-line">Round 4 · Board 6 · Open · Sun, Sep 6 · 17 moves, ending 17. Rd8#</p>
+<div class="sp-btns" style="margin-top:12px"><a class="k-btn k-btn-navy" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z"></path></svg>Play through</a><a class="k-btn k-btn-line" href="#">Open in lichess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a><button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PGN</button></div>
+</div>
+<div class="sp-tdchip"><span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>TD view: Change the key game</span><small>Picks from the games linked to this event</small></div>
+</section>
+<div class="k-tablebox sp-rel" style="margin-top:14px">
+<table class="sp-ct">
+<thead><tr><th>#</th><th class="l">Player</th><th>Rating</th><th>Rd 1</th><th>Rd 2</th><th>Rd 3</th><th>Rd 4 <span class="k-num-badge sp-nb" style="vertical-align:middle;margin-left:4px;width:22px;height:22px;font-size:11.5px">3</span></th><th>Rd 5</th><th>Total</th></tr></thead>
+<tbody><tr><td class="n">1</td><td class="l">Andre Charbonnet</td><td class="n">2210</td><td><span class="sp-cc"><b>W16</b><i>b</i></span></td><td><span class="sp-cc"><b>D4</b><i>w</i></span></td><td><span class="sp-cc"><b>L2</b><i>b</i></span></td><td><span class="sp-cc"><b>W5</b><i>w</i></span></td><td><span class="sp-cc"><b>D6</b><i>b</i></span></td><td class="t">3</td></tr><tr><td class="n">2</td><td class="l">Grant Melancon</td><td class="n">2105</td><td><span class="sp-cc"><b>W17</b><i>w</i></span></td><td><span class="sp-cc"><b>W10</b><i>b</i></span></td><td><span class="sp-cc"><b>W1</b><i>w</i></span></td><td><span class="sp-cc"><b>L8</b><i>b</i></span></td><td><span class="sp-cc"><b>D3</b><i>w</i></span></td><td class="t">3½</td></tr><tr class="me"><td class="n">3</td><td class="l">Marcus Landry<span class="sp-you">You</span></td><td class="n">2014</td><td><span class="sp-cc"><b>L15</b><i>w</i></span></td><td><span class="sp-cc"><b>W7</b><i>b</i></span></td><td><span class="sp-cc"><b>W9</b><i>w</i></span></td><td><span class="sp-cc sp-cc-on"><b>W12</b><i>w</i><a href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z"></path></svg>Game</a></span></td><td><span class="sp-cc"><b>D2</b><i>b</i></span></td><td class="t">3½</td></tr><tr><td class="n">4</td><td class="l">Hannah Breaux</td><td class="n">1990</td><td><span class="sp-cc"><b>W18</b><i>w</i></span></td><td><span class="sp-cc"><b>D1</b><i>b</i></span></td><td><span class="sp-cc"><b>W11</b><i>w</i></span></td><td><span class="sp-cc"><b>L7</b><i>b</i></span></td><td><span class="sp-cc"><b>D10</b><i>w</i></span></td><td class="t">3</td></tr><tr class="sp-ell"><td colspan="9" class="l">Rows 5 to 11 · Show all 60 players in the Open</td></tr><tr><td class="n">12</td><td class="l">Priya Shah</td><td class="n">1803</td><td><span class="sp-cc"><b>W20</b><i>b</i></span></td><td><span class="sp-cc"><b>D11</b><i>w</i></span></td><td><span class="sp-cc"><b>W14</b><i>b</i></span></td><td><span class="sp-cc sp-cc-on"><b>L3</b><i>b</i><a href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10-6.5z"></path></svg>Game</a></span></td><td><span class="sp-cc"><b>W8</b><i>w</i></span></td><td class="t">3½</td></tr></tbody>
+</table>
+</div>
+<div class="sp-ctkey"><span><b>W</b> won · <b>L</b> lost · <b>D</b> drew, then the opponent&#39;s number</span><span><b>w</b> played White · <b>b</b> played Black</span><span><b>Game</b>: a scanned game you can play through</span></div>
+<p class="k-small" style="margin:8px 0 0;color:#3d4556"><b style="color:#1a2744">Games from this event:</b> 2 of 150 boards have a game.</p>
+<p class="sp-anno" style="margin-top:14px"><span class="k-num-badge sp-nb">2</span><span><b>Tell the TD, never edit.</b> &quot;Something wrong with this game? Tell the TD&quot; sends the event&#39;s directors the round, the board and the result on the sheet. If the sheet and the crosstable differ, the player sees &quot;The sheet says 1-0. The crosstable says ½-½.&quot; with Tell the TD prefilled; only a director changes a result (replan 3.1).</span></p>
+<p class="sp-anno" style="margin-top:8px"><span class="k-num-badge sp-nb">3</span><span><b>Only cells with a linked game get the third line.</b> A hidden game drops it from that player&#39;s row only.</span></p>
+</div>
+
+<aside class="sp-sheet" aria-labelledby="gs-h" role="dialog">
+<div class="sp-hrow"><div><span class="k-label">Round 4 · Board 6</span><h4 id="gs-h" style="margin-top:4px">Marcus Landry 1-0 Priya Shah</h4></div><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Close</button></div>
+<div style="display:flex;justify-content:center"><div class="k-board sp-bd sp-bd-300 " role="img" aria-label="Final position after 17. Rd8 checkmate. White: king c1, rook d8, bishop g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e6, bishop f8, knight b8, rook h8, pawns a7 e5 f7 g7 h7. Last move d1 to d8 marked."><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d lm"><span class="pc pw">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l lm"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div></div></div>
+<div class="sp-navb"><button class="k-iconbtn" type="button" aria-label="First move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5l-7 7 7 7"></path></svg></button><button class="k-iconbtn" type="button" aria-label="Back"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><button class="k-iconbtn" type="button" aria-label="Forward"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button><button class="k-iconbtn" type="button" aria-label="Last move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l7 7-7 7"></path></svg></button><span class="k-meta" style="margin-left:auto">Move 17 · White</span></div>
+<table class="sp-mv"><thead><tr><th></th><th>White</th><th>Black</th><th></th><th>White</th><th>Black</th></tr></thead><tbody><tr><td class="no">1</td><td>e4</td><td>e5</td><td class="no sp">10</td><td class="">Nxb5</td><td>cxb5</td></tr><tr><td class="no">2</td><td>Nf3</td><td>d6</td><td class="no sp">11</td><td class="">Bxb5+</td><td>Nbd7</td></tr><tr><td class="no">3</td><td>d4</td><td>Bg4</td><td class="no sp">12</td><td class="">O-O-O</td><td>Rd8</td></tr><tr><td class="no">4</td><td>dxe5</td><td>Bxf3</td><td class="no sp">13</td><td class="">Rxd7</td><td>Rxd7</td></tr><tr><td class="no">5</td><td>Qxf3</td><td>dxe5</td><td class="no sp">14</td><td class="">Rd1</td><td>Qe6</td></tr><tr><td class="no">6</td><td>Bc4</td><td>Nf6</td><td class="no sp">15</td><td class="">Bxd7+</td><td>Nxd7</td></tr><tr><td class="no">7</td><td>Qb3</td><td>Qe7</td><td class="no sp">16</td><td class="">Qb8+</td><td>Nxb8</td></tr><tr><td class="no">8</td><td>Nc3</td><td>c6</td><td class="no sp">17</td><td class="cur">Rd8#</td><td></td></tr><tr><td class="no">9</td><td>Bg5</td><td>b5</td><td class="no sp"></td><td></td><td></td></tr></tbody></table>
+<div class="sp-btns"><a class="k-btn k-btn-navy" href="#">Open in lichess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a><button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PGN</button></div>
+<p class="sp-line">Scanned by Marcus Landry · every move checked</p>
+<a class="k-link" href="#" style="font-size:13px;align-self:flex-start">Something wrong with this game? Tell the TD</a>
+</aside>
+</div>
+</div>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

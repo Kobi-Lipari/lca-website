@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · P · Board: a short desk, with Admin (view only) kept (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ap-root{box-sizing:border-box;padding:24px 40px 32px;background:#ecebe6;color:#1a2744}
+.ap-root *{box-sizing:border-box}
+.ap-title{display:block;background:#1a2744;color:#ffffff;border-radius:14px;padding:18px 24px 18px;border-bottom:4px solid #c8a94a}
+.ap-title .k-kicker{color:#e6cf86;margin:0}
+.ap-title h1{font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:6px 0 10px}
+.ap-tmeta{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:13px;line-height:1.4;margin:0;max-width:1040px}
+.ap-tmeta dt{font-weight:600;color:#e6cf86;white-space:nowrap}
+.ap-tmeta dd{margin:0;color:#ffffff}
+.ap-tside{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;width:250px}
+.ap-tag-r2{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ap-tag-frame{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;border:1px solid rgba(255,255,255,.6);color:#ffffff;font-size:12.5px;font-weight:600}
+.ap-tside .k-meta{color:rgba(255,255,255,.82);text-align:right}
+.ap-legend{margin-top:12px}
+.ap-title .ap-grey{flex:none;width:500px}
+.ap-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px}
+.ap-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 24px}
+.ap-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446}
+.ap-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ap-notes b{font-weight:600;color:#1a2744}
+.ap-grey{background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;align-content:start}
+.ap-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.ap-grey p + p{margin-top:7px}
+.ap-grey b.ap-gh{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ap-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.ap-grey li{margin-bottom:3px}
+/* frame labels */
+.ap-flab{display:flex;align-items:center;gap:12px;margin:18px 0 8px;flex-wrap:nowrap}
+.ap-flab h2{margin:0;font-size:18px;line-height:1.2;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.ap-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;flex:none}
+.ap-url{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:6px;padding:3px 8px}
+.ap-fmeta{font-size:13px;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ap-frame{position:relative;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;background:#f5f5f2;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+/* decided header */
+.ap-hd-in{display:flex;align-items:center;height:68px;padding:0 24px}
+.ap-brand{margin-right:16px}
+.ap-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ap-rook-sm{width:22px;height:22px;fill:#ffffff;flex:none}
+.ap-nav{gap:0}
+.ap-nav a{padding:0 8px !important;white-space:nowrap}
+.ap-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 8px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500}
+.ap-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ap-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ap-util{gap:12px}
+.ap-util .k-ulink{padding:0 4px}
+.ap-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500}
+.ap-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.ap-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.ap-foot .k-meta{color:rgba(255,255,255,.78)}
+.ap-foot nav a{font-size:14px}
+/* hub band */
+.ap-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8;padding:12px 24px 12px}
+.ap-band-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.ap-name{font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:4px 0 0}
+.ap-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.ap-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 14px 5px 5px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.ap-rchip-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.ap-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.ap-r-td{background:#1a2744;color:#ffffff}
+.ap-r-rep{background:#f6efd9;color:#5e4a12}
+.ap-r-board{background:#e4e9f3;color:#1a2744}
+.ap-r-parent{background:#e3efe6;color:#1f4d33}
+.ap-r-member{background:#ecebe5;color:#1a2744}
+/* layout */
+.ap-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:30px;align-items:start;padding:16px 24px 20px}
+.ap-railcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 12px}
+.ap-rnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.ap-rnav a{display:flex;justify-content:space-between;align-items:center;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:40px}
+.ap-rnav a.ap-on{background:#efede6;font-weight:600;box-shadow:inset 3px 0 0 #1a2744}
+.ap-rc{font-size:12px;font-weight:700;color:#3d4556;background:#eceef2;border-radius:999px;padding:1px 8px}
+.ap-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ap-coll{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:14.5px}
+.ap-coll b{font-weight:600}
+.ap-coll .ap-cm{color:#555c6b}
+.ap-coll .ap-show{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1a2744}
+/* the section */
+.ap-sec{background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;padding:18px 20px 0;margin:6px 0}
+.ap-sh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.ap-sh h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.ap-chip-dir{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;background:#1a2744;color:#ffffff;line-height:1.2}
+.ap-subl{font-size:15px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.ap-anchor{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#555c6b}
+.ap-row{display:grid;grid-template-columns:72px minmax(0,1fr) 220px;gap:10px 18px;padding:17px 0;border-top:1px solid #eeede7}
+.ap-sh + .ap-row{margin-top:14px}
+.ap-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:72px;min-height:74px;padding:8px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center}
+.ap-date b{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.ap-date span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;white-space:nowrap}
+.ap-date-navy{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ap-date-navy span{color:#e6cf86}
+.ap-date-done{background:#efefea;border-color:#dddcd4}
+.ap-main{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ap-tl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ap-tl b{font-size:20px;line-height:1.25;font-weight:600}
+.ap-det{font-size:14px;line-height:1.45;color:#555c6b;margin:0}
+.ap-cnt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.ap-cnt > b{font-weight:600;margin-right:4px}
+.ap-pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:999px;background:#f1f0eb;color:#3d4556;font-size:12.5px;font-weight:500}
+.ap-pill i{font-style:normal;font-weight:700;color:#1a2744}
+.ap-flags{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ap-t{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap}
+.ap-t::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.ap-t-nodot::before{display:none}
+.ap-t-green{background:#e3efe6;color:#1f4d33}
+.ap-t-amber{background:#f6efd9;color:#5e4a12}
+.ap-t-navy{background:#e4e9f3;color:#1a2744}
+.ap-t-red{background:#fbe9e4;color:#9a3b1b}
+.ap-t-grey{background:#ecebe5;color:#3d4555}
+.ap-next{font-size:14px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px}
+.ap-next span{font-weight:500;color:#555c6b}
+.ap-btns{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.ap-btns .k-btn{width:100%}
+.ap-btn-muted{background:#ffffff;border:1px solid #c9c8c0;color:#5d6371;flex-direction:column;gap:2px;min-height:52px}
+.ap-btn-muted small{font-size:12px;font-weight:500;color:#5d6371}
+.ap-plink{font-size:13px;font-weight:600;color:#1a2744;text-align:center;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0;margin-top:2px}
+/* inline decisions */
+.ap-dec{grid-column:2 / 4;background:#f5f5f2;border-radius:10px;padding:4px 14px}
+.ap-sub{display:flex;align-items:center;gap:14px;min-height:48px;font-size:13.5px;line-height:1.35;border-top:1px solid #e6e5df}
+.ap-sub:first-child{border-top:0}
+.ap-sub > .ap-st{flex:1;min-width:0}
+.ap-sub b{font-weight:600}
+.ap-sub .k-btn{min-height:36px;padding:0 14px;font-size:13.5px;flex:none}
+.ap-after{grid-column:2 / 4;display:flex;align-items:center;gap:10px;font-size:12.5px;color:#555c6b;margin-top:-2px}
+.ap-done{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;background:#e3efe6;color:#1f4d33;font-size:12.5px;font-weight:600}
+.ap-done u{color:#1a2744;text-underline-offset:2px}
+/* checks */
+.ap-check{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4;margin:0}
+.ap-ok{color:#1f4d33;font-weight:700;flex:none;width:14px}
+.ap-bad{color:#9a3b1b;font-weight:700;flex:none;width:14px}
+.ap-checks{display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;background:#fdfdfb}
+.ap-checks .k-label{margin-bottom:2px}
+.ap-tap{font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.ap-sec-foot{display:flex;align-items:center;gap:10px;margin:0 -20px;padding:12px 20px;background:#fbfaf6;border-top:1px solid #eeede7;border-radius:0 0 12px 12px;font-size:14px}
+.ap-sec-foot b{font-weight:600;white-space:nowrap}
+.ap-sec-foot .k-sample{white-space:nowrap}
+/* live */
+.ap-strip{display:flex;align-items:center;gap:12px;height:44px;padding:0 6px 0 24px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;font-size:14px;white-space:nowrap}
+.ap-livetag{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:#ff4757;color:#070b14;font-size:12px;font-weight:700;line-height:1.2;flex:none}
+.ap-evname{font-weight:700;color:#f3f5f9;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:3px}
+.ap-ps{color:#b9c2d3}
+.ap-ps b{color:#f3f5f9;font-weight:600}
+.ap-hide{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:44px;height:38px;border-radius:8px;border:1px solid rgba(243,245,249,.3);color:#f3f5f9;font-size:13px;font-weight:600;padding:0 10px;width:auto}
+.ap-liveband{background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;border-radius:10px;padding:14px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:center;margin-top:14px}
+.ap-liveband .ap-l1{font-size:16px;font-weight:600;line-height:1.35;margin:6px 0 0}
+.ap-liveband .ap-l1 span{color:#b9c2d3;font-weight:500}
+.ap-liveband .ap-l2{font-size:14px;line-height:1.45;color:#d5dbe6;margin:6px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ap-lbtns{display:flex;gap:8px}
+.ap-btn-light{background:transparent;color:#f3f5f9;border:1px solid rgba(243,245,249,.7)}
+.ap-shrunk{font-size:14px;line-height:1.5;color:#3d4556;padding:10px 0 14px;margin:0}
+/* phone */
+.ap-phone{width:360px;height:640px;flex:none;border-radius:34px;border:10px solid #10182b;background:#fbfaf6;overflow:hidden;position:relative;box-shadow:0 20px 44px rgba(16,24,43,.2)}
+.ap-pbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;background:#1a2744;color:#ffffff;font-size:16px;font-weight:600}
+.ap-pbody{padding:10px 12px 0;display:flex;flex-direction:column;gap:7px}
+.ap-ptabs{position:absolute;left:0;right:0;bottom:0;height:56px;background:#ffffff;border-top:1px solid #dddcd4;display:grid;grid-template-columns:repeat(4,1fr);font-size:11px;font-weight:600;color:#555c6b;text-align:center;align-items:center}
+.ap-ptabs .ap-pon{color:#1a2744;box-shadow:inset 0 2px 0 #1a2744;height:100%;display:flex;align-items:center;justify-content:center}
+/* insets */
+.ap-inset{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px}
+.ap-ilab{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 8px}
+.ap-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:3px 10px;border-radius:7px;font-size:14px;font-weight:500}
+.ap-mrow-todo{background:#fbf7e9}
+.ap-mrow-cur{background:#f3eedc;font-weight:600}
+.ap-mrow-ev{font-weight:600}
+.ap-msep{height:1px;background:#e3e2dc;margin:4px 2px}
+.ap-msub{font-size:12px;color:#555c6b;font-weight:400}
+.ap-crumbs{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px 10px;font-size:13.5px;line-height:1.4;align-items:baseline}
+.ap-crumbs .ap-fn{font-size:12px;font-weight:700;color:#555c6b}
+.ap-crumbs .ap-cr a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0}
+.ap-console{display:flex;align-items:center;justify-content:space-between;gap:10px;height:56px;padding:0 14px;margin-top:12px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:13.5px}
+.ap-console a{color:#ffffff}
+.ap-exit{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.7);font-weight:600;font-size:13px;color:#ffffff;flex:none}
+.ap-cap{font-size:13px;line-height:1.45;color:#3d4556;margin:8px 0 0}
+.ap-cap b{color:#1a2744;font-weight:600}
+.ap-lookup{display:flex;align-items:center;gap:8px;width:420px;height:44px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;color:#1a2744}
+.ap-res{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;font-size:14px;width:420px}
+.ap-row > .ap-date{align-self:start}
+.ap-plrow{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+.ap-nolook{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;margin-left:12px}
+.ap-tbody{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.ap-tbody > div{flex:1;min-width:0}
+.ap-after > span{white-space:nowrap}
+/* O: today card */
+.ap-today{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 20px 8px}
+.ap-th{display:flex;align-items:center;gap:12px}
+.ap-th h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.ap-thd{margin-left:auto;font-size:13px;color:#555c6b}
+.ap-tsub{font-size:14px;color:#555c6b;margin:4px 0 6px}
+.ap-trow{display:grid;grid-template-columns:230px minmax(0,1fr) auto;gap:16px;align-items:center;min-height:58px;padding:7px 0;border-top:1px solid #e8e8e3}
+.ap-trow .ap-role{white-space:normal;max-width:230px;line-height:1.3;justify-self:start}
+.ap-ts{font-size:15px;line-height:1.35;font-weight:600;margin:0}
+.ap-tm{font-size:13px;line-height:1.4;color:#555c6b;margin:2px 0 0}
+.ap-trow .k-btn{min-height:36px;padding:0 14px;font-size:14px;white-space:nowrap}
+.ap-more{display:flex;align-items:center;gap:8px;min-height:44px;border-top:1px solid #e8e8e3;font-size:14.5px;font-weight:600}
+.ap-more u{text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ap-more span{font-weight:400;color:#555c6b;font-size:13px}
+.ap-r-off{background:#ecebe5;color:#1a2744}
+/* collapsed strips */
+.ap-coll{gap:12px;height:50px}
+.ap-coll .ap-role{flex:none}
+.ap-coll .ap-cm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-size:13.5px}
+.ap-coll b{white-space:nowrap}
+/* board section */
+.ap-bsec{background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;padding:22px 24px 0}
+.ap-bsh{display:flex;justify-content:space-between;align-items:flex-start;gap:20px}
+.ap-bsh h2{margin:8px 0 0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.ap-bshr{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}
+.ap-bgrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;margin-top:12px;align-items:start}
+.ap-cap{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0 0 4px;display:flex;align-items:center;gap:8px}
+.ap-ib{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:4px 14px;align-items:center;min-height:64px;padding:8px 0;border-top:1px solid #eeede7}
+.ap-ib .ap-ts{font-size:15px}
+.ap-ib .k-btn{min-height:36px;padding:0 14px;font-size:14px}
+.ap-new{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:#eef1f8;color:#1a2744;font-size:12.5px;font-weight:600}
+.ap-second{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;padding:10px 0 0;border-top:1px solid #eeede7;margin:0}
+.ap-room{display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.4;color:#3d4556;margin:8px 0 0;padding:8px 10px;background:#f5f5f2;border-radius:8px}
+.ap-room b{font-weight:600;color:#1a2744}
+.ap-cream{background:#fbf7e9;border:1px solid #866a1e;border-radius:10px;padding:14px 16px}
+.ap-cream + .ap-cream{margin-top:12px}
+.ap-big{font-size:18px;font-weight:700;margin:2px 0 2px}
+.ap-sm{font-size:13px;line-height:1.45;color:#3d4556;margin:0}
+.ap-sm-g{font-size:13px;line-height:1.45;color:#555c6b;margin:0}
+.ap-doc{display:block;margin-top:8px;font-size:14px;line-height:1.35}
+.ap-doc a{color:#1a2744;font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#866a1e}
+.ap-doc span{display:block;font-size:12.5px;color:#555c6b}
+.ap-div{display:flex;align-items:center;gap:12px;margin:16px 0 0;padding-top:12px;border-top:2px solid #1a2744}
+.ap-div .ap-sm-g{font-size:14px}
+.ap-orow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 18px;align-items:center;min-height:56px;padding:9px 0;border-top:1px solid #eeede7}
+.ap-div + .ap-orow{border-top:0}
+.ap-orow .k-btn{min-height:40px;padding:0 16px;font-size:14px}
+.ap-ot{font-size:15px;line-height:1.4;margin:0}
+.ap-ot b{font-weight:600}
+.ap-rt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px}
+.ap-goes{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#3d4556;background:#f5f5f2;border:1px solid #e3e2dc;border-radius:5px;padding:2px 7px;white-space:nowrap}
+.ap-acol{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.ap-lk{display:flex;align-items:flex-start;gap:20px}
+.ap-bfoot{display:flex;align-items:center;gap:10px;margin:14px -24px 0;padding:12px 24px;background:#fbfaf6;border-top:1px solid #eeede7;border-radius:0 0 12px 12px;font-size:14px;line-height:1.4;color:#3d4556}
+.ap-bfoot b{color:#1a2744;font-weight:600}
+.ap-eyb{display:flex;align-items:center;gap:10px}
+.ap-sub2{font-size:13px;color:#555c6b;margin:2px 0 0}
+.ap-res b{white-space:nowrap}
+.ap-root{padding-bottom:18px}
+.ap-trow .ap-role{border-radius:10px}
+/* P: the desk */
+.ap-desk{margin-top:16px}
+.ap-drow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px 16px;align-items:center;min-height:52px;padding:7px 0;border-top:1px solid #eeede7}
+.ap-drow:first-child{border-top:1px solid #e3e2dc}
+.ap-dt{font-size:15px;line-height:1.35;margin:0;color:#1a2744}
+.ap-dt b{font-weight:600}
+.ap-dt .ap-goes{margin-left:8px;vertical-align:1px}
+.ap-drow .k-btn{min-height:36px;padding:0 14px;font-size:14px;white-space:nowrap}
+.ap-dact{display:flex;align-items:center;gap:8px;justify-content:flex-end;min-width:200px}
+.ap-dact .k-btn{width:100%}
+.ap-adm{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:10px 24px;align-items:center;margin-top:14px;padding:16px 20px;background:#f6f6f2;border:1px solid #e3e2dc;border-left:4px solid #1a2744;border-radius:10px}
+.ap-adm-h{display:flex;align-items:center;gap:10px;margin:0 0 6px}
+.ap-adm-pill{display:inline-flex;align-items:center;height:26px;padding:0 11px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:600}
+.ap-adm-q{font-size:15px;line-height:1.45;margin:0;color:#1a2744}
+.ap-adm-s{font-size:13px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.ap-adm .ap-acol{align-items:stretch}
+.ap-adm .k-btn{min-height:40px}
+.ap-pill-g{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:#ecebe5;color:#3d4555;font-size:12.5px;font-weight:600;white-space:nowrap}
+.ap-pill-n{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:#eef1f8;color:#1a2744;font-size:12.5px;font-weight:600;white-space:nowrap}
+.ap-pill-a{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;background:#fff4d6;color:#7a5c00;font-size:12.5px;font-weight:600;white-space:nowrap}
+/* frame B: the room */
+.ap-panel{background:#f6f6f2;border:1px solid #cfcec6;border-radius:12px;padding:20px;display:grid;grid-template-columns:800px minmax(0,1fr);gap:28px;align-items:start}
+.ap-win{background:#ffffff;border:1px solid #c9c8c0;border-radius:10px;overflow:hidden;box-shadow:0 10px 24px rgba(16,24,43,.10)}
+.ap-whd{display:flex;align-items:center;gap:10px;height:40px;padding:0 14px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:600}
+.ap-whd .ap-rook-sm{width:18px;height:18px}
+.ap-whd .ap-wsp{margin-left:auto;display:flex;align-items:center;gap:14px;font-weight:500}
+.ap-wcr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;border-bottom:1px solid #e6e5df;font-size:12px;color:#3d4556;background:#fbfaf6}
+.ap-wcr a{color:#1a2744;text-decoration:underline;text-underline-offset:2px;text-decoration-color:#9aa1b0;font-weight:600}
+.ap-wbody{display:grid;grid-template-columns:168px minmax(0,1fr)}
+.ap-side{border-right:1px solid #e6e5df;padding:10px 8px;background:#ffffff}
+.ap-side-t{display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;padding:2px 6px 2px}
+.ap-side-b{font-size:11px;color:#1a2744;text-decoration:underline;text-underline-offset:2px;padding:0 6px 6px;display:block}
+.ap-srow{display:flex;justify-content:space-between;align-items:center;min-height:26px;padding:0 6px;border-radius:6px;font-size:12px;color:#1a2744}
+.ap-srow.ap-son{background:#f3eedc;font-weight:600;box-shadow:inset 3px 0 0 #866a1e}
+.ap-srow i{font-style:normal;font-size:11px;font-weight:700;color:#3d4556;background:#eceef2;border-radius:999px;padding:0 6px}
+.ap-snote{font-size:10.5px;line-height:1.35;color:#555c6b;padding:6px 6px 0;margin:4px 0 0;border-top:1px solid #eeede7}
+.ap-wmain{padding:10px 14px 12px;min-width:0}
+.ap-whero{background:#1a2744;color:#ffffff;border-radius:8px;padding:10px 12px}
+.ap-whero h3{margin:0;font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ap-vo{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:999px;border:1px solid rgba(255,255,255,.45);font-size:11px;font-weight:500;color:#ffffff}
+.ap-whero p{margin:4px 0 0;font-size:11.5px;line-height:1.4;color:#e8ecf4}
+.ap-wq{font-size:13px;font-weight:700;margin:10px 0 6px}
+.ap-wq span{font-weight:500;color:#555c6b}
+.ap-tbl{width:100%;border-collapse:collapse;font-size:11.5px;line-height:1.3}
+.ap-tbl th{text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:4px 6px;border-bottom:1px solid #e3e2dc}
+.ap-tbl td{padding:5px 6px;border-bottom:1px solid #eeede7;vertical-align:middle;color:#1a2744}
+.ap-tbl td small{display:block;color:#555c6b;font-size:10.5px}
+.ap-src{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:5px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.ap-src-s{background:#e4e9f3;color:#1a2744}
+.ap-src-a{background:#f6efd9;color:#5e4a12}
+.ap-src-b{background:#ecebe5;color:#3d4555}
+.ap-src-f{background:#fbe9e4;color:#9a3b1b}
+.ap-tbtn{display:inline-flex;align-items:center;justify-content:center;height:24px;padding:0 9px;border-radius:6px;border:1px solid #1a2744;font-size:11px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ap-toff{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#5d6371;white-space:nowrap}
+.ap-toff span{display:inline-flex;align-items:center;height:22px;padding:0 7px;border-radius:6px;border:1px solid #d6d5cd;background:#f3f3ef;color:#6b7080;font-size:10.5px;font-weight:600}
+.ap-tr-off td{color:#5d6371}
+.ap-tr-me{background:#fbf7e9}
+.ap-wfoot{font-size:10.5px;color:#555c6b;margin:6px 0 0}
+.ap-side-list{display:flex;flex-direction:column;gap:14px}
+.ap-say{font-size:15px;line-height:1.5;margin:0;color:#1a2744}
+.ap-say b{font-weight:600}
+.ap-say-g{font-size:13px;line-height:1.5;color:#3d4556;margin:0}
+.ap-wayback{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:12px 14px}
+
+</style>
+</helmet>
+<div class="ap-root" style="width:1440px;height:2650px">
+<section class="ap-title" aria-label="About this board"><div class="ap-thead">
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option P · Board · part 1 of 2</p><span class="ap-tag-r2">ROUND 2</span><span class="ap-tag-frame">Frame: Int-A, swappable</span><span class="k-sample">Sample data</span></div>
+<h1>My LCA · P · Board: a short desk, with Admin (view only) kept (round 2)</h1></div><div class="ap-tbody"><div>
+<dl class="ap-tmeta">
+<dt>Built from</dt><dd>Account-C's Board card, chips, rail and its footer line "Officers and admins also see Admin in the header", Account-G's Today list, Account-O (the same officer on the same morning), today's AdminPage (the "View only" hero, lines 119 to 122), Work-I's queue, the decided header and menu (Nav-Header-Final).</dd>
+<dt>Replaces</dt><dd>Account-C's Board card with its three-message preview, vote rows and "Drafts to review", the "Shortcuts into Workspace" block, the Daily digest, the header's Workspace link, and the header Admin link Account-C's footer promised officers (now one menu row).</dd>
+<dt>Shown</dt><dd>/dashboard#board for Chris Arceneaux at 1440px, Mon, Oct 5, 2026, 8:40 AM; Part 2 (Account-P-2): what Open Admin shows him, empty, busy, President, Secretary, the rail and menu rows, the way in and back.</dd>
+<dt>Differs</dt><dd>From Account-O: O withdraws Admin for officers and puts the work in the section with rooms behind it; P keeps today's "Admin (view only)" as one row and makes the section a short desk that sends the officer there.</dd>
+<dt>Frame</dt><dd>Int-A, swappable (note 6). Grows from Account-C. The same officer as Account-O; the section is a desk of links and today's view-only Admin stays as one row (open question 3, the alternative).</dd>
+<dt>K's feedback applied</dt><dd>A good default, every section drawn in full, roles hosted in My LCA, options for each (Tue, Oct 13).</dd>
+<dt>Sample data</dt><dd>Counts, the ticket, queue rows and edit dates; routes, roles, seat names and the AdminPage copy are real.</dd>
+</dl></div>
+<aside class="ap-grey" aria-label="Board note">
+<div><p><b class="ap-gh">What</b>Option P for the Board section in My LCA: a desk of six one-line rows (two inboxes, the meeting, the report you keep, tickets, lookup) and today's view-only Admin kept as one row, so the treasurer can still read members, payments and the audit log.</p><p><b class="ap-gh">Built from</b>Account-C, Account-G, Account-O, AdminPage.tsx, Work-I, Nav-Header-Final.</p></div>
+<div><p><b class="ap-gh">K's feedback applied</b>Roles hosted in My LCA: the Board section is the way in. Kept from today: one Admin row for officers, read-only. No votes, no digest, no Workspace.</p><p><b class="ap-gh">Open for K</b></p><ol><li>Keep Admin (view only) for officers (P) or withdraw it (O)?</li><li>Does the treasurer need payments and the members table? P says yes, read-only.</li><li>No second factor for officers in Admin: confirm.</li></ol></div>
+</aside></div>
+</section><div class="ap-legend"><div class="ap-lbox"><div class="k-row-sm" style="gap:12px;justify-content:space-between"><p class="k-label" style="margin:0">Notes on this board</p><p class="k-small k-muted" style="margin:0;font-size:12.5px">Drawn inside Int-A. The frame is swappable (note 6).</p></div><ol class="ap-notes">
+<li><span class="k-num-badge">1</span><span><b>The one difference from Account-O:</b> today's view-only Admin stays, as one row in this section and one row in the menu. The section becomes a desk because the work happens in Admin.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The desk never shows message subjects or fields.</b> Every row is a count in words plus a way in, so the section keeps the same height for any officer, quiet or busy. No votes: Account-C's "Vote open" is dropped unless K asks (WS14 scope).</span></li>
+<li><span class="k-num-badge">3</span><span><b>The treasurer reads payments and the members table in Admin, read-only.</b> This answers open question 6 the other way from Account-O, which keeps both with LCA admins. Account-P-2 draws what the panel shows him.</span></li>
+<li><span class="k-num-badge">4</span><span><b>No second factor is asked of an officer,</b> in the panel or the inbox (auth.ts lines 177 to 179). Deletes, roles, memberships, refunds and group email stay with LCA admins even inside the panel. Group email for the President is the one thing to confirm.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Today's rows and ranking are identical to Account-O;</b> only the ticket row's button changes wording, to "Answer in Admin". Board items never count in the header's My LCA pill (it reads 1, Ella's entry).</span></li>
+<li><span class="k-num-badge">6</span><span><b>Drawn inside Int-A</b> (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</span></li>
+</ol></div></div><div class="ap-flab"><span class="ap-code">A</span><h2>My LCA at 1440 · Mon, Oct 5, 2026 · 8:40 AM</h2><span class="ap-url">louisianachess.org/dashboard#board</span><span class="k-row-sm" style="gap:6px;flex:none"><span class="k-num-badge">6</span><span class="ap-fmeta">Int-A, swappable</span></span><span class="ap-fmeta">Board open, others collapsed. The difference from O: the Admin (view only) row (note 1).</span></div>
+<div class="ap-frame"><header class="k-header"><div class="ap-hd-in"><a class="k-brand ap-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ap-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks ap-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ap-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="ap-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="ap-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility ap-util"><a class="k-ulink" href="#">Donate</a><button class="ap-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg><span class="ap-count" aria-hidden="true">1</span></button></div></div></header>
+<section class="ap-band"><div class="ap-band-top"><div><div class="k-row-sm" style="gap:10px"><span class="k-kicker">My LCA</span><span class="k-sample">Sample data · names, counts, messages and times are invented; routes, roles and seat names are real</span></div><h1 class="ap-name">Chris Arceneaux</h1></div><a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Show my card</a></div>
+<div class="ap-roles" aria-label="Your roles"><a class="ap-rchip" href="#"><span class="ap-role ap-r-member">Member</span>Adult</a><a class="ap-rchip" href="#"><span class="ap-role ap-r-parent">Parent</span>Ella</a><a class="ap-rchip" href="#"><span class="ap-role ap-r-td">Director</span>The Baton Rouge Classic</a><a class="ap-rchip" href="#"><span class="ap-role ap-r-rep">Representative</span>South Central Louisiana</a><a class="ap-rchip ap-rchip-on" href="#"><span class="ap-role ap-r-board">Treasurer</span>board seat</a></div>
+<p class="k-small k-muted" style="margin:8px 0 0">Sections appear for the roles LCA has given you. There are no modes to switch. <a class="k-link" href="#">Role looks wrong?</a></p>
+</section>
+<div class="ap-layout"><aside><div class="ap-railcard"><div class="k-label" style="padding:0 10px">On this page</div><nav class="ap-rnav" aria-label="Sections"><a href="#"><span>Today</span><span class="ap-rc">9</span></a><a href="#"><span>You</span></a><a href="#"><span>Family</span><span class="ap-rc">1</span></a><a href="#"><span>Events you direct</span><span class="ap-rc">3</span></a><a href="#"><span>Your region</span><span class="ap-rc">4</span></a><a class="ap-on" href="#" aria-current="location"><span>Board</span><span class="ap-rc">7</span></a></nav></div></aside>
+<div class="ap-col">
+<section class="ap-today" id="today" aria-labelledby="ap-today-h">
+<div class="ap-th"><h2 id="ap-today-h">Today across your roles</h2><span class="ap-thd">Mon, Oct 5 · most urgent first</span></div>
+<p class="ap-tsub">9 things · 1 is yours</p>
+<div class="ap-trow"><span class="ap-role ap-r-parent">Ella</span><div><p class="ap-ts">Ella's November Meet entry isn't paid yet.</p><p class="ap-tm">New Orleans Youth Chess November Meet · Sat, Nov 14 · K–5 · $20 · early price ends today, Mon, Oct 5</p></div><a class="k-btn k-btn-gold" href="#">Pay $20</a></div>
+<div class="ap-trow"><span class="ap-role ap-r-rep">Representative · South Central Louisiana</span><div><p class="ap-ts">A visitor reports Houma Chess Club's listing is out of date.</p><p class="ap-tm">"The library closes at 8:00 PM on Mondays now. Are you still meeting until 8:30 PM?" · Sat, Sep 26 · no answer in 9 days</p></div><a class="k-btn k-btn-line" href="#">Reply</a></div>
+<div class="ap-trow"><span class="ap-role ap-r-td">Director · The Baton Rouge Classic</span><div><p class="ap-ts">Bye request: Maya Robichaux, ½ point in round 5.</p><p class="ap-tm">Requested Fri, Oct 2 · waiting 3 days · within the 2-bye limit</p></div><a class="k-btn k-btn-line" href="#">Answer the request</a></div>
+<div class="ap-trow"><span class="ap-role ap-r-board">Treasurer</span><div><p class="ap-ts">3 messages waiting in the Treasurer inbox.</p><p class="ap-tm">Oldest Fri, Oct 2 · waiting 3 days</p></div><a class="k-btn k-btn-line" href="#">Open inbox</a></div>
+<div class="ap-trow"><span class="ap-role ap-r-rep">Representative · South Central Louisiana</span><div><p class="ap-ts">Bunkie Chess Club suggests an update to its listing.</p><p class="ap-tm">"The club moved to the Bunkie Public Library" · from the club · Sun, Oct 4 · waiting 1 day</p></div><a class="k-btn k-btn-line" href="#">Apply this</a></div>
+<div class="ap-trow"><span class="ap-role ap-r-off">LCA office</span><div><p class="ap-ts">Support ticket assigned to you: "Wrong section on my registration".</p><p class="ap-tm">Isaac Dupre · waiting 1 day</p></div><span class="k-row-sm" style="gap:8px;flex:none"><span class="k-num-badge" style="width:24px;height:24px;font-size:12px">5</span><a class="k-btn k-btn-line" href="#">Answer in Admin</a></span></div>
+<div class="ap-trow"><span class="ap-role ap-r-td">Director · Baton Rouge Chess Club Saturday G/90</span><div><p class="ap-ts">Rating report due Sat, Oct 10.</p><p class="ap-tm">Finished Sat, Oct 3 · 14 players · 1 check to fix: Theo Guidry's US Chess membership ended Wed, Sep 30</p></div><a class="k-btn k-btn-line" href="#">Open rating report</a></div>
+<div class="ap-more"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg><u>Show 2 more</u><span>· Representative: 4 clubs not checked in 90 days · the November Saturday G/90 in LCA review</span></div>
+</section>
+<div class="ap-coll ap-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><span class="ap-role ap-r-member">Member</span><b>You</b><span class="ap-cm">· Adult · LCA-24-0562 · renews automatically Mon, Nov 2 ($15) · you're directing The Baton Rouge Classic, so you aren't entered</span><span class="ap-show">Open</span></div>
+<div class="ap-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><span class="ap-role ap-r-parent">Parent</span><b>Family · 1</b><span class="ap-cm">· Ella · November Meet · Sat, Nov 14 · $20 unpaid</span><span class="ap-show">Open</span></div>
+<div class="ap-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><span class="ap-role ap-r-td">Director</span><b>Events you direct · 3</b><span class="ap-cm">· The Baton Rouge Classic · Registration open · 38 of 60 registered · Next: publish the prize list</span><span class="ap-show">Open</span></div>
+<div class="ap-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><span class="ap-role ap-r-rep">Representative</span><b>Your region · 4</b><span class="ap-cm">· South Central Louisiana · 4 of 9 clubs to check · 2 reports waiting</span><span class="ap-show">Open</span></div>
+<section class="ap-bsec" id="board" aria-labelledby="ap-board-h">
+<div class="ap-bsh"><div><span class="ap-role ap-r-board">Treasurer</span><h2 id="ap-board-h">Board · Treasurer</h2><p class="ap-subl">Officer seat · term ends Wed, Jun 30, 2027 · you also hold the South Central Louisiana representative seat (Your region, above)</p></div>
+<div class="ap-bshr"><span class="ap-anchor">#board</span><a class="k-btn k-btn-navy" href="#">Open board inbox</a><a class="k-link" href="#" style="font-size:14px">Governance documents</a></div></div>
+<div class="ap-desk"><p class="ap-cap" style="margin-bottom:6px">Your desk · six rows, one way in each <span class="k-num-badge" style="width:24px;height:24px;font-size:12px">2</span></p><div class="ap-drow"><p class="ap-dt"><b>Treasurer inbox</b> · 3 waiting · oldest Fri, Oct 2 · waiting 3 days<span class="ap-goes">/board/inbox</span></p><span class="ap-new">3 new</span><div class="ap-dact"><a class="k-btn k-btn-line" href="#">Open inbox</a></div></div><div class="ap-drow"><p class="ap-dt"><b>South Central Louisiana inbox</b> · nothing waiting<span class="ap-goes">/board/inbox</span></p><span class="ap-pill-g">Nothing waiting</span><div class="ap-dact"><a class="k-btn k-btn-line" href="#">Open</a></div></div><div class="ap-drow"><p class="ap-dt"><b>Next board meeting</b> · Tue, Nov 10 · 7:00 PM · online · agenda not posted yet</p><span class="ap-pill-g">Agenda not posted</span><div class="ap-dact"><a class="k-btn k-btn-line" href="#">Add to calendar</a></div></div><div class="ap-drow"><p class="ap-dt"><b>Treasurer's report, September</b> · last edited Thu, Oct 1<span class="ap-goes">About › Minutes</span></p><span class="ap-pill-n">Draft</span><div class="ap-dact"><a class="k-btn k-btn-line" href="#">Edit</a></div></div><div class="ap-drow"><p class="ap-dt"><b>Support tickets</b> · 4 open · 1 assigned to you · oldest 3 days<span class="ap-goes">/admin/support</span></p><span class="ap-pill-n">1 assigned to you</span><div class="ap-dact"><a class="k-btn k-btn-line" href="#">Answer in Admin</a></div></div><div class="ap-drow"><p class="ap-dt"><b>Look up a member</b> · the members table, read-only<span class="ap-goes">Admin › Members</span></p><span class="ap-pill-g">Read-only</span><div class="ap-dact"><a class="k-btn k-btn-line" href="#">Open Member lookup</a></div></div></div>
+<div class="ap-adm"><div><div class="ap-adm-h"><span class="ap-adm-pill">Admin (view only)</span><span class="k-num-badge" style="width:24px;height:24px;font-size:12px">1</span><span class="ap-goes">/admin</span></div>
+<p class="ap-adm-q">"See everything across the LCA. You can answer support tickets and manage the bylaws and minutes; other changes are made by admins."</p>
+<p class="ap-adm-s" style="display:flex;align-items:center;gap:8px">Read-only: members, payments, tournaments, clubs, board seats, the audit log. Opens with a "View only" badge. <span class="k-num-badge" style="width:24px;height:24px;font-size:12px">3</span></p></div>
+<div class="ap-acol"><a class="k-btn k-btn-line" href="#">Open Admin</a><span class="ap-sub2" style="text-align:center">no second factor asked</span></div></div>
+<div class="ap-bfoot"><span class="k-num-badge">4</span><span>Deletes, roles, memberships, refunds and group email stay with LCA admins even inside the view-only panel (auth.ts lines 163 to 179; support/[id].ts line 111, requireAdmin on delete).</span></div>
+</section>
+</div></div>
+<footer class="k-footer ap-foot"><div class="ap-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="ap-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2650}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+{
+ "label": "acct-2",
+ "results": [
+  {
+   "board": {
+    "file": "Account-F.dc.html",
+    "title": "My LCA · F · The card is the page's header band (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "The card is the page's header band",
+    "idea": "The same page as Account-D, but the membership card becomes the page's header: a navy band across the top carries the card with its QR, the membership line in words and the US Chess status, so 'show the card at the desk' is the first thing on the page and the body below is only Today, Entries, Receipts and Settings.",
+    "differs": "Where the card lives: the page's navy header band (F) instead of a section in the flow (D) or a sticky side column (E). F is the only option where the page opens on the card."
+   },
+   "drawn": {
+    "file": "Account-F.dc.html",
+    "title": "My LCA · F · The card is the page's header band (round 2)",
+    "width": 1440,
+    "height": 3350,
+    "second_file": "Account-F-2.dc.html",
+    "second_title": "My LCA · F · The card band in its other states (round 2, part 2)",
+    "second_height": 2400,
+    "note": "What: Option F for the default My LCA page, drawn for Avery, a plain member, on Mon, Oct 5. The membership card is the page's header: a navy band carries the card with its QR, the membership line in words and the US Chess status, so the page opens on the card. The body below it holds Today, Entries, Receipts and Settings, and the On this page rail starts with a Card row. Part 2 (F-2) shows the other states: the new-member empty state, the phone and its full-screen card, Maya's own My LCA as a teen with her own login, the rail and menu insets, and the expired band.\n\nBuilt from: Account-A (Avery, the timeline with the four-step tracker, the card and QR, US Chess, receipts, Settings), Account-C's rail and Account-D's copy, with the decided header, footer, phone bar and tabs. Drawn inside Int-A. The frame is swappable: under Int-B this is the You page that the left rail opens, and under Int-C it is My LCA with Your work beside it.\n\nK's feedback applied: a good default with no role chips, no role rows and nothing that hints at volunteer work. Every section is drawn in full. Roles are hosted in My LCA (Int-A). D, E and F are the options, and they differ only in where the card lives. Open for K: is the top of the page best spent on the card, given that Today starts about 300px lower than on D? Should the rail keep its Card row? On a phone, should the band shrink after the first visit? Once a membership expires, should the QR stay on show?",
+    "unresolved": [
+     "Split into two boards. The full page with the spec's copy renders about 2,750px tall, so it cannot share a frame under 3400 with Frames B to D, as the spec's map assumed (Frame A at 1900). Part 1 is the title strip, the legend and Frame A (3350). Part 2, Account-F-2, holds the empty state, the phone, the full-screen card, the teen inset, the rail and menu insets and the expired state (2400).",
+     "Lafayette Open 2026, Mississippi State Championship and The Casa Chess Tournament are partner events on the decided Tourn-List-Final. So Today item 4 and Entries rows a, c and f say 'Registers on the organizer's site ↗' instead of 'See event and enter' or 'Organizer's site'. Casa reads 'US Chess and FIDE rated' instead of 'Dual-rated'. Account-D and E should match.",
+     "Tourn-List-Final puts The Baton Rouge Classic's early price ending on Sun, Oct 18. The spec and Account-A say Sat, Oct 17. I kept Sat, Oct 17 so it matches D and E; one of the two sources needs correcting.",
+     "The My LCA count in the header is drawn as the decided Nav-Header-Final draws it (cream disc, navy numeral), not as the gold disc the spec text names.",
+     "The amber pill now reads 'Ends before your Sat, Jan 16 event', because every date carries its weekday. The date tiles in Entries gained a weekday line for the same reason.",
+     "The phone band is about 250px tall, not 220, so it can hold the 120px QR on a full-width plate.",
+     "Invented and badged as Sample data: Nia Broussard and her ID LCA-26-0412, and Maya's US Chess line. The legend notes and the grey note sit at the top of each board, not across the bottom as the spec's canvas map had them."
+    ]
+   },
+   "review": {
+    "file": "Account-F.dc.html (part 1) and Account-F-2.dc.html (part 2)",
+    "height": 3350,
+    "second_height": 2400,
+    "counts": "Both files rendered at 1440 wide. Natural render heights: part 1 is 3346px, declared 3350 (limit 3400). Part 2 is 2383px, declared 2400 (limit 3000). The root height and $preview match on both. Legend: 6 numbered notes on each board, and every badge on the design maps to a note (7 badge spans on part 1, including the badge on the swappable-frame line). Dates: I checked every date in the visible text of both files with a script, and all of them carry the correct weekday. Em dashes: 0 (en dashes appear only in ranges like Sat–Mon, Jan 16–18 and in K–8). USCF: 0. Decimal .5: 0 (½ is used). Times without AM/PM: 0, except the phone status-bar clock \"7:40\", which matches Nav-Mobile-Final. Other rule checks: no {{holes}}, iframes, animation, transitions, AI references, grade or birthdate fields. Gold #c8a94a appears only as fills, rules, underlines and gold-on-navy kickers, never as text on a light ground. The tag-balance parser found every element closed. The header (Donate · My LCA ▾ 3, no Join, no role rows) and the footer match Tourn-List-Final and Nav-Header-Final. Regions from the spec, all present: card band (kicker, name, membership line, Renew · $15, Turn on auto-renew, plate with QR, desk line, Wallet after D4, US Chess block with amber pill in words, Find a tournament overlapping the band edge); rail Card · Today 4 · Entries 2 · Receipts · Settings; Today with 4 items; Entries rows (a) to (g) with tracker, foot line and club line; Receipts and history; six Settings cards plus How we email you (email only). Part 2 holds frame B (Nia empty state, no counts), C (phone), C2 (full-screen card), D (Maya's teen inset), insets i and ii, and E (expired state). No role chips, role rows or volunteer hints appear anywhere for Avery, Nia or Maya.",
+    "changes": [
+     "Account-F: removed the grey sentence 'Card lights once the band has scrolled away.' from under the On this page rail. The spec says nothing goes under the rail, and legend note 2 already says this.",
+     "Account-F-2 frame E (expired): the 'Expired' pill across the QR was clipped and hard to read, because the QR box has line-height 0. I gave the pill a line-height, a darker border and text, a larger size and a small shadow so it reads in words.",
+     "Account-F-2 frame E: under the expired plate, the line 'Show this at the desk. The QR checks you in.' contradicted the expired state. It now reads 'Expired cards don't check you in. Renew and the same QR works again.'",
+     "Account-F-2 frame E: the header to-do count was 1 and the caption said it 'drops to 1'. Under the frame's count rule, Tue, Oct 27 has two personal items: the lapsed LCA membership and US Chess ending before the Sat, Jan 16 entry (the Classic is over). The count is now 2, the aria-label now says 2 things to do, and the caption explains why.",
+     "Account-F-2 inset i: moved the annotation 'Card lights only once the band has scrolled away. No Membership row: the band is the membership.' out of the drawn rail card and into the inset's caption, so it no longer reads as page copy under the rail.",
+     "Account-F-2 frame D (Maya): the 'Sample data' badge sat on the 'I'm 18 or older' Settings card. It now sits beside the line 'Danielle R. gets copies of your emails', at the top of the inset next to the band, set to stay on one line so the guardian line no longer wraps.",
+     "Re-rendered and viewed both PNGs after the changes. Heights are unchanged (3346 → 3350, 2383 → 2400), with no overlap, overflow or clipping at 1440."
+    ],
+    "remaining_concerns": [
+     "The spec's frame map puts frames B, C, D, the insets and the legend in one 3400px file. The designer split them across two files (F and F-2) to fit the part limits, and the split reads cleanly, but the canvas coordinates in the spec no longer apply literally.",
+     "Today card 4 (the Lafayette Open reminder) uses 'Registers on the organizer's site ↗' instead of the spec's 'See event and enter', because the copy rules require that wording for partner events. Account-D and E do the same, so the boards agree, but the spec text differs.",
+     "The amber pill reads 'Ends before your Sat, Jan 16 event'; the spec's wording had no weekday. The weekday was added for the copy rule, and D and E carry the same wording.",
+     "The Find a tournament button in the scaled frame E sits right at the bottom edge of the 60% frame. It is intended to overlap the band edge, but the frame crop leaves little room below it.",
+     "The 'Tier 2' and 'Tier 4' dashed labels beside the Today cards are designer annotations carried over from Account-D. They are not numbered notes, and K may read them as page copy.",
+     "Canvas sticky note, suggested text: 'F · The card is the page's header band. The page opens on Avery's card: a navy band with the QR, the membership line in words and the US Chess status; the body is only Today, Entries, Receipts and Settings, and the rail adds a Card row. Part 2: new member, phone with full-screen card, Maya's own login, expired band. Drawn inside Int-A, swappable.'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-G.dc.html",
+    "title": "My LCA · G · Today as one merged list (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Today as one merged list",
+    "idea": "Today is one list for every role, ranked by the five tiers so an item from any role never outranks a deadline that falls earlier, with a worded role label at the start of each row; the same list is drawn for an empty day, a one-role day and a five-role day.",
+    "differs": "G merges every role into one ranked list; H ranks the same items the same way but groups them under role headers with counts beneath one urgent band. The items, the counts, the cap and the empty day are identical on both."
+   },
+   "drawn": {
+    "file": "Account-G.dc.html",
+    "title": "My LCA · G · Today as one merged list (round 2)",
+    "width": 1440,
+    "height": 2350,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: the Today list at the top of My LCA, drawn as one ranked list that covers every role. It appears three times, each under the decided header with the On this page rail. F1 is an empty day for Chris on Wed, Oct 21: \"Nothing needs you today.\" and one next-thing line per role, with an inset for Avery's empty day and for a new member. F2 is Avery, a plain member, on Mon, Oct 5: four rows, no role labels, header count 3. F3 is Chris on Mon, Oct 5 with five roles: \"Today across your roles\" and \"9 things · 1 is yours\". It has seven ranked rows, each starting with a role word, tier marks beside each row, \"Show 2 more\" both closed and opened, his My LCA menu and the rules panel.\n\nBuilt from: Account-C (the Today card, its role labels, Chris Arceneaux's Monday), Account-A (Avery's Needs attention rows), Nav-Header-Final (the signed-in header and the My LCA menu) and the frame's Today rules. Drawn inside Int-A. The frame is swappable: under Int-B this list is the Overview page, and under Int-C it heads Your work.\n\nK's feedback applied: the default is a plain member's \"Today\" with nothing about roles. The list is drawn in full for an empty day, one role and five roles. Roles live in My LCA and never in the admin panel. G pairs with H as the two options. Open for K: G or H. For a member, the list is named \"Today\" (drawn) or keeps WS13's \"Needs attention\". The header count stays personal (drawn) or gains a second count for volunteer work.",
+    "unresolved": [
+     "Avery's Lafayette Open row: the spec's button 'See event and enter' was changed to 'See event', and the grey line now adds 'Registers on the organizer's site ↗'. The reason is that Tourn-List-Final names Lafayette Open 2026 as a partner event, and partner events never get an enter or register action. K or the spec owner should confirm.",
+     "The Houma quote now reads '8:00 PM' and '8:30 PM' to follow the time rule. The spec had '8 PM' and '8:30'.",
+     "Layout differs from the spec's frame map so everything fits under 2400px. Each page mock is 1010 wide (rail 176, main column 782) rather than rail 220 plus main 876. The legend and grey note sit at the top as on the decided boards, not at y 2140. The rules panel sits beside Frame 2, not under the Frame 3 insets. The rail inset (i) is Frame 3's own rail rather than a separate copy. The opened 'Show 2 more' pane is 310 wide, not 420.",
+     "To save height, the mock header is 60px tall (the decided bar is 68px) and the On this page rows are about 31px tall. On the real page the rows stay 44px tall for touch targets.",
+     "Account-H is not in the project folder yet, so I could not check its wording against this board. The shared rows, counts and the empty day follow the spec text word for word."
+    ]
+   },
+   "review": {
+    "file": "Account-G.dc.html",
+    "height": 2400,
+    "second_height": 0,
+    "counts": "Single file with no second part, 1440 wide. Content renders 2376px tall, so the root and $preview stay at 2400, which is also the cap. Nothing overflows, overlaps or clips, and all tags are closed. Legend: 6 notes, and every numbered badge (1 to 6) also appears on the design. Frame 1: 5 grey next-thing lines; rail shows \"Today\" with no count and the header no count; Avery's empty-day inset includes the new-member line. Frame 2: 4 rows tiered T2, T2, T2, T4; rail \"Today · 4\"; header count 3; no role labels. Frame 3: 7 rows open with tier marks T1, T3 9d, T3 3d, T3 3d, T3 1d, T3 1d, T4 Sat, Oct 10. Before the fold: Director 2, Representative 2, Treasurer 1, LCA office 1, Ella 1, so no role holds more than three. \"Show 2 more\" is drawn open as \"Representative · 2\". Sub-line reads \"9 things · 1 is yours\". Rail: Today 9 · You · Family 1 · Events you direct 3 · Your region 4 · Board 7. Menu: To do · 1, then My LCA, Family, Membership card, then Events you direct (3), My region · 4 to check, Board inbox (3), Support tickets (4), Log out, with no Workspace, Admin or Member lookup row. Every date I checked has the right weekday (Oct 5, 10, 17, 20, 21, 23, 24, 26; Nov 2, 10, 14; Sep 26, 30; Oct 2, 3, 4, 12; Dec 31; Jan 16 to 18, 2027). Rule checks: 0 em dashes; no USCF; ½ used; \"7:00 PM\" and \"8:00 AM\" format; no AI references, grade, birthdate or financial-need question; gold appears only as button fill or with gold-ink text (kicker #866a1e, Sample badge #664c0c); a Sample data badge is on the title strip. The header matches the decided signed-in bar at the 1024-style compact width: Tournaments · Clubs · Scholastic · News · Membership · About ▾, Search, Donate · My LCA ▾.",
+    "changes": [
+     "Frame 3 label: replaced 'Tier marks at the right are notes for K. Event day (Account-K, L)...' with a bold lead 'One ranked list, each row led by its role in words.' followed by 'Account-H groups the same rows by role. Tier marks are notes for K.' This states G's idea and how it differs from H at a glance, and it fits on one line beside the heading, so badge 4 no longer collides with a wrapped line.",
+     "Moved the event-day state line into the right column under the opened 'Show 2 more' pane, where there was free space: 'Event day (not drawn here; Account-K and L draw it): the live event's items form one group at the top of this list, under the event's name.' This keeps the board under 2400.",
+     "Kept the other designer's deviations from the spec because they fix rule breaks. (1) The Lafayette Open reminder uses the button 'See event' and the line 'Registers on the organizer's site ↗' instead of 'See event and enter', because Lafayette Open 2026 is a partner event on Tourn-List-Final; this matches Account-D. (2) Houma's quote reads '8:00 PM' and '8:30 PM'. (3) The tier mark reads 'T4 Sat, Oct 10' with its weekday.",
+     "Declared height and $preview stay at 2400. The re-rendered height is 2376, which rounds up to 2400."
+    ],
+    "remaining_concerns": [
+     "Sibling mismatch, not mine to fix: Account-H's Frame 2 reminder row still says 'See event and enter' for Lafayette Open 2026. That is a partner event, so that row breaks the partner rule, and it differs from G and Account-D. H's reviewer should change it to match G and D.",
+     "Avery's 'US Chess membership ends Thu, Dec 31' item on Mon, Oct 5 conflicts with the frame's Today rule. The rule says the item appears from 7 days before the entered event, and the Ken Ferguson Memorial Open starts Sat, Jan 16, 2027, so the item should not show yet. It also conflicts with G's own note 5 and its 'Not shown yet' note on the entrants' expiries. The spec, Account-D and Account-H all draw the item, so I left it alone. The spec owner should either drop it from Avery's Monday or say the 7-day window counts from the membership's end date.",
+     "No site footer on the board. The three frames are cut-outs of the Today region under the decided header, and Account-H draws no footer either. Adding one would push the board past the 2400 cap.",
+     "The layout departs from the spec's frame map (876 main column plus a 220 rail at set y positions). Each frame is a 1010-wide page mock with a 176 rail, and the rules panel sits beside Frame 2 instead of under the Frame 3 insets. Chris's rail is drawn inside the Frame 3 mock instead of as a separate 240-wide inset. Everything the spec asks for is present and nothing clips, so I left it.",
+     "The role chip column is 150px wide, so 'Director · Baton Rouge Chess Club Saturday G/90' wraps to three lines and the Representative chips to two. It is readable and does not overlap anything, but the merged-list rows look uneven."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-H.dc.html",
+    "title": "My LCA · H · An urgent band, then by role (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "An urgent band, then by role",
+    "idea": "Today keeps one urgent band at the top for anything due today or within 48 hours, and below it groups the remaining items under role headers with counts, ranked by the same tiers inside each group, so a volunteer reads 'what is burning' first and then one role at a time.",
+    "differs": "H groups items under role headers with counts beneath one urgent band; G merges them into one ranked list with a label on each row. The items, the ranking inside a role, the counts, the cap and the empty day are identical on both."
+   },
+   "drawn": {
+    "file": "Account-H.dc.html",
+    "title": "My LCA · H · An urgent band, then by role (round 2)",
+    "width": 1440,
+    "height": 2350,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Today on My LCA as one urgent band, then the remaining items grouped by role with a count and a room link on each group header. Three frames under the decided header: an empty day (Chris, Wed, Oct 21, with no band and no count), one role (Avery, Mon, Oct 5: no groups, no labels and no band, plus an inset of the same list on Fri, Oct 16, the first day the band appears for her) and five roles (Chris, Mon, Oct 5: a band holding only Ella's $20 due today, then Director 2, Representative 4, Treasurer 1 and LCA office 1).\n\nBuilt from: Account-C (the Today card, \"Today across your roles\", Chris's Monday), Account-A (Avery's Needs attention rows), Account-G (the same nine items, counts, cap and empty day), Nav-Header-Final (the signed-in header and the My LCA ▾ menu) and the frame's Today rules. Drawn inside Int-A; the frame is swappable.\n\nK's feedback applied: a good default (a plain member sees \"Today\" and nothing about roles, and the band shows up only when something is due within 48 hours); every case drawn in full; each role's items sit under its own name inside My LCA; G and H are the options. Open for K: G or H; three rows open per group, which folds the ticket that has waited one day (the right-hand pane shows what G puts in the same seven slots); \"Today\" or WS13's \"Needs attention\" for a member; one personal header count (as drawn) or two.",
+    "unresolved": [
+     "To fit under 2400px, the board uses Account-G's layout (a 990px mock with a side column) instead of the spec's literal frame map (insets at x 1180, legend at y 2140). The legend sits at the top, as on G. The rules panel sits beside Frame 2 and Frame 3 rather than under the menu inset.",
+     "The two folded rows (Representative's LCA-review item and the LCA office ticket) are drawn as one-line 'Opens' previews beside each 'Show 1 more'. The previews give the title only, without the action button, so they stay on one line.",
+     "Avery's reminder row follows the H spec ('See event and enter', no partner line). The current Account-G file differs here: it reads 'See event' and adds 'Registers on the organizer's site ↗'. Other boards show the Lafayette Open 2026 as an LCA event with Register, so G may need aligning to H.",
+     "The menu inset is copied from Account-G, including its 'Unpaid' tag on the to-do row."
+    ]
+   },
+   "review": {
+    "file": "Account-H.dc.html",
+    "height": 2350,
+    "second_height": 0,
+    "counts": "The board is one part: 1440 wide, renders at 2344px and is declared at 2350 (root and $preview), under the 2400 limit. There is no second file, so second_height is 0. Legend: 6 numbered notes. Badges on the design: 1 on the band, 2 on Director, 3 on the fold and again on the seven-open note, 4 on the G comparison pane, 5 on the Fri, Oct 16 inset, 6 on the swappable-frame line. Frame 3 has 9 items ('9 things · 1 is yours'): 1 in the band, Director 2, Representative 4 (3 open and 1 folded), Treasurer 1, LCA office 1 (folded). That gives 7 open rows and 2 folded, with no group above three rows before the fold. The header count is 1 and the rail reads Today 9 · You · Family 1 · Events you direct 3 · Your region 4 · Board 7. Frame 2 (Avery): 4 rows, header count 3, rail Today 4 · Membership · Entries · Receipts · Settings, with no band, groups or labels. Frame 1: no band, no counts, five grey next-thing lines, plus Avery's empty-day inset. The menu inset has 'To do · 1', My LCA, Family, Membership card, 4 room rows (Events you direct (3), My region · 4 to check, Board inbox (3), Support tickets (4)) and Log out, with no Workspace, Admin or Member lookup row. No overflow or clipping was found by measuring. Tags are balanced, there is one style block, and there are no holes, iframes or animation. Scans found no em dashes, USCF, '.5', AI wording, grade or birthdate. Every date in the copy carries its weekday once the tier-mark fix below was made, and every time reads like 7:00 PM. Gold #c8a94a is used only as a fill behind navy text and as an underline on the dark header.",
+    "changes": [
+     "My LCA menu inset: the 'Unpaid' tag had the misspelled class 'k-tah-soon', so it showed as a plain grey pill. It is now 'k-tag-soon'.",
+     "Director rating-report tier mark: 'T4 Oct 10' became 'T4 Sat, Oct 10' (three short lines) so this date also carries its weekday.",
+     "Fri, Oct 16 inset: the band line now reads 'early price ends tomorrow, Sat, Oct 17', as the spec words it.",
+     "Fri, Oct 16 inset: removed the list row 'Lafayette Open 2026 reminder · gone, the weekend passed'. A row like that is a status with no action, which the Today rules say is never shown. A grey note now says the reminder left the list once its weekend passed, after 'One role: no group header under the band.'",
+     "Avery's empty-day inset: 'Sat–Sun, Oct 24–25' is kept on one line so the date range no longer breaks after 'Oct 24–'.",
+     "Re-rendered and measured after the fixes: natural height 2344, so the declared 2350 is unchanged."
+    ],
+    "remaining_concerns": [
+     "The frames are cropped page mocks (the decided header plus the Today card), so no footer is drawn. Sibling Account-G does the same, and a footer in each of the three mocks would push the board past 2400. If footer chrome is required here, the board must be split.",
+     "The spec's separate rail-row inset for Chris (240 wide) is not drawn on its own. The same rows are drawn in Frame 3's On this page rail, the same way Account-G handles it.",
+     "The header in the 990px mocks uses the full brand name and a compact Search. Nav-Header-Final's 1024px tight case uses the rook mark only. It fits without overflow, but it is not that case's exact chrome.",
+     "Badge 3 appears twice (on the Representative fold and on the 'Seven open' note) and badge 6 appears in the legend and on the swappable-frame line. These are intentional repeats, not extra notes.",
+     "Avery's Frame 2 keeps the US Chess row (ends Thu, Dec 31, before an event on Sat, Jan 16), as Account-G does. Under the frame's rule ('from 7 days before') that item would not appear on Mon, Oct 5. Both G and H should change together if K holds the rule strictly.",
+     "The frame map does not match the spec's y-positions (Frame 1 at y 120, legend at y 2140). The legend sits at the top, as the board rules require, and the frames follow it."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-I.dc.html",
+    "title": "My LCA · I · Family, one card per child (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Family, one card per child",
+    "idea": "The child is the unit: one full card per child, the guardians panel under them, and on event day the family day view at the top of the section.",
+    "differs": "Account-J arranges the same facts by date (one family timeline with a people strip); Account-I arranges them by child (one card each)."
+   },
+   "drawn": {
+    "file": "Account-I.dc.html",
+    "title": "My LCA · I · Family, one card per child (round 2)",
+    "width": 1440,
+    "height": 3350,
+    "second_file": "Account-I-2.dc.html",
+    "second_title": "My LCA · I-2 · Family, one card per child: empty, busy, phone and the way in (round 2)",
+    "second_height": 2950,
+    "note": "What: Option I for the Family section of My LCA, drawn for Danielle Robichaux (Maya and Leo). Each child is the unit and gets one full card with the next events, the four-step tracker, paid status in words, US Chess ID and expiry, Family plan coverage, last result and the login line. The guardians panel sits under the cards, and on event day the family day view goes at the top of the section. Part 1 has the default on Mon, Oct 5 and event day on Sat, Nov 14. Part 2 (I-2) has the busy family (three children, a co-guardian and a request), the empty state, the phone, the rail and menu rows, the Add a family member and Give Maya her own login sheets, and Chris's one-child form.\n\nBuilt from: Account-B (per-child cards, day view, Register the family, guardians) placed inside Account-C's hub with its On this page rail and role chips, WS13's Family section, WS06's guardians, and the decided header and My LCA menu (Nav-Header-Final). It replaces Account-B's Family first page and Account-C's Family card. It is drawn inside Int-A, and the frame can be swapped.\n\nK's feedback applied: Family is managed in My LCA from the On this page rail, never in an admin panel. The section only appears for a parent, so the default page stays You alone. Every state is drawn (default, event day, busy, empty, phone) so the section doesn't look foolish when it is crowded or empty. Option J is the timeline version. Open for K: cards per child (I) or one family timeline (J)? Should the day view stay inside Family, with no Text me until there is SMS? Should \"Role looks wrong?\" stay? Should Noah's \"Not playing today\" row show, or should he be hidden? Is one-tap Approve with a ten-second Undo right?",
+    "unresolved": [
+     "The spec's busy frame gives Maya her own login 'since Sat, Oct 10'. The corrections say Work-E shows her with no login on Sat, Oct 24, so the dates clash. I drew it as the spec says; one of the boards needs a later date (for example after Oct 25).",
+     "The spec says Frame D shows 'Leo as in A' (no US Chess ID). But on Sat, Nov 14 he plays his first rated game, so he must have an ID by then. I drew him with an invented ID, 31208844, added Fri, Oct 9, and badged it Sample data.",
+     "Frame B's menu inset could not go at the right of a full-width 1440 frame without covering the event strip's Hide button. It is drawn instead in Account-I-2, Frame E, beside the Mon, Oct 5 menu.",
+     "The spec put Frame C (520 wide) and Frame D (880 wide) on one 600-tall row. Neither the width nor the height fits. Frame D is drawn full width first, and Frame C sits beside the phone in Frame E's row.",
+     "Account-I-2 has its own five-note legend (numbered 1 to 5) to stay under 3000px. Account-I carries the spec's six notes.",
+     "The day view shows the opponents' full names (Rosa Mendez, Elise Fontenot), as the spec and Account-B do, on the basis that the first-name-and-initial rule is for pre-event lists. Please confirm that live pairings are covered the same way as results."
+    ]
+   },
+   "review": {
+    "file": "Account-I.dc.html (main) and Account-I-2.dc.html (second)",
+    "height": 3350,
+    "second_height": 3000,
+    "counts": "Main board (Account-I): renders at 3330, declared 3350 with a matching $preview, under the 3400 cap. Legend has 6 notes. Badges 1, 2, 3, 4 and 6 sit on the design; note 5 now names where its card is drawn (Account-I-2, Frame D). Frame A has every region the spec names: the decided header with 'My LCA ▾ 1', the hub band with two role chips and 'Role looks wrong?', the rail (Today 1 · You · Family 1 current · Receipts · Settings), the two collapsed headers above and Receipts below, the section header with Register all (gold) and Add a family member, the chips with the ?child=maya note, and Maya's and Leo's cards. The cards carry facts strips, four-step trackers with labels, status words beside every tint (Waiting, Needed, Paid, covered), login lines, Open page buttons and the muted 18 links. Then the guardians panel with disabled copies switches, the plan cell and the Website help line. Frame B has the event strip with Hide, the half band, the day view with 6 time columns and 2 children, 'Updated 11:04 AM' and the Marc R. links. Second board (Account-I-2): renders at 2976, declared 3000 with a matching $preview, at the 3000 cap. Legend has 5 notes. Frame D (busy: 3 day-view rows, 4 chips, 3 cards, guardians with Remove, the amber request with Approve and Decline, the Undo state, plan full), Frame C (empty card, rail row with no count, header with no count) and Frame E (phone 360×720, rail row 'Family 1', menu on Mon, Oct 5 and Sat, Nov 14, Chris's one-child inset with Pay $20 matching Account-G and Int-A, and both sheets) are all present. Rule checks on both files: 0 em dashes; every '.5' is SVG or CSS only; no USCF; no gold text on light grounds (gold appears only as button fill and underline colour; kickers use #866a1e); 'grade' and 'birthdate' appear only in the spec's 'you confirmed he's in 3rd grade or below' and in 'no grade, no birthdate' notes, never as a question; no financial-need question; no holes, iframes or animation; tags balanced. Header and footer markup match Tourn-List-Final and Nav-Header-Final. The overflow scan found no clipped or overflowing elements at 1440.",
+    "changes": [
+     "Account-I-2 Frame D: Maya's card had only 'Next: Ken Ferguson... · Unpaid', with no Pay action and no line for the event she is playing that day. It now reads 'Today: November Meet · K–8 · Paid' and 'Next: Ken Ferguson Memorial Scholastic, Sun, Jan 17, 2027 · Unpaid · Maya asked you to pay · Pay $25', matching Account-J-2.",
+     "Account-I-2: added the missing 'Differs' row to the title strip: 'From Account-J: the same states arranged by child (one card each); on J they read as one family timeline by date.'",
+     "Account-I-2: legend note 5 now uses the frame's exact swappable sentence (it had dropped 'The room itself does not change'). Widened the 5th legend column so the legend got shorter, not taller.",
+     "Account-I-2 Frame D: Sample data badge extended to 'Noah, Marc R., the request, Leo's ID, the Ken Ferguson entry'.",
+     "Account-I-2: declared height and $preview raised from 2950 to 3000 (renders at 2976 after the edits).",
+     "Account-I Frame B: day-view Sample badge now covers Marc R. ('times, venue, rooms, Marc R.').",
+     "Account-I Frame A: the collapsed Receipts line used an invented 'last: Maya's November Meet entry, Thu, Oct 1'. Changed to 'the last one Fri, Sep 18' to match Account-J.",
+     "Account-I: legend note 5 now says where the claimed teen's card is drawn ('(Account-I-2, Frame D)'), because its badge has no anchor on this board.",
+     "Canvas sticky note text: 'My LCA · I · Family, one card per child. The child is the unit: one full card per child (next events with the four-step tracker, paid status in words, US Chess ID and expiry, plan coverage, last result, login line), the guardians panel under them, and on event day the family day view at the top of the section. Differs from J, which arranges the same facts by date. Drawn inside Int-A; the frame is swappable. Part 2 (I-2) draws busy, empty, phone, rail and menu rows, Chris's one-child form and the two sheets.'"
+    ],
+    "remaining_concerns": [
+     "The spec contradicts itself on Leo's US Chess ID for Sat, Nov 14 at 11:04 AM. Frame B (the same moment) has 'first rated game' and a menu with 'To do · nothing today', so Leo must have an ID. But Frame D says 'Leo as in A' (ID still needed). Account-I-2 gives Leo a Sample-badged ID (31208844, added Fri, Oct 9), which fits Frame B. Account-J-2's busy frame still shows 'Leo needs a US Chess ID · Add his ID' that day. So the two siblings disagree on Leo in the busy frame. One of them should be aligned once the intended reading is settled; I left I-2 as drawn because it agrees with its own Frame B.",
+     "The spec names Chris and Avery as the frame's drawn people, but this spec draws the Family section on Danielle's page because Account-B has the real family data. Chris appears only in the one-child inset on I-2 (Ella, Pay $20, which matches Account-G and Int-A). That follows the board spec, but K may notice the change of person.",
+     "Account-I-2 is at exactly the 3000px cap (renders at 2976). Any later copy that adds a line will push it over.",
+     "Account-I-2 Frame D draws only the Family section box, with no header, band or rail; the way in is drawn in Frame E (rail and menu rows) instead. That is acceptable under the spec but less self-explanatory than Frame A.",
+     "Pairings show opponents' full names ('vs Elise Fontenot'), taken from Account-B. The under-18 rule names only pre-event lists, so I left them, but K may want initials in live pairings too."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-J.dc.html",
+    "title": "My LCA · J · Family, one family timeline (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "Family, one family timeline",
+    "idea": "The date is the unit: a people strip holds each child's facts, and one dated timeline merges every child's entries, deadlines and the membership renewal, each row starting with the child's name.",
+    "differs": "Account-I gives each child a full card; Account-J gives the family one timeline in date order with a compact people strip above it."
+   },
+   "drawn": {
+    "file": "Account-J.dc.html",
+    "title": "My LCA · J · Family, one family timeline (round 2)",
+    "width": 1440,
+    "height": 3250,
+    "second_file": "Account-J-2.dc.html",
+    "second_title": "My LCA · J-2 · Family timeline: event day, empty, busy and the phone (round 2)",
+    "second_height": 2950,
+    "note": "What: This is option J for the Family section of My LCA, where the date is the unit. A compact people strip at the top holds each child's facts (rating, US Chess ID and expiry, plan coverage, login line). Below it, one timeline in date order holds the whole family's entries, deadlines, saved events and the membership renewal, and each row starts with the child's name. The guardians panel sits beside the timeline. Part 1 shows Danielle on Mon, Oct 5, 2026, plus the rail row, the menu row and Chris's one-child form. Part 2 (J-2) shows event day on Sat, Nov 14, with the day view in today's row, then the empty and busy states and the phone.\n\nBuilt from: Account-B (the family facts, the day view, Register all, the guardians), Account-A's date-ordered Next up with its four-step tracker, and Account-C's hub. Also WS13's Family section and WS06's guardians, inside the decided header. Drawn inside Int-A and swappable for Int-B or Int-C.\n\nK's feedback applied and open for K: Family is now a section of the hub with no admin panel, and it is drawn on a normal day, on event day, empty, busy and on a phone. A parent with one child (Chris) sees no chips. Open for K: by date (J) or one card per child (I)? Should the day view stay inside Family, with Text me hidden until SMS exists (D8)? Should \"Role looks wrong?\" stay under the chips?",
+    "unresolved": [
+     "The spec's single board (Frames A to E plus legend) renders at about 4200px, over the 3400px limit. It is split: Account-J holds the title strip, the legend, Frame A and the Frame E insets (rail row, menu row, Chris). Account-J-2 holds Frame B (event day), C (empty), D (busy) and both phones. Each part has its own six-note legend, and the event-day note moved to J-2.",
+     "Frame B is drawn 976px wide with no rail, with a note that the rail sits as in Frame A, so the day view grid and the event-day phone fit beside it. The spec asked for the rail and the band at half height. The header in that frame uses tighter nav spacing and drops the ⌘K hint so nothing overlaps.",
+     "On event day Leo is shown as 'Unrated · US Chess ID on file' in Frame D, because the spec does not say when or whether he added his ID before Sat, Nov 14. No ID number was invented."
+    ]
+   },
+   "review": {
+    "file": "Account-J.dc.html (part 2: Account-J-2.dc.html)",
+    "height": 3350,
+    "second_height": 2950,
+    "counts": "Main board: renders at 3318px, declared 3350, which is under the 3400 limit. Part 2: renders at 2933px, declared 2950, under the 3000 limit. Both are 1440 wide. Each board has a legend of exactly 6 numbered notes, and each note 6 is the frame's swappable line word for word. Each board has 1 title strip with Built from, Replaces, Shown, Differs (main only), K's feedback applied and Sample data, plus 1 grey What / Built from / K's feedback applied / Open for K note (3 open questions on the main board, 2 on part 2). Frames: the main board draws A (Danielle's default, Mon, Oct 5, 2026, 8:10 AM) and E (the rail row, the menu row and Chris's one-child inset). Part 2 draws B (event day, Sat, Nov 14, 11:04 AM, with its menu inset), C (empty), D (busy, three children) and E (a phone on Mon, Oct 5 and a phone on event day). The timeline has 5 dated rows plus the Results line, in the spec's order. The people strip has 3 tiles. The guardians panel has every block the spec names. Every date I checked has the right weekday: Mon, Oct 5; Fri, Oct 2; Sat, Oct 24; Sat, Nov 14; Sat, Nov 7; Sun, Oct 11; Sat, Oct 10; Sat, Jan 9; Sun, Jan 17, 2027; Sun, Jan 31, 2027; Sun, Mar 14, 2027; Sat, May 9, 2026; Thu, Oct 1. Neither file has an em dash, \"USCF\", a decimal .5, an AI reference, a grade or birthdate field, a financial-need question, a {{hole}}, an iframe or an animation. No tag is left open. Gold #c8a94a appears only as a fill, a rule or an underline colour, never as text on a light ground. The header and footer match Tourn-List-Final and Nav-Header-Final.",
+    "changes": [
+     "Account-J, Frame A label: the grey meta line was cut off by 26px ('Header count 1: Leo's US Ch...'). I shortened it to 'Other sections collapsed · header count 1: Leo's US Chess ID'.",
+     "Account-J, collapsed Receipts row: it now reads 'Receipts · 3 · last: Maya's November Meet entry, Thu, Oct 1', the same as Account-I. Before, it said 'the last one Fri, Sep 18', which disagreed with the sibling.",
+     "Account-J, chips row: I removed a designer's remark drawn as page copy ('The chips filter the timeline; the address carries ?child=maya...'). It would read as filler to Danielle. The ?child= point now sits in legend note 1, so there are still six notes.",
+     "Account-J, timeline row 1: I added a 'Sample data · request date' badge beside 'waiting on the director since Fri, Oct 2'. The spec lists request dates as invented data.",
+     "Account-J, Chris inset: I added 'Early price ends today, Mon, Oct 5' under Ella's unpaid entry and Pay $20, so it matches Ella's item on Account-G, Account-H and Account-Int-C.",
+     "Both files: the timeline and guardians columns now use the spec's 330px guardians panel with a 40px gutter. Before, they were 300px with 32px.",
+     "Account-J-2, Frame B: two designer remarks were drawn as UI copy, one in the band and one at the foot of the section. I restyled both as grey mono 'Cropped:' strips so they read as annotations, and shortened the band one to a single line.",
+     "Account-J-2, Frame D: the 'Mar 2027' month label overflowed the 56px date block by 2px. I tightened its letter-spacing for the 56px blocks.",
+     "Declared heights and $preview set to the rendered height rounded up to the next 50: Account-J 3250 to 3350, Account-J-2 2950 to 2950 (it renders at 2933)."
+    ],
+    "remaining_concerns": [
+     "Header count and Today on Mon, Oct 5: the spec has 'My LCA ▾ 1', 'Today · 1' and the to-do row 'Leo needs a US Chess ID before Sat, Nov 14', and I kept them. That deadline is 40 days out, though, and the Today rules count only things within 14 days. I'm also not sure a missing ID is one of the personal-count types (unpaid entry, membership ending, US Chess membership ending before an event). K or the spec owner should decide whether this item belongs in the count on Oct 5.",
+     "The event-day menu inset (Account-J-2) keeps a 'To do · nothing today' row, the same as Account-I-2. A row with no action edges towards the 'information with no action' the frame rules out. I left it because the two siblings should match, but both should drop it or both keep it.",
+     "Spec dimensions are approximate: Frame B is far taller than the spec's 1440×500 because it holds the full day view. Frame C is 500 wide where the spec says 520, and Frame D is 836 where it says 880. The people-strip gap is 24px where the spec says 40, because the column is 1022px, not 1070. None of this overlaps or clips.",
+     "Two expected flags remain in the overflow check. The Leo tile in the Mon, Oct 5 phone is cut off on purpose, to show the strip scrolling sideways. The negative-margin amber and red rule rows bleed a few pixels left on purpose.",
+     "Frame D is dated Sat, Nov 14, while the corrections log says Account-D's teen inset was moved to Mon, Nov 16 'as Account-J's busy frame has it'. The unpaid Ken Ferguson entry is the same on both. Only the date in that correction note disagrees, and I did not change either board.",
+     "Note for the canvas sticky: 'Account-J: the family by date. A compact people strip, then one timeline merging Maya's and Leo's entries, Leo's US Chess ID deadline, a saved event and the Family plan renewal, each row led by the child's name. Guardians beside it. Part 2: event day, empty, busy (three children, a teen asking a guardian to pay) and the phone. Drawn inside Int-A; the frame is swappable.'"
+    ]
+   }
+  }
+ ]
+}
