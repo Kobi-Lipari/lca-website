@@ -494,7 +494,7 @@ The last of checkpoint C's moves. The domain components move from `src/component
 
 ### Checkpoint C: steps 16 to 19
 
-**Ready for its pull request; not merged.** Checkpoint C groups the code by area and changes no behaviour. Every step is a scripted move or split, checked by a second script against the commit before it, and the built site is the same.
+**Merged into `main` as `7151bff` on Tuesday, October 13, 2026 at 2:03 AM UTC** (pull request 107, a merge commit on head `cedb39f`), after a three-part review of the built site, the Pages Functions bundle and the daily-emails worker found them identical in behaviour to `748a5ef`, with only module order and file paths changed, and nothing to fix. The Pages production build, the worker redeploy and the main branch checks all succeeded on the merge commit, and the public site answered afterwards with the same pages and sizes as before. Checkpoint C groups the code by area and changes no behaviour. Every step is a scripted move or split, checked by a second script against the commit before it, and the built site is the same.
 
 - **Step 16:** the server helpers move into `functions/utils/events`, `registration`, `membership`, `live` and `admin` (`scripts/moves/server-areas.json`, 20 files), with the two tools the later steps reuse, `scripts/move-files.ts` and `scripts/verify-move.ts`.
 - **Step 17:** nine site library files move into `src/areas/events`, `clubs` and `admin` (`scripts/moves/client-lib.json`), and each of the eight area folders gets an `index.ts`.
