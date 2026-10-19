@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Club-Final-Bare · a club page with only the basics</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.cg-root{box-sizing:border-box;padding:16px 0 16px;background:#ecebe6;color:#1a2744}
+.cg-root *{box-sizing:border-box}
+.cg-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:14px 22px 14px}
+.cg-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:26px}
+.cg-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.cg-ml{font-size:12.5px;line-height:1.4;color:#3d4556;margin:2px 0 0}
+.cg-ml b{color:#1a2744;font-weight:600}
+.cg-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.cg-grey{flex:none;width:600px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.cg-grey > div > p + p{margin-top:8px}
+.cg-grey p{font-size:11.5px;line-height:1.4;color:#2b3446;margin:0}
+.cg-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.cg-grey ol{margin:0;padding-left:16px;font-size:11.5px;line-height:1.4;color:#2b3446}
+.cg-grey li{margin-bottom:4px}
+.cg-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 16px 10px;margin-top:10px}
+.cg-notes{list-style:none;margin:6px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 22px}
+.cg-notes li{display:flex;gap:8px;align-items:flex-start;font-size:11.5px;line-height:1.4;color:#2b3446}
+.cg-notes .k-num-badge{width:20px;height:20px;font-size:11px}
+.cg-notes b{font-weight:600;color:#1a2744}
+.cg-data{margin:10px 0 0;padding-top:8px;border-top:1px solid #ecebe5;font-size:12px;line-height:1.45;color:#555c6b}
+.cg-data b{color:#1a2744}
+.cg-data code,.cg-mono{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#2b3446}
+.cg-flab{display:flex;align-items:center;gap:12px;margin:16px 40px 8px}
+.cg-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.cg-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.cg-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.cg-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.cg-frame .k-browser-url{max-width:760px}
+.cg-nb{width:24px;height:24px;font-size:12px}
+.cg-nbs{width:20px;height:20px;font-size:10.5px;vertical-align:middle}
+.cg-anno{display:flex;gap:8px;align-items:flex-start;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;padding:7px 11px;font-size:12.5px;line-height:1.45;color:#3d4556;margin:0}
+.cg-anno b{color:#1a2744;font-weight:600}
+.cg-anno svg{flex:none;margin-top:2px}
+/* decided header and footer */
+.cg-hd-in{gap:0;position:relative}
+.cg-hd .k-brand{margin-right:16px}
+.cg-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.cg-rook-sm{width:24px;height:24px}
+.cg-nav{gap:0}
+.cg-nav a{padding:0 10px;white-space:nowrap}
+.cg-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.cg-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.cg-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.cg-util{gap:12px}
+.cg-util .k-ulink{padding:0 4px}
+.cg-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.cg-foot .k-meta{color:rgba(255,255,255,.78)}
+.cg-foot nav a{font-size:14px}
+/* club page, as Club-G, with navy standing in for the club colour */
+.cg-band{height:8px;background:#1a2744}
+.cg-crumbs{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:#555c6b;padding:8px 0 8px}
+.cg-crumbs a{color:#1a2744}
+.cg-cover-in{position:absolute;left:0;right:0;bottom:0}
+.cg-cover-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-bottom:26px}
+.cg-idrow{display:flex;align-items:flex-end;gap:22px}
+.cg-h1{font-size:44px;line-height:1.05;font-weight:700;letter-spacing:-.02em;color:#ffffff;margin:0}
+.cg-city{font-size:18px;line-height:1.4;color:#ffffff;margin:8px 0 0}
+.cg-cbtns{display:flex;gap:10px;align-items:center}
+.cg-btn-wline{background:transparent;color:#ffffff;border-color:#ffffff}
+.cg-btn-wghost{background:transparent;color:#ffffff;border-color:transparent;padding:0 10px}
+.cg-author{background:#fbfaf6;border-bottom:1px solid #ecebe6}
+.cg-author-in{display:flex;align-items:center;gap:12px;min-height:44px;font-size:13.5px;color:#3d4556;flex-wrap:nowrap}
+.cg-author-in b{color:#1a2744;font-weight:600}
+.cg-sep{width:1px;height:16px;background:#d6d5cd;flex:none}
+.cg-snav{background:#ffffff;border-bottom:1px solid #e4e2db;box-shadow:0 4px 12px rgba(16,24,43,.05)}
+.cg-snav-in{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.cg-sl{display:flex;gap:2px}
+.cg-sl a{display:inline-flex;align-items:center;gap:6px;min-height:50px;padding:4px 14px 0;font-size:15px;font-weight:600;color:#555c6b;text-decoration:none;border-bottom:3px solid transparent;white-space:nowrap}
+.cg-sl a.on{color:#1a2744;border-bottom-color:#1a2744}
+.cg-sec{padding:18px 0 20px}
+.cg-frame .k-h2{font-size:25px}
+.cg-cream{background:#fbfaf6;border-top:1px solid #ecebe6;border-bottom:1px solid #ecebe6}
+.cg-h{display:flex;align-items:center;gap:10px;margin:0}
+.cg-bar{width:6px;height:24px;border-radius:3px;background:#1a2744;flex:none}
+.cg-two{display:grid;grid-template-columns:760px 420px;justify-content:space-between;align-items:start}
+.cg-side{display:flex;flex-direction:column;gap:10px}
+.cg-sc{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:11px 16px;display:flex;flex-direction:column;gap:4px}
+.cg-say{background:#ffffff;border:1px solid #dddcd4;border-left:5px solid #1a2744;border-radius:12px;padding:16px 22px 16px}
+.cg-say p{font-size:19px;line-height:1.5;color:#1a2744;margin:6px 0 0}
+.cg-told{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;margin:0}
+.cg-road{position:absolute;background:#ffffff;border:1px solid #d9dee5}
+.cg-river{position:absolute;border-radius:40px;background:#cfe0ea}
+.cg-mpin{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:#1a2744;color:#ffffff;border:2px solid #ffffff;box-shadow:0 2px 6px rgba(26,39,68,.35);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cg-mlab{position:absolute;background:#ffffff;border:1px solid #e4e2db;border-radius:6px;padding:2px 7px;font-size:11.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.cg-venue{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;align-items:start;padding:10px 0 6px;font-size:13px;line-height:1.45;color:#3d4556}
+.cg-venue b{color:#1a2744;font-weight:600;font-size:14px}
+.cg-vno{width:24px;height:24px;border-radius:50%;background:#1a2744;color:#ffffff;font-size:11.5px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.cg-ts{display:flex;align-items:center;gap:12px;width:290px;height:46px;padding:0 14px;border:1px solid #d6d5cd;border-radius:6px;background:#fafaf7;font-size:13.5px;color:#3d4556}
+.cg-ts i{display:block;width:22px;height:22px;border:2px solid #858b99;border-radius:4px;background:#ffffff;flex:none}
+.cg-ts span{margin-left:auto;font-size:11px;color:#555c6b;text-align:right;line-height:1.25}
+.cg-near{display:flex;flex-direction:column;gap:0;padding:7px 0;border-bottom:1px solid #ecebe6;font-size:12.5px;line-height:1.4;color:#3d4556}
+.cg-near a{font-weight:600;color:#1a2744;font-size:14.5px}
+.cg-sitefoot-in{display:flex;align-items:center;gap:12px;min-height:56px;font-size:13.5px;color:#3d4556}
+.cg-sitefoot-in b{color:#1a2744}
+/* search and sharing panel */
+.cg-panel{margin:14px 40px 0;background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:14px 18px 16px}
+.cg-pgrid{display:grid;grid-template-columns:236px 296px 424px minmax(0,1fr);gap:14px;margin-top:10px;align-items:start}
+.cg-tile{border:1px solid #e4e2db;border-radius:10px;padding:10px 12px;background:#fbfbf8;display:flex;flex-direction:column;gap:7px}
+.cg-tl{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.cg-tile p{margin:0;font-size:12px;line-height:1.45;color:#3d4556}
+.cg-tile p b{color:#1a2744;font-weight:600}
+.cg-codebox{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;overflow-wrap:anywhere;line-height:1.45;color:#1a2744;background:#ffffff;border:1px solid #e4e2db;border-radius:7px;padding:6px 9px;margin:0}
+.cg-tile p.cg-codebox{font-size:11px;color:#1a2744}
+.cg-serp{background:#ffffff;border:1px solid #e4e2db;border-radius:8px;padding:10px 12px;font-family:Arial,Helvetica,sans-serif}
+.cg-serp-src{display:flex;align-items:center;gap:8px}
+.cg-fav{width:26px;height:26px;border-radius:50%;background:#1a2744;display:flex;align-items:center;justify-content:center;flex:none}
+.cg-fav svg{width:15px;height:15px;fill:#ffffff}
+.cg-serp-site{font-size:13px;color:#202124;line-height:1.25}
+.cg-serp-url{font-size:12px;color:#4d5156;line-height:1.25}
+.cg-serp .cg-serp-t{font-size:16px;line-height:1.3;color:#1a0dab;margin:6px 0 3px}
+.cg-serp .cg-serp-d{font-size:12.5px;line-height:1.45;color:#4d5156}
+.cg-bub{display:flex;gap:10px;align-items:center;background:#e9e9eb;border-radius:16px;padding:6px 12px 6px 6px;width:300px}
+.cg-bub b{display:block;font-size:13px;color:#111111;line-height:1.25}
+.cg-bub small{display:block;font-size:11.5px;color:#6b6b70}
+.cg-checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cg-checks li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:7px;font-size:12px;line-height:1.4;color:#3d4556}
+.cg-checks li b{color:#1a2744;font-weight:600}
+.cg-tick{width:20px;height:20px;border-radius:50%;background:#e1f0e7;color:#145b3a;display:flex;align-items:center;justify-content:center;margin-top:1px}
+/* the bare state */
+.cb-cover{position:relative;height:260px;overflow:hidden;background:#22325a}
+.cb-squares{position:absolute;top:0;right:0;bottom:0;width:640px;background-image:conic-gradient(rgba(255,255,255,.06) 0 25%,transparent 0 50%,rgba(255,255,255,.06) 0 75%,transparent 0);background-size:64px 64px;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000000 55%);mask-image:linear-gradient(90deg,transparent 0,#000000 55%)}
+.cb-shade{position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(26,39,68,0) 30%,rgba(26,39,68,.6) 75%,#1a2744 100%)}
+.cb-covnote{position:absolute;right:24px;top:14px;max-width:450px}
+.cb-tile{position:relative;width:96px;height:96px;border-radius:18px;background:#ffffff;color:#1a2744;font-size:40px;font-weight:700;letter-spacing:.01em;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(10,16,30,.35);flex:none}
+.cb-tile .k-num-badge{position:absolute;right:-10px;top:-10px;box-shadow:0 0 0 2px #ffffff}
+.cb-meet{display:flex;align-items:center;gap:8px;font-size:16px;line-height:1.4;color:#ffffff;margin:6px 0 0;white-space:nowrap}
+.cb-wwl{color:#e6cf86;font-weight:600;font-size:15px;text-decoration:underline;text-decoration-color:#e6cf86;text-underline-offset:3px;white-space:nowrap;margin-left:8px}
+.cb-info{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e4e9f3;color:#1a2744;flex:none}
+.cb-sug{font-size:14px;font-weight:600;color:#866a1e;text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px;white-space:nowrap}
+.cb-ask{font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.cb-leadrow{display:flex;justify-content:space-between;align-items:center;gap:40px}
+.cb-lead{font-size:21px;line-height:1.5;color:#1a2744;margin:0;max-width:1200px}
+.cb-toldrow{display:flex;align-items:flex-start;gap:16px;margin-top:12px}
+.cb-toldrow .cg-told{flex:none;margin-top:6px}
+.cb-map{position:relative;height:260px;border-radius:12px;overflow:hidden}
+.cb-mtext{position:absolute;font-size:11.5px;font-weight:600;color:#3d4556;white-space:nowrap}
+.cb-ood{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 14px;font-size:13px;line-height:1.45;color:#3d4556;margin:0}
+.cb-ood b{color:#1a2744;font-weight:600}
+.cb-ood .cb-sug{font-size:13px}
+.cb-sitefoot{background:#eef0f4;border-top:1px solid #dcdfe6}
+.cb-minitile{width:30px;height:30px;border-radius:8px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cb-og{width:400px;border:1px solid #d6d5cd;border-radius:8px;overflow:hidden;background:#ffffff}
+.cb-og-img{position:relative;width:400px;height:210px;background:#22325a;overflow:hidden}
+.cb-og-img .cb-squares{width:250px;background-size:40px 40px}
+.cb-og-img .cb-shade{background:linear-gradient(180deg,rgba(26,39,68,0) 40%,#1a2744 100%)}
+.cb-og-url{position:absolute;left:22px;top:18px;font-size:12px;font-weight:600;letter-spacing:.04em;color:#e6cf86}
+.cb-og-in{position:absolute;left:22px;right:22px;bottom:20px;display:flex;align-items:flex-end;gap:14px}
+.cb-og-tile{width:64px;height:64px;border-radius:13px;background:#ffffff;color:#1a2744;font-size:26px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+.cb-og-in b{display:block;font-size:21px;line-height:1.15;color:#ffffff}
+.cb-og-in .cb-og-city{display:block;font-size:13px;line-height:1.35;color:#ffffff;margin-top:3px}
+.cb-og-meta{padding:7px 12px;background:#f0f2f5;font-family:Arial,Helvetica,sans-serif}
+.cb-og-meta small{display:block;font-size:11px;color:#606770;text-transform:uppercase;letter-spacing:.02em}
+.cb-og-meta b{display:block;font-size:14px;color:#1d2129;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb-bubtile{width:40px;height:40px;border-radius:9px;background:#1a2744;color:#ffffff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+/* what fills in later, a board note under the page */
+.cb-later{margin:22px 40px 0;border:1.5px dashed #b9b7ad;border-radius:14px;padding:14px 18px 14px;background:#f4f3ee}
+.cb-later-h{display:flex;align-items:center;gap:10px;margin:0;font-size:21px;line-height:1.3;font-weight:600;letter-spacing:-.01em;color:#1a2744}
+.cb-ltiles{display:grid;grid-template-columns:repeat(6,210px);justify-content:space-between;margin-top:12px}
+.cb-lt{width:210px;min-height:210px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:10px 11px 12px;display:flex;flex-direction:column;gap:5px}
+.cb-sk{position:relative;height:84px;border-radius:8px;background:#f3f3ef;border:1px solid #e6e5de;overflow:hidden;margin-bottom:3px}
+.cb-lt h3{margin:0;font-size:14.5px;line-height:1.25;font-weight:700;color:#1a2744}
+.cb-lt p{margin:0;font-size:12px;line-height:1.4;color:#3d4556}
+.cb-lt p.cb-when{color:#555c6b}
+.cb-bar{display:block;height:6px;border-radius:3px;background:#d9d8d1}
+.cb-later-foot{margin:12px 0 0;font-size:13px;line-height:1.45;color:#3d4556}
+</style>
+</helmet>
+<div class="cg-root" style="width:1440px;height:3200px">
+
+<section class="cg-doc" aria-label="About this board">
+<div class="cg-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker" style="margin:0">9 · Club page · final · Club-G bare · part 1 of 2</p><span class="cg-round">FINAL</span></div>
+<h1 class="cg-title">Club page · Club-G in its bare state</h1>
+<p class="cg-ml" style="margin-top:5px"><b>Built from:</b> Club-G as decided (one template: cover, author line, section nav, About, When and where with the map, relay Contact, nearby clubs, search and sharing) and Club-G-2's thin club (the no-photo cover with the initials tile, the author line for a club with no rep).</p>
+<p class="cg-ml"><b>Replaces:</b> the placeholders of Club-G-2 frame C. Dropped: [The club hasn't written about itself yet], [not listed] for Cost and Who is welcome, No links yet, [How the club meets: not told yet], Not told by the club yet, the dashed circle with no pin, Events near the club, a Suggest an update on every block.</p>
+<p class="cg-ml"><b>K's feedback applied:</b> Thu, Oct 15 "plan for most of these blocks to go unused for a while … make sure it looks good regardless ~ I can input the basics of what is necessary if you see fit".</p>
+<p class="cg-ml"><b>Shown:</b> /clubs/morgan-city-chess-club at 1440 on Tue, Oct 20, 2026, signed out, holding only the basics an LCA admin saved on Mon, Oct 19; then what search and sharing get, and what fills in later. Part 2: the basics as they are entered, a phone, Ask to be its named rep, the page as it fills.</p>
+<p class="cg-ml" style="margin-top:6px"><span class="k-sample">Sample data: the one sentence, Ray A., Theo Guidry, road miles</span> <b>Real:</b> the club, Morgan City, its meeting line, its church and pin, the nearby clubs' own lines.</p>
+</div>
+<aside class="cg-grey" aria-label="Board note">
+<div><p><b>What</b>Club-G as decided, for a club whose rep has filled nothing: only the basics an LCA admin enters and the region's representative line. Every block with nothing in it is gone, not a placeholder, and the page still reads finished.</p><p><b>Built from</b>Club-G's template and search panel; Club-G-2's no-photo cover, its author line for a club with no rep, and no self-serve claim; Clubs-H's meeting line for Morgan City, word for word.</p><p><b>K's feedback applied</b>Blocks are planned to go unused: nothing on the page says empty. The basics are the ones K offered to enter. The club's rep fills the rest once named.</p></div>
+<div><p><b>Open for K</b></p><ol><li>The basics are five fields: one sentence, how the club meets, where, a contact name, a contact email kept private. Enough?</li><li>A rep request reaches the region's representative and the LCA admins, and an LCA admin names the rep, as today. May the region's representative name one too, as they can now name a one-event director?</li><li>Basics an admin typed read As told to LCA, October 2026 until the club's rep rewrites them. OK?</li><li>Settled Mon, Oct 19: a named rep's My LCA gains Your club, and with it the rail (Account-Final-Hub).</li></ol></div>
+</aside>
+</div>
+<div class="cg-lbox">
+<p class="k-label" style="margin:0">Notes on this board</p>
+<ol class="cg-notes">
+<li><span class="k-num-badge">1</span><span><b>Only what is filled shows.</b> No brackets, no not listed, no empty card, no Suggest an update on each block: a block with nothing in it, and its nav link, are not there (Club-D's rule, on every block).</span></li>
+<li><span class="k-num-badge">2</span><span><b>The basics make a whole page:</b> one sentence, how and where the club meets in words (never turned into dates), the pin with Directions, and a contact the form relays to.</span></li>
+<li><span class="k-num-badge">3</span><span><b>No photo yet:</b> a 260px cover in the club colour, navy until one is set, with the initials tile; the meeting line sits under the name, so when and where is in the first screen.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Who keeps it is said once:</b> the region's representative until the club names its rep, with Suggest an update, and a small Is this your club? Ask to be its named rep. No self-serve claim.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Search and sharing work from the basics:</b> the slug address, the title pattern, a description from the sentence and the meeting line, the initials share card, JSON-LD and the sitemap.</span></li>
+<li><span class="k-num-badge">6</span><span><b>What fills in later is drawn under the page, never on it:</b> each block appears the first time someone adds to it.</span></li>
+</ol>
+<p class="cg-data"><b>Data:</b> the basics are <code>clubs.about_text</code> (the sentence), <code>how_we_meet_text</code>, one <code>club_places</code> row (its pin from <code>clubMapData.ts</code>, geocoded once on Save), <code>contact_name_public</code> and <code>contact_email</code> (private), <code>told_updated_at</code> and <code>told_by</code> (an LCA admin). Everything else stays empty and renders nothing; <code>functions/clubs/[slug].ts</code> writes only the sections that have content.</p>
+</div>
+</section>
+
+<div class="cg-flab"><span class="cg-code">A</span><h2>Desktop · Morgan City Chess Club · basics only</h2><span class="k-meta">Tue, Oct 20, 2026, signed out</span><span class="cg-urlchip">/clubs/morgan-city-chess-club</span></div>
+<div class="cg-frame">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/clubs/morgan-city-chess-club</div></div>
+<div>
+<header class="k-header cg-hd">
+<div class="k-wrap-wide k-header-in cg-hd-in">
+<a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="cg-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks cg-nav" aria-label="Main"><a href="#">Tournaments</a><a class="k-nav-on" href="#" aria-current="page">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="cg-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav>
+<a class="cg-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="cg-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility cg-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+</div>
+</header>
+
+<main>
+<div class="cg-band"></div>
+<div class="k-wrap-wide"><nav class="cg-crumbs" aria-label="Breadcrumb"><a href="#">Clubs</a><span aria-hidden="true">/</span><a href="#">Bayou Region</a><span aria-hidden="true">/</span><span aria-current="page">Morgan City Chess Club</span></nav></div>
+
+<section class="cb-cover" aria-label="Morgan City Chess Club">
+<div class="cb-squares" aria-hidden="true"></div>
+<div class="cb-shade" aria-hidden="true"></div>
+<p class="cg-anno cb-covnote"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 9h18"></path></svg><span><b>No photo and no logo:</b> 260 tall, not Club-G's 340. The first photo the rep adds becomes the 340 cover, and the meeting line then lives in When and where only.</span></p>
+<div class="cg-cover-in">
+<div class="k-wrap-wide cg-cover-row">
+<div class="cg-idrow">
+<div class="cb-tile"><span aria-hidden="true">MC</span><span class="k-num-badge cg-nb">3</span></div>
+<div>
+<h1 class="cg-h1">Morgan City Chess Club</h1>
+<p class="cg-city">Chess club in Morgan City, Louisiana · Bayou Region</p>
+<p class="cb-meet"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church</span><a class="cb-wwl" href="#when-and-where">When and where ›</a></p>
+</div>
+</div>
+<div class="cg-cbtns">
+<a class="k-btn k-btn-gold" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Follow this club</a>
+<a class="k-btn cg-btn-wline" href="#contact"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5l8.5 6.5 8.5-6.5"></path></svg>Contact the club</a>
+<a class="k-btn cg-btn-wghost" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 8l4-4 4 4M5 13v6.5h14V13"></path></svg>Share</a>
+</div>
+</div>
+</div>
+</section>
+
+<div class="cg-author">
+<div class="k-wrap-wide cg-author-in">
+<span class="cb-info" aria-hidden="true"><svg class="k-i-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg></span>
+<span><b>This club hasn't named a rep yet</b></span>
+<span class="cg-sep" aria-hidden="true"></span>
+<span>Kept by Theo Guidry, the Bayou Region representative</span>
+<span class="cg-sep" aria-hidden="true"></span>
+<a class="cb-sug" href="#">Suggest an update</a>
+<a class="cb-ask" href="#" style="margin-left:auto">Is this your club? Ask to be its named rep</a>
+<span class="k-num-badge cg-nb">4</span>
+<span class="k-sample">Sample data: representative</span>
+</div>
+</div>
+
+<nav class="cg-snav" aria-label="On this page">
+<div class="k-wrap-wide cg-snav-in">
+<div class="cg-sl"><a class="on" href="#about" aria-current="true">About</a><a href="#when-and-where">When and where</a><a href="#contact">Contact</a></div>
+<p class="cg-anno" style="max-width:900px;padding:5px 11px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M5 21h14"></path></svg><span><b>Only sections with something in them.</b> News, Events and Photos join this row the day they have something.</span></p>
+</div>
+</nav>
+
+<section id="about" class="cg-sec">
+<div class="k-wrap-wide">
+<div class="k-between" style="margin-bottom:10px"><h2 class="k-h2 cg-h"><span class="cg-bar"></span>About Morgan City Chess Club</h2><div class="k-row-sm" style="gap:10px"><span class="k-num-badge cg-nb">1</span><span class="k-sample">Sample data: the one sentence</span></div></div>
+<p class="cb-lead">A friendly club for casual and rated games in Morgan City, open to every level.</p>
+<p class="cg-anno" style="max-width:820px;margin-top:12px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v10l-6 6H5z"></path><path d="M13 20v-6h6"></path></svg><span><b>One sentence is set as a lead,</b> not as a short paragraph beside an empty column. Cost, Who is welcome and Find us online are not rendered, so nothing sits to its right.</span></p>
+</div>
+</section>
+
+<section id="when-and-where" class="cg-sec cg-cream">
+<div class="k-wrap-wide">
+<h2 class="k-h2 cg-h" style="margin-bottom:14px"><span class="cg-bar"></span>When and where Morgan City Chess Club meets</h2>
+<div class="cg-two">
+<div>
+<div class="cg-say">
+<span class="k-label">How the club meets</span>
+<p>1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church.</p>
+</div>
+<div class="cb-toldrow">
+<p class="cg-told"><span>As told to LCA, October 2026</span><span aria-hidden="true">·</span><a class="cb-sug" style="font-size:13px" href="#">Suggest an update</a><span class="k-num-badge cg-nbs">2</span></p>
+<p class="cg-anno"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v10l-6 6H5z"></path><path d="M13 20v-6h6"></path></svg><span><b>An LCA admin entered this from LCA's club list,</b> and the page says so. When the club's rep rewrites it, the line reads As told by the club, updated, with the month.</span></p>
+</div>
+<p class="cg-anno" style="margin-top:12px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v10l-6 6H5z"></path><path d="M13 20v-6h6"></path></svg><span><b>No next date, no Tonight, no Meets today.</b> The statement is shown as words and never turned into dates, as Club-G decided.</span></p>
+</div>
+<div>
+<div class="k-map cb-map" role="img" aria-label="Map of Morgan City with pin 1 on First Baptist Church">
+<span class="cg-river" style="left:-70px;top:-60px;width:150px;height:400px;transform:rotate(14deg)"></span>
+<span class="cb-mtext" style="left:6px;top:150px;transform:rotate(-76deg);color:#4b6a80">Atchafalaya River</span>
+<span class="cg-road" style="left:0;top:58px;width:420px;height:9px"></span>
+<span class="cg-road" style="left:236px;top:0;width:8px;height:260px"></span>
+<span class="cg-road" style="left:110px;top:176px;width:310px;height:7px"></span>
+<span class="cg-road" style="left:330px;top:60px;width:7px;height:200px;transform:rotate(-12deg)"></span>
+<span class="cg-mlab" style="left:356px;top:52px;font-size:11px;color:#3d4556">US 90</span>
+<span class="cb-mtext" style="left:150px;top:22px">Morgan City</span>
+<span class="cg-mpin" style="left:268px;top:136px">1</span>
+<span class="cg-mlab" style="left:290px;top:125px">First Baptist Church</span>
+</div>
+<div class="cg-venue"><span class="cg-vno">1</span><span><b>First Baptist Church</b> · Morgan City, Louisiana · <a class="k-link" href="#">Directions ↗</a></span></div>
+<p class="cg-anno" style="padding:5px 10px;font-size:12px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v10l-6 6H5z"></path><path d="M13 20v-6h6"></path></svg><span>Directions opens the pin in the visitor's maps app.</span></p>
+</div>
+</div>
+</div>
+</section>
+
+<section id="contact" class="cg-sec">
+<div class="k-wrap-wide cg-two">
+<div class="k-card k-card-pad k-stack" style="gap:10px;padding:18px 20px">
+<div class="k-stack-sm" style="gap:4px">
+<div class="k-between"><h2 class="k-h2 cg-h"><span class="cg-bar"></span>Contact Morgan City Chess Club</h2><span class="k-sample">Sample data: contact</span></div>
+<p class="k-small" style="margin:0">Your message goes to Ray A., the club's contact, by email. Their address stays private. Spam-checked.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="k-field"><label for="cb-name">Your name</label><input id="cb-name" class="k-input" placeholder="First and last name"></div>
+<div class="k-field"><label for="cb-email">Your email</label><input id="cb-email" class="k-input" placeholder="So the club can reply"></div>
+</div>
+<div class="k-field"><label for="cb-msg">Message</label><textarea id="cb-msg" class="k-input" rows="2" style="padding:8px 12px;min-height:64px" placeholder="e.g. Is a 1st Tuesday a good first visit?"></textarea></div>
+<div class="k-between"><div class="cg-ts" role="img" aria-label="Turnstile spam check"><i></i>Verify you're a person<span>Turnstile<br>spam check</span></div><button class="k-btn k-btn-navy" type="button">Send message</button></div>
+</div>
+<div class="cg-side" style="gap:10px">
+<div class="cg-sc" style="padding:10px 16px 10px;gap:2px">
+<h2 class="k-h3 cg-h" style="font-size:18px;margin-bottom:2px"><span class="cg-bar" style="height:20px"></span>Chess clubs near Morgan City</h2>
+<div class="cg-near"><a href="#">Houma Chess Club</a><span>Houma · about 35 mi · "Mondays 6:00&nbsp;PM to 8:30&nbsp;PM at Terrebonne Parish North Library", as the club says</span></div>
+<div class="cg-near"><a href="#">Lafayette Chess Club</a><span>Lafayette · about 60 mi · "Hosts the Louisiana Open every Memorial Day weekend and the Lafayette Open in October", as the club says</span></div>
+<div class="cg-near" style="border-bottom:0"><a href="#">Marrero Chess Organization</a><span>Marrero · about 75 mi · "Wednesdays 6:00&nbsp;PM to 10:00&nbsp;PM at Chopsticks Buffet. No entry fee, all welcome", as the club says</span></div>
+<div class="k-between" style="padding-top:4px"><div class="k-row" style="gap:16px"><a class="k-link k-small" href="#">All Bayou Region clubs</a><a class="k-link k-small" href="#">Clubs near you</a></div><span class="k-sample">Sample data: road miles</span></div>
+</div>
+<p class="cb-ood"><span><b>Out of date?</b> <a class="cb-sug" href="#">Suggest an update</a> · goes to Theo Guidry, the Bayou Region representative</span><span class="k-num-badge cg-nbs">4</span></p>
+</div>
+</div>
+</section>
+
+<div class="cb-sitefoot">
+<div class="k-wrap-wide cg-sitefoot-in">
+<span class="cb-minitile" aria-hidden="true">MC</span>
+<b>Morgan City Chess Club</b><span aria-hidden="true">·</span><span>Morgan City, Louisiana</span><span aria-hidden="true">·</span><span>a club listed by the Louisiana Chess Association</span><span aria-hidden="true">·</span><span class="cg-mono" style="font-size:12.5px">louisianachess.org/clubs/morgan-city-chess-club</span>
+<a class="k-btn k-btn-line k-btn-sm" href="#" style="margin-left:auto"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"></rect><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"></path></svg>Copy link</a>
+</div>
+</div>
+</main>
+
+<footer class="k-footer cg-foot">
+<div class="k-wrap-wide cg-foot-in">
+<div class="k-row-sm" style="gap:10px"><svg class="cg-rook cg-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+<span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span>
+<nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+</div>
+</footer>
+</div>
+</div>
+
+<section class="cg-panel" aria-labelledby="cb-seo-h">
+<div class="k-between"><h2 class="k-h3 cg-h" id="cb-seo-h" style="font-size:21px"><span class="cg-bar"></span>How the bare page is found and shared</h2><div class="k-row-sm" style="gap:10px"><span class="k-meta">What crawlers and link previews get for /clubs/morgan-city-chess-club, from the basics alone</span><span class="k-num-badge cg-nb">5</span></div></div>
+<div class="cg-pgrid">
+<div class="cg-tile">
+<p class="cg-tl">a · Address and title</p>
+<p class="cg-codebox" style="overflow-wrap:break-word">louisianachess.org/clubs/<wbr>morgan-city-chess-club</p>
+<p>The slug made from the name at the first save, kept on rename; canonical link to it.</p>
+<p class="cg-codebox">&lt;title&gt;Morgan City Chess Club · Chess club in Morgan City, Louisiana · Louisiana Chess Association&lt;/title&gt;</p>
+<p><b>Meta description:</b> the one sentence, then the meeting line, 155 characters.</p>
+</div>
+<div class="cg-tile">
+<p class="cg-tl">b · A search result</p>
+<div class="cg-serp">
+<div class="cg-serp-src"><span class="cg-fav"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><span class="cg-serp-site" style="display:block">Louisiana Chess Association</span><span class="cg-serp-url">louisianachess.org › clubs › morgan-city-chess-club</span></span></div>
+<p class="cg-serp-t">Morgan City Chess Club · Chess club in Morgan City, Louisi…</p>
+<p class="cg-serp-d" style="margin:0">A friendly club for casual and rated games in Morgan City, open to every level. Meets 1st, 3rd and 5th Tuesday evenings at 5:30&nbsp;PM at First Baptist Church.</p>
+</div>
+<p>Name and city lead, so they survive the cut at about 60 characters.</p>
+<span class="k-sample" style="align-self:flex-start">Sample data: the sentence</span>
+</div>
+<div class="cg-tile">
+<p class="cg-tl">c · Shared · 1200 × 630, drawn at 400 × 210</p>
+<div class="cb-og">
+<div class="cb-og-img"><div class="cb-squares" aria-hidden="true"></div><div class="cb-shade" aria-hidden="true"></div><span class="cb-og-url">louisianachess.org</span><div class="cb-og-in"><span class="cb-og-tile" aria-hidden="true">MC</span><div><b>Morgan City Chess Club</b><span class="cb-og-city">Chess club in Morgan City, Louisiana</span></div></div></div>
+<div class="cb-og-meta"><small>louisianachess.org</small><b>Morgan City Chess Club · Chess club in Morgan City, Louisiana</b></div>
+</div>
+<div class="cg-bub"><span class="cb-bubtile" aria-hidden="true">MC</span><span><b>Morgan City Chess Club</b><small>louisianachess.org</small></span></div>
+<p>No photo and no logo yet: the initials card on navy (Club-G-2). The first photo becomes the share image.</p>
+</div>
+<div class="cg-tile">
+<p class="cg-tl">d · For crawlers</p>
+<ul class="cg-checks">
+<li><span class="cg-tick"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>JSON-LD SportsClub:</b> name, sport Chess, description (the one sentence), url, address (addressLocality Morgan City, addressRegion LA), geo from the pin, memberOf Louisiana Chess Association. No image until a photo, no sameAs until a link, no Event entries until a club event.</span></li>
+<li><span class="cg-tick"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>Server-rendered body:</b> the h1, the city line, the meeting line, About, When and where with the place, Contact, written before any script runs (functions/clubs/[slug].ts).</span></li>
+<li><span class="cg-tick"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>sitemap.xml</b> entry with lastmod Mon, Oct 19, 2026 (told_updated_at).</span></li>
+<li><span class="cg-tick"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><b>Headings carry name and city:</b> the h1 is the name; every h2 names the club or Morgan City.</span></li>
+</ul>
+</div>
+</div>
+</section>
+
+<section class="cb-later" aria-labelledby="cb-later-h">
+<div class="k-between"><h2 id="cb-later-h" class="cb-later-h">What fills in later, and who adds it <span class="k-num-badge cg-nb">6</span></h2><div class="k-row-sm" style="gap:10px"><span class="k-meta">A board note under the page, not part of it. Each sketch is the block as Club-G draws it.</span><span class="k-sample">Sample data: the sketches</span></div></div>
+<div class="cb-ltiles">
+<article class="cb-lt">
+<div class="cb-sk" aria-hidden="true"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="" style="position:absolute;left:0;top:0;width:100%;height:58px;object-fit:cover;display:block"><span style="position:absolute;left:8px;right:8px;bottom:6px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px"><i style="display:block;height:16px;border-radius:3px;background:#c9c8c0"></i><i style="display:block;height:16px;border-radius:3px;background:#d6d5cd"></i><i style="display:block;height:16px;border-radius:3px;background:#d6d5cd"></i><i style="display:block;height:16px;border-radius:3px;background:#d6d5cd"></i></span></div>
+<h3>Photos</h3>
+<p>the 340 cover and the Photos section</p>
+<p class="cb-when">when the club's rep adds the first photo, its caption the alt text</p>
+</article>
+<article class="cb-lt">
+<div class="cb-sk" aria-hidden="true" style="padding:10px;display:grid;grid-template-columns:1.25fr 1fr;gap:8px;background:#ffffff"><span style="display:flex;flex-direction:column;gap:6px"><i class="cb-bar" style="width:100%"></i><i class="cb-bar" style="width:92%"></i><i class="cb-bar" style="width:96%"></i><i class="cb-bar" style="width:70%"></i><i class="cb-bar" style="width:84%"></i></span><span style="display:flex;flex-direction:column;gap:5px"><span style="border:1px solid #dddcd4;border-radius:5px;padding:3px 5px;font-size:9.5px;font-weight:700;letter-spacing:.06em;color:#555c6b">COST</span><span style="border:1px solid #dddcd4;border-radius:5px;padding:3px 5px;font-size:9.5px;font-weight:700;letter-spacing:.06em;color:#555c6b">WHO IS WELCOME</span></span></div>
+<h3>The club in its own words</h3>
+<p>About's paragraphs, Cost, Who is welcome</p>
+<p class="cb-when">when the rep writes them</p>
+</article>
+<article class="cb-lt">
+<div class="cb-sk" aria-hidden="true" style="padding:10px;display:grid;grid-template-columns:40px minmax(0,1fr);gap:8px;align-items:start;background:#ffffff"><span class="k-date k-date-navy" style="width:40px;min-height:40px;border-radius:7px"><b style="font-size:15px">17</b><span style="font-size:9px;margin-top:2px">Nov</span></span><span style="display:flex;flex-direction:column;gap:5px"><span style="font-size:10px;font-weight:700;line-height:1.2;color:#1a2744">Tue, Nov 17</span><i class="cb-bar" style="width:70%"></i><span style="display:flex;align-items:center;gap:5px;margin-top:3px"><span style="background:#c8a94a;color:#1a2744;border-radius:4px;padding:2px 6px;font-size:9.5px;font-weight:700">Register</span><span style="font-size:9.5px;color:#3d4556;font-weight:600">3 of 12</span></span></span></div>
+<h3>Events</h3>
+<p>club events with Register and the count</p>
+<p class="cb-when">when the club's rep or the region's representative adds one on louisianachess.org (club reps may set entry fees, K, Mon, Oct 19)</p>
+</article>
+<article class="cb-lt">
+<div class="cb-sk" aria-hidden="true" style="padding:9px 10px;display:flex;flex-direction:column;gap:5px;background:#ffffff"><i class="cb-bar" style="width:40%;height:5px"></i><i class="cb-bar" style="width:86%;background:#1a2744;opacity:.75"></i><i class="cb-bar" style="width:74%"></i><span style="height:1px;background:#e4e2db;margin:2px 0"></span><i class="cb-bar" style="width:36%;height:5px"></i><i class="cb-bar" style="width:80%;background:#1a2744;opacity:.75"></i></div>
+<h3>Club news</h3>
+<p>newest first, also on LCA News › From the clubs</p>
+<p class="cb-when">when the rep posts</p>
+</article>
+<article class="cb-lt">
+<div class="cb-sk" aria-hidden="true" style="padding:10px 12px;display:flex;flex-direction:column;gap:7px;background:#ffffff"><span style="font-size:9.5px;font-weight:700;letter-spacing:.07em;color:#555c6b">FIND US ONLINE</span><span style="font-size:12px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:2px">Facebook ↗</span><span style="font-size:12px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:2px">Website ↗</span></div>
+<h3>Find us online</h3>
+<p>Facebook and website links</p>
+<p class="cb-when">when the rep adds one</p>
+</article>
+<article class="cb-lt">
+<div class="cb-sk" aria-hidden="true" style="background:#ffffff"><span style="position:absolute;left:0;right:0;top:0;height:8px;background:#2f6b4f"></span><span style="position:absolute;left:12px;top:20px;width:48px;height:48px;border-radius:10px;border:1px solid #dddcd4;background-color:#e6e5de;background-image:repeating-linear-gradient(135deg,rgba(26,39,68,.075) 0 1px,transparent 1px 8px)"></span><span style="position:absolute;left:72px;top:30px;display:flex;gap:5px"><i style="display:block;width:18px;height:18px;border-radius:5px;background:#2f6b4f;outline:2px solid #1a2744;outline-offset:1px"></i><i style="display:block;width:18px;height:18px;border-radius:5px;background:#1a2744"></i><i style="display:block;width:18px;height:18px;border-radius:5px;background:#8a2f3b"></i><i style="display:block;width:18px;height:18px;border-radius:5px;background:#2d5d8a"></i><i style="display:block;width:18px;height:18px;border-radius:5px;background:#6b4f8a"></i></span></div>
+<h3>Logo and colour</h3>
+<p>the tile, band, tint and bars</p>
+<p class="cb-when">when the rep sets them</p>
+</article>
+</div>
+<p class="cb-later-foot">Until then each leaves no mark on the public page. The editor (part 2) shows them to the rep as open fields.</p>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3200}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

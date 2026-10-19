@@ -1655,6 +1655,38 @@
    "w": 1440,
    "x": 25480,
    "y": 0
+  },
+  "Account-Final-Hub.dc.html": {
+   "h": 3400,
+   "page": "account",
+   "title": "Account-Final-Hub · one page for one role, a left rail for more",
+   "w": 1440,
+   "x": 59920,
+   "y": 0
+  },
+  "Account-Final-Hub-2.dc.html": {
+   "h": 2950,
+   "page": "account",
+   "title": "Account-Final-Hub-2 · what each entry opens, the menu, phones and K's event rules",
+   "w": 1440,
+   "x": 61440,
+   "y": 0
+  },
+  "Club-Final-Bare.dc.html": {
+   "h": 3200,
+   "page": "club",
+   "title": "Club-Final-Bare · a club page with only the basics",
+   "w": 1440,
+   "x": 23440,
+   "y": 0
+  },
+  "Club-Final-Bare-2.dc.html": {
+   "h": 2950,
+   "page": "club",
+   "title": "Club-Final-Bare-2 · the basics, a phone, the rep invitation, the page as it fills",
+   "w": 1440,
+   "x": 24960,
+   "y": 0
   }
  },
  "createdOnFiles": {
@@ -2305,7 +2337,7 @@
   },
   "t_about": {
    "kind": "title1",
-   "maxW": 6000,
+   "maxW": 8000,
    "page": "about",
    "text": "About, board & history — 4 options",
    "w": 240,
@@ -2314,27 +2346,27 @@
   },
   "t_account": {
    "kind": "title1",
-   "maxW": 60000,
+   "maxW": 8000,
    "page": "account",
-   "text": "My LCA (account) · 3 options, then the frame and options per section",
+   "text": "My LCA (account) · 3 options, then the frame and options per section, then the decided frame (Mon, Oct 19)",
    "w": 240,
    "x": 640,
    "y": -320
   },
   "t_club": {
    "kind": "title1",
-   "maxW": 30000,
+   "maxW": 8000,
    "page": "club",
-   "text": "Club page — 3 options",
+   "text": "Club page · 3 options, then the decided bare state (Mon, Oct 19)",
    "w": 240,
    "x": 640,
    "y": -320
   },
   "t_clubs": {
    "kind": "title1",
-   "maxW": 30000,
+   "maxW": 8000,
    "page": "clubs",
-   "text": "Clubs directory — 4 options + phones",
+   "text": "Clubs directory · 4 options + phones",
    "w": 240,
    "x": 640,
    "y": -320
@@ -2377,7 +2409,7 @@
   },
   "t_membership": {
    "kind": "title1",
-   "maxW": 30000,
+   "maxW": 8000,
    "page": "membership",
    "text": "Membership & giving · 4 options, then six Member-B variants and a plain Give page",
    "w": 240,
@@ -2386,7 +2418,7 @@
   },
   "t_nav": {
    "kind": "title1",
-   "maxW": 6520,
+   "maxW": 8000,
    "page": "nav",
    "text": "Navigation & footer · decided: structure 1, header (two boards), phones, footer",
    "w": 240,
@@ -2395,7 +2427,7 @@
   },
   "t_news": {
    "kind": "title1",
-   "maxW": 6000,
+   "maxW": 8000,
    "page": "news",
    "text": "News & stories — 4 options",
    "w": 240,
@@ -2413,7 +2445,7 @@
   },
   "t_scanner": {
    "kind": "title1",
-   "maxW": 40000,
+   "maxW": 8000,
    "page": "scanner",
    "text": "Scoresheet scanner · 3 parts, then 8 parts with 2 options each",
    "w": 240,
@@ -2422,7 +2454,7 @@
   },
   "t_scholastic": {
    "kind": "title1",
-   "maxW": 6520,
+   "maxW": 8000,
    "page": "scholastic",
    "text": "Scholastic & parents — 3 options + phones",
    "w": 240,
@@ -2431,7 +2463,7 @@
   },
   "t_sources": {
    "kind": "title1",
-   "maxW": 1440,
+   "maxW": 8000,
    "page": "sources",
    "text": "Research & sources",
    "w": 240,
@@ -2440,7 +2472,7 @@
   },
   "t_start": {
    "kind": "title1",
-   "maxW": 6000,
+   "maxW": 8000,
    "page": "start",
    "text": "LCA website — look & feel options (Oct 2026)",
    "w": 240,
@@ -2458,7 +2490,7 @@
   },
   "t_workspace": {
    "kind": "title1",
-   "maxW": 40000,
+   "maxW": 8000,
    "page": "workspace",
    "text": "Workspace & admin · 4 options, then options per screen",
    "w": 240,
@@ -3304,6 +3336,38 @@
    "w": 760,
    "x": 7240,
    "y": -300
+  },
+  "s_Account-Final-Hub": {
+   "fill": "gray",
+   "page": "account",
+   "text": "What: The decided frame for My LCA, in two parts. Anyone who holds only You, or You and Family, keeps Int-A's one My LCA page at /dashboard. Anyone who holds a volunteer section (Events you direct, Your region, Your club, Board, Admin, Member lookup) gets Int-B's 240px left rail with one entry per section, and each entry opens its full room as its page. Part 1 states the rule (A), draws Avery, Danielle and Chris side by side on a busy day and a quiet one (B1 to B4) and runs seven more people through the rule (C). Part 2 maps every entry to its page and address (D), then draws the short My LCA ▾ menu (E), the rail on phones, tablets and the console (F), K's event rules for making, listing, fees and rating reports (G), and the way in and back with the admin backstop (H).\n\nBuilt from: Account-Int-A (the one page, the decided paths and crumbs) and Account-Int-B (the rail, how it folds, the short menu), with the decided boards inside them: Account-D, H, I, L, N, P, R and S, Work-E, Work-H, Work-J and Work-L, and Club-G-2. The header, footer and event strip are the decided chrome from Tourn-List-Final and Nav-Header-Final.\n\nK's feedback applied and open for K: Mon, Oct 19: A for no other role, B for more than one. An empty Today is one line, and My LCA opens on You with the card. Show my card sits up top on phones and is never more than a button. Club reps stay, so Your club brings the rail. A standing director's event lists the moment it is published, with a note to the admins and no hold. Only LCA admins, club reps, the president and standing directors can set fees above $0; anyone else is told in plain words that LCA must first set up a connected account for them inside its Stripe account (Stripe Connect). Rating reports are on every event. Open for K: the rating report guard (LCA's affiliate ID is filled in only on events LCA lists, part 2 G4), and how a standing director is paid before their connected account exists (fees wait in LCA's account and are paid out after the event; drawn as Proposed, part 2 G2).",
+   "w": 760,
+   "x": 59920,
+   "y": 3460
+  },
+  "s_Club-Final-Bare": {
+   "fill": "gray",
+   "page": "club",
+   "text": "What: Club-G as decided, drawn for a club whose rep has filled in nothing. The club is Morgan City Chess Club, with only the basics an LCA admin enters: one sentence, how and where it meets with its pin, and a contact name with a private email. The Bayou Region representative's line sits beside them. Every empty block is gone along with its nav link, with no placeholders. The 260 navy cover carries the MC tile and the meeting line, and search and sharing still work. Part 2 draws the basics form, a phone, Ask to be its named rep, and the page as it fills.\n\nBuilt from: Club-G's template and search panel. Club-G-2's no-photo cover, its author line for a club with no rep, and its editor, phone and states. Clubs-H's Morgan City meeting line, word for word. Work-J's admin sidebar and Needs attention row. Account-S's Your club and Account-Final-Hub's rail.\n\nK's feedback applied: Thu, Oct 15 \"plan for most of these blocks to go unused for a while … I can input the basics of what is necessary\". Nothing on the page says empty, and the basics are one short form per club. Open for K: are five basics enough? May a region's representative name a club rep, as they can name a one-event director? Is \"As told to LCA, October 2026\" the right line for basics an admin typed? Settled Mon, Oct 19: a named rep's My LCA gains Your club, and with it the rail.",
+   "w": 760,
+   "x": 23440,
+   "y": 3260
+  },
+  "r4_account": {
+   "fill": "teal",
+   "page": "account",
+   "text": "Round 4, Mon, Oct 19: K picked the frame A for one role and B for more, the member page D with the card button up top, Today H collapsing to one line when empty, Family I, Events you direct L, Your region N, Board P, LCA admin R, and S with the club rep and the standing director kept. Work-E console, Work-H region, Work-J admin and Work-L setup without the jump list. Account-Final-Hub and Hub-2 draw the decided frame and K's event rules: who may create a tournament, listing on publish with a note to the admins, fees above $0 only for admins, club reps, the president and standing directors, a connected Stripe account for everyone else, and rating reports on every event with the affiliate ID open for K.",
+   "w": 760,
+   "x": 59920,
+   "y": -300
+  },
+  "r4_club": {
+   "fill": "teal",
+   "page": "club",
+   "text": "Round 4, Mon, Oct 19: K picked Club-G and G-2. Club-Final-Bare and Bare-2 draw the page for a club whose rep has filled in nothing, with only the basics an admin enters, so it reads complete while the reps catch up.",
+   "w": 760,
+   "x": 23440,
+   "y": -300
   }
  },
  "order": [
@@ -3505,7 +3569,11 @@
   "Member-I-2.dc.html",
   "Member-J.dc.html",
   "Member-J-2.dc.html",
-  "Give-A.dc.html"
+  "Give-A.dc.html",
+  "Account-Final-Hub.dc.html",
+  "Account-Final-Hub-2.dc.html",
+  "Club-Final-Bare.dc.html",
+  "Club-Final-Bare-2.dc.html"
  ],
  "pages": [
   {

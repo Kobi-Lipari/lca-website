@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Account-Final-Hub · one page for one role, a left rail for more</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744;background:#ecebe6}
+.fh-root{box-sizing:border-box;padding:40px 48px 56px;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.fh-root *{box-sizing:border-box}
+.fh-root p{margin:0}
+.fh-root h2,.fh-root h3,.fh-root h4{text-wrap:balance}
+.fh-c{font-family:"Geist Mono",ui-monospace,monospace;font-size:max(10px,.9em)}
+.fh-sample{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap;flex:none}
+.fh-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#c8a94a;color:#1a2744;font-size:13px;font-weight:700;line-height:1;flex:none}
+.fh-nb{position:absolute;z-index:30;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#c8a94a;color:#1a2744;font-size:13px;font-weight:700;line-height:1;box-shadow:0 0 0 3px #ffffff}
+.fh-rel{position:relative}
+
+/* title block */
+.fh-title{display:grid;grid-template-columns:minmax(0,1fr) 300px;column-gap:28px;align-items:start;background:#1a2744;color:#ffffff;border-radius:14px;padding:22px 26px 20px;border-bottom:4px solid #c8a94a}
+.fh-tl1{grid-column:1;grid-row:1}
+.fh-tside{grid-column:2;grid-row:1 / span 2;display:flex;flex-direction:column;align-items:flex-end;gap:9px}
+.fh-tside p{font-size:12.5px;line-height:1.42;color:rgba(255,255,255,.8);text-align:right}
+.fh-kick{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#e6cf86}
+.fh-title h1{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.fh-tmeta{grid-column:1;grid-row:2;display:grid;grid-template-columns:max-content minmax(0,1fr);gap:5px 16px;font-size:14.5px;line-height:1.42;margin:14px 0 0}
+.fh-tmeta dt{font-weight:600;color:#e6cf86}
+.fh-tmeta dd{margin:0;color:#ffffff}
+
+/* grey note and legend */
+.fh-row2{display:grid;grid-template-columns:640px 688px;gap:16px;margin-top:16px;align-items:stretch}
+.fh-grey{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 18px;align-content:start;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px}
+.fh-gcol{min-width:0}
+.fh-gp + .fh-gp{margin-top:9px}
+.fh-grey h4{margin:0 0 3px;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;line-height:1.3}
+.fh-grey p{font-size:12px;line-height:1.42;color:#2b3446}
+.fh-grey ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.fh-grey li{display:flex;gap:7px;font-size:12px;line-height:1.42;color:#2b3446}
+.fh-grey li b{flex:none;width:12px;color:#1a2744;font-weight:700}
+.fh-lbox{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:15px 18px 16px}
+.fh-lh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.fh-lgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:11px 22px;margin-top:11px}
+.fh-li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.42;color:#1a2744}
+
+/* sections */
+.fh-sec{margin-top:36px}
+.fh-lab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.fh-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.fh-code{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:7px;background:#1a2744;color:#ffffff;font-weight:700;font-size:13px;flex:none}
+.fh-ssub{font-size:13.5px;line-height:1.45;color:#3d4556;margin:-4px 0 14px}
+.fh-under{font-size:13px;line-height:1.45;color:#555c6b;margin:10px 0 0}
+
+/* A: the rule */
+.fh-acard{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;overflow:hidden}
+.fh-lanes{display:grid;grid-template-columns:minmax(0,1fr) 1px minmax(0,1fr)}
+.fh-lanes > i{background:#e3e1d8}
+.fh-lane{display:flex;gap:20px;align-items:flex-start;justify-content:space-between;padding:18px 24px 18px}
+.fh-ltxt{max-width:410px}
+.fh-llab{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.fh-lh2{font-size:20px;line-height:1.25;font-weight:600;color:#1a2744;margin:6px 0 6px}
+.fh-lp{font-size:15px;line-height:1.45;color:#1a2744}
+.fh-stacks{display:flex;gap:14px;flex:none}
+.fh-stk{display:flex;flex-direction:column;align-items:center;gap:6px}
+.fh-stack{width:120px;height:110px;border:1.5px solid #8a8f9c;border-radius:9px;background:#fbfaf6;padding:8px;display:flex;flex-direction:column;gap:6px}
+.fh-stack b{font-size:12px;font-weight:700;line-height:1.2}
+.fh-stack span{display:flex;align-items:center;justify-content:center;height:28px;border:1px solid #b9b7ad;border-radius:6px;background:#ffffff;font-size:12px;font-weight:600}
+.fh-stk small{font-size:11.5px;color:#555c6b}
+.fh-mrail{width:150px;background:#ffffff;border:1px solid #cfcec6;border-radius:9px;padding:8px 0 6px;flex:none;box-shadow:0 4px 12px rgba(16,24,43,.06)}
+.fh-mh{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#555c6b;padding:0 10px 4px 11px}
+.fh-mre{display:flex;justify-content:space-between;align-items:center;gap:6px;min-height:22px;padding:0 9px 0 11px;font-size:12px;color:#1a2744}
+.fh-mre small{font-size:11px;color:#555c6b;font-weight:500}
+.fh-mre.on{background:#f3eedc;box-shadow:inset 3px 0 0 #c8a94a;font-weight:700}
+.fh-astrip{display:flex;align-items:center;min-height:48px;padding:10px 24px;border-top:1px solid #866a1e;background:#fbf7e9;font-size:15px;line-height:1.4;color:#1a2744}
+.fh-astrip b{font-weight:600}
+
+/* B: the frames */
+.fh-bgrid{display:grid;grid-template-columns:660px 660px;column-gap:24px}
+.fh-blab{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;align-self:end;font-size:13px;line-height:1.38;color:#3d4556;padding:0 0 9px}
+.fh-blab b{color:#1a2744;font-weight:700}
+.fh-bcap{font-size:13px;line-height:1.45;color:#3d4556;padding:10px 2px 0}
+.fh-bcell{min-width:0;align-self:start}
+.fh-nw{white-space:nowrap}
+.fh-bgap{grid-column:1 / -1;height:22px}
+.fh-fr{position:relative;display:flex;flex-direction:column;background:#f5f5f2;border:1px solid #cfcec6;border-radius:10px;box-shadow:0 10px 26px rgba(16,24,43,.10)}
+
+/* half-size decided header */
+.fh-bar{position:relative;display:flex;align-items:center;gap:9px;height:34px;padding:0 8px 0 11px;background:#1a2744;color:#ffffff;border-radius:9px 9px 0 0;flex:none}
+.fh-rk{width:17px;height:17px;fill:#ffffff;flex:none}
+.fh-rk-sm{width:13px;height:13px}
+.fh-nav{display:flex;align-items:center;gap:9px;font-size:10.5px;font-weight:500;white-space:nowrap;color:rgba(255,255,255,.92)}
+.fh-nav span{display:inline-flex;align-items:center;gap:2px}
+.fh-i{width:12px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.fh-i-xs{width:9px;height:9px;stroke-width:2.4}
+.fh-i-ok{color:#1f4d33;width:13px;height:13px}
+.fh-i-info{color:#1a2744;width:15px;height:15px}
+.fh-srch{display:inline-flex;align-items:center;gap:5px;width:92px;height:22px;padding:0 7px;margin-left:auto;border:1px solid rgba(255,255,255,.45);border-radius:5px;background:rgba(255,255,255,.08);font-size:10.5px;color:rgba(255,255,255,.92)}
+.fh-don{font-size:10.5px;font-weight:500}
+.fh-my{position:relative;display:inline-flex;align-items:center;gap:3px;height:34px;padding:0 3px;font-size:10.5px;font-weight:600;white-space:nowrap}
+.fh-my-on{box-shadow:inset 0 -2px 0 #c8a94a}
+.fh-pill{display:inline-flex;align-items:center;justify-content:center;min-width:15px;height:15px;padding:0 4px;margin-left:2px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:10px;font-weight:700;line-height:1}
+
+/* event strip, week phase */
+.fh-strip{display:flex;align-items:center;gap:7px;min-height:28px;padding:3px 4px 3px 11px;background:#fbf7e9;border-bottom:1px solid #866a1e;font-size:10.5px;line-height:1.35;color:#1a2744;flex:none}
+.fh-wk{display:inline-flex;align-items:center;padding:2px 6px;border-radius:4px;background:#1a2744;color:#ffffff;font-size:10px;font-weight:700;flex:none}
+.fh-evn{font-weight:700;text-decoration:underline;text-decoration-color:#866a1e;text-underline-offset:2px;white-space:nowrap;flex:none}
+.fh-sent{flex:1 1 auto;min-width:0}
+.fh-hide{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;color:#1a2744;flex:none}
+
+/* page head */
+.fh-ph{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:11px 14px 11px;background:#ffffff;border-bottom:1px solid #e3e2dc;flex:none}
+.fh-pk{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#555c6b}
+.fh-h1{font-size:19px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:3px 0 3px;color:#1a2744}
+.fh-h1 span{font-size:12px;font-weight:500;color:#555c6b;letter-spacing:0;margin-left:6px}
+.fh-psub{font-size:10.5px;line-height:1.4;color:#555c6b}
+.fh-btns{position:relative;display:flex;gap:6px;flex:none;align-items:center}
+.fh-b{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:24px;padding:0 9px;border-radius:5px;border:1px solid transparent;font-size:10.5px;font-weight:600;line-height:1;white-space:nowrap;flex:none}
+.fh-b-sm{height:21px;padding:0 7px;font-size:10px}
+.fh-b-line{background:#ffffff;border-color:#1a2744;color:#1a2744}
+.fh-b-navy{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.fh-b-gold{background:#c8a94a;border-color:#c8a94a;color:#1a2744}
+.fh-b-ondark{background:transparent;border-color:rgba(255,255,255,.75);color:#ffffff}
+.fh-tl{font-size:10.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:2px;white-space:nowrap}
+.fh-lk{font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:1.5px;text-underline-offset:2px}
+.fh-rchips{display:flex;flex-wrap:wrap;align-items:center;gap:5px 6px;margin-top:4px}
+.fh-rc{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 8px;border:1px solid #c9c8c0;border-radius:5px;background:#ffffff;font-size:10.5px;color:#3d4556}
+.fh-rc b{color:#1a2744;font-weight:700}
+
+/* page body */
+.fh-body{flex:1 1 auto;display:grid;grid-template-columns:110px minmax(0,1fr);gap:14px;padding:12px 14px 14px;align-items:start}
+.fh-body-r{grid-template-columns:120px minmax(0,1fr);padding:0 14px 0 0;align-items:stretch}
+.fh-col{min-width:0;display:flex;flex-direction:column;gap:10px}
+.fh-body-r > .fh-col{padding:12px 0 14px}
+.fh-sl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.fh-otp{position:relative;display:flex;flex-direction:column;background:#ffffff;border:1px solid #e3e1d8;border-radius:8px;padding:7px 5px 6px}
+.fh-otp .fh-sl{padding:0 6px 4px}
+.fh-oe{display:flex;justify-content:space-between;align-items:center;min-height:20px;padding:0 6px;border-radius:4px;font-size:11px;color:#1a2744}
+.fh-oe small{font-size:10px;font-weight:600;color:#555c6b}
+.fh-oe.on{background:#efede6;font-weight:700;box-shadow:inset 3px 0 0 #1a2744;border-radius:0 4px 4px 0}
+.fh-rail{position:relative;display:flex;flex-direction:column;background:#ffffff;border-right:1px solid #e3e2dc;padding:11px 0 12px}
+.fh-rail .fh-sl{padding:0 10px 5px 11px}
+.fh-re{display:flex;justify-content:space-between;align-items:center;gap:4px;min-height:19px;padding:0 8px 0 11px;font-size:11px;color:#1a2744;line-height:1.2}
+.fh-re small{font-size:10px;color:#555c6b;font-weight:500}
+.fh-re.on{background:#f3eedc;box-shadow:inset 3px 0 0 #c8a94a;font-weight:700}
+.fh-re.fh-re2{min-height:17px;padding-left:23px;font-size:10.5px;color:#3d4556;font-weight:400}
+.fh-re.fh-re2.on{color:#1a2744}
+
+/* page content */
+.fh-sect{display:flex;flex-direction:column;gap:6px;position:relative}
+.fh-sh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.fh-h2{font-size:13.5px;line-height:1.25;font-weight:700;color:#1a2744;margin:0}
+.fh-h2 small{font-size:10.5px;font-weight:500;color:#555c6b;margin-left:5px}
+.fh-shr{font-size:10px;color:#555c6b}
+.fh-t1{position:relative;display:flex;align-items:flex-start;gap:6px;min-height:22px;padding:4px 0 3px;font-size:11px;line-height:1.38;color:#555c6b}
+.fh-t1 .fh-i{margin-top:1px}
+.fh-t1 b{color:#1a2744;font-weight:600;white-space:nowrap}
+.fh-line{font-size:10.5px;line-height:1.42;color:#3d4556}
+.fh-line b{color:#1a2744;font-weight:600}
+.fh-mrow{display:grid;grid-template-columns:256px minmax(0,1fr);gap:12px;align-items:start}
+.fh-card{position:relative;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:84px;padding:9px 9px 9px 12px;border-radius:9px;background:#1a2744;color:#ffffff;box-shadow:0 6px 14px rgba(26,39,68,.16)}
+.fh-cl{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#c8a94a}
+.fh-cn{font-size:13.5px;line-height:1.25;font-weight:700;margin:3px 0 1px}
+.fh-cm{font-size:10.5px;line-height:1.38;color:rgba(255,255,255,.86)}
+.fh-qr{background:#ffffff;border-radius:5px;padding:3px;line-height:0;flex:none}
+.fh-cu{font-size:10px;line-height:1.38;color:#555c6b;margin-top:5px !important}
+.fh-usc{background:#ffffff;border:1px solid #e3e1d8;border-radius:8px;padding:8px 10px 8px}
+.fh-usc h4{margin:0 0 4px;font-size:11.5px;font-weight:700;color:#1a2744}
+.fh-dl{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:1px 10px;margin:0;font-size:10.5px;line-height:1.42}
+.fh-dl dt{color:#555c6b}
+.fh-dl dd{margin:0;color:#1a2744;font-weight:600}
+.fh-ln{font-size:10px;line-height:1.4;color:#555c6b;margin-top:2px !important}
+.fh-ent{display:grid;grid-template-columns:40px minmax(0,1fr);gap:10px;background:#ffffff;border:1px solid #e3e1d8;border-radius:8px;padding:9px 10px 9px}
+.fh-date{display:flex;flex-direction:column;align-items:center;justify-content:center;width:40px;height:48px;border:1px solid #d6d5cd;border-radius:6px;background:#ffffff;line-height:1}
+.fh-date i{font-style:normal;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:#555c6b}
+.fh-date b{font-size:16px;font-weight:700;margin:3px 0 2px}
+.fh-date span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:#555c6b}
+.fh-etop{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.fh-elab{font-size:10px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#555c6b}
+.fh-ett{font-size:12.5px;font-weight:700;line-height:1.3;margin:2px 0 1px}
+.fh-tags{display:inline-flex;gap:4px;flex:none}
+.fh-tag{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:700;line-height:1.25;white-space:nowrap;flex:none}
+.fh-tg-g{background:#e3efe6;color:#1f4d33}
+.fh-tg-a{background:#f6efd9;color:#5e4a12}
+.fh-tg-i{background:#e4e9f3;color:#1a2744}
+.fh-tg-live{background:#ff4757;color:#070b14}
+.fh-trk{list-style:none;margin:8px 0 5px;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.fh-trk li{position:relative;padding:15px 6px 0 0;font-size:10px;line-height:1.32;color:#555c6b}
+.fh-trk li b{display:block;font-size:10.5px;font-weight:600;color:#1a2744}
+.fh-trk li::before{content:"";position:absolute;top:4px;left:0;right:0;height:2px;background:#e3e1d8}
+.fh-trk li::after{content:"";position:absolute;top:0;left:0;width:10px;height:10px;border-radius:50%;background:#ffffff;border:1.5px solid #9aa1b0;box-sizing:border-box}
+.fh-trk li.dn::before{background:#1a2744}
+.fh-trk li.dn::after{background:#1a2744;border-color:#1a2744}
+.fh-trk li:last-child::before{right:auto;width:10px}
+.fh-ebot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.fh-ebot .fh-line{display:inline-flex;align-items:center;gap:5px}
+.fh-coll{display:flex;align-items:center;gap:6px;min-height:24px;padding:3px 10px;background:#ffffff;border:1px solid #e3e1d8;border-radius:7px;font-size:10.5px;line-height:1.35;color:#555c6b}
+.fh-coll b{color:#1a2744;font-weight:700;font-size:11px}
+.fh-show{margin-left:auto;display:inline-flex;align-items:center;gap:3px;font-weight:600;color:#1a2744;white-space:nowrap}
+.fh-thead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.fh-band{position:relative;background:#fbf7e9;border:1px solid #866a1e;border-radius:8px;padding:6px 10px 8px}
+.fh-bandt{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#1a2744}
+.fh-brow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:9px;align-items:center;margin-top:5px}
+.fh-who{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;background:#ffffff;border:1px solid #866a1e;font-size:10px;font-weight:700;color:#1a2744}
+.fh-ttl{font-size:11px;line-height:1.36;font-weight:600;color:#1a2744}
+.fh-grp{position:relative;display:flex;flex-direction:column}
+.fh-gh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 0 3px;border-bottom:1.5px solid #1a2744}
+.fh-ghl{font-size:11.5px;font-weight:700;color:#1a2744}
+.fh-room{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:2px;white-space:nowrap}
+.fh-gr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:5px 0 5px;border-top:1px solid #ecebe5}
+.fh-gh + .fh-gr{border-top:0}
+.fh-acts{display:flex;align-items:center;gap:7px;justify-content:flex-end}
+.fh-more{display:inline-flex;align-items:center;gap:4px;align-self:flex-start;padding:2px 0 0;font-size:10.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:2px}
+.fh-ghost{display:flex;gap:7px;align-items:center;margin-top:4px;padding:3px 8px;border:1px dashed #b9b7ad;border-radius:6px;background:#fbfbf8;font-size:10px;line-height:1.35;color:#3d4556}
+.fh-opens{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#6b7180;flex:none}
+.fh-tbox{background:#ffffff;border:1px solid #e3e1d8;border-radius:8px;padding:8px 10px 9px}
+.fh-trow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;margin-top:6px}
+.fh-yrow{display:grid;grid-template-columns:256px minmax(0,1fr);gap:12px;align-items:start}
+.fh-next{background:#ffffff;border:1px solid #e3e1d8;border-radius:8px;padding:7px 10px;font-size:10.5px;line-height:1.42;color:#3d4556}
+.fh-next .fh-elab{display:block;margin-bottom:2px}
+.fh-fhead{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fh-chips{display:flex;gap:5px}
+.fh-chip{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 9px;border-radius:999px;border:1px solid #c4c3bb;background:#ffffff;font-size:10.5px;font-weight:500;color:#1a2744}
+.fh-chip.on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.fh-kids{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.fh-kid{background:#ffffff;border:1px solid #e3e1d8;border-radius:8px;padding:8px 9px 9px;display:flex;flex-direction:column;gap:5px}
+.fh-kh{display:flex;gap:7px;align-items:center}
+.fh-av{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#e4e9f3;color:#1a2744;font-size:10px;font-weight:700;flex:none}
+.fh-kn{font-size:11.5px;font-weight:700;line-height:1.25}
+.fh-ks{font-size:10px;line-height:1.38;color:#555c6b}
+.fh-amb{display:flex;gap:5px;align-items:flex-start;background:#f6efd9;color:#5e4a12;border-radius:5px;padding:3px 6px;font-size:10px;line-height:1.38}
+.fh-amb b{font-weight:700;flex:none}
+.fh-dots{display:flex;flex-wrap:wrap;gap:2px 7px;font-size:10px;color:#3d4556}
+.fh-dots span{display:inline-flex;align-items:center;gap:3px}
+.fh-dots i{display:inline-block;width:8px;height:8px;border-radius:50%;border:1.5px solid #9aa1b0;box-sizing:border-box}
+.fh-dots i.dn{background:#1a2744;border-color:#1a2744}
+.fh-dots em{font-style:normal;color:#555c6b}
+.fh-foot{display:flex;flex-wrap:wrap;align-items:center;gap:3px 10px;margin-top:auto;padding:7px 14px 8px;background:#1a2744;color:#ffffff;border-top:2px solid #c8a94a;border-radius:0 0 9px 9px;font-size:10px;line-height:1.3;flex:none}
+.fh-foot b{font-size:10.5px;font-weight:700}
+.fh-fm{color:rgba(255,255,255,.75)}
+.fh-fl{margin-left:auto;white-space:nowrap}
+
+/* C: everyone else */
+.fh-crow{display:grid;grid-template-columns:repeat(7,180px);gap:14px}
+.fh-cc{position:relative;display:flex;flex-direction:column;gap:9px;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:12px 12px 13px}
+.fh-ccl{font-size:13px;line-height:1.35;font-weight:600;color:#1a2744;min-height:52px}
+.fh-ccl small{display:block;font-size:12px;font-weight:500;color:#555c6b;margin-top:1px}
+.fh-crail{background:#ffffff;border:1px solid #cfcec6;border-radius:7px;padding:6px 0 5px;box-shadow:0 2px 6px rgba(16,24,43,.05)}
+.fh-crail .fh-sl{display:block;padding:0 9px 3px 10px}
+.fh-crail .fh-re{min-height:20px;font-size:11.5px;padding:0 9px 0 10px}
+.fh-crail .fh-re small{font-size:10.5px}
+.fh-none{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:74px;border:1.5px dashed #9aa1b0;border-radius:7px;font-size:12px;font-weight:600;color:#3d4556;text-align:center;padding:6px;background:#fbfbf8}
+.fh-cline{font-size:12px;line-height:1.42;color:#2b3446}
+
+</style>
+</helmet>
+<div class="fh-root" style="width:1440px;height:3400px">
+<header class="fh-title">
+<div class="fh-tl1"><div class="fh-kick">My LCA · Final · Pages 14 and 15 · Part 1 of 2</div>
+<h1>The hub for one role, the rail for several</h1></div>
+<div class="fh-tside"><span class="fh-sample">Sample data</span><p>People, IDs, counts, times and messages are invented, as on <span class="fh-nw">Account-D</span>, H, I, L, N and P. Routes, roles and rules are real or tagged Proposed.</p></div>
+<dl class="fh-tmeta">
+<dt>Built from</dt><dd><span class="fh-nw">Account-Int-A</span> (the one page, the decided paths, the crumbs) and <span class="fh-nw">Account-Int-B</span> (the left rail, how it folds, the short menu), joined by K&#8217;s rule.</dd>
+<dt>Replaces</dt><dd><span class="fh-nw">Account-Int-A</span>, Int-B and Int-C, the three frame options. Int-C goes; A and B each keep the part K chose.</dd>
+<dt>K&#8217;s feedback applied</dt><dd>Mon, Oct&nbsp;19: &#8220;I like A for general or no other role, but I prefer B when they have more than one role&#8221; · Today: &#8220;not open it first if its empty&#8221; · &#8220;everything else is fine as assumed&#8221;.</dd>
+<dt>Shown</dt><dd>Avery on a quiet day, Danielle with one thing due, Chris busy and quiet: each state on both kinds of day. Part 2 holds what each entry opens, the menu, phones, the console and K&#8217;s event rules.</dd>
+</dl>
+</header>
+<div class="fh-row2"><div class="fh-grey" role="note" aria-label="About this board">
+<div class="fh-gcol">
+<div class="fh-gp"><h4>What</h4><p>The decided frame for My LCA. Someone who holds only You, or You and Family, gets one page (Int-A). Someone who holds any volunteer section gets a left rail with one entry per section, and each entry opens its full room as its page (Int-B). Drawn for Avery, Danielle and Chris, busy and quiet.</p></div>
+<div class="fh-gp"><h4>Built from</h4><p><span class="fh-nw">Account-Int-A</span> and <span class="fh-nw">Account-Int-B</span>, with the decided boards inside them: D (the card up top on phones), H (Today), I (Family), L (Events you direct), N with <span class="fh-nw">Work-H</span> (Your region), P (Board, with Admin view only), R (Admin, one row), S (the small roles).</p></div>
+<div class="fh-gp"><h4>K&#8217;s feedback applied</h4><p>A for no other role, B for more than one. Today never opens first when it is empty: it is one line, and the page opens on You with the card. The card button sits up top on phones without taking over the page.</p></div>
+</div>
+<div class="fh-gcol">
+<div class="fh-gp"><h4>Open for K</h4><ol>
+<li><b>1</b><span>Settled Mon, Oct&nbsp;19, drawn as decided: the rail appears only with a volunteer section (Your club counts, since club reps stay).</span></li>
+<li><b>2</b><span>Settled Mon, Oct&nbsp;19: under the rail each entry opens its full room as its page.</span></li>
+<li><b>3</b><span>Settled Mon, Oct&nbsp;19: an empty Today is one line and My LCA opens on You with the card.</span></li>
+<li><b>4</b><span>Open: rating reports on every event, as you said, with one guard: LCA&#8217;s US Chess affiliate ID is filled in only on events LCA lists (part 2, G4). OK?</span></li>
+<li><b>5</b><span>Open: a standing director may charge fees now. Until LCA sets up their connected account, the fees wait in LCA&#8217;s Stripe account and are paid out after the event (drawn as Proposed, part 2, G2). Right?</span></li>
+</ol></div>
+</div>
+</div><div class="fh-lbox"><p class="fh-lh">Notes on this board</p><div class="fh-lgrid"><div class="fh-li"><span class="fh-n">1</span><span>One page for You, or You and Family: <span class="fh-c">/dashboard</span> with the On this page list, no chips under two sections and nothing that hints at volunteer work. The page for most of the 300+ members.</span></div><div class="fh-li"><span class="fh-n">2</span><span>Any volunteer section brings the left rail: Events you direct, Your region, Your club, Board, Admin, Member lookup. One entry per section in a fixed order; each opens its full room as its page.</span></div><div class="fh-li"><span class="fh-n">3</span><span>The rail comes and goes with the grant: a one-event director has it while named on an event; a standing director and the president always, since they can always make tournaments; a seat while its term runs.</span></div><div class="fh-li"><span class="fh-n">4</span><span>Today opens first only when it holds something, laid out as <span class="fh-nw">Account-H</span>. Empty, it is one line with the next dated thing, and My LCA opens on You with the card.</span></div><div class="fh-li"><span class="fh-n">5</span><span>Show my card sits up top on every My LCA page on phones (<span class="fh-nw">Account-D</span>), a button and never more. On a quiet day the card is the first thing under the one line.</span></div><div class="fh-li"><span class="fh-n">6</span><span>One header with the personal count only. The rooms keep their decided paths and crumbs; Workspace is never a word on screen; Admin stays its own area at <span class="fh-c">/admin</span>.</span></div></div></div></div>
+<section class="fh-sec" aria-labelledby="fh-a">
+<div class="fh-lab"><span class="fh-code">A</span><h2 id="fh-a">The rule, in words</h2><span class="fh-sample">Sample data</span></div>
+<div class="fh-acard">
+<div class="fh-lanes">
+<div class="fh-lane">
+<div class="fh-ltxt"><div class="fh-llab">One page</div><div class="fh-lh2">You hold You, or You and Family.</div><p class="fh-lp">My LCA is one page at <span class="fh-c">/dashboard</span>: Today, You, Family, Receipts, Settings, with the On this page list at the left. No rail.</p></div>
+<div class="fh-stacks">
+<div class="fh-stk"><div class="fh-stack" role="img" aria-label="Avery holds You"><b>Avery</b><span>You</span></div><small>one page</small></div>
+<div class="fh-stk"><div class="fh-stack" role="img" aria-label="Danielle holds You and Family"><b>Danielle</b><span>You</span><span>Family</span></div><small>one page</small></div>
+</div>
+</div>
+<i></i>
+<div class="fh-lane">
+<div class="fh-ltxt"><div class="fh-llab">The rail</div><div class="fh-lh2">You hold any volunteer section.</div><p class="fh-lp">Events you direct&nbsp;· Your region&nbsp;· Your club&nbsp;· Board&nbsp;· Admin&nbsp;· Member lookup. My LCA gains a 240px left rail, one entry per section, and each entry opens its full room as its own page.</p></div>
+<div class="fh-stk"><nav class="fh-mrail" aria-label="Chris&#8217;s My LCA rail"><div class="fh-mh">My LCA</div><span class="fh-mre on" aria-current="page">Today<small>9</small></span><span class="fh-mre">You</span><span class="fh-mre">Family<small>1</small></span><span class="fh-mre">Events you direct<small>3</small></span><span class="fh-mre">Your region<small>4</small></span><span class="fh-mre">Board<small>7</small></span></nav><small>Chris</small></div>
+</div>
+</div>
+<div class="fh-astrip"><p>Today, in both: when it holds something, My LCA opens on it. When it holds nothing, it is one line, <b>Nothing needs you today</b> with the next dated thing, and My LCA opens on You with your card.</p></div>
+</div>
+<p class="fh-under">Family is not a volunteer section, so a parent stays on one page. The rail leaves with the last grant: a one-event director is back on one page once the event&#8217;s rating report is marked submitted. No mode switch: one header, one account, one menu; only the hall TV and print leave the chrome.</p>
+</section>
+<section class="fh-sec" aria-labelledby="fh-b">
+<div class="fh-lab"><span class="fh-code">B</span><h2 id="fh-b">Both states side by side</h2></div>
+<p class="fh-ssub">Left column: one page. Right column: the rail. Top row: the usual day for each. Bottom row: the other kind of day.</p>
+<div class="fh-bgrid">
+<div class="fh-blab"><span><b>B1 · Avery Thibodeaux</b> · member only · one page · Tue, Oct&nbsp;20, 2026 · 6:15 PM · a quiet day</span><span class="fh-sample">Sample data</span></div>
+<div class="fh-blab"><span><b>B2 · Chris Arceneaux</b> · member, parent of Ella, director of The Baton Rouge Classic, South Central Louisiana representative, treasurer · the rail · Mon, Oct&nbsp;5, 2026 · 7:40 AM · a busy morning</span><span class="fh-sample">Sample data</span></div>
+<div class="fh-bcell"><div class="fh-fr" aria-label="Frame B1, Avery&#8217;s My LCA">
+<div class="fh-bar "><svg class="fh-rk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="fh-nav"><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></span><span class="fh-srch"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="fh-don">Donate</span><span class="fh-my fh-my-on" role="button" aria-haspopup="menu" aria-label="My LCA"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>My LCA <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+<div class="fh-strip" role="region" aria-label="Your event: The Baton Rouge Classic"><span class="fh-wk">This week</span><span class="fh-evn">The Baton Rouge Classic</span><span class="fh-sent">Sat&#8211;&#8288;Sun, Oct&nbsp;24&#8211;&#8288;25 · you&#8217;re in the Open section · Round 1 Sat, Oct&nbsp;24 at 10:00 AM</span><span class="fh-hide" role="button" aria-label="Hide until the next update" title="Hide until the next update"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+<div class="fh-ph">
+<div><div class="fh-pk">My LCA</div><div class="fh-h1">Avery Thibodeaux</div><div class="fh-psub">Adult member · valid through Mon, Oct&nbsp;26, 2026 · renews automatically · <span class="fh-nw">US Chess ID 30188264</span></div></div>
+<div class="fh-btns"><span class="fh-nb" style="top:-1px;left:-33px" aria-hidden="true">5</span><span class="fh-b fh-b-line"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1"></rect><rect x="14" y="3.5" width="6.5" height="6.5" rx="1"></rect><rect x="3.5" y="14" width="6.5" height="6.5" rx="1"></rect><path d="M14 14h2.5v2.5H14zM18 18h2.5v2.5H18zM14 19.5h1.5M19.5 14v1.5"></path></svg>Show my card</span><span class="fh-b fh-b-navy">Find a tournament</span></div>
+</div>
+<div class="fh-body">
+<nav class="fh-otp" aria-label="On this page"><span class="fh-nb" style="top:-14px;left:-18px" aria-hidden="true">1</span><span class="fh-sl">On this page</span><span class="fh-oe">Today</span><span class="fh-oe on" aria-current="location">Membership</span><span class="fh-oe">Entries<small>2</small></span><span class="fh-oe">Receipts</span><span class="fh-oe">Settings</span></nav>
+<div class="fh-col">
+<div class="fh-t1" role="status"><svg class="fh-i fh-i-ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.6 2.6L16 9.6"></path></svg><b>Nothing needs you today.</b><span>Next: The Baton Rouge Classic, Sat&#8211;&#8288;Sun, Oct&nbsp;24&#8211;&#8288;25 · you&#8217;re entered and paid</span></div>
+<section class="fh-sect" aria-label="Membership">
+<div class="fh-sh"><h3 class="fh-h2">Membership</h3></div>
+<p class="fh-line">Adult · valid through Mon, Oct&nbsp;26, 2026 · renews automatically Mon, Oct&nbsp;26 ($15) · <span class="fh-lk">Turn off auto-renew</span></p>
+<div class="fh-mrow">
+<div><div class="fh-card" role="img" aria-label="Membership card for Avery Thibodeaux, Adult · LCA-25-1183, Valid through Mon, Oct 26, 2026"><div><div class="fh-cl">Member</div><div class="fh-cn">Avery Thibodeaux</div><div class="fh-cm">Adult · <span class="fh-c">LCA-25-1183</span></div><div class="fh-cm">Valid through Mon, Oct&nbsp;26, 2026</div></div><div class="fh-qr"><svg viewBox="0 0 25 25" width="46" height="46" shape-rendering="crispEdges" aria-hidden="true"><g transform="matrix(0 1 1 0 0 0)"><path fill="#1a2744" stroke="none" d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h3v1h-3zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM15 3h2v1h-2zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM13 7h3v1h-3zM1 8h4v1h-4zM6 8h2v1h-2zM9 8h2v1h-2zM12 8h1v1h-1zM14 8h4v1h-4zM20 8h1v1h-1zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h2v1h-2zM7 9h4v1h-4zM12 9h1v1h-1zM14 9h2v1h-2zM20 9h2v1h-2zM24 9h1v1h-1zM0 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM8 10h3v1h-3zM12 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM0 11h1v1h-1zM2 11h4v1h-4zM7 11h3v1h-3zM11 11h2v1h-2zM18 11h3v1h-3zM24 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM14 12h1v1h-1zM18 12h1v1h-1zM23 12h1v1h-1zM1 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM22 13h3v1h-3zM1 14h2v1h-2zM5 14h2v1h-2zM8 14h1v1h-1zM10 14h2v1h-2zM15 14h1v1h-1zM17 14h2v1h-2zM24 14h1v1h-1zM0 15h5v1h-5zM8 15h1v1h-1zM11 15h3v1h-3zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h4v1h-4zM0 16h3v1h-3zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h5v1h-5zM22 16h3v1h-3zM12 17h1v1h-1zM15 17h2v1h-2zM20 17h1v1h-1zM23 17h2v1h-2zM0 18h7v1h-7zM10 18h1v1h-1zM15 18h2v1h-2zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM10 19h1v1h-1zM16 19h1v1h-1zM20 19h2v1h-2zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM13 20h1v1h-1zM15 20h6v1h-6zM22 20h2v1h-2zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM17 21h2v1h-2zM20 21h1v1h-1zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM9 22h2v1h-2zM13 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM20 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM23 24h1v1h-1z"></path></g></svg></div></div><p class="fh-cu">Show this at the desk. The QR checks you in to an LCA event.</p></div>
+<div class="fh-usc"><h4>US Chess</h4><dl class="fh-dl"><dt>US Chess ID</dt><dd><span class="fh-c">30188264</span></dd><dt>Regular</dt><dd>1912</dd><dt>Quick</dt><dd>1874</dd><dt>Membership</dt><dd>through Fri, Dec&nbsp;31, 2027</dd></dl><p class="fh-ln">Checked against US Chess last night at 2:10 AM</p></div>
+</div>
+</section>
+<section class="fh-sect" aria-label="Entries">
+<div class="fh-sh"><h3 class="fh-h2">Entries<small>2</small></h3></div>
+<article class="fh-ent">
+<div class="fh-date"><i>Sat</i><b>24</b><span>Oct</span></div>
+<div>
+<div class="fh-etop"><span class="fh-elab">Sat&#8211;&#8288;Sun, Oct&nbsp;24&#8211;&#8288;25 · Baton Rouge</span><span class="fh-tags"><span class="fh-tag fh-tg-g">Entered</span><span class="fh-tag fh-tg-g">Paid</span></span></div>
+<div class="fh-ett">The Baton Rouge Classic</div>
+<p class="fh-line">Open section · 5 rounds · G/90+30 (90 min each + 30 sec per move)</p>
+<ol class="fh-trk"><li class="dn"><b>Registered</b>Fri, Oct&nbsp;2 · Done</li><li class="dn"><b>Paid</b>Sat, Oct&nbsp;17 · Done</li><li><b>Pairings posted</b>At the event · we email you</li><li><b>Results</b>Sun, Oct&nbsp;25</li></ol>
+<div class="fh-ebot"><span class="fh-line">½-point bye for round 5 <span class="fh-tag fh-tg-g">Approved</span></span><span class="fh-line"><span class="fh-tl">Change section</span> · <span class="fh-tl">Byes</span> · <span class="fh-tl">Withdraw</span></span></div>
+</div>
+</article>
+<div class="fh-coll"><b>Ken Ferguson Memorial Open</b> · Sat&#8211;&#8288;Mon, Jan&nbsp;16&#8211;&#8288;18, 2027<span class="fh-tags" style="margin-left:auto"><span class="fh-tag fh-tg-g">Entered</span><span class="fh-tag fh-tg-g">Paid</span></span></div>
+</section>
+<div class="fh-coll"><b>Receipts</b> · 24 · <span class="fh-lk">Send me a receipt again</span><span class="fh-show">Show <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+<div class="fh-coll"><b>Settings</b> · profile, US Chess ID, privacy, payments, sign-in<span class="fh-show">Show <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+</div>
+</div>
+<div class="fh-foot"><svg class="fh-rk fh-rk-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b>Louisiana Chess Association</b><span class="fh-fm">US Chess state affiliate · Louisiana&#8217;s chess community since 1915</span><span class="fh-fl">Contact · Website help · Bylaws &amp; rules · Donate</span></div>
+</div>
+<p class="fh-bcap">The page for most of the 300+ members on most days. She paid on Sat, Oct&nbsp;17, turned on auto-renew and renewed at US Chess, so nothing waits: Today is one line and the page opens on the card. On a day with something due, Today opens first (<span class="fh-nw">Account-H</span>, frame 2).</p></div>
+<div class="fh-bcell"><div class="fh-fr" aria-label="Frame B2, Chris&#8217;s My LCA with the rail">
+<div class="fh-bar "><svg class="fh-rk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="fh-nav"><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></span><span class="fh-srch"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="fh-don">Donate</span><span class="fh-my fh-my-on" style="position:relative" role="button" aria-haspopup="menu" aria-label="My LCA, 1 thing to do"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>My LCA<span class="fh-pill" aria-hidden="true">1</span><svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+<span class="fh-nb" style="top:4px;right:-34px" aria-hidden="true">6</span>
+<div class="fh-body fh-body-r">
+<nav class="fh-rail" aria-label="My LCA"><span class="fh-nb" style="top:3px;right:6px" aria-hidden="true">2</span><span class="fh-sl">My LCA</span><span class="fh-re on" aria-current="page">Today<small>9</small></span><span class="fh-re">You</span><span class="fh-re">Family<small>1</small></span><span class="fh-re">Events you direct<small>3</small></span><span class="fh-re">Your region<small>4</small></span><span class="fh-re">Board<small>7</small></span></nav>
+<div class="fh-col">
+<div class="fh-thead"><div><div class="fh-pk">My LCA &#8250; Today</div><div class="fh-h1">Today across your roles<span>Mon, Oct&nbsp;5</span></div><div class="fh-psub">9 things · 1 is yours</div></div><span class="fh-b fh-b-line"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1"></rect><rect x="14" y="3.5" width="6.5" height="6.5" rx="1"></rect><rect x="3.5" y="14" width="6.5" height="6.5" rx="1"></rect><path d="M14 14h2.5v2.5H14zM18 18h2.5v2.5H18zM14 19.5h1.5M19.5 14v1.5"></path></svg>Show my card</span></div>
+<div class="fh-band" role="region" aria-label="Due today or by Wed, Oct 7"><div class="fh-bandt">Due today or by Wed, Oct&nbsp;7</div>
+<div class="fh-brow"><span class="fh-who">Ella</span><div><p class="fh-ttl">Pay $20 for Ella&#8217;s November Meet entry</p><p class="fh-ln">New Orleans Youth Chess November Meet, Sat, Nov&nbsp;14 · K&#8211;&#8288;5 · early price ends today, Mon, Oct&nbsp;5</p></div><span class="fh-b fh-b-sm fh-b-gold">Pay $20</span></div>
+</div>
+<section class="fh-grp" aria-label="Director">
+<div class="fh-gh"><span class="fh-ghl">Director · 2</span><span class="fh-room">Events you direct <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></div>
+<div class="fh-gr"><div><p class="fh-ttl">Bye request: Maya Robichaux, ½ point in round 5</p><p class="fh-ln">The Baton Rouge Classic · requested Fri, Oct&nbsp;2 · within the 2-bye limit</p></div><div class="fh-acts"><span class="fh-b fh-b-sm fh-b-navy">Approve</span><span class="fh-tl">Decline</span></div></div>
+<div class="fh-gr"><div><p class="fh-ttl">Rating report due Sat, Oct&nbsp;10</p><p class="fh-ln">Baton Rouge Chess Club Saturday G/90 · finished Sat, Oct&nbsp;3 · 14 players · 1 check to fix</p></div><div class="fh-acts"><span class="fh-b fh-b-sm fh-b-line">Open rating report</span></div></div>
+</section>
+<section class="fh-grp" aria-label="Representative">
+<div class="fh-gh"><span class="fh-ghl">Representative · South Central Louisiana · 4</span><span class="fh-room">Your region <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></div>
+<div class="fh-gr"><div><p class="fh-ttl">&#8220;The library closes at 8:00 PM on Mondays now. Are you still meeting until 8:30 PM?&#8221; · Houma Chess Club</p><p class="fh-ln">from a visitor · Sat, Sep&nbsp;26 · no answer in 9 days</p></div><div class="fh-acts"><span class="fh-b fh-b-sm fh-b-navy">Reply</span></div></div>
+<div class="fh-gr"><div><p class="fh-ttl">&#8220;The club moved to the Bunkie Public Library&#8221; · Bunkie Chess Club</p><p class="fh-ln">from the club · Sun, Oct&nbsp;4 · no answer in 1 day</p></div><div class="fh-acts"><span class="fh-b fh-b-sm fh-b-navy">Apply this</span><span class="fh-tl">Reply</span></div></div>
+<div class="fh-gr"><div><p class="fh-ttl">4 of 9 clubs not checked in 90 days: Bunkie, Gonzales, Heart of Worship, Pineville</p></div><div class="fh-acts"><span class="fh-b fh-b-sm fh-b-line">Check the four</span></div></div>
+<span class="fh-more">Show 1 more <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span>
+</section>
+<section class="fh-grp" aria-label="Treasurer">
+<div class="fh-gh"><span class="fh-ghl">Treasurer · 1</span><span class="fh-room">Board <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></div>
+<div class="fh-gr"><div><p class="fh-ttl">3 messages waiting in the Treasurer inbox</p><p class="fh-ln">oldest Fri, Oct&nbsp;2 · &#8220;Receipt for the Lafayette Open sponsorship&#8221;</p></div><div class="fh-acts"><span class="fh-b fh-b-sm fh-b-line">Open inbox</span></div></div>
+</section>
+<section class="fh-grp" aria-label="LCA office">
+<div class="fh-gh"><span class="fh-ghl">LCA office · 1</span><span class="fh-room">Board <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></span></div>
+<span class="fh-more">Show 1 more <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span>
+<div class="fh-ghost"><span class="fh-opens">Opens</span><span>Support ticket assigned to you: &#8220;Wrong section on my registration&#8221; · Isaac Dupre · waiting 1 day · Answer in Admin</span></div>
+</section>
+</div>
+</div>
+<div class="fh-foot"><svg class="fh-rk fh-rk-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b>Louisiana Chess Association</b><span class="fh-fm">US Chess state affiliate · Louisiana&#8217;s chess community since 1915</span><span class="fh-fl">Contact · Website help · Bylaws &amp; rules · Donate</span></div>
+</div>
+<p class="fh-bcap">More than one role, so the rail. Today holds nine things, so My LCA opens on it, laid out as <span class="fh-nw">Account-H</span>: the one thing burning, then one group per role. Each group&#8217;s link opens that entry&#8217;s page, where the same work sits in full.</p></div>
+<div class="fh-bgap"></div>
+<div class="fh-blab"><span><b>B3 · Danielle Robichaux</b> · member and parent of Maya and Leo · one page · Mon, Oct&nbsp;5, 2026 · 8:10 AM</span><span class="fh-sample">Sample data</span></div>
+<div class="fh-blab"><span><b>B4 · Chris Arceneaux</b> · the rail on a quiet day · Wed, Oct&nbsp;21, 2026 · 8:05 AM · Today is empty, so My LCA opens on You</span><span class="fh-sample">Sample data</span></div>
+<div class="fh-bcell"><div class="fh-fr" aria-label="Frame B3, Danielle&#8217;s My LCA">
+<div class="fh-bar "><svg class="fh-rk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="fh-nav"><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></span><span class="fh-srch"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="fh-don">Donate</span><span class="fh-my fh-my-on" role="button" aria-haspopup="menu" aria-label="My LCA, 1 thing to do"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>My LCA<span class="fh-pill" aria-hidden="true">1</span><svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+<div class="fh-ph">
+<div><div class="fh-pk">My LCA</div><div class="fh-h1">Danielle Robichaux</div>
+<div class="fh-rchips"><span class="fh-rc"><b>Member</b> Family plan</span><span class="fh-rc"><b>Parent</b> Maya, Leo</span><span class="fh-tl">Role looks wrong?</span></div></div>
+<div class="fh-btns"><span class="fh-b fh-b-line"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1"></rect><rect x="14" y="3.5" width="6.5" height="6.5" rx="1"></rect><rect x="3.5" y="14" width="6.5" height="6.5" rx="1"></rect><path d="M14 14h2.5v2.5H14zM18 18h2.5v2.5H18zM14 19.5h1.5M19.5 14v1.5"></path></svg>Show my card</span></div>
+</div>
+<div class="fh-body">
+<nav class="fh-otp" aria-label="On this page"><span class="fh-sl">On this page</span><span class="fh-oe on" aria-current="location">Today<small>1</small></span><span class="fh-oe">You</span><span class="fh-oe">Family<small>1</small></span><span class="fh-oe">Receipts</span><span class="fh-oe">Settings</span></nav>
+<div class="fh-col">
+<section class="fh-tbox" aria-label="Today">
+<div class="fh-sh"><h3 class="fh-h2">Today<small>Mon, Oct&nbsp;5</small></h3></div>
+<div class="fh-trow"><span class="fh-tag fh-tg-a">Needed</span><div><p class="fh-ttl">Leo needs a US Chess ID before Sat, Nov&nbsp;14</p><p class="fh-ln">New Orleans Youth Chess November Meet · K&#8211;&#8288;3 section</p></div><div class="fh-acts"><span class="fh-b fh-b-sm fh-b-navy">Add his ID</span><span class="fh-tl">Look up by name</span></div></div>
+</section>
+<section class="fh-sect" aria-label="You">
+<div class="fh-sh"><h3 class="fh-h2">You</h3></div>
+<p class="fh-line">Family plan · valid through Sun, Mar&nbsp;14, 2027 · auto-renew on</p>
+<div class="fh-yrow"><div class="fh-card" role="img" aria-label="Membership card for Danielle Robichaux, Family plan, Valid through Sun, Mar 14, 2027"><div><div class="fh-cl">Member</div><div class="fh-cn">Danielle Robichaux</div><div class="fh-cm">Family plan</div><div class="fh-cm">Valid through Sun, Mar&nbsp;14, 2027</div></div><div class="fh-qr"><svg viewBox="0 0 25 25" width="46" height="46" shape-rendering="crispEdges" aria-hidden="true"><g transform="matrix(0 1 1 0 0 0)"><path fill="#1a2744" stroke="none" d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h3v1h-3zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM15 3h2v1h-2zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM13 7h3v1h-3zM1 8h4v1h-4zM6 8h2v1h-2zM9 8h2v1h-2zM12 8h1v1h-1zM14 8h4v1h-4zM20 8h1v1h-1zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h2v1h-2zM7 9h4v1h-4zM12 9h1v1h-1zM14 9h2v1h-2zM20 9h2v1h-2zM24 9h1v1h-1zM0 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM8 10h3v1h-3zM12 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM0 11h1v1h-1zM2 11h4v1h-4zM7 11h3v1h-3zM11 11h2v1h-2zM18 11h3v1h-3zM24 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM14 12h1v1h-1zM18 12h1v1h-1zM23 12h1v1h-1zM1 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM22 13h3v1h-3zM1 14h2v1h-2zM5 14h2v1h-2zM8 14h1v1h-1zM10 14h2v1h-2zM15 14h1v1h-1zM17 14h2v1h-2zM24 14h1v1h-1zM0 15h5v1h-5zM8 15h1v1h-1zM11 15h3v1h-3zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h4v1h-4zM0 16h3v1h-3zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h5v1h-5zM22 16h3v1h-3zM12 17h1v1h-1zM15 17h2v1h-2zM20 17h1v1h-1zM23 17h2v1h-2zM0 18h7v1h-7zM10 18h1v1h-1zM15 18h2v1h-2zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM10 19h1v1h-1zM16 19h1v1h-1zM20 19h2v1h-2zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM13 20h1v1h-1zM15 20h6v1h-6zM22 20h2v1h-2zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM17 21h2v1h-2zM20 21h1v1h-1zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM9 22h2v1h-2zM13 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM20 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM23 24h1v1h-1z"></path></g></svg></div></div><div class="fh-next"><span class="fh-elab">Next up</span>Nothing entered for you · <span class="fh-lk">Find a tournament</span></div></div>
+</section>
+<section class="fh-sect" aria-label="Family">
+<div class="fh-fhead"><div><h3 class="fh-h2">Family</h3><p class="fh-line" style="margin-top:2px">Family membership · valid through Sun, Mar&nbsp;14, 2027 · covers you, Maya and Leo · 1 spot open</p></div><div class="fh-btns"><span class="fh-b fh-b-sm fh-b-gold">Register all</span><span class="fh-b fh-b-sm fh-b-line">Add a family member</span></div></div>
+<div class="fh-chips"><span class="fh-chip on" aria-pressed="true">Everyone</span><span class="fh-chip">Maya</span><span class="fh-chip">Leo</span></div>
+<div class="fh-kids">
+<article class="fh-kid">
+<div class="fh-kh"><span class="fh-av" aria-hidden="true">MR</span><div><p class="fh-kn">Maya Robichaux</p><p class="fh-ks">Scholastic · on your Family plan</p></div></div>
+<p class="fh-ks">US Chess ID 30522917 · rating 1102 · through Sun, Jan&nbsp;31, 2027</p>
+<p class="fh-line"><b>Coming up:</b> The Baton Rouge Classic · Sat&#8211;&#8288;Sun, Oct&nbsp;24&#8211;&#8288;25 · U1400</p>
+<div class="fh-dots"><span><i class="dn"></i>Registered <em>done</em></span><span><i class="dn"></i>Paid <em>done</em></span><span><i></i>Pairings posted <em>not yet</em></span><span><i></i>Results <em>not yet</em></span></div>
+<p class="fh-amb"><b>Waiting</b><span>½-point bye requested for round 5 · waiting on the director since Fri, Oct&nbsp;2</span></p>
+<p class="fh-ks">No login · emails come to you</p>
+<span class="fh-tl">Open Maya&#8217;s page</span>
+</article>
+<article class="fh-kid">
+<div class="fh-kh"><span class="fh-av" aria-hidden="true">LR</span><div><p class="fh-kn">Leo Robichaux</p><p class="fh-ks">Scholastic · on your Family plan</p></div></div>
+<p class="fh-amb"><b>Needed</b><span>US Chess ID · none yet · needed by Sat, Nov&nbsp;14</span></p>
+<p class="fh-line"><b>Coming up:</b> New Orleans Youth Chess November Meet · Sat, Nov&nbsp;14 · K&#8211;&#8288;3</p>
+<div class="fh-dots"><span><i class="dn"></i>Registered <em>done</em></span><span><i class="dn"></i>Paid <em>done</em></span><span><i></i>Pairings posted <em>not yet</em></span><span><i></i>Results <em>not yet</em></span></div>
+<p class="fh-ks">No login · emails come to you</p>
+<span class="fh-tl">Open Leo&#8217;s page</span>
+</article>
+</div>
+<p class="fh-line"><b>Guardians</b> · Danielle Robichaux, owner, you · <span class="fh-lk">Invite a guardian</span></p>
+</section>
+</div>
+</div>
+<div class="fh-foot"><svg class="fh-rk fh-rk-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b>Louisiana Chess Association</b><span class="fh-fm">US Chess state affiliate · Louisiana&#8217;s chess community since 1915</span><span class="fh-fl">Contact · Website help · Bylaws &amp; rules · Donate</span></div>
+</div>
+<p class="fh-bcap">A parent holds no volunteer section, so still one page. Today holds one thing and opens first; the card is a tap away at the top; the family cards are <span class="fh-nw">Account-I&#8217;s</span>.</p></div>
+<div class="fh-bcell"><div class="fh-fr" aria-label="Frame B4, Chris&#8217;s My LCA on a quiet day">
+<div class="fh-bar "><svg class="fh-rk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="fh-nav"><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></span><span class="fh-srch"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="fh-don">Donate</span><span class="fh-my fh-my-on" role="button" aria-haspopup="menu" aria-label="My LCA"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>My LCA <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+<div class="fh-strip" role="region" aria-label="Your event: The Baton Rouge Classic"><span class="fh-wk">This week</span><span class="fh-evn">The Baton Rouge Classic</span><span class="fh-sent">Sat&#8211;&#8288;Sun, Oct&nbsp;24&#8211;&#8288;25 · setup 10 of 10 · registration closes Fri, Oct&nbsp;23 · Round 1 Sat, Oct&nbsp;24 at 10:00 AM</span><span class="fh-b fh-b-sm fh-b-line">Open setup</span><span class="fh-hide" role="button" aria-label="Hide until the next update" title="Hide until the next update"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+<div class="fh-body fh-body-r">
+<nav class="fh-rail" aria-label="My LCA"><span class="fh-sl">My LCA</span><span class="fh-re">Today</span><span class="fh-re on" aria-current="page">You</span><span class="fh-re fh-re2">Membership</span><span class="fh-re fh-re2">Entries</span><span class="fh-re fh-re2">Receipts</span><span class="fh-re fh-re2">Settings</span><span class="fh-re">Family</span><span class="fh-re">Events you direct<small>2</small></span><span class="fh-re">Your region</span><span class="fh-re">Board</span></nav>
+<div class="fh-col">
+<div class="fh-t1" role="status"><span class="fh-nb" style="top:-2px;left:-29px" aria-hidden="true">4</span><svg class="fh-i fh-i-ok" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.6 2.6L16 9.6"></path></svg><b>Nothing needs you today.</b><span>Next: The Baton Rouge Classic, Sat&#8211;&#8288;Sun, Oct&nbsp;24&#8211;&#8288;25 · you direct it · Open event day from Sat, Oct&nbsp;24 at 8:00 AM</span></div>
+<div class="fh-thead"><div><div class="fh-pk">My LCA &#8250; You</div><div class="fh-h1">Chris Arceneaux</div></div><span class="fh-b fh-b-line"><svg class="fh-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="6.5" height="6.5" rx="1"></rect><rect x="14" y="3.5" width="6.5" height="6.5" rx="1"></rect><rect x="3.5" y="14" width="6.5" height="6.5" rx="1"></rect><path d="M14 14h2.5v2.5H14zM18 18h2.5v2.5H18zM14 19.5h1.5M19.5 14v1.5"></path></svg>Show my card</span></div>
+<p class="fh-line">Adult · <span class="fh-c">LCA-24-0562</span> · valid through Mon, Nov&nbsp;2, 2026 · renews automatically Mon, Nov&nbsp;2 ($15)</p>
+<div class="fh-yrow"><div><div class="fh-card" role="img" aria-label="Membership card for Chris Arceneaux, Adult · LCA-24-0562, Valid through Mon, Nov 2, 2026"><div><div class="fh-cl">Member</div><div class="fh-cn">Chris Arceneaux</div><div class="fh-cm">Adult · <span class="fh-c">LCA-24-0562</span></div><div class="fh-cm">Valid through Mon, Nov&nbsp;2, 2026</div></div><div class="fh-qr"><svg viewBox="0 0 25 25" width="46" height="46" shape-rendering="crispEdges" aria-hidden="true"><g transform="matrix(0 1 1 0 0 0)"><path fill="#1a2744" stroke="none" d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h3v1h-3zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM15 3h2v1h-2zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM13 7h3v1h-3zM1 8h4v1h-4zM6 8h2v1h-2zM9 8h2v1h-2zM12 8h1v1h-1zM14 8h4v1h-4zM20 8h1v1h-1zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h2v1h-2zM7 9h4v1h-4zM12 9h1v1h-1zM14 9h2v1h-2zM20 9h2v1h-2zM24 9h1v1h-1zM0 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM8 10h3v1h-3zM12 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM0 11h1v1h-1zM2 11h4v1h-4zM7 11h3v1h-3zM11 11h2v1h-2zM18 11h3v1h-3zM24 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM14 12h1v1h-1zM18 12h1v1h-1zM23 12h1v1h-1zM1 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM22 13h3v1h-3zM1 14h2v1h-2zM5 14h2v1h-2zM8 14h1v1h-1zM10 14h2v1h-2zM15 14h1v1h-1zM17 14h2v1h-2zM24 14h1v1h-1zM0 15h5v1h-5zM8 15h1v1h-1zM11 15h3v1h-3zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h4v1h-4zM0 16h3v1h-3zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h5v1h-5zM22 16h3v1h-3zM12 17h1v1h-1zM15 17h2v1h-2zM20 17h1v1h-1zM23 17h2v1h-2zM0 18h7v1h-7zM10 18h1v1h-1zM15 18h2v1h-2zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM10 19h1v1h-1zM16 19h1v1h-1zM20 19h2v1h-2zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM13 20h1v1h-1zM15 20h6v1h-6zM22 20h2v1h-2zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM17 21h2v1h-2zM20 21h1v1h-1zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM9 22h2v1h-2zM13 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM20 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM23 24h1v1h-1z"></path></g></svg></div></div><p class="fh-cu">Show this at the desk. The QR checks you in to an LCA event.</p></div><div class="fh-next"><span class="fh-elab">Next up</span>You&#8217;re directing The Baton Rouge Classic, so you aren&#8217;t entered · <span class="fh-lk">Find a tournament</span></div></div>
+<div class="fh-coll"><b>Receipts</b><span class="fh-show">Show <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+<div class="fh-coll"><b>Settings</b><span class="fh-show">Show <svg class="fh-i fh-i-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+</div>
+</div>
+<div class="fh-foot"><svg class="fh-rk fh-rk-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b>Louisiana Chess Association</b><span class="fh-fm">US Chess state affiliate · Louisiana&#8217;s chess community since 1915</span><span class="fh-fl">Contact · Website help · Bylaws &amp; rules · Donate</span></div>
+</div>
+<p class="fh-bcap">The same rail on a quiet morning: Today has no count and My LCA opens on You with the card. The Today entry still opens the whole quiet day, one line per role with its next dated thing (<span class="fh-nw">Account-H</span>, frame 1).</p></div>
+</div>
+</section>
+<section class="fh-sec" aria-labelledby="fh-cc">
+<div class="fh-lab"><span class="fh-code">C</span><h2 id="fh-cc">Everyone else, by the same rule</h2><span class="fh-sample">Sample data</span></div>
+<div class="fh-crow"><article class="fh-cc" aria-label="C1, Teen with her own login"><p class="fh-ccl">C1 · Teen with her own login<small>Maya Robichaux · since Sun, Nov&nbsp;15, 2026</small></p><div class="fh-none" role="img" aria-label="No rail, one page">No rail · one page</div><p class="fh-cline">You only, with &#8220;Danielle R. gets copies of your emails&#8221; (<span class="fh-nw">Account-D&#8217;s</span> teen inset).</p></article><article class="fh-cc" aria-label="C2, LCA auditor"><p class="fh-ccl">C2 · LCA auditor<small>Lila Guidry</small></p><nav class="fh-crail" aria-label="My LCA"><span class="fh-sl">My LCA</span><span class="fh-re">Today</span><span class="fh-re on" aria-current="page">You</span><span class="fh-re">Member lookup</span></nav><p class="fh-cline">Member lookup: name or US Chess ID; a result reads the name and Active through or Expired with the date, nothing else (<span class="fh-nw">Account-S</span>).</p></article><article class="fh-cc" aria-label="C3, One-event director"><span class="fh-nb" style="top:-13px;left:-17px" aria-hidden="true">3</span><p class="fh-ccl">C3 · One-event director<small>Tommy LeBlanc · Lafayette Open 2026</small></p><nav class="fh-crail" aria-label="My LCA"><span class="fh-sl">My LCA</span><span class="fh-re on" aria-current="page">Today<small>4</small></span><span class="fh-re">You</span><span class="fh-re">Events you direct<small>1</small></span></nav><p class="fh-cline">The rail leaves with the event: once its rating report is marked submitted, he is back on one page.</p></article><article class="fh-cc" aria-label="C4, Standing director"><p class="fh-ccl">C4 · Standing director<small>Gerald Landry</small></p><nav class="fh-crail" aria-label="My LCA"><span class="fh-sl">My LCA</span><span class="fh-re">Today</span><span class="fh-re on" aria-current="page">You</span><span class="fh-re">Events you direct</span></nav><p class="fh-cline">Always there, with New tournament at its head: standing directors can always make their tournaments here (page 14). The role&#8217;s one lookup line sits on the page.</p></article><article class="fh-cc" aria-label="C5, The president"><p class="fh-ccl">C5 · The president<small>Gerald Prejean</small></p><nav class="fh-crail" aria-label="My LCA"><span class="fh-sl">My LCA</span><span class="fh-re on" aria-current="page">Today<small>1</small></span><span class="fh-re">You</span><span class="fh-re">Events you direct</span><span class="fh-re">Board<small>6</small></span></nav><p class="fh-cline">New tournament always, and the drafts he named a one-event director for; Board is <span class="fh-nw">Account-P&#8217;s</span> desk with Admin (view only).</p></article><article class="fh-cc" aria-label="C6, Club rep"><p class="fh-ccl">C6 · Club rep<small>Paul Comeaux · Houma Chess Club</small></p><nav class="fh-crail" aria-label="My LCA"><span class="fh-sl">My LCA</span><span class="fh-re on" aria-current="page">Today<small>1</small></span><span class="fh-re">You</span><span class="fh-re">Your club</span></nav><p class="fh-cline">Your club opens the club&#8217;s own page editor (<span class="fh-nw">Club-G-2</span>). Club reps stay (Mon, Oct&nbsp;19).</p></article><article class="fh-cc" aria-label="C7, LCA admin"><p class="fh-ccl">C7 · LCA admin<small>Rachel Boudreaux</small></p><nav class="fh-crail" aria-label="My LCA"><span class="fh-sl">My LCA</span><span class="fh-re on" aria-current="page">Today<small>5</small></span><span class="fh-re">You</span><span class="fh-re">Admin<small>12</small></span></nav><p class="fh-cline">Admin opens <span class="fh-c">/admin</span>, its own area behind a second factor, with its own sidebar (<span class="fh-nw">Work-J</span>); Back to My LCA returns to the rail.</p></article></div>
+<p class="fh-under">The fixed order, for anyone: Today · You · Family · Events you direct · Your region · Your club · Board · Admin · Member lookup. On an event&#8217;s days the live event is pinned under Today (part 2, F3). Settings stays inside You.</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

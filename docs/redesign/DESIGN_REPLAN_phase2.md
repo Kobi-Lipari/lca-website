@@ -884,3 +884,153 @@ The last one covers small additions across pages 7, 10, 11 and 12:
 | `About-Final-2` | 1440 × 5350 | Frame 3, Minutes searching "scholastic"; frame 4, Champions; frame 5, the Board tab and the Bylaws reader on phones | (with the above) |
 
 Sample data on every board is badged (on page 7: players, ratings, pairings, results, times and IDs; on pages 8 and 9: representative names, Checked months, club colours, logos and distances; on page 10: the day's times, fees, champions' names and the admin-entered season; on page 11: story and Facebook post text, winners, captions and counts; on page 12: officer and representative names, terms, bylaw wording, motions and vote counts). Club names, meeting times and venues, event names, dates, cities and organizers are real.
+
+---
+
+## 7. The October 19 picks
+
+K picked among the option boards on canvas pages 8, 9 and 13 on Thu, Oct 15, 2026, and on pages 14, 15 and 16 on Mon, Oct 19, 2026. Later on Mon, Oct 19, 2026, K answered the eight questions that followed: question 4, on who may create a tournament, in full, and the other seven with "everything else is fine as assumed". K's words are in `docs/redesign/rounds/2026-10-19/feedback.md`, and the round's summary is `docs/redesign/rounds/2026-10-19/README.md`.
+
+This section records, page by page, the boards K decided and K's changes to them, in K's meaning; who may create a tournament; the scanner decisions; and the working assumptions K confirmed. For pages 8 and 9 it answers questions 11 and 17, with round 3's boards in place of round 2's options, and for pages 13 to 16 it settles what section 1 left as option boards. Where earlier parts of this document still describe pages 8 and 9 as waiting for K's pick (the status line and sections 1, 2.2, 4.2, 4.8 and 6), this section wins.
+
+| Page | Decided | Decided as drawn | Redrawn to K's words |
+|---|---|---|---|
+| 8 · Clubs directory | Thu, Oct 15, 2026 | `Clubs-H`, `Clubs-H-2` | none |
+| 9 · Club page | Thu, Oct 15, 2026 | `Club-G`, `Club-G-2` | Club-G in its bare state |
+| 13 · Membership & giving | Thu, Oct 15, 2026 | none | Member-E with Member-F's "What your dues do" section; `Give-A` was not named (7.3) |
+| 14 · My LCA | Mon, Oct 19, 2026 | `Account-I`, `Account-L`, `Account-N`, `Account-P`, `Account-R`, `Account-S`, each with its part 2 | the hub joining Int-A and Int-B; Account-D on phones with an empty Today folded; Account-H with its empty state |
+| 15 · Workspace & admin | Mon, Oct 19, 2026 | `Work-E`, `Work-H`, `Work-J`, each with its part 2 | Work-L without the jump list |
+| 16 · Scoresheet scanner | Mon, Oct 19, 2026 | `Scan-G`, `Scan-K` | Scan-E with Scan-D's states; Scan-H and Scan-S with piece images; Scan-L with the immediate private save and no Public; Scan-O with games outside tournaments; Scan-Q with scanning optional |
+
+Until a redraw is on the canvas, the board it grows from, read with K's change as written in this section, is the reference.
+
+### 7.1 Page 8: Clubs directory
+
+K, Thu, Oct 15, 2026:
+
+> "For 8, I like H and H-2."
+
+**Decision:** `Clubs-H` (one list, always whole) and `Clubs-H-2` (phones, forms and states), from round 3, as drawn. This answers question 11.
+
+### 7.2 Page 9: Club page
+
+K, Thu, Oct 15, 2026:
+
+> "For 9, I like G and G-2 (just keep in mind that we need to plan for most of these blocks to go unused for a while until the club reps start inputting stuff and properly managing it, so make sure it looks good regardless ~ I can input the basics of what is necessary if you see fit)"
+
+**How K's words were read**
+- "We need to plan for most of these blocks to go unused for a while until the club reps start inputting stuff ... make sure it looks good regardless" was read as a bare state of Club-G: a club whose rep has filled in nothing yet shows only the basics and the region's representative line, every optional block (the club's own words, events, news and photos) is left out rather than shown empty, and the page still reads as finished.
+- "I can input the basics of what is necessary if you see fit" was read as K, as an LCA admin, entering each club's basics: how and where the club meets, in its own words, a contact, and one sentence about the club.
+- "The club reps", read with Club-G's author line (the club's own rep keeps the page) and with K's fee rule in 7.7, which names club reps, was read as keeping the club rep.
+
+**Decisions**
+- **`Club-G` and `Club-G-2`** (round 3: the club's own one-page site; the editor, the thin club and a phone), as drawn. This answers question 17.
+- **A bare state is drawn** for a club whose rep has filled in nothing yet, as read above.
+- **The club rep stays.** A club keeps a named rep who keeps its page, and the region's representative and LCA admins can edit any club page, as Club-G draws it. Question 18's retirement of `club_rep` does not go ahead, and question 20 is answered for the page. Sections 2.2, 3.3 and 4.2 assume that retirement (P2.18); for the role itself, this section wins. K's picks do not settle the rest of question 18. Whether a club rep also creates the club's events is still open (7.7).
+
+### 7.3 Page 13: Membership & giving
+
+K, Thu, Oct 15, 2026:
+
+> "For 13, I like E and E-2 best, but I prefer the "What you dues fund" section from F (the What your dues do). Take that from it."
+
+**Decisions**
+- **`Member-E` and `Member-E-2`** (benefits first).
+- **Member-F's "What your dues do" takes the place of Member-E's "What your dues fund".** K's "What you dues fund" names the money section, and "(the What your dues do)" names F's version of it: the dues told as the work LCA does, not as categories and amounts.
+- **`Give-A`**, the plain Give page, was not named. **Default: `Give-A` as drawn, the plain Give page drawn after K's note of Tue, Oct 13, 2026 that giving should be there as an option.**
+
+### 7.4 Page 14: My LCA
+
+K, Mon, Oct 19, 2026 (the section picks; the rest of K's note, on who may create a tournament, is in 7.7):
+
+> "Frame (I like A for general or no other role, but I prefer B when they have more than one role). Default page (so, how the card is displayed should be optimized for use on mobile, since that is when they will be showing it to a td to scan, etc. With this in mind, I think D caters to this best, by having the show card button up top and apparent for mobile, but not over emphasizing it in the overall displays etc.). Today (I like H best because of the efficient layout for those with multiple roles, but ensure this still works well for the average person, for example most people will have this page just say "Nothing needs you today" so we should not have this section as the default if that is the case, as in not open it first if its empty when they come to the My LCA, ~ use their attention wisely.). Family (agreed, I). Events you direct (L, I like it). Your Region (I like N best, you can still see the to do list elements of what is checked and the marking buttons, etc, but it doesnt resrict visibility of seeing all the clubs at once and what up, etc). Board: (I like P better just in case they need to see that stuff, it helps stuff run smoother if we dont have to wait for one person, especially in volunteer work, and there is no sensitive info to hide anyway). LCA Admin (Agreed, R). Account (yes, yes)."
+
+**How K's words were read**
+- "I like A for general or no other role, but I prefer B when they have more than one role" was read as one frame with a rule, not a choice between two: Int-A's single My LCA page for a person who holds no volunteer section, and Int-B's left rail for a person who holds one. Int-C is not used.
+- "How the card is displayed should be optimized for use on mobile ... having the show card button up top and apparent for mobile, but not over emphasizing it" was read as Account-D's Show my card button at the top of My LCA on phones, quick to reach, and never a large card that takes over the page.
+- "We should not have this section as the default if that is the case, as in not open it first if its empty" was read as: an empty Today shrinks to one line, and My LCA opens on You with the card.
+- "Account (yes, yes)" was read as agreement to `Account-S` and `Account-S-2`, the small roles, as drawn.
+
+**Decisions**
+- **One page for one role, the rail for more.** If all a person holds is You, or You and Family, My LCA is one page, as Int-A draws it. A person who holds a volunteer section (Events you direct, Your region, Board, LCA admin, Member lookup) gets Int-B's left rail, with one entry per section, and each entry opens its full room as its own page. Read with 7.2, a club rep's Your club section (`Account-S-2`) counts as a volunteer section too.
+- **The empty-Today rule.** When Today holds nothing, it is one line, "Nothing needs you today", and My LCA opens on You with the card, so an empty Today never takes the first screen.
+- **Both rules were working assumptions, and K confirmed them** later on Mon, Oct 19, 2026: "everything else is fine as assumed".
+- **Default page: `Account-D`** (one column, the card as a section), with `Account-D-2`. Account-D is redrawn on phones with an empty Today folded to its one line: Show my card sits up top, where the card is shown to a director to scan, without taking over the page.
+- **Today: `Account-H`** (an urgent band, then the rest grouped by role), for its efficient layout for people with several roles. It is redrawn with its empty state, so it works for the many people whose Today is empty.
+- **Family: `Account-I`** (one card per child), with `Account-I-2`.
+- **Events you direct: `Account-L`** (a stage track per event), with `Account-L-2`.
+- **Your region: `Account-N`** (every club as a tile, the to-do list under the grid), with `Account-N-2`. The checks and their buttons stay in view without hiding the whole region. Where it differs from Work-H, Work-H's drawings win (7.5).
+- **Board: `Account-P`** (a short desk, with Admin (view only) kept), with `Account-P-2`. Officers keep today's view-only Admin, which the frame's question 3 (`docs/redesign/rounds/2026-10-13/frame-pages-14-15.json`) had proposed withdrawing: in volunteer work nobody should have to wait on one person, and nothing there is sensitive.
+- **LCA admin: `Account-R`** (one row), with `Account-R-2`.
+- **The small roles: `Account-S` and `Account-S-2`** (the auditor, the one-event director, the president and the club rep), as drawn.
+- **Who may create a tournament:** 7.7.
+
+### 7.5 Page 15: Workspace & admin
+
+K, Mon, Oct 19, 2026:
+
+> "TD console (Agreed, E). My region (I prefer H, and H's clubs own page screen, if this conflicts with the design for this from 14, know that I prefer this ones diagrams). Admin (I prefer J and I love the way I can quickly see the health of my automations). Setup checklist (I like L best but thing the jump to section is redundant with the setup steps side bar as long as none of the steps are overly long for the setup steps sidebar to be completely passed up, but this should be fixable by having the middle section as a scroll if its overly long)."
+
+**Decisions**
+- **TD console: `Work-E`** (one stage at a time), with `Work-E-2`.
+- **My region: `Work-H`** (a card per club), with `Work-H-2`'s page for each club. Where page 14's Your region (`Account-N`) differs, Work-H's drawings win.
+- **Admin: `Work-J`** (a dashboard home with the queue beside it), with `Work-J-2`, for the health of the automations at a glance.
+- **Setup checklist: `Work-L`** (one step at a time), with `Work-L-2`. Work-L is redrawn without its jump list, which repeats the setup steps sidebar. A step too long to fit scrolls inside the middle section, so the steps sidebar is never left behind.
+
+### 7.6 Page 16: Scoresheet scanner
+
+K, Mon, Oct 19, 2026:
+
+> "Getting in (Agreed, E, but make sure they are logged into their account first, but I prefer the look of D's states). Reading job (Agreed, G, we should save api cost where it is smart to do so, and a live feed of the read is unneccary). Review (I Iike H best, but is there a way we can use flat chess piece symbols that resemble the default board settings of something like chess.com for the board image on the rigth instead of just being letters). Fixing (Agreed, K). Save (I really like all the screens on this and I don't see much of a difference besides the technical idea of how its saved piravately immediately. So, yes I like the idea of it saving immediately, also, I really love the visuals in L showing the ability to link you game to the tournament game you are playing! that is an awesome idea, we should make sure this works well, seeing if they are or were in a game recently, but ensure they are able to select any tournament they have been in or are in and any one of those games to connect it to (not just if there is a live one). this will give a even greater functionality to the site and the results page with even more cool stuff like viewing these actual games. I also, love the sahare and eexport section and overall everything on L, besides the public save option, i am not sure what that would do, i dont think we should allow anyone to click on someones proofile and see their games, or a joined game list. i think the link it to the tournament thing is good enough for that public aspect and i like how we encourage but dont force that., and i dont see much conflict with this and the screens on M, it seems like a bunch of conditional screens that we would need anyway, but if there is conflict, prefer L, and let me know if I need to decide on any conflicts if importtatn). My games (I prefer, O, its easier to read and understand for the user, but we should make sure their games not connected to tournaments are displayed well too. And i dont know what you mean by it matches how news lists.) Kit (I prefer Q since scanning game notation should be optional, I like how Q allows for multiple ways of game verification, etc. the games should be saved in their My games section by default, with the check mark available to uncheck it if they want. ). Kit (I prefer S, but like previously noted, I do not like the lettered pieces on the images for the chess piece visuals, but rather the traditional stuff like from chess.com and the like, etc.)."
+
+**How K's words were read**
+- The first "Kit (I prefer Q ...)" is part 7, Into the tournament (`Scan-Q`, from the crosstable, at the table). The second "Kit (I prefer S ...)" is part 8, the printed notation kit (`Scan-S`).
+- "Flat chess piece symbols that resemble the default board settings of something like chess.com" and "the traditional stuff like from chess.com and the like" were read as flat piece images like the default board on the big chess sites, taken from an open-licensed set (cburnett, as lichess draws it), never chess.com's own art.
+- "I dont know what you mean by it matches how news lists" refers to `Scan-N`, which grouped games by month, newest first, the way the News page's Latest list does. With `Scan-O` picked, nothing depends on it.
+
+**Decisions, part by part**
+1. **Getting in and capture: `Scan-E`** (camera first, check the photo), redrawn with `Scan-D`'s states, and the person signed in to their account first.
+2. **The reading job: `Scan-G`** (hand-off), as drawn. There is no live feed of the read, which saves API cost where that is sensible.
+3. **Review: `Scan-H`** (photo, moves and board in three panes), redrawn with piece images in place of letters on the board.
+4. **Fixing a misread: `Scan-K`** (fix in place), as drawn.
+5. **Save, share and export: `Scan-L`** (choose then save), redrawn with `Scan-M`'s immediate save and without the Public option. L's share and export section stays. Scan-M's screens stay as the states L needs, and L wins where they differ.
+6. **My games: `Scan-O`** (event cards), redrawn so games not linked to a tournament show well too.
+7. **Into the tournament: `Scan-Q` and `Scan-Q-2`** (from the crosstable, at the table), redrawn with scanning optional and several ways to verify a game. A scanned game goes into My games by default, with a tick to leave it out.
+8. **The printed notation kit: `Scan-S`** (a plain LCA sheet, the kit split by audience), redrawn with piece images in place of letters.
+
+**The scanner decisions**
+- **No Public share.** Nobody can open a person's profile and see their games, and there is no joined list of games. Linking a game to its tournament game is the public side: encouraged, never forced.
+- **Saved at once, as a private draft.** The scan saves itself privately as soon as it is read, under Scan-L's finish card, and the photo is kept 30 days beside the game (a working assumption, confirmed). Today's scanner page promises "Photos are read once and never stored" (`src/pages/ScannerPage.tsx`, with the same promise in `functions/api/scan/index.ts` and migration 0035), so that promise changes with this work.
+- **Link to any tournament game, past or current.** The scanner offers the game the person is playing or played recently, and lets them pick any tournament they are in or have been in, and any game in it, not only a live one. Linked games give the results pages more to show, down to the games themselves.
+- **Scanning is optional, with several ways to verify a game** (`Scan-Q`). A director's scan at the table lands in both players' My games, private (a working assumption, confirmed).
+- **Open-licensed piece images** on every board image: cburnett, as lichess draws it, never chess.com's own art (a working assumption, confirmed).
+- **Games outside tournaments** get their own group on My games (a working assumption, confirmed).
+
+### 7.7 Who may create a tournament
+
+K's note on page 14, Mon, Oct 19, 2026:
+
+> "Right now we should have a sort of standing director role as you say for our trusted TD's of the community to always be able to make their tournaments here for the purpose of testing things out and spreading its usage etc, and then there should be a role for single-event directors that the president can assign onto tournaments that they have drafted ect (the president should be able to make tournaments always). and later in the future we will roll out tournament creation to the reps to manage their regions clubs and their tournaments (they should similarly be able to appoint the one event tds) and finally we can roll out tournament creation to all members, but these tournaments should not be able to be listed on our tournament page since there will be no fast and effective way to monitor them since we are a volunteer org. This will eliiminate spam and ect, and instead of them being listed on the public tournament lists and page etc, they should have all of the other functionality though, so this can be a proper way to serve the public of LA to bring well organized tournaments to them, and the sharing can be done via link."
+
+**Decision, in K's phases**
+- **Now:**
+  - **A standing director role** for the community's trusted tournament directors, who may always create their tournaments on the site, to test it and spread its use.
+  - **The president**, who may always create tournaments, and may assign a single-event director to a tournament the president drafted.
+  - **The admins**, who can already create tournaments, and whom K's answer to question 4 names beside the president.
+- **Later:** **regional representatives** create tournaments for their region's clubs and appoint one-event directors, as the president does.
+- **Last:** **every member** may create a tournament. A member's tournament is never listed on the public tournament pages, since a volunteer organization has no fast and effective way to watch them, and that keeps out spam. It has every other function, so members can bring well-run tournaments to the public of Louisiana, and it is shared by link.
+
+**In the code today:** only an LCA admin, or a `club_rep` for its own club, can create a tournament (`functions/api/admin/tournaments.ts`). The `tournament_director` role, held by LCA's standing directors, opens no event by itself: every director is named on each event through `tournament_directors`, which is also how a one-event director is named. The president holds the President seat and the `lca_observer` role, and neither can create a tournament. A tournament is either listed (`is_visible = 1`) or a hidden draft whose page answers only to the people who manage it and to the president and officers (`is_visible = 0`, `functions/api/tournaments/[id].ts`). A member's unlisted tournament is a third state: its page and every function work for anyone with the link, and it stays out of every list.
+
+**K's answers to question 4** (Mon, Oct 19, 2026, later the same day). Each part of the question carried a default, and K's answer takes its place.
+
+1. **When a standing director's event is listed.** The default offered: listed at once, with a Needs attention line for admins. K: "as soon as they publish, but send a notification to the LCA Admin to review after the fact just in case, but no holds." **Decided:** a standing director's event goes on the public lists the moment it is published, a notification goes to the LCA admins to review it after the fact, and nothing ever holds it.
+2. **Who else drafts a tournament and assigns a one-event director.** The default offered: the president and admins only. K: "president, admins, and regions reps." **Decided:** the president, the admins and the regional representatives; no other officer.
+3. **Online entry fees.** The default offered, for members' unlisted events: none at first, pay at the door. K: "For stripe, we will not allow anyone but LCA admin, club reps, and the president (and the astanding directors too, but let them know the below distinction about accessing funds, etc) to set prices above 0 for now, when other people attempt to, we need to notify them in a way they can understand that we need to setup a stripe profile insdie of our stripe profile (I forget what this is called) so that there is a proper separation and they can access their funds)." **Decided:** for now, only LCA admins, club reps, the president and standing directors may set an entry fee above $0. Anyone else who tries is told, in words they can follow, that LCA must first set up an account for them inside LCA's own Stripe account, which Stripe calls a connected account (Stripe Connect), so that their money is kept apart from LCA's and they can reach it. Standing directors may set fees too, and are told the same thing about reaching their money. Regional representatives are not on the list. Today every online payment on the site goes into LCA's own Stripe account, and nothing uses Stripe Connect (`functions/utils/stripe.ts`).
+4. **US Chess rating reports.** The default offered: listed events only, under LCA's affiliate. K: "Rating reports available for everyone, i see no reason to restrict this, convince me if otherwise." **Decided:** the US Chess rating report can be made for every event, listed or not, and K asks to be told of any reason to restrict it. Today the director enters the event's affiliate ID and the Chief TD's US Chess ID on the report card, which keeps them on the event (`tournaments.report_settings`, migration 0045), and the console's own instructions say only affiliate-authorized certified TDs can submit the report at US Chess.
+
+**Still open after K's answers.** Each default is followed until K says otherwise; silence keeps it.
+- **When the regional representatives start.** K's phases put them later; K's answer to question 4 names them beside the president and the admins. **Default: from WS09's My region in Phase 3, where section 4.2 already has the representative create a club's event and name its director (P2.19); until then the people in the first phase create tournaments.**
+- **Whose affiliate an unlisted event's rating report carries.** **Default: the director's own affiliate ID, entered on the event as today; LCA's affiliate ID only on events LCA lists.**
+- **How a standing director reaches fees before a connected account exists.** **Default: the fees are paid into LCA's Stripe account, as every online payment is today, and LCA passes them on to the director, who is told so before setting a fee.**
+- **Whether a club rep also creates the club's events.** K's fee rule lets club reps set fees above $0, K's phases do not give club reps tournament creation, and `Account-S-2` draws both ways. **Default: none assumed. WS09 is Phase 3, so nothing being built now waits.**
