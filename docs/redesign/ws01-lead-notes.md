@@ -1,0 +1,24 @@
+# WS01 lead's notes (read with the slice brief; these win over the manifest where they differ)
+
+Manifest: `ws01-manifest.json` in this folder (32 slices, four checkpoints). The brief: `docs/redesign/REDESIGN_SPEC.md` section 0 and the WS01 section. Facts: `repo-facts.md`, `family-brief.md`.
+
+## Branch and commits
+- The work is on `redesign/ws01-design-system`, created from `claude/busy-davinci-aarey7` (the docs branch, which carries the brief, the decided boards, `.claude/agents` and `.claude/workflows`). It rebases onto `main` once the docs PR merges; the content is the same.
+- Agents never commit or push. The lead commits after each slice with the recorder's text: plain, human-authored prose, no attribution lines, no session links, no mention of AI assistants, no em dashes.
+- The gate before every commit: `npm run lint`, `npm run build`, `npm run typecheck:functions`, `npm run test:all` (plus `npm run scanner:check` when `scanner/` or `functions/utils/scan/` is touched). `node_modules` is installed. The baseline gate result on the untouched tree is in `gate-baseline.log`; a failure that is already in the baseline is not this slice's to fix unless the slice touches it, but it is recorded in `REDESIGN_STATUS.md`.
+
+## Decisions on the manifest's open questions
+1. **Contracts:** the ratchet, as planned. Every endpoint a slice touches gets a zod contract and a contract test; the coverage test blocks new endpoints without one; the pending list only shrinks. No sweep slice in WS01.
+2. **Preview database:** the id is confirmed by K: `28e13174-3a06-47a7-ab0f-b4ac7f24af6f` (`lca-db-preview`, ENAM, created October 8). Write the real id into `[env.preview]`, not a placeholder; the guard still refuses the production id and name. Previews keep the production `CLUB_LOGOS` bucket for now (recorded as a follow-up). K sets the preview secrets (Stripe test keys; no Resend key on previews until K wants test mail) in the Pages dashboard; the README says so.
+3. **`SITE_URL` on previews** stays the production origin. Previews are not meant to send mail; without a Resend key `trySendEmail` fails safely.
+4. **Member discount:** `member_discount` is retired as planned (slice 15). The production check (`SELECT id, name, member_discount FROM tournaments WHERE member_discount > 0 AND status != 'completed'`) is K's to run before checkpoint B merges; the slice records the question in `REDESIGN_STATUS.md` and does not block on it.
+5. **LCA membership requirement:** `requires_lca_membership` defaults to 1 for LCA-run events (no `club_id`). Existing and new club-run events (`club_id` set) start with it off, because K rolls tournament creation out to clubs free of charge first. Only a club rep for that club or an LCA admin may change it; a tournament director cannot. In WS01 the column exists and the setup form shows the switch; enforcement (refusing or adding the membership at checkout) is WS06's, because today's registration endpoint has no way to add a membership inline and switching it on now would block non-members with no path forward. Say so in the flag comment and in `REDESIGN_STATUS.md`.
+6. **Dark mode** follows the device setting as soon as `newLook` is on, with the Appearance control (System · Light · Dark) as the brief says. No separate `darkMode` flag.
+7. **Removing a section that has entries:** the setup refuses with a plain message ("3 entries are in this section. Move them to another section first."). Archiving is only for empty sections.
+8. **Checkpoints:** each checkpoint is a draft PR K merges; `migrate-db.yml` then applies its migrations to production on merge. Before reviewing a checkpoint's preview K runs `npm run db:migrate:preview` from the branch. The lead tells K at each checkpoint.
+
+## Standing rules that bind every slice (from the brief, section 0.1)
+No AI references anywhere; read the real file before changing it; match repo conventions; collect only what is needed (eligibility checkbox, never grade or birthdate; no financial-need questions; full names for minors in results); keep the hard-coded "300+ members" stat and every Facebook link; partner events register on the organizer's site; WCAG 2.2 AA with status in words beside colour and gold `#c8a94a` never text on a light ground; plain language ("US Chess", weekday on every date, "7:00 PM", ½); nothing runs against a preview that shares production.
+
+## Gate baseline (October 8, untouched tree)
+`npm run build`, `npm run typecheck:functions`, `npm run test` (326 passing) and `npm run test:integration` (267 passing) are green. `npm run lint` is red at baseline with 37 errors and 4 warnings (CI does not run lint); the per-file list is in `lint-baseline.md`. Rule for every slice: the total error count never rises, and every error in a file the slice touches is fixed. Report the before and after counts in the slice report.
