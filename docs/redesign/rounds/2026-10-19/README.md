@@ -91,3 +91,11 @@ Silence keeps the default.
 - **How a standing director reaches fees before a connected account exists.** Every online payment on the site goes into LCA's own Stripe account today. Default: the fees are paid into LCA's account and LCA passes them on to the director, who is told so before setting a fee.
 - **Whether a club rep also creates the club's events.** K's fee rule lets club reps charge, K's phases do not give them tournament creation, and Account-S-2 draws both ways. Default: none assumed; WS09 is Phase 3, so nothing being built now waits.
 - **Give-A, the plain Give page.** Not named. Default: `Give-A` as drawn, the plain Give page drawn after K's note of Tue, Oct 13, 2026 that giving should be there as an option.
+
+## Later on Mon, Oct 19: the two boards, in K's words
+
+K looked at Account-Final-Hub and Club-Final-Bare and took the defaults on the affiliate stamp (LCA's number only on listed events and on events run by standing directors, the president, admins and representatives), on a standing director's fees waiting in LCA's account until a connected account exists, and on the regional representative approving a named-rep request with admins as the backstop.
+
+On the club page's contact: "contact emails are to never be shared, this is how we maintain trust with the volunteers. we always use our go between method. in that i mean the regional rep email that manages them. the club itself is free and encouraged to provide their own email for people to contact outside of the lca platform perview, which lessens our reps burden. so, the contact section should go to that email, and then a fall back of the regional rep. then in that email to the regional rep, notify them that they are being contacted because the club has no connected email as of yet. we just direct the emails to the clubs instead of recording them in house like we usually do, its their business, we just make sure that connection exists. everything else looks good."
+
+Reading: a contact email is never shown. The form sends to the club's own email when the club has given one, otherwise to the regional representative, whose copy says the club has no connected email yet. The messages are relayed, not stored the way support tickets are. The bare club boards are approved as drawn.
