@@ -101,12 +101,12 @@ export function TournamentPrintPage() {
             <tr key={p.id} className="border-b border-gray-300">
               <td className="py-1.5 pr-2 font-bold tabular-nums">{p.board}</td>
               <td className="py-1.5 pr-2">
-                {p.white_name} <span className="text-gray-600">({p.white_rating ?? 'unr'}) {fmt(scoreBefore.get(p.white_member_id ?? '') ?? 0)}</span>
+                {p.white_name} <span className="text-quiet-600">({p.white_rating ?? 'unr'}) {fmt(scoreBefore.get(p.white_member_id ?? '') ?? 0)}</span>
               </td>
               <td className="py-1.5 text-center">{p.black_member_id ? (p.result === 'pending' ? '' : p.result.replace('1/2-1/2', '½-½')) : ''}</td>
               <td className={cn('py-1.5 pl-2', !p.black_member_id && 'italic')}>
                 {p.black_member_id
-                  ? <>{p.black_name} <span className="text-gray-600">({p.black_rating ?? 'unr'}) {fmt(scoreBefore.get(p.black_member_id) ?? 0)}</span></>
+                  ? <>{p.black_name} <span className="text-quiet-600">({p.black_rating ?? 'unr'}) {fmt(scoreBefore.get(p.black_member_id) ?? 0)}</span></>
                   : p.result === 'bye-half' ? 'Half-point bye' : 'Bye'}
               </td>
             </tr>
@@ -119,7 +119,7 @@ export function TournamentPrintPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-8 print:max-w-none print:px-0 print:py-0 print:text-black">
       {!tournament.is_visible && (
-        <p className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 print:hidden">
+        <p className="mb-4 rounded-md border border-warn-300 bg-warn-50 px-3 py-2 text-sm text-warn-900 print:hidden">
           Preview: this event is hidden from the public. Printing works as normal.
         </p>
       )}

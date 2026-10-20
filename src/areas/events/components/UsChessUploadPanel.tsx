@@ -145,12 +145,12 @@ export function UsChessUploadPanel({ tournamentId, report, canEdit }: {
       </div>
 
       {problems.length > 0 && (
-        <ul className="mt-3 list-disc pl-5 text-xs text-amber-800">
+        <ul className="mt-3 list-disc pl-5 text-xs text-warn-800">
           {problems.map((p) => <li key={p}>{p}</li>)}
         </ul>
       )}
       {report.validationErrors.length > 0 && (
-        <p className="mt-2 text-xs text-amber-800">Fix the problems listed above first.</p>
+        <p className="mt-2 text-xs text-warn-800">Fix the problems listed above first.</p>
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-2">

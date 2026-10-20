@@ -1154,7 +1154,7 @@ export function TournamentManagePage() {
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <h2 className="text-lg font-bold text-ink">Tournament details</h2>
                 {detailsDirty && (
-                  <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
+                  <span className="text-xs font-medium text-warn-600">Unsaved changes</span>
                 )}
               </div>
 
@@ -1196,12 +1196,12 @@ export function TournamentManagePage() {
                     <button type="button"
                       onClick={() => setIsRated(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        isRated ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}
+                        isRated ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}
                     >USCF Rated</button>
                     <button type="button"
                       onClick={() => setIsRated(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !isRated ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}
+                        !isRated ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}
                     >Unrated</button>
                   </div>
                   <label className="flex items-center gap-2 text-sm text-ink">
@@ -1271,7 +1271,7 @@ export function TournamentManagePage() {
                       className={cn(
                         'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                         timeControl === tc
-                          ? 'border-lca-navy bg-brand-navy text-white'
+                          ? 'border-brand-navy bg-brand-navy text-white'
                           : 'border-border text-muted-foreground hover:border-lca-gold hover:text-ink',
                       )}
                     >
@@ -1309,7 +1309,7 @@ export function TournamentManagePage() {
                       className={cn(
                         'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                         sections.some((s) => s.name === presetName)
-                          ? 'border-lca-navy bg-brand-navy text-white cursor-default'
+                          ? 'border-brand-navy bg-brand-navy text-white cursor-default'
                           : 'border-border text-muted-foreground hover:border-lca-gold hover:text-ink',
                       )}
                     >
@@ -1500,7 +1500,7 @@ export function TournamentManagePage() {
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <h2 className="text-lg font-bold text-ink">Visibility &amp; registration</h2>
                 {registrationDirty && (
-                  <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
+                  <span className="text-xs font-medium text-warn-600">Unsaved changes</span>
                 )}
               </div>
               <div className="grid gap-6 sm:grid-cols-2">
@@ -1510,12 +1510,12 @@ export function TournamentManagePage() {
                     <button type="button"
                       onClick={() => setIsVisible(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        isVisible ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}
+                        isVisible ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-ink/40')}
                     >Visible to public</button>
                     <button type="button"
                       onClick={() => setIsVisible(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !isVisible ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}
+                        !isVisible ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-ink/40')}
                     >Hidden (draft)</button>
                   </div>
                 </div>
@@ -1568,10 +1568,10 @@ export function TournamentManagePage() {
                   </div>
                 </div>
                 {Number(pricing.earlyDiscount) > 0 && !pricing.earlyDeadline && (
-                  <p className="text-xs text-amber-700">Set when early entry ends, or the discount won't apply.</p>
+                  <p className="text-xs text-warn-700">Set when early entry ends, or the discount won't apply.</p>
                 )}
                 {Number(pricing.lateFee) > 0 && !pricing.lateAfter && (
-                  <p className="text-xs text-amber-700">Set when the late fee starts, or it won't apply.</p>
+                  <p className="text-xs text-warn-700">Set when the late fee starts, or it won't apply.</p>
                 )}
               </div>
               {showMembershipSwitch && (
@@ -1648,7 +1648,7 @@ export function TournamentManagePage() {
                                 className={cn(
                                   'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
                                   player.checked_in_at
-                                    ? 'border-emerald-600 bg-emerald-600 text-white'
+                                    ? 'border-ok-fill bg-ok-fill text-white'
                                     : 'border-border text-muted-foreground hover:border-emerald-600/50',
                                   withdrawn && 'opacity-40 cursor-not-allowed',
                                 )}
@@ -1659,18 +1659,18 @@ export function TournamentManagePage() {
                             <td className="px-3 py-2 font-medium">
                               {player.full_name}
                               {withdrawn && (
-                                <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700">
+                                <span className="ml-2 rounded-full bg-bad-100 px-2 py-0.5 text-[10px] font-medium text-bad-700">
                                   Withdrawn
                                 </span>
                               )}
                               {player.grade && (
-                                <span className="ml-2 text-xs font-normal text-emerald-700" title={`Confirmed ${gradeNote(player.grade)} this school year`}>
+                                <span className="ml-2 text-xs font-normal text-ok-700" title={`Confirmed ${gradeNote(player.grade)} this school year`}>
                                   ✓ grade
                                 </span>
                               )}
                               {isRated && player.uscf_expiration && tournament && player.uscf_expiration.slice(0, 10) < tournament.date.slice(0, 10) && (
                                 <span
-                                  className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800"
+                                  className="ml-2 rounded-full bg-warn-100 px-2 py-0.5 text-[10px] font-medium text-warn-800"
                                   title={`US Chess membership expires ${player.uscf_expiration.slice(0, 10)}`}
                                 >
                                   USCF expired
@@ -1700,7 +1700,7 @@ export function TournamentManagePage() {
                                 className={cn(
                                   'rounded-md border px-2 py-1 text-xs font-medium',
                                   player.payment_status === 'paid'
-                                    ? 'bg-emerald-100 text-emerald-800'
+                                    ? 'bg-ok-100 text-ok'
                                     : 'bg-lca-gold/20 text-ink',
                                 )}
                                 value={player.payment_status}
@@ -1736,8 +1736,8 @@ export function TournamentManagePage() {
                                       className={cn(
                                         'size-6 rounded-full border text-[11px] font-medium transition-colors',
                                         isSel
-                                          ? 'border-lca-navy bg-brand-navy text-white'
-                                          : 'border-border text-muted-foreground hover:border-lca-navy/40',
+                                          ? 'border-brand-navy bg-brand-navy text-white'
+                                          : 'border-border text-muted-foreground hover:border-ink/40',
                                       )}
                                     >
                                       {round}
@@ -1856,12 +1856,12 @@ export function TournamentManagePage() {
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setWalkInMarkPaid(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        walkInMarkPaid ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
+                        walkInMarkPaid ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
                       Paid (cash/check)
                     </button>
                     <button type="button" onClick={() => setWalkInMarkPaid(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !walkInMarkPaid ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
+                        !walkInMarkPaid ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
                       Pending
                     </button>
                   </div>
@@ -1886,7 +1886,7 @@ export function TournamentManagePage() {
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <h2 className="text-lg font-bold text-ink">Rounds &amp; schedule</h2>
                 {scheduleDirty && (
-                  <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
+                  <span className="text-xs font-medium text-warn-600">Unsaved changes</span>
                 )}
               </div>
               <div className="space-y-2 max-w-xs">
@@ -2174,7 +2174,7 @@ export function TournamentManagePage() {
               const finished = tournament.status === 'completed'
               return (
                 <div className={cn('flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4',
-                  finished ? 'border-emerald-200 bg-emerald-50' : 'bg-card')}>
+                  finished ? 'border-ok-200 bg-ok-50' : 'bg-card')}>
                   <div className="text-sm">
                     <p className="font-semibold text-ink">
                       {finished ? 'This event is finished' : roundsDone && pendingCount === 0 ? 'All rounds are in' : 'Event in progress'}
@@ -2358,7 +2358,7 @@ export function TournamentManagePage() {
                 />
               </div>
               {announceResult && (
-                <p className="text-sm font-medium text-emerald-700">{announceResult}</p>
+                <p className="text-sm font-medium text-ok-700">{announceResult}</p>
               )}
               <Button
                 type="button"

@@ -130,7 +130,7 @@ export function MembersTable({ members, admin }: {
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
-      active: 'bg-emerald-100 text-emerald-800',
+      active: 'bg-ok-100 text-ok',
       expired: 'bg-destructive/10 text-destructive',
       pending: 'bg-lca-gold/15 text-[#7a5c00]',
     }

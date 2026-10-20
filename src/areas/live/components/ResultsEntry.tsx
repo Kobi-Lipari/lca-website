@@ -72,7 +72,7 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
           {rounds.map((r) => (
             <button key={r} type="button" onClick={() => setRoundChoice(r)}
               className={cn('rounded-md border px-2.5 py-1 text-sm font-medium',
-                r === round ? 'border-lca-navy bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
+                r === round ? 'border-brand-navy bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
               Rd {r}
             </button>
           ))}
@@ -89,7 +89,7 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
             </Link>
           </span>
         )}
-        <span className={cn('ml-auto text-sm', missing ? 'font-medium text-[#7a5c00]' : 'text-emerald-700')}>
+        <span className={cn('ml-auto text-sm', missing ? 'font-medium text-[#7a5c00]' : 'text-ok-700')}>
           {missing ? `${missing} result${missing === 1 ? '' : 's'} missing` : 'All results in'}
         </span>
       </div>
@@ -101,10 +101,10 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
           return (
             <section key={sec} aria-label={showAll ? `${sec} section` : undefined}>
               {showAll && (
-                <div className="mb-1.5 flex items-baseline justify-between gap-3 border-b-2 border-lca-navy pb-1">
+                <div className="mb-1.5 flex items-baseline justify-between gap-3 border-b-2 border-ink pb-1">
                   <h3 className="text-sm font-bold uppercase tracking-wide text-ink">{sec}</h3>
                   {shown.length > 0 && (
-                    <span className={cn('text-xs', secMissing ? 'font-medium text-[#7a5c00]' : 'text-emerald-700')}>
+                    <span className={cn('text-xs', secMissing ? 'font-medium text-[#7a5c00]' : 'text-ok-700')}>
                       {secMissing ? `${secMissing} missing` : 'All in'}
                     </span>
                   )}
@@ -159,13 +159,13 @@ function BoardsTable({ shown, onResult, onSwap, savedGameId }: {
                           <button key={q.value} type="button" onClick={() => onResult(g.id, q.value)}
                             aria-pressed={g.result === q.value}
                             className={cn('min-w-[3rem] rounded-md border px-2 py-1 text-sm font-medium tabular-nums',
-                              g.result === q.value ? 'border-lca-navy bg-brand-navy text-white' : 'hover:border-lca-navy/40')}>
+                              g.result === q.value ? 'border-brand-navy bg-brand-navy text-white' : 'hover:border-ink/40')}>
                             {q.label}
                           </button>
                         ))}
                         <select aria-label={`More results for board ${g.board}`}
                           className={cn('rounded-md border bg-background px-1.5 py-1 text-xs',
-                            g.result.endsWith('F') && 'border-lca-navy font-medium text-ink')}
+                            g.result.endsWith('F') && 'border-ink font-medium text-ink')}
                           value={OTHER.some((o) => o.value === g.result) && g.result !== 'pending' ? g.result : ''}
                           onChange={(e) => e.target.value && onResult(g.id, e.target.value)}>
                           <option value="">More…</option>
@@ -178,7 +178,7 @@ function BoardsTable({ shown, onResult, onSwap, savedGameId }: {
                             <ArrowLeftRight className="size-3.5" />
                           </button>
                         )}
-                        {savedGameId === g.id && <Check className="size-4 text-emerald-600" aria-label="Saved" />}
+                        {savedGameId === g.id && <Check className="size-4 text-ok-600" aria-label="Saved" />}
                       </div>
                     )}
                   </td>

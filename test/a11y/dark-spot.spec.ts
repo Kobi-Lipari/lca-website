@@ -9,10 +9,12 @@
 // Step 23 moved the pages' navy text to text-ink and their white grounds to
 // bg-surface, so axe must find no colour-contrast failure caused by either:
 // no failing text in the brand navy #1a2744 (navy on a dark ground) and no
-// failing text on a white ground. Every colour-contrast failure that is left
-// must come from a class a later step moves to the tokens: raw hex colours
-// and the status colours (step 24) or gold text (step 25), on the element
-// itself or on an ancestor up to its ground. Anything else fails the test.
+// failing text on a white ground. Step 24 moved the status colours, the greys
+// and the raw hex colours to the tokens too, so every colour-contrast
+// failure that is left must come from a class a later step still owns: gold
+// text (step 25) or StatusBadge's light tones (step 26), on the element
+// itself or on an ancestor up to its ground. Anything else fails the test,
+// a status or hex colour step 24 left included.
 // Every finding of every rule is printed and attached, so a run is also the
 // record of what is left. The full axe sweep of every look is step 32's
 // (WS01 acceptance criterion 1).
@@ -23,11 +25,15 @@ const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 const NAVY = '#1a2744'
 const WHITE = '#ffffff'
 
-/** Classes whose colours a later step moves to the tokens: raw hex and status colours (24), gold text (25). */
+/**
+ * Classes whose colours a later step still moves to the tokens: gold text
+ * (step 25: text-lca-gold and the three gold hex colours) and StatusBadge's
+ * light tones, which step 24 keeps for step 26.
+ */
 const LATER = [
-  /^(?:[^:\s]+:)*(?:text|bg|border)-\[#/,
-  /^(?:[^:\s]+:)*(?:text|bg)-(?:emerald|red|amber|green|blue|yellow|orange|gray|slate)-/,
   /^(?:[^:\s]+:)*text-lca-gold\b/,
+  /^(?:[^:\s]+:)*text-\[#(?:7a5c00|f0d07a|8a6d1f)\]$/i,
+  /^(?:bg-emerald-100|text-emerald-800|bg-red-100|text-red-700|border-blue-200|bg-blue-50|text-blue-800)$/,
 ]
 
 interface Contrast {

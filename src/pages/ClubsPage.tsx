@@ -123,7 +123,7 @@ function ClubCard({
       onMouseLeave={() => onHover(false)}
       className={cn(
         'group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card text-left shadow-sm outline-none transition-all',
-        'hover:border-lca-navy/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-lca-gold',
+        'hover:border-ink/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-lca-gold',
         selected && 'shadow-md ring-2',
       )}
       style={selected ? ({ borderColor: color, backgroundColor: clubColorTint(color, 0.06), '--tw-ring-color': clubColorTint(color, 0.45) } as CSSProperties) : undefined}
@@ -166,7 +166,7 @@ function ClubCard({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-lca-navy/40"
+              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-ink/40"
             >
               Directions ↗
             </a>
@@ -322,7 +322,7 @@ export function ClubsPage() {
                 className={cn(
                   'flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                   activeRegion === null
-                    ? 'border-lca-navy bg-brand-navy text-white'
+                    ? 'border-brand-navy bg-brand-navy text-white'
                     : 'border-border bg-card text-muted-foreground hover:border-lca-gold/60 hover:text-foreground',
                 )}
               >
@@ -337,7 +337,7 @@ export function ClubsPage() {
                   className={cn(
                     'flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                     activeRegion === r
-                      ? 'border-lca-navy bg-brand-navy text-white'
+                      ? 'border-brand-navy bg-brand-navy text-white'
                       : 'border-border bg-card text-muted-foreground hover:border-lca-gold/60 hover:text-foreground',
                   )}
                 >
@@ -433,8 +433,8 @@ export function ClubsPage() {
                   className={cn(
                     'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60',
                     userLocation
-                      ? 'border-lca-navy bg-brand-navy text-white'
-                      : 'border-border bg-card text-ink hover:border-lca-navy/40',
+                      ? 'border-brand-navy bg-brand-navy text-white'
+                      : 'border-border bg-card text-ink hover:border-ink/40',
                   )}
                 >
                   <LocateFixed className="size-3.5" />

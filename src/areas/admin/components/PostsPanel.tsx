@@ -161,7 +161,7 @@ export function PostsPanel() {
                   </span>
                 </span>
                 <span className={cn('flex-shrink-0 rounded-full px-2 py-0.5 text-xs font-medium',
-                  p.status === 'published' ? 'bg-emerald-100 text-emerald-800' : 'bg-muted text-muted-foreground')}>
+                  p.status === 'published' ? 'bg-ok-100 text-ok' : 'bg-muted text-muted-foreground')}>
                   {p.status === 'published' ? 'Published' : 'Draft'}
                 </span>
               </button>
@@ -277,13 +277,13 @@ function PostEditor({ post, onClose, onSaved }: {
           ← All posts
         </button>
         <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-medium',
-          published ? 'bg-emerald-100 text-emerald-800' : 'bg-muted text-muted-foreground')}>
+          published ? 'bg-ok-100 text-ok' : 'bg-muted text-muted-foreground')}>
           {published ? 'Published' : 'Draft'}{dirty ? ' · unsaved changes' : ''}
         </span>
       </div>
 
       {error && <p className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
-      {notice && !error && <p className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{notice}</p>}
+      {notice && !error && <p className="mb-4 rounded-lg border border-ok-200 bg-ok-50 px-3 py-2 text-sm text-ok">{notice}</p>}
 
       <div className="space-y-5 rounded-xl border bg-card p-5 shadow-sm">
         <div className="space-y-1.5">
@@ -341,7 +341,7 @@ function PostEditor({ post, onClose, onSaved }: {
               onChange={(e) => set({ publishedAt: e.target.value })} />
           </div>
           <label className="flex cursor-pointer items-center gap-2 pb-2 text-sm">
-            <input type="checkbox" className="size-4 accent-[#1a2744]" checked={draft.pinned}
+            <input type="checkbox" className="size-4 accent-ink" checked={draft.pinned}
               onChange={(e) => set({ pinned: e.target.checked })} />
             Pin to the top of the News page
           </label>

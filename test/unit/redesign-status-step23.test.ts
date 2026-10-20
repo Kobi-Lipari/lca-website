@@ -51,8 +51,12 @@ describe('REDESIGN_STATUS.md, step 23: the acceptance row', () => {
   it('has a T1 row for step 23, after the AC and K rows, and the table says what T1 is', () => {
     expect(row).toMatch(/^\| T1 \| The existing pages follow dark mode: navy text, white grounds and navy bands \| 23 \|/)
     expect(row).not.toContain('Planned')
+    // After every AC and K row; a later step of the plan adds its own T row after it.
     const table = lines.filter((l) => l.startsWith('| ') && !l.startsWith('| Item'))
-    expect(table[table.length - 1]).toBe(row)
+    const at = table.indexOf(row)
+    expect(at).toBeGreaterThan(0)
+    expect(table.slice(0, at).every((l) => /^\| (AC|K)\d/.test(l))).toBe(true)
+    expect(table.slice(at + 1).every((l) => /^\| T\d+ \| /.test(l))).toBe(true)
     expect(status).toMatch(/T1 is a step of the plan that neither names/)
   })
 

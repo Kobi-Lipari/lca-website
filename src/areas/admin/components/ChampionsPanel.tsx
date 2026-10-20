@@ -120,7 +120,7 @@ export function ChampionsPanel() {
         </div>
       )}
 
-      {note && <p className={note.ok ? 'text-sm text-emerald-700' : 'text-sm text-destructive'}>{note.text}</p>}
+      {note && <p className={note.ok ? 'text-sm text-ok-700' : 'text-sm text-destructive'}>{note.text}</p>}
 
       <div className={`rounded-xl border bg-card shadow-sm ${ADMIN_SCROLL}`}>
         {rows.length === 0 ? (

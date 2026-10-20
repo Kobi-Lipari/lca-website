@@ -48,7 +48,7 @@ export function FilterDropdown<T extends string>({
         : 'border-white/15 bg-white/6 text-white/60 hover:border-white/25 hover:text-white/80'
       : isActive
       ? 'border-lca-gold/60 bg-lca-gold/10 text-[#7a5c00]'
-      : 'border-border bg-background text-muted-foreground hover:border-lca-navy/40 hover:text-foreground'
+      : 'border-border bg-background text-muted-foreground hover:border-ink/40 hover:text-foreground'
 
   return (
     <div ref={ref} className={cn('relative', className)}>

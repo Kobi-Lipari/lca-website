@@ -12,7 +12,7 @@
 // - The nesting rule: base inside heritage is the one nesting allowed.
 import { describe, expect, it } from 'vitest'
 import { ALWAYS_BASE_PREFIXES, HERITAGE_ROUTES, THEME_SCOPES, dataThemeOf, isThemeScope, nestingProblem, routeScope } from '@/lib/themeScopes'
-import { indexCssRules, matchesScope, read, rootTokens, scopeTokens, specificity, substitute, type RootState } from './helpers/cssTokens'
+import { applies, indexCssRules, matchesScope, read, rootTokens, scopeTokens, specificity, substitute, type RootState } from './helpers/cssTokens'
 
 const rules = indexCssRules()
 const TODAY: RootState = { look: false, dark: false }
@@ -27,7 +27,7 @@ const DARK: RootState = { look: true, dark: true }
  */
 function nestedTokens(outer: Map<string, string>, state: RootState, theme: string): Map<string, string> {
   const own = rules
-    .filter((r) => !r.within && r.selectors.some((sel) => matchesScope(sel, state, theme)))
+    .filter((r) => applies(r, state.print) && r.selectors.some((sel) => matchesScope(sel, state, theme)))
     .map((r) => ({ r, spec: Math.max(...r.selectors.filter((sel) => matchesScope(sel, state, theme)).map(specificity)) }))
     .sort((a, b) => a.spec - b.spec || a.r.order - b.r.order)
   const raw = new Map(outer)

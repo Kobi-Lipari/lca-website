@@ -241,7 +241,7 @@ function ScannerTool() {
           <PageStrip urls={pageUrls} onRemove={removePage} />
 
           {pageCount < MAX_PAGES && (
-            <div className="mt-5 rounded-lg border border-dashed border-lca-navy/15 p-4">
+            <div className="mt-5 rounded-lg border border-dashed border-ink/15 p-4">
               <p className="text-sm font-medium text-foreground">Does the game continue on the back or another sheet?</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Add the next page, in order. Pages are joined into one game before the moves are checked.
@@ -382,7 +382,7 @@ function objectUrlStore(files: File[]) {
 
 function PhotoPicker({ onChoose }: { onChoose: (file: File) => void }) {
   return (
-    <div className="rounded-xl border-2 border-dashed border-lca-navy/15 bg-card p-6 text-center sm:p-10">
+    <div className="rounded-xl border-2 border-dashed border-ink/15 bg-card p-6 text-center sm:p-10">
       <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-lca-gold/10">
         <Camera className="size-6 text-lca-gold" aria-hidden="true" />
       </div>
@@ -661,9 +661,9 @@ function Results({
             <p className="mt-2 text-sm text-foreground">
               {Math.ceil(game.moves.length / 2)} moves · Result {game.result === '*' ? 'not recorded' : game.result}
               {needsLook > 0 ? (
-                <span className="text-amber-700"> · {needsLook} {needsLook === 1 ? 'move needs' : 'moves need'} a look</span>
+                <span className="text-warn-700"> · {needsLook} {needsLook === 1 ? 'move needs' : 'moves need'} a look</span>
               ) : (
-                <span className="text-emerald-700"> · every move checked</span>
+                <span className="text-ok-700"> · every move checked</span>
               )}
             </p>
           </div>
@@ -785,13 +785,13 @@ function MoveList({
         </p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm bg-amber-200" aria-hidden="true" /> Check this move
+            <span className="size-2.5 rounded-sm bg-mark-warn" aria-hidden="true" /> Check this move
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm border border-dashed border-lca-navy/40" aria-hidden="true" /> Read differently from the sheet
+            <span className="size-2.5 rounded-sm border border-dashed border-ink/40" aria-hidden="true" /> Read differently from the sheet
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm bg-emerald-200" aria-hidden="true" /> Fixed by you
+            <span className="size-2.5 rounded-sm bg-mark-ok" aria-hidden="true" /> Fixed by you
           </span>
         </div>
       </div>
@@ -802,7 +802,7 @@ function MoveList({
           aria-live="polite"
           className={cn(
             'flex items-center gap-2 border-b px-4 py-2 text-xs',
-            updateError ? 'bg-red-50 text-red-900' : 'bg-muted/40 text-muted-foreground',
+            updateError ? 'bg-bad-50 text-bad-900' : 'bg-muted/40 text-muted-foreground',
           )}
         >
           {updating && <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />}
@@ -831,7 +831,7 @@ function MoveList({
         </tbody>
       </table>
       {game.truncatedAtPly !== undefined && (
-        <p className="border-t bg-amber-50 px-4 py-2.5 text-xs text-amber-900">
+        <p className="border-t bg-warn-50 px-4 py-2.5 text-xs text-warn-900">
           The rest of the sheet couldn't be matched to legal moves, so the game stops here. Fixing the last
           moves above can often get it going again.
         </p>
@@ -867,9 +867,9 @@ function MoveCell({
         aria-label={`${moveLabel(move)}${needsLook ? ', needs a look' : ''}${fixed ? ', fixed by you' : ''}. Change this move`}
         className={cn(
           'inline-block rounded px-1.5 py-0.5 text-left font-medium transition-colors hover:ring-2 hover:ring-lca-gold/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lca-gold',
-          needsLook && 'bg-amber-200 text-amber-950',
-          readDifferently && 'border border-dashed border-lca-navy/40',
-          fixed && 'bg-emerald-200 text-emerald-950',
+          // A fixed move never needs a look, so it carries one mark or the other.
+          fixed ? 'bg-mark-ok text-ok-950' : needsLook && 'bg-mark-warn text-warn-950',
+          readDifferently && 'border border-dashed border-ink/40',
         )}
       >
         {move.san}
@@ -987,7 +987,7 @@ function MoveEditor({
                   onClick={() => pick(san)}
                   className={cn(
                     'rounded-md border px-2 py-1 text-sm transition-colors hover:border-lca-gold hover:bg-lca-gold/10',
-                    san === move.san && 'border-lca-navy font-semibold',
+                    san === move.san && 'border-ink font-semibold',
                   )}
                 >
                   {san}
@@ -1026,7 +1026,7 @@ function Notice({
       role={tone === 'error' ? 'alert' : undefined}
       className={cn(
         'flex gap-3 rounded-lg border p-4',
-        tone === 'warn' ? 'border-amber-200 bg-amber-50 text-amber-950' : 'border-red-200 bg-red-50 text-red-900',
+        tone === 'warn' ? 'border-warn-200 bg-warn-50 text-warn-950' : 'border-bad-200 bg-bad-50 text-bad-900',
         className,
       )}
     >

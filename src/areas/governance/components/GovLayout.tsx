@@ -57,8 +57,8 @@ function GovTabs() {
             className={cn(
               'whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition-colors',
               pathname === link.href
-                ? 'border-lca-navy bg-brand-navy font-medium text-white'
-                : 'border-border bg-card text-muted-foreground hover:border-lca-navy/40 hover:text-foreground',
+                ? 'border-brand-navy bg-brand-navy font-medium text-white'
+                : 'border-border bg-card text-muted-foreground hover:border-ink/40 hover:text-foreground',
             )}
           >
             {link.label}
@@ -106,7 +106,7 @@ export function DocRow({
   return (
     <div className="flex items-center justify-between gap-4 border-b border-border py-3 last:border-0">
       <div className="flex items-center gap-3 min-w-0">
-        <svg viewBox="0 0 24 24" className="size-5 flex-shrink-0 fill-red-500" aria-hidden="true">
+        <svg viewBox="0 0 24 24" className="size-5 flex-shrink-0 fill-bad-500" aria-hidden="true">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-5.5-9.5C11 11.1 9.5 12 8 12H7v4H5.5V8H8c1.5 0 3 .9 3 2.5zM7 11h1c.8 0 1.5-.4 1.5-1.5S8.8 8 8 8H7v3z"/>
         </svg>
         <div className="min-w-0">

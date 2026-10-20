@@ -102,8 +102,8 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       className={cn(
         'flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
         active
-          ? 'border-lca-navy bg-brand-navy text-white'
-          : 'border-border bg-background text-muted-foreground hover:border-lca-navy/40 hover:text-foreground',
+          ? 'border-brand-navy bg-brand-navy text-white'
+          : 'border-border bg-background text-muted-foreground hover:border-ink/40 hover:text-foreground',
       )}
     >
       {children}
@@ -156,13 +156,13 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
           {sections.map(s => {
             const name = s.name
             return (
-              <span key={name} className="rounded-full border border-lca-navy/20 bg-brand-navy/8 px-2 py-0.5 text-[11px] font-medium text-ink">
+              <span key={name} className="rounded-full border border-ink/20 bg-ink/8 px-2 py-0.5 text-[11px] font-medium text-ink">
                 {name}
               </span>
             )
           })}
           {t.is_rated === 1 && (
-            <span className="rounded-full border border-blue-200 bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-800">
+            <span className="rounded-full border border-info-200 bg-info-50 px-2 py-0.5 text-[11px] font-medium text-info-800">
               USCF Rated
             </span>
           )}
@@ -171,7 +171,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
       {t.entry_fee != null && (
         <p className="mt-3 text-xs text-muted-foreground">${t.entry_fee} entry</p>
       )}
-      {regOpen && !isPast && <p className="mt-0.5 text-xs font-medium text-emerald-600">Registration open</p>}
+      {regOpen && !isPast && <p className="mt-0.5 text-xs font-medium text-ok-600">Registration open</p>}
       {registrationSummary(t) && (
         <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
           <Users className="size-3.5 text-lca-gold" /> {registrationSummary(t)}

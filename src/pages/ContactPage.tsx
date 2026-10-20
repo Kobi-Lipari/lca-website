@@ -73,9 +73,9 @@ export function ContactPage() {
           <div>
             <h2 className="mb-6 text-xl font-bold text-ink">Send a message</h2>
             {status === 'success' ? (
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-center">
-                <p className="font-semibold text-emerald-800">Message sent</p>
-                <p className="mt-1 text-sm text-emerald-700">
+              <div className="rounded-xl border border-ok-200 bg-ok-50 p-6 text-center">
+                <p className="font-semibold text-ok">Message sent</p>
+                <p className="mt-1 text-sm text-ok-700">
                   We emailed you a copy. You can follow it in the{' '}
                   <a href="/support" className="underline">support area</a>.
                 </p>

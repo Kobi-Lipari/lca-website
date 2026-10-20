@@ -126,7 +126,7 @@ function HeroSlideshow() {
 }
 
 function StatusDot({ regStatus }: { regStatus?: string | null }) {
-  if (regStatus === 'open') return <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" title="Registration open" />
+  if (regStatus === 'open') return <span className="h-2 w-2 shrink-0 rounded-full bg-ok-500" title="Registration open" />
   if (regStatus === 'draft') return <span className="h-2 w-2 shrink-0 rounded-full bg-lca-gold" title="Opening soon" />
   return <span className="h-2 w-2 shrink-0 rounded-full bg-border" title="Coming soon" />
 }

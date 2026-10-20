@@ -55,7 +55,7 @@ function ScholasticCard({ t }: { t: UnifiedTournament }) {
                 return (
                   <span
                     key={name}
-                    className="rounded-full border border-lca-navy/20 bg-brand-navy/7 px-2 py-0.5 text-[10px] font-medium text-ink"
+                    className="rounded-full border border-ink/20 bg-ink/7 px-2 py-0.5 text-[10px] font-medium text-ink"
                   >
                     {name}
                   </span>

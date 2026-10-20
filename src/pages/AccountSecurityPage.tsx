@@ -193,7 +193,7 @@ export function AccountSecurityPage() {
           </p>
         )}
         {notice && (
-          <p className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          <p className="mb-4 rounded-lg border border-ok-200 bg-ok-50 px-3 py-2 text-sm text-ok">
             {notice}
           </p>
         )}
@@ -263,8 +263,8 @@ export function AccountSecurityPage() {
           ) : hasVerified ? (
             <div className="mt-4">
               <p className="flex items-center gap-2 text-sm">
-                <ShieldCheck className="size-4 text-emerald-600" />
-                <span className="font-medium text-emerald-800">
+                <ShieldCheck className="size-4 text-ok-600" />
+                <span className="font-medium text-ok">
                   On for this account
                 </span>
               </p>

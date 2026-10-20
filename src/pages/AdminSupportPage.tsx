@@ -18,11 +18,11 @@ import { ADMIN_SCROLL } from '@/lib/brand'
 import { useViewOnly } from '@/hooks/useViewOnly'
 
 const statusColors: Record<string, string> = {
-  open: 'bg-blue-100 text-blue-800',
-  new: 'bg-blue-100 text-blue-800',
-  answered: 'bg-emerald-100 text-emerald-800',
-  in_progress: 'bg-yellow-100 text-yellow-800',
-  resolved: 'bg-gray-100 text-gray-600',
+  open: 'bg-info-100 text-info-800',
+  new: 'bg-info-100 text-info-800',
+  answered: 'bg-ok-100 text-ok',
+  in_progress: 'bg-warn-yellow-100 text-warn-yellow-800',
+  resolved: 'bg-quiet-100 text-quiet-600',
 }
 
 const statusLabels: Record<string, string> = {
@@ -213,7 +213,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                 onClick={() => openTicket(ticket)}
                 className={`w-full text-left rounded-lg border p-4 transition-colors ${
                   selectedTicket?.ticket.id === ticket.id
-                    ? 'border-lca-navy bg-brand-navy/5'
+                    ? 'border-ink bg-ink/5'
                     : 'hover:bg-muted/50'
                 }`}
               >
@@ -297,7 +297,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                     key={msg.id}
                     className={`rounded-lg p-3 ${
                       msg.sender_type === 'admin'
-                        ? 'bg-brand-navy/5 border border-lca-navy/10'
+                        ? 'bg-ink/5 border border-ink/10'
                         : 'bg-muted'
                     }`}
                   >

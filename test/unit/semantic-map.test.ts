@@ -21,14 +21,35 @@
 //   modifiers, the navy-on-gold rule, a site, commented-out code), what it
 //   keeps, that a second run and --check find nothing to do, and the
 //   problems that stop it before anything is written.
+//
+// WS01 step 24: the second map, scripts/codemods/semantic-colours.status.map.json
+// (the status colours, the greys, the navy borders and tints, raw hex), is
+// held to the same proof:
+// - every class it writes, in every form the TSX files use, paints on the
+//   plain :root the colour of the class it replaced: to the letter, or for
+//   text-bad, which is red-600 written as the shadcn destructive, the same
+//   oklch() numbers; with an opacity modifier, the colour every browser that
+//   can mix colours paints is the same to the letter, and a token class's
+//   fallback for one that cannot is put back by the block in src/index.css
+//   to the tint the old class fell back to;
+// - each written form, variants included, builds the selector and at-rules
+//   its old form built; tailwind-merge reads it as it read the old one; and
+//   no element's winning colour changes through CSS order;
+// - the tree matches the map: --check finds nothing left, the kept classes
+//   are the map's keep entries, and a text search agrees with the parser.
+// The two classes step 24 changed by hand, the club map's loading note on
+// its paper, build the rules and paint the colours of the classes they
+// replaced too.
 import { spawnSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { compile } from 'tailwindcss'
+import { twMerge } from 'tailwind-merge'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
   DEFAULT_MAP,
+  STATUS_MAP,
   classStrings,
   loadMap,
   parseToken,
@@ -37,9 +58,12 @@ import {
   tokensOf,
   tsxFiles,
   withUtility,
+  type ClassToken,
   type ColourMap,
 } from '../../scripts/codemods/semantic-colours'
 import { indexCssRules, read, ROOT, rootTokens, stripComments, substitute } from './helpers/cssTokens'
+import { classAttributes, exclusive, jsxTree, merged, selfAndAncestors, type ClassAttribute, type JsxNode, type Piece } from './helpers/jsxClasses'
+import { escapeClass as escapeSelector, leafRules } from './helpers/tailwindRules'
 
 const map = loadMap(DEFAULT_MAP)
 
@@ -133,11 +157,14 @@ describe('every class the map writes gives exactly the colour it replaced, with 
   const cases = [...forms].flatMap(([to, mods]) => [...mods].sort().map((m) => [PAIRS.get(to)!, to, m] as const))
 
   it('checks every form the TSX files use, opacity modifiers included', () => {
-    expect(forms.get('bg-brand-navy')).toEqual(new Set(['', '5', '7', '8', '10', '55', '90', '[0.03]', '[0.04]', '[0.06]']))
+    // Step 24's map moved the seven faint tints (/5 to /10 and /[0.03] to
+    // /[0.06]) on to the ink; the hero photo's veil (/55), the navy buttons'
+    // hover (/90) and the Exit button's hover on the gold banner (/10) stay.
+    expect(forms.get('bg-brand-navy')).toEqual(new Set(['', '10', '55', '90']))
     expect(forms.get('text-ink')).toEqual(new Set(['', '80']))
     expect(forms.get('bg-surface')).toEqual(new Set(['', '90']))
     expect(forms.get('text-brand-navy')).toEqual(new Set(['']))
-    expect(cases).toHaveLength(15)
+    expect(cases).toHaveLength(9)
   })
 
   // Tailwind gives a colour class with an opacity modifier a fallback before
@@ -449,5 +476,500 @@ describe('class tokens', () => {
     expect(takesOpacity('any', '80')).toBe(true)
     expect(takesOpacity(['90'], '90')).toBe(true)
     expect(takesOpacity(['90'], '10')).toBe(false)
+  })
+})
+
+// ── The status map (step 24) ───────────────────────────────────────────────
+
+const statusMap = loadMap(STATUS_MAP)
+
+/** Every utility the status map writes, with the one it replaces. */
+const STATUS_PAIRS = new Map<string, string>()
+for (const r of statusMap.rules) STATUS_PAIRS.set(r.to, r.from)
+for (const s of statusMap.sites) STATUS_PAIRS.set(parseToken(s.to).utility, parseToken(s.from).utility)
+
+/** A class as it was written before step 24: a written utility swapped back, everything else kept. */
+const beforeStatus = (cls: string) => {
+  const t = parseToken(cls)
+  const old = STATUS_PAIRS.get(t.utility)
+  return old ? withUtility(t, old) : cls
+}
+
+/** A class without its variants and ! mark: the utility and its opacity modifier. */
+const bareForm = (cls: string) => {
+  const t = parseToken(cls)
+  return withUtility({ ...t, variants: '', bang: '' }, t.utility)
+}
+
+/** Every class the TSX files write with a utility the status map writes, as written. */
+function statusForms(): string[] {
+  const forms = new Set<string>()
+  for (const file of tsxFiles(ROOT)) {
+    for (const s of classStrings(file, read(file))) {
+      for (const { token } of tokensOf(s.text)) if (STATUS_PAIRS.has(token.utility)) forms.add(token.text)
+    }
+  }
+  return [...forms].sort()
+}
+
+/** The numbers of an oklch() colour, with its lightness as a fraction, or null. */
+function oklch(colour: string): number[] | null {
+  const m = colour.match(/^oklch\(([\d.]+)(%?) ([\d.]+) ([\d.]+)\)$/)
+  return m ? [Number(m[1]) / (m[2] ? 100 : 1), Number(m[3]), Number(m[4])] : null
+}
+
+/** The same colour: the same text, or the same oklch() numbers written another way. */
+function sameColour(a: string, b: string): boolean {
+  if (a === b) return true
+  const x = oklch(a)
+  const y = oklch(b)
+  return !!x && !!y && x.every((v, i) => Math.abs(v - y[i]) < 1e-9)
+}
+
+/**
+ * The tint a hex colour mixed with transparent gives, as #rrggbbaa, which is
+ * what the build writes for a browser that cannot mix colours; null for any
+ * other value.
+ */
+function mixedTint(value: string): string | null {
+  const m = value.match(/^color-mix\(in (?:srgb|oklab), (#[0-9a-f]{6}) ([\d.]+)%, transparent\)$/i)
+  return m ? `${m[1].toLowerCase()}${Math.round((Number(m[2]) / 100) * 255).toString(16).padStart(2, '0')}` : null
+}
+
+const NO_COLOR_MIX = '@supports not (color: color-mix(in lab, red, red))'
+
+/** The rules of src/index.css for browsers that cannot mix colours, with the at-rules around them. */
+const noMixRules = () => leafRules(stripComments(read('src/index.css'))).filter((r) => r.within.includes(NO_COLOR_MIX))
+
+/** The rules one class compiles to, with the at-rules around each and the class's own selector as written. */
+function rulesOf(cls: string) {
+  const own = `.${escapeSelector(cls)}`
+  return leafRules(stripComments(build([cls]))).filter((r) => r.selector === own || r.selector.startsWith(`${own}:`) || r.selector.startsWith(`${own} `))
+}
+
+/** The same, with the class's own name written ".X" and every colour replaced from the legacy :root, to compare two classes by what they do. */
+function behaviourOf(cls: string) {
+  const css = build([cls])
+  const vars = new Map(legacy)
+  const root = css.indexOf(':root, :host {')
+  if (root >= 0) {
+    for (const m of blockAt(css, css.indexOf('{', root)).matchAll(/(--[\w-]+):\s*([^;]+);/g)) vars.set(m[1], m[2].trim())
+  }
+  const own = `.${escapeSelector(cls)}`
+  return rulesOf(cls).map((r) => ({
+    within: r.within,
+    selector: r.selector.split(own).join('.X'),
+    body: r.body.split('; ').map((d) => {
+      const colon = d.indexOf(':')
+      return `${d.slice(0, colon).trim()}: ${substitute(d.slice(colon + 1).trim(), vars)}`
+    }).join('; '),
+  }))
+}
+
+describe('the status map: every class it writes gives exactly the colour it replaced, with newLook off', () => {
+  const forms = statusForms()
+  const cases = [...new Set([...forms.map(bareForm), ...STATUS_PAIRS.keys()])].sort().map((now) => [beforeStatus(now), now] as const)
+
+  it('each written utility replaces exactly one utility, and none is written by two rules', () => {
+    const froms = new Map<string, Set<string>>()
+    const add = (to: string, from: string) => froms.set(to, new Set([...(froms.get(to) ?? []), from]))
+    for (const r of statusMap.rules) add(r.to, r.from)
+    for (const s of statusMap.sites) add(parseToken(s.to).utility, parseToken(s.from).utility)
+    for (const [to, set] of froms) expect([...set], to).toHaveLength(1)
+    // Nothing the step 23 map writes is written again from another class.
+    for (const to of STATUS_PAIRS.keys()) expect(PAIRS.has(to) && PAIRS.get(to) !== STATUS_PAIRS.get(to), to).toBe(false)
+  })
+
+  it('checks every form the TSX files use, variants and opacity modifiers included', () => {
+    for (const form of ['text-ok', 'bg-ok-50', 'hover:bg-bad-50', 'border-brand-navy', 'border-brand-navy/30', 'hover:border-ink/40', 'focus:border-ink/50', 'bg-ink/[0.03]', 'bg-info-banner/15', 'accent-ink', 'ring-ink', 'fill-bad-500', 'text-facebook-link', 'bg-status-open-tint']) {
+      expect(forms, form).toContain(form)
+    }
+    expect(cases.length).toBeGreaterThan(70)
+  })
+
+  it.each(cases)('%s and %s paint the same colour', (from, to) => {
+    const was = paint(from)
+    const now = paint(to)
+    expect(now.property).toBe(was.property)
+    // What every browser Tailwind 4 supports paints: the same colour. Only
+    // text-bad, red-600 written as the shadcn destructive, differs in how it is written.
+    expect(sameColour(now.supported, was.supported), `${now.supported} against ${was.supported}`).toBe(true)
+    if (now.supported !== was.supported) expect([from, to]).toEqual(['text-red-600', 'text-bad'])
+    expect(now.supported).not.toContain('var(')
+    const { utility, modifier } = parseToken(to)
+    if (!modifier || /^(bg|text|border)-brand-/.test(utility)) {
+      expect(sameColour(now.fallback, was.fallback), `${now.fallback} against ${was.fallback}`).toBe(true)
+      return
+    }
+    // A token class with a modifier falls back to its token at full strength;
+    // the block in src/index.css gives it back the old class's tint (next test).
+    expect(mixedTint(was.fallback), was.fallback).not.toBeNull()
+    expect(now.fallback).toBe(substitute(`var(--${utility.replace(/^(bg|border|text)-/, '')})`, legacy))
+  })
+
+  it('every token class with a modifier gets its old tint back in a browser that cannot mix colours, in its own selector and media query', () => {
+    const block = noMixRules()
+    const tokenForms = forms.filter((f) => parseToken(f).modifier !== '' && !/-brand-/.test(parseToken(f).utility))
+    expect(tokenForms).toEqual([
+      'bg-info-banner/15', 'bg-ink/10', 'bg-ink/5', 'bg-ink/7', 'bg-ink/8', 'bg-ink/[0.03]', 'bg-ink/[0.04]', 'bg-ink/[0.06]',
+      'border-ink/10', 'border-ink/15', 'border-ink/20', 'border-ink/40', 'focus:border-ink/50', 'hover:border-ink/30', 'hover:border-ink/40',
+    ])
+    for (const form of tokenForms) {
+      const fallback = rulesOf(form).filter((r) => !r.within.some((w) => w.startsWith('@supports')))
+      expect(fallback, form).toHaveLength(1)
+      const back = block.filter((r) => r.selector === fallback[0].selector)
+      expect(back, form).toHaveLength(1)
+      expect(back[0].within.filter((w) => w !== NO_COLOR_MIX), form).toEqual(fallback[0].within)
+      const property = fallback[0].body.split(':')[0]
+      expect(back[0].body, form).toBe(`${property}: ${mixedTint(paint(bareForm(beforeStatus(form))).fallback)}`)
+    }
+    // And nothing else: the block holds one rule for each of these forms.
+    expect(block).toHaveLength(tokenForms.length)
+  })
+
+  it('each written form, variants included, builds the selector and at-rules its old form built, and paints the same colour', () => {
+    const differ: string[] = []
+    const mixes = (r: { within: string[] }) => r.within.some((w) => w.startsWith('@supports'))
+    for (const now of forms) {
+      const was = beforeStatus(now)
+      let a = behaviourOf(was)
+      let b = behaviourOf(now)
+      if (b.length === 0) differ.push(`${now} compiled to nothing`)
+      const tokenModifier = parseToken(now).modifier !== '' && !/-brand-/.test(parseToken(now).utility)
+      if (tokenModifier) {
+        // A token class with a modifier writes a fallback (its token at full
+        // strength, which the block above puts right) and the mix in
+        // @supports. An arbitrary hex with a modifier (bg-[#1e4d7b]/15) wrote
+        // the mix alone, so the mix is what to compare.
+        const drop = <T extends { within: string[] }>(r: T): T => ({ ...r, within: r.within.filter((w) => !w.startsWith('@supports')) })
+        b = b.filter(mixes).map(drop)
+        a = (a.some(mixes) ? a.filter(mixes) : a).map(drop)
+      }
+      if (JSON.stringify(b.map((r) => [r.within, r.selector])) !== JSON.stringify(a.map((r) => [r.within, r.selector]))) differ.push(`${now}: ${JSON.stringify(b)} against ${JSON.stringify(a)}`)
+      b.forEach((rule, i) => {
+        const old = a[i]?.body ?? ''
+        const [p, v] = [rule.body.split(': ')[0], rule.body.slice(rule.body.indexOf(': ') + 2)]
+        if (!old.startsWith(`${p}: `) || !sameColour(v, old.slice(p.length + 2))) differ.push(`${now}: ${rule.body} against ${old}`)
+      })
+    }
+    expect(differ).toEqual([])
+  })
+})
+
+/** Rivals and look-alikes for the status map's classes: colours they meet in the files, and classes of other kinds that share a prefix. */
+const STATUS_RIVALS = [
+  'text-white', 'text-white/60', 'text-ink', 'text-muted-foreground', 'text-foreground', 'text-destructive', 'text-lca-gold',
+  'text-xs', 'text-sm', 'text-[10px]', 'text-center',
+  'bg-muted', 'bg-muted/40', 'bg-card', 'bg-background', 'bg-transparent', 'bg-lca-gold', 'bg-lca-gold/20', 'bg-brand-navy', 'bg-white/10', 'bg-cover',
+  'border-border', 'border-transparent', 'border', 'border-2', 'border-b', 'border-dashed', 'border-lca-gold/40',
+  'ring-2', 'ring-offset-2', 'ring-lca-gold', 'fill-none', 'accent-auto',
+]
+
+describe('the status map: tailwind-merge reads each written class exactly as it read the class it replaced', () => {
+  it.each(statusForms())('%s, against every rival and look-alike, in either order', (now) => {
+    const was = beforeStatus(now)
+    for (const rival of STATUS_RIVALS) {
+      const r = `${parseToken(now).variants}${rival}`
+      for (const [first, second] of [[r, now], [now, r]] as const) {
+        const result = twMerge(`${first} ${second}`).split(' ').map(beforeStatus).join(' ')
+        const old = twMerge(`${first === now ? was : first} ${second === now ? was : second}`)
+        expect(result, `${first} ${second}`).toBe(old)
+      }
+    }
+  })
+})
+
+describe('the status map: no element changes its winning colour through CSS order', () => {
+  interface Rival { where: string; a: string; b: string; pa: Piece; pb: Piece }
+
+  /** Pairs in one className that set one colour property under the same variants, at least one written by the map, whose CSS order is not the order of the classes they replaced. */
+  function flipped(attrs: ClassAttribute[], position: (u: string) => number, colourProperty: (u: string) => string | null): Rival[] {
+    const out: Rival[] = []
+    for (const attr of attrs) {
+      const toks: Array<{ token: ClassToken; piece: Piece }> = attr.pieces.flatMap((piece) => tokensOf(piece.text).map(({ token }) => ({ token, piece })))
+      for (let i = 0; i < toks.length; i++) {
+        for (let j = i + 1; j < toks.length; j++) {
+          const [x, y] = [toks[i], toks[j]]
+          if (x.token.text === y.token.text) continue
+          if (!STATUS_PAIRS.has(x.token.utility) && !STATUS_PAIRS.has(y.token.utility)) continue
+          if (x.token.variants !== y.token.variants || x.token.bang !== y.token.bang) continue
+          const [bx, by] = [bareForm(x.token.text), bareForm(y.token.text)]
+          const prop = colourProperty(bx)
+          if (!prop || prop !== colourProperty(by)) continue
+          const now = Math.sign(position(bx) - position(by))
+          const was = Math.sign(position(beforeStatus(bx)) - position(beforeStatus(by)))
+          if (now !== was) out.push({ where: `${attr.file}:${attr.line}`, a: x.token.text, b: y.token.text, pa: x.piece, pb: y.piece })
+        }
+      }
+    }
+    return out
+  }
+
+  /** The flips in some className attributes, with every bare class built at once so their places in one stylesheet compare. */
+  function flipsIn(attrs: ClassAttribute[]): Rival[] {
+    const all = new Set<string>()
+    for (const attr of attrs) for (const piece of attr.pieces) for (const { token } of tokensOf(piece.text)) {
+      const bare = bareForm(token.text)
+      all.add(bare)
+      all.add(beforeStatus(bare))
+    }
+    const css = build([...all])
+    const position = (u: string) => css.indexOf(`.${escapeSelector(u)} {`)
+    // The colour property each bare class sets, read from the same stylesheet.
+    const bodies = new Map<string, string>()
+    for (const r of leafRules(stripComments(css))) if (!bodies.has(r.selector)) bodies.set(r.selector, r.body)
+    const colourProperty = (u: string) =>
+      bodies.get(`.${escapeSelector(u)}`)?.match(/^(color|background-color|border-color|outline-color|fill|stroke|accent-color|--tw-ring-color):/)?.[1] ?? null
+    return flipped(attrs, position, colourProperty)
+  }
+  const unsettled = (f: Rival) => !exclusive(f.pa, f.pb) && !merged(f.pa, f.pb)
+
+  it('the check finds a planted pair, and knows that cn() and exclusive branches settle one', () => {
+    // text-emerald-800 sorted before text-muted-foreground; text-ok sorts after it.
+    const planted = [
+      "import { cn } from '@/lib/utils'",
+      'export function Planted({ on }: { on: boolean }) {',
+      '  return (',
+      '    <div>',
+      '      <p className="text-muted-foreground text-ok">plain</p>',
+      "      <p className={cn('text-muted-foreground', on && 'text-ok')}>merged</p>",
+      "      <p className={on ? 'text-muted-foreground' : 'text-ok'}>exclusive</p>",
+      '    </div>',
+      '  )',
+      '}',
+    ].join('\n')
+    const flips = flipsIn(classAttributes('src/pages/Planted.tsx', planted))
+    expect(flips.map((f) => f.where)).toEqual([5, 6, 7].map((n) => `src/pages/Planted.tsx:${n}`))
+    expect(flips.filter(unsettled).map((f) => f.where)).toEqual(['src/pages/Planted.tsx:5'])
+  })
+
+  it('every rival pair whose order the move changed is settled by cn() or never applies together', () => {
+    const flips = flipsIn(tsxFiles(ROOT).flatMap((file) => classAttributes(file)))
+    expect(flips.filter(unsettled).map((f) => `${f.where} ${f.a} / ${f.b}`)).toEqual([])
+    // Those that did change order sit in cn(), where tailwind-merge keeps the later one, as it did before.
+    for (const f of flips.filter((x) => !exclusive(x.pa, x.pb))) {
+      expect(twMerge(`${f.a} ${f.b}`).split(' ').map(beforeStatus).join(' ')).toBe(twMerge(`${beforeStatus(f.a)} ${beforeStatus(f.b)}`))
+    }
+  }, 60_000)
+})
+
+describe('the status map: the TSX files match it', () => {
+  const plan = planRewrite(ROOT, statusMap, 'check')
+
+  it('the codemod finds nothing left to rewrite and no problem', () => {
+    expect(plan.problems).toEqual([])
+    expect(plan.edits).toEqual([])
+  })
+
+  it('the classes it keeps are its keep entries: the light tones on navy, StatusBadge (step 26), the check-in toggle\'s hover line, the print page\'s row rules and the external-event dots', () => {
+    const byFile = new Map<string, string[]>()
+    for (const k of plan.kept) byFile.set(k.file, [...(byFile.get(k.file) ?? []), k.token])
+    expect(Object.fromEntries([...byFile].map(([f, t]) => [f, t.sort()]))).toEqual({
+      'src/components/ImpersonationBanner.tsx': ['hover:bg-brand-navy/10'],
+      'src/components/StatusBadge.tsx': [
+        'bg-blue-50', 'bg-blue-500/20', 'bg-emerald-100', 'bg-emerald-500', 'bg-emerald-500/20', 'bg-red-100', 'bg-red-500/20',
+        'border-blue-200', 'text-blue-200', 'text-blue-800', 'text-emerald-300', 'text-emerald-800', 'text-red-300', 'text-red-700',
+      ],
+      'src/pages/TournamentDetailPage.tsx': ['bg-blue-500/20', 'bg-emerald-500/20', 'bg-emerald-500/20', 'text-blue-200', 'text-emerald-300', 'text-emerald-300'],
+      'src/pages/TournamentManagePage.tsx': [
+        'bg-emerald-500/20', 'bg-green-500/20', 'bg-red-500/20', 'hover:border-emerald-600/50',
+        'text-emerald-300', 'text-green-300', 'text-red-300',
+      ],
+      // The rating and score on the pairing sheet take text-quiet-600: a printed page takes the light look.
+      'src/pages/TournamentPrintPage.tsx': ['border-gray-300', 'border-gray-300'],
+      'src/pages/TournamentsPage.tsx': ['bg-slate-400', 'bg-slate-400', 'bg-slate-500'],
+    })
+    for (const k of plan.kept) expect(k.reason.length, k.token).toBeGreaterThan(40)
+  })
+
+  it('keeps nothing in every file: each keep entry names its file, and each light tone on navy and its tint the one string it sits in', () => {
+    // A keep entry with no file would let the class through in any page, a
+    // light red word on a white card included, in this check. (The ratchet,
+    // raw-colours.test.ts, credits a keep entry only where it names its one
+    // string, and counts the rest in its allowlist.)
+    for (const k of statusMap.keep) expect(k.file, `${k.class} ${k.reason}`).toBeDefined()
+    // The light words and their 20 per cent tints on the navy heroes and StatusBadge's navy surface (StatusDot's opaque dot is StatusBadge's own).
+    const lightWords = /^(text-(emerald|red|green)-300|text-blue-200)$/
+    const tintUnder = /^bg-(emerald|red|blue|green)-500$/
+    const onNavy = statusMap.keep.filter((k) => lightWords.test(k.class) || (tintUnder.test(k.class) && k.opacity !== 'none'))
+    expect(onNavy.map((k) => k.file).sort()).toEqual([
+      ...Array(6).fill('src/components/StatusBadge.tsx'),
+      ...Array(6).fill('src/pages/TournamentDetailPage.tsx'),
+      ...Array(6).fill('src/pages/TournamentManagePage.tsx'),
+    ])
+    for (const k of onNavy) {
+      expect(k.contains, `${k.file} ${k.class}`).toBeDefined()
+      expect(k.opacity, `${k.file} ${k.class}`).toEqual(k.class.startsWith('bg-') ? ['20'] : 'none')
+    }
+    // Each names one string of its file that holds the class (the codemod's check above would report any other count).
+    const named = new Set(onNavy.map((k) => `${k.file} ${k.contains}`))
+    expect(named.size).toBe(9)
+  })
+
+  it('a plain text search of the TSX files finds exactly the uses of its watched classes the parser keeps', () => {
+    const watched = new RegExp(`(?<![\\w-])(${statusMap.watch.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?=$|[\\s'"\`/!])`, 'g')
+    const byText = new Map<string, number>()
+    for (const file of tsxFiles(ROOT)) {
+      const n = (read(file).match(watched) ?? []).length
+      if (n > 0) byText.set(file, n)
+    }
+    const byParser = new Map<string, number>()
+    for (const k of plan.kept) if (statusMap.watch.includes(parseToken(k.token).utility)) byParser.set(k.file, (byParser.get(k.file) ?? 0) + 1)
+    expect(byText).toEqual(byParser)
+  })
+})
+
+describe('the status map: the block for browsers that cannot mix colours changes nothing else on an element', () => {
+  // The block in src/index.css sits outside Tailwind's cascade layers, so in
+  // a browser that reads it each of its rules wins over every Tailwind
+  // utility on the same element, whatever its specificity or variant. It
+  // puts back exactly the tint the old class fell back to only while nothing
+  // else on the element sets the same colour and should win: a class with a
+  // state or breakpoint the block's class lacks (hover:, focus-visible:,
+  // md:, aria-invalid:), or one with the same variants that the CSS order
+  // let win before (unless cn() keeps just one of the two). A component that
+  // brings classes of its own, such as a shadcn Button or Input, could hide
+  // such a rival, so the block's classes sit only on plain elements and on
+  // Link, which adds none.
+
+  /** A class as a selector of the block writes it, read back: ".hover\:border-ink\/30:hover" is hover:border-ink/30. */
+  function classOfSelector(selector: string): string {
+    let out = ''
+    for (let i = 1; i < selector.length; i++) {
+      if (selector[i] === '\\') out += selector[++i]
+      else if (selector[i] === ':') break
+      else out += selector[i]
+    }
+    return out
+  }
+
+  const block = noMixRules().map((r) => ({ cls: classOfSelector(r.selector), property: r.body.split(':')[0], selector: r.selector }))
+
+  it('reads each rule of the block as a class and the colour property it sets', () => {
+    const classes = block.map((b) => b.cls)
+    expect(classes).toContain('bg-ink/[0.03]')
+    expect(classes).toContain('hover:border-ink/40')
+    expect(classes).toContain('focus:border-ink/50')
+    expect(new Set(block.map((b) => b.property))).toEqual(new Set(['background-color', 'border-color']))
+    // Outside every layer: no @layer around any of them.
+    for (const rule of noMixRules()) expect(rule.within.filter((w) => w.startsWith('@layer')), rule.selector).toEqual([])
+  })
+
+  /** Each element that holds a class of the block, with the classes its className can hold beside it. */
+  function holders(nodes: JsxNode[]) {
+    const byClass = new Map(block.map((b) => [b.cls, b]))
+    const out: Array<{ node: JsxNode; own: { token: ClassToken; piece: Piece }; rivals: Array<{ token: ClassToken; piece: Piece }> }> = []
+    for (const node of nodes) {
+      const toks = node.pieces.flatMap((piece) => tokensOf(piece.text).map(({ token }) => ({ token, piece })))
+      for (const own of toks) {
+        if (!byClass.has(own.token.text)) continue
+        out.push({ node, own, rivals: toks.filter((t) => t.token.text !== own.token.text && !exclusive(t.piece, own.piece)) })
+      }
+    }
+    return out
+  }
+
+  /** The problems: rivals the block's rule would now beat, and components that could hide one. */
+  function overridden(nodes: JsxNode[]): string[] {
+    const found = holders(nodes)
+    // Every class beside a block class, built once, to read the colour property each sets.
+    const bare = [...new Set(found.flatMap((h) => h.rivals.map((r) => bareForm(r.token.text))))]
+    const css = build(bare)
+    const bodies = new Map<string, string>()
+    for (const r of leafRules(stripComments(css))) if (!r.within.some((w) => w.startsWith('@supports')) && !bodies.has(r.selector)) bodies.set(r.selector, r.body)
+    const propertyOf = (cls: string) => bodies.get(`.${escapeSelector(bareForm(cls))}`)?.match(/^(background-color|border-color):/)?.[1] ?? null
+    const byClass = new Map(block.map((b) => [b.cls, b]))
+    const problems: string[] = []
+    for (const { node, own, rivals } of found) {
+      const where = `${node.file}:${node.line} <${node.tag}> ${own.token.text}`
+      if (/^[A-Z]/.test(node.tag) && node.tag !== 'Link') problems.push(`${where}: on a component, whose own classes could set the same colour`)
+      const mine = byClass.get(own.token.text)!
+      for (const r of rivals) {
+        if (propertyOf(r.token.text) !== mine.property) continue
+        const theirs = byClass.get(r.token.text)
+        // A rival in the block too wins by its own selector where it has a state the class lacks.
+        if (theirs && r.token.variants !== '' && own.token.variants === '') continue
+        // A rival with no variant, beside a block class with one (hover:), loses in that state, as it should.
+        if (r.token.variants === '' && own.token.variants !== '') continue
+        // Same variants inside one cn(): tailwind-merge keeps only the later.
+        if (r.token.variants === own.token.variants && merged(r.piece, own.piece)) continue
+        problems.push(`${where} would beat ${r.token.text}`)
+      }
+    }
+    return problems
+  }
+
+  it('finds a planted rival, a planted component, and lets a hover form and cn() through', () => {
+    const planted = [
+      "import { cn } from '@/lib/utils'",
+      "import { Button } from '@/components/ui/button'",
+      'export function Planted({ on }: { on: boolean }) {',
+      '  return (',
+      '    <div>',
+      '      <p className="border border-ink/20 focus-visible:border-ring">a</p>',
+      '      <p className="bg-ink/5 bg-muted">b</p>',
+      '      <Button className="bg-ink/5">c</Button>',
+      '      <p className="border border-border hover:border-ink/40">d</p>',
+      "      <p className={cn('bg-ink/5', on && 'bg-muted')}>e</p>",
+      "      <p className={on ? 'bg-ink/5' : 'bg-muted'}>f</p>",
+      '    </div>',
+      '  )',
+      '}',
+    ].join('\n')
+    const nodes = jsxTree('src/pages/Planted.tsx', planted)
+    expect(overridden(nodes)).toEqual([
+      'src/pages/Planted.tsx:6 <p> border-ink/20 would beat focus-visible:border-ring',
+      'src/pages/Planted.tsx:7 <p> bg-ink/5 would beat bg-muted',
+      'src/pages/Planted.tsx:8 <Button> bg-ink/5: on a component, whose own classes could set the same colour',
+    ])
+  })
+
+  it('on the site, no element holds a class of the block beside a colour it would wrongly beat, or on a component', () => {
+    const nodes = tsxFiles(ROOT).flatMap((file) => jsxTree(file))
+    expect(holders(nodes).length).toBeGreaterThan(40)
+    expect(overridden(nodes)).toEqual([])
+  }, 60_000)
+})
+
+// ── Changed by hand (step 24) ──────────────────────────────────────────────
+
+describe('the club map\'s loading note, changed by hand, paints what it painted with newLook off', () => {
+  // The club map's paper (bg-[#f2efe6]) stays light in every look, so the
+  // words on it and the veil laid over it while the map loads take tokens
+  // that stay as the light look draws them (tokens.test.ts holds their
+  // values, contrast.test.ts their contrast on the paper). No map writes
+  // them: the words in LCAMap.tsx sit in a string ("text-sm" and the colour)
+  // that no site could name alone.
+  const HAND = [
+    ['text-muted-foreground', 'text-muted-on-light'],
+    ['bg-muted/30', 'bg-veil-on-light/30'],
+  ] as const
+
+  it.each(HAND)('%s and %s build the same rules, and paint the same colour in every browser, fallback included', (was, now) => {
+    expect(behaviourOf(now)).toEqual(behaviourOf(was))
+    expect(behaviourOf(now).length).toBeGreaterThan(0)
+    expect(paint(now)).toEqual(paint(was))
+    expect(paint(now).supported).not.toContain('var(')
+  })
+
+  it('tailwind-merge reads each as it read the class it replaced', () => {
+    for (const [was, now] of HAND) {
+      for (const rival of STATUS_RIVALS) {
+        const back = (cls: string) => (cls === now ? was : cls)
+        for (const [first, second] of [[rival, now], [now, rival]] as const) {
+          expect(twMerge(`${first} ${second}`).split(' ').map(back).join(' '), `${first} ${second}`).toBe(twMerge(`${back(first)} ${back(second)}`))
+        }
+      }
+    }
+  })
+
+  it('only the two loading notes on the club map\'s paper use them, each with no other colour beside it', () => {
+    const users = tsxFiles(ROOT).flatMap((file) => jsxTree(file)).filter((n) => n.classes.some((c) => HAND.some(([, now]) => c === now)))
+    expect(users.map((n) => `${n.file} ${n.classes.join(' ')}`)).toEqual([
+      'src/areas/clubs/components/ClubLocationPicker.tsx absolute inset-0 flex items-center justify-center text-sm text-muted-on-light',
+      'src/areas/clubs/components/LCAMap.tsx absolute inset-0 flex items-center justify-center bg-veil-on-light/30',
+      'src/areas/clubs/components/LCAMap.tsx text-sm text-muted-on-light',
+    ])
+    for (const n of users) expect(selfAndAncestors(n).some((a) => a.classes.includes('bg-[#f2efe6]')), `${n.file}:${n.line}`).toBe(true)
   })
 })

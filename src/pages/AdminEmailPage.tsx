@@ -93,8 +93,8 @@ function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml:
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; className: string }> = {
   sending: { label: 'Sending…', icon: Clock, className: 'bg-lca-gold/15 text-[#7a5c00]' },
-  completed: { label: 'Completed', icon: CheckCircle2, className: 'bg-emerald-100 text-emerald-800' },
-  failed: { label: 'Failed', icon: XCircle, className: 'bg-red-100 text-red-700' },
+  completed: { label: 'Completed', icon: CheckCircle2, className: 'bg-ok-100 text-ok' },
+  failed: { label: 'Failed', icon: XCircle, className: 'bg-bad-100 text-bad-700' },
 }
 
 function CampaignRow({ c }: { c: ApiCampaign }) {
@@ -123,7 +123,7 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
         </div>
         <p className="mt-1 text-[11px] text-muted-foreground">
           {c.sent_count} sent
-          {c.failed_count > 0 && <span className="text-red-600"> · {c.failed_count} failed</span>}
+          {c.failed_count > 0 && <span className="text-bad"> · {c.failed_count} failed</span>}
           {' '}· {pct}%
         </p>
       </div>
@@ -431,7 +431,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                   </Button>
                 </div>
                 {testResult && (
-                  <p className={cn('mt-2 text-xs', testResult.ok ? 'text-emerald-700' : 'text-destructive')}>{testResult.message}</p>
+                  <p className={cn('mt-2 text-xs', testResult.ok ? 'text-ok-700' : 'text-destructive')}>{testResult.message}</p>
                 )}
                 <p className="mt-1.5 text-[10px] text-muted-foreground">
                   Test emails are marked [TEST] in the subject and don't count toward — or appear in — send history.

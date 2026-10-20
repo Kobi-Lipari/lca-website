@@ -312,7 +312,9 @@ export function buildUploadFiles(report: ApiRatingReport, s: UploadSettings): Up
 
 // ── One download: a plain (uncompressed) zip of the three files ──────────────
 
-const CRC_TABLE = (() => {
+// Marked pure, so a page that imports the events area for something else (the
+// tournament page takes the grade ticks from it) does not load this file too.
+const CRC_TABLE = /* @__PURE__ */ (() => {
   const t = new Uint32Array(256)
   for (let n = 0; n < 256; n++) {
     let c = n

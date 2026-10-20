@@ -508,7 +508,7 @@ export function AdminClubPage() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="flex-shrink-0 text-red-600 hover:bg-red-50"
+                        className="flex-shrink-0 text-bad hover:bg-bad-50"
                         disabled={newsDeletingId === item.id}
                         onClick={() => handleDeleteNews(item)}
                       >
@@ -631,7 +631,7 @@ export function AdminClubPage() {
                       </div>
                       <div className="flex flex-shrink-0 items-center gap-3">
                         <span className={cn('rounded-full px-2 py-0.5 text-xs capitalize',
-                          m.membership_status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-muted text-muted-foreground')}>
+                          m.membership_status === 'active' ? 'bg-ok-100 text-ok' : 'bg-muted text-muted-foreground')}>
                           {m.membership_status}
                         </span>
                         {m.uscf_rating != null && (

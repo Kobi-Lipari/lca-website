@@ -24,13 +24,18 @@
 //   in any place its component is drawn, is a menu (bg-popover) whose
 //   controls the focus ring rules give the look's own ring back; any other
 //   would get the band's gold ring on a light ground;
-// - text-ink sits on a fixed light tint only at the two places recorded as
-//   a follow-up for step 24, where it is light on light in dark mode.
+// - text-ink sits on no fixed light tint, where it would be light on light
+//   in dark mode: step 24 moved the two places step 23 recorded onto the ok
+//   tint, which follows the look. Since step 24 no words colour that follows
+//   the look sits on one either, and no veil that follows the look lies over
+//   one: the club map's paper, which stays light in every look, takes words
+//   and a veil that stay as the light look draws them. Which colours follow
+//   the look is read from src/index.css, so a new token is placed by its values.
 //
 // Each check is run on a planted file first, to show it finds what it looks for.
 import { describe, expect, it } from 'vitest'
 import { DEFAULT_MAP, loadMap, parseToken, tokensOf, tsxFiles, type ClassToken } from '../../scripts/codemods/semantic-colours'
-import { contrast, indexCssRules, parseRules, read, ROOT, type CssRule } from './helpers/cssTokens'
+import { contrast, indexCssRules, parseRules, read, ROOT, rootTokens, scopeTokens, type CssRule } from './helpers/cssTokens'
 import { descendants, exclusive, jsxTree, merged, selfAndAncestors, type JsxNode, type Piece } from './helpers/jsxClasses'
 
 const map = loadMap(DEFAULT_MAP)
@@ -234,41 +239,86 @@ function goldRingOnLight(cards: JsxNode[], css: CssRule[] = indexCssRules()): st
     .map(where)
 }
 
-/** Fixed light tints: they do not follow the look, so text-ink (light in dark mode) on one is light on light. */
+/** Fixed light tints: they do not follow the look, so words that do (light in dark mode) are light on light there. */
 const FIXED_LIGHT = /^bg-((emerald|green|red|amber|yellow|orange|blue|sky|indigo|violet|purple|pink|rose|teal|cyan|lime|gray|slate|zinc|stone|neutral)-(50|100|200)|lca-cream|\[#[ef][0-9a-f]{5}\]|\[#fff\]|\[#ffffff\])$/
-/** Grounds that follow the look, which put an element back on the look's own ground. */
-const FOLLOWS = /^bg-(surface|surface-2|ground|card|background|popover|muted|secondary|accent|ink)$/
 
-/** text-ink in the same className as a fixed light tint that can apply with it. */
-function inkBesideTint(nodes: JsxNode[]): string[] {
+/** Every look the new look brings, light and dark, as the tokens a container in it sees. */
+const LOOK_TOKENS = (() => {
+  const rules = indexCssRules()
+  return [false, true].flatMap((dark) => [
+    rootTokens(rules, { look: true, dark }),
+    ...['live', 'scholastic', 'heritage'].map((theme) => scopeTokens(rules, { look: true, dark }, theme)),
+  ])
+})()
+const INLINE = indexCssRules().find((r) => r.selector === '@theme inline')!
+
+/**
+ * Whether a text or background colour utility follows the look: it reads a
+ * token (through the @theme inline block) whose value is not the same in
+ * every look and mode. text-ink, text-muted-foreground, text-ok and bg-muted
+ * do; text-muted-on-light and bg-veil-on-light/30, which stay as the light look
+ * draws them, do not, and neither do text-white or a brand or palette colour.
+ */
+function followsLook(utility: string): boolean {
+  const m = utility.match(/^(?:text|bg)-(.+)$/)
+  const token = m ? INLINE.decls.get(`--color-${m[1]}`)?.match(/^var\((--[\w-]+)\)$/)?.[1] : undefined
+  return !!token && new Set(LOOK_TOKENS.map((t) => t.get(token))).size > 1
+}
+const wordsFollow = (t: ClassToken) => t.variants === '' && t.utility.startsWith('text-') && followsLook(t.utility)
+/** An opaque ground that follows the look, which puts an element back on the look's own ground. */
+const groundFollows = (t: ClassToken) => t.variants === '' && t.modifier === '' && t.utility.startsWith('bg-') && followsLook(t.utility)
+
+/** Words that follow the look in the same className as a fixed light tint that can apply with them. */
+function lookWordsBesideTint(nodes: JsxNode[]): string[] {
   const out: string[] = []
   for (const n of nodes) {
     const all = tokens(n)
-    for (const ink of all.filter(({ token }) => token.utility === 'text-ink' && token.variants === '')) {
+    for (const words of all.filter(({ token }) => wordsFollow(token))) {
       for (const other of all) {
-        if (other.piece !== ink.piece && exclusive(other.piece, ink.piece)) continue
-        if (other.token.variants === '' && other.token.modifier === '' && FIXED_LIGHT.test(other.token.utility)) out.push(`${where(n)} ${other.token.text}`)
+        if (other.piece !== words.piece && exclusive(other.piece, words.piece)) continue
+        if (other.token.variants === '' && other.token.modifier === '' && FIXED_LIGHT.test(other.token.utility)) out.push(`${where(n)} ${words.token.text} on ${other.token.text}`)
       }
     }
   }
   return out
 }
 
-/** text-ink inside an element with a fixed light tint, with no ground that follows the look in between. */
-function inkOnIslands(nodes: JsxNode[]): string[] {
+/**
+ * The fixed light tint an element sits on, when no ground that follows the
+ * look comes between: the first one up its ancestors (itself left out), or null.
+ */
+function islandAbove(n: JsxNode): string | null {
+  for (const a of selfAndAncestors(n).slice(1)) {
+    const t = tokens(a).filter(({ token }) => token.variants === '' && token.modifier === '')
+    // A fixed tint in any branch of an ancestor: in that branch the element sits on it.
+    const tint = t.find(({ token }) => FIXED_LIGHT.test(token.utility))
+    if (tint) return tint.token.text
+    // A ground that follows the look, between the element and any tint, is what it sits on.
+    if (t.some(({ token }) => groundFollows(token))) return null
+  }
+  return null
+}
+
+/** Words that follow the look inside an element with a fixed light tint, with no ground that follows the look in between. */
+function lookWordsOnIslands(nodes: JsxNode[]): string[] {
   const out: string[] = []
   for (const n of nodes) {
-    if (!tokens(n).some(({ token }) => token.utility === 'text-ink' && token.variants === '')) continue
-    for (const a of selfAndAncestors(n)) {
-      const t = tokens(a).filter(({ token }) => token.variants === '' && token.modifier === '')
-      // A fixed tint in any branch of an ancestor: in that branch the ink sits on it.
-      if (a !== n && t.some(({ token }) => FIXED_LIGHT.test(token.utility))) {
-        out.push(where(n))
-        break
-      }
-      // A ground that follows the look, on the element or between it and any tint, is what the ink sits on.
-      if (t.some(({ token }) => FOLLOWS.test(token.utility))) break
-    }
+    const own = tokens(n).map(({ token }) => token)
+    if (own.some(groundFollows)) continue
+    const words = own.filter(wordsFollow)
+    const island = words.length > 0 ? islandAbove(n) : null
+    if (island) out.push(`${where(n)} ${words.map((w) => w.text).join(' ')} on ${island}`)
+  }
+  return out
+}
+
+/** A translucent ground that follows the look, laid over a fixed light tint: in dark mode it darkens the island under it. */
+function lookVeilsOnIslands(nodes: JsxNode[]): string[] {
+  const out: string[] = []
+  for (const n of nodes) {
+    const veils = tokens(n).filter(({ token }) => token.variants === '' && token.modifier !== '' && token.utility.startsWith('bg-') && followsLook(token.utility))
+    const island = veils.length > 0 ? islandAbove(n) : null
+    if (island) out.push(`${where(n)} ${veils.map((v) => v.token.text).join(' ')} on ${island}`)
   }
   return out
 }
@@ -355,11 +405,34 @@ describe('each check finds what it looks for', () => {
     expect(goldRingOnLight(menu, css(back.slice(0, back.indexOf(',')) + ' { outline-color: var(--focus); }'))).toHaveLength(1)
   })
 
-  it('ink on a fixed light tint, beside it or inside it', () => {
-    expect(inkBesideTint(planted('<p className="bg-emerald-50 text-ink">x</p>'))).toHaveLength(1)
-    expect(inkBesideTint(planted("<p className={on ? 'bg-emerald-50 text-emerald-800' : 'bg-lca-gold/20 text-ink'}>x</p>"))).toEqual([])
-    expect(inkOnIslands(planted('<div className="bg-emerald-50"><p className="text-ink">x</p></div>'))).toHaveLength(1)
-    expect(inkOnIslands(planted('<div className="bg-emerald-50"><div className="bg-card"><p className="text-ink">x</p></div></div>'))).toEqual([])
+  it('words that follow the look on a fixed light tint, beside it or inside it', () => {
+    expect(lookWordsBesideTint(planted('<p className="bg-emerald-50 text-ink">x</p>'))).toHaveLength(1)
+    expect(lookWordsBesideTint(planted("<p className={on ? 'bg-emerald-50 text-emerald-800' : 'bg-lca-gold/20 text-ink'}>x</p>"))).toEqual([])
+    expect(lookWordsOnIslands(planted('<div className="bg-emerald-50"><p className="text-ink">x</p></div>'))).toHaveLength(1)
+    expect(lookWordsOnIslands(planted('<div className="bg-emerald-50"><div className="bg-card"><p className="text-ink">x</p></div></div>'))).toEqual([])
+    // Any words colour that follows the look, read from the stylesheet: muted words and a tone's words too.
+    expect(lookWordsOnIslands(planted('<div className="bg-[#f2efe6]"><p className="text-muted-foreground">x</p></div>'))).toHaveLength(1)
+    expect(lookWordsOnIslands(planted('<div className="bg-[#f2efe6]"><p className="text-ok-700">x</p></div>'))).toHaveLength(1)
+    expect(lookWordsBesideTint(planted('<p className="bg-[#f2efe6] text-muted-foreground">x</p>'))).toHaveLength(1)
+    // Words that stay as the light look draws them, or that never follow a look, are not.
+    expect(lookWordsOnIslands(planted('<div className="bg-[#f2efe6]"><p className="text-muted-on-light">x</p></div>'))).toEqual([])
+    expect(lookWordsOnIslands(planted('<div className="bg-[#f2efe6]"><p className="text-white">x</p></div>'))).toEqual([])
+    // A translucent ground does not end the island; an opaque one that follows the look does.
+    expect(lookWordsOnIslands(planted('<div className="bg-[#f2efe6]"><div className="bg-muted/30"><p className="text-muted-foreground">x</p></div></div>'))).toHaveLength(1)
+    expect(lookWordsOnIslands(planted('<div className="bg-[#f2efe6]"><button className="bg-surface text-ink">x</button></div>'))).toEqual([])
+  })
+
+  it('a veil that follows the look over a fixed light tint', () => {
+    expect(lookVeilsOnIslands(planted('<div className="bg-[#f2efe6]"><div className="bg-muted/30"><p className="text-muted-on-light">x</p></div></div>'))).toHaveLength(1)
+    expect(lookVeilsOnIslands(planted('<div className="bg-[#f2efe6]"><div className="bg-veil-on-light/30"><p className="text-muted-on-light">x</p></div></div>'))).toEqual([])
+    expect(lookVeilsOnIslands(planted('<div className="bg-card"><div className="bg-muted/30">x</div></div>'))).toEqual([])
+  })
+
+  it('reads from the stylesheet which colours follow the look', () => {
+    for (const u of ['text-ink', 'text-muted-foreground', 'text-foreground', 'text-ok', 'text-ok-700', 'text-status-open', 'bg-muted', 'bg-card', 'bg-ok-50']) expect(followsLook(u), u).toBe(true)
+    // The veil as the clubs map writes it, and a hex colour put together when the test runs, so Tailwind, which reads this file, builds no CSS for it.
+    const fixed = ['text-muted-on-light', parseToken('bg-veil-on-light/30').utility, 'text-white', 'text-brand-navy', 'bg-brand-navy', 'text-lca-gold', 'text-gold-on-dark', 'bg-ok-fill', ['text-[#', '123456]'].join('')]
+    for (const u of fixed) expect(followsLook(u), u).toBe(false)
   })
 })
 
@@ -473,15 +546,33 @@ describe('dark grounds and the focus ring', () => {
   })
 })
 
-describe('ink on a ground that stays light in dark mode', () => {
-  it('text-ink never shares a className with a fixed light tint that can apply with it', () => {
-    expect(inkBesideTint(ALL)).toEqual([])
+describe('words on a ground that stays light in dark mode', () => {
+  it('words that follow the look never share a className with a fixed light tint that can apply with them', () => {
+    expect(lookWordsBesideTint(ALL)).toEqual([])
   })
 
-  it('sits inside one only at the two recorded light islands, the member strip on /membership and the finished-event panel', () => {
-    const files = [...new Set(inkOnIslands(ALL).map((w) => w.split(':')[0]))].sort()
-    expect(files).toEqual(['src/pages/MembershipPage.tsx', 'src/pages/TournamentManagePage.tsx'])
+  it('sits inside one nowhere: the two light islands step 23 recorded now sit on the ok tint, which follows the look', () => {
+    // Step 23 left the member strip on /membership and the finished-event
+    // panel on the manage page as fixed light tints (bg-emerald-50) under
+    // text-ink; step 24 moved both tints to bg-ok-50, which turns dark in dark mode.
+    expect(lookWordsOnIslands(ALL)).toEqual([])
+    const islands = ALL.filter((n) =>
+      ['src/pages/MembershipPage.tsx', 'src/pages/TournamentManagePage.tsx'].includes(n.file) &&
+      n.classes.includes('bg-ok-50') &&
+      descendants(n).some((d) => d.classes.includes('text-ink')))
+    expect(islands.map((n) => n.file).sort()).toEqual(['src/pages/MembershipPage.tsx', 'src/pages/TournamentManagePage.tsx'])
     const status = read('REDESIGN_STATUS.md')
     expect(status).toMatch(/- \*\*Light islands that stay light in dark mode \(step 23\)\.\*\* .*`\/membership`.*manage page/)
+  })
+
+  it('no veil that follows the look lies over one, and the club map\'s paper keeps its loading note as the light look draws it', () => {
+    expect(lookVeilsOnIslands(ALL)).toEqual([])
+    // The paper stays light in every look (the raw colour allowlist), so the
+    // words on it while the map loads, and the veil over them on the clubs
+    // map, take text-muted-on-light and bg-veil-on-light/30.
+    const paper = ALL.filter((n) => n.classes.includes('bg-[#f2efe6]'))
+    expect(paper.map((n) => n.file).sort()).toEqual(['src/areas/clubs/components/ClubLocationPicker.tsx', 'src/areas/clubs/components/LCAMap.tsx'])
+    const notes = paper.flatMap((n) => descendants(n)).filter((d) => d.text && d.classes.includes('text-muted-on-light'))
+    expect(notes.map((d) => d.file).sort()).toEqual(['src/areas/clubs/components/ClubLocationPicker.tsx', 'src/areas/clubs/components/LCAMap.tsx'])
   })
 })

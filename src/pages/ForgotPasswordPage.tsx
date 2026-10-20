@@ -81,11 +81,11 @@ export function ForgotPasswordPage() {
 
             {sent ? (
               <CardContent className="space-y-4">
-                <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-4">
-                  <p className="text-sm font-medium text-emerald-800">
+                <div className="rounded-lg border border-ok-200 bg-ok-50 px-4 py-4">
+                  <p className="text-sm font-medium text-ok">
                     Check your email
                   </p>
-                  <p className="mt-1 text-sm text-emerald-700">
+                  <p className="mt-1 text-sm text-ok-700">
                     If an account exists for <strong>{email}</strong>, you'll
                     receive a password reset link shortly.
                   </p>

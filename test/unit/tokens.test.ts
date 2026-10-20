@@ -8,14 +8,32 @@
 //   the values of the brief and the Looks tile boards, the shadcn variables
 //   point at them, and data-theme="" puts the base look back.
 // - Nothing outside the legacy :root and .dark blocks applies without
-//   data-look="new", and Geist Mono is named nowhere else.
+//   data-look="new", and Geist Mono is named nowhere else. The one exception
+//   (step 24) is the block for browsers that cannot mix colours, which gives
+//   a token class with an opacity modifier the tint its old class fell back to.
+// - The tone tokens (step 24): with newLook off each is exactly the Tailwind
+//   colour it stands for; under the new look each is its tone's tint or
+//   words in every look, and heritage restyles none of them. The scanner's
+//   move marks and the check-in toggle's fill, which are not tags, are
+//   exactly their Tailwind colours with newLook off too, and take values of
+//   their own under the new look.
+// - A printed page takes the light look (step 24): the dark look, the live
+//   look and heritage in dark mode apply on screens only, so a sheet printed
+//   from a dark device puts dark words on the white paper.
+// - Light islands (step 24): the words and the veil on a ground that stays
+//   light in every look are today's muted words and muted ground with
+//   newLook off, and the light look's in every look and mode under it.
 //
 // Contrast is in contrast.test.ts; the browser check is test/a11y/tokens.spec.ts.
 import { readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { compile } from 'tailwindcss'
 import { describe, expect, it } from 'vitest'
-import { contrast, indexCssRules, parseRules, read, ROOT, rootTokens, scopeTokens, specificity, stripComments, type RootState } from './helpers/cssTokens'
+import { contrast, indexCssRules, parseRules, read, ROOT, rootTokens, SCREEN_ONLY, scopeTokens, specificity, stripComments, type RootState } from './helpers/cssTokens'
+import { HEX_TOKENS, TONE_FAMILY, TONE_TINT, TONE_WORDS, tailwindColour, toneTokens } from './helpers/tones'
+
+/** The at-rule of the block for browsers that cannot mix colours. */
+const NO_COLOR_MIX = '@supports not (color: color-mix(in lab, red, red))'
 
 const css = read('src/index.css')
 const rules = indexCssRules()
@@ -150,15 +168,35 @@ describe('the legacy tokens: newLook off', () => {
 })
 
 describe('the gate: nothing new applies without data-look="new"', () => {
-  it('every rule outside the legacy blocks, @theme and @layer base starts with :root[data-look="new"]', () => {
+  it('every rule outside the legacy blocks, @theme, @layer base and the no-colour-mix block starts with :root[data-look="new"]', () => {
     for (const rule of rules) {
       if (rule.selector.startsWith('@theme')) continue
       if (rule.within.startsWith('@layer')) continue
+      if (rule.within === NO_COLOR_MIX) continue
       if (rule.selector === ':root' || rule.selector === '.dark') continue
       for (const sel of rule.selectors) {
         expect(sel.startsWith(':root[data-look="new"]'), `${rule.within} ${sel}`).toBe(true)
       }
     }
+  })
+
+  it('the no-colour-mix block only gives a token class with an opacity modifier a plain #rrggbbaa tint', () => {
+    // What each rule's tint is, and that it is the old class's fallback, is
+    // semantic-map.test.ts's to check; here, that the block can do nothing else.
+    const block = rules.filter((r) => r.within === NO_COLOR_MIX)
+    expect(block.length).toBeGreaterThan(0)
+    for (const rule of block) {
+      expect(rule.selectors, rule.selector).toHaveLength(1)
+      // One class: a token utility with an escaped opacity modifier, perhaps a hover or focus variant.
+      expect(rule.selector).toMatch(/^\.(?:(?:hover|focus)\\:)?(?:bg|border)-[a-z-]+\\\/(?:\d+|\\\[0\\\.\d+\\\])(?::hover|:focus)?$/)
+      expect([...rule.decls.keys()]).toHaveLength(1)
+      const [[property, value]] = [...rule.decls]
+      expect(['background-color', 'border-color'], rule.selector).toContain(property)
+      expect(value, rule.selector).toMatch(/^#[0-9a-f]{8}$/)
+    }
+    // The hover forms sit inside @media (hover: hover), as Tailwind's own hover utilities do.
+    const hover = stripComments(css).match(/@media \(hover: hover\) \{\s*@supports not \(color: color-mix\(in lab, red, red\)\) \{([^}]*\}[^}]*)\}/)?.[1] ?? ''
+    for (const rule of block.filter((r) => r.selector.endsWith(':hover'))) expect(hover, rule.selector).toContain(rule.selector)
   })
 
   it('the dark variant matches .dark on <html> itself as well as inside it', () => {
@@ -325,6 +363,249 @@ describe('the new look: newLook on', () => {
       const scoped = scopeTokens(rules, TODAY, theme)
       for (const [name, value] of today) expect(scoped.get(name), `${theme} ${name}`).toBe(value)
     }
+  })
+})
+
+describe('a printed page takes the light look (step 24)', () => {
+  // Paper is white, and a browser prints no background unless asked, so the
+  // dark look's light words would print light on white: the dark muted
+  // #9aa6bf at 2.45:1 and the dark ink #e8ecf4 at 1.18:1, as on the print
+  // page's pairing sheet and crosstable printed from a dark device.
+  const PRINT_LIGHT: RootState = { look: true, dark: false, print: true }
+  const PRINT_DARK: RootState = { look: true, dark: true, print: true }
+  const light = rootTokens(rules, LIGHT)
+
+  it('the dark look, the live look and heritage in dark mode apply on screens only, and nothing else does', () => {
+    expect(rules.filter((r) => r.within === SCREEN_ONLY).map((r) => r.selectors)).toEqual([
+      [':root[data-look="new"].dark', ':root[data-look="new"].dark [data-theme=""]'],
+      [':root[data-look="new"] [data-theme="live"]'],
+      [':root[data-look="new"].dark [data-theme="heritage"]'],
+    ])
+    // No other rule of the new look names .dark or the live look, and only a screen-only rule sets a dark colour scheme.
+    for (const rule of rules.filter((r) => r.within !== SCREEN_ONLY)) {
+      for (const sel of rule.selectors.filter((s) => s.includes('data-look'))) expect(sel).not.toMatch(/\.dark|\[data-theme="live"\]/)
+      expect(rule.decls.get('color-scheme'), rule.selector).not.toBe('dark')
+    }
+  })
+
+  it('printed, the page has the light look\'s tokens on a light or a dark device', () => {
+    expect(rootTokens(rules, PRINT_DARK)).toEqual(light)
+    expect(rootTokens(rules, PRINT_LIGHT)).toEqual(light)
+    // Heritage, scholastic and the base look inside a scope print as they look on a light device.
+    for (const theme of ['heritage', 'scholastic', '']) {
+      expect(scopeTokens(rules, PRINT_DARK, theme), theme).toEqual(scopeTokens(rules, LIGHT, theme))
+    }
+    // The live look, dark on every screen, prints in the base light look.
+    const live = scopeTokens(rules, PRINT_DARK, 'live')
+    for (const [name, value] of light) expect(live.get(name), name).toBe(value)
+    expect([live.get('--ground'), live.get('--ink'), live.get('--live')]).toEqual(['#fff', '#1a2744', undefined])
+  })
+
+  it('printed, the words on the print page\'s sheets are dark on the white paper', () => {
+    // The crosstable's ink and muted words, and the rating and score beside each name on the pairing sheet (text-quiet-600).
+    const printed = rootTokens(rules, PRINT_DARK)
+    for (const name of ['--ink', '--ink-muted', '--quiet-600']) {
+      expect(contrast(printed.get(name)!, '#ffffff'), name).toBeGreaterThanOrEqual(4.5)
+    }
+    expect(printed.get('--quiet-600')).toBe('#5b6478')
+    // On the screen the dark look keeps its light words, which would print far below 4.5:1.
+    const screen = rootTokens(rules, DARK)
+    expect(contrast(screen.get('--quiet-600')!, '#ffffff')).toBeCloseTo(2.45, 2)
+    expect(contrast(screen.get('--ink')!, '#ffffff')).toBeCloseTo(1.18, 2)
+  })
+
+  it('with newLook off, a printed page is today\'s look, as on a screen', () => {
+    expect(rootTokens(rules, { look: false, dark: false, print: true })).toEqual(rootTokens(rules, TODAY))
+  })
+})
+
+describe('the tone tokens (step 24)', () => {
+  const tones = toneTokens(rules)
+  const today = rootTokens(rules, TODAY)
+  const inline = rules.find((r) => r.selector === '@theme inline')!
+
+  it('are the shades the step 24 map writes, each named for its tone, its Tailwind colour where it is not the tone\'s own, and its step', () => {
+    expect(tones.map((t) => t.name.slice(2))).toEqual([
+      'ok-50', 'ok-100', 'ok-200', 'ok-500', 'ok-600', 'ok-700', 'ok-900', 'ok-950',
+      'ok-green-50', 'ok-green-100', 'ok-green-200', 'ok-green-500', 'ok-green-600', 'ok-green-700', 'ok-green-800',
+      'bad-50', 'bad-100', 'bad-200', 'bad-500', 'bad-700', 'bad-800', 'bad-900',
+      'warn-50', 'warn-100', 'warn-200', 'warn-300', 'warn-600', 'warn-700', 'warn-800', 'warn-900', 'warn-950',
+      'warn-yellow-50', 'warn-yellow-100', 'warn-yellow-200', 'warn-yellow-700', 'warn-yellow-800',
+      'info-50', 'info-100', 'info-200', 'info-800',
+      'info-purple-100', 'info-purple-800',
+      'quiet-100', 'quiet-600',
+    ])
+    // A tone's own Tailwind colour, and no tone named after a Tailwind colour, which would shadow it.
+    expect(TONE_FAMILY).toEqual({ ok: 'emerald', bad: 'red', warn: 'amber', info: 'blue', quiet: 'gray' })
+    const theme = read('node_modules/tailwindcss/theme.css')
+    for (const tone of Object.keys(TONE_FAMILY)) expect(theme, tone).not.toMatch(new RegExp(`--color-${tone}-\\d`))
+  })
+
+  it('with newLook off, each is exactly the Tailwind colour it replaced, as Tailwind\'s theme writes it', () => {
+    for (const t of tones) expect(today.get(t.name), t.name).toBe(tailwindColour(t.family, t.step))
+    // text-ok is emerald-800 and text-bad red-600 (written as the shadcn destructive), so they need no step token.
+    expect(today.get('--ok')).toBe(tailwindColour('emerald', 800))
+    expect(tones.some((t) => t.name === '--ok-800' || t.name === '--bad-600')).toBe(false)
+  })
+
+  it('the two hex colours the pages used have a token each, at that colour with newLook off', () => {
+    for (const [name, { legacy }] of Object.entries(HEX_TOKENS)) expect(today.get(name), name).toBe(legacy)
+  })
+
+  it('every tone token has a utility that reads it where it is used', () => {
+    for (const name of [...tones.map((t) => t.name), ...Object.keys(HEX_TOKENS)]) {
+      expect(inline.decls.get(`--color-${name.slice(2)}`), name).toBe(`var(${name})`)
+    }
+  })
+
+  const LOOKS: Array<[string, Map<string, string>]> = [
+    ['base', rootTokens(rules, LIGHT)],
+    ['dark', rootTokens(rules, DARK)],
+    ['live', scopeTokens(rules, LIGHT, 'live')],
+    ['live in dark mode', scopeTokens(rules, DARK, 'live')],
+    ['scholastic', scopeTokens(rules, LIGHT, 'scholastic')],
+    ['scholastic in dark mode', scopeTokens(rules, DARK, 'scholastic')],
+    ['heritage', scopeTokens(rules, LIGHT, 'heritage')],
+    ['heritage in dark mode', scopeTokens(rules, DARK, 'heritage')],
+    ['base inside a scope', scopeTokens(rules, DARK, '')],
+  ]
+
+  it.each(LOOKS)('under the new look (%s), each shade is its tone\'s tint up to step 300 and its words from 400', (_, tokens) => {
+    for (const t of tones) {
+      const want = t.role === 'tint' ? TONE_TINT[t.tone] : TONE_WORDS[t.tone]
+      expect(tokens.get(t.name), t.name).toBe(tokens.get(want))
+      expect(tokens.get(t.name), t.name).toMatch(/^#[0-9a-f]{3,6}$/)
+    }
+    expect(tokens.get('--info-banner')).toBe(tokens.get('--status-partner'))
+  })
+
+  it('takes the Looks-3 status tag colours: ok is the open tag, bad the full tag with --bad for its words, warn soon, info partner, quiet closed', () => {
+    const base = rootTokens(rules, LIGHT)
+    const dark = rootTokens(rules, DARK)
+    const pair = (tokens: Map<string, string>, prefix: string) => [tokens.get(`--${prefix}-700`) ?? tokens.get(`--${prefix}-600`), tokens.get(`--${prefix}-100`)]
+    expect(pair(base, 'ok')).toEqual(['#047857', '#e8f5ef'])
+    expect(pair(base, 'bad')).toEqual(['#c0362c', '#fdeeec'])
+    expect(pair(base, 'warn')).toEqual(['#705718', '#fbf7e9'])
+    expect([base.get('--info-800'), base.get('--info-100')]).toEqual(['#1a2744', '#eef1f6'])
+    expect(pair(base, 'quiet')).toEqual(['#5b6478', '#f7f8fa'])
+    expect(pair(dark, 'ok')).toEqual(['#3ecf8e', '#0d2b22'])
+    expect(pair(dark, 'bad')).toEqual(['#ff6b6b', '#3a1619'])
+    expect(pair(dark, 'warn')).toEqual(['#c8a94a', '#2a2412'])
+    expect([dark.get('--info-800'), dark.get('--info-100')]).toEqual(['#e8ecf4', '#1a2744'])
+    expect(pair(dark, 'quiet')).toEqual(['#9aa6bf', '#1a2744'])
+  })
+
+  it('heritage restyles no tone, as it restyles no status tag', () => {
+    for (const [state, root] of [[LIGHT, rootTokens(rules, LIGHT)], [DARK, rootTokens(rules, DARK)]] as const) {
+      const heritage = scopeTokens(rules, state, 'heritage')
+      for (const name of [...tones.map((t) => t.name), ...Object.keys(HEX_TOKENS)]) expect(heritage.get(name), name).toBe(root.get(name))
+    }
+  })
+
+  it('the Facebook link blue keeps #1668d8 on the light looks and takes a lighter blue on the dark ones', () => {
+    const value = (tokens: Map<string, string>) => tokens.get('--facebook-link')
+    expect(LOOKS.map(([look, tokens]) => [look, value(tokens)])).toEqual([
+      ['base', '#1668d8'],
+      ['dark', '#4599ff'],
+      ['live', '#4599ff'],
+      ['live in dark mode', '#4599ff'],
+      ['scholastic', '#1668d8'],
+      ['scholastic in dark mode', '#1668d8'],
+      ['heritage', '#1668d8'],
+      ['heritage in dark mode', '#4599ff'],
+      ['base inside a scope', '#4599ff'],
+    ])
+  })
+
+  it('the tone aliases sit in one new-look block that names every scope, so a shade follows the scope it is in', () => {
+    // The tone shades and the info banner's blue; --ok-fill, a fixed fill, is not a shade (next tests).
+    const aliased = new Set([...tones.map((t) => t.name), '--info-banner'])
+    const blocks = rules.filter((r) => !r.within && [...r.decls.keys()].some((k) => aliased.has(k)))
+    expect(blocks.map((b) => b.selectors)).toEqual([[':root'], [':root[data-look="new"]', ':root[data-look="new"] [data-theme]']])
+    for (const [name, value] of blocks[1].decls) expect(value, name).toMatch(/^var\(--[\w-]+\)$/)
+  })
+
+  // Not status tags: the scanner's move marks, which must stand out from the
+  // card (contrast.test.ts measures them), and the solid green of a checked
+  // check-in toggle under white words.
+  const NOT_TAGS = { '--mark-warn': ['amber', 200], '--mark-ok': ['emerald', 200], '--ok-fill': ['emerald', 600] } as const
+
+  it('the marks and the check-in fill are, with newLook off, exactly the Tailwind colours they replaced, and each has a utility', () => {
+    for (const [name, [family, step]] of Object.entries(NOT_TAGS)) {
+      expect(today.get(name), name).toBe(tailwindColour(family, step))
+      expect(inline.decls.get(`--color-${name.slice(2)}`), name).toBe(`var(${name})`)
+    }
+    // None is a tone shade, which would have to follow the tone's tint or words.
+    for (const name of Object.keys(NOT_TAGS)) expect(tones.some((t) => t.name === name), name).toBe(false)
+  })
+
+  it('under the new look the marks are a highlighter on the light looks and a quarter of their words over the card on the dark ones, and the check-in fill is #047857 everywhere', () => {
+    expect(LOOKS.map(([look, tokens]) => [look, tokens.get('--mark-warn'), tokens.get('--mark-ok'), tokens.get('--ok-fill')])).toEqual([
+      ['base', '#fee685', '#bcf7db', '#047857'],
+      ['dark', '#3f3e34', '#1c4745', '#047857'],
+      ['live', '#3d3a2f', '#184543', '#047857'],
+      ['live in dark mode', '#3d3a2f', '#184543', '#047857'],
+      ['scholastic', '#fee685', '#bcf7db', '#047857'],
+      ['scholastic in dark mode', '#fee685', '#bcf7db', '#047857'],
+      ['heritage', '#fee685', '#bcf7db', '#047857'],
+      ['heritage in dark mode', '#3f3e34', '#1c4745', '#047857'],
+      ['base inside a scope', '#3f3e34', '#1c4745', '#047857'],
+    ])
+    // The dark marks are the gold and the ok green at a quarter over the card, rounded to the nearest hex.
+    const quarter = (colour: string, card: string) => {
+      const rgb = (h: string) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16))
+      return `#${rgb(colour).map((c, i) => Math.round(c * 0.25 + rgb(card)[i] * 0.75).toString(16).padStart(2, '0')).join('')}`
+    }
+    for (const tokens of [rootTokens(rules, DARK), scopeTokens(rules, LIGHT, 'live')]) {
+      expect(quarter(tokens.get('--gold')!, tokens.get('--surface')!)).toBe(tokens.get('--mark-warn'))
+      expect(quarter(tokens.get('--ok')!, tokens.get('--surface')!)).toBe(tokens.get('--mark-ok'))
+    }
+  })
+
+  it('heritage restyles neither the marks nor the check-in fill', () => {
+    for (const [state, root] of [[LIGHT, rootTokens(rules, LIGHT)], [DARK, rootTokens(rules, DARK)]] as const) {
+      const heritage = scopeTokens(rules, state, 'heritage')
+      for (const name of Object.keys(NOT_TAGS)) expect(heritage.get(name), name).toBe(root.get(name))
+    }
+  })
+})
+
+describe('light islands (step 24)', () => {
+  // A ground that stays light in every look, such as the club map's paper
+  // (bg-[#f2efe6]), keeps the words on it dark: words that followed the look
+  // would turn light on it in dark mode. contrast.test.ts measures them on the paper.
+  const today = rootTokens(rules, TODAY)
+  const legacyRoot = rules.find((r) => r.selector === ':root')!
+  const inline = rules.find((r) => r.selector === '@theme inline')!
+  const ISLAND = { '--muted-on-light': '#5b6478', '--veil-on-light': '#f7f8fa' }
+
+  it('with newLook off, the words and the veil are the muted words and muted ground the map\'s loading note drew', () => {
+    expect(today.get('--muted-on-light')).toBe(legacyRoot.decls.get('--muted-foreground'))
+    expect(today.get('--veil-on-light')).toBe(legacyRoot.decls.get('--muted'))
+    for (const name of Object.keys(ISLAND)) expect(inline.decls.get(`--color-${name.slice(2)}`), name).toBe(`var(${name})`)
+  })
+
+  it('under the new look they are the light look\'s muted words and muted ground, in every look, in dark mode and printed', () => {
+    const base = rootTokens(rules, LIGHT)
+    expect([base.get('--ink-muted'), base.get('--surface-2')]).toEqual(Object.values(ISLAND))
+    const looks: Array<[string, Map<string, string>]> = [
+      ['base', base],
+      ['dark', rootTokens(rules, DARK)],
+      ['printed from a dark device', rootTokens(rules, { look: true, dark: true, print: true })],
+      ...(['live', 'scholastic', 'heritage', ''] as const).flatMap((theme): Array<[string, Map<string, string>]> => [
+        [`${theme || 'base inside a scope'}`, scopeTokens(rules, LIGHT, theme)],
+        [`${theme || 'base inside a scope'} in dark mode`, scopeTokens(rules, DARK, theme)],
+      ]),
+    ]
+    for (const [look, tokens] of looks) {
+      for (const [name, value] of Object.entries(ISLAND)) expect(tokens.get(name), `${look} ${name}`).toBe(value)
+    }
+    // Only the base block of the new look sets them: no dark, scope or screen-only rule restyles an island.
+    const setting = rules.filter((r) => Object.keys(ISLAND).some((k) => r.decls.has(k)))
+    expect(setting.map((r) => [r.within, r.selectors])).toEqual([
+      ['', [':root']],
+      ['', [':root[data-look="new"]', ':root[data-look="new"] [data-theme=""]']],
+    ])
   })
 })
 

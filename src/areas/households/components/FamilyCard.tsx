@@ -22,7 +22,7 @@ import { usChessState } from '@/areas/membership'
 import { FAMILY_MEMBERSHIP_CHILDREN as LIMIT } from '@/lib/family'
 
 const STATUS: Record<string, { label: string; className: string }> = {
-  active: { label: 'Member', className: 'bg-emerald-100 text-emerald-800' },
+  active: { label: 'Member', className: 'bg-ok-100 text-ok' },
   expired: { label: 'Expired', className: 'bg-destructive/10 text-destructive' },
   pending: { label: 'Not a member', className: 'bg-muted text-muted-foreground' },
 }
@@ -134,7 +134,7 @@ export function FamilyCard({ planActive, setup = false }: {
           <Users className="size-5 text-lca-gold" />
           <h2 className="text-lg font-bold text-ink">My family</h2>
           {planActive && children && (
-            <span className="rounded-full bg-brand-navy/[0.06] px-2 py-0.5 text-xs font-medium text-ink">
+            <span className="rounded-full bg-ink/[0.06] px-2 py-0.5 text-xs font-medium text-ink">
               {covered} of {LIMIT} added
             </span>
           )}
@@ -193,7 +193,7 @@ export function FamilyCard({ planActive, setup = false }: {
                         if (st === 'none' || st === 'unknown') return null
                         const date = (c.uscf_expiration as string).slice(0, 10)
                         return (
-                          <p className={cn('text-xs', st === 'expired' ? 'text-red-700' : st === 'soon' ? 'text-amber-800' : 'text-muted-foreground')}>
+                          <p className={cn('text-xs', st === 'expired' ? 'text-bad-700' : st === 'soon' ? 'text-warn-800' : 'text-muted-foreground')}>
                             US Chess {st === 'expired' ? `expired ${date}` : `through ${date}`}
                             {st !== 'valid' && (
                               <> · <a href={USCHESS_RENEW_URL} target="_blank" rel="noopener noreferrer" className="font-medium underline underline-offset-2">Renew</a></>

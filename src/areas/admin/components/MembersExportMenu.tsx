@@ -69,7 +69,7 @@ export function MembersExportMenu() {
 
   const option = (active: boolean) => cn(
     'flex cursor-pointer items-start gap-2 rounded-md border px-3 py-2 text-sm',
-    active ? 'border-lca-navy bg-brand-navy/[0.04]' : 'hover:border-lca-navy/30',
+    active ? 'border-ink bg-ink/[0.04]' : 'hover:border-ink/30',
   )
 
   return (
@@ -121,7 +121,7 @@ export function MembersExportMenu() {
               </Button>
             )}
           </div>
-          {note && <p className={cn('text-xs', note.ok ? 'text-emerald-700' : 'text-destructive')}>{note.text}</p>}
+          {note && <p className={cn('text-xs', note.ok ? 'text-ok-700' : 'text-destructive')}>{note.text}</p>}
           <p className="text-[11px] text-muted-foreground">
             Opens in Excel or Google Sheets. Each export is recorded in Admin activity. Member contact details are for LCA
             business only; please don't share the file outside the board.

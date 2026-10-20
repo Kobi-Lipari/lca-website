@@ -89,7 +89,7 @@ function StepBar({ current }: { current: WizardStep }) {
             : 'border-transparent text-muted-foreground/50')}>
             <span className={cn('flex size-4 flex-shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold',
               idx < currentIdx ? 'border-lca-gold bg-lca-gold text-brand-navy'
-              : idx === currentIdx ? 'border-lca-navy bg-brand-navy text-white'
+              : idx === currentIdx ? 'border-brand-navy bg-brand-navy text-white'
               : 'border-border text-muted-foreground')}>
               {idx < currentIdx ? <Check className="size-2.5" /> : idx + 1}
             </span>
@@ -120,7 +120,7 @@ function PreviewBanner({ w }: { w: WizardState }) {
       {w.sections.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-1">
           {w.sections.map((s) => (
-            <span key={s.name} className="rounded-full border border-lca-navy/20 bg-brand-navy/7 px-2 py-0.5 text-[10px] font-medium text-ink">{s.name}</span>
+            <span key={s.name} className="rounded-full border border-ink/20 bg-ink/7 px-2 py-0.5 text-[10px] font-medium text-ink">{s.name}</span>
           ))}
         </div>
       )}
@@ -145,7 +145,7 @@ function PreviewSidebar({ w }: { w: WizardState }) {
           {w.sections.length > 0 && (
             <div className="flex flex-wrap gap-1 pt-1">
               {w.sections.map((s) => (
-                <span key={s.name} className="rounded-full border border-lca-navy/20 bg-brand-navy/7 px-2 py-0.5 text-[10px] font-medium text-ink">{s.name}</span>
+                <span key={s.name} className="rounded-full border border-ink/20 bg-ink/7 px-2 py-0.5 text-[10px] font-medium text-ink">{s.name}</span>
               ))}
             </div>
           )}
@@ -209,7 +209,7 @@ function StepTemplate({ w, set, tournaments, onNext }: {
             className={cn('w-full rounded-xl border p-4 text-left transition-colors',
               w.templateType === type ? 'border-[2px] border-lca-gold bg-lca-gold/4' : 'border-border hover:border-border-strong')}>
             <div className="mb-1.5 flex items-center gap-3">
-              <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-lg bg-brand-navy/8">
+              <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-lg bg-ink/8">
                 <Icon className="size-3.5 text-ink" />
               </div>
               <span className="text-sm font-semibold">{title}</span>
@@ -226,7 +226,7 @@ function StepTemplate({ w, set, tournaments, onNext }: {
                 </select>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {['Sections','Time control','Rounds','Custom details'].map((p) => (
-                    <span key={p} className="rounded-full border border-lca-navy/20 bg-brand-navy/7 px-2 py-0.5 text-[10px] font-medium text-ink">{p}</span>
+                    <span key={p} className="rounded-full border border-ink/20 bg-ink/7 px-2 py-0.5 text-[10px] font-medium text-ink">{p}</span>
                   ))}
                   {['Name','Date','Round times'].map((p) => (
                     <span key={p} className="rounded-full border border-border bg-muted/30 px-2 py-0.5 text-[10px] text-muted-foreground line-through">{p}</span>
@@ -286,7 +286,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
             {ROUND_OPTIONS.map((n) => (
               <button key={n} type="button" onClick={() => set({ rounds: n })}
                 className={cn('rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
-                  w.rounds === n ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}>
+                  w.rounds === n ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-ink/40')}>
                 {n}
               </button>
             ))}
@@ -301,7 +301,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
             {TC_PRESETS.map((tc) => (
               <button key={tc} type="button" onClick={() => set({ timeControl: tc, customTimeControl: '' })}
                 className={cn('rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                  w.timeControl === tc ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-lca-gold')}>
+                  w.timeControl === tc ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-lca-gold')}>
                 {tc}
               </button>
             ))}
@@ -317,7 +317,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
               {[{ val: true, label: 'USCF Rated' }, { val: false, label: 'Unrated' }].map(({ val, label }) => (
                 <button key={label} type="button" onClick={() => set({ isRated: val })}
                   className={cn('flex-1 rounded-lg border py-2 text-sm font-medium transition-colors',
-                    w.isRated === val ? 'border-lca-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
+                    w.isRated === val ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
                   {label}
                 </button>
               ))}
@@ -382,7 +382,7 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
               <button key={name} type="button" onClick={() => addPreset(name)}
                 className={cn('rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   w.sections.some((s) => s.name === name)
-                    ? 'border-lca-navy bg-brand-navy text-white cursor-default'
+                    ? 'border-brand-navy bg-brand-navy text-white cursor-default'
                     : 'border-border text-muted-foreground hover:border-lca-gold')}>
                 {name}
               </button>
@@ -492,7 +492,7 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
             <p className="mb-2 text-sm text-muted-foreground">Sections</p>
             <div className="flex flex-wrap gap-2">
               {w.sections.map((s) => (
-                <span key={s.name} className="rounded-full border border-lca-navy/20 bg-brand-navy/7 px-3 py-1 text-xs font-medium text-ink">
+                <span key={s.name} className="rounded-full border border-ink/20 bg-ink/7 px-3 py-1 text-xs font-medium text-ink">
                   {s.name}{s.entryFee > 0 ? ` · $${s.entryFee}` : ''}
                 </span>
               ))}

@@ -366,8 +366,8 @@ export function LCAMap(props: Props) {
         </button>
       )}
       {!loaded && (
-        <div className="absolute inset-0 flex items-center justify-center bg-muted/30">
-          <p className="text-sm text-muted-foreground">Loading map...</p>
+        <div className="absolute inset-0 flex items-center justify-center bg-veil-on-light/30">
+          <p className="text-sm text-muted-on-light">Loading map...</p>
         </div>
       )}
     </div>

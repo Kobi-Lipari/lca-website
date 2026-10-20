@@ -13,7 +13,7 @@ export function ImpersonationBanner() {
       <button
         type="button"
         onClick={() => exitImpersonation()}
-        className="rounded-md border border-lca-navy/30 px-2.5 py-0.5 text-xs font-semibold hover:bg-brand-navy/10"
+        className="rounded-md border border-brand-navy/30 px-2.5 py-0.5 text-xs font-semibold hover:bg-brand-navy/10"
       >
         Exit
       </button>

@@ -138,7 +138,7 @@ export function RegisterPage() {
                   </p>
                 )}
                 {success && (
-                  <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                  <p className="rounded-lg border border-ok-200 bg-ok-50 px-3 py-2 text-sm text-ok">
                     {success}
                   </p>
                 )}

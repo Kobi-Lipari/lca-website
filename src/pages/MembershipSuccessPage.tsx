@@ -113,7 +113,7 @@ function MembershipSuccessContent() {
 
       {!loading && !error && status === 'active' && (
         <>
-          <CheckCircle2 className="mx-auto size-12 text-emerald-600" />
+          <CheckCircle2 className="mx-auto size-12 text-ok-600" />
           <h1 className="mt-4 text-2xl font-bold text-ink">
             Membership confirmed
           </h1>

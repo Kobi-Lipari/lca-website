@@ -180,8 +180,8 @@ export function MembershipPage() {
       </section>
 
       {member?.membership_status === 'active' && (
-        <section className="border-b bg-emerald-50">
-          <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-emerald-900">
+        <section className="border-b bg-ok-50">
+          <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-ok-900">
             Your membership is <strong>active</strong>
             {member.membership_expiry && (
               <> through {member.membership_expiry}</>

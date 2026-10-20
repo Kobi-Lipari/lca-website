@@ -8,11 +8,14 @@
 // Usage:
 //   node --no-warnings --experimental-strip-types scripts/codemods/semantic-colours.ts [--dry-run | --check] [--map <map.json>] [--root <dir>]
 //
-// The map (scripts/codemods/semantic-colours.map.json unless --map names
-// another) has four parts:
+// Two maps are committed: scripts/codemods/semantic-colours.map.json (the
+// default: navy text, white grounds and navy bands, WS01 step 23) and
+// scripts/codemods/semantic-colours.status.map.json (the status colours, the
+// greys, the navy borders and tints, and raw hex colours, step 24), which a
+// run takes with --map. A map has four parts:
 // - watch: the classes that must not be left behind. After a run, every use
 //   of one of them has been rewritten or is covered by a keep entry.
-// - rules: one utility to another, tried in order; the first that fits wins.
+// - rules: one class to another, tried in order; the first that fits wins.
 //   A rule says which opacity forms it takes: "none" (the plain class only),
 //   "translucent" (only with an opacity modifier, such as /10), "any", or a
 //   list of modifiers. With "when": { "sameString": [...] } it also needs one
@@ -24,7 +27,14 @@
 //   rewrite touches, so a site still finds its string after the run. A site
 //   wins over keep entries and rules.
 // - keep: classes left as they are, each with its reason: everywhere (no
-//   file), or in the one string of a file that contains "contains".
+//   file), in every string of one file (a file and no "contains"), or in the
+//   one string of a file that contains "contains".
+//
+// A class in watch, in a rule's "from" or in a keep entry is a utility name
+// on its own (no variant, ! mark or opacity modifier), such as
+// "text-emerald-700", or a colour given as an arbitrary hex value, such as
+// "accent-[#1a2744]". What a rule writes ("to") and the grounds it looks for
+// ("sameString") are always plain utility names.
 //
 // A rewrite keeps the token's variants (hover:, md:, [&_a]:), its opacity
 // modifier and its ! mark; only the utility changes.
@@ -35,7 +45,9 @@
 // that runs into a ${} substitution cannot be rewritten safely, and neither
 // can a string with an escape in it; either stops the run. Comments are
 // searched too, but only the quoted strings inside them (commented-out code),
-// never their prose; the plan lists those rewrites apart.
+// never their prose; the plan lists those rewrites apart. In a comment, a
+// quote mark opens or closes a string only where no letter or digit stands on
+// its outer side, so the apostrophes of "don't" and "it's" never make one.
 //
 // --dry-run prints the plan and writes nothing. --check writes nothing and
 // fails when anything is left to rewrite, when a watched class is left with
@@ -50,6 +62,7 @@ import ts from 'typescript'
 const HERE = dirname(fileURLToPath(import.meta.url))
 export const REPO_ROOT = resolve(HERE, '../..')
 export const DEFAULT_MAP = join(HERE, 'semantic-colours.map.json')
+export const STATUS_MAP = join(HERE, 'semantic-colours.status.map.json')
 
 const USAGE = 'Usage: node --no-warnings --experimental-strip-types scripts/codemods/semantic-colours.ts [--dry-run | --check] [--map <map.json>] [--root <dir>]'
 
@@ -99,6 +112,14 @@ export interface ColourMap {
 /** A utility name on its own: no variant, no ! mark, no opacity modifier. */
 const isUtility = (s: unknown): s is string => typeof s === 'string' && /^[a-z][a-z0-9-]*$/.test(s)
 
+/**
+ * A class a map can watch, rewrite or keep: a utility name on its own, or a
+ * colour given as an arbitrary hex value ("text-[#1668d8]"), again with no
+ * variant, ! mark or opacity modifier.
+ */
+const isClassName = (s: unknown): s is string =>
+  isUtility(s) || (typeof s === 'string' && /^[a-z][a-z0-9-]*-\[#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\]$/.test(s))
+
 const isOpacity = (o: unknown): o is Opacity =>
   o === 'none' || o === 'translucent' || o === 'any' || (Array.isArray(o) && o.length > 0 && o.every((m) => typeof m === 'string' && m !== ''))
 
@@ -110,7 +131,7 @@ export function loadMap(path: string): ColourMap {
   const problems: string[] = []
   if (!raw || typeof raw !== 'object') throw new Error(`${path} must hold a JSON object.`)
   const watch = Array.isArray(raw.watch) ? raw.watch : []
-  if (watch.length === 0 || !watch.every(isUtility)) problems.push('watch must list one or more utility names, such as "text-lca-navy"')
+  if (watch.length === 0 || !watch.every(isClassName)) problems.push('watch must list one or more utility names, such as "text-lca-navy"')
   const rules = Array.isArray(raw.rules) ? raw.rules : []
   const ids = new Set<string>()
   rules.forEach((r, i) => {
@@ -118,7 +139,7 @@ export function loadMap(path: string): ColourMap {
     if (!r || !isText(r.id)) problems.push(`${where}: an id is needed`)
     else if (ids.has(r.id)) problems.push(`${where}: the id is used twice`)
     else ids.add(r.id)
-    if (!isUtility(r?.from) || !isUtility(r?.to)) problems.push(`${where}: from and to must be utility names, without a variant or modifier`)
+    if (!isClassName(r?.from) || !isUtility(r?.to)) problems.push(`${where}: from and to must be utility names, without a variant or modifier`)
     if (!isOpacity(r?.opacity)) problems.push(`${where}: opacity must be "none", "translucent", "any" or a list of modifiers`)
     if (r?.when !== undefined && !(Array.isArray(r.when.sameString) && r.when.sameString.length > 0 && r.when.sameString.every(isUtility))) {
       problems.push(`${where}: when.sameString must list utility names`)
@@ -140,9 +161,9 @@ export function loadMap(path: string): ColourMap {
   const keep = Array.isArray(raw.keep) ? raw.keep : []
   keep.forEach((k, i) => {
     const where = `keep[${i}]`
-    if (!isUtility(k?.class)) problems.push(`${where}: class must be a utility name, without a variant or modifier`)
+    if (!isClassName(k?.class)) problems.push(`${where}: class must be a utility name, without a variant or modifier`)
     if (!isOpacity(k?.opacity)) problems.push(`${where}: opacity must be "none", "translucent", "any" or a list of modifiers`)
-    if ((k?.file === undefined) !== (k?.contains === undefined)) problems.push(`${where}: give both file and contains, or neither`)
+    if (k?.contains !== undefined && k?.file === undefined) problems.push(`${where}: contains needs the file it is in`)
     if (k?.file !== undefined && (!isText(k.file) || !k.file.endsWith('.tsx'))) problems.push(`${where}: file must be a .tsx path relative to the root`)
     if (k?.contains !== undefined && !isText(k.contains)) problems.push(`${where}: contains must not be empty`)
     if (!isText(k?.reason)) problems.push(`${where}: a reason is needed`)
@@ -282,7 +303,9 @@ export function classStrings(path: string, source: string): ClassString[] {
   for (const comment of blanked.matchAll(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g)) {
     const at = comment.index ?? 0
     const body = source.slice(at, at + comment[0].length)
-    for (const quoted of body.matchAll(/(["'`])((?:(?!\1)[^\n\\])*)\1/g)) {
+    // A quote mark with a letter or digit on its outer side is an apostrophe
+    // in prose ("don't", "it's", "the map's"), not the edge of a string.
+    for (const quoted of body.matchAll(/(?<![A-Za-z0-9])(["'`])((?:(?!\1)[^\n\\])*)\1(?![A-Za-z0-9])/g)) {
       const start = at + (quoted.index ?? 0) + 1
       found.push({ start, end: start + quoted[2].length, text: quoted[2], value: quoted[2], kind: 'comment', joinedStart: false, joinedEnd: false, escaped: false })
     }
@@ -377,7 +400,7 @@ export function planRewrite(root: string, map: ColourMap, mode: 'write' | 'check
     if (!files.includes(site.file)) problems.push({ file: site.file, line: 0, message: `the site's file is not a .tsx file under src (${site.contains})` })
   }
   for (const k of map.keep) {
-    if (k.file && !files.includes(k.file)) problems.push({ file: k.file, line: 0, message: `the keep entry's file is not a .tsx file under src (${k.contains})` })
+    if (k.file && !files.includes(k.file)) problems.push({ file: k.file, line: 0, message: `the keep entry's file is not a .tsx file under src (${k.contains ?? k.class})` })
   }
 
   for (const file of files) {
@@ -421,8 +444,14 @@ export function planRewrite(root: string, map: ColourMap, mode: 'write' | 'check
         }
         for (const i of sitesHere) if (map.sites[i].to === token.text) siteUse[i].holds++
 
-        const keep = map.keep.findIndex((k, i) =>
-          k.class === token.utility && takesOpacity(k.opacity, token.modifier) && (k.file === undefined || keepsHere.includes(i)))
+        // The most particular keep entry that fits: one string, then one
+        // file, then everywhere.
+        const fits = (k: Keep) => k.class === token.utility && takesOpacity(k.opacity, token.modifier)
+        const keep = [
+          map.keep.findIndex((k, i) => fits(k) && keepsHere.includes(i)),
+          map.keep.findIndex((k) => fits(k) && k.file === file && k.contains === undefined),
+          map.keep.findIndex((k) => fits(k) && k.file === undefined),
+        ].find((i) => i >= 0) ?? -1
         if (keep >= 0) {
           keepUse[keep].tokens++
           kept.push({ file, line, kind: s.kind, token: token.text, reason: map.keep[keep].reason })
@@ -458,7 +487,7 @@ export function planRewrite(root: string, map: ColourMap, mode: 'write' | 'check
   })
   map.keep.forEach((k, i) => {
     const use = keepUse[i]
-    if (k.file !== undefined && use.strings !== 1) {
+    if (k.file !== undefined && k.contains !== undefined && use.strings !== 1) {
       problems.push({ file: k.file, line: 0, message: `${use.strings} strings contain "${k.contains}"; a keep entry names exactly one` })
     } else if (use.tokens === 0) {
       problems.push({ file: k.file ?? '(every file)', line: 0, message: `the keep entry for ${k.class} matches nothing; remove it` })

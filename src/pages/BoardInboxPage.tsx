@@ -268,7 +268,7 @@ export function BoardInboxPage() {
                 className={cn(
                   'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
                   onlyUnanswered
-                    ? 'border-lca-navy bg-brand-navy text-white'
+                    ? 'border-brand-navy bg-brand-navy text-white'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >
@@ -353,7 +353,7 @@ export function BoardInboxPage() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="text-red-600 hover:bg-red-50"
+                          className="text-bad hover:bg-bad-50"
                           disabled={deleting}
                           onClick={handleDelete}
                           aria-label="Delete this ticket"

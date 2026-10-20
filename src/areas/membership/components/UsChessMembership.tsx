@@ -19,9 +19,9 @@ const fmtDate = (d: string) => new Date(`${d.slice(0, 10)}T12:00:00`).toLocaleDa
 const BADGE: Record<UsChessState, { label: string; className: string }> = {
   none: { label: 'No ID yet', className: 'bg-muted text-muted-foreground' },
   unknown: { label: 'Checking', className: 'bg-muted text-muted-foreground' },
-  valid: { label: 'Active', className: 'bg-emerald-100 text-emerald-800' },
-  soon: { label: 'Expiring soon', className: 'bg-amber-100 text-amber-900' },
-  expired: { label: 'Expired', className: 'bg-red-100 text-red-800' },
+  valid: { label: 'Active', className: 'bg-ok-100 text-ok' },
+  soon: { label: 'Expiring soon', className: 'bg-warn-100 text-warn-900' },
+  expired: { label: 'Expired', className: 'bg-bad-100 text-bad-800' },
 }
 
 export function UsChessBadge({ state }: { state: UsChessState }) {

@@ -64,7 +64,7 @@ function SeatRegions({ seat, clubsByRegion, busy, onChange }: {
               onClick={() => toggle(r)}
               className={cn(
                 'rounded-full border px-2.5 py-0.5 text-xs transition-colors disabled:opacity-60',
-                on ? 'border-lca-navy bg-brand-navy text-white' : 'text-muted-foreground hover:border-lca-navy/40',
+                on ? 'border-brand-navy bg-brand-navy text-white' : 'text-muted-foreground hover:border-ink/40',
               )}
             >
               {r} <span className={on ? 'text-white/70' : 'text-muted-foreground/70'}>· {clubsByRegion.get(r) ?? 0}</span>

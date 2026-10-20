@@ -26,7 +26,8 @@ import {
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { describeRules, effectiveRules, eligibilityProblem, gradeRangeText, needsGrade, parseGradeRange } from '@/lib/sectionRules'
-import { asksGrade, confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/areas/events/components/GradeConfirm'
+import { GradeConfirm } from '@/areas/events/components/GradeConfirm'
+import { asksGrade, confirmedRange, NO_TICKS, type GradeTicks } from '@/areas/events'
 import { priceShownSection, type Price } from '@/lib/pricing'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { useNow } from '@/hooks/useNow'
@@ -208,10 +209,10 @@ function ByeRoundsEditor({
               className={cn(
                 'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                 isSel
-                  ? 'border-lca-navy bg-brand-navy text-white'
+                  ? 'border-brand-navy bg-brand-navy text-white'
                   : wouldExceed
                   ? 'cursor-not-allowed border-border text-muted-foreground/40'
-                  : 'border-border text-muted-foreground hover:border-lca-navy/40',
+                  : 'border-border text-muted-foreground hover:border-ink/40',
               )}
             >
               Round {round}
@@ -683,7 +684,7 @@ export function TournamentDetailPage() {
 
             {/* My registration — bye rounds */}
             {myRegistration && (
-              <div className="rounded-xl border border-lca-navy/20 bg-brand-navy/5 p-6">
+              <div className="rounded-xl border border-ink/20 bg-ink/5 p-6">
                 <h2 className="text-lg font-bold text-ink">Your registration</h2>
                 <dl className="mt-3 space-y-2 text-sm">
                   <div className="flex gap-4">
@@ -818,7 +819,7 @@ export function TournamentDetailPage() {
                     <dt className="text-muted-foreground">Status</dt>
                     <dd>
                       {regStatus === 'open' && tournament.status === 'upcoming' ? (
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
+                        <span className="rounded-full bg-status-open-tint px-2 py-0.5 text-xs font-medium text-status-open">
                           Open
                         </span>
                       ) : (
@@ -843,7 +844,7 @@ export function TournamentDetailPage() {
                       myWaitlisted
                         ? 'border-border bg-muted/40 text-ink'
                         : myRegistration.payment_status === 'paid'
-                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                        ? 'border-ok-200 bg-ok-50 text-ok'
                         : 'border-lca-gold/40 bg-lca-gold/10 text-ink',
                     )}>
                       <CheckCircle2 className="size-4" />
@@ -894,16 +895,16 @@ export function TournamentDetailPage() {
                 {/* Registration open form */}
                 {!myRegistration && regStatus === 'open' && tournament.status === 'upcoming' && (
                   confirmation ? (
-                    <div className="mt-5 space-y-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                    <div className="mt-5 space-y-4 rounded-lg border border-ok-200 bg-ok-50 p-4">
                       <div className="flex items-start gap-2">
-                        <CheckCircle2 className="mt-0.5 size-5 flex-shrink-0 text-emerald-700" />
+                        <CheckCircle2 className="mt-0.5 size-5 flex-shrink-0 text-ok-700" />
                         <div>
-                          <p className="font-medium text-emerald-900">Registration submitted</p>
-                          <p className="mt-1 text-sm text-emerald-800">{confirmation.message}</p>
+                          <p className="font-medium text-ok-900">Registration submitted</p>
+                          <p className="mt-1 text-sm text-ok">{confirmation.message}</p>
                         </div>
                       </div>
                       {warnings.map((w) => (
-                        <p key={w} className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900">{w}</p>
+                        <p key={w} className="rounded-md border border-warn-300 bg-warn-50 p-2.5 text-xs text-warn-900">{w}</p>
                       ))}
                       {confirmation.paymentUrl && (
                         <Button asChild className={cn('w-full', goldBtn)}>
@@ -955,13 +956,13 @@ export function TournamentDetailPage() {
                       )}
 
                       {blockingProblem && (
-                        <p className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900">
+                        <p className="rounded-md border border-warn-300 bg-warn-50 p-2.5 text-xs text-warn-900">
                           {blockingProblem} Pick another section, or ask the director if you think this is wrong.
                         </p>
                       )}
 
                       {expiresBefore && (
-                        <p className="rounded-md border border-amber-300 bg-amber-50 p-2.5 text-xs text-amber-900">
+                        <p className="rounded-md border border-warn-300 bg-warn-50 p-2.5 text-xs text-warn-900">
                           Your US Chess membership expires {expiresBefore}, before this event. Renew it at uschess.org so your games can be rated.
                         </p>
                       )}
@@ -1000,10 +1001,10 @@ export function TournamentDetailPage() {
                                   className={cn(
                                     'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
                                     isSel
-                                      ? 'border-lca-navy bg-brand-navy text-white'
+                                      ? 'border-brand-navy bg-brand-navy text-white'
                                       : wouldExceed
                                       ? 'cursor-not-allowed border-border text-muted-foreground/40'
-                                      : 'border-border text-muted-foreground hover:border-lca-navy/40',
+                                      : 'border-border text-muted-foreground hover:border-ink/40',
                                   )}
                                 >
                                   Rd {round}

@@ -111,7 +111,7 @@ export function ChampionsPage() {
               <div className="relative">
                 <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
                 <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Find a name…"
-                  className="h-9 w-56 rounded-full border bg-background pl-8 pr-3 text-sm outline-none focus:border-lca-navy/50" />
+                  className="h-9 w-56 rounded-full border bg-background pl-8 pr-3 text-sm outline-none focus:border-ink/50" />
               </div>
             </div>
             {titles.length > 1 && (
@@ -119,7 +119,7 @@ export function ChampionsPage() {
                 {['all', ...titles].map((t) => (
                   <button key={t} type="button" onClick={() => setTitle(t)} aria-pressed={title === t}
                     className={cn('rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                      title === t ? 'border-lca-navy bg-brand-navy text-white' : 'text-muted-foreground hover:border-lca-navy/40')}>
+                      title === t ? 'border-brand-navy bg-brand-navy text-white' : 'text-muted-foreground hover:border-ink/40')}>
                     {t === 'all' ? 'All championships' : t}
                   </button>
                 ))}

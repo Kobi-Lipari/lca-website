@@ -15,7 +15,7 @@ import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
 
 const STATUS: Record<string, { label: string; className: string }> = {
   upcoming: { label: 'Upcoming', className: 'bg-lca-gold/15 text-[#7a5c00] border border-lca-gold/40' },
-  active: { label: 'Active', className: 'bg-emerald-100 text-emerald-800' },
+  active: { label: 'Active', className: 'bg-ok-100 text-ok' },
   completed: { label: 'Done', className: 'bg-muted text-muted-foreground border border-border' },
 }
 

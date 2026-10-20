@@ -27,7 +27,7 @@ export function ViewOnlyNote({ children }: { children?: ReactNode }) {
   const viewOnly = useViewOnly()
   if (!viewOnly) return null
   return (
-    <p className="mb-4 rounded-lg border border-lca-navy/15 bg-brand-navy/[0.04] px-3 py-2 text-xs text-ink">
+    <p className="mb-4 rounded-lg border border-ink/15 bg-ink/[0.04] px-3 py-2 text-xs text-ink">
       {children ?? 'View only: you can see everything here, but changes are made by LCA admins.'}
     </p>
   )

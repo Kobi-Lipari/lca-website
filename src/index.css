@@ -79,6 +79,61 @@
     --color-status-partner-tint: var(--status-partner-tint);
     --color-status-lca: var(--status-lca);
     --color-status-lca-tint: var(--status-lca-tint);
+    /* The tone shades (step 24): text-ok-700, bg-warn-50, border-info-200
+     * and the rest, one for each shade of a status colour the pages use. */
+    --color-ok-50: var(--ok-50);
+    --color-ok-100: var(--ok-100);
+    --color-ok-200: var(--ok-200);
+    --color-ok-500: var(--ok-500);
+    --color-ok-600: var(--ok-600);
+    --color-ok-700: var(--ok-700);
+    --color-ok-900: var(--ok-900);
+    --color-ok-950: var(--ok-950);
+    --color-ok-green-50: var(--ok-green-50);
+    --color-ok-green-100: var(--ok-green-100);
+    --color-ok-green-200: var(--ok-green-200);
+    --color-ok-green-500: var(--ok-green-500);
+    --color-ok-green-600: var(--ok-green-600);
+    --color-ok-green-700: var(--ok-green-700);
+    --color-ok-green-800: var(--ok-green-800);
+    --color-bad-50: var(--bad-50);
+    --color-bad-100: var(--bad-100);
+    --color-bad-200: var(--bad-200);
+    --color-bad-500: var(--bad-500);
+    --color-bad-700: var(--bad-700);
+    --color-bad-800: var(--bad-800);
+    --color-bad-900: var(--bad-900);
+    --color-warn-50: var(--warn-50);
+    --color-warn-100: var(--warn-100);
+    --color-warn-200: var(--warn-200);
+    --color-warn-300: var(--warn-300);
+    --color-warn-600: var(--warn-600);
+    --color-warn-700: var(--warn-700);
+    --color-warn-800: var(--warn-800);
+    --color-warn-900: var(--warn-900);
+    --color-warn-950: var(--warn-950);
+    --color-warn-yellow-50: var(--warn-yellow-50);
+    --color-warn-yellow-100: var(--warn-yellow-100);
+    --color-warn-yellow-200: var(--warn-yellow-200);
+    --color-warn-yellow-700: var(--warn-yellow-700);
+    --color-warn-yellow-800: var(--warn-yellow-800);
+    --color-info-50: var(--info-50);
+    --color-info-100: var(--info-100);
+    --color-info-200: var(--info-200);
+    --color-info-800: var(--info-800);
+    --color-info-purple-100: var(--info-purple-100);
+    --color-info-purple-800: var(--info-purple-800);
+    --color-info-banner: var(--info-banner);
+    --color-quiet-100: var(--quiet-100);
+    --color-quiet-600: var(--quiet-600);
+    --color-facebook-link: var(--facebook-link);
+    --color-mark-warn: var(--mark-warn);
+    --color-mark-ok: var(--mark-ok);
+    --color-ok-fill: var(--ok-fill);
+    /* Light islands (step 24): the words on a ground that stays light in
+     * every look, such as the club map's paper, and the veil laid over it. */
+    --color-muted-on-light: var(--muted-on-light);
+    --color-veil-on-light: var(--veil-on-light);
 
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
@@ -195,6 +250,82 @@
     --status-partner-tint: oklch(97% 0.014 254.604);
     --status-lca: #1a2744;
     --status-lca-tint: color-mix(in oklab, #c8a94a 20%, transparent);
+    /*
+     * Tones (step 24): the status colours the pages spelled out as Tailwind
+     * classes, one token for each shade they use, named for its tone and
+     * Tailwind's step. ok is emerald (and green, the US Chess lookup's
+     * second green), bad is red, warn is amber (and the support pages'
+     * yellow), info is blue (and the purple of one audit entry), quiet is
+     * grey (not "neutral", which is a Tailwind colour of its own). text-ok is
+     * emerald-800 and text-bad red-600, so those two shades need no token of
+     * their own. Here each is exactly the Tailwind colour it replaced; under
+     * the new look every shade of a tone is that tone's tint or its words
+     * (the block after the looks). test/unit/tokens.test.ts holds each one
+     * to its Tailwind colour.
+     */
+    --ok-50: oklch(97.9% 0.021 166.113);
+    --ok-100: oklch(95% 0.052 163.051);
+    --ok-200: oklch(90.5% 0.093 164.15);
+    --ok-500: oklch(69.6% 0.17 162.48);
+    --ok-600: oklch(59.6% 0.145 163.225);
+    --ok-700: oklch(50.8% 0.118 165.612);
+    --ok-900: oklch(37.8% 0.077 168.94);
+    --ok-950: oklch(26.2% 0.051 172.552);
+    --ok-green-50: oklch(98.2% 0.018 155.826);
+    --ok-green-100: oklch(96.2% 0.044 156.743);
+    --ok-green-200: oklch(92.5% 0.084 155.995);
+    --ok-green-500: oklch(72.3% 0.219 149.579);
+    --ok-green-600: oklch(62.7% 0.194 149.214);
+    --ok-green-700: oklch(52.7% 0.154 150.069);
+    --ok-green-800: oklch(44.8% 0.119 151.328);
+    --bad-50: oklch(97.1% 0.013 17.38);
+    --bad-100: oklch(93.6% 0.032 17.717);
+    --bad-200: oklch(88.5% 0.062 18.334);
+    --bad-500: oklch(63.7% 0.237 25.331);
+    --bad-700: oklch(50.5% 0.213 27.518);
+    --bad-800: oklch(44.4% 0.177 26.899);
+    --bad-900: oklch(39.6% 0.141 25.723);
+    --warn-50: oklch(98.7% 0.022 95.277);
+    --warn-100: oklch(96.2% 0.059 95.617);
+    --warn-200: oklch(92.4% 0.12 95.746);
+    --warn-300: oklch(87.9% 0.169 91.605);
+    --warn-600: oklch(66.6% 0.179 58.318);
+    --warn-700: oklch(55.5% 0.163 48.998);
+    --warn-800: oklch(47.3% 0.137 46.201);
+    --warn-900: oklch(41.4% 0.112 45.904);
+    --warn-950: oklch(27.9% 0.077 45.635);
+    --warn-yellow-50: oklch(98.7% 0.026 102.212);
+    --warn-yellow-100: oklch(97.3% 0.071 103.193);
+    --warn-yellow-200: oklch(94.5% 0.129 101.54);
+    --warn-yellow-700: oklch(55.4% 0.135 66.442);
+    --warn-yellow-800: oklch(47.6% 0.114 61.907);
+    --info-50: oklch(97% 0.014 254.604);
+    --info-100: oklch(93.2% 0.032 255.585);
+    --info-200: oklch(88.2% 0.059 254.128);
+    --info-800: oklch(42.4% 0.199 265.638);
+    --info-purple-100: oklch(94.6% 0.033 307.174);
+    --info-purple-800: oklch(43.8% 0.218 303.724);
+    /* The blue of the info announcement banner, which the admin list's
+     * "Scheduled" tag borrows. */
+    --info-banner: #1e4d7b;
+    --quiet-100: oklch(96.7% 0.003 264.542);
+    --quiet-600: oklch(44.6% 0.03 256.802);
+    /* The Facebook links' blue, a darker shade of the Facebook brand blue
+     * that reaches 4.5:1 on white. */
+    --facebook-link: #1668d8;
+    /* Not status tags (step 24): the scanner's marks on a move to check and
+     * a move that was fixed, which must stand out from the card the moves
+     * sit on (amber-200 and emerald-200 here), and the solid green of a
+     * checked check-in toggle under white words (emerald-600 here). */
+    --mark-warn: oklch(92.4% 0.12 95.746);
+    --mark-ok: oklch(90.5% 0.093 164.15);
+    --ok-fill: oklch(59.6% 0.145 163.225);
+    /* Light islands (step 24): a ground that stays light in every look, such
+     * as the club map's paper (bg-[#f2efe6], the map style's own colour),
+     * keeps the words on it dark. Here they are the muted words and the muted
+     * ground the map's loading note drew (text-muted-foreground, bg-muted). */
+    --muted-on-light: oklch(0.556 0 0);
+    --veil-on-light: oklch(0.97 0 0);
 }
 
 .dark {
@@ -280,83 +411,115 @@
     --status-partner-tint: #eef1f6;
     --status-lca: #fff;
     --status-lca-tint: #1a2744;
+    --facebook-link: #1668d8;
+    /* The scanner's marks keep a highlighter's strength on a light card:
+     * amber-200, and emerald-200 lightened just enough for the ok words to
+     * reach 4.5:1 on it (the tag tints would all but vanish on the card). */
+    --mark-warn: #fee685;
+    --mark-ok: #bcf7db;
+    /* A checked check-in toggle: a dark green under white words (5.48:1),
+     * the same in every look and in dark mode, where the ok words colour
+     * would be too light under white. */
+    --ok-fill: #047857;
+    /* Light islands: the light look's muted words and muted ground, the same
+     * in every look and in dark mode, because the ground under them stays
+     * light (the words reach 5.16:1 on the club map's paper). */
+    --muted-on-light: #5b6478;
+    --veil-on-light: #f7f8fa;
 }
 
 /* Dark: the Looks-3 dark palette. It follows the device setting unless the
- * visitor picks Light or Dark in the Appearance control. */
-:root[data-look="new"].dark,
-:root[data-look="new"].dark [data-theme=""] {
-    color-scheme: dark;
-    --ground: #0b1220;
-    --surface: #111a2c;
-    --surface-2: #0b1220;
-    --raised: #1a2744;
-    --ink: #e8ecf4;
-    --ink-muted: #9aa6bf;
-    --hairline: rgb(255 255 255 / 8%);
-    --field: #5f6d89;
-    --ok: #3ecf8e;
-    --bad: #ff6b6b;
-    --gold-ink: #c8a94a;
-    --focus: #c8a94a;
-    --status-open: #3ecf8e;
-    --status-open-tint: #0d2b22;
-    --status-soon: #c8a94a;
-    --status-soon-tint: #2a2412;
-    --status-full: #ff6b6b;
-    --status-full-tint: #3a1619;
-    --status-waitlist: #ff6b6b;
-    --status-waitlist-tint: #3a1619;
-    --status-closed: #9aa6bf;
-    --status-closed-tint: #1a2744;
-    --status-live: #fff;
-    --status-live-tint: #c0362c;
-    --status-partner: #e8ecf4;
-    --status-partner-tint: #1a2744;
-    --status-lca: #0b1220;
-    --status-lca-tint: #c8a94a;
+ * visitor picks Light or Dark in the Appearance control. On screens only
+ * (step 24): a printed page takes the light look, so a sheet printed from
+ * a dark device puts dark words on the white paper. The live look and
+ * heritage in dark mode below are on screens only for the same reason. */
+@media screen {
+    :root[data-look="new"].dark,
+    :root[data-look="new"].dark [data-theme=""] {
+        color-scheme: dark;
+        --ground: #0b1220;
+        --surface: #111a2c;
+        --surface-2: #0b1220;
+        --raised: #1a2744;
+        --ink: #e8ecf4;
+        --ink-muted: #9aa6bf;
+        --hairline: rgb(255 255 255 / 8%);
+        --field: #5f6d89;
+        --ok: #3ecf8e;
+        --bad: #ff6b6b;
+        --gold-ink: #c8a94a;
+        --focus: #c8a94a;
+        --status-open: #3ecf8e;
+        --status-open-tint: #0d2b22;
+        --status-soon: #c8a94a;
+        --status-soon-tint: #2a2412;
+        --status-full: #ff6b6b;
+        --status-full-tint: #3a1619;
+        --status-waitlist: #ff6b6b;
+        --status-waitlist-tint: #3a1619;
+        --status-closed: #9aa6bf;
+        --status-closed-tint: #1a2744;
+        --status-live: #fff;
+        --status-live-tint: #c0362c;
+        --status-partner: #e8ecf4;
+        --status-partner-tint: #1a2744;
+        --status-lca: #0b1220;
+        --status-lca-tint: #c8a94a;
+        --facebook-link: #4599ff;
+        /* The scanner's marks: a quarter of the gold and of the ok green over
+         * the card, so each stands out from it with its words at 4.5:1 (the
+         * live look's below are worked out the same way over its panel). */
+        --mark-warn: #3f3e34;
+        --mark-ok: #1c4745;
+    }
 }
 
-/* Live (Looks-7 Broadcast Night): always dark, light or dark mode alike.
+/* Live (Looks-7 Broadcast Night): always dark on a screen, light or dark
+ * mode alike; a printed live page takes the light look (step 24).
  * Live red carries dark text only; white on it is 3.34:1. */
-:root[data-look="new"] [data-theme="live"] {
-    color-scheme: dark;
-    --ground: #070b14;
-    --surface: #0e1526;
-    --surface-2: #070b14;
-    --raised: #1a2744;
-    --ink: #f3f5f9;
-    --ink-muted: #8e9ab2;
-    --hairline: rgb(255 255 255 / 8%);
-    --field: #5f6d89;
-    --ok: #34d399;
-    --bad: #ff6b6b;
-    --gold: #c8a94a;
-    --gold-ink: #c8a94a;
-    --gold-on-dark: #c8a94a;
-    --gold-hi: #e5c768;
-    --live: #ff4757;
-    --live-strong: #c81e32;
-    --win: #34d399;
-    --loss: #ff6b6b;
-    --draw: #a7b0c2;
-    --focus: #c8a94a;
-    --status-open: #34d399;
-    --status-open-tint: #0e1526;
-    --status-soon: #f3f5f9;
-    --status-soon-tint: #1a2744;
-    --status-full: #c8a94a;
-    --status-full-tint: #0e1526;
-    --status-waitlist: #c8a94a;
-    --status-waitlist-tint: #0e1526;
-    --status-closed: #8e9ab2;
-    --status-closed-tint: #0e1526;
-    --status-live: #070b14;
-    --status-live-tint: #ff4757;
-    --status-partner: #a7b0c2;
-    --status-partner-tint: #0e1526;
-    --status-lca: #070b14;
-    --status-lca-tint: #c8a94a;
+@media screen {
+    :root[data-look="new"] [data-theme="live"] {
+        color-scheme: dark;
+        --ground: #070b14;
+        --surface: #0e1526;
+        --surface-2: #070b14;
+        --raised: #1a2744;
+        --ink: #f3f5f9;
+        --ink-muted: #8e9ab2;
+        --hairline: rgb(255 255 255 / 8%);
+        --field: #5f6d89;
+        --ok: #34d399;
+        --bad: #ff6b6b;
+        --gold: #c8a94a;
+        --gold-ink: #c8a94a;
+        --gold-on-dark: #c8a94a;
+        --gold-hi: #e5c768;
+        --live: #ff4757;
+        --live-strong: #c81e32;
+        --win: #34d399;
+        --loss: #ff6b6b;
+        --draw: #a7b0c2;
+        --focus: #c8a94a;
+        --status-open: #34d399;
+        --status-open-tint: #0e1526;
+        --status-soon: #f3f5f9;
+        --status-soon-tint: #1a2744;
+        --status-full: #c8a94a;
+        --status-full-tint: #0e1526;
+        --status-waitlist: #c8a94a;
+        --status-waitlist-tint: #0e1526;
+        --status-closed: #8e9ab2;
+        --status-closed-tint: #0e1526;
+        --status-live: #070b14;
+        --status-live-tint: #ff4757;
+        --status-partner: #a7b0c2;
+        --status-partner-tint: #0e1526;
+        --status-lca: #070b14;
+        --status-lca-tint: #c8a94a;
+        --facebook-link: #4599ff;
+        --mark-warn: #3d3a2f;
+        --mark-ok: #184543;
+    }
 }
 
 /* Scholastic (Looks-6 Bright Scholastic): a light look in either mode.
@@ -403,6 +566,9 @@
     --status-partner-tint: #eef1f6;
     --status-lca: #fff;
     --status-lca-tint: #1a2744;
+    --facebook-link: #1668d8;
+    --mark-warn: #fee685;
+    --mark-ok: #bcf7db;
 }
 
 /* Heritage (Looks-1 Heritage Club): grounds, ink, rules and gold-ink only.
@@ -424,17 +590,76 @@
 }
 
 /* Heritage in dark mode keeps its type, rules and seal on the Minimal dark
- * grounds. */
-:root[data-look="new"].dark [data-theme="heritage"] {
-    --ground: #0b1220;
-    --surface: #111a2c;
-    --surface-2: #0b1220;
-    --raised: #1a2744;
-    --ink: #e8ecf4;
-    --ink-muted: #9aa6bf;
-    --hairline: rgb(255 255 255 / 8%);
-    --field: #5f6d89;
-    --gold-ink: #c8a94a;
+ * grounds, on screens only like the dark look (step 24). */
+@media screen {
+    :root[data-look="new"].dark [data-theme="heritage"] {
+        --ground: #0b1220;
+        --surface: #111a2c;
+        --surface-2: #0b1220;
+        --raised: #1a2744;
+        --ink: #e8ecf4;
+        --ink-muted: #9aa6bf;
+        --hairline: rgb(255 255 255 / 8%);
+        --field: #5f6d89;
+        --gold-ink: #c8a94a;
+    }
+}
+
+/* The tones, only in the new look (step 24). Every shade of a tone takes
+ * the tone's colour from the Looks-3 status tags: the shades up to step 300
+ * (the tints and the light lines) its tint, the shades from 400 (the words,
+ * icons and dots) its words. ok is the open tag (its words are --ok), bad
+ * the full tag (its words are --bad), warn the soon tag, info the partner
+ * tag and quiet the closed tag. Heritage restyles none of them, as it
+ * restyles no status tag. Repeated on every scope, like the shadcn
+ * variables below, so a shade follows the look of the scope it sits in. */
+:root[data-look="new"],
+:root[data-look="new"] [data-theme] {
+    --ok-50: var(--status-open-tint);
+    --ok-100: var(--status-open-tint);
+    --ok-200: var(--status-open-tint);
+    --ok-500: var(--ok);
+    --ok-600: var(--ok);
+    --ok-700: var(--ok);
+    --ok-900: var(--ok);
+    --ok-950: var(--ok);
+    --ok-green-50: var(--status-open-tint);
+    --ok-green-100: var(--status-open-tint);
+    --ok-green-200: var(--status-open-tint);
+    --ok-green-500: var(--ok);
+    --ok-green-600: var(--ok);
+    --ok-green-700: var(--ok);
+    --ok-green-800: var(--ok);
+    --bad-50: var(--status-full-tint);
+    --bad-100: var(--status-full-tint);
+    --bad-200: var(--status-full-tint);
+    --bad-500: var(--bad);
+    --bad-700: var(--bad);
+    --bad-800: var(--bad);
+    --bad-900: var(--bad);
+    --warn-50: var(--status-soon-tint);
+    --warn-100: var(--status-soon-tint);
+    --warn-200: var(--status-soon-tint);
+    --warn-300: var(--status-soon-tint);
+    --warn-600: var(--status-soon);
+    --warn-700: var(--status-soon);
+    --warn-800: var(--status-soon);
+    --warn-900: var(--status-soon);
+    --warn-950: var(--status-soon);
+    --warn-yellow-50: var(--status-soon-tint);
+    --warn-yellow-100: var(--status-soon-tint);
+    --warn-yellow-200: var(--status-soon-tint);
+    --warn-yellow-700: var(--status-soon);
+    --warn-yellow-800: var(--status-soon);
+    --info-50: var(--status-partner-tint);
+    --info-100: var(--status-partner-tint);
+    --info-200: var(--status-partner-tint);
+    --info-800: var(--status-partner);
+    --info-purple-100: var(--status-partner-tint);
+    --info-purple-800: var(--status-partner);
+    --info-banner: var(--status-partner);
+    --quiet-100: var(--status-closed-tint);
+    --quiet-600: var(--status-closed);
 }
 
 /* The shadcn variables point at the semantic tokens, only in the new look.
@@ -519,6 +744,41 @@
         transition-duration: 0s !important;
         transition-delay: 0s !important;
         scroll-behavior: auto !important;
+    }
+}
+
+/*
+ * Browsers that cannot mix colours (Safari 15.4 to 16.1, and older ones such
+ * as Chrome 109), in either look. Tailwind gives a token class with an
+ * opacity modifier, such as bg-ink/5, its token at full strength there,
+ * which would put navy text on a solid navy box, while the brand class it
+ * replaced (bg-brand-navy/5) fell back to its worked-out tint. Each rule
+ * below gives one token class with a modifier that the step 24 map writes
+ * the tint its old class fell back to, the same colour as #rrggbbaa, so those
+ * browsers draw what they drew before. Browsers that can mix colours skip
+ * these rules. test/unit/semantic-map.test.ts checks every one.
+ */
+@supports not (color: color-mix(in lab, red, red)) {
+    .bg-ink\/5 { background-color: #1a27440d; }
+    .bg-ink\/7 { background-color: #1a274412; }
+    .bg-ink\/8 { background-color: #1a274414; }
+    .bg-ink\/10 { background-color: #1a27441a; }
+    .bg-ink\/\[0\.03\] { background-color: #1a274408; }
+    .bg-ink\/\[0\.04\] { background-color: #1a27440a; }
+    .bg-ink\/\[0\.06\] { background-color: #1a27440f; }
+    .border-ink\/10 { border-color: #1a27441a; }
+    .border-ink\/15 { border-color: #1a274426; }
+    .border-ink\/20 { border-color: #1a274433; }
+    .border-ink\/40 { border-color: #1a274466; }
+    .focus\:border-ink\/50:focus { border-color: #1a274480; }
+    .bg-info-banner\/15 { background-color: #1e4d7b26; }
+}
+
+/* The hover forms sit inside the same media query as Tailwind's own. */
+@media (hover: hover) {
+    @supports not (color: color-mix(in lab, red, red)) {
+        .hover\:border-ink\/30:hover { border-color: #1a27444d; }
+        .hover\:border-ink\/40:hover { border-color: #1a274466; }
     }
 }
 

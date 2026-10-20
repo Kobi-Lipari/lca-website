@@ -39,17 +39,17 @@ import { usChessState } from '@/areas/membership/usChess'
 type MembershipStatus = 'active' | 'expired' | 'pending'
 
 const statusConfig: Record<MembershipStatus, { label: string; className: string }> = {
-  active: { label: 'Active', className: 'bg-emerald-100 text-emerald-800' },
+  active: { label: 'Active', className: 'bg-ok-100 text-ok' },
   expired: { label: 'Expired', className: 'bg-destructive/10 text-destructive' },
   pending: { label: 'Pending', className: 'bg-lca-gold/20 text-ink' },
 }
 
 const ticketStatusColors: Record<string, string> = {
-  open: 'bg-blue-100 text-blue-800',
-  new: 'bg-blue-100 text-blue-800',
-  answered: 'bg-emerald-100 text-emerald-800',
-  in_progress: 'bg-yellow-100 text-yellow-800',
-  resolved: 'bg-gray-100 text-gray-600',
+  open: 'bg-info-100 text-info-800',
+  new: 'bg-info-100 text-info-800',
+  answered: 'bg-ok-100 text-ok',
+  in_progress: 'bg-warn-yellow-100 text-warn-yellow-800',
+  resolved: 'bg-quiet-100 text-quiet-600',
 }
 
 const ticketStatusLabels: Record<string, string> = {
@@ -344,7 +344,7 @@ export function DashboardPage() {
                     <li key={c.id}>
                       <Link
                         to={`/admin/clubs/${c.id}`}
-                        className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors hover:border-lca-navy/40 hover:bg-muted/40"
+                        className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors hover:border-ink/40 hover:bg-muted/40"
                       >
                         <span className="min-w-0">
                           <span className="block truncate font-medium text-ink">{c.name}</span>
@@ -582,7 +582,7 @@ export function DashboardPage() {
               </div>
 
               {passwordNotice && !changingPassword && (
-                <p className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+                <p className="mt-3 rounded-lg border border-ok-200 bg-ok-50 px-3 py-2 text-xs text-ok">
                   {passwordNotice}
                 </p>
               )}
@@ -710,7 +710,7 @@ export function DashboardPage() {
                         reg.waitlisted_at
                           ? 'bg-muted text-muted-foreground'
                           : reg.payment_status === 'paid'
-                          ? 'bg-emerald-100 text-emerald-800'
+                          ? 'bg-ok-100 text-ok'
                           : 'bg-lca-gold/20 text-ink',
                       )}
                     >

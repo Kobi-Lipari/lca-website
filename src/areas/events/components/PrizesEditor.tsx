@@ -151,9 +151,9 @@ export function PrizesEditor({ section, onChange }: {
 
           <div className="flex flex-wrap items-center gap-2 border-t pt-3">
             <span className="text-muted-foreground">Add a class prize:</span>
-            <button type="button" className="rounded-full border px-2.5 py-0.5 hover:border-lca-navy/40" onClick={() => addClass('rating')}>Rating class</button>
-            <button type="button" className="rounded-full border px-2.5 py-0.5 hover:border-lca-navy/40" onClick={() => addClass('unrated')}>Top unrated</button>
-            <button type="button" className="rounded-full border px-2.5 py-0.5 hover:border-lca-navy/40" onClick={() => addClass('grade')}>Grade</button>
+            <button type="button" className="rounded-full border px-2.5 py-0.5 hover:border-ink/40" onClick={() => addClass('rating')}>Rating class</button>
+            <button type="button" className="rounded-full border px-2.5 py-0.5 hover:border-ink/40" onClick={() => addClass('unrated')}>Top unrated</button>
+            <button type="button" className="rounded-full border px-2.5 py-0.5 hover:border-ink/40" onClick={() => addClass('grade')}>Grade</button>
           </div>
           <p className="text-muted-foreground">
             Cash is split evenly among players tied on score, and each player gets only their largest cash prize

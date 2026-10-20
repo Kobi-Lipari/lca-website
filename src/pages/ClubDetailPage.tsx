@@ -41,7 +41,7 @@ function readableTextOn(hex: string): string {
 
 const statusBadge: Record<string, { label: string; className: string }> = {
   upcoming: { label: 'Upcoming', className: 'bg-lca-gold/15 text-[#8a6d1f]' },
-  active: { label: 'In progress', className: 'bg-emerald-100 text-emerald-800' },
+  active: { label: 'In progress', className: 'bg-ok-100 text-ok' },
   completed: { label: 'Completed', className: 'bg-muted text-muted-foreground' },
 }
 

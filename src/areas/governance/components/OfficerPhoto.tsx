@@ -27,7 +27,7 @@ export function OfficerPhoto({ name, photoUrl, size = 56, className }: {
   }
   return (
     <span aria-hidden style={style}
-      className={cn('flex flex-shrink-0 items-center justify-center rounded-full bg-brand-navy/10 text-sm font-semibold text-ink', className)}>
+      className={cn('flex flex-shrink-0 items-center justify-center rounded-full bg-ink/10 text-sm font-semibold text-ink', className)}>
       {initials(name)}
     </span>
   )

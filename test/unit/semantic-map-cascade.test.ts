@@ -158,7 +158,10 @@ describe('every written form builds the rule its old form built', () => {
     expect(forms).toContain('[&_a]:text-ink')
     expect(forms).toContain('hover:bg-brand-navy/90')
     expect(forms).toContain('hover:bg-surface')
-    expect(forms.length).toBeGreaterThanOrEqual(15)
+    // 19 when step 23 was built; step 24 moved the seven faint navy tints
+    // (bg-brand-navy/5 and the rest) on to the ink, and its map's own forms
+    // are checked the same way in semantic-map.test.ts.
+    expect(forms.length).toBeGreaterThanOrEqual(12)
   })
 
   it('the comparison tells two different colours apart, and two different variants', () => {

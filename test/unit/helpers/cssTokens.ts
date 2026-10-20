@@ -9,6 +9,11 @@
 // in order of specificity and then of position, and then replacing each
 // var() with the value it names on that element. A container inherits the
 // values <html> ends up with, as custom properties do.
+//
+// The cascade reads the page on a screen: it takes the rules at the top
+// level and those inside @media screen (the dark look, the live look and
+// heritage in dark mode, step 24), and leaves out every other at-rule. Told
+// the page is printed, it leaves out the screen-only rules as well.
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 
@@ -92,6 +97,20 @@ export function specificity(selector: string): number {
 export interface RootState {
   look: boolean
   dark: boolean
+  /** The page is printed rather than shown on a screen, so the screen-only rules do not apply. */
+  print?: boolean
+}
+
+/**
+ * The at-rule around the rules that apply on a screen only (step 24): the
+ * dark look, the live look and heritage in dark mode, so a printed page
+ * takes the light look.
+ */
+export const SCREEN_ONLY = '@media screen'
+
+/** Whether a rule takes part in the cascade: at the top level, or on a screen only and the page is not printed. */
+export function applies(rule: CssRule, print = false): boolean {
+  return rule.within === '' || (rule.within === SCREEN_ONLY && !print)
 }
 
 /** Whether a selector, taken whole, matches <html> in this state. */
@@ -114,10 +133,10 @@ export function matchesScope(selector: string, state: RootState, theme: string):
   return m[2] === undefined || m[2] === theme
 }
 
-function cascade(rules: CssRule[], matches: (selector: string) => boolean): Map<string, string> {
+function cascade(rules: CssRule[], matches: (selector: string) => boolean, print = false): Map<string, string> {
   const hits: Array<{ spec: number; order: number; decls: Map<string, string> }> = []
   for (const rule of rules) {
-    if (rule.within) continue
+    if (!applies(rule, print)) continue
     for (const sel of rule.selectors) {
       if (matches(sel)) {
         hits.push({ spec: specificity(sel), order: rule.order, decls: rule.decls })
@@ -163,7 +182,7 @@ function resolveAll(raw: Map<string, string>): Map<string, string> {
 
 /** Every custom property on <html> in this state, with var() replaced. */
 export function rootTokens(rules: CssRule[], state: RootState): Map<string, string> {
-  return resolveAll(cascade(rules, (sel) => matchesRoot(sel, state)))
+  return resolveAll(cascade(rules, (sel) => matchesRoot(sel, state), state.print))
 }
 
 /**
@@ -173,7 +192,7 @@ export function rootTokens(rules: CssRule[], state: RootState): Map<string, stri
  */
 export function scopeTokens(rules: CssRule[], state: RootState, theme: string): Map<string, string> {
   const inherited = rootTokens(rules, state)
-  const own = cascade(rules, (sel) => matchesScope(sel, state, theme))
+  const own = cascade(rules, (sel) => matchesScope(sel, state, theme), state.print)
   const raw = new Map(inherited)
   for (const [k, v] of own) raw.set(k, v)
   return resolveAll(raw)

@@ -17,11 +17,11 @@ import {
 } from '@/lib/api'
 
 const statusColors: Record<string, string> = {
-  open: 'bg-blue-100 text-blue-800',
-  new: 'bg-blue-100 text-blue-800',
-  answered: 'bg-emerald-100 text-emerald-800',
-  in_progress: 'bg-yellow-100 text-yellow-800',
-  resolved: 'bg-gray-100 text-gray-600',
+  open: 'bg-info-100 text-info-800',
+  new: 'bg-info-100 text-info-800',
+  answered: 'bg-ok-100 text-ok',
+  in_progress: 'bg-warn-yellow-100 text-warn-yellow-800',
+  resolved: 'bg-quiet-100 text-quiet-600',
 }
 
 const statusLabels: Record<string, string> = {
@@ -295,15 +295,15 @@ export function SupportPage() {
       {view === 'new' && (
         <div className="max-w-lg">
           {submitStatus === 'success' ? (
-            <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-6 text-center">
-              <p className="text-emerald-800 font-medium text-lg">
+            <div className="rounded-lg bg-ok-50 border border-ok-200 p-6 text-center">
+              <p className="text-ok font-medium text-lg">
                 Ticket created!
               </p>
-              <p className="text-emerald-700 text-sm mt-1">
+              <p className="text-ok-700 text-sm mt-1">
                 We'll respond as soon as possible.
               </p>
               {!user && (
-                <p className="text-sm text-emerald-700 mt-2">
+                <p className="text-sm text-ok-700 mt-2">
                   <Link to="/login" className="underline font-medium">
                     Sign in
                   </Link>{' '}
@@ -324,7 +324,7 @@ export function SupportPage() {
           ) : (
             <form onSubmit={handleCreateTicket} className="space-y-4">
               {!user && (
-                <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 text-sm text-blue-800">
+                <div className="rounded-lg bg-info-50 border border-info-200 p-4 text-sm text-info-800">
                   <Link to="/login" className="font-medium underline">
                     Sign in
                   </Link>{' '}
@@ -351,7 +351,7 @@ export function SupportPage() {
                   required
                 />
                 {user && form.email !== user.email && (
-                  <p className="text-xs text-yellow-700 bg-yellow-50 border border-yellow-200 rounded px-3 py-2">
+                  <p className="text-xs text-warn-yellow-700 bg-warn-yellow-50 border border-warn-yellow-200 rounded px-3 py-2">
                     This is different from your account email ({user.email}).
                     Replies will be sent to {form.email}.
                   </p>
@@ -407,7 +407,7 @@ export function SupportPage() {
                 key={msg.id}
                 className={`rounded-lg p-4 ${
                   msg.sender_type === 'admin'
-                    ? 'bg-brand-navy/5 border border-lca-navy/10'
+                    ? 'bg-ink/5 border border-ink/10'
                     : 'bg-muted'
                 }`}
               >

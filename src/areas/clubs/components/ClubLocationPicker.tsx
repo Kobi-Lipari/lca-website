@@ -159,7 +159,7 @@ export function ClubLocationPicker({
         <div className="relative h-72 overflow-hidden rounded-lg border bg-[#f2efe6]">
           <div ref={mapEl} className="h-full w-full" />
           {!loaded && (
-            <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">Loading map…</div>
+            <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-on-light">Loading map…</div>
           )}
         </div>
       ) : (
@@ -205,7 +205,7 @@ export function ClubLocationPicker({
           </span>
         )}
       </div>
-      {note && <p className={note.ok ? 'mt-2 text-sm text-emerald-700' : 'mt-2 text-sm text-destructive'}>{note.text}</p>}
+      {note && <p className={note.ok ? 'mt-2 text-sm text-ok-700' : 'mt-2 text-sm text-destructive'}>{note.text}</p>}
     </div>
   )
 }

@@ -84,7 +84,7 @@ export function AgendaList({ tournaments, selectedKey, onSelect }: AgendaListPro
                 </p>
               </div>
               {t.is_lca === 1 && t.registration_status === 'open' && (
-                <span className="flex-shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800">
+                <span className="flex-shrink-0 rounded-full bg-status-open-tint px-2 py-0.5 text-[10px] font-medium text-status-open">
                   Open
                 </span>
               )}
