@@ -1,22 +1,22 @@
 # Handoff: the LCA website redesign
 
-Written on Mon, Oct 19, 2026, for the next working session, and brought up to date on Tue, Oct 20, 2026, after WS01 step 23, for a session that runs on K's own PC from the command line. It says where every branch and pull request stands, the rules that hold for all of the work, how a slice and a board get built, and what is waiting on K.
+Written on Mon, Oct 19, 2026, for the next working session, and brought up to date on Tue, Oct 20, 2026, after WS01 step 24, for a session that runs on K's own PC from the command line. It says where every branch and pull request stands, the rules that hold for all of the work, how a slice and a board get built, and what is waiting on K.
 
 The brief is `docs/redesign/REDESIGN_SPEC.md`. The build record is `REDESIGN_STATUS.md` at the repository root. The design decisions are in `docs/redesign/DESIGN_REPLAN_phase0.md`, `DESIGN_REPLAN_phase1.md` and `DESIGN_REPLAN_phase2.md`.
 
-This file, `docs/redesign/tools/`, `docs/redesign/ws01-manifest.json`, `docs/redesign/ws01-lead-notes.md` and `docs/redesign/uschess-fix-brief.md` live on `redesign/docs-phase2` until PR 106 merges. From another branch, read them with `git show origin/redesign/docs-phase2:<path>`.
+This file, `docs/redesign/tools/`, `docs/redesign/ws01-manifest.json`, `docs/redesign/ws01-lead-notes.md`, `docs/redesign/briefs/` and `docs/redesign/uschess-fix-brief.md` live on `redesign/docs-phase2` until PR 106 merges. From another branch, read them with `git show origin/redesign/docs-phase2:<path>`.
 
 `<repo>` stands for the repository root, and `<scratchpad>` for any local scratch folder outside it (see "On K's PC"). A file named under `<scratchpad>` is not in the repository.
 
 ## First
 
 1. Subscribe to activity on PRs 106 and 108.
-2. Read the October 19 record: `docs/redesign/rounds/2026-10-19/README.md`, then section 7 of `docs/redesign/DESIGN_REPLAN_phase2.md`.
-3. Then carry on with the October 19 design round, or with WS01 step 24. Both are described below.
+2. Read the October 19 record: `docs/redesign/rounds/2026-10-19/README.md`, then section 7 of `docs/redesign/DESIGN_REPLAN_phase2.md`; its section 7.9 is the decision of Tue, Oct 20.
+3. Then carry on with the October 19 design round, or with WS01 step 25. Both are described below.
 
 ## Branches and pull requests
 
-Checked on Tue, Oct 20, 2026, at about 3:15 AM UTC, with step 23 built and about to be committed.
+Brought up to date on Tue, Oct 20, 2026, after step 24 landed. The heads of `main` and of the audit branch are as last checked on GitHub at about 3:15 AM UTC that day; the heads of the two redesign branches are from their commit logs.
 
 **`main`**, head `7151bff`. Checkpoints A, B and C of WS01 are merged and live:
 - A, steps 1 to 8: PR 105, merged Fri, Oct 9, 2026 at 3:06 AM UTC (`4f0882f`).
@@ -25,15 +25,17 @@ Checked on Tue, Oct 20, 2026, at about 3:15 AM UTC, with step 23 built and about
 
 The production database is at `0054_requires_lca_membership.sql`, as the checkpoint C record says. In the container, the clone is shallow and two refs are out of date: the local `main` points at `4c1a466` and `origin/main` at `748a5ef`. Check the real state with `git ls-remote origin` before trusting either.
 
-**`redesign/ws01-design-system`**, draft PR 108 (WS01 checkpoint D: the design system, steps 20 to 32), head `4e4ad3a`:
+**`redesign/ws01-design-system`**, draft PR 108 (WS01 checkpoint D: the design system, steps 20 to 32), head `3d80a0e`:
 - Step 20, the browser tests for accessibility and end to end: `27824cf`.
 - Step 21, tokens, dark mode, the focus ring and motion: `06f8dd8`.
 - `aaa001b`, which lets the build workflow pass a model and an effort setting to its agents.
 - Step 22, ThemeScope, the route-to-look map and the live fonts: `bb8c8a6`, committed Mon, Oct 19, 2026 at 8:21 PM UTC.
 - Step 23, the pages' ink and grounds on the tokens: `4e4ad3a`.
-- Next: step 24, `ws01-24-semantic-colours-status-raw` in `docs/redesign/ws01-manifest.json` (the status colours, the grey and slate classes and raw hex colours).
-- PR 108's description lists steps 20 to 22, with the step 22 gate line. Once the lead updates it, it lists step 23 too, with the gate below.
-- The WS01 header in `REDESIGN_STATUS.md` now names the merged checkpoints and draft PR 108; step 23 corrected it.
+- `b83bb23`, which lets the build workflow run its scout and recorder on a lighter model (`lightModel` and `lightEffort`; see "How a slice is built"). It changes the workflow only.
+- Step 24, the status colours, greys, navy lines and tints and raw hex on the tokens: `3d80a0e`, after `b83bb23`.
+- Next: step 25, the gold text pass, `ws01-25-gold-ink-codemod` in `docs/redesign/ws01-manifest.json`. Its brief is composed: `docs/redesign/briefs/ws01-25-brief.json` (see "How a slice is built").
+- PR 108's description lists steps 20 to 24, with the step 24 gate line below.
+- The WS01 header in `REDESIGN_STATUS.md` names the merged checkpoints and draft PR 108; steps 23 and 24 kept it.
 
 Step 23 in short (the full record is under "Step 23" in `REDESIGN_STATUS.md`):
 - The colour pass for the pages' ink and grounds: navy text, white grounds and navy bands now use the token utilities. With `newLook` off every class paints the colour it replaced, so nothing visible changes.
@@ -42,18 +44,33 @@ Step 23 in short (the full record is under "Step 23" in `REDESIGN_STATUS.md`):
 - `data-ground="dark"` now marks the homepage hero, the `urgent` and `info` announcement tones, and the heroes of the club page and the club's admin page.
 - The three navy Buttons on the support pages ("Create ticket", "Send reply" and "Send reply & mark answered") gained `dark:text-white`.
 - The lint fixes moved the club map helpers into `src/areas/clubs/clubMap.ts`, the US Chess membership state into `src/areas/membership/usChess.ts` and the view-only hook into `src/hooks/useViewOnly.ts`.
-- Follow-ups: navy borders and tints are not dark-aware yet (step 24); a selected navy control is hard to tell from an unselected one in dark mode (step 26's `FilterChip` and the workstreams that rebuild those controls); the script reads a line of comment prose with two apostrophes as a quoted string; and `newLook` stays off until steps 24 and 25 are done.
+- Follow-ups: navy borders and tints were not dark-aware yet (step 24 did them); a selected navy control is hard to tell from an unselected one in dark mode (step 26's `FilterChip` and the workstreams that rebuild those controls); the script read a line of comment prose with two apostrophes as a quoted string (step 24 fixed it); and `newLook` stays off until steps 24 and 25 are done.
 
-The gate at step 23: `npm run lint` at 16 errors and 13 warnings, down from 34 errors. The 16 left are in `src/areas/events/components/GradeConfirm.tsx`, `functions/` and `scanner/sandbox/`, none in a file step 23 touched, and from here on the error count never rises from 16. `npm run build`, `npm run typecheck:functions` and `npm run check:bundle` (no zod in 127 files) pass. `npm run test:all` passes with 2426 unit tests in 103 files and 790 integration tests in 58. `npm run test:a11y` passes 122 tests with 27 skipped, and the baseline is unchanged; one earlier run failed one test on a locked local database and the next run passed it (a step 23 follow-up).
+The gate at step 23 was `npm run lint` at 16 errors and 13 warnings, down from 34, `npm run build`, `npm run typecheck:functions` and `npm run check:bundle` passing, 2426 unit tests in 103 files, 790 integration tests in 58, and `npm run test:a11y` passing 122 tests with 27 skipped. Step 24's gate below replaces it.
 
-**`redesign/docs-phase2`**, draft PR 106 (the phase 2 design replan and the round records), head `3c629a6`, pushed:
+Step 24 in short (the full record is under "Step 24" in `REDESIGN_STATUS.md`):
+- The second half of the colour pass. The status colours (emerald, green, red, amber, yellow, blue and purple), the grey and slate classes, the navy borders and faint tints, and raw hex colours now use token utilities. With `newLook` off every class paints the colour it replaced, so nothing visible changes and `test/a11y/baseline.json` is unchanged.
+- The same script, `scripts/codemods/semantic-colours.ts`, made the change from a second reviewed map, `scripts/codemods/semantic-colours.status.map.json`, in which every entry gives its reason. It rewrote 339 classes in 49 files and kept 33; a second run rewrites none. Tailwind palette colours went from 273 in 37 files to the 32 kept in 5, `border-lca-navy` (73) and `ring-lca-navy` (1) to none, the 17 faint navy tints to the ink, and hex colours from 51 in 30 files to 44 in 27.
+- 51 new tokens in `src/index.css`: 44 tone shades (`text-ok-700`, `bg-warn-50` and the rest, one for each Tailwind shade a page used), the info banner's blue, the Facebook link, two scanner mark colours, the check-in toggle's fill and two for a light island. Each is exactly the old colour with `newLook` off. Under the new look each takes its tone's words or tint. A block for browsers that cannot mix colours gives the token classes with an opacity modifier the tint their old classes drew.
+- The ratchet test `test/unit/raw-colours.test.ts` fails on any Tailwind palette colour, `lca-navy` class, `bg-white` in any form or hex colour in a TSX class string that no keep entry names and the allowlist, `test/unit/fixtures/raw-colours-allowlist.json`, does not count. The allowlist holds 91 uses in 33 files, each with a reason, and its counts only go down.
+- The contrast test `test/unit/contrast.test.ts` now covers every pair the map writes, in every look and in dark mode, at 4.5:1 for words and 3:1 for an icon's fill, and the map's proof of identity in `test/unit/semantic-map.test.ts` covers every form it writes.
+- The dark look, the live look and heritage in dark mode now apply on screens only (inside `@media screen`), so a printed page takes the light look.
+- The script's map grammar accepts hex classes and keep entries for a whole file, and its comment search no longer reads the apostrophes of "don't" and "it's" as a string.
+- By hand: the three lint errors in `GradeConfirm.tsx` were fixed by moving `NO_TICKS`, `asksGrade`, `confirmedRange` and `GradeTicks` into `src/areas/events/gradeConfirm.ts`, and the club map's loading note now takes `text-muted-on-light` and `bg-veil-on-light/30`, since the map's paper stays light in every look.
+- Follow-ups (all in the step 24 block of the record): K reviews the step 24 judgement calls with step 23's before `newLook` is turned on; all 34 gold hex text uses wait for step 25; StatusBadge's tones and dot wait for step 26; heritage's ok and bad words read 4.33:1 and 4.36:1 on its muted inset, which K settles before step 31; the check-in toggle (3.67:1) and the club map's loading note (4.12:1) are below 4.5:1 with `newLook` off and are left for WS08 and WS09; categories (the audit log, the support badges) took the tone of their colour and WS08 and WS13 decide whether they get a look of their own; printing leaves a few things (the print page's black heading rule on the dark screen, `dark:` utilities on controls no print page shows, and live pages, which print the base light look until WS07's print kit); `@source not` for classes only docs and tests name (about 5,300 bytes of the CSS) waits for step 32; and `semantic-map-cascade.test.ts` keeps its own copy of the rule reader that `test/unit/helpers/tailwindRules.ts` also holds, to be merged the next time either changes.
+
+The gate at step 24: `npm run lint` at 13 errors and 13 warnings, down from 16 errors; the 13 left are in `functions/` and `scanner/`, none in a file step 24 touched, and from here on the error count never rises from 13. `npm run build`, `npm run typecheck:functions` and `npm run check:bundle` (no zod in 127 files) pass. `npm run test:all` passes with 2770 unit tests in 107 files and 790 integration tests in 58. `npm run test:a11y` passes 125 tests with 30 skipped, and the baseline is unchanged. `scanner:check` was not run; nothing under `scanner/` or `functions/utils/scan/` changed.
+
+**`redesign/docs-phase2`**, draft PR 106 (the phase 2 design replan and the round records), head `7d8f03f`, pushed:
 - The replan (`6e19b91`, `cc1ce47`) and the October 13 round records with the repository's copy of the canvas (`448ea12`).
 - The October 19 picks and answers (section 7 of `DESIGN_REPLAN_phase2.md` and `docs/redesign/rounds/2026-10-19/`), the four decided frame boards, `docs/redesign/tools/`, `docs/redesign/ws01-manifest.json`, `docs/redesign/uschess-fix-brief.md`, this file and the renderer line in `.claude/agents/designer.md` (`0fa78cc`).
 - `docs/redesign/ws01-lead-notes.md` (`b49f09f`).
 - K's decisions on the two decided boards and the club contact flow (`3c629a6`).
-- This update of the handoff was not committed when it was written.
+- The handoff brought up to date after step 23 (`b2ae06b`).
+- K's decisions of Tue, Oct 20 on member-created tournaments (section 7.9 of the replan) and the scanner's membership gate, with the round record (`7d8f03f`).
+- `docs/redesign/briefs/`, the build briefs for steps 22 to 25, and this update of the handoff were not committed when it was written.
 
-PR 106's description lists K's picks. It still says the affiliate ID is open for K; it needs the decisions made later on Mon, Oct 19 (under "The October 19 design round").
+PR 106's description lists K's picks. It still says the affiliate ID is open for K; it needs the decisions made later on Mon, Oct 19 and on Tue, Oct 20 (under "The October 19 design round").
 
 **`audit/integrity-and-tests`**, PR 102 (integrity fixes: payments, registration races, member delete, times). Open since Sun, Oct 4, 2026, and it cannot merge. It was cut from `4c1a466` (Fri, Oct 2, 2026), and `main` is 42 commits ahead of that. Since then `main` has changed at least four of the files it edits (`functions/api/registrations.ts`, `functions/api/registrations/[id].ts`, `functions/api/registrations/batch.ts` and `functions/api/admin/tournaments/[id]/walk-ins.ts`) and moved two of them (`functions/utils/membershipActivation.ts` into `functions/utils/membership/`, and `src/components/AdminAnnouncementPanel.tsx` into `src/areas/admin/components/`). What waits on K is under "Waiting on K".
 
@@ -104,13 +121,14 @@ The environment facts under "How a slice is built" were written for the cloud co
 
 ## How a slice is built
 
-WS01 is built one slice at a time on `redesign/ws01-design-system`, from the 32 slices in `docs/redesign/ws01-manifest.json`. Each entry holds the slice's name, brief, files, acceptance criteria, `verify:` items, switches, migrations, tests and risks. Steps 1 to 23 are done and step 24 is next. The lead, the session that runs the work, kept notes on the manifest's open questions (`docs/redesign/ws01-lead-notes.md`). They win over the manifest where the two differ, and their decisions are recorded under WS01's Decisions in `REDESIGN_STATUS.md`, which is where to read them.
+WS01 is built one slice at a time on `redesign/ws01-design-system`, from the 32 slices in `docs/redesign/ws01-manifest.json`. Each entry holds the slice's name, brief, files, acceptance criteria, `verify:` items, switches, migrations, tests and risks. Steps 1 to 24 are done and step 25 is next. The lead, the session that runs the work, kept notes on the manifest's open questions (`docs/redesign/ws01-lead-notes.md`). They win over the manifest where the two differ, and their decisions are recorded under WS01's Decisions in `REDESIGN_STATUS.md`, which is where to read them.
 
-- **The workflow** is `.claude/workflows/build-slice.js`. It takes `{ slices: [{ name, brief, files, acceptance }], base }`, and on `redesign/ws01-design-system` also `model` and `effort` for its agents (`aaa001b`). Step 22 ran through a small wrapper that called it as `workflow('build-slice', ARGS)`. The brief it was given was the manifest entry, plus the branch's head and the base for diffs, the files to read first, the environment facts below and where to find the lead's notes. Pass `base` as the previous step's commit: the local `main` ref is out of date, so a diff against it shows far more than the slice.
+- **The workflow** is `.claude/workflows/build-slice.js`. It takes `{ slices: [{ name, brief, files, acceptance }], base }`, and on `redesign/ws01-design-system` also `model` and `effort` for its agents (`aaa001b`), and `lightModel` and `lightEffort` for the scout and the recorder, which read and write prose (`b83bb23`). The heavy stages (builder, tester and reviewer) keep `model` and `effort`; when `lightModel` is not passed, every stage uses `model`, and when `lightEffort` is not passed the light stages use `effort`. Step 22 ran through a small wrapper that called it as `workflow('build-slice', ARGS)`. The brief it was given was the manifest entry, plus the branch's head and the base for diffs, the files to read first, the environment facts below and where to find the lead's notes. Pass `base` as the previous step's commit: the local `main` ref is out of date, so a diff against it shows far more than the slice.
+- **The brief files.** `docs/redesign/briefs/` holds the brief for each step from 22 on (`ws01-22-brief.json` to `ws01-25-brief.json`). A brief file is the exact args object for the workflow, so step 25 runs as `workflow('build-slice', <the parsed file>)`: `base` is `3d80a0e`, `model` and `effort` are for the heavy stages, `lightModel` and `lightEffort` for the scout and the recorder, and `slices` holds the one slice with its brief, files and acceptance criteria. Paths written as `<scratchpad>` in a brief are any local scratch folder (see "On K's PC"). The manifest and the lead's notes that the brief names as `<scratchpad>/ws01-manifest.json` and `<scratchpad>/ws01-lead-notes.md` are in the repository, at `docs/redesign/ws01-manifest.json` and `docs/redesign/ws01-lead-notes.md`, so read them there. Each later step's brief is composed the same way: a read-only scout reads the previous brief, the manifest entry for the step and the tree, and writes the next brief file beside it, with the `base` set to the previous step's commit. The `verify:` items in a brief are checked again by the build's own scout, so a wrong guess in the brief is caught before the builder starts.
 - **The agents** are in `.claude/agents/`. The scout finds the facts and answers the `verify:` items. The builder builds the slice and runs the gate. The tester covers each acceptance criterion with new tests. The reviewer reviews the working tree against the base, with up to three rounds of fixes by the builder; anything left after the third goes to the lead. The recorder updates `REDESIGN_STATUS.md` and any switch comments and drafts the commit text. The designer draws boards (next section).
 - **Switches.** Every change a visitor would see sits behind a switch in `src/lib/features.ts` (`FEATURES`, default `false`), each with a short plain comment saying what it turns on. K turns switches on after checking the preview.
 - **The gate**, before every commit:
-  - `npm run lint`: the error count never rises from 16 (13 warnings at step 23), and every error in a file the slice touches is fixed.
+  - `npm run lint`: the error count never rises from 13 (13 warnings at step 24), and every error in a file the slice touches is fixed.
   - `npm run build`, `npm run typecheck:functions` and `npm run check:bundle`.
   - `npm run test:all`. If one file fails as a whole (it does not load, or times out while other heavy work runs), it may be rerun once on its own, and the record says so.
   - For the checkpoint D slices, `npm run test:a11y`; in the container it ran as `PW_CHROMIUM_PATH=/opt/pw-browsers/chromium npm run test:a11y` (see "On K's PC"). The switched-off baseline, `test/a11y/baseline.json`, stays unchanged.
@@ -161,6 +179,17 @@ K looked at the two decided boards, Account-Final-Hub and Club-Final-Bare, and w
 - **The club contact flow.** A club's contact email is never shown on its page. The contact form sends to the club's own email when the club has given one, and clubs are encouraged to give one, which lightens the representative's load. Otherwise it sends to the regional representative, with a line saying the club has no connected email yet. The messages are relayed to the club, not stored in LCA's database the way support tickets are; LCA only makes sure the connection exists.
 - The bare club boards are approved as drawn.
 
+### Decided on Tue, Oct 20
+
+K's words and the reading are in the round record ("Tue, Oct 20: member-created tournaments, in K's words") and in section 7.9 of `DESIGN_REPLAN_phase2.md`, which decides member-created tournaments in full.
+- **Who may create.** Any active LCA member, once an LCA admin turns the site setting on. The setting is in Admin, is off until K has tested, needs no deploy to change, and when turned off stops new creation only: events already created keep running, and their organizers and entrants see a short plain note with a direct way to reach the LCA admins.
+- **Never listed, shared by link.** A member-created event is not on the tournaments pages, the home page, the news digest, the monthly results, the champions archive, the sitemap or the structured data, and its pages carry noindex. It has every other function: registration, pairings, standings, event day, the scanner, the results page and the rating report.
+- **Not an LCA event.** The event page, the checkout, every email and the printed kit say "Organized by <name>. Not an LCA event." Emails go out with the organizer as the reply-to. The registration form tells entrants that the event is not run or rated by LCA and that their name, US Chess ID and email go to the organizer (for a child, the guardian's email). Under-18s show as first name and last initial on any pre-event list.
+- **The organizer.** At creation the organizer ticks one eligibility box, 18 or older and responsible for an event LCA does not run; no birthdate is asked. An entry fee above $0 needs the organizer's connected account inside LCA's Stripe account, and until it exists the organizer is told so in plain words with a direct way to reach the LCA admins. The organizer may require LCA membership of entrants.
+- **The rating report.** For a member-created event it carries only the affiliate ID and director IDs the organizer enters as their own. The site refuses LCA's affiliate ID and never fills in LCA's director IDs, so US Chess has nothing to bill LCA for. This is the reason K asked to be told about, and it answers his question on restricting rating reports (see "Waiting on K").
+- **Abuse.** At most three open events per organizer. Every member-created event page carries "Report this event", which lands in the admin queue. An admin can close an event or remove a member's ability to create. Admins see every member-created event in Admin, with how often the service is used and by whom; representatives do not. Adopting a member's event into the listed set is left for later.
+- **The scanner is for active LCA members only,** replacing today's gate of any signed-in account. The scanner record in section 7.6 and WS15 read with this change.
+
 ### Cross-board slips to fix on the picked boards
 
 Checked against the boards in `docs/redesign/canvas/boards/`:
@@ -174,11 +203,12 @@ Silence keeps each default.
 
 **Answered later on Mon, Oct 19**, and no longer waiting: whose affiliate a rating report carries and how a standing director reaches entry fees took their defaults, as did who approves a named-rep request, and K decided the club page's contact flow. All four are under "Decided later on Mon, Oct 19" above.
 
+**Answered on Tue, Oct 20**, and no longer waiting: K's rating reports for every event, with K's request to be told of any reason to restrict them. Member-created events get a report that carries only the organizer's own affiliate and director IDs, and the site refuses LCA's, so that reason is settled (under "Decided on Tue, Oct 20" above). The same decisions settle that the scanner is for active LCA members only.
+
 **From the October 19 record** (`docs/redesign/rounds/2026-10-19/README.md`, "Still open, with their defaults", less the two answered that evening):
-- When the regional representatives start creating tournaments. Default: from WS09's My region in Phase 3 (P2.19); until then the people in the first phase create tournaments.
+- When the regional representatives start creating tournaments: answered on Mon, Oct 19. K named the president, the admins and the regional representatives together for the first phase (section 7.7), so representatives create and assign one-event directors from the start.
 - Whether a club rep also creates the club's events. Default: none assumed. WS09 is Phase 3, so nothing being built now waits.
 - Give-A, the plain Give page, which K did not name. Default: Give-A as drawn.
-- K made US Chess rating reports available for every event and asked to be told of any reason to restrict them. No reply is recorded.
 
 **The US Chess fix brief's four answers** (`docs/redesign/uschess-fix-brief.md`, "Needs K"):
 1. Grand Prix: does LCA run real US Chess Grand Prix events? Default: no.
