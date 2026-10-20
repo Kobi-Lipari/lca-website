@@ -14,6 +14,8 @@ export const meta = {
 const slices = (args && args.slices) || []
 const base = (args && args.base) || 'main'
 const MODEL = Object.assign({}, args && args.model ? { model: args.model } : {}, args && args.effort ? { effort: args.effort } : {})
+// The scout and the recorder read and write prose; a lighter model may take those stages when args.lightModel names one.
+const LIGHT = args && args.lightModel ? Object.assign({}, { model: args.lightModel }, args.lightEffort || args.effort ? { effort: args.lightEffort || args.effort } : {}) : MODEL
 if (!slices.length) throw new Error('build-slice needs args.slices')
 
 const FINDINGS = {
@@ -42,7 +44,7 @@ for (const s of slices) {
   const scope = `Slice: ${s.name}\nBrief: ${s.brief}\nFiles in scope: ${(s.files || []).join(', ') || 'as the brief names'}\nAcceptance criteria:\n${(s.acceptance || []).map((a, i) => `${i + 1}. ${a}`).join('\n')}`
 
   const facts = await agent(`${scope}\n\nFind and report every fact a builder needs before touching this slice: where each file and helper named in the brief lives today (or that it does not exist), the current shape of every table, endpoint, response and test harness it touches, and the answer to every "verify:" item in the brief's section for this slice. Paths and line numbers.`,
-    Object.assign({ label: `scout:${s.name}`, phase: 'Scout', agentType: 'scout' }, MODEL))
+    Object.assign({ label: `scout:${s.name}`, phase: 'Scout', agentType: 'scout' }, LIGHT))
 
   const build = await agent(`${scope}\n\nFacts from the scout:\n${facts}\n\nImplement the slice completely, then run the gate (lint, build, typecheck:functions, test:all) and fix what it finds. Do not commit.`,
     Object.assign({ label: `build:${s.name}`, phase: 'Build', agentType: 'builder' }, MODEL))
@@ -64,7 +66,7 @@ for (const s of slices) {
   if (round >= 3) log(`${s.name}: three fix rounds used; remaining findings go to the lead`)
 
   const record = await agent(`${scope}\n\nThe slice is built. Builder report:\n${build}\nTester report:\n${tests}\nFinal review:\n${JSON.stringify(review)}\nFixes:\n${fixes.join('\n\n')}\n\nUpdate REDESIGN_STATUS.md (create it if missing) and any flag comments, and draft the commit message. Do not commit.`,
-    Object.assign({ label: `record:${s.name}`, phase: 'Record', agentType: 'recorder' }, MODEL))
+    Object.assign({ label: `record:${s.name}`, phase: 'Record', agentType: 'recorder' }, LIGHT))
 
   results.push({ slice: s.name, facts, build, tests, review, fixes, record })
 }
