@@ -1038,3 +1038,17 @@ K's note on page 14, Mon, Oct 19, 2026:
 ### 7.8 The club page's contact, decided later on Mon, Oct 19
 
 A contact email is never shown on a club page. The contact form sends to the club's own email when the club has given one, and the club is encouraged to give one so the regional representative carries less. When the club has none, the form sends to the regional representative, and that email says the club has no connected email yet. These messages are relayed to the club and not stored in LCA's database the way support tickets are; LCA only makes sure the connection exists. The three other questions from the two decided boards took their defaults: LCA's affiliate ID only on listed events and on events run by standing directors, the president, admins and representatives; a standing director's fees wait in LCA's account until a connected account exists; the regional representative approves a named-rep request, with admins as the backstop.
+
+### 7.9 Member-created tournaments, decided Tue, Oct 20
+
+The last phase of tournament creation is decided in full. Any active LCA member may create a tournament once an LCA admin turns the site setting on. The setting lives in Admin, is off until K has tested, needs no deploy to change, and when turned off stops new creation only: events already created keep running, and their organizers and entrants see a short plain note with a direct way to reach the LCA admins.
+
+What a member-created event is. It is never listed: not on the tournaments pages, the home page, the news digest, the monthly results, the champions archive, the sitemap or the structured data, and its pages carry noindex. It is shared by link. It has every other function: registration, pairings, standings, event day, the scanner, the results page and the rating report. The event page, the checkout, every email and the printed kit say "Organized by <name>. Not an LCA event." Emails go out with the organizer as the reply-to, and the registration form tells entrants that the event is not run or rated by LCA and that their name, US Chess ID and email go to the organizer (for a child, the guardian's email). Under-18s appear as first name and last initial on any pre-event list, as everywhere.
+
+The organizer. At creation the organizer ticks one eligibility box: 18 or older and responsible for the event, which LCA does not run. No birthdate is asked. Entry fees above $0 need the organizer's connected account inside LCA's Stripe account; until it exists the organizer is told so in plain words, with a direct way to reach the LCA admins, and is not left stuck. The organizer may require LCA membership of entrants.
+
+The rating report. The report for a member-created event carries only the affiliate ID and director IDs the organizer enters as their own. The site refuses LCA's affiliate ID and never fills in LCA's director IDs on such an event, so US Chess has nothing to bill LCA for.
+
+Abuse. At most three open events per organizer. Every member-created event page carries "Report this event", which lands in the admin queue. An admin can close an event or remove a member's ability to create. Admins see every member-created event in Admin, with how often the service is used and by whom; representatives do not see them. A representative or admin adopting a member's event into the listed set is left for later.
+
+The scanner. Decided the same day: the scoresheet scanner is for active LCA members only, replacing today's gate of any signed-in account. The scanner record in 7.6 and WS15 read with this change.
