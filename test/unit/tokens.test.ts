@@ -15,7 +15,7 @@ import { readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { compile } from 'tailwindcss'
 import { describe, expect, it } from 'vitest'
-import { indexCssRules, parseRules, read, ROOT, rootTokens, scopeTokens, stripComments, type RootState } from './helpers/cssTokens'
+import { contrast, indexCssRules, parseRules, read, ROOT, rootTokens, scopeTokens, specificity, stripComments, type RootState } from './helpers/cssTokens'
 
 const css = read('src/index.css')
 const rules = indexCssRules()
@@ -341,14 +341,34 @@ describe('focus and motion under the new look', () => {
     expect(navy?.decls.get('outline-color')).toBe('var(--gold-on-dark)')
   })
 
-  it('turns the ring gold inside a navy band and inside anything marked data-ground="dark"', () => {
+  it('turns the ring gold inside a navy band, by either navy class, and inside anything marked data-ground="dark"', () => {
     const gold = rules.filter((r) => r.decls.get('outline-color') === 'var(--gold-on-dark)')
     expect(gold).toHaveLength(1)
     expect(gold[0].within).toBe('')
+    // Step 23 moved the bands to bg-brand-navy; bg-lca-navy is the same navy.
     expect(gold[0].selectors).toEqual([
       ':root[data-look="new"] .bg-lca-navy :focus-visible',
+      ':root[data-look="new"] .bg-brand-navy :focus-visible',
       ':root[data-look="new"] [data-ground="dark"] :focus-visible',
     ])
+  })
+
+  it('gives the controls of a menu inside a navy band the look\'s own ring back, at 3:1 or more on the menu', () => {
+    // Step 23: the state filter in the /tournaments hero opens a bg-popover menu inside the bg-brand-navy hero.
+    const gold = rules.find((r) => r.decls.get('outline-color') === 'var(--gold-on-dark)')!
+    const back = rules.filter((r) => r.decls.get('outline-color') === 'var(--focus)')
+    expect(back).toHaveLength(1)
+    expect(back[0].within).toBe('')
+    expect(back[0].selectors).toEqual(gold.selectors.map((s) => s.replace(/ :focus-visible$/, ' .bg-popover :focus-visible')))
+    // One class more than the gold rule, and after it, so it wins inside the menu.
+    for (const s of back[0].selectors) expect(specificity(s), s).toBe(specificity(gold.selectors[0]) + 1)
+    expect(back[0].order).toBeGreaterThan(gold.order)
+    // The menu is --popover, which the new look points at --raised: navy on #fff, gold on #1a2744 in dark mode.
+    for (const [state, focus, ground] of [[LIGHT, '#1a2744', '#fff'], [DARK, '#c8a94a', '#1a2744']] as const) {
+      const t = rootTokens(rules, state)
+      expect([t.get('--focus'), t.get('--popover')]).toEqual([focus, ground])
+      expect(contrast(focus, ground)).toBeGreaterThanOrEqual(3)
+    }
   })
 
   it('reduced motion zeroes every transition and animation', () => {

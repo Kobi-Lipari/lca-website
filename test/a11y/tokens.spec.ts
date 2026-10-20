@@ -16,7 +16,10 @@
 // - a focused Button has the 2px --focus ring with a 2px gap, navy on light
 //   grounds and gold on dark and live ones, at 3:1 or more on its ground
 //   (WS01 acceptance criterion 3); the Appearance control in the navy footer
-//   gets the gold ring, and so does a control inside data-ground="dark"
+//   gets the gold ring, and so does a control inside data-ground="dark",
+//   on the fixture page and (step 23) in the homepage hero and a club hero;
+//   the menu the state filter opens in the /tournaments hero gives its
+//   options the look's own ring back, in light and dark mode (step 23)
 // - Appearance follows the device by default, can be set to Light or Dark,
 //   keeps the choice across a reload, is applied before the app's script
 //   runs (no flash), and a throwing localStorage leaves the page on the
@@ -343,5 +346,54 @@ test.describe('newLook on: Appearance', () => {
     expect(ring.outlineColor).toBe(GOLD)
     expect(ring.outlineWidth).toBe('2px')
     expect(ratio(ring.outlineColor, ground)).toBeGreaterThanOrEqual(3)
+  })
+
+  test('the homepage hero and a club page hero, marked data-ground="dark" in step 23, give their links the gold ring', async ({ page }, testInfo) => {
+    only(testInfo, ON)
+    await page.emulateMedia({ colorScheme: 'light' })
+    for (const [route, name] of [['/', 'Join LCA'], ['/clubs/fx-club-north', 'All clubs']] as const) {
+      await page.goto(route)
+      await page.waitForLoadState('networkidle')
+      const ground = page.locator('[data-ground="dark"]')
+      await expect(ground, route).toHaveCount(1)
+      const link = ground.getByRole('link', { name })
+      await keyboardFocus(page, link)
+      const ring = await ringOf(link)
+      expect(ring.outlineColor, route).toBe(GOLD)
+      expect(ring.outlineWidth, route).toBe('2px')
+    }
+    // The club hero's navy is an inline style, so its ground can be read: gold on it is 6.51:1.
+    const hero = await page.locator('[data-ground="dark"]').evaluate((el) => getComputedStyle(el).backgroundColor)
+    expect(hero).toBe(NAVY)
+    expect(ratio(GOLD, hero)).toBeGreaterThanOrEqual(3)
+  })
+
+  test('the menu the state filter opens in the /tournaments hero gives its options the look\'s own ring, light and dark', async ({ page }, testInfo) => {
+    only(testInfo, ON)
+    const measured: Record<string, unknown> = {}
+    // The menu is --popover: white in the light look, navy in dark mode.
+    for (const [scheme, own, ground] of [['light', NAVY, 'rgb(255, 255, 255)'], ['dark', GOLD, NAVY]] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      await page.goto('/tournaments')
+      await page.waitForLoadState('networkidle')
+      const hero = page.locator('main section.bg-brand-navy').first()
+      const filter = hero.getByRole('button', { name: /^Louisiana \(\d+\)$/ })
+      await keyboardFocus(page, filter)
+      // The filter itself sits on the navy hero and keeps the gold ring.
+      expect((await ringOf(filter)).outlineColor, scheme).toBe(GOLD)
+      await page.keyboard.press('Enter')
+      // The menu is drawn inside the hero, so the band's gold rule reaches it; the menu's own rule wins.
+      const option = hero.getByRole('button', { name: /^Mississippi \(\d+\)$/ })
+      await expect(option, scheme).toBeVisible()
+      await keyboardFocus(page, option)
+      const ring = await ringOf(option)
+      const menu = await option.evaluate((el) => getComputedStyle(el.parentElement!).backgroundColor)
+      measured[scheme] = { ring, menu, ratio: ratio(ring.outlineColor, menu) }
+      expect(menu, scheme).toBe(ground)
+      expect(ring.outlineColor, scheme).toBe(own)
+      expect(ring.outlineWidth, scheme).toBe('2px')
+      expect(ratio(ring.outlineColor, menu), scheme).toBeGreaterThanOrEqual(3)
+    }
+    await testInfo.attach('filter-menu-ring.json', { body: JSON.stringify(measured, null, 2), contentType: 'application/json' })
   })
 })

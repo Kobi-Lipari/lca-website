@@ -27,7 +27,7 @@ export function OfficerPhoto({ name, photoUrl, size = 56, className }: {
   }
   return (
     <span aria-hidden style={style}
-      className={cn('flex flex-shrink-0 items-center justify-center rounded-full bg-lca-navy/10 text-sm font-semibold text-lca-navy', className)}>
+      className={cn('flex flex-shrink-0 items-center justify-center rounded-full bg-brand-navy/10 text-sm font-semibold text-ink', className)}>
       {initials(name)}
     </span>
   )
@@ -75,7 +75,7 @@ export function OfficerPhotoControl({ target, hasPhoto, onChanged }: {
     <span className="inline-flex flex-wrap items-center gap-2 text-[11px]">
       <input ref={input} type="file" accept="image/*" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
       <button type="button" disabled={busy} onClick={() => input.current?.click()}
-        className="inline-flex items-center gap-1 text-lca-navy underline-offset-2 hover:underline disabled:opacity-50">
+        className="inline-flex items-center gap-1 text-ink underline-offset-2 hover:underline disabled:opacity-50">
         <Camera className="size-3" /> {busy ? 'Saving…' : hasPhoto ? 'Change photo' : 'Add photo'}
       </button>
       {hasPhoto && !busy && (

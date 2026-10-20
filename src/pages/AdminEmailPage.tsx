@@ -108,7 +108,7 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-medium text-lca-navy">{c.subject}</p>
+          <p className="truncate font-medium text-ink">{c.subject}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {new Date(c.created_at).toLocaleString()} · {c.total_recipients} recipients
           </p>
@@ -331,7 +331,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
     <div>
       {embedded ? (
         <div className="mb-5">
-          <h2 className="text-xl font-bold text-lca-navy">Group email</h2>
+          <h2 className="text-xl font-bold text-ink">Group email</h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
             Send an email to members — everyone, or a targeted group by role, club, or membership status.
           </p>
@@ -350,7 +350,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
           <div>
             <div className="mb-4 flex items-center gap-2">
               <Mail className="size-5 text-lca-gold" />
-              <h2 className="text-xl font-bold text-lca-navy">Compose</h2>
+              <h2 className="text-xl font-bold text-ink">Compose</h2>
             </div>
 
             <div className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
@@ -361,7 +361,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                     <button key={value} type="button" role="tab" aria-selected={mode === value}
                       onClick={() => { setMode(value); setConfirming(false) }}
                       className={cn('rounded-md px-3 py-1 transition-colors',
-                        mode === value ? 'bg-lca-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
+                        mode === value ? 'bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
                       {label}
                     </button>
                   ))}
@@ -397,7 +397,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
               <div>
                 <div className="flex items-center justify-between">
                   <Label className="text-xs">Message</Label>
-                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-lca-navy hover:underline">
+                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-ink hover:underline">
                     {showPreview ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
                     {showPreview ? 'Hide preview' : 'Preview email'}
                   </button>
@@ -458,19 +458,19 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                 </div>
               ) : (
                 <div className="rounded-lg border border-lca-gold/50 bg-lca-gold/8 p-4">
-                  <p className="flex items-center gap-2 text-sm font-medium text-lca-navy">
+                  <p className="flex items-center gap-2 text-sm font-medium text-ink">
                     <Users className="size-4 text-lca-gold" />
                     This will email <span className="font-bold">{finalList.length}</span> {finalList.length === 1 ? 'person' : 'people'}.
                   </p>
                   {mode === 'groups' && (
                     <div className="mt-1.5 flex flex-wrap gap-3 text-[11px]">
                       {finalList.length > 0 && (
-                        <button type="button" onClick={removeAll} className="font-medium text-lca-navy hover:underline">
+                        <button type="button" onClick={removeAll} className="font-medium text-ink hover:underline">
                           Remove all
                         </button>
                       )}
                       {excludedIds.size > 0 && (
-                        <button type="button" onClick={() => setExcludedIds(new Set())} className="font-medium text-lca-navy hover:underline">
+                        <button type="button" onClick={() => setExcludedIds(new Set())} className="font-medium text-ink hover:underline">
                           Restore {excludedIds.size} removed
                         </button>
                       )}
@@ -598,7 +598,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
 
           {/* ── History ── */}
           <div>
-            <h2 className="mb-4 text-xl font-bold text-lca-navy">Send history</h2>
+            <h2 className="mb-4 text-xl font-bold text-ink">Send history</h2>
             {loadingHistory ? (
               <p className="text-sm text-muted-foreground">Loading…</p>
             ) : campaigns.length === 0 ? (

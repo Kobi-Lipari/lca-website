@@ -49,7 +49,7 @@ const footerSections = [
 export function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer className="border-t-[3px] border-lca-gold bg-lca-navy text-white print:hidden">
+    <footer className="border-t-[3px] border-lca-gold bg-brand-navy text-white print:hidden">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr] lg:gap-16">
           {/* Brand column — identity, social, and actions as one anchored block */}
@@ -82,7 +82,7 @@ export function Footer() {
 
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/tournaments" className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/80 transition-colors hover:border-lca-gold hover:text-lca-gold">Find a tournament</Link>
-              <Link to="/membership" className="rounded-lg bg-lca-gold px-4 py-2 text-sm font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90">Join LCA</Link>
+              <Link to="/membership" className="rounded-lg bg-lca-gold px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-lca-gold/90">Join LCA</Link>
             </div>
           </div>
 

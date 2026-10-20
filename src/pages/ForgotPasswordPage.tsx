@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 export function ForgotPasswordPage() {
   usePageTitle('Forgot Password')
@@ -50,7 +50,7 @@ export function ForgotPasswordPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
             <KeyRound className="size-8 text-lca-gold sm:size-10" />
@@ -71,7 +71,7 @@ export function ForgotPasswordPage() {
         <div className="mx-auto max-w-md">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-lca-navy">
+              <CardTitle className="text-xl text-ink">
                 Reset your password
               </CardTitle>
               <CardDescription>
@@ -93,7 +93,7 @@ export function ForgotPasswordPage() {
                 <p className="text-center text-sm text-muted-foreground">
                   <Link
                     to="/login"
-                    className="font-medium text-lca-navy hover:underline"
+                    className="font-medium text-ink hover:underline"
                   >
                     Back to log in
                   </Link>
@@ -134,7 +134,7 @@ export function ForgotPasswordPage() {
                     Remember your password?{' '}
                     <Link
                       to="/login"
-                      className="font-medium text-lca-navy hover:underline"
+                      className="font-medium text-ink hover:underline"
                     >
                       Log in
                     </Link>

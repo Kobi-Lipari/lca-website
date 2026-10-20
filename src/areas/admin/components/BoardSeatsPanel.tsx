@@ -46,7 +46,7 @@ function SeatRegions({ seat, clubsByRegion, busy, onChange }: {
 
   return (
     <div className="mt-3 rounded-lg border border-dashed px-3 py-2.5">
-      <p className="flex items-center gap-1.5 text-xs font-medium text-lca-navy">
+      <p className="flex items-center gap-1.5 text-xs font-medium text-ink">
         <Building2 className="size-3.5 text-lca-gold" />
         {regions.length === 0
           ? 'No region set: this seat doesn\u2019t manage any clubs yet'
@@ -64,7 +64,7 @@ function SeatRegions({ seat, clubsByRegion, busy, onChange }: {
               onClick={() => toggle(r)}
               className={cn(
                 'rounded-full border px-2.5 py-0.5 text-xs transition-colors disabled:opacity-60',
-                on ? 'border-lca-navy bg-lca-navy text-white' : 'text-muted-foreground hover:border-lca-navy/40',
+                on ? 'border-lca-navy bg-brand-navy text-white' : 'text-muted-foreground hover:border-lca-navy/40',
               )}
             >
               {r} <span className={on ? 'text-white/70' : 'text-muted-foreground/70'}>· {clubsByRegion.get(r) ?? 0}</span>
@@ -120,7 +120,7 @@ function SeatRow({
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-lca-navy">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink">
             {seat.role}
             {seat.is_shared === 1 && (
               <span className="ml-2 inline-flex items-center gap-1 rounded bg-lca-gold/15 px-1.5 py-0.5 text-[10px] font-normal text-[#7a5c00]">
@@ -138,7 +138,7 @@ function SeatRow({
             <ul className="mt-1.5 space-y-1">
               {holders.map((h) => (
                 <li key={h.assignment_id} className="flex items-center gap-2 text-sm">
-                  <span className="font-semibold text-lca-navy">{h.member_name}</span>
+                  <span className="font-semibold text-ink">{h.member_name}</span>
                   <span className="text-xs text-muted-foreground">
                     since {formatDate(h.started_at)}
                   </span>
@@ -213,7 +213,7 @@ function SeatRow({
                 }}
                 className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-sm hover:bg-background"
               >
-                <span className="font-medium text-lca-navy">{m.full_name}</span>
+                <span className="font-medium text-ink">{m.full_name}</span>
                 <span className="text-xs text-muted-foreground">{m.email}</span>
               </button>
             ))}
@@ -314,7 +314,7 @@ export function BoardSeatsPanel() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-base font-bold text-lca-navy">Board seats</h2>
+        <h2 className="text-base font-bold text-ink">Board seats</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Link member accounts to each seat. Messages sent through the board page
           stay with the seat, so whoever holds it next sees the full history.

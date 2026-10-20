@@ -48,25 +48,25 @@ export function Crosstable({ standings, pairings, sectionName, rounds, showHeadi
 
   return (
     <div className="mb-6 break-inside-avoid">
-      {showHeading && <h3 className="mb-3 text-base font-semibold text-lca-navy">{sectionName}</h3>}
+      {showHeading && <h3 className="mb-3 text-base font-semibold text-ink">{sectionName}</h3>}
       <div className="overflow-x-auto rounded-xl border print:overflow-visible">
         <table className="w-full min-w-[480px] text-left text-sm tabular-nums">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="px-2 py-2.5 text-right font-semibold text-lca-navy">#</th>
-              <th className="px-3 py-2.5 font-semibold text-lca-navy">Player</th>
-              <th className="px-2 py-2.5 text-right font-semibold text-lca-navy">Rating</th>
+              <th className="px-2 py-2.5 text-right font-semibold text-ink">#</th>
+              <th className="px-3 py-2.5 font-semibold text-ink">Player</th>
+              <th className="px-2 py-2.5 text-right font-semibold text-ink">Rating</th>
               {roundList.map((r) => (
-                <th key={r} className="px-2 py-2.5 text-center font-semibold text-lca-navy">Rd {r}</th>
+                <th key={r} className="px-2 py-2.5 text-center font-semibold text-ink">Rd {r}</th>
               ))}
-              <th className="px-2 py-2.5 text-center font-semibold text-lca-navy">Total</th>
+              <th className="px-2 py-2.5 text-center font-semibold text-ink">Total</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((p, i) => (
               <tr key={p.member_id} className="border-b last:border-0">
                 <td className="px-2 py-1.5 text-right text-muted-foreground">{i + 1}</td>
-                <td className="px-3 py-1.5 font-medium text-lca-navy">
+                <td className="px-3 py-1.5 font-medium text-ink">
                   {p.full_name}
                   {p.placeLabel && <span className="ml-1.5 text-xs font-normal text-muted-foreground">({p.placeLabel})</span>}
                 </td>
@@ -78,7 +78,7 @@ export function Crosstable({ standings, pairings, sectionName, rounds, showHeadi
                     <td key={r} className="px-2 py-1 text-center leading-tight" title={c.color ? (c.color === 'w' ? 'White' : 'Black') : undefined}>
                       <span className={cn(
                         'font-mono text-xs',
-                        c.code === 'W' || c.code === 'X' || c.code === 'B' ? 'font-semibold text-lca-navy' : 'text-muted-foreground',
+                        c.code === 'W' || c.code === 'X' || c.code === 'B' ? 'font-semibold text-ink' : 'text-muted-foreground',
                       )}>
                         {c.code}{c.opp ?? ''}
                       </span>
@@ -86,7 +86,7 @@ export function Crosstable({ standings, pairings, sectionName, rounds, showHeadi
                     </td>
                   )
                 })}
-                <td className="px-2 py-1.5 text-center font-semibold text-lca-navy">{fmt(p.score)}</td>
+                <td className="px-2 py-1.5 text-center font-semibold text-ink">{fmt(p.score)}</td>
               </tr>
             ))}
           </tbody>

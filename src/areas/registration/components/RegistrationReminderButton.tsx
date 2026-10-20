@@ -64,7 +64,7 @@ export function RegistrationReminderButton({ tournamentId }: RegistrationReminde
   if (!user) {
     return (
       <p className="text-xs text-muted-foreground">
-        <a href="/login" className="text-lca-navy hover:underline">
+        <a href="/login" className="text-ink hover:underline">
           Log in
         </a>{' '}
         to get notified when registration opens.

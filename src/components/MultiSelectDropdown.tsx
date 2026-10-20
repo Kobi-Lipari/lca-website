@@ -86,14 +86,14 @@ export function MultiSelectDropdown({
                 onClick={() => toggle(opt.value)}
                 className={cn(
                   'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50',
-                  checked ? 'font-medium text-lca-navy' : 'text-muted-foreground',
+                  checked ? 'font-medium text-ink' : 'text-muted-foreground',
                 )}
               >
                 <span className={cn(
                   'flex size-3.5 flex-shrink-0 items-center justify-center rounded border',
                   checked ? 'border-lca-gold bg-lca-gold' : 'border-border',
                 )}>
-                  {checked && <span className="size-1.5 rounded-sm bg-lca-navy" />}
+                  {checked && <span className="size-1.5 rounded-sm bg-brand-navy" />}
                 </span>
                 {opt.label}
               </button>

@@ -15,7 +15,7 @@ export function GovSidebar() {
   return (
     <aside className="hidden lg:block lg:w-52 lg:flex-shrink-0">
       <div className="sticky top-24 overflow-hidden rounded-xl border bg-card shadow-sm">
-        <div className="bg-lca-navy px-4 py-3">
+        <div className="bg-brand-navy px-4 py-3">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-white/60">Governance</p>
         </div>
         <nav className="py-1">
@@ -26,7 +26,7 @@ export function GovSidebar() {
               className={cn(
                 'block border-l-2 px-4 py-2.5 text-sm transition-colors',
                 pathname === link.href
-                  ? 'border-lca-gold bg-lca-gold/5 font-medium text-lca-navy'
+                  ? 'border-lca-gold bg-lca-gold/5 font-medium text-ink'
                   : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground',
               )}
             >
@@ -57,7 +57,7 @@ function GovTabs() {
             className={cn(
               'whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition-colors',
               pathname === link.href
-                ? 'border-lca-navy bg-lca-navy font-medium text-white'
+                ? 'border-lca-navy bg-brand-navy font-medium text-white'
                 : 'border-border bg-card text-muted-foreground hover:border-lca-navy/40 hover:text-foreground',
             )}
           >

@@ -55,7 +55,7 @@ function SlotsEditor({ slots, onChange, namer }: {
         </div>
       ))}
       <button type="button" onClick={() => onChange([...slots, {}])}
-        className="inline-flex items-center gap-1 text-xs text-lca-navy underline-offset-2 hover:underline">
+        className="inline-flex items-center gap-1 text-xs text-ink underline-offset-2 hover:underline">
         <Plus className="size-3" /> Add prize
       </button>
     </div>
@@ -94,14 +94,14 @@ export function PrizesEditor({ section, onChange }: {
 
   return (
     <div className="text-xs">
-      <button type="button" onClick={() => setOpen((o) => !o)} className="text-left text-muted-foreground hover:text-lca-navy">
+      <button type="button" onClick={() => setOpen((o) => !o)} className="text-left text-muted-foreground hover:text-ink">
         {count === 0 ? 'No prizes set' : `${count} prize${count === 1 ? '' : 's'}${cash > 0 ? ` · $${cash} cash` : ''}`}
-        <span className="ml-1.5 text-lca-navy underline underline-offset-2">{open ? 'done' : 'edit'}</span>
+        <span className="ml-1.5 text-ink underline underline-offset-2">{open ? 'done' : 'edit'}</span>
       </button>
       {open && (
         <div className="mt-2 space-y-4 rounded-md border bg-muted/30 p-3">
           <div>
-            <p className="mb-1.5 font-semibold text-lca-navy">Place prizes</p>
+            <p className="mb-1.5 font-semibold text-ink">Place prizes</p>
             <SlotsEditor slots={place} onChange={(next) => set({ ...prizes, place: next })} namer={(i) => ordinal(i + 1)} />
           </div>
 

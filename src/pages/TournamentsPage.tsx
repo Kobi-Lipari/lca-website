@@ -102,7 +102,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
       className={cn(
         'flex-shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition-colors',
         active
-          ? 'border-lca-navy bg-lca-navy text-white'
+          ? 'border-lca-navy bg-brand-navy text-white'
           : 'border-border bg-background text-muted-foreground hover:border-lca-navy/40 hover:text-foreground',
       )}
     >
@@ -122,7 +122,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
   return (
     <div className="p-4">
       <h3 className="mb-3 text-[15px] font-semibold leading-snug">
-        <Link to={`/tournaments/${t.id}`} className="text-lca-navy hover:underline transition-colors">
+        <Link to={`/tournaments/${t.id}`} className="text-ink hover:underline transition-colors">
           {t.name}
         </Link>
       </h3>
@@ -156,7 +156,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
           {sections.map(s => {
             const name = s.name
             return (
-              <span key={name} className="rounded-full border border-lca-navy/20 bg-lca-navy/8 px-2 py-0.5 text-[11px] font-medium text-lca-navy">
+              <span key={name} className="rounded-full border border-lca-navy/20 bg-brand-navy/8 px-2 py-0.5 text-[11px] font-medium text-ink">
                 {name}
               </span>
             )
@@ -179,7 +179,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
       )}
       <div className="mt-3.5 flex flex-wrap items-center gap-2">
         {regOpen && !isPast && (
-          <Button asChild size="sm" className="h-7 bg-lca-gold text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
+          <Button asChild size="sm" className="h-7 bg-lca-gold text-xs font-semibold text-brand-navy hover:bg-lca-gold/90">
             <Link to={`/tournaments/${t.id}`}>Register</Link>
           </Button>
         )}
@@ -207,7 +207,7 @@ function ExternalDetailPane({ t }: { t: UnifiedTournament }) {
           <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground">{t.state}</span>
         )}
       </div>
-      <h3 className="mb-3 text-[15px] font-semibold leading-snug text-lca-navy">{t.name}</h3>
+      <h3 className="mb-3 text-[15px] font-semibold leading-snug text-ink">{t.name}</h3>
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Calendar className="size-3.5 flex-shrink-0 text-lca-gold" />
@@ -242,7 +242,7 @@ function ExternalDetailPane({ t }: { t: UnifiedTournament }) {
       </div>
       {t.link && (
         <div className="mt-3.5">
-          <Button asChild size="sm" className="h-7 bg-lca-gold text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
+          <Button asChild size="sm" className="h-7 bg-lca-gold text-xs font-semibold text-brand-navy hover:bg-lca-gold/90">
             <a href={t.link} target="_blank" rel="noopener noreferrer">
               <ExternalLink className="mr-1.5 size-3" />
               Register / Details
@@ -578,7 +578,7 @@ export function TournamentsPage() {
               onClick={() => setViewMode('list')}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors',
-                viewMode === 'list' ? 'bg-lca-gold text-lca-navy' : 'text-white/70 hover:text-white',
+                viewMode === 'list' ? 'bg-lca-gold text-brand-navy' : 'text-white/70 hover:text-white',
               )}
             >
               <Trophy className="size-3.5" /> List
@@ -588,7 +588,7 @@ export function TournamentsPage() {
               onClick={() => setViewMode('calendar')}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors',
-                viewMode === 'calendar' ? 'bg-lca-gold text-lca-navy' : 'text-white/70 hover:text-white',
+                viewMode === 'calendar' ? 'bg-lca-gold text-brand-navy' : 'text-white/70 hover:text-white',
               )}
             >
               <Calendar className="size-3.5" /> Calendar
@@ -648,7 +648,7 @@ export function TournamentsPage() {
               {banner.city ? ` · ${banner.city}` : ''}
             </span>
           </div>
-          <Button asChild size="sm" className="ml-3 h-7 flex-shrink-0 bg-lca-gold text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
+          <Button asChild size="sm" className="ml-3 h-7 flex-shrink-0 bg-lca-gold text-xs font-semibold text-brand-navy hover:bg-lca-gold/90">
             <Link to={`/tournaments/${banner.id}`}>
               {banner.registration_status === 'open' ? 'Register now' : 'View details'}
             </Link>
@@ -745,7 +745,7 @@ export function TournamentsPage() {
                       className={cn(
                         'rounded-md px-2 py-0.5 text-xs font-semibold capitalize transition-colors',
                         timeTab === tab
-                          ? 'bg-lca-navy text-white'
+                          ? 'bg-brand-navy text-white'
                           : 'text-muted-foreground hover:text-foreground',
                       )}
                     >

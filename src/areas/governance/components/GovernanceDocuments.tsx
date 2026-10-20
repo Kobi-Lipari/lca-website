@@ -78,7 +78,7 @@ function DocumentCard({
       >
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-lca-navy">{doc.title}</h4>
+            <h4 className="font-semibold text-ink">{doc.title}</h4>
             <ChevronDown className={`size-4 flex-shrink-0 text-muted-foreground transition-transform ${expanded ? 'rotate-180' : ''}`} />
           </div>
           {doc.doc_date && <p className="text-xs text-muted-foreground">{doc.doc_date}</p>}
@@ -88,7 +88,7 @@ function DocumentCard({
         </div>
         {isAdmin && (
           <div className="flex flex-shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()}>
-            <button type="button" onClick={onEdit} className="p-1 text-muted-foreground hover:text-lca-navy">
+            <button type="button" onClick={onEdit} className="p-1 text-muted-foreground hover:text-ink">
               <Pencil className="size-3.5" />
             </button>
             <button type="button" onClick={onDelete} className="p-1 text-muted-foreground hover:text-destructive">
@@ -133,7 +133,7 @@ function DocumentCard({
             <button
               type="button"
               onClick={() => setExpanded((e) => !e)}
-              className="mt-2 text-sm font-medium text-lca-navy underline underline-offset-2"
+              className="mt-2 text-sm font-medium text-ink underline underline-offset-2"
             >
               {expanded ? 'Show less' : 'Read more'}
             </button>
@@ -258,7 +258,7 @@ export function GovernanceDocuments({
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-semibold text-lca-navy">{title}</h3>
+        <h3 className="text-base font-semibold text-ink">{title}</h3>
         {isAdmin && !adding && (
           <Button type="button" variant="outline" size="sm" onClick={startAdd}>
             <Plus className="mr-1.5 size-3.5" /> Add document
@@ -268,7 +268,7 @@ export function GovernanceDocuments({
 
       {adding && (
         <div className="mb-4 rounded-xl border bg-card p-4 shadow-sm space-y-3">
-          <p className="text-sm font-medium text-lca-navy">{editingId ? 'Edit document' : 'Add document'}</p>
+          <p className="text-sm font-medium text-ink">{editingId ? 'Edit document' : 'Add document'}</p>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div><Label className="text-xs">Title</Label><Input className="mt-1 h-8 text-sm" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} /></div>

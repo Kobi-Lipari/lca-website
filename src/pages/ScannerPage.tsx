@@ -10,7 +10,7 @@
 // Nothing is stored: the photo lives in this tab's memory until the member
 // leaves or scans another.
 
-import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
+import { useMemo, useRef, useState, useSyncExternalStore, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Camera,
@@ -85,7 +85,7 @@ function SignInPrompt() {
       <div className="flex size-11 items-center justify-center rounded-lg bg-lca-gold/10">
         <LogIn className="size-5 text-lca-gold" aria-hidden="true" />
       </div>
-      <h2 className="mt-4 text-xl font-semibold text-lca-navy">Log in to scan a scoresheet</h2>
+      <h2 className="mt-4 text-xl font-semibold text-ink">Log in to scan a scoresheet</h2>
       <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
         The scanner is free with an LCA account. Log in, take a photo of your scoresheet, and
         you'll have the game on a board in under a minute.
@@ -114,13 +114,13 @@ function HowItWorks() {
   return (
     <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
       <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-        <div className="bg-lca-navy px-4 py-3">
+        <div className="bg-brand-navy px-4 py-3">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-white/60">How it works</p>
         </div>
         <ol className="space-y-3 p-4">
           {steps.map(([title, body], i) => (
             <li key={title} className="flex gap-3">
-              <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-lca-gold/15 text-xs font-semibold text-lca-navy">
+              <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-lca-gold/15 text-xs font-semibold text-ink">
                 {i + 1}
               </span>
               <div>
@@ -350,15 +350,32 @@ function scanError(err: unknown): Stage {
   }
 }
 
-/** Object URLs for the chosen photos, released when they change or the page closes. */
+/**
+ * Object URLs for the chosen photos, released when they change or the page
+ * closes. The URLs live outside React, so they come in through
+ * useSyncExternalStore rather than state set from an effect: each set of
+ * files gets a small store that makes its URLs when first read, and React's
+ * unsubscribe (the files changed, or the page closed) releases them. In
+ * development StrictMode unsubscribes and subscribes again straight away;
+ * the store then asks React to read again, which makes fresh URLs.
+ */
 function useObjectUrls(files: File[]): string[] {
-  const [urls, setUrls] = useState<string[]>([])
-  useEffect(() => {
-    const next = files.map((file) => URL.createObjectURL(file))
-    setUrls(next)
-    return () => next.forEach((url) => URL.revokeObjectURL(url))
-  }, [files])
-  return urls
+  const store = useMemo(() => objectUrlStore(files), [files])
+  return useSyncExternalStore(store.subscribe, store.read)
+}
+
+function objectUrlStore(files: File[]) {
+  let urls: string[] | null = null
+  return {
+    read: () => (urls ??= files.map((file) => URL.createObjectURL(file))),
+    subscribe: (changed: () => void) => {
+      if (urls === null) changed()
+      return () => {
+        for (const url of urls ?? []) URL.revokeObjectURL(url)
+        urls = null
+      }
+    },
+  }
 }
 
 // ── Picking a photo ──────────────────────────────────────────────────
@@ -369,7 +386,7 @@ function PhotoPicker({ onChoose }: { onChoose: (file: File) => void }) {
       <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-lca-gold/10">
         <Camera className="size-6 text-lca-gold" aria-hidden="true" />
       </div>
-      <h2 className="mt-4 text-lg font-semibold text-lca-navy">Add a photo of your scoresheet</h2>
+      <h2 className="mt-4 text-lg font-semibold text-ink">Add a photo of your scoresheet</h2>
       <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
         One sheet per photo, taken from straight above, with every row visible. If the game runs onto
         the back or another sheet, you can add those pages next.
@@ -437,7 +454,7 @@ function PageStrip({
             alt={`Page ${i + 1} of your scoresheet`}
             className={cn('aspect-[3/4] w-full rounded-lg border object-cover transition-opacity', dimmed && 'opacity-60')}
           />
-          <span className="absolute left-2 top-2 rounded-full bg-lca-navy px-2 py-0.5 text-xs font-semibold text-white">
+          <span className="absolute left-2 top-2 rounded-full bg-brand-navy px-2 py-0.5 text-xs font-semibold text-white">
             Page {i + 1}
           </span>
           {onRemove && (
@@ -445,7 +462,7 @@ function PageStrip({
               type="button"
               onClick={() => onRemove(i)}
               aria-label={`Remove page ${i + 1}`}
-              className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-white/90 text-foreground shadow hover:bg-white"
+              className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-surface/90 text-foreground shadow hover:bg-surface"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
@@ -635,7 +652,7 @@ function Results({
             <img src={previewUrl} alt="Your scoresheet" className="h-28 w-auto self-start rounded-md border object-cover" />
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-semibold text-lca-navy">
+            <p className="text-lg font-semibold text-ink">
               {white} <span className="font-normal text-muted-foreground">vs</span> {black}
             </p>
             <p className="mt-0.5 text-sm text-muted-foreground">
@@ -756,7 +773,7 @@ function MoveList({
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <div className="border-b px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-lca-navy">Moves</h2>
+          <h2 className="text-sm font-semibold text-ink">Moves</h2>
           {canUndo && (
             <Button type="button" variant="ghost" size="sm" onClick={onUndo} disabled={updating}>
               <Undo2 className="size-3.5" aria-hidden="true" /> Undo last change

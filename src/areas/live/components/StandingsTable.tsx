@@ -26,16 +26,16 @@ export function StandingsTable({ standings, sectionName, showHeading = true }: {
 
   return (
     <div className="mb-6 break-inside-avoid">
-      {showHeading && <h3 className="mb-3 text-base font-semibold text-lca-navy">{sectionName}</h3>}
+      {showHeading && <h3 className="mb-3 text-base font-semibold text-ink">{sectionName}</h3>}
       <div className="overflow-x-auto rounded-xl border print:overflow-visible">
         <table className="w-full min-w-[560px] text-left text-sm tabular-nums">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="px-3 py-2.5 font-semibold text-lca-navy">Place</th>
-              <th className="px-3 py-2.5 font-semibold text-lca-navy">Player</th>
-              <th className="px-3 py-2.5 text-right font-semibold text-lca-navy">Rating</th>
-              <th className="px-3 py-2.5 text-center font-semibold text-lca-navy">Pts</th>
-              <th className="px-3 py-2.5 text-center font-semibold text-lca-navy">W-D-L</th>
+              <th className="px-3 py-2.5 font-semibold text-ink">Place</th>
+              <th className="px-3 py-2.5 font-semibold text-ink">Player</th>
+              <th className="px-3 py-2.5 text-right font-semibold text-ink">Rating</th>
+              <th className="px-3 py-2.5 text-center font-semibold text-ink">Pts</th>
+              <th className="px-3 py-2.5 text-center font-semibold text-ink">W-D-L</th>
               {TIEBREAKS.map((t) => (
                 <th key={t.key} className="px-2 py-2.5 text-center text-xs font-semibold text-muted-foreground" title={t.long}>
                   {t.short}
@@ -46,12 +46,12 @@ export function StandingsTable({ standings, sectionName, showHeading = true }: {
           <tbody>
             {rows.map((p) => (
               <tr key={p.member_id} className={cn('border-b last:border-0', p.place === 1 && 'bg-lca-gold/5')}>
-                <td className={cn('px-3 py-2 font-medium', p.place === 1 ? 'text-lca-navy' : 'text-muted-foreground')}>
+                <td className={cn('px-3 py-2 font-medium', p.place === 1 ? 'text-ink' : 'text-muted-foreground')}>
                   {p.placeLabel ?? p.place}
                 </td>
-                <td className="px-3 py-2 font-medium text-lca-navy">{p.full_name}</td>
+                <td className="px-3 py-2 font-medium text-ink">{p.full_name}</td>
                 <td className="px-3 py-2 text-right text-muted-foreground">{p.rating ?? 'Unr.'}</td>
-                <td className="px-3 py-2 text-center font-semibold text-lca-navy">{fmt(p.score)}</td>
+                <td className="px-3 py-2 text-center font-semibold text-ink">{fmt(p.score)}</td>
                 <td className="px-3 py-2 text-center text-muted-foreground">{p.wins}-{p.draws}-{p.losses}</td>
                 {TIEBREAKS.map((t) => (
                   <td key={t.key} className="px-2 py-2 text-center text-xs text-muted-foreground">

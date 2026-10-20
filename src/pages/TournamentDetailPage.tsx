@@ -39,7 +39,7 @@ const statusConfig: Record<TournamentStatus, { label: string; className: string 
   completed:{ label: 'Completed',className: 'bg-white/10 text-white/60' },
 }
 
-const goldBtn = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+const goldBtn = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 // ── Registration confirmation modal ─────────────────────────────────────────
 
@@ -67,7 +67,7 @@ function RegistrationModal({
     >
       <div className="mx-4 w-full max-w-md rounded-xl border bg-background p-6 shadow-lg">
         <div className="mb-4 flex items-start justify-between">
-          <h3 className="text-lg font-bold text-lca-navy">{waitlist ? 'Join the waitlist' : 'Confirm registration'}</h3>
+          <h3 className="text-lg font-bold text-ink">{waitlist ? 'Join the waitlist' : 'Confirm registration'}</h3>
           <button type="button" onClick={onCancel} className="text-muted-foreground hover:text-foreground">
             <X className="size-5" />
           </button>
@@ -208,7 +208,7 @@ function ByeRoundsEditor({
               className={cn(
                 'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                 isSel
-                  ? 'border-lca-navy bg-lca-navy text-white'
+                  ? 'border-lca-navy bg-brand-navy text-white'
                   : wouldExceed
                   ? 'cursor-not-allowed border-border text-muted-foreground/40'
                   : 'border-border text-muted-foreground hover:border-lca-navy/40',
@@ -427,7 +427,7 @@ export function TournamentDetailPage() {
   if (notFound || !tournament) return (
     <div className="mx-auto max-w-6xl px-6 py-12 text-center">
       <Trophy className="mx-auto size-12 text-muted-foreground" />
-      <h1 className="mt-4 text-2xl font-bold text-lca-navy">Tournament not found</h1>
+      <h1 className="mt-4 text-2xl font-bold text-ink">Tournament not found</h1>
       <Button asChild className="mt-6" variant="outline">
         <Link to="/tournaments"><ArrowLeft className="size-4" /> Back to tournaments</Link>
       </Button>
@@ -511,7 +511,7 @@ export function TournamentDetailPage() {
       <PreviewBanner tournamentId={tournament.id} visible={tournament.is_visible} />
 
       {/* ── Hero ── */}
-      <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-[3px] border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <Link
             to="/tournaments"
@@ -530,7 +530,7 @@ export function TournamentDetailPage() {
                   {status.label}
                 </span>
                 {!!tournament.is_state_championship && (
-                  <Link to="/champions" className="rounded-full bg-lca-gold px-2.5 py-0.5 text-xs font-semibold text-lca-navy hover:bg-lca-gold/90">
+                  <Link to="/champions" className="rounded-full bg-lca-gold px-2.5 py-0.5 text-xs font-semibold text-brand-navy hover:bg-lca-gold/90">
                     State Championship
                   </Link>
                 )}
@@ -576,7 +576,7 @@ export function TournamentDetailPage() {
                 <Button
                   asChild
                   size="sm"
-                  className="border-lca-gold/50 bg-lca-gold/15 text-lca-navy hover:bg-lca-gold/25"
+                  className="border-lca-gold/50 bg-lca-gold/15 text-ink hover:bg-lca-gold/25"
                   variant="outline"
                 >
                   <Link to={`/tournaments/${id}/pairings`}>
@@ -613,13 +613,13 @@ export function TournamentDetailPage() {
             {/* About */}
             {(tournament.description || tournament.venue) && (
               <div>
-                <h2 className="text-xl font-bold text-lca-navy">About</h2>
+                <h2 className="text-xl font-bold text-ink">About</h2>
                 {tournament.description && (
                   <p className="mt-3 text-muted-foreground">{tournament.description}</p>
                 )}
                 {tournament.venue && (
                   <p className="mt-2 text-sm text-muted-foreground">
-                    <span className="font-medium text-lca-navy">Venue:</span> {tournament.venue}
+                    <span className="font-medium text-ink">Venue:</span> {tournament.venue}
                   </p>
                 )}
               </div>
@@ -628,14 +628,14 @@ export function TournamentDetailPage() {
             {/* Round schedule */}
             {roundSchedule.length > 0 && (
               <div>
-                <h2 className="text-xl font-bold text-lca-navy">Round schedule</h2>
+                <h2 className="text-xl font-bold text-ink">Round schedule</h2>
                 <div className="mt-4 overflow-x-auto rounded-xl border">
                   <table className="w-full text-left text-sm">
                     <thead>
                       <tr className="border-b bg-muted/50">
-                        <th className="px-4 py-3 font-semibold text-lca-navy">Round</th>
-                        <th className="px-4 py-3 font-semibold text-lca-navy">Date</th>
-                        <th className="px-4 py-3 font-semibold text-lca-navy">Time</th>
+                        <th className="px-4 py-3 font-semibold text-ink">Round</th>
+                        <th className="px-4 py-3 font-semibold text-ink">Date</th>
+                        <th className="px-4 py-3 font-semibold text-ink">Time</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -654,15 +654,15 @@ export function TournamentDetailPage() {
 
             {/* Sections */}
             <div>
-              <h2 className="text-xl font-bold text-lca-navy">Sections</h2>
+              <h2 className="text-xl font-bold text-ink">Sections</h2>
               <div className="mt-4 overflow-x-auto rounded-xl border">
                 <table className="w-full min-w-[480px] text-left text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
-                      <th className="px-4 py-3 font-semibold text-lca-navy">Section</th>
-                      <th className="px-4 py-3 font-semibold text-lca-navy">Who can enter</th>
-                      <th className="px-4 py-3 font-semibold text-lca-navy">Entry fee</th>
-                      <th className="px-4 py-3 font-semibold text-lca-navy">Prize fund</th>
+                      <th className="px-4 py-3 font-semibold text-ink">Section</th>
+                      <th className="px-4 py-3 font-semibold text-ink">Who can enter</th>
+                      <th className="px-4 py-3 font-semibold text-ink">Entry fee</th>
+                      <th className="px-4 py-3 font-semibold text-ink">Prize fund</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -683,22 +683,22 @@ export function TournamentDetailPage() {
 
             {/* My registration — bye rounds */}
             {myRegistration && (
-              <div className="rounded-xl border border-lca-navy/20 bg-lca-navy/5 p-6">
-                <h2 className="text-lg font-bold text-lca-navy">Your registration</h2>
+              <div className="rounded-xl border border-lca-navy/20 bg-brand-navy/5 p-6">
+                <h2 className="text-lg font-bold text-ink">Your registration</h2>
                 <dl className="mt-3 space-y-2 text-sm">
                   <div className="flex gap-4">
-                    <dt className="font-medium text-lca-navy">Section</dt>
+                    <dt className="font-medium text-ink">Section</dt>
                     <dd className="text-muted-foreground">{myRegistration.section}</dd>
                   </div>
                   <div className="flex gap-4">
-                    <dt className="font-medium text-lca-navy">{myWithdrawn || myWaitlisted ? 'Status' : 'Payment'}</dt>
+                    <dt className="font-medium text-ink">{myWithdrawn || myWaitlisted ? 'Status' : 'Payment'}</dt>
                     <dd className="text-muted-foreground">
                       {myWithdrawn ? 'Withdrawn' : myWaitlisted ? 'On the waitlist' : myRegistration.payment_status}
                     </dd>
                   </div>
                 </dl>
                 {!myWithdrawn && <div className="mt-4">
-                  <p className="mb-2 text-sm font-medium text-lca-navy">Bye rounds</p>
+                  <p className="mb-2 text-sm font-medium text-ink">Bye rounds</p>
                   <ByeRoundsEditor
                     registration={myRegistration}
                     totalRounds={tournament.rounds}
@@ -710,7 +710,7 @@ export function TournamentDetailPage() {
 
             {/* Registered players — by section, sorted by name */}
             <div>
-              <h2 className="text-xl font-bold text-lca-navy">
+              <h2 className="text-xl font-bold text-ink">
                 Registered players
                 {activeRoster.length > 0 && (
                   <span className="ml-2 text-base font-normal text-muted-foreground">
@@ -727,7 +727,7 @@ export function TournamentDetailPage() {
                     return (
                       <div key={sectionName}>
                         <div className="border-b bg-lca-gold/8 px-4 py-2">
-                          <span className="text-xs font-semibold uppercase tracking-wide text-lca-navy">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-ink">
                             {sectionName}
                           </span>
                           <span className="ml-2 text-xs text-muted-foreground">
@@ -741,7 +741,7 @@ export function TournamentDetailPage() {
                               className="flex items-center justify-between px-4 py-2.5"
                             >
                               <div>
-                                <p className="text-sm font-medium text-lca-navy">
+                                <p className="text-sm font-medium text-ink">
                                   {player.full_name}
                                 </p>
                                 {player.uscf_id && (
@@ -770,7 +770,7 @@ export function TournamentDetailPage() {
               <div className="space-y-6">
                 {customDetails.map((cd, i) => (
                   <div key={i}>
-                    <h2 className="text-xl font-bold text-lca-navy">{cd.title}</h2>
+                    <h2 className="text-xl font-bold text-ink">{cd.title}</h2>
                     <p className="mt-2 whitespace-pre-wrap text-muted-foreground">{cd.body}</p>
                   </div>
                 ))}
@@ -783,7 +783,7 @@ export function TournamentDetailPage() {
 
             {/* Registration card */}
             <div className="overflow-hidden rounded-xl border shadow-sm">
-              <div className="bg-lca-navy px-5 py-4">
+              <div className="bg-brand-navy px-5 py-4">
                 <h2 className="font-semibold text-white">
                   {myRegistration ? 'Your registration' : 'Register'}
                 </h2>
@@ -841,10 +841,10 @@ export function TournamentDetailPage() {
                     <div className={cn(
                       'flex items-center gap-2 rounded-lg border px-3 py-2.5 text-sm font-medium',
                       myWaitlisted
-                        ? 'border-border bg-muted/40 text-lca-navy'
+                        ? 'border-border bg-muted/40 text-ink'
                         : myRegistration.payment_status === 'paid'
                         ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
-                        : 'border-lca-gold/40 bg-lca-gold/10 text-lca-navy',
+                        : 'border-lca-gold/40 bg-lca-gold/10 text-ink',
                     )}>
                       <CheckCircle2 className="size-4" />
                       {myWaitlisted ? 'Waitlisted' : 'Registered'} · {myRegistration.section}
@@ -870,7 +870,7 @@ export function TournamentDetailPage() {
                     )}
                     {!myWaitlisted && (
                       <div>
-                        <p className="mb-2 text-xs font-medium text-lca-navy">Bye rounds</p>
+                        <p className="mb-2 text-xs font-medium text-ink">Bye rounds</p>
                         <ByeRoundsEditor
                           registration={myRegistration}
                           totalRounds={tournament.rounds}
@@ -1000,7 +1000,7 @@ export function TournamentDetailPage() {
                                   className={cn(
                                     'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
                                     isSel
-                                      ? 'border-lca-navy bg-lca-navy text-white'
+                                      ? 'border-lca-navy bg-brand-navy text-white'
                                       : wouldExceed
                                       ? 'cursor-not-allowed border-border text-muted-foreground/40'
                                       : 'border-border text-muted-foreground hover:border-lca-navy/40',

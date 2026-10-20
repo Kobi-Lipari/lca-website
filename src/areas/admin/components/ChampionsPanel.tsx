@@ -13,7 +13,7 @@ import {
   type ApiChampion,
 } from '@/lib/api'
 import { GOLD_BUTTON as GOLD, ADMIN_SCROLL } from '@/lib/brand'
-import { useViewOnly } from '@/lib/viewOnly'
+import { useViewOnly } from '@/hooks/useViewOnly'
 import { parsePasted } from '@/areas/events/champions'
 
 const EMPTY = { year: String(new Date().getFullYear()), title: '', champion: '', notes: '' }
@@ -74,7 +74,7 @@ export function ChampionsPanel() {
       {!viewOnly && (
         <div className="grid gap-6 lg:grid-cols-2">
           <form onSubmit={add} className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-            <p className="font-semibold text-lca-navy">Add a champion</p>
+            <p className="font-semibold text-ink">Add a champion</p>
             <div className="grid grid-cols-[90px_1fr] gap-3">
               <div className="space-y-1">
                 <Label htmlFor="ch-year" className="text-xs">Year</Label>
@@ -99,7 +99,7 @@ export function ChampionsPanel() {
           </form>
 
           <div className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
-            <p className="font-semibold text-lca-navy">Add many at once</p>
+            <p className="font-semibold text-ink">Add many at once</p>
             <p className="text-xs text-muted-foreground">
               One per line: <span className="font-mono">year, championship, champion, note</span>. Copying rows from a
               spreadsheet works too.
@@ -154,12 +154,12 @@ export function ChampionsPanel() {
                 <tr key={r.id} className="border-b last:border-0">
                   <td className="px-3 py-2 tabular-nums">{r.year}</td>
                   <td className="px-3 py-2">{r.title}</td>
-                  <td className="px-3 py-2 font-medium text-lca-navy">{r.champion}</td>
+                  <td className="px-3 py-2 font-medium text-ink">{r.champion}</td>
                   <td className="px-3 py-2 text-muted-foreground">{r.notes}</td>
                   <td className="px-3 py-2">
                     {!viewOnly && (
                       <span className="flex gap-2">
-                        <button type="button" onClick={() => setEditing(r)} aria-label={`Edit ${r.champion}`} className="text-muted-foreground hover:text-lca-navy"><Pencil className="size-3.5" /></button>
+                        <button type="button" onClick={() => setEditing(r)} aria-label={`Edit ${r.champion}`} className="text-muted-foreground hover:text-ink"><Pencil className="size-3.5" /></button>
                         <button type="button" disabled={busy} aria-label={`Remove ${r.champion}`}
                           onClick={() => window.confirm(`Remove ${r.champion} (${r.year} ${r.title})?`) && run(() => adminDeleteChampion(r.id), 'Removed.')}
                           className="text-muted-foreground hover:text-destructive"><Trash2 className="size-3.5" /></button>

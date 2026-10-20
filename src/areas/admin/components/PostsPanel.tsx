@@ -25,7 +25,8 @@ import { downscaleImage } from '@/lib/resizeImage'
 import { formatPostDate } from '@/lib/posts'
 import { cn } from '@/lib/utils'
 import { ADMIN_SCROLL, GOLD_BUTTON as GOLD } from '@/lib/brand'
-import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
+import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
+import { useViewOnly } from '@/hooks/useViewOnly'
 
 const SITE = 'https://www.louisianachess.org'
 
@@ -51,6 +52,8 @@ function toDraft(p: ApiPost): Draft {
   }
 }
 
+const loadError = (err: unknown) => (err instanceof Error ? err.message : 'Failed to load posts')
+
 export function PostsPanel() {
   const viewOnly = useViewOnly()
   const [posts, setPosts] = useState<ApiPost[] | null>(null)
@@ -61,11 +64,17 @@ export function PostsPanel() {
     try {
       setPosts(await adminGetPosts())
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load posts')
+      setError(loadError(err))
     }
   }
 
-  useEffect(() => { refresh() }, [])
+  // The first load. The list is set when the request answers, not while the
+  // effect runs.
+  useEffect(() => {
+    adminGetPosts()
+      .then(setPosts)
+      .catch((err) => setError(loadError(err)))
+  }, [])
 
   async function openPost(p: ApiPost) {
     setError(null)
@@ -116,7 +125,7 @@ export function PostsPanel() {
     <div>
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-lca-navy">News posts</h2>
+          <h2 className="text-xl font-bold text-ink">News posts</h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
             LCA announcements on the News page. Each post has its own page you can share to Facebook.
           </p>
@@ -142,7 +151,7 @@ export function PostsPanel() {
                   ? <img src={p.image_url} alt="" className="size-12 flex-shrink-0 rounded-md border object-cover" />
                   : <span className="size-12 flex-shrink-0 rounded-md border bg-muted/40" />}
                 <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-1.5 truncate font-medium text-lca-navy">
+                  <span className="flex items-center gap-1.5 truncate font-medium text-ink">
                     {p.pinned === 1 && <Pin className="size-3.5 flex-shrink-0 text-lca-gold" aria-label="Pinned" />}
                     <span className="truncate">{p.title}</span>
                   </span>
@@ -264,7 +273,7 @@ function PostEditor({ post, onClose, onSaved }: {
 
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <button type="button" onClick={() => { if (!dirty || confirm('Discard unsaved changes?')) onClose() }}
-          className="text-sm text-lca-navy hover:underline">
+          className="text-sm text-ink hover:underline">
           ← All posts
         </button>
         <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-medium',

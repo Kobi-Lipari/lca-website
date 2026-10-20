@@ -67,7 +67,7 @@ function MemberCard({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Input
-              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-lca-navy"
+              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-ink"
               value={member.role}
               disabled={saving}
               onBlur={(e) => onSave(seat.id, 'role', e.target.value)}
@@ -98,7 +98,7 @@ function MemberCard({
                   </div>
                 ))}
               </div>
-              <p className="text-sm font-semibold text-lca-navy">{seat.holder_name}</p>
+              <p className="text-sm font-semibold text-ink">{seat.holder_name}</p>
               <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">
                 From {seat.holder_count > 1 ? 'their member accounts' : 'their member account'}.
                 Messages reach {seat.holder_count > 1 ? 'them all' : 'them'} through the site.
@@ -107,7 +107,7 @@ function MemberCard({
           ) : (
             <>
               <Input
-                className="h-8 font-semibold text-lca-navy"
+                className="h-8 font-semibold text-ink"
                 value={member.name}
                 disabled={saving}
                 placeholder="Full name, or TBD"
@@ -128,7 +128,7 @@ function MemberCard({
         </div>
       ) : (
         <>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-lca-navy">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink">
             {seat.role}
           </p>
           {isVacant ? (
@@ -138,7 +138,7 @@ function MemberCard({
               </p>
               <Link
                 to={contactHref}
-                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-lca-navy hover:underline"
+                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-ink hover:underline"
               >
                 Interested in serving? Contact us →
               </Link>
@@ -149,7 +149,7 @@ function MemberCard({
                 {(seat.holders?.length ? seat.holders : [{ member_id: seat.id, name: displayName, photo_url: seat.photo_url ?? null }]).map((h) => (
                   <OfficerPhoto key={h.member_id} name={h.name} photoUrl={h.photo_url} size={(seat.holders?.length ?? 1) > 1 ? 44 : 56} />
                 ))}
-                <p className="font-semibold text-lca-navy">{displayName}</p>
+                <p className="font-semibold text-ink">{displayName}</p>
               </div>
               <Link
                 to={contactHref}
@@ -284,7 +284,7 @@ export function BoardPage() {
             <div>
               <div className="mb-4 flex items-center gap-2">
                 <ShieldCheck className="size-5 text-lca-gold" />
-                <h2 className="text-base font-bold text-lca-navy">Officers</h2>
+                <h2 className="text-base font-bold text-ink">Officers</h2>
                 <span className="text-xs text-muted-foreground">· {officers.length}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -309,7 +309,7 @@ export function BoardPage() {
             <div>
               <div className="mb-4 flex items-center gap-2">
                 <MapPin className="size-5 text-lca-gold" />
-                <h2 className="text-base font-bold text-lca-navy">Regional representatives</h2>
+                <h2 className="text-base font-bold text-ink">Regional representatives</h2>
                 <span className="text-xs text-muted-foreground">· {reps.length}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -334,7 +334,7 @@ export function BoardPage() {
             <div>
               {adding ? (
                 <div className="rounded-xl border bg-card p-4 shadow-sm space-y-3">
-                  <p className="text-sm font-medium text-lca-navy">Add a board seat</p>
+                  <p className="text-sm font-medium text-ink">Add a board seat</p>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div><Label className="text-xs">Role</Label><Input className="mt-1 h-8 text-sm" placeholder="e.g. President, or '… Representative'" value={newMember.role} onChange={(e) => setNewMember((p) => ({ ...p, role: e.target.value }))} /></div>
                     <div><Label className="text-xs">Name</Label><Input className="mt-1 h-8 text-sm" placeholder="Full name, or TBD" value={newMember.name} onChange={(e) => setNewMember((p) => ({ ...p, name: e.target.value }))} /></div>
@@ -357,7 +357,7 @@ export function BoardPage() {
             </div>
           )}
 
-          <div className="rounded-xl border-[3px] border-lca-gold bg-lca-navy p-5 text-white">
+          <div className="rounded-xl border-[3px] border-lca-gold bg-brand-navy p-5 text-white">
             <h3 className="font-semibold">Not sure who to ask?</h3>
             <p className="mt-2 text-sm text-white/65">
               Send it as a general inquiry and we'll route it to the right person. Every message opens a ticket you can follow.

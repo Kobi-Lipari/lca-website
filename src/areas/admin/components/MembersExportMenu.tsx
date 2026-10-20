@@ -69,7 +69,7 @@ export function MembersExportMenu() {
 
   const option = (active: boolean) => cn(
     'flex cursor-pointer items-start gap-2 rounded-md border px-3 py-2 text-sm',
-    active ? 'border-lca-navy bg-lca-navy/[0.04]' : 'hover:border-lca-navy/30',
+    active ? 'border-lca-navy bg-brand-navy/[0.04]' : 'hover:border-lca-navy/30',
   )
 
   return (

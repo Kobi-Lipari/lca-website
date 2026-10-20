@@ -67,7 +67,7 @@ export function AgendaList({ tournaments, selectedKey, onSelect }: AgendaListPro
               )}
             >
               <div className="w-9 flex-shrink-0 text-center">
-                <div className="text-base font-semibold leading-none text-lca-navy">{dayNum}</div>
+                <div className="text-base font-semibold leading-none text-ink">{dayNum}</div>
                 <div className="mt-0.5 text-[9px] uppercase text-muted-foreground">{dayName}</div>
               </div>
               <div className="min-w-0 flex-1">

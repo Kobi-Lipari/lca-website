@@ -90,7 +90,7 @@ export function WorkspacePage() {
                 onClick={() => selectTab(id)}
                 className={cn(
                   '-mb-px flex flex-shrink-0 items-center gap-1.5 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors',
-                  tab === id ? 'border-lca-gold text-lca-navy' : 'border-transparent text-muted-foreground hover:text-foreground',
+                  tab === id ? 'border-lca-gold text-ink' : 'border-transparent text-muted-foreground hover:text-foreground',
                 )}
               >
                 <Icon className="size-4" /> {label}
@@ -151,7 +151,7 @@ function MyClubPanel({ clubId, onShowEvents }: { clubId: string; onShowEvents: (
           <div className="flex min-w-0 items-center gap-4">
             <ClubMark club={club} />
             <div className="min-w-0">
-              <h2 className="truncate text-xl font-bold text-lca-navy">{club.name}</h2>
+              <h2 className="truncate text-xl font-bold text-ink">{club.name}</h2>
               <p className="text-sm text-muted-foreground">
                 {club.city}, LA{club.meeting_schedule ? ` · ${club.meeting_schedule}` : ''}
               </p>
@@ -170,7 +170,7 @@ function MyClubPanel({ clubId, onShowEvents }: { clubId: string; onShowEvents: (
         {gaps.length > 0 && (
           <p className="mt-4 rounded-lg bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
             Your public page is missing {listPhrase(gaps)}.{' '}
-            <Link to={`/admin/clubs/${club.id}`} className="font-medium text-lca-navy underline-offset-2 hover:underline">Add {gaps.length > 1 ? 'them' : 'it'}</Link>
+            <Link to={`/admin/clubs/${club.id}`} className="font-medium text-ink underline-offset-2 hover:underline">Add {gaps.length > 1 ? 'them' : 'it'}</Link>
           </p>
         )}
       </div>
@@ -203,7 +203,7 @@ function ClubMark({ club }: { club: ApiClubDetail }) {
 function Stat({ label, value, to, onClick }: { label: string; value: number; to?: string; onClick?: () => void }) {
   const inner = (
     <>
-      <p className="text-2xl font-bold text-lca-navy">{value}</p>
+      <p className="text-2xl font-bold text-ink">{value}</p>
       <p className="mt-0.5 text-sm text-muted-foreground">{label}</p>
     </>
   )

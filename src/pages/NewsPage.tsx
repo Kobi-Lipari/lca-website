@@ -41,10 +41,10 @@ function ClubNewsFeed({
     return (
       <div className="rounded-xl border border-dashed bg-muted/10 px-6 py-10 text-center">
         <Building2 className="mx-auto mb-3 size-8 text-muted-foreground" />
-        <p className="font-medium text-lca-navy">No club news yet</p>
+        <p className="font-medium text-ink">No club news yet</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Updates posted by clubs will appear here.{' '}
-          <Link to="/clubs" className="text-lca-navy hover:underline">
+          <Link to="/clubs" className="text-ink hover:underline">
             Browse clubs →
           </Link>
         </p>
@@ -69,13 +69,13 @@ function ClubNewsFeed({
               />
               <Link
                 to={`/clubs/${item.club_id}`}
-                className="font-medium text-lca-navy transition-colors hover:underline"
+                className="font-medium text-ink transition-colors hover:underline"
               >
                 {item.club_name}
               </Link>
               <span className="text-muted-foreground">· {formatDate(item.news_date)}</span>
             </div>
-            <p className="mt-1.5 font-semibold leading-snug text-lca-navy">{item.title}</p>
+            <p className="mt-1.5 font-semibold leading-snug text-ink">{item.title}</p>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{item.excerpt}</p>
           </div>
         )
@@ -136,11 +136,11 @@ export function NewsPage() {
                     <img src={post.image_url} alt="" loading="lazy" className="aspect-[1.91/1] w-full object-cover" />
                   )}
                   <div className="flex flex-1 flex-col p-4">
-                    <p className="mb-1 flex items-center gap-2 text-[11px] font-medium text-lca-navy/80">
+                    <p className="mb-1 flex items-center gap-2 text-[11px] font-medium text-ink/80">
                       {post.pinned === 1 && <Pin className="size-3 text-lca-gold" aria-label="Pinned" />}
                       {formatPostDate(post.published_at)}
                     </p>
-                    <p className="font-semibold leading-snug text-lca-navy group-hover:underline">{post.title}</p>
+                    <p className="font-semibold leading-snug text-ink group-hover:underline">{post.title}</p>
                     {post.summary && (
                       <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{post.summary}</p>
                     )}
@@ -166,7 +166,7 @@ export function NewsPage() {
                 <Building2 className="size-4 text-lca-gold" />
                 From the clubs
               </h2>
-              <Link to="/clubs" className="flex items-center gap-1 text-xs text-lca-navy hover:underline">
+              <Link to="/clubs" className="flex items-center gap-1 text-xs text-ink hover:underline">
                 All clubs <ExternalLink className="size-3" />
               </Link>
             </div>

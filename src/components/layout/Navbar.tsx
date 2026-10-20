@@ -145,7 +145,7 @@ function MoreMenu({ groups }: { groups: NavLink[][] }) {
       </button>
       {open && (
         <div className="absolute right-0 top-full z-50 pt-1">
-          <div role="menu" className="min-w-[180px] rounded-lg border border-white/10 bg-lca-navy py-1 shadow-xl">
+          <div role="menu" className="min-w-[180px] rounded-lg border border-white/10 bg-brand-navy py-1 shadow-xl">
             {visibleGroups.map((group, i) => (
               <div key={group[0]!.href} className={cn(i > 0 && 'mt-1 border-t border-white/10 pt-1')}>
                 {group.map((link) => (
@@ -224,7 +224,7 @@ export function Navbar() {
   const desktopOnlyLinks = primaryLinks.filter((link) => !HYBRID_VISIBLE_LABELS.includes(link.label))
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-lca-navy text-white shadow-md print:hidden">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-navy text-white shadow-md print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-90" onClick={closeMobile}>
           <img src={lcaLogo} alt="Louisiana Chess Association" className="h-11 w-11 rounded-lg object-contain" />
@@ -259,14 +259,14 @@ export function Navbar() {
               <Button asChild variant="outline" className="h-10 gap-2 border-white/40 bg-white/5 px-4 text-[15px] font-semibold text-white hover:bg-white/15 hover:text-white">
                 <Link to="/dashboard"><UserCircle className="size-5 text-lca-gold" /> Profile</Link>
               </Button>
-              <Button type="button" size="sm" onClick={handleSignOut} className="bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">Log out</Button>
+              <Button type="button" size="sm" onClick={handleSignOut} className="bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90">Log out</Button>
             </>
           ) : (
             <>
               <Button asChild variant="outline" size="sm" className="border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
                 <Link to="/login">Log in</Link>
               </Button>
-              <Button asChild size="sm" className="bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">
+              <Button asChild size="sm" className="bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90">
                 <Link to="/membership">Join LCA</Link>
               </Button>
             </>
@@ -279,7 +279,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-lca-navy lg:hidden">
+        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto border-t border-white/10 bg-brand-navy lg:hidden">
           <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-4 sm:px-6">
             {primaryLinks.map((link) => (
               <DrawerLink key={link.href} link={link} onNavigate={closeMobile} />
@@ -298,14 +298,14 @@ export function Navbar() {
                   <Link to="/dashboard" className="flex items-center gap-2.5 rounded-md border border-white/20 bg-white/5 px-3 py-2.5 text-base font-semibold text-white hover:bg-white/10 hover:text-lca-gold" onClick={closeMobile}>
                     <UserCircle className="size-6 text-lca-gold" /> Profile
                   </Link>
-                  <Button type="button" onClick={handleSignOut} className="w-full bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">Log out</Button>
+                  <Button type="button" onClick={handleSignOut} className="w-full bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90">Log out</Button>
                 </>
               ) : (
                 <>
                   <Button asChild variant="outline" className="w-full border-white/30 bg-transparent text-white hover:bg-white/10 hover:text-white">
                     <Link to="/login" onClick={closeMobile}>Log in</Link>
                   </Button>
-                  <Button asChild className="w-full bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90">
+                  <Button asChild className="w-full bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90">
                     <Link to="/membership" onClick={closeMobile}>Join LCA</Link>
                   </Button>
                 </>

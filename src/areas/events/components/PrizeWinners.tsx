@@ -20,17 +20,17 @@ export function PrizeWinners({ prizes, standings, sectionName, note }: {
   const total = rows.reduce((a, r) => a + r.cash, 0)
   return (
     <div className="mb-6 rounded-xl border border-lca-gold/40 bg-lca-gold/5 p-4 break-inside-avoid">
-      <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-lca-navy">
+      <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink">
         <Trophy className="size-4 text-lca-gold" /> Prize winners · {sectionName}
       </p>
       <ul className="divide-y divide-lca-gold/20 text-sm">
         {rows.map((r) => (
           <li key={r.member_id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 py-1.5">
             <span>
-              <span className="font-medium text-lca-navy">{name.get(r.member_id) ?? 'Player'}</span>
+              <span className="font-medium text-ink">{name.get(r.member_id) ?? 'Player'}</span>
               <span className="ml-2 text-xs text-muted-foreground">{r.prize}</span>
             </span>
-            <span className="tabular-nums text-lca-navy">
+            <span className="tabular-nums text-ink">
               {r.cash > 0 && <span className="font-semibold">{money(r.cash)}</span>}
               {r.items.length > 0 && <span className="ml-2 text-xs text-muted-foreground">{r.items.join(', ')}</span>}
             </span>

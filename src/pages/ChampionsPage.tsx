@@ -61,14 +61,14 @@ export function ChampionsPage() {
 
         {upcoming.length > 0 && (
           <section>
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-lca-navy">
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-ink">
               <Calendar className="size-5 text-lca-gold" /> Upcoming state championships
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {upcoming.map((t) => (
                 <Link key={t.id} to={`/tournaments/${t.id}`}
                   className="rounded-xl border-l-[3px] border-l-lca-gold bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
-                  <p className="font-semibold text-lca-navy">{t.name}</p>
+                  <p className="font-semibold text-ink">{t.name}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{fmtDate(t.date)}{t.end_date && t.end_date !== t.date ? ` – ${fmtDate(t.end_date)}` : ''}</p>
                   <p className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="size-3.5" />{t.location}</p>
                 </Link>
@@ -80,14 +80,14 @@ export function ChampionsPage() {
         {!loading && champions.length === 0 && !error && (
           <div className="rounded-xl border border-dashed p-8 text-center">
             <Trophy className="mx-auto size-10 text-muted-foreground" />
-            <p className="mt-3 font-medium text-lca-navy">The honor roll is being put together.</p>
+            <p className="mt-3 font-medium text-ink">The honor roll is being put together.</p>
             <p className="mt-1 text-sm text-muted-foreground">Check back soon for Louisiana's state champions.</p>
           </div>
         )}
 
         {reigning.length > 0 && (
           <section>
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-lca-navy">
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-ink">
               <Crown className="size-5 text-lca-gold" /> Reigning champions
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -95,7 +95,7 @@ export function ChampionsPage() {
                 <div key={r.title} className="rounded-xl border bg-card p-4 shadow-sm">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-[#7a5c00]">{r.title} · {r.year}</p>
                   {r.rows.map((c) => (
-                    <p key={c.id} className="mt-1 text-lg font-bold text-lca-navy">{c.champion}</p>
+                    <p key={c.id} className="mt-1 text-lg font-bold text-ink">{c.champion}</p>
                   ))}
                   {r.rows[0]?.notes && <p className="mt-1 text-xs text-muted-foreground">{r.rows[0].notes}</p>}
                 </div>
@@ -107,7 +107,7 @@ export function ChampionsPage() {
         {champions.length > 0 && (
           <section>
             <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-              <h2 className="text-xl font-bold text-lca-navy">All champions</h2>
+              <h2 className="text-xl font-bold text-ink">All champions</h2>
               <div className="relative">
                 <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
                 <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Find a name…"
@@ -119,7 +119,7 @@ export function ChampionsPage() {
                 {['all', ...titles].map((t) => (
                   <button key={t} type="button" onClick={() => setTitle(t)} aria-pressed={title === t}
                     className={cn('rounded-full border px-3 py-1 text-xs font-medium transition-colors',
-                      title === t ? 'border-lca-navy bg-lca-navy text-white' : 'text-muted-foreground hover:border-lca-navy/40')}>
+                      title === t ? 'border-lca-navy bg-brand-navy text-white' : 'text-muted-foreground hover:border-lca-navy/40')}>
                     {t === 'all' ? 'All championships' : t}
                   </button>
                 ))}
@@ -131,17 +131,17 @@ export function ChampionsPage() {
               <div className="overflow-hidden rounded-xl border">
                 {years.map((y) => (
                   <div key={y}>
-                    <div className="border-b bg-muted/50 px-4 py-1.5 text-sm font-bold text-lca-navy">{y}</div>
+                    <div className="border-b bg-muted/50 px-4 py-1.5 text-sm font-bold text-ink">{y}</div>
                     <ul className="divide-y">
                       {shown.filter((c) => c.year === y).map((c) => (
                         <li key={c.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-0.5 px-4 py-2.5 text-sm">
                           <span>
-                            <span className="font-semibold text-lca-navy">{c.champion}</span>
+                            <span className="font-semibold text-ink">{c.champion}</span>
                             {c.notes && <span className="ml-2 text-xs text-muted-foreground">{c.notes}</span>}
                           </span>
                           <span className="text-muted-foreground">
                             {c.tournament_id && c.tournament_name
-                              ? <Link to={`/tournaments/${c.tournament_id}`} className="hover:text-lca-navy hover:underline">{c.title}</Link>
+                              ? <Link to={`/tournaments/${c.tournament_id}`} className="hover:text-ink hover:underline">{c.title}</Link>
                               : c.title}
                           </span>
                         </li>

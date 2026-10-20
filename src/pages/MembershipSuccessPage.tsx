@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 import { FAMILY_MEMBERSHIP_CHILDREN } from '@/lib/family'
 
 const goldButtonClass =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 function MembershipSuccessContent() {
   const [searchParams] = useSearchParams()
@@ -97,7 +97,7 @@ function MembershipSuccessContent() {
       {!loading && !error && status === 'pending' && (
         <>
           <Clock className="mx-auto size-12 text-lca-gold" />
-          <h1 className="mt-4 text-2xl font-bold text-lca-navy">
+          <h1 className="mt-4 text-2xl font-bold text-ink">
             Payment received — activating your membership
           </h1>
           <p className="mt-2 text-muted-foreground">
@@ -114,7 +114,7 @@ function MembershipSuccessContent() {
       {!loading && !error && status === 'active' && (
         <>
           <CheckCircle2 className="mx-auto size-12 text-emerald-600" />
-          <h1 className="mt-4 text-2xl font-bold text-lca-navy">
+          <h1 className="mt-4 text-2xl font-bold text-ink">
             Membership confirmed
           </h1>
           {tier === 'family' ? (
@@ -123,7 +123,7 @@ function MembershipSuccessContent() {
                 Your LCA family membership is now active and covers you and up to {FAMILY_MEMBERSHIP_CHILDREN} children.
               </p>
               <div className="mx-auto mt-6 max-w-md rounded-xl border border-lca-gold/50 bg-lca-gold/10 p-4 text-left">
-                <p className="font-semibold text-lca-navy">One more step: add your children</p>
+                <p className="font-semibold text-ink">One more step: add your children</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Your membership covers them as soon as they're added to your profile. It takes a minute: just their name,
                   and their US Chess ID if they have one.

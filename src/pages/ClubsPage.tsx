@@ -8,7 +8,8 @@ import { PageHero } from '@/components/PageHero'
 import { clubColorTint } from '@/areas/clubs/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { LCAMap, clubLocation, directionsUrl } from '@/areas/clubs/components/LCAMap'
+import { LCAMap } from '@/areas/clubs/components/LCAMap'
+import { clubLocation, directionsUrl } from '@/areas/clubs/clubMap'
 import { LCA } from '@/lib/brand'
 import { REGIONS } from '@/lib/regions'
 
@@ -130,7 +131,7 @@ function ClubCard({
       <ClubLogoPanel club={club} />
       <div className="min-w-0 flex-1 p-3.5">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-semibold leading-snug text-lca-navy">{club.name}</p>
+          <p className="text-sm font-semibold leading-snug text-ink">{club.name}</p>
           {distance != null && (
             <span className="flex-shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
               {distance < 10 ? distance.toFixed(1) : Math.round(distance)} mi
@@ -155,7 +156,7 @@ function ClubCard({
           <Link
             to={`/clubs/${club.id}`}
             onClick={(e) => e.stopPropagation()}
-            className="rounded-md bg-lca-gold px-3 py-1.5 text-xs font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90"
+            className="rounded-md bg-lca-gold px-3 py-1.5 text-xs font-semibold text-brand-navy transition-colors hover:bg-lca-gold/90"
           >
             Visit club
           </Link>
@@ -165,7 +166,7 @@ function ClubCard({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-lca-navy transition-colors hover:border-lca-navy/40"
+              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-lca-navy/40"
             >
               Directions ↗
             </a>
@@ -321,7 +322,7 @@ export function ClubsPage() {
                 className={cn(
                   'flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                   activeRegion === null
-                    ? 'border-lca-navy bg-lca-navy text-white'
+                    ? 'border-lca-navy bg-brand-navy text-white'
                     : 'border-border bg-card text-muted-foreground hover:border-lca-gold/60 hover:text-foreground',
                 )}
               >
@@ -336,7 +337,7 @@ export function ClubsPage() {
                   className={cn(
                     'flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                     activeRegion === r
-                      ? 'border-lca-navy bg-lca-navy text-white'
+                      ? 'border-lca-navy bg-brand-navy text-white'
                       : 'border-border bg-card text-muted-foreground hover:border-lca-gold/60 hover:text-foreground',
                   )}
                 >
@@ -404,7 +405,7 @@ export function ClubsPage() {
             <div className="lg:order-1">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <h2 className="text-base font-bold text-lca-navy">
+                  <h2 className="text-base font-bold text-ink">
                     {displayedClubs.length} {displayedClubs.length === 1 ? 'club' : 'clubs'}
                     {activeRegion && <span className="font-normal text-muted-foreground"> in {activeRegion}</span>}
                   </h2>
@@ -432,8 +433,8 @@ export function ClubsPage() {
                   className={cn(
                     'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60',
                     userLocation
-                      ? 'border-lca-navy bg-lca-navy text-white'
-                      : 'border-border bg-card text-lca-navy hover:border-lca-navy/40',
+                      ? 'border-lca-navy bg-brand-navy text-white'
+                      : 'border-border bg-card text-ink hover:border-lca-navy/40',
                   )}
                 >
                   <LocateFixed className="size-3.5" />
@@ -444,7 +445,7 @@ export function ClubsPage() {
 
               {displayedClubs.length === 0 ? (
                 <div className="rounded-xl border border-dashed px-6 py-10 text-center">
-                  <p className="font-medium text-lca-navy">
+                  <p className="font-medium text-ink">
                     {isSearching ? 'No clubs match your search' : 'No clubs in this region yet'}
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -477,7 +478,7 @@ export function ClubsPage() {
       </section>
 
       {/* ── Footer CTA ── */}
-      <section className="border-t border-border bg-lca-navy">
+      <section className="border-t border-border bg-brand-navy">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -492,7 +493,7 @@ export function ClubsPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-shrink-0">
               <Link
                 to="/contact"
-                className="rounded-lg bg-lca-gold px-5 py-2.5 text-center text-sm font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90"
+                className="rounded-lg bg-lca-gold px-5 py-2.5 text-center text-sm font-semibold text-brand-navy transition-colors hover:bg-lca-gold/90"
               >
                 Contact LCA
               </Link>

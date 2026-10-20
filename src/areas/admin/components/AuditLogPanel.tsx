@@ -198,7 +198,7 @@ export function AuditLogPanel() {
     <div>
       <div className="mb-4 flex items-center gap-2">
         <ShieldAlert className="size-5 text-lca-gold" />
-        <h2 className="text-xl font-bold text-lca-navy">Admin activity</h2>
+        <h2 className="text-xl font-bold text-ink">Admin activity</h2>
       </div>
       <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
         Admin actions plus what club reps and directors change (events, payments,
@@ -214,7 +214,7 @@ export function AuditLogPanel() {
             type="button"
             size="sm"
             variant={filter === f.value ? 'default' : 'outline'}
-            className={cn(filter === f.value && 'bg-lca-gold text-lca-navy hover:bg-lca-gold/90')}
+            className={cn(filter === f.value && 'bg-lca-gold text-brand-navy hover:bg-lca-gold/90')}
             onClick={() => setFilter(f.value)}
           >
             {f.label}
@@ -223,7 +223,7 @@ export function AuditLogPanel() {
       </div>
 
       {unclosedImpersonations > 0 && filter === '' && (
-        <p className="mb-4 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-lca-navy">
+        <p className="mb-4 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-ink">
           {unclosedImpersonations} impersonation
           {unclosedImpersonations === 1 ? '' : 's'} with no recorded end. Usually
           means the tab was closed rather than exited — the end time is unknown,
@@ -275,7 +275,7 @@ export function AuditLogPanel() {
                     >
                       <Icon className="size-3" /> {meta.label}
                     </span>
-                    <span className="truncate text-sm text-lca-navy">
+                    <span className="truncate text-sm text-ink">
                       {entry.target_label ?? '—'}
                     </span>
                   </div>

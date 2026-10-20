@@ -52,7 +52,7 @@ export function PageHero({
   className,
 }: PageHeroProps) {
   return (
-    <section className={cn('border-b-[3px] border-lca-gold bg-lca-navy text-white', className)}>
+    <section className={cn('border-b-[3px] border-lca-gold bg-brand-navy text-white', className)}>
       <div
         className={cn(
           'mx-auto max-w-6xl px-6',

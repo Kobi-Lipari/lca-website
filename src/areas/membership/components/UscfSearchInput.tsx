@@ -70,7 +70,7 @@ function PlayerCard({
       className={cn(
         'w-full text-left px-4 py-3 border rounded-lg transition-colors',
         selected
-          ? 'border-lca-navy bg-lca-navy/5'
+          ? 'border-lca-navy bg-brand-navy/5'
           : 'border-border hover:border-lca-navy/40 hover:bg-muted/40',
       )}
     >
@@ -286,7 +286,7 @@ export default function UscfSearchInput({
             className={cn(
               'px-2 py-1 rounded transition-colors',
               mode === 'id'
-                ? 'bg-lca-navy text-white'
+                ? 'bg-brand-navy text-white'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >
@@ -298,7 +298,7 @@ export default function UscfSearchInput({
             className={cn(
               'px-2 py-1 rounded transition-colors',
               mode === 'name'
-                ? 'bg-lca-navy text-white'
+                ? 'bg-brand-navy text-white'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >

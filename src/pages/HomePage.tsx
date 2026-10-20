@@ -18,7 +18,7 @@ import slide4 from '@/assets/LCA_Slide_4.jpg'
 import slide5 from '@/assets/LCA_Slide_5.jpg'
 import { LCA } from '@/lib/brand'
 
-const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 const LCA_GOLD = LCA.gold
 
 const heroSlides = [
@@ -58,8 +58,11 @@ function HeroSlideshow() {
   }, [])
   function handleNav(n: number) { go(n); restart() }
 
+  // data-ground="dark": the buttons, arrows and dots sit on the darkened
+  // photo, and the navy veil is a sibling of them, not an ancestor, so under
+  // the new look this marker is what gives them the gold focus ring.
   return (
-    <div className="relative overflow-hidden border-b border-border" style={{ height: 420 }}>
+    <div className="relative overflow-hidden border-b border-border" style={{ height: 420 }} data-ground="dark">
       <div className="flex h-full transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${current * 100}%)` }}>
         {heroSlides.map((slide, i) => (
           <div key={i} className="relative h-full min-w-full flex-shrink-0 overflow-hidden">
@@ -73,7 +76,7 @@ function HeroSlideshow() {
               }}
             />
             {/* Navy brand tint, ties the photo into the site palette instead of a raw photo look */}
-            <div className="absolute inset-0 bg-lca-navy/55 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-brand-navy/55 mix-blend-multiply" />
             {/* Existing gradient for text legibility at the bottom */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
             <div className="absolute right-4 top-4 rounded-full bg-black/30 px-3 py-1 text-xs text-white/70 backdrop-blur-sm">
@@ -205,7 +208,7 @@ export function HomePage() {
               <Trophy className="size-3.5 text-lca-gold" />
               <span className="text-[13px] font-semibold text-foreground">Tournaments</span>
             </div>
-            <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-lca-navy hover:underline">
+            <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-ink hover:underline">
               View all <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -260,7 +263,7 @@ export function HomePage() {
               <Building2 className="size-3.5 text-lca-gold" />
               <span className="text-[13px] font-semibold text-foreground">Clubs</span>
             </div>
-            <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-lca-navy hover:underline">
+            <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-ink hover:underline">
               Find yours <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -290,10 +293,10 @@ export function HomePage() {
       </div>
 
       {member?.membership_status !== 'active' && (
-      <div className="border-t-[3px] border-lca-gold bg-lca-navy px-6 py-10 text-center text-white">
+      <div className="border-t-[3px] border-lca-gold bg-brand-navy px-6 py-10 text-center text-white">
         <div className="mx-auto max-w-lg">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-lca-gold">
-            <Trophy className="size-6 text-lca-navy" />
+            <Trophy className="size-6 text-brand-navy" />
           </div>
           <h2 className="text-2xl font-bold sm:text-3xl">Become an LCA member</h2>
           <p className="mt-3 text-sm leading-relaxed text-white/70">

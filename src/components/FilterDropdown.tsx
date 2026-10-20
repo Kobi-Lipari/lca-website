@@ -72,7 +72,7 @@ export function FilterDropdown<T extends string>({
               onClick={() => { onChange(opt.value); setOpen(false) }}
               className={cn(
                 'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50',
-                opt.value === value ? 'bg-lca-gold/8 font-medium text-lca-navy' : 'text-muted-foreground',
+                opt.value === value ? 'bg-lca-gold/8 font-medium text-ink' : 'text-muted-foreground',
               )}
             >
               <span className={cn(

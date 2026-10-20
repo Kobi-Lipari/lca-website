@@ -18,18 +18,24 @@
  *
  * A separate @theme block from the shadcn tokens above because these are
  * literal brand values, not aliases of shadcn variables. Tailwind generates
- * the usual utilities from them — bg-lca-navy, text-lca-gold, border-lca-gold,
- * and the /NN opacity modifiers — so the colors stop being spelled out in
+ * the usual utilities from them (bg-lca-navy, text-lca-gold, border-lca-gold
+ * and the /NN opacity modifiers), so the colors stop being spelled out in
  * hundreds of arbitrary-value classes.
  *
  * These are the palette, deliberately named for what they are. The semantic
  * tokens (ground, surface, ink and the rest) are defined further down, with
  * a value for today's look and one for each of the new looks.
+ *
+ * --color-brand-navy is the navy that stays navy: no look and no dark mode
+ * redefines it, unlike --ink. bg-brand-navy is for the navy bands, heroes
+ * and selected controls, which stay navy in dark mode, and text-brand-navy
+ * is for navy text on a gold fill, which the brief keeps in every look.
  */
 @theme {
     --color-lca-navy: #1a2744;
     --color-lca-gold: #c8a94a;
     --color-lca-cream: #f4f4f0;
+    --color-brand-navy: #1a2744;
 }
 
 @theme inline {
@@ -479,12 +485,25 @@
 }
 
 /* Inside a navy band (today's header, footer and page heroes, until they
- * are rebuilt) the ground is dark, so the ring turns gold. A dark ground that
- * is not a bg-lca-navy box, such as a photo with a tint laid over it, says so
- * with data-ground="dark" on the element that holds its controls. */
+ * are rebuilt) the ground is dark, so the ring turns gold. The bands carry
+ * bg-brand-navy; bg-lca-navy is the same navy, kept here for code that still
+ * names it. A dark ground that is not a navy box, such as a
+ * photo with a tint laid over it, says so with data-ground="dark" on the
+ * element that holds its controls. */
 :root[data-look="new"] .bg-lca-navy :focus-visible,
+:root[data-look="new"] .bg-brand-navy :focus-visible,
 :root[data-look="new"] [data-ground="dark"] :focus-visible {
     outline-color: var(--gold-on-dark);
+}
+
+/* A menu drawn inside a navy band, such as the one the state filter in the
+ * /tournaments hero opens, is the look's own ground again (--popover: white
+ * in the light look, navy in dark mode), so its controls take back the
+ * look's own ring: navy on the white menu, gold on the navy one. */
+:root[data-look="new"] .bg-lca-navy .bg-popover :focus-visible,
+:root[data-look="new"] .bg-brand-navy .bg-popover :focus-visible,
+:root[data-look="new"] [data-ground="dark"] .bg-popover :focus-visible {
+    outline-color: var(--focus);
 }
 
 /* Motion, new look only: with reduced motion asked for, nothing moves. A

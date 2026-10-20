@@ -62,7 +62,7 @@ export function TournamentList({
       <div key={t.id} className="overflow-hidden rounded-xl border bg-card shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-3 px-5 py-4">
           <div className="min-w-0">
-            <p className="truncate font-semibold text-lca-navy">{t.name}</p>
+            <p className="truncate font-semibold text-ink">{t.name}</p>
             <p className="mt-0.5 text-sm text-muted-foreground">
               {t.date} · {t.location}{t.rounds ? ` · ${t.rounds} rounds` : ''}
               {!clubs && t.club_name ? ` · ${t.club_name}` : ''}
@@ -128,7 +128,7 @@ export function TournamentList({
       {tournaments.length === 0 ? (
         <div className="rounded-xl border border-dashed px-6 py-12 text-center">
           <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
-          <p className="font-medium text-lca-navy">No tournaments yet</p>
+          <p className="font-medium text-ink">No tournaments yet</p>
           <p className="mt-1 text-sm text-muted-foreground">
             {emptyHint ?? (canCreate ? 'Create your first tournament to get started.' : 'Events you are assigned to will appear here.')}
           </p>
@@ -145,7 +145,7 @@ export function TournamentList({
           {completed.length > 0 && (
             <div className="pt-3">
               <button type="button" onClick={() => setShowCompleted((v) => !v)}
-                className="text-sm font-medium text-lca-navy hover:underline">
+                className="text-sm font-medium text-ink hover:underline">
                 {showCompleted ? 'Hide' : 'Show'} {completed.length} completed
               </button>
               {showCompleted && <div className={`${ADMIN_SCROLL} mt-3 space-y-3 pr-1`}>{completed.map(row)}</div>}

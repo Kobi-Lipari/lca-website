@@ -134,7 +134,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
     <div className="mt-6 border-t pt-5">
       <div className="flex items-center gap-2">
         <Users className="size-4 text-lca-gold" />
-        <p className="text-sm font-semibold text-lca-navy">Register your family</p>
+        <p className="text-sm font-semibold text-ink">Register your family</p>
       </div>
 
       {entered.length > 0 && (
@@ -162,7 +162,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
           {players.map((p) => {
             const c = choiceOf(p)
             return (
-              <div key={keyOf(p)} className={cn('rounded-lg border p-3', c.selected && 'border-lca-navy/40 bg-lca-navy/[0.03]')}>
+              <div key={keyOf(p)} className={cn('rounded-lg border p-3', c.selected && 'border-lca-navy/40 bg-brand-navy/[0.03]')}>
                 <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
                   <input type="checkbox" className="size-4 accent-[#1a2744]" checked={c.selected}
                     onChange={(e) => setChoice(p, { selected: e.target.checked })} />
@@ -198,7 +198,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
                             <button key={round} type="button" disabled={blocked}
                               onClick={() => setChoice(p, { byes: on ? c.byes.filter((r) => r !== round) : [...c.byes, round].sort((a, b) => a - b) })}
                               className={cn('rounded-full border px-2 py-0.5 text-[11px] font-medium',
-                                on ? 'border-lca-navy bg-lca-navy text-white'
+                                on ? 'border-lca-navy bg-brand-navy text-white'
                                   : blocked ? 'cursor-not-allowed border-border text-muted-foreground/40'
                                   : 'border-border text-muted-foreground hover:border-lca-navy/40')}>
                               {round}

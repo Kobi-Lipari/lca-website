@@ -21,8 +21,8 @@ import {
  * urgent 8.15:1, info 8.74:1.
  */
 const TONES: { value: AnnouncementTone; label: string; swatch: string }[] = [
-  { value: 'gold', label: 'Gold', swatch: 'bg-lca-gold text-lca-navy' },
-  { value: 'navy', label: 'Navy', swatch: 'bg-lca-navy text-white' },
+  { value: 'gold', label: 'Gold', swatch: 'bg-lca-gold text-brand-navy' },
+  { value: 'navy', label: 'Navy', swatch: 'bg-brand-navy text-white' },
   { value: 'urgent', label: 'Urgent', swatch: 'bg-[#9b1c1c] text-white' },
   { value: 'info', label: 'Info', swatch: 'bg-[#1e4d7b] text-white' },
 ]
@@ -295,7 +295,7 @@ export function AdminAnnouncementPanel() {
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Megaphone className="size-5 text-lca-gold" />
-          <h2 className="text-base font-semibold text-lca-navy">
+          <h2 className="text-base font-semibold text-ink">
             Site banners · {list.length}
           </h2>
         </div>
@@ -375,7 +375,7 @@ export function AdminAnnouncementPanel() {
                         <span className="text-[11px] text-muted-foreground">compact</span>
                       )}
                     </div>
-                    <p className="mt-1 truncate font-medium text-lca-navy">
+                    <p className="mt-1 truncate font-medium text-ink">
                       {a.message?.trim() || a.link_label}
                     </p>
                     {(a.starts_at || a.ends_at) && (
