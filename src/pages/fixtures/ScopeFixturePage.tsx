@@ -1,20 +1,20 @@
 // src/pages/fixtures/ScopeFixturePage.tsx
 //
 // A test page for the accessibility suite (npm run test:a11y), at
-// /__fixtures/:name, in the accessibility test build only: src/App.tsx
-// registers the route behind import.meta.env.MODE, so the site's own build
-// carries neither the route nor this file. Each name draws the shared
-// controls in one look through ThemeScope (data-theme, "" for base), so the
-// browser tests measure colours, contrast and layout in each look: buttons,
-// a text field, status badges, a table and figures in the monospace face,
-// then the base components (BaseComponents, below) and, in the scholastic
-// look, the grade band tiles. The colours change only in a build with
-// newLook on. test/a11y/scope-switch.spec.ts switches data-theme on the
-// container in place to show a change of look moves nothing, and
-// test/a11y/components.spec.ts checks the base components in every look.
+// /__fixtures/:name, in the accessibility test build only (src/App.tsx
+// registers the route behind import.meta.env.MODE). Each name draws the
+// shared controls in one look through ThemeScope (data-theme, "" for base):
+// buttons, a text field, status badges, the base components (BaseComponents,
+// below) with a crosstable's result cells, pinned columns and bounded box,
+// a table with figures in the monospace face and, in the scholastic look,
+// the grade band tiles. The colours change only in a build with newLook on.
+// test/a11y/scope-switch.spec.ts switches data-theme on the container in
+// place to show a change of look moves nothing; components.spec.ts and
+// chess-data.spec.ts check the base components and the chess data.
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { DateBlock } from '@/components/DateBlock'
+import { ResultCell, ResultLegend, type ResultCellProps } from '@/components/ResultCell'
 import { ScrollPanel } from '@/components/ScrollPanel'
 import { StatusBadge, StatusDot } from '@/components/StatusBadge'
 import { ThemeScope } from '@/components/ThemeScope'
@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button'
 import { FilterChip } from '@/components/ui/filter-chip'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableRowHeader } from '@/components/ui/table'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { BADGE_STATUSES } from '@/lib/badgeStatus'
 import type { ThemeScopeName } from '@/lib/themeScopes'
@@ -276,6 +276,77 @@ function BaseComponents() {
           </ol>
         </ScrollPanel>
       </section>
+      <ChessData />
     </>
+  )
+}
+
+type Game = Pick<ResultCellProps, 'code' | 'opponent' | 'color'>
+const g = (code: Game['code'], opponent: number | null = null, color: Game['color'] = null): Game => ({ code, opponent, color })
+
+/**
+ * A made-up crosstable after four of five rounds, the fifth paired with no
+ * results yet: every result code, a win, a loss and a draw with each colour,
+ * whole-number totals (so the page holds no half point, which builds.spec.ts
+ * checks on both builds), and the leader's row tinted as first place.
+ */
+const CROSSTABLE: ReadonlyArray<{ name: string; total: number; games: readonly Game[] }> = [
+  { name: 'Player One', total: 3, games: [g('W', 5, 'white'), g('W', 3, 'black'), g('W', 4, 'white'), g('L', 2, 'black'), g('', 6, 'white')] },
+  { name: 'Player Two', total: 3, games: [g('D', 3, 'black'), g('W', 4, 'black'), g('H'), g('W', 1, 'white'), g('', 5, 'white')] },
+  { name: 'Player Three', total: 2, games: [g('D', 2, 'white'), g('L', 1, 'white'), g('W', 5, 'black'), g('D', 6, 'white'), g('', 4, 'white')] },
+  { name: 'Player Four', total: 2, games: [g('X', 6), g('L', 2, 'white'), g('L', 1, 'black'), g('W', 5, 'black'), g('', 3, 'black')] },
+  { name: 'Player Five', total: 1, games: [g('L', 1, 'black'), g('B'), g('L', 3, 'white'), g('L', 4, 'white'), g('', 2, 'black')] },
+  { name: 'Player Six', total: 1, games: [g('F', 4), g('U'), g('H'), g('D', 3, 'black'), g('', 1, 'black')] },
+]
+
+/** First place's tint, through --row-tint so the pinned cells take it too. */
+const LEADER_TINT = '[--row-tint:color-mix(in_oklab,var(--color-lca-gold)_5%,transparent)]'
+const HEAD_CELL = 'h-auto px-2 py-2.5 font-semibold text-ink'
+
+/**
+ * The chess data of WS01 step 27: ResultCell for every code, its key, and
+ * the table primitives' new props on a table wider and taller than its box,
+ * so it scrolls both ways: the number and the name pinned on the surface,
+ * the name the row's header, and the header held at the top of a bounded box
+ * that is a named region in the tab order.
+ */
+function ChessData() {
+  return (
+    <section aria-labelledby="fixture-crosstable">
+      <h2 id="fixture-crosstable" className="text-xl font-semibold">Crosstable</h2>
+      <Table
+        label="Sample crosstable"
+        stickyFirst={2}
+        bounded
+        containerClassName="mt-3 max-h-48 rounded-xl border bg-surface"
+        className="min-w-[840px] text-left text-sm tabular-nums"
+      >
+        <TableHeader>
+          <TableRow className="[--row-tint:var(--muted)]">
+            <TableHead className={`${HEAD_CELL} text-right`}>#</TableHead>
+            <TableHead className={HEAD_CELL}>Player</TableHead>
+            {[1, 2, 3, 4, 5].map((r) => (
+              <TableHead key={r} className={`${HEAD_CELL} text-center`}>Rd {r}</TableHead>
+            ))}
+            <TableHead className={`${HEAD_CELL} text-center`}>Total</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {CROSSTABLE.map((row, i) => (
+            <TableRow key={row.name} className={i === 0 ? LEADER_TINT : undefined}>
+              <TableCell className="px-2 py-1.5 text-right font-mono text-muted-foreground">{i + 1}</TableCell>
+              <TableRowHeader className="px-3 py-1.5 whitespace-nowrap text-ink">{row.name}</TableRowHeader>
+              {row.games.map((game, r) => (
+                <TableCell key={r} className="px-2 py-1 text-center">
+                  <ResultCell {...game} />
+                </TableCell>
+              ))}
+              <TableCell className="px-2 py-1.5 text-center font-mono font-semibold text-ink">{row.total}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <ResultLegend />
+    </section>
   )
 }

@@ -11,6 +11,7 @@ import {
   type ApiTournamentDetail,
   type ApiTournamentPairing,
 } from '@/lib/api'
+import { FEATURES } from '@/lib/features'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { StandingsTable } from '@/areas/live/components/StandingsTable'
@@ -29,6 +30,9 @@ function formatResult(result: string): string {
   if (!result || result === 'pending') return '—'
   if (result === 'bye') return '1'
   if (result === 'bye-half') return '½'
+  // Under the new look a drawn game is written with ½, as the print page and
+  // the results entry write it; today's list shows the stored 1/2-1/2.
+  if (FEATURES.newLook && result === '1/2-1/2') return '½-½'
   if (result === '1-0 F') return '1-0 (F)'
   if (result === '0-1 F') return '0-1 (F)'
   if (result === '0-0 F') return '0-0 (F)'

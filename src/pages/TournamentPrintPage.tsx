@@ -18,6 +18,8 @@ import { Crosstable } from '@/areas/live/components/Crosstable'
 import { PrizeWinners } from '@/areas/events/components/PrizeWinners'
 import { getTournament, type ApiPrizeAward, type ApiStanding, type ApiTournamentDetail, type ApiTournamentPairing } from '@/lib/api'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { FEATURES } from '@/lib/features'
+import { formatScore } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 type What = 'pairings' | 'alpha' | 'standings' | 'crosstable'
@@ -30,7 +32,12 @@ const pts = (result: string, side: 'w' | 'b'): number => {
   if (result.startsWith('0-1')) return side === 'w' ? 0 : 1
   return 0
 }
-const fmt = (n: number) => (n % 1 === 0 ? String(n) : n.toFixed(1).replace('.5', '½').replace('0½', '½'))
+// The score going into the round. Under the new look it is formatScore's, the
+// one writer of scores. Today's own formatter, kept with newLook off, writes ½
+// for a half but misprints a half score of 10 or more whose whole part ends in
+// 0: its last replace also takes the 0 of the 10, so 10.5 prints as 1½, 20.5
+// as 2½ and 100.5 as 10½ (REDESIGN_STATUS.md, Follow-ups, step 27).
+const fmt = (n: number) => (FEATURES.newLook ? formatScore(n) : n % 1 === 0 ? String(n) : n.toFixed(1).replace('.5', '½').replace('0½', '½'))
 
 export function TournamentPrintPage() {
   const { id } = useParams<{ id: string }>()

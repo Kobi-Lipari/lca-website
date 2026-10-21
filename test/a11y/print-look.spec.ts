@@ -128,7 +128,8 @@ test('newLook on: the crosstable printed from a dark device puts navy and muted 
     return {
       dark: document.documentElement.classList.contains('dark'),
       heading: colourOf('table thead th'),
-      name: colourOf('table tbody tr td.font-medium'),
+      // The player's name: a cell today, and under the new look the row's header cell (step 27).
+      name: colourOf('table tbody tr :is(th, td).font-medium'),
       rating: colourOf('table tbody tr td:nth-child(3)'),
     }
   })

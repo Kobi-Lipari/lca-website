@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { ArrowLeftRight, Check, Printer } from 'lucide-react'
 
 import type { ApiTournamentGame } from '@/lib/api'
+import { FEATURES } from '@/lib/features'
 import { cn } from '@/lib/utils'
 
 const QUICK = [
@@ -131,15 +132,18 @@ function BoardsTable({ shown, onResult, onSwap, savedGameId }: {
   onSwap?: (game: ApiTournamentGame) => void
   savedGameId: string | null
 }) {
+  // Under the new look each header cell says it heads its column; with
+  // newLook off the cells are today's. A half point here is already ½.
+  const headScope = FEATURES.newLook ? 'col' : undefined
   return (
       <div className="overflow-x-auto rounded-lg border">
         <table className="w-full min-w-[560px] text-left text-sm">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="w-12 px-3 py-2">Bd</th>
-              <th className="px-3 py-2">White</th>
-              <th className="px-3 py-2">Black</th>
-              <th className="px-3 py-2">Result</th>
+              <th scope={headScope} className="w-12 px-3 py-2">Bd</th>
+              <th scope={headScope} className="px-3 py-2">White</th>
+              <th scope={headScope} className="px-3 py-2">Black</th>
+              <th scope={headScope} className="px-3 py-2">Result</th>
             </tr>
           </thead>
           <tbody>

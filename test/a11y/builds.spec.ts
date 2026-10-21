@@ -101,7 +101,9 @@ test.describe('/__fixtures/:name', () => {
       await expect(container.getByLabel('Your name')).toBeVisible()
       await expect(container.locator('[data-status]')).toHaveCount(3 + 8 + 2)
       await expect(container.locator('[data-slot="status-badge"][data-status]')).toHaveCount(8 + 2)
-      await expect(container.locator('th')).toHaveCount(3)
+      // The standings table's three header cells; since step 27 the sample crosstable has its own.
+      await expect(container.locator('section[aria-labelledby="fixture-table"] th')).toHaveCount(3)
+      await expect(container.getByRole('region', { name: 'Sample crosstable' })).toBeVisible()
     }
     expect(scripts).toEqual([])
     expect(external).toEqual([])
@@ -138,7 +140,7 @@ test.describe('/__fixtures/:name', () => {
     expect(main).toContain('US Chess')
     expect(main).not.toMatch(/USCF/i)
 
-    const scores = await page.locator('main td.font-mono').allInnerTexts()
+    const scores = await page.locator('main section[aria-labelledby="fixture-table"] td.font-mono').allInnerTexts()
     expect(scores).toEqual(['3½', '3', '2½'])
     expect(main).not.toMatch(/\d\.5/)
   })
@@ -147,7 +149,8 @@ test.describe('/__fixtures/:name', () => {
     await page.goto('/__fixtures/base')
     const font = await page.locator('main td.font-mono').first().evaluate((el) => getComputedStyle(el).fontFamily)
     expect(font).toMatch(/monospace/)
-    await expect(page.getByRole('columnheader')).toHaveText(['Place', 'Player', 'Score'])
+    const standings = page.locator('main section[aria-labelledby="fixture-table"]')
+    await expect(standings.getByRole('columnheader')).toHaveText(['Place', 'Player', 'Score'])
     await expect(page.getByLabel('Your name')).toHaveAttribute('placeholder', 'First and last name')
   })
 })

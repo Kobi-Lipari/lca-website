@@ -121,3 +121,35 @@ describe('Geist Mono, as the browser will fetch it', () => {
     expect(cmapHas(cmap, 0x4e2d)).toBe(false) // a CJK ideograph
   })
 })
+
+// The colour marks of a result cell (WS01 step 27). The boards write White
+// and Black as ○ and ● (U+25CB and U+25CF). No file of the face covers
+// either in its range, so a browser would draw them from whatever font the
+// device has, and no file's character map holds them either; so
+// src/components/ResultCell.tsx draws them as shapes instead.
+describe('the colour marks, which the face does not have', () => {
+  const faces = parseRules(read(`${PACKAGE}/index.css`)).filter((r) => r.selector === '@font-face' && r.decls.get('font-style') === 'normal')
+  const MARKS: Array<[string, number]> = [['white circle', 0x25cb], ['black circle', 0x25cf]]
+
+  it('has six files: latin, latin-ext, cyrillic, cyrillic-ext, vietnamese and symbols2', () => {
+    const names = faces.map((f) => f.decls.get('src')!.match(/geist-mono-([a-z0-9-]+)-wght-normal\.woff2/)![1]).sort()
+    expect(names).toEqual(['cyrillic', 'cyrillic-ext', 'latin', 'latin-ext', 'symbols2', 'vietnamese'])
+  })
+
+  it.each(MARKS)('no file covers the %s in its unicode-range', (_name, codePoint) => {
+    for (const face of faces) expect(covers(face.decls.get('unicode-range') ?? '', codePoint), face.decls.get('src')).toBe(false)
+  })
+
+  it.each(MARKS)('no file\'s character map holds the %s', (_name, codePoint) => {
+    for (const face of faces) {
+      const file = face.decls.get('src')!.match(/files\/([\w-]+\.woff2)/)![1]
+      expect(cmapHas(woff2Table(readFileSync(join(ROOT, PACKAGE, 'files', file)), 'cmap'), codePoint), file).toBe(false)
+    }
+  })
+
+  it('so the result cell draws the marks as shapes, and never types either character', () => {
+    const cell = read('src/components/ResultCell.tsx').replace(/\/\/.*$/gm, '')
+    expect(cell).toContain('<circle')
+    expect(cell).not.toMatch(/[○●]/)
+  })
+})

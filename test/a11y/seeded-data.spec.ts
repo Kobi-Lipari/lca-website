@@ -210,9 +210,10 @@ test.describe('the pages that show it', () => {
     await expect(page.getByRole('heading', { name: 'Pairings & results' })).toBeVisible()
     const rows = page.locator('main table').first().locator('tbody tr')
     await expect(rows).toHaveCount(5)
+    // Header cells and data cells in order: under the new look the player's name is the row's header cell (step 27).
     const standings = await rows.evaluateAll((trs) =>
       trs.map((tr) => {
-        const cells = Array.from(tr.querySelectorAll('td')).map((td) => (td.textContent ?? '').trim())
+        const cells = Array.from(tr.querySelectorAll(':scope > th, :scope > td')).map((cell) => (cell.textContent ?? '').trim())
         return { place: cells[0], player: cells[1], points: cells[3] }
       }),
     )
