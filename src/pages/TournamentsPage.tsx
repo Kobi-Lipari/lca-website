@@ -128,23 +128,23 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
       </h3>
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Calendar className="size-3.5 flex-shrink-0 text-lca-gold" />
+          <Calendar className="size-3.5 flex-shrink-0 text-gold-ink" />
           {formatDate(t.start_date)}
         </div>
         {t.city && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <MapPin className="size-3.5 flex-shrink-0 text-lca-gold" />
+            <MapPin className="size-3.5 flex-shrink-0 text-gold-ink" />
             {t.city}
           </div>
         )}
         {t.time_control && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Clock className="size-3.5 flex-shrink-0 text-lca-gold" />
+            <Clock className="size-3.5 flex-shrink-0 text-gold-ink" />
             {t.time_control}
           </div>
         )}
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Building2 className="size-3.5 flex-shrink-0 text-lca-gold" />
+          <Building2 className="size-3.5 flex-shrink-0 text-gold-ink" />
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full" style={{ backgroundColor: color }} />
             {t.club_name ?? 'LCA event'}
@@ -174,7 +174,7 @@ function LCADetailPane({ t }: { t: UnifiedTournament }) {
       {regOpen && !isPast && <p className="mt-0.5 text-xs font-medium text-ok-600">Registration open</p>}
       {registrationSummary(t) && (
         <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Users className="size-3.5 text-lca-gold" /> {registrationSummary(t)}
+          <Users className="size-3.5 text-gold-ink" /> {registrationSummary(t)}
         </p>
       )}
       <div className="mt-3.5 flex flex-wrap items-center gap-2">
@@ -210,32 +210,32 @@ function ExternalDetailPane({ t }: { t: UnifiedTournament }) {
       <h3 className="mb-3 text-[15px] font-semibold leading-snug text-ink">{t.name}</h3>
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Calendar className="size-3.5 flex-shrink-0 text-lca-gold" />
+          <Calendar className="size-3.5 flex-shrink-0 text-gold-ink" />
           {formatDate(t.start_date)}
           {t.end_date && t.end_date !== t.start_date ? ` – ${formatDate(t.end_date)}` : ''}
         </div>
         {(t.venue || t.city) && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <MapPin className="size-3.5 flex-shrink-0 text-lca-gold" />
+            <MapPin className="size-3.5 flex-shrink-0 text-gold-ink" />
             {t.venue ?? t.city}{t.state ? `, ${t.state}` : ''}
           </div>
         )}
         {t.organizer && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Users className="size-3.5 flex-shrink-0 text-lca-gold" />
+            <Users className="size-3.5 flex-shrink-0 text-gold-ink" />
             {t.organizer}
           </div>
         )}
         {t.rating_system && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Trophy className="size-3.5 flex-shrink-0 text-lca-gold" />
+            <Trophy className="size-3.5 flex-shrink-0 text-gold-ink" />
             {t.rating_system}
             {t.eligibility && t.eligibility !== 'All ages' ? ` · ${t.eligibility}` : ''}
           </div>
         )}
         {t.contact && (
           <div className="flex items-start gap-2 text-xs text-muted-foreground">
-            <Globe className="mt-0.5 size-3.5 flex-shrink-0 text-lca-gold" />
+            <Globe className="mt-0.5 size-3.5 flex-shrink-0 text-gold-ink" />
             <span className="break-all">{t.contact}</span>
           </div>
         )}
@@ -286,7 +286,7 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
     <div className="flex flex-col">
       <div className="flex items-center justify-between border-b border-border bg-muted/20 px-3 py-2">
         <div className="flex items-center gap-1.5">
-          <Building2 className="size-3.5 text-lca-gold" />
+          <Building2 className="size-3.5 text-gold-ink" />
           <span className="text-xs font-semibold text-foreground">By organizer</span>
         </div>
         <span className="text-[11px] text-muted-foreground">click to filter</span>
@@ -640,8 +640,8 @@ export function TournamentsPage() {
       {banner && timeTab === 'upcoming' && (
         <div className="flex items-center justify-between border-b border-lca-gold/30 bg-lca-gold/10 px-4 py-2 sm:px-6">
           <div className="flex min-w-0 items-center gap-2 text-sm">
-            <Calendar className="size-3.5 flex-shrink-0 text-lca-gold" />
-            <span className="rounded-full border border-lca-gold/40 bg-lca-gold/18 px-1.5 py-px text-[10px] font-medium text-[#7a5c00]">LCA</span>
+            <Calendar className="size-3.5 flex-shrink-0 text-gold-ink" />
+            <span className="rounded-full border border-lca-gold/40 bg-lca-gold/18 px-1.5 py-px text-[10px] font-medium text-gold-ink-badge">LCA</span>
             <span className="truncate text-muted-foreground">
               <span className="font-medium text-foreground">{banner.name}</span>
               {' · '}{formatDate(banner.start_date)}

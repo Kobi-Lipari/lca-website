@@ -80,7 +80,7 @@ export function RegistrationReminderButton({ tournamentId }: RegistrationReminde
       onClick={toggle}
       className="h-7 gap-1.5 text-xs"
     >
-      {optedIn ? <BellOff className="size-3.5" /> : <Bell className="size-3.5 text-lca-gold" />}
+      {optedIn ? <BellOff className="size-3.5" /> : <Bell className="size-3.5 text-gold-ink" />}
       {optedIn ? 'Remove notification' : 'Notify me when it opens'}
     </Button>
   )

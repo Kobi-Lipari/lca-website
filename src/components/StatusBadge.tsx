@@ -32,7 +32,7 @@ const TONE_CLASSES: Record<BadgeSurface, Record<BadgeTone, string>> = {
     muted: 'bg-white/10 text-white/60',
   },
   light: {
-    gold: 'bg-lca-gold/20 text-[#7a5c00]',
+    gold: 'bg-lca-gold/20 text-gold-ink-badge',
     emerald: 'bg-emerald-100 text-emerald-800',
     red: 'bg-red-100 text-red-700',
     blue: 'border border-blue-200 bg-blue-50 text-blue-800',

@@ -18,7 +18,8 @@
 //   brackets, the ! mark at either end and CRLF line endings come out right;
 // - only .tsx files under src are searched, never node_modules or dist;
 // - a keep entry keeps only the opacity forms it names;
-// - --check on the real tree passes, with either committed map.
+// - --check on the real tree passes, with each committed map (the gold map
+//   of step 25 as well).
 //
 // Step 24 (the second map) adds:
 // - in a comment, a quote mark with a letter or digit on its outer side is an
@@ -34,6 +35,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterAll, describe, expect, it } from 'vitest'
+import { GOLD_MAP } from '../../scripts/codemods/gold-ink'
 import { STATUS_MAP, classStrings, loadMap, parseToken, planRewrite, withUtility, type ColourMap } from '../../scripts/codemods/semantic-colours'
 import { ROOT } from './helpers/cssTokens'
 
@@ -126,6 +128,13 @@ describe('the command line', () => {
     const r = run('--check', '--map', STATUS_MAP)
     expect(r.status, r.stdout + r.stderr).toBe(0)
     expect(r.stdout).toMatch(/^Check \(nothing written\): 0 rewrites in 0 files, \d+ kept, \d+ files searched\./)
+    expect(r.stdout).toContain('Problems: 0')
+  })
+
+  it('--check with the gold map (step 25) on the real tree passes too, keeping nothing', () => {
+    const r = run('--check', '--map', GOLD_MAP)
+    expect(r.status, r.stdout + r.stderr).toBe(0)
+    expect(r.stdout).toMatch(/^Check \(nothing written\): 0 rewrites in 0 files, 0 kept, \d+ files searched\./)
     expect(r.stdout).toContain('Problems: 0')
   })
 })
@@ -232,6 +241,7 @@ describe('the map', () => {
   it.each([
     ['the step 23 map', join(ROOT, 'scripts/codemods/semantic-colours.map.json')],
     ['the status map', STATUS_MAP],
+    ['the gold map', GOLD_MAP],
   ])('%s loads, and every reason says why in a sentence', (_, path) => {
     const m = loadMap(path)
     for (const entry of [...m.rules, ...m.sites, ...m.keep]) {

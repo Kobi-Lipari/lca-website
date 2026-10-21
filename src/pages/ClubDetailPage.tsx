@@ -13,7 +13,7 @@ import {
   type ApiClubOfficer,
   type ApiClubTournament,
 } from '@/lib/api'
-import { clubColorTint } from '@/areas/clubs/clubColors'
+import { clubColorTint, clubTextColor } from '@/areas/clubs/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/areas/clubs/components/LCAMap'
@@ -40,7 +40,7 @@ function readableTextOn(hex: string): string {
 }
 
 const statusBadge: Record<string, { label: string; className: string }> = {
-  upcoming: { label: 'Upcoming', className: 'bg-lca-gold/15 text-[#8a6d1f]' },
+  upcoming: { label: 'Upcoming', className: 'bg-lca-gold/15 text-gold-ink-badge-club' },
   active: { label: 'In progress', className: 'bg-ok-100 text-ok' },
   completed: { label: 'Completed', className: 'bg-muted text-muted-foreground' },
 }
@@ -127,6 +127,9 @@ export function ClubDetailPage() {
   )
 
   const color = club.color || LCA_GOLD
+  // Words in the club's colour: brand gold, every club's colour until it
+  // picks one, takes the gold-ink token (clubTextColor).
+  const textColor = clubTextColor(club.color)
   const imageUrl = club.image_url
   const buttonText = readableTextOn(color)
 
@@ -221,7 +224,7 @@ export function ClubDetailPage() {
             {officers.length > 0 && (
               <div>
                 <div className="flex items-center gap-2">
-                  <User className="size-5 text-lca-gold" />
+                  <User className="size-5 text-gold-ink" />
                   <h2 className="text-xl font-bold text-ink">Officers</h2>
                 </div>
                 <ul className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -233,7 +236,7 @@ export function ClubDetailPage() {
                     >
                       <div className="px-4 py-3">
                         <p className="font-medium text-ink">{officer.full_name}</p>
-                        <p className="text-sm" style={{ color }}>
+                        <p className="text-sm" style={{ color: textColor }}>
                           {formatOfficerRole(officer.role)}
                         </p>
                       </div>
@@ -246,7 +249,7 @@ export function ClubDetailPage() {
             {/* Upcoming tournaments */}
             <div>
               <div className="flex items-center gap-2">
-                <Trophy className="size-5 text-lca-gold" />
+                <Trophy className="size-5 text-gold-ink" />
                 <h2 className="text-xl font-bold text-ink">Upcoming tournaments</h2>
               </div>
               {upcoming.length > 0 ? (
@@ -278,7 +281,7 @@ export function ClubDetailPage() {
             {news.length > 0 && (
               <div>
                 <div className="flex items-center gap-2">
-                  <Newspaper className="size-5 text-lca-gold" />
+                  <Newspaper className="size-5 text-gold-ink" />
                   <h2 className="text-xl font-bold text-ink">Club news</h2>
                 </div>
                 <ul className="mt-4 space-y-4">
@@ -287,7 +290,7 @@ export function ClubDetailPage() {
                       key={item.id}
                       className="rounded-xl border bg-card p-5 shadow-sm"
                     >
-                      <p className="text-xs font-medium" style={{ color }}>
+                      <p className="text-xs font-medium" style={{ color: textColor }}>
                         {item.news_date}
                       </p>
                       <h3 className="mt-1 font-semibold text-ink">{item.title}</h3>
@@ -329,7 +332,7 @@ export function ClubDetailPage() {
                         <a
                           href={`mailto:${club.contact_email}`}
                           className="hover:underline"
-                          style={{ color }}
+                          style={{ color: textColor }}
                         >
                           {club.contact_email}
                         </a>

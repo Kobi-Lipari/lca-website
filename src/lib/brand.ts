@@ -28,12 +28,14 @@ export const LCA: Readonly<Record<'navy' | 'gold' | 'cream', string>> = {
 
 /**
  * The primary action button: navy on gold at 6.51:1, which clears AA.
+ * text-brand-navy is the navy that stays navy in every look and in dark mode,
+ * as navy words on a gold fill must (the same #1a2744 text-lca-navy paints).
  *
  * This exact string was duplicated in six files. Changing the button used to
  * mean finding all six, and one of them drifting was inevitable.
  */
 export const GOLD_BUTTON =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 /**
  * Long admin lists and tables: a fixed-height box that scrolls on its own,

@@ -65,7 +65,7 @@ function RoundAccordion({
       >
         <div className="flex items-center gap-2">
           {open ? (
-            <ChevronDown className="size-4 text-lca-gold" />
+            <ChevronDown className="size-4 text-gold-ink" />
           ) : (
             <ChevronRight className="size-4 text-muted-foreground" />
           )}

@@ -89,7 +89,7 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
             </Link>
           </span>
         )}
-        <span className={cn('ml-auto text-sm', missing ? 'font-medium text-[#7a5c00]' : 'text-ok-700')}>
+        <span className={cn('ml-auto text-sm', missing ? 'font-medium text-gold-ink-badge' : 'text-ok-700')}>
           {missing ? `${missing} result${missing === 1 ? '' : 's'} missing` : 'All results in'}
         </span>
       </div>
@@ -104,7 +104,7 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
                 <div className="mb-1.5 flex items-baseline justify-between gap-3 border-b-2 border-ink pb-1">
                   <h3 className="text-sm font-bold uppercase tracking-wide text-ink">{sec}</h3>
                   {shown.length > 0 && (
-                    <span className={cn('text-xs', secMissing ? 'font-medium text-[#7a5c00]' : 'text-ok-700')}>
+                    <span className={cn('text-xs', secMissing ? 'font-medium text-gold-ink-badge' : 'text-ok-700')}>
                       {secMissing ? `${secMissing} missing` : 'All in'}
                     </span>
                   )}

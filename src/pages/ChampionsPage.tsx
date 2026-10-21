@@ -62,7 +62,7 @@ export function ChampionsPage() {
         {upcoming.length > 0 && (
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-ink">
-              <Calendar className="size-5 text-lca-gold" /> Upcoming state championships
+              <Calendar className="size-5 text-gold-ink" /> Upcoming state championships
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {upcoming.map((t) => (
@@ -88,12 +88,12 @@ export function ChampionsPage() {
         {reigning.length > 0 && (
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-ink">
-              <Crown className="size-5 text-lca-gold" /> Reigning champions
+              <Crown className="size-5 text-gold-ink" /> Reigning champions
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {reigning.map((r) => (
                 <div key={r.title} className="rounded-xl border bg-card p-4 shadow-sm">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-[#7a5c00]">{r.title} · {r.year}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-gold-ink-badge">{r.title} · {r.year}</p>
                   {r.rows.map((c) => (
                     <p key={c.id} className="mt-1 text-lg font-bold text-ink">{c.champion}</p>
                   ))}

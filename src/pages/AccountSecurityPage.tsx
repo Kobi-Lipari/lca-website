@@ -200,7 +200,7 @@ export function AccountSecurityPage() {
 
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2">
-            <KeyRound className="size-5 text-lca-gold" />
+            <KeyRound className="size-5 text-gold-ink" />
             <h2 className="text-lg font-bold text-ink">
               Authenticator app
             </h2>

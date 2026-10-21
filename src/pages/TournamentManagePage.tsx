@@ -1806,7 +1806,7 @@ export function TournamentManagePage() {
             {/* Add walk-in */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-2">
-                <UserPlus className="size-5 text-lca-gold" />
+                <UserPlus className="size-5 text-gold-ink" />
                 <h2 className="text-lg font-bold text-ink">Add walk-in player</h2>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -1964,7 +1964,7 @@ export function TournamentManagePage() {
             {/* Generate pairings */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-2">
-                <Sparkles className="size-5 text-lca-gold" />
+                <Sparkles className="size-5 text-gold-ink" />
                 <h2 className="text-lg font-bold text-ink">Pair the next round</h2>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -2243,7 +2243,7 @@ export function TournamentManagePage() {
               <div className="rounded-xl border bg-card p-6 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <FileText className="size-5 text-lca-gold" />
+                    <FileText className="size-5 text-gold-ink" />
                     <h2 className="text-lg font-bold text-ink">USCF rating report</h2>
                   </div>
                   <div className="flex gap-2">
@@ -2331,7 +2331,7 @@ export function TournamentManagePage() {
         {activeTab === 'email' && (
           <div className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="flex items-center gap-2">
-              <Mail className="size-5 text-lca-gold" />
+              <Mail className="size-5 text-gold-ink" />
               <h2 className="text-lg font-bold text-ink">Email all entrants</h2>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">

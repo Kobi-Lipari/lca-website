@@ -228,8 +228,8 @@ export function BoardInboxPage() {
 
         {isAdmin && vacantCount > 0 && (
           <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-lca-gold/50 bg-lca-gold/10 px-4 py-3">
-            <UserX className="mt-0.5 size-4 flex-shrink-0 text-[#7a5c00]" />
-            <p className="text-sm text-[#7a5c00]">
+            <UserX className="mt-0.5 size-4 flex-shrink-0 text-gold-ink-badge" />
+            <p className="text-sm text-gold-ink-badge">
               {vacantCount} unanswered {vacantCount === 1 ? 'message is' : 'messages are'} on
               {vacantCount === 1 ? ' a seat' : ' seats'} nobody currently holds — only
               admins can see {vacantCount === 1 ? 'it' : 'them'}. Link a member in
@@ -372,7 +372,7 @@ export function BoardInboxPage() {
                             key={m.id}
                             className="rounded-lg border border-dashed border-lca-gold/50 bg-lca-gold/5 p-3"
                           >
-                            <p className="text-[11px] font-medium text-[#7a5c00]">
+                            <p className="text-[11px] font-medium text-gold-ink-badge">
                               Logged by {m.logged_by_name ?? 'a board member'}
                               {' · '}
                               {formatWhen(m.occurred_at ?? m.created_at)}

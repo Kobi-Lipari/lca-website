@@ -83,7 +83,7 @@ function SignInPrompt() {
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm sm:p-8">
       <div className="flex size-11 items-center justify-center rounded-lg bg-lca-gold/10">
-        <LogIn className="size-5 text-lca-gold" aria-hidden="true" />
+        <LogIn className="size-5 text-gold-ink" aria-hidden="true" />
       </div>
       <h2 className="mt-4 text-xl font-semibold text-ink">Log in to scan a scoresheet</h2>
       <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
@@ -132,7 +132,7 @@ function HowItWorks() {
         </ol>
       </div>
       <p className="flex gap-2 px-1 text-xs leading-relaxed text-muted-foreground">
-        <ShieldCheck className="mt-0.5 size-3.5 flex-shrink-0 text-lca-gold" aria-hidden="true" />
+        <ShieldCheck className="mt-0.5 size-3.5 flex-shrink-0 text-gold-ink" aria-hidden="true" />
         Photos are read once and never stored. Up to 20 scans per day.
       </p>
     </aside>
@@ -268,7 +268,7 @@ function ScannerTool() {
         <Panel>
           <PageStrip urls={pageUrls} dimmed />
           <div role="status" aria-live="polite" className="mt-5 flex items-center gap-3">
-            <Loader2 className="size-5 animate-spin text-lca-gold" aria-hidden="true" />
+            <Loader2 className="size-5 animate-spin text-gold-ink" aria-hidden="true" />
             <div>
               <p className="text-sm font-medium text-foreground">
                 {stage.step === 'reading'
@@ -384,7 +384,7 @@ function PhotoPicker({ onChoose }: { onChoose: (file: File) => void }) {
   return (
     <div className="rounded-xl border-2 border-dashed border-ink/15 bg-card p-6 text-center sm:p-10">
       <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-lca-gold/10">
-        <Camera className="size-6 text-lca-gold" aria-hidden="true" />
+        <Camera className="size-6 text-gold-ink" aria-hidden="true" />
       </div>
       <h2 className="mt-4 text-lg font-semibold text-ink">Add a photo of your scoresheet</h2>
       <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">

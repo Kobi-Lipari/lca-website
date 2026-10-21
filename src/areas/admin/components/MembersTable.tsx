@@ -132,7 +132,7 @@ export function MembersTable({ members, admin }: {
     const map: Record<string, string> = {
       active: 'bg-ok-100 text-ok',
       expired: 'bg-destructive/10 text-destructive',
-      pending: 'bg-lca-gold/15 text-[#7a5c00]',
+      pending: 'bg-lca-gold/15 text-gold-ink-badge',
     }
     return map[status] ?? 'bg-muted text-muted-foreground'
   }

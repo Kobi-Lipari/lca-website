@@ -131,7 +131,7 @@ export function FamilyCard({ planActive, setup = false }: {
     <div id="family" ref={card} className="scroll-mt-24 rounded-xl border bg-card p-6 shadow-sm">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Users className="size-5 text-lca-gold" />
+          <Users className="size-5 text-gold-ink" />
           <h2 className="text-lg font-bold text-ink">My family</h2>
           {planActive && children && (
             <span className="rounded-full bg-ink/[0.06] px-2 py-0.5 text-xs font-medium text-ink">

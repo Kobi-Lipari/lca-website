@@ -21,7 +21,7 @@ export function PrizeWinners({ prizes, standings, sectionName, note }: {
   return (
     <div className="mb-6 rounded-xl border border-lca-gold/40 bg-lca-gold/5 p-4 break-inside-avoid">
       <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-ink">
-        <Trophy className="size-4 text-lca-gold" /> Prize winners · {sectionName}
+        <Trophy className="size-4 text-gold-ink" /> Prize winners · {sectionName}
       </p>
       <ul className="divide-y divide-lca-gold/20 text-sm">
         {rows.map((r) => (

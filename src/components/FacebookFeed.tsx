@@ -235,7 +235,7 @@ function FullFeed({ posts }: { posts: FacebookFeedPost[] }) {
                 rel="noopener noreferrer"
                 className="group flex gap-3 px-4 py-3 transition-colors hover:bg-muted/30"
               >
-                <Icon className="mt-0.5 size-4 flex-shrink-0 text-lca-gold" aria-hidden="true" />
+                <Icon className="mt-0.5 size-4 flex-shrink-0 text-gold-ink" aria-hidden="true" />
                 <span className="min-w-0">
                   <span className="line-clamp-2 text-sm text-ink group-hover:underline">{postText(post)}</span>
                   <span className="mt-0.5 block text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</span>

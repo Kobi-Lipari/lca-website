@@ -294,7 +294,7 @@ export function AdminAnnouncementPanel() {
     <div className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Megaphone className="size-5 text-lca-gold" />
+          <Megaphone className="size-5 text-gold-ink" />
           <h2 className="text-base font-semibold text-ink">
             Site banners · {list.length}
           </h2>

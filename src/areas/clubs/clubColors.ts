@@ -24,3 +24,16 @@ export function clubCardStyle(color?: string | null): React.CSSProperties {
 export function clubAccentStyle(color?: string | null): React.CSSProperties {
   return { backgroundColor: color || LCA.gold }
 }
+
+/**
+ * The colour of words drawn in a club's colour: an officer's title, a news
+ * date, a contact link, the initials standing in for a logo. Brand gold is
+ * every club's colour until the club picks its own (the database's default),
+ * and brand gold is 2.28:1 on white, so a club with brand gold or no colour
+ * gets the gold-ink token instead: brand gold with newLook off, exactly as
+ * before, and the new look's dark gold on its light grounds. A colour the
+ * club chose is its own and is drawn as given.
+ */
+export function clubTextColor(color?: string | null): string {
+  return !color || color.trim().toLowerCase() === LCA.gold ? 'var(--gold-ink)' : color
+}

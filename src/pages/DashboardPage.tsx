@@ -334,7 +334,7 @@ export function DashboardPage() {
             {role !== 'lca_admin' && managedClubs.length > 0 && (
               <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
                 <h2 className="flex items-center gap-2 text-lg font-bold text-ink">
-                  <Building2 className="size-5 text-lca-gold" /> Clubs in your region
+                  <Building2 className="size-5 text-gold-ink" /> Clubs in your region
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   As regional representative you can update these clubs' pages, officers and news.
@@ -362,7 +362,7 @@ export function DashboardPage() {
               <div id="profile" className="scroll-mt-24 rounded-xl border bg-card p-6 shadow-sm lg:col-span-1">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <User className="size-5 text-lca-gold" />
+                    <User className="size-5 text-gold-ink" />
                     <h2 className="text-lg font-bold text-ink">Profile</h2>
                   </div>
                   {!editing && (
@@ -517,7 +517,7 @@ export function DashboardPage() {
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <CreditCard className="size-5 text-lca-gold" />
+                      <CreditCard className="size-5 text-gold-ink" />
                       <h2 className="text-lg font-bold text-ink">LCA membership</h2>
                     </div>
                     <span
@@ -562,7 +562,7 @@ export function DashboardPage() {
             <div className="mt-6 rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <KeyRound className="size-5 text-lca-gold" />
+                  <KeyRound className="size-5 text-gold-ink" />
                   <h2 className="text-lg font-bold text-ink">Security</h2>
                 </div>
                 {!changingPassword && (
@@ -677,7 +677,7 @@ export function DashboardPage() {
       <section className="bg-muted/30">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-2">
-            <Calendar className="size-6 text-lca-gold" />
+            <Calendar className="size-6 text-gold-ink" />
             <h2 className="text-2xl font-bold text-ink">My Registrations</h2>
           </div>
           <p className="mt-1 text-muted-foreground">
@@ -738,7 +738,7 @@ export function DashboardPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <MessageSquare className="size-6 text-lca-gold" />
+              <MessageSquare className="size-6 text-gold-ink" />
               <h2 className="text-2xl font-bold text-ink">My Support Tickets</h2>
               {openCount > 0 && (
                 <span className="rounded-full bg-lca-gold/20 px-2.5 py-0.5 text-xs font-semibold text-ink">

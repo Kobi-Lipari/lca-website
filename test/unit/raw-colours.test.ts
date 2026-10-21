@@ -28,6 +28,10 @@
 // any other. A keep entry whose text matches more than one string of its
 // file allows nothing and fails too.
 //
+// Step 25 moved the gold hex text classes to the gold tokens and took their
+// entries out of the allowlist; a block below holds that one written back
+// fails in the very file that held it, and that the gold tokens are not raw.
+//
 // Class strings are read with the codemod's own parser: string literals,
 // template text, and the quoted strings of commented-out code. Club colours
 // are user data and inline styles; no class is built from a value at run
@@ -155,14 +159,15 @@ describe('the raw colour ratchet on the tree', () => {
     // white mats, and step 24's light tones on navy with their tints (18) and
     // the check-in toggle's hover line (1); step 24 also keeps one navy tint
     // in its string, which is not raw. The allowlist counts the rest: the
-    // hex colours (44), the translucent white veils on navy (34), and the
+    // hex colours (10, since step 25 moved the 34 gold text classes to the
+    // gold tokens), the translucent white veils on navy (34), and the
     // classes the status map keeps for a whole file (13: StatusBadge's light
     // tones and StatusDot's dot 8, the print page's row rules 2 and the
     // dots 3).
     const keptRaw = [...result.kept].filter(([k]) => result.uses.some((u) => key(u.file, u.token) === k)).reduce((a, [, n]) => a + n, 0)
     const fromList = allowlist.reduce((a, e) => a + e.count, 0)
     expect(keptRaw).toBe(5 + 18 + 1)
-    expect(fromList).toBe(44 + 34 + 13)
+    expect(fromList).toBe(10 + 34 + 13)
     expect(result.uses.length).toBe(keptRaw + fromList)
     const veils = allowlist.filter((e) => parseToken(e.class).utility === 'bg-white')
     expect(veils.reduce((a, e) => a + e.count, 0)).toBe(34)
@@ -200,9 +205,14 @@ describe('the raw colour ratchet on the tree', () => {
     ])
   })
 
-  it('the hex colours left are gold text (step 25), the banners\' fixed grounds, Facebook\'s blue and the map\'s paper', () => {
-    const hexes = new Set(result.uses.filter((u) => u.kind === 'a hex colour').map((u) => u.token.match(/#[0-9a-fA-F]+/)![0].toLowerCase()))
-    expect([...hexes].sort()).toEqual(['#1877f2', '#1e4d7b', '#7a5c00', '#8a6d1f', '#9b1c1c', '#f0d07a', '#f2efe6'])
+  it('the hex colours left are the banners\' fixed grounds, Facebook\'s blue and the map\'s paper: no gold text (step 25)', () => {
+    const hexUses = result.uses.filter((u) => u.kind === 'a hex colour')
+    const hexes = new Set(hexUses.map((u) => u.token.match(/#[0-9a-fA-F]+/)![0].toLowerCase()))
+    expect([...hexes].sort()).toEqual(['#1877f2', '#1e4d7b', '#9b1c1c', '#f2efe6'])
+    // 10 classes in 7 files: the banners' grounds and their swatches (4), Facebook's blue (4) and the map's paper (2).
+    expect(hexUses).toHaveLength(10)
+    expect(new Set(hexUses.map((u) => u.file)).size).toBe(7)
+    expect(allowlist.some((e) => /step 25/.test(e.reason))).toBe(false)
   })
 })
 
@@ -396,6 +406,64 @@ describe('the ratchet on a planted tree', () => {
     ])('passes %s', (_, cls) => {
       expect(ratchet(tree({ 'src/pages/Planted.tsx': page(cls) }), []).problems).toEqual([])
     })
+  })
+})
+
+describe('the gold hex text classes are raw to the ratchet again (step 25)', () => {
+  // Step 25 moved the 34 gold hex text classes to the gold tokens and took
+  // their 23 entries out of the allowlist, so the list no longer allows any
+  // of them: one written back fails in the very file that held it, with the
+  // committed allowlist, and the gold tokens that took their place are not
+  // raw. The class names are put together when the test runs, so Tailwind,
+  // which reads this file, builds no CSS for them.
+  const work = mkdtempSync(join(tmpdir(), 'raw-colours-gold-'))
+  afterAll(() => rmSync(work, { recursive: true, force: true }))
+  let n = 0
+  const c = (...parts: string[]) => parts.join('')
+  function tree(files: Record<string, string>): string {
+    const root = join(work, `t${n++}`)
+    for (const [path, text] of Object.entries(files)) {
+      mkdirSync(dirname(join(root, path)), { recursive: true })
+      writeFileSync(join(root, path), text)
+    }
+    return root
+  }
+  const page = (classes: string) => `export function Planted() {\n  return <div className="p-4 ${classes}">x</div>\n}\n`
+  const GOLD_HEX = /#(?:7a5c00|f0d07a|8a6d1f)\b/i
+
+  it('no allowlist entry names a gold hex colour, in any form, and no keep entry of either map does', () => {
+    expect(allowlist.filter((e) => GOLD_HEX.test(e.class))).toEqual([])
+    for (const path of [DEFAULT_MAP, STATUS_MAP]) {
+      const m = loadMap(path)
+      expect(m.keep.filter((k) => GOLD_HEX.test(JSON.stringify(k))), path).toEqual([])
+    }
+    // Nor does the tree hold one: the hex colours left are the four the ratchet test above names.
+    expect(rawUses(ROOT).filter((u) => GOLD_HEX.test(u.token))).toEqual([])
+  })
+
+  it.each([
+    ['the audit log\'s dark gold words', 'src/areas/admin/components/AuditLogPanel.tsx', '', '7a5c00'],
+    ['StatusBadge\'s light gold words', 'src/components/StatusBadge.tsx', '', '7a5c00'],
+    ['the add-seat pill\'s hover words', 'src/areas/admin/components/MemberSeatsCell.tsx', 'hover:', '7a5c00'],
+    ['the LCA pill on the tournaments page', 'src/pages/TournamentsPage.tsx', '', '7a5c00'],
+    ['the hero eyebrow\'s light gold', 'src/components/PageHero.tsx', '', 'f0d07a'],
+    ['the home page hero\'s pill', 'src/pages/HomePage.tsx', '', 'f0d07a'],
+    ['the club page\'s Upcoming badge', 'src/pages/ClubDetailPage.tsx', '', '8a6d1f'],
+  ])('fails on %s written back as a hex colour in its own file, with the committed allowlist', (_, file, variant, hex) => {
+    const cls = c(variant, 'text-[#', hex, ']')
+    const { problems } = ratchet(tree({ [file]: page(cls) }), allowlist.filter((e) => e.file === file))
+    expect(problems.filter((p) => p.includes(cls))).toEqual([`${file}:2 ${cls} is a hex colour; use a token, or allow it with its reason`])
+  })
+
+  it.each([
+    ['the badge words', 'text-gold-ink-badge'],
+    ['the hover form of the badge words', 'hover:text-gold-ink-badge'],
+    ['the club badge\'s words', 'text-gold-ink-badge-club'],
+    ['the pill\'s light gold', 'text-gold-on-dark-badge'],
+    ['gold-ink', 'text-gold-ink'],
+  ])('passes %s, a gold token', (_, cls) => {
+    expect(rawKind(parseToken(cls)), cls).toBeNull()
+    expect(ratchet(tree({ 'src/pages/Planted.tsx': page(cls) }), []).problems).toEqual([])
   })
 })
 

@@ -58,7 +58,7 @@ export function ContactPage() {
     <div>
       <section className="border-b-[3px] border-lca-gold bg-brand-navy">
         <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]">Louisiana Chess Association</div>
+          <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/15 px-2.5 py-0.5 text-[10px] text-gold-on-dark-badge">Louisiana Chess Association</div>
           <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Contact us</h1>
           <p className="mt-2 text-sm text-white/60">
             {selectedSeat
@@ -123,21 +123,21 @@ export function ContactPage() {
             <h2 className="text-xl font-bold text-ink">Contact information</h2>
             <div className="space-y-5 text-sm">
               <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 size-5 flex-shrink-0 text-lca-gold" />
+                <Mail className="mt-0.5 size-5 flex-shrink-0 text-gold-ink" />
                 <div>
                   <p className="font-medium text-foreground">Email</p>
                   <a href={`mailto:${LCA_EMAIL}`} className="text-muted-foreground hover:underline">{LCA_EMAIL}</a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 size-5 flex-shrink-0 text-lca-gold" />
+                <MapPin className="mt-0.5 size-5 flex-shrink-0 text-gold-ink" />
                 <div>
                   <p className="font-medium text-foreground">State</p>
                   <p className="text-muted-foreground">Louisiana, United States</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MessageSquare className="mt-0.5 size-5 flex-shrink-0 text-lca-gold" />
+                <MessageSquare className="mt-0.5 size-5 flex-shrink-0 text-gold-ink" />
                 <div>
                   <p className="font-medium text-foreground">Technical support</p>
                   <p className="text-muted-foreground">Site problems go to the same place: use the form above, or the <a href="/support" className="text-ink hover:underline">support ticket system</a>.</p>

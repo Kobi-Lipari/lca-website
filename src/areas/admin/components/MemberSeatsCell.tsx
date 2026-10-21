@@ -54,7 +54,7 @@ export function MemberSeatsCell({
           return (
             <span
               key={h.assignment_id}
-              className="inline-flex items-center gap-1 rounded-full border border-lca-gold/40 bg-lca-gold/10 px-2 py-0.5 text-[10px] font-medium text-[#7a5c00]"
+              className="inline-flex items-center gap-1 rounded-full border border-lca-gold/40 bg-lca-gold/10 px-2 py-0.5 text-[10px] font-medium text-gold-ink-badge"
             >
               {seat?.role ?? 'Seat'}
               <button
@@ -75,7 +75,7 @@ export function MemberSeatsCell({
           disabled={busy}
           onClick={() => { setOpen((o) => !o); setConfirming(null) }}
           className={cn(
-            'inline-flex items-center gap-0.5 rounded-full border border-dashed px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:border-lca-gold hover:text-[#7a5c00]',
+            'inline-flex items-center gap-0.5 rounded-full border border-dashed px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:border-lca-gold hover:text-gold-ink-badge',
             held.length === 0 && 'border-solid',
           )}
         >

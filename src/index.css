@@ -62,6 +62,12 @@
     --color-gold: var(--gold);
     --color-gold-ink: var(--gold-ink);
     --color-gold-on-dark: var(--gold-on-dark);
+    /* Gold words (step 25): the dark gold of badges, pills and notes on a
+     * gold tint, its lighter shade on a club page's Upcoming badge, and the
+     * light gold of a pill on a ground that stays dark. */
+    --color-gold-ink-badge: var(--gold-ink-badge);
+    --color-gold-ink-badge-club: var(--gold-ink-badge-club);
+    --color-gold-on-dark-badge: var(--gold-on-dark-badge);
     --color-focus: var(--focus);
     --color-status-open: var(--status-open);
     --color-status-open-tint: var(--status-open-tint);
@@ -231,6 +237,15 @@
     --gold: #c8a94a;
     --gold-ink: #c8a94a;
     --gold-on-dark: #c8a94a;
+    /* Gold words (step 25), at the hex colours the pages spelled out: the
+     * dark gold of badges, pills and notes on a gold tint (#7a5c00), the
+     * club page's Upcoming badge (#8a6d1f) and the light gold of a pill on
+     * navy or the home page hero's darkened photo (#f0d07a). No look
+     * restyles --gold-on-dark-badge: the ground under it stays dark in every
+     * look, like the brand navy. */
+    --gold-ink-badge: #7a5c00;
+    --gold-ink-badge-club: #8a6d1f;
+    --gold-on-dark-badge: #f0d07a;
     --focus: color-mix(in oklab, var(--ring) 50%, transparent);
     --font-mono-face: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
     /* Status: the light tones StatusBadge draws today. */
@@ -393,6 +408,10 @@
     --gold: #c8a94a;
     --gold-ink: #866a1e;
     --gold-on-dark: #c8a94a;
+    /* Gold words on a gold tint take the soon tag's words, which keep 4.5:1
+     * on a tint up to 25 per cent; --gold-ink would read 4.42:1 on 20. */
+    --gold-ink-badge: #705718;
+    --gold-ink-badge-club: #705718;
     --focus: #1a2744;
     --font-mono-face: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
     --status-open: #047857;
@@ -448,6 +467,8 @@
         --ok: #3ecf8e;
         --bad: #ff6b6b;
         --gold-ink: #c8a94a;
+        --gold-ink-badge: #c8a94a;
+        --gold-ink-badge-club: #c8a94a;
         --focus: #c8a94a;
         --status-open: #3ecf8e;
         --status-open-tint: #0d2b22;
@@ -493,6 +514,8 @@
         --gold: #c8a94a;
         --gold-ink: #c8a94a;
         --gold-on-dark: #c8a94a;
+        --gold-ink-badge: #c8a94a;
+        --gold-ink-badge-club: #c8a94a;
         --gold-hi: #e5c768;
         --live: #ff4757;
         --live-strong: #c81e32;
@@ -540,6 +563,8 @@
     --gold: #c8a94a;
     --gold-ink: #866a1e;
     --gold-on-dark: #c8a94a;
+    --gold-ink-badge: #705718;
+    --gold-ink-badge-club: #705718;
     --gold-tile: #fdf1cc;
     --coral: #b23e1a;
     --coral-tile: #ffe4da;

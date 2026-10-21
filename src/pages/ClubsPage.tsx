@@ -5,7 +5,7 @@ import { Calendar, LocateFixed, MapPin, Search, X } from 'lucide-react'
 
 import { getClubs, type ApiClubListItem } from '@/lib/api'
 import { PageHero } from '@/components/PageHero'
-import { clubColorTint } from '@/areas/clubs/clubColors'
+import { clubColorTint, clubTextColor } from '@/areas/clubs/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/areas/clubs/components/LCAMap'
@@ -70,7 +70,7 @@ function ClubLogoPanel({ club }: { club: ApiClubListItem }) {
           className="flex aspect-square w-full items-center justify-center rounded-lg ring-1 ring-black/5"
           style={{ backgroundColor: clubColorTint(color, 0.16) }}
         >
-          <span aria-hidden="true" className="select-none text-2xl font-bold tracking-tight" style={{ color }}>
+          <span aria-hidden="true" className="select-none text-2xl font-bold tracking-tight" style={{ color: clubTextColor(club.color) }}>
             {clubInitials(club.name)}
           </span>
         </div>
@@ -140,14 +140,14 @@ function ClubCard({
         </div>
         <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
           <p className="flex items-center gap-1.5">
-            <MapPin className="size-3 flex-shrink-0 text-lca-gold" />
+            <MapPin className="size-3 flex-shrink-0 text-gold-ink" />
             <span className="truncate">
               {club.city}, LA{club.region ? ` · ${club.region}` : ''}
             </span>
           </p>
           {club.meeting_schedule && (
             <p className="flex items-center gap-1.5">
-              <Calendar className="size-3 flex-shrink-0 text-lca-gold" />
+              <Calendar className="size-3 flex-shrink-0 text-gold-ink" />
               <span className="truncate">{club.meeting_schedule}</span>
             </p>
           )}

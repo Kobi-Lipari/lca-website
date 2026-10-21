@@ -23,6 +23,12 @@
 // - Light islands (step 24): the words and the veil on a ground that stays
 //   light in every look are today's muted words and muted ground with
 //   newLook off, and the light look's in every look and mode under it.
+// - The gold words tokens (step 25): with newLook off each is the hex colour
+//   the class it replaced spelled, and --gold-ink is brand gold, the colour
+//   text-lca-gold paints; under the new look the dark gold words on a gold
+//   tint are the soon tag's words on the light looks and brand gold on the
+//   dark ones, and the light gold of a pill on a dark ground stays as it is
+//   in every look.
 //
 // Contrast is in contrast.test.ts; the browser check is test/a11y/tokens.spec.ts.
 import { readdirSync, statSync } from 'node:fs'
@@ -118,7 +124,11 @@ describe('the legacy tokens: newLook off', () => {
     expect(badge).toContain("emerald: 'bg-emerald-100 text-emerald-800'")
     expect(badge).toContain("red: 'bg-red-100 text-red-700'")
     expect(badge).toContain("blue: 'border border-blue-200 bg-blue-50 text-blue-800'")
-    expect(badge).toContain("gold: 'bg-lca-gold/20 text-[#7a5c00]'")
+    // The gold tone's words moved to the gold-ink-badge token in step 25,
+    // whose plain value is the hex the tone spelled before (the gold words
+    // tokens below); --status-soon has that hex too.
+    expect(badge).toContain("gold: 'bg-lca-gold/20 text-gold-ink-badge'")
+    expect(today.get('--gold-ink-badge')).toBe(today.get('--status-soon'))
     expect(today.get('--ok')).toBe(tailwindTheme('--color-emerald-800'))
     expect(today.get('--status-open')).toBe(tailwindTheme('--color-emerald-800'))
     expect(today.get('--status-open-tint')).toBe(tailwindTheme('--color-emerald-100'))
@@ -606,6 +616,86 @@ describe('light islands (step 24)', () => {
       ['', [':root']],
       ['', [':root[data-look="new"]', ':root[data-look="new"] [data-theme=""]']],
     ])
+  })
+})
+
+describe('the gold words tokens (step 25)', () => {
+  // Step 25 moved the gold text the pages spelled as hex colours to three
+  // tokens, each at that very hex on the plain :root, so nothing changes with
+  // newLook off: --gold-ink-badge (the dark gold words of badges, pills and
+  // notes on a gold tint, and four labels and counts), --gold-ink-badge-club
+  // (a club page's Upcoming badge, a shade lighter) and --gold-on-dark-badge
+  // (a pill's words over navy or the home page hero's darkened photo). The
+  // hex values are written without the class around them, so Tailwind, which
+  // reads this file, builds no CSS for the old classes.
+  const today = rootTokens(rules, TODAY)
+  const legacyRoot = rules.find((r) => r.selector === ':root' && !r.within)!
+  const inline = rules.find((r) => r.selector === '@theme inline')!
+  const brand = rules.find((r) => r.selector === '@theme')!
+  const LEGACY: Record<string, string> = { '--gold-ink-badge': '#7a5c00', '--gold-ink-badge-club': '#8a6d1f', '--gold-on-dark-badge': '#f0d07a' }
+  const LOOKS: Array<[string, Map<string, string>]> = [
+    ['base', rootTokens(rules, LIGHT)],
+    ['dark', rootTokens(rules, DARK)],
+    ['live', scopeTokens(rules, LIGHT, 'live')],
+    ['live in dark mode', scopeTokens(rules, DARK, 'live')],
+    ['scholastic', scopeTokens(rules, LIGHT, 'scholastic')],
+    ['scholastic in dark mode', scopeTokens(rules, DARK, 'scholastic')],
+    ['heritage', scopeTokens(rules, LIGHT, 'heritage')],
+    ['heritage in dark mode', scopeTokens(rules, DARK, 'heritage')],
+    ['base inside a scope', scopeTokens(rules, DARK, '')],
+    ['printed from a dark device', rootTokens(rules, { look: true, dark: true, print: true })],
+  ]
+
+  it('with newLook off, each is the hex colour the class it replaced painted, and --gold-ink is brand gold, as text-lca-gold paints', () => {
+    for (const [name, hex] of Object.entries(LEGACY)) {
+      expect(legacyRoot.decls.get(name), name).toBe(hex)
+      expect(today.get(name), name).toBe(hex)
+    }
+    // text-lca-gold on a light ground became text-gold-ink, the same colour on the plain :root.
+    expect(today.get('--gold-ink')).toBe(brand.decls.get('--color-lca-gold'))
+    // The club badge keeps its own shade: the other badges' token would change it.
+    expect(today.get('--gold-ink-badge-club')).not.toBe(today.get('--gold-ink-badge'))
+  })
+
+  it('each has a utility in the @theme inline block that reads it where it is used', () => {
+    for (const name of Object.keys(LEGACY)) expect(inline.decls.get(`--color-${name.slice(2)}`), name).toBe(`var(${name})`)
+  })
+
+  it('under the new look the badge words are the soon tag\'s words on the light looks and brand gold on the dark ones, the club badge\'s the same', () => {
+    expect(LOOKS.map(([look, t]) => [look, t.get('--gold-ink-badge'), t.get('--gold-ink-badge-club')])).toEqual([
+      ['base', '#705718', '#705718'],
+      ['dark', '#c8a94a', '#c8a94a'],
+      ['live', '#c8a94a', '#c8a94a'],
+      ['live in dark mode', '#c8a94a', '#c8a94a'],
+      ['scholastic', '#705718', '#705718'],
+      ['scholastic in dark mode', '#705718', '#705718'],
+      ['heritage', '#705718', '#705718'],
+      ['heritage in dark mode', '#c8a94a', '#c8a94a'],
+      ['base inside a scope', '#c8a94a', '#c8a94a'],
+      ['printed from a dark device', '#705718', '#705718'],
+    ])
+    // On the light looks that is the Looks-3 soon tag's words, and heritage's own gold ink.
+    for (const [look, t] of LOOKS.filter(([look]) => ['base', 'scholastic'].includes(look))) expect(t.get('--gold-ink-badge'), look).toBe(t.get('--status-soon'))
+    expect(scopeTokens(rules, LIGHT, 'heritage').get('--gold-ink-badge')).toBe(scopeTokens(rules, LIGHT, 'heritage').get('--gold-ink'))
+  })
+
+  it('--gold-on-dark-badge is #f0d07a in every look and mode, printed too, and only the plain :root sets it', () => {
+    for (const [look, t] of LOOKS) expect(t.get('--gold-on-dark-badge'), look).toBe('#f0d07a')
+    const setting = rules.filter((r) => r.decls.has('--gold-on-dark-badge'))
+    expect(setting.map((r) => [r.within, r.selectors])).toEqual([['', [':root']]])
+  })
+
+  it('the new look sets the badge words in each block that sets --gold-ink but heritage\'s, which restyles --gold-ink alone and passes the rest on', () => {
+    const blocks = (name: string) => rules.filter((r) => r.decls.has(name) && r.selector !== ':root').map((r) => [r.within, r.selectors])
+    expect(blocks('--gold-ink-badge')).toEqual([
+      ['', [':root[data-look="new"]', ':root[data-look="new"] [data-theme=""]']],
+      [SCREEN_ONLY, [':root[data-look="new"].dark', ':root[data-look="new"].dark [data-theme=""]']],
+      [SCREEN_ONLY, [':root[data-look="new"] [data-theme="live"]']],
+      ['', [':root[data-look="new"] [data-theme="scholastic"]']],
+    ])
+    expect(blocks('--gold-ink-badge-club')).toEqual(blocks('--gold-ink-badge'))
+    const goldInk = blocks('--gold-ink').filter(([, selectors]) => !(selectors as string[]).some((s) => s.includes('heritage')))
+    expect(goldInk).toEqual(blocks('--gold-ink-badge'))
   })
 })
 

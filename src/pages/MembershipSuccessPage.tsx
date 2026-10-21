@@ -96,7 +96,7 @@ function MembershipSuccessContent() {
 
       {!loading && !error && status === 'pending' && (
         <>
-          <Clock className="mx-auto size-12 text-lca-gold" />
+          <Clock className="mx-auto size-12 text-gold-ink" />
           <h1 className="mt-4 text-2xl font-bold text-ink">
             Payment received — activating your membership
           </h1>

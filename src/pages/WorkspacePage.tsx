@@ -73,7 +73,7 @@ export function WorkspacePage() {
 
       <section className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         {isRep && !clubId && (
-          <p className="mb-6 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-4 py-3 text-sm text-[#7a5c00]">
+          <p className="mb-6 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-4 py-3 text-sm text-gold-ink-badge">
             Your account is a club rep account but isn’t linked to a club yet. Ask an LCA admin to assign your club,
             then you’ll be able to edit it and create its tournaments here.
           </p>

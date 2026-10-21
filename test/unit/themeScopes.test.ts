@@ -5,6 +5,11 @@
 //   including a reset inside heritage. These are the light blocks under
 //   data-look="new"; with newLook off no scope changes any token, and dark
 //   mode puts brand gold back on the dark grounds.
+// - The gold words tokens of step 25 in each scope: the dark gold of badges
+//   on a gold tint is #705718 wherever the look is light and brand gold
+//   wherever it is dark, the scholastic and live scopes keeping their own
+//   whatever the device says, and the light gold of a pill on a dark ground
+//   is #f0d07a everywhere.
 // - The route-to-scope map: the heritage pages are exactly the six, every
 //   working route in src/App.tsx (admin, workspace, club and tournament
 //   tools, My LCA, account and the board inbox) is base, and the three old
@@ -67,6 +72,44 @@ describe('--gold-ink in each scope (src/index.css)', () => {
     for (const scope of THEME_SCOPES) {
       const scoped = scopeTokens(rules, TODAY, dataThemeOf(scope))
       for (const [name, value] of today) expect(scoped.get(name), `${scope} ${name}`).toBe(value)
+    }
+  })
+})
+
+describe('the gold words tokens in each scope (step 25)', () => {
+  const BADGE = ['--gold-ink-badge', '--gold-ink-badge-club']
+
+  it('the dark gold of badges is #705718 in base, heritage and scholastic, and brand gold in live and in dark mode', () => {
+    const heritage = scopeTokens(rules, LIGHT, 'heritage')
+    for (const name of BADGE) {
+      expect(rootTokens(rules, LIGHT).get(name), name).toBe('#705718')
+      expect(scopeTokens(rules, LIGHT, '').get(name), name).toBe('#705718')
+      expect(heritage.get(name), name).toBe('#705718')
+      expect(scopeTokens(rules, LIGHT, 'scholastic').get(name), name).toBe('#705718')
+      expect(scopeTokens(rules, LIGHT, 'live').get(name), name).toBe('#c8a94a')
+      expect(rootTokens(rules, DARK).get(name), name).toBe('#c8a94a')
+      expect(scopeTokens(rules, DARK, 'heritage').get(name), name).toBe('#c8a94a')
+      // Scholastic is light in dark mode too, and live dark on a light device:
+      // each sets its own, so neither takes the device's from <html>.
+      expect(scopeTokens(rules, DARK, 'scholastic').get(name), name).toBe('#705718')
+      // A base reset inside heritage gives the base value back.
+      expect(nestedTokens(heritage, LIGHT, '').get(name), name).toBe('#705718')
+    }
+  })
+
+  it('the light gold of a pill on a dark ground is #f0d07a in every scope, light and dark', () => {
+    for (const state of [LIGHT, DARK]) {
+      expect(rootTokens(rules, state).get('--gold-on-dark-badge')).toBe('#f0d07a')
+      for (const scope of THEME_SCOPES) expect(scopeTokens(rules, state, dataThemeOf(scope)).get('--gold-on-dark-badge'), scope).toBe('#f0d07a')
+    }
+  })
+
+  it('with newLook off, no scope changes them: they are the hex colours the pages spelled before', () => {
+    const today = rootTokens(rules, TODAY)
+    expect([today.get('--gold-ink-badge'), today.get('--gold-ink-badge-club'), today.get('--gold-on-dark-badge')]).toEqual(['#7a5c00', '#8a6d1f', '#f0d07a'])
+    for (const scope of THEME_SCOPES) {
+      const scoped = scopeTokens(rules, TODAY, dataThemeOf(scope))
+      for (const name of [...BADGE, '--gold-on-dark-badge']) expect(scoped.get(name), `${scope} ${name}`).toBe(today.get(name))
     }
   })
 })

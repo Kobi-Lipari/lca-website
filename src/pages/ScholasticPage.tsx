@@ -32,18 +32,18 @@ function ScholasticCard({ t }: { t: UnifiedTournament }) {
           </div>
           <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Calendar className="size-3.5 text-lca-gold" />
+              <Calendar className="size-3.5 text-gold-ink" />
               {formatDate(t.start_date)}
             </span>
             {(t.city || t.venue) && (
               <span className="flex items-center gap-1">
-                <MapPin className="size-3.5 text-lca-gold" />
+                <MapPin className="size-3.5 text-gold-ink" />
                 {t.city ?? t.venue}
               </span>
             )}
             {!isLca && t.organizer && (
               <span className="flex items-center gap-1">
-                <Users className="size-3.5 text-lca-gold" />
+                <Users className="size-3.5 text-gold-ink" />
                 {t.organizer}
               </span>
             )}
@@ -125,7 +125,7 @@ export function ScholasticPage() {
           {/* ── Left: Tournaments ── */}
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <Trophy className="size-5 text-lca-gold" />
+              <Trophy className="size-5 text-gold-ink" />
               <h2 className="text-xl font-bold text-ink">Scholastic tournaments</h2>
             </div>
             <p className="-mt-2 mb-4 text-xs text-muted-foreground">
@@ -158,7 +158,7 @@ export function ScholasticPage() {
           {/* ── Right: Programs ── */}
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <Users className="size-5 text-lca-gold" />
+              <Users className="size-5 text-gold-ink" />
               <h2 className="text-xl font-bold text-ink">Scholastic programs</h2>
             </div>
 

@@ -134,7 +134,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
   return (
     <div className="mt-6 border-t pt-5">
       <div className="flex items-center gap-2">
-        <Users className="size-4 text-lca-gold" />
+        <Users className="size-4 text-gold-ink" />
         <p className="text-sm font-semibold text-ink">Register your family</p>
       </div>
 

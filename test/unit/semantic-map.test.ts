@@ -40,6 +40,22 @@
 // The two classes step 24 changed by hand, the club map's loading note on
 // its paper, build the rules and paint the colours of the classes they
 // replaced too.
+//
+// WS01 step 25: the gold work, the third map
+// (scripts/codemods/semantic-colours.gold.map.json, the gold hex text
+// classes) and scripts/codemods/gold-ink.ts (text-lca-gold on a light ground
+// to text-gold-ink), is held to the same proof: every class it writes, in
+// every form the TSX files use, paints on the plain :root the colour of the
+// class it replaced, builds the selector and at-rules its old form built,
+// reads the same to tailwind-merge and wins no rival through CSS order; the
+// club colour words' fallback var(--gold-ink) is brand gold there too; and
+// the map's --check finds nothing left. The old hex classes are put together
+// when the test runs, so Tailwind, which reads this file, builds no CSS for them.
+// The two changes made by hand are held the same way: GOLD_BUTTON's navy
+// words, text-brand-navy for text-lca-navy, paint and merge as before on
+// every button that uses it, and a club's colour as words, through
+// clubTextColor, paints on the plain :root what club.color || LCA.gold
+// painted for every value a club can hold.
 import { spawnSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -61,8 +77,11 @@ import {
   type ClassToken,
   type ColourMap,
 } from '../../scripts/codemods/semantic-colours'
+import { GOLD, GOLD_INK, GOLD_MAP } from '../../scripts/codemods/gold-ink'
 import { indexCssRules, read, ROOT, rootTokens, stripComments, substitute } from './helpers/cssTokens'
-import { classAttributes, exclusive, jsxTree, merged, selfAndAncestors, type ClassAttribute, type JsxNode, type Piece } from './helpers/jsxClasses'
+import { classAttributes, exclusive, goldButton, jsxTree, merged, selfAndAncestors, type ClassAttribute, type JsxNode, type Piece } from './helpers/jsxClasses'
+import { clubTextColor } from '../../src/areas/clubs/clubColors'
+import { LCA } from '../../src/lib/brand'
 import { escapeClass as escapeSelector, leafRules } from './helpers/tailwindRules'
 
 const map = loadMap(DEFAULT_MAP)
@@ -971,5 +990,250 @@ describe('the club map\'s loading note, changed by hand, paints what it painted 
       'src/areas/clubs/components/LCAMap.tsx text-sm text-muted-on-light',
     ])
     for (const n of users) expect(selfAndAncestors(n).some((a) => a.classes.includes('bg-[#f2efe6]')), `${n.file}:${n.line}`).toBe(true)
+  })
+})
+
+// ── The gold work (step 25) ────────────────────────────────────────────────
+
+const goldMap = loadMap(GOLD_MAP)
+/** A gold hex text class, put together when the test runs. */
+const goldHex = (hex: string) => ['text-[#', hex, ']'].join('')
+
+/** Every utility the gold work writes, with the one it replaces: the gold map's rules, and text-lca-gold to text-gold-ink on a light ground. */
+const GOLD_PAIRS = new Map<string, string>([[GOLD_INK, GOLD], ...goldMap.rules.map((r) => [r.to, r.from] as [string, string])])
+
+/** A class as it was written before step 25: a written utility swapped back, everything else kept. */
+const beforeGold = (cls: string) => {
+  const t = parseToken(cls)
+  const old = GOLD_PAIRS.get(t.utility)
+  return old ? withUtility(t, old) : cls
+}
+
+/** Every class the TSX files write with a utility the gold work writes, as written. */
+function goldForms(): string[] {
+  const forms = new Set<string>()
+  for (const file of tsxFiles(ROOT)) {
+    for (const s of classStrings(file, read(file))) {
+      for (const { token } of tokensOf(s.text)) if (GOLD_PAIRS.has(token.utility)) forms.add(token.text)
+    }
+  }
+  return [...forms].sort()
+}
+
+describe('the gold work: every class it writes gives exactly the colour it replaced, with newLook off', () => {
+  const forms = goldForms()
+  const cases = [...new Set([...forms.map(bareForm), ...GOLD_PAIRS.keys()])].sort().map((now) => [beforeGold(now), now] as const)
+
+  it('the gold map moves the three gold hex text classes, one rule each, with no site or keep entry, and gold-ink.ts moves text-lca-gold', () => {
+    expect(Object.fromEntries(GOLD_PAIRS)).toEqual({
+      'text-gold-ink': 'text-lca-gold',
+      'text-gold-ink-badge': goldHex('7a5c00'),
+      'text-gold-on-dark-badge': goldHex('f0d07a'),
+      'text-gold-ink-badge-club': goldHex('8a6d1f'),
+    })
+    expect([...goldMap.watch].sort()).toEqual(goldMap.rules.map((r) => r.from).sort())
+    expect(goldMap.sites).toEqual([])
+    expect(goldMap.keep).toEqual([])
+    // Each rule takes the plain class only, and a variant rides along (the add-seat pill's hover).
+    for (const r of goldMap.rules) expect(r.opacity, r.id).toBe('none')
+    // Nothing the earlier maps write is written again.
+    for (const to of GOLD_PAIRS.keys()) expect(PAIRS.has(to) || STATUS_PAIRS.has(to), to).toBe(false)
+  })
+
+  it('checks every form the TSX files use: the four written utilities, the hover form included, and no opacity modifier', () => {
+    expect(forms).toEqual(['hover:text-gold-ink-badge', 'text-gold-ink', 'text-gold-ink-badge', 'text-gold-ink-badge-club', 'text-gold-on-dark-badge'])
+    // No form has an opacity modifier, so the block for browsers that cannot mix colours needs no line for them.
+    for (const f of forms) expect(parseToken(f).modifier, f).toBe('')
+    expect(cases).toHaveLength(4)
+  })
+
+  it.each(cases)('%s and %s paint the same colour, in every browser', (from, to) => {
+    const was = paint(from)
+    const now = paint(to)
+    expect(now).toEqual(was)
+    expect(now.property).toBe('color')
+    expect(now.supported).not.toContain('var(')
+    expect(now.supported).toMatch(/^#[0-9a-f]{6}$/)
+  })
+
+  it('each written form, variants included, builds the selector and at-rules its old form built, and paints the same colour', () => {
+    for (const now of forms) {
+      const b = behaviourOf(now)
+      expect(b.length, now).toBeGreaterThan(0)
+      expect(b, now).toEqual(behaviourOf(beforeGold(now)))
+    }
+  })
+
+  it('a club colour\'s words, brand gold until the club picks its own, take var(--gold-ink), which is brand gold on the plain :root', () => {
+    expect(substitute('var(--gold-ink)', legacy)).toBe('#c8a94a')
+    expect(read('src/lib/brand.ts')).toContain("gold: '#c8a94a'")
+    expect(read('src/areas/clubs/clubColors.ts')).toContain("? 'var(--gold-ink)' : color")
+  })
+})
+
+/** Rivals and look-alikes for the gold work's classes: the colours they meet in the files, and classes of other kinds that share a prefix. */
+const GOLD_RIVALS = [
+  'text-white', 'text-white/60', 'text-ink', 'text-ink/80', 'text-muted-foreground', 'text-foreground', 'text-lca-gold', 'text-ok-700', 'text-brand-navy',
+  'text-xs', 'text-sm', 'text-[10px]', 'text-[11px]', 'text-center', 'text-left',
+  'bg-lca-gold/20', 'bg-lca-gold/15', 'border-lca-gold/40', 'font-medium', 'fill-none',
+]
+
+describe('the gold work: tailwind-merge reads each written class exactly as it read the class it replaced', () => {
+  it.each(goldForms())('%s, against every rival and look-alike, in either order', (now) => {
+    const was = beforeGold(now)
+    for (const rival of GOLD_RIVALS) {
+      const r = `${parseToken(now).variants}${rival}`
+      for (const [first, second] of [[r, now], [now, r]] as const) {
+        const result = twMerge(`${first} ${second}`).split(' ').map((c) => (c === now ? was : c)).join(' ')
+        const old = twMerge(`${first === now ? was : first} ${second === now ? was : second}`)
+        expect(result, `${first} ${second}`).toBe(old)
+      }
+    }
+  })
+})
+
+describe('the gold work: no element changes its winning colour through CSS order', () => {
+  it('every pair of colours on one element under the same variants, one of them written by the gold work, keeps its order, or is settled by cn() or never applies together', () => {
+    const attrs = tsxFiles(ROOT).flatMap((file) => classAttributes(file))
+    const all = new Set<string>()
+    for (const attr of attrs) for (const piece of attr.pieces) for (const { token } of tokensOf(piece.text)) {
+      all.add(bareForm(token.text))
+      all.add(beforeGold(bareForm(token.text)))
+    }
+    const css = build([...all])
+    const position = (u: string) => css.indexOf(`.${escapeSelector(u)} {`)
+    const bodies = new Map<string, string>()
+    for (const r of leafRules(stripComments(css))) if (!bodies.has(r.selector)) bodies.set(r.selector, r.body)
+    const colourProperty = (u: string) => bodies.get(`.${escapeSelector(u)}`)?.match(/^(color|background-color|border-color|fill|stroke):/)?.[1] ?? null
+    const checked: string[] = []
+    const unsettled: string[] = []
+    for (const attr of attrs) {
+      const toks = attr.pieces.flatMap((piece) => tokensOf(piece.text).map(({ token }) => ({ token, piece })))
+      for (let i = 0; i < toks.length; i++) {
+        for (let j = i + 1; j < toks.length; j++) {
+          const [x, y] = [toks[i], toks[j]]
+          if (x.token.text === y.token.text) continue
+          if (!GOLD_PAIRS.has(x.token.utility) && !GOLD_PAIRS.has(y.token.utility)) continue
+          if (x.token.variants !== y.token.variants || x.token.bang !== y.token.bang) continue
+          const [bx, by] = [bareForm(x.token.text), bareForm(y.token.text)]
+          const prop = colourProperty(bx)
+          if (!prop || prop !== colourProperty(by)) continue
+          checked.push(`${attr.file}:${attr.line} ${x.token.text} / ${y.token.text}`)
+          const now = Math.sign(position(bx) - position(by))
+          const was = Math.sign(position(beforeGold(bx)) - position(beforeGold(by)))
+          if (now !== was && !exclusive(x.piece, y.piece) && !merged(x.piece, y.piece)) unsettled.push(`${attr.file}:${attr.line} ${x.token.text} / ${y.token.text}`)
+        }
+      }
+    }
+    // The pairs there are: the results count's dark gold or green, in the two branches of one ternary.
+    expect(checked.length).toBeGreaterThan(0)
+    expect(unsettled).toEqual([])
+  }, 60_000)
+})
+
+describe('the gold map: the TSX files match it', () => {
+  const plan = planRewrite(ROOT, goldMap, 'check')
+
+  it('the codemod finds nothing left to rewrite, keeps nothing and has no problem', () => {
+    expect(plan.problems).toEqual([])
+    expect(plan.edits).toEqual([])
+    expect(plan.kept).toEqual([])
+  })
+
+  it('a plain text search of the TSX files finds none of its watched classes, so none hides in prose or JSX text', () => {
+    const left = tsxFiles(ROOT).filter((file) => goldMap.watch.some((w) => read(file).toLowerCase().includes(w.toLowerCase())))
+    expect(left).toEqual([])
+  })
+})
+
+// ── GOLD_BUTTON and a club's colour as words, changed by hand (step 25) ────
+
+describe('GOLD_BUTTON paints what it painted before step 25, with newLook off', () => {
+  // Step 25 moved GOLD_BUTTON's words (src/lib/brand.ts) from text-lca-navy
+  // to text-brand-navy, the same #1a2744, which stays navy in every look as
+  // navy words on a gold fill must. Not a TSX file, so no map moved it. Each
+  // class of the string paints on the plain :root what the class it replaced
+  // painted and builds the same rules, and tailwind-merge gives every button
+  // that uses it the same classes over each Button variant, with the classes
+  // its own className adds. The old class name is put together when the test
+  // runs, so Tailwind, which reads this file, builds no CSS for it.
+  const NAVY_WORDS = ['text-lca', '-navy'].join('')
+  const now = goldButton()
+  const swapBack = (classes: string) => classes.split(' ').map((c) => (c === 'text-brand-navy' ? NAVY_WORDS : c)).join(' ')
+  const before = swapBack(now)
+  const button = read('src/components/ui/button.tsx')
+  const base = button.match(/const buttonVariants = cva\(\s*"([^"]+)"/)![1]
+  const variantBlock = button.slice(button.indexOf('variant: {'), button.indexOf('size: {'))
+  const variants = [...variantBlock.matchAll(/^\s+(default|outline|secondary|ghost|destructive|link):\s*"([^"]+)"/gm)].map((m) => [m[1], m[2]] as const)
+
+  it('differs from the string step 24 left only in its navy words', () => {
+    expect(now.split(' ')).toContain('text-brand-navy')
+    expect(now.split(' ')).not.toContain(NAVY_WORDS)
+    const diff = before.split(' ').filter((c, i) => c !== now.split(' ')[i])
+    expect(diff).toEqual([NAVY_WORDS])
+  })
+
+  it('each of its colour classes paints on the plain :root the colour of the class it replaced, and builds the same rules', () => {
+    const pairs = now.split(' ').map((c, i) => [before.split(' ')[i], c] as const)
+    for (const [was, is] of pairs) {
+      if (!/^(?:[\w-]+:)*(?:bg|text)-(?:lca|brand)-/.test(is)) continue
+      expect(behaviourOf(is), is).toEqual(behaviourOf(was))
+    }
+    expect(paint('text-brand-navy')).toEqual(paint(NAVY_WORDS))
+    expect(paint('text-brand-navy').supported).toBe('#1a2744')
+  })
+
+  it('tailwind-merge gives every button that uses it the same classes as before, over each Button variant', () => {
+    expect(variants.map(([name]) => name)).toEqual(['default', 'outline', 'secondary', 'ghost', 'destructive', 'link'])
+    const users = tsxFiles(ROOT).flatMap((file) => classAttributes(file)).filter((a) => a.pieces.some((p) => p.text === now))
+    expect(users.length).toBeGreaterThan(10)
+    for (const attr of users) {
+      const own = attr.pieces.map((p) => p.text).join(' ')
+      for (const [name, variant] of variants) {
+        const merged = twMerge(`${base} ${variant} ${own}`)
+        const old = twMerge(`${base} ${variant} ${swapBack(own)}`)
+        expect(swapBack(merged), `${attr.file}:${attr.line} over ${name}`).toBe(old)
+        // The navy words win over the variant's own words, as before.
+        expect(merged.split(' '), `${attr.file}:${attr.line} over ${name}`).toContain('text-brand-navy')
+      }
+    }
+  })
+})
+
+describe('a club\'s colour as words paints what it painted before step 25, with newLook off', () => {
+  // The club pages drew a club's words (an officer's title, a news date, the
+  // contact link, the initials on /clubs, the name in the admin's preview)
+  // in club.color || LCA.gold. Since step 25 they take clubTextColor, which
+  // gives var(--gold-ink) for brand gold or no colour. On the plain :root
+  // that is brand gold, so for every value a club can hold the words paint
+  // what they painted; under the new look brand gold becomes the dark gold
+  // on the light looks, and a colour the club chose stays its own.
+  const old = (color: string | null | undefined) => color || LCA.gold
+  const values: Array<string | null | undefined> = [null, undefined, '', LCA.gold, LCA.gold.toUpperCase(), '#1e4d7b', '#9b1c1c', '#ffffff', 'rgb(30, 77, 123)']
+
+  it.each(values.map((v) => [String(v), v] as const))('%s paints the colour it painted', (_, value) => {
+    expect(substitute(clubTextColor(value), legacy).toLowerCase()).toBe(old(value).toLowerCase())
+  })
+
+  it('under the new look brand gold or no colour becomes the gold-ink of the look, and a chosen colour is drawn as given', () => {
+    const rules = indexCssRules()
+    const light = rootTokens(rules, { look: true, dark: false })
+    const dark = rootTokens(rules, { look: true, dark: true })
+    for (const value of [null, '', LCA.gold, LCA.gold.toUpperCase()]) {
+      expect(substitute(clubTextColor(value), light), String(value)).toBe('#866a1e')
+      expect(substitute(clubTextColor(value), dark), String(value)).toBe('#c8a94a')
+    }
+    expect(substitute(clubTextColor('#1e4d7b'), light)).toBe('#1e4d7b')
+  })
+
+  it('the five places a club\'s colour is words read it through clubTextColor, and its fills and borders keep the club\'s colour', () => {
+    const detail = read('src/pages/ClubDetailPage.tsx')
+    expect(detail.match(/style=\{\{ color: textColor \}\}/g)).toHaveLength(3)
+    expect(read('src/pages/ClubsPage.tsx').match(/style=\{\{ color: clubTextColor\(club\.color\) \}\}/g)).toHaveLength(1)
+    const admin = read('src/pages/AdminClubPage.tsx')
+    expect(admin).toContain('color: clubTextColor(color),')
+    // The preview's tint, border and dot stay the club's colour.
+    expect(admin).toContain('backgroundColor: `${color}15`')
+    expect(admin).toContain('borderColor: `${color}40`')
   })
 })

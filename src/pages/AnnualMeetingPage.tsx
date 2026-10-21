@@ -129,7 +129,7 @@ export function AnnualMeetingPage() {
         {/* ── Join ── */}
         <div className="rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
-            <Video className="size-5 text-lca-gold" />
+            <Video className="size-5 text-gold-ink" />
             <h2 className="text-lg font-semibold text-ink">Join the meeting</h2>
           </div>
 
@@ -191,7 +191,7 @@ export function AnnualMeetingPage() {
 
             <div>
               <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                <Phone className="size-3.5 text-lca-gold" />
+                <Phone className="size-3.5 text-gold-ink" />
                 Join by phone
               </h3>
               <a
@@ -223,7 +223,7 @@ export function AnnualMeetingPage() {
 
         <div className="mt-5 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
-            <FileText className="size-5 text-lca-gold" />
+            <FileText className="size-5 text-gold-ink" />
             <h2 className="text-lg font-semibold text-ink">Agenda</h2>
           </div>
           {AGENDA.length === 0 ? (

@@ -86,7 +86,7 @@ function HeroSlideshow() {
         ))}
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 px-6 text-center text-white">
-        <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/20 px-3 py-1 text-xs text-[#f0d07a] backdrop-blur-sm">
+        <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/20 px-3 py-1 text-xs text-gold-on-dark-badge backdrop-blur-sm">
           Louisiana's chess community since 1915
         </div>
         <h1 className="mt-2 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">Play. Compete. Connect.</h1>
@@ -180,7 +180,7 @@ export function HomePage() {
       {nextTournament && (
         <div className="flex items-center justify-between border-b border-lca-gold/30 bg-lca-gold/10 px-4 py-2 sm:px-6">
           <div className="flex items-center gap-2 text-sm">
-            <Calendar className="size-3.5 shrink-0 text-lca-gold" />
+            <Calendar className="size-3.5 shrink-0 text-gold-ink" />
             <span className="text-muted-foreground">
               <span className="font-medium text-foreground">{nextTournament.name}</span>
               {' · '}{formatDate(nextTournament.start_date)}
@@ -205,7 +205,7 @@ export function HomePage() {
         <div className="flex flex-col border-b border-border sm:border-b-0 sm:border-r">
           <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
             <div className="flex items-center gap-2">
-              <Trophy className="size-3.5 text-lca-gold" />
+              <Trophy className="size-3.5 text-gold-ink" />
               <span className="text-[13px] font-semibold text-foreground">Tournaments</span>
             </div>
             <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-ink hover:underline">
@@ -260,7 +260,7 @@ export function HomePage() {
         <div className="flex flex-col">
           <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
             <div className="flex items-center gap-2">
-              <Building2 className="size-3.5 text-lca-gold" />
+              <Building2 className="size-3.5 text-gold-ink" />
               <span className="text-[13px] font-semibold text-foreground">Clubs</span>
             </div>
             <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-ink hover:underline">

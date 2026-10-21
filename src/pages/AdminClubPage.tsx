@@ -27,6 +27,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
 import { ClubLocationPicker } from '@/areas/clubs/components/ClubLocationPicker'
+import { clubTextColor } from '@/areas/clubs/clubColors'
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -401,7 +402,8 @@ export function AdminClubPage() {
                   style={{
                     backgroundColor: `${color}15`,
                     borderColor: `${color}40`,
-                    color,
+                    // The words as the club's page draws them (clubTextColor).
+                    color: clubTextColor(color),
                   }}
                 >
                   <div className="size-3 rounded-full" style={{ backgroundColor: color }} />
@@ -486,7 +488,7 @@ export function AdminClubPage() {
             */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
-                <Newspaper className="size-5 text-lca-gold" />
+                <Newspaper className="size-5 text-gold-ink" />
                 <h2 className="text-base font-semibold text-ink">
                   Posted news · {news.length}
                 </h2>
@@ -523,7 +525,7 @@ export function AdminClubPage() {
 
           <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
-              <Newspaper className="size-5 text-lca-gold" />
+              <Newspaper className="size-5 text-gold-ink" />
               <h2 className="text-base font-semibold text-ink">Post club news</h2>
             </div>
             <div className="space-y-4">
@@ -560,7 +562,7 @@ export function AdminClubPage() {
           <div className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-1 flex items-center gap-2">
-                <UserPlus className="size-5 text-lca-gold" />
+                <UserPlus className="size-5 text-gold-ink" />
                 <h2 className="text-base font-semibold text-ink">Officers · {officers.length}</h2>
               </div>
               <p className="mb-4 text-sm text-muted-foreground">
@@ -611,7 +613,7 @@ export function AdminClubPage() {
 
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-1 flex items-center gap-2">
-                <Users className="size-5 text-lca-gold" />
+                <Users className="size-5 text-gold-ink" />
                 <h2 className="text-base font-semibold text-ink">Club roster · {roster.length} members</h2>
               </div>
               <p className="mb-4 text-sm text-muted-foreground">
@@ -652,7 +654,7 @@ export function AdminClubPage() {
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Trophy className="size-5 text-lca-gold" />
+                <Trophy className="size-5 text-gold-ink" />
                 <h2 className="text-base font-semibold text-ink">Club tournaments</h2>
               </div>
               <Button asChild size="sm" className={goldButtonClass}>

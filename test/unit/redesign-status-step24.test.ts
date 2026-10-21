@@ -82,23 +82,28 @@ describe('REDESIGN_STATUS.md, step 24: the acceptance row', () => {
     // The palette classes kept: every kept class but the one navy tint on the gold banner.
     const palette = plan.kept.filter((k) => !k.token.includes('brand-navy')).length
     expect(row).toContain(`the ${palette} kept in 5`)
+    // The row records the allowlist as step 24 left it. Step 25 took out its
+    // 23 gold text entries (34 uses: hex colours, every one), so the numbers
+    // are pinned here, and today's allowlist plus those 34 gives them back.
+    const STEP_24 = { uses: 91, files: 33, hex: 44, veils: 34 }
+    const GOLD_RETIRED = 34
     const uses = allowlist.reduce((n, e) => n + e.count, 0)
-    const files = new Set(allowlist.map((e) => e.file)).size
-    expect(row).toContain(`\`test/unit/fixtures/raw-colours-allowlist.json\` counts ${uses} uses in ${files} files`)
-    // Its parts: the hex colours, the white veils and the classes the status map keeps for a whole file.
     const hex = allowlist.filter((e) => /\[#/.test(e.class)).reduce((n, e) => n + e.count, 0)
     const veils = allowlist.filter((e) => /(^|:)bg-white\//.test(e.class)).reduce((n, e) => n + e.count, 0)
-    expect(row).toContain(`hex colours from 51 in 30 files to ${hex} in`)
-    expect(row).toContain(`the ${hex} hex colours, the ${veils} translucent white veils on navy that step 23's map keeps in every file, and the ${uses - hex - veils} classes the status map keeps for a whole file`)
+    expect([uses + GOLD_RETIRED, hex + GOLD_RETIRED, veils]).toEqual([STEP_24.uses, STEP_24.hex, STEP_24.veils])
+    expect(row).toContain(`\`test/unit/fixtures/raw-colours-allowlist.json\` counts ${STEP_24.uses} uses in ${STEP_24.files} files`)
+    // Its parts: the hex colours, the white veils and the classes the status map keeps for a whole file.
+    expect(row).toContain(`hex colours from 51 in 30 files to ${STEP_24.hex} in`)
+    expect(row).toContain(`the ${STEP_24.hex} hex colours, the ${STEP_24.veils} translucent white veils on navy that step 23's map keeps in every file, and the ${STEP_24.uses - STEP_24.hex - STEP_24.veils} classes the status map keeps for a whole file`)
   })
 })
 
 describe('REDESIGN_STATUS.md, step 24: the step block', () => {
-  it('sits after step 23 and before the Decisions, and the date line names it first', () => {
+  it('sits after step 23 and before the Decisions, and the date line names it, after any later step', () => {
     const at = status.indexOf(HEADING)
     expect(at).toBeGreaterThan(status.indexOf('### Step 23:'))
     expect(at).toBeLessThan(status.indexOf('### Decisions'))
-    expect(line('Last updated:')).toMatch(/^Last updated: \S+ \(WS01, step 24: /)
+    expect(line('Last updated:')).toMatch(/^Last updated: \S+ \(WS01, (?:step 2[5-9]: [^;]+; )*step 24: /)
   })
 
   it('describes the status map with the counts it has, and the run with the counts it gave', () => {
@@ -209,11 +214,11 @@ describe('REDESIGN_STATUS.md, step 24: decisions, deviations, verify items and f
     ]) expect(followUps, name).toContain(`- **${name} (step 24).**`)
   })
 
-  it('gives step 25 every gold hex text use the allowlist leaves it, with its count', () => {
-    const gold = allowlist.filter((e) => /step 25/.test(e.reason))
-    const uses = gold.reduce((n, e) => n + e.count, 0)
-    const files = new Set(gold.map((e) => e.file)).size
-    expect(line('- **Gold hex text is step 25\'s, every use of it (step 24).**')).toContain(`${uses} gold text classes in ${files} files`)
+  it('gives step 25 every gold hex text use the allowlist left it, with its count', () => {
+    // The 23 entries that named step 25 left the allowlist in step 25, which
+    // moved their 34 uses in 20 files to the gold tokens; the line keeps its count.
+    expect(allowlist.filter((e) => /step 25/.test(e.reason))).toEqual([])
+    expect(line('- **Gold hex text is step 25\'s, every use of it (step 24).**')).toContain('34 gold text classes in 20 files')
   })
 })
 

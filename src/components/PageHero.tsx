@@ -72,7 +72,7 @@ export function PageHero({
         {eyebrow && (
           <div
             className={cn(
-              'inline-block rounded-full border border-lca-gold/50 bg-lca-gold/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]',
+              'inline-block rounded-full border border-lca-gold/50 bg-lca-gold/15 px-2.5 py-0.5 text-[10px] text-gold-on-dark-badge',
               backTo ? 'mt-4 block w-fit' : 'mb-1',
             )}
           >

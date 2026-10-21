@@ -2,7 +2,8 @@
 //
 // The brief names the utilities new code reaches the tokens through: text-ink,
 // text-ink-muted, bg-ground, bg-surface, bg-surface-2, border-hairline, bg-gold,
-// text-gold-ink, text-gold-on-dark and the status utilities. Each must compile,
+// text-gold-ink, text-gold-on-dark and the status utilities, and step 25 adds
+// the gold words (text-gold-ink-badge and the rest). Each must compile,
 // and must read its token where it is used (var(--ink), not a copied value),
 // so a scope or the dark class changes it. font-mono must read --font-mono-face,
 // ring-focus must read --focus, and the dark variant must match .dark on <html>
@@ -49,6 +50,10 @@ describe('the colour utilities the brief names', () => {
     ['bg-gold', 'background-color: var(--gold)'],
     ['text-gold-ink', 'color: var(--gold-ink)'],
     ['text-gold-on-dark', 'color: var(--gold-on-dark)'],
+    // The gold words of step 25: badges on a gold tint, a club page's badge, a pill on a dark ground.
+    ['text-gold-ink-badge', 'color: var(--gold-ink-badge)'],
+    ['text-gold-ink-badge-club', 'color: var(--gold-ink-badge-club)'],
+    ['text-gold-on-dark-badge', 'color: var(--gold-on-dark-badge)'],
     ['text-ok', 'color: var(--ok)'],
     ['text-bad', 'color: var(--bad)'],
   ])('%s reads its token where it is used', (name, declaration) => {

@@ -92,7 +92,7 @@ function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml:
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; className: string }> = {
-  sending: { label: 'Sending…', icon: Clock, className: 'bg-lca-gold/15 text-[#7a5c00]' },
+  sending: { label: 'Sending…', icon: Clock, className: 'bg-lca-gold/15 text-gold-ink-badge' },
   completed: { label: 'Completed', icon: CheckCircle2, className: 'bg-ok-100 text-ok' },
   failed: { label: 'Failed', icon: XCircle, className: 'bg-bad-100 text-bad-700' },
 }
@@ -349,7 +349,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
           {/* ── Compose ── */}
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <Mail className="size-5 text-lca-gold" />
+              <Mail className="size-5 text-gold-ink" />
               <h2 className="text-xl font-bold text-ink">Compose</h2>
             </div>
 
@@ -416,7 +416,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
               {/* ── Test send ── */}
               <div className="rounded-lg border border-dashed p-3">
                 <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                  <FlaskConical className="size-3.5 text-lca-gold" />
+                  <FlaskConical className="size-3.5 text-gold-ink" />
                   Send yourself a test before the real thing
                 </p>
                 <div className="flex gap-2">
@@ -459,7 +459,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
               ) : (
                 <div className="rounded-lg border border-lca-gold/50 bg-lca-gold/8 p-4">
                   <p className="flex items-center gap-2 text-sm font-medium text-ink">
-                    <Users className="size-4 text-lca-gold" />
+                    <Users className="size-4 text-gold-ink" />
                     This will email <span className="font-bold">{finalList.length}</span> {finalList.length === 1 ? 'person' : 'people'}.
                   </p>
                   {mode === 'groups' && (
@@ -495,7 +495,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                               <p className="truncate text-xs font-medium text-foreground">
                                 {r.full_name}
                                 {isManual && (
-                                  <span className="ml-1.5 rounded-full bg-lca-gold/15 px-1.5 py-0.5 text-[9px] font-medium text-[#7a5c00]">
+                                  <span className="ml-1.5 rounded-full bg-lca-gold/15 px-1.5 py-0.5 text-[9px] font-medium text-gold-ink-badge">
                                     {isTyped ? 'No account' : 'Added'}
                                   </span>
                                 )}
@@ -546,7 +546,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                             <span className="text-muted-foreground"> (no account)</span>
                           )}
                         </span>
-                        <UserPlus className="size-3.5 flex-shrink-0 text-lca-gold" />
+                        <UserPlus className="size-3.5 flex-shrink-0 text-gold-ink" />
                       </button>
                     )}
                     {addQuery.length >= 2 && typedAddresses.length === 0 && (
@@ -563,7 +563,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                                 <p className="truncate text-xs font-medium">{m.full_name}</p>
                                 <p className="truncate text-[11px] text-muted-foreground">{m.email}</p>
                               </div>
-                              <UserPlus className="size-3.5 flex-shrink-0 text-lca-gold" />
+                              <UserPlus className="size-3.5 flex-shrink-0 text-gold-ink" />
                             </button>
                           ))}
                         </div>

@@ -238,7 +238,7 @@ export function MembershipPage() {
                       key={item}
                       className="flex items-start gap-2 text-sm text-muted-foreground"
                     >
-                      <Check className="mt-0.5 size-4 shrink-0 text-lca-gold" />
+                      <Check className="mt-0.5 size-4 shrink-0 text-gold-ink" />
                       {item}
                     </li>
                   ))}
@@ -264,7 +264,7 @@ export function MembershipPage() {
               key={benefit.title}
               className="flex gap-4 rounded-xl border bg-card p-5 shadow-sm"
             >
-              <benefit.icon className="size-6 shrink-0 text-lca-gold" />
+              <benefit.icon className="size-6 shrink-0 text-gold-ink" />
               <div>
                 <h3 className="font-semibold text-ink">{benefit.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">

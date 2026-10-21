@@ -8,7 +8,7 @@ export function DonationSuccessPage() {
   usePageTitle('Thank You')
   return (
     <div className="mx-auto max-w-lg px-6 py-16 text-center">
-      <Heart className="mx-auto size-10 text-lca-gold" />
+      <Heart className="mx-auto size-10 text-gold-ink" />
       <h1 className="mt-4 text-2xl font-bold text-ink">Thank you for your donation!</h1>
       <p className="mt-2 text-muted-foreground">
         Your support helps grow chess across Louisiana. A receipt has been sent to your email by Stripe.

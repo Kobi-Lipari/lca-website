@@ -56,10 +56,10 @@ export function MultiSelectDropdown({
   const triggerClass =
     on === 'navy'
       ? isActive
-        ? 'border-lca-gold/50 bg-lca-gold/15 text-[#f0d07a]'
+        ? 'border-lca-gold/50 bg-lca-gold/15 text-gold-on-dark-badge'
         : 'border-white/15 bg-white/6 text-white/60 hover:border-white/25 hover:text-white/80'
       : isActive
-        ? 'border-lca-gold/60 bg-lca-gold/10 text-[#7a5c00]'
+        ? 'border-lca-gold/60 bg-lca-gold/10 text-gold-ink-badge'
         : 'border-border bg-background text-muted-foreground hover:border-ink/40 hover:text-foreground'
 
   return (

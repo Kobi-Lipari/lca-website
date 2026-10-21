@@ -221,7 +221,7 @@ export function SupportPage() {
         <div className="space-y-8">
           {!user && (
             <div className="rounded-lg border p-6 text-center text-muted-foreground">
-              <MessageSquare className="size-8 mx-auto mb-3 text-lca-gold" />
+              <MessageSquare className="size-8 mx-auto mb-3 text-gold-ink" />
               <p className="font-medium text-foreground mb-1">
                 Sign in to view your tickets
               </p>

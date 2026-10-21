@@ -152,7 +152,7 @@ export function PostsPanel() {
                   : <span className="size-12 flex-shrink-0 rounded-md border bg-muted/40" />}
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5 truncate font-medium text-ink">
-                    {p.pinned === 1 && <Pin className="size-3.5 flex-shrink-0 text-lca-gold" aria-label="Pinned" />}
+                    {p.pinned === 1 && <Pin className="size-3.5 flex-shrink-0 text-gold-ink" aria-label="Pinned" />}
                     <span className="truncate">{p.title}</span>
                   </span>
                   <span className="block truncate text-xs text-muted-foreground">

@@ -37,7 +37,7 @@ const ACTION_META: Record<
   membership_override: {
     label: 'Membership override',
     icon: CreditCard,
-    className: 'bg-lca-gold/20 text-[#7a5c00]',
+    className: 'bg-lca-gold/20 text-gold-ink-badge',
   },
   club_change: {
     label: 'Club change',
@@ -60,21 +60,21 @@ const ACTION_META: Record<
   tournament_unpublish: { label: 'Hid event', icon: EyeOff, className: 'bg-muted text-muted-foreground' },
   round_delete: { label: 'Deleted round', icon: Trash2, className: 'bg-bad-100 text-bad-800' },
   round_paired: { label: 'Paired round', icon: Trophy, className: 'bg-ok-100 text-ok' },
-  pairing_edit: { label: 'Changed a pairing', icon: Pencil, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  pairing_edit: { label: 'Changed a pairing', icon: Pencil, className: 'bg-lca-gold/20 text-gold-ink-badge' },
   tournament_complete: { label: 'Finished event', icon: Trophy, className: 'bg-ok-100 text-ok' },
   announcement_sent: { label: 'Emailed entrants', icon: Mail, className: 'bg-info-100 text-info-800' },
   director_assign: { label: 'Added director', icon: UserPlus, className: 'bg-info-100 text-info-800' },
   director_remove: { label: 'Removed director', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
-  registration_withdraw: { label: 'Withdrew player', icon: UserMinus, className: 'bg-lca-gold/20 text-[#7a5c00]' },
-  registration_reinstate: { label: 'Reinstated player', icon: UserPlus, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  registration_withdraw: { label: 'Withdrew player', icon: UserMinus, className: 'bg-lca-gold/20 text-gold-ink-badge' },
+  registration_reinstate: { label: 'Reinstated player', icon: UserPlus, className: 'bg-lca-gold/20 text-gold-ink-badge' },
   waitlist_offer: { label: 'Offered waitlist spot', icon: UserPlus, className: 'bg-ok-100 text-ok' },
-  payment_change: { label: 'Payment status', icon: DollarSign, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  payment_change: { label: 'Payment status', icon: DollarSign, className: 'bg-lca-gold/20 text-gold-ink-badge' },
   club_edit: { label: 'Edited club', icon: Pencil, className: 'bg-info-100 text-info-800' },
   officer_add: { label: 'Added officer', icon: UserPlus, className: 'bg-info-100 text-info-800' },
   officer_remove: { label: 'Removed officer', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   group_email_sent: { label: 'Sent group email', icon: Mail, className: 'bg-info-100 text-info-800' },
   seat_assign: { label: 'Board seat filled', icon: UserPlus, className: 'bg-info-100 text-info-800' },
-  members_export: { label: 'Exported members', icon: Download, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  members_export: { label: 'Exported members', icon: Download, className: 'bg-lca-gold/20 text-gold-ink-badge' },
   seat_end: { label: 'Board seat ended', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
   seat_regions: { label: 'Seat regions changed', icon: Building2, className: 'bg-info-100 text-info-800' },
   ticket_reply: { label: 'Answered ticket', icon: Mail, className: 'bg-muted text-muted-foreground' },
@@ -197,7 +197,7 @@ export function AuditLogPanel() {
   return (
     <div>
       <div className="mb-4 flex items-center gap-2">
-        <ShieldAlert className="size-5 text-lca-gold" />
+        <ShieldAlert className="size-5 text-gold-ink" />
         <h2 className="text-xl font-bold text-ink">Admin activity</h2>
       </div>
       <p className="mb-4 max-w-2xl text-sm text-muted-foreground">

@@ -370,8 +370,8 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
       <div className="flex-1 min-w-0">
         <PreviewBanner w={w} />
         {copiedFrom && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-3 py-2 text-xs text-[#7a5c00]">
-            <Copy className="size-3.5 flex-shrink-0 text-lca-gold" />
+          <div className="mb-4 flex items-center gap-2 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-3 py-2 text-xs text-gold-ink-badge">
+            <Copy className="size-3.5 flex-shrink-0 text-gold-ink" />
             Pre-filled from {copiedFrom} · edit freely — the original is unchanged.
           </div>
         )}
@@ -452,7 +452,7 @@ function StepSchedule({ w, onBack, onNext, onDraft }: {
       <div className="flex-1 min-w-0">
         <PreviewBanner w={w} />
         <div className="rounded-xl border bg-muted/20 p-6 text-center">
-          <Trophy className="mx-auto mb-3 size-8 text-lca-gold" />
+          <Trophy className="mx-auto mb-3 size-8 text-gold-ink" />
           <h3 className="text-base font-semibold text-ink">Round schedule</h3>
           <p className="mt-2 text-sm text-muted-foreground">
             Round-by-round dates and times are configured in the tournament management page after creation.
@@ -500,7 +500,7 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
           </div>
           {w.description && <div><p className="mb-1 text-sm text-muted-foreground">Description</p><p className="text-sm">{w.description}</p></div>}
         </div>
-        <div className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-4 py-3 text-xs text-[#7a5c00]">
+        <div className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-4 py-3 text-xs text-gold-ink-badge">
           Tournament will be created as a <strong>draft</strong> — hidden from the public until you make it visible in the management page.
         </div>
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}

@@ -155,7 +155,7 @@ function MemberCard({
                 to={contactHref}
                 aria-label={`Message the ${seat.role}`}
                 className={cn(
-                  'mt-3 inline-flex items-center gap-1.5 rounded-md border border-lca-gold/40 bg-lca-gold/8 px-2.5 py-1 text-[11px] font-medium text-[#7a5c00] transition-colors hover:bg-lca-gold/15',
+                  'mt-3 inline-flex items-center gap-1.5 rounded-md border border-lca-gold/40 bg-lca-gold/8 px-2.5 py-1 text-[11px] font-medium text-gold-ink-badge transition-colors hover:bg-lca-gold/15',
                 )}
               >
                 <Mail className="size-3" /> Message
@@ -283,7 +283,7 @@ export function BoardPage() {
           {officers.length > 0 && (
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <ShieldCheck className="size-5 text-lca-gold" />
+                <ShieldCheck className="size-5 text-gold-ink" />
                 <h2 className="text-base font-bold text-ink">Officers</h2>
                 <span className="text-xs text-muted-foreground">· {officers.length}</span>
               </div>
@@ -308,7 +308,7 @@ export function BoardPage() {
           {reps.length > 0 && (
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <MapPin className="size-5 text-lca-gold" />
+                <MapPin className="size-5 text-gold-ink" />
                 <h2 className="text-base font-bold text-ink">Regional representatives</h2>
                 <span className="text-xs text-muted-foreground">· {reps.length}</span>
               </div>

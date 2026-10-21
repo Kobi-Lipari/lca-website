@@ -47,7 +47,7 @@ function SeatRegions({ seat, clubsByRegion, busy, onChange }: {
   return (
     <div className="mt-3 rounded-lg border border-dashed px-3 py-2.5">
       <p className="flex items-center gap-1.5 text-xs font-medium text-ink">
-        <Building2 className="size-3.5 text-lca-gold" />
+        <Building2 className="size-3.5 text-gold-ink" />
         {regions.length === 0
           ? 'No region set: this seat doesn\u2019t manage any clubs yet'
           : `Manages ${clubCount} ${clubCount === 1 ? 'club' : 'clubs'} in ${regions.join(', ')}`}
@@ -123,7 +123,7 @@ function SeatRow({
           <p className="text-[11px] font-semibold uppercase tracking-wide text-ink">
             {seat.role}
             {seat.is_shared === 1 && (
-              <span className="ml-2 inline-flex items-center gap-1 rounded bg-lca-gold/15 px-1.5 py-0.5 text-[10px] font-normal text-[#7a5c00]">
+              <span className="ml-2 inline-flex items-center gap-1 rounded bg-lca-gold/15 px-1.5 py-0.5 text-[10px] font-normal text-gold-ink-badge">
                 <Users className="size-2.5" /> shared
               </span>
             )}
@@ -324,7 +324,7 @@ export function BoardSeatsPanel() {
           manage every club in those regions: the club page, officers, news and logo.
         </p>
         {clubsWithoutRegion > 0 && (
-          <p className="mt-2 rounded-md bg-lca-gold/10 px-3 py-2 text-xs text-[#7a5c00]">
+          <p className="mt-2 rounded-md bg-lca-gold/10 px-3 py-2 text-xs text-gold-ink-badge">
             {clubsWithoutRegion} {clubsWithoutRegion === 1 ? 'club has' : 'clubs have'} no region set, so no
             regional representative manages {clubsWithoutRegion === 1 ? 'it' : 'them'}. Set the region on each club&rsquo;s page under Clubs.
           </p>

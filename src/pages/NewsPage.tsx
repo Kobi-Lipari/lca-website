@@ -6,6 +6,7 @@ import { PageHero } from '@/components/PageHero'
 import { FacebookFeed } from '@/components/FacebookFeed'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
+import { FEATURES } from '@/lib/features'
 import { getPosts, type ApiPost } from '@/lib/api'
 import { formatPostDate } from '@/lib/posts'
 // Re-add when club news is re-enabled:
@@ -114,7 +115,7 @@ export function NewsPage() {
         {/* ── LCA posts (written in the admin panel → News posts) ── */}
         <div className="mb-12">
           <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            <Megaphone className="size-4 text-lca-gold" />
+            <Megaphone className="size-4 text-gold-ink" />
             LCA announcements
           </h2>
           {posts === null ? (
@@ -137,7 +138,18 @@ export function NewsPage() {
                   )}
                   <div className="flex flex-1 flex-col p-4">
                     <p className="mb-1 flex items-center gap-2 text-[11px] font-medium text-ink/80">
-                      {post.pinned === 1 && <Pin className="size-3 text-lca-gold" aria-label="Pinned" />}
+                      {/* Under the new look a pinned post says so in words beside
+                          the pin, so the gold icon is not the only sign, and the
+                          icon is then hidden from screen readers so the word is
+                          read once. With newLook off the row is as it was. */}
+                      {post.pinned === 1 && (FEATURES.newLook ? (
+                        <span className="inline-flex items-center gap-1 font-semibold text-gold-ink">
+                          <Pin className="size-3" aria-hidden="true" />
+                          Pinned
+                        </span>
+                      ) : (
+                        <Pin className="size-3 text-gold-ink" aria-label="Pinned" />
+                      ))}
                       {formatPostDate(post.published_at)}
                     </p>
                     <p className="font-semibold leading-snug text-ink group-hover:underline">{post.title}</p>
@@ -163,7 +175,7 @@ export function NewsPage() {
           <div>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                <Building2 className="size-4 text-lca-gold" />
+                <Building2 className="size-4 text-gold-ink" />
                 From the clubs
               </h2>
               <Link to="/clubs" className="flex items-center gap-1 text-xs text-ink hover:underline">
@@ -180,7 +192,7 @@ export function NewsPage() {
 
         <div>
           <h2 className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            <Building2 className="size-4 text-lca-gold" />
+            <Building2 className="size-4 text-gold-ink" />
             Latest from Facebook
           </h2>
           <FacebookFeed variant="full" limit={8} />

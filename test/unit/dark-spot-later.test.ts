@@ -4,13 +4,14 @@
 // 24). The spec runs axe in dark mode on /, /tournaments and /membership, and
 // lets a colour-contrast failure through only when a class on the element,
 // or on an ancestor up to its ground, is one a later step still moves to the
-// tokens. After step 24 that is gold text (step 25) and StatusBadge's light
-// tones (step 26), and nothing else: a status or hex colour step 24
-// converted, or kept for a reason of its own (the white veils on navy, the
-// banners' grounds, Facebook's blue, the map's paper, the light tones on the
-// navy heroes, the check-in toggle, the print page's row rules, the dots),
-// fails the spec if it fails in dark mode. The list is read from the spec
-// itself and held against the TSX files, the allowlist of
+// tokens. After step 25 that is StatusBadge's light tones (step 26), and
+// nothing else: gold text (text-lca-gold, left only on navy, and the gold
+// tokens step 25 writes), and a status or hex colour step 24 converted or
+// kept for a reason of its own (the white veils on navy, the banners'
+// grounds, Facebook's blue, the map's paper, the light tones on the navy
+// heroes, the check-in toggle, the print page's row rules, the dots), fail
+// the spec if they fail in dark mode. The list is read from the spec itself
+// and held against the TSX files, the allowlist of
 // test/unit/raw-colours.test.ts and the status map.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -40,8 +41,11 @@ const statusMap = loadMap(STATUS_MAP)
 const kept = planRewrite(ROOT, statusMap, 'check').kept
 const STATUS_BADGE = 'src/components/StatusBadge.tsx'
 
-/** Gold text: text-lca-gold and the three gold hex colours, with any variant or modifier. */
-const isGoldText = (cls: string) => /^text-(?:lca-gold|\[#(?:7a5c00|f0d07a|8a6d1f)\])$/i.test(parseToken(cls).utility)
+/**
+ * Gold text, with any variant or modifier: text-lca-gold, the gold tokens
+ * step 25 writes, and the three gold hex colours it moved to them.
+ */
+const isGoldText = (cls: string) => /^text-(?:lca-gold|gold-ink(?:-badge(?:-club)?)?|gold-on-dark-badge|\[#(?:7a5c00|f0d07a|8a6d1f)\])$/i.test(parseToken(cls).utility)
 
 /** Every class token of the TSX files under src, with its file. */
 const treeTokens = tsxFiles(ROOT).flatMap((file) =>
@@ -50,19 +54,25 @@ const treeTokens = tsxFiles(ROOT).flatMap((file) =>
 describe('the classes the dark spot run credits to a later step', () => {
   it('reads the list from the spec', () => {
     expect(LATER.length).toBeGreaterThan(0)
-    expect(credited('text-lca-gold')).toBe(true)
+    expect(credited('bg-emerald-100')).toBe(true)
   })
 
-  it('credits gold text in every form the pages use: text-lca-gold and each gold hex the allowlist leaves to step 25', () => {
+  it('credits no gold text since step 25, in any form the pages use or used, so a gold text failure in dark mode fails the spec', () => {
     const gold = treeTokens.filter((t) => isGoldText(t.cls))
-    expect(gold.length).toBeGreaterThan(100)
-    expect(gold.filter((t) => !credited(t.cls))).toEqual([])
-    const forStep25 = allowlist.filter((e) => /step 25/.test(e.reason))
-    expect(forStep25.length).toBeGreaterThan(0)
-    for (const e of forStep25) {
-      expect(isGoldText(e.class), e.class).toBe(true)
-      expect(credited(e.class), e.class).toBe(true)
+    // text-lca-gold on navy (53), text-gold-ink on a light ground (82) and the gold hex classes as tokens (34).
+    expect(gold.length).toBeGreaterThan(150)
+    expect(gold.filter((t) => credited(t.cls))).toEqual([])
+    for (const cls of ['text-lca-gold', 'hover:text-lca-gold', 'text-lca-gold/90', 'text-gold-ink', 'text-gold-ink-badge', 'hover:text-gold-ink-badge', 'text-gold-ink-badge-club', 'text-gold-on-dark-badge']) {
+      expect(credited(cls), cls).toBe(false)
     }
+    // The hex classes the pages used before step 25, put together when the
+    // test runs so Tailwind, which reads this file, builds no CSS for them.
+    for (const hex of ['7a5c00', 'f0d07a', '8a6d1f']) {
+      const cls = ['text-[#', hex, ']'].join('')
+      expect(isGoldText(cls), cls).toBe(true)
+      expect(credited(cls), cls).toBe(false)
+    }
+    expect(allowlist.filter((e) => /step 25/.test(e.reason))).toEqual([])
   })
 
   it('credits StatusBadge\'s light tones, which step 26 maps, and nothing of StatusBadge that is not text or a ground under it', () => {
@@ -72,8 +82,8 @@ describe('the classes the dark spot run credits to a later step', () => {
     for (const k of light) expect(credited(k.token), k.token).toBe(true)
   })
 
-  it('every class of the pages it credits is gold text or sits in StatusBadge', () => {
-    const others = treeTokens.filter((t) => credited(t.cls) && !isGoldText(t.cls) && t.file !== STATUS_BADGE)
+  it('every class of the pages it credits sits in StatusBadge', () => {
+    const others = treeTokens.filter((t) => credited(t.cls) && t.file !== STATUS_BADGE)
     expect(others).toEqual([])
   })
 
@@ -91,8 +101,8 @@ describe('the classes the dark spot run credits to a later step', () => {
   })
 
   it('credits none of the raw colours step 24 keeps for a reason of its own, so a dark mode failure in one fails the spec', () => {
-    // The allowlist's entries for a later step: gold text (step 25) and StatusBadge's tones (step 26).
-    const later = (e: AllowEntry) => /step 25/.test(e.reason) || (e.file === STATUS_BADGE && /step 26/i.test(e.reason))
+    // The allowlist's entries for a later step: StatusBadge's tones (step 26); gold text has none since step 25.
+    const later = (e: AllowEntry) => e.file === STATUS_BADGE && /step 26/i.test(e.reason)
     const ownReasons = allowlist.filter((e) => !later(e))
     const kinds = new Set(ownReasons.map((e) => parseToken(e.class).utility.replace(/^(bg-white)$/, 'a white veil').replace(/-\[#[0-9a-fA-F]+\]$/, ' hex')))
     expect([...kinds].sort()).toEqual(['a white veil', 'bg hex', 'bg-slate-400', 'bg-slate-500', 'border hex', 'border-gray-300', 'text hex'])
@@ -102,7 +112,7 @@ describe('the classes the dark spot run credits to a later step', () => {
     ])
     for (const e of ownReasons) expect(credited(e.class), `${e.file} ${e.class}`).toBe(false)
     // StatusBadge's entries for step 26 are its seven light tone classes, which the spec credits, and StatusDot's dot.
-    const badge = allowlist.filter((e) => e.file === STATUS_BADGE && /step 26/i.test(e.reason) && !/step 25/.test(e.reason))
+    const badge = allowlist.filter((e) => e.file === STATUS_BADGE && /step 26/i.test(e.reason))
     expect(badge.map((e) => e.class).sort()).toEqual(['bg-blue-50', 'bg-emerald-100', 'bg-emerald-500', 'bg-red-100', 'border-blue-200', 'text-blue-800', 'text-emerald-800', 'text-red-700'])
     expect(badge.filter((e) => !credited(e.class)).map((e) => e.class)).toEqual(['bg-emerald-500'])
     const keptForItself = kept.filter((k) => k.file !== STATUS_BADGE)

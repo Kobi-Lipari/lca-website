@@ -145,7 +145,7 @@ export function ClubLocationPicker({
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm">
       <div className="mb-1 flex items-center gap-2">
-        <MapPin className="size-5 text-lca-gold" />
+        <MapPin className="size-5 text-gold-ink" />
         <h2 className="text-base font-semibold text-ink">Map location</h2>
       </div>
       <p className="mb-4 text-sm text-muted-foreground">
