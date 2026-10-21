@@ -22,3 +22,7 @@ No AI references anywhere; read the real file before changing it; match repo con
 
 ## Gate baseline (October 8, untouched tree)
 `npm run build`, `npm run typecheck:functions`, `npm run test` (326 passing) and `npm run test:integration` (267 passing) are green. `npm run lint` is red at baseline with 37 errors and 4 warnings (CI does not run lint); the per-file list is in `lint-baseline.md`. Rule for every slice: the total error count never rises, and every error in a file the slice touches is fixed. Report the before and after counts in the slice report.
+
+## Note for step 32 (Wed, Oct 21)
+
+The CI accessibility job failed once on a74f221 (step 25) and passed on re-run. test/a11y/baseline.ts sampled /tournaments/fx-t-done in its empty state (first Button a plain outline button, no table header, no mono element) after the local test database answered "database is locked: SQLITE_BUSY" to the page's data request. The spec waits only for networkidle and a visible main. Step 32, which owns the harness, should make the baseline and the other samplers wait for the page's content (the table header on the done page, the first Button with its data-variant) and retry one navigation when the data request failed, so a lock in the local database never reads as a colour change. Nothing in step 25 touched the database or the API.
