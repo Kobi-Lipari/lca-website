@@ -782,6 +782,13 @@
  * the tint its old class fell back to, the same colour as #rrggbbaa, so those
  * browsers draw what they drew before. Browsers that can mix colours skip
  * these rules. test/unit/semantic-map.test.ts checks every one.
+ *
+ * The last rule (step 26) is of another kind: two status tints are a mix on
+ * the plain :root, 20 per cent of brand gold, which those browsers cannot
+ * read, so a soon or LCA tag would lose its tint there with newLook off. It
+ * gives both the same tint as #rrggbbaa, the fallback Tailwind writes for
+ * bg-lca-gold/20. The new look's values are plain hex colours and outrank it,
+ * so it changes nothing else. test/unit/tokens.test.ts checks it.
  */
 @supports not (color: color-mix(in lab, red, red)) {
     .bg-ink\/5 { background-color: #1a27440d; }
@@ -797,6 +804,10 @@
     .border-ink\/40 { border-color: #1a274466; }
     .focus\:border-ink\/50:focus { border-color: #1a274480; }
     .bg-info-banner\/15 { background-color: #1e4d7b26; }
+    :root {
+        --status-soon-tint: #c8a94a33;
+        --status-lca-tint: #c8a94a33;
+    }
 }
 
 /* The hover forms sit inside the same media query as Tailwind's own. */

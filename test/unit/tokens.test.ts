@@ -193,7 +193,8 @@ describe('the gate: nothing new applies without data-look="new"', () => {
   it('the no-colour-mix block only gives a token class with an opacity modifier a plain #rrggbbaa tint', () => {
     // What each rule's tint is, and that it is the old class's fallback, is
     // semantic-map.test.ts's to check; here, that the block can do nothing else.
-    const block = rules.filter((r) => r.within === NO_COLOR_MIX)
+    // Its one :root rule (step 26) is checked in the next test.
+    const block = rules.filter((r) => r.within === NO_COLOR_MIX && r.selector !== ':root')
     expect(block.length).toBeGreaterThan(0)
     for (const rule of block) {
       expect(rule.selectors, rule.selector).toHaveLength(1)
@@ -207,6 +208,43 @@ describe('the gate: nothing new applies without data-look="new"', () => {
     // The hover forms sit inside @media (hover: hover), as Tailwind's own hover utilities do.
     const hover = stripComments(css).match(/@media \(hover: hover\) \{\s*@supports not \(color: color-mix\(in lab, red, red\)\) \{([^}]*\}[^}]*)\}/)?.[1] ?? ''
     for (const rule of block.filter((r) => r.selector.endsWith(':hover'))) expect(hover, rule.selector).toContain(rule.selector)
+  })
+
+  it('the no-colour-mix block gives the two status tints that are a mix on the plain :root their #rrggbbaa value, and nothing else (step 26)', () => {
+    // --status-soon-tint and --status-lca-tint are 20 per cent of brand gold
+    // mixed with transparent on the plain :root, a value a browser that
+    // cannot mix colours cannot read, so a soon or LCA tag (StatusBadge's
+    // status path, the selected FilterChip) would lose its tint there with
+    // newLook off. The block gives both the same tint as #rrggbbaa: what
+    // Tailwind writes for bg-lca-gold/20 in those browsers.
+    const tokenRules = rules.filter((r) => r.within === NO_COLOR_MIX && r.selector === ':root')
+    expect(tokenRules).toHaveLength(1)
+    const decls = tokenRules[0].decls
+    expect([...decls.keys()].sort()).toEqual(['--status-lca-tint', '--status-soon-tint'])
+    const legacyRoot = rules.find((r) => r.selector === ':root' && r.within === '')!
+    const mixed = /^color-mix\(in oklab, (#[0-9a-f]{6}) (\d+)%, transparent\)$/
+    for (const [name, fallback] of decls) {
+      const plain = legacyRoot.decls.get(name) ?? ''
+      const m = plain.match(mixed)
+      expect(m, `${name} is a mix on the plain :root`).not.toBeNull()
+      const alpha = Math.round((Number(m![2]) / 100) * 255).toString(16).padStart(2, '0')
+      expect(fallback, name).toBe(`${m![1]}${alpha}`)
+    }
+    expect(decls.get('--status-soon-tint')).toBe('#c8a94a33')
+    // Every other status tint on the plain :root is a plain colour every browser reads.
+    for (const s of STATUSES.filter((x) => x !== 'soon' && x !== 'lca')) {
+      expect(legacyRoot.decls.get(`--status-${s}-tint`), s).toMatch(/^oklch\(/)
+    }
+    // The rule sits after the plain :root, which it overrides at the same
+    // specificity in those browsers, and below every new-look block, whose
+    // selectors outrank it, so under the new look the tags keep their tints.
+    expect(tokenRules[0].order).toBeGreaterThan(legacyRoot.order)
+    expect(specificity(':root')).toBeLessThan(specificity(':root[data-look="new"]'))
+    for (const r of rules.filter((x) => x.selectors.some((s) => s.startsWith(':root[data-look="new"]')))) {
+      for (const name of decls.keys()) {
+        if (r.decls.has(name)) expect(r.decls.get(name), `${r.selector} ${name}`).toMatch(/^#[0-9a-f]{3,6}$/)
+      }
+    }
   })
 
   it('the dark variant matches .dark on <html> itself as well as inside it', () => {

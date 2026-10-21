@@ -688,8 +688,11 @@ describe('a status tag\'s words sit on their own tint (step 24)', () => {
   // ground in dark mode, so their words on a page or a card would vanish.
   // The step 24 map writes text-status-open only on the two Open pills,
   // beside bg-status-open-tint; red or green words on a page take text-bad
-  // or text-ok. This holds every text-status class in the site to that, and
-  // the fixture pages, which draw the looks' own swatches, are left out.
+  // or text-ok. Since step 26 StatusBadge's status path writes each status's
+  // words beside its own tint, one string per status, and a FilterChip that
+  // is on takes the soon pair. This holds every text-status class in the site
+  // to that, and the fixture pages, which draw the looks' own swatches, are
+  // left out.
   const files = tsxFiles(ROOT).filter((f) => !f.startsWith('src/pages/fixtures/'))
 
   it('every text-status class shares its string with its own opaque tint, under the same variants', () => {
@@ -711,6 +714,15 @@ describe('a status tag\'s words sit on their own tint (step 24)', () => {
     }
     expect(found).toEqual([
       'src/areas/events/components/AgendaList.tsx:87 text-status-open',
+      'src/components/StatusBadge.tsx:59 text-status-open',
+      'src/components/StatusBadge.tsx:60 text-status-soon',
+      'src/components/StatusBadge.tsx:61 text-status-full',
+      'src/components/StatusBadge.tsx:62 text-status-waitlist',
+      'src/components/StatusBadge.tsx:63 text-status-closed',
+      'src/components/StatusBadge.tsx:64 text-status-live',
+      'src/components/StatusBadge.tsx:65 text-status-partner',
+      'src/components/StatusBadge.tsx:66 text-status-lca',
+      'src/components/ui/filter-chip.tsx:63 text-status-soon',
       'src/pages/TournamentDetailPage.tsx:822 text-status-open',
     ])
     expect(lonely).toEqual([])

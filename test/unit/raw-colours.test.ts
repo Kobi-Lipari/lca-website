@@ -156,18 +156,18 @@ describe('the raw colour ratchet on the tree', () => {
 
   it('what is left: the maps\' keep entries for one string and the allowlist, every one with its reason', () => {
     // The raw classes a keep entry names in its one string: step 23's five
-    // white mats, and step 24's light tones on navy with their tints (18) and
-    // the check-in toggle's hover line (1); step 24 also keeps one navy tint
-    // in its string, which is not raw. The allowlist counts the rest: the
-    // hex colours (10, since step 25 moved the 34 gold text classes to the
-    // gold tokens), the translucent white veils on navy (34), and the
-    // classes the status map keeps for a whole file (13: StatusBadge's light
-    // tones and StatusDot's dot 8, the print page's row rules 2 and the
-    // dots 3).
+    // white mats, step 24's light tones on navy with their tints (18) and
+    // the check-in toggle's hover line (1), and since step 26 StatusBadge's
+    // light tones (7) and StatusDot's dot with newLook off (1); step 24 also
+    // keeps one navy tint in its string, which is not raw. The allowlist
+    // counts the rest: the hex colours (10, since step 25 moved the 34 gold
+    // text classes to the gold tokens), the translucent white veils on navy
+    // (34), and the classes the status map keeps for a whole file (5: the
+    // print page's row rules 2 and the dots 3).
     const keptRaw = [...result.kept].filter(([k]) => result.uses.some((u) => key(u.file, u.token) === k)).reduce((a, [, n]) => a + n, 0)
     const fromList = allowlist.reduce((a, e) => a + e.count, 0)
-    expect(keptRaw).toBe(5 + 18 + 1)
-    expect(fromList).toBe(10 + 34 + 13)
+    expect(keptRaw).toBe(5 + 18 + 1 + 7 + 1)
+    expect(fromList).toBe(10 + 34 + 5)
     expect(result.uses.length).toBe(keptRaw + fromList)
     const veils = allowlist.filter((e) => parseToken(e.class).utility === 'bg-white')
     expect(veils.reduce((a, e) => a + e.count, 0)).toBe(34)
@@ -195,7 +195,7 @@ describe('the raw colour ratchet on the tree', () => {
   it('leaves no text-lca-navy or other brand navy class, and no status colour of a palette but the kept ones', () => {
     expect(result.uses.filter((u) => u.kind.startsWith('the brand navy'))).toEqual([])
     const palette = result.uses.filter((u) => u.kind === 'a Tailwind palette colour')
-    // StatusBadge (step 26), the light tones on the navy heroes, the check-in toggle, the print page's row rules and the dots.
+    // StatusBadge's tones and StatusDot's dot (kept in step 26), the light tones on the navy heroes, the check-in toggle, the print page's row rules and the dots.
     expect([...new Set(palette.map((u) => u.file))].sort()).toEqual([
       'src/components/StatusBadge.tsx',
       'src/pages/TournamentDetailPage.tsx',
@@ -304,13 +304,37 @@ describe('the ratchet on a planted tree', () => {
   })
 
   it.each([
-    ['StatusBadge\'s light green, which the status map keeps for the whole file', 'src/components/StatusBadge.tsx', c('bg-emerald', '-100')],
-    ['StatusDot\'s open dot', 'src/components/StatusBadge.tsx', c('bg-emerald', '-500')],
     ['the print page\'s grey row rule', 'src/pages/TournamentPrintPage.tsx', c('border-gray', '-300')],
     ['the external-event dot', 'src/pages/TournamentsPage.tsx', c('bg-slate', '-400')],
   ])('fails on %s in its own file when the allowlist does not count it', (_, file, cls) => {
     const { problems } = ratchet(tree({ [file]: page(cls) }), [])
     expect(problems).toEqual([`${file}:2 ${cls} is a Tailwind palette colour; use a token, or allow it with its reason`])
+  })
+
+  // Since step 26 the status map keeps StatusBadge's light tones and
+  // StatusDot's dot with newLook off each in its one string, so the ratchet
+  // checks StatusBadge like any other file: the same class in another string
+  // of the file is raw, and so is a light tone written apart from its pair.
+  it.each([
+    ['StatusBadge\'s light green, outside the one string its keep entry names', 'src/components/StatusBadge.tsx', c('bg-emerald', '-100')],
+    ['StatusBadge\'s light red words, outside their string', 'src/components/StatusBadge.tsx', c('text-red', '-700')],
+    ['StatusBadge\'s light blue line, outside its string', 'src/components/StatusBadge.tsx', c('border-blue', '-200')],
+    ['StatusDot\'s open dot, outside the string of today\'s dot', 'src/components/StatusBadge.tsx', c('bg-emerald', '-500')],
+  ])('fails on %s', (_, file, cls) => {
+    const { problems } = ratchet(tree({ [file]: page(cls) }), [])
+    expect(problems).toEqual([`${file}:2 ${cls} is a Tailwind palette colour; use a token, or allow it with its reason`])
+  })
+
+  it('keeps StatusBadge\'s light tones and StatusDot\'s dot in their own strings, with no allowlist entry, and fails on the same class in a second string beside them', () => {
+    const green = `${c('bg-emerald', '-100')} ${c('text-emerald', '-800')}`
+    const dot = `size-1.5 flex-shrink-0 rounded-full ${c('bg-emerald', '-500')}`
+    const source = `const TONES = { emerald: '${green}' }\nexport const Dot = () => <span className="${dot}" />\n`
+    expect(ratchet(tree({ 'src/components/StatusBadge.tsx': source }), []).problems).toEqual([])
+    expect(allowlist.filter((e) => e.file === 'src/components/StatusBadge.tsx').map((e) => e.class)).toEqual(['bg-white/10'])
+    const beside = `${source}export const Other = () => <p className="p-1 ${c('bg-emerald', '-100')}">y</p>\n`
+    expect(ratchet(tree({ 'src/components/StatusBadge.tsx': beside }), []).problems).toEqual([
+      `src/components/StatusBadge.tsx:3 ${c('bg-emerald', '-100')} is a Tailwind palette colour; use a token, or allow it with its reason`,
+    ])
   })
 
   // The status map keeps the light green, red, blue and green tones and

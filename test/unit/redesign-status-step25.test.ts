@@ -94,11 +94,11 @@ describe('REDESIGN_STATUS.md, step 25: the AC2 row', () => {
 })
 
 describe('REDESIGN_STATUS.md, step 25: the step block', () => {
-  it('sits after step 24 and before the Decisions, and the date line names it first', () => {
+  it('sits after step 24 and before the Decisions, and the date line names it, after any later step', () => {
     const at = status.indexOf(HEADING)
     expect(at).toBeGreaterThan(status.indexOf('### Step 24:'))
     expect(at).toBeLessThan(status.indexOf('### Decisions'))
-    expect(line('Last updated:')).toMatch(/^Last updated: \S+ \(WS01, step 25: /)
+    expect(line('Last updated:')).toMatch(/^Last updated: \S+ \(WS01, (?:step (?:2[6-9]|3\d): [^;]+; )*step 25: /)
   })
 
   it('records the files, the script, the tokens, a club\'s colour, the icons, the judgement calls, the guard, the lint, the build and the dark run', () => {

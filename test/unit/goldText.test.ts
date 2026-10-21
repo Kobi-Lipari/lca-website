@@ -787,6 +787,9 @@ describe('the gold guard on the tree', () => {
   })
 
   it('finds every place a component told its ground by on is drawn giving the on its ground needs', () => {
+    // Since step 26 the fixture page also draws StatusBadge's status path,
+    // a tag for every status and two with words of their own, each with
+    // on="light", the only on its type takes.
     expect([...result.onPlaces].sort()).toEqual([
       'src/pages/AdminEmailPage.tsx:379 <MultiSelectDropdown> on=light (its default) -> light',
       'src/pages/AdminEmailPage.tsx:380 <MultiSelectDropdown> on=light (its default) -> light',
@@ -796,6 +799,9 @@ describe('the gold guard on the tree', () => {
       'src/pages/fixtures/ScopeFixturePage.tsx:114 <StatusBadge> on=light -> light',
       'src/pages/fixtures/ScopeFixturePage.tsx:115 <StatusBadge> on=light -> light',
       'src/pages/fixtures/ScopeFixturePage.tsx:116 <StatusBadge> on=light -> light',
+      'src/pages/fixtures/ScopeFixturePage.tsx:213 <StatusBadge> on=light -> light',
+      'src/pages/fixtures/ScopeFixturePage.tsx:217 <StatusBadge> on=light -> light',
+      'src/pages/fixtures/ScopeFixturePage.tsx:218 <StatusBadge> on=light -> light',
     ])
   })
 

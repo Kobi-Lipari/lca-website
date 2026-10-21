@@ -462,6 +462,8 @@ describe('the files of the browser test layer', () => {
     'test/a11y/builds.spec.ts',
     'test/a11y/seeded-data.spec.ts',
     'test/a11y/axe-detects.spec.ts',
+    'test/a11y/components.spec.ts',
+    'test/a11y/components-edges.spec.ts',
     'test/a11y/known-violations.json',
     'test/e2e/register-family.spec.ts',
     'test/e2e/publish-round.spec.ts',

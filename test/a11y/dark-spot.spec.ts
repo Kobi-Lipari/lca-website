@@ -10,14 +10,15 @@
 // bg-surface, so axe must find no colour-contrast failure caused by either:
 // no failing text in the brand navy #1a2744 (navy on a dark ground) and no
 // failing text on a white ground. Step 24 moved the status colours, the greys
-// and the raw hex colours to the tokens too, and step 25 the gold text, so
-// every colour-contrast failure that is left must come from a class a later
-// step still owns: StatusBadge's light tones (step 26), on the element
-// itself or on an ancestor up to its ground. Anything else fails the test,
-// gold text, and a status or hex colour step 24 left, included.
-// Every finding of every rule is printed and attached, so a run is also the
-// record of what is left. The full axe sweep of every look is step 32's
-// (WS01 acceptance criterion 1).
+// and the raw hex colours to the tokens too, step 25 the gold text, and step
+// 26 settled StatusBadge's light tones, so no colour-contrast failure is
+// left to a later step: a class in the LATER list below, on the element
+// itself or on an ancestor up to its ground, would be the one thing let
+// through, and the list is empty. Every colour-contrast failure fails the
+// test, gold text, a status or hex colour step 24 left and StatusBadge's
+// tones included. Every finding of every rule is printed and attached, so a
+// run is also the record of what is left. The full axe sweep of every look
+// is step 32's (WS01 acceptance criterion 1).
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from './support'
 
@@ -26,13 +27,15 @@ const NAVY = '#1a2744'
 const WHITE = '#ffffff'
 
 /**
- * Classes whose colours a later step still moves to the tokens: StatusBadge's
- * light tones, which step 24 keeps for step 26. Gold text is credited to no
- * step since step 25: text-lca-gold is left only on navy, where it reads
- * 6.51:1 in every look, and every other gold text class is a gold token.
+ * Classes whose colours a later step still moves to the tokens: none since
+ * step 26. Gold text is credited to no step since step 25 (text-lca-gold is
+ * left only on navy, where it reads 6.51:1 in every look, and every other
+ * gold text class is a gold token), and StatusBadge's light tones to none
+ * since step 26, which keeps them as opaque light pills with words of their
+ * own that read the same on any ground. A later step that leaves a class to
+ * another adds it here, as a regular expression literal on a line of its own.
  */
-const LATER = [
-  /^(?:bg-emerald-100|text-emerald-800|bg-red-100|text-red-700|border-blue-200|bg-blue-50|text-blue-800)$/,
+const LATER: RegExp[] = [
 ]
 
 interface Contrast {

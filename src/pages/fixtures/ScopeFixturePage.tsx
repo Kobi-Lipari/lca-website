@@ -1,30 +1,30 @@
 // src/pages/fixtures/ScopeFixturePage.tsx
 //
 // A test page for the accessibility suite (npm run test:a11y), at
-// /__fixtures/:name. It shows the shared controls (buttons, a text field, a
-// table, status badges and figures in the monospace face) inside one look,
-// so the browser tests can measure colours, contrast and layout in each look
-// without depending on what the real pages happen to show that day.
-//
-// The route exists only in the accessibility test build (vite build --mode
-// a11y): src/App.tsx registers it behind import.meta.env.MODE, so the site's
-// own build carries neither the route nor this file.
-//
-// Each name draws its container in one look through ThemeScope, which puts
-// data-theme on it ("" for base) and loads that look's fonts. The colours
-// change only in a build with newLook on; with it off every name draws the
-// site as it looks today. The scholastic fixture adds the grade band colour
-// tiles, each with its band's words. test/a11y/scope-switch.spec.ts switches
-// data-theme on the container in place to show a change of look moves
-// nothing on the page.
+// /__fixtures/:name, in the accessibility test build only: src/App.tsx
+// registers the route behind import.meta.env.MODE, so the site's own build
+// carries neither the route nor this file. Each name draws the shared
+// controls in one look through ThemeScope (data-theme, "" for base), so the
+// browser tests measure colours, contrast and layout in each look: buttons,
+// a text field, status badges, a table and figures in the monospace face,
+// then the base components (BaseComponents, below) and, in the scholastic
+// look, the grade band tiles. The colours change only in a build with
+// newLook on. test/a11y/scope-switch.spec.ts switches data-theme on the
+// container in place to show a change of look moves nothing, and
+// test/a11y/components.spec.ts checks the base components in every look.
+import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { StatusBadge } from '@/components/StatusBadge'
+import { DateBlock } from '@/components/DateBlock'
+import { ScrollPanel } from '@/components/ScrollPanel'
+import { StatusBadge, StatusDot } from '@/components/StatusBadge'
 import { ThemeScope } from '@/components/ThemeScope'
 import { Button } from '@/components/ui/button'
+import { FilterChip } from '@/components/ui/filter-chip'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { BADGE_STATUSES } from '@/lib/badgeStatus'
 import type { ThemeScopeName } from '@/lib/themeScopes'
 
 /** Fixture name to the look its container is drawn in. */
@@ -117,6 +117,8 @@ export function ScopeFixturePage() {
           </div>
         </section>
 
+        <BaseComponents />
+
         <section aria-labelledby="fixture-table">
           <h2 id="fixture-table" className="text-xl font-semibold">Standings</h2>
           <Table className="mt-3">
@@ -161,5 +163,119 @@ export function ScopeFixturePage() {
         )}
       </div>
     </ThemeScope>
+  )
+}
+
+/** The quick filters the chips show, with the count each would give; Scholastic can also be removed. */
+const QUICK_FILTERS: ReadonlyArray<{ label: string; count?: number; removable?: boolean }> = [
+  { label: 'This month' },
+  { label: 'Classical', count: 2 },
+  { label: 'Scholastic', count: 2, removable: true },
+  { label: 'Near me' },
+]
+
+/** The rows of the scroll panel, each a box to tick: more than the panel shows at once, so it scrolls. */
+const SETUP_STEPS = [
+  'Event name and dates',
+  'Venue and parking',
+  'Sections and rating limits',
+  'Entry fees',
+  'Prizes',
+  'Round schedule',
+  'Directors',
+  'Registration window',
+  'Rating with US Chess',
+  'Payments',
+  'Review and publish',
+]
+
+/**
+ * The base components later pages are built from (WS01 step 26), in the look
+ * of the container: a StatusBadge for every status, in its default words and
+ * in words of its own, each carrying data-status, and the three StatusDots;
+ * the gold Button; filter chips that toggle, with and without a count, one
+ * that can also be removed, and an applied filter that can only be removed;
+ * date blocks for a bare date, a Louisiana wall-clock time and an instant
+ * (with the year); and a scroll panel of steps to tick under a header.
+ */
+function BaseComponents() {
+  const [pressed, setPressed] = useState<Record<string, boolean>>({ 'This month': true })
+  const [removed, setRemoved] = useState<string[]>([])
+  const shown = (label: string) => !removed.includes(label)
+  const remove = (label: string) => () => setRemoved((r) => [...r, label])
+
+  return (
+    <>
+      <section aria-labelledby="fixture-statuses">
+        <h2 id="fixture-statuses" className="text-xl font-semibold">Every status</h2>
+        <div className="mt-3 flex flex-wrap gap-3">
+          {BADGE_STATUSES.map((status) => (
+            <StatusBadge key={status} status={status} on="light" />
+          ))}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-3">
+          <StatusBadge status="soon" on="light">Opens Mon, Oct 12</StatusBadge>
+          <StatusBadge status="live" on="light">Live · Round 3</StatusBadge>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-4">
+          <StatusDot regStatus="open" />
+          <StatusDot regStatus="draft" />
+          <StatusDot regStatus="closed" />
+        </div>
+      </section>
+
+      <section aria-labelledby="fixture-gold">
+        <h2 id="fixture-gold" className="text-xl font-semibold">Gold button</h2>
+        <div className="mt-3">
+          <Button variant="gold">Join the waitlist</Button>
+        </div>
+      </section>
+
+      <section aria-labelledby="fixture-chips">
+        <h2 id="fixture-chips" className="text-xl font-semibold">Filter chips</h2>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          {QUICK_FILTERS.filter((f) => shown(f.label)).map((f) => (
+            <FilterChip
+              key={f.label}
+              label={f.label}
+              count={f.count}
+              pressed={pressed[f.label] === true}
+              onPressedChange={(on) => setPressed((p) => ({ ...p, [f.label]: on }))}
+              onRemove={f.removable ? remove(f.label) : undefined}
+            />
+          ))}
+          {shown('Next 3 months') && <FilterChip label="Next 3 months" onRemove={remove('Next 3 months')} />}
+        </div>
+      </section>
+
+      <section aria-labelledby="fixture-dates">
+        <h2 id="fixture-dates" className="text-xl font-semibold">Dates</h2>
+        <div className="mt-3 flex flex-wrap gap-3">
+          <DateBlock value="2026-10-24" />
+          <DateBlock value="2026-11-07T09:00" />
+          <DateBlock value="2026-12-05T03:00:00Z" year />
+        </div>
+      </section>
+
+      <section aria-labelledby="fixture-scroll">
+        <h2 id="fixture-scroll" className="text-xl font-semibold">Scroll panel</h2>
+        <ScrollPanel
+          label="Setup steps"
+          header={<p className="px-4 py-2 text-sm font-semibold">Setup steps</p>}
+          className="mt-3 max-h-48"
+        >
+          <ol className="divide-y divide-hairline">
+            {SETUP_STEPS.map((step, i) => (
+              <li key={step}>
+                <label className="flex items-center gap-3 px-4 py-2 text-sm">
+                  <input type="checkbox" className="size-4 accent-ink" />
+                  {i + 1}. {step}
+                </label>
+              </li>
+            ))}
+          </ol>
+        </ScrollPanel>
+      </section>
+    </>
   )
 }

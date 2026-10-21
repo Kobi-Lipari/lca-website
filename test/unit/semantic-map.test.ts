@@ -557,8 +557,13 @@ function mixedTint(value: string): string | null {
 
 const NO_COLOR_MIX = '@supports not (color: color-mix(in lab, red, red))'
 
-/** The rules of src/index.css for browsers that cannot mix colours, with the at-rules around them. */
-const noMixRules = () => leafRules(stripComments(read('src/index.css'))).filter((r) => r.within.includes(NO_COLOR_MIX))
+/**
+ * The class rules of src/index.css for browsers that cannot mix colours, with
+ * the at-rules around them. The block's one rule of another kind (step 26),
+ * on :root, gives two status tints that are a mix on the plain :root their
+ * fallback as tokens; it sets no class's colour, and tokens.test.ts checks it.
+ */
+const noMixRules = () => leafRules(stripComments(read('src/index.css'))).filter((r) => r.within.includes(NO_COLOR_MIX) && r.selector !== ':root')
 
 /** The rules one class compiles to, with the at-rules around each and the class's own selector as written. */
 function rulesOf(cls: string) {
@@ -780,7 +785,7 @@ describe('the status map: the TSX files match it', () => {
     expect(plan.edits).toEqual([])
   })
 
-  it('the classes it keeps are its keep entries: the light tones on navy, StatusBadge (step 26), the check-in toggle\'s hover line, the print page\'s row rules and the external-event dots', () => {
+  it('the classes it keeps are its keep entries: the light tones on navy, StatusBadge\'s tones and dot (kept in step 26), the check-in toggle\'s hover line, the print page\'s row rules and the external-event dots', () => {
     const byFile = new Map<string, string[]>()
     for (const k of plan.kept) byFile.set(k.file, [...(byFile.get(k.file) ?? []), k.token])
     expect(Object.fromEntries([...byFile].map(([f, t]) => [f, t.sort()]))).toEqual({
@@ -799,6 +804,14 @@ describe('the status map: the TSX files match it', () => {
       'src/pages/TournamentsPage.tsx': ['bg-slate-400', 'bg-slate-400', 'bg-slate-500'],
     })
     for (const k of plan.kept) expect(k.reason.length, k.token).toBeGreaterThan(40)
+    // Since step 26 every StatusBadge entry names its one string, so the
+    // ratchet checks the file like any other, and none waits for a later step.
+    const badge = statusMap.keep.filter((k) => k.file === 'src/components/StatusBadge.tsx')
+    expect(badge).toHaveLength(14)
+    for (const k of badge) {
+      expect(k.contains, k.class).toBeDefined()
+      expect(k.reason, k.class).not.toMatch(/step 2[6-9]|step 3\d/)
+    }
   })
 
   it('keeps nothing in every file: each keep entry names its file, and each light tone on navy and its tint the one string it sits in', () => {

@@ -84,8 +84,9 @@ test.describe('a change of look on a phone and on a dark device', () => {
         }
         const total = await observeShifts(page)
         const before = await boxes(page)
-        expect(before.buttons.length).toBe(4)
-        expect(before.badges.length).toBe(3)
+        // Four Buttons and the gold Button; today's three pills and, since step 26, ten status tags.
+        expect(before.buttons.length).toBe(5)
+        expect(before.badges.length).toBe(13)
         for (let pass = 0; pass < 2; pass++) {
           for (const theme of THEMES) {
             await switchTo(page, theme)

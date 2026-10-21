@@ -83,14 +83,18 @@ describe('REDESIGN_STATUS.md, step 24: the acceptance row', () => {
     const palette = plan.kept.filter((k) => !k.token.includes('brand-navy')).length
     expect(row).toContain(`the ${palette} kept in 5`)
     // The row records the allowlist as step 24 left it. Step 25 took out its
-    // 23 gold text entries (34 uses: hex colours, every one), so the numbers
-    // are pinned here, and today's allowlist plus those 34 gives them back.
+    // 23 gold text entries (34 uses: hex colours, every one), and step 26 the
+    // 8 entries of StatusBadge's light tones and StatusDot's dot (8 uses),
+    // which the status map now keeps each in its one string, so the numbers
+    // are pinned here, and today's allowlist plus those gives them back.
     const STEP_24 = { uses: 91, files: 33, hex: 44, veils: 34 }
     const GOLD_RETIRED = 34
+    const STATUS_BADGE_KEPT = 8
     const uses = allowlist.reduce((n, e) => n + e.count, 0)
     const hex = allowlist.filter((e) => /\[#/.test(e.class)).reduce((n, e) => n + e.count, 0)
     const veils = allowlist.filter((e) => /(^|:)bg-white\//.test(e.class)).reduce((n, e) => n + e.count, 0)
-    expect([uses + GOLD_RETIRED, hex + GOLD_RETIRED, veils]).toEqual([STEP_24.uses, STEP_24.hex, STEP_24.veils])
+    expect([uses + GOLD_RETIRED + STATUS_BADGE_KEPT, hex + GOLD_RETIRED, veils]).toEqual([STEP_24.uses, STEP_24.hex, STEP_24.veils])
+    expect(allowlist.filter((e) => e.file === 'src/components/StatusBadge.tsx').map((e) => e.class)).toEqual(['bg-white/10'])
     expect(row).toContain(`\`test/unit/fixtures/raw-colours-allowlist.json\` counts ${STEP_24.uses} uses in ${STEP_24.files} files`)
     // Its parts: the hex colours, the white veils and the classes the status map keeps for a whole file.
     expect(row).toContain(`hex colours from 51 in 30 files to ${STEP_24.hex} in`)

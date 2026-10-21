@@ -33,6 +33,11 @@ export const LCA: Readonly<Record<'navy' | 'gold' | 'cream', string>> = {
  *
  * This exact string was duplicated in six files. Changing the button used to
  * mean finding all six, and one of them drifting was inevitable.
+ *
+ * The Button's gold variant, <Button variant="gold"> in
+ * src/components/ui/button.tsx, draws these same classes, read from here,
+ * and is the gold button for new code; this string stays for the pages that
+ * put it on a link, a Button's className or a plain element.
  */
 export const GOLD_BUTTON =
   'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'

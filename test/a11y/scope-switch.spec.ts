@@ -71,7 +71,10 @@ const frames = (page: Page) =>
 
 /**
  * The boxes of the shared controls in the container (every Button, the text
- * field and each StatusBadge pill) and the colours that follow the tokens.
+ * field and each StatusBadge, today's pills and the status tags step 26
+ * adds) and the colours that follow the tokens. Today's pills mark their
+ * words with data-status, so the pill is the parent; a status tag carries
+ * data-status itself.
  */
 function measure(page: Page) {
   return page.locator('[data-fixture="base"]').evaluate((container) => {
@@ -81,7 +84,7 @@ function measure(page: Page) {
     }
     const buttons = [...container.querySelectorAll('[data-slot="button"]')]
     const input = container.querySelector('#fixture-input')!
-    const badges = [...container.querySelectorAll('[data-status]')].map((s) => s.parentElement!)
+    const badges = [...container.querySelectorAll('[data-status]')].map((s) => (s.matches('[data-slot="status-badge"]') ? s : s.parentElement!))
     const s = getComputedStyle(container)
     const register = buttons.find((b) => b.textContent === 'Register')!
     return {
@@ -130,8 +133,12 @@ test.describe('a change of look on the fixture container', () => {
 
     const before = await measure(page)
     expect(before.theme).toBe('')
-    expect(before.boxes.buttons.map((b) => b.text)).toEqual(['Register', 'See details', 'Add to calendar', 'Read the rules'])
-    expect(before.boxes.badges.map((b) => b.text)).toEqual(['Registration open', 'Opens soon', 'Registration closed'])
+    expect(before.boxes.buttons.map((b) => b.text)).toEqual(['Register', 'See details', 'Add to calendar', 'Read the rules', 'Join the waitlist'])
+    expect(before.boxes.badges.map((b) => b.text)).toEqual([
+      'Registration open', 'Opens soon', 'Registration closed',
+      'Registration open', 'Opens soon', 'Event full', 'Waitlist', 'Registration closed', 'Live', 'Partner event', 'LCA event',
+      'Opens Mon, Oct 12', 'Live · Round 3',
+    ])
 
     const seen: Record<string, Awaited<ReturnType<typeof measure>>> = {}
     for (const { scope, theme } of SWITCHES) {

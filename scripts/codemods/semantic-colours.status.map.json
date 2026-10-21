@@ -1,5 +1,5 @@
 {
-  "comment": "The reviewed map for scripts/codemods/semantic-colours.ts, run with --map (WS01 step 24: the status colours, the greys, the navy borders and tints, and raw hex colours). Each Tailwind status colour becomes the token of its tone, one token for each shade the pages use (text-emerald-700 becomes text-ok-700), so every class it writes gives exactly the colour of the class it replaces on the plain :root and nothing changes with newLook off; under the new look each shade takes its tone's tint or words from the Looks-3 status tags, but for two that are not tags: the scanner's move marks take mark colours of their own (bg-mark-warn, bg-mark-ok), which stand out from the card, and the checked check-in toggle takes a fixed dark green fill (bg-ok-fill) that keeps its white words at 4.5:1. Every keep entry for a light tone on navy names its own string, so the same class anywhere else is a raw colour. test/unit/semantic-map.test.ts proves it and holds the TSX files to this map, and test/unit/raw-colours.test.ts fails on any raw colour class this map or the step 23 map does not keep and test/unit/fixtures/raw-colours-allowlist.json does not list. Not in this map: StatusBadge's tones (step 26), gold text (text-lca-gold and the gold hex colours, step 25), the announcement banners' red and blue grounds, the Facebook brand blue and the club map's own ground, which stay fixed (the allowlist gives each reason). Club colours are user data and inline styles, so no class carries them. The judgement calls behind the sites and keep entries are recorded under step 24 in REDESIGN_STATUS.md.",
+  "comment": "The reviewed map for scripts/codemods/semantic-colours.ts, run with --map (WS01 step 24: the status colours, the greys, the navy borders and tints, and raw hex colours). Each Tailwind status colour becomes the token of its tone, one token for each shade the pages use (text-emerald-700 becomes text-ok-700), so every class it writes gives exactly the colour of the class it replaces on the plain :root and nothing changes with newLook off; under the new look each shade takes its tone's tint or words from the Looks-3 status tags, but for two that are not tags: the scanner's move marks take mark colours of their own (bg-mark-warn, bg-mark-ok), which stand out from the card, and the checked check-in toggle takes a fixed dark green fill (bg-ok-fill) that keeps its white words at 4.5:1. Every keep entry for a light tone on navy, and those for StatusBadge's light tones and StatusDot's dot with newLook off (kept for today's callers in step 26, since new code shows a status through StatusBadge's status prop and its tokens), names its own string, so the same class anywhere else is a raw colour. test/unit/semantic-map.test.ts proves it and holds the TSX files to this map, and test/unit/raw-colours.test.ts fails on any raw colour class this map or the step 23 map does not keep and test/unit/fixtures/raw-colours-allowlist.json does not list. Not in this map: gold text (text-lca-gold and the gold hex colours, step 25), the announcement banners' red and blue grounds, the Facebook brand blue and the club map's own ground, which stay fixed (the allowlist gives each reason). Club colours are user data and inline styles, so no class carries them. The judgement calls behind the sites and keep entries are recorded under step 24 in REDESIGN_STATUS.md.",
   "watch": [
     "text-emerald-300", "text-emerald-600", "text-emerald-700", "text-emerald-800", "text-emerald-900", "text-emerald-950",
     "bg-emerald-50", "bg-emerald-100", "bg-emerald-200", "bg-emerald-500", "bg-emerald-600",
@@ -596,51 +596,59 @@
     },
     {
       "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-emerald-100 text-emerald-800",
       "class": "bg-emerald-100",
       "opacity": "none",
-      "reason": "StatusBadge's light green tone. The component is step 26's: its new status prop maps to the status tokens there, and its tone and on props keep working for today's callers, so its tones stay as they are until then."
+      "reason": "StatusBadge's light green tone, the pill today's callers draw on a light card, kept class for class: the tone path keeps its ten strings to the letter, as the Button keeps its variants, and new code shows a status through the status prop, which reads the status tokens. An opaque light pill with words of its own (6.68:1), it reads the same on any ground, dark mode included; the Scholastic page's pill moves to the status prop when WS11 rebuilds that page."
     },
     {
       "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-emerald-100 text-emerald-800",
       "class": "text-emerald-800",
       "opacity": "none",
-      "reason": "The words of StatusBadge's light green tone, which step 26 maps with the rest of the component."
+      "reason": "The words of StatusBadge's light green tone, kept in their one string with the tint they are read on."
     },
     {
       "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-red-100 text-red-700",
       "class": "bg-red-100",
       "opacity": "none",
-      "reason": "StatusBadge's light red tone, which step 26 maps with the rest of the component."
+      "reason": "StatusBadge's light red tone, kept class for class like the light green: an opaque light pill whose words read 5.26:1 on any ground. New code takes the status prop."
     },
     {
       "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-red-100 text-red-700",
       "class": "text-red-700",
       "opacity": "none",
-      "reason": "The words of StatusBadge's light red tone, which step 26 maps with the rest of the component."
+      "reason": "The words of StatusBadge's light red tone, kept in their one string with the tint they are read on."
     },
     {
       "file": "src/components/StatusBadge.tsx",
+      "contains": "border-blue-200 bg-blue-50 text-blue-800",
       "class": "border-blue-200",
       "opacity": "none",
-      "reason": "The line of StatusBadge's light blue tone, which step 26 maps with the rest of the component."
+      "reason": "The line of StatusBadge's light blue tone, kept in its one string with the tint and the words it frames."
     },
     {
       "file": "src/components/StatusBadge.tsx",
+      "contains": "border-blue-200 bg-blue-50 text-blue-800",
       "class": "bg-blue-50",
       "opacity": "none",
-      "reason": "StatusBadge's light blue tone, which step 26 maps with the rest of the component."
+      "reason": "StatusBadge's light blue tone, kept class for class like the light green: an opaque light pill whose words read 8.11:1 on any ground. New code takes the status prop."
     },
     {
       "file": "src/components/StatusBadge.tsx",
+      "contains": "border-blue-200 bg-blue-50 text-blue-800",
       "class": "text-blue-800",
       "opacity": "none",
-      "reason": "The words of StatusBadge's light blue tone, which step 26 maps with the rest of the component."
+      "reason": "The words of StatusBadge's light blue tone, kept in their one string with the tint they are read on."
     },
     {
       "file": "src/components/StatusBadge.tsx",
+      "contains": "rounded-full bg-emerald-500",
       "class": "bg-emerald-500",
       "opacity": "none",
-      "reason": "StatusDot's open dot. Step 26 gives StatusDot its words under the new look, and maps the dot with them."
+      "reason": "StatusDot's open dot with newLook off, which keeps today's markup to the letter (its span, its class and its title). Under the new look the dot takes bg-ok-500, the open words colour, and its words show beside it."
     },
     {
       "file": "src/pages/TournamentManagePage.tsx",

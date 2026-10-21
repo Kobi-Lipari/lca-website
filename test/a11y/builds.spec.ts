@@ -93,10 +93,14 @@ test.describe('/__fixtures/:name', () => {
       await expect(container).toHaveCount(1)
       expect(await container.getAttribute('data-theme'), name).toBe(theme)
       await expect(page).toHaveTitle(new RegExp(`Fixture: ${name}`))
-      // Buttons, a text field, status badges and a table are all there to measure.
+      // Buttons, a text field, status badges and a table are all there to
+      // measure: today's three pills, which mark their words with data-status,
+      // and since step 26 a tag for each of the eight statuses and two with
+      // words of their own, which carry it themselves.
       await expect(container.getByRole('button', { name: 'Register' })).toBeVisible()
       await expect(container.getByLabel('Your name')).toBeVisible()
-      await expect(container.locator('[data-status]')).toHaveCount(3)
+      await expect(container.locator('[data-status]')).toHaveCount(3 + 8 + 2)
+      await expect(container.locator('[data-slot="status-badge"][data-status]')).toHaveCount(8 + 2)
       await expect(container.locator('th')).toHaveCount(3)
     }
     expect(scripts).toEqual([])
