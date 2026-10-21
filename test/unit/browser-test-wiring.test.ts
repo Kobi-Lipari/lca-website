@@ -468,6 +468,8 @@ describe('the files of the browser test layer', () => {
     'test/a11y/chess-data-edges.spec.ts',
     'test/a11y/brand.spec.ts',
     'test/a11y/brand-edges.spec.ts',
+    'test/a11y/home.spec.ts',
+    'test/a11y/home-edges.spec.ts',
     'test/a11y/known-violations.json',
     'test/e2e/register-family.spec.ts',
     'test/e2e/publish-round.spec.ts',

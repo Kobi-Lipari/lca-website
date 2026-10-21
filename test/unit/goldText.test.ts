@@ -1145,13 +1145,13 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     [
       'a style colour of LCA.gold on the home page',
       { file: 'src/pages/HomePage.tsx', from: '<Trophy className="size-3.5 text-gold-ink" />', to: '<Trophy className="size-3.5" style={{ color: LCA.gold }} />' },
-      'src/pages/HomePage.tsx:208 ',
+      'src/pages/HomePage.tsx:259 ',
       'can be brand gold, as text on a light ground',
     ],
     [
       'the same trophy given brand gold through its color prop',
       { file: 'src/pages/HomePage.tsx', from: '<Trophy className="size-3.5 text-gold-ink" />', to: '<Trophy className="size-3.5" color={LCA.gold} />' },
-      'src/pages/HomePage.tsx:208 ',
+      'src/pages/HomePage.tsx:259 ',
       'can be brand gold, as text on a light ground',
     ],
     [

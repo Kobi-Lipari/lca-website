@@ -38,7 +38,8 @@ const SWITCHES = {
   /**
    * The new base look: the new colours and type, dark mode (following the
    * device setting unless the visitor picks Light or Dark), the stronger
-   * focus ring, and the new date, time and score formats.
+   * focus ring, and the new date, time and score formats. It also shows the
+   * home page hero as one still picture, with no slideshow and no timer.
    */
   newLook: false,
 

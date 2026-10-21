@@ -479,6 +479,9 @@ describe('REDESIGN_STATUS.md keeps its shape round the step', () => {
     }
     const deviations = part('### Deviations from the brief').filter((l) => /^- \*\*Step \d+\.\*\*/.test(l))
     const steps = deviations.map((l) => Number(l.match(/Step (\d+)/)![1]))
-    expect(steps.slice(-2)).toEqual([27, 28])
+    // Later steps' deviations follow step 28's.
+    const at27 = steps.indexOf(27)
+    expect(steps.slice(at27, at27 + 2)).toEqual([27, 28])
+    expect(steps.slice(at27 + 2).every((n) => n > 28)).toBe(true)
   })
 })
