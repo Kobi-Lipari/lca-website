@@ -2,10 +2,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, Menu, UserCircle, X } from 'lucide-react'
+import { LcaMark } from '@/components/LcaMark'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
 import { WORKSPACE_ROLES, canAccessAdmin } from '@/areas/admin/roles'
+import { FEATURES } from '@/lib/features'
 import { cn } from '@/lib/utils'
 import lcaLogo from '@/assets/lca-logo.webp'
 
@@ -227,7 +229,16 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-navy text-white shadow-md print:hidden">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-3 transition-opacity hover:opacity-90" onClick={closeMobile}>
-          <img src={lcaLogo} alt="Louisiana Chess Association" className="h-11 w-11 rounded-lg object-contain" />
+          {/* Under the new look the rook mark at every width (decision D1), 28px
+              on a phone and 30px wider, as the decided boards draw it. It has no
+              colour of its own and takes the header's white, so a contrast theme
+              recolours it along with the name beside it. It is decoration: the
+              name names the link once. */}
+          {FEATURES.newLook ? (
+            <LcaMark title="" className="size-7 md:size-[30px]" />
+          ) : (
+            <img src={lcaLogo} alt="Louisiana Chess Association" className="h-11 w-11 rounded-lg object-contain" />
+          )}
           <div>
             <div className="text-base font-bold leading-tight text-white">Louisiana Chess</div>
             <div className="text-[10px] font-semibold uppercase leading-tight tracking-[0.18em] text-lca-gold/90">

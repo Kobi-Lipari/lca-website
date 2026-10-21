@@ -7,7 +7,8 @@
 //   tag with its default words when no children are given, the children when
 //   they are, and its default words for children that draw nothing; each tag
 //   carries data-status and its status's pair of tokens, its words on its
-//   own tint (WS01 acceptance criterion 5).
+//   own tint (WS01 acceptance criterion 5). Each has the tile's mark, hidden
+//   from screen readers, the LCA tag's the rook of LcaMark since step 28.
 // - The live tag's dot is static: no animation class, and its animation is
 //   none; nothing in src pulses, pings or bounces (acceptance criterion 14).
 // - The tone path draws today's pills class for class: all ten strings, each
@@ -133,11 +134,6 @@ describe('StatusBadge: every status in words', () => {
       cleanup()
       const { container } = render(<StatusBadge status={status} on="light" />)
       const marks = container.querySelectorAll('[data-slot="status-mark"]')
-      if (status === 'lca') {
-        // The rook mark is step 28's (LcaMark); the words carry the status.
-        expect(marks).toHaveLength(0)
-        continue
-      }
       expect(marks, status).toHaveLength(1)
       const mark = marks[0]
       expect(mark.tagName.toLowerCase()).toBe('svg')
@@ -154,10 +150,28 @@ describe('StatusBadge: every status in words', () => {
       }
       shapes[status] = mark.innerHTML
     }
-    // Full and waitlist share the half-filled ring; every other status has a shape of its own.
-    expect(Object.keys(shapes)).toHaveLength(7)
-    expect(new Set(Object.values(shapes)).size).toBe(6)
+    // Full and waitlist share the half-filled ring; every other status has a
+    // shape of its own, the LCA tag the rook (since step 28).
+    expect(Object.keys(shapes)).toHaveLength(8)
+    expect(new Set(Object.values(shapes)).size).toBe(7)
     expect(shapes.full).toBe(shapes.waitlist)
+  })
+
+  it('draws the LCA tag\'s mark as the rook of LcaMark (step 28): the favicon\'s path, 11px, in the words\' colour', () => {
+    const rook = readFileSync(join(ROOT, 'public/favicon.svg'), 'utf8').match(/<path[^>]* d="([^"]+)"/)?.[1]
+    const { container } = render(<StatusBadge status="lca" on="light" />)
+    const tag = container.firstElementChild as HTMLElement
+    const mark = tag.firstElementChild as SVGElement
+    expect(mark.getAttribute('data-slot')).toBe('status-mark')
+    expect(mark.getAttribute('viewBox')).toBe('0 0 100 100')
+    expect(mark.querySelectorAll('path')).toHaveLength(1)
+    expect(mark.querySelector('path')!.getAttribute('d')).toBe(rook)
+    // No colour of its own: the tag's words colour fills it.
+    expect(mark.getAttribute('fill')).toBe('currentColor')
+    expect(mark.getAttribute('class')).toBe('flex-none size-[11px]')
+    expect(mark.getAttribute('aria-hidden')).toBe('true')
+    expect(mark.querySelector('title')).toBeNull()
+    expect(tag.textContent).toBe('LCA event')
   })
 })
 

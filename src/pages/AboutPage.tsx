@@ -1,13 +1,23 @@
 // src/pages/AboutPage.tsx
 import { Link } from 'react-router-dom'
 import { GovLayout } from '@/areas/governance/components/GovLayout'
+import { LcaLogo } from '@/components/LcaLogo'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { FEATURES } from '@/lib/features'
 
 export function AboutPage() {
   usePageTitle('About LCA')
   return (
     <GovLayout title="About LCA" subtitle="The Louisiana Chess Association">
       <div className="space-y-8 text-sm leading-relaxed text-muted-foreground">
+        {/* Under the new look the official logo heads the page's words (decision
+            D1 gives it the About and history pages), framed on the surface:
+            white, and cream in the heritage look. */}
+        {FEATURES.newLook && (
+          <div data-slot="lca-logo-mat" className="w-fit rounded-xl border border-hairline bg-surface p-3">
+            <LcaLogo width={160} height={160} />
+          </div>
+        )}
         <div>
           <h2 className="mb-3 text-xl font-bold text-ink">Who we are</h2>
           <p>The Louisiana Chess Association (LCA) is the official state chess organization for Louisiana, affiliated with the United States Chess Federation (USCF). We serve chess players of all ages and skill levels across the state.</p>

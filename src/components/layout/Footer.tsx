@@ -1,6 +1,7 @@
 // src/components/layout/Footer.tsx
 import { Link } from 'react-router-dom'
 import { AppearanceControl } from '@/components/AppearanceControl'
+import { LcaLogo } from '@/components/LcaLogo'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import lcaLogo from '@/assets/lca-logo.webp'
 import { FEATURES } from '@/lib/features'
@@ -55,11 +56,10 @@ export function Footer() {
           {/* Brand column — identity, social, and actions as one anchored block */}
           <div>
             <div className="flex items-center gap-3.5">
-              <img
-                src={lcaLogo}
-                alt="Louisiana Chess Association"
-                className="h-14 w-14 rounded-xl object-contain"
-              />
+              {/* Under the new look the logo's words are empty: the name beside it says them once. */}
+              {FEATURES.newLook
+                ? <LcaLogo width={56} height={56} alt="" />
+                : <img src={lcaLogo} alt="Louisiana Chess Association" className="h-14 w-14 rounded-xl object-contain" />}
               <div>
                 <div className="text-lg font-bold leading-tight text-white">
                   Louisiana Chess Association

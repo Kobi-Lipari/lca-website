@@ -5,16 +5,16 @@
 //
 // StatusBadge, given a status (open, soon, full, waitlist, closed, live,
 // partner or lca), draws the Looks-3 tile's tag in that status's pair of
-// tokens, with the default words of src/lib/badgeStatus.ts when its children
-// draw nothing. Given a tone, it draws the pill today's pages use, class for
-// class: `tone` picks the colour family and `on` the surface, navy or light.
-//
-// StatusDot is the registration dot of the tournament list: open, draft,
-// closed or a status it does not know. Under the new look it says its state
-// in words beside the dot; with newLook off it is today's dot, named only by
-// its title, which for a closed registration is still "Coming soon".
+// tokens with its mark (the LCA tag's is the rook, LcaMark), its words the
+// default words of src/lib/badgeStatus.ts when its children draw nothing.
+// Given a tone, it draws the pill today's pages use, class for class:
+// `tone` picks the colour family and `on` the surface, navy or light.
+// StatusDot is the registration dot of the tournament list. Under the new
+// look it says its state in words beside the dot; with newLook off it is
+// today's dot, named only by its title ("Coming soon" when it is closed).
 
 import type { ReactNode } from 'react'
+import { LcaMark } from '@/components/LcaMark'
 import { STATUS_LABELS, type BadgeStatus } from '@/lib/badgeStatus'
 import { drawsNothing } from '@/lib/drawsNothing'
 import { FEATURES } from '@/lib/features'
@@ -134,11 +134,20 @@ function PartnerMark() {
   )
 }
 
+/**
+ * The LCA tag's mark before its words: the rook of LcaMark, 11px as the tile
+ * draws it, filled with the words' colour and hidden from screen readers. It
+ * carries the slot of the other tags' marks, so it is read with them.
+ */
+function RookMark() {
+  return <LcaMark title="" slot="status-mark" className="size-[11px]" />
+}
+
 export function StatusBadge({ tone, status, on = 'navy', className, children }: StatusBadgeProps) {
   if (status !== undefined) {
     return (
       <span data-slot="status-badge" data-status={status} className={cn(TAG_SHAPE, STATUS_CLASSES[status], className)}>
-        {status !== 'partner' && status !== 'lca' && <StatusMark status={status} />}
+        {status === 'lca' ? <RookMark /> : status !== 'partner' && <StatusMark status={status} />}
         {drawsNothing(children) ? STATUS_LABELS[status] : children}
         {status === 'partner' && <PartnerMark />}
       </span>
