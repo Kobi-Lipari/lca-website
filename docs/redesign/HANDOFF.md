@@ -199,6 +199,8 @@ Checked against the boards in `docs/redesign/canvas/boards/`:
 
 ## Waiting on K
 
+**Remember for the very end (Wed, Oct 21):** K wants a demo or LCA board walkthrough that shows every built part of the site and every role's screens from one place, since no single person ever sees them all. Not to be planned or built until the last workstream has landed; section 8 of the phase 2 replan holds K's words.
+
 Silence keeps each default.
 
 **Answered later on Mon, Oct 19**, and no longer waiting: whose affiliate a rating report carries and how a standing director reaches entry fees took their defaults, as did who approves a named-rep request, and K decided the club page's contact flow. All four are under "Decided later on Mon, Oct 19" above.

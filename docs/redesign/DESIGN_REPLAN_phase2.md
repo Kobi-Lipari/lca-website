@@ -1052,3 +1052,9 @@ The rating report. The report for a member-created event carries only the affili
 Abuse. At most three open events per organizer. Every member-created event page carries "Report this event", which lands in the admin queue. An admin can close an event or remove a member's ability to create. Admins see every member-created event in Admin, with how often the service is used and by whom; representatives do not see them. A representative or admin adopting a member's event into the listed set is left for later.
 
 The scanner. Decided the same day: the scoresheet scanner is for active LCA members only, replacing today's gate of any signed-in account. The scanner record in 7.6 and WS15 read with this change.
+
+## 8. For the very end: a walkthrough of everything built
+
+Asked for on Wed, Oct 21, 2026, in K's words: "I would like a way to view all build aspects of the site like a demo or a LCA board walkthrough. Since a regular person wont hit every category etc, it would be nice to build something that can show off all of the hard work we have done. This does not need to be planned upon or built out yet. just remember for last."
+
+Reading: when the last workstream has landed, build a guided walkthrough of the whole site for the LCA board and for showing the work: every page and every role's screens, with sample data, reachable from one place, so a viewer sees what a plain member, a parent, a director, a representative, an officer and an admin each see without having to be one. It is not planned and not built until then; this section is the reminder.
