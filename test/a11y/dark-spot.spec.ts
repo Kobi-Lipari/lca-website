@@ -20,7 +20,7 @@
 // run is also the record of what is left. The full axe sweep of every look
 // is step 32's (WS01 acceptance criterion 1).
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test } from './support'
+import { expect, openDrawn, test } from './support'
 
 const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 const NAVY = '#1a2744'
@@ -56,9 +56,8 @@ for (const route of ['/', '/tournaments', '/membership']) {
     const scriptErrors: string[] = []
     page.on('pageerror', (err) => scriptErrors.push(err.message))
 
-    await page.goto(route)
-    await page.waitForLoadState('networkidle')
-    await expect(page.locator('main')).toBeVisible()
+    // A page whose data request failed draws its empty state, with less for axe to check: it is loaded once more.
+    await openDrawn(page, route, [page.locator('main')])
     const html = await page.evaluate(() => ({
       look: document.documentElement.getAttribute('data-look'),
       dark: document.documentElement.classList.contains('dark'),

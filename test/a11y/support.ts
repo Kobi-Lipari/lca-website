@@ -13,8 +13,13 @@
 //   (links are not followed, so the Facebook and other outside links in the
 //   page are not requests and are not affected)
 //
+// It also gives openDrawn, which opens a page that draws itself from a data
+// request and waits until what a test reads is there, loading the page once
+// more when it is not; a test that samples a page's colours must never
+// sample its empty state.
+//
 // Usage: import { test, expect } from './support'
-import { test as base, expect, type Page } from '@playwright/test'
+import { test as base, expect, type Locator, type Page, type Request, type Response } from '@playwright/test'
 
 export { expect }
 
@@ -87,3 +92,71 @@ export const test = base.extend<{ external: string[] }>({
     { auto: true },
   ],
 })
+
+/** How long openDrawn waits, on each load, for all of a page's content together. */
+export const DRAWN_TIMEOUT = 15_000
+
+/**
+ * Opens a page that draws itself from a data request, and waits until it is
+ * drawn: every locator in `content` visible, and no request to the local
+ * /api/ answered with a server error (500 or more) or failed outright. When
+ * a request failed, or the content is not there within DRAWN_TIMEOUT of the
+ * page going quiet, the page drew its empty or error state (as it did when a
+ * busy local database answered SQLITE_BUSY); it is then opened once more,
+ * and this time everything must be there, or the test fails here with the
+ * reason, rather than reading the wrong state later. Gives back how many
+ * loads it took (1 or 2).
+ */
+export async function openDrawn(page: Page, route: string, content: readonly Locator[]): Promise<number> {
+  const failed: string[] = []
+  // Only the requests this load makes count, not one the page before it left
+  // running (which the navigation cancels).
+  let ours = new WeakSet<Request>()
+  const local = (url: string) => {
+    const u = new URL(url)
+    return LOCAL_HOSTS.has(u.hostname) && u.pathname.startsWith('/api/') ? `${u.pathname}${u.search}` : null
+  }
+  const onRequest = (request: Request) => {
+    if (local(request.url())) ours.add(request)
+  }
+  const onResponse = (response: Response) => {
+    if (ours.has(response.request()) && response.status() >= 500) failed.push(`${response.status()} ${local(response.url())}`)
+  }
+  const onFailed = (request: Request) => {
+    const error = request.failure()?.errorText ?? 'failed'
+    if (ours.has(request) && error !== 'net::ERR_ABORTED') failed.push(`${error} ${local(request.url())}`)
+  }
+  page.on('request', onRequest)
+  page.on('response', onResponse)
+  page.on('requestfailed', onFailed)
+  try {
+    for (let load = 1; load <= 2; load++) {
+      failed.length = 0
+      ours = new WeakSet<Request>()
+      await page.goto(route)
+      await page.waitForLoadState('networkidle')
+      const last = load === 2
+      let drawn = content
+      const missing: string[] = []
+      const deadline = Date.now() + DRAWN_TIMEOUT
+      // A data request that already failed will not draw the content: load the page again at once.
+      if (!last && failed.length > 0) drawn = []
+      for (const locator of drawn) {
+        try {
+          await locator.first().waitFor({ state: 'visible', timeout: Math.max(1, deadline - Date.now()) })
+        } catch {
+          missing.push(String(locator))
+        }
+      }
+      if (missing.length === 0 && failed.length === 0) return load
+      const why = [...missing.map((m) => `${m} not drawn`), ...failed.map((f) => `data request ${f}`)].join('; ')
+      if (last) throw new Error(`${route} was not drawn after loading it twice: ${why}`)
+      console.log(`${route} was not drawn on its first load (${why}); loading it once more`)
+    }
+    return 2
+  } finally {
+    page.off('request', onRequest)
+    page.off('response', onResponse)
+    page.off('requestfailed', onFailed)
+  }
+}

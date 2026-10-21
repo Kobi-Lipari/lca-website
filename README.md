@@ -187,9 +187,10 @@ npm run test:e2e    # end-to-end tests against a branch preview (E2E_BASE_URL)
 Chromium you already have). It builds the site twice with
 `vite build --mode a11y`, into `dist-a11y-on` (with the `newLook` and
 `themeHeritage` switches on) and `dist-a11y-off` (none on), builds a local
-database in `.wrangler/a11y` from the migrations and
-`scripts/seed/fixtures.sql` (synthetic data only), and serves each build with
-`wrangler pages dev` on ports 8801 and 8802 using the fake values in
+database for each from the migrations and `scripts/seed/fixtures.sql`
+(synthetic data only), in `.wrangler/a11y/on` and `.wrangler/a11y/off`, and
+serves each build with `wrangler pages dev` on its own database, on ports
+8801 and 8802, using the fake values in
 `.dev.vars.a11y`, with the Stripe, Resend, Facebook and scanning keys bound
 empty, so your own `.dev.vars` is overridden. Nothing it runs touches a
 remote database. With every key empty, a call to a real service is refused,

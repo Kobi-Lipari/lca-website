@@ -13,7 +13,7 @@
 //   "US Chess" and half points as ½
 // - the page loads with no script error and no request to any other host
 //
-// Reads only. Both projects share one local database, so nothing here writes.
+// Reads only: nothing here writes to either project's local database.
 import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from './support'

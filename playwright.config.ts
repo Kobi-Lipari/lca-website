@@ -9,11 +9,13 @@
 //   the switches newLook and themeHeritage on (dist-a11y-on) and once with
 //   none (dist-a11y-off, the site as visitors see it today). Each build is
 //   served by `wrangler pages dev`, with the functions folder, on its own
-//   port, on one local database built from the migrations and
-//   scripts/seed/fixtures.sql in .wrangler/a11y. Each line of .dev.vars.a11y
-//   (fake values only) is passed to wrangler as a binding, replacing the
-//   production values in wrangler.toml's [vars], and every real secret the
-//   functions read is bound empty (A11Y_EMPTY_SECRETS in
+//   port, on its own local database built from the migrations and
+//   scripts/seed/fixtures.sql (.wrangler/a11y/on and .wrangler/a11y/off;
+//   two servers on one SQLite file locked each other out now and then, and
+//   a page whose data request met the lock drew its empty state). Each line
+//   of .dev.vars.a11y (fake values only) is passed to wrangler as a binding,
+//   replacing the production values in wrangler.toml's [vars], and every
+//   real secret the functions read is bound empty (A11Y_EMPTY_SECRETS in
 //   test/a11y/global-setup.ts), which overrides anything in a developer's own
 //   .dev.vars, .env or shell. So no test can sign in or use a real service
 //   (a checkout or an email may still send a request, which is refused for
@@ -33,7 +35,7 @@
 // --with-deps chromium). Where another Chromium is already installed, set
 // PW_CHROMIUM_PATH to its executable to use that one instead.
 import { defineConfig, devices } from '@playwright/test'
-import { A11Y_PERSIST, A11Y_SERVER_ENV, A11Y_VARIANTS, ROOT, a11yServerArgs } from './test/a11y/global-setup.ts'
+import { A11Y_SERVER_ENV, A11Y_VARIANTS, ROOT, a11yServerArgs } from './test/a11y/global-setup.ts'
 
 /** Hosts the end-to-end tests must never run against: the live site. */
 const PRODUCTION_HOSTS = ['louisianachess.org', 'lca-website.pages.dev', 'main.lca-website.pages.dev']
@@ -135,7 +137,8 @@ export default defineConfig({
           'node node_modules/wrangler/bin/wrangler.js pages dev',
           variant.dist,
           `--ip 127.0.0.1 --port ${variant.port} --inspector-port ${variant.inspectorPort}`,
-          `--persist-to ${A11Y_PERSIST}`,
+          // Each server on its own database, never the other's.
+          `--persist-to ${variant.persist}`,
           '--show-interactive-dev-session=false --log-level warn',
           ...a11yServerArgs(),
         ].join(' '),

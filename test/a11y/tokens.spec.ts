@@ -26,7 +26,7 @@
 //   device setting
 // - figures in font-mono use Geist Mono; reduced motion stops transitions
 import type { Locator, Page, TestInfo } from '@playwright/test'
-import { expect, test } from './support'
+import { expect, openDrawn, test } from './support'
 
 const ON = 'a11y-on'
 const OFF = 'a11y-off'
@@ -112,9 +112,9 @@ test.describe('newLook off: today\'s look is untouched', () => {
     only(testInfo, OFF)
     const measured: Record<string, unknown> = {}
     for (const route of ['/__fixtures/base', '/', '/tournaments', '/membership']) {
-      await page.goto(route)
-      await page.waitForLoadState('networkidle')
       const button = page.locator('main [data-slot="button"]:visible').first()
+      // The /tournaments banner's Button is drawn from the event list: wait for the list, so the Button measured is that one.
+      await openDrawn(page, route, route === '/tournaments' ? [button, page.locator('main').getByRole('button', { name: /Fixture Fall Open/ })] : [button])
       expect(await button.getAttribute('data-variant'), route).not.toBe('destructive')
       await keyboardFocus(page, button)
       const ring = await ringOf(button)
@@ -352,9 +352,9 @@ test.describe('newLook on: Appearance', () => {
     only(testInfo, ON)
     await page.emulateMedia({ colorScheme: 'light' })
     for (const [route, name] of [['/', 'Join LCA'], ['/clubs/fx-club-north', 'All clubs']] as const) {
-      await page.goto(route)
-      await page.waitForLoadState('networkidle')
       const ground = page.locator('[data-ground="dark"]')
+      // The club page draws its hero only once its data request answers; a page that drew its error instead is loaded once more.
+      await openDrawn(page, route, [ground])
       await expect(ground, route).toHaveCount(1)
       const link = ground.getByRole('link', { name })
       await keyboardFocus(page, link)

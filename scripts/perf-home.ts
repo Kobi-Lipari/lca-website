@@ -14,9 +14,12 @@
 //
 // What it does:
 //   1. builds the site into dist-a11y-on with newLook and themeHeritage on,
-//      and builds the seeded local database in .wrangler/a11y, as npm run
-//      test:a11y does first (buildVariant and buildDatabase in
-//      test/a11y/global-setup.ts; local only, never a remote database);
+//      and builds the seeded local database in .wrangler/a11y/on, the a11y-on
+//      server's own database folder, as npm run test:a11y does first
+//      (buildVariant and buildDatabase in test/a11y/global-setup.ts; local
+//      only, never a remote database). It keeps to that one folder, which
+//      it may share because it never runs beside the test servers (below),
+//      and leaves the a11y-off server's .wrangler/a11y/off alone;
 //   2. serves the build with wrangler pages dev on 127.0.0.1:8801, on that
 //      database, with the same fake settings and empty secrets as the
 //      accessibility tests (a11yServerArgs);
@@ -31,11 +34,12 @@
 // beyond lighthouse itself.
 //
 // Never run it while npm run test:a11y runs, or two of it at once: they use
-// the same port (8801), the same build folder and the same database folder,
-// and this rebuilds the build and the database under whatever else is
-// reading them. So before it builds anything it checks the ports the test
-// servers use (8801 and 8802, and their inspector ports 9231 and 9232), and
-// stops when something already listens on one: like playwright.config.ts
+// the same port (8801), the same build folder and the same database folder
+// (.wrangler/a11y/on), and this rebuilds the build and the database under
+// whatever else is reading them. So before it builds anything it checks the
+// ports the test servers use
+// (8801 and 8802, and their inspector ports 9231 and 9232), and stops when
+// something already listens on one: like playwright.config.ts
 // (reuseExistingServer: false), it measures only a server it started itself,
 // since one left behind may serve another build, or a database that has been
 // rebuilt under it.
@@ -52,7 +56,7 @@
 // Usage (see package.json):
 //   npm run perf:home [-- --runs <n>] [-- --reuse] [-- --out <folder>]
 //     --runs <n>      how many Lighthouse runs, 1 to 9 (3 when not given)
-//     --reuse         serve dist-a11y-on and .wrangler/a11y as they are,
+//     --reuse         serve dist-a11y-on and .wrangler/a11y/on as they are,
 //                     built by an earlier run of this or of npm run test:a11y
 //     --out <folder>  also write each run's full Lighthouse report there, as
 //                     home-run<n>.json
@@ -64,7 +68,7 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { chromium } from '@playwright/test'
 import lighthouse from 'lighthouse'
-import { A11Y_PERSIST, A11Y_SERVER_ENV, A11Y_VARIANTS, ROOT, a11yServerArgs, buildDatabase, buildVariant } from '../test/a11y/global-setup.ts'
+import { A11Y_SERVER_ENV, A11Y_VARIANTS, ROOT, a11yServerArgs, buildDatabase, buildVariant } from '../test/a11y/global-setup.ts'
 
 /** The build with newLook on, and where it is served. */
 const VARIANT = A11Y_VARIANTS.find((v) => v.name === 'a11y-on')!
@@ -216,14 +220,14 @@ async function refuseBusyPorts(ports: readonly number[]): Promise<void> {
   }
 }
 
-/** Starts wrangler pages dev on the newLook build, on the local test database, and waits until / answers. */
+/** Starts wrangler pages dev on the newLook build, on the a11y-on server's local test database, and waits until / answers. */
 async function startServer(): Promise<void> {
   // Checked again now that the build is done, just before the server starts.
   await refuseBusyPorts([VARIANT.port, VARIANT.inspectorPort])
   const args = [
     join(ROOT, 'node_modules/wrangler/bin/wrangler.js'), 'pages', 'dev', VARIANT.dist,
     '--ip', '127.0.0.1', '--port', String(VARIANT.port), '--inspector-port', String(VARIANT.inspectorPort),
-    '--persist-to', A11Y_PERSIST, '--show-interactive-dev-session=false', '--log-level', 'warn',
+    '--persist-to', VARIANT.persist, '--show-interactive-dev-session=false', '--log-level', 'warn',
     ...a11yServerArgs(),
   ]
   const server = launch(process.execPath, args, { cwd: ROOT, env: { ...process.env, ...A11Y_SERVER_ENV }, stdio: ['ignore', 'ignore', 'inherit'] })
@@ -413,12 +417,12 @@ async function main(): Promise<number> {
   // a server that may be reading them.
   await refuseBusyPorts(A11Y_VARIANTS.flatMap((v) => [v.port, v.inspectorPort]))
   if (options.reuse) {
-    for (const folder of [VARIANT.dist, A11Y_PERSIST]) {
+    for (const folder of [VARIANT.dist, VARIANT.persist]) {
       if (!existsSync(join(ROOT, folder))) throw new Error(`--reuse needs ${folder}, which is missing. Run without --reuse to build it.`)
     }
   } else {
     buildVariant(VARIANT)
-    buildDatabase()
+    buildDatabase(VARIANT)
   }
   const profile = mkdtempSync(join(tmpdir(), 'perf-home-'))
   browserProfile = profile

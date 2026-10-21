@@ -441,7 +441,8 @@ describe('the lab check stays on this computer', () => {
     expect(script).toContain("const VARIANT = A11Y_VARIANTS.find((v) => v.name === 'a11y-on')!")
     expect(script).toContain('const URL_HOME = `http://127.0.0.1:${VARIANT.port}/`')
     expect(script).toContain("'--ip', '127.0.0.1'")
-    expect(script).toContain("'--persist-to', A11Y_PERSIST")
+    // The a11y-on server's own database folder: each test server has one of its own.
+    expect(script).toContain("'--persist-to', VARIANT.persist")
     expect(script).toContain('env: { ...process.env, ...A11Y_SERVER_ENV }')
     expect(script).toContain("'--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1'")
     const addresses = [...script.matchAll(/\b(?:https?|wss?):\/\/[^\s'"`]+/g)].map((m) => m[0])

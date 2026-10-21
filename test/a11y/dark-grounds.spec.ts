@@ -26,7 +26,7 @@
 // dark in dark mode, so the page adds dark:text-white: white on a11y-on with
 // a dark device, and on a11y-off (no .dark) the label token as before.
 import type { Page } from '@playwright/test'
-import { expect, test } from './support'
+import { expect, openDrawn, test } from './support'
 
 const ROUTES = ['/', '/tournaments', '/membership']
 const APPEARANCE_KEY = 'lca-appearance'
@@ -163,9 +163,8 @@ function scan(page: Page): Promise<Scan> {
 test.use({ colorScheme: 'dark', reducedMotion: 'reduce', viewport: { width: 1280, height: 800 } })
 
 async function check(page: Page, route: string, how: string, attach: (name: string, body: string) => Promise<void>) {
-  await page.goto(route)
-  await page.waitForLoadState('networkidle')
-  await expect(page.locator('main')).toBeVisible()
+  // A page whose data request failed draws its empty state, with fewer parts to read: it is loaded once more.
+  await openDrawn(page, route, [page.locator('main')])
   const found = await scan(page)
   expect({ look: found.look, dark: found.dark }, route).toEqual({ look: 'new', dark: true })
 

@@ -36,8 +36,8 @@
 //   fitting at eight rounds, and with the print shape it still fits at 12.
 //
 // Each page is read once its table rows are drawn, not on network idle alone,
-// and a page that draws its error message because the shared local database
-// was busy is loaded once more (rowsDrawn). Reads only.
+// and a page that draws its error message because its data request failed
+// is loaded once more (rowsDrawn). Reads only.
 import AxeBuilder from '@axe-core/playwright'
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from './support'
@@ -59,12 +59,12 @@ const LETTER_WIDTH = 740
 interface View { name: string; open: (page: Page) => Promise<void> }
 
 /**
- * Waits for the five rows of the section, not for network idle. The two
- * servers share one local database, which now and then answers a read with
- * SQLITE_BUSY (REDESIGN_STATUS.md, Follow-ups, "The a11y servers share one
- * database (step 23)"), and the page then draws its error message instead of
- * a table; so a page that shows its error is loaded once more, and the rows
- * must then be there.
+ * Waits for the five rows of the section, not for network idle. When the
+ * page's data request fails, as it did now and then while the two servers
+ * shared one local database that answered SQLITE_BUSY (REDESIGN_STATUS.md,
+ * Follow-ups, "The a11y servers share one database (step 23)"), the page
+ * draws its error message instead of a table; so a page that shows its error
+ * is loaded once more, and the rows must then be there.
  */
 async function rowsDrawn(page: Page, count = 5) {
   const rows = page.locator('main table').first().locator('tbody tr')

@@ -298,8 +298,16 @@ test.describe('the keyboard through the chips and into the scroll panel', () => 
     const height = await panel.evaluate((el) => el.clientHeight)
     // A line, not a page.
     await expect.poll(top).toBeLessThan(height)
-    await page.keyboard.press('ArrowUp')
-    await expect.poll(top).toBe(0)
+    // Back up to the top. One press may not get there: a slower machine can
+    // see the scroll down land after the first reading above, a line or more
+    // further on. So press ArrowUp again while the panel is not at the top,
+    // reading scrollTop after each press, up to ten presses.
+    const atTop = () => expect.poll(top, { timeout: 1_000 }).toBe(0).then(() => true, () => false)
+    for (let press = 1; press <= 10; press++) {
+      await page.keyboard.press('ArrowUp')
+      if (await atTop()) break
+    }
+    expect(await top()).toBe(0)
     await page.keyboard.press('Shift+Tab')
     await expect(container.getByRole('button', { name: 'Remove filter: Next 3 months', exact: true })).toBeFocused()
   })

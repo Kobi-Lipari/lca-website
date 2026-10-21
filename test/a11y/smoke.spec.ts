@@ -16,7 +16,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test } from './support'
+import { expect, openDrawn, test } from './support'
 
 const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa']
 
@@ -47,9 +47,8 @@ for (const route of ['/']) {
     const scriptErrors: string[] = []
     page.on('pageerror', (err) => scriptErrors.push(err.message))
 
-    await page.goto(route)
-    await page.waitForLoadState('networkidle')
-    await expect(page.locator('main')).toBeVisible()
+    // A page whose data request failed draws its empty state, with less for axe to check: it is loaded once more.
+    await openDrawn(page, route, [page.locator('main')])
 
     const results = await new AxeBuilder({ page }).withTags(AXE_TAGS).analyze()
     const found: Finding[] = results.violations.flatMap((v) =>

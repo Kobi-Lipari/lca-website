@@ -16,7 +16,8 @@
 // - the pages that show the data draw it with no script error and reach no
 //   host but the local server
 //
-// Reads only: both accessibility projects share one local database.
+// Reads only: nothing here writes to either project's local database, each
+// seeded the same way.
 import { expect, test } from './support'
 
 interface SectionJson {

@@ -190,7 +190,10 @@ describe('continuous integration', () => {
 describe('ignored and committed files', () => {
   const ignored = (path: string) => spawnSync('git', ['check-ignore', '-q', '--no-index', path], { cwd: ROOT }).status === 0
 
-  it.each(['dist-a11y-on/index.html', 'dist-a11y-off/assets/x.js', '.wrangler/a11y/v3/d1/x.sqlite', 'test-results/x/trace.zip', 'playwright-report/index.html'])(
+  // Each server has its own local database folder inside .wrangler/a11y (on
+  // and off), since two servers on one SQLite file locked each other out
+  // ("database is locked: SQLITE_BUSY"); both folders' files are ignored.
+  it.each(['dist-a11y-on/index.html', 'dist-a11y-off/assets/x.js', '.wrangler/a11y/on/v3/d1/x.sqlite', '.wrangler/a11y/off/v3/d1/x.sqlite', 'test-results/x/trace.zip', 'playwright-report/index.html'])(
     'ignores %s',
     (path) => {
       expect(ignored(path)).toBe(true)

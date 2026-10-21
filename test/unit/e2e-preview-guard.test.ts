@@ -158,7 +158,7 @@ describe('playwright.config.ts as Playwright loads it', () => {
     expect(config.projects?.find((p) => p.name === 'e2e-preview')?.use?.baseURL).toBeUndefined()
   })
 
-  it('serves each accessibility build on its own port from the one local database, with fake settings only', async () => {
+  it('serves each accessibility build on its own port from its own local database, with fake settings only', async () => {
     const { default: config } = await loadConfig({ LCA_PW_PROJECTS: 'a11y-on,a11y-off' })
     const servers = Array.isArray(config.webServer) ? config.webServer : config.webServer ? [config.webServer] : []
     expect(servers).toHaveLength(2)
@@ -177,9 +177,14 @@ describe('playwright.config.ts as Playwright loads it', () => {
       .split('\n')
       .filter((l) => l.trim() && !l.startsWith('#'))
     expect(devVars.length).toBeGreaterThan(0)
+    // Two servers on one SQLite file locked each other out now and then
+    // ("database is locked: SQLITE_BUSY"), so each has a folder of its own.
+    const persist = (cmd: string) => cmd.match(/--persist-to (\S+)/)?.[1]
+    expect(persist(on.command as string)).toBe('.wrangler/a11y/on')
+    expect(persist(off.command as string)).toBe('.wrangler/a11y/off')
     for (const server of servers) {
       const command = server.command as string
-      expect(command).toContain('--persist-to .wrangler/a11y')
+      expect(command.match(/--persist-to /g)).toHaveLength(1)
       expect(command).toContain('--ip 127.0.0.1')
       // A reused server could be serving another database or another build.
       expect(server.reuseExistingServer).toBe(false)

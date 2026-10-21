@@ -16,6 +16,12 @@
 // as the sRGB pixel it paints, which reads the same whichever way the browser
 // writes the colour out (rgb(), oklch() and so on).
 //
+// Each page is measured once what it draws from its data is there (DRAWN
+// below, through openDrawn in support.ts), not on network idle alone: a page
+// whose data request failed draws its empty state, whose plain Button and
+// missing table would read as a changed colour. Such a page is loaded once
+// more, and if its content is still missing the test fails saying so.
+//
 // test/a11y/baseline.json holds the recording and is committed. When that
 // file is missing, or A11Y_BASELINE=record is set, this test writes it.
 // Otherwise it compares: a font-family must match exactly, a colour may
@@ -25,7 +31,8 @@
 // Only the a11y-off project runs this file (see playwright.config.ts).
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { expect, test } from './support'
+import type { Locator, Page } from '@playwright/test'
+import { expect, openDrawn, test } from './support'
 
 const BASELINE = join(import.meta.dirname, 'baseline.json')
 const ROUTES = ['/', '/tournaments', '/membership', '/tournaments/fx-t-done'] as const
@@ -36,6 +43,26 @@ const TARGETS = {
   mono: 'main .font-mono',
 } as const
 const COLOUR_TOLERANCE = 2
+
+/**
+ * What each page draws from its data, waited for before it is measured: the
+ * first Button with its variant on each, the event rows the /tournaments
+ * banner is drawn from, and the finished event's standings with their header
+ * cells and figures.
+ */
+const DRAWN: Record<(typeof ROUTES)[number], (page: Page) => Locator[]> = {
+  '/': (page) => [page.locator(`${TARGETS.button}[data-variant]:visible`)],
+  '/tournaments': (page) => [
+    page.locator(`${TARGETS.button}[data-variant]:visible`),
+    page.locator('main').getByRole('button', { name: /Fixture Fall Open/ }),
+  ],
+  '/membership': (page) => [page.locator(`${TARGETS.button}[data-variant]:visible`)],
+  '/tournaments/fx-t-done': (page) => [
+    page.locator(`${TARGETS.button}[data-variant]:visible`),
+    page.locator(`${TARGETS.tableHeader}:visible`),
+    page.locator(`${TARGETS.mono}:visible`),
+  ],
+}
 
 type Rgba = [number, number, number, number]
 
@@ -69,8 +96,7 @@ test('records or compares the colours and fonts of the site as it is today', asy
   const routes: Recording = {} as Recording
 
   for (const route of ROUTES) {
-    await page.goto(route)
-    await page.waitForLoadState('networkidle')
+    await openDrawn(page, route, DRAWN[route](page))
     await expect(page.locator('main')).toBeVisible()
     routes[route] = await page.evaluate((targets) => {
       const canvas = document.createElement('canvas')

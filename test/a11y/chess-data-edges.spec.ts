@@ -32,8 +32,8 @@
 //   crosstable's box with Tab, after the view's own tabs.
 //
 // Each page is read once its table rows are drawn, not on network idle
-// alone, and a page that draws its error message because the shared local
-// database was busy is loaded once more. Reads only.
+// alone, and a page that draws its error message because its data request
+// failed is loaded once more. Reads only.
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from './support'
 
@@ -55,11 +55,11 @@ const TRANSPARENT = 'rgba(0, 0, 0, 0)'
 const OPAQUE = /^rgb\(\d+, \d+, \d+\)$/
 
 /**
- * Waits for the section's rows, not for network idle. The two servers share
- * one local database, which now and then answers a read with SQLITE_BUSY
- * (REDESIGN_STATUS.md, Follow-ups, "The a11y servers share one database
- * (step 23)"); a page that drew its error message instead is loaded once
- * more, and the rows must then be there.
+ * Waits for the section's rows, not for network idle. When the page's data
+ * request fails, as it did now and then while the two servers shared one
+ * local database that answered SQLITE_BUSY (REDESIGN_STATUS.md, Follow-ups,
+ * "The a11y servers share one database (step 23)"), a page that drew its
+ * error message instead is loaded once more, and the rows must then be there.
  */
 async function rowsDrawn(page: Page, count = 5) {
   const rows = page.locator('main table').first().locator('tbody tr')
