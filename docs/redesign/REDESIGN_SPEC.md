@@ -2081,6 +2081,7 @@ Sequencing notes:
   - NC Chess: internal pages for clearinghouse events, a club freshness loop, clickable stats.
   - KingRegistration: ID-first entry and expiry flags.
   - Chess67: QR posters (the Campbell story); its link previews show "Loading…".
+  - Zextaos (zextaos.com): added by K on Thursday, October 22 as a peer to review beside Chess67 when the site is being optimised, later in the project; the LCA runs no scholastic programmes of that kind today, so this is for a future look, not for any workstream now.
   - parkrun: club "when + first visit".
   - Luma: count line.
   - Councilmatic and Keep a Changelog: governance history.
