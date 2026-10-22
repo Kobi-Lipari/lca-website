@@ -3,29 +3,58 @@
 // ThemeScope at its edges (WS01 step 22): the check is left out of the site's
 // own build, a scope that changes in place, a font file that fails to load,
 // elements between two scopes, and what the wrapper does with a style it is
-// given.
+// given. Since step 30 the heritage look has a font file too, counted beside
+// the live one: a scope that changes in place loads each once, and after a
+// failed import of either file the next scope of that look calls import()
+// again. The files are mocked here, so these tests show that call, not a
+// request: in a built site the second call fetches nothing, since Vite's
+// preload helper remembers each stylesheet it has added (ThemeScope.tsx).
 import type { ReactNode } from 'react'
 import { cleanup, render, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ThemeScopeName } from '@/lib/themeScopes'
 
-const fonts = vi.hoisted(() => ({ live: vi.fn(), fail: false }))
+const fonts = vi.hoisted(() => ({ live: vi.fn(), heritage: vi.fn(), fail: false, failHeritage: false }))
 
-/** A fresh ThemeScope, with the live font file replaced by one that counts its imports. */
-async function freshScope() {
-  vi.resetModules()
-  fonts.live.mockClear()
+/** Replaces both font files with ones that count their imports, and fail when told to. */
+function mockFontFiles() {
   vi.doMock('@/styles/themes/live.css', () => {
     fonts.live()
     if (fonts.fail) throw new Error('the font file did not load')
     return {}
   })
+  vi.doMock('@/styles/themes/heritage.css', () => {
+    fonts.heritage()
+    if (fonts.failHeritage) throw new Error('the font file did not load')
+    return {}
+  })
+}
+
+/** A fresh ThemeScope, with both font files replaced by ones that count their imports. */
+async function freshScope() {
+  vi.resetModules()
+  fonts.live.mockClear()
+  fonts.heritage.mockClear()
+  mockFontFiles()
   return (await import('@/components/ThemeScope')).ThemeScope
+}
+
+/**
+ * Lets a further import() of either file run its mock again, keeping the
+ * copy of ThemeScope in hand. The module registry keeps a file once it has
+ * loaded, so without this a second import() would not run the mock and a
+ * count could not move whatever ThemeScope did; with it, only ThemeScope's
+ * own record of what it has loaded keeps a count where it is.
+ */
+function forgetImportedFiles() {
+  vi.resetModules()
+  mockFontFiles()
 }
 
 let warn: ReturnType<typeof vi.spyOn>
 beforeEach(() => {
   fonts.fail = false
+  fonts.failHeritage = false
   warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 })
 afterEach(() => {
@@ -133,7 +162,7 @@ describe('the nesting check', () => {
 })
 
 describe('a scope that changes in place', () => {
-  it('rewrites data-theme on the same element, keeps its children mounted, and loads live fonts when it becomes live', async () => {
+  it('rewrites data-theme on the same element, keeps its children mounted, and loads each look\'s fonts when it becomes that look', async () => {
     const ThemeScope = await freshScope()
     const tree = (scope: ThemeScopeName) => (
       <ThemeScope scope={scope} data-fixture="x">
@@ -146,6 +175,7 @@ describe('a scope that changes in place', () => {
     expect(wrapper.getAttribute('data-theme')).toBe('')
     await new Promise((r) => setTimeout(r, 30))
     expect(fonts.live).not.toHaveBeenCalled()
+    expect(fonts.heritage).not.toHaveBeenCalled()
 
     for (const scope of ['heritage', 'scholastic', 'base'] as const) {
       rerender(tree(scope))
@@ -154,6 +184,8 @@ describe('a scope that changes in place', () => {
       expect(getByTestId('field')).toBe(field)
       expect(field.value).toBe('typed')
     }
+    // Heritage asked for its own file once, and none of the three for the live one.
+    await waitFor(() => expect(fonts.heritage).toHaveBeenCalledTimes(1))
     expect(fonts.live).not.toHaveBeenCalled()
 
     rerender(tree('live'))
@@ -161,8 +193,10 @@ describe('a scope that changes in place', () => {
     await waitFor(() => expect(fonts.live).toHaveBeenCalledTimes(1))
     rerender(tree('base'))
     rerender(tree('live'))
+    rerender(tree('heritage'))
     await new Promise((r) => setTimeout(r, 30))
     expect(fonts.live).toHaveBeenCalledTimes(1)
+    expect(fonts.heritage).toHaveBeenCalledTimes(1)
   })
 
   it('a live scope that mounts later, nested in another page, loads the file once for all of them', async () => {
@@ -182,7 +216,10 @@ describe('a scope that changes in place', () => {
 })
 
 describe('a font file that fails to load', () => {
-  it('does not break the page or warn, and the next live scope tries again', async () => {
+  // The mocks stand for the files, so "calls import() again" is all these
+  // show; whether a browser then fetches the file is the build's loader's
+  // business (test/unit/heritage-edges.test.ts drives the one it emits).
+  it('does not break the page or warn, and the next live scope calls import() again', async () => {
     const ThemeScope = await freshScope()
     fonts.fail = true
     const { container, unmount } = render(<ThemeScope scope="live">Text</ThemeScope>)
@@ -200,6 +237,61 @@ describe('a font file that fails to load', () => {
     render(<ThemeScope scope="live">Text</ThemeScope>)
     await new Promise((r) => setTimeout(r, 30))
     expect(fonts.live).toHaveBeenCalledTimes(2)
+  })
+
+  it('the heritage file too: the page still draws, nothing warns, and the next heritage scope calls import() again', async () => {
+    const ThemeScope = await freshScope()
+    fonts.failHeritage = true
+    const { container, unmount } = render(
+      <ThemeScope scope="heritage">
+        <ThemeScope scope="base">Text</ThemeScope>
+      </ThemeScope>,
+    )
+    await waitFor(() => expect(fonts.heritage).toHaveBeenCalledTimes(1))
+    await new Promise((r) => setTimeout(r, 30))
+    expect(container.textContent).toBe('Text')
+    expect(warn).not.toHaveBeenCalled()
+    unmount()
+
+    fonts.failHeritage = false
+    const second = render(<ThemeScope scope="heritage">Text</ThemeScope>)
+    await waitFor(() => expect(fonts.heritage).toHaveBeenCalledTimes(2))
+    second.unmount()
+    // Loaded now: a third scope does not call import() again.
+    forgetImportedFiles()
+    render(<ThemeScope scope="heritage">Text</ThemeScope>)
+    await new Promise((r) => setTimeout(r, 30))
+    expect(fonts.heritage).toHaveBeenCalledTimes(2)
+    // The live file is never asked for on the way.
+    expect(fonts.live).not.toHaveBeenCalled()
+  })
+
+  it('a failed live file does not stop the heritage file loading, and the other way round', async () => {
+    for (const [failed, other] of [['live', 'heritage'], ['heritage', 'live']] as const) {
+      const ThemeScope = await freshScope()
+      fonts.fail = failed === 'live'
+      fonts.failHeritage = failed === 'heritage'
+      const both = () => (
+        <>
+          <ThemeScope scope="live">One</ThemeScope>
+          <ThemeScope scope="heritage">Two</ThemeScope>
+        </>
+      )
+      render(both())
+      await waitFor(() => expect(fonts[failed], failed).toHaveBeenCalledTimes(1))
+      await waitFor(() => expect(fonts[other], failed).toHaveBeenCalledTimes(1))
+      cleanup()
+
+      // The other file loaded, so only the failed one is asked for again.
+      fonts.fail = false
+      fonts.failHeritage = false
+      forgetImportedFiles()
+      render(both())
+      await waitFor(() => expect(fonts[failed], failed).toHaveBeenCalledTimes(2))
+      await new Promise((r) => setTimeout(r, 30))
+      expect(fonts[other], failed).toHaveBeenCalledTimes(1)
+      cleanup()
+    }
   })
 })
 

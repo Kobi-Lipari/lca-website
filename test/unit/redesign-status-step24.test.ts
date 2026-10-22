@@ -107,7 +107,7 @@ describe('REDESIGN_STATUS.md, step 24: the step block', () => {
     const at = status.indexOf(HEADING)
     expect(at).toBeGreaterThan(status.indexOf('### Step 23:'))
     expect(at).toBeLessThan(status.indexOf('### Decisions'))
-    expect(line('Last updated:')).toMatch(/^Last updated: \S+ \(WS01, (?:step 2[5-9]: [^;]+; )*step 24: /)
+    expect(line('Last updated:')).toMatch(/^Last updated: \S+ \(WS01, (?:step (?:2[5-9]|3\d): [^;]+; )*step 24: /)
   })
 
   it('describes the status map with the counts it has, and the run with the counts it gave', () => {

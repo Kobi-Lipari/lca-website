@@ -1,11 +1,15 @@
 // How ThemeScope is wired into the site (WS01 step 22).
 //
 // - Nothing renders ThemeScope but the fixture page, and only ThemeScope
-//   imports the live look's font file, so no page fetches it by accident.
+//   imports a look's font file, the live look's and (since step 30) the
+//   heritage look's, each lazily, so no page fetches one by accident.
 // - live.css declares only the Barlow Condensed and Barlow faces, in the
 //   weights the Looks-7 tile names, and the two packages are pinned exactly.
-// - The flags for the heritage and scholastic looks are not wired here.
-// - The files of the step hold no dash character and name no tool.
+// - The flags for the heritage and scholastic looks are not wired here: the
+//   heritage file loads whatever the switches say, and its rules wait for
+//   the new look themselves.
+// - The files of the step, and the heritage look's file, hold no dash
+//   character and name no tool.
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -35,6 +39,17 @@ describe('where ThemeScope is used', () => {
     // And as a lazy import, so the file is in a chunk of its own.
     expect(read('src/components/ThemeScope.tsx')).toMatch(/\(\)\s*=>\s*import\('@\/styles\/themes\/live\.css'\)/)
     expect(read('src/components/ThemeScope.tsx')).not.toMatch(/^import\s+['"]@\/styles/m)
+  })
+
+  it('only ThemeScope imports the heritage look\'s file, and lazily, beside the live one', () => {
+    expect(mentions(/themes\/heritage\.css/)).toEqual(['src/components/ThemeScope.tsx'])
+    const scope = read('src/components/ThemeScope.tsx')
+    expect(scope).toMatch(/heritage:\s*\(\)\s*=>\s*import\('@\/styles\/themes\/heritage\.css'\)/)
+    expect(scope).not.toMatch(/^import\s+['"]@\/styles/m)
+    expect(scope).not.toMatch(/^import[^\n]*themes\//m)
+    // Only the two looks with fonts of their own have a file: base never does, and scholastic waits for its own work.
+    const fonts = scope.slice(scope.indexOf('const SCOPE_FONTS'), scope.indexOf('}', scope.indexOf('const SCOPE_FONTS')))
+    expect([...fonts.matchAll(/^\s*(\w+):\s*\(\)\s*=>\s*import\(/gm)].map((m) => m[1]).sort()).toEqual(['heritage', 'live'])
   })
 
   it('does not wire the heritage and scholastic flags', () => {
@@ -97,6 +112,7 @@ describe('the files of the step', () => {
     'src/components/ThemeScope.tsx',
     'src/lib/themeScopes.ts',
     'src/styles/themes/live.css',
+    'src/styles/themes/heritage.css',
     'test/unit/themeScopes.test.ts',
     'test/unit/theme-scope.test.tsx',
     'test/unit/theme-scope-edges.test.tsx',

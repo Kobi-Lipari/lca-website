@@ -18,9 +18,16 @@
 // back inside heritage, for the editors and forms on a heritage page.
 //
 // A look's own fonts load the first time that look renders, from a CSS file
-// imported on demand: src/styles/themes/live.css for live. Heritage's fonts
-// arrive with the heritage pages, and Scholastic's with the Scholastic work;
-// until then those looks change colours only.
+// imported on demand, each in a file of its own that no other page fetches:
+// src/styles/themes/heritage.css for heritage (its faces, and the type rules
+// its pages opt into) and src/styles/themes/live.css for live. Scholastic's
+// arrive with the Scholastic work; until then that look changes colours
+// only. The file loads whatever the switches say: its rules apply only under
+// the new look, as the scope colours do, so this component reads no switch.
+// The file is asked for in an effect, after the scope's first paint, so an
+// element that takes one of heritage's type rules is drawn first in the base
+// type and moves when the file arrives (REDESIGN_STATUS.md, Follow-ups,
+// step 30).
 //
 // Looks nest one level only, and base inside heritage is the one nesting
 // allowed (nestingProblem in src/lib/themeScopes.ts). A nesting outside that
@@ -34,6 +41,7 @@ const ScopeAncestors = createContext<readonly ThemeScopeName[]>([])
 
 /** Each look's font CSS, imported the first time the look renders. */
 const SCOPE_FONTS: Partial<Record<ThemeScopeName, () => Promise<unknown>>> = {
+  heritage: () => import('@/styles/themes/heritage.css'),
   live: () => import('@/styles/themes/live.css'),
 }
 
@@ -43,8 +51,14 @@ function loadScopeFonts(scope: ThemeScopeName) {
   const load = SCOPE_FONTS[scope]
   if (!load || requested.has(scope)) return
   requested.add(scope)
-  // Without the fonts the look falls back to the next face in its stack, so
-  // a failed load is not an error for the visitor; let a later render retry.
+  // Without its file a look keeps the type it had before the file arrived,
+  // so a failed load is not an error for the visitor. Forgetting the failure
+  // lets a later render call import() again, but in a built site that second
+  // call fetches nothing: Vite's preload helper remembers each stylesheet it
+  // has added and leaves the failed <link> in the page, so the call resolves
+  // at once and the file stays missing until the page is reloaded. A loader
+  // that must try again has to add a link of its own (REDESIGN_STATUS.md,
+  // Follow-ups, step 30).
   load().catch(() => requested.delete(scope))
 }
 

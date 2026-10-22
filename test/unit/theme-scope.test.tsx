@@ -9,15 +9,22 @@
 // - Base inside heritage is allowed. Heritage inside live, and every other
 //   nesting (two levels, a look inside itself, any look inside live or
 //   scholastic), is reported in the console.
-// - The live look's font file is imported only once a live scope renders.
+// - Each look's font file is imported only once a scope of that look
+//   renders, once for all of them: the live look's, and since step 30 the
+//   heritage look's. Base and scholastic import none, and neither look
+//   imports the other's.
 import type { ReactNode } from 'react'
 import { cleanup, render, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { THEME_SCOPES, type ThemeScopeName } from '@/lib/themeScopes'
 
-const fonts = vi.hoisted(() => ({ live: vi.fn() }))
+const fonts = vi.hoisted(() => ({ live: vi.fn(), heritage: vi.fn() }))
 vi.mock('@/styles/themes/live.css', () => {
   fonts.live()
+  return {}
+})
+vi.mock('@/styles/themes/heritage.css', () => {
+  fonts.heritage()
   return {}
 })
 
@@ -125,16 +132,48 @@ describe('the nesting rule', () => {
   })
 })
 
+/** A fresh copy of ThemeScope, with both font files counted again from nothing. */
+async function freshScope() {
+  vi.resetModules()
+  fonts.live.mockClear()
+  fonts.heritage.mockClear()
+  vi.doMock('@/styles/themes/live.css', () => {
+    fonts.live()
+    return {}
+  })
+  vi.doMock('@/styles/themes/heritage.css', () => {
+    fonts.heritage()
+    return {}
+  })
+  return (await import('@/components/ThemeScope')).ThemeScope
+}
+
+/**
+ * Lets any further import() of either file run its mock again. The module
+ * registry keeps an imported file, so a second import() would never run the
+ * mock and a count could not move; clearing the registry, while keeping the
+ * copy of ThemeScope already drawn, leaves only ThemeScope's own once-only
+ * guard to keep a count where it is.
+ */
+function forgetImportedFiles() {
+  vi.resetModules()
+  vi.doMock('@/styles/themes/live.css', () => {
+    fonts.live()
+    return {}
+  })
+  vi.doMock('@/styles/themes/heritage.css', () => {
+    fonts.heritage()
+    return {}
+  })
+}
+
+/** Gives a stray import time to start before saying none did. */
+const settle = () => new Promise((r) => setTimeout(r, 50))
+
 describe('the live fonts', () => {
   it('are imported only once a live scope renders', async () => {
     // A fresh copy of ThemeScope, since the tests above have drawn live scopes already.
-    vi.resetModules()
-    fonts.live.mockClear()
-    vi.doMock('@/styles/themes/live.css', () => {
-      fonts.live()
-      return {}
-    })
-    const { ThemeScope } = await import('@/components/ThemeScope')
+    const ThemeScope = await freshScope()
     const nest = (scopes: ThemeScopeName[]) =>
       scopes.reduceRight<ReactNode>((inner, scope) => <ThemeScope scope={scope}>{inner}</ThemeScope>, <span>Text</span>)
     render(
@@ -144,26 +183,60 @@ describe('the live fonts', () => {
         {nest(['scholastic'])}
       </>,
     )
-    // Give a stray import time to start before saying none did.
-    await new Promise((r) => setTimeout(r, 50))
+    await settle()
     expect(fonts.live).not.toHaveBeenCalled()
 
     render(nest(['live']))
     await waitFor(() => expect(fonts.live).toHaveBeenCalledTimes(1))
 
-    // A second live scope reuses the file already loaded. The module registry
-    // keeps an imported file, so a second import() would never run the mock
-    // again and the count could not move. Clearing the registry here, while
-    // keeping this copy of ThemeScope, makes any further import() of the file
-    // run the mock again: only ThemeScope's own once-only guard keeps the
-    // count at 1.
-    vi.resetModules()
-    vi.doMock('@/styles/themes/live.css', () => {
-      fonts.live()
-      return {}
-    })
+    // A second live scope reuses the file already loaded.
+    forgetImportedFiles()
     render(nest(['live']))
-    await new Promise((r) => setTimeout(r, 50))
+    await settle()
     expect(fonts.live).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('the heritage fonts', () => {
+  it('are imported once a heritage scope renders, and never by a base, scholastic or live scope', async () => {
+    const ThemeScope = await freshScope()
+    const nest = (scopes: ThemeScopeName[]) =>
+      scopes.reduceRight<ReactNode>((inner, scope) => <ThemeScope scope={scope}>{inner}</ThemeScope>, <span>Text</span>)
+    render(
+      <>
+        {nest(['base'])}
+        {nest(['scholastic'])}
+        {nest(['live'])}
+      </>,
+    )
+    await waitFor(() => expect(fonts.live).toHaveBeenCalledTimes(1))
+    await settle()
+    expect(fonts.heritage).not.toHaveBeenCalled()
+
+    // A heritage page with a base scope inside, for its forms: the heritage file once, and still not the live one again.
+    render(nest(['heritage', 'base']))
+    await waitFor(() => expect(fonts.heritage).toHaveBeenCalledTimes(1))
+    await settle()
+    expect(fonts.live).toHaveBeenCalledTimes(1)
+
+    // More heritage scopes reuse the file already loaded.
+    forgetImportedFiles()
+    render(
+      <>
+        {nest(['heritage'])}
+        {nest(['heritage', 'base'])}
+      </>,
+    )
+    await settle()
+    expect(fonts.heritage).toHaveBeenCalledTimes(1)
+    expect(fonts.live).toHaveBeenCalledTimes(1)
+  })
+
+  it('a heritage scope on its own imports the heritage file and not the live one', async () => {
+    const ThemeScope = await freshScope()
+    render(<ThemeScope scope="heritage">Text</ThemeScope>)
+    await waitFor(() => expect(fonts.heritage).toHaveBeenCalledTimes(1))
+    await settle()
+    expect(fonts.live).not.toHaveBeenCalled()
   })
 })
