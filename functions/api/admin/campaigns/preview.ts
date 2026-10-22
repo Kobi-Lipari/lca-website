@@ -1,7 +1,7 @@
 // functions/api/admin/campaigns/preview.ts
 import type { Env } from '../../../types'
 import { isResponse, requireMailer } from '../../../utils/auth'
-import { resolveRecipients, type CampaignFilter } from '../../../utils/campaigns'
+import { resolveRecipients, type CampaignFilter } from '../../../utils/admin/campaigns'
 import { handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()

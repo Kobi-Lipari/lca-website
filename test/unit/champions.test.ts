@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parsePasted } from '../../src/lib/champions'
+import { parsePasted } from '../../src/areas/events/champions'
 
 describe('pasting champions', () => {
   it('reads comma and tab separated lines, with an optional note', () => {

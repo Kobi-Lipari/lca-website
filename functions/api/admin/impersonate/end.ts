@@ -1,6 +1,6 @@
 // functions/api/admin/impersonate/end.ts
 import type { Env } from '../../../types'
-import { recordAdminAction } from '../../../utils/audit'
+import { recordAdminAction } from '../../../utils/admin/audit'
 import { isResponse, requireAdmin } from '../../../utils/auth'
 import { handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
 

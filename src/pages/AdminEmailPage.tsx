@@ -5,7 +5,7 @@ import {
   Eye, EyeOff, FlaskConical, X, UserPlus, Search,
 } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
-import { RichTextEditor } from '@/components/governance/RichTextEditor'
+import { RichTextEditor } from '@/areas/governance/components/RichTextEditor'
 import { MultiSelectDropdown } from '@/components/MultiSelectDropdown'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -51,7 +51,7 @@ const SITE_URL_DISPLAY = (
   import.meta.env.VITE_SITE_URL ?? 'https://www.louisianachess.org'
 ).replace(/^https?:\/\//, '')
 
-/** Visual mirror of functions/utils/campaigns.ts → wrapBrandedEmail().
+/** Visual mirror of functions/utils/admin/campaigns.ts → wrapBrandedEmail().
  *  Preview only — the actual email HTML is generated server-side. If you
  *  change the backend template's colors/spacing, update this one too. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -92,9 +92,9 @@ function BrandedEmailPreview({ subject, bodyHtml }: { subject: string; bodyHtml:
 }
 
 const STATUS_META: Record<string, { label: string; icon: typeof Clock; className: string }> = {
-  sending: { label: 'Sending…', icon: Clock, className: 'bg-lca-gold/15 text-[#7a5c00]' },
-  completed: { label: 'Completed', icon: CheckCircle2, className: 'bg-emerald-100 text-emerald-800' },
-  failed: { label: 'Failed', icon: XCircle, className: 'bg-red-100 text-red-700' },
+  sending: { label: 'Sending…', icon: Clock, className: 'bg-lca-gold/15 text-gold-ink-badge' },
+  completed: { label: 'Completed', icon: CheckCircle2, className: 'bg-ok-100 text-ok' },
+  failed: { label: 'Failed', icon: XCircle, className: 'bg-bad-100 text-bad-700' },
 }
 
 function CampaignRow({ c }: { c: ApiCampaign }) {
@@ -108,7 +108,7 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
     <div className="rounded-xl border bg-card p-4 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="truncate font-medium text-lca-navy">{c.subject}</p>
+          <p className="truncate font-medium text-ink">{c.subject}</p>
           <p className="mt-0.5 text-xs text-muted-foreground">
             {new Date(c.created_at).toLocaleString()} · {c.total_recipients} recipients
           </p>
@@ -123,7 +123,7 @@ function CampaignRow({ c }: { c: ApiCampaign }) {
         </div>
         <p className="mt-1 text-[11px] text-muted-foreground">
           {c.sent_count} sent
-          {c.failed_count > 0 && <span className="text-red-600"> · {c.failed_count} failed</span>}
+          {c.failed_count > 0 && <span className="text-bad"> · {c.failed_count} failed</span>}
           {' '}· {pct}%
         </p>
       </div>
@@ -331,7 +331,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
     <div>
       {embedded ? (
         <div className="mb-5">
-          <h2 className="text-xl font-bold text-lca-navy">Group email</h2>
+          <h2 className="text-xl font-bold text-ink">Group email</h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
             Send an email to members — everyone, or a targeted group by role, club, or membership status.
           </p>
@@ -349,8 +349,8 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
           {/* ── Compose ── */}
           <div>
             <div className="mb-4 flex items-center gap-2">
-              <Mail className="size-5 text-lca-gold" />
-              <h2 className="text-xl font-bold text-lca-navy">Compose</h2>
+              <Mail className="size-5 text-gold-ink" />
+              <h2 className="text-xl font-bold text-ink">Compose</h2>
             </div>
 
             <div className="space-y-4 rounded-xl border bg-card p-5 shadow-sm">
@@ -361,7 +361,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                     <button key={value} type="button" role="tab" aria-selected={mode === value}
                       onClick={() => { setMode(value); setConfirming(false) }}
                       className={cn('rounded-md px-3 py-1 transition-colors',
-                        mode === value ? 'bg-lca-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
+                        mode === value ? 'bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
                       {label}
                     </button>
                   ))}
@@ -397,7 +397,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
               <div>
                 <div className="flex items-center justify-between">
                   <Label className="text-xs">Message</Label>
-                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-lca-navy hover:underline">
+                  <button type="button" onClick={() => setShowPreview((p) => !p)} className="flex items-center gap-1 text-[11px] font-medium text-ink hover:underline">
                     {showPreview ? <EyeOff className="size-3" /> : <Eye className="size-3" />}
                     {showPreview ? 'Hide preview' : 'Preview email'}
                   </button>
@@ -416,7 +416,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
               {/* ── Test send ── */}
               <div className="rounded-lg border border-dashed p-3">
                 <p className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
-                  <FlaskConical className="size-3.5 text-lca-gold" />
+                  <FlaskConical className="size-3.5 text-gold-ink" />
                   Send yourself a test before the real thing
                 </p>
                 <div className="flex gap-2">
@@ -431,7 +431,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                   </Button>
                 </div>
                 {testResult && (
-                  <p className={cn('mt-2 text-xs', testResult.ok ? 'text-emerald-700' : 'text-destructive')}>{testResult.message}</p>
+                  <p className={cn('mt-2 text-xs', testResult.ok ? 'text-ok-700' : 'text-destructive')}>{testResult.message}</p>
                 )}
                 <p className="mt-1.5 text-[10px] text-muted-foreground">
                   Test emails are marked [TEST] in the subject and don't count toward — or appear in — send history.
@@ -458,19 +458,19 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                 </div>
               ) : (
                 <div className="rounded-lg border border-lca-gold/50 bg-lca-gold/8 p-4">
-                  <p className="flex items-center gap-2 text-sm font-medium text-lca-navy">
-                    <Users className="size-4 text-lca-gold" />
+                  <p className="flex items-center gap-2 text-sm font-medium text-ink">
+                    <Users className="size-4 text-gold-ink" />
                     This will email <span className="font-bold">{finalList.length}</span> {finalList.length === 1 ? 'person' : 'people'}.
                   </p>
                   {mode === 'groups' && (
                     <div className="mt-1.5 flex flex-wrap gap-3 text-[11px]">
                       {finalList.length > 0 && (
-                        <button type="button" onClick={removeAll} className="font-medium text-lca-navy hover:underline">
+                        <button type="button" onClick={removeAll} className="font-medium text-ink hover:underline">
                           Remove all
                         </button>
                       )}
                       {excludedIds.size > 0 && (
-                        <button type="button" onClick={() => setExcludedIds(new Set())} className="font-medium text-lca-navy hover:underline">
+                        <button type="button" onClick={() => setExcludedIds(new Set())} className="font-medium text-ink hover:underline">
                           Restore {excludedIds.size} removed
                         </button>
                       )}
@@ -495,7 +495,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                               <p className="truncate text-xs font-medium text-foreground">
                                 {r.full_name}
                                 {isManual && (
-                                  <span className="ml-1.5 rounded-full bg-lca-gold/15 px-1.5 py-0.5 text-[9px] font-medium text-[#7a5c00]">
+                                  <span className="ml-1.5 rounded-full bg-lca-gold/15 px-1.5 py-0.5 text-[9px] font-medium text-gold-ink-badge">
                                     {isTyped ? 'No account' : 'Added'}
                                   </span>
                                 )}
@@ -546,7 +546,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                             <span className="text-muted-foreground"> (no account)</span>
                           )}
                         </span>
-                        <UserPlus className="size-3.5 flex-shrink-0 text-lca-gold" />
+                        <UserPlus className="size-3.5 flex-shrink-0 text-gold-ink" />
                       </button>
                     )}
                     {addQuery.length >= 2 && typedAddresses.length === 0 && (
@@ -563,7 +563,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
                                 <p className="truncate text-xs font-medium">{m.full_name}</p>
                                 <p className="truncate text-[11px] text-muted-foreground">{m.email}</p>
                               </div>
-                              <UserPlus className="size-3.5 flex-shrink-0 text-lca-gold" />
+                              <UserPlus className="size-3.5 flex-shrink-0 text-gold-ink" />
                             </button>
                           ))}
                         </div>
@@ -598,7 +598,7 @@ export function AdminEmailPage({ embedded = false }: { embedded?: boolean } = {}
 
           {/* ── History ── */}
           <div>
-            <h2 className="mb-4 text-xl font-bold text-lca-navy">Send history</h2>
+            <h2 className="mb-4 text-xl font-bold text-ink">Send history</h2>
             {loadingHistory ? (
               <p className="text-sm text-muted-foreground">Loading…</p>
             ) : campaigns.length === 0 ? (

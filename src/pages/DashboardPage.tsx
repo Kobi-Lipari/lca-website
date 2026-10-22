@@ -27,28 +27,29 @@ import {
   type ApiRegistration,
   type ApiSupportTicket,
 } from '@/lib/api'
-import { ROLE_LABELS, canAccessAdmin } from '@/lib/roles'
-import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
+import { ROLE_LABELS, canAccessAdmin } from '@/areas/admin/roles'
+import UscfSearchInput, { type UscfPlayerResult } from '@/areas/membership/components/UscfSearchInput'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { FamilyCard } from '@/components/family/FamilyCard'
-import { UsChessBadge, UsChessMembershipDetail, usChessState } from '@/components/uscf/UsChessMembership'
+import { FamilyCard } from '@/areas/households/components/FamilyCard'
+import { UsChessBadge, UsChessMembershipDetail } from '@/areas/membership/components/UsChessMembership'
+import { usChessState } from '@/areas/membership/usChess'
 
 type MembershipStatus = 'active' | 'expired' | 'pending'
 
 const statusConfig: Record<MembershipStatus, { label: string; className: string }> = {
-  active: { label: 'Active', className: 'bg-emerald-100 text-emerald-800' },
+  active: { label: 'Active', className: 'bg-ok-100 text-ok' },
   expired: { label: 'Expired', className: 'bg-destructive/10 text-destructive' },
-  pending: { label: 'Pending', className: 'bg-lca-gold/20 text-lca-navy' },
+  pending: { label: 'Pending', className: 'bg-lca-gold/20 text-ink' },
 }
 
 const ticketStatusColors: Record<string, string> = {
-  open: 'bg-blue-100 text-blue-800',
-  new: 'bg-blue-100 text-blue-800',
-  answered: 'bg-emerald-100 text-emerald-800',
-  in_progress: 'bg-yellow-100 text-yellow-800',
-  resolved: 'bg-gray-100 text-gray-600',
+  open: 'bg-info-100 text-info-800',
+  new: 'bg-info-100 text-info-800',
+  answered: 'bg-ok-100 text-ok',
+  in_progress: 'bg-warn-yellow-100 text-warn-yellow-800',
+  resolved: 'bg-quiet-100 text-quiet-600',
 }
 
 const ticketStatusLabels: Record<string, string> = {
@@ -60,7 +61,7 @@ const ticketStatusLabels: Record<string, string> = {
 }
 
 const goldButtonClass =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 export function DashboardPage() {
   const { user, role, member: authMember, directedTournaments, managedClubs } = useAuth()
@@ -258,7 +259,7 @@ export function DashboardPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
             <UserCircle className="size-8 text-lca-gold sm:size-10" />
@@ -289,7 +290,7 @@ export function DashboardPage() {
           <>
             {(canAccessAdmin(role) || role === 'club_rep' || role === 'tournament_director' || role === 'lca_auditor' || directedTournaments.length > 0) && (
               <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-lca-navy">
+                <h2 className="text-lg font-bold text-ink">
                   {role === 'member' ? 'Event director' : ROLE_LABELS[role]} tools
                 </h2>
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -332,8 +333,8 @@ export function DashboardPage() {
             {/* Regional representatives manage every club in their region. */}
             {role !== 'lca_admin' && managedClubs.length > 0 && (
               <div className="mb-8 rounded-xl border bg-card p-6 shadow-sm">
-                <h2 className="flex items-center gap-2 text-lg font-bold text-lca-navy">
-                  <Building2 className="size-5 text-lca-gold" /> Clubs in your region
+                <h2 className="flex items-center gap-2 text-lg font-bold text-ink">
+                  <Building2 className="size-5 text-gold-ink" /> Clubs in your region
                 </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   As regional representative you can update these clubs' pages, officers and news.
@@ -343,13 +344,13 @@ export function DashboardPage() {
                     <li key={c.id}>
                       <Link
                         to={`/admin/clubs/${c.id}`}
-                        className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors hover:border-lca-navy/40 hover:bg-muted/40"
+                        className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-sm transition-colors hover:border-ink/40 hover:bg-muted/40"
                       >
                         <span className="min-w-0">
-                          <span className="block truncate font-medium text-lca-navy">{c.name}</span>
+                          <span className="block truncate font-medium text-ink">{c.name}</span>
                           {c.region && <span className="block text-xs text-muted-foreground">{c.region}</span>}
                         </span>
-                        <span className="flex-shrink-0 text-xs font-medium text-lca-navy">Manage →</span>
+                        <span className="flex-shrink-0 text-xs font-medium text-ink">Manage →</span>
                       </Link>
                     </li>
                   ))}
@@ -361,8 +362,8 @@ export function DashboardPage() {
               <div id="profile" className="scroll-mt-24 rounded-xl border bg-card p-6 shadow-sm lg:col-span-1">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <User className="size-5 text-lca-gold" />
-                    <h2 className="text-lg font-bold text-lca-navy">Profile</h2>
+                    <User className="size-5 text-gold-ink" />
+                    <h2 className="text-lg font-bold text-ink">Profile</h2>
                   </div>
                   {!editing && (
                     <Button
@@ -377,7 +378,7 @@ export function DashboardPage() {
                 </div>
 
                 {saveNotice && !editing && (
-                  <p className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/10 px-3 py-2 text-xs text-lca-navy">
+                  <p className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/10 px-3 py-2 text-xs text-ink">
                     {saveNotice}
                   </p>
                 )}
@@ -481,22 +482,22 @@ export function DashboardPage() {
                 ) : (
                   <dl className="mt-4 space-y-3 text-sm">
                     <div>
-                      <dt className="font-medium text-lca-navy">Name</dt>
+                      <dt className="font-medium text-ink">Name</dt>
                       <dd className="text-muted-foreground">{displayName}</dd>
                     </div>
                     <div>
-                      <dt className="font-medium text-lca-navy">Email</dt>
+                      <dt className="font-medium text-ink">Email</dt>
                       <dd className="text-muted-foreground">{email}</dd>
                     </div>
                     {member?.uscf_id && (
                       <div>
-                        <dt className="font-medium text-lca-navy">USCF ID</dt>
+                        <dt className="font-medium text-ink">USCF ID</dt>
                         <dd className="text-muted-foreground">{member.uscf_id}</dd>
                       </div>
                     )}
                     {member?.uscf_rating != null && (
                       <div>
-                        <dt className="font-medium text-lca-navy">USCF Rating</dt>
+                        <dt className="font-medium text-ink">USCF Rating</dt>
                         <dd className="text-muted-foreground">
                           {member.uscf_rating}
                           {member.uscf_rating_updated_at && (
@@ -516,8 +517,8 @@ export function DashboardPage() {
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <CreditCard className="size-5 text-lca-gold" />
-                      <h2 className="text-lg font-bold text-lca-navy">LCA membership</h2>
+                      <CreditCard className="size-5 text-gold-ink" />
+                      <h2 className="text-lg font-bold text-ink">LCA membership</h2>
                     </div>
                     <span
                       className={cn(
@@ -532,7 +533,7 @@ export function DashboardPage() {
                     {membershipStatus === 'active' ? (
                       <>
                         Your LCA membership is valid through{' '}
-                        <span className="font-medium text-lca-navy">{membershipExpiry}</span>.
+                        <span className="font-medium text-ink">{membershipExpiry}</span>.
                       </>
                     ) : (
                       <>Membership status: {status.label.toLowerCase()}.</>
@@ -544,7 +545,7 @@ export function DashboardPage() {
                 </div>
                 <div className="sm:pl-6">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h2 className="text-lg font-bold text-lca-navy">US Chess membership</h2>
+                    <h2 className="text-lg font-bold text-ink">US Chess membership</h2>
                     <UsChessBadge state={usChessState(member?.uscf_id, member?.uscf_expiration)} />
                   </div>
                   <div className="mt-4">
@@ -561,8 +562,8 @@ export function DashboardPage() {
             <div className="mt-6 rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <KeyRound className="size-5 text-lca-gold" />
-                  <h2 className="text-lg font-bold text-lca-navy">Security</h2>
+                  <KeyRound className="size-5 text-gold-ink" />
+                  <h2 className="text-lg font-bold text-ink">Security</h2>
                 </div>
                 {!changingPassword && (
                   <Button
@@ -581,7 +582,7 @@ export function DashboardPage() {
               </div>
 
               {passwordNotice && !changingPassword && (
-                <p className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+                <p className="mt-3 rounded-lg border border-ok-200 bg-ok-50 px-3 py-2 text-xs text-ok">
                   {passwordNotice}
                 </p>
               )}
@@ -656,7 +657,7 @@ export function DashboardPage() {
               )}
 
               <div className="mt-4 border-t pt-4">
-                <p className="text-sm font-medium text-lca-navy">
+                <p className="text-sm font-medium text-ink">
                   Two-factor authentication
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -676,8 +677,8 @@ export function DashboardPage() {
       <section className="bg-muted/30">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-2">
-            <Calendar className="size-6 text-lca-gold" />
-            <h2 className="text-2xl font-bold text-lca-navy">My Registrations</h2>
+            <Calendar className="size-6 text-gold-ink" />
+            <h2 className="text-2xl font-bold text-ink">My Registrations</h2>
           </div>
           <p className="mt-1 text-muted-foreground">
             Tournaments you and your children are registered for.
@@ -690,11 +691,11 @@ export function DashboardPage() {
                   className="flex flex-col gap-3 rounded-xl border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
-                    <h3 className="font-semibold text-lca-navy">
+                    <h3 className="font-semibold text-ink">
                       {reg.tournament_name ?? reg.tournament_id}
                     </h3>
                     {reg.is_child_entry === 1 && reg.player_name && (
-                      <p className="text-sm font-medium text-lca-navy/80">For {reg.player_name}</p>
+                      <p className="text-sm font-medium text-ink/80">For {reg.player_name}</p>
                     )}
                     <p className="mt-1 text-sm text-muted-foreground">
                       {reg.tournament_date ?? ''}{' '}
@@ -709,8 +710,8 @@ export function DashboardPage() {
                         reg.waitlisted_at
                           ? 'bg-muted text-muted-foreground'
                           : reg.payment_status === 'paid'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-lca-gold/20 text-lca-navy',
+                          ? 'bg-ok-100 text-ok'
+                          : 'bg-lca-gold/20 text-ink',
                       )}
                     >
                       {reg.waitlisted_at ? 'Waitlisted' : reg.payment_status === 'paid' ? 'Paid' : 'Payment pending'}
@@ -725,7 +726,7 @@ export function DashboardPage() {
           ) : (
             <p className="mt-8 text-sm text-muted-foreground">
               No registrations yet.{' '}
-              <Link to="/tournaments" className="text-lca-navy hover:underline">
+              <Link to="/tournaments" className="text-ink hover:underline">
                 Browse tournaments
               </Link>
             </p>
@@ -737,10 +738,10 @@ export function DashboardPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <MessageSquare className="size-6 text-lca-gold" />
-              <h2 className="text-2xl font-bold text-lca-navy">My Support Tickets</h2>
+              <MessageSquare className="size-6 text-gold-ink" />
+              <h2 className="text-2xl font-bold text-ink">My Support Tickets</h2>
               {openCount > 0 && (
-                <span className="rounded-full bg-lca-gold/20 px-2.5 py-0.5 text-xs font-semibold text-lca-navy">
+                <span className="rounded-full bg-lca-gold/20 px-2.5 py-0.5 text-xs font-semibold text-ink">
                   {openCount} open
                 </span>
               )}
@@ -767,7 +768,7 @@ export function DashboardPage() {
                     className="flex flex-col gap-2 rounded-xl border bg-card p-5 shadow-sm transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-semibold text-lca-navy">
+                      <p className="truncate font-semibold text-ink">
                         {ticket.subject}
                       </p>
                       <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
@@ -794,7 +795,7 @@ export function DashboardPage() {
             </ul>
             {tickets.length > recentTickets.length && (
               <p className="mt-4 text-sm">
-                <Link to="/support" className="font-medium text-lca-navy hover:underline">
+                <Link to="/support" className="font-medium text-ink hover:underline">
                   View all {tickets.length} tickets →
                 </Link>
               </p>
@@ -803,7 +804,7 @@ export function DashboardPage() {
         ) : (
           <div className="mt-6 rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
             No support tickets yet. If you hit a problem or have a question,{' '}
-            <Link to="/support?new=1" className="font-medium text-lca-navy hover:underline">
+            <Link to="/support?new=1" className="font-medium text-ink hover:underline">
               open a ticket
             </Link>{' '}
             and the LCA team will get back to you.

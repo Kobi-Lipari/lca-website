@@ -11,12 +11,13 @@ import {
   type ApiTournamentDetail,
   type ApiTournamentPairing,
 } from '@/lib/api'
+import { FEATURES } from '@/lib/features'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { StandingsTable } from '@/components/tournaments/StandingsTable'
-import { Crosstable } from '@/components/tournaments/Crosstable'
-import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
-import { PreviewBanner } from '@/components/tournaments/PreviewBanner'
+import { StandingsTable } from '@/areas/live/components/StandingsTable'
+import { Crosstable } from '@/areas/live/components/Crosstable'
+import { PrizeWinners } from '@/areas/events/components/PrizeWinners'
+import { PreviewBanner } from '@/areas/events/components/PreviewBanner'
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -29,6 +30,9 @@ function formatResult(result: string): string {
   if (!result || result === 'pending') return '—'
   if (result === 'bye') return '1'
   if (result === 'bye-half') return '½'
+  // Under the new look a drawn game is written with ½, as the print page and
+  // the results entry write it; today's list shows the stored 1/2-1/2.
+  if (FEATURES.newLook && result === '1/2-1/2') return '½-½'
   if (result === '1-0 F') return '1-0 (F)'
   if (result === '0-1 F') return '0-1 (F)'
   if (result === '0-0 F') return '0-0 (F)'
@@ -65,11 +69,11 @@ function RoundAccordion({
       >
         <div className="flex items-center gap-2">
           {open ? (
-            <ChevronDown className="size-4 text-lca-gold" />
+            <ChevronDown className="size-4 text-gold-ink" />
           ) : (
             <ChevronRight className="size-4 text-muted-foreground" />
           )}
-          <span className="font-semibold text-lca-navy">Round {round}</span>
+          <span className="font-semibold text-ink">Round {round}</span>
           {schedule && (
             <span className="text-xs text-muted-foreground">
               · {schedule.date}{schedule.time ? ` · ${schedule.time}` : ''}
@@ -88,7 +92,7 @@ function RoundAccordion({
             return (
               <div key={section}>
                 <div className="border-b border-border bg-lca-gold/5 px-4 py-1.5">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-lca-navy">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-ink">
                     {section}
                   </span>
                 </div>
@@ -116,7 +120,7 @@ function RoundAccordion({
                           </span>
                         )}
                       </span>
-                      <span className="w-16 flex-shrink-0 text-right font-medium text-lca-navy">
+                      <span className="w-16 flex-shrink-0 text-right font-medium text-ink">
                         {formatResult(game.result)}
                       </span>
                     </li>
@@ -184,7 +188,7 @@ export function TournamentPairingsPage() {
   if (notFound || !tournament) return (
     <div className="mx-auto max-w-4xl px-6 py-12 text-center">
       <Trophy className="mx-auto size-12 text-muted-foreground" />
-      <h1 className="mt-4 text-2xl font-bold text-lca-navy">Tournament not found</h1>
+      <h1 className="mt-4 text-2xl font-bold text-ink">Tournament not found</h1>
       <Button asChild className="mt-6" variant="outline">
         <Link to="/tournaments"><ArrowLeft className="size-4" /> Back to tournaments</Link>
       </Button>
@@ -204,7 +208,7 @@ export function TournamentPairingsPage() {
   if (pairings.length === 0) return (
     <div>
       <PreviewBanner tournamentId={tournament.id} visible={tournament.is_visible} />
-      <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-[3px] border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-4xl px-6 py-10">
           <Link
             to={`/tournaments/${id}`}
@@ -220,7 +224,7 @@ export function TournamentPairingsPage() {
       </section>
       <div className="mx-auto max-w-4xl px-6 py-16 text-center">
         <Trophy className="mx-auto size-10 text-muted-foreground" />
-        <p className="mt-4 text-lg font-medium text-lca-navy">No pairings published yet</p>
+        <p className="mt-4 text-lg font-medium text-ink">No pairings published yet</p>
         <p className="mt-2 text-sm text-muted-foreground">
           Check back once the tournament director posts round pairings.
         </p>
@@ -235,7 +239,7 @@ export function TournamentPairingsPage() {
     <div>
       {/* ── Hero ── */}
       <PreviewBanner tournamentId={tournament.id} visible={tournament.is_visible} />
-      <section className="border-b-[3px] border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-[3px] border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-4xl px-6 py-10">
           <Link
             to={`/tournaments/${id}`}
@@ -262,7 +266,7 @@ export function TournamentPairingsPage() {
         {hasScores && (
           <div>
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-              <h2 className="text-2xl font-bold text-lca-navy">
+              <h2 className="text-2xl font-bold text-ink">
                 {isCompleted ? 'Final standings' : 'Current standings'}
               </h2>
               <div className="inline-flex rounded-lg border p-0.5 text-sm" role="tablist" aria-label="Standings view">
@@ -274,8 +278,8 @@ export function TournamentPairingsPage() {
                     aria-selected={view === v}
                     onClick={() => setView(v)}
                     className={view === v
-                      ? 'rounded-md bg-lca-navy px-3 py-1 font-medium text-white'
-                      : 'rounded-md px-3 py-1 text-muted-foreground hover:text-lca-navy'}
+                      ? 'rounded-md bg-brand-navy px-3 py-1 font-medium text-white'
+                      : 'rounded-md px-3 py-1 text-muted-foreground hover:text-ink'}
                   >
                     {v === 'standings' ? 'Standings' : 'Crosstable'}
                   </button>
@@ -295,7 +299,7 @@ export function TournamentPairingsPage() {
 
         {/* Pairings by round */}
         <div>
-          <h2 className="mb-4 text-2xl font-bold text-lca-navy">
+          <h2 className="mb-4 text-2xl font-bold text-ink">
             {isCompleted ? 'Pairings' : 'Round pairings'}
           </h2>
           <div className="space-y-3">

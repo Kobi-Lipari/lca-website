@@ -1,8 +1,8 @@
 // functions/api/admin/tournaments/[id]/directors.ts
 import type { Env, MemberRow } from '../../../../types'
 import { isObserver, isResponse, requireAuthedMember } from '../../../../utils/auth'
-import { canManageTournament } from '../../../../utils/permissions'
-import { recordAdminAction } from '../../../../utils/audit'
+import { canManageTournament } from '../../../../utils/admin/permissions'
+import { recordAdminAction } from '../../../../utils/admin/audit'
 import {
   errorResponse,
   handleOptions,

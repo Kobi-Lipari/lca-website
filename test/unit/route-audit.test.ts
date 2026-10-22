@@ -1,15 +1,32 @@
 // test/unit/route-audit.test.ts
-// Guards against this repo's most repeated bug class: api.ts calling a
-// route that no file under functions/ actually serves.
+// Guards against this repo's most repeated bug class: the site's API client
+// calling a route that no file under functions/ actually serves.
+//
+// The client is src/lib/api.ts (now a barrel), the shared helpers in
+// src/lib/http.ts and each area's src/areas/<area>/api.ts. The paths found
+// across all of them must be the same set as before the client was split
+// by area (fixtures/api-fetch-paths.json, taken from the unsplit api.ts), so
+// a file left out of the scan cannot drop coverage unnoticed.
 import { describe, expect, it } from 'vitest'
-import { readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { collectRoutes } from './routes'
 
-const FUNCTIONS_DIR = join(__dirname, '../../functions')
-const API_TS = join(__dirname, '../../src/lib/api.ts')
+const ROOT = join(__dirname, '../..')
+const FUNCTIONS_DIR = join(ROOT, 'functions')
+const AREAS_DIR = join(ROOT, 'src/areas')
+const PATHS_BEFORE_SPLIT = JSON.parse(readFileSync(join(__dirname, 'fixtures/api-fetch-paths.json'), 'utf8')) as string[]
 
-/** Extract '/api/...' fetch paths from api.ts; '${expr}' → '*' */
+/** Every file of the site's API client, relative to the repository root. */
+const API_FILES = [
+  'src/lib/api.ts',
+  'src/lib/http.ts',
+  ...readdirSync(AREAS_DIR)
+    .filter((area) => existsSync(join(AREAS_DIR, area, 'api.ts')))
+    .map((area) => `src/areas/${area}/api.ts`),
+]
+
+/** Extract '/api/...' fetch paths from a client file; '${expr}' → '*' */
 function extractFetchPaths(source: string): string[] {
   const paths = new Set<string>()
   const regex = /fetch\(\s*[`'"](\/api\/[^`'"]*)[`'"]/g
@@ -34,13 +51,20 @@ function routeMatches(callSegments: string[], routeSegments: string[]): boolean 
   })
 }
 
-describe('route audit: every api.ts fetch path has a serving file', () => {
+describe('route audit: every API client fetch path has a serving file', () => {
   const routes = collectRoutes(FUNCTIONS_DIR)
-  const source = readFileSync(API_TS, 'utf-8')
-  const fetchPaths = extractFetchPaths(source)
+  const fetchPaths = [...new Set(API_FILES.flatMap((file) => extractFetchPaths(readFileSync(join(ROOT, file), 'utf-8'))))].sort()
+
+  it('scans the barrel, the shared helpers and all eight area modules', () => {
+    expect(API_FILES).toHaveLength(10)
+  })
 
   it('found a plausible number of paths (guard against regex rot)', () => {
     expect(fetchPaths.length).toBeGreaterThan(20)
+  })
+
+  it('found the same paths as the unsplit api.ts', () => {
+    expect(fetchPaths).toEqual([...PATHS_BEFORE_SPLIT].sort())
   })
 
   for (const path of fetchPaths) {

@@ -32,25 +32,27 @@ import {
   type ApiPrizeAward,
   type ApiRatingReport,
   type ApiRoundScheduleItem,
+  type ApiSectionDraft,
   type ApiStanding,
   type ApiTournamentDetail,
   type ApiTournamentGame,
-  type ApiTournamentSection,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { FEATURES } from '@/lib/features'
 import { useAuth } from '@/contexts/auth-context'
-import { canUseMailing, isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
-import { useViewOnly, ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
-import { StandingsTable } from '@/components/tournaments/StandingsTable'
-import { ResultsEntry } from '@/components/tournaments/ResultsEntry'
-import { SectionRulesEditor } from '@/components/tournaments/SectionRulesEditor'
+import { canUseMailing, isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
+import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
+import { useViewOnly } from '@/hooks/useViewOnly'
+import { StandingsTable } from '@/areas/live/components/StandingsTable'
+import { ResultsEntry } from '@/areas/live/components/ResultsEntry'
+import { SectionRulesEditor } from '@/areas/events/components/SectionRulesEditor'
 import { gradeRangeText, parseGradeRange } from '@/lib/sectionRules'
-import { PrizesEditor } from '@/components/tournaments/PrizesEditor'
-import { UsChessUploadPanel } from '@/components/tournaments/UsChessUploadPanel'
-import { Crosstable } from '@/components/tournaments/Crosstable'
-import { PrizeWinners } from '@/components/tournaments/PrizeWinners'
+import { PrizesEditor } from '@/areas/events/components/PrizesEditor'
+import { UsChessUploadPanel } from '@/areas/events/components/UsChessUploadPanel'
+import { Crosstable } from '@/areas/live/components/Crosstable'
+import { PrizeWinners } from '@/areas/events/components/PrizeWinners'
 
-const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 const SECTION_PRESETS = [
   'Open', 'U2200', 'U2000', 'U1800', 'U1600',
@@ -103,6 +105,7 @@ interface FormSnapshot {
   registrationStatus: string
   registrationClosesAt: string
   pricing: string // JSON
+  requiresMembership: boolean
   rounds: string
   roundSchedule: string // JSON
 }
@@ -177,7 +180,7 @@ export function TournamentManagePage() {
   // can't see; if the app has a useAuth() hook exposing member.role, swap it in.
   const [myRole, setMyRole] = useState<string | null>(null)
   // Back links go to the admin panel for admins, the workspace for reps/directors.
-  const { role: authRole } = useAuth()
+  const { role: authRole, member: authMember } = useAuth()
   // Someone directing an event with an ordinary member account works from the workspace.
   const backHref = authRole === 'member' ? '/workspace?tab=events' : toolsHomeFor(authRole, 'tournaments')
   // LCA Officers see events like an observer but without the mailing tools.
@@ -199,7 +202,9 @@ export function TournamentManagePage() {
   const [keepApart, setKeepApart] = useState<'family' | 'family_club' | 'none'>('family')
   const [timeControl, setTimeControl] = useState('')
   const [customTimeControl, setCustomTimeControl] = useState('')
-  const [sections, setSections] = useState<ApiTournamentSection[]>([])
+  // Each loaded section keeps its id while it is edited and goes back with
+  // it on save, so the server matches it by id rather than by name.
+  const [sections, setSections] = useState<ApiSectionDraft[]>([])
   const [customPreset, setCustomPreset] = useState('')
   const [customDetails, setCustomDetails] = useState<ApiCustomDetail[]>([])
 
@@ -207,7 +212,10 @@ export function TournamentManagePage() {
   const [isVisible, setIsVisible] = useState(true)
   const [registrationStatus, setRegistrationStatus] = useState('draft')
   const [registrationClosesAt, setRegistrationClosesAt] = useState('')
-  const [pricing, setPricing] = useState({ earlyDeadline: '', earlyDiscount: '', lateAfter: '', lateFee: '', memberDiscount: '' })
+  const [pricing, setPricing] = useState({ earlyDeadline: '', earlyDiscount: '', lateAfter: '', lateFee: '' })
+  // Whether entering needs a current LCA membership. Only a club-run event
+  // can switch it off, and only an LCA admin or that club's rep may change it.
+  const [requiresMembership, setRequiresMembership] = useState(true)
   const [waitlist, setWaitlist] = useState<ApiManageRosterPlayer[]>([])
   const [offering, setOffering] = useState<string | null>(null)
 
@@ -312,8 +320,8 @@ export function TournamentManagePage() {
       earlyDiscount: money(t.early_discount),
       lateAfter: (t.late_after ?? '').slice(0, 16),
       lateFee: money(t.late_fee),
-      memberDiscount: money(t.member_discount),
     }
+    const nRequiresMembership = t.requires_lca_membership !== 0
     const nRounds = String(t.rounds ?? 5)
     const nRoundSchedule = normalizeSchedule(t.round_schedule ?? [], Number(nRounds))
 
@@ -339,6 +347,7 @@ export function TournamentManagePage() {
     setRegistrationStatus(nRegistrationStatus)
     setRegistrationClosesAt(nRegistrationClosesAt)
     setPricing(nPricing)
+    setRequiresMembership(nRequiresMembership)
     setRounds(nRounds)
     setRoundSchedule(nRoundSchedule)
 
@@ -362,6 +371,7 @@ export function TournamentManagePage() {
       registrationStatus: nRegistrationStatus,
       registrationClosesAt: nRegistrationClosesAt,
       pricing: JSON.stringify(nPricing),
+      requiresMembership: nRequiresMembership,
       rounds: nRounds,
       roundSchedule: JSON.stringify(nRoundSchedule),
     })
@@ -508,11 +518,17 @@ export function TournamentManagePage() {
     JSON.stringify(sections) !== snap.sections ||
     JSON.stringify(customDetails) !== snap.customDetails
   )
+  // The membership switch: club-run events only (an LCA-run event always
+  // requires a membership), for an LCA admin or the organizing club's rep.
+  const showMembershipSwitch = FEATURES.membershipRequirementSwitch &&
+    !!tournament?.club_id &&
+    (authRole === 'lca_admin' || (authRole === 'club_rep' && authMember?.club_id === tournament.club_id))
   const registrationDirty = !!snap && (
     isVisible !== snap.isVisible ||
     registrationStatus !== snap.registrationStatus ||
     registrationClosesAt !== snap.registrationClosesAt ||
-    JSON.stringify(pricing) !== snap.pricing
+    JSON.stringify(pricing) !== snap.pricing ||
+    requiresMembership !== snap.requiresMembership
   )
   const scheduleDirty = !!snap && (
     rounds !== snap.rounds ||
@@ -543,7 +559,7 @@ export function TournamentManagePage() {
     setCustomTimeControl(
       s.timeControl && !TIME_CONTROL_PRESETS.includes(s.timeControl) ? s.timeControl : '',
     )
-    setSections(JSON.parse(s.sections) as ApiTournamentSection[])
+    setSections(JSON.parse(s.sections) as ApiSectionDraft[])
     setCustomDetails(JSON.parse(s.customDetails) as ApiCustomDetail[])
     setIsVisible(s.isVisible)
     setRegistrationStatus(s.registrationStatus)
@@ -621,8 +637,11 @@ export function TournamentManagePage() {
       if (pricing.earlyDiscount !== was.earlyDiscount) body.earlyDiscount = amt(pricing.earlyDiscount)
       if (pricing.lateAfter !== was.lateAfter) body.lateAfter = pricing.lateAfter || null
       if (pricing.lateFee !== was.lateFee) body.lateFee = amt(pricing.lateFee)
-      if (pricing.memberDiscount !== was.memberDiscount) body.memberDiscount = amt(pricing.memberDiscount)
     }
+    // Sent only when changed: the server refuses the field from anyone but an
+    // LCA admin or the organizing club's rep, which an assigned director
+    // saving other settings must never trip over.
+    if (requiresMembership !== s.requiresMembership) body.requiresLcaMembership = requiresMembership
     const statusChanged = registrationStatus !== s.registrationStatus
     if (Object.keys(body).length === 0 && !statusChanged) return
 
@@ -1039,7 +1058,7 @@ export function TournamentManagePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <Link to={backHref} className="inline-flex items-center gap-1.5 text-sm text-white/70 hover:text-lca-gold">
             <ArrowLeft className="size-4" />All Tournaments
@@ -1092,7 +1111,7 @@ export function TournamentManagePage() {
       </section>
 
       {/* Tab bar */}
-      <div className="border-b bg-white sticky top-0 z-10">
+      <div className="border-b bg-surface sticky top-0 z-10">
         <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-6">
           {visibleTabs.map((t) => (
             <button
@@ -1102,8 +1121,8 @@ export function TournamentManagePage() {
               className={cn(
                 'relative whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors',
                 activeTab === t.id
-                  ? 'border-lca-gold text-lca-navy font-semibold'
-                  : 'border-transparent text-muted-foreground hover:text-lca-navy',
+                  ? 'border-lca-gold text-ink font-semibold'
+                  : 'border-transparent text-muted-foreground hover:text-ink',
               )}
             >
               {t.label}
@@ -1133,9 +1152,9 @@ export function TournamentManagePage() {
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-8">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <h2 className="text-lg font-bold text-lca-navy">Tournament details</h2>
+                <h2 className="text-lg font-bold text-ink">Tournament details</h2>
                 {detailsDirty && (
-                  <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
+                  <span className="text-xs font-medium text-warn-600">Unsaved changes</span>
                 )}
               </div>
 
@@ -1177,15 +1196,15 @@ export function TournamentManagePage() {
                     <button type="button"
                       onClick={() => setIsRated(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        isRated ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}
+                        isRated ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}
                     >USCF Rated</button>
                     <button type="button"
                       onClick={() => setIsRated(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !isRated ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}
+                        !isRated ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}
                     >Unrated</button>
                   </div>
-                  <label className="flex items-center gap-2 text-sm text-lca-navy">
+                  <label className="flex items-center gap-2 text-sm text-ink">
                     <input type="checkbox" checked={stateChampionship} onChange={(e) => setStateChampionship(e.target.checked)} />
                     State championship
                     <span className="text-xs text-muted-foreground">(badged, and listed on the State champions page)</span>
@@ -1252,8 +1271,8 @@ export function TournamentManagePage() {
                       className={cn(
                         'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                         timeControl === tc
-                          ? 'border-lca-navy bg-lca-navy text-white'
-                          : 'border-border text-muted-foreground hover:border-lca-gold hover:text-lca-navy',
+                          ? 'border-brand-navy bg-brand-navy text-white'
+                          : 'border-border text-muted-foreground hover:border-lca-gold hover:text-ink',
                       )}
                     >
                       {tc}
@@ -1290,8 +1309,8 @@ export function TournamentManagePage() {
                       className={cn(
                         'rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                         sections.some((s) => s.name === presetName)
-                          ? 'border-lca-navy bg-lca-navy text-white cursor-default'
-                          : 'border-border text-muted-foreground hover:border-lca-gold hover:text-lca-navy',
+                          ? 'border-brand-navy bg-brand-navy text-white cursor-default'
+                          : 'border-border text-muted-foreground hover:border-lca-gold hover:text-ink',
                       )}
                     >
                       {presetName}
@@ -1479,9 +1498,9 @@ export function TournamentManagePage() {
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-6">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <h2 className="text-lg font-bold text-lca-navy">Visibility &amp; registration</h2>
+                <h2 className="text-lg font-bold text-ink">Visibility &amp; registration</h2>
                 {registrationDirty && (
-                  <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
+                  <span className="text-xs font-medium text-warn-600">Unsaved changes</span>
                 )}
               </div>
               <div className="grid gap-6 sm:grid-cols-2">
@@ -1491,12 +1510,12 @@ export function TournamentManagePage() {
                     <button type="button"
                       onClick={() => setIsVisible(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        isVisible ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}
+                        isVisible ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-ink/40')}
                     >Visible to public</button>
                     <button type="button"
                       onClick={() => setIsVisible(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !isVisible ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}
+                        !isVisible ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-ink/40')}
                     >Hidden (draft)</button>
                   </div>
                 </div>
@@ -1525,12 +1544,12 @@ export function TournamentManagePage() {
               </div>
               <div className="space-y-3 border-t pt-5">
                 <div>
-                  <Label>Discounts and late fee</Label>
+                  <Label>Early-entry discount and late fee</Label>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Optional. Applied to every section's entry fee at checkout, never below free. Times are Central.
                   </p>
                 </div>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <Label htmlFor="p-early" className="text-xs">Early-entry discount ($)</Label>
                     <Input id="p-early" type="number" min={0} placeholder="0" value={pricing.earlyDiscount}
@@ -1547,20 +1566,35 @@ export function TournamentManagePage() {
                       onChange={(e) => setPricing((p) => ({ ...p, lateAfter: e.target.value }))} />
                     <p className="text-[11px] text-muted-foreground">From this time on.</p>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="p-member" className="text-xs">LCA member discount ($)</Label>
-                    <Input id="p-member" type="number" min={0} placeholder="0" value={pricing.memberDiscount}
-                      onChange={(e) => setPricing((p) => ({ ...p, memberDiscount: e.target.value }))} />
-                    <p className="text-[11px] text-muted-foreground">For players with a current LCA membership.</p>
-                  </div>
                 </div>
                 {Number(pricing.earlyDiscount) > 0 && !pricing.earlyDeadline && (
-                  <p className="text-xs text-amber-700">Set when early entry ends, or the discount won't apply.</p>
+                  <p className="text-xs text-warn-700">Set when early entry ends, or the discount won't apply.</p>
                 )}
                 {Number(pricing.lateFee) > 0 && !pricing.lateAfter && (
-                  <p className="text-xs text-amber-700">Set when the late fee starts, or it won't apply.</p>
+                  <p className="text-xs text-warn-700">Set when the late fee starts, or it won't apply.</p>
                 )}
               </div>
+              {showMembershipSwitch && (
+                <div className="space-y-2 border-t pt-5">
+                  <Label>LCA membership</Label>
+                  <label className="flex items-start gap-2 text-sm text-ink">
+                    <input
+                      type="checkbox"
+                      className="mt-0.5"
+                      checked={requiresMembership}
+                      onChange={(e) => setRequiresMembership(e.target.checked)}
+                    />
+                    <span>
+                      Players need a current LCA membership to enter
+                      <span className="block text-xs text-muted-foreground">
+                        {requiresMembership
+                          ? 'Required: every player must hold an LCA membership on the day of the event.'
+                          : 'Not required: anyone may enter, member or not.'}
+                      </span>
+                    </span>
+                  </label>
+                </div>
+              )}
               <Button
                 type="button"
                 className={goldButtonClass}
@@ -1573,7 +1607,7 @@ export function TournamentManagePage() {
 
             {/* Roster: check-in, editing, withdrawal */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
-              <h2 className="text-lg font-bold text-lca-navy">
+              <h2 className="text-lg font-bold text-ink">
                 Registered players ({activeRoster.length})
                 <span className="ml-2 text-sm font-normal text-muted-foreground">
                   · {checkedInCount} checked in
@@ -1614,7 +1648,7 @@ export function TournamentManagePage() {
                                 className={cn(
                                   'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
                                   player.checked_in_at
-                                    ? 'border-emerald-600 bg-emerald-600 text-white'
+                                    ? 'border-ok-fill bg-ok-fill text-white'
                                     : 'border-border text-muted-foreground hover:border-emerald-600/50',
                                   withdrawn && 'opacity-40 cursor-not-allowed',
                                 )}
@@ -1625,18 +1659,18 @@ export function TournamentManagePage() {
                             <td className="px-3 py-2 font-medium">
                               {player.full_name}
                               {withdrawn && (
-                                <span className="ml-2 rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700">
+                                <span className="ml-2 rounded-full bg-bad-100 px-2 py-0.5 text-[10px] font-medium text-bad-700">
                                   Withdrawn
                                 </span>
                               )}
                               {player.grade && (
-                                <span className="ml-2 text-xs font-normal text-emerald-700" title={`Confirmed ${gradeNote(player.grade)} this school year`}>
+                                <span className="ml-2 text-xs font-normal text-ok-700" title={`Confirmed ${gradeNote(player.grade)} this school year`}>
                                   ✓ grade
                                 </span>
                               )}
                               {isRated && player.uscf_expiration && tournament && player.uscf_expiration.slice(0, 10) < tournament.date.slice(0, 10) && (
                                 <span
-                                  className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-800"
+                                  className="ml-2 rounded-full bg-warn-100 px-2 py-0.5 text-[10px] font-medium text-warn-800"
                                   title={`US Chess membership expires ${player.uscf_expiration.slice(0, 10)}`}
                                 >
                                   USCF expired
@@ -1666,8 +1700,8 @@ export function TournamentManagePage() {
                                 className={cn(
                                   'rounded-md border px-2 py-1 text-xs font-medium',
                                   player.payment_status === 'paid'
-                                    ? 'bg-emerald-100 text-emerald-800'
-                                    : 'bg-lca-gold/20 text-lca-navy',
+                                    ? 'bg-ok-100 text-ok'
+                                    : 'bg-lca-gold/20 text-ink',
                                 )}
                                 value={player.payment_status}
                                 disabled={busy || withdrawn}
@@ -1702,8 +1736,8 @@ export function TournamentManagePage() {
                                       className={cn(
                                         'size-6 rounded-full border text-[11px] font-medium transition-colors',
                                         isSel
-                                          ? 'border-lca-navy bg-lca-navy text-white'
-                                          : 'border-border text-muted-foreground hover:border-lca-navy/40',
+                                          ? 'border-brand-navy bg-brand-navy text-white'
+                                          : 'border-border text-muted-foreground hover:border-ink/40',
                                       )}
                                     >
                                       {round}
@@ -1735,7 +1769,7 @@ export function TournamentManagePage() {
             {/* Waitlist */}
             {waitlist.length > 0 && (
               <div className="rounded-xl border bg-card p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-lca-navy">Waitlist ({waitlist.length})</h2>
+                <h2 className="text-lg font-bold text-ink">Waitlist ({waitlist.length})</h2>
                 <p className="mt-1 text-xs text-muted-foreground">
                   In the order they joined. Offering a spot moves the player into the event and emails them;
                   paid sections get a payment link. Nobody on the waitlist has been charged.
@@ -1772,8 +1806,8 @@ export function TournamentManagePage() {
             {/* Add walk-in */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-2">
-                <UserPlus className="size-5 text-lca-gold" />
-                <h2 className="text-lg font-bold text-lca-navy">Add walk-in player</h2>
+                <UserPlus className="size-5 text-gold-ink" />
+                <h2 className="text-lg font-bold text-ink">Add walk-in player</h2>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 Registers a player without a site account. Collect payment at the door.
@@ -1822,12 +1856,12 @@ export function TournamentManagePage() {
                   <div className="flex gap-2">
                     <button type="button" onClick={() => setWalkInMarkPaid(true)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        walkInMarkPaid ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}>
+                        walkInMarkPaid ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
                       Paid (cash/check)
                     </button>
                     <button type="button" onClick={() => setWalkInMarkPaid(false)}
                       className={cn('flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
-                        !walkInMarkPaid ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}>
+                        !walkInMarkPaid ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
                       Pending
                     </button>
                   </div>
@@ -1850,9 +1884,9 @@ export function TournamentManagePage() {
             {/* Rounds count + schedule */}
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <h2 className="text-lg font-bold text-lca-navy">Rounds &amp; schedule</h2>
+                <h2 className="text-lg font-bold text-ink">Rounds &amp; schedule</h2>
                 {scheduleDirty && (
-                  <span className="text-xs font-medium text-amber-600">Unsaved changes</span>
+                  <span className="text-xs font-medium text-warn-600">Unsaved changes</span>
                 )}
               </div>
               <div className="space-y-2 max-w-xs">
@@ -1898,7 +1932,7 @@ export function TournamentManagePage() {
               <div className="space-y-2">
                 {roundSchedule.map((rs, i) => (
                   <div key={rs.round} className="grid grid-cols-3 gap-2 items-center">
-                    <span className="text-sm font-medium text-lca-navy">Round {rs.round}</span>
+                    <span className="text-sm font-medium text-ink">Round {rs.round}</span>
                     <Input
                       type="date"
                       value={rs.date}
@@ -1930,8 +1964,8 @@ export function TournamentManagePage() {
             {/* Generate pairings */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex items-center gap-2">
-                <Sparkles className="size-5 text-lca-gold" />
-                <h2 className="text-lg font-bold text-lca-navy">Pair the next round</h2>
+                <Sparkles className="size-5 text-gold-ink" />
+                <h2 className="text-lg font-bold text-ink">Pair the next round</h2>
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
                 {tournament?.pairing_system === 'fide'
@@ -1949,7 +1983,7 @@ export function TournamentManagePage() {
                   .filter((s) => s.n > 2 ** rounds)
                 if (big.length === 0) return null
                 return (
-                  <p className="mt-2 rounded-md border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-lca-navy">
+                  <p className="mt-2 rounded-md border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-ink">
                     {big.map((s) => `${s.name} (${s.n} players)`).join(', ')} in {rounds} rounds may finish with more than one
                     perfect score. Consider accelerated pairings (Details tab, Pairing rules) before pairing round 1.
                   </p>
@@ -1973,11 +2007,11 @@ export function TournamentManagePage() {
                 <div className="space-y-2">
                   <Label>Round</Label>
                   {generateForm.section === ALL_SECTIONS && new Set(sections.map((s) => nextRoundFor(s.name))).size > 1 ? (
-                    <p className="rounded-md border bg-muted/30 px-3 py-2 text-xs text-lca-navy">
+                    <p className="rounded-md border bg-muted/30 px-3 py-2 text-xs text-ink">
                       {sections.map((s) => `${s.name}: Rd ${nextRoundFor(s.name)}`).join(' · ')}
                     </p>
                   ) : (
-                    <p className="rounded-md border bg-muted/30 px-3 py-2 text-sm font-medium text-lca-navy">
+                    <p className="rounded-md border bg-muted/30 px-3 py-2 text-sm font-medium text-ink">
                       Round {nextRoundFor(generateForm.section === ALL_SECTIONS ? sections[0]?.name ?? '' : generateForm.section)}
                       <span className="font-normal text-muted-foreground"> of {tournament?.rounds}</span>
                     </p>
@@ -2016,7 +2050,7 @@ export function TournamentManagePage() {
                   )}
                 </label>
                 {pairingNotes.length > 0 && (
-                  <ul className="space-y-1 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-sm text-lca-navy sm:col-span-3">
+                  <ul className="space-y-1 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-sm text-ink sm:col-span-3">
                     {pairingNotes.map((note) => <li key={note}>{note}</li>)}
                   </ul>
                 )}
@@ -2025,7 +2059,7 @@ export function TournamentManagePage() {
 
             {/* Manual pairing */}
             <details className="rounded-xl border bg-card p-6 shadow-sm">
-              <summary className="cursor-pointer text-lg font-bold text-lca-navy">
+              <summary className="cursor-pointer text-lg font-bold text-ink">
                 Manual pairing override
               </summary>
               <form onSubmit={handleAddPairing} className="mt-4">
@@ -2090,7 +2124,7 @@ export function TournamentManagePage() {
             {/* Pairings & results */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-lg font-bold text-lca-navy">Pairings &amp; results</h2>
+                <h2 className="text-lg font-bold text-ink">Pairings &amp; results</h2>
                 {sectionsInGames.length > 0 && (
                   <div className="flex items-center gap-2">
                     <select
@@ -2140,9 +2174,9 @@ export function TournamentManagePage() {
               const finished = tournament.status === 'completed'
               return (
                 <div className={cn('flex flex-wrap items-center justify-between gap-3 rounded-xl border p-4',
-                  finished ? 'border-emerald-200 bg-emerald-50' : 'bg-card')}>
+                  finished ? 'border-ok-200 bg-ok-50' : 'bg-card')}>
                   <div className="text-sm">
-                    <p className="font-semibold text-lca-navy">
+                    <p className="font-semibold text-ink">
                       {finished ? 'This event is finished' : roundsDone && pendingCount === 0 ? 'All rounds are in' : 'Event in progress'}
                     </p>
                     <p className="text-muted-foreground">
@@ -2164,12 +2198,12 @@ export function TournamentManagePage() {
             })()}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <h2 className="text-lg font-bold text-lca-navy">Standings</h2>
+                <h2 className="text-lg font-bold text-ink">Standings</h2>
                 {standings.length > 0 && (
                   <div className="inline-flex rounded-lg border p-0.5 text-sm" role="tablist" aria-label="Standings view">
                     {(['standings', 'crosstable'] as const).map((v) => (
                       <button key={v} type="button" role="tab" aria-selected={standingsView === v} onClick={() => setStandingsView(v)}
-                        className={standingsView === v ? 'rounded-md bg-lca-navy px-3 py-1 font-medium text-white' : 'rounded-md px-3 py-1 text-muted-foreground hover:text-lca-navy'}>
+                        className={standingsView === v ? 'rounded-md bg-brand-navy px-3 py-1 font-medium text-white' : 'rounded-md px-3 py-1 text-muted-foreground hover:text-ink'}>
                         {v === 'standings' ? 'Standings' : 'Crosstable'}
                       </button>
                     ))}
@@ -2209,8 +2243,8 @@ export function TournamentManagePage() {
               <div className="rounded-xl border bg-card p-6 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <FileText className="size-5 text-lca-gold" />
-                    <h2 className="text-lg font-bold text-lca-navy">USCF rating report</h2>
+                    <FileText className="size-5 text-gold-ink" />
+                    <h2 className="text-lg font-bold text-ink">USCF rating report</h2>
                   </div>
                   <div className="flex gap-2">
                     <Button type="button" variant="outline" size="sm" disabled={reportLoading} onClick={handleLoadReport}>
@@ -2242,7 +2276,7 @@ export function TournamentManagePage() {
                     )}
                     {report.sections.map((section) => (
                       <div key={section.name}>
-                        <h3 className="mb-2 text-base font-semibold text-lca-navy">{section.name}</h3>
+                        <h3 className="mb-2 text-base font-semibold text-ink">{section.name}</h3>
                         <div className="overflow-x-auto rounded-lg border">
                           <table className="w-full text-left text-sm">
                             <thead>
@@ -2297,8 +2331,8 @@ export function TournamentManagePage() {
         {activeTab === 'email' && (
           <div className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="flex items-center gap-2">
-              <Mail className="size-5 text-lca-gold" />
-              <h2 className="text-lg font-bold text-lca-navy">Email all entrants</h2>
+              <Mail className="size-5 text-gold-ink" />
+              <h2 className="text-lg font-bold text-ink">Email all entrants</h2>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
               Will send to {roster.filter((p) => !p.withdrawn_at && !p.member_id.startsWith('guest-')).length} active
@@ -2324,7 +2358,7 @@ export function TournamentManagePage() {
                 />
               </div>
               {announceResult && (
-                <p className="text-sm font-medium text-emerald-700">{announceResult}</p>
+                <p className="text-sm font-medium text-ok-700">{announceResult}</p>
               )}
               <Button
                 type="button"

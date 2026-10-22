@@ -1,0 +1,11 @@
+{
+  "src/lib/tournamentStatus.ts": "src/areas/events/tournamentStatus.ts",
+  "src/lib/clearinghouse.ts": "src/areas/events/clearinghouse.ts",
+  "src/lib/scholastic.ts": "src/areas/events/scholastic.ts",
+  "src/lib/uschessUpload.ts": "src/areas/events/uschessUpload.ts",
+  "src/lib/champions.ts": "src/areas/events/champions.ts",
+  "src/lib/clubColors.ts": "src/areas/clubs/clubColors.ts",
+  "src/lib/clubMapData.ts": "src/areas/clubs/clubMapData.ts",
+  "src/lib/mapLocation.ts": "src/areas/clubs/mapLocation.ts",
+  "src/lib/roles.ts": "src/areas/admin/roles.ts"
+}

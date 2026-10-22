@@ -1,7 +1,7 @@
 // functions/api/admin/board-seats.ts
 import type { Env } from '../../types'
 import { isResponse, requireAdmin, requireAdminView } from '../../utils/auth'
-import { recordAdminAction } from '../../utils/audit'
+import { recordAdminAction } from '../../utils/admin/audit'
 import {
   errorResponse,
   handleOptions,

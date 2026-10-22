@@ -1,0 +1,77 @@
+{
+  "comment": "Accessibility issues axe finds on the site today, with every switch off (the a11y-off build), by build (project), page (route), rule id and selector. test/a11y/smoke.spec.ts reports each one and does not fail on it; nothing new may be added to this list. On / today: the muted grey date and place lines in the upcoming events and clubs lists are below 4.5:1 (color-contrast), and the hero slideshow's dots are smaller than 24 by 24 px (target-size, WCAG 2.2). The slideshow moves on every 5 seconds, so whichever dot is current is listed as .w-5 and the others by label; all six forms are listed so the check does not depend on timing. The full axe sweep in step 32 (WS01 acceptance criterion 1) found none of them under the new look, whose greys read 4.5:1 and whose hero is one still picture with no dots, so it took the a11y-on entries out and the build with the switches on lists nothing. These stay, as today's site: the greys go when newLook is turned on, and the dots when WS03 deletes the slideshow.",
+  "violations": [
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "color-contrast",
+      "selector": ".gap-2.text-sm.flex > .text-muted-foreground",
+      "impact": "serious",
+      "help": "Elements must meet minimum color contrast ratio thresholds"
+    },
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "color-contrast",
+      "selector": ".justify-between.py-3[href$=\"fx-t-quads\"] > .min-w-0 > .text-\\[11px\\].text-muted-foreground",
+      "impact": "serious",
+      "help": "Elements must meet minimum color contrast ratio thresholds"
+    },
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "color-contrast",
+      "selector": "a[href$=\"fx-club-north\"] > .min-w-0 > .text-\\[11px\\].text-muted-foreground",
+      "impact": "serious",
+      "help": "Elements must meet minimum color contrast ratio thresholds"
+    },
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "target-size",
+      "selector": ".w-5",
+      "impact": "serious",
+      "help": "All touch targets must be 24px large, or leave sufficient space"
+    },
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "target-size",
+      "selector": "button[aria-label=\"Slide 1\"]",
+      "impact": "serious",
+      "help": "All touch targets must be 24px large, or leave sufficient space"
+    },
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "target-size",
+      "selector": "button[aria-label=\"Slide 2\"]",
+      "impact": "serious",
+      "help": "All touch targets must be 24px large, or leave sufficient space"
+    },
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "target-size",
+      "selector": "button[aria-label=\"Slide 3\"]",
+      "impact": "serious",
+      "help": "All touch targets must be 24px large, or leave sufficient space"
+    },
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "target-size",
+      "selector": "button[aria-label=\"Slide 4\"]",
+      "impact": "serious",
+      "help": "All touch targets must be 24px large, or leave sufficient space"
+    },
+    {
+      "project": "a11y-off",
+      "route": "/",
+      "rule": "target-size",
+      "selector": "button[aria-label=\"Slide 5\"]",
+      "impact": "serious",
+      "help": "All touch targets must be 24px large, or leave sufficient space"
+    }
+  ]
+}

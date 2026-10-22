@@ -48,9 +48,10 @@ To change the schema:
 2. Run `npm run db:generate -- <name>` (for example
    `npm run db:generate -- club notes`). drizzle-kit writes its file into
    the staging folder `drizzle/`; the script numbers it after the highest
-   prefix here (the sections tables were `0052`; `0054` is next), adds a
-   header and writes it here as `0054_club_notes.sql`. Commit it together
-   with the new snapshot in `drizzle/meta`.
+   prefix here (the sections tables were `0052`, `requires_lca_membership`
+   was `0054`; `0055` is next), adds a header and writes it here as
+   `0055_club_notes.sql`. Commit it together with the new snapshot in
+   `drizzle/meta`.
 3. Read the file, run `npm run db:migrate:local` and `npm run test:all`.
 
 The script refuses, writes nothing and puts `drizzle/` back when the file
@@ -72,6 +73,18 @@ header for you to fill in; if the schema changed, drizzle-kit's own version is
 included as comments to work from, and `drizzle/meta` records the new schema
 so the next run does not offer the same change again. Write it the safe way
 (the list above), then run the tests.
+
+### A data statement after a generated change
+
+When a new column needs existing rows set differently from its default,
+generate the column as usual, then add the data statement at the end of the
+generated file, after a `--> statement-breakpoint` line, and say in the
+file's header comment that it was edited by hand. Keep the statement safe to
+run twice in a row. `0054_requires_lca_membership.sql` is the example: the
+generated `ALTER TABLE ... ADD requires_lca_membership` (default 1), then
+`UPDATE tournaments SET requires_lca_membership = 0 WHERE club_id IS NOT
+NULL ...`, because club-run events start with the requirement off. Running
+`npx drizzle-kit generate` afterwards must still report no schema changes.
 
 ### What stays hand-written
 

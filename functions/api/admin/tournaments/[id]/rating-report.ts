@@ -2,7 +2,9 @@
 import type { Env } from '../../../../types'
 import { isResponse, requireTournamentView } from '../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../utils/response'
-import { parseJsonArray } from '../../../../utils/json'
+import { getDb } from '../../../../db/client'
+import { loadSections } from '../../../../utils/events/sectionsRepo'
+import { formatDate } from '../../../../../domain/format'
 
 interface GameRow {
   round: number
@@ -38,17 +40,17 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   if (isResponse(authResult)) return authResult
 
   const tournament = await context.env.DB.prepare(
-    `SELECT id, name, date, end_date, location, venue, rounds, sections, is_rated, time_control, report_settings, created_by
+    `SELECT id, name, date, end_date, location, venue, rounds, is_rated, time_control, report_settings, created_by
        FROM tournaments WHERE id = ?`,
   ).bind(tournamentId).first<{
     id: string; name: string; date: string; end_date: string | null
-    location: string; venue: string | null; rounds: number; sections: string; is_rated: number
+    location: string; venue: string | null; rounds: number; is_rated: number
     time_control: string | null; report_settings: string | null; created_by: string | null
   }>()
 
   if (!tournament) return errorResponse('Tournament not found', 404)
   if (!tournament.is_rated) {
-    return errorResponse('This tournament is not USCF-rated — no rating report applies', 400)
+    return errorResponse('This tournament is not US Chess rated, so it has no rating report.', 400)
   }
 
   const rosterRes = await context.env.DB.prepare(
@@ -77,8 +79,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     if (g.black_member_id) participated.add(g.black_member_id)
   }
 
-  const sectionNames = (parseJsonArray(tournament.sections) as Array<{ name: string } | string>)
-    .map((s) => (typeof s === 'string' ? s : s.name))
+  // Every section the event has had, archived ones included: the report is
+  // history, and entries and games keep their section's name. A section
+  // nobody played in is left out below. Players are grouped by name, and a
+  // live row may take a name an archived row still holds, so each name is
+  // listed once (the live row's place wins, as live rows load first).
+  const sectionNames = [...new Set(
+    (await loadSections(getDb(context.env.DB), tournamentId, { includeArchived: true })).map((s) => s.name),
+  )]
 
   const validationErrors: string[] = []
   const eventStart = String(tournament.date).slice(0, 10)
@@ -108,13 +116,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     for (const p of players) {
       if (!p.uscf_id) {
         validationErrors.push(
-          `${p.full_name} (${sectionName}) has no USCF ID — the report cannot be submitted until this is fixed`,
+          `${p.full_name} (${sectionName}) has no US Chess ID. The report cannot be submitted until one is added.`,
         )
       }
       const expires = p.uscf_expiration?.slice(0, 10)
       if (p.uscf_id && expires && expires < eventStart) {
         validationErrors.push(
-          `${p.full_name} (${sectionName}): US Chess membership expired ${expires}. It must be renewed before US Chess will rate the event.`,
+          `${p.full_name} (${sectionName}): US Chess membership expired ${formatDate(expires, { year: true })}. It must be renewed before US Chess will rate the event.`,
         )
       }
     }
@@ -195,7 +203,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const zip = /\b(\d{5})(?:-\d{4})?\b/.exec(place)?.[1] ?? ''
   const stateMatch = /,\s*([A-Z]{2})\b/.exec(tournament.location ?? '') ?? /\b([A-Z]{2})\s+\d{5}\b/.exec(place)
   const city = (tournament.location ?? '').split(',')[0]?.trim() ?? ''
-  let settings: unknown = null
+  let settings: unknown
   try { settings = tournament.report_settings ? JSON.parse(tournament.report_settings) : null } catch { settings = null }
 
   return jsonResponse({

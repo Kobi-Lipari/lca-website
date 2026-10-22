@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { MessageSquare, RefreshCw, Trash2 } from 'lucide-react'
-import { ConfirmDialog } from '@/components/admin/ConfirmDialog'
+import { ConfirmDialog } from '@/areas/admin/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
@@ -15,14 +15,14 @@ import {
   type ApiSupportMessage,
 } from '@/lib/api'
 import { ADMIN_SCROLL } from '@/lib/brand'
-import { useViewOnly } from '@/lib/viewOnly'
+import { useViewOnly } from '@/hooks/useViewOnly'
 
 const statusColors: Record<string, string> = {
-  open: 'bg-blue-100 text-blue-800',
-  new: 'bg-blue-100 text-blue-800',
-  answered: 'bg-emerald-100 text-emerald-800',
-  in_progress: 'bg-yellow-100 text-yellow-800',
-  resolved: 'bg-gray-100 text-gray-600',
+  open: 'bg-info-100 text-info-800',
+  new: 'bg-info-100 text-info-800',
+  answered: 'bg-ok-100 text-ok',
+  in_progress: 'bg-warn-yellow-100 text-warn-yellow-800',
+  resolved: 'bg-quiet-100 text-quiet-600',
 }
 
 const statusLabels: Record<string, string> = {
@@ -151,8 +151,8 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
       <div className={embedded ? 'mb-5 flex items-center justify-between gap-3' : 'flex items-center justify-between mb-8'}>
         <div>
           {embedded
-            ? <h2 className="text-xl font-bold text-lca-navy">Support tickets</h2>
-            : <h1 className="text-3xl font-bold text-lca-navy">Support Tickets</h1>}
+            ? <h2 className="text-xl font-bold text-ink">Support tickets</h2>
+            : <h1 className="text-3xl font-bold text-ink">Support Tickets</h1>}
           <p className="text-muted-foreground mt-1">
             Manage member support requests
           </p>
@@ -170,13 +170,13 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
               onClick={() => setTab('new')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 tab === 'new'
-                  ? 'bg-lca-navy text-white'
+                  ? 'bg-brand-navy text-white'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
               New
               {newTickets.length > 0 && (
-                <span className="ml-2 bg-lca-gold text-lca-navy text-xs px-1.5 py-0.5 rounded-full font-bold">
+                <span className="ml-2 bg-lca-gold text-brand-navy text-xs px-1.5 py-0.5 rounded-full font-bold">
                   {newTickets.length}
                 </span>
               )}
@@ -185,7 +185,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
               onClick={() => setTab('answered')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 tab === 'answered'
-                  ? 'bg-lca-navy text-white'
+                  ? 'bg-brand-navy text-white'
                   : 'bg-muted text-muted-foreground hover:bg-muted/80'
               }`}
             >
@@ -213,13 +213,13 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                 onClick={() => openTicket(ticket)}
                 className={`w-full text-left rounded-lg border p-4 transition-colors ${
                   selectedTicket?.ticket.id === ticket.id
-                    ? 'border-lca-navy bg-lca-navy/5'
+                    ? 'border-ink bg-ink/5'
                     : 'hover:bg-muted/50'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-medium text-lca-navy truncate">
+                    <p className="font-medium text-ink truncate">
                       {ticket.subject}
                     </p>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">
@@ -259,7 +259,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
             <div className="rounded-lg border p-5">
               <div className="flex items-start justify-between gap-3 mb-4 pb-4 border-b">
                 <div>
-                  <h3 className="font-semibold text-lca-navy">
+                  <h3 className="font-semibold text-ink">
                     {selectedTicket.ticket.subject}
                   </h3>
                   <p className="text-sm text-muted-foreground mt-0.5">
@@ -297,7 +297,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                     key={msg.id}
                     className={`rounded-lg p-3 ${
                       msg.sender_type === 'admin'
-                        ? 'bg-lca-navy/5 border border-lca-navy/10'
+                        ? 'bg-ink/5 border border-ink/10'
                         : 'bg-muted'
                     }`}
                   >
@@ -324,7 +324,7 @@ export function AdminSupportPage({ embedded = false }: { embedded?: boolean } = 
                 />
                 <Button
                   type="submit"
-                  className="w-full bg-lca-navy hover:bg-lca-navy/90"
+                  className="w-full bg-brand-navy hover:bg-brand-navy/90 dark:text-white"
                   disabled={sending}
                 >
                   {sending ? 'Sending…' : 'Send reply & mark answered'}

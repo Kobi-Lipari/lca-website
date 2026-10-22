@@ -1,0 +1,20 @@
+{
+  "src/components/tournaments/AgendaList.tsx": "src/areas/events/components/AgendaList.tsx",
+  "src/components/tournaments/GradeConfirm.tsx": "src/areas/events/components/GradeConfirm.tsx",
+  "src/components/tournaments/MiniCalendar.tsx": "src/areas/events/components/MiniCalendar.tsx",
+  "src/components/tournaments/PreviewBanner.tsx": "src/areas/events/components/PreviewBanner.tsx",
+  "src/components/tournaments/PrizeWinners.tsx": "src/areas/events/components/PrizeWinners.tsx",
+  "src/components/tournaments/PrizesEditor.tsx": "src/areas/events/components/PrizesEditor.tsx",
+  "src/components/tournaments/SectionRulesEditor.tsx": "src/areas/events/components/SectionRulesEditor.tsx",
+  "src/components/tournaments/UsChessUploadPanel.tsx": "src/areas/events/components/UsChessUploadPanel.tsx",
+  "src/components/tournaments/Crosstable.tsx": "src/areas/live/components/Crosstable.tsx",
+  "src/components/tournaments/ResultsEntry.tsx": "src/areas/live/components/ResultsEntry.tsx",
+  "src/components/tournaments/StandingsTable.tsx": "src/areas/live/components/StandingsTable.tsx",
+  "src/components/family": "src/areas/households/components",
+  "src/components/admin": "src/areas/admin/components",
+  "src/components/AdminAnnouncementPanel.tsx": "src/areas/admin/components/AdminAnnouncementPanel.tsx",
+  "src/components/governance": "src/areas/governance/components",
+  "src/components/maps": "src/areas/clubs/components",
+  "src/components/uscf": "src/areas/membership/components",
+  "src/components/RegistrationReminderButton.tsx": "src/areas/registration/components/RegistrationReminderButton.tsx"
+}

@@ -24,16 +24,17 @@ import {
   type ApiClubNews,
 } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
-import { isViewOnlyAdmin, toolsHomeFor } from '@/lib/roles'
+import { isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
-import { ClubLocationPicker } from '@/components/maps/ClubLocationPicker'
+import { ClubLocationPicker } from '@/areas/clubs/components/ClubLocationPicker'
+import { clubTextColor, clubTextOnDark } from '@/areas/clubs/clubColors'
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCA } from '@/lib/brand'
 import { ViewOnlyFieldset, ViewOnlyNote } from '@/lib/viewOnly'
 
-const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 type ClubTab = 'details' | 'news' | 'roster' | 'tournaments'
 
@@ -261,9 +262,13 @@ export function AdminClubPage() {
   return (
     <div>
       {/* ── Hero ── */}
+      {/* data-ground="dark": the navy is an inline style here, not a navy
+          class, so this marker is what gives the back link and the tabs the
+          gold focus ring under the new look. */}
       <section
         className="border-b-[3px] text-white"
         style={{ backgroundColor: LCA.navy, borderBottomColor: color }}
+        data-ground="dark"
       >
         <div className="mx-auto max-w-6xl px-6 py-8">
           <Link
@@ -321,7 +326,7 @@ export function AdminClubPage() {
           <ViewOnlyFieldset>
           <form onSubmit={handleSaveClub} className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
-              <h2 className="mb-4 text-base font-semibold text-lca-navy">Basic information</h2>
+              <h2 className="mb-4 text-base font-semibold text-ink">Basic information</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label htmlFor="name">Club name</Label>
@@ -376,7 +381,7 @@ export function AdminClubPage() {
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
                 <Palette className="size-4 text-muted-foreground" />
-                <h2 className="text-base font-semibold text-lca-navy">Club color</h2>
+                <h2 className="text-base font-semibold text-ink">Club color</h2>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <input
@@ -393,11 +398,12 @@ export function AdminClubPage() {
                   maxLength={7}
                 />
                 <div
-                  className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium"
+                  className={cn('flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium', clubTextOnDark(color))}
                   style={{
                     backgroundColor: `${color}15`,
                     borderColor: `${color}40`,
-                    color,
+                    // The words as the club's page draws them (clubTextColor, clubTextOnDark).
+                    color: clubTextColor(color),
                   }}
                 >
                   <div className="size-3 rounded-full" style={{ backgroundColor: color }} />
@@ -413,7 +419,7 @@ export function AdminClubPage() {
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
                 <Upload className="size-4 text-muted-foreground" />
-                <h2 className="text-base font-semibold text-lca-navy">Club image</h2>
+                <h2 className="text-base font-semibold text-ink">Club image</h2>
               </div>
               <p className="mb-3 text-sm text-muted-foreground">
                 Upload a logo or promotional photo. This appears at the top of your club's card in the carousel and in the hero of your club detail page. It's automatically resized to fit — nothing gets cropped, and there's no need to prepare an exact size yourself.
@@ -482,8 +488,8 @@ export function AdminClubPage() {
             */}
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
-                <Newspaper className="size-5 text-lca-gold" />
-                <h2 className="text-base font-semibold text-lca-navy">
+                <Newspaper className="size-5 text-gold-ink" />
+                <h2 className="text-base font-semibold text-ink">
                   Posted news · {news.length}
                 </h2>
               </div>
@@ -496,7 +502,7 @@ export function AdminClubPage() {
                   {news.map((item) => (
                     <li key={item.id} className="flex items-start justify-between gap-4 py-3 first:pt-0 last:pb-0">
                       <div className="min-w-0">
-                        <p className="font-medium text-lca-navy">{item.title}</p>
+                        <p className="font-medium text-ink">{item.title}</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">{item.news_date}</p>
                         <p className="mt-1 text-sm text-muted-foreground">{item.excerpt}</p>
                       </div>
@@ -504,7 +510,7 @@ export function AdminClubPage() {
                         type="button"
                         variant="outline"
                         size="sm"
-                        className="flex-shrink-0 text-red-600 hover:bg-red-50"
+                        className="flex-shrink-0 text-bad hover:bg-bad-50"
                         disabled={newsDeletingId === item.id}
                         onClick={() => handleDeleteNews(item)}
                       >
@@ -519,8 +525,8 @@ export function AdminClubPage() {
 
           <form onSubmit={handlePostNews} className="rounded-xl border bg-card p-6 shadow-sm">
             <div className="mb-4 flex items-center gap-2">
-              <Newspaper className="size-5 text-lca-gold" />
-              <h2 className="text-base font-semibold text-lca-navy">Post club news</h2>
+              <Newspaper className="size-5 text-gold-ink" />
+              <h2 className="text-base font-semibold text-ink">Post club news</h2>
             </div>
             <div className="space-y-4">
               <div className="space-y-1.5">
@@ -556,8 +562,8 @@ export function AdminClubPage() {
           <div className="space-y-6">
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-1 flex items-center gap-2">
-                <UserPlus className="size-5 text-lca-gold" />
-                <h2 className="text-base font-semibold text-lca-navy">Officers · {officers.length}</h2>
+                <UserPlus className="size-5 text-gold-ink" />
+                <h2 className="text-base font-semibold text-ink">Officers · {officers.length}</h2>
               </div>
               <p className="mb-4 text-sm text-muted-foreground">
                 Listed on your public club page with their name and email, so visitors know who to contact.
@@ -607,8 +613,8 @@ export function AdminClubPage() {
 
             <div className="rounded-xl border bg-card p-6 shadow-sm">
               <div className="mb-1 flex items-center gap-2">
-                <Users className="size-5 text-lca-gold" />
-                <h2 className="text-base font-semibold text-lca-navy">Club roster · {roster.length} members</h2>
+                <Users className="size-5 text-gold-ink" />
+                <h2 className="text-base font-semibold text-ink">Club roster · {roster.length} members</h2>
               </div>
               <p className="mb-4 text-sm text-muted-foreground">
                 {isAdmin
@@ -627,7 +633,7 @@ export function AdminClubPage() {
                       </div>
                       <div className="flex flex-shrink-0 items-center gap-3">
                         <span className={cn('rounded-full px-2 py-0.5 text-xs capitalize',
-                          m.membership_status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-muted text-muted-foreground')}>
+                          m.membership_status === 'active' ? 'bg-ok-100 text-ok' : 'bg-muted text-muted-foreground')}>
                           {m.membership_status}
                         </span>
                         {m.uscf_rating != null && (
@@ -648,8 +654,8 @@ export function AdminClubPage() {
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Trophy className="size-5 text-lca-gold" />
-                <h2 className="text-base font-semibold text-lca-navy">Club tournaments</h2>
+                <Trophy className="size-5 text-gold-ink" />
+                <h2 className="text-base font-semibold text-ink">Club tournaments</h2>
               </div>
               <Button asChild size="sm" className={goldButtonClass}>
                 <Link to={toolsHomeFor(role, 'tournaments')}>New tournament</Link>
@@ -659,7 +665,7 @@ export function AdminClubPage() {
             {tournaments.length === 0 ? (
               <div className="rounded-xl border border-dashed px-6 py-10 text-center">
                 <Trophy className="mx-auto mb-3 size-8 text-muted-foreground" />
-                <p className="font-medium text-lca-navy">No tournaments yet</p>
+                <p className="font-medium text-ink">No tournaments yet</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Tournaments you create for {club.name} will show up here, including drafts.
                 </p>
@@ -672,7 +678,7 @@ export function AdminClubPage() {
                     className="flex items-center justify-between gap-3 rounded-xl border bg-card p-4 shadow-sm"
                   >
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-lca-navy">{t.name}</p>
+                      <p className="truncate font-medium text-ink">{t.name}</p>
                       <p className="flex items-center gap-2 text-sm capitalize text-muted-foreground">
                         {t.date} · {t.status}
                         {t.is_visible === 0 && (

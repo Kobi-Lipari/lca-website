@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   buildUploadFiles, defaultSettings, ratingSystemFor, readDbf, roundCell, settingsProblems, uschessName, writeDbf, zipFiles,
-} from '../../src/lib/uschessUpload'
+} from '../../src/areas/events/uschessUpload'
 import type { ApiRatingReport } from '../../src/lib/api'
 
 const report: ApiRatingReport = {

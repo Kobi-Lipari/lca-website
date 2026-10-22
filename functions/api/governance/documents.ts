@@ -2,7 +2,7 @@
 import type { Env } from '../../types'
 import { errorResponse, jsonResponse, parseJsonBody } from '../../utils/response'
 import { requireGovernanceEditor, isResponse } from '../../utils/auth'
-import { recordAdminAction } from '../../utils/audit'
+import { recordAdminAction } from '../../utils/admin/audit'
 
 // Mirrors the frontend ApiGovernanceDocument['category'] union. The DB column
 // has no CHECK constraint, so this allowlist is what keeps a typo'd category

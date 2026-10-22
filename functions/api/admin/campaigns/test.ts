@@ -1,7 +1,7 @@
 // functions/api/admin/campaigns/test.ts
 import type { Env } from '../../../types'
 import { isResponse, requireMailer } from '../../../utils/auth'
-import { sendTestEmail } from '../../../utils/campaigns'
+import { sendTestEmail } from '../../../utils/admin/campaigns'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../../utils/response'
 
 interface TestSendBody {

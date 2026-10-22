@@ -1,7 +1,7 @@
 // functions/api/board/tickets/[id].ts
 import type { Env } from '../../../types'
 import { isResponse, requireSeatAccess } from '../../../utils/auth'
-import { recordAdminAction } from '../../../utils/audit'
+import { recordAdminAction } from '../../../utils/admin/audit'
 import {
   errorResponse,
   handleOptions,
@@ -9,7 +9,7 @@ import {
   parseJsonBody,
 } from '../../../utils/response'
 import { trySendEmail, supportReplyNotificationEmail } from '../../../utils/email'
-import { siteUrlFromRequest } from '../../../utils/tickets'
+import { siteUrlFromRequest } from '../../../utils/admin/tickets'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 

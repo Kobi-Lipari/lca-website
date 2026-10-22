@@ -50,7 +50,7 @@ const UNAVAILABLE_TITLE = /^(this )?content (isn.t|is not|not) available/i
  * The server skips these now; this also drops any still sitting in the
  * fallback cache from before that change.
  */
-export function isUsablePost(post: FacebookFeedPost): boolean {
+function isUsablePost(post: FacebookFeedPost): boolean {
   const text = post.message.replace(URL_RE, '').trim()
   const title = post.linkTitle && !UNAVAILABLE_TITLE.test(post.linkTitle) ? post.linkTitle : null
   return !!(text || title || post.linkUrl || post.imageUrl)
@@ -114,7 +114,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }:
             href={FACEBOOK_PAGE_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-0.5 text-xs text-lca-navy hover:underline"
+            className="flex items-center gap-0.5 text-xs text-ink hover:underline"
           >
             Follow us <ArrowRight className="size-3" />
           </a>
@@ -124,7 +124,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }:
             {error ? (
               <div className="flex flex-col items-center gap-2 px-4 py-6 text-center">
                 <p className="text-xs text-muted-foreground">Couldn't load posts right now.</p>
-                <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-xs text-lca-navy hover:underline">
+                <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-xs text-ink hover:underline">
                   Visit our Facebook page
                 </a>
               </div>
@@ -161,7 +161,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }:
         {error ? (
           <p className="text-sm text-muted-foreground">
             Couldn't load Facebook posts right now — you can still{' '}
-            <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-[#1668d8] hover:underline">
+            <a href={FACEBOOK_PAGE_URL} target="_blank" rel="noopener noreferrer" className="text-facebook-link hover:underline">
               visit the page directly
             </a>
             .
@@ -180,7 +180,7 @@ export function FacebookFeed({ variant, limit = variant === 'compact' ? 5 : 6 }:
           href={FACEBOOK_PAGE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-[#1668d8] hover:underline"
+          className="text-sm text-facebook-link hover:underline"
         >
           See all posts on Facebook →
         </a>
@@ -212,7 +212,7 @@ function FullFeed({ posts }: { posts: FacebookFeedPost[] }) {
           <img src={post.imageUrl!} alt="" loading="lazy" className="aspect-[4/3] w-full bg-muted object-cover" />
           <div className="flex flex-1 flex-col border-t-2 border-lca-gold p-4">
             <p className="text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</p>
-            <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-lca-navy group-hover:underline">{postText(post)}</p>
+            <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-ink group-hover:underline">{postText(post)}</p>
           </div>
         </a>
       ))}
@@ -235,9 +235,9 @@ function FullFeed({ posts }: { posts: FacebookFeedPost[] }) {
                 rel="noopener noreferrer"
                 className="group flex gap-3 px-4 py-3 transition-colors hover:bg-muted/30"
               >
-                <Icon className="mt-0.5 size-4 flex-shrink-0 text-lca-gold" aria-hidden="true" />
+                <Icon className="mt-0.5 size-4 flex-shrink-0 text-gold-ink" aria-hidden="true" />
                 <span className="min-w-0">
-                  <span className="line-clamp-2 text-sm text-lca-navy group-hover:underline">{postText(post)}</span>
+                  <span className="line-clamp-2 text-sm text-ink group-hover:underline">{postText(post)}</span>
                   <span className="mt-0.5 block text-[11px] text-muted-foreground">{formatDate(post.createdAt)}</span>
                 </span>
               </a>

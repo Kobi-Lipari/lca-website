@@ -13,6 +13,9 @@ export const meta = {
 
 const slices = (args && args.slices) || []
 const base = (args && args.base) || 'main'
+const MODEL = Object.assign({}, args && args.model ? { model: args.model } : {}, args && args.effort ? { effort: args.effort } : {})
+// The scout and the recorder read and write prose; a lighter model may take those stages when args.lightModel names one.
+const LIGHT = args && args.lightModel ? Object.assign({}, { model: args.lightModel }, args.lightEffort || args.effort ? { effort: args.lightEffort || args.effort } : {}) : MODEL
 if (!slices.length) throw new Error('build-slice needs args.slices')
 
 const FINDINGS = {
@@ -41,29 +44,29 @@ for (const s of slices) {
   const scope = `Slice: ${s.name}\nBrief: ${s.brief}\nFiles in scope: ${(s.files || []).join(', ') || 'as the brief names'}\nAcceptance criteria:\n${(s.acceptance || []).map((a, i) => `${i + 1}. ${a}`).join('\n')}`
 
   const facts = await agent(`${scope}\n\nFind and report every fact a builder needs before touching this slice: where each file and helper named in the brief lives today (or that it does not exist), the current shape of every table, endpoint, response and test harness it touches, and the answer to every "verify:" item in the brief's section for this slice. Paths and line numbers.`,
-    { label: `scout:${s.name}`, phase: 'Scout', agentType: 'scout' })
+    Object.assign({ label: `scout:${s.name}`, phase: 'Scout', agentType: 'scout' }, LIGHT))
 
   const build = await agent(`${scope}\n\nFacts from the scout:\n${facts}\n\nImplement the slice completely, then run the gate (lint, build, typecheck:functions, test:all) and fix what it finds. Do not commit.`,
-    { label: `build:${s.name}`, phase: 'Build', agentType: 'builder' })
+    Object.assign({ label: `build:${s.name}`, phase: 'Build', agentType: 'builder' }, MODEL))
 
   const tests = await agent(`${scope}\n\nThe builder reported:\n${build}\n\nCover every acceptance criterion with tests that do not yet exist, run the suites, fix test-only problems, and report any defect a test reveals in the code.`,
-    { label: `test:${s.name}`, phase: 'Test', agentType: 'tester' })
+    Object.assign({ label: `test:${s.name}`, phase: 'Test', agentType: 'tester' }, MODEL))
 
   let round = 0, review = null, fixes = []
   while (round < 3) {
     review = await agent(`${scope}\n\nReview the working tree's changes against ${base} (run: git diff ${base} --stat, then read the changed files). Builder report:\n${build}\nTester report:\n${tests}\n${fixes.length ? `Fixes applied since the last review:\n${fixes.join('\n\n')}` : ''}\n\nReport findings as structured output; verdict is "ready" when nothing blocking remains.`,
-      { label: `review:${s.name}:${round + 1}`, phase: 'Review', agentType: 'reviewer', schema: FINDINGS })
+      Object.assign({ label: `review:${s.name}:${round + 1}`, phase: 'Review', agentType: 'reviewer', schema: FINDINGS }, MODEL))
     const blocking = (review && review.findings || []).filter(f => f.severity !== 'nit')
     if (!blocking.length) break
     round += 1
     const fix = await agent(`${scope}\n\nA reviewer found these problems in the working tree; fix each one (or explain precisely why it is not a defect), then re-run the gate:\n${JSON.stringify(blocking, null, 2)}`,
-      { label: `fix:${s.name}:${round}`, phase: 'Review', agentType: 'builder' })
+      Object.assign({ label: `fix:${s.name}:${round}`, phase: 'Review', agentType: 'builder' }, MODEL))
     fixes.push(fix)
   }
   if (round >= 3) log(`${s.name}: three fix rounds used; remaining findings go to the lead`)
 
   const record = await agent(`${scope}\n\nThe slice is built. Builder report:\n${build}\nTester report:\n${tests}\nFinal review:\n${JSON.stringify(review)}\nFixes:\n${fixes.join('\n\n')}\n\nUpdate REDESIGN_STATUS.md (create it if missing) and any flag comments, and draft the commit message. Do not commit.`,
-    { label: `record:${s.name}`, phase: 'Record', agentType: 'recorder' })
+    Object.assign({ label: `record:${s.name}`, phase: 'Record', agentType: 'recorder' }, LIGHT))
 
   results.push({ slice: s.name, facts, build, tests, review, fixes, record })
 }

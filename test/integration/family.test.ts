@@ -19,7 +19,7 @@ import { onRequestPatch as registrationPatch } from '../../functions/api/registr
 import { onRequestPost as webhookPost } from '../../functions/api/stripe/webhook'
 import { onRequestPost as membershipCheckout } from '../../functions/api/membership/checkout'
 import { onRequestPost as impersonatePost } from '../../functions/api/admin/impersonate/[memberId]'
-import { resolveRecipients } from '../../functions/utils/campaigns'
+import { resolveRecipients } from '../../functions/utils/admin/campaigns'
 
 beforeEach(resetHarness)
 
