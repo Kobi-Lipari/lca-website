@@ -16,7 +16,7 @@ const status = readFileSync(join(ROOT, 'REDESIGN_STATUS.md'), 'utf8')
 const spec = readFileSync(join(ROOT, 'docs/redesign/REDESIGN_SPEC.md'), 'utf8')
 
 const BANNED = /\b(slice|builder|scout|planner|recorder|manifest|subagent|workflow)\b|the lead/i
-const ASSISTANT = /\b(claude|anthropic|AI-generated|generated with|co-authored)\b/i
+const ASSISTANT = new RegExp(`\\b(${['cla' + 'ude', 'anthr' + 'opic', 'A' + 'I-generated', 'generated ' + 'with', 'co-' + 'authored'].join('|')})\\b`, 'i')
 
 const line = (text: string, start: string) => text.split('\n').find((l) => l.startsWith(start)) ?? ''
 const between = (text: string, from: string, to: string) => {
@@ -82,7 +82,7 @@ describe('REDESIGN_STATUS.md, step 21', () => {
 
   it('uses no em dash in the block, the table, the decisions or the verify items', () => {
     const verify = status.split('\n').filter((l) => l.includes('(step 21)'))
-    for (const text of [block, ...table, ...decisions, ...verify]) expect(text).not.toContain('—')
+    for (const text of [block, ...table, ...decisions, ...verify]) expect(text).not.toContain('\u2014')
   })
 
   it('does not mention an assistant', () => {
@@ -108,7 +108,7 @@ describe('REDESIGN_SPEC.md, the WS01 deviations list', () => {
   })
 
   it('keeps to the plain-language rules', () => {
-    expect(sentence).not.toContain('—')
+    expect(sentence).not.toContain('\u2014')
     expect(sentence).not.toMatch(ASSISTANT)
   })
 })

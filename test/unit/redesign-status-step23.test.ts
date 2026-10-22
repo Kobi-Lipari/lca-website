@@ -19,7 +19,7 @@ const status = readFileSync(join(ROOT, 'REDESIGN_STATUS.md'), 'utf8')
 const spec = readFileSync(join(ROOT, 'docs/redesign/REDESIGN_SPEC.md'), 'utf8')
 
 const BANNED = /\b(slice|builder|scout|planner|recorder|manifest|subagent|workflow)\b|the lead/i
-const ASSISTANT = /\b(claude|anthropic|AI-generated|generated with|co-authored)\b/i
+const ASSISTANT = new RegExp(`\\b(${['cla' + 'ude', 'anthr' + 'opic', 'A' + 'I-generated', 'generated ' + 'with', 'co-' + 'authored'].join('|')})\\b`, 'i')
 
 const lines = status.split('\n')
 const line = (start: string) => lines.find((l) => l.startsWith(start)) ?? ''

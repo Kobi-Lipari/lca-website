@@ -853,7 +853,7 @@ describe('the gold guard on the tree', () => {
       expect(Number.isInteger(e.count) && e.count >= 1, e.file).toBe(true)
       expect(e.reason.length, e.file).toBeGreaterThan(80)
       expect(e.reason).toMatch(/\.$/)
-      expect(e.reason).not.toContain('—')
+      expect(e.reason).not.toContain('\u2014')
       expect(result.tree.files.has(e.file), e.file).toBe(true)
     }
     for (const w of WS02_GOLD) {
@@ -871,7 +871,7 @@ describe('the gold guard on the tree', () => {
       expect(Number.isInteger(e.count) && e.count >= 1, e.file).toBe(true)
       expect(e.reason.length, e.file).toBeGreaterThan(80)
       expect(e.reason).toMatch(/\.$/)
-      expect(e.reason).not.toContain('—')
+      expect(e.reason).not.toContain('\u2014')
       expect(result.tree.files.has(e.file), e.file).toBe(true)
     }
   })

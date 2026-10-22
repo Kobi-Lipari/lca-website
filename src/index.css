@@ -887,6 +887,8 @@
     :root {
         --status-soon-tint: #c8a94a33;
         --status-lca-tint: #c8a94a33;
+        /* The focus glow at half strength, which the --focus token mixes above: #a1a1a1 is --ring's grey. */
+        --focus: #a1a1a180;
     }
 }
 

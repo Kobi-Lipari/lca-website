@@ -210,7 +210,7 @@ describe('the gate: nothing new applies without data-look="new"', () => {
     for (const rule of block.filter((r) => r.selector.endsWith(':hover'))) expect(hover, rule.selector).toContain(rule.selector)
   })
 
-  it('the no-colour-mix block gives the two status tints that are a mix on the plain :root their #rrggbbaa value, and nothing else (step 26)', () => {
+  it('the no-colour-mix block gives the two status tints that are a mix on the plain :root their #rrggbbaa value, and the focus glow its grey, and nothing else (step 26; the glow after step 32)', () => {
     // --status-soon-tint and --status-lca-tint are 20 per cent of brand gold
     // mixed with transparent on the plain :root, a value a browser that
     // cannot mix colours cannot read, so a soon or LCA tag (StatusBadge's
@@ -220,10 +220,11 @@ describe('the gate: nothing new applies without data-look="new"', () => {
     const tokenRules = rules.filter((r) => r.within === NO_COLOR_MIX && r.selector === ':root')
     expect(tokenRules).toHaveLength(1)
     const decls = tokenRules[0].decls
-    expect([...decls.keys()].sort()).toEqual(['--status-lca-tint', '--status-soon-tint'])
+    expect([...decls.keys()].sort()).toEqual(['--focus', '--status-lca-tint', '--status-soon-tint'])
     const legacyRoot = rules.find((r) => r.selector === ':root' && r.within === '')!
     const mixed = /^color-mix\(in oklab, (#[0-9a-f]{6}) (\d+)%, transparent\)$/
     for (const [name, fallback] of decls) {
+      if (name === '--focus') continue
       const plain = legacyRoot.decls.get(name) ?? ''
       const m = plain.match(mixed)
       expect(m, `${name} is a mix on the plain :root`).not.toBeNull()
@@ -231,6 +232,14 @@ describe('the gate: nothing new applies without data-look="new"', () => {
       expect(fallback, name).toBe(`${m![1]}${alpha}`)
     }
     expect(decls.get('--status-soon-tint')).toBe('#c8a94a33')
+    // --focus on the plain :root is --ring at half strength, mixed the same way, and
+    // --ring there is oklch(0.708 0 0), the grey #a1a1a1; so the block writes the
+    // Button's focus glow as #a1a1a180, where before step 21 the ring utility fell
+    // back to the full --ring in those browsers (added after step 32, from the
+    // merge review of checkpoint D).
+    expect(legacyRoot.decls.get('--focus')).toBe('color-mix(in oklab, var(--ring) 50%, transparent)')
+    expect(legacyRoot.decls.get('--ring')).toBe('oklch(0.708 0 0)')
+    expect(decls.get('--focus')).toBe('#a1a1a180')
     // Every other status tint on the plain :root is a plain colour every browser reads.
     for (const s of STATUSES.filter((x) => x !== 'soon' && x !== 'lca')) {
       expect(legacyRoot.decls.get(`--status-${s}-tint`), s).toMatch(/^oklch\(/)

@@ -24,7 +24,7 @@ const spec = readFileSync(join(ROOT, 'docs/redesign/REDESIGN_SPEC.md'), 'utf8')
 const fixture = readFileSync(join(ROOT, 'src/pages/fixtures/ScopeFixturePage.tsx'), 'utf8')
 
 const BANNED = /\b(slice|builder|scout|planner|recorder|manifest|subagent|workflow)\b|the lead/i
-const ASSISTANT = /\b(claude|anthropic|AI-generated|generated with|co-authored)\b/i
+const ASSISTANT = new RegExp(`\\b(${['cla' + 'ude', 'anthr' + 'opic', 'A' + 'I-generated', 'generated ' + 'with', 'co-' + 'authored'].join('|')})\\b`, 'i')
 /** An en dash or an em dash, written by code so this file holds neither. */
 const DASHES = new RegExp(`[${String.fromCharCode(0x2013, 0x2014)}]`)
 

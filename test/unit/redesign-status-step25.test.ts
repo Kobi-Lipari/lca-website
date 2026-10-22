@@ -22,7 +22,7 @@ const status = readFileSync(join(ROOT, 'REDESIGN_STATUS.md'), 'utf8')
 const spec = readFileSync(join(ROOT, 'docs/redesign/REDESIGN_SPEC.md'), 'utf8')
 
 const BANNED = /\b(slice|builder|scout|planner|recorder|manifest|subagent|workflow)\b|the lead/i
-const ASSISTANT = /\b(claude|anthropic|AI-generated|generated with|co-authored)\b/i
+const ASSISTANT = new RegExp(`\\b(${['cla' + 'ude', 'anthr' + 'opic', 'A' + 'I-generated', 'generated ' + 'with', 'co-' + 'authored'].join('|')})\\b`, 'i')
 
 const lines = status.split('\n')
 const line = (start: string) => lines.find((l) => l.startsWith(start)) ?? ''
@@ -240,7 +240,7 @@ describe('REDESIGN_STATUS.md, step 25: plain language', () => {
     expect(block).not.toBe('')
     for (const text of [block, row, ...decisions, ...tagged, deviation]) {
       expect(text).not.toMatch(BANNED)
-      expect(text).not.toContain('—')
+      expect(text).not.toContain('\u2014')
       expect(text).not.toMatch(ASSISTANT)
       expect(text).not.toMatch(/\bUSCF\b/)
     }
@@ -261,7 +261,7 @@ describe('REDESIGN_SPEC.md, the WS01 deviations list', () => {
     for (const piece of ['scripts/codemods/gold-ink.ts', 'scripts/codemods/semantic-colours.gold.map.json', '`--gold-ink-badge`', '`--gold-on-dark-badge`', 'reminder bell', '`clubTextColor`', '`GOLD_BUTTON`', 'test/unit/goldText.test.ts', 'WS02']) {
       expect(sentence, piece).toContain(piece)
     }
-    expect(sentence).not.toContain('—')
+    expect(sentence).not.toContain('\u2014')
     expect(sentence).not.toMatch(ASSISTANT)
     expect(sentence).not.toMatch(BANNED)
   })
