@@ -32,55 +32,55 @@ const ACTION_META: Record<
     label: 'Role change',
     icon: UserCog,
     // Role changes are the entries worth spotting from across the room.
-    className: 'bg-red-100 text-red-800',
+    className: 'bg-bad-100 text-bad-800',
   },
   membership_override: {
     label: 'Membership override',
     icon: CreditCard,
-    className: 'bg-lca-gold/20 text-[#7a5c00]',
+    className: 'bg-lca-gold/20 text-gold-ink-badge',
   },
   club_change: {
     label: 'Club change',
     icon: Building2,
-    className: 'bg-blue-100 text-blue-800',
+    className: 'bg-info-100 text-info-800',
   },
   impersonation_start: {
     label: 'Started impersonating',
     icon: Eye,
-    className: 'bg-purple-100 text-purple-800',
+    className: 'bg-info-purple-100 text-info-purple-800',
   },
   impersonation_end: {
     label: 'Stopped impersonating',
     icon: EyeOff,
     className: 'bg-muted text-muted-foreground',
   },
-  ticket_delete: { label: 'Deleted ticket', icon: Trash2, className: 'bg-red-100 text-red-800' },
-  tournament_create: { label: 'Created event', icon: Trophy, className: 'bg-emerald-100 text-emerald-800' },
-  tournament_publish: { label: 'Made event public', icon: Globe, className: 'bg-emerald-100 text-emerald-800' },
+  ticket_delete: { label: 'Deleted ticket', icon: Trash2, className: 'bg-bad-100 text-bad-800' },
+  tournament_create: { label: 'Created event', icon: Trophy, className: 'bg-ok-100 text-ok' },
+  tournament_publish: { label: 'Made event public', icon: Globe, className: 'bg-ok-100 text-ok' },
   tournament_unpublish: { label: 'Hid event', icon: EyeOff, className: 'bg-muted text-muted-foreground' },
-  round_delete: { label: 'Deleted round', icon: Trash2, className: 'bg-red-100 text-red-800' },
-  round_paired: { label: 'Paired round', icon: Trophy, className: 'bg-emerald-100 text-emerald-800' },
-  pairing_edit: { label: 'Changed a pairing', icon: Pencil, className: 'bg-lca-gold/20 text-[#7a5c00]' },
-  tournament_complete: { label: 'Finished event', icon: Trophy, className: 'bg-emerald-100 text-emerald-800' },
-  announcement_sent: { label: 'Emailed entrants', icon: Mail, className: 'bg-blue-100 text-blue-800' },
-  director_assign: { label: 'Added director', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
+  round_delete: { label: 'Deleted round', icon: Trash2, className: 'bg-bad-100 text-bad-800' },
+  round_paired: { label: 'Paired round', icon: Trophy, className: 'bg-ok-100 text-ok' },
+  pairing_edit: { label: 'Changed a pairing', icon: Pencil, className: 'bg-lca-gold/20 text-gold-ink-badge' },
+  tournament_complete: { label: 'Finished event', icon: Trophy, className: 'bg-ok-100 text-ok' },
+  announcement_sent: { label: 'Emailed entrants', icon: Mail, className: 'bg-info-100 text-info-800' },
+  director_assign: { label: 'Added director', icon: UserPlus, className: 'bg-info-100 text-info-800' },
   director_remove: { label: 'Removed director', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
-  registration_withdraw: { label: 'Withdrew player', icon: UserMinus, className: 'bg-lca-gold/20 text-[#7a5c00]' },
-  registration_reinstate: { label: 'Reinstated player', icon: UserPlus, className: 'bg-lca-gold/20 text-[#7a5c00]' },
-  waitlist_offer: { label: 'Offered waitlist spot', icon: UserPlus, className: 'bg-emerald-100 text-emerald-800' },
-  payment_change: { label: 'Payment status', icon: DollarSign, className: 'bg-lca-gold/20 text-[#7a5c00]' },
-  club_edit: { label: 'Edited club', icon: Pencil, className: 'bg-blue-100 text-blue-800' },
-  officer_add: { label: 'Added officer', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
+  registration_withdraw: { label: 'Withdrew player', icon: UserMinus, className: 'bg-lca-gold/20 text-gold-ink-badge' },
+  registration_reinstate: { label: 'Reinstated player', icon: UserPlus, className: 'bg-lca-gold/20 text-gold-ink-badge' },
+  waitlist_offer: { label: 'Offered waitlist spot', icon: UserPlus, className: 'bg-ok-100 text-ok' },
+  payment_change: { label: 'Payment status', icon: DollarSign, className: 'bg-lca-gold/20 text-gold-ink-badge' },
+  club_edit: { label: 'Edited club', icon: Pencil, className: 'bg-info-100 text-info-800' },
+  officer_add: { label: 'Added officer', icon: UserPlus, className: 'bg-info-100 text-info-800' },
   officer_remove: { label: 'Removed officer', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
-  group_email_sent: { label: 'Sent group email', icon: Mail, className: 'bg-blue-100 text-blue-800' },
-  seat_assign: { label: 'Board seat filled', icon: UserPlus, className: 'bg-blue-100 text-blue-800' },
-  members_export: { label: 'Exported members', icon: Download, className: 'bg-lca-gold/20 text-[#7a5c00]' },
+  group_email_sent: { label: 'Sent group email', icon: Mail, className: 'bg-info-100 text-info-800' },
+  seat_assign: { label: 'Board seat filled', icon: UserPlus, className: 'bg-info-100 text-info-800' },
+  members_export: { label: 'Exported members', icon: Download, className: 'bg-lca-gold/20 text-gold-ink-badge' },
   seat_end: { label: 'Board seat ended', icon: UserMinus, className: 'bg-muted text-muted-foreground' },
-  seat_regions: { label: 'Seat regions changed', icon: Building2, className: 'bg-blue-100 text-blue-800' },
+  seat_regions: { label: 'Seat regions changed', icon: Building2, className: 'bg-info-100 text-info-800' },
   ticket_reply: { label: 'Answered ticket', icon: Mail, className: 'bg-muted text-muted-foreground' },
-  document_add: { label: 'Added document', icon: FileText, className: 'bg-emerald-100 text-emerald-800' },
-  document_edit: { label: 'Edited document', icon: Pencil, className: 'bg-blue-100 text-blue-800' },
-  document_remove: { label: 'Removed document', icon: Trash2, className: 'bg-red-100 text-red-800' },
+  document_add: { label: 'Added document', icon: FileText, className: 'bg-ok-100 text-ok' },
+  document_edit: { label: 'Edited document', icon: Pencil, className: 'bg-info-100 text-info-800' },
+  document_remove: { label: 'Removed document', icon: Trash2, className: 'bg-bad-100 text-bad-800' },
 }
 
 function roleLabel(role: unknown): string {
@@ -197,8 +197,8 @@ export function AuditLogPanel() {
   return (
     <div>
       <div className="mb-4 flex items-center gap-2">
-        <ShieldAlert className="size-5 text-lca-gold" />
-        <h2 className="text-xl font-bold text-lca-navy">Admin activity</h2>
+        <ShieldAlert className="size-5 text-gold-ink" />
+        <h2 className="text-xl font-bold text-ink">Admin activity</h2>
       </div>
       <p className="mb-4 max-w-2xl text-sm text-muted-foreground">
         Admin actions plus what club reps and directors change (events, payments,
@@ -214,7 +214,7 @@ export function AuditLogPanel() {
             type="button"
             size="sm"
             variant={filter === f.value ? 'default' : 'outline'}
-            className={cn(filter === f.value && 'bg-lca-gold text-lca-navy hover:bg-lca-gold/90')}
+            className={cn(filter === f.value && 'bg-lca-gold text-brand-navy hover:bg-lca-gold/90')}
             onClick={() => setFilter(f.value)}
           >
             {f.label}
@@ -223,7 +223,7 @@ export function AuditLogPanel() {
       </div>
 
       {unclosedImpersonations > 0 && filter === '' && (
-        <p className="mb-4 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-lca-navy">
+        <p className="mb-4 rounded-lg border border-lca-gold/40 bg-lca-gold/10 px-3 py-2 text-xs text-ink">
           {unclosedImpersonations} impersonation
           {unclosedImpersonations === 1 ? '' : 's'} with no recorded end. Usually
           means the tab was closed rather than exited — the end time is unknown,
@@ -275,7 +275,7 @@ export function AuditLogPanel() {
                     >
                       <Icon className="size-3" /> {meta.label}
                     </span>
-                    <span className="truncate text-sm text-lca-navy">
+                    <span className="truncate text-sm text-ink">
                       {entry.target_label ?? '—'}
                     </span>
                   </div>

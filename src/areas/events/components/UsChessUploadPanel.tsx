@@ -73,7 +73,7 @@ export function UsChessUploadPanel({ tournamentId, report, canEdit }: {
 
   return (
     <div className="rounded-lg border p-4">
-      <h3 className="text-base font-semibold text-lca-navy">Upload files for US Chess</h3>
+      <h3 className="text-base font-semibold text-ink">Upload files for US Chess</h3>
       <p className="mt-1 text-xs text-muted-foreground">
         The three files (THEXPORT, TSEXPORT, TDEXPORT) US Chess's rating report upload asks for, the same ones
         SwissSys and WinTD make. Fill these in once; they're saved with the event.
@@ -145,12 +145,12 @@ export function UsChessUploadPanel({ tournamentId, report, canEdit }: {
       </div>
 
       {problems.length > 0 && (
-        <ul className="mt-3 list-disc pl-5 text-xs text-amber-800">
+        <ul className="mt-3 list-disc pl-5 text-xs text-warn-800">
           {problems.map((p) => <li key={p}>{p}</li>)}
         </ul>
       )}
       {report.validationErrors.length > 0 && (
-        <p className="mt-2 text-xs text-amber-800">Fix the problems listed above first.</p>
+        <p className="mt-2 text-xs text-warn-800">Fix the problems listed above first.</p>
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-2">

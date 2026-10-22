@@ -1,0 +1,33 @@
+{
+  "comment": "The reviewed map for scripts/codemods/semantic-colours.ts, run with --map (WS01 step 25: the gold text spelled as a hex colour). Each of the three gold hex text classes becomes a token whose plain :root value is that very hex, so nothing changes with newLook off, and one token serves each class wherever it sits, so no rule needs to know the ground. text-lca-gold, whose right token does depend on the ground (brand gold stays on navy, text-gold-ink on a light ground), is not in this map: scripts/codemods/gold-ink.ts reads the ground of each use and rewrites it. test/unit/semantic-map.test.ts proves each class this map writes paints the colour it replaced and holds the TSX files to the map; test/unit/goldText.test.ts guards gold text from here on. No site and no keep entry: every use moves.",
+  "watch": [
+    "text-[#7a5c00]",
+    "text-[#f0d07a]",
+    "text-[#8a6d1f]"
+  ],
+  "rules": [
+    {
+      "id": "gold-ink-badge",
+      "from": "text-[#7a5c00]",
+      "opacity": "none",
+      "to": "text-gold-ink-badge",
+      "reason": "The dark gold words of badges, pills and notes on a gold tint of 5 to 20 per cent (StatusBadge's light gold tone, the audit log's gold entries, the LCA pill on /tournaments, the board inbox notes) and of four labels and counts with no tint under them. --gold-ink-badge is #7a5c00 with newLook off; under the new look it is the Looks-3 soon tag's words, #705718, on the light looks (4.70:1 or more on a gold tint up to 25 per cent over any of their grounds) and brand gold on the dark ones (4.52:1 or more on a gold tint up to 20 per cent, the most these classes sit on)."
+    },
+    {
+      "id": "gold-on-dark-badge",
+      "from": "text-[#f0d07a]",
+      "opacity": "none",
+      "to": "text-gold-on-dark-badge",
+      "reason": "The light gold words of a pill on a gold tint over a ground that stays dark in every look: PageHero's eyebrow and the same pill on /contact, the chosen filter in the navy branch of FilterDropdown and MultiSelectDropdown, and the pill over the home page hero's darkened photo. --gold-on-dark-badge is #f0d07a in every look; brand gold would read 4.52:1 on the 20 per cent tint over navy and about 3.2:1 over the lightest part of the photo."
+    },
+    {
+      "id": "gold-ink-badge-club",
+      "from": "text-[#8a6d1f]",
+      "opacity": "none",
+      "to": "text-gold-ink-badge-club",
+      "reason": "The words of the Upcoming badge on a club page, on a 15 per cent gold tint. --gold-ink-badge-club is #8a6d1f with newLook off, a shade lighter than the other badges' #7a5c00, so it keeps a token of its own rather than taking theirs, which would change today's look; under the new look it is the same as --gold-ink-badge."
+    }
+  ],
+  "sites": [],
+  "keep": []
+}

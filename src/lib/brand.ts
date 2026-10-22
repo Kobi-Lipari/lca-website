@@ -7,6 +7,11 @@
 // every existing class in the app spells the hex out, and mixing the two
 // styles is worse than either. The point here is that the button treatment
 // and the accent rules live in one file instead of seven.
+//
+// The new look (the newLook switch) works from the semantic tokens in
+// src/index.css instead: text-ink, bg-ground, text-gold-ink (#866a1e, the
+// gold for text on a light ground) and the rest, which change with dark mode
+// and each look. New code uses those; these literals are today's look.
 
 /** Brand colors. Contrast ratios below are against white unless stated. */
 /** Typed as string, not as const: these are a palette, and a literal type
@@ -23,12 +28,19 @@ export const LCA: Readonly<Record<'navy' | 'gold' | 'cream', string>> = {
 
 /**
  * The primary action button: navy on gold at 6.51:1, which clears AA.
+ * text-brand-navy is the navy that stays navy in every look and in dark mode,
+ * as navy words on a gold fill must (the same #1a2744 text-lca-navy paints).
  *
  * This exact string was duplicated in six files. Changing the button used to
  * mean finding all six, and one of them drifting was inevitable.
+ *
+ * The Button's gold variant, <Button variant="gold"> in
+ * src/components/ui/button.tsx, draws these same classes, read from here,
+ * and is the gold button for new code; this string stays for the pages that
+ * put it on a link, a Button's className or a plain element.
  */
 export const GOLD_BUTTON =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 /**
  * Long admin lists and tables: a fixed-height box that scrolls on its own,

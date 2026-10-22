@@ -10,7 +10,7 @@ import { MapPin } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { MAP_STYLES, findPinByName, fitLouisiana, loadMapsScript } from '@/areas/clubs/components/LCAMap'
+import { MAP_STYLES, findPinByName, fitLouisiana, loadMapsScript } from '@/areas/clubs/clubMap'
 import { LCA } from '@/lib/brand'
 import { parseLocation, round6 } from '@/areas/clubs/mapLocation'
 
@@ -48,8 +48,12 @@ export function ClubLocationPicker({
   const mapEl = useRef<HTMLDivElement>(null)
   const mapRef = useRef<google.maps.Map | null>(null)
   const markerRef = useRef<google.maps.Marker | null>(null)
+  // The map's click listener reads this, so it sees the latest value without
+  // the map being made again. Updated after each render, not during one.
   const disabledRef = useRef(disabled)
-  disabledRef.current = disabled
+  useEffect(() => {
+    disabledRef.current = disabled
+  }, [disabled])
 
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined
   useEffect(() => {
@@ -141,8 +145,8 @@ export function ClubLocationPicker({
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm">
       <div className="mb-1 flex items-center gap-2">
-        <MapPin className="size-5 text-lca-gold" />
-        <h2 className="text-base font-semibold text-lca-navy">Map location</h2>
+        <MapPin className="size-5 text-gold-ink" />
+        <h2 className="text-base font-semibold text-ink">Map location</h2>
       </div>
       <p className="mb-4 text-sm text-muted-foreground">
         Where this club&rsquo;s pin goes on the Clubs map and its own page. Click the map where the club meets,
@@ -155,7 +159,7 @@ export function ClubLocationPicker({
         <div className="relative h-72 overflow-hidden rounded-lg border bg-[#f2efe6]">
           <div ref={mapEl} className="h-full w-full" />
           {!loaded && (
-            <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-foreground">Loading map…</div>
+            <div className="absolute inset-0 flex items-center justify-center text-sm text-muted-on-light">Loading map…</div>
           )}
         </div>
       ) : (
@@ -179,7 +183,7 @@ export function ClubLocationPicker({
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Button
           type="button"
-          className="bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90"
+          className="bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90"
           disabled={disabled || busy || !changed}
           onClick={() => draft && save(draft)}
         >
@@ -201,7 +205,7 @@ export function ClubLocationPicker({
           </span>
         )}
       </div>
-      {note && <p className={note.ok ? 'mt-2 text-sm text-emerald-700' : 'mt-2 text-sm text-destructive'}>{note.text}</p>}
+      {note && <p className={note.ok ? 'mt-2 text-sm text-ok-700' : 'mt-2 text-sm text-destructive'}>{note.text}</p>}
     </div>
   )
 }

@@ -1,6 +1,8 @@
 // src/areas/governance/components/GovLayout.tsx
 import { Link, useLocation } from 'react-router-dom'
 import { PageHero } from '@/components/PageHero'
+import { ThickThinRule } from '@/components/ThickThinRule'
+import { useHeritageOrnaments, useInHeritageLayout } from '@/contexts/heritage-layout'
 import { cn } from '@/lib/utils'
 
 const GOV_LINKS = [
@@ -15,7 +17,7 @@ export function GovSidebar() {
   return (
     <aside className="hidden lg:block lg:w-52 lg:flex-shrink-0">
       <div className="sticky top-24 overflow-hidden rounded-xl border bg-card shadow-sm">
-        <div className="bg-lca-navy px-4 py-3">
+        <div className="bg-brand-navy px-4 py-3">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-white/60">Governance</p>
         </div>
         <nav className="py-1">
@@ -26,7 +28,7 @@ export function GovSidebar() {
               className={cn(
                 'block border-l-2 px-4 py-2.5 text-sm transition-colors',
                 pathname === link.href
-                  ? 'border-lca-gold bg-lca-gold/5 font-medium text-lca-navy'
+                  ? 'border-lca-gold bg-lca-gold/5 font-medium text-ink'
                   : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground',
               )}
             >
@@ -57,8 +59,8 @@ function GovTabs() {
             className={cn(
               'whitespace-nowrap rounded-full border px-3.5 py-1.5 text-sm transition-colors',
               pathname === link.href
-                ? 'border-lca-navy bg-lca-navy font-medium text-white'
-                : 'border-border bg-card text-muted-foreground hover:border-lca-navy/40 hover:text-foreground',
+                ? 'border-brand-navy bg-brand-navy font-medium text-white'
+                : 'border-border bg-card text-muted-foreground hover:border-ink/40 hover:text-foreground',
             )}
           >
             {link.label}
@@ -78,16 +80,23 @@ export function GovLayout({
   subtitle: string
   children: React.ReactNode
 }) {
+  // Inside HeritageLayout its column is a plain element, since the site's
+  // own <main> (src/App.tsx) already holds the page and a page has one main
+  // landmark, and under the new look a thick-thin rule opens the page under
+  // its heading band. Elsewhere the column stays the main it has been.
+  const Column = useInHeritageLayout() ? 'div' : 'main'
+  const ornaments = useHeritageOrnaments()
   return (
     <div>
       <PageHero title={title} subtitle={subtitle} />
       <section className="mx-auto max-w-6xl px-6 py-10">
+        {ornaments && <ThickThinRule className="mb-8" />}
         <div className="flex gap-8">
           <GovSidebar />
-          <main className="min-w-0 flex-1">
+          <Column className="min-w-0 flex-1">
             <GovTabs />
             {children}
-          </main>
+          </Column>
         </div>
       </section>
     </div>
@@ -106,7 +115,7 @@ export function DocRow({
   return (
     <div className="flex items-center justify-between gap-4 border-b border-border py-3 last:border-0">
       <div className="flex items-center gap-3 min-w-0">
-        <svg viewBox="0 0 24 24" className="size-5 flex-shrink-0 fill-red-500" aria-hidden="true">
+        <svg viewBox="0 0 24 24" className="size-5 flex-shrink-0 fill-bad-500" aria-hidden="true">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-5.5-9.5C11 11.1 9.5 12 8 12H7v4H5.5V8H8c1.5 0 3 .9 3 2.5zM7 11h1c.8 0 1.5-.4 1.5-1.5S8.8 8 8 8H7v3z"/>
         </svg>
         <div className="min-w-0">

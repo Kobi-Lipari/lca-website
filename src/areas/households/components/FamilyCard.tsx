@@ -17,11 +17,12 @@ import { Label } from '@/components/ui/label'
 import { addChild, getMyChildren, removeChild, updateChild, type ApiChild } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
-import { USCHESS_RENEW_URL, usChessState } from '@/areas/membership/components/UsChessMembership'
+import { USCHESS_RENEW_URL } from '@/areas/membership/components/UsChessMembership'
+import { usChessState } from '@/areas/membership'
 import { FAMILY_MEMBERSHIP_CHILDREN as LIMIT } from '@/lib/family'
 
 const STATUS: Record<string, { label: string; className: string }> = {
-  active: { label: 'Member', className: 'bg-emerald-100 text-emerald-800' },
+  active: { label: 'Member', className: 'bg-ok-100 text-ok' },
   expired: { label: 'Expired', className: 'bg-destructive/10 text-destructive' },
   pending: { label: 'Not a member', className: 'bg-muted text-muted-foreground' },
 }
@@ -130,10 +131,10 @@ export function FamilyCard({ planActive, setup = false }: {
     <div id="family" ref={card} className="scroll-mt-24 rounded-xl border bg-card p-6 shadow-sm">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <Users className="size-5 text-lca-gold" />
-          <h2 className="text-lg font-bold text-lca-navy">My family</h2>
+          <Users className="size-5 text-gold-ink" />
+          <h2 className="text-lg font-bold text-ink">My family</h2>
           {planActive && children && (
-            <span className="rounded-full bg-lca-navy/[0.06] px-2 py-0.5 text-xs font-medium text-lca-navy">
+            <span className="rounded-full bg-ink/[0.06] px-2 py-0.5 text-xs font-medium text-ink">
               {covered} of {LIMIT} added
             </span>
           )}
@@ -152,13 +153,13 @@ export function FamilyCard({ planActive, setup = false }: {
       ) : (
         <p className="mt-1 text-sm text-muted-foreground">
           Your family membership isn't active, so the children below aren't covered.{' '}
-          <Link to="/membership" className="font-medium text-lca-navy underline underline-offset-2">Renew it</Link> to cover them again.
+          <Link to="/membership" className="font-medium text-ink underline underline-offset-2">Renew it</Link> to cover them again.
         </p>
       )}
 
       {planActive && children && room > 0 && !adding && (
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-lca-gold/50 bg-lca-gold/10 px-4 py-3">
-          <p className="text-sm text-lca-navy">
+          <p className="text-sm text-ink">
             {covered === 0
               ? <><span className="font-semibold">Finish setting up your family membership:</span> add the children it covers.</>
               : <>You can add {room} more {room === 1 ? 'child' : 'children'} to your membership.</>}
@@ -181,7 +182,7 @@ export function FamilyCard({ planActive, setup = false }: {
                 <li key={c.id} className="px-4 py-3">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-lca-navy">{c.full_name}</p>
+                      <p className="truncate font-medium text-ink">{c.full_name}</p>
                       <p className="text-xs text-muted-foreground">
                         {c.uscf_id ? `USCF ${c.uscf_id}` : 'No USCF ID yet — needed for rated events'}
                         {c.uscf_rating ? ` · rating ${c.uscf_rating}` : ''}
@@ -192,7 +193,7 @@ export function FamilyCard({ planActive, setup = false }: {
                         if (st === 'none' || st === 'unknown') return null
                         const date = (c.uscf_expiration as string).slice(0, 10)
                         return (
-                          <p className={cn('text-xs', st === 'expired' ? 'text-red-700' : st === 'soon' ? 'text-amber-800' : 'text-muted-foreground')}>
+                          <p className={cn('text-xs', st === 'expired' ? 'text-bad-700' : st === 'soon' ? 'text-warn-800' : 'text-muted-foreground')}>
                             US Chess {st === 'expired' ? `expired ${date}` : `through ${date}`}
                             {st !== 'valid' && (
                               <> · <a href={USCHESS_RENEW_URL} target="_blank" rel="noopener noreferrer" className="font-medium underline underline-offset-2">Renew</a></>
@@ -205,7 +206,7 @@ export function FamilyCard({ planActive, setup = false }: {
                       <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', (STATUS[c.membership_status] ?? STATUS.pending).className)}>
                         {(STATUS[c.membership_status] ?? STATUS.pending).label}
                       </span>
-                      <button type="button" onClick={() => startEdit(c)} className="p-1 text-muted-foreground hover:text-lca-navy" aria-label={`Edit ${c.full_name}`}>
+                      <button type="button" onClick={() => startEdit(c)} className="p-1 text-muted-foreground hover:text-ink" aria-label={`Edit ${c.full_name}`}>
                         <Pencil className="size-4" />
                       </button>
                       <button type="button" onClick={() => handleRemove(c)} disabled={busy}

@@ -21,8 +21,8 @@ import {
  * urgent 8.15:1, info 8.74:1.
  */
 const TONES: { value: AnnouncementTone; label: string; swatch: string }[] = [
-  { value: 'gold', label: 'Gold', swatch: 'bg-lca-gold text-lca-navy' },
-  { value: 'navy', label: 'Navy', swatch: 'bg-lca-navy text-white' },
+  { value: 'gold', label: 'Gold', swatch: 'bg-lca-gold text-brand-navy' },
+  { value: 'navy', label: 'Navy', swatch: 'bg-brand-navy text-white' },
   { value: 'urgent', label: 'Urgent', swatch: 'bg-[#9b1c1c] text-white' },
   { value: 'info', label: 'Info', swatch: 'bg-[#1e4d7b] text-white' },
 ]
@@ -149,7 +149,7 @@ function BannerFields({
               className={cn(
                 'rounded-md px-3 py-1 text-xs font-medium ring-offset-2',
                 t.swatch,
-                value.tone === t.value && 'ring-2 ring-lca-navy',
+                value.tone === t.value && 'ring-2 ring-ink',
               )}
             >
               {t.label}
@@ -283,9 +283,9 @@ export function AdminAnnouncementPanel() {
   function status(a: ApiAdminAnnouncement): { label: string; className: string } {
     if (!a.enabled) return { label: 'Off', className: 'bg-muted text-muted-foreground' }
     const now = new Date().toISOString().replace('T', ' ').slice(0, 19)
-    if (a.starts_at && a.starts_at > now) return { label: 'Scheduled', className: 'bg-[#1e4d7b]/15 text-[#1e4d7b]' }
+    if (a.starts_at && a.starts_at > now) return { label: 'Scheduled', className: 'bg-info-banner/15 text-info-banner' }
     if (a.ends_at && a.ends_at < now) return { label: 'Expired', className: 'bg-muted text-muted-foreground' }
-    return { label: 'Live', className: 'bg-emerald-100 text-emerald-800' }
+    return { label: 'Live', className: 'bg-ok-100 text-ok' }
   }
 
   if (loading) return <p className="text-sm text-muted-foreground">Loading announcements…</p>
@@ -294,8 +294,8 @@ export function AdminAnnouncementPanel() {
     <div className="rounded-xl border bg-card p-5 shadow-sm">
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <Megaphone className="size-5 text-lca-gold" />
-          <h2 className="text-base font-semibold text-lca-navy">
+          <Megaphone className="size-5 text-gold-ink" />
+          <h2 className="text-base font-semibold text-ink">
             Site banners · {list.length}
           </h2>
         </div>
@@ -311,7 +311,7 @@ export function AdminAnnouncementPanel() {
         )}
       </div>
 
-      {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+      {error && <p className="mb-3 text-sm text-bad">{error}</p>}
 
       <p className="mb-4 text-sm text-muted-foreground">
         Banners stack at the top of every page, in this order. Leaving both dates empty means
@@ -375,7 +375,7 @@ export function AdminAnnouncementPanel() {
                         <span className="text-[11px] text-muted-foreground">compact</span>
                       )}
                     </div>
-                    <p className="mt-1 truncate font-medium text-lca-navy">
+                    <p className="mt-1 truncate font-medium text-ink">
                       {a.message?.trim() || a.link_label}
                     </p>
                     {(a.starts_at || a.ends_at) && (
@@ -412,7 +412,7 @@ export function AdminAnnouncementPanel() {
                     </Button>
                     <Button
                       type="button" variant="outline" size="sm"
-                      className="text-red-600 hover:bg-red-50"
+                      className="text-bad hover:bg-bad-50"
                       disabled={savingId === a.id}
                       onClick={() => handleDelete(a)}
                       aria-label="Delete banner"

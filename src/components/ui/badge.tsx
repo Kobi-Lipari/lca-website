@@ -3,6 +3,11 @@ import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+// The focus ring is ring-ring at full strength, as it always was. The --focus
+// token cannot draw it in today's look, because there --focus is the
+// half-strength ring the Button uses; under the new look --ring points at
+// --focus, so this ring is the --focus colour, and src/index.css draws the
+// shared 2px ring with a 2px gap on keyboard focus.
 const badgeVariants = cva(
   "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {

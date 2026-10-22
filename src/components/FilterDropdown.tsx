@@ -44,16 +44,17 @@ export function FilterDropdown<T extends string>({
   const triggerClass =
     on === 'navy'
       ? isActive
-        ? 'border-lca-gold/50 bg-lca-gold/15 text-[#f0d07a]'
+        ? 'border-lca-gold/50 bg-lca-gold/15 text-gold-on-dark-badge'
         : 'border-white/15 bg-white/6 text-white/60 hover:border-white/25 hover:text-white/80'
       : isActive
-      ? 'border-lca-gold/60 bg-lca-gold/10 text-[#7a5c00]'
-      : 'border-border bg-background text-muted-foreground hover:border-lca-navy/40 hover:text-foreground'
+      ? 'border-lca-gold/60 bg-lca-gold/10 text-gold-ink-badge'
+      : 'border-border bg-background text-muted-foreground hover:border-ink/40 hover:text-foreground'
 
   return (
     <div ref={ref} className={cn('relative', className)}>
       <button
         type="button"
+        aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         className={cn(
           'flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors',
@@ -69,10 +70,11 @@ export function FilterDropdown<T extends string>({
             <button
               key={opt.value}
               type="button"
+              aria-pressed={opt.value === value}
               onClick={() => { onChange(opt.value); setOpen(false) }}
               className={cn(
                 'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50',
-                opt.value === value ? 'bg-lca-gold/8 font-medium text-lca-navy' : 'text-muted-foreground',
+                opt.value === value ? 'bg-lca-gold/8 font-medium text-ink' : 'text-muted-foreground',
               )}
             >
               <span className={cn(

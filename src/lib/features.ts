@@ -3,8 +3,13 @@
 // On/off switches for parts of the site that are built but not open yet.
 // To turn one on, change its value to true and deploy. Nothing else needs
 // to change: the code behind each switch stays in place.
+//
+// The values written below are the values the site runs with. The one
+// exception is the accessibility test build (vite build --mode a11y, run by
+// npm run test:a11y), which may turn switches on through VITE_FLAGS; see
+// applyFlagOverrides at the end of this file.
 
-export const FEATURES = {
+const SWITCHES = {
   /**
    * The "By organizer" column on the Tournaments page, which lets visitors
    * filter by LCA club. Off until clubs are given permission to run their
@@ -33,19 +38,24 @@ export const FEATURES = {
   /**
    * The new base look: the new colours and type, dark mode (following the
    * device setting unless the visitor picks Light or Dark), the stronger
-   * focus ring, and the new date, time and score formats.
+   * focus ring, and the new date, time and score formats. It also shows the
+   * home page hero as one still picture, with no slideshow and no timer.
    */
   newLook: false,
 
   /**
    * The Heritage Club look on About, Board, Bylaws, Minutes, Annual meeting
-   * and Champions.
+   * and Champions. It puts those six pages in the heritage layout, with the
+   * look's type, paper ground, rules and seal, and keeps forms and editors on
+   * them in the base look. The look itself shows only when newLook is on as
+   * well.
    */
   themeHeritage: false,
 
   /**
    * The Bright Scholastic look on the Scholastic pages. Off until the
    * Scholastic fonts are added and the look has been checked on a preview.
+   * It shows only when newLook is on as well.
    */
   themeScholastic: false,
 
@@ -150,3 +160,41 @@ export const FEATURES = {
    */
   membershipRequirementSwitch: false,
 } as const
+
+/** The name of one switch. */
+export type FeatureName = keyof typeof SWITCHES
+
+/** Every switch, on or off. */
+export type Features = { readonly [K in FeatureName]: boolean }
+
+/** The mode of the accessibility test build, the only mode that reads VITE_FLAGS. */
+export const FLAG_OVERRIDE_MODE = 'a11y'
+
+/**
+ * The switches as written above, with the names listed in `flags` turned on
+ * when `mode` is the accessibility test build's mode. `flags` is a
+ * comma-separated list of switch names, such as "newLook,themeHeritage". In
+ * any other mode, or with no names, the answer is `base` itself, unchanged.
+ * An unknown name is an error, so a typo in a test run fails loudly instead
+ * of testing the wrong page.
+ */
+export function applyFlagOverrides(base: Features, mode: string | undefined, flags: string | undefined): Features {
+  if (mode !== FLAG_OVERRIDE_MODE) return base
+  const names = (flags ?? '').split(',').map((n) => n.trim()).filter(Boolean)
+  if (names.length === 0) return base
+  const out: Record<string, boolean> = { ...base }
+  for (const name of names) {
+    if (!Object.prototype.hasOwnProperty.call(base, name)) throw new Error(`VITE_FLAGS names "${name}", which is not a switch in src/lib/features.ts.`)
+    out[name] = true
+  }
+  return out as Features
+}
+
+// The mode check is written out here as a literal, not only inside
+// applyFlagOverrides: the build replaces import.meta.env.MODE with the mode's
+// name, so in every build except the accessibility test build this line
+// becomes plain `FEATURES = SWITCHES` and VITE_FLAGS never reaches the site.
+export const FEATURES: Features =
+  import.meta.env.MODE === 'a11y'
+    ? applyFlagOverrides(SWITCHES, import.meta.env.MODE, import.meta.env.VITE_FLAGS)
+    : SWITCHES

@@ -60,6 +60,7 @@ export function AgendaList({ tournaments, selectedKey, onSelect }: AgendaListPro
             )}
             <button
               type="button"
+              aria-current={isSelected ? 'true' : undefined}
               onClick={() => onSelect(t)}
               className={cn(
                 'flex w-full items-start gap-3 border-b border-border px-3 py-2.5 text-left transition-colors last:border-b-0 hover:bg-muted/30',
@@ -67,7 +68,7 @@ export function AgendaList({ tournaments, selectedKey, onSelect }: AgendaListPro
               )}
             >
               <div className="w-9 flex-shrink-0 text-center">
-                <div className="text-base font-semibold leading-none text-lca-navy">{dayNum}</div>
+                <div className="text-base font-semibold leading-none text-ink">{dayNum}</div>
                 <div className="mt-0.5 text-[9px] uppercase text-muted-foreground">{dayName}</div>
               </div>
               <div className="min-w-0 flex-1">
@@ -84,7 +85,7 @@ export function AgendaList({ tournaments, selectedKey, onSelect }: AgendaListPro
                 </p>
               </div>
               {t.is_lca === 1 && t.registration_status === 'open' && (
-                <span className="flex-shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800">
+                <span className="flex-shrink-0 rounded-full bg-status-open-tint px-2 py-0.5 text-[10px] font-medium text-status-open">
                   Open
                 </span>
               )}

@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Building2, Calendar, ChevronLeft, ChevronRight, Trophy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { FacebookFeed } from '@/components/FacebookFeed'
+import { ResponsiveImage } from '@/components/ResponsiveImage'
+import { FEATURES } from '@/lib/features'
 import { getClubs, type ApiClubListItem } from '@/lib/api'
 import { formatDate, louisianaFirst, registrationSummary, type UnifiedTournament } from '@/areas/events/clearinghouse'
 import { clubColorTint, clubAccentStyle } from '@/areas/clubs/clubColors'
@@ -16,9 +18,15 @@ import slide2 from '@/assets/LCA_Slide_2.jpg'
 import slide3 from '@/assets/LCA_Slide_3.jpg'
 import slide4 from '@/assets/LCA_Slide_4.jpg'
 import slide5 from '@/assets/LCA_Slide_5.jpg'
+import slide1Avif640 from '@/assets/generated/LCA_Slide_1-640.avif'
+import slide1Avif1024 from '@/assets/generated/LCA_Slide_1-1024.avif'
+import slide1Avif1600 from '@/assets/generated/LCA_Slide_1-1600.avif'
+import slide1Webp640 from '@/assets/generated/LCA_Slide_1-640.webp'
+import slide1Webp1024 from '@/assets/generated/LCA_Slide_1-1024.webp'
+import slide1Webp1600 from '@/assets/generated/LCA_Slide_1-1600.webp'
 import { LCA } from '@/lib/brand'
 
-const goldButtonClass = 'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 const LCA_GOLD = LCA.gold
 
 const heroSlides = [
@@ -28,6 +36,23 @@ const heroSlides = [
   { label: 'Players across the Pelican State', src: slide4 },
   { label: 'Chess for every generation', src: slide5 },
 ]
+
+/**
+ * Slide 1 as the hero's still picture under the new look, in the files
+ * scripts/images.mjs writes, at the photo's own shape (2048 by 1237). The
+ * picture covers the 420 pixel high hero, so it is drawn 696 pixels wide on
+ * a screen narrower than that, and across the screen on a wider one.
+ */
+const heroStill = {
+  avif: [{ src: slide1Avif640, width: 640 }, { src: slide1Avif1024, width: 1024 }, { src: slide1Avif1600, width: 1600 }],
+  webp: [{ src: slide1Webp640, width: 640 }, { src: slide1Webp1024, width: 1024 }, { src: slide1Webp1600, width: 1600 }],
+  width: 2048,
+  height: 1237,
+  sizes: '(max-width: 695px) 696px, 100vw',
+}
+
+/** The photo's darkening, so it reads as texture, not a spotlighted portrait; the scale hides any filter edge on pan. */
+const heroPhotoShade = { filter: 'grayscale(35%) brightness(0.55) contrast(1.05)', transform: 'scale(1.04)' }
 
 /** Fisher–Yates shuffle. Moved here from ClubsPage — the homepage preview
  *  column is advertisement-only, so a fresh random order on each visit is a
@@ -42,48 +67,55 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a
 }
 
-function HeroSlideshow() {
-  const [current, setCurrent] = useState(0)
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const total = heroSlides.length
+/** What the slideshow gives the hero: the slide on show, and how to show another. */
+interface HeroSlides {
+  current: number
+  show: (n: number) => void
+}
 
-  function go(n: number) { setCurrent((n + total) % total) }
-  function restart() {
-    if (timerRef.current) clearInterval(timerRef.current)
-    timerRef.current = setInterval(() => setCurrent((c) => (c + 1) % total), 5000)
-  }
-  useEffect(() => {
-    timerRef.current = setInterval(() => setCurrent((c) => (c + 1) % total), 5000)
-    return () => { if (timerRef.current) clearInterval(timerRef.current) }
-  }, [])
-  function handleNav(n: number) { go(n); restart() }
-
+/**
+ * The homepage hero: the photo, darkened, with the words and buttons over it.
+ * With newLook off HeroSlideshow draws it with all five slides and their
+ * controls, moving on every 5 seconds, as it always has. Under the new look
+ * it is drawn on its own: slide 1 as one still picture, with no controls and
+ * no timer, since nothing on the site moves on by itself (WCAG 2.2.2). WS03
+ * replaces the hero, and HeroSlideshow with it.
+ */
+function HomeHero({ slides }: { slides?: HeroSlides }) {
+  // data-ground="dark": the buttons, arrows and dots sit on the darkened
+  // photo, and the navy veil is a sibling of them, not an ancestor, so under
+  // the new look this marker is what gives them the gold focus ring.
   return (
-    <div className="relative overflow-hidden border-b border-border" style={{ height: 420 }}>
-      <div className="flex h-full transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${current * 100}%)` }}>
-        {heroSlides.map((slide, i) => (
-          <div key={i} className="relative h-full min-w-full flex-shrink-0 overflow-hidden">
-            {/* Background photo, desaturated + darkened so it reads as texture, not a spotlighted portrait */}
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${slide.src})`,
-                filter: 'grayscale(35%) brightness(0.55) contrast(1.05)',
-                transform: 'scale(1.04)', // hides any filter edge artifacts on pan
-              }}
-            />
-            {/* Navy brand tint, ties the photo into the site palette instead of a raw photo look */}
-            <div className="absolute inset-0 bg-lca-navy/55 mix-blend-multiply" />
-            {/* Existing gradient for text legibility at the bottom */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
-            <div className="absolute right-4 top-4 rounded-full bg-black/30 px-3 py-1 text-xs text-white/70 backdrop-blur-sm">
-              {slide.label}
+    <div className="relative overflow-hidden border-b border-border" style={{ height: 420 }} data-ground="dark">
+      {slides ? (
+        <div className="flex h-full transition-transform duration-500 ease-in-out" style={{ transform: `translateX(-${slides.current * 100}%)` }}>
+          {heroSlides.map((slide, i) => (
+            <div key={i} className="relative h-full min-w-full flex-shrink-0 overflow-hidden">
+              {/* Background photo, desaturated + darkened so it reads as texture, not a spotlighted portrait */}
+              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${slide.src})`, ...heroPhotoShade }} />
+              {/* Navy brand tint, ties the photo into the site palette instead of a raw photo look */}
+              <div className="absolute inset-0 bg-brand-navy/55 mix-blend-multiply" />
+              {/* Existing gradient for text legibility at the bottom */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+              <div className="absolute right-4 top-4 rounded-full bg-black/30 px-3 py-1 text-xs text-white/70 backdrop-blur-sm">
+                {slide.label}
+              </div>
             </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {/* Slide 1, still, under the same darkening, tint, gradient and label as its slide; object-cover centres it, as bg-cover bg-center did. Its JPEG, which the slideshow draws, is for a browser that shows neither AVIF nor WebP. */}
+          <ResponsiveImage {...heroStill} fallback={slide1} alt="" priority className="absolute inset-0 h-full w-full object-cover" style={heroPhotoShade} />
+          <div className="absolute inset-0 bg-brand-navy/55 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/10" />
+          <div className="absolute right-4 top-4 rounded-full bg-black/30 px-3 py-1 text-xs text-white/70 backdrop-blur-sm">
+            {heroSlides[0].label}
           </div>
-        ))}
-      </div>
+        </>
+      )}
       <div className="absolute inset-0 flex flex-col items-center justify-end pb-14 px-6 text-center text-white">
-        <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/20 px-3 py-1 text-xs text-[#f0d07a] backdrop-blur-sm">
+        <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/20 px-3 py-1 text-xs text-gold-on-dark-badge backdrop-blur-sm">
           Louisiana's chess community since 1915
         </div>
         <h1 className="mt-2 text-4xl font-bold leading-tight tracking-tight sm:text-5xl">Play. Compete. Connect.</h1>
@@ -107,23 +139,45 @@ function HeroSlideshow() {
           ))}
         </div>
       </div>
-      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
-        <button type="button" onClick={() => handleNav(current - 1)} aria-label="Previous slide" className="flex h-6 w-6 items-center justify-center rounded bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors">
-          <ChevronLeft className="size-3.5 text-white" />
-        </button>
-        {heroSlides.map((_, i) => (
-          <button key={i} type="button" onClick={() => handleNav(i)} aria-label={`Slide ${i + 1}`} className={cn('h-1.5 rounded-full transition-all duration-300', i === current ? 'w-5 bg-lca-gold' : 'w-1.5 bg-white/40 hover:bg-white/60')} />
-        ))}
-        <button type="button" onClick={() => handleNav(current + 1)} aria-label="Next slide" className="flex h-6 w-6 items-center justify-center rounded bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors">
-          <ChevronRight className="size-3.5 text-white" />
-        </button>
-      </div>
+      {slides && (
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
+          <button type="button" onClick={() => slides.show(slides.current - 1)} aria-label="Previous slide" className="flex h-6 w-6 items-center justify-center rounded bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors">
+            <ChevronLeft className="size-3.5 text-white" />
+          </button>
+          {heroSlides.map((_, i) => (
+            <button key={i} type="button" onClick={() => slides.show(i)} aria-label={`Slide ${i + 1}`} className={cn('h-1.5 rounded-full transition-all duration-300', i === slides.current ? 'w-5 bg-lca-gold' : 'w-1.5 bg-white/40 hover:bg-white/60')} />
+          ))}
+          <button type="button" onClick={() => slides.show(slides.current + 1)} aria-label="Next slide" className="flex h-6 w-6 items-center justify-center rounded bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-colors">
+            <ChevronRight className="size-3.5 text-white" />
+          </button>
+        </div>
+      )}
     </div>
   )
 }
 
+/** Today's hero with newLook off: the five slides, moving on every 5 seconds. Not drawn under the new look. */
+function HeroSlideshow() {
+  const [current, setCurrent] = useState(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const total = heroSlides.length
+
+  function go(n: number) { setCurrent((n + total) % total) }
+  function restart() {
+    if (timerRef.current) clearInterval(timerRef.current)
+    timerRef.current = setInterval(() => setCurrent((c) => (c + 1) % total), 5000)
+  }
+  useEffect(() => {
+    timerRef.current = setInterval(() => setCurrent((c) => (c + 1) % total), 5000)
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [])
+  function handleNav(n: number) { go(n); restart() }
+
+  return <HomeHero slides={{ current, show: handleNav }} />
+}
+
 function StatusDot({ regStatus }: { regStatus?: string | null }) {
-  if (regStatus === 'open') return <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-500" title="Registration open" />
+  if (regStatus === 'open') return <span className="h-2 w-2 shrink-0 rounded-full bg-ok-500" title="Registration open" />
   if (regStatus === 'draft') return <span className="h-2 w-2 shrink-0 rounded-full bg-lca-gold" title="Opening soon" />
   return <span className="h-2 w-2 shrink-0 rounded-full bg-border" title="Coming soon" />
 }
@@ -172,12 +226,12 @@ export function HomePage() {
 
   return (
     <div>
-      <HeroSlideshow />
+      {FEATURES.newLook ? <HomeHero /> : <HeroSlideshow />}
 
       {nextTournament && (
         <div className="flex items-center justify-between border-b border-lca-gold/30 bg-lca-gold/10 px-4 py-2 sm:px-6">
           <div className="flex items-center gap-2 text-sm">
-            <Calendar className="size-3.5 shrink-0 text-lca-gold" />
+            <Calendar className="size-3.5 shrink-0 text-gold-ink" />
             <span className="text-muted-foreground">
               <span className="font-medium text-foreground">{nextTournament.name}</span>
               {' · '}{formatDate(nextTournament.start_date)}
@@ -202,10 +256,10 @@ export function HomePage() {
         <div className="flex flex-col border-b border-border sm:border-b-0 sm:border-r">
           <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
             <div className="flex items-center gap-2">
-              <Trophy className="size-3.5 text-lca-gold" />
+              <Trophy className="size-3.5 text-gold-ink" />
               <span className="text-[13px] font-semibold text-foreground">Tournaments</span>
             </div>
-            <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-lca-navy hover:underline">
+            <Link to="/tournaments" className="flex items-center gap-0.5 text-xs text-ink hover:underline">
               View all <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -257,10 +311,10 @@ export function HomePage() {
         <div className="flex flex-col">
           <div className="flex items-center justify-between border-b border-border bg-muted/30 px-4 py-2">
             <div className="flex items-center gap-2">
-              <Building2 className="size-3.5 text-lca-gold" />
+              <Building2 className="size-3.5 text-gold-ink" />
               <span className="text-[13px] font-semibold text-foreground">Clubs</span>
             </div>
-            <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-lca-navy hover:underline">
+            <Link to="/clubs" className="flex items-center gap-0.5 text-xs text-ink hover:underline">
               Find yours <ArrowRight className="size-3" />
             </Link>
           </div>
@@ -290,10 +344,10 @@ export function HomePage() {
       </div>
 
       {member?.membership_status !== 'active' && (
-      <div className="border-t-[3px] border-lca-gold bg-lca-navy px-6 py-10 text-center text-white">
+      <div className="border-t-[3px] border-lca-gold bg-brand-navy px-6 py-10 text-center text-white">
         <div className="mx-auto max-w-lg">
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-lca-gold">
-            <Trophy className="size-6 text-lca-navy" />
+            <Trophy className="size-6 text-brand-navy" />
           </div>
           <h2 className="text-2xl font-bold sm:text-3xl">Become an LCA member</h2>
           <p className="mt-3 text-sm leading-relaxed text-white/70">

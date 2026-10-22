@@ -56,11 +56,11 @@ export function MultiSelectDropdown({
   const triggerClass =
     on === 'navy'
       ? isActive
-        ? 'border-lca-gold/50 bg-lca-gold/15 text-[#f0d07a]'
+        ? 'border-lca-gold/50 bg-lca-gold/15 text-gold-on-dark-badge'
         : 'border-white/15 bg-white/6 text-white/60 hover:border-white/25 hover:text-white/80'
       : isActive
-        ? 'border-lca-gold/60 bg-lca-gold/10 text-[#7a5c00]'
-        : 'border-border bg-background text-muted-foreground hover:border-lca-navy/40 hover:text-foreground'
+        ? 'border-lca-gold/60 bg-lca-gold/10 text-gold-ink-badge'
+        : 'border-border bg-background text-muted-foreground hover:border-ink/40 hover:text-foreground'
 
   return (
     <div ref={ref} className={cn('relative', className)}>
@@ -86,14 +86,14 @@ export function MultiSelectDropdown({
                 onClick={() => toggle(opt.value)}
                 className={cn(
                   'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50',
-                  checked ? 'font-medium text-lca-navy' : 'text-muted-foreground',
+                  checked ? 'font-medium text-ink' : 'text-muted-foreground',
                 )}
               >
                 <span className={cn(
                   'flex size-3.5 flex-shrink-0 items-center justify-center rounded border',
                   checked ? 'border-lca-gold bg-lca-gold' : 'border-border',
                 )}>
-                  {checked && <span className="size-1.5 rounded-sm bg-lca-navy" />}
+                  {checked && <span className="size-1.5 rounded-sm bg-brand-navy" />}
                 </span>
                 {opt.label}
               </button>

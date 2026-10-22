@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { ArrowLeftRight, Check, Printer } from 'lucide-react'
 
 import type { ApiTournamentGame } from '@/lib/api'
+import { FEATURES } from '@/lib/features'
 import { cn } from '@/lib/utils'
 
 const QUICK = [
@@ -39,10 +40,13 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
   const [section, setSection] = useState(withGames.length > 1 ? ALL : (withGames[0] ?? sections[0] ?? ''))
   const showAll = section === ALL && withGames.length > 1
   const shownSections = showAll ? withGames : [section === ALL ? withGames[0] ?? '' : section]
+  // The sections with games, as one value, so the list below changes only
+  // when they do (the array itself is new on every render).
+  const withGamesKey = withGames.join('|')
   const rounds = useMemo(
     () => [...new Set(games.filter((g) => shownSections.includes(g.section)).map((g) => g.round))].sort((a, b) => a - b),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [games, section, withGames.join('|')],
+    [games, section, withGamesKey],
   )
   const [roundChoice, setRoundChoice] = useState<number | null>(null)
   const round = roundChoice !== null && rounds.includes(roundChoice) ? roundChoice : rounds[rounds.length - 1]
@@ -69,7 +73,7 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
           {rounds.map((r) => (
             <button key={r} type="button" onClick={() => setRoundChoice(r)}
               className={cn('rounded-md border px-2.5 py-1 text-sm font-medium',
-                r === round ? 'border-lca-navy bg-lca-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
+                r === round ? 'border-brand-navy bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground')}>
               Rd {r}
             </button>
           ))}
@@ -77,16 +81,16 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
         {tournamentId && round !== undefined && (
           <span className="flex gap-3 text-sm">
             <Link to={`/tournaments/${tournamentId}/print?what=pairings&section=${encodeURIComponent(printSection)}&round=${round}`}
-              className="inline-flex items-center gap-1 text-lca-navy hover:underline">
+              className="inline-flex items-center gap-1 text-ink hover:underline">
               <Printer className="size-3.5" /> Print pairings
             </Link>
             <Link to={`/tournaments/${tournamentId}/print?what=alpha&section=${encodeURIComponent(printSection)}&round=${round}`}
-              className="text-lca-navy hover:underline">
+              className="text-ink hover:underline">
               Alphabetical
             </Link>
           </span>
         )}
-        <span className={cn('ml-auto text-sm', missing ? 'font-medium text-[#7a5c00]' : 'text-emerald-700')}>
+        <span className={cn('ml-auto text-sm', missing ? 'font-medium text-gold-ink-badge' : 'text-ok-700')}>
           {missing ? `${missing} result${missing === 1 ? '' : 's'} missing` : 'All results in'}
         </span>
       </div>
@@ -98,10 +102,10 @@ export function ResultsEntry({ games, sections, onResult, onSwap, savedGameId, t
           return (
             <section key={sec} aria-label={showAll ? `${sec} section` : undefined}>
               {showAll && (
-                <div className="mb-1.5 flex items-baseline justify-between gap-3 border-b-2 border-lca-navy pb-1">
-                  <h3 className="text-sm font-bold uppercase tracking-wide text-lca-navy">{sec}</h3>
+                <div className="mb-1.5 flex items-baseline justify-between gap-3 border-b-2 border-ink pb-1">
+                  <h3 className="text-sm font-bold uppercase tracking-wide text-ink">{sec}</h3>
                   {shown.length > 0 && (
-                    <span className={cn('text-xs', secMissing ? 'font-medium text-[#7a5c00]' : 'text-emerald-700')}>
+                    <span className={cn('text-xs', secMissing ? 'font-medium text-gold-ink-badge' : 'text-ok-700')}>
                       {secMissing ? `${secMissing} missing` : 'All in'}
                     </span>
                   )}
@@ -128,15 +132,18 @@ function BoardsTable({ shown, onResult, onSwap, savedGameId }: {
   onSwap?: (game: ApiTournamentGame) => void
   savedGameId: string | null
 }) {
+  // Under the new look each header cell says it heads its column; with
+  // newLook off the cells are today's. A half point here is already ½.
+  const headScope = FEATURES.newLook ? 'col' : undefined
   return (
       <div className="overflow-x-auto rounded-lg border">
         <table className="w-full min-w-[560px] text-left text-sm">
           <thead>
             <tr className="border-b bg-muted/50">
-              <th className="w-12 px-3 py-2">Bd</th>
-              <th className="px-3 py-2">White</th>
-              <th className="px-3 py-2">Black</th>
-              <th className="px-3 py-2">Result</th>
+              <th scope={headScope} className="w-12 px-3 py-2">Bd</th>
+              <th scope={headScope} className="px-3 py-2">White</th>
+              <th scope={headScope} className="px-3 py-2">Black</th>
+              <th scope={headScope} className="px-3 py-2">Result</th>
             </tr>
           </thead>
           <tbody>
@@ -156,13 +163,13 @@ function BoardsTable({ shown, onResult, onSwap, savedGameId }: {
                           <button key={q.value} type="button" onClick={() => onResult(g.id, q.value)}
                             aria-pressed={g.result === q.value}
                             className={cn('min-w-[3rem] rounded-md border px-2 py-1 text-sm font-medium tabular-nums',
-                              g.result === q.value ? 'border-lca-navy bg-lca-navy text-white' : 'hover:border-lca-navy/40')}>
+                              g.result === q.value ? 'border-brand-navy bg-brand-navy text-white' : 'hover:border-ink/40')}>
                             {q.label}
                           </button>
                         ))}
                         <select aria-label={`More results for board ${g.board}`}
                           className={cn('rounded-md border bg-background px-1.5 py-1 text-xs',
-                            g.result.endsWith('F') && 'border-lca-navy font-medium text-lca-navy')}
+                            g.result.endsWith('F') && 'border-ink font-medium text-ink')}
                           value={OTHER.some((o) => o.value === g.result) && g.result !== 'pending' ? g.result : ''}
                           onChange={(e) => e.target.value && onResult(g.id, e.target.value)}>
                           <option value="">More…</option>
@@ -171,11 +178,11 @@ function BoardsTable({ shown, onResult, onSwap, savedGameId }: {
                         {onSwap && (
                           <button type="button" onClick={() => onSwap(g)} title="Swap colors"
                             aria-label={`Swap colors on board ${g.board}`}
-                            className="rounded-md p-1 text-muted-foreground hover:text-lca-navy">
+                            className="rounded-md p-1 text-muted-foreground hover:text-ink">
                             <ArrowLeftRight className="size-3.5" />
                           </button>
                         )}
-                        {savedGameId === g.id && <Check className="size-4 text-emerald-600" aria-label="Saved" />}
+                        {savedGameId === g.id && <Check className="size-4 text-ok-600" aria-label="Saved" />}
                       </div>
                     )}
                   </td>

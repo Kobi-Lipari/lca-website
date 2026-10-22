@@ -2,31 +2,145 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+/* The only monospace face. It is used only through --font-mono-face, which
+ * names it only under the new look, so with newLook off nothing loads it. */
+@import "@fontsource-variable/geist-mono";
+/* The one display accent of the new look (font-accent). */
+@import "@fontsource/instrument-serif/400.css";
 
-@custom-variant dark (&:is(.dark *));
+/* The class on <html> as well as its descendants, so a dark: utility on the
+ * root element itself applies too. :where keeps the variant's specificity at
+ * zero, as the shadcn default does. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 /*
  * LCA brand palette.
  *
  * A separate @theme block from the shadcn tokens above because these are
  * literal brand values, not aliases of shadcn variables. Tailwind generates
- * the usual utilities from them — bg-lca-navy, text-lca-gold, border-lca-gold,
- * and the /NN opacity modifiers — so the colors stop being spelled out in
+ * the usual utilities from them (bg-lca-navy, text-lca-gold, border-lca-gold
+ * and the /NN opacity modifiers), so the colors stop being spelled out in
  * hundreds of arbitrary-value classes.
  *
- * These are the palette, deliberately named for what they are. Semantic
- * tokens (surface, ink, accent) are what a dark theme will need on top of
- * them, and naming those is a design decision, not a rename.
+ * These are the palette, deliberately named for what they are. The semantic
+ * tokens (ground, surface, ink and the rest) are defined further down, with
+ * a value for today's look and one for each of the new looks.
+ *
+ * --color-brand-navy is the navy that stays navy: no look and no dark mode
+ * redefines it, unlike --ink. bg-brand-navy is for the navy bands, heroes
+ * and selected controls, which stay navy in dark mode, and text-brand-navy
+ * is for navy text on a gold fill, which the brief keeps in every look.
  */
 @theme {
     --color-lca-navy: #1a2744;
     --color-lca-gold: #c8a94a;
     --color-lca-cream: #f4f4f0;
+    --color-brand-navy: #1a2744;
 }
 
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Geist Variable', sans-serif;
+    /* font-mono reads the token, so it is the device's own monospace stack
+     * in today's look and Geist Mono only under the new look. */
+    --font-mono: var(--font-mono-face);
+    --font-accent: 'Instrument Serif', Georgia, serif;
+
+    /* The semantic tokens as utilities: text-ink, bg-ground, border-hairline,
+     * text-gold-ink, bg-status-open-tint and so on. Each utility reads the
+     * token where it is used, so it follows the look of its scope. */
+    --color-ground: var(--ground);
+    --color-surface: var(--surface);
+    --color-surface-2: var(--surface-2);
+    --color-raised: var(--raised);
+    --color-ink: var(--ink);
+    --color-ink-muted: var(--ink-muted);
+    --color-hairline: var(--hairline);
+    --color-field: var(--field);
+    --color-ok: var(--ok);
+    --color-bad: var(--bad);
+    --color-gold: var(--gold);
+    --color-gold-ink: var(--gold-ink);
+    --color-gold-on-dark: var(--gold-on-dark);
+    /* Gold words (step 25): the dark gold of badges, pills and notes on a
+     * gold tint, its lighter shade on a club page's Upcoming badge, and the
+     * light gold of a pill on a ground that stays dark. */
+    --color-gold-ink-badge: var(--gold-ink-badge);
+    --color-gold-ink-badge-club: var(--gold-ink-badge-club);
+    --color-gold-on-dark-badge: var(--gold-on-dark-badge);
+    --color-focus: var(--focus);
+    --color-status-open: var(--status-open);
+    --color-status-open-tint: var(--status-open-tint);
+    --color-status-soon: var(--status-soon);
+    --color-status-soon-tint: var(--status-soon-tint);
+    --color-status-full: var(--status-full);
+    --color-status-full-tint: var(--status-full-tint);
+    --color-status-waitlist: var(--status-waitlist);
+    --color-status-waitlist-tint: var(--status-waitlist-tint);
+    --color-status-closed: var(--status-closed);
+    --color-status-closed-tint: var(--status-closed-tint);
+    --color-status-live: var(--status-live);
+    --color-status-live-tint: var(--status-live-tint);
+    --color-status-partner: var(--status-partner);
+    --color-status-partner-tint: var(--status-partner-tint);
+    --color-status-lca: var(--status-lca);
+    --color-status-lca-tint: var(--status-lca-tint);
+    /* The tone shades (step 24): text-ok-700, bg-warn-50, border-info-200
+     * and the rest, one for each shade of a status colour the pages use. */
+    --color-ok-50: var(--ok-50);
+    --color-ok-100: var(--ok-100);
+    --color-ok-200: var(--ok-200);
+    --color-ok-500: var(--ok-500);
+    --color-ok-600: var(--ok-600);
+    --color-ok-700: var(--ok-700);
+    --color-ok-900: var(--ok-900);
+    --color-ok-950: var(--ok-950);
+    --color-ok-green-50: var(--ok-green-50);
+    --color-ok-green-100: var(--ok-green-100);
+    --color-ok-green-200: var(--ok-green-200);
+    --color-ok-green-500: var(--ok-green-500);
+    --color-ok-green-600: var(--ok-green-600);
+    --color-ok-green-700: var(--ok-green-700);
+    --color-ok-green-800: var(--ok-green-800);
+    --color-bad-50: var(--bad-50);
+    --color-bad-100: var(--bad-100);
+    --color-bad-200: var(--bad-200);
+    --color-bad-500: var(--bad-500);
+    --color-bad-700: var(--bad-700);
+    --color-bad-800: var(--bad-800);
+    --color-bad-900: var(--bad-900);
+    --color-warn-50: var(--warn-50);
+    --color-warn-100: var(--warn-100);
+    --color-warn-200: var(--warn-200);
+    --color-warn-300: var(--warn-300);
+    --color-warn-600: var(--warn-600);
+    --color-warn-700: var(--warn-700);
+    --color-warn-800: var(--warn-800);
+    --color-warn-900: var(--warn-900);
+    --color-warn-950: var(--warn-950);
+    --color-warn-yellow-50: var(--warn-yellow-50);
+    --color-warn-yellow-100: var(--warn-yellow-100);
+    --color-warn-yellow-200: var(--warn-yellow-200);
+    --color-warn-yellow-700: var(--warn-yellow-700);
+    --color-warn-yellow-800: var(--warn-yellow-800);
+    --color-info-50: var(--info-50);
+    --color-info-100: var(--info-100);
+    --color-info-200: var(--info-200);
+    --color-info-800: var(--info-800);
+    --color-info-purple-100: var(--info-purple-100);
+    --color-info-purple-800: var(--info-purple-800);
+    --color-info-banner: var(--info-banner);
+    --color-quiet-100: var(--quiet-100);
+    --color-quiet-600: var(--quiet-600);
+    --color-facebook-link: var(--facebook-link);
+    --color-mark-warn: var(--mark-warn);
+    --color-mark-ok: var(--mark-ok);
+    --color-ok-fill: var(--ok-fill);
+    /* Light islands (step 24): the words on a ground that stays light in
+     * every look, such as the club map's paper, and the veil laid over it. */
+    --color-muted-on-light: var(--muted-on-light);
+    --color-veil-on-light: var(--veil-on-light);
+
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -100,6 +214,133 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    /*
+     * The semantic tokens, at today's values. The site reads them only
+     * through the utilities above, and while newLook is off every one of
+     * them gives what the page shows today: --focus is the same half-strength
+     * ring that ring-ring/50 draws, and --font-mono-face is Tailwind's own
+     * monospace stack. They live here, at the root, because the @theme
+     * inline utilities need every token to exist everywhere.
+     * test/unit/tokens.test.ts holds each one to today's value.
+     */
+    --ground: oklch(1 0 0);
+    --surface: #fff;
+    --surface-2: oklch(0.97 0 0);
+    --raised: oklch(1 0 0);
+    --ink: #1a2744;
+    --ink-muted: oklch(0.556 0 0);
+    --hairline: oklch(0.922 0 0);
+    --field: oklch(0.922 0 0);
+    --ok: oklch(43.2% 0.095 166.913);
+    --bad: oklch(0.577 0.245 27.325);
+    --gold: #c8a94a;
+    --gold-ink: #c8a94a;
+    --gold-on-dark: #c8a94a;
+    /* Gold words (step 25), at the hex colours the pages spelled out: the
+     * dark gold of badges, pills and notes on a gold tint (#7a5c00), the
+     * club page's Upcoming badge (#8a6d1f) and the light gold of a pill on
+     * navy or the home page hero's darkened photo (#f0d07a). No look
+     * restyles --gold-on-dark-badge: the ground under it stays dark in every
+     * look, like the brand navy. */
+    --gold-ink-badge: #7a5c00;
+    --gold-ink-badge-club: #8a6d1f;
+    --gold-on-dark-badge: #f0d07a;
+    --focus: color-mix(in oklab, var(--ring) 50%, transparent);
+    --font-mono-face: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    /* Status: the light tones StatusBadge draws today. */
+    --status-open: oklch(43.2% 0.095 166.913);
+    --status-open-tint: oklch(95% 0.052 163.051);
+    --status-soon: #7a5c00;
+    --status-soon-tint: color-mix(in oklab, #c8a94a 20%, transparent);
+    --status-full: oklch(50.5% 0.213 27.518);
+    --status-full-tint: oklch(93.6% 0.032 17.717);
+    --status-waitlist: oklch(50.5% 0.213 27.518);
+    --status-waitlist-tint: oklch(93.6% 0.032 17.717);
+    --status-closed: oklch(0.556 0 0);
+    --status-closed-tint: oklch(0.97 0 0);
+    --status-live: oklch(50.5% 0.213 27.518);
+    --status-live-tint: oklch(93.6% 0.032 17.717);
+    --status-partner: oklch(42.4% 0.199 265.638);
+    --status-partner-tint: oklch(97% 0.014 254.604);
+    --status-lca: #1a2744;
+    --status-lca-tint: color-mix(in oklab, #c8a94a 20%, transparent);
+    /*
+     * Tones (step 24): the status colours the pages spelled out as Tailwind
+     * classes, one token for each shade they use, named for its tone and
+     * Tailwind's step. ok is emerald (and green, the US Chess lookup's
+     * second green), bad is red, warn is amber (and the support pages'
+     * yellow), info is blue (and the purple of one audit entry), quiet is
+     * grey (not "neutral", which is a Tailwind colour of its own). text-ok is
+     * emerald-800 and text-bad red-600, so those two shades need no token of
+     * their own. Here each is exactly the Tailwind colour it replaced; under
+     * the new look every shade of a tone is that tone's tint or its words
+     * (the block after the looks). test/unit/tokens.test.ts holds each one
+     * to its Tailwind colour.
+     */
+    --ok-50: oklch(97.9% 0.021 166.113);
+    --ok-100: oklch(95% 0.052 163.051);
+    --ok-200: oklch(90.5% 0.093 164.15);
+    --ok-500: oklch(69.6% 0.17 162.48);
+    --ok-600: oklch(59.6% 0.145 163.225);
+    --ok-700: oklch(50.8% 0.118 165.612);
+    --ok-900: oklch(37.8% 0.077 168.94);
+    --ok-950: oklch(26.2% 0.051 172.552);
+    --ok-green-50: oklch(98.2% 0.018 155.826);
+    --ok-green-100: oklch(96.2% 0.044 156.743);
+    --ok-green-200: oklch(92.5% 0.084 155.995);
+    --ok-green-500: oklch(72.3% 0.219 149.579);
+    --ok-green-600: oklch(62.7% 0.194 149.214);
+    --ok-green-700: oklch(52.7% 0.154 150.069);
+    --ok-green-800: oklch(44.8% 0.119 151.328);
+    --bad-50: oklch(97.1% 0.013 17.38);
+    --bad-100: oklch(93.6% 0.032 17.717);
+    --bad-200: oklch(88.5% 0.062 18.334);
+    --bad-500: oklch(63.7% 0.237 25.331);
+    --bad-700: oklch(50.5% 0.213 27.518);
+    --bad-800: oklch(44.4% 0.177 26.899);
+    --bad-900: oklch(39.6% 0.141 25.723);
+    --warn-50: oklch(98.7% 0.022 95.277);
+    --warn-100: oklch(96.2% 0.059 95.617);
+    --warn-200: oklch(92.4% 0.12 95.746);
+    --warn-300: oklch(87.9% 0.169 91.605);
+    --warn-600: oklch(66.6% 0.179 58.318);
+    --warn-700: oklch(55.5% 0.163 48.998);
+    --warn-800: oklch(47.3% 0.137 46.201);
+    --warn-900: oklch(41.4% 0.112 45.904);
+    --warn-950: oklch(27.9% 0.077 45.635);
+    --warn-yellow-50: oklch(98.7% 0.026 102.212);
+    --warn-yellow-100: oklch(97.3% 0.071 103.193);
+    --warn-yellow-200: oklch(94.5% 0.129 101.54);
+    --warn-yellow-700: oklch(55.4% 0.135 66.442);
+    --warn-yellow-800: oklch(47.6% 0.114 61.907);
+    --info-50: oklch(97% 0.014 254.604);
+    --info-100: oklch(93.2% 0.032 255.585);
+    --info-200: oklch(88.2% 0.059 254.128);
+    --info-800: oklch(42.4% 0.199 265.638);
+    --info-purple-100: oklch(94.6% 0.033 307.174);
+    --info-purple-800: oklch(43.8% 0.218 303.724);
+    /* The blue of the info announcement banner, which the admin list's
+     * "Scheduled" tag borrows. */
+    --info-banner: #1e4d7b;
+    --quiet-100: oklch(96.7% 0.003 264.542);
+    --quiet-600: oklch(44.6% 0.03 256.802);
+    /* The Facebook links' blue, a darker shade of the Facebook brand blue
+     * that reaches 4.5:1 on white. */
+    --facebook-link: #1668d8;
+    /* Not status tags (step 24): the scanner's marks on a move to check and
+     * a move that was fixed, which must stand out from the card the moves
+     * sit on (amber-200 and emerald-200 here), and the solid green of a
+     * checked check-in toggle under white words (emerald-600 here). */
+    --mark-warn: oklch(92.4% 0.12 95.746);
+    --mark-ok: oklch(90.5% 0.093 164.15);
+    --ok-fill: oklch(59.6% 0.145 163.225);
+    /* Light islands (step 24): a ground that stays light in every look, such
+     * as the club map's paper (bg-[#f2efe6], the map style's own colour),
+     * keeps the words on it dark. Here they are the muted words and the muted
+     * ground the map's loading note drew (text-muted-foreground, bg-muted). */
+    --muted-on-light: oklch(0.556 0 0);
+    --veil-on-light: oklch(0.97 0 0);
 }
 
 .dark {
@@ -134,6 +375,529 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+}
+
+/*
+ * The new look (the newLook switch). src/main.tsx sets data-look="new" on
+ * <html> when the switch is on, and the script that build adds to the page
+ * head sets it, and the .dark class, before the first paint. Without the
+ * attribute none of the rules below match, so today's look is untouched.
+ *
+ * Base: Looks-3 Minimal, light and dark. Scopes, set with data-theme on a
+ * container: live (Looks-7 Broadcast), scholastic (Looks-6 Bright
+ * Scholastic) and heritage (Looks-1 Heritage Club); data-theme="" puts the
+ * base look back inside another scope. The values come from the Looks tile
+ * boards in docs/redesign/lca-redesign-boards/boards.
+ *
+ * Each scope selector is written once per look, because a token that points
+ * at another token (var()) is worked out on the element that declares it.
+ */
+:root[data-look="new"],
+:root[data-look="new"] [data-theme=""] {
+    color-scheme: light;
+    --ground: #fff;
+    --surface: #fff;
+    --surface-2: #f7f8fa;
+    --raised: #fff;
+    --ink: #1a2744;
+    --ink-muted: #5b6478;
+    --hairline: #e5e7ed;
+    --field: #7c8496;
+    --ok: #047857;
+    --bad: #c0362c;
+    --gold: #c8a94a;
+    --gold-ink: #866a1e;
+    --gold-on-dark: #c8a94a;
+    /* Gold words on a gold tint take the soon tag's words, which keep 4.5:1
+     * on a tint up to 25 per cent; --gold-ink would read 4.42:1 on 20. */
+    --gold-ink-badge: #705718;
+    --gold-ink-badge-club: #705718;
+    --focus: #1a2744;
+    --font-mono-face: 'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+    --status-open: #047857;
+    --status-open-tint: #e8f5ef;
+    --status-soon: #705718;
+    --status-soon-tint: #fbf7e9;
+    --status-full: #c0362c;
+    --status-full-tint: #fdeeec;
+    --status-waitlist: #c0362c;
+    --status-waitlist-tint: #fdeeec;
+    --status-closed: #5b6478;
+    --status-closed-tint: #f7f8fa;
+    --status-live: #fff;
+    --status-live-tint: #c0362c;
+    --status-partner: #1a2744;
+    --status-partner-tint: #eef1f6;
+    --status-lca: #fff;
+    --status-lca-tint: #1a2744;
+    --facebook-link: #1668d8;
+    /* The scanner's marks keep a highlighter's strength on a light card:
+     * amber-200, and emerald-200 lightened just enough for the ok words to
+     * reach 4.5:1 on it (the tag tints would all but vanish on the card). */
+    --mark-warn: #fee685;
+    --mark-ok: #bcf7db;
+    /* A checked check-in toggle: a dark green under white words (5.48:1),
+     * the same in every look and in dark mode, where the ok words colour
+     * would be too light under white. */
+    --ok-fill: #047857;
+    /* Light islands: the light look's muted words and muted ground, the same
+     * in every look and in dark mode, because the ground under them stays
+     * light (the words reach 5.16:1 on the club map's paper). */
+    --muted-on-light: #5b6478;
+    --veil-on-light: #f7f8fa;
+}
+
+/* Dark: the Looks-3 dark palette. It follows the device setting unless the
+ * visitor picks Light or Dark in the Appearance control. On screens only
+ * (step 24): a printed page takes the light look, so a sheet printed from
+ * a dark device puts dark words on the white paper. The live look and
+ * heritage in dark mode below are on screens only for the same reason. */
+@media screen {
+    :root[data-look="new"].dark,
+    :root[data-look="new"].dark [data-theme=""] {
+        color-scheme: dark;
+        --ground: #0b1220;
+        --surface: #111a2c;
+        --surface-2: #0b1220;
+        --raised: #1a2744;
+        --ink: #e8ecf4;
+        --ink-muted: #9aa6bf;
+        --hairline: rgb(255 255 255 / 8%);
+        --field: #5f6d89;
+        --ok: #3ecf8e;
+        --bad: #ff6b6b;
+        --gold-ink: #c8a94a;
+        --gold-ink-badge: #c8a94a;
+        --gold-ink-badge-club: #c8a94a;
+        --focus: #c8a94a;
+        --status-open: #3ecf8e;
+        --status-open-tint: #0d2b22;
+        --status-soon: #c8a94a;
+        --status-soon-tint: #2a2412;
+        --status-full: #ff6b6b;
+        --status-full-tint: #3a1619;
+        --status-waitlist: #ff6b6b;
+        --status-waitlist-tint: #3a1619;
+        --status-closed: #9aa6bf;
+        --status-closed-tint: #1a2744;
+        --status-live: #fff;
+        --status-live-tint: #c0362c;
+        --status-partner: #e8ecf4;
+        --status-partner-tint: #1a2744;
+        --status-lca: #0b1220;
+        --status-lca-tint: #c8a94a;
+        --facebook-link: #4599ff;
+        /* The scanner's marks: a quarter of the gold and of the ok green over
+         * the card, so each stands out from it with its words at 4.5:1 (the
+         * live look's below are worked out the same way over its panel). */
+        --mark-warn: #3f3e34;
+        --mark-ok: #1c4745;
+    }
+}
+
+/* Live (Looks-7 Broadcast Night): always dark on a screen, light or dark
+ * mode alike; a printed live page takes the light look (step 24).
+ * Live red carries dark text only; white on it is 3.34:1. */
+@media screen {
+    :root[data-look="new"] [data-theme="live"] {
+        color-scheme: dark;
+        --ground: #070b14;
+        --surface: #0e1526;
+        --surface-2: #070b14;
+        --raised: #1a2744;
+        --ink: #f3f5f9;
+        --ink-muted: #8e9ab2;
+        --hairline: rgb(255 255 255 / 8%);
+        --field: #5f6d89;
+        --ok: #34d399;
+        --bad: #ff6b6b;
+        --gold: #c8a94a;
+        --gold-ink: #c8a94a;
+        --gold-on-dark: #c8a94a;
+        --gold-ink-badge: #c8a94a;
+        --gold-ink-badge-club: #c8a94a;
+        --gold-hi: #e5c768;
+        --live: #ff4757;
+        --live-strong: #c81e32;
+        --win: #34d399;
+        --loss: #ff6b6b;
+        --draw: #a7b0c2;
+        --focus: #c8a94a;
+        --status-open: #34d399;
+        --status-open-tint: #0e1526;
+        --status-soon: #f3f5f9;
+        --status-soon-tint: #1a2744;
+        --status-full: #c8a94a;
+        --status-full-tint: #0e1526;
+        --status-waitlist: #c8a94a;
+        --status-waitlist-tint: #0e1526;
+        --status-closed: #8e9ab2;
+        --status-closed-tint: #0e1526;
+        --status-live: #070b14;
+        --status-live-tint: #ff4757;
+        --status-partner: #a7b0c2;
+        --status-partner-tint: #0e1526;
+        --status-lca: #070b14;
+        --status-lca-tint: #c8a94a;
+        --facebook-link: #4599ff;
+        --mark-warn: #3d3a2f;
+        --mark-ok: #184543;
+    }
+}
+
+/* Scholastic (Looks-6 Bright Scholastic): a light look in either mode.
+ * Navy carries all text and buttons, a section hue only ever marks a grade
+ * band beside its words, and status tags keep the base status tokens. */
+:root[data-look="new"] [data-theme="scholastic"] {
+    color-scheme: light;
+    --ground: #fffaf1;
+    --surface: #fff;
+    --surface-2: #fffaf1;
+    --raised: #fff;
+    --ink: #1a2744;
+    --ink-muted: #4f5b75;
+    --hairline: #efe5cf;
+    --field: #7c8496;
+    --ok: #047857;
+    --bad: #c0362c;
+    --gold: #c8a94a;
+    --gold-ink: #866a1e;
+    --gold-on-dark: #c8a94a;
+    --gold-ink-badge: #705718;
+    --gold-ink-badge-club: #705718;
+    --gold-tile: #fdf1cc;
+    --coral: #b23e1a;
+    --coral-tile: #ffe4da;
+    --mint: #1f7a55;
+    --mint-tile: #dcf5e9;
+    --sky: #2563c9;
+    --sky-tile: #e3eeff;
+    --grape: #6a3fc1;
+    --grape-tile: #eee6ff;
+    --focus: #1a2744;
+    --status-open: #047857;
+    --status-open-tint: #e8f5ef;
+    --status-soon: #705718;
+    --status-soon-tint: #fbf7e9;
+    --status-full: #c0362c;
+    --status-full-tint: #fdeeec;
+    --status-waitlist: #c0362c;
+    --status-waitlist-tint: #fdeeec;
+    --status-closed: #5b6478;
+    --status-closed-tint: #f7f8fa;
+    --status-live: #fff;
+    --status-live-tint: #c0362c;
+    --status-partner: #1a2744;
+    --status-partner-tint: #eef1f6;
+    --status-lca: #fff;
+    --status-lca-tint: #1a2744;
+    --facebook-link: #1668d8;
+    --mark-warn: #fee685;
+    --mark-ok: #bcf7db;
+}
+
+/* Heritage (Looks-1 Heritage Club): grounds, ink, rules and gold-ink only.
+ * It never restyles buttons, fields, status tags or the focus ring, so the
+ * status tokens and --focus stay as the base sets them. Brand gold is for
+ * rules, seals and text on navy only (2.05:1 on paper). */
+:root[data-look="new"] [data-theme="heritage"] {
+    --ground: #f7f3e8;
+    --surface: #fffdf8;
+    --surface-2: #ece4d0;
+    --raised: #fffdf8;
+    --ink: #1a2744;
+    --ink-muted: #5e5a52;
+    --hairline: #d8cdb4;
+    --field: #857d6b;
+    --gold-ink: #705718;
+    --baize: #2d5a45;
+    --claret: #8a2b38;
+}
+
+/* Heritage in dark mode keeps its type, rules and seal on the Minimal dark
+ * grounds, on screens only like the dark look (step 24). */
+@media screen {
+    :root[data-look="new"].dark [data-theme="heritage"] {
+        --ground: #0b1220;
+        --surface: #111a2c;
+        --surface-2: #0b1220;
+        --raised: #1a2744;
+        --ink: #e8ecf4;
+        --ink-muted: #9aa6bf;
+        --hairline: rgb(255 255 255 / 8%);
+        --field: #5f6d89;
+        --gold-ink: #c8a94a;
+    }
+}
+
+/* Heritage's controls are the base look's (step 31, the brief's AC13): a
+ * Button, a field, a status tag or dot, a filter chip, a date block and a
+ * pill drawn in the muted pair inside a heritage scope draw exactly as in
+ * base. The scope's grounds, lines and muted words are the page's, but a
+ * control reads the same variables (an outline Button's ground and line, a
+ * field's ground, line and placeholder, the closed tag's hairline, the
+ * muted pill's ground and words), so on the controls themselves the tokens
+ * heritage restyles are the light look's again, and the variables worked
+ * out from them are worked out again here. The muted pill (StatusBadge's
+ * muted tone, and the governance lists' Pending upload tag) has no slot of
+ * its own, so it is found by its two classes, the ground and the words of
+ * the pair. In dark mode heritage's tokens are the dark look's already, so
+ * there the controls take what the page around them has. */
+:root[data-look="new"] [data-theme="heritage"] [data-slot="button"],
+:root[data-look="new"] [data-theme="heritage"] [data-slot="status-badge"],
+:root[data-look="new"] [data-theme="heritage"] [data-slot="status-dot"],
+:root[data-look="new"] [data-theme="heritage"] [data-slot="filter-chip"],
+:root[data-look="new"] [data-theme="heritage"] [data-slot="date-block"],
+:root[data-look="new"] [data-theme="heritage"] .bg-muted.text-muted-foreground,
+:root[data-look="new"] [data-theme="heritage"] input,
+:root[data-look="new"] [data-theme="heritage"] textarea,
+:root[data-look="new"] [data-theme="heritage"] select {
+    --ground: #fff;
+    --surface: #fff;
+    --surface-2: #f7f8fa;
+    --raised: #fff;
+    --ink-muted: #5b6478;
+    --hairline: #e5e7ed;
+    --field: #7c8496;
+    --gold-ink: #866a1e;
+    --background: var(--ground);
+    --card: var(--surface);
+    --popover: var(--raised);
+    --primary-foreground: var(--ground);
+    --secondary: var(--surface-2);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--ink-muted);
+    --accent: var(--surface-2);
+    --border: var(--hairline);
+    --input: var(--field);
+}
+
+@media screen {
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="button"],
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="status-badge"],
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="status-dot"],
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="filter-chip"],
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="date-block"],
+    :root[data-look="new"].dark [data-theme="heritage"] .bg-muted.text-muted-foreground,
+    :root[data-look="new"].dark [data-theme="heritage"] input,
+    :root[data-look="new"].dark [data-theme="heritage"] textarea,
+    :root[data-look="new"].dark [data-theme="heritage"] select {
+        --ground: inherit;
+        --surface: inherit;
+        --surface-2: inherit;
+        --raised: inherit;
+        --ink-muted: inherit;
+        --hairline: inherit;
+        --field: inherit;
+        --gold-ink: inherit;
+    }
+}
+
+/* The tones, only in the new look (step 24). Every shade of a tone takes
+ * the tone's colour from the Looks-3 status tags: the shades up to step 300
+ * (the tints and the light lines) its tint, the shades from 400 (the words,
+ * icons and dots) its words. ok is the open tag (its words are --ok), bad
+ * the full tag (its words are --bad), warn the soon tag, info the partner
+ * tag and quiet the closed tag. Heritage restyles none of them, as it
+ * restyles no status tag. Repeated on every scope, like the shadcn
+ * variables below, so a shade follows the look of the scope it sits in. */
+:root[data-look="new"],
+:root[data-look="new"] [data-theme] {
+    --ok-50: var(--status-open-tint);
+    --ok-100: var(--status-open-tint);
+    --ok-200: var(--status-open-tint);
+    --ok-500: var(--ok);
+    --ok-600: var(--ok);
+    --ok-700: var(--ok);
+    --ok-900: var(--ok);
+    --ok-950: var(--ok);
+    --ok-green-50: var(--status-open-tint);
+    --ok-green-100: var(--status-open-tint);
+    --ok-green-200: var(--status-open-tint);
+    --ok-green-500: var(--ok);
+    --ok-green-600: var(--ok);
+    --ok-green-700: var(--ok);
+    --ok-green-800: var(--ok);
+    --bad-50: var(--status-full-tint);
+    --bad-100: var(--status-full-tint);
+    --bad-200: var(--status-full-tint);
+    --bad-500: var(--bad);
+    --bad-700: var(--bad);
+    --bad-800: var(--bad);
+    --bad-900: var(--bad);
+    --warn-50: var(--status-soon-tint);
+    --warn-100: var(--status-soon-tint);
+    --warn-200: var(--status-soon-tint);
+    --warn-300: var(--status-soon-tint);
+    --warn-600: var(--status-soon);
+    --warn-700: var(--status-soon);
+    --warn-800: var(--status-soon);
+    --warn-900: var(--status-soon);
+    --warn-950: var(--status-soon);
+    --warn-yellow-50: var(--status-soon-tint);
+    --warn-yellow-100: var(--status-soon-tint);
+    --warn-yellow-200: var(--status-soon-tint);
+    --warn-yellow-700: var(--status-soon);
+    --warn-yellow-800: var(--status-soon);
+    --info-50: var(--status-partner-tint);
+    --info-100: var(--status-partner-tint);
+    --info-200: var(--status-partner-tint);
+    --info-800: var(--status-partner);
+    --info-purple-100: var(--status-partner-tint);
+    --info-purple-800: var(--status-partner);
+    --info-banner: var(--status-partner);
+    --quiet-100: var(--status-closed-tint);
+    --quiet-600: var(--status-closed);
+}
+
+/* The shadcn variables point at the semantic tokens, only in the new look.
+ * Repeated on every scope so a component inside a scope gets that scope's
+ * colours. This also outranks the stock .dark block above. */
+:root[data-look="new"],
+:root[data-look="new"] [data-theme] {
+    --background: var(--ground);
+    --foreground: var(--ink);
+    --card: var(--surface);
+    --card-foreground: var(--ink);
+    --popover: var(--raised);
+    --popover-foreground: var(--ink);
+    --primary: var(--ink);
+    --primary-foreground: var(--ground);
+    --secondary: var(--surface-2);
+    --secondary-foreground: var(--ink);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--ink-muted);
+    --accent: var(--surface-2);
+    --accent-foreground: var(--ink);
+    --destructive: var(--bad);
+    --border: var(--hairline);
+    --input: var(--field);
+    --ring: var(--focus);
+    --sidebar: var(--surface-2);
+    --sidebar-foreground: var(--ink);
+    --sidebar-primary: var(--ink);
+    --sidebar-primary-foreground: var(--ground);
+    --sidebar-accent: var(--surface);
+    --sidebar-accent-foreground: var(--ink);
+    --sidebar-border: var(--hairline);
+    --sidebar-ring: var(--focus);
+}
+
+/*
+ * Focus, new look only: one ring for every control, a 2px line in --focus
+ * with a 2px gap, navy on light grounds and gold on dark and live grounds.
+ * It sits outside the layers on purpose, so it wins over the outline-none
+ * and ring utilities the shadcn components carry; their own focus glow is
+ * switched off while the ring shows, so a control never draws two.
+ */
+:root[data-look="new"] :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    --tw-ring-shadow: 0 0 #0000;
+    --tw-ring-offset-shadow: 0 0 #0000;
+}
+
+/* Inside a navy band (today's header, footer and page heroes, until they
+ * are rebuilt) the ground is dark, so the ring turns gold. The bands carry
+ * bg-brand-navy; bg-lca-navy is the same navy, kept here for code that still
+ * names it. A dark ground that is not a navy box, such as a
+ * photo with a tint laid over it, says so with data-ground="dark" on the
+ * element that holds its controls. */
+:root[data-look="new"] .bg-lca-navy :focus-visible,
+:root[data-look="new"] .bg-brand-navy :focus-visible,
+:root[data-look="new"] [data-ground="dark"] :focus-visible {
+    outline-color: var(--gold-on-dark);
+}
+
+/* A menu drawn inside a navy band, such as the one the state filter in the
+ * /tournaments hero opens, is the look's own ground again (--popover: white
+ * in the light look, navy in dark mode), so its controls take back the
+ * look's own ring: navy on the white menu, gold on the navy one. */
+:root[data-look="new"] .bg-lca-navy .bg-popover :focus-visible,
+:root[data-look="new"] .bg-brand-navy .bg-popover :focus-visible,
+:root[data-look="new"] [data-ground="dark"] .bg-popover :focus-visible {
+    outline-color: var(--focus);
+}
+
+/* A link in brand gold inside a run of words, such as the State champions
+ * link in the /tournaments hero's subtitle, is set apart from the words
+ * around it by its colour alone until it is hovered (WCAG 1.4.1, the
+ * checker's link-in-text-block). Under the new look it is underlined as
+ * well (step 32). */
+:root[data-look="new"] p > a.text-lca-gold {
+    text-decoration-line: underline;
+}
+
+/* The options of a menu that scrolls (FilterDropdown's and
+ * MultiSelectDropdown's) fill its width, so its own edges would hide the
+ * part of an option's ring drawn outside the option. Under the new look an
+ * option's ring is drawn just inside its edge instead (step 32). */
+:root[data-look="new"] .bg-popover.overflow-y-auto > button:focus-visible {
+    outline-offset: -2px;
+}
+
+/* Motion, new look only: with reduced motion asked for, nothing moves. A
+ * zero-length animation still fires its end event, which the dialogs wait
+ * for before they close. */
+@media (prefers-reduced-motion: reduce) {
+    :root[data-look="new"] *,
+    :root[data-look="new"] *::before,
+    :root[data-look="new"] *::after {
+        animation-duration: 0s !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0s !important;
+        transition-delay: 0s !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/*
+ * Browsers that cannot mix colours (Safari 15.4 to 16.1, and older ones such
+ * as Chrome 109), in either look. Tailwind gives a token class with an
+ * opacity modifier, such as bg-ink/5, its token at full strength there,
+ * which would put navy text on a solid navy box, while the brand class it
+ * replaced (bg-brand-navy/5) fell back to its worked-out tint. Each rule
+ * below gives one token class with a modifier that the step 24 map writes
+ * the tint its old class fell back to, the same colour as #rrggbbaa, so those
+ * browsers draw what they drew before. Browsers that can mix colours skip
+ * these rules. test/unit/semantic-map.test.ts checks every one.
+ *
+ * The last rule (step 26) is of another kind: two status tints are a mix on
+ * the plain :root, 20 per cent of brand gold, which those browsers cannot
+ * read, so a soon or LCA tag would lose its tint there with newLook off. It
+ * gives both the same tint as #rrggbbaa, the fallback Tailwind writes for
+ * bg-lca-gold/20. The new look's values are plain hex colours and outrank it,
+ * so it changes nothing else. test/unit/tokens.test.ts checks it.
+ */
+@supports not (color: color-mix(in lab, red, red)) {
+    .bg-ink\/5 { background-color: #1a27440d; }
+    .bg-ink\/7 { background-color: #1a274412; }
+    .bg-ink\/8 { background-color: #1a274414; }
+    .bg-ink\/10 { background-color: #1a27441a; }
+    .bg-ink\/\[0\.03\] { background-color: #1a274408; }
+    .bg-ink\/\[0\.04\] { background-color: #1a27440a; }
+    .bg-ink\/\[0\.06\] { background-color: #1a27440f; }
+    .border-ink\/10 { border-color: #1a27441a; }
+    .border-ink\/15 { border-color: #1a274426; }
+    .border-ink\/20 { border-color: #1a274433; }
+    .border-ink\/40 { border-color: #1a274466; }
+    .focus\:border-ink\/50:focus { border-color: #1a274480; }
+    .bg-info-banner\/15 { background-color: #1e4d7b26; }
+    :root {
+        --status-soon-tint: #c8a94a33;
+        --status-lca-tint: #c8a94a33;
+        /* The focus glow at half strength, which the --focus token mixes above: #a1a1a1 is --ring's grey. */
+        --focus: #a1a1a180;
+    }
+}
+
+/* The hover forms sit inside the same media query as Tailwind's own. */
+@media (hover: hover) {
+    @supports not (color: color-mix(in lab, red, red)) {
+        .hover\:border-ink\/30:hover { border-color: #1a27444d; }
+        .hover\:border-ink\/40:hover { border-color: #1a274466; }
+    }
 }
 
 @layer base {

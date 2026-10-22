@@ -55,11 +55,11 @@ export function SectionRulesEditor({ section, onChange }: {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="text-left text-muted-foreground hover:text-lca-navy"
+        className="text-left text-muted-foreground hover:text-ink"
         title="Change who can enter this section"
       >
         {describeRules(rules)}
-        <span className="ml-1.5 text-lca-navy underline underline-offset-2">{open ? 'done' : 'edit'}</span>
+        <span className="ml-1.5 text-ink underline underline-offset-2">{open ? 'done' : 'edit'}</span>
       </button>
       {open && (
         <div className="mt-2 space-y-2 rounded-md border bg-muted/30 p-2.5">
@@ -111,7 +111,7 @@ export function SectionRulesEditor({ section, onChange }: {
             {fromName ? (
               <span>Filled in from the section name.</span>
             ) : (
-              <button type="button" onClick={resetToName} className="text-lca-navy underline underline-offset-2">
+              <button type="button" onClick={resetToName} className="text-ink underline underline-offset-2">
                 Go back to the name's default ({inferred})
               </button>
             )}

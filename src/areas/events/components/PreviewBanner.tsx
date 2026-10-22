@@ -8,7 +8,7 @@ import { EyeOff } from 'lucide-react'
 export function PreviewBanner({ tournamentId, visible }: { tournamentId: string; visible: number | boolean | undefined }) {
   if (visible === undefined || visible === null || Number(visible) === 1 || visible === true) return null
   return (
-    <div className="border-b border-amber-300 bg-amber-50 text-amber-900 print:hidden">
+    <div className="border-b border-warn-300 bg-warn-50 text-warn-900 print:hidden">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-3 gap-y-1 px-6 py-2 text-sm">
         <EyeOff className="size-4 flex-shrink-0" />
         <span><span className="font-semibold">Preview.</span> This event is hidden, so only directors and admins can see this page.</span>

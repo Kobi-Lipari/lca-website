@@ -85,11 +85,11 @@ function StepBar({ current }: { current: WizardStep }) {
         <div key={step.key} className="flex flex-shrink-0 items-center">
           <div className={cn('flex items-center gap-1.5 border-b-2 py-2.5 pr-3 text-[11px] font-medium transition-colors',
             idx < currentIdx ? 'border-transparent text-muted-foreground'
-            : idx === currentIdx ? 'border-lca-gold text-lca-navy'
+            : idx === currentIdx ? 'border-lca-gold text-ink'
             : 'border-transparent text-muted-foreground/50')}>
             <span className={cn('flex size-4 flex-shrink-0 items-center justify-center rounded-full border text-[9px] font-semibold',
-              idx < currentIdx ? 'border-lca-gold bg-lca-gold text-lca-navy'
-              : idx === currentIdx ? 'border-lca-navy bg-lca-navy text-white'
+              idx < currentIdx ? 'border-lca-gold bg-lca-gold text-brand-navy'
+              : idx === currentIdx ? 'border-brand-navy bg-brand-navy text-white'
               : 'border-border text-muted-foreground')}>
               {idx < currentIdx ? <Check className="size-2.5" /> : idx + 1}
             </span>
@@ -108,7 +108,7 @@ function PreviewBanner({ w }: { w: WizardState }) {
   if (!w.name && !w.startDate) return null
   return (
     <div className="mb-4 rounded-lg border border-lca-gold/30 bg-lca-gold/8 p-3">
-      <p className="text-sm font-semibold text-lca-navy">{w.name || 'New tournament'}</p>
+      <p className="text-sm font-semibold text-ink">{w.name || 'New tournament'}</p>
       {(w.startDate || w.location) && (
         <p className="mt-0.5 text-xs text-muted-foreground">
           {w.startDate}{w.location ? ` · ${w.location}` : ''}
@@ -120,7 +120,7 @@ function PreviewBanner({ w }: { w: WizardState }) {
       {w.sections.length > 0 && (
         <div className="mt-1.5 flex flex-wrap gap-1">
           {w.sections.map((s) => (
-            <span key={s.name} className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-2 py-0.5 text-[10px] font-medium text-lca-navy">{s.name}</span>
+            <span key={s.name} className="rounded-full border border-ink/20 bg-ink/7 px-2 py-0.5 text-[10px] font-medium text-ink">{s.name}</span>
           ))}
         </div>
       )}
@@ -135,7 +135,7 @@ function PreviewSidebar({ w }: { w: WizardState }) {
     <div className="hidden lg:block lg:w-52 lg:flex-shrink-0">
       <p className="mb-2 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">Preview</p>
       <div className="overflow-hidden rounded-xl border">
-        <div className="bg-lca-navy px-3 py-2.5">
+        <div className="bg-brand-navy px-3 py-2.5">
           <p className="text-sm font-semibold text-white">{w.name || 'New tournament'}</p>
         </div>
         <div className="space-y-1.5 p-3 text-xs text-muted-foreground">
@@ -145,7 +145,7 @@ function PreviewSidebar({ w }: { w: WizardState }) {
           {w.sections.length > 0 && (
             <div className="flex flex-wrap gap-1 pt-1">
               {w.sections.map((s) => (
-                <span key={s.name} className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-2 py-0.5 text-[10px] font-medium text-lca-navy">{s.name}</span>
+                <span key={s.name} className="rounded-full border border-ink/20 bg-ink/7 px-2 py-0.5 text-[10px] font-medium text-ink">{s.name}</span>
               ))}
             </div>
           )}
@@ -209,13 +209,13 @@ function StepTemplate({ w, set, tournaments, onNext }: {
             className={cn('w-full rounded-xl border p-4 text-left transition-colors',
               w.templateType === type ? 'border-[2px] border-lca-gold bg-lca-gold/4' : 'border-border hover:border-border-strong')}>
             <div className="mb-1.5 flex items-center gap-3">
-              <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-lg bg-lca-navy/8">
-                <Icon className="size-3.5 text-lca-navy" />
+              <div className="flex size-7 flex-shrink-0 items-center justify-center rounded-lg bg-ink/8">
+                <Icon className="size-3.5 text-ink" />
               </div>
               <span className="text-sm font-semibold">{title}</span>
             </div>
             <p className="pl-10 text-xs text-muted-foreground">{desc}</p>
-            {note && <p className="pl-10 mt-1 text-xs italic text-lca-navy">{note}</p>}
+            {note && <p className="pl-10 mt-1 text-xs italic text-ink">{note}</p>}
             {type === 'existing' && w.templateType === 'existing' && (
               <div className="mt-3 pl-10">
                 <select className="w-full rounded-md border bg-background px-3 py-2 text-sm"
@@ -226,7 +226,7 @@ function StepTemplate({ w, set, tournaments, onNext }: {
                 </select>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {['Sections','Time control','Rounds','Custom details'].map((p) => (
-                    <span key={p} className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-2 py-0.5 text-[10px] font-medium text-lca-navy">{p}</span>
+                    <span key={p} className="rounded-full border border-ink/20 bg-ink/7 px-2 py-0.5 text-[10px] font-medium text-ink">{p}</span>
                   ))}
                   {['Name','Date','Round times'].map((p) => (
                     <span key={p} className="rounded-full border border-border bg-muted/30 px-2 py-0.5 text-[10px] text-muted-foreground line-through">{p}</span>
@@ -286,7 +286,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
             {ROUND_OPTIONS.map((n) => (
               <button key={n} type="button" onClick={() => set({ rounds: n })}
                 className={cn('rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors',
-                  w.rounds === n ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground hover:border-lca-navy/40')}>
+                  w.rounds === n ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-ink/40')}>
                 {n}
               </button>
             ))}
@@ -301,7 +301,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
             {TC_PRESETS.map((tc) => (
               <button key={tc} type="button" onClick={() => set({ timeControl: tc, customTimeControl: '' })}
                 className={cn('rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
-                  w.timeControl === tc ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground hover:border-lca-gold')}>
+                  w.timeControl === tc ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground hover:border-lca-gold')}>
                 {tc}
               </button>
             ))}
@@ -317,7 +317,7 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
               {[{ val: true, label: 'USCF Rated' }, { val: false, label: 'Unrated' }].map(({ val, label }) => (
                 <button key={label} type="button" onClick={() => set({ isRated: val })}
                   className={cn('flex-1 rounded-lg border py-2 text-sm font-medium transition-colors',
-                    w.isRated === val ? 'border-lca-navy bg-lca-navy text-white' : 'border-border text-muted-foreground')}>
+                    w.isRated === val ? 'border-brand-navy bg-brand-navy text-white' : 'border-border text-muted-foreground')}>
                   {label}
                 </button>
               ))}
@@ -370,8 +370,8 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
       <div className="flex-1 min-w-0">
         <PreviewBanner w={w} />
         {copiedFrom && (
-          <div className="mb-4 flex items-center gap-2 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-3 py-2 text-xs text-[#7a5c00]">
-            <Copy className="size-3.5 flex-shrink-0 text-lca-gold" />
+          <div className="mb-4 flex items-center gap-2 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-3 py-2 text-xs text-gold-ink-badge">
+            <Copy className="size-3.5 flex-shrink-0 text-gold-ink" />
             Pre-filled from {copiedFrom} · edit freely — the original is unchanged.
           </div>
         )}
@@ -382,7 +382,7 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
               <button key={name} type="button" onClick={() => addPreset(name)}
                 className={cn('rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
                   w.sections.some((s) => s.name === name)
-                    ? 'border-lca-navy bg-lca-navy text-white cursor-default'
+                    ? 'border-brand-navy bg-brand-navy text-white cursor-default'
                     : 'border-border text-muted-foreground hover:border-lca-gold')}>
                 {name}
               </button>
@@ -452,8 +452,8 @@ function StepSchedule({ w, onBack, onNext, onDraft }: {
       <div className="flex-1 min-w-0">
         <PreviewBanner w={w} />
         <div className="rounded-xl border bg-muted/20 p-6 text-center">
-          <Trophy className="mx-auto mb-3 size-8 text-lca-gold" />
-          <h3 className="text-base font-semibold text-lca-navy">Round schedule</h3>
+          <Trophy className="mx-auto mb-3 size-8 text-gold-ink" />
+          <h3 className="text-base font-semibold text-ink">Round schedule</h3>
           <p className="mt-2 text-sm text-muted-foreground">
             Round-by-round dates and times are configured in the tournament management page after creation.
             The auto-fill tool lets you set round 1 and fill the rest automatically.
@@ -479,7 +479,7 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
     <div className="flex gap-6 p-5">
       <div className="flex-1 min-w-0">
         <div className="space-y-4 rounded-xl border bg-card p-5">
-          <h3 className="text-base font-semibold text-lca-navy">{w.name}</h3>
+          <h3 className="text-base font-semibold text-ink">{w.name}</h3>
           <dl className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
             <div><dt className="text-muted-foreground">Date</dt><dd className="font-medium">{w.startDate}{w.endDate ? ` – ${w.endDate}` : ''}</dd></div>
             <div><dt className="text-muted-foreground">Location</dt><dd className="font-medium">{w.location}</dd></div>
@@ -492,7 +492,7 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
             <p className="mb-2 text-sm text-muted-foreground">Sections</p>
             <div className="flex flex-wrap gap-2">
               {w.sections.map((s) => (
-                <span key={s.name} className="rounded-full border border-lca-navy/20 bg-lca-navy/7 px-3 py-1 text-xs font-medium text-lca-navy">
+                <span key={s.name} className="rounded-full border border-ink/20 bg-ink/7 px-3 py-1 text-xs font-medium text-ink">
                   {s.name}{s.entryFee > 0 ? ` · $${s.entryFee}` : ''}
                 </span>
               ))}
@@ -500,7 +500,7 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
           </div>
           {w.description && <div><p className="mb-1 text-sm text-muted-foreground">Description</p><p className="text-sm">{w.description}</p></div>}
         </div>
-        <div className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-4 py-3 text-xs text-[#7a5c00]">
+        <div className="mt-3 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-4 py-3 text-xs text-gold-ink-badge">
           Tournament will be created as a <strong>draft</strong> — hidden from the public until you make it visible in the management page.
         </div>
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
@@ -575,7 +575,7 @@ export function TournamentWizard({ templates, clubs, onCancel }: {
   return (
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <div className="flex items-center justify-between border-b border-border bg-muted/20 px-5 py-3">
-        <p className="text-sm font-semibold text-lca-navy">
+        <p className="text-sm font-semibold text-ink">
           {step === 'template' ? 'Choose a starting point' : WIZARD_STEPS.find((s) => s.key === step)?.label}
         </p>
         <button type="button" onClick={onCancel} aria-label="Close" className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>

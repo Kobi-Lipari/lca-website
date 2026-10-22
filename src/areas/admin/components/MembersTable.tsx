@@ -130,9 +130,9 @@ export function MembersTable({ members, admin }: {
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
-      active: 'bg-emerald-100 text-emerald-800',
+      active: 'bg-ok-100 text-ok',
       expired: 'bg-destructive/10 text-destructive',
-      pending: 'bg-lca-gold/15 text-[#7a5c00]',
+      pending: 'bg-lca-gold/15 text-gold-ink-badge',
     }
     return map[status] ?? 'bg-muted text-muted-foreground'
   }
@@ -166,7 +166,7 @@ export function MembersTable({ members, admin }: {
                 disabled={!!query}
                 className={cn(
                   'rounded-md px-3 py-1 text-xs font-medium capitalize transition-colors',
-                  filter === f ? 'bg-lca-navy text-white' : 'text-muted-foreground hover:text-foreground',
+                  filter === f ? 'bg-brand-navy text-white' : 'text-muted-foreground hover:text-foreground',
                 )}
               >
                 {f === 'active' ? 'Active only' : 'All members'}
@@ -306,7 +306,7 @@ export function MembersTable({ members, admin }: {
                         type="button"
                         onClick={() => admin!.onImpersonate(m)}
                         disabled={m.role === 'lca_admin'}
-                        className="text-muted-foreground transition-colors hover:text-lca-navy disabled:cursor-not-allowed disabled:opacity-30"
+                        className="text-muted-foreground transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-30"
                         title={m.role === 'lca_admin' ? "Can't log in as another admin" : 'Log in as this member'}
                       >
                         <LogIn className="size-4" />

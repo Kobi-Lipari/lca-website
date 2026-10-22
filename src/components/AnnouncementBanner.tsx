@@ -11,11 +11,19 @@ const DISMISS_KEY = 'lca-announcements-dismissed'
  * A new tone needs its pairing checked before it goes in.
  */
 const TONES: Record<string, string> = {
-  gold: 'bg-lca-gold text-lca-navy',
-  navy: 'bg-lca-navy text-white',
+  gold: 'bg-lca-gold text-brand-navy',
+  navy: 'bg-brand-navy text-white',
   urgent: 'bg-[#9b1c1c] text-white',
   info: 'bg-[#1e4d7b] text-white',
 }
+
+/**
+ * The tones on a dark ground that is not a navy band. They carry
+ * data-ground="dark", so under the new look the focus ring on their link and
+ * dismiss button turns gold. The navy tone is a bg-brand-navy box, which the
+ * ring rule already covers, and the gold tone keeps the navy ring.
+ */
+const DARK_GROUND_TONES = new Set(['urgent', 'info'])
 
 const SIZES: Record<string, string> = {
   default: 'px-4 py-2 text-sm',
@@ -65,6 +73,7 @@ export function AnnouncementBanner() {
             TONES[a.tone] ?? TONES.gold,
             SIZES[a.size] ?? SIZES.default,
           )}
+          data-ground={DARK_GROUND_TONES.has(a.tone) ? 'dark' : undefined}
         >
           <span>
             {a.message}

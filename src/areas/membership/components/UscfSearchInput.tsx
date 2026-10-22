@@ -70,8 +70,8 @@ function PlayerCard({
       className={cn(
         'w-full text-left px-4 py-3 border rounded-lg transition-colors',
         selected
-          ? 'border-lca-navy bg-lca-navy/5'
-          : 'border-border hover:border-lca-navy/40 hover:bg-muted/40',
+          ? 'border-ink bg-ink/5'
+          : 'border-border hover:border-ink/40 hover:bg-muted/40',
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -79,7 +79,7 @@ function PlayerCard({
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium text-sm">{player.fullName}</span>
             {selected && (
-              <CheckCircle className="h-3.5 w-3.5 text-green-600 shrink-0" />
+              <CheckCircle className="h-3.5 w-3.5 text-ok-green-600 shrink-0" />
             )}
           </div>
           <div className="flex items-center gap-3 mt-1 flex-wrap">
@@ -125,8 +125,8 @@ function PlayerCard({
               className={cn(
                 'text-xs mt-1',
                 player.status === 'Active'
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-red-100 text-red-800',
+                  ? 'bg-ok-green-100 text-ok-green-800'
+                  : 'bg-bad-100 text-bad-800',
               )}
             >
               {player.status}
@@ -286,7 +286,7 @@ export default function UscfSearchInput({
             className={cn(
               'px-2 py-1 rounded transition-colors',
               mode === 'id'
-                ? 'bg-lca-navy text-white'
+                ? 'bg-brand-navy text-white'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >
@@ -298,7 +298,7 @@ export default function UscfSearchInput({
             className={cn(
               'px-2 py-1 rounded transition-colors',
               mode === 'name'
-                ? 'bg-lca-navy text-white'
+                ? 'bg-brand-navy text-white'
                 : 'text-muted-foreground hover:text-foreground',
             )}
           >
@@ -325,7 +325,7 @@ export default function UscfSearchInput({
               if (!/^\d{4,}$/.test(next.trim())) reset()
             }}
             className={cn(
-              status === 'selected' && 'border-green-500',
+              status === 'selected' && 'border-ok-green-500',
               status === 'not_found' && 'border-destructive',
             )}
           />
@@ -422,13 +422,13 @@ export default function UscfSearchInput({
 
       {/* Selected confirmation */}
       {status === 'selected' && selectedPlayer && (
-        <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-          <div className="flex items-center gap-2 text-green-800 text-sm font-medium">
+        <div className="rounded-lg border border-ok-green-200 bg-ok-green-50 p-3">
+          <div className="flex items-center gap-2 text-ok-green-800 text-sm font-medium">
             <CheckCircle className="h-4 w-4" />
             {selectedPlayer.fullName}{' '}
             <span className="font-mono text-xs">#{selectedPlayer.uscfId}</span>
             {selectedPlayer.rating && (
-              <span className="font-normal text-green-700">
+              <span className="font-normal text-ok-green-700">
                 · {selectedPlayer.rating}
               </span>
             )}
@@ -436,7 +436,7 @@ export default function UscfSearchInput({
           <button
             type="button"
             onClick={handleClear}
-            className="text-xs text-green-700 underline mt-1"
+            className="text-xs text-ok-green-700 underline mt-1"
           >
             Change
           </button>

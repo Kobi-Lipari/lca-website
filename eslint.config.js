@@ -59,8 +59,19 @@ const pageFetchMessage = "Pages call the area api modules (such as '@/areas/even
 
 export default defineConfig([
   // The lint fixtures break the domain/ and src/areas rules on purpose; their
-  // tests lint them.
-  globalIgnores(['dist', '.claude', 'test/unit/fixtures/lint']),
+  // tests lint them. The rest are build and test output: the accessibility
+  // test builds, wrangler's local state and bundles (.wrangler), and the
+  // Playwright results and report.
+  globalIgnores([
+    'dist',
+    '.claude',
+    'test/unit/fixtures/lint',
+    'dist-a11y-on',
+    'dist-a11y-off',
+    '.wrangler',
+    'test-results',
+    'playwright-report',
+  ]),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

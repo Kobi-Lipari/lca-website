@@ -101,7 +101,7 @@ export function DirectorsModal({ tournament, onClose }: {
       <div className="w-full max-w-md rounded-t-2xl border bg-background p-6 shadow-lg sm:rounded-xl">
         <div className="mx-auto mb-4 h-1 w-9 rounded-full bg-border sm:hidden" />
         <div className="mb-1 flex items-start justify-between">
-          <h3 className="text-base font-semibold text-lca-navy">Tournament directors</h3>
+          <h3 className="text-base font-semibold text-ink">Tournament directors</h3>
           <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="size-4" /></button>
         </div>
         <p className="mb-5 text-sm text-muted-foreground">

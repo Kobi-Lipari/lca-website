@@ -18,6 +18,8 @@ import { Crosstable } from '@/areas/live/components/Crosstable'
 import { PrizeWinners } from '@/areas/events/components/PrizeWinners'
 import { getTournament, type ApiPrizeAward, type ApiStanding, type ApiTournamentDetail, type ApiTournamentPairing } from '@/lib/api'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { FEATURES } from '@/lib/features'
+import { formatScore } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 type What = 'pairings' | 'alpha' | 'standings' | 'crosstable'
@@ -30,7 +32,12 @@ const pts = (result: string, side: 'w' | 'b'): number => {
   if (result.startsWith('0-1')) return side === 'w' ? 0 : 1
   return 0
 }
-const fmt = (n: number) => (n % 1 === 0 ? String(n) : n.toFixed(1).replace('.5', '½').replace('0½', '½'))
+// The score going into the round. Under the new look it is formatScore's, the
+// one writer of scores. Today's own formatter, kept with newLook off, writes ½
+// for a half but misprints a half score of 10 or more whose whole part ends in
+// 0: its last replace also takes the 0 of the 10, so 10.5 prints as 1½, 20.5
+// as 2½ and 100.5 as 10½ (REDESIGN_STATUS.md, Follow-ups, step 27).
+const fmt = (n: number) => (FEATURES.newLook ? formatScore(n) : n % 1 === 0 ? String(n) : n.toFixed(1).replace('.5', '½').replace('0½', '½'))
 
 export function TournamentPrintPage() {
   const { id } = useParams<{ id: string }>()
@@ -101,12 +108,12 @@ export function TournamentPrintPage() {
             <tr key={p.id} className="border-b border-gray-300">
               <td className="py-1.5 pr-2 font-bold tabular-nums">{p.board}</td>
               <td className="py-1.5 pr-2">
-                {p.white_name} <span className="text-gray-600">({p.white_rating ?? 'unr'}) {fmt(scoreBefore.get(p.white_member_id ?? '') ?? 0)}</span>
+                {p.white_name} <span className="text-quiet-600">({p.white_rating ?? 'unr'}) {fmt(scoreBefore.get(p.white_member_id ?? '') ?? 0)}</span>
               </td>
               <td className="py-1.5 text-center">{p.black_member_id ? (p.result === 'pending' ? '' : p.result.replace('1/2-1/2', '½-½')) : ''}</td>
               <td className={cn('py-1.5 pl-2', !p.black_member_id && 'italic')}>
                 {p.black_member_id
-                  ? <>{p.black_name} <span className="text-gray-600">({p.black_rating ?? 'unr'}) {fmt(scoreBefore.get(p.black_member_id) ?? 0)}</span></>
+                  ? <>{p.black_name} <span className="text-quiet-600">({p.black_rating ?? 'unr'}) {fmt(scoreBefore.get(p.black_member_id) ?? 0)}</span></>
                   : p.result === 'bye-half' ? 'Half-point bye' : 'Bye'}
               </td>
             </tr>
@@ -119,7 +126,7 @@ export function TournamentPrintPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-8 print:max-w-none print:px-0 print:py-0 print:text-black">
       {!tournament.is_visible && (
-        <p className="mb-4 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900 print:hidden">
+        <p className="mb-4 rounded-md border border-warn-300 bg-warn-50 px-3 py-2 text-sm text-warn-900 print:hidden">
           Preview: this event is hidden from the public. Printing works as normal.
         </p>
       )}

@@ -1,7 +1,9 @@
 // src/pages/BylawsPage.tsx
 import { GovLayout } from '@/areas/governance/components/GovLayout'
 import { GovernanceDocuments } from '@/areas/governance/components/GovernanceDocuments'
+import { ThickThinRule } from '@/components/ThickThinRule'
 import { useAuth } from '@/contexts/auth-context'
+import { useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { canEditGovernance } from '@/areas/admin/roles'
 
@@ -10,6 +12,8 @@ export function BylawsPage() {
   const { role } = useAuth()
   // Admins, the LCA Observer and LCA Officers manage these documents.
   const isAdmin = canEditGovernance(role)
+  // In the heritage layout, under the new look, a thick-thin rule parts each list of documents from the next, and from the rules.
+  const ornaments = useHeritageOrnaments()
 
   return (
     <GovLayout
@@ -18,26 +22,29 @@ export function BylawsPage() {
     >
       <div className="space-y-8">
         <GovernanceDocuments category="amendments" title="Proposed amendments" isAdmin={isAdmin} layout="preview" />
+        {ornaments && <ThickThinRule />}
         <GovernanceDocuments category="bylaws" title="Bylaws documents" isAdmin={isAdmin} layout="preview" />
+        {ornaments && <ThickThinRule />}
         {/* RulesPage was retired; its document category lives on here so the
             board can still publish rules/policy documents when they exist. */}
         <GovernanceDocuments category="rules" title="Rules & policy documents" isAdmin={isAdmin} layout="preview" />
+        {ornaments && <ThickThinRule />}
 
         <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
           <div>
-            <h2 className="mb-2 text-base font-bold text-lca-navy">Tournament rules</h2>
+            <h2 className="mb-2 text-base font-bold text-ink">Tournament rules</h2>
             <p>All LCA-sanctioned tournaments are conducted under USCF Official Rules of Chess. Specific time controls, pairing systems, and tiebreak methods are listed on each tournament's detail page.</p>
           </div>
           <div>
-            <h2 className="mb-2 text-base font-bold text-lca-navy">Electronic devices</h2>
+            <h2 className="mb-2 text-base font-bold text-ink">Electronic devices</h2>
             <p>Electronic devices capable of chess analysis must be turned off and stored out of reach during play. Violation may result in forfeiture of the game.</p>
           </div>
           <div>
-            <h2 className="mb-2 text-base font-bold text-lca-navy">Code of conduct</h2>
+            <h2 className="mb-2 text-base font-bold text-ink">Code of conduct</h2>
             <p>All participants are expected to behave respectfully toward opponents, directors, and spectators. Unsportsmanlike conduct may result in removal from the tournament without refund.</p>
           </div>
           <div>
-            <h2 className="mb-2 text-base font-bold text-lca-navy">Appeals</h2>
+            <h2 className="mb-2 text-base font-bold text-ink">Appeals</h2>
             <p>Rulings by the tournament director may be appealed to the appeals committee. Appeals must be submitted in writing within 30 minutes of the disputed ruling.</p>
           </div>
         </div>

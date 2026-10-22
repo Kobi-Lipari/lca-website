@@ -12,7 +12,9 @@
 import { useEffect, useState } from 'react'
 import { Calendar, Clock, ExternalLink, Phone, Video } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
+import { ThickThinRule } from '@/components/ThickThinRule'
 import { Button } from '@/components/ui/button'
+import { useHeritageHook, useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { GOLD_BUTTON } from '@/lib/brand'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
@@ -101,6 +103,10 @@ function useCountdown(target: Date) {
 export function AnnualMeetingPage() {
   usePageTitle('Annual Business Meeting')
   const countdown = useCountdown(MEETING_START)
+  // In the heritage layout the card takes the look's card hook, and under
+  // the new look a thick-thin rule opens the page under its heading band.
+  const ornaments = useHeritageOrnaments()
+  const hook = useHeritageHook()
 
   return (
     <div>
@@ -126,11 +132,12 @@ export function AnnualMeetingPage() {
       />
 
       <section className="mx-auto max-w-3xl px-6 py-8">
+        {ornaments && <ThickThinRule className="mb-6" />}
         {/* ── Join ── */}
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
+        <div data-heritage={hook('card')} className="rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
-            <Video className="size-5 text-lca-gold" />
-            <h2 className="text-lg font-semibold text-lca-navy">Join the meeting</h2>
+            <Video className="size-5 text-gold-ink" />
+            <h2 className="text-lg font-semibold text-ink">Join the meeting</h2>
           </div>
 
           <p className="mt-2 text-sm text-muted-foreground">
@@ -162,7 +169,7 @@ export function AnnualMeetingPage() {
               </h3>
               <p className="mt-1.5 text-sm text-muted-foreground">
                 Open the Zoom app and choose{' '}
-                <strong className="text-lca-navy">Join a Meeting</strong>.
+                <strong className="text-ink">Join a Meeting</strong>.
               </p>
             </div>
 
@@ -175,7 +182,7 @@ export function AnnualMeetingPage() {
                 <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   Meeting ID
                 </h3>
-                <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-ink select-all">
                   {MEETING_ID}
                 </p>
               </div>
@@ -183,7 +190,7 @@ export function AnnualMeetingPage() {
                 <h3 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   Passcode
                 </h3>
-                <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-lca-navy select-all">
+                <p className="mt-1.5 font-mono text-base font-medium tabular-nums text-ink select-all">
                   {MEETING_PASSCODE}
                 </p>
               </div>
@@ -191,12 +198,12 @@ export function AnnualMeetingPage() {
 
             <div>
               <h3 className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                <Phone className="size-3.5 text-lca-gold" />
+                <Phone className="size-3.5 text-gold-ink" />
                 Join by phone
               </h3>
               <a
                 href={`tel:${DIAL_IN.tel}`}
-                className="mt-1.5 block font-mono text-base font-medium tabular-nums text-lca-navy hover:underline select-all"
+                className="mt-1.5 block font-mono text-base font-medium tabular-nums text-ink hover:underline select-all"
               >
                 {DIAL_IN.display}
               </a>
@@ -223,8 +230,8 @@ export function AnnualMeetingPage() {
 
         <div className="mt-5 rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
-            <FileText className="size-5 text-lca-gold" />
-            <h2 className="text-lg font-semibold text-lca-navy">Agenda</h2>
+            <FileText className="size-5 text-gold-ink" />
+            <h2 className="text-lg font-semibold text-ink">Agenda</h2>
           </div>
           {AGENDA.length === 0 ? (
             <p className="mt-2 text-sm text-muted-foreground">
@@ -237,7 +244,7 @@ export function AnnualMeetingPage() {
                   <span className="font-mono text-xs tabular-nums text-muted-foreground">
                     {String(i + 1).padStart(2, '0')}
                   </span>
-                  <span className="text-lca-navy">{item}</span>
+                  <span className="text-ink">{item}</span>
                 </li>
               ))}
             </ol>

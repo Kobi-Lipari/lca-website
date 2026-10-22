@@ -14,7 +14,8 @@ import { createBatchRegistration, getMyChildren, type ApiChild, type ApiTourname
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { effectiveRules, eligibilityProblem, needsGrade } from '@/lib/sectionRules'
-import { confirmedRange, GradeConfirm, NO_TICKS, type GradeTicks } from '@/areas/events/components/GradeConfirm'
+import { GradeConfirm } from '@/areas/events/components/GradeConfirm'
+import { confirmedRange, NO_TICKS, type GradeTicks } from '@/areas/events'
 import { priceShownSection } from '@/lib/pricing'
 import { useNow } from '@/hooks/useNow'
 
@@ -133,14 +134,14 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
   return (
     <div className="mt-6 border-t pt-5">
       <div className="flex items-center gap-2">
-        <Users className="size-4 text-lca-gold" />
-        <p className="text-sm font-semibold text-lca-navy">Register your family</p>
+        <Users className="size-4 text-gold-ink" />
+        <p className="text-sm font-semibold text-ink">Register your family</p>
       </div>
 
       {entered.length > 0 && (
         <ul className="mt-3 space-y-1.5">
           {entered.map((c) => (
-            <li key={c.id} className="flex items-center gap-2 text-sm text-emerald-800">
+            <li key={c.id} className="flex items-center gap-2 text-sm text-ok">
               <CheckCircle2 className="size-4 flex-shrink-0" />
               <span className="truncate">
                 {c.full_name} · {c.registration!.section}
@@ -152,7 +153,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
       )}
 
       {done && (
-        <p className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">{done.message}</p>
+        <p className="mt-3 rounded-lg border border-ok-200 bg-ok-50 p-3 text-sm text-ok">{done.message}</p>
       )}
 
       {players.length === 0 ? (
@@ -162,9 +163,9 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
           {players.map((p) => {
             const c = choiceOf(p)
             return (
-              <div key={keyOf(p)} className={cn('rounded-lg border p-3', c.selected && 'border-lca-navy/40 bg-lca-navy/[0.03]')}>
+              <div key={keyOf(p)} className={cn('rounded-lg border p-3', c.selected && 'border-ink/40 bg-ink/[0.03]')}>
                 <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
-                  <input type="checkbox" className="size-4 accent-[#1a2744]" checked={c.selected}
+                  <input type="checkbox" className="size-4 accent-ink" checked={c.selected}
                     onChange={(e) => setChoice(p, { selected: e.target.checked })} />
                   <span className="truncate">{p.name}</span>
                 </label>
@@ -186,7 +187,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
                       compact
                     />
                     {problemOf(p) && (
-                      <p className="text-xs text-amber-800">{problemOf(p)}</p>
+                      <p className="text-xs text-warn-800">{problemOf(p)}</p>
                     )}
                     {maxByes > 0 && (
                       <div className="flex flex-wrap items-center gap-1">
@@ -195,12 +196,12 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
                           const on = c.byes.includes(round)
                           const blocked = !on && c.byes.length >= maxByes
                           return (
-                            <button key={round} type="button" disabled={blocked}
+                            <button key={round} type="button" aria-pressed={on} disabled={blocked}
                               onClick={() => setChoice(p, { byes: on ? c.byes.filter((r) => r !== round) : [...c.byes, round].sort((a, b) => a - b) })}
                               className={cn('rounded-full border px-2 py-0.5 text-[11px] font-medium',
-                                on ? 'border-lca-navy bg-lca-navy text-white'
+                                on ? 'border-brand-navy bg-brand-navy text-white'
                                   : blocked ? 'cursor-not-allowed border-border text-muted-foreground/40'
-                                  : 'border-border text-muted-foreground hover:border-lca-navy/40')}>
+                                  : 'border-border text-muted-foreground hover:border-ink/40')}>
                               {round}
                             </button>
                           )
