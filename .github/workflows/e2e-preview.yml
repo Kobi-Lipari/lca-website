@@ -1,0 +1,159 @@
+name: End-to-end tests on a branch preview
+
+# Runs test/e2e (npm run test:e2e) against one branch preview deployment.
+# Only ever started by hand, from the Actions tab ("Run workflow"), on the
+# branch whose preview is being tested: it has no push, pull_request or
+# schedule trigger, because a preview shares the sign-in service with the
+# live site and must be checked before anything runs against it.
+#
+# The person starting it gives the preview's address and ticks each
+# precondition below. The first job stops the run, before anything is
+# installed, unless every box is ticked and the address is not the live site
+# or a single deployment's own address (playwright.config.ts refuses both as
+# well).
+#
+# Test logins come from repository secrets: E2E_GUARDIAN_EMAIL,
+# E2E_GUARDIAN_PASSWORD, E2E_DIRECTOR_EMAIL and E2E_DIRECTOR_PASSWORD. They
+# must be test accounts, never anyone's own.
+#
+# Until WS06's household checkout and WS07's round publishing ship, both
+# specs are marked fixme, so a run reports them as skipped.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "The branch preview's address, such as https://my-branch.lca-website.pages.dev (never the live site)"
+        required: true
+        type: string
+      preview_database:
+        description: "wrangler.toml's [env.preview] holds the preview database id (lca-db-preview), not production's"
+        required: true
+        type: boolean
+        default: false
+      migrated_and_seeded:
+        description: 'The preview database is migrated (npm run db:migrate:preview) and seeded (npm run db:seed:preview) from this branch'
+        required: true
+        type: boolean
+        default: false
+      stripe_test_keys:
+        description: "The preview's Pages environment holds Stripe test keys, not live ones"
+        required: true
+        type: boolean
+        default: false
+      household_checkout_shipped:
+        description: "WS06's household checkout has shipped on this branch, with its switch on"
+        required: true
+        type: boolean
+        default: false
+      round_publishing_shipped:
+        description: "WS07's round publishing (and WS08's TD console) has shipped on this branch, with its switches on"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: e2e-preview
+  cancel-in-progress: false
+
+jobs:
+  preconditions:
+    name: Check the preconditions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop unless every precondition is confirmed
+        env:
+          BASE_URL: ${{ inputs.base_url }}
+          PREVIEW_DATABASE: ${{ inputs.preview_database }}
+          MIGRATED_AND_SEEDED: ${{ inputs.migrated_and_seeded }}
+          STRIPE_TEST_KEYS: ${{ inputs.stripe_test_keys }}
+          HOUSEHOLD_CHECKOUT: ${{ inputs.household_checkout_shipped }}
+          ROUND_PUBLISHING: ${{ inputs.round_publishing_shipped }}
+        run: |
+          missing=0
+          check() {
+            if [ "$1" != "true" ]; then
+              echo "::error::Not confirmed: $2"
+              missing=1
+            fi
+          }
+          check "$PREVIEW_DATABASE" "the preview database id is in [env.preview]"
+          check "$MIGRATED_AND_SEEDED" "the preview database is migrated and seeded from this branch"
+          check "$STRIPE_TEST_KEYS" "the preview holds Stripe test keys, not live ones"
+          check "$HOUSEHOLD_CHECKOUT" "WS06's household checkout has shipped"
+          check "$ROUND_PUBLISHING" "WS07's round publishing has shipped"
+
+          # The host as the URL parser reads it (the runner's own node, nothing
+          # installed), so every spelling playwright.config.ts folds to the
+          # live site is caught here too. An address with no scheme is read
+          # as https://. Empty when it is not an http or https address.
+          host=$(node -e '
+            const raw = process.argv[1].trim()
+            let url
+            try { url = new URL(raw) } catch {
+              if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) process.exit(0)
+              try { url = new URL("https://" + raw) } catch { process.exit(0) }
+            }
+            if (url.protocol !== "https:" && url.protocol !== "http:") process.exit(0)
+            process.stdout.write(url.hostname.toLowerCase().replace(/\.+$/, ""))
+          ' -- "$BASE_URL")
+          case "$host" in
+            "")
+              echo "::error::No preview address was given, or it is not a web address."
+              missing=1 ;;
+            louisianachess.org|*.louisianachess.org|lca-website.pages.dev|main.lca-website.pages.dev)
+              echo "::error::$host is the live site. These tests run only against a branch preview."
+              missing=1 ;;
+            # A deployment's own address; a production deployment's runs on
+            # production data.
+            [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].lca-website.pages.dev)
+              echo "::error::$host is a single deployment's address, which may be production. Use the branch preview address."
+              missing=1 ;;
+          esac
+
+          if [ "$missing" -ne 0 ]; then
+            echo "Stopped: nothing was run against the preview."
+            exit 1
+          fi
+          echo "Every precondition is confirmed for $host."
+
+  e2e:
+    name: Playwright against the preview
+    needs: preconditions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: npm run test:e2e
+        env:
+          E2E_BASE_URL: ${{ inputs.base_url }}
+          E2E_GUARDIAN_EMAIL: ${{ secrets.E2E_GUARDIAN_EMAIL }}
+          E2E_GUARDIAN_PASSWORD: ${{ secrets.E2E_GUARDIAN_PASSWORD }}
+          E2E_DIRECTOR_EMAIL: ${{ secrets.E2E_DIRECTOR_EMAIL }}
+          E2E_DIRECTOR_PASSWORD: ${{ secrets.E2E_DIRECTOR_PASSWORD }}
+
+      # Kept only when a test fails, and without playwright-report/data,
+      # where attachments would sit.
+      - name: Keep the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-playwright-report
+          path: |
+            playwright-report/
+            !playwright-report/data/
+          retention-days: 14

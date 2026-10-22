@@ -1,5 +1,8 @@
 // test/integration/factories.ts
 import { env } from 'cloudflare:test'
+import { getDb } from '../../functions/db/client'
+import { saveSections } from '../../functions/utils/events/sectionsRepo'
+import { normalizeLegacySections } from '../../domain/events/sections'
 
 let seq = 0
 const nextId = (prefix: string) => `${prefix}-${++seq}-${Date.now().toString(36)}`
@@ -60,6 +63,12 @@ export interface SeedTournamentOptions {
   clubId?: string | null
 }
 
+/**
+ * A tournament, with its sections written the way the admin endpoints write
+ * them: the row first, then the one section writer (sectionsRepo), which
+ * adds the section rows and the legacy JSON together. Plain string sections
+ * are taken as names.
+ */
 export async function seedTournament(opts: SeedTournamentOptions = {}): Promise<string> {
   const id = opts.id ?? nextId('tour')
   const sections = opts.sections ?? [
@@ -68,16 +77,15 @@ export async function seedTournament(opts: SeedTournamentOptions = {}): Promise<
   ]
   await env.DB.prepare(
     `INSERT INTO tournaments
-       (id, name, location, date, entry_fee, sections, rounds, max_players,
+       (id, name, location, date, entry_fee, rounds, max_players,
         status, registration_status, registration_closes_at, is_rated, is_visible, club_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).bind(
     id,
     opts.name ?? `Tournament ${id}`,
     'Kenner, LA',
     opts.date ?? '2026-09-12',
     opts.entryFee ?? 25,
-    JSON.stringify(sections),
     opts.rounds ?? 4,
     opts.maxPlayers ?? null,
     opts.status ?? 'upcoming',
@@ -87,6 +95,8 @@ export async function seedTournament(opts: SeedTournamentOptions = {}): Promise<
     opts.isVisible === false ? 0 : 1,
     opts.clubId ?? null,
   ).run()
+  const saved = await saveSections(getDb(env.DB), id, normalizeLegacySections(sections), { reportSettings: null })
+  if (!saved.ok) throw new Error(`seedTournament: ${saved.error}`)
   return id
 }
 

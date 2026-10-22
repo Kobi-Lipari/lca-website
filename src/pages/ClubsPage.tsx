@@ -5,11 +5,13 @@ import { Calendar, LocateFixed, MapPin, Search, X } from 'lucide-react'
 
 import { getClubs, type ApiClubListItem } from '@/lib/api'
 import { PageHero } from '@/components/PageHero'
-import { clubColorTint } from '@/lib/clubColors'
+import { clubColorTint, clubTextColor, clubTextOnDark } from '@/areas/clubs/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
-import { LCAMap, clubLocation, directionsUrl } from '@/components/maps/LCAMap'
+import { LCAMap } from '@/areas/clubs/components/LCAMap'
+import { clubLocation, directionsUrl } from '@/areas/clubs/clubMap'
 import { LCA } from '@/lib/brand'
+import { FEATURES } from '@/lib/features'
 import { REGIONS } from '@/lib/regions'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -69,7 +71,7 @@ function ClubLogoPanel({ club }: { club: ApiClubListItem }) {
           className="flex aspect-square w-full items-center justify-center rounded-lg ring-1 ring-black/5"
           style={{ backgroundColor: clubColorTint(color, 0.16) }}
         >
-          <span aria-hidden="true" className="select-none text-2xl font-bold tracking-tight" style={{ color }}>
+          <span aria-hidden="true" className={cn('select-none text-2xl font-bold tracking-tight', clubTextOnDark(club.color))} style={{ color: clubTextColor(club.color) }}>
             {clubInitials(club.name)}
           </span>
         </div>
@@ -105,24 +107,30 @@ function ClubCard({
 }) {
   const color = club.color || LCA_GOLD
   const pin = clubLocation(club)
+  // With newLook off the card is a button, as it always was. Under the new
+  // look it is not, because it holds the club's two links and a control may
+  // not hold another (axe's nested-interactive): the club's name is the
+  // button that shows the club on the map, and a click anywhere else on the
+  // card still does, since the name's click reaches the card's own.
+  const cardIsButton = !FEATURES.newLook
 
   return (
     <div
       ref={cardRef}
-      role="button"
-      tabIndex={0}
-      aria-pressed={selected}
-      aria-label={`Show ${club.name} on the map`}
+      role={cardIsButton ? 'button' : undefined}
+      tabIndex={cardIsButton ? 0 : undefined}
+      aria-pressed={cardIsButton ? selected : undefined}
+      aria-label={cardIsButton ? `Show ${club.name} on the map` : undefined}
       onClick={onSelect}
-      onKeyDown={(e) => {
+      onKeyDown={cardIsButton ? (e) => {
         if (e.target !== e.currentTarget) return
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect() }
-      }}
+      } : undefined}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
       className={cn(
         'group relative flex cursor-pointer overflow-hidden rounded-xl border bg-card text-left shadow-sm outline-none transition-all',
-        'hover:border-lca-navy/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-lca-gold',
+        'hover:border-ink/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-lca-gold',
         selected && 'shadow-md ring-2',
       )}
       style={selected ? ({ borderColor: color, backgroundColor: clubColorTint(color, 0.06), '--tw-ring-color': clubColorTint(color, 0.45) } as CSSProperties) : undefined}
@@ -130,7 +138,13 @@ function ClubCard({
       <ClubLogoPanel club={club} />
       <div className="min-w-0 flex-1 p-3.5">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-semibold leading-snug text-lca-navy">{club.name}</p>
+          {cardIsButton ? (
+            <p className="text-sm font-semibold leading-snug text-ink">{club.name}</p>
+          ) : (
+            <button type="button" aria-pressed={selected} aria-label={`Show ${club.name} on the map`} className="cursor-pointer text-left text-sm font-semibold leading-snug text-ink">
+              {club.name}
+            </button>
+          )}
           {distance != null && (
             <span className="flex-shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
               {distance < 10 ? distance.toFixed(1) : Math.round(distance)} mi
@@ -139,14 +153,14 @@ function ClubCard({
         </div>
         <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
           <p className="flex items-center gap-1.5">
-            <MapPin className="size-3 flex-shrink-0 text-lca-gold" />
+            <MapPin className="size-3 flex-shrink-0 text-gold-ink" />
             <span className="truncate">
               {club.city}, LA{club.region ? ` · ${club.region}` : ''}
             </span>
           </p>
           {club.meeting_schedule && (
             <p className="flex items-center gap-1.5">
-              <Calendar className="size-3 flex-shrink-0 text-lca-gold" />
+              <Calendar className="size-3 flex-shrink-0 text-gold-ink" />
               <span className="truncate">{club.meeting_schedule}</span>
             </p>
           )}
@@ -155,7 +169,7 @@ function ClubCard({
           <Link
             to={`/clubs/${club.id}`}
             onClick={(e) => e.stopPropagation()}
-            className="rounded-md bg-lca-gold px-3 py-1.5 text-xs font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90"
+            className="rounded-md bg-lca-gold px-3 py-1.5 text-xs font-semibold text-brand-navy transition-colors hover:bg-lca-gold/90"
           >
             Visit club
           </Link>
@@ -165,7 +179,7 @@ function ClubCard({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-lca-navy transition-colors hover:border-lca-navy/40"
+              className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-ink/40"
             >
               Directions ↗
             </a>
@@ -321,7 +335,7 @@ export function ClubsPage() {
                 className={cn(
                   'flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                   activeRegion === null
-                    ? 'border-lca-navy bg-lca-navy text-white'
+                    ? 'border-brand-navy bg-brand-navy text-white'
                     : 'border-border bg-card text-muted-foreground hover:border-lca-gold/60 hover:text-foreground',
                 )}
               >
@@ -336,7 +350,7 @@ export function ClubsPage() {
                   className={cn(
                     'flex-shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs font-medium transition-colors',
                     activeRegion === r
-                      ? 'border-lca-navy bg-lca-navy text-white'
+                      ? 'border-brand-navy bg-brand-navy text-white'
                       : 'border-border bg-card text-muted-foreground hover:border-lca-gold/60 hover:text-foreground',
                   )}
                 >
@@ -404,7 +418,7 @@ export function ClubsPage() {
             <div className="lg:order-1">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <h2 className="text-base font-bold text-lca-navy">
+                  <h2 className="text-base font-bold text-ink">
                     {displayedClubs.length} {displayedClubs.length === 1 ? 'club' : 'clubs'}
                     {activeRegion && <span className="font-normal text-muted-foreground"> in {activeRegion}</span>}
                   </h2>
@@ -432,8 +446,8 @@ export function ClubsPage() {
                   className={cn(
                     'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-60',
                     userLocation
-                      ? 'border-lca-navy bg-lca-navy text-white'
-                      : 'border-border bg-card text-lca-navy hover:border-lca-navy/40',
+                      ? 'border-brand-navy bg-brand-navy text-white'
+                      : 'border-border bg-card text-ink hover:border-ink/40',
                   )}
                 >
                   <LocateFixed className="size-3.5" />
@@ -444,7 +458,7 @@ export function ClubsPage() {
 
               {displayedClubs.length === 0 ? (
                 <div className="rounded-xl border border-dashed px-6 py-10 text-center">
-                  <p className="font-medium text-lca-navy">
+                  <p className="font-medium text-ink">
                     {isSearching ? 'No clubs match your search' : 'No clubs in this region yet'}
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -477,7 +491,7 @@ export function ClubsPage() {
       </section>
 
       {/* ── Footer CTA ── */}
-      <section className="border-t border-border bg-lca-navy">
+      <section className="border-t border-border bg-brand-navy">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -492,7 +506,7 @@ export function ClubsPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-shrink-0">
               <Link
                 to="/contact"
-                className="rounded-lg bg-lca-gold px-5 py-2.5 text-center text-sm font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90"
+                className="rounded-lg bg-lca-gold px-5 py-2.5 text-center text-sm font-semibold text-brand-navy transition-colors hover:bg-lca-gold/90"
               >
                 Contact LCA
               </Link>

@@ -15,11 +15,11 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/auth-context'
-import UscfSearchInput, { type UscfPlayerResult } from '@/components/uscf/UscfSearchInput'
+import UscfSearchInput, { type UscfPlayerResult } from '@/areas/membership/components/UscfSearchInput'
 import { cn } from '@/lib/utils'
 
 const goldButtonClass =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 export function RegisterPage() {
   const { user, loading, signUp, syncMember } = useAuth()
@@ -100,7 +100,7 @@ export function RegisterPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
             <UserPlus className="size-8 text-lca-gold sm:size-10" />
@@ -121,7 +121,7 @@ export function RegisterPage() {
         <div className="mx-auto max-w-md">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-lca-navy">
+              <CardTitle className="text-xl text-ink">
                 Member Registration
               </CardTitle>
               <CardDescription>
@@ -138,13 +138,13 @@ export function RegisterPage() {
                   </p>
                 )}
                 {success && (
-                  <p className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                  <p className="rounded-lg border border-ok-200 bg-ok-50 px-3 py-2 text-sm text-ok">
                     {success}
                   </p>
                 )}
                 {existingEmail && (
                   <div className="rounded-lg border border-lca-gold/50 bg-lca-gold/10 px-3 py-3 text-sm">
-                    <p className="font-medium text-lca-navy">
+                    <p className="font-medium text-ink">
                       You already have an account
                     </p>
                     <p className="mt-1 text-muted-foreground">
@@ -244,7 +244,7 @@ export function RegisterPage() {
                   Already have an account?{' '}
                   <Link
                     to="/login"
-                    className="font-medium text-lca-navy hover:underline"
+                    className="font-medium text-ink hover:underline"
                   >
                     Log in
                   </Link>

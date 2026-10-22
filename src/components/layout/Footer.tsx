@@ -1,7 +1,10 @@
 // src/components/layout/Footer.tsx
 import { Link } from 'react-router-dom'
+import { AppearanceControl } from '@/components/AppearanceControl'
+import { LcaLogo } from '@/components/LcaLogo'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import lcaLogo from '@/assets/lca-logo.webp'
+import { FEATURES } from '@/lib/features'
 
 // Every link points somewhere DISTINCT. When pages grow filters/anchors
 // (e.g. /tournaments?filter=past), add richer links back then — no fake
@@ -47,17 +50,16 @@ const footerSections = [
 export function Footer() {
   const year = new Date().getFullYear()
   return (
-    <footer className="border-t-[3px] border-lca-gold bg-lca-navy text-white print:hidden">
+    <footer className="border-t-[3px] border-lca-gold bg-brand-navy text-white print:hidden">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr] lg:gap-16">
           {/* Brand column — identity, social, and actions as one anchored block */}
           <div>
             <div className="flex items-center gap-3.5">
-              <img
-                src={lcaLogo}
-                alt="Louisiana Chess Association"
-                className="h-14 w-14 rounded-xl object-contain"
-              />
+              {/* Under the new look the logo's words are empty: the name beside it says them once. */}
+              {FEATURES.newLook
+                ? <LcaLogo width={56} height={56} alt="" />
+                : <img src={lcaLogo} alt="Louisiana Chess Association" className="h-14 w-14 rounded-xl object-contain" />}
               <div>
                 <div className="text-lg font-bold leading-tight text-white">
                   Louisiana Chess Association
@@ -80,7 +82,7 @@ export function Footer() {
 
             <div className="mt-6 flex flex-wrap gap-3">
               <Link to="/tournaments" className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/80 transition-colors hover:border-lca-gold hover:text-lca-gold">Find a tournament</Link>
-              <Link to="/membership" className="rounded-lg bg-lca-gold px-4 py-2 text-sm font-semibold text-lca-navy transition-colors hover:bg-lca-gold/90">Join LCA</Link>
+              <Link to="/membership" className="rounded-lg bg-lca-gold px-4 py-2 text-sm font-semibold text-brand-navy transition-colors hover:bg-lca-gold/90">Join LCA</Link>
             </div>
           </div>
 
@@ -108,9 +110,15 @@ export function Footer() {
           <p className="text-sm text-white/50">
             © {year} Louisiana Chess Association. All rights reserved.
           </p>
-          <p className="text-sm text-white/40">
-            
-          </p>
+          {/* The Appearance control, under the new look only, until the
+              footer is rebuilt; the empty line keeps today's layout. */}
+          {FEATURES.newLook ? (
+            <AppearanceControl />
+          ) : (
+            <p className="text-sm text-white/40">
+              
+            </p>
+          )}
         </div>
       </div>
     </footer>

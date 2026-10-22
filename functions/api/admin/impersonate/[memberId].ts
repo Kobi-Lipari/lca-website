@@ -1,7 +1,7 @@
 // functions/api/admin/impersonate/[memberId].ts
 import { createClient } from '@supabase/supabase-js'
 import type { Env } from '../../../types'
-import { recordAdminAction } from '../../../utils/audit'
+import { recordAdminAction } from '../../../utils/admin/audit'
 import { isResponse, requireAdmin } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../utils/response'
 

@@ -104,7 +104,7 @@ const tierBenefits: Record<string, string[]> = {
 }
 
 const goldButtonClass =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 function TierButton({
   tierId,
@@ -162,7 +162,7 @@ export function MembershipPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
             <Users className="size-8 text-lca-gold sm:size-10" />
@@ -180,8 +180,8 @@ export function MembershipPage() {
       </section>
 
       {member?.membership_status === 'active' && (
-        <section className="border-b bg-emerald-50">
-          <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-emerald-900">
+        <section className="border-b bg-ok-50">
+          <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-ok-900">
             Your membership is <strong>active</strong>
             {member.membership_expiry && (
               <> through {member.membership_expiry}</>
@@ -189,7 +189,7 @@ export function MembershipPage() {
             .{' '}
             <button
               type="button"
-              className="font-medium text-lca-navy underline"
+              className="font-medium text-ink underline"
               onClick={() => navigate('/dashboard')}
             >
               View my profile
@@ -200,7 +200,7 @@ export function MembershipPage() {
 
       <section className="bg-muted/30">
         <div className="mx-auto max-w-6xl px-6 py-8">
-          <h2 className="text-2xl font-bold text-lca-navy">
+          <h2 className="text-2xl font-bold text-ink">
             Membership Tiers
           </h2>
           <ul className="mt-8 grid gap-3 lg:grid-cols-4">
@@ -213,18 +213,18 @@ export function MembershipPage() {
                 )}
               >
                 {tier.highlighted && (
-                  <span className="mb-3 w-fit rounded-full bg-lca-gold/20 px-2.5 py-0.5 text-xs font-medium text-lca-navy">
+                  <span className="mb-3 w-fit rounded-full bg-lca-gold/20 px-2.5 py-0.5 text-xs font-medium text-ink">
                     Most Popular
                   </span>
                 )}
 
-                <h3 className="text-xl font-bold text-lca-navy">{tier.name}</h3>
+                <h3 className="text-xl font-bold text-ink">{tier.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {tier.description}
                 </p>
 
                 <div className="mt-4">
-                  <span className="text-3xl font-bold text-lca-navy">
+                  <span className="text-3xl font-bold text-ink">
                     ${tier.price}
                   </span>
                   <span className="ml-1 text-sm text-muted-foreground">
@@ -238,7 +238,7 @@ export function MembershipPage() {
                       key={item}
                       className="flex items-start gap-2 text-sm text-muted-foreground"
                     >
-                      <Check className="mt-0.5 size-4 shrink-0 text-lca-gold" />
+                      <Check className="mt-0.5 size-4 shrink-0 text-gold-ink" />
                       {item}
                     </li>
                   ))}
@@ -252,7 +252,7 @@ export function MembershipPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-8">
-        <h2 className="text-2xl font-bold text-lca-navy">Member Benefits</h2>
+        <h2 className="text-2xl font-bold text-ink">Member Benefits</h2>
         <p className="mt-1 text-muted-foreground">
           Every membership tier includes access to the LCA community and
           platform.
@@ -264,9 +264,9 @@ export function MembershipPage() {
               key={benefit.title}
               className="flex gap-4 rounded-xl border bg-card p-5 shadow-sm"
             >
-              <benefit.icon className="size-6 shrink-0 text-lca-gold" />
+              <benefit.icon className="size-6 shrink-0 text-gold-ink" />
               <div>
-                <h3 className="font-semibold text-lca-navy">{benefit.title}</h3>
+                <h3 className="font-semibold text-ink">{benefit.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {benefit.description}
                 </p>
@@ -278,12 +278,12 @@ export function MembershipPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-8">
         <div className="rounded-xl border bg-card p-6 sm:p-8">
-          <h2 className="text-xl font-bold text-lca-navy">
+          <h2 className="text-xl font-bold text-ink">
             How Membership Works
           </h2>
           <ol className="mt-4 space-y-4 text-sm text-muted-foreground">
             <li className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-lca-navy text-xs font-bold text-white">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-navy text-xs font-bold text-white">
                 1
               </span>
               <span>
@@ -291,7 +291,7 @@ export function MembershipPage() {
               </span>
             </li>
             <li className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-lca-navy text-xs font-bold text-white">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-navy text-xs font-bold text-white">
                 2
               </span>
               <span>
@@ -299,7 +299,7 @@ export function MembershipPage() {
               </span>
             </li>
             <li className="flex gap-3">
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-lca-navy text-xs font-bold text-white">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-navy text-xs font-bold text-white">
                 3
               </span>
               <span>
@@ -310,7 +310,7 @@ export function MembershipPage() {
 
           <p className="mt-6 text-sm text-muted-foreground">
             Already a member?{' '}
-            <Link to="/login" className="font-medium text-lca-navy hover:underline">
+            <Link to="/login" className="font-medium text-ink hover:underline">
               Log in to renew
             </Link>{' '}
             or manage your account.

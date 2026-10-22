@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { useAuth } from '@/contexts/auth-context'
-import { canManageClub, isViewOnlyAdmin, toolsHomeFor, type MemberRole } from '@/lib/roles'
+import { canManageClub, isViewOnlyAdmin, toolsHomeFor, type MemberRole } from '@/areas/admin/roles'
 
 interface RoleProtectedRouteProps {
   children: ReactNode

@@ -6,7 +6,7 @@
 import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { listChildren, syncFamilyCoverage } from '../../utils/family'
-import { validateFullName } from '../../utils/members'
+import { validateFullName } from '../../utils/admin/members'
 import { isValidUscfId, refreshUscfSoon } from '../../utils/uscf'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
 

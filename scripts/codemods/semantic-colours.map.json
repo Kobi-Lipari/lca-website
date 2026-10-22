@@ -1,0 +1,114 @@
+{
+  "comment": "The reviewed map for scripts/codemods/semantic-colours.ts (WS01 step 23: ink and grounds). Every class it writes gives exactly the colour of the class it replaces on the plain :root, so with newLook off nothing changes; test/unit/semantic-map.test.ts proves it and holds the TSX files to this map. Not in this map: text-white on navy grounds (it stays), text-lca-gold (step 25), the grey and slate classes, the status colours and raw hex colours (step 24), border-lca-navy and ring-lca-navy, and the GOLD_BUTTON string in src/lib/brand.ts, which is not a TSX file. Navy tints keep the brand navy for now (see the navy-tint rule). Club colours are user data and stay inline styles. The judgement calls behind the sites and keep entries are recorded under step 23 in REDESIGN_STATUS.md.",
+  "watch": ["text-lca-navy", "bg-white", "bg-lca-navy"],
+  "rules": [
+    {
+      "id": "navy-on-gold",
+      "from": "text-lca-navy",
+      "opacity": "none",
+      "when": { "sameString": ["bg-lca-gold"] },
+      "to": "text-brand-navy",
+      "reason": "Navy text on an opaque gold fill: the gold button and its copies, gold badges, the gold banners. The brief keeps navy text on gold in every look, and text-ink would be #e8ecf4 on gold in dark mode (about 1.9:1), so the text takes the navy that stays #1a2744 everywhere."
+    },
+    {
+      "id": "ink",
+      "from": "text-lca-navy",
+      "opacity": "any",
+      "to": "text-ink",
+      "reason": "Navy text on the page, on a card or on a light tint: it follows the ink of the look, navy in light mode and #e8ecf4 in dark."
+    },
+    {
+      "id": "surface",
+      "from": "bg-white",
+      "opacity": "none",
+      "to": "bg-surface",
+      "reason": "A white ground for page chrome or a control: it follows the surface of the look, #fff in light mode and #111a2c in dark."
+    },
+    {
+      "id": "navy-ground",
+      "from": "bg-lca-navy",
+      "opacity": "none",
+      "to": "bg-brand-navy",
+      "reason": "A navy band, hero, card header, selected control, step number or badge: it stays #1a2744 in every look and in dark mode, so the white and gold on it keep their contrast."
+    },
+    {
+      "id": "navy-hover",
+      "from": "bg-lca-navy",
+      "opacity": ["90"],
+      "to": "bg-brand-navy",
+      "reason": "The hover of a navy button (hover:bg-lca-navy/90): it stays with the navy fill it belongs to."
+    },
+    {
+      "id": "navy-tint",
+      "from": "bg-lca-navy",
+      "opacity": "translucent",
+      "to": "bg-brand-navy",
+      "reason": "A navy tint keeps the brand navy at the same opacity: the faint tints behind a chip, an avatar, a selected row, a message or a note, the veil over the hero photo under white text, and the Exit button's hover on the gold banner. For a browser that cannot mix colours, such as Safari 15.4 to 16.1, Tailwind gives a brand colour with an opacity modifier its worked-out tint but a token utility only the token at full strength, so an ink tint would show there as a solid navy box behind navy text. In dark mode a navy tint barely shows on the dark ground; moving the tints to the ink, with a fallback of their own, is step 24's, with the navy borders beside them."
+    }
+  ],
+  "sites": [
+    {
+      "file": "src/pages/HomePage.tsx",
+      "contains": "size-6",
+      "from": "text-lca-navy",
+      "to": "text-brand-navy",
+      "reason": "The trophy icon on the gold square of the membership band: the gold is on the parent element, so the navy-on-gold rule cannot see it."
+    },
+    {
+      "file": "src/pages/ScannerPage.tsx",
+      "contains": "absolute right-2 top-2 flex size-7",
+      "from": "bg-white/90",
+      "to": "bg-surface/90",
+      "reason": "The remove button over a page photo. Its icon is text-foreground, which turns light in dark mode, so its ground follows the surface instead of staying white."
+    },
+    {
+      "file": "src/pages/ScannerPage.tsx",
+      "contains": "absolute right-2 top-2 flex size-7",
+      "from": "hover:bg-white",
+      "to": "hover:bg-surface",
+      "reason": "The same remove button's hover, which goes with its ground."
+    }
+  ],
+  "keep": [
+    {
+      "class": "bg-white",
+      "opacity": "translucent",
+      "reason": "A translucent white veil (bg-white/5 to bg-white/60, and their hover forms) on a navy ground or the dark hero photo. The ground stays navy or dark in every look, so the veil stays white, like text-white on it."
+    },
+    {
+      "file": "src/pages/ClubsPage.tsx",
+      "contains": "aspect-square w-full items-center justify-center overflow-hidden rounded-lg bg-white",
+      "class": "bg-white",
+      "opacity": "none",
+      "reason": "The white mat behind a club logo on the clubs list. Logos are drawn for a white ground and are never recoloured, so the mat stays white in dark mode."
+    },
+    {
+      "file": "src/pages/ClubDetailPage.tsx",
+      "contains": "h-24 w-24 flex-shrink-0 overflow-hidden rounded-xl",
+      "class": "bg-white",
+      "opacity": "none",
+      "reason": "The white mat behind the club logo in the club page hero, which stays white for the same reason."
+    },
+    {
+      "file": "src/pages/AdminClubPage.tsx",
+      "contains": "h-32 w-full bg-white object-contain",
+      "class": "bg-white",
+      "opacity": "none",
+      "reason": "The white mat behind the club logo preview on the club's admin page, which shows the logo as visitors see it."
+    },
+    {
+      "file": "src/pages/WorkspacePage.tsx",
+      "contains": "size-14 flex-shrink-0 rounded-lg border bg-white",
+      "class": "bg-white",
+      "opacity": "none",
+      "reason": "The white mat behind a club logo in the workspace list, which stays white for the same reason."
+    },
+    {
+      "file": "src/pages/AccountSecurityPage.tsx",
+      "contains": "mx-auto w-fit rounded-lg border bg-white p-3",
+      "class": "bg-white",
+      "opacity": "none",
+      "reason": "The white quiet zone around the two-step sign-in QR code. A phone camera reads dark modules on white, so it stays white in dark mode."
+    }
+  ]
+}

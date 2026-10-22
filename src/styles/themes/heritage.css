@@ -1,0 +1,209 @@
+/*
+ * The heritage look's type (Looks-1 Heritage Club): Libre Caslon Display for
+ * display headings and display figures, and Source Serif 4 for reading text
+ * and labels. ThemeScope (src/components/ThemeScope.tsx) imports this file
+ * lazily the first time a heritage scope renders, so no other page fetches
+ * it. The heritage colours are in src/index.css with the other scope token
+ * blocks, so a scope switch never waits on this file.
+ *
+ * The faces. Only the latin file of each face is named: Libre Caslon Display
+ * 400 (its one weight) and the Source Serif 4 file with the weight axis only
+ * (200 to 900), not the larger one with the optical size axis as well. The
+ * italic's latin file is declared too, and a browser fetches it only when
+ * italic text is set in the face. A letter outside the latin files is drawn
+ * from the fallback below. test/unit/heritage-budget.test.ts holds the roman
+ * files to the 110 KB budget.
+ *
+ * The fallback faces. Until a face arrives (font-display: swap) its text is
+ * drawn in Georgia, scaled and given the face's own vertical metrics, so the
+ * swap moves as little as it can (the budget for layout shift is 0.1).
+ * Georgia's metrics are from @capsizecss/metrics 4.3.0: 2048 units per em,
+ * ascent 1878, descent 449, line gap 0, and an average width of 913 (931 in
+ * Georgia Italic). The faces' metrics are read from the files named here,
+ * each of 1000 units per em: Libre Caslon Display ascent 970, descent 266,
+ * line gap 0, average width 374; Source Serif 4 ascent 1036, descent 335,
+ * line gap 0, average width 479, and 441 in the italic. The average width
+ * is Capsize's: the advance of each character weighted by how often it
+ * occurs in English text. Then, for each face:
+ *   size-adjust = (face width / face units) / (Georgia width / 2048)
+ *   each override = (face metric / face units) / size-adjust
+ *   Caslon:        0.374 / 0.44580 = 83.89%; ascent 0.970 / 0.83894 =
+ *                  115.62%; descent 0.266 / 0.83894 = 31.71%; line gap 0%
+ *   Source Serif:  0.479 / 0.44580 = 107.45%; ascent 1.036 / 1.07447 =
+ *                  96.42%; descent 0.335 / 1.07447 = 31.18%; line gap 0%
+ *   its italic:    0.441 / 0.45459 = 97.01%; ascent 1.036 / 0.97011 =
+ *                  106.79%; descent 0.335 / 0.97011 = 34.53%; line gap 0%
+ * These are worked out, not measured: the shift of the swap is measured
+ * once a page is drawn in the look. Where Georgia is not installed, as on
+ * Android phones, ChromeOS and most Linux systems, the fallback face is
+ * skipped and the device's own serif is drawn at its own size and metrics
+ * until the face arrives, so the swap there moves more.
+ *
+ * The tokens, set on the scope: --font-display is Caslon, its fallback,
+ * Georgia and the generic serif, and no other declaration names Caslon;
+ * --font-text is Source Serif in the same way; --display-size is 2.25rem,
+ * the size of a display heading or figure when a page sets none (see the
+ * display hook below). The base look's display accent face never shows
+ * in this look: its token points at --font-text, and its utility class
+ * takes the text face (on the scope's own element, the face of the page
+ * around it).
+ *
+ * The hooks. No rule styles an element by its tag alone and no rule reaches
+ * a control: buttons, fields, chips, status tags, date blocks, result cells,
+ * figures in the fixed-width face, the focus ring and the radius of
+ * controls keep the base look. The scope's own element gets no face, so a
+ * form drawn in the base look inside it keeps the site's own face. A page
+ * puts these on its own elements (data-heritage takes one or more words):
+ *   data-heritage="display" on an h1 or an h2: Caslon at 400, at the size
+ *     --display-size gives (2.25rem, set on the scope, when a page sets
+ *     none) and never under 2rem (32px). CSS cannot read the size a page's
+ *     own class gives a heading, so the hook carries the size itself. The
+ *     property is registered below as a length or a percentage, so a value
+ *     that is neither, such as a bare number (React writes a number in a
+ *     style without a unit), counts as not set and the heading takes the
+ *     size its scope or a wrapper gives; unregistered, such a value would
+ *     drop the heading to the size of the text around it. Set it in rem or
+ *     px, or as a percentage: a unit of the heading's own font (em, ex, ch,
+ *     cap or lh) set on the heading makes its size depend on itself, and
+ *     the browser then drops it to the size of the text around it.
+ *     test/unit/heritage-css.test.ts holds every value set under src to
+ *     rem, px or a percentage.
+ *   data-heritage="figure" on a display figure, such as a founding year or
+ *     a member count: the same, but never inside a table or on figures in
+ *     the fixed-width face, so ratings, scores and tables keep theirs.
+ *   data-heritage="reader" on the column of a document such as the bylaws
+ *     or the minutes: Source Serif at 18px (1.125rem) with a line height of
+ *     1.6, lining and tabular figures, and a measure of 70 of the face's
+ *     figure zeros. Its zero is 0.529em wide, so the measure is written as
+ *     37em, which keeps the column's width while the fallback face is
+ *     drawn, where 70ch would follow the zero of whichever face is drawn.
+ *     Put it on the text, not around a form or a button, which would take
+ *     its face.
+ *   data-heritage="card", "table" or "mat", and the About page's logo frame
+ *     (data-slot="lca-logo-mat"): a 2px radius on the element that draws
+ *     the box. Controls keep the base radius.
+ *   The small capitals class: the latin files have no small capitals (no
+ *     smcp or c2sc feature), and a browser asked for them would make them
+ *     by shrinking capitals, so the class sets capitals at 0.85em with
+ *     0.07em tracking, in the text face. For labels of 15px or more, never
+ *     on buttons or sentences.
+ *
+ * Every rule that sets a face, a size, a radius or a measure applies only
+ * under the new look (:root[data-look="new"]), as the heritage colours do,
+ * so a heritage scope with newLook off looks as it does today; only the
+ * @font-face declarations and the registration of --display-size sit
+ * outside it. A registration cannot sit inside a rule, and it sets nothing
+ * on an element: only the display rule, under the new look, reads the
+ * property. The rules are in no cascade layer, so they outrank the utility
+ * classes on the same element: a hook keeps its face and its floor
+ * whatever other classes the element has.
+ */
+@import "@fontsource/libre-caslon-display/latin-400.css";
+
+@font-face {
+  font-family: 'Source Serif 4 Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 900;
+  src: url("@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Source Serif 4 Variable';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 200 900;
+  src: url("@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-italic.woff2") format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Georgia, fitted to each face (the numbers are worked out above). */
+@font-face {
+  font-family: 'Libre Caslon Display Fallback';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Georgia');
+  size-adjust: 83.89%;
+  ascent-override: 115.62%;
+  descent-override: 31.71%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Source Serif 4 Fallback';
+  font-style: normal;
+  src: local('Georgia');
+  size-adjust: 107.45%;
+  ascent-override: 96.42%;
+  descent-override: 31.18%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Source Serif 4 Fallback';
+  font-style: italic;
+  src: local('Georgia Italic'), local('Georgia-Italic');
+  size-adjust: 97.01%;
+  ascent-override: 106.79%;
+  descent-override: 34.53%;
+  line-gap-override: 0%;
+}
+
+/* The display size, registered so that a value that is not a length or a
+ * percentage counts as not set (see the display hook above). A
+ * registration's first value must be a fixed length, so it is 36px; the
+ * scope sets 2.25rem, which follows the text size a visitor has chosen. */
+@property --display-size {
+  syntax: "<length-percentage>";
+  inherits: true;
+  initial-value: 36px;
+}
+
+:root[data-look="new"] [data-theme="heritage"] {
+  --font-display: 'Libre Caslon Display', 'Libre Caslon Display Fallback', Georgia, serif;
+  --font-text: 'Source Serif 4 Variable', 'Source Serif 4 Fallback', Georgia, serif;
+  --font-accent: var(--font-text);
+  --display-size: 2.25rem;
+}
+
+/* Display headings and display figures. */
+:root[data-look="new"] [data-theme="heritage"] :is(h1, h2)[data-heritage~="display"],
+:root[data-look="new"] [data-theme="heritage"] [data-heritage~="figure"]:not(table *, .font-mono, .font-mono *) {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variant-numeric: normal;
+  font-size: max(2rem, var(--display-size, 2.25rem));
+}
+
+/* The reading column of a document. */
+:root[data-look="new"] [data-theme="heritage"] [data-heritage~="reader"] {
+  font-family: var(--font-text);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  font-variant-numeric: lining-nums tabular-nums;
+  max-width: 37em;
+}
+
+/* Small capitals, drawn as capitals at 0.85em. */
+:root[data-look="new"] [data-theme="heritage"] .small-caps {
+  font-family: var(--font-text);
+  font-size: 0.85em;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+/* The base look's display accent, switched off: inside the scope it takes
+ * the text face, and on the scope's own element the face around it. */
+:root[data-look="new"] [data-theme="heritage"] .font-accent {
+  font-family: var(--font-text);
+}
+
+:root[data-look="new"] [data-theme="heritage"].font-accent {
+  font-family: inherit;
+}
+
+/* Cards, tables and mats: a 2px radius. */
+:root[data-look="new"] [data-theme="heritage"] :is([data-heritage~="card"], [data-heritage~="table"], [data-heritage~="mat"], [data-slot="lca-logo-mat"]) {
+  border-radius: 2px;
+}

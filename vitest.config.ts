@@ -22,7 +22,7 @@ export default defineConfig({
   },
   test: {
     include: [
-      'functions/utils/swiss/**/*.test.ts',
+      'functions/utils/live/swiss/**/*.test.ts',
       'src/lib/scanner/**/*.test.ts',
       'test/unit/**/*.test.ts',
       'test/unit/**/*.test.tsx',

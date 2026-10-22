@@ -79,7 +79,8 @@ describe('old paths re-export domain/', () => {
       expect(typeof (serverSectionRules as Module)[name], name).toBe('function')
     }
     for (const name of ['lcaTimeToMs', 'hasPassed']) expect(typeof (serverTime as Module)[name], name).toBe('function')
-    for (const name of ['entryPrice', 'sectionBaseFee']) expect(typeof (serverPricing as Module)[name], name).toBe('function')
+    expect(typeof (serverPricing as Module).priceEntry).toBe('function')
+    expect(typeof (serverPricing as Module).priceShownSection).toBe('function')
     expect(typeof serverRegions.isRegion).toBe('function')
   })
 })
@@ -163,8 +164,12 @@ function codeFiles(dirs: string[]): string[] {
 const DEFINITIONS: Array<[string, string]> = [
   ['rulesFromName', 'domain/events/sectionRules.ts'],
   ['eligibilityProblem', 'domain/events/sectionRules.ts'],
-  ['entryPrice', 'domain/registration/pricing.ts'],
-  ['sectionBaseFee', 'domain/registration/pricing.ts'],
+  ['priceEntry', 'domain/registration/pricing.ts'],
+  ['priceShownSection', 'domain/registration/pricing.ts'],
+  // The pricing adapter over the legacy sections JSON, removed once the pages
+  // priced from the section rows.
+  ['entryPrice', ''],
+  ['sectionBaseFee', ''],
   ['lcaTimeToMs', 'domain/format/centralTime.ts'],
   ['hasPassed', 'domain/format/centralTime.ts'],
   ['REGIONS', 'domain/clubs/regions.ts'],

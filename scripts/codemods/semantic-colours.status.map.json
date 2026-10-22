@@ -1,0 +1,686 @@
+{
+  "comment": "The reviewed map for scripts/codemods/semantic-colours.ts, run with --map (WS01 step 24: the status colours, the greys, the navy borders and tints, and raw hex colours). Each Tailwind status colour becomes the token of its tone, one token for each shade the pages use (text-emerald-700 becomes text-ok-700), so every class it writes gives exactly the colour of the class it replaces on the plain :root and nothing changes with newLook off; under the new look each shade takes its tone's tint or words from the Looks-3 status tags, but for two that are not tags: the scanner's move marks take mark colours of their own (bg-mark-warn, bg-mark-ok), which stand out from the card, and the checked check-in toggle takes a fixed dark green fill (bg-ok-fill) that keeps its white words at 4.5:1. Every keep entry for a light tone on navy, and those for StatusBadge's light tones and StatusDot's dot with newLook off (kept for today's callers in step 26, since new code shows a status through StatusBadge's status prop and its tokens), names its own string, so the same class anywhere else is a raw colour. test/unit/semantic-map.test.ts proves it and holds the TSX files to this map, and test/unit/raw-colours.test.ts fails on any raw colour class this map or the step 23 map does not keep and test/unit/fixtures/raw-colours-allowlist.json does not list. Not in this map: gold text (text-lca-gold and the gold hex colours, step 25), the announcement banners' red and blue grounds, the Facebook brand blue and the club map's own ground, which stay fixed (the allowlist gives each reason). Club colours are user data and inline styles, so no class carries them. The judgement calls behind the sites and keep entries are recorded under step 24 in REDESIGN_STATUS.md.",
+  "watch": [
+    "text-emerald-300", "text-emerald-600", "text-emerald-700", "text-emerald-800", "text-emerald-900", "text-emerald-950",
+    "bg-emerald-50", "bg-emerald-100", "bg-emerald-200", "bg-emerald-500", "bg-emerald-600",
+    "border-emerald-200", "border-emerald-600",
+    "text-green-300", "text-green-600", "text-green-700", "text-green-800",
+    "bg-green-50", "bg-green-100", "bg-green-500",
+    "border-green-200", "border-green-500",
+    "text-red-300", "text-red-600", "text-red-700", "text-red-800", "text-red-900",
+    "bg-red-50", "bg-red-100", "bg-red-500",
+    "border-red-200", "fill-red-500",
+    "text-amber-600", "text-amber-700", "text-amber-800", "text-amber-900", "text-amber-950",
+    "bg-amber-50", "bg-amber-100", "bg-amber-200",
+    "border-amber-200", "border-amber-300",
+    "text-yellow-700", "text-yellow-800", "bg-yellow-50", "bg-yellow-100", "border-yellow-200",
+    "text-blue-200", "text-blue-800", "bg-blue-50", "bg-blue-100", "bg-blue-500", "border-blue-200",
+    "text-purple-800", "bg-purple-100",
+    "text-gray-600", "bg-gray-100", "border-gray-300",
+    "bg-slate-400", "bg-slate-500",
+    "border-lca-navy", "ring-lca-navy",
+    "accent-[#1a2744]", "text-[#1668d8]", "text-[#1e4d7b]"
+  ],
+  "rules": [
+    {
+      "id": "ok-words",
+      "from": "text-emerald-800",
+      "opacity": "none",
+      "to": "text-ok",
+      "reason": "Green words on the page, on a card, on a green badge or in a success note. text-ok is emerald-800 with newLook off, and the ok tone's words under the new look (#047857, and #3ecf8e in dark mode)."
+    },
+    {
+      "id": "ok-600",
+      "from": "text-emerald-600",
+      "opacity": "none",
+      "to": "text-ok-600",
+      "reason": "The lighter green of a check icon or of the Registration open line on a tournament card. Under the new look it is the ok tone's words, which turn light in dark mode."
+    },
+    {
+      "id": "ok-700",
+      "from": "text-emerald-700",
+      "opacity": "none",
+      "to": "text-ok-700",
+      "reason": "Green words that report a success on the page (Saved, Sent, every move checked) and the second line of a success note. Emerald-700 is dark green on a dark ground in dark mode, so under the new look it takes the ok tone's words."
+    },
+    {
+      "id": "ok-900",
+      "from": "text-emerald-900",
+      "opacity": "none",
+      "to": "text-ok-900",
+      "reason": "The heading of a success note and the words of the member strip on /membership. Under the new look they take the ok tone's words, on the ok tint the note turns to."
+    },
+    {
+      "id": "ok-950",
+      "from": "text-emerald-950",
+      "opacity": "none",
+      "to": "text-ok-950",
+      "reason": "The words of the scanner's green move mark. Under the new look they take the ok tone's words, on the ok tint the mark turns to."
+    },
+    {
+      "id": "ok-tint-50",
+      "from": "bg-emerald-50",
+      "opacity": "none",
+      "to": "bg-ok-50",
+      "reason": "The ground of a success note, and of the two light islands step 23 left (the member strip on /membership and the finished-event panel on the manage page). Under the new look it is the ok tint, which turns dark in dark mode, so the ink on the islands stays readable."
+    },
+    {
+      "id": "ok-tint-100",
+      "from": "bg-emerald-100",
+      "opacity": "none",
+      "to": "bg-ok-100",
+      "reason": "The ground of a green badge (Active, Paid, Published, Answered, In progress and the audit log's green entries). Under the new look it is the ok tint, with the ok words on it."
+    },
+    {
+      "id": "ok-mark",
+      "from": "bg-emerald-200",
+      "opacity": "none",
+      "to": "bg-mark-ok",
+      "reason": "The scanner's mark on a move that was fixed, and its swatch in the legend beside the words. A mark has to stand out from the card the moves sit on, and the ok tint (#e8f5ef) would all but vanish there (1.12:1 on white), so it takes a mark colour of its own: emerald-200 with newLook off, on the light looks emerald-200 lightened just enough for the ok words to reach 4.5:1 on it, and a dark green in dark mode. The swatch still matches the mark."
+    },
+    {
+      "id": "ok-line-200",
+      "from": "border-emerald-200",
+      "opacity": "none",
+      "to": "border-ok-200",
+      "reason": "The line around a success note. Under the new look it is the ok tint, like the note's ground, so the note reads as one tinted box, as the Looks-3 tags do."
+    },
+    {
+      "id": "ok-dot-500",
+      "from": "bg-emerald-500",
+      "opacity": "none",
+      "to": "bg-ok-500",
+      "reason": "The green dot the home page's own StatusDot draws for open registration, beside the event's name. Under the new look it is the ok tone's words colour, which shows on either ground."
+    },
+    {
+      "id": "ok-fill",
+      "from": "bg-emerald-600",
+      "opacity": "none",
+      "to": "bg-ok-fill",
+      "reason": "A player's check-in toggle when checked: a solid green fill under the white words Present. White on emerald-600 is 3.67:1, so under the new look the fill is the dark green #047857 in every look, dark mode included, where white reaches 5.48:1; a tone shade would turn light green in dark mode under the same white words. Emerald-600 with newLook off."
+    },
+    {
+      "id": "ok-fill-line",
+      "from": "border-emerald-600",
+      "opacity": "none",
+      "to": "border-ok-fill",
+      "reason": "The line of the same checked toggle, which stays with its fill in every look. Its 50 per cent hover line on the unchecked toggle is kept as it is (see keep)."
+    },
+    {
+      "id": "ok-green-600",
+      "from": "text-green-600",
+      "opacity": "none",
+      "to": "text-ok-green-600",
+      "reason": "The check icon beside a chosen player in the US Chess lookup. Green is that lookup's own second green; under the new look it takes the ok tone's words."
+    },
+    {
+      "id": "ok-green-700",
+      "from": "text-green-700",
+      "opacity": "none",
+      "to": "text-ok-green-700",
+      "reason": "The rating and the change link inside the US Chess lookup's found note. Under the new look they take the ok tone's words, on the ok tint the note turns to."
+    },
+    {
+      "id": "ok-green-800",
+      "from": "text-green-800",
+      "opacity": "none",
+      "to": "text-ok-green-800",
+      "reason": "The player's name in the US Chess lookup's found note and the words of its Active badge. Under the new look they take the ok tone's words, on the ok tint."
+    },
+    {
+      "id": "ok-green-tint-50",
+      "from": "bg-green-50",
+      "opacity": "none",
+      "to": "bg-ok-green-50",
+      "reason": "The ground of the US Chess lookup's found note. Under the new look it is the ok tint, which turns dark in dark mode with the light words on it."
+    },
+    {
+      "id": "ok-green-tint-100",
+      "from": "bg-green-100",
+      "opacity": "none",
+      "to": "bg-ok-green-100",
+      "reason": "The ground of the Active badge in the US Chess lookup, beside the red Expired badge that becomes the bad tint. Under the new look it is the ok tint."
+    },
+    {
+      "id": "ok-green-line-200",
+      "from": "border-green-200",
+      "opacity": "none",
+      "to": "border-ok-green-200",
+      "reason": "The line around the US Chess lookup's found note. Under the new look it is the ok tint, like the note's ground."
+    },
+    {
+      "id": "ok-green-line-500",
+      "from": "border-green-500",
+      "opacity": "none",
+      "to": "border-ok-green-500",
+      "reason": "The US Chess ID field's border once a player is chosen, a state shown by the field's line. Under the new look it is the ok tone's words colour, which keeps the line visible on either ground."
+    },
+    {
+      "id": "bad-words",
+      "from": "text-red-600",
+      "opacity": "none",
+      "to": "text-bad",
+      "reason": "Red words on the page and the red delete buttons. text-bad is red-600 with newLook off (the same colour, written as the shadcn destructive, oklch(0.577 0.245 27.325)), and the bad tone's words under the new look (#c0362c, and #ff6b6b in dark mode)."
+    },
+    {
+      "id": "bad-700",
+      "from": "text-red-700",
+      "opacity": "none",
+      "to": "text-bad-700",
+      "reason": "The words of a red badge (Withdrawn, a failed email) and an expired US Chess membership on a family card. Under the new look they take the bad tone's words."
+    },
+    {
+      "id": "bad-800",
+      "from": "text-red-800",
+      "opacity": "none",
+      "to": "text-bad-800",
+      "reason": "The words of a red badge: the audit log's red entries and an expired US Chess membership. Under the new look they take the bad tone's words, on the bad tint."
+    },
+    {
+      "id": "bad-900",
+      "from": "text-red-900",
+      "opacity": "none",
+      "to": "text-bad-900",
+      "reason": "The words of the scanner's error notes. Under the new look they take the bad tone's words, on the bad tint the notes turn to."
+    },
+    {
+      "id": "bad-tint-50",
+      "from": "bg-red-50",
+      "opacity": "none",
+      "to": "bg-bad-50",
+      "reason": "The ground of the scanner's error notes and the hover of a red delete button. Under the new look it is the bad tint, so the red words on it stay readable in dark mode."
+    },
+    {
+      "id": "bad-tint-100",
+      "from": "bg-red-100",
+      "opacity": "none",
+      "to": "bg-bad-100",
+      "reason": "The ground of a red badge. Under the new look it is the bad tint, with the bad words on it."
+    },
+    {
+      "id": "bad-line-200",
+      "from": "border-red-200",
+      "opacity": "none",
+      "to": "border-bad-200",
+      "reason": "The line around the scanner's error note. Under the new look it is the bad tint, like the note's ground."
+    },
+    {
+      "id": "bad-fill-500",
+      "from": "fill-red-500",
+      "opacity": "none",
+      "to": "fill-bad-500",
+      "reason": "The red document icon beside each governance document. Under the new look it is the bad tone's words colour, which shows on either ground."
+    },
+    {
+      "id": "warn-600",
+      "from": "text-amber-600",
+      "opacity": "none",
+      "to": "text-warn-600",
+      "reason": "Unsaved changes beside a heading on the manage page. Under the new look it takes the warn tone's words, the dark gold of the Looks-3 soon tag, which turns gold in dark mode."
+    },
+    {
+      "id": "warn-700",
+      "from": "text-amber-700",
+      "opacity": "none",
+      "to": "text-warn-700",
+      "reason": "A warning line on the page (a discount or late fee with no date, a move that needs a look). Amber-700 is dark on a dark ground in dark mode, so under the new look it takes the warn tone's words."
+    },
+    {
+      "id": "warn-800",
+      "from": "text-amber-800",
+      "opacity": "none",
+      "to": "text-warn-800",
+      "reason": "A warning line on the page or a card (US Chess expiring soon, a problem with an entry or an upload) and the words of the US Chess expiry badge. Under the new look it takes the warn tone's words."
+    },
+    {
+      "id": "warn-900",
+      "from": "text-amber-900",
+      "opacity": "none",
+      "to": "text-warn-900",
+      "reason": "The words of a warning note or strip (the preview banner, entry warnings, the print page's preview note, the scanner's cut-off note) and of the Expiring soon badge. Under the new look they take the warn tone's words, on the warn tint."
+    },
+    {
+      "id": "warn-950",
+      "from": "text-amber-950",
+      "opacity": "none",
+      "to": "text-warn-950",
+      "reason": "The words of the scanner's amber move mark and its warning notes. Under the new look they take the warn tone's words, on the warn tint."
+    },
+    {
+      "id": "warn-tint-50",
+      "from": "bg-amber-50",
+      "opacity": "none",
+      "to": "bg-warn-50",
+      "reason": "The ground of a warning note or strip. Under the new look it is the warn tint, the soon tag's ground, which turns dark in dark mode."
+    },
+    {
+      "id": "warn-tint-100",
+      "from": "bg-amber-100",
+      "opacity": "none",
+      "to": "bg-warn-100",
+      "reason": "The ground of an amber badge (Expiring soon, a US Chess membership that ends before the event). Under the new look it is the warn tint."
+    },
+    {
+      "id": "warn-mark",
+      "from": "bg-amber-200",
+      "opacity": "none",
+      "to": "bg-mark-warn",
+      "reason": "The scanner's mark on a move to check, and its swatch in the legend beside the words. A mark has to stand out from the card the moves sit on, and the warn tint (#fbf7e9) would all but vanish there (1.07:1 on white), so it takes a mark colour of its own: amber-200 with newLook off and on the light looks, and a dark gold in dark mode, each with the warn words at 4.5:1 on it. The swatch still matches the mark."
+    },
+    {
+      "id": "warn-line-200",
+      "from": "border-amber-200",
+      "opacity": "none",
+      "to": "border-warn-200",
+      "reason": "The line around the scanner's warning note. Under the new look it is the warn tint, like the note's ground."
+    },
+    {
+      "id": "warn-line-300",
+      "from": "border-amber-300",
+      "opacity": "none",
+      "to": "border-warn-300",
+      "reason": "The line around a warning note and under the preview banner. Under the new look it is the warn tint, like the note's ground."
+    },
+    {
+      "id": "warn-yellow-700",
+      "from": "text-yellow-700",
+      "opacity": "none",
+      "to": "text-warn-yellow-700",
+      "reason": "The words of the support form's note that replies go to an address other than the account's. Yellow is the support pages' second warning colour; under the new look it takes the warn tone's words."
+    },
+    {
+      "id": "warn-yellow-800",
+      "from": "text-yellow-800",
+      "opacity": "none",
+      "to": "text-warn-yellow-800",
+      "reason": "The words of the In progress ticket badge on the support pages and the dashboard. Under the new look they take the warn tone's words, on the warn tint."
+    },
+    {
+      "id": "warn-yellow-tint-50",
+      "from": "bg-yellow-50",
+      "opacity": "none",
+      "to": "bg-warn-yellow-50",
+      "reason": "The ground of the support form's note about the reply address. Under the new look it is the warn tint."
+    },
+    {
+      "id": "warn-yellow-tint-100",
+      "from": "bg-yellow-100",
+      "opacity": "none",
+      "to": "bg-warn-yellow-100",
+      "reason": "The ground of the In progress ticket badge. Under the new look it is the warn tint, beside the other ticket badges, which take their tones too."
+    },
+    {
+      "id": "warn-yellow-line-200",
+      "from": "border-yellow-200",
+      "opacity": "none",
+      "to": "border-warn-yellow-200",
+      "reason": "The line around the support form's note about the reply address. Under the new look it is the warn tint, like the note's ground."
+    },
+    {
+      "id": "info-800",
+      "from": "text-blue-800",
+      "opacity": "none",
+      "to": "text-info-800",
+      "reason": "The words of a blue badge (open and new tickets, the audit log's blue entries, the rated badge on a tournament card) and of the support form's sign-in note. Under the new look they take the info tone's words, the navy of the Looks-3 partner tag."
+    },
+    {
+      "id": "info-tint-50",
+      "from": "bg-blue-50",
+      "opacity": "none",
+      "to": "bg-info-50",
+      "reason": "The ground of the rated badge on a tournament card and of the support form's sign-in note. Under the new look it is the info tint."
+    },
+    {
+      "id": "info-tint-100",
+      "from": "bg-blue-100",
+      "opacity": "none",
+      "to": "bg-info-100",
+      "reason": "The ground of a blue badge (open and new tickets, the audit log's blue entries). Under the new look it is the info tint, with the info words on it."
+    },
+    {
+      "id": "info-line-200",
+      "from": "border-blue-200",
+      "opacity": "none",
+      "to": "border-info-200",
+      "reason": "The line around the rated badge and the support form's sign-in note. Under the new look it is the info tint, like the ground inside it."
+    },
+    {
+      "id": "info-purple-800",
+      "from": "text-purple-800",
+      "opacity": "none",
+      "to": "text-info-purple-800",
+      "reason": "The words of the audit log's Started impersonating entry, its one purple badge. Under the new look they take the info tone's words, like the other audit badges that are not green, red or gold."
+    },
+    {
+      "id": "info-purple-tint-100",
+      "from": "bg-purple-100",
+      "opacity": "none",
+      "to": "bg-info-purple-100",
+      "reason": "The ground of the audit log's Started impersonating badge. Under the new look it is the info tint."
+    },
+    {
+      "id": "quiet-600",
+      "from": "text-gray-600",
+      "opacity": "none",
+      "to": "text-quiet-600",
+      "reason": "The words of the Resolved ticket badge on the support pages and the dashboard, and the rating and score beside each name on the print page's pairing sheet. Under the new look they take the closed tag's words, the muted grey #5b6478 (#9aa6bf in dark mode, on the screen only: a printed page takes the light look, so the sheet prints #5b6478 on the white paper)."
+    },
+    {
+      "id": "quiet-tint-100",
+      "from": "bg-gray-100",
+      "opacity": "none",
+      "to": "bg-quiet-100",
+      "reason": "The ground of the Resolved ticket badge. Under the new look it is the closed tag's tint, #f7f8fa, and #1a2744 in dark mode."
+    },
+    {
+      "id": "navy-line-on-navy",
+      "from": "border-lca-navy",
+      "opacity": "none",
+      "when": { "sameString": ["bg-brand-navy"] },
+      "to": "border-brand-navy",
+      "reason": "The line of a selected control filled navy (border-lca-navy bg-brand-navy text-white): it stays with the fill it belongs to, #1a2744 in every look and in dark mode."
+    },
+    {
+      "id": "navy-line",
+      "from": "border-lca-navy",
+      "opacity": "any",
+      "to": "border-ink",
+      "reason": "A navy line on a light ground: a chosen option, a heading rule, a hover or focus border and the faint borders of chips and notes. It follows the ink, so in dark mode it is a light line on the dark ground rather than navy on navy. With a modifier, the tint is the same in every browser that can mix colours, and the block in src/index.css gives older browsers the tint the old class fell back to."
+    },
+    {
+      "id": "navy-ring",
+      "from": "ring-lca-navy",
+      "opacity": "any",
+      "to": "ring-ink",
+      "reason": "The ring around the chosen tone in the announcement editor, on a light card. It follows the ink, so it still shows in dark mode."
+    },
+    {
+      "id": "navy-tint-to-ink",
+      "from": "bg-brand-navy",
+      "opacity": ["5", "7", "8", "10", "[0.03]", "[0.04]", "[0.06]"],
+      "to": "bg-ink",
+      "reason": "A faint navy tint behind ink text (section chips, avatars and officer initials, chosen rows and options, support replies, Your registration and the view-only note). As a tint of the ink it lightens the dark ground in dark mode instead of vanishing into it. Tailwind gives a token class with a modifier its token at full strength in a browser that cannot mix colours, so the block in src/index.css gives those browsers the tint bg-brand-navy fell back to. The hero photo's veil (/55) and the navy buttons' hover (/90) stay navy."
+    },
+    {
+      "id": "accent-ink",
+      "from": "accent-[#1a2744]",
+      "opacity": "none",
+      "to": "accent-ink",
+      "reason": "The navy tick of a checkbox (the family entry panel, the grade confirmation, the news post form). It follows the ink, so a ticked box shows in dark mode; accent-ink is #1a2744 with newLook off."
+    },
+    {
+      "id": "facebook-link",
+      "from": "text-[#1668d8]",
+      "opacity": "none",
+      "to": "text-facebook-link",
+      "reason": "The Facebook feed's links (visit the page directly, See all posts on Facebook). #1668d8 is 3.31:1 on the dark surface, so the token keeps it in light mode and gives a lighter Facebook blue, #4599ff, in dark mode and the live look."
+    },
+    {
+      "id": "info-banner-words",
+      "from": "text-[#1e4d7b]",
+      "opacity": "none",
+      "to": "text-info-banner",
+      "reason": "The words of the Scheduled tag in the admin list of announcements, in the info banner's blue. Under the new look they take the info tone's words, which turn light in dark mode."
+    },
+    {
+      "id": "info-banner-tint",
+      "from": "bg-[#1e4d7b]",
+      "opacity": ["15"],
+      "to": "bg-info-banner",
+      "reason": "The tint behind the Scheduled tag. It keeps its 15 per cent of the token, and the block in src/index.css gives a browser that cannot mix colours the tint the old class gave. The info banner's own solid blue under white words stays as it is (see the allowlist)."
+    }
+  ],
+  "sites": [
+    {
+      "file": "src/areas/events/components/AgendaList.tsx",
+      "contains": "px-2 py-0.5 text-[10px] font-medium",
+      "from": "bg-emerald-100",
+      "to": "bg-status-open-tint",
+      "reason": "The Open pill of an LCA event whose registration is open: a tournament status, so it takes the status utility StatusBadge's open tone will use (step 26), the same colour as the ok tint in every look."
+    },
+    {
+      "file": "src/areas/events/components/AgendaList.tsx",
+      "contains": "px-2 py-0.5 text-[10px] font-medium",
+      "from": "text-emerald-800",
+      "to": "text-status-open",
+      "reason": "The words of the same Open pill, which take the open status words to go with its tint."
+    },
+    {
+      "file": "src/pages/TournamentDetailPage.tsx",
+      "contains": "px-2 py-0.5 text-xs font-medium",
+      "from": "bg-emerald-100",
+      "to": "bg-status-open-tint",
+      "reason": "The Open pill beside Status in the tournament page's facts list: a tournament status, so it takes the open status tint."
+    },
+    {
+      "file": "src/pages/TournamentDetailPage.tsx",
+      "contains": "px-2 py-0.5 text-xs font-medium",
+      "from": "text-emerald-800",
+      "to": "text-status-open",
+      "reason": "The words of the same Open pill, which take the open status words to go with its tint."
+    },
+    {
+      "file": "src/components/ImpersonationBanner.tsx",
+      "contains": "px-2.5 py-0.5 text-xs font-semibold",
+      "from": "border-lca-navy/30",
+      "to": "border-brand-navy/30",
+      "reason": "The line of the Exit button on the gold impersonation banner. The gold is on the banner, not in the button's string, so the rule cannot see it; navy on gold stays navy in every look, like the text on it."
+    }
+  ],
+  "keep": [
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-emerald-500/20 text-emerald-300",
+      "class": "text-emerald-300",
+      "opacity": "none",
+      "reason": "The light green words of StatusBadge's green tone on its navy surface. The navy stays #1a2744 in every look, so the light tone stays, like the translucent white veils step 23 kept; anywhere else a light green word is a raw colour."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-emerald-500/20 text-emerald-300",
+      "class": "bg-emerald-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent green tint behind those words on StatusBadge's navy surface. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-red-500/20 text-red-300",
+      "class": "text-red-300",
+      "opacity": "none",
+      "reason": "The light red words of StatusBadge's red tone on its navy surface. The navy stays #1a2744 in every look, so the light tone stays; anywhere else a light red word is a raw colour."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-red-500/20 text-red-300",
+      "class": "bg-red-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent red tint behind those words on StatusBadge's navy surface. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-blue-500/20 text-blue-200",
+      "class": "text-blue-200",
+      "opacity": "none",
+      "reason": "The light blue words of StatusBadge's blue tone on its navy surface. The navy stays #1a2744 in every look, so the light tone stays; anywhere else a light blue word is a raw colour."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-blue-500/20 text-blue-200",
+      "class": "bg-blue-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent blue tint behind those words on StatusBadge's navy surface. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/pages/TournamentDetailPage.tsx",
+      "contains": "bg-emerald-500/20 text-emerald-300",
+      "class": "text-emerald-300",
+      "opacity": "none",
+      "reason": "The light green Active tag on the tournament page's navy hero. The navy stays #1a2744 in every look, so the light tone stays, like the translucent white veils step 23 kept."
+    },
+    {
+      "file": "src/pages/TournamentDetailPage.tsx",
+      "contains": "bg-emerald-500/20 text-emerald-300",
+      "class": "bg-emerald-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent green tint behind the Active tag on the tournament page's navy hero. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/pages/TournamentDetailPage.tsx",
+      "contains": "bg-blue-500/20 text-blue-200",
+      "class": "text-blue-200",
+      "opacity": "none",
+      "reason": "The light blue rated tag on the tournament page's navy hero. The navy stays #1a2744 in every look, so the light tone stays."
+    },
+    {
+      "file": "src/pages/TournamentDetailPage.tsx",
+      "contains": "bg-blue-500/20 text-blue-200",
+      "class": "bg-blue-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent blue tint behind the rated tag on the tournament page's navy hero. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/pages/TournamentDetailPage.tsx",
+      "contains": "rounded-full bg-emerald-500/20 px-2.5",
+      "class": "text-emerald-300",
+      "opacity": "none",
+      "reason": "The light green Registration open tag on the tournament page's navy hero. The navy stays #1a2744 in every look, so the light tone stays."
+    },
+    {
+      "file": "src/pages/TournamentDetailPage.tsx",
+      "contains": "rounded-full bg-emerald-500/20 px-2.5",
+      "class": "bg-emerald-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent green tint behind the Registration open tag on the tournament page's navy hero. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/pages/TournamentManagePage.tsx",
+      "contains": "bg-green-500/20 text-green-300",
+      "class": "text-green-300",
+      "opacity": "none",
+      "reason": "The light green Visible tag on the manage page's navy hero. The navy stays #1a2744 in every look, so the light tone stays."
+    },
+    {
+      "file": "src/pages/TournamentManagePage.tsx",
+      "contains": "bg-green-500/20 text-green-300",
+      "class": "bg-green-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent green tint behind the Visible tag on the manage page's navy hero. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/pages/TournamentManagePage.tsx",
+      "contains": "bg-emerald-500/20 text-emerald-300",
+      "class": "text-emerald-300",
+      "opacity": "none",
+      "reason": "The light green tag on the manage page's navy hero while registration is open. The navy stays #1a2744 in every look, so the light tone stays."
+    },
+    {
+      "file": "src/pages/TournamentManagePage.tsx",
+      "contains": "bg-emerald-500/20 text-emerald-300",
+      "class": "bg-emerald-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent green tint behind the open registration tag on the manage page's navy hero. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/pages/TournamentManagePage.tsx",
+      "contains": "bg-red-500/20 text-red-300",
+      "class": "text-red-300",
+      "opacity": "none",
+      "reason": "The light red tag on the manage page's navy hero while registration is closed. The navy stays #1a2744 in every look, so the light tone stays."
+    },
+    {
+      "file": "src/pages/TournamentManagePage.tsx",
+      "contains": "bg-red-500/20 text-red-300",
+      "class": "bg-red-500",
+      "opacity": ["20"],
+      "reason": "The 20 per cent red tint behind the closed registration tag on the manage page's navy hero. It lies on navy in every look, so it stays as it is."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-emerald-100 text-emerald-800",
+      "class": "bg-emerald-100",
+      "opacity": "none",
+      "reason": "StatusBadge's light green tone, the pill today's callers draw on a light card, kept class for class: the tone path keeps its ten strings to the letter, as the Button keeps its variants, and new code shows a status through the status prop, which reads the status tokens. An opaque light pill with words of its own (6.68:1), it reads the same on any ground, dark mode included; the Scholastic page's pill moves to the status prop when WS11 rebuilds that page."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-emerald-100 text-emerald-800",
+      "class": "text-emerald-800",
+      "opacity": "none",
+      "reason": "The words of StatusBadge's light green tone, kept in their one string with the tint they are read on."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-red-100 text-red-700",
+      "class": "bg-red-100",
+      "opacity": "none",
+      "reason": "StatusBadge's light red tone, kept class for class like the light green: an opaque light pill whose words read 5.26:1 on any ground. New code takes the status prop."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "bg-red-100 text-red-700",
+      "class": "text-red-700",
+      "opacity": "none",
+      "reason": "The words of StatusBadge's light red tone, kept in their one string with the tint they are read on."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "border-blue-200 bg-blue-50 text-blue-800",
+      "class": "border-blue-200",
+      "opacity": "none",
+      "reason": "The line of StatusBadge's light blue tone, kept in its one string with the tint and the words it frames."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "border-blue-200 bg-blue-50 text-blue-800",
+      "class": "bg-blue-50",
+      "opacity": "none",
+      "reason": "StatusBadge's light blue tone, kept class for class like the light green: an opaque light pill whose words read 8.11:1 on any ground. New code takes the status prop."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "border-blue-200 bg-blue-50 text-blue-800",
+      "class": "text-blue-800",
+      "opacity": "none",
+      "reason": "The words of StatusBadge's light blue tone, kept in their one string with the tint they are read on."
+    },
+    {
+      "file": "src/components/StatusBadge.tsx",
+      "contains": "rounded-full bg-emerald-500",
+      "class": "bg-emerald-500",
+      "opacity": "none",
+      "reason": "StatusDot's open dot with newLook off, which keeps today's markup to the letter (its span, its class and its title). Under the new look the dot takes bg-ok-500, the open words colour, and its words show beside it."
+    },
+    {
+      "file": "src/pages/TournamentManagePage.tsx",
+      "contains": "hover:border-emerald-600/50",
+      "class": "border-emerald-600",
+      "opacity": ["50"],
+      "reason": "The hover line of the check-in toggle when it is not checked, a 50 per cent green beside the words Check in, which shows the green the toggle turns. A half-strength green hint shows on a light or a dark card alike, so it stays as it is in every look, which also keeps the tint Tailwind works out for a browser that cannot mix colours (a token class with a modifier falls back to its token at full strength there); WS08 rebuilds check-in."
+    },
+    {
+      "file": "src/pages/TournamentPrintPage.tsx",
+      "class": "border-gray-300",
+      "opacity": "none",
+      "reason": "The rules between the rows of the pairing and alphabetical sheets. They are drawn for the paper, like the black rule under each heading, which no look restyles either, so they stay as they are and print as they always have. On the screen in dark mode they are light lines between dark rows: still seen, and a row rule carries no meaning of its own."
+    },
+    {
+      "file": "src/pages/TournamentsPage.tsx",
+      "class": "bg-slate-400",
+      "opacity": "none",
+      "reason": "The dot of the Other (Louisiana) filter and of External in the list's legend. It keys the colour the list gives an external event, the inline value #94a3b8 (slate-400), so the dot and what it keys stay one colour; each dot sits beside its words. WS04 rebuilds the list and its filters."
+    },
+    {
+      "file": "src/pages/TournamentsPage.tsx",
+      "class": "bg-slate-500",
+      "opacity": "none",
+      "reason": "The dot of the Out of State filter, beside its words and the external dot it sits under. It stays with that dot until WS04 rebuilds the filters."
+    },
+    {
+      "file": "src/components/ImpersonationBanner.tsx",
+      "contains": "px-2.5 py-0.5 text-xs font-semibold",
+      "class": "bg-brand-navy",
+      "opacity": ["10"],
+      "reason": "The Exit button's hover on the gold impersonation banner: a navy tint on gold, which stays navy in every look, like the navy words on the banner."
+    }
+  ]
+}

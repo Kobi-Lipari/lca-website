@@ -1,0 +1,317 @@
+{
+  "comment": "Computed colours and font-family on the a11y-off build (no switches on), written by test/a11y/baseline.ts. Later steps compare against it: with newLook off, these must not change. Rewrite it only on purpose, with A11Y_BASELINE=record npm run test:a11y.",
+  "build": "a11y-off",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "colorScheme": "light",
+  "routes": {
+    "/": {
+      "body": {
+        "found": true,
+        "color": "oklch(0.145 0 0)",
+        "backgroundColor": "oklch(1 0 0)",
+        "borderColor": "oklch(0.922 0 0)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            10,
+            10,
+            10,
+            255
+          ],
+          "backgroundColor": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "borderColor": [
+            229,
+            229,
+            229,
+            255
+          ]
+        }
+      },
+      "button": {
+        "found": true,
+        "text": "Find a tournament",
+        "variant": "default",
+        "color": "rgb(26, 39, 68)",
+        "backgroundColor": "rgb(200, 169, 74)",
+        "borderColor": "rgba(0, 0, 0, 0)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            26,
+            39,
+            68,
+            255
+          ],
+          "backgroundColor": [
+            200,
+            169,
+            74,
+            255
+          ],
+          "borderColor": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "tableHeader": {
+        "found": false
+      },
+      "mono": {
+        "found": false
+      }
+    },
+    "/tournaments": {
+      "body": {
+        "found": true,
+        "color": "oklch(0.145 0 0)",
+        "backgroundColor": "oklch(1 0 0)",
+        "borderColor": "oklch(0.922 0 0)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            10,
+            10,
+            10,
+            255
+          ],
+          "backgroundColor": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "borderColor": [
+            229,
+            229,
+            229,
+            255
+          ]
+        }
+      },
+      "button": {
+        "found": true,
+        "text": "Register now",
+        "variant": "default",
+        "color": "rgb(26, 39, 68)",
+        "backgroundColor": "rgb(200, 169, 74)",
+        "borderColor": "rgba(0, 0, 0, 0)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            26,
+            39,
+            68,
+            255
+          ],
+          "backgroundColor": [
+            200,
+            169,
+            74,
+            255
+          ],
+          "borderColor": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "tableHeader": {
+        "found": false
+      },
+      "mono": {
+        "found": false
+      }
+    },
+    "/membership": {
+      "body": {
+        "found": true,
+        "color": "oklch(0.145 0 0)",
+        "backgroundColor": "oklch(1 0 0)",
+        "borderColor": "oklch(0.922 0 0)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            10,
+            10,
+            10,
+            255
+          ],
+          "backgroundColor": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "borderColor": [
+            229,
+            229,
+            229,
+            255
+          ]
+        }
+      },
+      "button": {
+        "found": true,
+        "text": "Join Now",
+        "variant": "default",
+        "color": "rgb(26, 39, 68)",
+        "backgroundColor": "rgb(200, 169, 74)",
+        "borderColor": "rgba(0, 0, 0, 0)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            26,
+            39,
+            68,
+            255
+          ],
+          "backgroundColor": [
+            200,
+            169,
+            74,
+            255
+          ],
+          "borderColor": [
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      },
+      "tableHeader": {
+        "found": false
+      },
+      "mono": {
+        "found": false
+      }
+    },
+    "/tournaments/fx-t-done": {
+      "body": {
+        "found": true,
+        "color": "oklch(0.145 0 0)",
+        "backgroundColor": "oklch(1 0 0)",
+        "borderColor": "oklch(0.922 0 0)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            10,
+            10,
+            10,
+            255
+          ],
+          "backgroundColor": [
+            255,
+            255,
+            255,
+            255
+          ],
+          "borderColor": [
+            229,
+            229,
+            229,
+            255
+          ]
+        }
+      },
+      "button": {
+        "found": true,
+        "text": "See pairings / results",
+        "variant": "outline",
+        "color": "rgb(26, 39, 68)",
+        "backgroundColor": "oklab(0.744032 -0.00233418 0.119053 / 0.15)",
+        "borderColor": "oklab(0.744032 -0.00233418 0.119053 / 0.5)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            26,
+            39,
+            68,
+            255
+          ],
+          "backgroundColor": [
+            201,
+            168,
+            74,
+            38
+          ],
+          "borderColor": [
+            199,
+            169,
+            74,
+            128
+          ]
+        }
+      },
+      "tableHeader": {
+        "found": true,
+        "text": "Section",
+        "color": "rgb(26, 39, 68)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderColor": "oklch(0.922 0 0)",
+        "fontFamily": "\"Geist Variable\", sans-serif",
+        "pixels": {
+          "color": [
+            26,
+            39,
+            68,
+            255
+          ],
+          "backgroundColor": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "borderColor": [
+            229,
+            229,
+            229,
+            255
+          ]
+        }
+      },
+      "mono": {
+        "found": true,
+        "text": "1910",
+        "color": "oklch(0.556 0 0)",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "borderColor": "oklch(0.922 0 0)",
+        "fontFamily": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace",
+        "pixels": {
+          "color": [
+            115,
+            115,
+            115,
+            255
+          ],
+          "backgroundColor": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "borderColor": [
+            229,
+            229,
+            229,
+            255
+          ]
+        }
+      }
+    }
+  }
+}

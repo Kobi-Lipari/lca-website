@@ -245,7 +245,7 @@ No birthdate, grade or child-email columns. members.email stays NOT NULL and hol
 
 Code:
 - functions/utils/auth.ts requireAuthedMember and optionalAuthedMember: SELECT by auth_user_id = user.id, else by id = user.id AND auth_user_id IS NULL.
-- functions/utils/members.ts upsertMemberFromAuth: resolve the same way and update email on the resolved row. Refuse a signup US Chess ID that is on a managed profile, with the message "Ask your parent or guardian to give you your own login from My LCA".
+- functions/utils/admin/members.ts (functions/utils/members.ts before step 16) upsertMemberFromAuth: resolve the same way and update email on the resolved row. Refuse a signup US Chess ID that is on a managed profile, with the message "Ask your parent or guardian to give you your own login from My LCA".
 - The 17 places that use user.id as a member id switch to member.id.
 - functions/utils/family.ts:
   to canActFor and listChildren read active member_guardians.

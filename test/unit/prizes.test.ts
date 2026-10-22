@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { awardPrizes, prizeFundTotal, type PrizeStanding, type SectionPrizes } from '../../functions/utils/prizes'
+import { awardPrizes, prizeFundTotal, type PrizeStanding, type SectionPrizes } from '../../functions/utils/events/prizes'
 
 const S = 'Open'
 const p = (member_id: string, score: number, rating: number | null, grade?: [number, number]): PrizeStanding =>

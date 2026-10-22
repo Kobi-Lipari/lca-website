@@ -69,8 +69,9 @@ describe('section entry rules', () => {
 })
 
 describe('entry pricing', () => {
-  it('takes the early and member discounts off at checkout', async () => {
+  it('takes the early discount off at checkout, and the member and the guest both pay 20', async () => {
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 25 }] })
+    // member_discount is left set to show it is no longer read: there is no member price.
     await env.DB.prepare(
       `UPDATE tournaments SET early_deadline = '2099-01-01', early_discount = 5, member_discount = 3 WHERE id = ?`,
     ).bind(tournamentId).run()
@@ -78,12 +79,14 @@ describe('entry pricing', () => {
     const res = await register(member, { tournamentId, section: 'Open' })
     expect(res.status).toBe(201)
     const { payment } = await res.json<{ payment: { amount: number } }>()
-    expect(payment.amount).toBe(17)
-    expect(stripeSessions.at(-1)?.lineItems[0].amountCents).toBe(1700)
+    expect(payment.amount).toBe(20)
+    expect(stripeSessions.at(-1)?.lineItems[0].amountCents).toBe(2000)
 
     const guest = await seedMember({ membershipStatus: 'expired' })
     const res2 = await register(guest, { tournamentId, section: 'Open' })
+    expect(res2.status).toBe(201)
     expect((await res2.json<{ payment: { amount: number } }>()).payment.amount).toBe(20)
+    expect(stripeSessions.at(-1)?.lineItems[0].amountCents).toBe(2000)
   })
 
   it('adds the late fee once the late date has passed', async () => {

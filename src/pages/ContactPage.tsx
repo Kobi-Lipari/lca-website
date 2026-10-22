@@ -31,7 +31,7 @@ export function ContactPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    // A failed seat load isn't fatal — the form still sends as a general
+    // A failed seat load isn't fatal: the form still sends as a general
     // inquiry, which is what an unrecognised ?to= does on the server anyway.
     getBoardSeats()
       .then(setSeats)
@@ -45,7 +45,7 @@ export function ContactPage() {
     setStatus('sending')
     setError(null)
     try {
-      const result = await submitContact(form)
+      await submitContact(form)
       setStatus('success')
       setForm({ name: '', email: '', subject: '', body: '', seatRef: '' })
     } catch {
@@ -56,9 +56,9 @@ export function ContactPage() {
 
   return (
     <div>
-      <section className="border-b-[3px] border-lca-gold bg-lca-navy">
+      <section className="border-b-[3px] border-lca-gold bg-brand-navy">
         <div className="mx-auto max-w-6xl px-6 py-10">
-          <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/15 px-2.5 py-0.5 text-[10px] text-[#f0d07a]">Louisiana Chess Association</div>
+          <div className="mb-2 inline-block rounded-full border border-lca-gold/50 bg-lca-gold/15 px-2.5 py-0.5 text-[10px] text-gold-on-dark-badge">Louisiana Chess Association</div>
           <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">Contact us</h1>
           <p className="mt-2 text-sm text-white/60">
             {selectedSeat
@@ -71,11 +71,11 @@ export function ContactPage() {
       <section className="mx-auto max-w-6xl px-6 py-10">
         <div className="grid gap-10 lg:grid-cols-2">
           <div>
-            <h2 className="mb-6 text-xl font-bold text-lca-navy">Send a message</h2>
+            <h2 className="mb-6 text-xl font-bold text-ink">Send a message</h2>
             {status === 'success' ? (
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-center">
-                <p className="font-semibold text-emerald-800">Message sent</p>
-                <p className="mt-1 text-sm text-emerald-700">
+              <div className="rounded-xl border border-ok-200 bg-ok-50 p-6 text-center">
+                <p className="font-semibold text-ok">Message sent</p>
+                <p className="mt-1 text-sm text-ok-700">
                   We emailed you a copy. You can follow it in the{' '}
                   <a href="/support" className="underline">support area</a>.
                 </p>
@@ -97,7 +97,7 @@ export function ContactPage() {
                     {seats.map((seat) => (
                       <option key={seat.id} value={seat.slug}>
                         {seat.role}
-                        {seat.holder_count > 0 ? ` — ${seat.holder_name}` : ' (seat open)'} 
+                        {seat.holder_count > 0 ? ` · ${seat.holder_name}` : ' (seat open)'} 
                       </option>
                     ))}
                   </select>
@@ -112,7 +112,7 @@ export function ContactPage() {
                 </div>
                 <div className="space-y-1.5"><Label htmlFor="subject">Subject</Label><Input id="subject" value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} required /></div>
                 <div className="space-y-1.5"><Label htmlFor="body">Message</Label><Textarea id="body" rows={6} value={form.body} onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))} required /></div>
-                <Button type="submit" className="w-full bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90" disabled={status === 'sending'}>
+                <Button type="submit" className="w-full bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90" disabled={status === 'sending'}>
                   {status === 'sending' ? 'Sending…' : 'Send message'}
                 </Button>
               </form>
@@ -120,27 +120,27 @@ export function ContactPage() {
           </div>
 
           <div className="space-y-6">
-            <h2 className="text-xl font-bold text-lca-navy">Contact information</h2>
+            <h2 className="text-xl font-bold text-ink">Contact information</h2>
             <div className="space-y-5 text-sm">
               <div className="flex items-start gap-3">
-                <Mail className="mt-0.5 size-5 flex-shrink-0 text-lca-gold" />
+                <Mail className="mt-0.5 size-5 flex-shrink-0 text-gold-ink" />
                 <div>
                   <p className="font-medium text-foreground">Email</p>
                   <a href={`mailto:${LCA_EMAIL}`} className="text-muted-foreground hover:underline">{LCA_EMAIL}</a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 size-5 flex-shrink-0 text-lca-gold" />
+                <MapPin className="mt-0.5 size-5 flex-shrink-0 text-gold-ink" />
                 <div>
                   <p className="font-medium text-foreground">State</p>
                   <p className="text-muted-foreground">Louisiana, United States</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MessageSquare className="mt-0.5 size-5 flex-shrink-0 text-lca-gold" />
+                <MessageSquare className="mt-0.5 size-5 flex-shrink-0 text-gold-ink" />
                 <div>
                   <p className="font-medium text-foreground">Technical support</p>
-                  <p className="text-muted-foreground">Site problems go to the same place — use the form above, or the <a href="/support" className="text-lca-navy hover:underline">support ticket system</a>.</p>
+                  <p className="text-muted-foreground">Site problems go to the same place: use the form above, or the <a href="/support" className="text-ink hover:underline">support ticket system</a>.</p>
                 </div>
               </div>
             </div>

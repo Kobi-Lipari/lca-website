@@ -2,7 +2,7 @@
 import type { Env } from '../../../../../types'
 import { isResponse, requireClubRep } from '../../../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse } from '../../../../../utils/response'
-import { recordAdminAction } from '../../../../../utils/audit'
+import { recordAdminAction } from '../../../../../utils/admin/audit'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 

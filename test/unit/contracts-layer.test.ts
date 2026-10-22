@@ -174,8 +174,8 @@ describe('events schemas', () => {
     expect(tournamentsListResponseSchema.safeParse({ tournaments: [], total: 0 }).success).toBe(false)
   })
 
-  it('names all 41 tournaments columns plus the two from the club join', () => {
-    expect(Object.keys(tournamentListItemSchema.shape)).toHaveLength(43)
-    expect(Object.keys(tournamentListItemSchema.shape)).toEqual(expect.arrayContaining(['end_date', 'club_name', 'club_color', 'member_discount']))
+  it('names all 42 tournaments columns plus the two from the club join and the schedules', () => {
+    expect(Object.keys(tournamentListItemSchema.shape)).toHaveLength(45)
+    expect(Object.keys(tournamentListItemSchema.shape)).toEqual(expect.arrayContaining(['end_date', 'club_name', 'club_color', 'member_discount', 'requires_lca_membership', 'schedules']))
   })
 })

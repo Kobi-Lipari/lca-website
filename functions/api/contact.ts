@@ -13,7 +13,7 @@ import {
   jsonResponse,
   parseJsonBody,
 } from '../utils/response'
-import { createTicket, siteUrlFromRequest } from '../utils/tickets'
+import { createTicket, siteUrlFromRequest } from '../utils/admin/tickets'
 
 interface ContactBody {
   name: string

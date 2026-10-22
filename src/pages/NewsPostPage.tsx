@@ -28,7 +28,7 @@ export function NewsPostPage() {
   if (missing) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-16 text-center">
-        <p className="font-medium text-lca-navy">This post isn't available.</p>
+        <p className="font-medium text-ink">This post isn't available.</p>
         <Button asChild variant="outline" className="mt-4"><Link to="/news">All news</Link></Button>
       </div>
     )
@@ -64,10 +64,10 @@ export function NewsPostPage() {
         {post.image_url && (
           <img src={post.image_url} alt="" className="mb-8 w-full rounded-xl border object-cover" />
         )}
-        {post.summary && <p className="text-lg leading-relaxed text-lca-navy">{post.summary}</p>}
+        {post.summary && <p className="text-lg leading-relaxed text-ink">{post.summary}</p>}
         {post.body_html && (
           <div
-            className="prose prose-sm mt-6 max-w-none sm:prose-base [&_a]:text-lca-navy [&_a]:underline [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5"
+            className="prose prose-sm mt-6 max-w-none sm:prose-base [&_a]:text-ink [&_a]:underline [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5"
             // Sanitised server-side on save (functions/utils/posts.ts).
             dangerouslySetInnerHTML={{ __html: post.body_html }}
           />

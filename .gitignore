@@ -24,6 +24,15 @@ scripts/members.tsv
 .dev.vars
 backup-*.sql
 
+# The accessibility tests (npm run test:a11y): the two builds, the local
+# database they run on, and Playwright's results and report. .dev.vars.a11y
+# is committed on purpose: it holds fake values only.
+dist-a11y-on/
+dist-a11y-off/
+.wrangler/a11y/
+test-results/
+playwright-report/
+
 # Claude Code keeps per-machine state here (settings.local.json, session
 # scratch). launch.json is the shared dev-server config and is meant to be
 # committed, so it is excepted rather than the whole directory ignored.

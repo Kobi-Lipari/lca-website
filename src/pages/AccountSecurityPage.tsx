@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 export function AccountSecurityPage() {
   usePageTitle('Account Security')
@@ -147,7 +147,7 @@ export function AccountSecurityPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
             <ShieldCheck className="size-8 text-lca-gold sm:size-10" />
@@ -193,15 +193,15 @@ export function AccountSecurityPage() {
           </p>
         )}
         {notice && (
-          <p className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+          <p className="mb-4 rounded-lg border border-ok-200 bg-ok-50 px-3 py-2 text-sm text-ok">
             {notice}
           </p>
         )}
 
         <div className="rounded-xl border bg-card p-6 shadow-sm">
           <div className="flex items-center gap-2">
-            <KeyRound className="size-5 text-lca-gold" />
-            <h2 className="text-lg font-bold text-lca-navy">
+            <KeyRound className="size-5 text-gold-ink" />
+            <h2 className="text-lg font-bold text-ink">
               Authenticator app
             </h2>
           </div>
@@ -263,8 +263,8 @@ export function AccountSecurityPage() {
           ) : hasVerified ? (
             <div className="mt-4">
               <p className="flex items-center gap-2 text-sm">
-                <ShieldCheck className="size-4 text-emerald-600" />
-                <span className="font-medium text-emerald-800">
+                <ShieldCheck className="size-4 text-ok-600" />
+                <span className="font-medium text-ok">
                   On for this account
                 </span>
               </p>
@@ -279,7 +279,7 @@ export function AccountSecurityPage() {
                   in order to fix the problem offers no way to fix it. */}
               {assuranceLevel !== 'aal2' && (
                 <form onSubmit={handleStepUp} className="mt-4 rounded-lg border border-lca-gold/50 bg-lca-gold/8 p-4">
-                  <p className="text-sm font-medium text-lca-navy">
+                  <p className="text-sm font-medium text-ink">
                     Verify this session
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
@@ -357,7 +357,7 @@ export function AccountSecurityPage() {
         </div>
 
         <p className="mt-6 text-sm text-muted-foreground">
-          <Link to="/dashboard" className="text-lca-navy hover:underline">
+          <Link to="/dashboard" className="text-ink hover:underline">
             ← Back to my profile
           </Link>
         </p>

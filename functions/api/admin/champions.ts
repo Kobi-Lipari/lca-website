@@ -6,7 +6,7 @@
 import type { Env } from '../../types'
 import { isResponse, requireAdmin } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseJsonBody } from '../../utils/response'
-import { cleanChampion, type ChampionInput } from '../../utils/champions'
+import { cleanChampion, type ChampionInput } from '../../utils/events/champions'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 

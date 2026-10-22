@@ -25,7 +25,7 @@ import {
   type ApiMySeat,
 } from '@/lib/api'
 import { getAssuranceLevel } from '@/lib/mfa'
-import { isViewOnlyAdmin, resolveRole, type MemberRole } from '@/lib/roles'
+import { isViewOnlyAdmin, resolveRole, type MemberRole } from '@/areas/admin/roles'
 import { supabase } from '@/lib/supabase'
 
 interface ImpersonationTarget {

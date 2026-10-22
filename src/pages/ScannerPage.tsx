@@ -10,7 +10,7 @@
 // Nothing is stored: the photo lives in this tab's memory until the member
 // leaves or scans another.
 
-import { useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
+import { useMemo, useRef, useState, useSyncExternalStore, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Camera,
@@ -83,9 +83,9 @@ function SignInPrompt() {
   return (
     <div className="rounded-xl border bg-card p-6 shadow-sm sm:p-8">
       <div className="flex size-11 items-center justify-center rounded-lg bg-lca-gold/10">
-        <LogIn className="size-5 text-lca-gold" aria-hidden="true" />
+        <LogIn className="size-5 text-gold-ink" aria-hidden="true" />
       </div>
-      <h2 className="mt-4 text-xl font-semibold text-lca-navy">Log in to scan a scoresheet</h2>
+      <h2 className="mt-4 text-xl font-semibold text-ink">Log in to scan a scoresheet</h2>
       <p className="mt-2 max-w-prose text-sm leading-relaxed text-muted-foreground">
         The scanner is free with an LCA account. Log in, take a photo of your scoresheet, and
         you'll have the game on a board in under a minute.
@@ -114,13 +114,13 @@ function HowItWorks() {
   return (
     <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
       <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-        <div className="bg-lca-navy px-4 py-3">
+        <div className="bg-brand-navy px-4 py-3">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-white/60">How it works</p>
         </div>
         <ol className="space-y-3 p-4">
           {steps.map(([title, body], i) => (
             <li key={title} className="flex gap-3">
-              <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-lca-gold/15 text-xs font-semibold text-lca-navy">
+              <span className="flex size-6 flex-shrink-0 items-center justify-center rounded-full bg-lca-gold/15 text-xs font-semibold text-ink">
                 {i + 1}
               </span>
               <div>
@@ -132,7 +132,7 @@ function HowItWorks() {
         </ol>
       </div>
       <p className="flex gap-2 px-1 text-xs leading-relaxed text-muted-foreground">
-        <ShieldCheck className="mt-0.5 size-3.5 flex-shrink-0 text-lca-gold" aria-hidden="true" />
+        <ShieldCheck className="mt-0.5 size-3.5 flex-shrink-0 text-gold-ink" aria-hidden="true" />
         Photos are read once and never stored. Up to 20 scans per day.
       </p>
     </aside>
@@ -241,7 +241,7 @@ function ScannerTool() {
           <PageStrip urls={pageUrls} onRemove={removePage} />
 
           {pageCount < MAX_PAGES && (
-            <div className="mt-5 rounded-lg border border-dashed border-lca-navy/15 p-4">
+            <div className="mt-5 rounded-lg border border-dashed border-ink/15 p-4">
               <p className="text-sm font-medium text-foreground">Does the game continue on the back or another sheet?</p>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Add the next page, in order. Pages are joined into one game before the moves are checked.
@@ -268,7 +268,7 @@ function ScannerTool() {
         <Panel>
           <PageStrip urls={pageUrls} dimmed />
           <div role="status" aria-live="polite" className="mt-5 flex items-center gap-3">
-            <Loader2 className="size-5 animate-spin text-lca-gold" aria-hidden="true" />
+            <Loader2 className="size-5 animate-spin text-gold-ink" aria-hidden="true" />
             <div>
               <p className="text-sm font-medium text-foreground">
                 {stage.step === 'reading'
@@ -350,26 +350,43 @@ function scanError(err: unknown): Stage {
   }
 }
 
-/** Object URLs for the chosen photos, released when they change or the page closes. */
+/**
+ * Object URLs for the chosen photos, released when they change or the page
+ * closes. The URLs live outside React, so they come in through
+ * useSyncExternalStore rather than state set from an effect: each set of
+ * files gets a small store that makes its URLs when first read, and React's
+ * unsubscribe (the files changed, or the page closed) releases them. In
+ * development StrictMode unsubscribes and subscribes again straight away;
+ * the store then asks React to read again, which makes fresh URLs.
+ */
 function useObjectUrls(files: File[]): string[] {
-  const [urls, setUrls] = useState<string[]>([])
-  useEffect(() => {
-    const next = files.map((file) => URL.createObjectURL(file))
-    setUrls(next)
-    return () => next.forEach((url) => URL.revokeObjectURL(url))
-  }, [files])
-  return urls
+  const store = useMemo(() => objectUrlStore(files), [files])
+  return useSyncExternalStore(store.subscribe, store.read)
+}
+
+function objectUrlStore(files: File[]) {
+  let urls: string[] | null = null
+  return {
+    read: () => (urls ??= files.map((file) => URL.createObjectURL(file))),
+    subscribe: (changed: () => void) => {
+      if (urls === null) changed()
+      return () => {
+        for (const url of urls ?? []) URL.revokeObjectURL(url)
+        urls = null
+      }
+    },
+  }
 }
 
 // ── Picking a photo ──────────────────────────────────────────────────
 
 function PhotoPicker({ onChoose }: { onChoose: (file: File) => void }) {
   return (
-    <div className="rounded-xl border-2 border-dashed border-lca-navy/15 bg-card p-6 text-center sm:p-10">
+    <div className="rounded-xl border-2 border-dashed border-ink/15 bg-card p-6 text-center sm:p-10">
       <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-lca-gold/10">
-        <Camera className="size-6 text-lca-gold" aria-hidden="true" />
+        <Camera className="size-6 text-gold-ink" aria-hidden="true" />
       </div>
-      <h2 className="mt-4 text-lg font-semibold text-lca-navy">Add a photo of your scoresheet</h2>
+      <h2 className="mt-4 text-lg font-semibold text-ink">Add a photo of your scoresheet</h2>
       <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
         One sheet per photo, taken from straight above, with every row visible. If the game runs onto
         the back or another sheet, you can add those pages next.
@@ -437,7 +454,7 @@ function PageStrip({
             alt={`Page ${i + 1} of your scoresheet`}
             className={cn('aspect-[3/4] w-full rounded-lg border object-cover transition-opacity', dimmed && 'opacity-60')}
           />
-          <span className="absolute left-2 top-2 rounded-full bg-lca-navy px-2 py-0.5 text-xs font-semibold text-white">
+          <span className="absolute left-2 top-2 rounded-full bg-brand-navy px-2 py-0.5 text-xs font-semibold text-white">
             Page {i + 1}
           </span>
           {onRemove && (
@@ -445,7 +462,7 @@ function PageStrip({
               type="button"
               onClick={() => onRemove(i)}
               aria-label={`Remove page ${i + 1}`}
-              className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-white/90 text-foreground shadow hover:bg-white"
+              className="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full bg-surface/90 text-foreground shadow hover:bg-surface"
             >
               <X className="size-4" aria-hidden="true" />
             </button>
@@ -635,7 +652,7 @@ function Results({
             <img src={previewUrl} alt="Your scoresheet" className="h-28 w-auto self-start rounded-md border object-cover" />
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-lg font-semibold text-lca-navy">
+            <p className="text-lg font-semibold text-ink">
               {white} <span className="font-normal text-muted-foreground">vs</span> {black}
             </p>
             <p className="mt-0.5 text-sm text-muted-foreground">
@@ -644,9 +661,9 @@ function Results({
             <p className="mt-2 text-sm text-foreground">
               {Math.ceil(game.moves.length / 2)} moves · Result {game.result === '*' ? 'not recorded' : game.result}
               {needsLook > 0 ? (
-                <span className="text-amber-700"> · {needsLook} {needsLook === 1 ? 'move needs' : 'moves need'} a look</span>
+                <span className="text-warn-700"> · {needsLook} {needsLook === 1 ? 'move needs' : 'moves need'} a look</span>
               ) : (
-                <span className="text-emerald-700"> · every move checked</span>
+                <span className="text-ok-700"> · every move checked</span>
               )}
             </p>
           </div>
@@ -756,7 +773,7 @@ function MoveList({
     <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
       <div className="border-b px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-lca-navy">Moves</h2>
+          <h2 className="text-sm font-semibold text-ink">Moves</h2>
           {canUndo && (
             <Button type="button" variant="ghost" size="sm" onClick={onUndo} disabled={updating}>
               <Undo2 className="size-3.5" aria-hidden="true" /> Undo last change
@@ -768,13 +785,13 @@ function MoveList({
         </p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm bg-amber-200" aria-hidden="true" /> Check this move
+            <span className="size-2.5 rounded-sm bg-mark-warn" aria-hidden="true" /> Check this move
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm border border-dashed border-lca-navy/40" aria-hidden="true" /> Read differently from the sheet
+            <span className="size-2.5 rounded-sm border border-dashed border-ink/40" aria-hidden="true" /> Read differently from the sheet
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="size-2.5 rounded-sm bg-emerald-200" aria-hidden="true" /> Fixed by you
+            <span className="size-2.5 rounded-sm bg-mark-ok" aria-hidden="true" /> Fixed by you
           </span>
         </div>
       </div>
@@ -785,7 +802,7 @@ function MoveList({
           aria-live="polite"
           className={cn(
             'flex items-center gap-2 border-b px-4 py-2 text-xs',
-            updateError ? 'bg-red-50 text-red-900' : 'bg-muted/40 text-muted-foreground',
+            updateError ? 'bg-bad-50 text-bad-900' : 'bg-muted/40 text-muted-foreground',
           )}
         >
           {updating && <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />}
@@ -814,7 +831,7 @@ function MoveList({
         </tbody>
       </table>
       {game.truncatedAtPly !== undefined && (
-        <p className="border-t bg-amber-50 px-4 py-2.5 text-xs text-amber-900">
+        <p className="border-t bg-warn-50 px-4 py-2.5 text-xs text-warn-900">
           The rest of the sheet couldn't be matched to legal moves, so the game stops here. Fixing the last
           moves above can often get it going again.
         </p>
@@ -850,9 +867,9 @@ function MoveCell({
         aria-label={`${moveLabel(move)}${needsLook ? ', needs a look' : ''}${fixed ? ', fixed by you' : ''}. Change this move`}
         className={cn(
           'inline-block rounded px-1.5 py-0.5 text-left font-medium transition-colors hover:ring-2 hover:ring-lca-gold/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lca-gold',
-          needsLook && 'bg-amber-200 text-amber-950',
-          readDifferently && 'border border-dashed border-lca-navy/40',
-          fixed && 'bg-emerald-200 text-emerald-950',
+          // A fixed move never needs a look, so it carries one mark or the other.
+          fixed ? 'bg-mark-ok text-ok-950' : needsLook && 'bg-mark-warn text-warn-950',
+          readDifferently && 'border border-dashed border-ink/40',
         )}
       >
         {move.san}
@@ -970,7 +987,7 @@ function MoveEditor({
                   onClick={() => pick(san)}
                   className={cn(
                     'rounded-md border px-2 py-1 text-sm transition-colors hover:border-lca-gold hover:bg-lca-gold/10',
-                    san === move.san && 'border-lca-navy font-semibold',
+                    san === move.san && 'border-ink font-semibold',
                   )}
                 >
                   {san}
@@ -1009,7 +1026,7 @@ function Notice({
       role={tone === 'error' ? 'alert' : undefined}
       className={cn(
         'flex gap-3 rounded-lg border p-4',
-        tone === 'warn' ? 'border-amber-200 bg-amber-50 text-amber-950' : 'border-red-200 bg-red-50 text-red-900',
+        tone === 'warn' ? 'border-warn-200 bg-warn-50 text-warn-950' : 'border-bad-200 bg-bad-50 text-bad-900',
         className,
       )}
     >

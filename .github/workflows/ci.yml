@@ -56,3 +56,41 @@ jobs:
       # migrations, so a broken migration fails here rather than on deploy.
       - name: Integration tests
         run: npm run test:integration
+
+  # The browser accessibility suite (npm run test:a11y): builds the site twice
+  # in the accessibility test mode, serves both builds with wrangler pages dev
+  # on a local database built from the migrations and the synthetic seed, and
+  # runs axe and the colour baseline in Chromium. Pull requests only, and a
+  # job of its own, so the build-and-test job above is unchanged. Nothing here
+  # reaches a remote database or the Cloudflare account: every wrangler
+  # command in it is --local.
+  a11y:
+    name: Accessibility (Playwright and axe)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Accessibility tests
+        run: npm run test:a11y
+        env:
+          WRANGLER_SEND_METRICS: 'false'
+
+      - name: Keep the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

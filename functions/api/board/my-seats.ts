@@ -1,7 +1,7 @@
 // functions/api/board/my-seats.ts
 import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
-import { getRegionalClubIds } from '../../utils/permissions'
+import { getRegionalClubIds } from '../../utils/admin/permissions'
 import { handleOptions, jsonResponse } from '../../utils/response'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()

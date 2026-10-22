@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
 const goldButtonClass =
-  'bg-lca-gold font-semibold text-lca-navy hover:bg-lca-gold/90'
+  'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
 export function ResetPasswordPage() {
   usePageTitle('Reset Password')
@@ -135,7 +135,7 @@ export function ResetPasswordPage() {
 
   return (
     <div>
-      <section className="border-b-4 border-lca-gold bg-lca-navy text-white">
+      <section className="border-b-4 border-lca-gold bg-brand-navy text-white">
         <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="flex items-center gap-3">
             <KeyRound className="size-8 text-lca-gold sm:size-10" />
@@ -155,7 +155,7 @@ export function ResetPasswordPage() {
         <div className="mx-auto max-w-md">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl text-lca-navy">
+              <CardTitle className="text-xl text-ink">
                 Choose a new password
               </CardTitle>
               <CardDescription>
@@ -178,7 +178,7 @@ export function ResetPasswordPage() {
                   Reset links are single-use and expire after a short time.{' '}
                   <Link
                     to="/forgot-password"
-                    className="font-medium text-lca-navy hover:underline"
+                    className="font-medium text-ink hover:underline"
                   >
                     Request a new link
                   </Link>

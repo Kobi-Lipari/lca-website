@@ -11,7 +11,7 @@
 // Every export is written to the admin activity log.
 import type { Env } from '../../../types'
 import { isResponse, requireAdminView } from '../../../utils/auth'
-import { recordAdminAction } from '../../../utils/audit'
+import { recordAdminAction } from '../../../utils/admin/audit'
 import { toCsv } from '../../../utils/csv'
 import { errorResponse, handleOptions } from '../../../utils/response'
 

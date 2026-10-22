@@ -25,7 +25,7 @@ import {
   type ApiBoardTicket,
   type ApiTicketMessage,
 } from '@/lib/api'
-import { useViewOnly } from '@/lib/viewOnly'
+import { useViewOnly } from '@/hooks/useViewOnly'
 
 const STATUS_LABEL: Record<string, string> = {
   open: 'New',
@@ -198,7 +198,7 @@ export function BoardInboxPage() {
   if (denied) {
     return (
       <div className="mx-auto max-w-6xl px-6 py-16 text-center">
-        <h1 className="text-xl font-bold text-lca-navy">No board inbox</h1>
+        <h1 className="text-xl font-bold text-ink">No board inbox</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           This page is for members currently holding a board seat.
         </p>
@@ -208,7 +208,7 @@ export function BoardInboxPage() {
 
   return (
     <div>
-      <section className="border-b-[3px] border-lca-gold bg-lca-navy">
+      <section className="border-b-[3px] border-lca-gold bg-brand-navy">
         <div className="mx-auto max-w-6xl px-6 py-8">
           <h1 className="text-2xl font-bold tracking-tight text-white">Board inbox</h1>
           <p className="mt-1 text-sm text-white/60">
@@ -228,8 +228,8 @@ export function BoardInboxPage() {
 
         {isAdmin && vacantCount > 0 && (
           <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-lca-gold/50 bg-lca-gold/10 px-4 py-3">
-            <UserX className="mt-0.5 size-4 flex-shrink-0 text-[#7a5c00]" />
-            <p className="text-sm text-[#7a5c00]">
+            <UserX className="mt-0.5 size-4 flex-shrink-0 text-gold-ink-badge" />
+            <p className="text-sm text-gold-ink-badge">
               {vacantCount} unanswered {vacantCount === 1 ? 'message is' : 'messages are'} on
               {vacantCount === 1 ? ' a seat' : ' seats'} nobody currently holds — only
               admins can see {vacantCount === 1 ? 'it' : 'them'}. Link a member in
@@ -241,7 +241,7 @@ export function BoardInboxPage() {
         {tickets.length === 0 ? (
           <div className="rounded-xl border bg-card p-10 text-center">
             <Inbox className="mx-auto size-6 text-muted-foreground" />
-            <p className="mt-3 text-sm font-medium text-lca-navy">Nothing here yet</p>
+            <p className="mt-3 text-sm font-medium text-ink">Nothing here yet</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Messages sent through the board page will appear here.
             </p>
@@ -268,7 +268,7 @@ export function BoardInboxPage() {
                 className={cn(
                   'rounded-md border px-3 py-1.5 text-xs font-medium transition-colors',
                   onlyUnanswered
-                    ? 'border-lca-navy bg-lca-navy text-white'
+                    ? 'border-brand-navy bg-brand-navy text-white'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
               >
@@ -297,14 +297,14 @@ export function BoardInboxPage() {
                       )}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-lca-navy">
+                        <span className="truncate text-[10px] font-semibold uppercase tracking-wide text-ink">
                           {t.seat_role}
                         </span>
                         <span className="flex-shrink-0 text-[10px] text-muted-foreground">
                           {STATUS_LABEL[t.status] ?? t.status}
                         </span>
                       </div>
-                      <p className="mt-1 truncate text-sm font-medium text-lca-navy">
+                      <p className="mt-1 truncate text-sm font-medium text-ink">
                         {t.subject}
                       </p>
                       <p className="truncate text-xs text-muted-foreground">{t.number ? `Ticket: ${t.number} · ` : ''}{t.name}</p>
@@ -333,10 +333,10 @@ export function BoardInboxPage() {
                   <div className="rounded-xl border bg-card p-5 shadow-sm">
                     <div className="flex flex-wrap items-start justify-between gap-3 border-b pb-3">
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-lca-navy">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-ink">
                           {selected.seat_role}
                         </p>
-                        <h2 className="mt-0.5 font-bold text-lca-navy">
+                        <h2 className="mt-0.5 font-bold text-ink">
                           {selected.subject}
                         </h2>
                         <p className="mt-0.5 text-xs text-muted-foreground">
@@ -353,7 +353,7 @@ export function BoardInboxPage() {
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="text-red-600 hover:bg-red-50"
+                          className="text-bad hover:bg-bad-50"
                           disabled={deleting}
                           onClick={handleDelete}
                           aria-label="Delete this ticket"
@@ -372,7 +372,7 @@ export function BoardInboxPage() {
                             key={m.id}
                             className="rounded-lg border border-dashed border-lca-gold/50 bg-lca-gold/5 p-3"
                           >
-                            <p className="text-[11px] font-medium text-[#7a5c00]">
+                            <p className="text-[11px] font-medium text-gold-ink-badge">
                               Logged by {m.logged_by_name ?? 'a board member'}
                               {' · '}
                               {formatWhen(m.occurred_at ?? m.created_at)}
@@ -397,7 +397,7 @@ export function BoardInboxPage() {
                           onClick={() => setMode('reply')}
                           className={cn(
                             'rounded-md px-3 py-1 text-xs font-medium',
-                            mode === 'reply' ? 'bg-lca-navy text-white' : 'text-muted-foreground',
+                            mode === 'reply' ? 'bg-brand-navy text-white' : 'text-muted-foreground',
                           )}
                         >
                           Reply
@@ -407,7 +407,7 @@ export function BoardInboxPage() {
                           onClick={() => setMode('note')}
                           className={cn(
                             'rounded-md px-3 py-1 text-xs font-medium',
-                            mode === 'note' ? 'bg-lca-navy text-white' : 'text-muted-foreground',
+                            mode === 'note' ? 'bg-brand-navy text-white' : 'text-muted-foreground',
                           )}
                         >
                           Log an email

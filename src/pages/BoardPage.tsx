@@ -1,13 +1,17 @@
 // src/pages/BoardPage.tsx
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { Archive, Mail, Plus, ShieldCheck, MapPin } from 'lucide-react'
-import { GovLayout } from '@/components/governance/GovLayout'
-import { OfficerPhoto, OfficerPhotoControl } from '@/components/governance/OfficerPhoto'
+import { GovLayout } from '@/areas/governance/components/GovLayout'
+import { OfficerPhoto, OfficerPhotoControl } from '@/areas/governance/components/OfficerPhoto'
+import { ThemeScope } from '@/components/ThemeScope'
+import { ThickThinRule } from '@/components/ThickThinRule'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/contexts/auth-context'
+import { useHeritageHook, useHeritageOrnaments } from '@/contexts/heritage-layout'
+import { FEATURES } from '@/lib/features'
 import {
   adminCreateBoardMember,
   adminDeleteBoardMember,
@@ -34,6 +38,18 @@ function isRegional(seat: ApiBoardSeat): boolean {
   return seat.category ? seat.category === 'regional_rep' : isRegionalRole(seat.role)
 }
 
+/**
+ * An admin's form in the base look. With themeHeritage on this page is drawn
+ * in the heritage look (HeritageLayout), so the seat cards an admin edits
+ * and the Add a board seat card sit in a base scope (data-theme="", the one
+ * nesting the looks allow), as the governance documents' add and edit card
+ * does; the scope adds no box (display: contents), so nothing moves. With
+ * the switch off nothing wraps them.
+ */
+function BaseLook({ children }: { children: ReactNode }) {
+  return FEATURES.themeHeritage ? <ThemeScope scope="base">{children}</ThemeScope> : <>{children}</>
+}
+
 // ── A single officer or representative card ───────────────────────────────────
 // The public side never shows an address. The contact link opens the contact
 // form pre-routed to this SEAT (?to=<slug>), so the message becomes a ticket
@@ -57,9 +73,15 @@ function MemberCard({
   // A seat with no slug predates 0025 and can't be routed to yet.
   const contactHref = seat.slug ? `/contact?to=${encodeURIComponent(seat.slug)}` : '/contact'
   const isLinked = seat.holder_count > 0
+  const hook = useHeritageHook()
+  // An admin's card is a form for the seat (its title, its holder and the
+  // photo), so it is drawn in the base look and takes no heritage hook; a
+  // visitor's card takes the look's card hook.
+  const editing = isAdmin && member !== undefined
 
-  return (
+  const card = (
     <div
+      data-heritage={editing ? undefined : hook('card')}
       className="rounded-xl border bg-card p-4 shadow-sm"
       style={{ borderLeftColor: LCA.gold, borderLeftWidth: 3 }}
     >
@@ -67,7 +89,7 @@ function MemberCard({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Input
-              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-lca-navy"
+              className="h-7 text-[11px] font-semibold uppercase tracking-wide text-ink"
               value={member.role}
               disabled={saving}
               onBlur={(e) => onSave(seat.id, 'role', e.target.value)}
@@ -98,7 +120,7 @@ function MemberCard({
                   </div>
                 ))}
               </div>
-              <p className="text-sm font-semibold text-lca-navy">{seat.holder_name}</p>
+              <p className="text-sm font-semibold text-ink">{seat.holder_name}</p>
               <p className="mt-0.5 text-[10px] leading-snug text-muted-foreground">
                 From {seat.holder_count > 1 ? 'their member accounts' : 'their member account'}.
                 Messages reach {seat.holder_count > 1 ? 'them all' : 'them'} through the site.
@@ -107,7 +129,7 @@ function MemberCard({
           ) : (
             <>
               <Input
-                className="h-8 font-semibold text-lca-navy"
+                className="h-8 font-semibold text-ink"
                 value={member.name}
                 disabled={saving}
                 placeholder="Full name, or TBD"
@@ -128,7 +150,7 @@ function MemberCard({
         </div>
       ) : (
         <>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-lca-navy">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-ink">
             {seat.role}
           </p>
           {isVacant ? (
@@ -138,7 +160,7 @@ function MemberCard({
               </p>
               <Link
                 to={contactHref}
-                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-lca-navy hover:underline"
+                className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-medium text-ink hover:underline"
               >
                 Interested in serving? Contact us →
               </Link>
@@ -149,13 +171,13 @@ function MemberCard({
                 {(seat.holders?.length ? seat.holders : [{ member_id: seat.id, name: displayName, photo_url: seat.photo_url ?? null }]).map((h) => (
                   <OfficerPhoto key={h.member_id} name={h.name} photoUrl={h.photo_url} size={(seat.holders?.length ?? 1) > 1 ? 44 : 56} />
                 ))}
-                <p className="font-semibold text-lca-navy">{displayName}</p>
+                <p className="font-semibold text-ink">{displayName}</p>
               </div>
               <Link
                 to={contactHref}
                 aria-label={`Message the ${seat.role}`}
                 className={cn(
-                  'mt-3 inline-flex items-center gap-1.5 rounded-md border border-lca-gold/40 bg-lca-gold/8 px-2.5 py-1 text-[11px] font-medium text-[#7a5c00] transition-colors hover:bg-lca-gold/15',
+                  'mt-3 inline-flex items-center gap-1.5 rounded-md border border-lca-gold/40 bg-lca-gold/8 px-2.5 py-1 text-[11px] font-medium text-gold-ink-badge transition-colors hover:bg-lca-gold/15',
                 )}
               >
                 <Mail className="size-3" /> Message
@@ -166,12 +188,16 @@ function MemberCard({
       )}
     </div>
   )
+  return editing ? <BaseLook>{card}</BaseLook> : card
 }
 
 export function BoardPage() {
   usePageTitle('Board Members')
   const { role } = useAuth()
   const isAdmin = role === 'lca_admin'
+  // In the heritage layout, under the new look, a thick-thin rule parts the
+  // officers from the representatives, and the board from the closing note.
+  const ornaments = useHeritageOrnaments()
 
   // seats drives what's rendered (it knows the slug, the category, and who
   // currently holds the office). members is only needed for the admin editor,
@@ -283,8 +309,8 @@ export function BoardPage() {
           {officers.length > 0 && (
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <ShieldCheck className="size-5 text-lca-gold" />
-                <h2 className="text-base font-bold text-lca-navy">Officers</h2>
+                <ShieldCheck className="size-5 text-gold-ink" />
+                <h2 className="text-base font-bold text-ink">Officers</h2>
                 <span className="text-xs text-muted-foreground">· {officers.length}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -305,11 +331,13 @@ export function BoardPage() {
             </div>
           )}
 
+          {ornaments && officers.length > 0 && reps.length > 0 && <ThickThinRule />}
+
           {reps.length > 0 && (
             <div>
               <div className="mb-4 flex items-center gap-2">
-                <MapPin className="size-5 text-lca-gold" />
-                <h2 className="text-base font-bold text-lca-navy">Regional representatives</h2>
+                <MapPin className="size-5 text-gold-ink" />
+                <h2 className="text-base font-bold text-ink">Regional representatives</h2>
                 <span className="text-xs text-muted-foreground">· {reps.length}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -333,22 +361,24 @@ export function BoardPage() {
           {isAdmin && (
             <div>
               {adding ? (
-                <div className="rounded-xl border bg-card p-4 shadow-sm space-y-3">
-                  <p className="text-sm font-medium text-lca-navy">Add a board seat</p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div><Label className="text-xs">Role</Label><Input className="mt-1 h-8 text-sm" placeholder="e.g. President, or '… Representative'" value={newMember.role} onChange={(e) => setNewMember((p) => ({ ...p, role: e.target.value }))} /></div>
-                    <div><Label className="text-xs">Name</Label><Input className="mt-1 h-8 text-sm" placeholder="Full name, or TBD" value={newMember.name} onChange={(e) => setNewMember((p) => ({ ...p, name: e.target.value }))} /></div>
+                <BaseLook>
+                  <div className="rounded-xl border bg-card p-4 shadow-sm space-y-3">
+                    <p className="text-sm font-medium text-ink">Add a board seat</p>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <div><Label className="text-xs">Role</Label><Input className="mt-1 h-8 text-sm" placeholder="e.g. President, or '… Representative'" value={newMember.role} onChange={(e) => setNewMember((p) => ({ ...p, role: e.target.value }))} /></div>
+                      <div><Label className="text-xs">Name</Label><Input className="mt-1 h-8 text-sm" placeholder="Full name, or TBD" value={newMember.name} onChange={(e) => setNewMember((p) => ({ ...p, name: e.target.value }))} /></div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      A role containing "Representative" is grouped under Regional
+                      representatives. The name here is only a placeholder until you
+                      link a member account in Admin → Board seats.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button type="button" className={GOLD} size="sm" onClick={handleAdd} disabled={saving === 'new'}>Add seat</Button>
+                      <Button type="button" variant="outline" size="sm" onClick={() => setAdding(false)}>Cancel</Button>
+                    </div>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    A role containing "Representative" is grouped under Regional
-                    representatives. The name here is only a placeholder until you
-                    link a member account in Admin → Board seats.
-                  </p>
-                  <div className="flex gap-2">
-                    <Button type="button" className={GOLD} size="sm" onClick={handleAdd} disabled={saving === 'new'}>Add seat</Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setAdding(false)}>Cancel</Button>
-                  </div>
-                </div>
+                </BaseLook>
               ) : (
                 <Button type="button" variant="outline" size="sm" onClick={() => setAdding(true)}>
                   <Plus className="mr-1.5 size-3.5" /> Add a board seat
@@ -357,7 +387,9 @@ export function BoardPage() {
             </div>
           )}
 
-          <div className="rounded-xl border-[3px] border-lca-gold bg-lca-navy p-5 text-white">
+          {ornaments && <ThickThinRule />}
+
+          <div className="rounded-xl border-[3px] border-lca-gold bg-brand-navy p-5 text-white">
             <h3 className="font-semibold">Not sure who to ask?</h3>
             <p className="mt-2 text-sm text-white/65">
               Send it as a general inquiry and we'll route it to the right person. Every message opens a ticket you can follow.

@@ -1,0 +1,17 @@
+{
+  "functions/utils/tournament-manage.ts": "functions/utils/events/tournament-manage.ts",
+  "functions/utils/prizes.ts": "functions/utils/events/prizes.ts",
+  "functions/utils/champions.ts": "functions/utils/events/champions.ts",
+  "functions/utils/linkPreview.ts": "functions/utils/events/linkPreview.ts",
+  "functions/utils/registrationEmails.ts": "functions/utils/registration/registrationEmails.ts",
+  "functions/utils/registrationOpenNotify.ts": "functions/utils/registration/registrationOpenNotify.ts",
+  "functions/utils/membershipActivation.ts": "functions/utils/membership/membershipActivation.ts",
+  "functions/utils/membershipExpiry.ts": "functions/utils/membership/membershipExpiry.ts",
+  "functions/utils/ratingSnapshots.ts": "functions/utils/membership/ratingSnapshots.ts",
+  "functions/utils/swiss": "functions/utils/live/swiss",
+  "functions/utils/audit.ts": "functions/utils/admin/audit.ts",
+  "functions/utils/campaigns.ts": "functions/utils/admin/campaigns.ts",
+  "functions/utils/tickets.ts": "functions/utils/admin/tickets.ts",
+  "functions/utils/permissions.ts": "functions/utils/admin/permissions.ts",
+  "functions/utils/members.ts": "functions/utils/admin/members.ts"
+}

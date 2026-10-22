@@ -1,8 +1,8 @@
 // functions/api/admin/members/[id]/name.ts
 import type { Env } from '../../../../types'
-import { recordAdminAction } from '../../../../utils/audit'
+import { recordAdminAction } from '../../../../utils/admin/audit'
 import { isResponse, requireAdmin } from '../../../../utils/auth'
-import { getMemberById, validateFullName } from '../../../../utils/members'
+import { getMemberById, validateFullName } from '../../../../utils/admin/members'
 import { syncSupabaseUserFullName } from '../../../../utils/supabase'
 import {
   errorResponse,

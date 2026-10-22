@@ -24,10 +24,10 @@ import {
   weekBeforeReminderEmail,
   attendeeReminderEmail,
 } from '../../../functions/utils/email'
-import { sweepPendingCampaigns } from '../../../functions/utils/campaigns'
+import { sweepPendingCampaigns } from '../../../functions/utils/admin/campaigns'
 import { resolveSiteUrl } from '../../../functions/utils/site'
-import { expireLapsedMemberships } from '../../../functions/utils/membershipExpiry'
-import { snapshotMemberRatings } from '../../../functions/utils/ratingSnapshots'
+import { expireLapsedMemberships } from '../../../functions/utils/membership/membershipExpiry'
+import { snapshotMemberRatings } from '../../../functions/utils/membership/ratingSnapshots'
 import { hasPassed } from '../../../functions/utils/time'
 
 interface Env {
@@ -107,7 +107,7 @@ export default {
     })
 
     // 1c. Lapse memberships whose paid term has ended. Semantics and the
-    //     reasoning behind them live in functions/utils/membershipExpiry.ts,
+    //     reasoning behind them live in functions/utils/membership/membershipExpiry.ts,
     //     where they can be tested — this Worker has no harness of its own.
     await phase('membership expiry', async () => {
       const { lapsed } = await expireLapsedMemberships(env.DB, todayStr)

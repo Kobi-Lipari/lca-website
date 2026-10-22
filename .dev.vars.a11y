@@ -1,0 +1,28 @@
+# .dev.vars.a11y
+#
+# Fake values only. Nothing in this file is a real secret, and it is
+# committed on purpose: npm run test:a11y serves the accessibility test builds
+# with `wrangler pages dev`, and each line below is passed to it as a binding
+# (-b NAME=VALUE), which overrides the production values in wrangler.toml's
+# [vars] and anything in a developer's own .dev.vars or .env.
+# test/a11y/global-setup.ts builds those arguments (a11yServerArgs).
+#
+# - SUPABASE_URL points at a closed local port, so any sign-in check fails at
+#   once and nothing reaches the real auth service. No test signs in.
+# - The mail addresses are at example.org, and SITE_URL is the local server.
+# - STRIPE_SECRET_KEY, RESEND_API_KEY, FACEBOOK_PAGE_TOKEN, FACEBOOK_PAGE_ID
+#   and ANTHROPIC_API_KEY are left out on purpose and bound empty instead
+#   (A11Y_EMPTY_SECRETS), so nothing can be charged, mailed or fetched with a
+#   real key even when one is set elsewhere. No test pays or sends mail, and
+#   the Facebook feed endpoint answers "not configured" (the tests stub the
+#   feed in the browser instead).
+#
+# One NAME=value per line, letters, digits and the characters ._:/@- only.
+SUPABASE_URL=http://127.0.0.1:9
+SUPABASE_SERVICE_ROLE_KEY=fake-service-role-key-for-a11y-tests
+STRIPE_WEBHOOK_SECRET=whsec_fake_a11y
+SITE_URL=http://127.0.0.1:8801
+FROM_EMAIL=noreply@example.org
+CONTACT_EMAIL=contact@example.org
+SUPPORT_EMAIL=support@example.org
+REPLY_TO_EMAIL=reply@example.org

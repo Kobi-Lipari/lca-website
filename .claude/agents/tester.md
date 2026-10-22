@@ -16,6 +16,6 @@ Rules:
 - Test the plain-language rules where they apply: weekday on dates, "7:00 PM", ½ never .5, "US Chess" never USCF, partner rows with no Register and no count.
 - Never skip, disable or quarantine a test to get green. If a test exposes a real defect in the code, report it; do not paper over it in the test.
 - No AI references in test names, comments or fixtures.
-- The route-audit test that checks every `fetch('/api/…')` in `src/lib/api.ts` against a handler file must stay green.
+- The route-audit test that checks every `fetch('/api/…')` in `src/lib/http.ts` and the `src/areas/*/api.ts` modules against a handler file, and against the committed path snapshot, must stay green.
 
 Run `npm test` for unit tests and `npm run test:integration` for integration tests (or `npm run test:all`). Fix test-only failures yourself. Report: the tests you added with the criterion each covers, the run results with any failure quoted, and any defect in the code under test that a failing test revealed.

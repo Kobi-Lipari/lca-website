@@ -1,7 +1,7 @@
 // functions/api/membership/confirm.ts
 import type { Env } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
-import { activateMembershipPayment } from '../../utils/membershipActivation'
+import { activateMembershipPayment } from '../../utils/membership/membershipActivation'
 import { retrieveCheckoutSession } from '../../utils/stripe'
 import { errorResponse, jsonResponse, parseJsonBody } from '../../utils/response'
 
