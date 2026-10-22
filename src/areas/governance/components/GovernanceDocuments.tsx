@@ -1,7 +1,10 @@
 // src/areas/governance/components/GovernanceDocuments.tsx
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Plus, Trash2, Upload, FileText, Pencil, ChevronDown } from 'lucide-react'
 import { DocRow } from '@/areas/governance/components/GovLayout'
+import { ThemeScope } from '@/components/ThemeScope'
+import { useHeritageHook } from '@/contexts/heritage-layout'
+import { FEATURES } from '@/lib/features'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -44,6 +47,19 @@ function LazyEditor(props: { content: string; onChange: (html: string) => void }
   )
 }
 
+/**
+ * The add and edit card in the base look. With themeHeritage on, the
+ * heritage pages (Bylaws and Minutes) draw this list in the heritage look,
+ * so the card, its fields and the editor sit in a base scope
+ * (data-theme="", the one nesting the looks allow), which puts the base
+ * look back; the scope adds no box (display: contents), so nothing moves.
+ * With the switch off nothing wraps the card. The list of documents stays
+ * in the look of the page.
+ */
+function BaseLook({ children }: { children: ReactNode }) {
+  return FEATURES.themeHeritage ? <ThemeScope scope="base">{children}</ThemeScope> : <>{children}</>
+}
+
 const emptyForm = { title: '', content: '', doc_date: '', year: '' }
 
 function stripHtml(html: string): string {
@@ -66,11 +82,12 @@ function DocumentCard({
   onDelete: () => void
 }) {
   const [expanded, setExpanded] = useState(false)
+  const hook = useHeritageHook()
   const plainText = doc.content ? stripHtml(doc.content) : ''
   const snippet = plainText.length > 220 ? plainText.slice(0, 220).trim() + '…' : plainText
 
   return (
-    <div className="rounded-xl border bg-card shadow-sm overflow-hidden">
+    <div data-heritage={hook('card')} className="rounded-xl border bg-card shadow-sm overflow-hidden">
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
@@ -165,6 +182,7 @@ export function GovernanceDocuments({
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState(emptyForm)
+  const hook = useHeritageHook()
 
   useEffect(() => {
     getGovernanceDocuments(category)
@@ -267,79 +285,81 @@ export function GovernanceDocuments({
       </div>
 
       {adding && (
-        <div className="mb-4 rounded-xl border bg-card p-4 shadow-sm space-y-3">
-          <p className="text-sm font-medium text-ink">{editingId ? 'Edit document' : 'Add document'}</p>
+        <BaseLook>
+          <div className="mb-4 rounded-xl border bg-card p-4 shadow-sm space-y-3">
+            <p className="text-sm font-medium text-ink">{editingId ? 'Edit document' : 'Add document'}</p>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div><Label className="text-xs">Title</Label><Input className="mt-1 h-8 text-sm" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} /></div>
-            <div><Label className="text-xs">Document date</Label><Input type="date" className="mt-1 h-8 text-sm" value={form.doc_date} onChange={(e) => setForm((p) => ({ ...p, doc_date: e.target.value }))} /></div>
-          </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div><Label className="text-xs">Title</Label><Input className="mt-1 h-8 text-sm" value={form.title} onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))} /></div>
+              <div><Label className="text-xs">Document date</Label><Input type="date" className="mt-1 h-8 text-sm" value={form.doc_date} onChange={(e) => setForm((p) => ({ ...p, doc_date: e.target.value }))} /></div>
+            </div>
 
-          <Tabs defaultValue="write">
-            <TabsList>
-              <TabsTrigger value="write">Write</TabsTrigger>
-              <TabsTrigger value="upload">Upload & convert</TabsTrigger>
-            </TabsList>
+            <Tabs defaultValue="write">
+              <TabsList>
+                <TabsTrigger value="write">Write</TabsTrigger>
+                <TabsTrigger value="upload">Upload & convert</TabsTrigger>
+              </TabsList>
 
-            <TabsContent value="write" className="mt-3">
-              <LazyEditor content={form.content} onChange={(html) => setForm((p) => ({ ...p, content: html }))} />
-            </TabsContent>
+              <TabsContent value="write" className="mt-3">
+                <LazyEditor content={form.content} onChange={(html) => setForm((p) => ({ ...p, content: html }))} />
+              </TabsContent>
 
-            <TabsContent value="upload" className="mt-3 space-y-3">
-              <div
-                onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
-                onDragLeave={() => setDragOver(false)}
-                onDrop={(e) => {
-                  e.preventDefault()
-                  setDragOver(false)
-                  const file = e.dataTransfer.files[0]
-                  if (file) handleFile(file)
-                }}
-                onClick={() => fileInputRef.current?.click()}
-                className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-6 text-center text-sm transition-colors ${
-                  dragOver ? 'border-lca-gold bg-lca-gold/5' : 'border-muted-foreground/30'
-                }`}
-              >
-                <Upload className="size-5 text-muted-foreground" />
-                <p className="text-muted-foreground">
-                  {parsing ? 'Reading file…' : 'Drag a .docx or .pdf here, or click to browse'}
-                </p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept={ACCEPTED_UPLOAD_TYPES}
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
+              <TabsContent value="upload" className="mt-3 space-y-3">
+                <div
+                  onDragOver={(e) => { e.preventDefault(); setDragOver(true) }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    setDragOver(false)
+                    const file = e.dataTransfer.files[0]
                     if (file) handleFile(file)
-                    e.target.value = ''
                   }}
-                />
-              </div>
-
-              {form.content && (
-                <div>
-                  <Label className="text-xs">Review & edit before saving</Label>
-                  <div className="mt-1">
-                    <LazyEditor content={form.content} onChange={(html) => setForm((p) => ({ ...p, content: html }))} />
-                  </div>
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`flex cursor-pointer flex-col items-center justify-center gap-2 rounded-md border-2 border-dashed p-6 text-center text-sm transition-colors ${
+                    dragOver ? 'border-lca-gold bg-lca-gold/5' : 'border-muted-foreground/30'
+                  }`}
+                >
+                  <Upload className="size-5 text-muted-foreground" />
+                  <p className="text-muted-foreground">
+                    {parsing ? 'Reading file…' : 'Drag a .docx or .pdf here, or click to browse'}
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept={ACCEPTED_UPLOAD_TYPES}
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleFile(file)
+                      e.target.value = ''
+                    }}
+                  />
                 </div>
-              )}
-            </TabsContent>
-          </Tabs>
 
-          <div className="flex gap-2">
-            <Button type="button" className={GOLD} size="sm" onClick={handleSave} disabled={saving || !form.title || !form.content}>
-              {editingId ? 'Save changes' : 'Save'}
-            </Button>
-            <Button type="button" variant="outline" size="sm" onClick={cancelForm}>Cancel</Button>
+                {form.content && (
+                  <div>
+                    <Label className="text-xs">Review & edit before saving</Label>
+                    <div className="mt-1">
+                      <LazyEditor content={form.content} onChange={(html) => setForm((p) => ({ ...p, content: html }))} />
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+
+            <div className="flex gap-2">
+              <Button type="button" className={GOLD} size="sm" onClick={handleSave} disabled={saving || !form.title || !form.content}>
+                {editingId ? 'Save changes' : 'Save'}
+              </Button>
+              <Button type="button" variant="outline" size="sm" onClick={cancelForm}>Cancel</Button>
+            </div>
           </div>
-        </div>
+        </BaseLook>
       )}
 
       <div className="space-y-3">
         {docs.length === 0 ? (
-          <div className="rounded-xl border bg-card px-4 py-3 shadow-sm">
+          <div data-heritage={hook('card')} className="rounded-xl border bg-card px-4 py-3 shadow-sm">
             <p className="text-sm italic text-muted-foreground">No documents yet.</p>
           </div>
         ) : (

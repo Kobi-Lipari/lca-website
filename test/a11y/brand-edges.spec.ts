@@ -21,10 +21,11 @@
 //   sits on the partner tag's row, so the wider tag starts no row of its own
 //   and moves no box below it. The fixture still holds 13 [data-status]
 //   elements.
-// - /about's frame paints the surface: white in the base look, the cream of
-//   the heritage look (#fffdf8, with its hairline) when main is drawn in that
-//   look as step 31 will draw it, and the dark surface in dark mode; nothing
-//   is laid over the logo, and nothing recolours it.
+// - /about's frame paints the surface: the cream of the heritage look
+//   (#fffdf8, with its hairline and 2px corners) as the heritage layout
+//   draws the page, white with its 14px corners in the base look (the
+//   layout's scope set to data-theme="" by the test), and the dark surface
+//   in dark mode; nothing is laid over the logo, and nothing recolours it.
 // - axe with the WCAG 2.0, 2.1 and 2.2 A and AA rules finds nothing in the
 //   header, in the footer or on /about at 390 pixels with a dark device.
 // - On the pages a phone opens most, the header and the footer fit a 390 and
@@ -271,17 +272,20 @@ test.describe('/about\'s frame in the looks', () => {
     light: { base: ['rgb(255, 255, 255)', 'rgb(229, 231, 237)'], heritage: ['rgb(255, 253, 248)', 'rgb(216, 205, 180)'] },
     dark: { base: ['rgb(17, 26, 44)', 'rgba(255, 255, 255, 0.08)'], heritage: ['rgb(17, 26, 44)', 'rgba(255, 255, 255, 0.08)'] },
   } as const
+  /** The frame's corners: the base look's rounded-xl, and the heritage look's 2px. */
+  const CORNERS = { base: '14px', heritage: '2px' } as const
 
-  test('a11y-on: the surface (white, the heritage cream, the dark surface) with its hairline, nothing laid over the logo and nothing recolouring it', async ({ page }, testInfo) => {
+  test('a11y-on: the surface (the heritage cream, white, the dark surface) with its hairline, nothing laid over the logo and nothing recolouring it', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== ON, 'the logo on /about is drawn under the new look, on a11y-on')
     for (const scheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme: scheme })
-      for (const look of ['base', 'heritage'] as const) {
+      for (const look of ['heritage', 'base'] as const) {
         await openAbout(page, 1280)
         const mat = page.locator('main [data-slot="lca-logo-mat"]')
         await expect(mat).toHaveCount(1)
-        // The page draws two main elements, the layout's and GovLayout's inside it; the look goes on the one round the frame.
-        if (look === 'heritage') await mat.evaluate((el) => el.closest('main')!.setAttribute('data-theme', 'heritage'))
+        // The heritage layout draws the page in its look; for the base reading its scope is set to the base look in place.
+        expect(await mat.evaluate((el) => el.closest('[data-theme]')?.getAttribute('data-layout'))).toBe('heritage')
+        if (look === 'base') await mat.evaluate((el) => el.closest('[data-layout="heritage"]')!.setAttribute('data-theme', ''))
         const logo = mat.locator('img')
         await expect.poll(() => logo.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true)
         const m = await mat.evaluate((el) => {
@@ -292,12 +296,14 @@ test.describe('/about\'s frame in the looks', () => {
           return {
             ground: getComputedStyle(el).backgroundColor,
             line: getComputedStyle(el).borderTopColor,
+            corner: getComputedStyle(el).borderTopLeftRadius,
             natural: [img.naturalWidth, img.naturalHeight],
             onTop: points.map(([x, y]) => document.elementFromPoint(box.left + box.width * x, box.top + box.height * y) === img),
           }
         })
         const at = `${look} look, ${scheme} device`
         expect([m.ground, m.line], at).toEqual(GROUNDS[scheme][look])
+        expect(m.corner, at).toBe(CORNERS[look])
         expect(m.natural, at).toEqual([400, 399])
         expect(m.onTop, `${at}: the logo is what is seen at each point`).toEqual([true, true, true, true, true])
         expect(await recolouring(logo), at).toEqual([])

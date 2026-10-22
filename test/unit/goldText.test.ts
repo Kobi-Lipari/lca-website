@@ -773,7 +773,7 @@ describe('the gold guard on the tree', () => {
     expect(of('ink', 'light')).toHaveLength(18)
     expect(of('ink', 'navy')).toEqual([])
     expect(of('pill', 'light')).toEqual([])
-    expect(of('pill', 'navy')).toEqual(['src/components/FilterDropdown.tsx:47', 'src/components/MultiSelectDropdown.tsx:59', 'src/components/PageHero.tsx:75', 'src/pages/ContactPage.tsx:61'])
+    expect(of('pill', 'navy')).toEqual(['src/components/FilterDropdown.tsx:47', 'src/components/MultiSelectDropdown.tsx:59', 'src/components/PageHero.tsx:84', 'src/pages/ContactPage.tsx:61'])
     // What the reading cannot place is the badge allowlist's, use for use: the tags in objects of strings and the home hero's pill.
     const unplaced = result.badgeUses.filter((b) => b.ground === 'unplaced').map((b) => `${b.use.file} ${b.use.token}`)
     expect(unplaced.sort()).toEqual(GOLD_BADGE_ALLOWLIST.flatMap((e) => Array.from({ length: e.count }, () => `${e.file} ${e.class}`)).sort())
@@ -789,11 +789,25 @@ describe('the gold guard on the tree', () => {
   it('finds every place a component told its ground by on is drawn giving the on its ground needs', () => {
     // Since step 26 the fixture page also draws StatusBadge's status path,
     // a tag for every status and two with words of their own, each with
-    // on="light", the only on its type takes.
+    // on="light", the only on its type takes. Since step 31 the heritage
+    // pages draw ThickThinRule, whose on says its ground, light (its
+    // default) or a navy band; each is drawn on a light ground.
     expect([...result.onPlaces].sort()).toEqual([
+      'src/areas/governance/components/GovLayout.tsx:93 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/AboutPage.tsx:47 <ThickThinRule> on=light (its default) -> light',
       'src/pages/AdminEmailPage.tsx:379 <MultiSelectDropdown> on=light (its default) -> light',
       'src/pages/AdminEmailPage.tsx:380 <MultiSelectDropdown> on=light (its default) -> light',
       'src/pages/AdminEmailPage.tsx:386 <MultiSelectDropdown> on=light (its default) -> light',
+      'src/pages/AnnualMeetingPage.tsx:135 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/BoardPage.tsx:334 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/BoardPage.tsx:390 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/BylawsPage.tsx:25 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/BylawsPage.tsx:27 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/BylawsPage.tsx:31 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:117 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:66 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:96 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/MinutesPage.tsx:21 <ThickThinRule> on=light (its default) -> light',
       'src/pages/ScholasticPage.tsx:69 <StatusBadge> on=light -> light',
       'src/pages/TournamentsPage.tsx:555 <FilterDropdown> on=navy -> navy',
       'src/pages/fixtures/ScopeFixturePage.tsx:114 <StatusBadge> on=light -> light',
@@ -1157,7 +1171,7 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     [
       'the eyebrow pill of PageHero given a badge\'s dark gold on its navy',
       { file: 'src/components/PageHero.tsx', from: 'text-[10px] text-gold-on-dark-badge', to: 'text-[10px] text-gold-ink-badge' },
-      'src/components/PageHero.tsx:75 ',
+      'src/components/PageHero.tsx:84 ',
       'sits on a navy ground',
     ],
     [

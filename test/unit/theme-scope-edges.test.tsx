@@ -5,13 +5,19 @@
 // elements between two scopes, and what the wrapper does with a style it is
 // given. Since step 30 the heritage look has a font file too, counted beside
 // the live one: a scope that changes in place loads each once, and after a
-// failed import of either file the next scope of that look calls import()
-// again. The files are mocked here, so these tests show that call, not a
-// request: in a built site the second call fetches nothing, since Vite's
-// preload helper remembers each stylesheet it has added (ThemeScope.tsx).
+// failed import of either file a scope of that look drawn later calls
+// import() again. The files are mocked here, so these tests show that call,
+// not a request. In a built site a second import() of a stylesheet that
+// failed would fetch nothing, since Vite's preload helper remembers each one
+// it has added; since step 31 the loader ThemeScope uses
+// (src/lib/scopeStylesheets.ts) adds a fresh link of its own instead, calls
+// import() again only when the failed import added no link, as here, and
+// asks again only once RETRY_AFTER_MS have passed since the failure
+// (test/unit/scope-stylesheets.test.tsx).
 import type { ReactNode } from 'react'
 import { cleanup, render, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { RETRY_AFTER_MS } from '@/lib/scopeStylesheets'
 import type { ThemeScopeName } from '@/lib/themeScopes'
 
 const fonts = vi.hoisted(() => ({ live: vi.fn(), heritage: vi.fn(), fail: false, failHeritage: false }))
@@ -60,8 +66,15 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.unstubAllEnvs()
+  vi.useRealTimers()
   warn.mockRestore()
 })
+
+/** Moves the clock the loader reads past the time it waits after a failure before asking again; timers keep running. */
+function afterTheWait() {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(Date.now() + RETRY_AFTER_MS)
+}
 
 describe('the nesting check', () => {
   it('is left out of the site\'s own build', async () => {
@@ -216,10 +229,13 @@ describe('a scope that changes in place', () => {
 })
 
 describe('a font file that fails to load', () => {
-  // The mocks stand for the files, so "calls import() again" is all these
-  // show; whether a browser then fetches the file is the build's loader's
-  // business (test/unit/heritage-edges.test.ts drives the one it emits).
-  it('does not break the page or warn, and the next live scope calls import() again', async () => {
+  // The mocks stand for the files and add no link, so "calls import() again"
+  // is all these show; a built site's failed link is replaced by a fresh one
+  // (test/unit/scope-stylesheets.test.tsx, and test/a11y/heritage.spec.ts in
+  // a browser), since Vite's own loader would fetch nothing a second time
+  // (test/unit/heritage-edges.test.ts drives the one the build emits). A
+  // scope drawn within RETRY_AFTER_MS of the failure takes it as it is.
+  it('does not break the page or warn, and a live scope drawn later calls import() again', async () => {
     const ThemeScope = await freshScope()
     fonts.fail = true
     const { container, unmount } = render(<ThemeScope scope="live">Text</ThemeScope>)
@@ -229,7 +245,14 @@ describe('a font file that fails to load', () => {
     expect(warn).not.toHaveBeenCalled()
     unmount()
 
+    // A scope drawn at once takes the failure as it is.
     fonts.fail = false
+    const soon = render(<ThemeScope scope="live">Text</ThemeScope>)
+    await new Promise((r) => setTimeout(r, 30))
+    expect(fonts.live).toHaveBeenCalledTimes(1)
+    soon.unmount()
+
+    afterTheWait()
     const second = render(<ThemeScope scope="live">Text</ThemeScope>)
     await waitFor(() => expect(fonts.live).toHaveBeenCalledTimes(2))
     second.unmount()
@@ -239,7 +262,7 @@ describe('a font file that fails to load', () => {
     expect(fonts.live).toHaveBeenCalledTimes(2)
   })
 
-  it('the heritage file too: the page still draws, nothing warns, and the next heritage scope calls import() again', async () => {
+  it('the heritage file too: the page still draws, nothing warns, and a heritage scope drawn later calls import() again', async () => {
     const ThemeScope = await freshScope()
     fonts.failHeritage = true
     const { container, unmount } = render(
@@ -254,6 +277,7 @@ describe('a font file that fails to load', () => {
     unmount()
 
     fonts.failHeritage = false
+    afterTheWait()
     const second = render(<ThemeScope scope="heritage">Text</ThemeScope>)
     await waitFor(() => expect(fonts.heritage).toHaveBeenCalledTimes(2))
     second.unmount()
@@ -286,6 +310,7 @@ describe('a font file that fails to load', () => {
       fonts.fail = false
       fonts.failHeritage = false
       forgetImportedFiles()
+      afterTheWait()
       render(both())
       await waitFor(() => expect(fonts[failed], failed).toHaveBeenCalledTimes(2))
       await new Promise((r) => setTimeout(r, 30))

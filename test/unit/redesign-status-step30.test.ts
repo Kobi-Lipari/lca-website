@@ -2,9 +2,9 @@
 //
 // REDESIGN_STATUS.md records step 30 (the heritage look's type, loaded only
 // inside its scope) and REDESIGN_SPEC.md's WS01 deviation list carries its
-// sentence. The living parts are pinned: the AC11 and AC12 rows stay
-// planned for step 31, each with a sentence for step 30, AC11's in place of
-// its old clause, and the AC13 and AC8 rows are left as they were; the step
+// sentence. The living parts are pinned: the AC11 and AC12 rows, filled in
+// step 31, keep a sentence for step 30, AC11's in place of its old clause,
+// and the AC13 row, filled in step 31, and the AC8 row name no step 30; the step
 // block sits in order and describes the faces, the fallback faces with
 // their numbers, the tokens, the hooks, small capitals, the accent face,
 // the guard and the layer, ThemeScope, the budget, the tests, the places
@@ -68,23 +68,23 @@ const followUpEntries = followUps.split('\n').filter((l) => l.startsWith('- **')
 const headings = followUpEntries.map((l) => l.slice(4, l.indexOf('**', 4)))
 
 describe('REDESIGN_STATUS.md, step 30: the acceptance rows', () => {
-  it('keeps AC11 planned for step 31, with step 30\'s half in place of its old clause', () => {
-    expect(ac11).toMatch(/^\| AC11 \| Heritage fonts stay off `\/`; no layout shift from the font swap \| 31 \| Planned: /)
+  it('keeps step 30\'s half of AC11 in place of its old clause, in the row step 31 fills', () => {
+    expect(ac11).toMatch(/^\| AC11 \| Heritage fonts stay off `\/`; no layout shift from the font swap \| 31 \| (?!Planned)/)
     expect(ac11).not.toContain('the heritage font chunk is step 30')
     for (const piece of ['Step 22 adds `src/styles/themes/live.css`', 'Step 30 lays the first half:', '`src/styles/themes/heritage.css`', 'lazy chunk', 'only `ThemeScope` imports', '`test/unit/theme-scope-wiring.test.ts`', 'not in the production build', 'as the stylesheet arrives after the scope\'s first paint', 'step 31']) {
       expect(ac11, piece).toContain(piece)
     }
   })
 
-  it('keeps AC12 planned for step 31, with step 22\'s sentence and a sentence for step 30\'s type rules', () => {
-    expect(ac12).toMatch(/^\| AC12 \| Editors and forms never render in the heritage look \| 31 \| Planned: /)
+  it('keeps step 22\'s sentence and a sentence for step 30\'s type rules in the AC12 row step 31 fills', () => {
+    expect(ac12).toMatch(/^\| AC12 \| Editors and forms never render in the heritage look \| 31 \| (?!Planned)/)
     for (const piece of ['Step 22 lays the first half:', 'Step 30 adds', '`test/unit/heritage-css.test.ts`', 'Instrument Serif', '`[data-theme="heritage"]`', 'Caslon', '`--font-display`', 'step 31']) {
       expect(ac12, piece).toContain(piece)
     }
   })
 
-  it('leaves the AC13 and AC8 rows as they were', () => {
-    expect(ac13).toMatch(/^\| AC13 \| Controls look identical inside heritage \| 31 \| Planned: /)
+  it('leaves step 30 out of the AC13 row step 31 fills and out of the AC8 row, which is as it was', () => {
+    expect(ac13).toMatch(/^\| AC13 \| Controls look identical inside heritage \| 31 \| (?!Planned)/)
     for (const row of [ac13, ac8]) expect(row).not.toMatch(/step 30/i)
     expect(ac8).toMatch(/the status tags' boxes stay put in every look too\. \|$/)
   })

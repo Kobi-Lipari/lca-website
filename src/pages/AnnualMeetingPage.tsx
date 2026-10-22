@@ -12,7 +12,9 @@
 import { useEffect, useState } from 'react'
 import { Calendar, Clock, ExternalLink, Phone, Video } from 'lucide-react'
 import { PageHero } from '@/components/PageHero'
+import { ThickThinRule } from '@/components/ThickThinRule'
 import { Button } from '@/components/ui/button'
+import { useHeritageHook, useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { GOLD_BUTTON } from '@/lib/brand'
 import { usePageTitle } from '@/hooks/usePageTitle'
 
@@ -101,6 +103,10 @@ function useCountdown(target: Date) {
 export function AnnualMeetingPage() {
   usePageTitle('Annual Business Meeting')
   const countdown = useCountdown(MEETING_START)
+  // In the heritage layout the card takes the look's card hook, and under
+  // the new look a thick-thin rule opens the page under its heading band.
+  const ornaments = useHeritageOrnaments()
+  const hook = useHeritageHook()
 
   return (
     <div>
@@ -126,8 +132,9 @@ export function AnnualMeetingPage() {
       />
 
       <section className="mx-auto max-w-3xl px-6 py-8">
+        {ornaments && <ThickThinRule className="mb-6" />}
         {/* ── Join ── */}
-        <div className="rounded-xl border bg-card p-5 shadow-sm">
+        <div data-heritage={hook('card')} className="rounded-xl border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
             <Video className="size-5 text-gold-ink" />
             <h2 className="text-lg font-semibold text-ink">Join the meeting</h2>

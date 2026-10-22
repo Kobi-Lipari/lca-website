@@ -8,6 +8,8 @@ import { Link } from 'react-router-dom'
 import { Calendar, Crown, MapPin, Search, Trophy } from 'lucide-react'
 
 import { PageHero } from '@/components/PageHero'
+import { ThickThinRule } from '@/components/ThickThinRule'
+import { useHeritageHook, useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { getChampions, type ApiChampion, type ApiChampionshipEvent } from '@/lib/api'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { cn } from '@/lib/utils'
@@ -22,6 +24,11 @@ export function ChampionsPage() {
   const [error, setError] = useState<string | null>(null)
   const [title, setTitle] = useState<string>('all')
   const [search, setSearch] = useState('')
+  // In the heritage layout the cards and the table's frame take the look's
+  // hooks, and under the new look a thick-thin rule opens the page under its
+  // heading band and parts its sections.
+  const ornaments = useHeritageOrnaments()
+  const hook = useHeritageHook()
 
   useEffect(() => {
     getChampions()
@@ -56,6 +63,7 @@ export function ChampionsPage() {
       />
 
       <div className="mx-auto max-w-6xl space-y-12 px-6 py-10">
+        {ornaments && <ThickThinRule />}
         {loading && <p className="text-sm text-muted-foreground">Loading…</p>}
         {error && <p className="text-sm text-destructive">{error}</p>}
 
@@ -66,7 +74,7 @@ export function ChampionsPage() {
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {upcoming.map((t) => (
-                <Link key={t.id} to={`/tournaments/${t.id}`}
+                <Link key={t.id} to={`/tournaments/${t.id}`} data-heritage={hook('card')}
                   className="rounded-xl border-l-[3px] border-l-lca-gold bg-card p-4 shadow-sm transition-shadow hover:shadow-md">
                   <p className="font-semibold text-ink">{t.name}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{fmtDate(t.date)}{t.end_date && t.end_date !== t.date ? ` – ${fmtDate(t.end_date)}` : ''}</p>
@@ -85,6 +93,8 @@ export function ChampionsPage() {
           </div>
         )}
 
+        {ornaments && upcoming.length > 0 && reigning.length > 0 && <ThickThinRule />}
+
         {reigning.length > 0 && (
           <section>
             <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-ink">
@@ -92,7 +102,7 @@ export function ChampionsPage() {
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {reigning.map((r) => (
-                <div key={r.title} className="rounded-xl border bg-card p-4 shadow-sm">
+                <div key={r.title} data-heritage={hook('card')} className="rounded-xl border bg-card p-4 shadow-sm">
                   <p className="text-[11px] font-semibold uppercase tracking-wide text-gold-ink-badge">{r.title} · {r.year}</p>
                   {r.rows.map((c) => (
                     <p key={c.id} className="mt-1 text-lg font-bold text-ink">{c.champion}</p>
@@ -103,6 +113,8 @@ export function ChampionsPage() {
             </div>
           </section>
         )}
+
+        {ornaments && champions.length > 0 && <ThickThinRule />}
 
         {champions.length > 0 && (
           <section>
@@ -128,7 +140,7 @@ export function ChampionsPage() {
             {shown.length === 0 ? (
               <p className="text-sm text-muted-foreground">No champions match.</p>
             ) : (
-              <div className="overflow-hidden rounded-xl border">
+              <div data-heritage={hook('table')} className="overflow-hidden rounded-xl border">
                 {years.map((y) => (
                   <div key={y}>
                     <div className="border-b bg-muted/50 px-4 py-1.5 text-sm font-bold text-ink">{y}</div>

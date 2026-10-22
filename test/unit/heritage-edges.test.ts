@@ -20,14 +20,20 @@
 //   stylesheet with itself, and the heritage and live stylesheets share no
 //   file.
 // - The whole site, built twice as the browser tests and the deploy build
-//   it: the site's own build carries no heritage stylesheet and none of its
-//   faces or files; the accessibility test build carries the stylesheet as
-//   a file of its own, the same bytes, beside its four font files, named
-//   only by the fixture page's chunk and by nothing the home page loads.
-//   The loader that build emits adds a stylesheet's link once: after the
-//   stylesheet fails to load, a second import of it resolves at once and
-//   adds no link, so ThemeScope's next import fetches nothing until the page
-//   is reloaded, as ThemeScope.tsx says.
+//   it. Since step 31 the site's own build draws the heritage layout, so
+//   both builds carry the stylesheet as a file of its own, the same bytes,
+//   beside its four font files, named only by the chunk that holds
+//   ThemeScope and its loader, and by nothing the home page loads: not
+//   index.html, not the main chunk, whose list of files to preload names
+//   that chunk but not the stylesheet, and not the site's own stylesheet,
+//   which names neither face; ThemeScope's code is not in the main chunk.
+//   Before step 31 the site's own build carried none of it, and the
+//   accessibility test build named the stylesheet in the fixture page's
+//   chunk. The loader that build emits adds a stylesheet's link once: after
+//   the stylesheet fails to load, a second import of it resolves at once
+//   and adds no link, so an import() made again fetches nothing until the
+//   page is reloaded, which is why ThemeScope's loader adds a fresh link of
+//   its own (src/lib/scopeStylesheets.ts).
 // - The two packages: exact at 5.3.0 under dependencies, the lock file
 //   agreeing, with no dependency of their own, and the copies installed are
 //   those versions.
@@ -440,35 +446,36 @@ describe('the whole site, built as it is deployed and as the browser tests build
     for (const dir of [production, a11y]) if (dir) rmSync(dir, { recursive: true, force: true })
   })
 
-  it('the site\'s own build carries no heritage stylesheet or font file, no file of it names one, and its stylesheet names neither face', () => {
-    const files = filesIn(production)
-    expect(files.filter((f) => /heritage|caslon|source-serif/i.test(f))).toEqual([])
-    expect(textFiles(files).filter((f) => f.endsWith('.css')).length).toBeGreaterThan(0)
-    for (const file of textFiles(files)) {
-      const text = readFileSync(join(production, file), 'utf8')
-      for (const trace of traces(file)) expect(trace.test(text), `${file} ${trace}`).toBe(false)
-    }
-  })
+  /** The loader's own code: the query it writes on a fresh link (the template literal survives minifying). */
+  const LOADER_CODE = 'retry=${'
+  /** The chunk that holds ThemeScope's loader: the one script whose code writes that query. */
+  const loaderChunk = (dir: string) => textFiles(filesIn(dir)).filter((f) => f.endsWith('.js') && readFileSync(join(dir, f), 'utf8').includes(LOADER_CODE))
 
-  it('the accessibility test build carries the stylesheet as a file of its own, the same bytes, beside its four font files', () => {
-    const files = filesIn(a11y)
+  it.each(['production', 'a11y'] as const)('the %s build carries the stylesheet as a file of its own, the same bytes, beside its four font files', (mode) => {
+    const dir = mode === 'production' ? production : a11y
+    const files = filesIn(dir)
     const sheets = files.filter((f) => /^assets\/heritage-[\w-]+\.css$/.test(f))
     expect(sheets).toEqual([sheet.fileName])
-    expect(readFileSync(join(a11y, sheets[0]), 'utf8')).toBe(css)
+    expect(readFileSync(join(dir, sheets[0]), 'utf8')).toBe(css)
     expect(files.filter((f) => /caslon|source-serif/i.test(f)).sort()).toEqual(alone.filter(isFont).map((o) => o.fileName).sort())
   })
 
-  it('names the stylesheet only in the fixture page\'s chunk, and nothing the home page loads names it or the faces', () => {
-    const files = filesIn(a11y)
-    const naming = textFiles(files).filter((f) => readFileSync(join(a11y, f), 'utf8').includes(sheet.fileName))
-    expect(naming).toHaveLength(1)
-    expect(naming[0]).toMatch(/^assets\/ScopeFixturePage-[\w-]+\.js$/)
-    const html = readFileSync(join(a11y, 'index.html'), 'utf8')
+  it.each(['production', 'a11y'] as const)('the %s build names the stylesheet only in the chunk that holds ThemeScope\'s loader, and nothing the home page loads names it, its faces or that chunk\'s code', (mode) => {
+    const dir = mode === 'production' ? production : a11y
+    const files = filesIn(dir)
+    const naming = textFiles(files).filter((f) => readFileSync(join(dir, f), 'utf8').includes(sheet.fileName))
+    expect(loaderChunk(dir)).toHaveLength(1)
+    expect(naming).toEqual(loaderChunk(dir))
+    expect(naming[0]).toMatch(/^assets\/ThemeScope-[\w-]+\.js$/)
+    const html = readFileSync(join(dir, 'index.html'), 'utf8')
     const loaded = [...html.matchAll(/(?:src|href)="\/(assets\/[^"]+\.(?:js|css))"/g)].map((m) => m[1])
     expect(loaded.some((f) => /^assets\/index-[\w-]+\.js$/.test(f))).toBe(true)
     expect(loaded.some((f) => /^assets\/index-[\w-]+\.css$/.test(f))).toBe(true)
-    for (const [file, text] of [['index.html', html], ...loaded.map((f) => [f, readFileSync(join(a11y, f), 'utf8')])]) {
+    // Nothing the home page loads holds the loader, and the page does not load its chunk.
+    expect(loaded).not.toContain(naming[0])
+    for (const [file, text] of [['index.html', html], ...loaded.map((f) => [f, readFileSync(join(dir, f), 'utf8')])]) {
       for (const trace of traces(file)) expect(trace.test(text), `${file} ${trace}`).toBe(false)
+      expect(text.includes(LOADER_CODE), `${file} holds the loader`).toBe(false)
     }
   })
 

@@ -19,8 +19,9 @@
 //   page, with empty words beside the name, and with no filter, no opacity
 //   and no blend on it or on anything around it. /about shows the same file
 //   with its name in its frame ([data-slot="lca-logo-mat"]) on the surface,
-//   before "Who we are", at 1280 and 390 pixels, white with a light device
-//   and the dark surface with a dark one.
+//   before "Who we are", at 1280 and 390 pixels: the page is drawn in the
+//   heritage look on this build, so the frame is its cream with its hairline
+//   and 2px corners with a light device, and the dark surface with a dark one.
 // - a11y-off (newLook off): the header's image is today's (the hashed webp,
 //   its words, a 44 by 44 box) and no mark is drawn, so the link is named by
 //   the image and the words; the footer's image is 56 by 56; /about draws no
@@ -56,6 +57,9 @@ const LOGO_PATH = /^\/assets\/lca-logo-[\w-]+\.webp$/
 const WIDTHS = [1280, 768, 390] as const
 const NAVY = 'rgb(26, 39, 68)'
 const WHITE = 'rgb(255, 255, 255)'
+/** The heritage look's surface and hairline (src/index.css), which /about is drawn in on a11y-on. */
+const CREAM = 'rgb(255, 253, 248)'
+const HERITAGE_HAIRLINE = 'rgb(216, 205, 180)'
 
 test.use({ colorScheme: 'light', reducedMotion: 'reduce' })
 
@@ -259,22 +263,28 @@ test.describe('/about', () => {
       expect(drawn.recolour).toEqual([])
       const response = fetched.find((r) => new URL(r.url()).pathname === drawn.path)!
       expect((await response.body()).equals(LOGO)).toBe(true)
-      // The frame: the surface (white in the base look) with a line of its own, inside the window.
+      // The frame: the surface of the heritage look the page is drawn in, cream, with a hairline of its own and 2px corners, inside the window.
       const frame = await mat.evaluate((el) => {
         const s = getComputedStyle(el)
         const box = el.getBoundingClientRect()
         const heading = [...document.querySelectorAll('main h2')].find((h) => h.textContent === 'Who we are')!
         return {
+          look: el.closest('[data-theme]')?.getAttribute('data-theme'),
           ground: s.backgroundColor,
           line: s.borderTopWidth,
+          lineColour: s.borderTopColor,
+          corner: s.borderTopLeftRadius,
           left: box.left,
           right: box.right,
           aboveHeading: box.bottom <= heading.getBoundingClientRect().top,
           window: document.documentElement.clientWidth,
         }
       })
-      expect(frame.ground).toBe(WHITE)
+      expect(frame.look).toBe('heritage')
+      expect(frame.ground).toBe(CREAM)
       expect(frame.line).toBe('1px')
+      expect(frame.lineColour).toBe(HERITAGE_HAIRLINE)
+      expect(frame.corner).toBe('2px')
       expect(frame.left).toBeGreaterThanOrEqual(0)
       expect(frame.right).toBeLessThanOrEqual(frame.window)
       expect(frame.aboveHeading).toBe(true)

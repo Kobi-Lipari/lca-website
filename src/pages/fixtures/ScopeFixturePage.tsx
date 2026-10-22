@@ -84,7 +84,7 @@ export function ScopeFixturePage() {
     <ThemeScope scope={FIXTURE_SCOPES[name]} layout="box" data-fixture={name} className="bg-background text-foreground">
       <div className="mx-auto max-w-3xl space-y-8 px-4 py-12">
         <header>
-          <h1 className="text-3xl font-bold">Fixture: {name}</h1>
+          <h1 data-heritage={name === 'heritage' ? 'display' : undefined} className="text-3xl font-bold">Fixture: {name}</h1>
           <p className="mt-2 text-muted-foreground">
             Sample controls in the {name} look. Sat, Oct 24 at 7:00 PM, rated by US Chess.
           </p>
@@ -118,10 +118,10 @@ export function ScopeFixturePage() {
         </section>
 
         <BaseComponents />
-
+        {name === 'heritage' && <HeritageParts />}
         <section aria-labelledby="fixture-table">
           <h2 id="fixture-table" className="text-xl font-semibold">Standings</h2>
-          <Table className="mt-3">
+          <Table className="mt-3" data-heritage={name === 'heritage' ? 'table' : undefined}>
             <TableHeader>
               <TableRow>
                 <TableHead>Place</TableHead>
@@ -347,6 +347,36 @@ function ChessData() {
         </TableBody>
       </Table>
       <ResultLegend />
+    </section>
+  )
+}
+
+/**
+ * What the heritage fixture alone draws, after the base components: a card
+ * with the card hook (its heading has the display hook and its standings
+ * the table hook, as on the heritage pages), and a base scope inside the
+ * heritage container, the one nesting the looks allow, holding a field and
+ * two buttons, the way the governance documents' add and edit card sits on
+ * a heritage page. test/a11y/heritage.spec.ts reads them.
+ */
+function HeritageParts() {
+  return (
+    <section aria-labelledby="fixture-heritage">
+      <h2 id="fixture-heritage" className="text-xl font-semibold">Heritage parts</h2>
+      <div data-heritage="card" className="mt-3 rounded-xl border bg-card p-4">
+        <p>A card in the heritage look, with the 2px corners of its cards.</p>
+      </div>
+      <ThemeScope scope="base" layout="box" id="fixture-base-in-heritage" className="mt-3 space-y-3 rounded-xl border bg-card p-4">
+        <p className="font-medium">A form in the base look</p>
+        <div className="max-w-sm space-y-2">
+          <Label htmlFor="fixture-base-input">Change summary</Label>
+          <Input id="fixture-base-input" placeholder="What changed" />
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Button>Save draft</Button>
+          <Button variant="outline">Cancel</Button>
+        </div>
+      </ThemeScope>
     </section>
   )
 }

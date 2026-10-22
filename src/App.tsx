@@ -11,6 +11,7 @@ import { HomePage } from '@/pages/HomePage'
 import { AnnouncementBanner } from '@/components/AnnouncementBanner'
 import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 import { PasswordRecoveryRedirect } from '@/components/auth/PasswordRecoveryRedirect'
+import { FEATURES } from '@/lib/features'
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AnnualMeetingPage = lazy(() => import('@/pages/AnnualMeetingPage').then(m => ({ default: m.AnnualMeetingPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
@@ -51,6 +52,24 @@ const TournamentsPage = lazy(() => import('@/pages/TournamentsPage').then(m => (
 const ScopeFixturePage = import.meta.env.MODE === 'a11y'
   ? lazy(() => import('@/pages/fixtures/ScopeFixturePage').then(m => ({ default: m.ScopeFixturePage })))
   : null
+// The layout of the six heritage pages, in the Heritage Club look.
+const HeritageLayout = lazy(() => import('@/layouts/HeritageLayout').then(m => ({ default: m.HeritageLayout })))
+/**
+ * The six pages drawn in the heritage look (HERITAGE_ROUTES in
+ * src/lib/themeScopes.ts), written once. With themeHeritage on they sit in
+ * HeritageLayout, a layout route with no path of its own; with it off they
+ * are listed with the rest, as they always were.
+ */
+const HERITAGE_PAGES = (
+  <>
+    <Route path="/meeting" element={<AnnualMeetingPage />} />
+    <Route path="/about" element={<AboutPage />} />
+    <Route path="/governance/board" element={<BoardPage />} />
+    <Route path="/champions" element={<ChampionsPage />} />
+    <Route path="/governance/bylaws" element={<BylawsPage />} />
+    <Route path="/governance/minutes" element={<MinutesPage />} />
+  </>
+)
 function App() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -97,18 +116,13 @@ function App() {
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/donate/success" element={<DonationSuccessPage />} />
             {/* ── Governance ── */}
-            <Route path="/meeting" element={<AnnualMeetingPage />} />
-            <Route path="/about" element={<AboutPage />} />
+            {FEATURES.themeHeritage ? <Route element={<HeritageLayout />}>{HERITAGE_PAGES}</Route> : HERITAGE_PAGES}
             {/* The old governance landing page is retired: the navbar opens on
                 Board members, and GovLayout links to the rest from there. */}
             <Route path="/governance" element={<Navigate to="/governance/board" replace />} />
-            <Route path="/governance/board" element={<BoardPage />} />
-            <Route path="/champions" element={<ChampionsPage />} />
             <Route path="/state-champions" element={<Navigate to="/champions" replace />} />
-            <Route path="/governance/bylaws" element={<BylawsPage />} />
             {/* RulesPage retired — its content merged into /governance/bylaws */}
             <Route path="/governance/rules" element={<Navigate to="/governance/bylaws" replace />} />
-            <Route path="/governance/minutes" element={<MinutesPage />} />
             {/* ── Protected ── */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             {/* ProtectedRoute, not RoleProtectedRoute: an admin who has not

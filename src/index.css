@@ -630,6 +630,69 @@
     }
 }
 
+/* Heritage's controls are the base look's (step 31, the brief's AC13): a
+ * Button, a field, a status tag or dot, a filter chip, a date block and a
+ * pill drawn in the muted pair inside a heritage scope draw exactly as in
+ * base. The scope's grounds, lines and muted words are the page's, but a
+ * control reads the same variables (an outline Button's ground and line, a
+ * field's ground, line and placeholder, the closed tag's hairline, the
+ * muted pill's ground and words), so on the controls themselves the tokens
+ * heritage restyles are the light look's again, and the variables worked
+ * out from them are worked out again here. The muted pill (StatusBadge's
+ * muted tone, and the governance lists' Pending upload tag) has no slot of
+ * its own, so it is found by its two classes, the ground and the words of
+ * the pair. In dark mode heritage's tokens are the dark look's already, so
+ * there the controls take what the page around them has. */
+:root[data-look="new"] [data-theme="heritage"] [data-slot="button"],
+:root[data-look="new"] [data-theme="heritage"] [data-slot="status-badge"],
+:root[data-look="new"] [data-theme="heritage"] [data-slot="status-dot"],
+:root[data-look="new"] [data-theme="heritage"] [data-slot="filter-chip"],
+:root[data-look="new"] [data-theme="heritage"] [data-slot="date-block"],
+:root[data-look="new"] [data-theme="heritage"] .bg-muted.text-muted-foreground,
+:root[data-look="new"] [data-theme="heritage"] input,
+:root[data-look="new"] [data-theme="heritage"] textarea,
+:root[data-look="new"] [data-theme="heritage"] select {
+    --ground: #fff;
+    --surface: #fff;
+    --surface-2: #f7f8fa;
+    --raised: #fff;
+    --ink-muted: #5b6478;
+    --hairline: #e5e7ed;
+    --field: #7c8496;
+    --gold-ink: #866a1e;
+    --background: var(--ground);
+    --card: var(--surface);
+    --popover: var(--raised);
+    --primary-foreground: var(--ground);
+    --secondary: var(--surface-2);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--ink-muted);
+    --accent: var(--surface-2);
+    --border: var(--hairline);
+    --input: var(--field);
+}
+
+@media screen {
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="button"],
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="status-badge"],
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="status-dot"],
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="filter-chip"],
+    :root[data-look="new"].dark [data-theme="heritage"] [data-slot="date-block"],
+    :root[data-look="new"].dark [data-theme="heritage"] .bg-muted.text-muted-foreground,
+    :root[data-look="new"].dark [data-theme="heritage"] input,
+    :root[data-look="new"].dark [data-theme="heritage"] textarea,
+    :root[data-look="new"].dark [data-theme="heritage"] select {
+        --ground: inherit;
+        --surface: inherit;
+        --surface-2: inherit;
+        --raised: inherit;
+        --ink-muted: inherit;
+        --hairline: inherit;
+        --field: inherit;
+        --gold-ink: inherit;
+    }
+}
+
 /* The tones, only in the new look (step 24). Every shade of a tone takes
  * the tone's colour from the Looks-3 status tags: the shades up to step 300
  * (the tints and the light lines) its tint, the shades from 400 (the words,

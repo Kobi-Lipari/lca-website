@@ -17,10 +17,17 @@
 //               (TournamentsPage filter bar)
 //
 // NOT for the HomePage slideshow hero — that one is intentionally bespoke.
+//
+// Inside HeritageLayout (src/contexts/heritage-layout.ts) the title takes the
+// heritage look's display hook (data-heritage="display"), and under the new
+// look a hero with no aside of its own shows the seal on the right from 640px
+// up. Everywhere else the hero draws exactly what it drew before.
 
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
+import { Seal } from '@/components/Seal'
+import { useHeritageHook, useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { cn } from '@/lib/utils'
 
 export interface PageHeroProps {
@@ -51,6 +58,8 @@ export function PageHero({
   children,
   className,
 }: PageHeroProps) {
+  const hook = useHeritageHook()
+  const seal = useHeritageOrnaments() && !aside
   return (
     <section className={cn('border-b-[3px] border-lca-gold bg-brand-navy text-white', className)}>
       <div
@@ -83,7 +92,7 @@ export function PageHero({
         <div
           className={cn(
             (backTo && !eyebrow) && 'mt-4',
-            aside && cn(
+            (aside || seal) && cn(
               'flex flex-col gap-4 sm:flex-row sm:justify-between',
               asideAlign === 'end' ? 'sm:items-end' : 'sm:items-start',
             ),
@@ -92,11 +101,11 @@ export function PageHero({
           <div className="min-w-0">
             {badges ? (
               <div className="mb-2 flex flex-wrap items-center gap-2">
-                <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
+                <h1 data-heritage={hook('display')} className="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
                 {badges}
               </div>
             ) : (
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
+              <h1 data-heritage={hook('display')} className="text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
             )}
             {subtitle && (
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/60">{subtitle}</p>
@@ -108,6 +117,7 @@ export function PageHero({
             )}
           </div>
           {aside && <div className="flex-shrink-0">{aside}</div>}
+          {seal && <Seal className="hidden sm:block" />}
         </div>
 
         {children && (

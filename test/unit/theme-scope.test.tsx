@@ -72,12 +72,12 @@ describe('the wrapper', () => {
 
   it('layout="box" is a real element that keeps its className, attributes and element type', () => {
     const { container } = render(
-      <ThemeScope scope="live" layout="box" as="main" className="bg-background" data-fixture="live" id="scoped">
+      <ThemeScope scope="live" layout="box" as="section" className="bg-background" data-fixture="live" id="scoped">
         Text
       </ThemeScope>,
     )
     const wrapper = container.firstElementChild as HTMLElement
-    expect(wrapper.tagName).toBe('MAIN')
+    expect(wrapper.tagName).toBe('SECTION')
     expect(wrapper.style.display).toBe('')
     expect(wrapper.className).toBe('bg-background')
     expect(wrapper.getAttribute('data-fixture')).toBe('live')

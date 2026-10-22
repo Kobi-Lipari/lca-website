@@ -1,6 +1,8 @@
 // src/areas/governance/components/GovLayout.tsx
 import { Link, useLocation } from 'react-router-dom'
 import { PageHero } from '@/components/PageHero'
+import { ThickThinRule } from '@/components/ThickThinRule'
+import { useHeritageOrnaments, useInHeritageLayout } from '@/contexts/heritage-layout'
 import { cn } from '@/lib/utils'
 
 const GOV_LINKS = [
@@ -78,16 +80,23 @@ export function GovLayout({
   subtitle: string
   children: React.ReactNode
 }) {
+  // Inside HeritageLayout its column is a plain element, since the site's
+  // own <main> (src/App.tsx) already holds the page and a page has one main
+  // landmark, and under the new look a thick-thin rule opens the page under
+  // its heading band. Elsewhere the column stays the main it has been.
+  const Column = useInHeritageLayout() ? 'div' : 'main'
+  const ornaments = useHeritageOrnaments()
   return (
     <div>
       <PageHero title={title} subtitle={subtitle} />
       <section className="mx-auto max-w-6xl px-6 py-10">
+        {ornaments && <ThickThinRule className="mb-8" />}
         <div className="flex gap-8">
           <GovSidebar />
-          <main className="min-w-0 flex-1">
+          <Column className="min-w-0 flex-1">
             <GovTabs />
             {children}
-          </main>
+          </Column>
         </div>
       </section>
     </div>

@@ -15,10 +15,12 @@
 //   in the fixed-width face) or a form in a base scope inside heritage.
 // - With newLook off, in another look and outside any scope, no rule
 //   reaches anything; in dark mode the same rules reach the same elements.
-// - The fixture page itself, drawn in the heritage look: none of its
-//   elements takes a rule but the scope's tokens, so it looks as it did, and
-//   with step 31's hooks put on its heading and sections its controls still
-//   take none.
+// - The fixture page itself, drawn in the heritage look: since step 31 its
+//   heading carries the display hook, its standings the table hook and its
+//   card the card hook, and those three take their rules; nothing else on
+//   it takes one but the scope's tokens (its controls, tags, chips, dates,
+//   tables and the base scope inside it keep the base look), and with the
+//   hooks put on all its sections as well its controls still take none.
 // - The base look's accent face: every element with its class inside a
 //   heritage scope, a base scope inside heritage included, takes a rule
 //   naming another face, and those rules are in no layer while the class is
@@ -327,7 +329,7 @@ describe('the fixture page drawn in the heritage look', () => {
     return { view, scope }
   }
 
-  it('takes no rule but the scope\'s tokens: its headings, controls, tags, chips, dates and tables keep the base look', async () => {
+  it('takes no rule but the scope\'s tokens beyond its three hooks: its other headings, controls, tags, chips, dates, tables and its base scope keep the base look', async () => {
     const { scope } = await fixture()
     const counts = {
       buttons: scope.querySelectorAll('[data-slot="button"]').length,
@@ -341,7 +343,16 @@ describe('the fixture page drawn in the heritage look', () => {
     }
     for (const [what, count] of Object.entries(counts)) expect(count, what).toBeGreaterThan(0)
     expect(kindsOf(scope)).toEqual(['tokens'])
-    expect(taken(scope)).toEqual({})
+    // The heading with the display hook, the card and the standings table: nothing else.
+    const hooked = [...scope.querySelectorAll('[data-heritage]')].map((el) => `${el.tagName.toLowerCase()} ${el.getAttribute('data-heritage')}`)
+    expect(hooked).toEqual(['h1 display', 'div card', 'table table'])
+    expect(taken(scope)).toEqual({ h1: ['display'], table: ['radius'], div: ['radius'] })
+    // The base scope inside it, with its field and buttons, takes nothing either.
+    const base = scope.querySelector('#fixture-base-in-heritage')!
+    expect(base.getAttribute('data-theme')).toBe('')
+    expect(base.querySelectorAll('input, [data-slot="button"]').length).toBe(3)
+    expect(taken(base)).toEqual({})
+    expect(kindsOf(base)).toEqual([])
     await waitFor(() => expect(fonts.heritage).toHaveBeenCalled())
   })
 

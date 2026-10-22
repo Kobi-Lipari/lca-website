@@ -45,7 +45,10 @@ const SWITCHES = {
 
   /**
    * The Heritage Club look on About, Board, Bylaws, Minutes, Annual meeting
-   * and Champions. It shows only when newLook is on as well.
+   * and Champions. It puts those six pages in the heritage layout, with the
+   * look's type, paper ground, rules and seal, and keeps forms and editors on
+   * them in the base look. The look itself shows only when newLook is on as
+   * well.
    */
   themeHeritage: false,
 

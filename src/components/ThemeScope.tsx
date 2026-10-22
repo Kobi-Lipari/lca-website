@@ -11,8 +11,8 @@
 // should be a real element that draws its own ground (className, a
 // background), such as a page's outer wrapper: a div, or a section with a
 // heading, inside the <main> that src/App.tsx already puts around every
-// route. Do not render it as a page's main (as="main"): that would put a
-// second main landmark on the page. A section should use layout="box" too.
+// route, as HeritageLayout's is. It is never a main: that would put a second
+// main landmark on the page. A section should use layout="box" too.
 //
 // The scope="base" wrapper writes data-theme="", which puts the base look
 // back inside heritage, for the editors and forms on a heritage page.
@@ -24,43 +24,27 @@
 // arrive with the Scholastic work; until then that look changes colours
 // only. The file loads whatever the switches say: its rules apply only under
 // the new look, as the scope colours do, so this component reads no switch.
-// The file is asked for in an effect, after the scope's first paint, so an
-// element that takes one of heritage's type rules is drawn first in the base
-// type and moves when the file arrives (REDESIGN_STATUS.md, Follow-ups,
-// step 30).
+// The loader, src/lib/scopeStylesheets.ts, asks for each file once and
+// handles a failed load itself. A scope asks for its file in an effect,
+// after its first paint, so an element that takes one of heritage's type
+// rules would be drawn first in the base type and move when the file
+// arrives. A page that should not paint before its look's type is in place
+// draws ScopeStylesheetReady beside its content, inside a Suspense boundary,
+// as HeritageLayout (src/layouts/HeritageLayout.tsx) does: it holds the
+// boundary's content until the file has arrived or could not be loaded, and
+// for HOLD_AT_MOST_MS at most (the loader's), after which the content is
+// drawn in the type it has and the look's type follows when the file does.
 //
 // Looks nest one level only, and base inside heritage is the one nesting
 // allowed (nestingProblem in src/lib/themeScopes.ts). A nesting outside that
 // rule is reported in the console in development, in the tests and in the
 // accessibility test build; the site's own build leaves the check out.
-import { createContext, useContext, useEffect, useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react'
+import { createContext, use, useContext, useEffect, useMemo, type CSSProperties, type HTMLAttributes, type ReactNode } from 'react'
+import { loadScopeStylesheet, scopeStylesheetPending } from '@/lib/scopeStylesheets'
 import { dataThemeOf, nestingProblem, type ThemeScopeName } from '@/lib/themeScopes'
 
 /** The looks around this point of the page, outermost first. */
 const ScopeAncestors = createContext<readonly ThemeScopeName[]>([])
-
-/** Each look's font CSS, imported the first time the look renders. */
-const SCOPE_FONTS: Partial<Record<ThemeScopeName, () => Promise<unknown>>> = {
-  heritage: () => import('@/styles/themes/heritage.css'),
-  live: () => import('@/styles/themes/live.css'),
-}
-
-const requested = new Set<ThemeScopeName>()
-
-function loadScopeFonts(scope: ThemeScopeName) {
-  const load = SCOPE_FONTS[scope]
-  if (!load || requested.has(scope)) return
-  requested.add(scope)
-  // Without its file a look keeps the type it had before the file arrived,
-  // so a failed load is not an error for the visitor. Forgetting the failure
-  // lets a later render call import() again, but in a built site that second
-  // call fetches nothing: Vite's preload helper remembers each stylesheet it
-  // has added and leaves the failed <link> in the page, so the call resolves
-  // at once and the file stays missing until the page is reloaded. A loader
-  // that must try again has to add a link of its own (REDESIGN_STATUS.md,
-  // Follow-ups, step 30).
-  load().catch(() => requested.delete(scope))
-}
 
 const CONTENTS: CSSProperties = { display: 'contents' }
 
@@ -69,8 +53,8 @@ export interface ThemeScopeProps extends HTMLAttributes<HTMLElement> {
   scope: ThemeScopeName
   /** "contents" (the default) adds no box; "box" makes the wrapper a real element. */
   layout?: 'contents' | 'box'
-  /** The wrapper element. */
-  as?: 'div' | 'main' | 'section'
+  /** The wrapper element: never a main, since the site's own main holds every page. */
+  as?: 'div' | 'section'
   children?: ReactNode
 }
 
@@ -79,7 +63,7 @@ export function ThemeScope({ scope, layout = 'contents', as: Tag = 'div', style,
   const inside = useMemo(() => [...ancestors, scope], [ancestors, scope])
 
   useEffect(() => {
-    loadScopeFonts(scope)
+    void loadScopeStylesheet(scope)
   }, [scope])
 
   useEffect(() => {
@@ -93,4 +77,20 @@ export function ThemeScope({ scope, layout = 'contents', as: Tag = 'div', style,
       <ScopeAncestors.Provider value={inside}>{children}</ScopeAncestors.Provider>
     </Tag>
   )
+}
+
+/**
+ * Draws nothing, and holds the content of the nearest Suspense boundary
+ * until the look's stylesheet has arrived, or could not be loaded, so that
+ * content first paints in the look's own type; never longer than the
+ * loader's HOLD_AT_MOST_MS, so a slow or stalled file does not keep the page
+ * from a visitor. It asks for the file when it renders, if no scope has
+ * asked yet. Put it beside the content, inside the boundary, after the part
+ * that loads on demand, so both are on their way at once. A look with no
+ * stylesheet of its own holds nothing.
+ */
+export function ScopeStylesheetReady({ scope }: { scope: ThemeScopeName }) {
+  const pending = scopeStylesheetPending(scope)
+  if (pending) use(pending)
+  return null
 }

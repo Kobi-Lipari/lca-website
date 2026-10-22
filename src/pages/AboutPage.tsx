@@ -2,11 +2,15 @@
 import { Link } from 'react-router-dom'
 import { GovLayout } from '@/areas/governance/components/GovLayout'
 import { LcaLogo } from '@/components/LcaLogo'
+import { ThickThinRule } from '@/components/ThickThinRule'
+import { useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { FEATURES } from '@/lib/features'
 
 export function AboutPage() {
   usePageTitle('About LCA')
+  // In the heritage layout, under the new look, a thick-thin rule sets the page's words apart from its call to join.
+  const ornaments = useHeritageOrnaments()
   return (
     <GovLayout title="About LCA" subtitle="The Louisiana Chess Association">
       <div className="space-y-8 text-sm leading-relaxed text-muted-foreground">
@@ -40,6 +44,7 @@ export function AboutPage() {
           <h2 className="mb-3 text-xl font-bold text-ink">USCF affiliation</h2>
           <p>The LCA is a USCF-affiliated state organization. All LCA-sanctioned tournaments count toward USCF national ratings. LCA members in good standing are eligible to participate in national USCF events.</p>
         </div>
+        {ornaments && <ThickThinRule />}
         <div className="rounded-xl border-[3px] border-lca-gold bg-brand-navy p-6 text-white">
           <h3 className="mb-2 font-semibold">Get involved</h3>
           <p className="text-sm text-white/65">Whether you want to play in tournaments, join a club, or help grow chess in Louisiana — we'd love to have you.</p>

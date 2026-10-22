@@ -1,7 +1,9 @@
 // src/pages/BylawsPage.tsx
 import { GovLayout } from '@/areas/governance/components/GovLayout'
 import { GovernanceDocuments } from '@/areas/governance/components/GovernanceDocuments'
+import { ThickThinRule } from '@/components/ThickThinRule'
 import { useAuth } from '@/contexts/auth-context'
+import { useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { canEditGovernance } from '@/areas/admin/roles'
 
@@ -10,6 +12,8 @@ export function BylawsPage() {
   const { role } = useAuth()
   // Admins, the LCA Observer and LCA Officers manage these documents.
   const isAdmin = canEditGovernance(role)
+  // In the heritage layout, under the new look, a thick-thin rule parts each list of documents from the next, and from the rules.
+  const ornaments = useHeritageOrnaments()
 
   return (
     <GovLayout
@@ -18,10 +22,13 @@ export function BylawsPage() {
     >
       <div className="space-y-8">
         <GovernanceDocuments category="amendments" title="Proposed amendments" isAdmin={isAdmin} layout="preview" />
+        {ornaments && <ThickThinRule />}
         <GovernanceDocuments category="bylaws" title="Bylaws documents" isAdmin={isAdmin} layout="preview" />
+        {ornaments && <ThickThinRule />}
         {/* RulesPage was retired; its document category lives on here so the
             board can still publish rules/policy documents when they exist. */}
         <GovernanceDocuments category="rules" title="Rules & policy documents" isAdmin={isAdmin} layout="preview" />
+        {ornaments && <ThickThinRule />}
 
         <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
           <div>
