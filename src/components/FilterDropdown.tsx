@@ -54,6 +54,7 @@ export function FilterDropdown<T extends string>({
     <div ref={ref} className={cn('relative', className)}>
       <button
         type="button"
+        aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
         className={cn(
           'flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors',
@@ -69,6 +70,7 @@ export function FilterDropdown<T extends string>({
             <button
               key={opt.value}
               type="button"
+              aria-pressed={opt.value === value}
               onClick={() => { onChange(opt.value); setOpen(false) }}
               className={cn(
                 'flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-muted/50',

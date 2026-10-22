@@ -5,12 +5,13 @@ import { Calendar, LocateFixed, MapPin, Search, X } from 'lucide-react'
 
 import { getClubs, type ApiClubListItem } from '@/lib/api'
 import { PageHero } from '@/components/PageHero'
-import { clubColorTint, clubTextColor } from '@/areas/clubs/clubColors'
+import { clubColorTint, clubTextColor, clubTextOnDark } from '@/areas/clubs/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/areas/clubs/components/LCAMap'
 import { clubLocation, directionsUrl } from '@/areas/clubs/clubMap'
 import { LCA } from '@/lib/brand'
+import { FEATURES } from '@/lib/features'
 import { REGIONS } from '@/lib/regions'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -70,7 +71,7 @@ function ClubLogoPanel({ club }: { club: ApiClubListItem }) {
           className="flex aspect-square w-full items-center justify-center rounded-lg ring-1 ring-black/5"
           style={{ backgroundColor: clubColorTint(color, 0.16) }}
         >
-          <span aria-hidden="true" className="select-none text-2xl font-bold tracking-tight" style={{ color: clubTextColor(club.color) }}>
+          <span aria-hidden="true" className={cn('select-none text-2xl font-bold tracking-tight', clubTextOnDark(club.color))} style={{ color: clubTextColor(club.color) }}>
             {clubInitials(club.name)}
           </span>
         </div>
@@ -106,19 +107,25 @@ function ClubCard({
 }) {
   const color = club.color || LCA_GOLD
   const pin = clubLocation(club)
+  // With newLook off the card is a button, as it always was. Under the new
+  // look it is not, because it holds the club's two links and a control may
+  // not hold another (axe's nested-interactive): the club's name is the
+  // button that shows the club on the map, and a click anywhere else on the
+  // card still does, since the name's click reaches the card's own.
+  const cardIsButton = !FEATURES.newLook
 
   return (
     <div
       ref={cardRef}
-      role="button"
-      tabIndex={0}
-      aria-pressed={selected}
-      aria-label={`Show ${club.name} on the map`}
+      role={cardIsButton ? 'button' : undefined}
+      tabIndex={cardIsButton ? 0 : undefined}
+      aria-pressed={cardIsButton ? selected : undefined}
+      aria-label={cardIsButton ? `Show ${club.name} on the map` : undefined}
       onClick={onSelect}
-      onKeyDown={(e) => {
+      onKeyDown={cardIsButton ? (e) => {
         if (e.target !== e.currentTarget) return
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect() }
-      }}
+      } : undefined}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
       className={cn(
@@ -131,7 +138,13 @@ function ClubCard({
       <ClubLogoPanel club={club} />
       <div className="min-w-0 flex-1 p-3.5">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-semibold leading-snug text-ink">{club.name}</p>
+          {cardIsButton ? (
+            <p className="text-sm font-semibold leading-snug text-ink">{club.name}</p>
+          ) : (
+            <button type="button" aria-pressed={selected} aria-label={`Show ${club.name} on the map`} className="cursor-pointer text-left text-sm font-semibold leading-snug text-ink">
+              {club.name}
+            </button>
+          )}
           {distance != null && (
             <span className="flex-shrink-0 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
               {distance < 10 ? distance.toFixed(1) : Math.round(distance)} mi

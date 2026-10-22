@@ -6,10 +6,12 @@
 //
 // Every violation axe finds is printed and attached to the report. A
 // violation fails the test unless known-violations.json lists it (rule id,
-// selector, build and page): those are the issues the site has today, kept
-// visible rather than ignored, and the full axe sweep of step 32 (WS01
-// acceptance criterion 1) fixes them and empties that list. A listed issue
-// that no longer appears is reported, so the list can be trimmed.
+// selector, build and page): those are the issues the site has today with
+// every switch off, kept visible rather than ignored. The full axe sweep of
+// step 32 (WS01 acceptance criterion 1, test/a11y/scopes.spec.ts) found none
+// of them under the new look and took the a11y-on entries out, so on that
+// build any finding fails. A listed issue that no longer appears is
+// reported, so the list can be trimmed.
 //
 // The page must also load without a script error and without asking any host
 // other than the local server for anything.

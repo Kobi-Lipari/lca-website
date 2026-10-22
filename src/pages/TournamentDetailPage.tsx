@@ -25,6 +25,7 @@ import {
   type TournamentStatus,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
+import { FEATURES } from '@/lib/features'
 import { describeRules, effectiveRules, eligibilityProblem, gradeRangeText, needsGrade, parseGradeRange } from '@/lib/sectionRules'
 import { GradeConfirm } from '@/areas/events/components/GradeConfirm'
 import { asksGrade, confirmedRange, NO_TICKS, type GradeTicks } from '@/areas/events'
@@ -204,6 +205,7 @@ function ByeRoundsEditor({
             <button
               key={round}
               type="button"
+              aria-pressed={isSel}
               disabled={wouldExceed}
               onClick={() => toggle(round)}
               className={cn(
@@ -571,13 +573,15 @@ export function TournamentDetailPage() {
               </div>
             </div>
 
-            {/* Pairings / Results button */}
+            {/* Pairings / Results button. Under the new look its words are
+                white, as the hero's are: text-ink is navy in the light look,
+                and navy on the gold tint over the navy hero reads 1.29:1. */}
             <div className="flex-shrink-0">
               {hasPairings ? (
                 <Button
                   asChild
                   size="sm"
-                  className="border-lca-gold/50 bg-lca-gold/15 text-ink hover:bg-lca-gold/25"
+                  className={FEATURES.newLook ? 'border-lca-gold/50 bg-lca-gold/15 text-white hover:bg-lca-gold/25 hover:text-white' : 'border-lca-gold/50 bg-lca-gold/15 text-ink hover:bg-lca-gold/25'}
                   variant="outline"
                 >
                   <Link to={`/tournaments/${id}/pairings`}>
@@ -606,7 +610,10 @@ export function TournamentDetailPage() {
 
       {/* ── Body ── */}
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <div className="grid gap-8 lg:grid-cols-3">
+        {/* Under the new look the one column below 1024 pixels may be
+            narrower than its widest item, so on a phone the sections table
+            scrolls in its own box rather than the whole page sideways. */}
+        <div className={FEATURES.newLook ? 'grid grid-cols-1 gap-8 lg:grid-cols-3' : 'grid gap-8 lg:grid-cols-3'}>
 
           {/* ── Main column ── */}
           <div className="space-y-8 lg:col-span-2">
@@ -656,7 +663,9 @@ export function TournamentDetailPage() {
             {/* Sections */}
             <div>
               <h2 className="text-xl font-bold text-ink">Sections</h2>
-              <div className="mt-4 overflow-x-auto rounded-xl border">
+              {/* Under the new look the box the table scrolls in is a named
+                  region in the tab order, so a keyboard can scroll it. */}
+              <div className="mt-4 overflow-x-auto rounded-xl border" {...(FEATURES.newLook ? { tabIndex: 0, role: 'region', 'aria-label': 'Sections' } : {})}>
                 <table className="w-full min-w-[480px] text-left text-sm">
                   <thead>
                     <tr className="border-b bg-muted/50">
@@ -996,6 +1005,7 @@ export function TournamentDetailPage() {
                                 <button
                                   key={round}
                                   type="button"
+                                  aria-pressed={isSel}
                                   disabled={wouldExceed}
                                   onClick={() => toggleBye(round)}
                                   className={cn(

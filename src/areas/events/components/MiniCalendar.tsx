@@ -67,6 +67,8 @@ export function MiniCalendar({
             <button
               key={day}
               type="button"
+              aria-pressed={isSelected}
+              aria-current={isToday ? 'date' : undefined}
               disabled={!hasEvent}
               onClick={() => onSelectDay(day)}
               className={cn(

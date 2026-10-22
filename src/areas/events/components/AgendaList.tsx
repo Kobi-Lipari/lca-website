@@ -60,6 +60,7 @@ export function AgendaList({ tournaments, selectedKey, onSelect }: AgendaListPro
             )}
             <button
               type="button"
+              aria-current={isSelected ? 'true' : undefined}
               onClick={() => onSelect(t)}
               className={cn(
                 'flex w-full items-start gap-3 border-b border-border px-3 py-2.5 text-left transition-colors last:border-b-0 hover:bg-muted/30',

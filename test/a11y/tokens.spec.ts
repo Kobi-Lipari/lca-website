@@ -368,7 +368,7 @@ test.describe('newLook on: Appearance', () => {
     expect(ratio(GOLD, hero)).toBeGreaterThanOrEqual(3)
   })
 
-  test('the menu the state filter opens in the /tournaments hero gives its options the look\'s own ring, light and dark', async ({ page }, testInfo) => {
+  test('the menu the state filter opens in the /tournaments hero gives its options the look\'s own ring, drawn inside them, light and dark', async ({ page }, testInfo) => {
     only(testInfo, ON)
     const measured: Record<string, unknown> = {}
     // The menu is --popover: white in the light look, navy in dark mode.
@@ -392,6 +392,9 @@ test.describe('newLook on: Appearance', () => {
       expect(menu, scheme).toBe(ground)
       expect(ring.outlineColor, scheme).toBe(own)
       expect(ring.outlineWidth, scheme).toBe('2px')
+      // The option fills the menu, which scrolls and so clips what is drawn
+      // outside it: the ring sits just inside the option's edge (step 32).
+      expect(ring.outlineOffset, scheme).toBe('-2px')
       expect(ratio(ring.outlineColor, menu), scheme).toBeGreaterThanOrEqual(3)
     }
     await testInfo.attach('filter-menu-ring.json', { body: JSON.stringify(measured, null, 2), contentType: 'application/json' })

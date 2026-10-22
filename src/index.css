@@ -819,6 +819,23 @@
     outline-color: var(--focus);
 }
 
+/* A link in brand gold inside a run of words, such as the State champions
+ * link in the /tournaments hero's subtitle, is set apart from the words
+ * around it by its colour alone until it is hovered (WCAG 1.4.1, the
+ * checker's link-in-text-block). Under the new look it is underlined as
+ * well (step 32). */
+:root[data-look="new"] p > a.text-lca-gold {
+    text-decoration-line: underline;
+}
+
+/* The options of a menu that scrolls (FilterDropdown's and
+ * MultiSelectDropdown's) fill its width, so its own edges would hide the
+ * part of an option's ring drawn outside the option. Under the new look an
+ * option's ring is drawn just inside its edge instead (step 32). */
+:root[data-look="new"] .bg-popover.overflow-y-auto > button:focus-visible {
+    outline-offset: -2px;
+}
+
 /* Motion, new look only: with reduced motion asked for, nothing moves. A
  * zero-length animation still fires its end event, which the dialogs wait
  * for before they close. */

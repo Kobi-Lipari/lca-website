@@ -418,7 +418,7 @@ describe('test/a11y/baseline.json', () => {
 describe('test/a11y/known-violations.json', () => {
   const known = json('test/a11y/known-violations.json')
 
-  it('says the sweep in step 32 empties it and that nothing new may be added', () => {
+  it('says what the sweep in step 32 did with it and that nothing new may be added', () => {
     expect(known.comment).toMatch(/step 32/)
     expect(known.comment).toMatch(/nothing new may be added/)
   })
@@ -437,9 +437,17 @@ describe('test/a11y/known-violations.json', () => {
     expect(new Set(keys).size).toBe(keys.length)
   })
 
-  it('lists the same findings for the build with the switches on as for the build with none', () => {
+  it('lists today\'s findings for the build with no switch on, and none for the build with the switches on (step 32)', () => {
+    // Until step 32 the two builds listed the same nine. The sweep found
+    // none of them under the new look, so the a11y-on entries came out and
+    // that build fails on any finding at all; the a11y-off entries are the
+    // site as it is today, three muted grey lines and the slideshow's dots.
     const forProject = (p: string) => known.violations.filter((v: any) => v.project === p).map((v: any) => `${v.rule}|${v.selector}`).sort() // eslint-disable-line @typescript-eslint/no-explicit-any
-    expect(forProject('a11y-on')).toEqual(forProject('a11y-off'))
+    expect(forProject('a11y-on')).toEqual([])
+    const today = forProject('a11y-off')
+    expect(today.filter((k) => k.startsWith('color-contrast|'))).toHaveLength(3)
+    expect(today.filter((k) => k.startsWith('target-size|'))).toHaveLength(6)
+    expect(today).toHaveLength(9)
   })
 
   it('only names real axe rules, and none of them is a rule turned off', () => {
@@ -474,6 +482,7 @@ describe('the files of the browser test layer', () => {
     'test/a11y/home.spec.ts',
     'test/a11y/home-edges.spec.ts',
     'test/a11y/heritage.spec.ts',
+    'test/a11y/scopes.spec.ts',
     'test/a11y/known-violations.json',
     'test/e2e/register-family.spec.ts',
     'test/e2e/publish-round.spec.ts',

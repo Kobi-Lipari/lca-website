@@ -196,7 +196,7 @@ export function FamilyRegistrationPanel({ tournament, selfName, selfUscfId, self
                           const on = c.byes.includes(round)
                           const blocked = !on && c.byes.length >= maxByes
                           return (
-                            <button key={round} type="button" disabled={blocked}
+                            <button key={round} type="button" aria-pressed={on} disabled={blocked}
                               onClick={() => setChoice(p, { byes: on ? c.byes.filter((r) => r !== round) : [...c.byes, round].sort((a, b) => a - b) })}
                               className={cn('rounded-full border px-2 py-0.5 text-[11px] font-medium',
                                 on ? 'border-brand-navy bg-brand-navy text-white'

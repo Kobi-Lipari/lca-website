@@ -739,7 +739,7 @@ describe('the gold guard on the tree', () => {
     expect(gold).toHaveLength(53)
     expect(new Set(gold.map((u) => u.file)).size).toBe(21)
     expect(gold.filter((u) => u.ground === 'navy')).toHaveLength(51)
-    expect(gold.filter((u) => u.ground === 'unplaced').map((u) => `${u.file}:${u.line}`)).toEqual(['src/components/StatusBadge.tsx:28', 'src/pages/TournamentDetailPage.tsx:38'])
+    expect(gold.filter((u) => u.ground === 'unplaced').map((u) => `${u.file}:${u.line}`)).toEqual(['src/components/StatusBadge.tsx:28', 'src/pages/TournamentDetailPage.tsx:39'])
     expect(gold.filter((u) => u.ground === 'light')).toEqual([])
     // Every text-gold-ink is on a light ground: the 82 step 25 wrote, and the word beside the News page's pin under the new look.
     expect(ink.length).toBe(83)
@@ -757,7 +757,7 @@ describe('the gold guard on the tree', () => {
       'src/pages/ClubDetailPage.tsx:239 the style colour color: textColor -> light',
       'src/pages/ClubDetailPage.tsx:293 the style colour color: textColor -> light',
       'src/pages/ClubDetailPage.tsx:335 the style colour color: textColor -> light',
-      'src/pages/ClubsPage.tsx:73 the style colour color: clubTextColor(club.color) -> light',
+      'src/pages/ClubsPage.tsx:74 the style colour color: clubTextColor(club.color) -> light',
     ])
     // The five places a club's colour is words, which were brand gold for a club that had not picked a colour.
     expect(read('src/pages/ClubDetailPage.tsx').match(/style=\{\{ color: textColor \}\}/g)).toHaveLength(3)
@@ -1092,7 +1092,7 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
 
   it('without the allowlist, exactly its two uses fail, each at its own line, and nothing else', () => {
     const problems = goldGuard(ROOT, { allowlist: [] }).problems
-    expect(problems.map((p) => p.split(' ')[0])).toEqual(['src/components/StatusBadge.tsx:28', 'src/pages/TournamentDetailPage.tsx:38'])
+    expect(problems.map((p) => p.split(' ')[0])).toEqual(['src/components/StatusBadge.tsx:28', 'src/pages/TournamentDetailPage.tsx:39'])
     for (const p of problems) expect(p).toContain('A person decides')
     // Each entry takes exactly its own use: without one of them, only that use fails.
     for (const [i, e] of GOLD_ALLOWLIST.entries()) {
@@ -1135,7 +1135,7 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     [
       'a club\'s initials put back in the club\'s colour, without clubTextColor',
       { file: 'src/pages/ClubsPage.tsx', from: 'style={{ color: clubTextColor(club.color) }}', to: 'style={{ color }}' },
-      'src/pages/ClubsPage.tsx:73 ',
+      'src/pages/ClubsPage.tsx:74 ',
       'can be brand gold, as text on a light ground',
     ],
     [

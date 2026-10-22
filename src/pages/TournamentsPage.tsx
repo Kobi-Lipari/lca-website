@@ -299,7 +299,7 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
               LCA Clubs
             </div>
             {lcaDirectCount > 0 && (
-              <button type="button" onClick={() => toggle({ kind: 'lca' })} className={rowClass({ kind: 'lca' })}>
+              <button type="button" aria-pressed={isSelected({ kind: 'lca' })} onClick={() => toggle({ kind: 'lca' })} className={rowClass({ kind: 'lca' })}>
                 <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full" style={{ backgroundColor: LCA_GOLD }} />
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-medium text-foreground">LCA direct events</p>
@@ -308,7 +308,7 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
               </button>
             )}
             {[...lcaClubs.entries()].map(([clubId, club]) => (
-              <button key={clubId} type="button" onClick={() => toggle({ kind: 'club', clubId })} className={rowClass({ kind: 'club', clubId })}>
+              <button key={clubId} type="button" aria-pressed={isSelected({ kind: 'club', clubId })} onClick={() => toggle({ kind: 'club', clubId })} className={rowClass({ kind: 'club', clubId })}>
                 <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full" style={{ backgroundColor: club.color }} />
                 <div className="min-w-0">
                   <p className="truncate text-[13px] font-medium text-foreground">{club.name}</p>
@@ -324,7 +324,7 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
             <div className="bg-muted/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Louisiana (External)
             </div>
-            <button type="button" onClick={() => toggle({ kind: 'other-la' })} className={rowClass({ kind: 'other-la' })}>
+            <button type="button" aria-pressed={isSelected({ kind: 'other-la' })} onClick={() => toggle({ kind: 'other-la' })} className={rowClass({ kind: 'other-la' })}>
               <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full bg-slate-400" />
               <div className="min-w-0">
                 <p className="truncate text-[13px] font-medium text-foreground">Other (Louisiana)</p>
@@ -339,7 +339,7 @@ function RightColumn({ lcaClubs, lcaDirectCount, selection, onSelect, otherLaCou
             <div className="bg-muted/30 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Regional
             </div>
-            <button type="button" onClick={() => toggle({ kind: 'out-of-state' })} className={rowClass({ kind: 'out-of-state' })}>
+            <button type="button" aria-pressed={isSelected({ kind: 'out-of-state' })} onClick={() => toggle({ kind: 'out-of-state' })} className={rowClass({ kind: 'out-of-state' })}>
               <span className="mt-0.5 size-2 flex-shrink-0 self-start rounded-full bg-slate-500" />
               <div className="min-w-0">
                 <p className="truncate text-[13px] font-medium text-foreground">Out of State</p>
@@ -575,6 +575,7 @@ export function TournamentsPage() {
           <div className="flex h-9 rounded-lg border border-lca-gold/70 p-0.5">
             <button
               type="button"
+              aria-pressed={viewMode === 'list'}
               onClick={() => setViewMode('list')}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors',
@@ -585,6 +586,7 @@ export function TournamentsPage() {
             </button>
             <button
               type="button"
+              aria-pressed={viewMode === 'calendar'}
               onClick={() => setViewMode('calendar')}
               className={cn(
                 'flex items-center gap-1.5 rounded-md px-3 text-sm font-semibold transition-colors',
@@ -741,6 +743,7 @@ export function TournamentsPage() {
                     <button
                       key={tab}
                       type="button"
+                      aria-pressed={timeTab === tab}
                       onClick={() => { setTimeTab(tab); setSelectedId(null) }}
                       className={cn(
                         'rounded-md px-2 py-0.5 text-xs font-semibold capitalize transition-colors',
@@ -792,6 +795,7 @@ export function TournamentsPage() {
                       <button
                         key={key}
                         type="button"
+                        aria-current={isSel ? 'true' : undefined}
                         onClick={() => handleRowClick(key)}
                         className={cn(
                           'flex w-full items-center justify-between border-b border-border px-3 py-3 text-left transition-colors last:border-b-0 hover:bg-muted/30',

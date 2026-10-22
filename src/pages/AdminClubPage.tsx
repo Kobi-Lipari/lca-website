@@ -27,7 +27,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { isViewOnlyAdmin, toolsHomeFor } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
 import { ClubLocationPicker } from '@/areas/clubs/components/ClubLocationPicker'
-import { clubTextColor } from '@/areas/clubs/clubColors'
+import { clubTextColor, clubTextOnDark } from '@/areas/clubs/clubColors'
 import { resizeImageToFit } from '@/lib/resizeImage'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -398,11 +398,11 @@ export function AdminClubPage() {
                   maxLength={7}
                 />
                 <div
-                  className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium"
+                  className={cn('flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium', clubTextOnDark(color))}
                   style={{
                     backgroundColor: `${color}15`,
                     borderColor: `${color}40`,
-                    // The words as the club's page draws them (clubTextColor).
+                    // The words as the club's page draws them (clubTextColor, clubTextOnDark).
                     color: clubTextColor(color),
                   }}
                 >

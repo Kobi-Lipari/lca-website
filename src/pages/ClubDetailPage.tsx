@@ -13,7 +13,7 @@ import {
   type ApiClubOfficer,
   type ApiClubTournament,
 } from '@/lib/api'
-import { clubColorTint, clubTextColor } from '@/areas/clubs/clubColors'
+import { clubColorTint, clubTextColor, clubTextOnDark } from '@/areas/clubs/clubColors'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/areas/clubs/components/LCAMap'
@@ -236,7 +236,7 @@ export function ClubDetailPage() {
                     >
                       <div className="px-4 py-3">
                         <p className="font-medium text-ink">{officer.full_name}</p>
-                        <p className="text-sm" style={{ color: textColor }}>
+                        <p className={cn('text-sm', clubTextOnDark(club.color))} style={{ color: textColor }}>
                           {formatOfficerRole(officer.role)}
                         </p>
                       </div>
@@ -290,7 +290,7 @@ export function ClubDetailPage() {
                       key={item.id}
                       className="rounded-xl border bg-card p-5 shadow-sm"
                     >
-                      <p className="text-xs font-medium" style={{ color: textColor }}>
+                      <p className={cn('text-xs font-medium', clubTextOnDark(club.color))} style={{ color: textColor }}>
                         {item.news_date}
                       </p>
                       <h3 className="mt-1 font-semibold text-ink">{item.title}</h3>
@@ -331,7 +331,7 @@ export function ClubDetailPage() {
                       <dd>
                         <a
                           href={`mailto:${club.contact_email}`}
-                          className="hover:underline"
+                          className={cn('hover:underline', clubTextOnDark(club.color))}
                           style={{ color: textColor }}
                         >
                           {club.contact_email}

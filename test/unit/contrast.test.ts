@@ -713,7 +713,7 @@ describe('a status tag\'s words sit on their own tint (step 24)', () => {
       }
     }
     expect(found).toEqual([
-      'src/areas/events/components/AgendaList.tsx:87 text-status-open',
+      'src/areas/events/components/AgendaList.tsx:88 text-status-open',
       'src/components/StatusBadge.tsx:59 text-status-open',
       'src/components/StatusBadge.tsx:60 text-status-soon',
       'src/components/StatusBadge.tsx:61 text-status-full',
@@ -723,7 +723,7 @@ describe('a status tag\'s words sit on their own tint (step 24)', () => {
       'src/components/StatusBadge.tsx:65 text-status-partner',
       'src/components/StatusBadge.tsx:66 text-status-lca',
       'src/components/ui/filter-chip.tsx:63 text-status-soon',
-      'src/pages/TournamentDetailPage.tsx:822 text-status-open',
+      'src/pages/TournamentDetailPage.tsx:831 text-status-open',
     ])
     expect(lonely).toEqual([])
   })
@@ -1199,7 +1199,7 @@ describe('the LCA pill on /tournaments in dark mode (step 25)', () => {
   // text-gold-ink-badge they are brand gold in dark mode and reach 4.5:1 on
   // every ground the page can give, and stay the dark gold of the light look
   // on a light device.
-  const pill = goldPairs().filter((p) => p.where.startsWith('src/pages/TournamentsPage.tsx:644 '))
+  const pill = goldPairs().filter((p) => p.where.startsWith('src/pages/TournamentsPage.tsx:646 '))
 
   it('is the pill the pages draw: badge words on 18 per cent gold over the banner\'s 10 per cent, with the page under it', () => {
     expect(pill).toHaveLength(1)

@@ -16,10 +16,12 @@
 //   drawn in;
 // - the News page's pin is the one icon whose meaning was its colour and a
 //   name for screen readers only, and under the new look it carries the word.
-// What is left, the gold "State champions" link on the /tournaments hero
-// that colour alone sets apart from the words around it until hovered, is
-// pinned here as it is, so fixing it means updating this test and the
-// record together (REDESIGN_STATUS.md, Follow-ups).
+// The gold "State champions" link on the /tournaments hero, which colour
+// alone set apart from the words around it until hovered, keeps its line as
+// it is, and with newLook off it is today's; under the new look a rule in
+// src/index.css underlines it (step 32). Both are pinned here, so a change
+// to either means updating this test and the record together
+// (REDESIGN_STATUS.md, Follow-ups).
 import { describe, expect, it } from 'vitest'
 import { tokensOf, tsxFiles } from '../../scripts/codemods/semantic-colours'
 import { read, ROOT } from './helpers/cssTokens'
@@ -104,13 +106,18 @@ describe('the pins on the news pages', () => {
   })
 })
 
-describe('what is left: the State champions link (step 25)', () => {
+describe('the State champions link (step 25, underlined under the new look in step 32)', () => {
   // Brand gold on the navy hero at 6.51:1, set apart from the white words
   // around it by its colour until hovered, which the accessibility checker's
-  // link-in-text-block finds. It is recorded, not fixed; this pins it as it is.
-  it('is brand gold on the /tournaments hero, underlined only on hover, and recorded as left', () => {
+  // link-in-text-block finds. With newLook off it is today's link, underlined
+  // on hover only; under the new look a rule underlines a brand gold link
+  // that is a paragraph's own (PageHero draws the subtitle as a paragraph),
+  // and test/a11y/scopes.spec.ts finds no link-in-text-block on the page.
+  it('is brand gold on the /tournaments hero, underlined on hover with newLook off and always under the new look', () => {
     const page = read('src/pages/TournamentsPage.tsx')
     expect(page).toContain('<Link to="/champions" className="text-lca-gold hover:underline">State champions →</Link>')
+    const css = read('src/index.css')
+    expect(css).toMatch(/:root\[data-look="new"\] p > a\.text-lca-gold \{\s*text-decoration-line: underline;\s*\}/)
     const status = read('REDESIGN_STATUS.md')
     expect(status).toContain('- **The State champions link (step 25; older than the step).**')
     expect(status).toContain('Nothing relies on colour alone')
