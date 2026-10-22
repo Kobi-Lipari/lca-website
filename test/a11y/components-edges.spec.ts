@@ -265,7 +265,8 @@ test.describe('the gold Button', () => {
     await container.getByLabel('Your name').focus()
     await page.keyboard.press('Tab')
     await expect(gold).toBeFocused()
-    expect(await ringShown(gold)).toBe(true)
+    // The ring eases in on a11y-off, where no reduced-motion rule stops the Button's transition: poll until it is drawn.
+    await expect.poll(() => ringShown(gold)).toBe(true)
   })
 })
 
@@ -280,7 +281,7 @@ test.describe('the keyboard through the chips and into the scroll panel', () => 
       await page.keyboard.press('Tab')
       const focused = page.locator(':focus')
       stops.push(await focused.evaluate((el) => el.getAttribute('aria-label') ?? (el.textContent ?? '').trim()))
-      expect(await ringShown(focused), stops.at(-1)).toBe(true)
+      await expect.poll(() => ringShown(focused), stops.at(-1)).toBe(true)
     }
     expect(stops).toEqual(['This month', 'Classical 2', 'Scholastic 2', 'Remove filter: Scholastic', 'Near me', 'Remove filter: Next 3 months', 'Setup steps'])
   })
