@@ -535,13 +535,29 @@ export function DashboardPage() {
                         Your LCA membership is valid through{' '}
                         <span className="font-medium text-ink">{membershipExpiry}</span>.
                       </>
+                    ) : membershipStatus === 'expired' ? (
+                      <>
+                        Your membership has expired
+                        {member?.membership_expiry ? <> (it ran through <span className="font-medium text-ink">{member.membership_expiry}</span>)</> : null}.
+                        Renew to keep your member benefits.
+                      </>
                     ) : (
-                      <>Membership status: {status.label.toLowerCase()}.</>
+                      <>
+                        Pending means no membership payment has gone through on this account yet, and nothing has been charged.
+                        If you tried to join and are not sure what happened, check your last payment.
+                      </>
                     )}
                   </p>
-                  <Button asChild className={cn('mt-4', goldButtonClass)}>
-                    <Link to="/membership">Join / Renew Membership</Link>
-                  </Button>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Button asChild className={goldButtonClass}>
+                      <Link to="/membership">Join / Renew Membership</Link>
+                    </Button>
+                    {membershipStatus === 'pending' && (
+                      <Button asChild variant="outline">
+                        <Link to="/membership/success">Check my last payment</Link>
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <div className="sm:pl-6">
                   <div className="flex flex-wrap items-center justify-between gap-2">

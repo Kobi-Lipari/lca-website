@@ -122,7 +122,12 @@ function TierButton({
     try {
       const checkout = await createMembershipCheckout(tierId)
       sessionStorage.setItem('lca_pending_payment_id', checkout.paymentId)
-      window.open(checkout.paymentUrl, '_blank', 'noopener,noreferrer')
+      // Same tab, on purpose. This used to open Stripe in a new tab after
+      // the request came back, and browsers, phones above all, block a new
+      // tab that is not opened straight from the tap. The button then went
+      // quiet, nothing opened, and the member was left with a payment that
+      // never started. Stripe sends the member back here when it is done.
+      window.location.assign(checkout.paymentUrl)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Checkout failed')
     } finally {
@@ -178,6 +183,19 @@ export function MembershipPage() {
           </div>
         </div>
       </section>
+
+      {member && member.membership_status !== 'active' && (
+        <section className="border-b bg-muted/40">
+          <div className="mx-auto max-w-6xl px-6 py-4 text-sm text-ink">
+            {member.membership_status === 'expired' ? (
+              <>Your membership has <strong>expired</strong>{member.membership_expiry ? <> (it ran through {member.membership_expiry})</> : null}. Renew below to keep your member benefits.</>
+            ) : (
+              <>Your membership shows as <strong>pending</strong>. That means no membership payment has gone through on this account yet, and nothing has been charged. Join below, or{' '}
+                <Link to="/membership/success" className="font-medium underline">check your last payment</Link> if you already tried.</>
+            )}
+          </div>
+        </section>
+      )}
 
       {member?.membership_status === 'active' && (
         <section className="border-b bg-ok-50">
