@@ -49,8 +49,8 @@ To change the schema:
    `npm run db:generate -- club notes`). drizzle-kit writes its file into
    the staging folder `drizzle/`; the script numbers it after the highest
    prefix here (the sections tables were `0052`, `requires_lca_membership`
-   was `0054`, the membership status `0057`; `0058` is next), adds a header
-   and writes it here as `0058_club_notes.sql`. Commit it together with the new snapshot in
+   was `0054`, the 2026 champion `0058`; `0059` is next), adds a header
+   and writes it here as `0059_club_notes.sql`. Commit it together with the new snapshot in
    `drizzle/meta`.
 3. Read the file, run `npm run db:migrate:local` and `npm run test:all`.
 
