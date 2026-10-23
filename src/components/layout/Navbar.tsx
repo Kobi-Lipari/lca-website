@@ -34,6 +34,9 @@ const moreLinks: NavLink[] = [
   // navigation (GovLayout) to About, Bylaws and Minutes from there.
   { label: 'Governance', href: '/governance/board', activeFor: ['/governance', '/about'] },
   { label: 'Membership', href: '/membership' },
+  // Support tickets and site problems. The footer links here too; the menu
+  // entry is back at K's request (Thursday, October 23, 2026).
+  { label: 'Support', href: '/support' },
 ]
 
 // Labels shown inline at the "hybrid" mid-width tier (md-lg). Everything
