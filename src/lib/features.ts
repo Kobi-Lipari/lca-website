@@ -41,7 +41,7 @@ const SWITCHES = {
    * focus ring, and the new date, time and score formats. It also shows the
    * home page hero as one still picture, with no slideshow and no timer.
    */
-  newLook: false,
+  newLook: true,
 
   /**
    * The Heritage Club look on About, Board, Bylaws, Minutes, Annual meeting
@@ -50,7 +50,7 @@ const SWITCHES = {
    * them in the base look. The look itself shows only when newLook is on as
    * well.
    */
-  themeHeritage: false,
+  themeHeritage: true,
 
   /**
    * The Bright Scholastic look on the Scholastic pages. Off until the
