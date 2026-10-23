@@ -24,3 +24,15 @@ Heavy stages (build, test, review, fix) run on the strongest model at the highes
 ## Stale tabs after a deploy (Fri, Oct 23; add to WS02 slice 1)
 
 On Thu, Oct 22 K's admin tab of /governance/minutes, open since before the checkpoint D deploy, fell into the "Something went wrong" screen on "Add document": the tab's index named the editor's lazy file under its old content hash, which the new deployment no longer serves, so the import failed. A hard refresh fixed it. With a deploy per checkpoint from now on this will recur for any open tab. Slice 1 adds the small guard the site lacks: in src/main.tsx, listen for the "vite:preloadError" event the build's loader fires when a lazy file fails to load, prevent its default, and reload the page once (a sessionStorage mark keeps it from looping; if the mark is set, let the error reach the boundary as today). No switch, since it changes nothing a visitor sees except that a stale tab recovers on its own; a unit test pins the listener and the once-only rule, and the record says why. Plain words only; the event name is the loader's own.
+
+## Support in the More menu (Fri, Oct 23, K's request)
+
+K asked for the Support entry back in the header's More menu on the live site. It lands as a one-line change on branch fix/more-menu-support from main (src/components/layout/Navbar.tsx, moreLinks: Governance, Membership, Support), with the gate, a pull request and a merge once CI is green. WS02's nav model and its header, menu sheet and drawer must carry Support under More (or wherever brief 1.4's WS02 section places support), and the WS02 branch merges main after the fix lands so its header tests start from the live menu.
+
+## Small correction to carry (Fri, Oct 23)
+
+The comment above the Support entry in src/components/layout/Navbar.tsx (from main, fc8109d) says "Thursday, October 23, 2026"; October 23, 2026 is a Friday. The next slice that edits Navbar.tsx (slice 5, the desktop header) corrects the weekday; no slice touches the file only for that.
+
+## K's yes on the stale-tab reload (Fri, Oct 23)
+
+K said yes on Friday, October 23, 2026 to the once-only reload shipping without a switch ("The reload idea sounds good. You can do it."). The next slice's recorder closes the WS02 follow-up and the Q34 item that said the reload waits for K's yes (one sentence each, with the date and weekday), and the pull request 110 text drops its "Before the merge: K's yes" section in favour of one line saying K agreed on that date. Checkpoint E merges after slice 5 with the merge-safety review only.

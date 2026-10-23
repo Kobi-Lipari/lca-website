@@ -85,3 +85,9 @@ I believe we previously noted ass chess67 as a competitor, please add https://ze
 can i make a monthly newletter be hosted on the site for our leaders to collaborativly edit and it goes out automatically on the same date and time (unless edited) to a list of our members (email list given at first and then all new members get added with an opt-out feature)?
 
 (Reading: a new feature request, not in brief 1.4. Candidate for a WS16 "Newsletter" section in brief 1.5 once K answers the questions put to them on Fri, Oct 23: turn-taking edits with history or live co-editing; fully automatic send or a confirm step; the sending day and time; who may edit and who may send; the sender address and the legal footer; consent for the first list.)
+
+## K, the stale-tab reload (Fri, Oct 23, verbatim)
+
+The reload idea sounds good. You can do it.
+
+(Reading: yes to the once-only reload shipping without a switch, as brief 1.4's Q34 requires; checkpoint E (pull request 110) no longer waits on it.)
