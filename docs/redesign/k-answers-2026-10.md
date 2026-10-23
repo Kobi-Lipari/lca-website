@@ -91,3 +91,9 @@ can i make a monthly newletter be hosted on the site for our leaders to collabor
 The reload idea sounds good. You can do it.
 
 (Reading: yes to the once-only reload shipping without a switch, as brief 1.4's Q34 requires; checkpoint E (pull request 110) no longer waits on it.)
+
+## Friday, October 23, 2026: tournament test-data personas (K, verbatim)
+
+"Also, I forget if I told you to make a note of this already, but when we make the tournaments, I would like a way for people to be able to very quickly and easily enter in testing information, entries, etc for them to test the tournament creation and management featrues without having to manual slog through all of that to test. We should add in a bunch of options with names associated with their quirks for them to be able to test out everything we have to offer and get a broad spectrum of compatibility and functionality assurance. Do not work on this now, just remember for when we do work on that."
+
+Reading: with the tournament creation and management work, add a one-click test-data seeder for directors: sample tournaments and entries, each sample player named for the quirk they exercise (late entry, bye request, unrated, under 18, no US Chess ID, withdrawn, tiebreak tie, co-champion, membership pending, and so on). Preview and test databases only, never production. Not for now.
