@@ -156,7 +156,8 @@ const INSIDE: Record<string, { hooks: string[]; rules: number }> = {
   // The join card; the rule under the band.
   meeting: { hooks: ['h1 display', 'div card'], rules: 1 },
   // The upcoming championship's card, two reigning cards and the table's frame; rules under the band, before the reigning and before all champions.
-  champions: { hooks: ['h1 display', 'a card', 'div card', 'div card', 'div table'], rules: 3 },
+  // One upcoming card, one reigning card (the state title), then the state and scholastic lists; four rules: under the band, before reigning, before each list.
+  champions: { hooks: ['h1 display', 'a card', 'div card', 'ol table', 'ol table'], rules: 4 },
 }
 
 /** The page's markup inside the layout with what the layout adds taken back out. */

@@ -9,7 +9,12 @@ import { onRequestPatch as tournamentPatch } from '../../functions/api/admin/tou
 
 beforeEach(resetHarness)
 
-type List = { champions: Array<{ id: string; year: number; champion: string }>; upcoming: Array<{ id: string }> }
+type Row = { id: string; year: number; title: string; champion: string; kind: string; photo_url: string | null }
+type List = { champions: Row[]; upcoming: Array<{ id: string }> }
+
+// Migration 0056 fills the table with the real honor roll (ids "lca-..."),
+// so the rows these tests add are read back by leaving those out.
+const added = (list: List) => list.champions.filter((c) => !c.id.startsWith('lca-'))
 
 describe('state champions', () => {
   it('admins add (one or many), edit and remove; everyone can see them', async () => {
@@ -17,24 +22,52 @@ describe('state champions', () => {
     expect((await invoke(championsPost, { method: 'POST', as: admin, body: { year: 2025, title: 'Louisiana State Champion', champion: 'Jane Doe' } })).status).toBe(201)
     const many = await invoke(championsPost, { method: 'POST', as: admin, body: { rows: [
       { year: 2024, title: 'Louisiana State Champion', champion: 'John Roe' },
-      { year: 2024, title: 'State Scholastic K-12', champion: 'Kid Star' },
+      { year: 2024, title: 'K-12', champion: 'Kid Star', kind: 'scholastic', photoUrl: '/champions/photos/kid-star.jpg' },
     ] } })
     expect(many.status).toBe(201)
 
-    let list = await (await invoke(championsGet, {})).json<List>()
-    expect(list.champions.map((c) => c.year)).toEqual([2025, 2024, 2024])
+    let list = added(await (await invoke(championsGet, {})).json<List>())
+    // Newest year first; within a year by title, so the K-12 section sorts before the state title.
+    expect(list.map((c) => c.year)).toEqual([2025, 2024, 2024])
+    // The list defaults to state; the scholastic row keeps its list and its photo.
+    expect(list.map((c) => c.kind)).toEqual(['state', 'scholastic', 'state'])
+    expect(list.map((c) => c.photo_url)).toEqual([null, '/champions/photos/kid-star.jpg', null])
 
-    const jane = list.champions[0].id
-    expect((await invoke(championPatch, { method: 'PATCH', as: admin, params: { id: jane }, body: { champion: 'Jane Q. Doe' } })).status).toBe(200)
-    expect((await invoke(championDelete, { method: 'DELETE', as: admin, params: { id: list.champions[2].id } })).status).toBe(200)
-    list = await (await invoke(championsGet, {})).json<List>()
-    expect(list.champions.map((c) => c.champion)).toEqual(['Jane Q. Doe', 'John Roe'])
+    const jane = list[0].id
+    expect((await invoke(championPatch, { method: 'PATCH', as: admin, params: { id: jane }, body: { champion: 'Jane Q. Doe', photoUrl: 'https://example.org/jane.jpg' } })).status).toBe(200)
+    expect((await invoke(championDelete, { method: 'DELETE', as: admin, params: { id: list[1].id } })).status).toBe(200)
+    list = added(await (await invoke(championsGet, {})).json<List>())
+    expect(list.map((c) => c.champion)).toEqual(['Jane Q. Doe', 'John Roe'])
+    expect(list[0].photo_url).toBe('https://example.org/jane.jpg')
+    // Editing one field leaves the list alone.
+    expect((await invoke(championPatch, { method: 'PATCH', as: admin, params: { id: list[1].id }, body: { kind: 'scholastic' } })).status).toBe(200)
+    expect((await invoke(championPatch, { method: 'PATCH', as: admin, params: { id: list[1].id }, body: { notes: 'co-champion' } })).status).toBe(200)
+    expect(added(await (await invoke(championsGet, {})).json<List>())[1].kind).toBe('scholastic')
   })
 
-  it('rejects bad rows and non-admins', async () => {
+  it('carries the honor roll itself: the 1915 and 2025 state champions and the 2021 sections, with photos', async () => {
+    const list = (await (await invoke(championsGet, {})).json<List>()).champions
+    const state = list.filter((c) => c.kind === 'state' && c.id.startsWith('lca-'))
+    const scholastic = list.filter((c) => c.kind === 'scholastic' && c.id.startsWith('lca-'))
+    expect(state).toHaveLength(87)
+    expect(scholastic).toHaveLength(75)
+    expect(state.find((c) => c.year === 1915)?.champion).toBe('James McConnell Jr.')
+    expect(state.find((c) => c.year === 2025)).toMatchObject({ champion: 'Nicholas Matta', photo_url: '/champions/photos/state-2025-nicholas-matta.jpg' })
+    // The document lists 2024, 2023 and 2022 on one line; each year is its own row.
+    expect(state.filter((c) => c.champion === 'Nicholas Matta').map((c) => c.year).sort()).toEqual([2020, 2022, 2023, 2024, 2025])
+    // A suffix stays with its name: "Karl Hoefer, Jr." is one person, not two.
+    expect(scholastic.filter((c) => c.year === 2011 && c.title === 'K-6').map((c) => c.champion)).toEqual(['Karl Hoefer, Jr.'])
+    expect(scholastic.filter((c) => c.year === 2021).map((c) => c.title).sort()).toEqual(['High School', 'Lower Elementary', 'Middle School', 'Upper Elementary'])
+    expect(list[0].year).toBe(2025)
+  })
+
+  it('rejects bad rows, a list it does not have, a photo it cannot serve, and non-admins', async () => {
     const admin = await seedAdmin()
     const member = await seedMember()
     expect((await invoke(championsPost, { method: 'POST', as: admin, body: { year: 1800, title: 'X', champion: 'Y' } })).status).toBe(400)
+    expect((await invoke(championsPost, { method: 'POST', as: admin, body: { year: 2020, title: 'X', champion: 'Y', kind: 'junior' } })).status).toBe(400)
+    expect((await invoke(championsPost, { method: 'POST', as: admin, body: { year: 2020, title: 'X', champion: 'Y', photoUrl: 'javascript:alert(1)' } })).status).toBe(400)
+    expect((await invoke(championsPost, { method: 'POST', as: admin, body: { year: 2020, title: 'X', champion: 'Y', photoUrl: 'http://example.org/plain.jpg' } })).status).toBe(400)
     expect((await invoke(championsPost, { method: 'POST', as: member, body: { year: 2020, title: 'X', champion: 'Y' } })).status).toBe(403)
   })
 

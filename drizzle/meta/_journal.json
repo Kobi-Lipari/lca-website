@@ -29,6 +29,20 @@
       "when": 1791548166077,
       "tag": "0003_requires_lca_membership",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792766247542,
+      "tag": "0004_champions_lists_and_photos",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792766259796,
+      "tag": "0005_champions_import",
+      "breakpoints": true
     }
   ]
 }

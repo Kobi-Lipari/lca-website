@@ -1,7 +1,9 @@
 // src/areas/admin/components/ChampionsPanel.tsx
 //
 // Admin → State champions: add one champion, paste many past years at
-// once, and edit or remove rows. Shown on the public /champions page.
+// once, and edit or remove rows. Each row belongs to one of two lists, the
+// state champions or the scholastic section winners, and may carry a photo.
+// Shown on the public /champions page.
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Pencil, Trash2, X } from 'lucide-react'
 
@@ -14,15 +16,28 @@ import {
 } from '@/lib/api'
 import { GOLD_BUTTON as GOLD, ADMIN_SCROLL } from '@/lib/brand'
 import { useViewOnly } from '@/hooks/useViewOnly'
-import { parsePasted } from '@/areas/events/champions'
+import { parsePasted, type ChampionKind } from '@/areas/events/champions'
 
-const EMPTY = { year: String(new Date().getFullYear()), title: '', champion: '', notes: '' }
+const EMPTY = { year: String(new Date().getFullYear()), title: '', champion: '', notes: '', kind: 'state' as ChampionKind, photoUrl: '' }
+
+const KIND_LABEL: Record<ChampionKind, string> = { state: 'State champions', scholastic: 'Scholastic champions' }
+
+function KindSelect({ id, value, onChange, className }: { id: string; value: ChampionKind; onChange: (k: ChampionKind) => void; className?: string }) {
+  return (
+    <select id={id} value={value} onChange={(e) => onChange(e.target.value as ChampionKind)}
+      className={`h-9 rounded-md border bg-background px-3 text-sm text-ink ${className ?? ''}`}>
+      <option value="state">State champions</option>
+      <option value="scholastic">Scholastic champions</option>
+    </select>
+  )
+}
 
 export function ChampionsPanel() {
   const viewOnly = useViewOnly()
   const [rows, setRows] = useState<ApiChampion[]>([])
   const [form, setForm] = useState(EMPTY)
   const [paste, setPaste] = useState('')
+  const [pasteKind, setPasteKind] = useState<ChampionKind>('state')
   const [editing, setEditing] = useState<ApiChampion | null>(null)
   const [busy, setBusy] = useState(false)
   const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null)
@@ -50,21 +65,21 @@ export function ChampionsPanel() {
 
   async function add(e: FormEvent) {
     e.preventDefault()
-    if (await run(() => adminAddChampions([{ ...form, notes: form.notes || null }]), `Added ${form.champion}.`)) {
-      setForm((f) => ({ ...EMPTY, year: f.year, title: f.title }))
+    if (await run(() => adminAddChampions([{ ...form, notes: form.notes || null, photoUrl: form.photoUrl || null }]), `Added ${form.champion}.`)) {
+      setForm((f) => ({ ...EMPTY, year: f.year, title: f.title, kind: f.kind }))
     }
   }
 
   const parsed = parsePasted(paste)
   async function addPasted() {
-    if (await run(() => adminAddChampions(parsed.rows), `Added ${parsed.rows.length} champion${parsed.rows.length === 1 ? '' : 's'}.`)) setPaste('')
+    if (await run(() => adminAddChampions(parsed.rows.map((r) => ({ ...r, kind: pasteKind }))), `Added ${parsed.rows.length} champion${parsed.rows.length === 1 ? '' : 's'} to ${KIND_LABEL[pasteKind].toLowerCase()}.`)) setPaste('')
   }
 
   async function saveEdit(e: FormEvent) {
     e.preventDefault()
     if (!editing) return
     const ed = editing
-    if (await run(() => adminUpdateChampion(ed.id, { year: ed.year, title: ed.title, champion: ed.champion, notes: ed.notes }), 'Saved.')) setEditing(null)
+    if (await run(() => adminUpdateChampion(ed.id, { year: ed.year, title: ed.title, champion: ed.champion, notes: ed.notes, kind: ed.kind, photoUrl: ed.photo_url }), 'Saved.')) setEditing(null)
   }
 
   return (
@@ -75,6 +90,10 @@ export function ChampionsPanel() {
         <div className="grid gap-6 lg:grid-cols-2">
           <form onSubmit={add} className="space-y-3 rounded-xl border bg-card p-5 shadow-sm">
             <p className="font-semibold text-ink">Add a champion</p>
+            <div className="space-y-1">
+              <Label htmlFor="ch-kind" className="text-xs">List</Label>
+              <KindSelect id="ch-kind" value={form.kind} onChange={(kind) => setForm((f) => ({ ...f, kind }))} className="w-full" />
+            </div>
             <div className="grid grid-cols-[90px_1fr] gap-3">
               <div className="space-y-1">
                 <Label htmlFor="ch-year" className="text-xs">Year</Label>
@@ -82,7 +101,7 @@ export function ChampionsPanel() {
               </div>
               <div className="space-y-1">
                 <Label htmlFor="ch-title" className="text-xs">Championship</Label>
-                <Input id="ch-title" list="champion-titles" placeholder="Louisiana State Champion" value={form.title}
+                <Input id="ch-title" list="champion-titles" placeholder={form.kind === 'scholastic' ? 'K-12' : 'Louisiana State Champion'} value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} required />
               </div>
             </div>
@@ -94,7 +113,11 @@ export function ChampionsPanel() {
               <Label htmlFor="ch-notes" className="text-xs">Note (optional)</Label>
               <Input id="ch-notes" placeholder="e.g. co-champion, 5.5/6" value={form.notes} onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
             </div>
-            <p className="text-xs text-muted-foreground">For a tie, add each co-champion as their own line with the same year and championship.</p>
+            <div className="space-y-1">
+              <Label htmlFor="ch-photo" className="text-xs">Photo (optional)</Label>
+              <Input id="ch-photo" placeholder="/champions/photos/name.jpg or an https address" value={form.photoUrl} onChange={(e) => setForm((f) => ({ ...f, photoUrl: e.target.value }))} />
+            </div>
+            <p className="text-xs text-muted-foreground">For a tie, add each co-champion as their own line with the same year and championship. A person who won more than once is shown once on the public page, at their first win, with one photo.</p>
             <Button type="submit" className={GOLD} disabled={busy}>Add</Button>
           </form>
 
@@ -104,6 +127,10 @@ export function ChampionsPanel() {
               One per line: <span className="font-mono">year, championship, champion, note</span>. Copying rows from a
               spreadsheet works too.
             </p>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="ch-paste-kind" className="text-xs">Add them to</Label>
+              <KindSelect id="ch-paste-kind" value={pasteKind} onChange={setPasteKind} />
+            </div>
             <textarea value={paste} onChange={(e) => setPaste(e.target.value)} rows={7}
               placeholder={'2019, Louisiana State Champion, Jane Doe\n2018, Louisiana State Champion, John Roe, co-champion'}
               className="w-full rounded-md border bg-background px-3 py-2 font-mono text-xs" />
@@ -129,22 +156,26 @@ export function ChampionsPanel() {
           <table className="w-full text-left text-sm">
             <thead className="sticky top-0 bg-muted">
               <tr className="border-b">
+                <th className="px-3 py-2">List</th>
                 <th className="px-3 py-2">Year</th>
                 <th className="px-3 py-2">Championship</th>
                 <th className="px-3 py-2">Champion</th>
                 <th className="px-3 py-2">Note</th>
+                <th className="px-3 py-2">Photo</th>
                 <th className="w-16 px-3 py-2"></th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => editing?.id === r.id ? (
                 <tr key={r.id} className="border-b bg-lca-gold/5">
-                  <td colSpan={5} className="px-3 py-2">
+                  <td colSpan={7} className="px-3 py-2">
                     <form onSubmit={saveEdit} className="flex flex-wrap items-center gap-2">
-                      <Input className="h-8 w-20" value={editing.year} onChange={(e) => setEditing({ ...editing, year: Number(e.target.value) || 0 })} />
+                      <KindSelect id={`ch-edit-kind-${editing.id}`} value={editing.kind} onChange={(kind) => setEditing({ ...editing, kind })} className="h-8" />
+                      <Input className="h-8 w-20" aria-label="Year" value={editing.year} onChange={(e) => setEditing({ ...editing, year: Number(e.target.value) || 0 })} />
                       <Input className="h-8 w-56" list="champion-titles" value={editing.title} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
                       <Input className="h-8 w-48" value={editing.champion} onChange={(e) => setEditing({ ...editing, champion: e.target.value })} />
-                      <Input className="h-8 w-40" placeholder="Note" value={editing.notes ?? ''} onChange={(e) => setEditing({ ...editing, notes: e.target.value || null })} />
+                      <Input className="h-8 w-40" placeholder="Note" aria-label="Note" value={editing.notes ?? ''} onChange={(e) => setEditing({ ...editing, notes: e.target.value || null })} />
+                      <Input className="h-8 w-64" placeholder="Photo address" aria-label="Photo address" value={editing.photo_url ?? ''} onChange={(e) => setEditing({ ...editing, photo_url: e.target.value || null })} />
                       <Button type="submit" size="sm" className={GOLD} disabled={busy}>Save</Button>
                       <button type="button" onClick={() => setEditing(null)} aria-label="Cancel" className="text-muted-foreground"><X className="size-4" /></button>
                     </form>
@@ -152,10 +183,14 @@ export function ChampionsPanel() {
                 </tr>
               ) : (
                 <tr key={r.id} className="border-b last:border-0">
+                  <td className="px-3 py-2 text-muted-foreground">{r.kind === 'scholastic' ? 'Scholastic' : 'State'}</td>
                   <td className="px-3 py-2 tabular-nums">{r.year}</td>
                   <td className="px-3 py-2">{r.title}</td>
                   <td className="px-3 py-2 font-medium text-ink">{r.champion}</td>
                   <td className="px-3 py-2 text-muted-foreground">{r.notes}</td>
+                  <td className="px-3 py-2">
+                    {r.photo_url ? <img src={r.photo_url} alt={`${r.champion}`} loading="lazy" className="h-10 w-8 rounded object-cover" /> : <span className="text-xs text-muted-foreground">None</span>}
+                  </td>
                   <td className="px-3 py-2">
                     {!viewOnly && (
                       <span className="flex gap-2">

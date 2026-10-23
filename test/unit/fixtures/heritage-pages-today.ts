@@ -16,7 +16,8 @@
 // They were made by drawing the files of 0cc7c30 in a copy of that tree with
 // the same answers; to make them again after a page changes on purpose,
 // draw the page as heritage-layout.test.tsx does and record what it prints
-// on a failure.
+// on a failure. The champions entries were made again on Friday, October 23,
+// 2026, when the page became two lists with one entry per person.
 
 export interface DrawnToday {
   length: number
@@ -35,8 +36,8 @@ export const HERITAGE_PAGES_TODAY: Record<string, DrawnToday> = {
   'minutes admin newLook off': { length: 9416, sha256: 'd8e67ca7439f07261faf267b01d737b64ad0f804c3b08259f899c69d2506c0e5' },
   'meeting visitor newLook off': { length: 6884, sha256: '29379c82e4bd867195c69e71ede071126ea9e3f1c104967afc16eb880c39937e' },
   'meeting admin newLook off': { length: 6884, sha256: '29379c82e4bd867195c69e71ede071126ea9e3f1c104967afc16eb880c39937e' },
-  'champions visitor newLook off': { length: 5347, sha256: '2743c8dfbc1f5723223481d1141d2c1eedac44424fdff8716b6a4c2d41c744ad' },
-  'champions admin newLook off': { length: 5347, sha256: '2743c8dfbc1f5723223481d1141d2c1eedac44424fdff8716b6a4c2d41c744ad' },
+  'champions visitor newLook off': { length: 9353, sha256: '3eee35ca235f032a0eed79274fab535730ec716f699b17f7c6d7cc57c23c99e4' },
+  'champions admin newLook off': { length: 9353, sha256: '3eee35ca235f032a0eed79274fab535730ec716f699b17f7c6d7cc57c23c99e4' },
   'about visitor newLook on': { length: 4898, sha256: '18ff7decc733dcad36974b1aad26d379a03d1da50b792acf4f07957fdef8714c' },
   'about admin newLook on': { length: 4898, sha256: '18ff7decc733dcad36974b1aad26d379a03d1da50b792acf4f07957fdef8714c' },
   'board visitor newLook on': { length: 9282, sha256: 'f66f461d2b710f20b4f9b56d19eca95832cccb3a6a14aa0b8decae989f898d81' },
@@ -47,6 +48,6 @@ export const HERITAGE_PAGES_TODAY: Record<string, DrawnToday> = {
   'minutes admin newLook on': { length: 9416, sha256: 'd8e67ca7439f07261faf267b01d737b64ad0f804c3b08259f899c69d2506c0e5' },
   'meeting visitor newLook on': { length: 6884, sha256: '29379c82e4bd867195c69e71ede071126ea9e3f1c104967afc16eb880c39937e' },
   'meeting admin newLook on': { length: 6884, sha256: '29379c82e4bd867195c69e71ede071126ea9e3f1c104967afc16eb880c39937e' },
-  'champions visitor newLook on': { length: 5347, sha256: '2743c8dfbc1f5723223481d1141d2c1eedac44424fdff8716b6a4c2d41c744ad' },
-  'champions admin newLook on': { length: 5347, sha256: '2743c8dfbc1f5723223481d1141d2c1eedac44424fdff8716b6a4c2d41c744ad' },
+  'champions visitor newLook on': { length: 9353, sha256: '3eee35ca235f032a0eed79274fab535730ec716f699b17f7c6d7cc57c23c99e4' },
+  'champions admin newLook on': { length: 9353, sha256: '3eee35ca235f032a0eed79274fab535730ec716f699b17f7c6d7cc57c23c99e4' },
 }
