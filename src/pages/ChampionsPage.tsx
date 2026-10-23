@@ -1,7 +1,7 @@
 // src/pages/ChampionsPage.tsx
 //
-// The LCA honor roll: reigning state champions up top, upcoming state
-// championships, then two lists, the state champions since 1915 and the
+// The LCA honor roll: the reigning state champion up top with their latest
+// photo, upcoming state championships, then two lists, the state champions since 1915 and the
 // scholastic section winners since 2009. Each list names every person once,
 // ordered by their latest win so the reigning champion is first, with every
 // title under their name, and has a "winner of a year" lookup so nobody
@@ -15,7 +15,7 @@ import { PageHero } from '@/components/PageHero'
 import { ThickThinRule } from '@/components/ThickThinRule'
 import { useHeritageHook, useHeritageOrnaments } from '@/contexts/heritage-layout'
 import { getChampions, type ApiChampion, type ApiChampionshipEvent } from '@/lib/api'
-import { groupByPerson, winnersOfYear, yearsWon, type ChampionEntry, type ChampionKind } from '@/areas/events/champions'
+import { groupByPerson, personSlug, winnersOfYear, yearsWon, type ChampionEntry, type ChampionKind } from '@/areas/events/champions'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { cn } from '@/lib/utils'
 
@@ -41,8 +41,12 @@ export function ChampionsPage() {
       .finally(() => setLoading(false))
   }, [])
 
+  const stateEntries = useMemo(() => groupByPerson(champions, 'state'), [champions])
+  const scholasticEntries = useMemo(() => groupByPerson(champions, 'scholastic'), [champions])
+
   // The state list's titles in order of how often they've been awarded, the
-  // main one first; the latest year's winner(s) of each is reigning.
+  // main one first; the latest year's winner(s) of each is reigning, drawn
+  // with the latest photo on file for the person and their record.
   const reigning = useMemo(() => {
     const count = new Map<string, number>()
     for (const c of champions) if (c.kind === 'state') count.set(c.title, (count.get(c.title) ?? 0) + 1)
@@ -50,12 +54,13 @@ export function ChampionsPage() {
     return titles.map((t) => {
       const rows = champions.filter((c) => c.kind === 'state' && c.title === t)
       const year = Math.max(...rows.map((r) => r.year))
-      return { title: t, year, rows: rows.filter((r) => r.year === year) }
+      const holders = rows.filter((r) => r.year === year).map((r) => ({
+        row: r,
+        entry: stateEntries.find((e) => e.anchor === `state-${personSlug(r.champion)}`) ?? null,
+      }))
+      return { title: t, year, holders }
     })
-  }, [champions])
-
-  const stateEntries = useMemo(() => groupByPerson(champions, 'state'), [champions])
-  const scholasticEntries = useMemo(() => groupByPerson(champions, 'scholastic'), [champions])
+  }, [champions, stateEntries])
   const q = search.trim().toLowerCase()
 
   return (
@@ -99,18 +104,47 @@ export function ChampionsPage() {
         {ornaments && upcoming.length > 0 && reigning.length > 0 && <ThickThinRule />}
 
         {reigning.length > 0 && (
-          <section>
-            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold text-ink">
-              <Crown className="size-5 text-gold-ink" aria-hidden="true" /> Reigning champions
+          <section aria-labelledby="reigning-heading">
+            <h2 id="reigning-heading" className="mb-4 flex items-center gap-2 text-xl font-bold text-ink">
+              <Crown className="size-5 text-gold-ink" aria-hidden="true" /> Reigning {reigning.length === 1 && reigning[0].holders.length === 1 ? 'champion' : 'champions'}
             </h2>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="space-y-4">
               {reigning.map((r) => (
-                <div key={r.title} data-heritage={hook('card')} className="rounded-xl border bg-card p-4 shadow-sm">
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-gold-ink-badge">{r.title} · {r.year}</p>
-                  {r.rows.map((c) => (
-                    <p key={c.id} className="mt-1 text-lg font-bold text-ink">{c.champion}</p>
-                  ))}
-                  {r.rows[0]?.notes && <p className="mt-1 text-xs text-muted-foreground">{r.rows[0].notes}</p>}
+                <div key={r.title} data-heritage={hook('card')}
+                  className="rounded-2xl border border-lca-gold/50 border-l-[6px] border-l-lca-gold bg-card p-5 shadow-md sm:p-6">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gold-ink-badge">{r.title} · {r.year}</p>
+                  <div className={cn('mt-3 grid gap-6', r.holders.length > 1 && 'sm:grid-cols-2')}>
+                    {r.holders.map(({ row, entry }) => (
+                      <div key={row.id} className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                        {entry?.photoUrl ? (
+                          <img src={entry.photoUrl} alt={row.champion} width={160} height={200}
+                            className="h-52 w-40 shrink-0 rounded-xl border border-lca-gold/50 bg-muted object-cover shadow-sm" />
+                        ) : (
+                          <div aria-hidden="true" className="flex h-52 w-40 shrink-0 items-center justify-center rounded-xl border border-lca-gold/50 bg-muted">
+                            <Trophy className="size-10 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-3xl font-bold tracking-tight text-ink">{row.champion}</p>
+                          {row.notes && <p className="mt-1 text-sm text-muted-foreground">{row.notes}</p>}
+                          {entry && (
+                            <p className="mt-2 text-sm text-ink">
+                              {entry.wins.length > 1
+                                ? <>{entry.wins.length} state titles, the first in {entry.firstYear}.</>
+                                : <>First state title.</>}
+                              {r.holders.length > 1 && <> Shared this year.</>}
+                            </p>
+                          )}
+                          {entry && (
+                            <a href={`#${entry.anchor}`} className="mt-3 inline-block text-sm font-medium text-ink underline underline-offset-4"
+                              onClick={(e) => { e.preventDefault(); goToEntry(entry.anchor) }}>
+                              Every title
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
