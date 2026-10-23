@@ -190,7 +190,7 @@ export function MembershipPage() {
             {member.membership_status === 'expired' ? (
               <>Your membership has <strong>expired</strong>{member.membership_expiry ? <> (it ran through {member.membership_expiry})</> : null}. Renew below to keep your member benefits.</>
             ) : (
-              <>Your membership shows as <strong>pending</strong>. That means no membership payment has gone through on this account yet, and nothing has been charged. Join below, or{' '}
+              <>No LCA membership on this account yet. Join below, or{' '}
                 <Link to="/membership/success" className="font-medium underline">check your last payment</Link> if you already tried.</>
             )}
           </div>

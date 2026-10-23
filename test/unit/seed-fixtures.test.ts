@@ -59,10 +59,10 @@ const isFixtureRow = (_table: string, row: Record<string, unknown>) =>
   ['id', 'tournament_id', 'seat_id'].some((k) => typeof row[k] === 'string' && (row[k] as string).startsWith('fx-'))
 
 describe('scripts/seed/fixtures.sql loads on the migrated schema', () => {
-  it('is written against migrations 0001 to 0056', () => {
+  it('is written against migrations 0001 to 0057', () => {
     const files = migrationFiles()
     expect(files[0]).toMatch(/^0001_/)
-    expect(files.at(-1)).toMatch(/^0056_/)
+    expect(files.at(-1)).toMatch(/^0057_/)
   })
 
   it('loads, and loads again with the same result, leaving the migrations\' own rows alone', () => {

@@ -49,8 +49,8 @@ To change the schema:
    `npm run db:generate -- club notes`). drizzle-kit writes its file into
    the staging folder `drizzle/`; the script numbers it after the highest
    prefix here (the sections tables were `0052`, `requires_lca_membership`
-   was `0054`, the champions import `0056`; `0057` is next), adds a header
-   and writes it here as `0057_club_notes.sql`. Commit it together with the new snapshot in
+   was `0054`, the membership status `0057`; `0058` is next), adds a header
+   and writes it here as `0058_club_notes.sql`. Commit it together with the new snapshot in
    `drizzle/meta`.
 3. Read the file, run `npm run db:migrate:local` and `npm run test:all`.
 
@@ -90,7 +90,8 @@ NULL ...`, because club-run events start with the requirement off. Running
 
 - **Triggers.** Drizzle does not model triggers, so they live only in
   migrations (today `members_role_insert` and `members_role_update`, from
-  0046 and 0050, and the four sections and schedules triggers from 0053,
+  0046, 0050 and 0057, `members_status_none_insert` and
+  `members_status_none_update` from 0057, and the four sections and schedules triggers from 0053,
   which keep `tournament_sections`, `tournament_schedules` and their rounds
   in step with the JSON columns). Write them in a `--custom` migration.
 - **CHECK constraints and inline `UNIQUE` constraints.** They are in the

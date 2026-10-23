@@ -539,6 +539,9 @@ export const members = sqliteTable('members', {
   email: text().notNull(),
   fullName: text('full_name').notNull(),
   uscfId: text('uscf_id'),
+  // 'none' (an account with no membership), 'active' or 'expired'. The
+  // stored default is still 'pending' because changing it would rebuild the
+  // table; migration 0057's triggers turn any 'pending' written into 'none'.
   membershipStatus: text('membership_status').default('pending').notNull(),
   membershipExpiry: text('membership_expiry'),
   role: text().default('member').notNull(),

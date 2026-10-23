@@ -118,8 +118,8 @@ describe('what the guard refuses', () => {
 })
 
 describe('numbering and naming', () => {
-  it('numbers the next file after the highest prefix in migrations/ (0057 today)', () => {
-    expect(nextMigrationNumber(readdirSync(join(ROOT, 'migrations')))).toBe('0057')
+  it('numbers the next file after the highest prefix in migrations/ (0058 today)', () => {
+    expect(nextMigrationNumber(readdirSync(join(ROOT, 'migrations')))).toBe('0058')
   })
 
   it('ignores files without a four-digit prefix and copes with a duplicate prefix', () => {
@@ -155,8 +155,8 @@ describe('generateMigration', () => {
     expect(splitSql(written)).toHaveLength(1)
     // The staging SQL is gone; the snapshot and journal entry stay for the next diff.
     expect(listing(box.stagingDir)).toEqual(['meta'])
-    // The committed meta holds 0000 to 0005 (steps 6, 8 and 15, then the champions lists and import); this run adds 0006.
-    expect(listing(join(box.stagingDir, 'meta'))).toEqual(['0000_snapshot.json', '0001_snapshot.json', '0002_snapshot.json', '0003_snapshot.json', '0004_snapshot.json', '0005_snapshot.json', '0006_snapshot.json', '_journal.json'])
+    // The committed meta holds 0000 to 0006 (steps 6, 8 and 15, the champions lists and import, the membership status); this run adds 0007.
+    expect(listing(join(box.stagingDir, 'meta'))).toEqual(['0000_snapshot.json', '0001_snapshot.json', '0002_snapshot.json', '0003_snapshot.json', '0004_snapshot.json', '0005_snapshot.json', '0006_snapshot.json', '0007_snapshot.json', '_journal.json'])
   })
 
   it.each([

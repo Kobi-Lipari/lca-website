@@ -458,7 +458,7 @@ describe('a membership activates even when the webhook never arrives', () => {
   })
 
   it('activates from the success page when Stripe says the checkout was paid', async () => {
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(id)
 
     // No webhook at all — this is the broken case, reproduced.
@@ -476,14 +476,14 @@ describe('a membership activates even when the webhook never arrives', () => {
 
   it('leaves an unpaid checkout alone', async () => {
     stripeBehavior.sessionPaymentStatus = 'unpaid'
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(id)
 
     await invoke(membershipConfirm, { method: 'POST', as: id, body: { paymentId } })
 
     const after = await statusOf(id, paymentId)
     expect(after.payment?.status).toBe('pending')
-    expect(after.member?.membership_status).toBe('pending')
+    expect(after.member?.membership_status).toBe('none')
   })
 
   it('says the Stripe page is still open, and where, when the member never finished it', async () => {
@@ -492,7 +492,7 @@ describe('a membership activates even when the webhook never arrives', () => {
     // "never charged, stuck on pending".
     stripeBehavior.sessionPaymentStatus = 'unpaid'
     stripeBehavior.sessionStatus = 'open'
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(id)
 
     const res = await invoke(membershipConfirm, { method: 'POST', as: id, body: { paymentId } })
@@ -504,13 +504,13 @@ describe('a membership activates even when the webhook never arrives', () => {
 
     const after = await statusOf(id, paymentId)
     expect(after.payment?.status).toBe('pending')
-    expect(after.member?.membership_status).toBe('pending')
+    expect(after.member?.membership_status).toBe('none')
   })
 
   it('marks a lapsed Stripe page failed and says nothing was charged', async () => {
     stripeBehavior.sessionPaymentStatus = 'unpaid'
     stripeBehavior.sessionStatus = 'expired'
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(id)
 
     const first = await invoke(membershipConfirm, { method: 'POST', as: id, body: { paymentId } })
@@ -522,22 +522,22 @@ describe('a membership activates even when the webhook never arrives', () => {
     stripeBehavior.succeed = false
     const again = await invoke(membershipConfirm, { method: 'POST', as: id, body: { paymentId } })
     expect((await again.json<{ paymentState: string }>()).paymentState).toBe('expired')
-    expect((await statusOf(id, paymentId)).member?.membership_status).toBe('pending')
+    expect((await statusOf(id, paymentId)).member?.membership_status).toBe('none')
   })
 
   it('reports a payment Stripe is still finishing as processing, not as paid', async () => {
     stripeBehavior.sessionPaymentStatus = 'unpaid'
     stripeBehavior.sessionStatus = 'complete'
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(id)
 
     const res = await invoke(membershipConfirm, { method: 'POST', as: id, body: { paymentId } })
     expect((await res.json<{ paymentState: string; alreadyConfirmed?: boolean }>())).toMatchObject({ paymentState: 'processing' })
-    expect((await statusOf(id, paymentId)).member?.membership_status).toBe('pending')
+    expect((await statusOf(id, paymentId)).member?.membership_status).toBe('none')
   })
 
   it('says it could not check when Stripe cannot be reached, and changes nothing', async () => {
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(id)
     stripeBehavior.succeed = false
 
@@ -546,13 +546,13 @@ describe('a membership activates even when the webhook never arrives', () => {
     expect((await res.json<{ paymentState: string }>()).paymentState).toBe('unknown')
     const after = await statusOf(id, paymentId)
     expect(after.payment?.status).toBe('pending')
-    expect(after.member?.membership_status).toBe('pending')
+    expect(after.member?.membership_status).toBe('none')
   })
 
   it('checks the latest payment when no id is given, from any device', async () => {
     stripeBehavior.sessionPaymentStatus = 'unpaid'
     stripeBehavior.sessionStatus = 'open'
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const older = await buy(id)
     await env.DB.prepare(`UPDATE payments SET created_at = '2026-01-02 03:04:05' WHERE id = ?`).bind(older).run()
     const latest = await buy(id)
@@ -564,22 +564,22 @@ describe('a membership activates even when the webhook never arrives', () => {
   })
 
   it('answers "none" for a member who never started a payment', async () => {
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const res = await invoke(membershipConfirm, { method: 'POST', as: id, body: {} })
     expect(res.status).toBe(200)
     expect((await res.json<{ paymentState: string; pending?: boolean }>())).toMatchObject({ paymentState: 'none', pending: true })
   })
 
   it('does not report someone else\'s payment', async () => {
-    const owner = await seedMember({ membershipStatus: 'pending' })
+    const owner = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(owner)
-    const other = await seedMember({ membershipStatus: 'pending' })
+    const other = await seedMember({ membershipStatus: 'none' })
     const res = await invoke(membershipConfirm, { method: 'POST', as: other, body: { paymentId } })
     expect(res.status).toBe(404)
   })
 
   it('activates the member and completes the payment together, so a retry repairs nothing half done', async () => {
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(id)
     const first = await activateMembershipPayment(env.DB, { paymentId, memberId: id, paymentIntent: 'pi_1' })
     expect(first).toBe('activated')
@@ -595,7 +595,7 @@ describe('a membership activates even when the webhook never arrives', () => {
     // The webhook and the success page can now both activate, in any order.
     // Reading the status and then writing it would let both win, and both
     // would add a year.
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     const paymentId = await buy(id)
 
     const rawBody = JSON.stringify({
@@ -623,7 +623,7 @@ describe('a membership activates even when the webhook never arrives', () => {
   it('is still pending when the payment has no Stripe session to check', async () => {
     // A cash walk-in, or a row from before sessions were recorded: there is
     // nothing to ask Stripe about, so nothing is assumed.
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     await env.DB.prepare(
       `INSERT INTO payments (id, member_id, amount, type, reference_id, status)
        VALUES ('p-nosession', ?, 15, 'membership', 'adult', 'pending')`,
@@ -788,12 +788,12 @@ describe('a membership lapses when its term ends', () => {
   it('never turns a pending membership into an expired one', async () => {
     // 'pending' means never paid. It has no term to end, and calling it
     // expired would claim a membership that never existed.
-    const id = await seedMember({ membershipStatus: 'pending' })
+    const id = await seedMember({ membershipStatus: 'none' })
     await env.DB.prepare('UPDATE members SET membership_expiry = ? WHERE id = ?')
       .bind('2020-01-01', id).run()
 
     await expireLapsedMemberships(env.DB, TODAY)
-    expect(await statusOf(id)).toBe('pending')
+    expect(await statusOf(id)).toBe('none')
   })
 
   it('leaves an active membership with no expiry alone', async () => {
