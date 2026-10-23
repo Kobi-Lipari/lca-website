@@ -159,7 +159,10 @@ describe('REDESIGN_STATUS.md, WS02 step 1: the WS02 section', () => {
     for (const at of order) expect(at).toBeGreaterThan(-1)
     expect([...order].sort((a, b) => a - b)).toEqual(order)
     const headings = ws02.split('\n').filter((l) => l.startsWith('### '))
-    expect(headings).toHaveLength(6)
+    // The six parts this step opened, once each; every other heading is a later step's block.
+    const FIXED = [MAP, STEP, '### WS02 decisions', '### WS02 deviations from the brief', '### WS02 verify items resolved', '### WS02 follow-ups']
+    for (const fixed of FIXED) expect(headings.filter((h) => h === fixed), fixed).toHaveLength(1)
+    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(h).toMatch(/^### WS02 step \d+: \S/)
     for (const h of headings) expect(h.startsWith('### WS02 '), h).toBe(true)
     expect(ws02.split('\n').filter((l) => l.startsWith('|'))).toEqual([])
   })
@@ -228,7 +231,11 @@ describe('REDESIGN_STATUS.md, WS02 step 1: the WS02 section', () => {
   it('records the step\'s decisions, each tagged with it, with the defaults of K\'s eight questions', () => {
     const own = entries(decisions)
     expect(own.length).toBeGreaterThanOrEqual(6)
-    for (const d of own) expect(head(d), d.slice(0, 60)).toMatch(/\(WS02 step 1\)\.$/)
+    // Each decision carries the tag of the step that took it, and this step's six are there with theirs.
+    for (const d of own) expect(head(d), d.slice(0, 60)).toMatch(/\(WS02 step \d+\)\.$/)
+    for (const name of ['Brief 1.4 lands in this step', 'The eighteen switches now, all off', 'The flag table tests read 1.4\'s table, and WS01\'s step 2 record a frozen list', 'A stale tab reloads once', 'WS02\'s record is a list', 'K\'s eight questions keep their defaults']) {
+      expect(own.map(head), name).toContain(`${name} (WS02 step 1).`)
+    }
     const defaults = entries(decisions).find((l) => l.startsWith('- **K\'s eight questions keep their defaults')) ?? ''
     for (const piece of ['today\'s donation dialog', '`/give` once `newMembership` is on', 'pull request 106', 'five checkpoints, E to I', 'throwaway preview', 'no count until WS08\'s merged queue exists', '`index.html` keeps its dash', 'Q18, Q32 and Q34', 'only with `newLook` on as well']) {
       expect(defaults, piece).toContain(piece)

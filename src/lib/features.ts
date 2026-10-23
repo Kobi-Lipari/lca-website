@@ -68,7 +68,8 @@ const SWITCHES = {
 
   /**
    * The Search button in the header, its search panel (also opened with
-   * Ctrl K or ⌘K) and the /search page.
+   * Ctrl K or ⌘K) and the /search page. It shows only when newNav and newLook
+   * are on as well.
    */
   siteSearch: false,
 
@@ -79,18 +80,23 @@ const SWITCHES = {
    * The personal event strip for people taking part in an event: on desktop
    * and tablet from the week before until after the event, and on phones the
    * event bar and banner from check-in on the first day. Off until it has
-   * been checked on a preview with a real registration.
+   * been checked on a preview with a real registration. It shows only when
+   * newNav and newLook are on as well.
    */
   eventStrip: false,
 
   /**
    * The event strip while rounds are being played (board, colour and
    * opponent), the "Playing today" line on pairings and standings, and the
-   * admin reminder to mark a finished event completed.
+   * admin reminder to mark a finished event completed. It shows only when
+   * eventStrip, newNav and newLook are on as well.
    */
   eventStripLive: false,
 
-  /** The "Live" tag on the Tournaments page while an event is being played. */
+  /**
+   * The "Live" tag on the Tournaments page while an event is being played.
+   * It shows only when newNav and newLook are on as well.
+   */
   liveMarker: false,
 
   /**

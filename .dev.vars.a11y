@@ -8,7 +8,9 @@
 # test/a11y/global-setup.ts builds those arguments (a11yServerArgs).
 #
 # - SUPABASE_URL points at a closed local port, so any sign-in check fails at
-#   once and nothing reaches the real auth service. No test signs in.
+#   once and nothing reaches the real auth service. No test signs in to a
+#   service: test/a11y/signedIn.ts draws a signed-in visitor by planting a
+#   session in the page and answering the site's calls for it there.
 # - The mail addresses are at example.org, and SITE_URL is the local server.
 # - STRIPE_SECRET_KEY, RESEND_API_KEY, FACEBOOK_PAGE_TOKEN, FACEBOOK_PAGE_ID
 #   and ANTHROPIC_API_KEY are left out on purpose and bound empty instead
