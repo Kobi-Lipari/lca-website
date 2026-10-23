@@ -1,0 +1,267 @@
+{
+ "label": "scanner-2",
+ "results": [
+  {
+   "board": {
+    "file": "Scan-J.dc.html",
+    "title": "Scanner · J · Fixing a misread: One check per screen (round 2)",
+    "width": 1960,
+    "page": "scanner",
+    "name": "One check per screen",
+    "idea": "One flagged move per screen with a counter, Confirm and next, so a child and a parent can settle a sheet at the table without ever seeing the whole move list.",
+    "differs": "You see one move at a time with a counter (Check 1 of 2) and a Confirm button that moves on; Scan-K keeps the whole move list on screen and lets you tap any cell, flagged or not."
+   },
+   "drawn": {
+    "file": "Scan-J.dc.html",
+    "title": "Scanner · J · Fixing a misread: One check per screen (round 2)",
+    "width": 1960,
+    "height": 2450,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 4 of the scanner, fixing a misread, option J. The phone shows one flagged move per screen with a counter (Check 1 of 2), Confirm and next. Row 1 is the walk: b5, then Rxd7, then Something else? with the keyboard up, then All checked. Row 2 shows the states: many flags (Sample data), no candidate fits, Couldn't update, and Priya's game offline. Row 3 has four small state cards: nothing to check, updating, skipped and the daily limit. Option K (Fix in place) is the other option for this part.\n\nBuilt from: Scan-B screen 3 as drawn (the crop from the photo, the board after the previous move, ranked candidates, Confirm b5 · next check). From Scan-A panel 3 it takes the reason line on each candidate, Something else? Type the move, and Skip for now. From today's ScannerPage.tsx it takes Undo last change, looseSan with legalMovesAt, Cut the game here, the re-decode failure line and forcedSans re-decode. The phones carry the decided 56px app bar, the gold page action bar and the Tournaments · Clubs · My LCA · Menu tab bar.\n\nK's feedback applied: this is one scanner in parts with options per part, and nothing from Scan-A, B or C is turned down. Open for K: J or K, or J on phones and K on laptops as WS15 pairs them. Photo retention decides whether the crop is still there when a draft is reopened later. Whose game: a guardian's scan files under Priya and stays family-only (proposed).",
+    "unresolved": [
+     "The move tag and the gold notice use #866a1e text on #faf3dc, not the spec's #f3e6bd. On #f3e6bd the contrast is 4.12:1, below 4.5:1; on #faf3dc it is 4.62:1.",
+     "The page action bar is drawn as a 48px bar. The gold Confirm fills it edge to edge and Skip for now sits at the right on white, so the buttons are 48px tall rather than inset 44px buttons.",
+     "Phone boards are smaller where a notice takes space, so the candidates stay visible without scrolling: 300px on phones 1 and 2, 264px on phone 5 (many flags), 196px on phone 6, 204px on phones 7 and 8. Boards under 250px have no coordinate letters.",
+     "The legend sits at the top beside the title strip and the grey note, as the decided boards do, instead of as a band at the bottom. Putting it at the bottom would have pushed the board past 2500px.",
+     "Phone 5's position and its candidates (Re7, Re6, Re8+) are invented placeholders and carry the Sample data badge. The guardian's name, Meera Shah, is a sample name, given only in the caption.",
+     "Drawn without a phone status bar. The navy app bar starts 12px below the top of the screen, as in Scan-B."
+    ]
+   },
+   "review": {
+    "file": "Scan-J.dc.html",
+    "height": 2500,
+    "second_height": 0,
+    "counts": "Single file, no second part (second_height 0). Width 1960. The content measures 2454px with the root set to auto height, so the root height and $preview are now 2500, which is exactly the 2500 limit. Counted: 8 phones (row 1 is the walk: Check 1 of 2, Check 2 of 2, Something else?, All checked; row 2 is the states: Many flags, No candidate fits, Couldn't update, Priya's game offline), 4 state cards of 440 x 220 (A Nothing to check, B Updating, C Skipped, D Daily limit), 1 designer note beside phone 3, and 6 legend notes with 6 badges on the design (1 phone 1, 2 phone 1 candidates, 3 phone 3 field, 4 phone 2 Undo line, 5 phone 5 Fix in the list instead, 6 phone 8 family strip). Rule checks: 0 em or en dashes; 0 USCF, '.5', AI, grade, birthdate, {{holes}}, iframes or animations; dates are 'Sun, Sep 6' (x2), times are '3:42 PM' (x1); gold #c8a94a is used only as fills, outlines, underlines and the spinner, and gold-ink text is #866a1e; every closing tag matches its opening tag. The clipping scan found only the screen-reader-only spans, which are hidden on purpose, and nothing reaches past x=1945. Checked by hand: the board positions after 9. Bg5, after 13. Rxd7 and after 17. Rd8# match the Opera Game. Same game, names, event, Round 4 Board 6 and step strip as the other parts. Save & share is open only on All checked and is greyed in card C with 'Resolve 1 flagged move to save'. The header in phone 8 says only your family sees Priya's game. The mobile chrome (56px navy app bar with the rook mark and Search, then the action bar above the Tournaments · Clubs · My LCA · Menu tabs) matches Nav-Header-Final and Event-Phones-Final.",
+    "changes": [
+     "Sample badge: 'players, round, scan limit' now reads 'players, round, scans used, guardian name'. The limit of 20 is real (DAILY_SCAN_LIMIT), so it no longer carries the Sample badge, and the wording matches Scan-K and Scan-L.",
+     "Title strip: added a 'Versus K' row ('J shows one move per screen with a counter; K keeps the whole list on screen and lets you tap any cell') so the difference from the sibling shows at a glance.",
+     "Grey note: renamed 'K's feedback' to 'K's feedback applied' to match the decided pattern, and widened its label column to 96px.",
+     "Grey note, Open for K: the photo-retention question now names both choices. Kept 30 days, or gone within the hour, in which case a draft reopened later shows 'Photo not kept' where the crop is.",
+     "Phone 1: removed the smudge blur over the b5 cell. The caption says 'Written on the sheet as \"b5\"', so the crop now shows b5 clearly, outlined gold.",
+     "Card B (Updating): the dimmed photo crop showed 'Rxd7' in the flagged cell, which made it look as if the photo or the reader had been corrected. It now shows the smudge as the sheet has it, so the decoder contract holds.",
+     "Phone 4 (All checked): added the count in words, '17 of 20 scans left today · checking never uses a scan', above the dock.",
+     "Step strips on all phones and card C: every ticked green step now carries a screen-reader-only ', done'. The visible tick stays as the non-colour cue.",
+     "Height: the root and $preview went from 2450 to 2500, measured at 2454 and rounded up to the next 50."
+    ],
+    "remaining_concerns": [
+     "At 2500 the height is exactly at the main-board limit. Anything added later needs a second part file.",
+     "The spec says the legend band goes after row 3, but the board puts the 'Notes on this board' legend at the top, as the round's rules and the decided boards do. I left it at the top.",
+     "Phone 4's line 'Nothing to fix · you checked 2 moves · 1 fixed automatically' wraps after '· 1' at 390px. It is readable but not tidy.",
+     "Phone 5's position and candidates (move 31, Re7) are invented and carry the 'Sample data · a time-pressure sheet' badge. The board itself has no badge on the phone face.",
+     "Card D shows 'resets at midnight' as the spec says. Whether that is midnight UTC (today) or Central is listed as open for K in the spec file, not on this board's Open for K line.",
+     "'Meera Shah' as the guardian appears only in the caption under phone 8, which the top Sample badge now covers as 'guardian name'. The phone itself never shows the guardian's name."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-K.dc.html",
+    "title": "Scanner · K · Fixing a misread: Fix in place (round 2)",
+    "width": 1440,
+    "page": "scanner",
+    "name": "Fix in place",
+    "idea": "Any cell in the move list opens the candidate panel beside the board, flagged or not, so the flags are a filter over the list rather than a queue to walk.",
+    "differs": "The whole move list stays on screen and any move can be changed, even one the reader was sure of; Scan-J shows only the flagged moves, one per screen with a counter."
+   },
+   "drawn": {
+    "file": "Scan-K.dc.html",
+    "title": "Scanner · K · Fixing a misread: Fix in place (round 2)",
+    "width": 1440,
+    "height": 2800,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 4 of the scanner (fixing a misread), option 2, Fix in place. Any move in the list opens the fix panel beside the board, whether it is flagged or not, and the flags filter the list instead of forming a queue. Frame A is the laptop review at 8:04 PM on Sun, Sep 6, with 13...Rxd7 selected. Frame B shows the same panel on a sure move (7. Qb3), six states (empty, updating, failure, no candidate fits, many flags, skipped), plus offline, a guardian's view and the daily limit. Frame C is the phone, where the panel opens as a bottom sheet.\n\nBuilt from: Scan-A panels 1 to 4 (the photo with the cell outlined, the scoresheet-shaped list with Fixed automatically · Check this · You checked, the board with ranked choices, the game checks) and Scan-B screen 3 (the crop and the reasons). It also uses today's MoveEditor, now a side panel, along with fixMove with forcedSans and Undo last change. The header and footer are the decided ones.\n\nK's feedback applied: one scanner in parts, with options per part. This board is option 2 of 2 for part 4; option 1 is Scan-J, One check per screen. It uses the same game, the same step strip, the real limit (\"17 of 20 scans left today\") and the same decoder contract as the other parts. Open for K: pick this, Scan-J, or both paired by width. Photo retention: the board shows the photo kept for 30 days, so the crop still shows that evening. A guardian's OK once per child or once per game. Whether the daily limit resets at midnight UTC or midnight Central.",
+    "unresolved": [
+     "The sure-move frame (B, 7. Qb3, 380 wide) is in the bottom band next to the states, not inside the page under pane 3. Inside the page, the board rendered at about 3050px, over the 2850px limit; it now renders at 2788px.",
+     "The Sample data badge says 'players, round, scans used' instead of the spec's 'scan limit', because the limit of 20 is real data (DAILY_SCAN_LIMIT). Only the 17 used is invented.",
+     "The signed-in header follows the decided Nav-Header-Final: Donate · My LCA ▾ with no visible name. 'Marcus Landry' is only in the button's aria-label.",
+     "The footer's Play column uses the decided label 'Scholastic' instead of the spec's 'Scholastic chess'. The decided footer's dashed Calendar and Results rows (with WS04 and WS10) are left out to save height.",
+     "The spec calls the offline and junior band two frames but also describes a limit frame, so it is drawn as three frames: Offline, Junior and Limit reached.",
+     "The 'Directors: scan a whole round' button has a dashed outline and the note 'Dashed: shown to directors only', because Marcus is a player.",
+     "The game line keeps the spec's spelling 'names and colours matched from the pairings'. Scan-A spelled it 'colors'."
+    ]
+   },
+   "review": {
+    "file": "Scan-K.dc.html",
+    "height": 2800,
+    "second_height": 0,
+    "counts": "Single file, 1440 wide, no second part, so second_height is 0. The board renders 2796px tall, which rounds up to 2800. The declared root height and $preview are both 2800, under the 2850 limit. The legend has 6 numbered notes, and badges 1 to 6 appear on the design, with 1 used twice (the hovered cell and the sure-move frame). Every region in the spec is drawn: the decided header with Donate and My LCA; the page head with the Sample data badge, the dashed director-only button and \"17 of 20 scans left today · resets at midnight\"; the step strip Photo · Read · 17 moves · Check · 1 move left · Save & share; the three panes at 330, fluid and 380; the full 17-move table; the game checks with Save & share locked; the sure-move frame for 7. Qb3; 6 states; the offline, junior and limit-reached frames; and the 390px phone with a bottom sheet. I checked the 3 board positions (after 13. Rxd7 on the laptop and phone, and after 7. Qb3) square by square, and they are correct. Dates are all weekday-led: Tue, Oct 13, 2026; Sun, Sep 6; Sun, Sep 6, 8:04 PM; Sun, Sep 6, 2026. There are 0 em or en dashes and 0 USCF. Text with .5 appears only inside SVG path data. Gold never appears as text on a light ground; gold-ink text on the gold tint (#866a1e on #fbf3dc) measures about 4.6:1. Every tag is closed. The header and footer match the decided boards (Nav-Header-Final, Nav-Footer-Final). Nothing overflows, overlaps or clips at 1440. The decoder contract holds: the 7. Qb3 fix is credited to the legal-move check, \"Show what we read\" stays raw, and Save & share is locked in the game checks and in the Skipped state.",
+    "changes": [
+     "Added a visible 'Click to change' label under the hovered 7th-row cell (5. Qxf3) next to its pencil, so it is clear at a glance that any move can be changed. This is how the board differs from Scan-J.",
+     "Added screen-reader words to the step strip (', done', ', current step', ', closed until every flag is resolved'), matching how Scan-J and Scan-H word their strips.",
+     "Empty state: the green step pill now reads 'Check · done', so its status is in words and not just colour and a tick.",
+     "Many flags state: replaced the caption 'a time-pressure sheet' with a 'Sample data · another sheet' badge, because the 58-move, 9-flag sheet is invented.",
+     "Junior frame: the game-details line now ends 'Sharing waits for your OK at Save.', so the guardian's OK before sharing shows next to 'only your family sees it'.",
+     "Updating state: the status overlay now spans the full width, so the dimmed move numbers no longer peek out at its left edge.",
+     "Skipped state: the highlighted Rxd7 cell no longer runs into the frame's right edge (added a right margin, a rounded corner and a non-breaking space before 'Skipped').",
+     "Re-rendered: the height grew from 2788 to 2796, so the declared 2800 still holds."
+    ],
+    "remaining_concerns": [
+     "Visually, the done steps in the step strip still show their status with green and a tick only; the words are hidden for screen readers. This follows the spec ('Photo ✓') and the sibling boards. Visible words would mean changing the shared strip on every part.",
+     "The sure-move frame sits in the lower band at 380 wide, not directly under pane 3 inside the page as the spec says. Moving it into the page would push the footer down and make the in-page panel read oddly. Its caption and badge 1 tie it to the main frame.",
+     "The 9...b5 cell on the photo carries a smudge as well as its dashed green 'checked' outline. The spec only names a smudge on row 13, but this reads as the reason it was checked, so I left it.",
+     "The phone status bar shows a bare '8:04', the same as the sibling boards' status bars ('3:42' in Scan-J). Everywhere else times read as 8:04 PM.",
+     "The candidate reasons are the spec's copy and are kept as written. 'Qxd7 · Legal here, but then 15. Bxd7+ would capture nothing' is loosely worded as chess, because after 13...Qxd7 a piece still stands on d7 to capture.",
+     "Open for K, as drawn: photo retention (drawn as kept 30 days so the crop shows that evening), whether a guardian's OK is given once per child or once per game, and whether the limit resets at midnight UTC or Central."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-L.dc.html",
+    "title": "Scanner · L · Save, share and export: Choose then save (round 2)",
+    "width": 1440,
+    "page": "scanner",
+    "name": "Choose then save",
+    "idea": "Nothing is stored until the person picks who can see it and taps Save; one finish card holds the choice, the Save button and the export row, and export works without saving, as today.",
+    "differs": "There is a Save to My games button and a who-can-see-it choice before it, and the share link is greyed until Save; Scan-M has no Save button because the game is already saved as a private draft."
+   },
+   "drawn": {
+    "file": "Scan-L.dc.html",
+    "title": "Scanner · L · Save, share and export: Choose then save (round 2)",
+    "width": 1440,
+    "height": 2850,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: This is part 5 of the scanner (save, share and export), option 1 of 2, \"Choose then save\". Nothing is stored until the person picks who can see it (Only me · Anyone with the link · Public) and taps Save to My games. One finish card holds that choice, the Save button and the export row, and export works without saving, as it does today. The board draws the laptop page with the decided header and footer; After Save with the live link and the PGN headers; a guardian frame and a teen frame for a junior's game; six states (disabled, saving, failure, offline, link copied, photo not kept); the phone with its share sheet open; and the family to-do in My LCA.\n\nBuilt from: Scan-A panel 5 (Who can see it, Save to My games, My games · 3 saved) and its Share & export card, with the crosstable box drawn small. Also today's Email, Copy PGN, share sheet and chess.com link from ScannerPage.tsx, and the decided header and footer. It replaces Scan-A panel 5 and today's export buttons. The other option is Scan-M, Draft first, which keeps Scan-B screen 4.\n\nK's feedback applied: the scanner is shown as one scanner in parts, with options for each part, and nothing from Scan-A, B or C is dropped. Open for K: pick this or Scan-M. Photo retention is drawn as deleted 30 days after the scan unless kept. Also open: whether to keep Public or drop it (D9); whether a guardian's OK is given once per child or once per game; whether a junior's public name is the full name (D3) or Priya S.; whether the opponent must agree before a game is linked from the crosstable, or can only hide it afterwards; and whether to offer lichess alone or chess.com too.",
+    "unresolved": [
+     "Phone inset: navigator.share opens a system sheet that covers the bottom of the screen, so the BottomDock's 'Save to My games' bar above the tab bar is hidden in the phone drawing. It is named in a grey note inside the sheet and in the phone caption, not drawn. A separate dock cut was tried and removed to stay under 2900px.",
+     "The board renders at exactly 2850px (declared 2850). Fitting under the 2900px limit took tight spacing: legend notes trimmed to two lines, the family band merged into one frame, and the privacy captions merged into the C label. Any added content needs a Scan-L-2 board.",
+     "The spec's photo line ends in '(WS15)'. The user-facing copy reads 'Otherwise the photo is deleted on Tue, Oct 6, 30 days after the scan.' The WS15 reference sits in the legend note and an annotation, not in the page copy.",
+     "The page-head Sample data badge says 'players, round, scans used' rather than the spec's 'scan limit', because the 20-a-day limit is real (DAILY_SCAN_LIMIT) and only the scans used are invented. This matches Scan-K.",
+     "Invented items carry Sample data badges: Meera Shah, the share link slug, the three My games rows, and the PGN [Site \"Louisiana\"] header.",
+     "The phone's share-sheet targets (Messages, Mail, Files, More) are generic placeholders, since the system sheet varies by device."
+    ]
+   },
+   "review": {
+    "file": "Scan-L.dc.html",
+    "height": 2900,
+    "second_height": 0,
+    "counts": "Single file, no second part. Height: it rendered at 2849.6px before my fixes and 2890px after. Declared $preview is now 2900, which matches the 2900 limit and is not over it. Legend: 6 numbered notes, and badges 1 to 6 all appear on the design (1 Save, 2 Who can see it, 3 photo checkbox, 4 guardian frame, 5 crosstable box, 6 offline state). Regions the spec names, all present: decided header (Donate, My LCA menu) and the full footer with Scoresheet scanner under Play, same as Scan-K. Page head with the Sample badge, Scan another sheet, the Directors-only button and \"17 of 20 scans left today · resets at midnight\". Step strip Photo ✓ · Read · 17 moves ✓ · Check · all 17 ✓ · Save & share (current). Game band: Landry 2014 vs Shah 1803, 1-0, Louisiana State Championship 2026 · Open · Round 4 · Board 6 · Sun, Sep 6. Finish card in 3 columns. After Save frame (220 tall). Guardian and teen privacy frames. 6 state frames. Phone inset (390×844) with the share sheet. Family band. Dates checked: Sun, Sep 6; Tue, Oct 6; Mon, Aug 31; Sat, Sep 5; Tue, Oct 13, 2026 all have the right weekday. Text checks found 0 em or en dashes, 0 {{holes}}, 0 USCF, no \".5\" in copy (3½ is used), no AI references, no grade or birthdate, no iframes, no animation. Brand gold #c8a94a is used only as a fill (code chips, Save buttons, last-move rings, the footer rule), never as text on a light ground. Tags are balanced. No overflow or clipping found, and nothing runs past the 1440 root. Decoder contract holds: the board never says the reader corrected a move; it shows \"1 fixed automatically\" and \"you checked 2\", and the Disabled state has Save, the link and the export buttons all greyed with \"Resolve 1 flagged move first\". Privacy holds: a junior's game defaults to Only me, both sharing rows are greyed until a guardian allows it, the teen gets \"Ask a parent to publish\", and there is no child email or grade anywhere.",
+    "changes": [
+     "Note badge 4 in the 'Privacy · guardian' caption showed a grey number on navy that was hard to read, because the caption's span colour overrode it. Added .sl-cap .k-num-badge{color:#ffffff}.",
+     "Disabled state (flags remain): 'Resolve 1 flagged move first' had wrapped onto three cramped lines beside the button. It now sits on its own line, and the greyed Save sits next to a greyed 'No link yet' field, so Save, the link and export are still visibly closed inside the 200px frame.",
+     "Phone inset: the developer note (navigator.share, ScannerPage.tsx line 550, BottomDock) sat inside the iOS share sheet and looked like part of the sheet. I removed it and shortened the sheet from 420px to 350px, so the stacked Share & export card shows above it.",
+     "Added a small drawn BottomDock strip under the phone: a gold 'Save to My games' button with 'Under the sheet (navigator.share, as today): the BottomDock, above the tab bar'. The spec names the dock's Save button and before this it was only described in a note. To make room I removed the Family band's divider line and cut the right-column gap from 14px to 10px.",
+     "Made the difference from Scan-M visible at a glance. The grey note's What now ends 'Scan-M has no Save button: it keeps a private draft at once.' The Replaces line now says Scan-M 'saves a private draft at once and has no Save button.'",
+     "Changed $preview height from 2850 to 2900 to match the new rendered height of 2890 rounded up."
+    ],
+    "remaining_concerns": [
+     "Height is 2890px rendered against a 2900 limit, so the declared height sits exactly at the cap. Anything added later has to be paid for by trimming something else.",
+     "The phone cannot show the BottomDock and tab bar under the open share sheet, because a real share sheet covers the bottom of the screen. The dock is drawn as a strip just under the phone instead of inside it, and the tab bar is named in words rather than drawn.",
+     "Some spec copy is shortened on the board. The Public 'Open for K' note reads 'with no player pages (D9), Public could go.' The photo note reads 'held only for the job, this reads \"gone within the hour\"'. Both keep the meaning.",
+     "The phone status bar shows '8:14' with no PM. That follows device chrome and matches Scan-K and Scan-M ('8:04'), but it is a narrow reading of the '7:00 PM' rule.",
+     "Column 2 of the finish card (the crosstable box) has a lot of empty space below its text. I left it because the spec asks for that box to be drawn small, but the card could be rebalanced."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-M.dc.html",
+    "title": "Scanner · M · Save, share and export: Draft first (round 2)",
+    "width": 1960,
+    "page": "scanner",
+    "name": "Draft first",
+    "idea": "The game is saved as a private draft the moment reading finishes, so the done screen says Game saved · only you, and sharing is a switch flipped afterwards on the saved game.",
+    "differs": "No Save button anywhere: the game is already in My games when the checks end, and the only choice left is who can see it; Scan-L makes the person choose first and press Save."
+   },
+   "drawn": {
+    "file": "Scan-M.dc.html",
+    "title": "Scanner · M · Save, share and export: Draft first (round 2)",
+    "width": 1960,
+    "height": 2500,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 5 of the scanner (save, share and export), option M \"Draft first\". The game goes into My games as a private draft the moment reading ends, so there is no Save button anywhere. The done screen says \"Game saved · In My games · only you\", and sharing is a switch on the saved game. Row 1 shows the finish: Game saved, the Who can see it sheet, Shared (link copied, then PGN through the phone's share sheet), and Priya's game seen by her guardian, with a callout for a teen's own login (\"Ask a parent to publish\"). Row 2 shows the states: Offline, Couldn't save, Photo not kept, and the guardian's My LCA to-do. Row 3 is the 1440 laptop done card with the \"Change\" dialog, plus two state cards: Flags remain and Daily limit.\n\nBuilt from: Scan-B screen 4 (Done) as drawn, with the final board on 17. Rd8#, lichess · PGN · Share link, the crosstable tick and Scan the next sheet. Scan-A panel 5's visibility wording (Only me · Anyone with the link · Public) and its Share & export card. Today's export row in ScannerPage.tsx (lichess, PGN, navigator.share). It uses the same game as the other boards: Marcus Landry 2014 vs Priya Shah 1803, Board 6, Round 4, Sun, Sep 6. The real limit is shown as \"17 of 20 scans left today\".\n\nK's feedback applied: the scanner is drawn as one scanner in parts, with two options for each part, and nothing from Scan-A, B or C is turned down. Scan-A's Save button and its three-way choice before saving are replaced by a switch after saving. Export without saving is gone, because the game is always saved. Scan-B's missing tab bar is back. Open for K: L or M; photo retention (30 days or gone within the hour); whether Public exists under D9; a junior's consent (once per child or once per game) and the name on a shared page; whether the opponent agrees first or only hides afterwards; Copy & open chess.com.",
+    "unresolved": [
+     "Phone 3 draws the \"Link copied\" toast and the half-open share sheet together, as the spec asks. The toast sits over part of the board caption behind the scrim; this is deliberate overlay UI, not a layout bug.",
+     "\"Open for K · D9\" appears as a small grey chip on the Public row inside the phone 2 sheet and the laptop dialog, because the spec asks for that note on the row itself. There was no room beside phone 2 for a separate note.",
+     "The two notes the spec puts beside phone 1 and beside phone 4 share one 170px column to the right of phone 4, because four phones leave no room for a second column. The phone 1 note is headed \"About phone 1\".",
+     "The laptop card's board is 92px rather than the phones' 140px, to keep the board under the 2500px limit.",
+     "Phone 8's line \"Marcus Landry shared your Round 4 game. It names Priya.\" keeps the spec's wording, though it is shown to Priya's guardian.",
+     "\"Resets at midnight\" is kept generic; whether that means midnight Central or UTC is still open for K (open_for_k item 2)."
+    ]
+   },
+   "review": {
+    "file": "Scan-M.dc.html",
+    "height": 2500,
+    "second_height": 0,
+    "counts": "Rendered at 1960 wide. The content ends at 2484px; with the bottom padding the page is 2492px, so the declared root height and $preview are both 2500, which is exactly the main limit. Scan-M is a single file with no second part, so second_height is 0.\n\nLegend: 6 numbered notes. Badges on the design: 6 (1 and 3 on phone 1, 2 on phone 2, 5 on phone 3, 4 on phone 4, 6 on phone 5).\n\nFrames: 8 phones (row 1: Game saved, Who can see it, Shared, Priya's game; row 2: Offline, Couldn't save, Photo not kept, The guardian's My LCA), plus 1 laptop strip 1440 wide (decided header, step pills, the done card, the Who can see it dialog, and now the short decided footer), 2 state cards 440 by 200 (A Flags remain, B Daily limit) and 4 grey side notes.\n\nSample data badges: 4 (the top badge, the share link on phone 3, Meera Shah on phone 4, the to-do list on phone 8).\n\nDates, all with a weekday: Sun, Sep 6 (Sep 6, 2026 is a Sunday), Tue, Oct 6 (photo deletion, 30 days later), Tue, Oct 13 (reopened). Time: 3:46 PM.\n\nThe daily count in words appears 3 times: the laptop page head and phone 8 say \"17 of 20 scans left today\", and card B says \"0 of 20 scans left today\". The step strip \"Photo · Read · Check · Save & share\" is on all 8 phones, as pills on the laptop, and at \"Check · 1 move left\" on card A. The same game, names, event, board and round appear throughout.\n\nRule greps found nothing: no em or en dashes, no USCF, no stray .5 (the only matches are SVG coordinates), no AI references, no grade, birthdate or financial question, no {{holes}}, iframes or animation. Gold #c8a94a appears only as a fill, a background or an underline colour, never as text on a light ground. Tags are balanced and every attribute is quoted. A clipping check found only the intended screen-reader-only label clipped.\n\nDecoder contract holds: nothing says the reader corrected a move; \"Checkmate, matches the result on the sheet\"; card A keeps the done screen closed with sharing and export shut until the last flag is resolved. Privacy holds: a junior's game is Only me by default, the sharing rows are locked with \"Sharing a junior's game needs a guardian's OK\", the guardian decides from her own My LCA, a teen gets \"Ask a parent to publish\", and no child email or grade appears anywhere.\n\nNote text for the canvas sticky: \"Scan-M · Draft first. Part 5, option 2 of 2. The game is saved privately the moment reading finishes, so there is no Save button; the done screen says Game saved · In My games · only you, and sharing is a switch on the saved game. Compare with Scan-L, which makes you choose who can see it first and then press Save. Open for K: L or M, photo retention, whether Public exists (D9), a junior's consent and name on a shared page.\"",
+    "changes": [
+     "Title strip: replaced the 'Round 2' meta row with 'Versus L: No Save button; L picks who can see it, then Save', so the difference from Scan-L shows at a glance.",
+     "Grey note: renamed the label 'K's feedback' to 'K's feedback applied' to match the decided pattern, and widened the label column from 84px to 96px.",
+     "Top Sample data badge: changed 'scan limit' to 'scans used today'. The limit of 20 is real (DAILY_SCAN_LIMIT); only the 17 used is invented.",
+     "Phone 3: the share link louisianachess.org/g/landry-shah-r4 was cut off with an ellipsis. Its font is now 12px and the whole link shows.",
+     "Laptop done card: the event line is now 'Louisiana State Championship 2026 · Open' then 'Round 4 · Board 6 · Sun, Sep 6', with non-breaking spaces, so 'Board 6' no longer splits across lines. This also adds the Open section the other parts carry.",
+     "Laptop strip: added the short decided footer (rook mark, Louisiana Chess Association, 'US Chess state affiliate · Louisiana's chess community since 1915', and Contact · Website help · Bylaws & rules · Donate), copied from Tourn-List-Final, so the header and footer both match the decided chrome.",
+     "Made room for the footer within 2500px: smaller root padding (12/8), header gap (8/8), row gap (4px) and laptop page-head padding; a 84px final board on the laptop; 'The share link previews with this board' removed from the laptop card only (it stays on the phones); 30px dialog rows; 10px footer padding.",
+     "Re-rendered after each change. Content ends at 2484px (2492px with padding), so the declared height and $preview stay at 2500, with nothing clipped, overflowing or overlapping apart from the intended overlays."
+    ],
+    "remaining_concerns": [
+     "The board has no room left: it renders at 2492px against a 2500px limit. Any copy added later will push it over and force a split into two parts.",
+     "Phone 3: the 'Link copied' toast sits over the dimmed 'Checkmate, matches the result on the sheet' line behind the scrim. It is an intended overlay, but that line reads as partly covered.",
+     "The spec asks for the POST /api/games note beside phone 1. With four phones across, there was no room, so it is in the side column after phone 4, labelled 'About phone 1'.",
+     "There is a tension in the idea itself: phone 6 'Couldn't save' sits in a model where the draft is already saved. It reads as the draft upload failing (the line under it says 'Not in My games yet'), which K may want explained.",
+     "Priya Shah's full name appears on Marcus's private game card and in the guardian to-do. A scanned game is neither a pre-event list nor results, so the junior name form stays open for K (noted on the board beside phone 8).",
+     "Phones 1 to 7 show no daily count; only the laptop, phone 8 and card B do. The spec does not ask for it on the done screen, but K may expect it on every phone.",
+     "Photo retention ('deleted on Tue, Oct 6 unless you keep it') follows WS15's 30 days, while today's page says photos are never stored. Note 3 of the legend marks this as open for K."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Scan-N.dc.html",
+    "title": "Scanner · N · My games: Dated rows (round 2)",
+    "width": 1440,
+    "page": "scanner",
+    "name": "Dated rows",
+    "idea": "One list, newest first, grouped by month, a final-position thumb at the left and a state column in words, the way Latest lists news; it scans fastest.",
+    "differs": "A dated list of rows; Scan-O shows a card per tournament with little boards in a row and empty slots for rounds not scanned."
+   },
+   "drawn": {
+    "file": "Scan-N.dc.html",
+    "title": "Scanner · N · My games: Dated rows (round 2)",
+    "width": 1440,
+    "height": 2750,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: Part 6 of 8, My games, option 1 \"Dated rows\". It is one list at /me/games, newest first and grouped by month. Each row has a 56px final-position thumb, \"vs Priya Shah · won\", the event line, the weekday date, who can see it in words and the state in words beside its dot. The board shows the More menu open on the newest row (Review, Share, Download PGN, Who can see it, Hide from the crosstable greyed \"not linked\", Delete), the Delete dialog, the \"Saved to My games\" toast, a guardian frame (Meera Shah, Everyone · Priya chips, \"Sharing Priya's games: not allowed yet · Allow\"), six states (Empty, Loading, Failure, Drafts, Offline, Limit at 0 of 20) and a 390 phone with My LCA current.\n\nBuilt from: Scan-A panel 5's \"My games · 3 saved\" list and its search line, grown into a page. Scan-B screen 4's final position is used as the row thumb, and Scan-B screen 2's \"The draft waits in My games\" line is used for the draft rows. Scan-C's kit link appears as \"Print the notation kit\". Also the WS13 family cards and WS15's MyGamesPage with GET /api/me/games. The header and footer match the decided chrome and Scan-O.\n\nK's feedback applied: one scanner in parts, with options per part. Option 2 is Scan-O, Event cards with boards. The board uses the same game, the real limit (17 of 20 scans left today) and the same privacy rules. The club-night game moves to Mon, Aug 31 so the list stays newest first. Open for K: dated rows or event cards; where My games lives (task 27); photo retention, so \"Photo not kept\" may never show; a junior's sharing consent once per child or once per game; whether Public exists at all (D9); the reset is at midnight UTC today, proposed midnight Central.",
+    "unresolved": [
+     "The spec asks for a 'Notes on this board' legend at the end of the board. It sits at the top in the title strip instead, so this board matches Scan-O and the system rule that the legend goes at the top.",
+     "The spec places the Delete dialog 'beside the list'. It is drawn directly under the list, next to the row-anatomy notes, so the list keeps its full width and the event line fits on one line.",
+     "Guardian frame: 'the same More menu' is described in the frame's grey note (Share waits for Allow), not drawn open a second time.",
+     "The thumbs for rows 2 to 4 are sample positions and carry a Sample data badge. In the guardian row, the line 'Only you and your parents' is worded from the child's side, as the spec gives it, even though the guardian is the one viewing."
+    ]
+   },
+   "review": {
+    "file": "Scan-N.dc.html",
+    "height": 2750,
+    "second_height": 0,
+    "counts": "Width 1440. The page measured 2728px tall once its fixed height was removed, so the declared height stays at 2750 (root height:2750px and $preview 1440 x 2750), under the 2800 limit. Scan-N has no second part, so second_height is 0. The legend has 6 numbered notes, and the board carries 6 matching badges (1 to 6, with 5 used twice), all in place. The grey note has What, Built from, K's feedback applied and Open for K. The title strip has Built from and Replaces. The main list has 4 rows in 2 month groups (September 2026 with 3 games, August 2026 with 1). The chips read All 4, Needs a check 0, Checked 4, Shared 1, On the crosstable 0. The More menu has 6 actions, with Hide from the crosstable greyed and marked \"not linked\". The guardian frame has 1 row. The states band has 6 frames (Empty, Loading, Failure, Drafts, Offline, Limit reached). The phone inset is 390 x 844. Copy checks found 0 em or en dashes, 0 {{holes}}, 0 iframes and 0 animations. Every \"x.5\" match was CSS, none in copy. No USCF, no AI references, and no grade, birthdate or child email. The daily count is in words: \"17 of 20 scans left today · resets at midnight\", and \"0 of 20\" in the limit frame. Every state colour has its word beside it (Checked, Reading, Draft · 1 to check; won in green, drew and lost in navy). Gold #c8a94a appears only as fills, dots and rules, never as text on a light ground; gold-ink text uses #866a1e. All tags close. Only the phone's chip row runs past its edge (meant as sideways scrolling), its list runs 6px past the screen under the tab bar (meant as scrolling), and the visually hidden search label reports overflow; nothing else overflows.",
+    "changes": [
+     "Header: the 'ML' initials avatar on the My LCA button is now the decided person icon + 'My LCA' + chevron, as in Tourn-List-Final, Nav-Header-Final and Scan-O. The current-page gold underline and the 'signed in as Marcus Landry' label stay.",
+     "Guardian frame: badge 4 sat on the corner of the Allow button; it now sits next to the 'Priya's games' heading.",
+     "Loading state: the 'Loading your games…' caption was cut off by the 220px frame; the skeleton rows are tighter so it shows.",
+     "Empty state: the dashed box ran 7px past the frame; its padding and gap are tighter so it fits.",
+     "Drafts state (decoder contract): added 'Save stays closed until every move is checked.' and changed the draft row to 'read Sun, Sep 6 · not saved yet'. The frame is compacted so this and the spec's 'Photo not kept' variant fit in 220px.",
+     "Grey note: the What line now says how this option differs from Scan-O: 'Unlike Scan-O, no event cards and no empty slots for rounds not scanned: one list that scans fastest.'",
+     "Grey note, Open for K: added 'a junior opponent's name on a shared game page (full name, or first name and last initial)', because row 1 shares a game against Priya by link.",
+     "Legend: the grey-note column is now 520px (was 440) so the longer note does not make the board taller. The page measures 2728px, so the declared 2750 stands."
+    ],
+    "remaining_concerns": [
+     "Row 1 (Marcus's game against Priya, a junior) is 'Anyone with the link' because the spec says so. That is Marcus's own copy, not Priya's game, but showing a junior opponent's name on a shared page is still open for K, and the grey note now says so.",
+     "The More menu is drawn open on row 1 and covers the State and More columns of rows 2 to 4. This is the expected overlay for an open menu, and the hidden dots are hidden with their words, but those three states can only be read in the phone inset.",
+     "On the phone, the first row's state 'Checked' wraps to a line of its own ('Anyone with the link' is long). It still reads correctly.",
+     "In the drafts frame the type is small (11.5 to 12px) so the spec's content fits in the 220px frame. It is readable but dense; a taller frame would read more easily.",
+     "In the board thumbnails the pieces are 5px dots, as on the other scanner boards. The final position after 17. Rd8# follows the spec's squares, but at that size it reads as a pattern rather than a recognisable position."
+    ]
+   }
+  }
+ ]
+}

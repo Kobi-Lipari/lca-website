@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · K · Events you direct, rows with the next step (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ak-root{box-sizing:border-box;padding:24px 40px 32px;background:#ecebe6;color:#1a2744}
+.ak-root *{box-sizing:border-box}
+.ak-title{display:block;background:#1a2744;color:#ffffff;border-radius:14px;padding:18px 24px 18px;border-bottom:4px solid #c8a94a}
+.ak-title .k-kicker{color:#e6cf86;margin:0}
+.ak-title h1{font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:6px 0 10px}
+.ak-tmeta{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:13px;line-height:1.4;margin:0;max-width:1040px}
+.ak-tmeta dt{font-weight:600;color:#e6cf86;white-space:nowrap}
+.ak-tmeta dd{margin:0;color:#ffffff}
+.ak-tside{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;width:250px}
+.ak-tag-r2{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ak-tag-frame{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;border:1px solid rgba(255,255,255,.6);color:#ffffff;font-size:12.5px;font-weight:600}
+.ak-tside .k-meta{color:rgba(255,255,255,.82);text-align:right}
+.ak-legend{margin-top:12px}
+.ak-title .ak-grey{flex:none;width:500px}
+.ak-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px}
+.ak-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 24px}
+.ak-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:#2b3446}
+.ak-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ak-notes b{font-weight:600;color:#1a2744}
+.ak-grey{background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;align-content:start}
+.ak-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.ak-grey p + p{margin-top:7px}
+.ak-grey b.ak-gh{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ak-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.ak-grey li{margin-bottom:3px}
+/* frame labels */
+.ak-flab{display:flex;align-items:center;gap:12px;margin:18px 0 8px;flex-wrap:nowrap}
+.ak-flab h2{margin:0;font-size:18px;line-height:1.2;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.ak-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;flex:none}
+.ak-url{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:6px;padding:3px 8px}
+.ak-fmeta{font-size:13px;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ak-frame{position:relative;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;background:#f5f5f2;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+/* decided header */
+.ak-hd-in{display:flex;align-items:center;height:68px;padding:0 24px}
+.ak-brand{margin-right:16px}
+.ak-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ak-rook-sm{width:22px;height:22px;fill:#ffffff;flex:none}
+.ak-nav{gap:0}
+.ak-nav a{padding:0 8px !important;white-space:nowrap}
+.ak-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 8px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500}
+.ak-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ak-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ak-util{gap:12px}
+.ak-util .k-ulink{padding:0 4px}
+.ak-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500}
+.ak-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.ak-foot-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.ak-foot .k-meta{color:rgba(255,255,255,.78)}
+.ak-foot nav a{font-size:14px}
+/* hub band */
+.ak-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8;padding:12px 24px 12px}
+.ak-band-top{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.ak-name{font-size:32px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:4px 0 0}
+.ak-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.ak-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 14px 5px 5px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:44px}
+.ak-rchip-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.ak-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.ak-r-td{background:#1a2744;color:#ffffff}
+.ak-r-rep{background:#f6efd9;color:#5e4a12}
+.ak-r-board{background:#e4e9f3;color:#1a2744}
+.ak-r-parent{background:#e3efe6;color:#1f4d33}
+.ak-r-member{background:#ecebe5;color:#1a2744}
+/* layout */
+.ak-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:30px;align-items:start;padding:16px 24px 20px}
+.ak-railcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 12px}
+.ak-rnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.ak-rnav a{display:flex;justify-content:space-between;align-items:center;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:40px}
+.ak-rnav a.ak-on{background:#efede6;font-weight:600;box-shadow:inset 3px 0 0 #1a2744}
+.ak-rc{font-size:12px;font-weight:700;color:#3d4556;background:#eceef2;border-radius:999px;padding:1px 8px}
+.ak-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.ak-coll{display:flex;align-items:center;gap:12px;height:48px;padding:0 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:14.5px}
+.ak-coll b{font-weight:600}
+.ak-coll .ak-cm{color:#555c6b}
+.ak-coll .ak-show{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1a2744}
+/* the section */
+.ak-sec{background:#ffffff;border:1px solid #c9c8c0;border-radius:12px;padding:18px 20px 0;margin:6px 0}
+.ak-sh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.ak-sh h2{margin:0;font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+.ak-chip-dir{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;background:#1a2744;color:#ffffff;line-height:1.2}
+.ak-subl{font-size:15px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.ak-anchor{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#555c6b}
+.ak-row{display:grid;grid-template-columns:72px minmax(0,1fr) 220px;gap:10px 18px;padding:17px 0;border-top:1px solid #eeede7}
+.ak-sh + .ak-row{margin-top:14px}
+.ak-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:72px;min-height:74px;padding:8px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center}
+.ak-date b{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.ak-date span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;white-space:nowrap}
+.ak-date-navy{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ak-date-navy span{color:#e6cf86}
+.ak-date-done{background:#efefea;border-color:#dddcd4}
+.ak-main{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ak-tl{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ak-tl b{font-size:20px;line-height:1.25;font-weight:600}
+.ak-det{font-size:14px;line-height:1.45;color:#555c6b;margin:0}
+.ak-cnt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.ak-cnt > b{font-weight:600;margin-right:4px}
+.ak-pill{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 9px;border-radius:999px;background:#f1f0eb;color:#3d4556;font-size:12.5px;font-weight:500}
+.ak-pill i{font-style:normal;font-weight:700;color:#1a2744}
+.ak-flags{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ak-t{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap}
+.ak-t::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;flex:none}
+.ak-t-nodot::before{display:none}
+.ak-t-green{background:#e3efe6;color:#1f4d33}
+.ak-t-amber{background:#f6efd9;color:#5e4a12}
+.ak-t-navy{background:#e4e9f3;color:#1a2744}
+.ak-t-red{background:#fbe9e4;color:#9a3b1b}
+.ak-t-grey{background:#ecebe5;color:#3d4555}
+.ak-next{font-size:14px;font-weight:600;margin:0;display:flex;align-items:center;gap:8px}
+.ak-next span{font-weight:500;color:#555c6b}
+.ak-btns{display:flex;flex-direction:column;gap:8px;align-items:stretch}
+.ak-btns .k-btn{width:100%}
+.ak-btn-muted{background:#ffffff;border:1px solid #c9c8c0;color:#5d6371;flex-direction:column;gap:2px;min-height:52px}
+.ak-btn-muted small{font-size:12px;font-weight:500;color:#5d6371}
+.ak-plink{font-size:13px;font-weight:600;color:#1a2744;text-align:center;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0;margin-top:2px}
+/* inline decisions */
+.ak-dec{grid-column:2 / 4;background:#f5f5f2;border-radius:10px;padding:4px 14px}
+.ak-sub{display:flex;align-items:center;gap:14px;min-height:48px;font-size:13.5px;line-height:1.35;border-top:1px solid #e6e5df}
+.ak-sub:first-child{border-top:0}
+.ak-sub > .ak-st{flex:1;min-width:0}
+.ak-sub b{font-weight:600}
+.ak-sub .k-btn{min-height:36px;padding:0 14px;font-size:13.5px;flex:none}
+.ak-after{grid-column:2 / 4;display:flex;align-items:center;gap:10px;font-size:12.5px;color:#555c6b;margin-top:-2px}
+.ak-done{display:inline-flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;background:#e3efe6;color:#1f4d33;font-size:12.5px;font-weight:600}
+.ak-done u{color:#1a2744;text-underline-offset:2px}
+/* checks */
+.ak-check{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.4;margin:0}
+.ak-ok{color:#1f4d33;font-weight:700;flex:none;width:14px}
+.ak-bad{color:#9a3b1b;font-weight:700;flex:none;width:14px}
+.ak-checks{display:flex;flex-direction:column;gap:3px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;background:#fdfdfb}
+.ak-checks .k-label{margin-bottom:2px}
+.ak-tap{font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.ak-sec-foot{display:flex;align-items:center;gap:10px;margin:0 -20px;padding:12px 20px;background:#fbfaf6;border-top:1px solid #eeede7;border-radius:0 0 12px 12px;font-size:14px}
+.ak-sec-foot b{font-weight:600;white-space:nowrap}
+.ak-sec-foot .k-sample{white-space:nowrap}
+/* live */
+.ak-strip{display:flex;align-items:center;gap:12px;height:44px;padding:0 6px 0 24px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;font-size:14px;white-space:nowrap}
+.ak-livetag{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;background:#ff4757;color:#070b14;font-size:12px;font-weight:700;line-height:1.2;flex:none}
+.ak-evname{font-weight:700;color:#f3f5f9;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:3px}
+.ak-ps{color:#b9c2d3}
+.ak-ps b{color:#f3f5f9;font-weight:600}
+.ak-hide{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:44px;height:38px;border-radius:8px;border:1px solid rgba(243,245,249,.3);color:#f3f5f9;font-size:13px;font-weight:600;padding:0 10px;width:auto}
+.ak-liveband{background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;border-radius:10px;padding:14px 18px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 20px;align-items:center;margin-top:14px}
+.ak-liveband .ak-l1{font-size:16px;font-weight:600;line-height:1.35;margin:6px 0 0}
+.ak-liveband .ak-l1 span{color:#b9c2d3;font-weight:500}
+.ak-liveband .ak-l2{font-size:14px;line-height:1.45;color:#d5dbe6;margin:6px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ak-lbtns{display:flex;gap:8px}
+.ak-btn-light{background:transparent;color:#f3f5f9;border:1px solid rgba(243,245,249,.7)}
+.ak-shrunk{font-size:14px;line-height:1.5;color:#3d4556;padding:10px 0 14px;margin:0}
+/* phone */
+.ak-phone{width:360px;height:640px;flex:none;border-radius:34px;border:10px solid #10182b;background:#fbfaf6;overflow:hidden;position:relative;box-shadow:0 20px 44px rgba(16,24,43,.2)}
+.ak-pbar{display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 14px;background:#1a2744;color:#ffffff;font-size:16px;font-weight:600}
+.ak-pbody{padding:10px 12px 0;display:flex;flex-direction:column;gap:7px}
+.ak-ptabs{position:absolute;left:0;right:0;bottom:0;height:56px;background:#ffffff;border-top:1px solid #dddcd4;display:grid;grid-template-columns:repeat(4,1fr);font-size:11px;font-weight:600;color:#555c6b;text-align:center;align-items:center}
+.ak-ptabs .ak-pon{color:#1a2744;box-shadow:inset 0 2px 0 #1a2744;height:100%;display:flex;align-items:center;justify-content:center}
+/* insets */
+.ak-inset{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 14px}
+.ak-ilab{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 8px}
+.ak-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:3px 10px;border-radius:7px;font-size:14px;font-weight:500}
+.ak-mrow-todo{background:#fbf7e9}
+.ak-mrow-cur{background:#f3eedc;font-weight:600}
+.ak-mrow-ev{font-weight:600}
+.ak-msep{height:1px;background:#e3e2dc;margin:4px 2px}
+.ak-msub{font-size:12px;color:#555c6b;font-weight:400}
+.ak-crumbs{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px 10px;font-size:13.5px;line-height:1.4;align-items:baseline}
+.ak-crumbs .ak-fn{font-size:12px;font-weight:700;color:#555c6b}
+.ak-crumbs .ak-cr a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#9aa1b0}
+.ak-console{display:flex;align-items:center;justify-content:space-between;gap:10px;height:56px;padding:0 14px;margin-top:12px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:13.5px}
+.ak-console a{color:#ffffff}
+.ak-exit{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.7);font-weight:600;font-size:13px;color:#ffffff;flex:none}
+.ak-cap{font-size:13px;line-height:1.45;color:#3d4556;margin:8px 0 0}
+.ak-cap b{color:#1a2744;font-weight:600}
+.ak-lookup{display:flex;align-items:center;gap:8px;width:420px;height:44px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;color:#1a2744}
+.ak-res{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #ecebe5;border-radius:8px;font-size:14px;width:420px}
+.ak-row > .ak-date{align-self:start}
+.ak-plrow{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+.ak-nolook{display:flex;align-items:center;gap:8px;font-size:13px;color:#555c6b;margin-left:12px}
+.ak-tbody{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.ak-tbody > div{flex:1;min-width:0}
+.ak-after > span{white-space:nowrap}
+</style>
+</helmet>
+<div class="ak-root" style="width:1440px;height:2950px">
+<section class="ak-title" aria-label="About this board"><div class="ak-thead">
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · round 2 · option K · Events you direct</p><span class="ak-tag-r2">ROUND 2</span><span class="ak-tag-frame">Frame: Int-A, swappable</span><span class="k-sample">Sample data</span></div>
+<h1>My LCA · K · Events you direct, rows with the next step (round 2)</h1></div><div class="ak-tbody"><div>
+<dl class="ak-tmeta">
+<dt>Built from</dt><dd>Account-C's Events you direct, with Work-A, Work-D and replan 4.6 for what the rooms hold; the decided header (Nav-Header-Final).</dd>
+<dt>Replaces</dt><dd>Account-C's Events you direct card (Manage, Add a co-director, "All your events in Workspace") and the Workspace Events tab.</dd>
+<dt>Shown</dt><dd>/dashboard#directing for Chris Arceneaux at 1440px on Mon, Oct 5, 2026, 8:10 AM. Frame B on Sun, Oct 25, 2026, 11:15 AM, round 3 live. Part 2 (Account-K-2) holds Frame C (the tournament_director role, empty), D (phone) and E (rail, menu and the way back).</dd>
+<dt>Differs</dt><dd>From Account-L: one row per event with the next step as a sentence; L shows each event's five-stage track.</dd>
+<dt>Frame</dt><dd>Int-A: this section is the list; Setup, Event day, Recap and Rating report open the rooms under /workspace/tournaments/:id/...; the word Workspace appears nowhere.</dd>
+<dt>K's feedback applied</dt><dd>A good default, every section drawn in full, roles hosted in My LCA, options for each (Tue, Oct 13).</dd>
+<dt>Sample data</dt><dd>Invented: the 2027 Paul Morphy Open draft, the unpaid entrant, the pay-by date, the withdrawal, all times, "17 past events". The Classic's counts, flags and the G/90 check follow Account-C.</dd>
+</dl></div>
+<aside class="ak-grey" aria-label="Board note">
+<div><p><b class="ak-gh">What</b>Option K for Events you direct in My LCA: one dense row per event in date order, the live one pinned first; status, counts, flags and the next step as words; one-tap decisions inline; room buttons only when they apply.</p><p><b class="ak-gh">Built from</b>Account-C, Work-A's console and Reported results queue, Work-D's checklist (10 steps per WS08), replan 4.6's close-out, rating report and Recap.</p></div>
+<div><p><b class="ak-gh">K's feedback applied</b>Hosted in My LCA, never the admin panel; drawn busy, live, empty and on a phone; a plain member never sees this section; option L is the card version.</p><p><b class="ak-gh">Open for K</b></p><ol><li>Rows (K) or stage cards (L)?</li><li>Keep tournament_director as "a director who can also look up members", or fold it into assignments plus lca_auditor?</li><li>May a standing TD start a draft for review? Drawn: no.</li></ol></div>
+</aside></div>
+</section><div class="ak-legend"><div class="ak-lbox"><p class="k-label" style="margin:0">Notes on this board</p><ol class="ak-notes"><li><span class="k-num-badge">1</span><span><b>One row per event in date order.</b> On the day the live event is pinned first in a live band with the round, confirmed count, reports waiting and "Open event day". The hub never becomes the console.</span></li><li><span class="k-num-badge">2</span><span><b>Status, counts, flags and the next step are words:</b> "Registration open", "38 of 60 registered", "2 US Chess memberships ending before the event", "Next: publish the prize list · Setup 6 of 10".</span></li><li><span class="k-num-badge">3</span><span><b>One-tap decisions happen here:</b> Approve or Decline a bye, Email both a reminder, Email him the renewal link. Anything with a form opens the room.</span></li><li><span class="k-num-badge">4</span><span><b>The rooms:</b> Setup (/:id/setup, 10 steps), Event day (/:id/live, tablet-first), Recap (/:id/recap, after Mark as completed), Rating report (the console's last step). The crumb reads "My LCA › ..."; Exit console returns to #directing. Admins keep event creation, naming directors and the membership switch.</span></li><li><span class="k-num-badge">5</span><span><b>A per-event assignment gives the rows and the rooms;</b> the tournament_director role adds one lookup line (Account-K-2, Frame C). An officer's lookup lives in Board, so nobody sees two.</span></li><li><span class="k-num-badge">6</span><span><b>Drawn inside Int-A</b> (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this section is the page the left rail opens; under Int-C it is a card on Your work. Only the breadcrumb, the way back and the menu row change. Pick the frame on Account-Int-A, B or C.</span></li></ol></div>
+</div><div class="ak-flab"><span class="ak-code">A</span><h2>Default for Chris · Mon, Oct 5, 2026 · 8:10 AM</h2><span class="ak-url">louisianachess.org/dashboard#directing</span><span class="k-row-sm" style="gap:6px;flex:none"><span class="k-num-badge">6</span><span class="ak-fmeta">Int-A, swappable</span></span><span class="ak-fmeta">Other sections collapsed; each remembers its state per device.</span></div>
+<div class="ak-frame"><header class="k-header"><div class="ak-hd-in"><a class="k-brand ak-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ak-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks ak-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ak-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="ak-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="ak-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility ak-util"><a class="k-ulink" href="#">Donate</a><button class="ak-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="ak-count" aria-hidden="true">1</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header>
+<section class="ak-band"><div class="ak-band-top"><div><span class="k-kicker">My LCA</span><h1 class="ak-name">Chris Arceneaux</h1></div><a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Show my card</a></div>
+<div class="ak-roles" aria-label="Your roles"><a class="ak-rchip" href="#"><span class="ak-role ak-r-member">Member</span>Adult</a><a class="ak-rchip" href="#"><span class="ak-role ak-r-parent">Parent</span>Ella</a><a class="ak-rchip ak-rchip-on" href="#"><span class="ak-role ak-r-td">Director</span>The Baton Rouge Classic</a><a class="ak-rchip" href="#"><span class="ak-role ak-r-rep">Representative</span>South Central Louisiana</a><a class="ak-rchip" href="#"><span class="ak-role ak-r-board">Treasurer</span>board seat</a><span class="k-small k-muted" style="margin-left:8px">Sections appear for the roles LCA has given you. <a class="k-link" href="#">Role looks wrong?</a></span></div>
+</section>
+<div class="ak-layout"><aside><div class="ak-railcard"><div class="k-label" style="padding:0 10px">On this page</div><nav class="ak-rnav" aria-label="Sections"><a class="" href="#"><span>Today</span><span class="ak-rc">9</span></a><a class="" href="#"><span>You</span></a><a class="" href="#"><span>Family</span><span class="ak-rc">1</span></a><a class="ak-on" href="#" aria-current="location"><span>Events you direct</span><span class="ak-rc">3</span></a><a class="" href="#"><span>Your region</span><span class="ak-rc">4</span></a><a class="" href="#"><span>Board</span><span class="ak-rc">7</span></a></nav></div></aside>
+<div class="ak-col">
+<div class="ak-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>Today · 9</b><span class="ak-cm">· Mon, Oct 5</span><span class="ak-show">Show</span></div>
+<div class="ak-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>You</b><span class="ak-cm">· Adult · renews automatically Mon, Nov 2</span><span class="ak-show">Show</span></div>
+<div class="ak-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>Family · 1</b><span class="ak-cm">· Ella</span><span class="ak-show">Show</span></div>
+<section class="ak-sec" id="directing" aria-labelledby="ak-dir-h">
+<div class="ak-sh"><div><h2 id="ak-dir-h">Events you direct <span class="ak-chip-dir">Director</span><span class="k-num-badge">1</span></h2><p class="ak-subl">You're named on these events. LCA admins and regional representatives name directors when they create an event.</p></div><span class="ak-anchor">#directing</span></div>
+<div class="ak-row">
+<div class="ak-date ak-date-navy"><span>Sat</span><b>24</b><span>Oct</span></div>
+<div class="ak-main">
+<div class="ak-tl"><b>The Baton Rouge Classic</b><span class="ak-t ak-t-green">Registration open</span></div>
+<p class="ak-det">Sat–Sun, Oct 24–25, 2026 · Baton Rouge · 5 rounds · G/90+30 (90 min each + 30 sec per move)</p>
+<div class="ak-cnt"><b>38 of 60 registered</b><span class="ak-pill">Open <i>10</i></span><span class="ak-pill">U1800 <i>12</i></span><span class="ak-pill">U1400 <i>9</i></span><span class="ak-pill">U1000 <i>7</i></span></div>
+<div class="ak-flags"><span class="ak-t ak-t-amber">2 US Chess memberships ending before the event</span><span class="ak-t ak-t-amber">1 unpaid</span><span class="ak-t ak-t-navy">1 bye request</span><span class="k-num-badge">2</span></div>
+<p class="ak-next">Next: publish the prize list <span>· Setup 6 of 10</span></p>
+</div>
+<div class="ak-btns"><a class="k-btn k-btn-navy" href="#">Setup</a><a class="k-btn ak-btn-muted" href="#" aria-disabled="true">Event day<small>from Sat, Oct 24</small></a><div class="ak-plrow"><span class="k-num-badge">4</span><a class="ak-plink" href="#">Public page ↗</a></div></div>
+<div class="ak-dec" aria-label="Decisions for The Baton Rouge Classic">
+<div class="ak-sub"><span class="ak-st"><b>Bye request</b> · Maya Robichaux · ½ point in round 5 · requested Fri, Oct 2 · within the 2-bye limit</span><span class="k-num-badge">3</span><a class="k-btn k-btn-gold" href="#">Approve</a><a class="k-btn k-btn-line" href="#">Decline</a></div>
+<div class="ak-sub"><span class="ak-st"><b>US Chess ending before the event</b> · Jordan Lee (ended Wed, Sep 30) · Rosa Mendez (ends Mon, Oct 12)</span><a class="k-btn k-btn-line" href="#">Email both a reminder</a></div>
+<div class="ak-sub"><span class="ak-st"><b>Unpaid</b> · Theo Guidry · U1400 · $40 · pays by Sat, Oct 17 or the place is released <span class="k-sample" style="margin-left:4px">Sample data</span></span><a class="k-btn k-btn-line" href="#">Email a reminder</a></div>
+</div>
+<div class="ak-after"><span>After a tap, for ten seconds:</span><span class="ak-done">Approved · 8:14 AM · Maya's guardian has been emailed · <u>Undo</u></span><span>then the flag count drops.</span></div>
+</div><div class="ak-row">
+<div class="ak-date "><span>Sat</span><b>12</b><span>Jun 2027</span></div>
+<div class="ak-main">
+<div class="ak-tl"><b>2027 Paul Morphy Open</b><span class="ak-t ak-t-grey">Draft · Setup 2 of 10</span><span class="k-sample">Sample data</span></div>
+<p class="ak-det">Sat–Sun, Jun 12–13, 2027 · New Orleans · started from the 2026 Paul Morphy Open</p>
+<p class="ak-det" style="color:#1a2744">Publishes Mon, Oct 12, 2026 · 9:00 AM once Prizes and Directors are done · registration opens with it</p>
+<p class="ak-next">Next: check the sections copied from 2026</p>
+</div>
+<div class="ak-btns"><a class="k-btn k-btn-navy" href="#">Setup</a><a class="k-btn k-btn-line" href="#">Preview public page</a></div>
+</div><div class="ak-row">
+<div class="ak-date ak-date-done"><span>Sat</span><b>3</b><span>Oct</span></div>
+<div class="ak-main">
+<div class="ak-tl"><b>Baton Rouge Chess Club Saturday G/90</b><span class="ak-t ak-t-amber">Finished · rating report due Sat, Oct 10</span></div>
+<p class="ak-det">Sat, Oct 3, 2026 · Baton Rouge · 14 players · 4 rounds · marked completed Sat, Oct 3, 6:40 PM</p>
+<div class="ak-checks"><span class="k-label">Rating report check</span>
+<p class="ak-check"><span class="ak-ok">✓</span><span>Every result confirmed by a TD, no reports waiting</span></p>
+<p class="ak-check"><span class="ak-ok">✓</span><span>Byes within the event's limit</span></p>
+<p class="ak-check"><span class="ak-bad">✗</span><span><b>Theo Guidry's US Chess membership ended Wed, Sep 30.</b> US Chess will reject the report until he renews. <a class="ak-tap" href="#">Email him the renewal link</a> <span class="k-meta">(after a tap: "Sent 8:15 AM")</span></span></p>
+</div>
+<p class="ak-next">Next: fix 1 check, then build the three files</p>
+</div>
+<div class="ak-btns"><a class="k-btn k-btn-navy" href="#">Rating report</a><a class="k-btn k-btn-line" href="#">Recap</a><span class="k-meta" style="text-align:center">Recap appears once an event is marked completed.</span></div>
+</div>
+<div class="ak-sec-foot"><b>Past events you directed · 17</b><span class="k-sample">Sample data</span><span class="ak-nolook"><span class="k-num-badge">5</span>No member lookup here: being named on an event doesn't include it. Chris's lookup sits in Board, with the treasurer's LCA office.</span><a class="k-link" href="#" style="margin-left:auto">Browse</a></div>
+</section>
+<div class="ak-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>Your region · 4</b><span class="ak-cm">· South Central Louisiana</span><span class="ak-show">Show</span></div>
+<div class="ak-coll"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg><b>Board · 7</b><span class="ak-cm">· Treasurer</span><span class="ak-show">Show</span></div>
+</div></div>
+<footer class="k-footer ak-foot"><div class="ak-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="ak-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div><div class="ak-flab"><span class="ak-code">B</span><h2>Busy · Sun, Oct 25, 2026 · 11:15 AM · round 3 live</h2><span class="ak-url">/dashboard#directing</span><span class="ak-fmeta">Scrolled to the section; the strip stays under the header at 44px.</span><span class="k-sample">Sample data · the rail's Today count</span></div>
+<div class="ak-frame"><header class="k-header"><div class="ak-hd-in"><a class="k-brand ak-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ak-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks ak-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="ak-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="ak-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="ak-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility ak-util"><a class="k-ulink" href="#">Donate</a><button class="ak-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="ak-count" aria-hidden="true">1</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header>
+<div class="ak-strip"><span class="ak-livetag">Live · Round 3</span><a class="ak-evname" href="#">The Baton Rouge Classic</a><span>8 of 13 results confirmed</span><a class="k-btn k-btn-sm k-btn-gold" href="#">TD console</a><span class="ak-ps"><b>Players see:</b> "Round 3 in progress, pairings posted 10:58 AM"</span><a class="ak-hide" href="#">Hide</a></div>
+<div class="ak-layout" style="padding-top:16px"><aside><div class="ak-railcard"><div class="k-label" style="padding:0 10px">On this page</div><nav class="ak-rnav" aria-label="Sections"><a class="" href="#"><span>Today</span><span class="ak-rc">3</span></a><a class="" href="#"><span>You</span></a><a class="" href="#"><span>Family</span><span class="ak-rc">1</span></a><a class="ak-on" href="#" aria-current="location"><span>Events you direct</span><span class="ak-rc">2</span></a><a class="" href="#"><span>Your region</span><span class="ak-rc">4</span></a><a class="" href="#"><span>Board</span><span class="ak-rc">7</span></a></nav></div></aside>
+<div class="ak-col"><section class="ak-sec" aria-label="Events you direct, event day">
+<div class="ak-sh"><div><h2>Events you direct <span class="ak-chip-dir">Director</span></h2></div><span class="ak-anchor">#directing</span></div>
+<div class="ak-liveband"><div><div class="k-row-sm" style="gap:8px"><span class="ak-livetag">Live · Round 3</span><span class="k-num-badge">1</span></div>
+<p class="ak-l1">The Baton Rouge Classic · Round 3 · 8 of 13 results confirmed</p><p class="ak-l2" style="margin-top:2px">3 reported, waiting · 2 not reported</p>
+<p class="ak-l2"><span class="ak-t ak-t-red">Reports disagree on board 2</span><span>Jean-Paul Fontenot and Kevin Tran · Round 4 pairs when all 13 are confirmed</span></p></div>
+<div class="ak-lbtns"><a class="k-btn k-btn-gold" href="#">Open event day</a><a class="k-btn ak-btn-light" href="#">Pairings ↗</a></div></div>
+<p class="ak-shrunk">26 playing in round 3 · 1 withdrew after round 2 (Sam Nguyen) <span class="k-sample">Sample data</span> · Rosa Mendez's US Chess membership is still ended (since Mon, Oct 12) · <a class="ak-tap" href="#">Email her the renewal link</a></p>
+<div class="ak-row" style="padding:16px 0">
+<div class="ak-date "><span>Sat</span><b>12</b><span>Jun 2027</span></div>
+<div class="ak-main"><div class="ak-tl"><b>2027 Paul Morphy Open</b><span class="ak-t ak-t-green">Registration open since Mon, Oct 12</span><span class="k-sample">Sample data</span></div>
+<p class="ak-det">Sat–Sun, Jun 12–13, 2027 · New Orleans · <b style="color:#1a2744">4 of 60 registered</b></p></div>
+<div class="ak-btns"><a class="k-btn k-btn-navy" href="#">Setup</a><a class="ak-plink" href="#">Public page ↗</a></div></div>
+<div class="ak-sec-foot"><b>Past events you directed · 18</b><span class="k-meta">The G/90 left the list when its report was marked submitted Fri, Oct 9.</span><a class="k-link" href="#" style="margin-left:auto">Browse</a></div>
+</section></div></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

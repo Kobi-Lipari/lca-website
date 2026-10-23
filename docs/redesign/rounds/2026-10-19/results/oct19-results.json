@@ -1,0 +1,120 @@
+{
+ "label": "oct19",
+ "results": [
+  {
+   "board": {
+    "file": "Account-Final-Hub.dc.html",
+    "title": "Account-Final-Hub \u00b7 one page for one role, a left rail for more",
+    "width": 1440,
+    "page": "account",
+    "name": "The hub for one role, the rail for several",
+    "idea": "K's hybrid of Int-A and Int-B: a person with You only, or You and Family, sees the single My LCA page of Int-A; a person holding any volunteer section (Events you direct, Your region, Board, LCA admin, Member lookup) sees Int-B's left rail with one entry per section, and each entry opens the full room as its page. Drawn for Avery (member only), Danielle (member and parent) and Chris (member, parent, director, representative, treasurer), with the trigger rule in words.",
+    "differs": "Replaces the three frame options with the decided rule and shows both states side by side"
+   },
+   "drawn": {
+    "file": "<scratchpad>/canvas-out/project/Account-Final-Hub.dc.html",
+    "title": "Account-Final-Hub \u00b7 one page for one role, a left rail for more",
+    "width": 1440,
+    "height": 3400,
+    "second_file": "<scratchpad>/canvas-out/project/Account-Final-Hub-2.dc.html",
+    "second_title": "Account-Final-Hub-2 \u00b7 what each entry opens, the menu, phones and K's event rules",
+    "second_height": 2950,
+    "note": "What: The decided frame for My LCA, in two parts. Anyone who holds only You, or You and Family, keeps Int-A's one My LCA page at /dashboard. Anyone who holds a volunteer section (Events you direct, Your region, Your club, Board, Admin, Member lookup) gets Int-B's 240px left rail with one entry per section, and each entry opens its full room as its page. Part 1 states the rule (A), draws Avery, Danielle and Chris side by side on a busy day and a quiet one (B1 to B4) and runs seven more people through the rule (C). Part 2 maps every entry to its page and address (D), then draws the short My LCA \u25be menu (E), the rail on phones, tablets and the console (F), K's event rules for making, listing, fees and rating reports (G), and the way in and back with the admin backstop (H).\n\nBuilt from: Account-Int-A (the one page, the decided paths and crumbs) and Account-Int-B (the rail, how it folds, the short menu), with the decided boards inside them: Account-D, H, I, L, N, P, R and S, Work-E, Work-H, Work-J and Work-L, and Club-G-2. The header, footer and event strip are the decided chrome from Tourn-List-Final and Nav-Header-Final.\n\nK's feedback applied and open for K: Mon, Oct 19: A for no other role, B for more than one. An empty Today is one line, and My LCA opens on You with the card. Show my card sits up top on phones and is never more than a button. Club reps stay, so Your club brings the rail. A standing director's event lists the moment it is published, with a note to the admins and no hold. Only LCA admins, club reps, the president and standing directors can set fees above $0; anyone else is told in plain words that LCA must first set up a connected account for them inside its Stripe account (Stripe Connect). Rating reports are on every event. Open for K: the rating report guard (LCA's affiliate ID is filled in only on events LCA lists, part 2 G4), and how a standing director is paid before their connected account exists (fees wait in LCA's account and are paid out after the event; drawn as Proposed, part 2 G2).",
+    "unresolved": [
+     "Part 2 did not fit its 3000px cap at the spec's own UI sizes: it rendered 3799px. To stay under the cap with all copy kept, part 2 draws the menus (E) and event insets (G) at 85%, the phones at 76% and the console and tablet at 70%; each section says so on the board. The table is set at 11.5px instead of 12.5px, with columns re-balanced to 146/192/542/286/176 so no row runs past three lines. Section gaps are 22px, and E uses cells of 292/292/rest with E3's caption beside its menu instead of three 440px cells. Part 2's content ends at 2937px, leaving only 13px under the declared 2950.",
+     "Part 1's frames come out shorter than the spec's estimates (B1 743, B2 706, B3 747, B4 454 instead of about 1000 and 860) because the copy fits at half size. Each frame keeps its natural height with its caption directly under it, so B4 ends well above B3.",
+     "Part 2's title strip had no Replaces row in the spec. I added one, as the house rule requires: 'Account-Int-A-2, Int-B-2 and Int-C-2, the second parts of the three frame options.'",
+     "Part 1's title strip says the people are shown 'at 1280', as the spec words it, while the frames are 1320-wide pages drawn at half size (660).",
+     "Lafayette Open 2026 (Tommy LeBlanc, C3) is a partner event on Tourn-List-Final but an LCA event he directs on Account-S. I kept the spec and Account-S version and show no Register button or count.",
+     "G4's line 'On every event, as K said.' sits inside the inset as the spec wrote it, though it reads like a board note rather than product copy.",
+     "Additions for legibility: a dashed 'Opens' ghost row under B2's closed LCA office group (Isaac Dupre's ticket \u00b7 Answer in Admin), the card caption under Chris's card in B4, 'sends the LCA admins a note' beside G1's second button, and an F4 caption.",
+     "Changes to fit: F1's 'opens the card full screen, QR at 240px' moved into section F's sub-label, and F1's Today line drops 'entered and paid' so the Next up card sits fully above the docked event bar.",
+     "Note badges straddle frame edges on purpose. Badge 6 hangs 13px past B2's right edge into the board margin, still inside the 1440 artboard."
+    ]
+   },
+   "review": {
+    "file": "<scratchpad>/canvas-out/project/Account-Final-Hub.dc.html (part 2: <scratchpad>/canvas-out/project/Account-Final-Hub-2.dc.html; pre-review copies in <scratchpad>/hubrev/)",
+    "height": 3400,
+    "second_height": 2950,
+    "counts": "Heights: part 1 renders at 3383px, declared 3400 (cap 3600); part 2 renders at 2937px, declared 2950 (cap 3000). In both files the root height and $preview match. Legend: 6 notes on each part, and badges 1 to 6 all placed on each design. Sample data badges: 7 on part 1, 9 on part 2, covering every frame with invented people, IDs, counts or times. Dates: 78 dated mentions checked (52 + 26), every one with the correct weekday. Times are all in the H:MM AM/PM form. Zero em dashes, USCF, decimal halves, AI references, grade or birthdate questions, financial-need questions or member prices. There are no partner events on these boards, so the Register and count rule never comes up. Gold appears as text only on navy; on light grounds it is used only as fills with navy text, rules, or the kit's own link underline. Neither part has a chess board image, so there are no piece glyphs to check. Structure: skeleton matches Tourn-List-Final; one style block each with the fonts link in the helmet; 0 unclosed elements, 0 unquoted attributes, 0 holes, 0 iframes, 0 animations. Overflow, clipping and overlap scan at 1440: 0 issues after the fixes (before: badge 6 covered the header count, and badge 3 overlapped the C3 label by 2px). Spec regions all present: doc strip, A, B1 to B4 and C1 to C7 on part 1; D (10 rows), E1 to E3, F1 to F4, G rules 1 to 4 with G1 to G4, and H on part 2. Every point of K's Oct 19 answer 4 is drawn: listing on publish with a note to the admins and no hold; the president, admins and regional reps draft events and name one-event directors; only admins, club reps, the president and standing directors can set fees above $0; everyone else gets the plain-words Stripe Connect message; standing directors are told how their funds are held and reached; rating reports on every event, with the argument K asked for. All page 14 and 15 picks are drawn (A/B frame rule, D card button, H Today collapsing when empty, I, L, N with Work-H, P, R, E console, J automations). Suggested canvas sticky: \"Account-Final-Hub, parts 1 and 2: the decided My LCA frame. You or You and Family get one page; any volunteer section brings the left rail; an empty Today is one line and My LCA opens on You with the card. Part 2: what each entry opens, the menu, phones, tablet and console, and K's Oct 19 rules on listing, fees and rating reports. Open for K: the affiliate-ID guard (G4) and standing directors' fees before a connected account (G2).\"",
+    "changes": [
+     "Part 1, B2: badge 6 covered the header's to-do count pill. Moved it just outside the frame, beside the bar.",
+     "Both parts: the header count pill changed from gold to the decided cream pill (#fbfaf6, navy digit) and now sits before the caret, as Nav-Header-Final and decided Account-D, H, P and R draw it. This covers B2, B3, E2 and E3.",
+     "Part 1, B3: the family step dots showed done or not done by fill alone. They now carry the status in words ('Registered done', 'Pairings posted not yet'), as Account-I words them.",
+     "Part 1, B2: the folded LCA office item now words the ticket as Account-P does: 'Support ticket assigned to you: \"Wrong section on my registration\" \u00b7 Isaac Dupre \u00b7 waiting 1 day \u00b7 Answer in Admin'.",
+     "Part 1, C1: Maya's teen login date now follows Account-D-2 ('since Sun, Nov 15, 2026'; it said 'from Mon, Nov 16'). Badge 3 was nudged off the C3 label.",
+     "Added two items from the spec's keeps list that were missing from both parts: section A's note now says 'No mode switch: one header, one account, one menu; only the hall TV and print leave the chrome' (Int-A's words). C7 and the D table's Admin row now say Admin sits behind a second factor.",
+     "Part 1 title strip: the 'Shown' row said each person was drawn on both kinds of day. It now says Avery on a quiet day, Danielle with one thing due, and Chris busy and quiet.",
+     "Part 2, F1: removed the docked 'This week' event bar. The decided mobile chrome (Nav-Mobile-Final note 13 and Q18; REDESIGN_SPEC line 393) docks the phone bar only from check-in on day 1 and shows event week as a card on My LCA. The Next up box became that week card: light tint, 'This week' tag in words, 'Sat\u2013Sun, Oct 24\u201325 \u00b7 Open section \u00b7 Round 1 Sat, Oct 24 at 10:00 AM'. The caption says so.",
+     "Part 2, F1 and F2: the phone app bars now carry the decided two-line name 'Louisiana Chess / Association'.",
+     "Part 2, F4: the tablet header showed only 'My LCA' and a search icon. Redrawn as the decided hybrid tablet header: rook + LCA \u00b7 Tournaments \u00b7 Clubs \u00b7 Search \u00b7 Donate \u00b7 My LCA \u25be with the count \u00b7 bordered Menu, above the rail's row of tabs. Caption updated.",
+     "Part 2, G rule 1 now carries K's page 14 words for events made by any member ('with all the same tools but unlisted, shared by link') and still fits in four lines. The F1 caption was tightened back to two lines so part 2 stays at 2950."
+    ],
+    "remaining_concerns": [
+     "The half-size desktop bars in B1 to B4 show the rook mark without the 'Louisiana Chess / Association' name and the \u2318K hint that the decided header carries from 1280px. I tested it: at the 10px type floor the name is 83px wide and does not fit beside the six sections, Search, Donate and the count without crushing Search. The bars stay as Int-A and Int-B drew them.",
+     "Both parts are styled with their own fh-* classes and use none of the kit's k-* classes. kit.css is linked, so nothing breaks on the canvas, but anyone copying markup from these boards gets no kit classes.",
+     "B2 (Chris, Mon, Oct 5, 7:40 AM) has no event strip, which matches how Account-H and P draw that moment. However, the club G/90 he directed ended Sat, Oct 3, so it is still inside the strip's 48-hour after-window if it counts as an LCA-run event. Worth one line in the build notes.",
+     "Chris's director Today shows 'Bye request: Maya Robichaux' with her full name, as decided Account-H does. I left it because it is a private director queue, not a pre-event list.",
+     "Open for K by design, drawn as Proposed: the affiliate-ID guard on rating reports (part 2, G4), and a standing director's fees waiting in LCA's Stripe account until a connected account exists (part 2, G2).",
+     "final-specs.json has no 'flow' field for this board, so I matched the two parts against the spec text and each other. The task's second path had a doubled prefix; I reviewed the file at its plain project path."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Club-Final-Bare.dc.html",
+    "title": "Club-Final-Bare \u00b7 a club page with only the basics",
+    "width": 1440,
+    "page": "club",
+    "name": "Club-G in its bare state",
+    "idea": "Club-G as decided, drawn for a club whose rep has filled nothing yet: only the basics K will enter (meeting day, time and place, a contact name and email, one sentence about the club) plus the region's representative line; every optional block (news, events, photos, the club's own words) is absent rather than empty, and the page still reads complete and inviting; a small 'Is this your club? Ask to be its named rep' line invites the rep.",
+    "differs": "The same page as Club-G with every unfilled block gone, not a placeholder"
+   },
+   "drawn": {
+    "file": "Club-Final-Bare.dc.html",
+    "title": "Club-Final-Bare \u00b7 a club page with only the basics",
+    "width": 1440,
+    "height": 3150,
+    "second_file": "Club-Final-Bare-2.dc.html",
+    "second_title": "Club-Final-Bare-2 \u00b7 the basics, a phone, the rep invitation, the page as it fills",
+    "second_height": 2950,
+    "note": "What: Club-G as decided, drawn for a club whose rep has filled in nothing. The club is Morgan City Chess Club, with only the basics an LCA admin enters: one sentence, how and where it meets with its pin, and a contact name with a private email. The Bayou Region representative's line sits beside them. Every empty block is gone along with its nav link, with no placeholders. The 260 navy cover carries the MC tile and the meeting line, and search and sharing still work. Part 2 draws the basics form, a phone, Ask to be its named rep, and the page as it fills.\n\nBuilt from: Club-G's template and search panel. Club-G-2's no-photo cover, its author line for a club with no rep, and its editor, phone and states. Clubs-H's Morgan City meeting line, word for word. Work-J's admin sidebar and Needs attention row. Account-S's Your club and Account-Final-Hub's rail.\n\nK's feedback applied: Thu, Oct 15 \"plan for most of these blocks to go unused for a while \u2026 I can input the basics of what is necessary\". Nothing on the page says empty, and the basics are one short form per club. Open for K: are five basics enough? May a region's representative name a club rep, as they can name a one-event director? Is \"As told to LCA, October 2026\" the right line for basics an admin typed? Settled Mon, Oct 19: a named rep's My LCA gains Your club, and with it the rail.",
+    "unresolved": [
+     "final-specs.json has no flow field for this board. Its keys are file, page, title, width, max_height, second_max_height, name, idea, differs, keeps, removes and spec. The chrome follows Club-G's doc strip, as the spec asks, so it differs from the navy title block on the sibling Account-Final-Hub.",
+     "The decided boards disagree on sample data. Clubs-H names Theo Guidry as the Bayou Region representative, and he is used here as the spec says. Work-J's audit log marks the Bayou Region seat vacant on Sat, Oct 3.",
+     "The spec keeps 'As told to LCA, October 2026 \u00b7 Suggest an update' under the meeting statement. So the page has three Suggest an update links (author line, When and where, beside Contact), while the removes field mentions only the author line and Contact ones.",
+     "Two sizes differ from the spec so everything fits. The six 'What fills in later' tiles are 210 wide but 262 tall, because the Events line needs the room. The share preview in Frame B is drawn at 224 \u00d7 118 instead of 400 \u00d7 210, to keep part 2 under 3000.",
+     "The phone's first screen cannot hold all three sections. The map shows only its top half, with the pin, above the club bar. Follow and Contact sit inside the 200px cover. The When and where heading is shortened to match Club-G-2's phone.",
+     "Part 2 repeats part 1's four Open for K lines, since the spec says 'the same four lines as part 1'. It also adds a Replaces line the spec did not give, to keep the title strip pattern. The admin in Frame B is Work-J's sample admin, Denise Fontenot."
+    ]
+   },
+   "review": {
+    "file": "<scratchpad>/canvas-out/project/Club-Final-Bare.dc.html",
+    "height": 3200,
+    "second_height": 2950,
+    "counts": "Files: <scratchpad>/canvas-out/project/Club-Final-Bare.dc.html is 1440 x 3200 (renders at 3180, cap 3400). <scratchpad>/canvas-out/project/Club-Final-Bare-2.dc.html is 1440 x 2950 (renders at 2944, cap 3000). In each file the root height and $preview match.\n\nLEGEND: 6 numbered notes on each board, three columns. Numbered badges on the design cover all six notes on both boards; board 1 places badge 4 twice, in the author line and in the Out of date card.\n\nSAMPLE DATA: 7 badges on board 1 and 10 on board 2 after the fixes. Each invented item is badged: the one sentence, Ray A., Ray Aucoin, Theo Guidry, road miles, the admin, the sketches, and E1 to E4.\n\nDATES: 8 dated strings on board 1 and 10 on board 2. All carry a weekday, checked against the 2026 calendar: Mon, Oct 19; Tue, Oct 20; Wed, Oct 21; Tue, Nov 17 (the 3rd Tuesday, a club night); Thu, Oct 15.\n\nTIMES: 5:30 PM, 6:00 PM, 8:30 PM, 10:00 PM, 4:40 PM and 6:10 PM. All are in the 7:00 PM form.\n\nZERO COUNTS:\n- em or en dashes: 0\n- USCF: 0\n- decimal halves: 0 (no halves occur)\n- AI references: 0\n- grade, birthdate or financial-need questions: 0. The D2 form asks only name, connection and an optional note; its board note says no age, school or money is asked.\n- #c8a94a gold as text on a light ground: 0. Gold appears only as fills with navy text, rules and underlines. Suggest an update uses #866a1e, and #e6cf86 is used on navy.\n- holes, iframes, animation: 0\n\nCHESS PIECES: none are drawn. The only board imagery is the faint square pattern on the cover and share card, with no pieces, so no letter pieces.\n\nSTRUCTURE: every element closes, every attribute is quoted, there is one style block, and the skeleton is exact (support.js, kit link /_blob/6107adb451dbab26ee5d89f4189b81f8, x-dc and helmet, data-dc-script with $preview).\n\nREAL DATA, verified:\n- Morgan City's line matches Clubs-H and clubMapData.ts word for word.\n- Bayou Region matches club_regions.sql line 12.\n- Theo Guidry is Clubs-H's Bayou Region representative.\n- The Houma, Lafayette and Marrero lines match Clubs-H.\n- The sentence counts 79 characters and the meta description 155, as the board says.\n\nK'S PICKS:\n- Page 9 is carried: G and G-2, blocks unused for a while but the page still looks good, K enters the basics.\n- Answer 4 of Mon, Oct 19 is reflected: club reps may set fees (E4 and the later strip), and region reps may name one-event directors (Open for K item 2).\n- The settled rules hold: Your club brings the rail, and an empty Today opens on You (now true in E1).\n\nCLUB-G STRUCTURE survived: band, breadcrumb, cover with tile, h1, city line and Follow, Contact and Share, then author line, sticky section nav, About, When and where with the map, pin and Directions, relay Contact with Turnstile, clubs near, site foot line, the decided footer, and the search and sharing panel. There is no roster or member count. Header and footer now match Tourn-List-Final. \"300+ members\" appears on no parent board, so there was nothing to keep.\n\nCANVAS STICKY: \"Club-G bare (page 9): Morgan City Chess Club with only the five basics an LCA admin enters and the Bayou Region representative line. Every block with nothing in it is gone, not a placeholder, and the page still reads finished. Part 2: the basics form, the phone, Ask to be its named rep, and the page as it fills. Open for K: are five basics enough, may a region's representative name a rep, and is the As told to LCA line OK.\"",
+    "changes": [
+     "Both boards: aligned the header and footer with Tourn-List-Final. Search is now 220px wide with 16px after it, the utility gap is 12px and the footer padding is 22/24. The bare boards had copied Club-G's 200px search.",
+     "Board 1, About: moved the dashed board note out of the old side-column slot to sit under the lead sentence, so the missing Cost and Who is welcome column reads as absent rather than as a dashed placeholder. The note now ends 'so nothing sits to its right'.",
+     "Board 1, When and where: 'No next date, no Tonight, no Meets today...' sat inside the frame as plain page copy. It is now a dashed board note. Every board note in frame A now carries the same note glyph.",
+     "Board 1: widened the Turnstile box from 250px to 290px so 'Verify you're a person' fits on one line.",
+     "Board 1, search panel tile a: the slug broke inside 'morgan'. It now breaks after 'clubs/'.",
+     "Both boards: a non-breaking space now joins every time to its AM or PM. On the phone, the statement had split '5:30' from 'PM' across lines.",
+     "Board 2, phone map: the 'First Baptist Church' label overlapped pin 1 by 5px. It now sits left of the pin.",
+     "Board 2, E1: the mini rail lit Today although it holds nothing. It now opens on You, per K's rule settled Mon, Oct 19, and the card says 'Today is empty, so it opens on You.'",
+     "Board 2, E2 and E4: the green tint on the new nav link (Photos, Events 1) is now explained in words: '(tinted here as new)'.",
+     "Board 2, Sample data: frame B's label badge now reads 'the admin, Theo Guidry'. Frame C's caption gained a Sample data badge, since the phone shows the invented sentence and Theo Guidry. The caption dropped its extra sentence about the pills so it stays on two lines.",
+     "Board 1 height raised from 3150 to 3200 in the root and $preview (it renders at 3180). Board 2 stays at 2950 (it renders at 2944). Backups of both files as received are in <scratchpad>/cfbr-backup/."
+    ],
+    "remaining_concerns": [
+     "final-specs.json has no 'flow' field, though the task said to read one. I matched the two parts using the spec's 'States the two boards show' paragraph (carried in frame E's label) and the Account-Final-Hub spec.",
+     "Sample data conflicts with other boards, not changed here: (1) Work-J's audit log has Denise Fontenot marking the 'Bayou Region representative' seat vacant on Sat, Oct 3, while Clubs-H and this board put Theo Guidry in that seat on Oct 19 to 21. (2) The Account-Final-Hub spec lists Houma Chess Club under South Central Louisiana, but club_regions.sql puts Houma in the Bayou Region with Morgan City.",
+     "Club-G and Club-G-2 still draw the 200px search button, so the decided club boards and Tourn-List-Final differ by 20px. I left those existing boards untouched as instructed.",
+     "Spec drifts kept on purpose. Frame B's sub line is 12px, not 13px, so it stays on one line. The search panel and the 'What fills in later' strip are 1360px wide inside the board margins (as Club-G draws its panel), not 1440. The Messages bubble sits under the share card, not beside it. The Events tile in the later strip grows to about 250px tall because of its long spec line, so all six tiles share that height instead of 210.",
+     "Board 2 sits only 50px under its 3000px cap, so any later addition there needs a matching cut.",
+     "The measuring script flags the maps' river and road layers as clipped. That is intentional cropping by the map frame, not lost content."
+    ]
+   }
+  }
+ ]
+}

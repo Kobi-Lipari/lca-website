@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · L · Events you direct, a stage track per event (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.al-root{width:1440px;box-sizing:border-box;padding:30px 40px 30px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.al-root *{box-sizing:border-box}
+.al-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* title strip */
+.al-title{display:flex;justify-content:space-between;align-items:flex-start;gap:28px;background:#1a2744;color:#ffffff;border-radius:14px;padding:20px 26px 20px;border-bottom:4px solid #c8a94a}
+.al-title .k-kicker{color:#e6cf86}
+.al-title h1{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 10px}
+.al-tmeta{display:grid;grid-template-columns:96px minmax(0,1fr) 140px minmax(0,1fr);gap:5px 14px;font-size:13.5px;line-height:1.42;max-width:none;margin:0}
+.al-tmeta dt{font-weight:600;color:#e6cf86}
+.al-tmeta dd{margin:0;color:#ffffff}
+.al-tside{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none;max-width:190px}
+.al-tside .al-tnote{font-size:13px;line-height:1.4;color:rgba(255,255,255,.82);text-align:right}
+/* legend */
+.al-legend{display:flex;flex-direction:column;gap:14px;margin-top:18px}
+.al-lbox{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:18px 20px}
+.al-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 26px}
+.al-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.43}
+.al-notes b{font-weight:600}
+.al-grey{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;background:#efefea;border:1px solid #d9d8d1;border-radius:12px;padding:16px 20px;font-size:13px;line-height:1.45;color:#2b3446}
+.al-grey p{margin:0}
+.al-grey b{display:block;margin-bottom:3px}
+.al-grey b{color:#1a2744;font-weight:700}
+/* frame labels */
+.al-sec{margin-top:36px}
+.al-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.al-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.al-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.al-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1100px;margin:10px 0 0}
+.al-browser{box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.al-view{position:relative;background:#f5f5f2;overflow:hidden}
+.al-b{position:absolute;z-index:8;box-shadow:0 0 0 3px #ffffff}
+.al-bi{box-shadow:0 0 0 3px #ffffff}
+/* header (decided) */
+.al-hd-in{display:flex;align-items:center;height:68px;padding:0 24px;gap:0}
+.al-hd .k-brand{margin-right:16px}
+.al-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.al-nav{gap:0}
+.al-nav a,.al-navbtn{padding:0 9px !important;white-space:nowrap}
+.al-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.al-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.al-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.al-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:rgba(255,255,255,.12);color:#ffffff;font:inherit;font-size:14px;font-weight:600}
+.al-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+/* hub band */
+.al-band{background:#fbfaf6;border-bottom:1px solid #e6e3d8}
+.al-band-in{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:18px 24px 18px}
+.al-band h3{font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.al-roles{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.al-rchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:5px 14px 5px 5px;font-size:14px;border:1px solid #d9d6cb;background:#ffffff;color:#1a2744;text-decoration:none;min-height:40px}
+.al-role{display:inline-flex;align-items:center;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600;white-space:nowrap;line-height:1.2}
+.al-r-member{background:#ecebe5;color:#1a2744}
+.al-r-parent{background:#e3efe6;color:#1f4d33}
+.al-r-td{background:#1a2744;color:#ffffff}
+.al-r-rep{background:#f6efd9;color:#5e4a12}
+.al-r-board{background:#e4e9f3;color:#1a2744}
+.al-rchip-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+/* layout */
+.al-lay{display:grid;grid-template-columns:220px minmax(0,1fr);gap:28px;align-items:start;padding:24px 24px 28px}
+.al-rail{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 12px 12px}
+.al-rail .k-label{padding:0 8px}
+.al-rnav{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.al-rnav a{display:flex;justify-content:space-between;align-items:center;padding:0 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;min-height:42px}
+.al-rnav a.al-on{background:#f3eedc;font-weight:600;box-shadow:inset 3px 0 0 #1a2744}
+.al-rn{font-size:12.5px;font-weight:700;color:#555c6b}
+.al-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.al-coll{display:flex;align-items:center;gap:12px;min-height:44px;padding:0 14px 0 18px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:15px}
+.al-coll b{font-weight:600}
+.al-coll .al-cs{color:#555c6b;font-size:14px}
+.al-coll .al-open{margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:#1a2744}
+.al-shead{padding:14px 2px 4px}
+.al-shead h4{display:flex;align-items:center;gap:12px;margin:0;font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.al-dir{display:inline-flex;align-items:center;border-radius:999px;padding:4px 11px;font-size:12.5px;font-weight:600;background:#1a2744;color:#ffffff;letter-spacing:0}
+.al-ssub{font-size:15px;line-height:1.5;color:#555c6b;margin:6px 0 0}
+/* event card */
+.al-card{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:20px 22px 22px}
+.al-top{display:grid;grid-template-columns:68px minmax(0,1fr) auto;gap:18px;align-items:center}
+.al-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:68px;min-height:64px;padding:6px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center}
+.al-date b{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.al-wd,.al-mo{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.al-yr{font-size:10.5px;font-weight:600;color:#555c6b}
+.al-date-n{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.al-date-n .al-wd,.al-date-n .al-mo{color:#e6cf86}
+.al-name{font-size:20px;line-height:1.25;font-weight:600;margin:0}
+.al-det{font-size:14px;line-height:1.5;color:#555c6b;margin:3px 0 0}
+.al-stag{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border-radius:7px;font-size:13px;font-weight:600;line-height:1.2;white-space:nowrap}
+.al-stag .al-sd{width:8px;height:8px;border-radius:50%;flex:none}
+.al-st-green{background:#e3efe6;color:#1f4d33}.al-st-green .al-sd{background:#2f7a4f}
+.al-st-amber{background:#f6efd9;color:#5e4a12}.al-st-amber .al-sd{background:#c08a1c}
+.al-st-grey{background:#eceef2;color:#3d4555}.al-st-grey .al-sd{background:#8a909c}
+.al-st-live{background:#ff4757;color:#070b14}
+/* track */
+.al-track{position:relative;display:grid;margin:14px 0 12px;padding:0 4px}
+.al-stg{position:relative;min-width:0;padding-right:14px}
+.al-sl{display:flex;align-items:baseline;gap:7px;font-size:13px;line-height:1.3;margin-bottom:6px;white-space:nowrap}
+.al-sl b{font-weight:600;color:#1a2744}
+.al-sw{font-size:11.5px;font-weight:600;letter-spacing:.02em}
+.al-sw-done{color:#1f4d33}
+.al-sw-work{color:#5e4a12}
+.al-sw-now{color:#866a1e}
+.al-sw-later{color:#6b7180}
+.al-nrow{position:relative;height:28px;margin-bottom:6px}
+.al-nrow::after{content:"";position:absolute;left:30px;right:-2px;top:13px;height:2px;background:#d6d3c8}
+.al-stg:last-child .al-nrow::after{display:none}
+.al-done .al-nrow::after{background:#1a2744}
+.al-node{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:#ffffff;border:2px solid #c9c6ba}
+.al-done .al-node{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.al-now .al-node{background:#c8a94a;border:2px solid #ffffff;box-shadow:0 0 0 2px #1a2744}
+.al-tk{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.al-adot{position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:#c08a1c;box-shadow:0 0 0 2px #ffffff}
+.al-ss{font-size:13px;line-height:1.4;color:#3d4556}
+.al-now .al-sl b{font-weight:700}
+.al-now .al-ss{color:#1a2744;font-weight:600}
+.al-ss-amber{color:#5e4a12;font-weight:600}
+.al-later .al-sl b{color:#3d4556;font-weight:600}
+.al-later .al-ss{color:#6b7180}
+.al-stg .al-ss.al-ss-live{display:block;margin-top:2px;padding:7px 9px;border-radius:7px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;font-weight:500}
+/* stage panel */
+.al-panel{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:12px 22px;background:#f5f5f2;border-radius:10px;padding:16px 18px 18px}
+.al-ptitle{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;margin:0 0 10px}
+.al-pills{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.al-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;background:#e7e5dd;color:#1a2744;font-size:13px;font-weight:500}
+.al-pill b{font-weight:700}
+.al-flags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.al-t{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:13px;font-weight:600;line-height:1.25}
+.al-t-amber{background:#f6efd9;color:#5e4a12}
+.al-t-navy{background:#e4e9f3;color:#1a2744}
+.al-t-green{background:#e3efe6;color:#1f4d33}
+.al-t-red{background:#fbe9e4;color:#9a3b1b}
+.al-subs{display:flex;flex-direction:column;gap:6px}
+.al-sub{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;min-height:48px;padding:5px 8px 5px 14px;background:#ffffff;border:1px solid #e3e1d8;border-radius:8px;font-size:14px;line-height:1.4}
+.al-sub b{font-weight:600}
+.al-sub .al-sb{display:flex;gap:6px;flex:none}
+.al-left{font-size:14px;line-height:1.5;margin:12px 0 0;color:#2b3446}
+.al-left b{font-weight:600;color:#1a2744}
+.al-pbtns{display:flex;flex-direction:column;gap:8px;align-items:stretch;position:relative}
+.al-mute{opacity:1;background:#ffffff;color:#6b7180;border-color:#c9c6ba;flex-direction:column;gap:2px;min-height:52px}
+.al-mute small{font-size:12px;font-weight:500;color:#6b7180}
+.al-plink{font-size:13.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;text-align:center;padding:6px 0}
+.al-checks{display:flex;flex-direction:column;gap:6px}
+.al-chk{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:10px;align-items:start;font-size:14px;line-height:1.45;padding:6px 12px;background:#ffffff;border:1px solid #e3e1d8;border-radius:8px}
+.al-chk .al-tk{margin-top:3px}
+.al-ok{color:#1f6b3f}
+.al-bad{color:#9a3b1b}
+.al-foot{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 18px;background:#fbfaf6;border:1px solid #e3e1d8;border-radius:10px;font-size:14.5px}
+.al-foot a{font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+/* live strip */
+.al-strip{display:flex;align-items:center;gap:12px;min-height:46px;padding:0 6px 0 20px;background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a;font-size:14px;white-space:nowrap}
+.al-ltag{display:inline-flex;align-items:center;padding:4px 9px;border-radius:6px;background:#ff4757;color:#070b14;font-size:12px;font-weight:700;line-height:1.2;flex:none}
+.al-strip .al-evn{font-weight:700;color:#f3f5f9;text-decoration:underline;text-decoration-color:#c8a94a;text-underline-offset:3px}
+.al-strip .al-ps{color:#b9c2d3;min-width:0;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto}
+.al-strip .al-ps b{color:#f3f5f9;font-weight:600}
+.al-hide{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;margin-left:auto;border-radius:8px;border:1px solid rgba(243,245,249,.3);background:transparent;color:#f3f5f9;flex:none}
+.al-livepanel{background:#0e1526;color:#f3f5f9;border-top:2px solid #c8a94a}
+.al-livepanel .al-ptitle{color:#f3f5f9}
+.al-livepanel .al-left{color:#d5dbe6}
+.al-livepanel .al-left b{color:#ffffff}
+.al-btn-lt{background:transparent;color:#f3f5f9;border-color:rgba(243,245,249,.7)}
+/* insets */
+.al-inset{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;padding:14px 14px 12px;box-shadow:0 8px 20px rgba(16,24,43,.06)}
+.al-icap{font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin:0 0 8px}
+.al-menu{display:flex;flex-direction:column;gap:1px}
+.al-mrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:34px;padding:3px 10px;border-radius:8px;font-size:14px;font-weight:500;color:#1a2744}
+.al-mrow small{font-size:12px;color:#555c6b;font-weight:400}
+.al-mrow-todo{background:#fbf7e9}
+.al-mrow-cur{background:#f3eedc;font-weight:600}
+.al-mrow-ev{font-weight:600}
+.al-msep{height:1px;background:#e3e2dc;margin:4px 4px}
+.al-crumb{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:center;min-height:36px;font-size:14px;border-top:1px solid #ecebe5}
+.al-crumb:first-of-type{border-top:0}
+.al-crumb .al-fn{font-size:12px;font-weight:700;color:#6b7180}
+.al-crumb a{color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.al-cband{display:flex;align-items:center;justify-content:space-between;gap:12px;height:56px;padding:0 14px;margin-top:10px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:14px}
+.al-cband a{color:#ffffff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.5);text-underline-offset:3px}
+/* phone */
+.al-phone{width:360px;height:660px;border:8px solid #10182b;border-radius:34px;background:#f5f5f2;overflow:hidden;position:relative;box-shadow:0 18px 40px rgba(16,24,43,.18);flex:none}
+.al-papp{display:flex;align-items:center;gap:10px;height:48px;padding:0 10px 0 14px;background:#1a2744;color:#ffffff}
+.al-papp b{font-size:17px;font-weight:700}
+.al-pmenu{margin-left:auto;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px}
+.al-pbody{padding:12px 12px 0}
+.al-pcard{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 12px 12px}
+.al-vtrack{display:flex;flex-direction:column;margin:8px 0 6px}
+.al-vst{position:relative;display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;min-height:29px;padding-bottom:1px}
+.al-vst .al-node{width:22px;height:22px}
+.al-vst .al-tk{width:12px;height:12px}
+.al-vst::after{content:"";position:absolute;left:10px;top:24px;bottom:-2px;width:2px;background:#d6d3c8}
+.al-vst:last-child::after{display:none}
+.al-vst.al-done::after{background:#1a2744}
+.al-vst .al-adot{width:8px;height:8px;top:-3px;right:-3px}
+.al-vtx{font-size:12px;line-height:1.25;padding-top:3px}
+.al-vtx b{font-weight:600}
+.al-mpanel{background:#f5f5f2;border-radius:9px;padding:10px 10px 10px}
+.al-foot2{background:#1a2744;color:#ffffff}
+.al-foot2-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.al-foot2 .k-meta{color:rgba(255,255,255,.78)}
+.al-foot2 nav a{font-size:14px}
+.al-rook-sm{width:22px;height:22px;fill:#ffffff;flex:none}
+.al-dash{border:1.5px dashed #c9c6ba;border-radius:10px;padding:16px 18px;background:#fbfaf6}
+</style>
+</helmet>
+<div class="al-root" style="width:1440px;height:2950px">
+<section class="al-title" aria-label="About this board"><div style="flex:1"><div class="k-between"><p class="k-kicker" style="margin:0">14 · My LCA · Round 2 · Option L</p><span class="k-sample">Sample data · the 2027 Paul Morphy Open draft, the unpaid entrant, times, past-event counts, the lookup result</span></div><h1>My LCA · L · Events you direct, a stage track per event (round 2)</h1><dl class="al-tmeta"><dt>Built from</dt><dd>Account-C's Events you direct, with Work-D, Work-A and replan 4.6</dd><dt>Differs</dt><dd>From Account-K: a card with a five-stage track per event; K is one row each</dd><dt>Replaces</dt><dd>Account-C's Events you direct (round 1) with its Manage and Workspace links</dd><dt>Frame</dt><dd>Drawn inside Int-A (My LCA as the hub, rooms open from each section); swappable</dd><dt>Shown</dt><dd>/dashboard#directing, Chris · Mon, Oct 5, 2026, 8:10 AM · B: Sun, Oct 25, 11:15 AM</dd><dt>K's feedback applied</dt><dd>A good default, every section drawn in full, roles hosted in My LCA, options for each</dd></dl></div></section>
+<div class="al-legend"><div class="al-lbox"><p class="k-label">Notes on this board</p><ol class="al-notes">
+<li><span class="k-num-badge">1</span><span><b>Five stages, always the same five:</b> Set up · Registration · Event day · Close out · Rating report. Gold is where the event is now; navy with an amber dot is done but still has work. Each node also says it in words.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The stage panel holds only the current stage's work:</b> flags and decisions during registration; the round and reports waiting on the day; the three checks before the rating report.</span></li>
+<li><span class="k-num-badge">3</span><span><b>One-tap decisions happen here:</b> Approve or Decline a bye, Email both a reminder, Email him the renewal link. Anything with a form opens the room.</span></li>
+<li><span class="k-num-badge">4</span><span><b>The rooms:</b> Setup (10 steps), Event day (tablet-first), Recap after Mark as completed, Rating report (checks, three files, Mark as submitted). Crumbs read "My LCA › ..."; Exit console returns to #directing.</span></li>
+<li><span class="k-num-badge">5</span><span><b>An assignment gives the cards and the rooms;</b> the tournament_director role adds one lookup line (Frame C, part 2): name, status in words, end date. Chris's lookup sits in his Board section, so nobody sees two.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Drawn inside Int-A; the frame is swappable.</b> Under Int-B this section is the page the left rail opens; under Int-C a card on Your work. The rooms do not change, only the crumb, the way back and the menu row.</span></li>
+</ol></div><aside class="al-grey" aria-label="Board note">
+<p><b>What</b>Option L for Events you direct: each event is a card with a five-stage track and a panel for the current stage's work. Same events and figures as Account-K.</p>
+<p><b>Built from</b>Account-C (counts, flags, bye decision, reminder, rating report check), Work-D (10 setup steps), Work-A and replan 4.6 (results queue, close-out, report), Nav-Header-Final.</p>
+<p><b>K's feedback applied</b>A plain member never sees this section; it comes with an assignment. The work lives in My LCA and opens its rooms from here, never the admin panel; no Workspace. Options: K (rows) or L (track).</p>
+<p><b>Open for K</b>K or L; the frame (Int-A, B or C). Directors are named, not creators (no create button). Keep or fold the tournament_director role. On event day the hub pins the live event, never becomes the console.</p>
+</aside></div>
+<section class="al-sec" style="margin-top:22px" aria-labelledby="al-fa"><div class="al-flab"><span class="al-code">A</span><h2 id="al-fa">Mon, Oct 5, 2026, 8:10 AM · Chris's My LCA, Events you direct open</h2><span class="k-meta">Three events, three stages: registration, set up, rating report</span></div>
+<div class="k-browser al-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url" style="position:relative">louisianachess.org/dashboard#directing<span class="k-num-badge al-b" style="top:-1px;right:-40px">6</span></div></div>
+<div class="al-view"><header class="k-header al-hd"><div class="al-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="al-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks al-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="al-navbtn" type="button" aria-haspopup="true" aria-expanded="false">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="al-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="al-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility" style="gap:12px"><a class="k-ulink" href="#">Donate</a><button class="al-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="al-count" aria-hidden="true">1</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header><main><section class="al-band"><div class="al-band-in"><div><div class="k-row k-row-sm"><span class="k-kicker">My LCA</span></div><h3>Chris Arceneaux</h3><div class="al-roles" aria-label="Your roles">
+<a class="al-rchip" href="#you"><span class="al-role al-r-member">Member</span>Adult</a>
+<a class="al-rchip" href="#family"><span class="al-role al-r-parent">Parent</span>Ella</a>
+<a class="al-rchip al-rchip-on" href="#directing" aria-current="true"><span class="al-role al-r-td">Director</span>The Baton Rouge Classic</a>
+<a class="al-rchip" href="#region"><span class="al-role al-r-rep">Representative</span>South Central Louisiana</a>
+<a class="al-rchip" href="#board"><span class="al-role al-r-board">Treasurer</span>board seat</a>
+</div><p class="k-small k-muted" style="margin:10px 0 0">Sections appear for the roles LCA has given you. <a class="k-link" href="#">Role looks wrong?</a></p></div>
+<a class="k-btn k-btn-line" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Show my card</a></div></section>
+<div class="al-lay"><aside class="al-rail" aria-label="On this page"><p class="k-label">On this page</p><nav class="al-rnav">
+<a href="#today">Today <span class="al-rn">9</span></a>
+<a href="#you">You</a>
+<a href="#family">Family <span class="al-rn">1</span></a>
+<a class="al-on" href="#directing" aria-current="true">Events you direct <span class="al-rn">3</span></a>
+<a href="#region">Your region <span class="al-rn">4</span></a>
+<a href="#board">Board <span class="al-rn">7</span></a>
+</nav></aside><div class="al-col">
+<div class="al-coll"><b>Today · 9</b><span class="al-cs">Mon, Oct 5 · across your roles</span><span class="al-open">Show<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="al-coll"><b>You</b><span class="al-cs">Adult · renews automatically Mon, Nov 2</span><span class="al-open">Show<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="al-coll"><b>Family · 1</b><span class="al-cs">Ella</span><span class="al-open">Show<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div id="directing" class="al-shead"><h4>Events you direct <span class="al-dir">Director</span></h4><p class="al-ssub">You're named on these events. LCA admins and regional representatives name directors when they create an event.</p></div>
+<article class="al-card" aria-label="The Baton Rouge Classic">
+<div class="al-top"><div class="al-date al-date-n"><span class="al-wd">Sat</span><b>24</b><span class="al-mo">Oct</span></div><div><h5 class="al-name">The Baton Rouge Classic</h5><p class="al-det">Sat–Sun, Oct 24–25, 2026 · Baton Rouge · 5 rounds · G/90+30 (90 min each + 30 sec per move)</p></div><span class="al-stag al-st-green"><span class="al-sd"></span>Registration open</span></div>
+<div class="al-track" style="grid-template-columns:0.9fr 1.95fr 1fr 0.85fr 1.2fr" role="list" aria-label="Stages"><span class="k-num-badge al-b" style="top:-12px;left:-34px">1</span><div class="al-stg al-done"><div class="al-sl"><b>Set up</b><span class="al-sw al-sw-work">Work left</span></div><div class="al-nrow"><span class="al-node"><svg class="al-tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><i class="al-adot" aria-hidden="true"></i></span></div><div class="al-ss al-ss-amber">6 of 10 · 4 steps left</div></div><div class="al-stg al-now"><div class="al-sl"><b>Registration</b><span class="al-sw al-sw-now">Now</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">Open · 38 of 60 · online entry closes Fri, Oct 23</div></div><div class="al-stg al-later"><div class="al-sl"><b>Event day</b><span class="al-sw al-sw-later">Coming</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">Sat, Oct 24 · 10:00 AM</div></div><div class="al-stg al-later"><div class="al-sl"><b>Close out</b><span class="al-sw al-sw-later">Coming</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">after round 5</div></div><div class="al-stg al-later"><div class="al-sl"><b>Rating report</b><span class="al-sw al-sw-later">Coming</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">due within 7 days of round 5</div></div></div>
+<div class="al-panel" style="grid-template-columns:minmax(0,1fr) auto"><div>
+<div class="k-row" style="gap:14px;margin:0 0 10px"><p class="al-ptitle" style="margin:0"><span class="k-num-badge al-bi">2</span>Now: registration</p><div class="al-pills" style="margin:0"><span class="al-pill"><b>38 of 60</b> registered</span><span class="al-pill">Open <b>10</b></span><span class="al-pill">U1800 <b>12</b></span><span class="al-pill">U1400 <b>9</b></span><span class="al-pill">U1000 <b>7</b></span></div></div>
+<div class="al-flags" style="margin:0"><span class="al-t al-t-amber">2 US Chess memberships ending before the event</span><span class="al-t al-t-amber">1 unpaid</span><span class="al-t al-t-navy">1 bye request</span></div>
+</div>
+<div class="al-pbtns" style="flex-direction:row;align-items:flex-start"><span class="k-num-badge al-b" style="top:8px;left:-38px">4</span><a class="k-btn k-btn-navy" href="#" style="min-width:120px">Setup</a><span class="k-btn al-mute" aria-disabled="true">Event day<small>from Sat, Oct 24</small></span></div>
+<div class="al-subs" style="position:relative;grid-column:1 / -1"><span class="k-num-badge al-b" style="top:-12px;left:-32px">3</span>
+<div class="al-sub"><span><b>Bye request</b> · Maya Robichaux · ½ point in round 5 · requested Fri, Oct 2 · within the 2-bye limit</span><span class="al-sb"><a class="k-btn k-btn-gold k-btn-sm" href="#">Approve</a><a class="k-btn k-btn-line k-btn-sm" href="#">Decline</a></span></div>
+<div class="al-sub"><span><b>US Chess ending before the event</b> · Jordan Lee (ended Wed, Sep 30) · Rosa Mendez (ends Mon, Oct 12)</span><span class="al-sb"><a class="k-btn k-btn-line k-btn-sm" href="#">Email both a reminder</a></span></div>
+<div class="al-sub"><span><b>Unpaid</b> · Theo Guidry · U1400 · $40 · pays by Sat, Oct 17 or the place is released <span class="k-sample" style="margin-left:4px;padding:2px 8px;font-size:11px">Sample data</span></span><span class="al-sb"><a class="k-btn k-btn-line k-btn-sm" href="#">Email a reminder</a></span></div>
+</div>
+<div class="k-between" style="grid-column:1 / -1"><p class="al-left" style="margin:0"><b>Set up still needs:</b> Prizes, Side events, Directors, Publish · <b>Next:</b> publish the prize list</p><a class="al-plink" href="#">Public page ↗</a></div>
+</div>
+</article>
+<article class="al-card" aria-label="2027 Paul Morphy Open">
+<div class="al-top"><div class="al-date"><span class="al-wd">Sat</span><b>12</b><span class="al-mo">Jun</span><span class="al-yr">2027</span></div><div><h5 class="al-name">2027 Paul Morphy Open <span class="k-sample" style="vertical-align:middle;margin-left:6px">Sample data</span></h5><p class="al-det">Sat–Sun, Jun 12–13, 2027 · New Orleans · started from the 2026 Paul Morphy Open</p></div><span class="al-stag al-st-grey"><span class="al-sd"></span>Draft</span></div>
+<div class="al-track" style="grid-template-columns:0.9fr 1.95fr 1fr 0.85fr 1.2fr" role="list" aria-label="Stages"><div class="al-stg al-now"><div class="al-sl"><b>Set up</b><span class="al-sw al-sw-now">Now</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">2 of 10</div></div><div class="al-stg al-later"><div class="al-sl"><b>Registration</b><span class="al-sw al-sw-later">Coming</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">opens with publish · Mon, Oct 12, 2026 · 9:00 AM</div></div><div class="al-stg al-later"><div class="al-sl"><b>Event day</b><span class="al-sw al-sw-later">Coming</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">Sat, Jun 12, 2027</div></div><div class="al-stg al-later"><div class="al-sl"><b>Close out</b><span class="al-sw al-sw-later">Coming</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">&nbsp;</div></div><div class="al-stg al-later"><div class="al-sl"><b>Rating report</b><span class="al-sw al-sw-later">Coming</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">&nbsp;</div></div></div>
+<div class="al-panel"><div>
+<p class="al-ptitle">Now: set up</p>
+<p class="al-left" style="margin:0"><b>Done:</b> Basics, Sections (copied from 2026).</p>
+<p class="al-left" style="margin:4px 0 0"><b>Left:</b> Fees, Schedule, Byes and rules, Venue &amp; travel, Prizes, Side events, Directors, Publish.</p>
+</div>
+<div class="al-pbtns"><a class="k-btn k-btn-navy" href="#">Setup</a><a class="k-btn k-btn-line" href="#">Preview public page</a></div>
+</div>
+</article>
+<article class="al-card" aria-label="Baton Rouge Chess Club Saturday G/90">
+<div class="al-top"><div class="al-date"><span class="al-wd">Sat</span><b>3</b><span class="al-mo">Oct</span></div><div><h5 class="al-name">Baton Rouge Chess Club Saturday G/90</h5><p class="al-det">Sat, Oct 3, 2026 · Baton Rouge · 14 players · 4 rounds</p></div><span class="al-stag al-st-amber"><span class="al-sd"></span>Finished · rating report due Sat, Oct 10</span></div>
+<div class="al-track" style="grid-template-columns:0.8fr 1fr 1fr 1.2fr 1.5fr" role="list" aria-label="Stages"><div class="al-stg al-done"><div class="al-sl"><b>Set up</b><span class="al-sw al-sw-done">Done</span></div><div class="al-nrow"><span class="al-node"><svg class="al-tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></div><div class="al-ss">&nbsp;</div></div><div class="al-stg al-done"><div class="al-sl"><b>Registration</b><span class="al-sw al-sw-done">Done</span></div><div class="al-nrow"><span class="al-node"><svg class="al-tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></div><div class="al-ss">14 players</div></div><div class="al-stg al-done"><div class="al-sl"><b>Event day</b><span class="al-sw al-sw-done">Done</span></div><div class="al-nrow"><span class="al-node"><svg class="al-tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></div><div class="al-ss">Sat, Oct 3</div></div><div class="al-stg al-done"><div class="al-sl"><b>Close out</b><span class="al-sw al-sw-done">Done</span></div><div class="al-nrow"><span class="al-node"><svg class="al-tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></div><div class="al-ss">completed Sat, Oct 3, 6:40 PM</div></div><div class="al-stg al-now"><div class="al-sl"><b>Rating report</b><span class="al-sw al-sw-now">Now</span></div><div class="al-nrow"><span class="al-node"></span></div><div class="al-ss">2 of 3 checks passed · due Sat, Oct 10</div></div></div>
+<div class="al-panel"><div>
+<p class="al-ptitle">Now: rating report</p>
+<div class="al-checks">
+<div class="al-chk"><span class="al-ok"><svg class="al-tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="al-t al-t-green">Passed</span><span>Every result confirmed by a TD, no reports waiting</span></div>
+<div class="al-chk"><span class="al-ok"><svg class="al-tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="al-t al-t-green">Passed</span><span>Byes within the event's limit</span></div>
+<div class="al-chk"><span class="al-bad"><svg class="al-tk" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span><span class="al-t al-t-red">Fix first</span><span><b>Theo Guidry's US Chess membership ended Wed, Sep 30.</b> US Chess will reject the report until he renews. <a class="k-link" href="#">Email him the renewal link</a></span></div>
+</div>
+<p class="al-left">When all three pass: the three files build (header, section, detail), then Mark as submitted to US Chess.</p>
+</div>
+<div class="al-pbtns"><a class="k-btn k-btn-navy" href="#">Rating report</a><a class="k-btn k-btn-line" href="#">Recap</a></div>
+</div>
+</article>
+<div class="al-foot">Past events you directed · 17 · <a href="#">Browse</a></div>
+<div style="height:6px"></div>
+<div class="al-coll"><b>Your region · 4</b><span class="al-cs">South Central Louisiana · 4 of 9 clubs to check</span><span class="al-open">Show<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+<div class="al-coll"><b>Board · 7</b><span class="al-cs">Treasurer inbox 3 · Support tickets 4</span><span class="al-open">Show<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></span></div>
+</div></div></main><footer class="k-footer al-foot2"><div class="al-foot2-in"><div class="k-row-sm" style="gap:10px"><svg class="al-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer></div></div>
+<p class="al-cap">The buttons open the rooms under /workspace/tournaments/:id/...; the word Workspace appears on no page, menu or crumb. Neighbours are drawn collapsed; the footer is the decided F1 footer, drawn short. <b>Continues on Account-L-2:</b> Frames B (round 3 live), C (the role, empty), D (phone), E (rail, menu, crumbs).</p>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

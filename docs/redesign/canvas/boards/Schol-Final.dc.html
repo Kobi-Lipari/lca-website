@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scholastic · decided</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.sf-root{width:100%;max-width:1440px;margin:0 auto;box-sizing:border-box;background:#f5f5f2;color:#1a2744}
+.sf-root *{box-sizing:border-box}
+.sf-board{background:#ecebe6;padding:36px 40px 40px}
+.sf-wrap{width:100%;max-width:1440px;margin:0 auto;padding:0 40px}
+.sf-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* title strip */
+.tl-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.tl-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.tl-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.tl-meta-line{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:820px}
+.tl-meta-line b{color:#1a2744;font-weight:600}
+.sf-grey{flex:none;width:480px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.sf-grey > div > p + p{margin-top:9px}
+.sf-grey p{font-size:12.5px;line-height:1.42;color:#2b3446;margin:0}
+.sf-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.sf-grey ol{margin:0;padding-left:17px;font-size:12.5px;line-height:1.42;color:#2b3446}
+.sf-grey li{margin-bottom:5px}
+.tl-legend{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:20px;margin-top:20px;align-items:start}
+.tl-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.tl-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 26px}
+.tl-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.tl-notes b{font-weight:600}
+.tl-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
+.sf-fb{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.sf-fb li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.42}
+.sf-fb b{font-weight:600}
+.sf-fb em{font-style:normal;display:block;color:#3d4556;margin-top:2px}
+.sf-fb .sf-off em{color:#555c6b}
+.sf-tick{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1a2744;border:2px solid #1a2744;color:#ffffff;flex:none;margin-top:1px}
+.sf-tick svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.sf-tick-off{background:#ffffff;border:2px dashed #858b99}
+.sf-fbn{font-weight:700;color:#1a2744;margin-right:4px}
+.sf-fbkey{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid #ecebe5;font-size:12.5px;color:#555c6b}
+.sf-fbkey span{display:inline-flex;align-items:center;gap:6px}
+.sf-fbkey .sf-tick{width:16px;height:16px;margin:0}
+.sf-fbkey .sf-tick svg{width:10px;height:10px}
+/* header + footer (decided chrome) */
+.sf-hd-in{gap:0;min-height:68px}
+.sf-hd .k-brand{margin-right:16px}
+.sf-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.sf-rook-sm{width:24px;height:24px}
+.sf-nav{gap:0}
+.sf-nav a{padding:0 10px;white-space:nowrap}
+.sf-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.sf-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.sf-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.sf-util{gap:12px}
+.sf-util .k-ulink{padding:0 4px}
+.sf-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.sf-foot .k-meta{color:rgba(255,255,255,.78)}
+.sf-foot nav a{font-size:14px}
+/* page */
+.sf-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+.sf-head{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.sf-headrow{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding-top:30px}
+.sf-sub{font-size:18px;line-height:1.5;color:#3d4556;margin:8px 0 0;max-width:780px}
+.sf-jump{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:18px 0 18px}
+.sf-jump .k-chip{text-decoration:none;min-height:40px}
+.sf-sec{padding-top:44px}
+.sf-sec-last{padding-bottom:56px}
+.sf-sh{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:18px}
+.sf-sh .k-h2{margin-top:6px}
+.sf-sh p.k-small{margin-top:6px;max-width:760px;color:#3d4556}
+.sf-g2{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:24px;align-items:start}
+.sf-g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
+.sf-mt{margin-top:24px}
+.sf-pad{padding:24px}
+/* timeline (Schol-A) */
+.sa-term{display:inline-flex;align-items:center;gap:3px;padding:0;background:none;border:0;border-bottom:2px dotted #1a2744;font:inherit;font-weight:600;color:#1a2744;cursor:help}
+.sa-tip{padding:12px 14px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:14px;line-height:1.5;max-width:560px}
+.sa-tip-x{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;flex:none;border:0;border-radius:6px;background:transparent;color:#ffffff;cursor:pointer}
+.sa-tlcard{padding:18px 24px}
+.sa-tl{list-style:none;margin:0;padding:0;position:relative}
+.sa-tl::before{content:"";position:absolute;left:105px;top:12px;bottom:12px;width:2px;background:#dddcd4}
+.sa-step{display:grid;grid-template-columns:82px 24px minmax(0,1fr);column-gap:12px;padding:8px 0}
+.sa-time{font-size:14px;font-weight:500;text-align:right;padding-top:1px;white-space:nowrap}
+.sa-node{display:flex;justify-content:center;padding-top:4px}
+.sa-dot{display:block;width:14px;height:14px;border-radius:50%;background:#1a2744;border:3px solid #ffffff;box-shadow:0 0 0 1px #1a2744;position:relative;z-index:1}
+.sa-dot-gold{background:#c8a94a}
+.sa-dot-sm{width:12px;height:12px;margin-top:1px;background:#ffffff;box-shadow:0 0 0 2px #8d98ad}
+.sa-dl{display:grid;grid-template-columns:118px minmax(0,1fr);margin:0}
+.sa-dl dt{padding:10px 0;border-top:1px solid #ecebe5;font-weight:600}
+.sa-dl dd{margin:0;padding:10px 0 10px 14px;border-top:1px solid #ecebe5;font-size:15px;line-height:1.5;color:#3d4556}
+.sa-band{display:grid;grid-template-columns:58px minmax(0,1fr);gap:12px;align-items:center;padding:9px 0;border-top:1px solid #ecebe5}
+.sa-bandtag{display:flex;align-items:center;justify-content:center;height:34px;border-radius:8px;background:#1a2744;color:#ffffff;font-weight:700;font-size:15px}
+.sa-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 16px;padding:10px 0;border-top:1px solid #ecebe5}
+.sa-list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.sa-list li{display:flex;gap:9px;align-items:flex-start;font-size:15px;line-height:1.45}
+.sa-list .k-i-sm{margin-top:3px}
+.sf-nbr{position:absolute;top:-12px;right:-12px}
+.sf-rel{position:relative}
+/* events */
+.sf-gp{display:flex;align-items:center;gap:10px 18px;flex-wrap:wrap;padding:14px 20px;background:#1a2744;color:#ffffff;border-radius:12px 12px 0 0}
+.sf-gp b{font-weight:600}
+.sf-gp .sf-gpd{color:#e6cf86;font-weight:600;white-space:nowrap}
+.sf-gp .sf-gpn{color:#d5d9e3;font-size:14px}
+.sf-evlist{border:1px solid #dddcd4;border-top:0;border-radius:0 0 12px 12px;background:#ffffff;overflow:hidden}
+.sf-ev{display:grid;grid-template-columns:72px minmax(0,1fr) 260px;gap:10px 20px;align-items:center;padding:16px 20px;border-top:1px solid #ecebe5}
+.sf-ev:first-child{border-top:0}
+.sf-ev-p{padding-top:12px;padding-bottom:12px}
+.sf-date{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:72px;min-height:72px;padding:8px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;color:#1a2744;line-height:1;text-align:center}
+.sf-date b{font-size:21px;font-weight:700;letter-spacing:-.02em}
+.sf-wd,.sf-mo{font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.sf-date-lca{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.sf-date-lca .sf-wd,.sf-date-lca .sf-mo{color:#e6cf86}
+.sf-date-p{min-height:62px;background:#fbfbf8}
+.sf-evmain{display:flex;flex-direction:column;gap:5px;min-width:0}
+.sf-evname{font-size:18px;line-height:1.3;font-weight:600;margin:0}
+.sf-ev-p .sf-evname{font-size:16px}
+.sf-evline{font-size:14px;line-height:1.5;color:#555c6b;margin:0}
+.sf-evline b{color:#1a2744;font-weight:600}
+.sf-evside{display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.sf-out{color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;line-height:1.35}
+.sf-fee{font-size:14px;margin:0}
+.sf-fee b{font-weight:700}
+.sf-end{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;border-top:1px solid #ecebe5;background:#fbfbf8}
+/* season schedule */
+.sf-season{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:24px;align-items:start}
+.sf-ph{border:2px dashed #b9b8b0;border-radius:14px;background:#fbfaf6;padding:28px 30px;display:flex;flex-direction:column;gap:14px}
+.sf-ph-ic{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:#eceef3;color:#1a2744}
+.sf-mail{display:flex;gap:10px;align-items:flex-end;max-width:560px}
+.sf-mail .k-field{flex:1}
+.sf-mail label{font-size:14px;font-weight:600}
+.sf-inset{background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:16px 18px 10px;box-shadow:0 10px 26px rgba(16,24,43,.07)}
+.sf-inset-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid #ecebe5}
+.sf-srow{display:grid;grid-template-columns:136px minmax(0,1fr) 24px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #f0efe9;font-size:14px;line-height:1.4}
+.sf-srow:last-of-type{border-bottom:0}
+.sf-srow time{font-weight:600;white-space:nowrap}
+.sf-srow a{font-weight:600;color:#1a2744}
+.sf-srow small{display:block;font-size:13px;color:#555c6b}
+.sf-go{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;color:#1a2744}
+.sf-xref{display:flex;align-items:flex-start;gap:10px;margin-top:16px;padding:11px 14px;background:#fbfaf6;border:1px solid #e5e7ed;border-radius:8px;font-size:13.5px;line-height:1.5;color:#3d4556}
+.sf-xref b{color:#1a2744;font-weight:600}
+.sf-ni{width:18px;height:18px;flex:none;margin-top:1px;fill:none;stroke:#1a2744;stroke-width:1.8;stroke-linecap:round}
+/* clubs */
+.sf-clubs{background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:22px 24px}
+.sf-near{display:flex;align-items:center;gap:8px;font-size:15px}
+.sf-near b{font-weight:600}
+.sf-cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:16px}
+.sf-club{border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;background:#ffffff}
+.sf-club h3{font-size:17px;line-height:1.3;font-weight:600;margin:0}
+.sf-club h3 a{color:#1a2744;text-decoration:none}
+.sf-when{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45}
+.sf-when .k-i-sm{margin-top:3px}
+.sf-cfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid #ecebe5}
+/* honor roll */
+.sf-hr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.sf-champ{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:6px}
+.sf-champ b{font-size:18px;font-weight:600;line-height:1.3}
+.sf-crown{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:#f4ecd4;color:#1a2744;margin-bottom:4px}
+/* ask */
+.sf-ask{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:32px;align-items:start;background:#ffffff;border:1px solid #dddcd4;border-radius:14px;padding:28px 30px}
+.sf-ta{width:100%;min-height:96px;padding:10px 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:16px;resize:vertical}
+</style>
+</helmet>
+<div class="sf-root">
+
+<!-- ============ Title strip, grey note, legend, K's feedback ============ -->
+<div class="sf-board">
+<section class="tl-doc" aria-label="About this board">
+  <div class="tl-doc-top">
+    <div>
+      <p class="k-kicker">10 · Scholastic &amp; parents · decided design</p>
+      <h1 class="tl-title">Scholastic · decided (parents first)</h1>
+      <p class="tl-meta-line" style="margin-top:8px"><b>Built from:</b> Schol-A (the day from check-in to awards, what to bring, chess words, sections, costs, safety, "What LCA keeps about your child", upcoming scholastic events, "Still unsure? Ask a person") · Schol-C (the program finder cut down to the three nearest clubs, the State Scholastic honor roll) · Schol-Phones (the Grand Prix series as one line) · the decided header and footer</p>
+      <p class="tl-meta-line"><b>Replaces:</b> Schol-A and Schol-C. Dropped: the hero, the three doors and the audience switch, the jump bar's move-list numbers, the FAQ, the share card, program-type filters, team entry and host requests (coach and school tools move to a later round). Schol-B's pathway and series standings stay parked for Phase 5.</p>
+      <p class="tl-meta-line"><b>K's feedback applied (Fri, Oct 9):</b> page 10 item, all ten parts in the box on the right. One entry price per event, no member price, no sibling or lunch discounts (decision D11).</p>
+      <p class="tl-meta-line"><b>Shown:</b> /scholastic at 1440px on Fri, Oct 9, 2026, signed out (Donate · Log in · Join LCA), the visitor's location set to Baton Rouge 70808. Phones are on part 2, Schol-Final-2.</p>
+      <p class="tl-meta-line" style="margin-top:10px"><span class="k-sample">Sample data: the day's times, entry fees, the State Scholastic date and city, champions' names, distances, the admin-entered season</span></p>
+    </div>
+    <aside class="sf-grey" aria-label="Board note">
+      <div>
+        <p><b>What</b>One Scholastic page for parents: before your first event, upcoming events, the season's schedule, the three nearest clubs, the honor roll, and a person to ask.</p>
+        <p><b>Built from</b>Schol-A's guide and events, Schol-C's finder and honor roll, the decided chrome.</p>
+        <p><b>K's feedback applied</b>A's three sections kept; C's finder minimal, clubs only, nearest first; honor roll kept; a yearly schedule space.</p>
+      </div>
+      <div>
+        <p><b>Open for K</b></p>
+        <ol>
+          <li>The open-tournament schedule gets a "Season at a glance" strip on the Tournaments page, not here (assumed).</li>
+          <li>The regional representative for a club's region posts that club's news (assumed).</li>
+          <li>"Ask a person" goes to a scholastic seat on the board; if there is no such seat, to the whole board.</li>
+          <li>The Sat, Nov 14 and Sat, Dec 5 meets register on LCA, as on the decided Tournaments boards; Schol-A drew them as partner events.</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+  <div class="tl-legend">
+    <div class="tl-lbox">
+      <p class="k-label">Notes on this board</p>
+      <ol class="tl-notes">
+        <li><span class="k-num-badge">1</span><span><b>No hero, no doors.</b> A plain page head for parents: the H1, one line on who the page is for, and six jump links in page order. Everything a coach or school needs comes later.</span></li>
+        <li><span class="k-num-badge">2</span><span><b>Before your first event leads,</b> starting with Schol-A's day from check-in to awards. Times are marked Sample; "~" marks a round that starts when the one before ends. Opened from an event, the timeline uses that event's own times.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>What to bring</b> stays beside the day, ticks saved on this device only, with Print.</span></li>
+        <li><span class="k-num-badge">4</span><span><b>Chess words in plain English</b> and <b>which section,</b> by grade band. Eligibility is one yes or no box; LCA never asks a grade or birthdate.</span></li>
+        <li><span class="k-num-badge">5</span><span><b>Costs show only real prices:</b> Scholastic $5 and Family $25 a year, and each event's one entry fee. No member price, no sibling or lunch discount. LCA-run events need an LCA membership, added at checkout.</span></li>
+        <li><span class="k-num-badge">6</span><span><b>Safety and "What LCA keeps about your child"</b> as Schol-A drew them. A concern goes to the scholastic seat or the TD on the day.</span></li>
+        <li><span class="k-num-badge">7</span><span><b>Upcoming scholastic events,</b> the real ones. LCA rows carry status in words, places and one fee; partner rows say "Registers on the organizer's site ↗" with no Register and no count. The Grand Prix is one line above the list.</span></li>
+        <li><span class="k-num-badge">8</span><span><b>This season's scholastic schedule,</b> as drawn today: nothing is published, so an honest placeholder and one email field. The email goes out once, when an admin publishes the season.</span></li>
+        <li><span class="k-num-badge">9</span><span><b>Once an admin enters the season</b> (inset, Sample): dated rows with weekdays, each linking to its event page. Rows for events not yet created show the date and city only.</span></li>
+        <li><span class="k-num-badge">10</span><span><b>The open-tournament season is not on this page.</b> One line points to the same kind of strip on the Tournaments page (open for K).</span></li>
+        <li><span class="k-num-badge">11</span><span><b>Find a club near you, minimal.</b> The three clubs closest to the visitor, nearest first, with when they meet. No program-type filters, only clubs. "Kids welcome" shows on a card only when the club lists it; none of these three does yet.</span></li>
+        <li><span class="k-num-badge">12</span><span><b>Honor roll:</b> the latest State Scholastic champions by grade band, from the champions table. Names are plain text, never links. "Show all years" opens the full scholastic honor roll.</span></li>
+        <li><span class="k-num-badge">13</span><span><b>Still unsure? Ask a person.</b> The note goes to a board seat, not a named volunteer: whoever holds it answers by email, and while the seat is open the whole board gets it. No personal email in the page.</span></li>
+      </ol>
+    </div>
+    <aside class="tl-fb" aria-labelledby="sf-fbh">
+      <p id="sf-fbh" class="k-label-gold">K's feedback, and where it landed</p>
+      <ol class="sf-fb">
+        <li><span class="sf-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="sf-fbn">10.1</span><b>"I like the before your first event [section]" (A).</b><em>Kept as the page's first section: the day, what to bring, words, sections, costs, safety, what LCA keeps (notes 2 to 6).</em></span></li>
+        <li><span class="sf-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="sf-fbn">10.2</span><b>"Upcoming scholastic events" (A).</b><em>Second section, the real events, partner rows sent to the organizer (note 7).</em></span></li>
+        <li><span class="sf-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="sf-fbn">10.3</span><b>"Still unsure, ask a person" (A).</b><em>Last section, writing to a seat (note 13).</em></span></li>
+        <li><span class="sf-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="sf-fbn">10.4</span><b>"Find a program near you" from C, "but make it minimal".</b><em>One small block, three cards and one line; the map and the program list are gone (note 11).</em></span></li>
+        <li><span class="sf-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="sf-fbn">10.5</span><b>"The club blocks... geographically closest."</b><em>The three clubs nearest the visitor's place, nearest first, with Change (note 11).</em></span></li>
+        <li><span class="sf-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="sf-fbn">10.6</span><b>"These will just have to be clubs... the filters won't be usable."</b><em>Titled "Find a club near you"; no program-type filters (note 11).</em></span></li>
+        <li><span class="sf-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="sf-fbn">10.7</span><b>"The honor roll showing the scholastic champions."</b><em>Kept, by grade band, with Show all years (note 12).</em></span></li>
+        <li><span class="sf-tick" role="img" aria-label="Applied on this board"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span><span class="sf-fbn">10.8</span><b>"A space to advertise the LCA scholastic tournament schedule (yearly)."</b><em>New section: the placeholder today, and the published season in the inset (notes 8, 9).</em></span></li>
+        <li class="sf-off"><span class="sf-tick sf-tick-off" role="img" aria-label="Not on this board"></span><span><span class="sf-fbn">10.9</span><b>"The same thing for the regular LCA tournament schedule."</b><em>Not on this page, as K said. Assumed for the Tournaments page as "Season at a glance"; this page points to it (note 10).</em></span></li>
+        <li class="sf-off"><span class="sf-tick sf-tick-off" role="img" aria-label="Not on this board"></span><span><span class="sf-fbn">10.10</span><b>"No notes on mobile... save space on the small screen."</b><em>Not on this board · Schol-Final-2: the same page, timeline as a list, one club at a time, chip-filtered honor roll.</em></span></li>
+      </ol>
+      <div class="sf-fbkey"><span><span class="sf-tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span>Applied here</span><span><span class="sf-tick sf-tick-off" aria-hidden="true"></span>Not on this board</span></div>
+    </aside>
+  </div>
+</section>
+</div>
+
+<!-- ============ The page ============ -->
+<header class="k-header sf-hd">
+  <div class="sf-wrap k-header-in sf-hd-in">
+    <a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="sf-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+    <nav class="k-navlinks sf-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a class="k-nav-on" href="#" aria-current="page">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="sf-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav>
+    <a class="sf-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="sf-kbd" aria-hidden="true">&#8984;K</kbd></a>
+    <div class="k-utility sf-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div>
+  </div>
+</header>
+
+<main>
+<section class="sf-head" aria-labelledby="sf-h1">
+  <div class="sf-wrap">
+    <div class="sf-headrow">
+      <div>
+        <p class="k-kicker">For parents of K–12 players</p>
+        <h1 class="k-h1" id="sf-h1" style="margin-top:8px">Scholastic chess</h1>
+        <p class="sf-sub">What a tournament day looks like, what it costs, which events are coming up, and where your child can play near home. You don't need to know chess to read it.</p>
+      </div>
+      <span class="k-sample">Sample data: times, fees, State Scholastic date, champions</span>
+    </div>
+    <nav class="sf-jump" aria-label="On this page">
+      <span class="k-label" style="margin-right:4px">On this page</span>
+      <a class="k-chip k-chip-on" href="#first" aria-current="true">Before your first event</a>
+      <a class="k-chip" href="#events">Upcoming events</a>
+      <a class="k-chip" href="#season">This season's schedule</a>
+      <a class="k-chip" href="#clubs">Clubs near you</a>
+      <a class="k-chip" href="#honor">Honor roll</a>
+      <a class="k-chip" href="#ask">Ask a person</a>
+      <span class="k-num-badge sf-b" style="margin-left:6px">1</span>
+    </nav>
+  </div>
+</section>
+
+<!-- Before your first event -->
+<section class="sf-sec" id="first" aria-labelledby="sf-first">
+  <div class="sf-wrap">
+    <div class="sf-sh">
+      <div>
+        <p class="k-label-gold">1 · Before your first event</p>
+        <h2 class="k-h2" id="sf-first">What a scholastic Saturday looks like</h2>
+        <p class="k-small">A typical one-day LCA scholastic: 5 rounds at <button class="sa-term" type="button" aria-expanded="true">G/30+5<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg></button>, nobody is knocked out, and your child plays every round. Parents wait just outside the playing room.</p>
+      </div>
+    </div>
+
+    <div class="sf-g2">
+      <div class="k-stack">
+        <div class="sa-tip" role="note">
+          <div class="k-between" style="align-items:flex-start;flex-wrap:nowrap">
+            <p><b>G/30+5</b> · Each player has 30 minutes on the clock, plus 5 seconds per move. A game can last about 70 minutes.</p>
+            <button class="sa-tip-x" type="button" aria-label="Close definition"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+          </div>
+        </div>
+        <div class="k-card sa-tlcard sf-rel">
+          <span class="k-num-badge sf-nbr sf-b">2</span>
+          <div class="k-between" style="padding:2px 0 8px"><h3 class="k-h4">The day, check-in to awards</h3><span class="k-sample">Sample times</span></div>
+          <ol class="sa-tl">
+            <li class="sa-step"><div class="sa-time k-mono">7:45 AM</div><div class="sa-node"><span class="sa-dot sa-dot-gold"></span></div><div><h4 class="k-h4">Check in</h4><p class="k-small k-muted">Give your child's name at the front table; check-in closes at 8:30 AM. Running late? Text the <button class="sa-term" type="button">TD</button> (number on the event page). Your child may get a <button class="sa-term" type="button">bye</button> in round 1.</p></div></li>
+            <li class="sa-step"><div class="sa-time k-mono">8:45 AM</div><div class="sa-node"><span class="sa-dot"></span></div><div><h4 class="k-h4">Welcome and rules talk</h4><p class="k-small k-muted">The TD explains touch-move, raising a hand for help, and where parents wait.</p></div></li>
+            <li class="sa-step"><div class="sa-time k-mono">9:00 AM</div><div class="sa-node"><span class="sa-dot"></span></div><div><h4 class="k-h4">Round 1</h4><p class="k-small k-muted">Find your child on the <button class="sa-term" type="button">pairings</button> (on the wall or this site): board number and colour. Walk them to the door.</p></div></li>
+            <li class="sa-step"><div class="sa-time k-mono">~10:15 AM</div><div class="sa-node"><span class="sa-dot sa-dot-sm"></span></div><div class="k-row-sm"><h4 class="k-h4">Round 2</h4><span class="k-meta">starts when the last round 1 game ends</span></div></li>
+            <li class="sa-step"><div class="sa-time k-mono">~11:30 AM</div><div class="sa-node"><span class="sa-dot sa-dot-sm"></span></div><div><h4 class="k-h4">Round 3</h4></div></li>
+            <li class="sa-step"><div class="sa-time k-mono">12:30 PM</div><div class="sa-node"><span class="sa-dot"></span></div><div><h4 class="k-h4">Lunch · 45 minutes</h4><p class="k-small k-muted">Pack lunch, or check the event page for food nearby.</p></div></li>
+            <li class="sa-step"><div class="sa-time k-mono">~1:15 PM</div><div class="sa-node"><span class="sa-dot sa-dot-sm"></span></div><div><h4 class="k-h4">Round 4</h4></div></li>
+            <li class="sa-step"><div class="sa-time k-mono">~2:30 PM</div><div class="sa-node"><span class="sa-dot sa-dot-sm"></span></div><div><h4 class="k-h4">Round 5</h4></div></li>
+            <li class="sa-step"><div class="sa-time k-mono">~3:45 PM</div><div class="sa-node"><span class="sa-dot sa-dot-gold"></span></div><div><h4 class="k-h4">Awards</h4><p class="k-small k-muted">Trophies for the top finishers in each section. Standings go up here the same day; <button class="sa-term" type="button">rated</button> results go to US Chess.</p></div></li>
+          </ol>
+        </div>
+        <div class="k-gold-band" style="border-radius:12px;padding:14px 18px">
+          <div class="k-row" style="align-items:flex-start;flex-wrap:nowrap"><svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 7.5 3c0 5.4-7.5 10-7.5 10z"></path></svg><p class="k-small"><b>Between rounds is your time.</b> Water, a snack, a bathroom trip, a hug. Save the game talk for the drive home, unless your child wants to talk.</p></div>
+        </div>
+      </div>
+
+      <aside class="k-card-pad k-stack sf-rel" id="bring" aria-labelledby="sf-bring" style="padding:24px">
+        <span class="k-num-badge sf-nbr sf-b">3</span>
+        <div class="k-between"><h3 class="k-h3" id="sf-bring">What to bring</h3><button class="k-btn k-btn-ghost k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Print</button></div>
+        <p class="k-label">For your child</p>
+        <label class="k-check"><input type="checkbox" checked>Two sharpened pencils</label>
+        <label class="k-check"><input type="checkbox" checked>Water bottle and snacks</label>
+        <label class="k-check"><input type="checkbox">A sweater: halls run cold</label>
+        <label class="k-check"><input type="checkbox">A book for between rounds</label>
+        <label class="k-check"><input type="checkbox">Chess set and clock, only if the event page asks</label>
+        <p class="k-label">For you</p>
+        <label class="k-check"><input type="checkbox">US Chess ID (rated events)</label>
+        <label class="k-check"><input type="checkbox">Lunch, or a plan for it</label>
+        <label class="k-check"><input type="checkbox">Phone charger</label>
+        <div class="k-panel k-stack-sm" style="padding:14px 16px">
+          <p class="k-h4">Leave in the bag during games</p>
+          <p class="k-small" style="color:#3d4556">Phones and smart watches, switched off. Under US Chess rules a buzzing phone can cost a game.</p>
+        </div>
+        <p class="k-meta">Ticks are saved on this device only.</p>
+      </aside>
+    </div>
+
+    <div class="sf-g2 sf-mt">
+      <div class="k-card-pad sf-rel" id="words" style="padding:24px">
+        <span class="k-num-badge sf-nbr sf-b">4</span>
+        <div class="k-between" style="margin-bottom:10px">
+          <div class="k-stack-sm"><p class="k-label-gold">Chess words, in plain English</p><h3 class="k-h3">The words on the pairing sheet</h3></div>
+          <a class="k-link k-small" href="#">Full glossary</a>
+        </div>
+        <dl class="sa-dl">
+          <dt class="k-mono">G/30+5</dt><dd>30 minutes on each clock, plus 5 seconds per move. Up to about 70 minutes a game.</dd>
+          <dt>Section</dt><dd>The group your child plays in, set by grade (K–3, K–5 and so on) or by rating.</dd>
+          <dt>Swiss</dt><dd>Nobody is knocked out. Each round, kids with similar scores play each other.</dd>
+          <dt>Pairings</dt><dd>Who plays whom, on which board, and who has White (White moves first).</dd>
+          <dt>Bye</dt><dd>A round with no game. Ask for a ½-point bye when you register if your child will miss one.</dd>
+          <dt>Rated</dt><dd>Games count toward an official US Chess rating. Needs a US Chess membership.</dd>
+          <dt>Touch-move</dt><dd>Touch your own piece on purpose and you must move it. Say "I adjust" to straighten one.</dd>
+          <dt>TD</dt><dd>Tournament director, the referee. Kids raise a hand for the TD.</dd>
+        </dl>
+      </div>
+
+      <aside class="k-card-pad k-stack" id="sections" style="padding:24px">
+        <div class="k-stack-sm"><p class="k-label-gold">Which section?</p><h3 class="k-h3">Most scholastic events group kids by grade</h3></div>
+        <div>
+          <div class="sa-band"><span class="sa-bandtag">K–3</span><p class="k-small">K through 3rd grade</p></div>
+          <div class="sa-band"><span class="sa-bandtag">K–5</span><p class="k-small">Up to 5th grade</p></div>
+          <div class="sa-band"><span class="sa-bandtag">K–8</span><p class="k-small">Up to 8th grade</p></div>
+          <div class="sa-band"><span class="sa-bandtag">K–12</span><p class="k-small">Any grade, K through 12th</p></div>
+        </div>
+        <p class="k-small k-muted">Younger kids may play up, never down. Some events add rating groups for newer players.</p>
+        <div class="k-stack-sm" style="border:1px solid #858b99;border-radius:10px;padding:14px">
+          <p class="k-label">When you register</p>
+          <label class="k-check"><input type="checkbox" checked>Maya is in 5th grade or below this school year</label>
+          <p class="k-hint">One yes or no box. No grade, no birthday.</p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="sf-g3 sf-mt">
+      <div class="k-card-pad k-stack sf-rel" id="costs" style="padding:24px">
+        <span class="k-num-badge sf-nbr sf-b">5</span>
+        <div class="k-stack-sm"><p class="k-label-gold">What it costs</p><h3 class="k-h3">Per child</h3></div>
+        <div>
+          <div class="sa-row"><span class="k-small k-strong">Entry fee</span><span class="k-small k-num">One price per event</span><span class="k-meta" style="flex-basis:100%">Shown on each event's row and page. The two LCA meets this fall: $25 each (Sample).</span></div>
+          <div class="sa-row"><span class="k-small k-strong">Partner events</span><span class="k-small k-muted">Set by the organizer</span><span class="k-meta" style="flex-basis:100%">Paid on the organizer's site.</span></div>
+          <div class="sa-row"><span class="k-small k-strong">LCA Scholastic membership</span><span class="k-small k-num">$5 a year</span><span class="k-meta" style="flex-basis:100%">For K–12 students. Needed to enter LCA events; added at checkout if your child has none.</span></div>
+          <div class="sa-row"><span class="k-small k-strong">LCA Family membership</span><span class="k-small k-num">$25 a year</span><span class="k-meta" style="flex-basis:100%">You and up to 3 children. Only the kids play? $5 each is cheaper.</span></div>
+          <div class="sa-row"><span class="k-small k-strong">US Chess membership</span><span class="k-small k-muted">Rated events</span><span class="k-meta" style="flex-basis:100%">Bought at uschess.org; US Chess sets the price.</span></div>
+        </div>
+        <p class="k-small" style="color:#3d4556">Everyone pays the same entry fee. There is no member price.</p>
+      </div>
+
+      <div class="k-card-pad k-stack sf-rel" id="safety" style="padding:24px">
+        <span class="k-num-badge sf-nbr sf-b">6</span>
+        <div class="k-stack-sm"><p class="k-label-gold">Safety</p><h3 class="k-h3">How events keep kids safe</h3></div>
+        <ul class="sa-list">
+          <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Parents and coaches wait outside the playing room during games.</li>
+          <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>A tournament director runs every event. Kids raise a hand for help.</li>
+          <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>LCA events follow US Chess rules and its safe-play policy.</li>
+        </ul>
+        <a class="k-link-plain k-small" href="#">Safe-play policy at uschess.org<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></a>
+        <div class="k-panel k-stack-sm" style="padding:16px">
+          <p class="k-h4">Report a concern</p>
+          <p class="k-small" style="color:#3d4556">It goes to the board's scholastic seat, privately. On the day, tell the TD.</p>
+          <a class="k-btn k-btn-line k-btn-sm" href="#" style="align-self:flex-start"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg>Report a concern</a>
+        </div>
+      </div>
+
+      <div class="k-card-pad k-stack" style="padding:24px">
+        <div class="k-stack-sm"><p class="k-label-gold">Privacy</p><h3 class="k-h3">What LCA keeps about your child</h3></div>
+        <div class="k-stack-sm">
+          <p class="k-label">We ask for</p>
+          <ul class="sa-list">
+            <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Your child's first and last name</li>
+            <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>US Chess ID, rated events only</li>
+            <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>A yes or no box for grade sections</li>
+            <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Your email and payment. Kids get no login.</li>
+          </ul>
+        </div>
+        <div class="k-stack-sm">
+          <p class="k-label">We never ask for</p>
+          <ul class="sa-list">
+            <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Birthdate, grade or school</li>
+            <li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Address, or a child's phone or email</li>
+          </ul>
+        </div>
+        <p class="k-small" style="color:#3d4556"><b>Public:</b> name, section, rating and results on pairings and standings, as at every rated event.</p>
+        <p class="k-meta">Remove a child any time in My LCA. Results sent to US Chess stay on record.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Upcoming scholastic events -->
+<section class="sf-sec" id="events" aria-labelledby="sf-ev">
+  <div class="sf-wrap">
+    <div class="sf-sh">
+      <div>
+        <p class="k-label-gold">2 · Ready?</p>
+        <h2 class="k-h2" id="sf-ev">Upcoming scholastic events</h2>
+        <p class="k-small">LCA events register here. Partner events register on the organizer's site.</p>
+      </div>
+      <div class="k-row-sm" role="group" aria-label="Where"><button class="k-chip k-chip-on" type="button" aria-pressed="true">Louisiana <span class="k-chip-count" style="color:#dfe3ec">7</span></button><button class="k-chip" type="button" aria-pressed="false">Nearby states <span class="k-chip-count">2</span></button></div>
+    </div>
+    <div class="sf-rel">
+      <span class="k-num-badge sf-nbr sf-b">7</span>
+      <div class="sf-gp">
+        <svg class="k-i-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v4a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg>
+        <b>New Orleans Youth Chess Grand Prix, 2026 to 2027</b>
+        <span class="sf-gpd">Sat, Nov 14</span><span class="sf-gpd">Sat, Dec 5</span><span class="sf-gpd">Sat, Mar 20</span><span class="sf-gpd">Sat, May 8 · Final</span>
+        <span class="sf-gpn">Points from each meet count toward the May Final.</span>
+      </div>
+      <div class="sf-evlist">
+        <div class="sf-ev">
+          <div class="sf-date sf-date-lca"><span class="sf-wd">Sat</span><b>14</b><span class="sf-mo">Nov</span></div>
+          <div class="sf-evmain">
+            <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-soon">Registration opens Mon, Oct 12</span><span class="k-tag">Grand Prix 1 of 4</span></div>
+            <h3 class="sf-evname">New Orleans Youth Chess November Meet</h3>
+            <p class="sf-evline"><b>Sat, Nov 14, 2026</b> · New Orleans · by Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</p>
+            <p class="sf-evline">K–12 · K–8 · K–5 · K–3 · 4 rounds, 30 minutes each plus 5 seconds a move · US Chess rated</p>
+          </div>
+          <div class="sf-evside"><p class="sf-fee"><b>$25</b> entry · 120 places</p><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Remind me when it opens</button></div>
+        </div>
+        <div class="sf-ev">
+          <div class="sf-date sf-date-lca"><span class="sf-wd">Sat</span><b>5</b><span class="sf-mo">Dec</span></div>
+          <div class="sf-evmain">
+            <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-soon">Registration opens Mon, Nov 16</span><span class="k-tag">Grand Prix 2 of 4</span></div>
+            <h3 class="sf-evname">New Orleans Youth Chess December Meet</h3>
+            <p class="sf-evline"><b>Sat, Dec 5, 2026</b> · New Orleans · by Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</p>
+          </div>
+          <div class="sf-evside"><p class="sf-fee"><b>$25</b> entry · 120 places</p><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Remind me when it opens</button></div>
+        </div>
+        <div class="sf-ev sf-ev-p">
+          <div class="sf-date sf-date-p"><span class="sf-wd">Sun</span><b>17</b><span class="sf-mo">Jan</span></div>
+          <div class="sf-evmain">
+            <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span></div>
+            <h3 class="sf-evname">Ken Ferguson Memorial Scholastic</h3>
+            <p class="sf-evline"><b>Sun, Jan 17, 2027</b> · New Orleans · by Downriver Chess · same weekend as the Ken Ferguson Memorial Open</p>
+          </div>
+          <div class="sf-evside"><a class="sf-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="sf-vh"> (opens in a new tab)</span></a></div>
+        </div>
+        <div class="sf-ev sf-ev-p">
+          <div class="sf-date sf-date-p"><span class="sf-wd">Sat</span><b>20</b><span class="sf-mo">Mar</span></div>
+          <div class="sf-evmain">
+            <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-tag">Grand Prix 3 of 4</span></div>
+            <h3 class="sf-evname">New Orleans Youth Chess March Meet</h3>
+            <p class="sf-evline"><b>Sat, Mar 20, 2027</b> · New Orleans · by Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</p>
+          </div>
+          <div class="sf-evside"><a class="sf-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="sf-vh"> (opens in a new tab)</span></a></div>
+        </div>
+        <div class="sf-ev sf-ev-p">
+          <div class="sf-date sf-date-p"><span class="sf-wd">Sat</span><b>17</b><span class="sf-mo">Apr</span></div>
+          <div class="sf-evmain">
+            <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span></div>
+            <h3 class="sf-evname">SWLA Regional Scholastic Tournament</h3>
+            <p class="sf-evline"><b>Sat, Apr 17, 2027</b> · Sulphur · by Casa de Ajedrez</p>
+          </div>
+          <div class="sf-evside"><a class="sf-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="sf-vh"> (opens in a new tab)</span></a></div>
+        </div>
+        <div class="sf-ev">
+          <div class="sf-date sf-date-lca"><span class="sf-wd">Sat</span><b>24</b><span class="sf-mo">Apr</span></div>
+          <div class="sf-evmain">
+            <div class="k-row-sm"><span class="k-tag k-tag-lca">LCA event</span><span class="k-tag k-tag-soon">Registration opens Mon, Feb 1</span><span class="k-sample">Sample date and city</span></div>
+            <h3 class="sf-evname">LCA State Scholastic Championship</h3>
+            <p class="sf-evline"><b>Sat, Apr 24, 2027</b> · [City] · state titles in K–12, K–8, K–5 and K–3</p>
+          </div>
+          <div class="sf-evside"><p class="sf-fee"><b>$25</b> entry · places set later</p><button class="k-btn k-btn-line k-btn-sm" type="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Remind me when it opens</button></div>
+        </div>
+        <div class="sf-ev sf-ev-p">
+          <div class="sf-date sf-date-p"><span class="sf-wd">Sat</span><b>8</b><span class="sf-mo">May</span></div>
+          <div class="sf-evmain">
+            <div class="k-row-sm"><span class="k-tag k-tag-ext">Partner event</span><span class="k-tag">Grand Prix Final</span></div>
+            <h3 class="sf-evname">New Orleans Youth Chess May Meet: Grand Prix Final</h3>
+            <p class="sf-evline"><b>Sat, May 8, 2027</b> · New Orleans · by Strategic Thoughts NOLA, Crescent City Chess and Downriver Chess</p>
+          </div>
+          <div class="sf-evside"><a class="sf-out" href="#" target="_blank" rel="noopener">Registers on the organizer's site ↗<span class="sf-vh"> (opens in a new tab)</span></a></div>
+        </div>
+        <div class="sf-end"><span class="k-small k-muted">Also nearby: 2026 National Chess Day Scholastic, Sat, Oct 10 (Birmingham, AL) and Team Scholastic Jamboree, Sat, Oct 24 (Ridgeland, MS).</span><a class="k-link k-small" href="#">Show nearby-state events</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- This season's scholastic schedule -->
+<section class="sf-sec" id="season" aria-labelledby="sf-season">
+  <div class="sf-wrap">
+    <div class="sf-sh">
+      <div>
+        <p class="k-label-gold">3 · The year ahead</p>
+        <h2 class="k-h2" id="sf-season">This season's scholastic schedule</h2>
+        <p class="k-small">The LCA scholastic tournaments for the school year, all on one list, once the board sets them.</p>
+      </div>
+    </div>
+    <div class="sf-season">
+      <div class="sf-ph sf-rel">
+        <span class="k-num-badge sf-nbr sf-b">8</span>
+        <span class="sf-ph-ic" aria-hidden="true"><svg class="k-i-lg" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4M8 13.5h3M8 17h6"></path></svg></span>
+        <h3 class="k-h3">The 2026 to 2027 scholastic schedule is being set.</h3>
+        <p class="k-small" style="color:#3d4556;max-width:560px">Sign up and we'll email you when it's out. One email when the schedule is published; we store your email and nothing else.</p>
+        <div class="sf-mail">
+          <div class="k-field"><label for="sf-mail">Your email</label><input id="sf-mail" class="k-input" type="email" placeholder="name@example.com"></div>
+          <button class="k-btn k-btn-navy" type="button">Email me when it's out</button>
+        </div>
+        <p class="k-meta">Until then, the events above are the ones already set.</p>
+      </div>
+      <div class="sf-rel">
+        <span class="k-num-badge sf-nbr sf-b">9</span>
+        <p class="k-label" style="margin-bottom:8px">Inset · the same block once an admin enters the season</p>
+        <div class="sf-inset">
+          <div class="sf-inset-h"><h3 class="k-h4">2026 to 2027 scholastic schedule</h3><span class="k-sample">Sample data</span></div>
+          <div class="sf-srow"><time datetime="2026-11-14">Sat, Nov 14, 2026</time><span><a href="#">New Orleans Youth Chess November Meet</a><small>New Orleans</small></span><span class="sf-go" aria-hidden="true"><svg class="k-i-sm" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></span></div><div class="sf-srow"><time datetime="2026-12-05">Sat, Dec 5, 2026</time><span><a href="#">New Orleans Youth Chess December Meet</a><small>New Orleans</small></span><span class="sf-go" aria-hidden="true"><svg class="k-i-sm" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></span></div><div class="sf-srow"><time datetime="2027-02-06">Sat, Feb 6, 2027</time><span><a href="#">Central Louisiana Scholastic</a><small>Alexandria</small></span><span class="sf-go" aria-hidden="true"><svg class="k-i-sm" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></span></div><div class="sf-srow"><time datetime="2027-04-24">Sat, Apr 24, 2027</time><span><a href="#">LCA State Scholastic Championship</a><small>[City]</small></span><span class="sf-go" aria-hidden="true"><svg class="k-i-sm" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg></span></div>
+          <p class="k-meta" style="padding:8px 0 4px">Set in Workspace › Scholastic season. Each event name opens its event page.</p>
+        </div>
+      </div>
+    </div>
+    <div class="sf-xref" role="note"><svg class="sf-ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span><b>Looking for open tournaments for adults and older players?</b> The year's LCA tournament schedule has the same kind of space on the Tournaments page, under "Season at a glance".</span><span class="k-num-badge" style="margin-left:auto">10</span></div>
+  </div>
+</section>
+
+<!-- Find a club near you -->
+<section class="sf-sec" id="clubs" aria-labelledby="sf-clubs">
+  <div class="sf-wrap">
+    <div class="sf-clubs sf-rel">
+      <span class="k-num-badge sf-nbr sf-b">11</span>
+      <div class="k-between" style="align-items:flex-end">
+        <div>
+          <p class="k-label-gold">4 · Play near home</p>
+          <h2 class="k-h2" id="sf-clubs" style="margin-top:6px">Find a club near you</h2>
+        </div>
+        <p class="sf-near"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Near you: <b>Baton Rouge 70808</b></span><span aria-hidden="true">·</span><button class="k-btn k-btn-ghost k-btn-sm" type="button" style="text-decoration:underline;text-underline-offset:3px;padding:0 4px">Change</button></p>
+      </div>
+      <div class="sf-cgrid">
+        <article class="sf-club">
+          <h3><a href="#">Baton Rouge Chess Club</a></h3>
+          <p class="k-meta">Baton Rouge · about 3 mi</p>
+          <p class="sf-when"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Saturdays 10:00 AM, long games · Jones Creek Branch Library</span></p>
+          <p class="sf-when"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Wednesdays 6:00 PM, casual · Boba ParTea, O'Neil Lane</span></p>
+          <p class="k-small"><b>Next:</b> Sat, Oct 10, 10:00 AM</p>
+        </article>
+        <article class="sf-club">
+          <h3><a href="#">Bluebonnet Chess Club</a></h3>
+          <p class="k-meta">Baton Rouge · about 5 mi</p>
+          <p class="sf-when"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>1st and 3rd Sunday, 4:30 to 5:30 PM · Bluebonnet Library</span></p>
+          <p class="k-small"><b>Next:</b> Sun, Oct 18</p>
+        </article>
+        <article class="sf-club">
+          <h3><a href="#">Gonzales Chess Club</a></h3>
+          <p class="k-meta">Gonzales · about 20 mi</p>
+          <div class="k-row-sm"><span class="k-tag k-tag-soon">Schedule not listed</span></div>
+          <p class="k-small k-muted">Ask the club when they meet before you go.</p>
+          <a class="k-link k-small" href="#">Contact the club</a>
+        </article>
+      </div>
+      <div class="sf-cfoot">
+        <p class="k-small" style="color:#3d4556"><b>LCA lists clubs; it doesn't vet or certify them.</b> <span class="k-muted">"Kids welcome" appears on a card when the club lists it.</span></p>
+        <a class="k-link-plain k-small" href="#">All 25 clubs on the map<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Honor roll -->
+<section class="sf-sec" id="honor" aria-labelledby="sf-honor">
+  <div class="sf-wrap">
+    <div class="sf-sh">
+      <div>
+        <p class="k-label-gold">5 · Honor roll</p>
+        <h2 class="k-h2" id="sf-honor">2026 State Scholastic champions</h2>
+        <p class="k-small">LCA State Scholastic Championship · Sat, Apr 18, 2026 · [City]</p>
+      </div>
+      <div class="k-row-sm"><span class="k-sample">Sample data: names, date, city</span><a class="k-btn k-btn-line k-btn-sm" href="#">Show all years<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a><span class="k-num-badge">12</span></div>
+    </div>
+    <div class="sf-hr">
+      <div class="sf-champ"><span class="sf-crown" aria-hidden="true"><svg class="k-i" viewBox="0 0 24 24"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg></span><span class="k-label-gold">K–12 champion</span><b>Priya Shah</b></div>
+      <div class="sf-champ"><span class="sf-crown" aria-hidden="true"><svg class="k-i" viewBox="0 0 24 24"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg></span><span class="k-label-gold">K–8 champion</span><b>Theo Guidry</b></div>
+      <div class="sf-champ"><span class="sf-crown" aria-hidden="true"><svg class="k-i" viewBox="0 0 24 24"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg></span><span class="k-label-gold">K–5 champion</span><b>Jalen Batiste</b></div>
+      <div class="sf-champ"><span class="sf-crown" aria-hidden="true"><svg class="k-i" viewBox="0 0 24 24"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg></span><span class="k-label-gold">K–3 champion</span><b>Emma Thibodeaux</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- Still unsure? Ask a person -->
+<section class="sf-sec sf-sec-last" id="ask" aria-labelledby="sf-ask">
+  <div class="sf-wrap">
+    <div class="sf-ask sf-rel">
+      <span class="k-num-badge sf-nbr sf-b">13</span>
+      <div class="k-stack">
+        <p class="k-label-gold">6 · Still unsure?</p>
+        <h2 class="k-h2" id="sf-ask">Still unsure? Ask a person</h2>
+        <p class="k-small" style="color:#3d4556;max-width:520px">Write to the board's scholastic seat. Whoever holds the seat writes back by email and can help you pick an event and a section. While the seat is open, the whole board gets your note.</p>
+        <a class="k-link-plain k-small" href="#clubs">Or visit a club night first<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+      </div>
+      <form class="k-stack">
+        <div class="k-field"><label class="k-small k-strong" for="sf-ae">Your email</label><input id="sf-ae" class="k-input" type="email" placeholder="name@example.com"></div>
+        <div class="k-field"><label class="k-small k-strong" for="sf-aq">Your question</label><textarea id="sf-aq" class="sf-ta" placeholder="My daughter is in 2nd grade and has never played in a tournament..."></textarea></div>
+        <div class="k-between"><span class="k-meta">To: Scholastic seat, LCA board</span><button class="k-btn k-btn-navy" type="submit"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send</button></div>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="k-footer sf-foot">
+  <div class="sf-wrap sf-foot-in">
+    <div class="k-row-sm" style="gap:10px"><svg class="sf-rook sf-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div>
+    <span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span>
+    <nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav>
+  </div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":6350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

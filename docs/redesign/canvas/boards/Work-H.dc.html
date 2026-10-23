@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workspace · H · My region, a card per club, each its own page (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.wh-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:28px 40px 40px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.wh-root *{box-sizing:border-box}
+.wh-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.wh-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.wh-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.wh-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.wh-meta{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1040px}
+.wh-meta b{color:#1a2744;font-weight:600}
+.wh-quote{margin:10px 0 0;padding:10px 14px;border-left:3px solid #866a1e;background:#ffffff;border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.5;color:#3d4556;max-width:1060px}
+.wh-quote b{color:#1a2744}
+.wh-legend{display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:20px;margin-top:18px}
+.wh-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.wh-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 26px}
+.wh-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.wh-notes b{font-weight:600}
+.wh-grey{background:#f1f0eb;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;font-size:13px;line-height:1.5;color:#3d4556}
+.wh-grey p{margin:0 0 8px}
+.wh-grey p:last-child{margin:0}
+.wh-grey b{color:#1a2744;font-weight:600}
+.wh-frameline{margin:14px 0 0;padding:10px 12px;border-radius:8px;background:#f5f5f2;font-size:13px;line-height:1.5;color:#3d4556}
+.wh-crumbs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+.wh-c3{border:1px solid #dddcd4;border-radius:8px;padding:8px 10px;background:#ffffff;font-size:12.5px;line-height:1.45;color:#555c6b}
+.wh-c3 b{display:block;color:#1a2744;font-size:13px;font-weight:600}
+.wh-c3 code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#3d4556}
+
+.wh-sec{margin-top:36px}
+.wh-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.wh-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.wh-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.wh-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1080px;margin:12px 0 0}
+.wh-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.wh-browser .k-browser-url{max-width:760px}
+.wh-view{position:relative;background:#f5f5f2;overflow:hidden}
+.wh-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+
+/* header */
+.wh-hd .k-brand{margin-right:16px}
+.wh-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.wh-rook-sm{width:24px;height:24px}
+.wh-nav{gap:0}
+.wh-nav a{padding:0 10px;white-space:nowrap}
+.wh-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.wh-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.wh-sbtn-s{width:auto;padding:0 12px}
+.wh-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.wh-util{gap:12px}
+.wh-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.wh-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.wh-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:22px}
+.wh-foot .k-meta{color:rgba(255,255,255,.78)}
+.wh-foot nav a{font-size:14px}
+
+/* room chrome */
+.wh-crumbbar{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.wh-crumbin{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:46px}
+.wh-crumb{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:#555c6b}
+.wh-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.wh-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.wh-sep{color:#858b99}
+.wh-backlink{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.wh-band{background:#ffffff;border-bottom:1px solid #866a1e}
+.wh-bandin{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding-top:22px;padding-bottom:22px}
+.wh-bandin .k-h1{margin:0;font-size:34px}
+.wh-sub{font-size:15px;line-height:1.5;color:#3d4556;margin:6px 0 0;max-width:820px}
+.wh-btns{display:flex;align-items:center;gap:10px;flex:none}
+
+/* this month bar */
+.wh-month{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:14px 18px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.wh-month p{margin:0;font-size:15px;line-height:1.45}
+.wh-month .wh-msub{display:block;font-size:13px;color:#555c6b;margin-top:2px}
+.wh-gridhead{display:flex;justify-content:space-between;align-items:center;margin:20px 0 12px}
+.wh-gridhead h3{margin:0;font-size:18px;font-weight:600}
+.wh-sort{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px 0 12px;border:1px solid #c4c3bb;border-radius:8px;background:#ffffff;font-size:14px;font-weight:600;color:#1a2744}
+.wh-sort span{color:#555c6b;font-weight:500}
+
+/* club cards */
+.wh-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.wh-card{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.wh-cband{height:8px}
+.wh-cin{padding:14px 16px 16px;display:flex;flex-direction:column;gap:10px;flex:1}
+.wh-chead{display:flex;align-items:center;gap:12px}
+.wh-logo{width:44px;height:44px;padding:0;align-items:center;justify-content:center;font-size:10.5px;flex:none}
+.wh-cname{margin:0;font-size:17px;line-height:1.25;font-weight:600}
+.wh-cwhere{margin:2px 0 0;font-size:13.5px;color:#555c6b}
+.wh-stmt{margin:0;font-size:14.5px;line-height:1.45;color:#1a2744;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:42px}
+.wh-stmt-none{color:#555c6b}
+.wh-stmt-none a{color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.wh-stamps{display:flex;flex-wrap:wrap;gap:6px;min-height:26px}
+.wh-stamp{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:6px;font-size:12.5px;font-weight:600;line-height:1.2;white-space:nowrap;background:#eceef2;color:#3d4555}
+.wh-stamp-amber{background:#f3eedc;color:#1a2744;box-shadow:inset 0 0 0 1px #d9c88f}
+.wh-stamp-rep{background:#f5ecd2;color:#664c0c}
+.wh-stamp-rev{background:#e8edf4;color:#2d3a52}
+.wh-stamp-ok{background:#e1f0e7;color:#145b3a}
+.wh-ci{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wh-cact{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:4px}
+.wh-cact .k-btn{flex:1}
+.wh-dis{background:#f1f0eb;color:#555c6b;border-color:#d6d5cd;cursor:not-allowed;padding:0 10px;font-size:14px}
+.wh-card .k-num-badge{position:absolute;top:18px;right:14px}
+.wh-gridfoot{margin:16px 0 0;font-size:14px;color:#555c6b}
+
+/* states + way in */
+.wh-row{display:grid;gap:20px}
+.wh-panel{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.wh-panel h3{margin:0;font-size:16px;font-weight:600}
+.wh-ptag{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.wh-pnote{margin:0;font-size:13px;line-height:1.5;color:#555c6b}
+.wh-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.wh-minic{border:1px solid #dddcd4;border-radius:8px;overflow:hidden;background:#ffffff}
+.wh-minic i{display:block;height:5px}
+.wh-minic div{padding:7px 8px;font-size:12px;line-height:1.35}
+.wh-minic b{display:block;font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* section snippet + menu */
+.wh-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;font-size:12.5px;font-weight:600;line-height:1.2;white-space:nowrap}
+.wh-chip-rep{background:#e1f0e7;color:#145b3a}
+.wh-today{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;padding:12px 14px;border:1px solid #dddcd4;border-radius:10px;background:#ffffff}
+.wh-today p{margin:0}
+.wh-dd{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 12px 28px rgba(16,24,43,.14);padding:8px}
+.wh-ddrow{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:32px;padding:4px 12px;border-radius:8px;font-size:14.5px;font-weight:500;color:#1a2744}
+.wh-ddsub{font-size:12.5px;color:#555c6b;font-weight:400}
+.wh-ddlabel{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:8px 12px 4px}
+.wh-ddsep{height:1px;background:#e3e2dc;margin:4px 4px}
+.wh-todo-row{background:#fbf7e9}
+.wh-cur{background:#f3eedc;font-weight:600}
+.wh-rail{border:1px solid #dddcd4;border-radius:10px;background:#ffffff;padding:8px}
+.wh-railrow{display:flex;justify-content:space-between;min-height:36px;align-items:center;padding:0 10px;border-radius:6px;font-size:14px}
+
+</style>
+</helmet>
+<div class="wh-root" style="width:1440px;height:2950px">
+<section class="wh-doc" aria-label="About this board"><div class="wh-doc-top"><div>
+<p class="k-kicker">15 · Workspace and admin · round 2 · part 1 of 2</p>
+<h1 class="wh-title">Workspace · H · My region, a card per club, each its own page (round 2)</h1>
+<p class="wh-meta" style="margin-top:10px"><span class="k-sample">Sample data · clubs' statements, dates, reports, counts, colours, the three-region grant</span></p>
+<p class="wh-meta" style="margin-top:8px"><b>Built from:</b> Work-B, the replan's My region text (DESIGN_REPLAN_phase2.md 3.3, 3.4, 4.2), the region data shared with Work-G and Account-M and N, the decided header and footer</p>
+<p class="wh-meta"><b>Replaces:</b> Work-B, with Work-G as the other option: Work-H opens each club as its own page from a card; Work-G keeps it in a side panel</p>
+<p class="wh-meta"><b>Round 2 · Frame:</b> Int-A, swappable · <b>K's feedback applied:</b> the screens joined to the whole, with options for each</p>
+<p class="wh-meta"><b>Shown:</b> /workspace/region and /workspace/region/clubs/houma-chess-club on Mon, Oct 5, 2026 at 8:40 AM, signed in as Chris Arceneaux, South Central Louisiana representative. Part 2 (Work-H-2) draws the club page, the monthly email and the states.</p>
+<p class="wh-quote"><b>K, page 15, Tue, Oct 13, 2026:</b> "for 15, it seems all the pages here are all their separate ideas and are good on their own right, i think its proper to think about how we plan to integrate each of them into the whole and also get mockup options for each to pin down a good vision."</p></div></div>
+<div class="wh-legend"><div class="wh-lbox"><p class="k-label">Notes on this board</p><ol class="wh-notes"><li><span class="k-num-badge">1</span><span><b>A card per club, stamped in words.</b> Nine cards, needs-a-check first. Each card opens the club's own page at /workspace/region/clubs/:id, a stable link the representative can bookmark or send.</span></li><li><span class="k-num-badge">2</span><span><b>The statement in the club's own words.</b> Cards and the editor carry how the club says it meets; nothing is worked out week by week, and there is no "Meeting tonight" state.</span></li><li><span class="k-num-badge">3</span><span><b>One-tap confirm on the card.</b> "Still accurate" stamps this month. A report or suggestion blocks it until answered; reports reach the representative first and the LCA admins too after 14 days.</span></li><li><span class="k-num-badge">4</span><span><b>The editor at full width.</b> The fields on the left; the live club card, the search-result preview and the page checklist on the right: the club page as the club's advertisement.</span></li><li><span class="k-num-badge">5</span><span><b>Club events and the TD.</b> The representative creates a club's event and names its tournament director (P2.19); LCA reviews it before it goes public.</span></li><li><span class="k-num-badge">6</span><span><b>The trade-off, in words.</b> Two levels (the board, then the club page) against Work-G's one; with nine clubs the representative clicks more, but each club has an address of its own.</span></li></ol>
+<p class="wh-frameline">Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this room is the page the left rail opens; under Int-C it opens from a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</p><div class="wh-crumbs3">
+<div class="wh-c3"><b>Int-A · the baseline drawn here</b>My LCA › My region › Houma Chess Club<br><code>/workspace/region/clubs/houma-chess-club</code></div>
+<div class="wh-c3"><b>Int-B · My LCA with a left rail</b>My LCA rail › My region › Houma Chess Club<br><code>/my/region/clubs/houma-chess-club</code></div>
+<div class="wh-c3"><b>Int-C · Your work beside My LCA</b>My LCA › Your work › My region › Houma Chess Club<br><code>/work/region/clubs/houma-chess-club</code></div></div></div>
+<aside class="wh-grey" aria-label="Note for the canvas"><p class="k-label">Note for the canvas</p>
+<p><b>What:</b> My region as nine club cards stamped in words; a card opens the club's own page with the editor at full width (part 2, Work-H-2).</p>
+<p><b>Built from:</b> Work-B (the accuracy check, reports, the Tonight notice, the editor with its live card, club news, club events, the checklist); replan 3.3, 3.4 and 4.2; the region data shared with Work-G and Account-M and N.</p>
+<p><b>K's feedback applied:</b> page 15, "think about how we plan to integrate each of them into the whole and also get mockup options for each". The club rep workspace becomes the representative's room, opened from Your region and the menu row "My region · 4 to check", with the way back in every crumb; option H against Work-G.</p>
+<p><b>Open for K:</b> Work-G or Work-H. Question 20: if a club's own rep stays as its author, they open this same club page for their one club. Lafayette's card shows no event: the Lafayette Open is a partner listing, so the shared data's "31 registered" is not drawn.</p></aside></div></section><section class="wh-sec" aria-labelledby="wh-fa">
+<div class="wh-flab"><span class="wh-code">A</span><h2 id="wh-fa">My region · the board of club cards</h2><span class="k-meta">Mon, Oct 5, 2026 · 8:40 AM · the busy state: four not checked, two reports, one event in review</span></div>
+<div class="k-browser wh-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/workspace/region</div></div>
+<div class="wh-view">
+<header class="k-header wh-hd"><div class="k-wrap-wide k-header-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="wh-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks wh-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="wh-navbtn" type="button" aria-haspopup="true" aria-expanded="false">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="wh-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="wh-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility wh-util"><a class="k-ulink" href="#">Donate</a><button class="wh-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="wh-count" aria-hidden="true">1</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<div class="wh-crumbbar"><div class="k-wrap-wide wh-crumbin"><nav aria-label="Breadcrumb"><p class="wh-crumb"><a href="#">My LCA</a><span class="wh-sep" aria-hidden="true">›</span><span aria-current="page">My region</span></p></nav><a class="wh-backlink" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to My LCA</a></div></div>
+<div class="wh-band"><div class="k-wrap-wide wh-bandin"><div><h2 class="k-h1">My region · South Central Louisiana</h2><p class="wh-sub" style="max-width:none">Chris Arceneaux · regional representative · term ends Wed, Jun 30, 2027 · also keeping Central Louisiana and the Bayou Region while their seats are open</p></div>
+<div class="wh-btns"><a class="k-btn k-btn-line" href="#">Post club news</a><a class="k-btn k-btn-gold" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a club event</a></div></div></div>
+<main class="k-wrap-wide" style="padding-top:22px;padding-bottom:30px">
+<div class="wh-month" role="region" aria-label="This month"><p><b>This month ·</b> Next monthly check lands Mon, Nov 2 · 5 of 9 checked in the last 90 days · 4 not checked in 90 days · 2 reports · 1 event in review<span class="wh-msub">Confirm all stamps this month on every club without an open report; Bunkie and Houma wait for your answer first.</span></p><button class="k-btn k-btn-line" type="button"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirm all still accurate</button></div>
+<div class="wh-gridhead"><div class="k-row-sm"><h3>9 clubs · 3 regions</h3><span class="k-num-badge wh-b">1</span></div><span class="wh-sort"><span>Sort:</span> Needs a check first · A to Z<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span></div>
+<div class="wh-grid"><article class="wh-card" aria-labelledby="c-bunkie"><i class="wh-cband" style="background:#3f7f8c"></i><span class="k-num-badge wh-b">3</span><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-bunkie">Bunkie Chess Club</h3><p class="wh-cwhere">Bunkie · Central Louisiana</p></div></div>
+<p class="wh-stmt">"Tuesdays 4:00–6:00 PM at the Bunkie Library"</p>
+<div class="wh-stamps"><span class="wh-stamp wh-stamp-amber"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>Not checked since Jun 2026</span><span class="wh-stamp wh-stamp-rep"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg>1 suggestion · 1 day</span></div>
+<div class="wh-cact"><button class="k-btn wh-dis" type="button" disabled="disabled">Answer it, then confirm</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Bunkie Chess Club</span></a></div></div></article><article class="wh-card" aria-labelledby="c-gonz"><i class="wh-cband" style="background:#b5462f"></i><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-gonz">Gonzales Chess Club</h3><p class="wh-cwhere">Gonzales · South Central Louisiana</p></div></div>
+<p class="wh-stmt wh-stmt-none">Schedule not listed · <a href="#">Suggest an update</a></p>
+<div class="wh-stamps"><span class="wh-stamp wh-stamp-amber"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>Not checked since Jun 2026</span></div>
+<div class="wh-cact"><button class="k-btn k-btn-line" type="button"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Still accurate</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Gonzales Chess Club</span></a></div></div></article><article class="wh-card" aria-labelledby="c-how"><i class="wh-cband" style="background:#8a5a2b"></i><span class="k-num-badge wh-b">2</span><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-how">Heart of Worship Church Chess</h3><p class="wh-cwhere">Opelousas · South Central Louisiana</p></div></div>
+<p class="wh-stmt">"Fridays 5:30–7:00 PM, church hall"</p>
+<div class="wh-stamps"><span class="wh-stamp wh-stamp-amber"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>Not checked since Jun 2026</span></div>
+<div class="wh-cact"><button class="k-btn k-btn-line" type="button"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Still accurate</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Heart of Worship Church Chess</span></a></div></div></article><article class="wh-card" aria-labelledby="c-pine"><i class="wh-cband" style="background:#5d7a2e"></i><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-pine">Pineville Homeschool Chess Club</h3><p class="wh-cwhere">Pineville · Central Louisiana</p></div></div>
+<p class="wh-stmt">"Monthly, for CCHSA homeschool families"</p>
+<div class="wh-stamps"><span class="wh-stamp wh-stamp-amber"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 7.5V12l3 2"></path></svg>Not checked since Jun 2026</span></div>
+<div class="wh-cact"><button class="k-btn k-btn-line" type="button"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Still accurate</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Pineville Homeschool Chess Club</span></a></div></div></article><article class="wh-card" aria-labelledby="c-houma"><i class="wh-cband" style="background:#2e6b4f"></i><span class="k-num-badge wh-b">6</span><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-houma">Houma Chess Club</h3><p class="wh-cwhere">Houma · Bayou Region</p></div></div>
+<p class="wh-stmt">"Mondays 6:00–8:30 PM at Terrebonne Parish North Library"</p>
+<div class="wh-stamps"><span class="wh-stamp"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Checked Sep 2026</span><span class="wh-stamp wh-stamp-rep"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg>1 report · 9 days</span></div>
+<div class="wh-cact"><button class="k-btn wh-dis" type="button" disabled="disabled">Answer it, then confirm</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Houma Chess Club</span></a></div></div></article><article class="wh-card" aria-labelledby="c-br"><i class="wh-cband" style="background:#1f4e8c"></i><span class="k-num-badge wh-b">5</span><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-br">Baton Rouge Chess Club</h3><p class="wh-cwhere">Baton Rouge · South Central Louisiana</p></div></div>
+<p class="wh-stmt">"Wednesdays 6:00 PM casual at Boba ParTea; Saturdays 10:00 AM at Jones Creek Branch Library, G/90+30"</p>
+<div class="wh-stamps"><span class="wh-stamp"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Checked Sep 2026</span><span class="wh-stamp wh-stamp-rev">Event in LCA review</span></div>
+<div class="wh-cact"><button class="k-btn k-btn-line" type="button"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Still accurate</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Baton Rouge Chess Club</span></a></div></div></article><article class="wh-card" aria-labelledby="c-blue"><i class="wh-cband" style="background:#4a6fd1"></i><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-blue">Bluebonnet Chess Club</h3><p class="wh-cwhere">Baton Rouge · South Central Louisiana</p></div></div>
+<p class="wh-stmt">"1st and 3rd Sundays 4:30–5:30 PM, Bluebonnet Library"</p>
+<div class="wh-stamps"><span class="wh-stamp"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Checked Aug 2026</span></div>
+<div class="wh-cact"><button class="k-btn k-btn-line" type="button"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Still accurate</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Bluebonnet Chess Club</span></a></div></div></article><article class="wh-card" aria-labelledby="c-laf"><i class="wh-cband" style="background:#7b2d8b"></i><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-laf">Lafayette Chess Club</h3><p class="wh-cwhere">Lafayette · South Central Louisiana</p></div></div>
+<p class="wh-stmt wh-stmt-none">Schedule not listed · <a href="#">Suggest an update</a></p>
+<div class="wh-stamps"><span class="wh-stamp"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Checked Sep 2026</span></div>
+<div class="wh-cact"><button class="k-btn k-btn-line" type="button"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Still accurate</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Lafayette Chess Club</span></a></div></div></article><article class="wh-card" aria-labelledby="c-mc"><i class="wh-cband" style="background:#1d6f8a"></i><div class="wh-cin">
+<div class="wh-chead"><div class="k-img wh-logo">Logo</div><div><h3 class="wh-cname" id="c-mc">Morgan City Chess Club</h3><p class="wh-cwhere">Morgan City · Bayou Region</p></div></div>
+<p class="wh-stmt wh-stmt-none">Schedule not listed · <a href="#">Suggest an update</a></p>
+<div class="wh-stamps"><span class="wh-stamp"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Checked Jul 2026</span></div>
+<div class="wh-cact"><button class="k-btn k-btn-line" type="button"><svg class="wh-ci" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Still accurate</button><a class="k-btn k-btn-navy" href="#">Open<span class="wh-vh"> Morgan City Chess Club</span></a></div></div></article></div>
+<p class="wh-gridfoot">Clubs in these regions are kept by you and LCA admins. No members list: players are not associated with clubs.</p>
+</main>
+<footer class="k-footer wh-foot"><div class="k-wrap-wide wh-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="wh-rook wh-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div></div>
+<p class="wh-cap">Needs-a-check first, then Houma with its report, then A to Z. Amber always carries the words; open items are worded stamps. Open goes to the club's own page (part 2, badge 6: a second level, but a stable address); there is no list view.</p>
+</section><section class="wh-sec" aria-labelledby="wh-wi">
+<div class="wh-flab"><span class="wh-code">W</span><h2 id="wh-wi">Way in from My LCA, and back</h2><span class="k-meta">Int-A: three doors into the same room</span></div>
+<div class="wh-row" style="grid-template-columns:1.25fr 1.1fr .85fr">
+<div class="wh-panel"><p class="wh-ptag">My LCA · the Your region section</p>
+<div class="k-row-sm"><h3 style="font-size:18px">Your region · South Central Louisiana</h3><span class="wh-chip wh-chip-rep">Representative</span></div>
+<p class="wh-pnote" style="font-size:14px;color:#1a2744">4 of 9 clubs not checked in 90 days: Bunkie, Gonzales, Heart of Worship, Pineville · 2 reports waiting · 1 club event in LCA review</p>
+<div class="k-row-sm"><a class="k-btn k-btn-navy" href="#">Open My region</a><a class="k-btn k-btn-line" href="#">Post club news</a><a class="k-btn k-btn-line" href="#">Add a club event</a></div>
+<div class="wh-rail" style="max-width:260px"><div class="wh-railrow"><span>Events you direct</span><span>3</span></div><div class="wh-railrow wh-cur"><span>Your region</span><span>4</span></div><div class="wh-railrow"><span>Board</span><span>7</span></div></div>
+<p class="wh-pnote">The On this page rail row "Your region · 4" jumps to /dashboard#region.</p></div>
+<div class="wh-panel"><p class="wh-ptag">My LCA · a Today item</p>
+<div class="wh-today"><div><span class="wh-chip wh-chip-rep">Representative · South Central Louisiana</span><p style="margin-top:6px;font-size:15px;font-weight:600">4 of 9 clubs not checked in 90 days: Bunkie, Gonzales, Heart of Worship, Pineville</p><p class="wh-pnote">Each takes one tap in Your region</p></div><button class="k-btn k-btn-line k-btn-sm" type="button">Check the four</button></div>
+<p class="wh-pnote" style="margin-top:4px"><b style="color:#1a2744">The way back.</b> "Back to My LCA" in the band returns to /dashboard#region. A club's page carries "My LCA › My region › Houma Chess Club" with "Back to My region"; after Confirm all, a line reads "Done · Back to My LCA". The word Workspace appears nowhere: not in the header, the menu or a crumb.</p></div>
+<div class="wh-panel"><p class="wh-ptag">The My LCA ▾ menu</p>
+<div class="wh-dd" role="menu" aria-label="My LCA"><div class="wh-ddlabel">To do · 1</div><div class="wh-ddrow wh-todo-row"><span>Pay $20 · Ella's November Meet entry</span></div><div class="wh-ddsep"></div>
+<div class="wh-ddrow"><span>My LCA</span></div><div class="wh-ddrow"><span>Family</span></div><div class="wh-ddrow"><span>Membership card</span></div><div class="wh-ddsep"></div>
+<div class="wh-ddrow"><span>Events you direct (3)</span></div><div class="wh-ddrow wh-cur"><span>My region · 4 to check</span></div><div class="wh-ddrow"><span>Board inbox (3)</span></div><div class="wh-ddrow"><span>Support tickets (4)</span></div><div class="wh-ddsep"></div><div class="wh-ddrow"><span>Log out</span></div></div></div>
+</div></section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
