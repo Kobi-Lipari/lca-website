@@ -49,10 +49,14 @@ describe('state champions', () => {
     const list = (await (await invoke(championsGet, {})).json<List>()).champions
     const state = list.filter((c) => c.kind === 'state' && c.id.startsWith('lca-'))
     const scholastic = list.filter((c) => c.kind === 'scholastic' && c.id.startsWith('lca-'))
-    expect(state).toHaveLength(84)
-    expect(scholastic).toHaveLength(77)
+    expect(state).toHaveLength(87)
+    expect(scholastic).toHaveLength(75)
     expect(state.find((c) => c.year === 1915)?.champion).toBe('James McConnell Jr.')
     expect(state.find((c) => c.year === 2025)).toMatchObject({ champion: 'Nicholas Matta', photo_url: '/champions/photos/state-2025-nicholas-matta.jpg' })
+    // The document lists 2024, 2023 and 2022 on one line; each year is its own row.
+    expect(state.filter((c) => c.champion === 'Nicholas Matta').map((c) => c.year).sort()).toEqual([2020, 2022, 2023, 2024, 2025])
+    // A suffix stays with its name: "Karl Hoefer, Jr." is one person, not two.
+    expect(scholastic.filter((c) => c.year === 2011 && c.title === 'K-6').map((c) => c.champion)).toEqual(['Karl Hoefer, Jr.'])
     expect(scholastic.filter((c) => c.year === 2021).map((c) => c.title).sort()).toEqual(['High School', 'Lower Elementary', 'Middle School', 'Upper Elementary'])
     expect(list[0].year).toBe(2025)
   })

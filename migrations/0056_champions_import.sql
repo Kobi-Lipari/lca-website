@@ -6,7 +6,8 @@
 -- changes and table rebuilds belong here; see migrations/README.md.
 --
 -- The honor roll itself: every Louisiana State Champion from 1915 to 2025
--- and every scholastic section winner from 2009 to 2021, copied from the
+-- (87 rows) and every scholastic section winner from 2009 to 2021 (75 rows),
+-- copied from the
 -- association's two champion documents (Friday, October 23, 2026). One row
 -- per person per win; a tie is one row per co-champion with the same year
 -- and title. Photos are the ones those documents carried, served from
@@ -20,6 +21,9 @@
 
 INSERT OR IGNORE INTO state_champions (id, year, title, champion, notes, kind, photo_url) VALUES
   ('lca-state-2025-louisiana-state-champion-nicholas-matta', 2025, 'Louisiana State Champion', 'Nicholas Matta', 'FIDE Master', 'state', '/champions/photos/state-2025-nicholas-matta.jpg'),
+  ('lca-state-2024-louisiana-state-champion-nicholas-matta', 2024, 'Louisiana State Champion', 'Nicholas Matta', NULL, 'state', NULL),
+  ('lca-state-2023-louisiana-state-champion-nicholas-matta', 2023, 'Louisiana State Champion', 'Nicholas Matta', NULL, 'state', NULL),
+  ('lca-state-2022-louisiana-state-champion-nicholas-matta', 2022, 'Louisiana State Champion', 'Nicholas Matta', NULL, 'state', NULL),
   ('lca-state-2021-louisiana-state-champion-dex-webster', 2021, 'Louisiana State Champion', 'Dex Webster', NULL, 'state', '/champions/photos/state-2021-dex-webster.jpg'),
   ('lca-state-2020-louisiana-state-champion-nicholas-matta', 2020, 'Louisiana State Champion', 'Nicholas Matta', NULL, 'state', '/champions/photos/state-2020-nicholas-matta.jpg'),
   ('lca-state-2019-louisiana-state-champion-miles-tisserand', 2019, 'Louisiana State Champion', 'Miles Tisserand', NULL, 'state', '/champions/photos/state-2019-miles-tisserand.jpg'),
@@ -171,11 +175,9 @@ INSERT OR IGNORE INTO state_champions (id, year, title, champion, notes, kind, p
   ('lca-scholastic-2012-k-2-jackson-serice', 2012, 'K-2', 'Jackson Serice', NULL, 'scholastic', NULL),
   ('lca-scholastic-2011-k-12-kyle-hecker', 2011, 'K-12', 'Kyle Hecker', NULL, 'scholastic', NULL),
   ('lca-scholastic-2011-k-8-botao-shan', 2011, 'K-8', 'Botao Shan', NULL, 'scholastic', NULL),
-  ('lca-scholastic-2011-k-6-karl-hoefer', 2011, 'K-6', 'Karl Hoefer', NULL, 'scholastic', NULL),
-  ('lca-scholastic-2011-k-6-jr', 2011, 'K-6', 'Jr.', NULL, 'scholastic', NULL),
+  ('lca-scholastic-2011-k-6-karl-hoefer-jr', 2011, 'K-6', 'Karl Hoefer, Jr.', NULL, 'scholastic', NULL),
   ('lca-scholastic-2011-k-4-prokkawn-majumdar', 2011, 'K-4', 'Prokkawn Majumdar', 'tiebreaks over Lee Gilyot and Aqib Zakaria', 'scholastic', NULL),
-  ('lca-scholastic-2011-k-2-miller-farnsworth', 2011, 'K-2', 'Miller Farnsworth', 'tiebreaks over Joseph Schexnayder, Andrew Wang won section', 'scholastic', NULL),
-  ('lca-scholastic-2011-k-2-iii', 2011, 'K-2', 'III', 'tiebreaks over Joseph Schexnayder, Andrew Wang won section', 'scholastic', NULL),
+  ('lca-scholastic-2011-k-2-miller-farnsworth-iii', 2011, 'K-2', 'Miller Farnsworth, III', 'tiebreaks over Joseph Schexnayder, Andrew Wang won section', 'scholastic', NULL),
   ('lca-scholastic-2010-k-12-joshua-larcena', 2010, 'K-12', 'Joshua Larcena', NULL, 'scholastic', NULL),
   ('lca-scholastic-2010-denker-representative-kyle-hecker', 2010, 'Denker representative', 'Kyle Hecker', NULL, 'scholastic', NULL),
   ('lca-scholastic-2009-denker-representative-aaron-gayle', 2009, 'Denker representative', 'Aaron Gayle', NULL, 'scholastic', '/champions/photos/scholastic-2009-aaron-gayle.jpg'),
