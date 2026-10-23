@@ -125,8 +125,10 @@ export function ChampionsPage() {
                           </div>
                         )}
                         <div className="min-w-0">
-                          <p className="text-3xl font-bold tracking-tight text-ink">{row.champion}</p>
-                          {row.notes && <p className="mt-1 text-sm text-muted-foreground">{row.notes}</p>}
+                          <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                            <span className="text-3xl font-bold tracking-tight text-ink">{row.champion}</span>
+                            {row.notes && <span className="text-base font-medium text-muted-foreground">{row.notes}</span>}
+                          </p>
                           {entry && (
                             <p className="mt-2 text-sm text-ink">
                               {entry.wins.length > 1

@@ -86,10 +86,10 @@ describe('the generate guard reads every spelling', () => {
 })
 
 describe('scripts/db/build-local-sqlite.ts', () => {
-  it('writes one database holding the 32 tables and the eight triggers, built from all 58 migrations', () => {
+  it('writes one database holding the 32 tables and the eight triggers, built from all 59 migrations', () => {
     const out = join(scratch(), 'nested/introspect.sqlite')
-    expect(buildLocalSqlite(out)).toEqual({ files: 58, tables: 32 })
-    expect(migrationFiles()).toHaveLength(58)
+    expect(buildLocalSqlite(out)).toEqual({ files: 59, tables: 32 })
+    expect(migrationFiles()).toHaveLength(59)
     const db = new DatabaseSync(out, { readOnly: true })
     const names = (type: string) => (db.prepare('SELECT name FROM sqlite_master WHERE type = ? ORDER BY name').all(type) as Array<{ name: string }>).map((r) => r.name)
     expect(names('trigger')).toEqual([
@@ -192,12 +192,12 @@ describe('the runners', () => {
     expect(existsSync(join(ROOT, 'migrations/meta'))).toBe(false)
   })
 
-  it('does not change what wrangler runs: 58 files, one duplicate 0022 prefix, the last 0057', () => {
+  it('does not change what wrangler runs: 59 files, one duplicate 0022 prefix, the last 0058', () => {
     const sql = readdirSync(join(ROOT, 'migrations')).filter((f) => f.endsWith('.sql')).sort()
-    expect(sql).toHaveLength(58)
+    expect(sql).toHaveLength(59)
     expect(sql[0].startsWith('0001_')).toBe(true)
     expect(sql.filter((f) => f.startsWith('0022_'))).toHaveLength(2)
-    expect(sql.at(-1)).toBe('0057_membership_none.sql')
+    expect(sql.at(-1)).toBe('0058_state_champion_2026.sql')
   })
 })
 

@@ -50,6 +50,13 @@
       "when": 1792784829792,
       "tag": "0006_membership_none",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792791991870,
+      "tag": "0007_state_champion_2026",
+      "breakpoints": true
     }
   ]
 }
