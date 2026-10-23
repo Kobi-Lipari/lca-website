@@ -57,7 +57,8 @@ describe('0054_requires_lca_membership.sql', () => {
 
   it('runs after 0053 with foreign keys on', () => {
     expect(BEFORE.at(-1)).toBe('0053_sections_schedules_backfill.sql')
-    expect(migrationFiles().at(-1)).toBe(FILE)
+    // 0054 follows 0053 at once; the champions migrations 0055 and 0056 came later.
+    expect(migrationFiles()[BEFORE.length]).toBe(FILE)
     expect(foreignKeysOn(db)).toBe(1)
     expect(all(db, 'PRAGMA foreign_key_check')).toEqual([])
   })
