@@ -1,7 +1,8 @@
 // test/unit/champions-by-person.test.ts
 //
-// The honor roll lists each person once, at their first win, newest first,
-// with every later win under their name and a tie marked on the win.
+// The honor roll lists each person once, ordered by their latest win so the
+// reigning champion is first, with every title under their name and a tie
+// marked on the win.
 import { describe, expect, it } from 'vitest'
 
 import type { ApiChampion } from '../../src/areas/events/api'
@@ -26,12 +27,12 @@ const rows: ApiChampion[] = [
 ]
 
 describe('groupByPerson', () => {
-  it('puts each person once, at their first win, newest first', () => {
+  it('puts each person once, ordered by their latest win, the reigning champion first', () => {
     const entries = groupByPerson(rows, 'state')
-    expect(entries.map((e) => [e.name, e.firstYear])).toEqual([
-      ['Nicholas Matta', 2020],
-      ['Miles Tisserand', 2019],
-      ['Dex Webster', 2016],
+    expect(entries.map((e) => [e.name, e.lastYear, e.firstYear])).toEqual([
+      ['Nicholas Matta', 2025, 2020],
+      ['Dex Webster', 2021, 2016],
+      ['Miles Tisserand', 2019, 2019],
     ])
   })
 
@@ -45,6 +46,7 @@ describe('groupByPerson', () => {
   it('keeps the lists apart, so a scholastic champion who later won the state title is on both', () => {
     const scholastic = groupByPerson(rows, 'scholastic')
     expect(scholastic.map((e) => e.name)).toEqual(['John B Gregory', 'Shayan Khan', 'Dex Webster'])
+    // Both 2014 co-champions sit above the 2013 winner: latest win first, then name.
     expect(scholastic.find((e) => e.name === 'Dex Webster')?.wins.map((w) => `${w.year} ${w.title}`)).toEqual(['2013 K-8', '2012 K-6'])
   })
 
@@ -60,7 +62,7 @@ describe('groupByPerson', () => {
   })
 
   it('gives every entry an anchor from the list and the name', () => {
-    expect(groupByPerson(rows, 'state').map((e) => e.anchor)).toEqual(['state-nicholas-matta', 'state-miles-tisserand', 'state-dex-webster'])
+    expect(groupByPerson(rows, 'state').map((e) => e.anchor)).toEqual(['state-nicholas-matta', 'state-dex-webster', 'state-miles-tisserand'])
     expect(personSlug("Rene' Phillips")).toBe('rene-phillips')
     expect(personSlug('A.L. McAuley')).toBe('a-l-mcauley')
   })

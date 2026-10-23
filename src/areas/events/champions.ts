@@ -37,7 +37,7 @@ export interface ChampionWin {
   tournamentName: string | null
 }
 
-/** One person on the honor roll, placed at the year they first won. */
+/** One person on the honor roll, placed by the year of their latest win. */
 export interface ChampionEntry {
   /** A stable anchor for the entry: the list and the person's name as a slug. */
   anchor: string
@@ -60,10 +60,10 @@ export function personSlug(name: string): string {
 }
 
 /**
- * One entry per person, newest first winner at the top: each person sits at
- * the year of their FIRST win, so a champion who kept winning is listed once,
- * where their story starts, with every later win under their name. Ties
- * are marked on the win, not split into more entries.
+ * One entry per person, ordered by their LATEST win, newest first, so the
+ * reigning champion is always at the top and a champion who kept winning is
+ * listed once, with every title under their name. Ties are marked on the
+ * win, not split into more entries.
  */
 export function groupByPerson(rows: ApiChampion[], kind: ChampionKind): ChampionEntry[] {
   const mine = rows.filter((r) => r.kind === kind)
@@ -106,7 +106,7 @@ export function groupByPerson(rows: ApiChampion[], kind: ChampionKind): Champion
   }
   const entries = [...byPerson.values()]
   for (const e of entries) e.wins.sort((a, b) => b.year - a.year || a.title.localeCompare(b.title))
-  return entries.sort((a, b) => b.firstYear - a.firstYear || a.name.localeCompare(b.name))
+  return entries.sort((a, b) => b.lastYear - a.lastYear || b.firstYear - a.firstYear || a.name.localeCompare(b.name))
 }
 
 /** Every year with a winner on this list, newest first. */

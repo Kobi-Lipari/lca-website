@@ -3,9 +3,10 @@
 // The LCA honor roll: reigning state champions up top, upcoming state
 // championships, then two lists, the state champions since 1915 and the
 // scholastic section winners since 2009. Each list names every person once,
-// at the year they first won, newest first, with every later win under their
-// name, and has a "winner of a year" lookup so nobody scrolls a century to
-// answer one question. Entered by admins (Admin → State champions).
+// ordered by their latest win so the reigning champion is first, with every
+// title under their name, and has a "winner of a year" lookup so nobody
+// scrolls a century to answer one question. Entered by admins (Admin → State
+// champions).
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Calendar, Crown, MapPin, Search, Trophy } from 'lucide-react'
@@ -137,7 +138,7 @@ export function ChampionsPage() {
           <HonorRoll
             kind="state"
             heading="State champions"
-            intro="Every Louisiana State Champion, listed once at the year they first won. A champion who won again has each later title under their name."
+            intro="Every Louisiana State Champion, listed once, the most recent champion first. A champion who won more than once has each title under their name."
             champions={champions}
             entries={stateEntries}
             query={q}
@@ -151,7 +152,7 @@ export function ChampionsPage() {
           <HonorRoll
             kind="scholastic"
             heading="Scholastic champions"
-            intro="The section winners of the Louisiana scholastic championships, each listed once at their first win. Sections are named as the records of each year have them: grade bands such as K-8, and from 2021 Lower Elementary, Upper Elementary, Middle School and High School."
+            intro="The section winners of the Louisiana scholastic championships, each listed once, the most recent first. Sections are named as the records of each year have them: grade bands such as K-8, and from 2021 Lower Elementary, Upper Elementary, Middle School and High School."
             champions={champions}
             entries={scholasticEntries}
             query={q}
@@ -238,8 +239,9 @@ function HonorRoll({ kind, heading, intro, champions, entries, query, frameHook 
                 <div className="min-w-0 flex-1">
                   <h3 className="text-lg font-bold text-ink">{e.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    First won in {e.firstYear}
-                    {e.wins.length > 1 && <>, {e.wins.length} titles through {e.lastYear}</>}
+                    {e.wins.length > 1
+                      ? <>Latest title in {e.lastYear}, first in {e.firstYear}, {e.wins.length} titles in all</>
+                      : <>Won in {e.firstYear}</>}
                   </p>
                   <ul className={cn('mt-2 text-sm text-ink', e.wins.length > 1 && 'space-y-0.5')}>
                     {e.wins.map((w) => (
