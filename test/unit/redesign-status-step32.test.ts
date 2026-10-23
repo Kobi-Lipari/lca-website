@@ -8,8 +8,10 @@
 // characters; the AC1 row is filled, and every row of the table ends with a
 // step and a proof, none of them Planned, with K's answer on K1d, the
 // pending halves of AC7 and AC9 and the step's sentences on K5 and T1; the
-// WS01 header says the merge is pending; the Checkpoint D section says what
-// the merge does to production and lists every switch as off; the planned
+// WS01 header and the Checkpoint D section say the merge has happened (they
+// said it was pending until checkpoint D merged, and WS02 step 1 moved these
+// two pins to the merged wording); the Checkpoint D section says what the
+// merge does to production and lists every switch as off; the planned
 // line for AC1 keeps its words with Done in step 32 added; the decisions,
 // the deviation, the verify items and the follow-ups are there, none
 // renamed or removed, the ones the step was handed closed or given a
@@ -181,10 +183,14 @@ describe('REDESIGN_STATUS.md, step 32: the acceptance table', () => {
     expect(row('T1')).toContain('Step 32: done; `test/a11y/scopes.spec.ts` reads every AC1 page in dark mode, the live look and heritage')
   })
 
-  it('updates the WS01 header: all 32 steps built, the merge pending, draft pull request 108, and no head named', () => {
-    for (const piece of ['**Status:** built. All 32 steps are on the branch', 'checkpoint D\'s merge is pending, after a merge-safety review', 'draft pull request 108']) expect(header, piece).toContain(piece)
+  it('updates the WS01 header: all 32 steps built, the four checkpoints merged and live, draft pull request 108, and the head that merged', () => {
+    for (const piece of ['**Status:** built. All 32 steps are on the branch', 'All four checkpoints are merged into `main` and live', 'draft pull request 108']) expect(header, piece).toContain(piece)
     expect(header).not.toMatch(/in progress/)
-    expect(header).not.toMatch(/`[0-9a-f]{7,40}`/)
+    expect(header).not.toMatch(/merge is pending/)
+    // Until the merge the header named no head, and a pin held that no commit
+    // stood in backticks there. The Branch line promised to name the head that
+    // merges once it had merged, so it now names ffee346, and that pin went.
+    expect(header).toMatch(/\*\*Branch:\*\* [^\n]*the head that merged is `ffee346`/)
   })
 })
 
@@ -401,9 +407,20 @@ describe('REDESIGN_STATUS.md, step 32: the step block', () => {
 })
 
 describe('REDESIGN_STATUS.md, the Checkpoint D section', () => {
-  it('says the merge is pending, with no merge commit, and what each step of the checkpoint did', () => {
-    expect(checkpoint).toContain('**Not merged yet: the merge into `main` is pending** (draft pull request 108)')
-    expect(checkpoint).not.toMatch(/Merged into `main` as/)
+  it('says the merge has happened, with its merge commit and what it was seen to do, and what each step of the checkpoint did', () => {
+    expect(checkpoint).toContain('**Merged into `main` as `34b721c` on Thursday, October 22, 2026 at 6:52 PM UTC** (pull request 108, a merge commit on head `ffee346`)')
+    for (const piece of [
+      'a green CI run on `ffee346`',
+      'the pull request\'s own merge time',
+      'the CI run for the push to `main` passed',
+      '`.github/workflows/migrate-db.yml` and `.github/workflows/deploy-worker.yml` did not run',
+      'production stays at `0054_requires_lca_membership.sql`',
+      'at 7:10 PM UTC',
+      'a local production build of `ffee346`\'s tree',
+      'all 24 switches are off in production',
+    ]) expect(checkpoint, piece).toContain(piece)
+    expect(checkpoint).not.toContain('Not merged yet')
+    expect(checkpoint).not.toContain('merge into `main` is pending')
     for (let n = 20; n <= 32; n++) expect(checkpoint, `step ${n}`).toContain(`\n- **Step ${n}:** `)
   })
 

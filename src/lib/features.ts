@@ -159,6 +159,64 @@ const SWITCHES = {
    * membership. Leave it off until that checkout ships.
    */
   membershipRequirementSwitch: false,
+
+  // Redesign, brief 1.4. Off until each part is checked on a preview.
+  // clubEmailHidden and rosterShortNames are Phase 0 switches, so
+  // test/unit/features.test.ts holds them off in PHASE_0 as well.
+
+  /** Today's club page offers "Contact this club through LCA" in place of the club's email. */
+  clubEmailHidden: false,
+
+  /** Today's event page lists entrants under 18 by first name and last initial to anyone not running it. */
+  rosterShortNames: false,
+
+  /** The new live pages: pairings, standings, My board, Find your board, the hall TV and the print kit. */
+  newLive: false,
+
+  /** Players report their own results from the pinned card, with the director's queue of reported results. */
+  resultReports: false,
+
+  /** Round emails to registered players and their guardians, sent when a director publishes a round and asks. */
+  roundAlerts: false,
+
+  /** The same round emails for the people who follow a player or the event. */
+  followerAlerts: false,
+
+  /** The first phase of tournament creation: standing directors, one-event directors and the entry-fee rule. */
+  standingDirectors: false,
+
+  /** The new director's console, one stage at a time, with the setup checklist and the rating report step. */
+  tdConsole: false,
+
+  /** The new admin home: the dashboard, the merged Needs attention queue and the grouped sidebar. */
+  adminHome: false,
+
+  /** The new clubs directory and club pages; the new menus and footer read it for their club rows too. */
+  newClubs: false,
+
+  /** The new News page, results index and /about/champions; the new menus read it for State champions too. */
+  newNews: false,
+
+  /** The new Scholastic page, one page for parents. */
+  newScholastic: false,
+
+  /** The scholastic season block, Season at a glance on Tournaments and the admin season screen. */
+  seasonSchedule: false,
+
+  /** The new Membership and Give pages and the digital card; the new menus read it for Donate and the card too. */
+  newMembership: false,
+
+  /** The new one-page My LCA (Today, You, Family, Receipts and Settings), for everyone until the rail is on. */
+  newDashboard: false,
+
+  /** My LCA's left rail for volunteers; until it is on, the new My LCA menu keeps today's role rows. */
+  myLcaRail: false,
+
+  /** The new tabbed About page and its redirects; the new menus read it for their governance rows too. */
+  newAbout: false,
+
+  /** The new scoresheet scanner for active LCA members, with private drafts, My games and the printed kit. */
+  scanner2: false,
 } as const
 
 /** The name of one switch. */
