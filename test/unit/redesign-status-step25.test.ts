@@ -157,7 +157,7 @@ describe('REDESIGN_STATUS.md, step 25: the step block', () => {
   it('names the badge and pill tokens, their allowlist with its count, the on prop and an icon\'s paint in the guard and the AC2 row', () => {
     const guard = bullet('- **The guard.**', HEADING)
     const entries = GOLD_BADGE_ALLOWLIST.reduce((n, e) => n + e.count, 0)
-    expect(entries).toBe(12)
+    expect(entries).toBe(11)
     for (const piece of ['`text-gold-ink-badge`', '`text-gold-on-dark-badge`', '`GOLD_BADGE_ALLOWLIST`', '`FilterDropdown`', '`MultiSelectDropdown`', '`StatusBadge`', '`color`', '`fill`', '`stroke`']) {
       expect(guard, piece).toContain(piece)
     }

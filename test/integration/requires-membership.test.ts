@@ -248,7 +248,7 @@ describe('nothing is enforced at entry yet', () => {
   it('a player without a membership can still enter an event that requires one (the checkout step is WS06)', async () => {
     const tournamentId = await seedTournament({ sections: [{ name: 'Open', entryFee: 0 }] })
     expect(await stored(tournamentId)).toBe(1)
-    const res = await invoke(registerPost, { method: 'POST', as: await seedMember({ membershipStatus: 'pending' }), body: { tournamentId, section: 'Open' } })
+    const res = await invoke(registerPost, { method: 'POST', as: await seedMember({ membershipStatus: 'none' }), body: { tournamentId, section: 'Open' } })
     expect(res.status).toBe(201)
   })
 })

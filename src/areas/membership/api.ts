@@ -21,7 +21,7 @@ export interface ApiMember {
   uscf_id: string | null
   uscf_rating: number | null
   uscf_rating_updated_at: string | null
-  membership_status: 'active' | 'expired' | 'pending'
+  membership_status: 'active' | 'expired' | 'none'
   membership_expiry: string | null
   /** 'family' for a family membership; null if never bought. */
   membership_type?: string | null

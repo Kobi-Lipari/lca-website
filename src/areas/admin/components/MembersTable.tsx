@@ -132,7 +132,7 @@ export function MembersTable({ members, admin }: {
     const map: Record<string, string> = {
       active: 'bg-ok-100 text-ok',
       expired: 'bg-destructive/10 text-destructive',
-      pending: 'bg-lca-gold/15 text-gold-ink-badge',
+      none: 'bg-muted text-muted-foreground',
     }
     return map[status] ?? 'bg-muted text-muted-foreground'
   }
@@ -225,7 +225,7 @@ export function MembersTable({ members, admin }: {
                       >
                         <option value="active">Active</option>
                         <option value="expired">Expired</option>
-                        <option value="pending">Pending</option>
+                        <option value="none">None</option>
                       </select>
                     ) : (
                       <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium capitalize', statusBadge(m.membership_status))}>

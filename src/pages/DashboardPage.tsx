@@ -36,12 +36,12 @@ import { FamilyCard } from '@/areas/households/components/FamilyCard'
 import { UsChessBadge, UsChessMembershipDetail } from '@/areas/membership/components/UsChessMembership'
 import { usChessState } from '@/areas/membership/usChess'
 
-type MembershipStatus = 'active' | 'expired' | 'pending'
+type MembershipStatus = 'active' | 'expired' | 'none'
 
 const statusConfig: Record<MembershipStatus, { label: string; className: string }> = {
   active: { label: 'Active', className: 'bg-ok-100 text-ok' },
   expired: { label: 'Expired', className: 'bg-destructive/10 text-destructive' },
-  pending: { label: 'Pending', className: 'bg-lca-gold/20 text-ink' },
+  none: { label: 'No membership', className: 'bg-muted text-muted-foreground' },
 }
 
 const ticketStatusColors: Record<string, string> = {
@@ -241,7 +241,7 @@ export function DashboardPage() {
 
   const displayName = member?.full_name || user?.email?.split('@')[0] || 'Member'
   const email = member?.email || user?.email || ''
-  const membershipStatus = (member?.membership_status ?? 'pending') as MembershipStatus
+  const membershipStatus = (member?.membership_status ?? 'none') as MembershipStatus
   const status = statusConfig[membershipStatus]
   const membershipExpiry = member?.membership_expiry ?? 'Not yet purchased'
 
@@ -542,17 +542,14 @@ export function DashboardPage() {
                         Renew to keep your member benefits.
                       </>
                     ) : (
-                      <>
-                        Pending means no membership payment has gone through on this account yet, and nothing has been charged.
-                        If you tried to join and are not sure what happened, check your last payment.
-                      </>
+                      <>No LCA membership on this account yet.</>
                     )}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Button asChild className={goldButtonClass}>
                       <Link to="/membership">Join / Renew Membership</Link>
                     </Button>
-                    {membershipStatus === 'pending' && (
+                    {membershipStatus === 'none' && (
                       <Button asChild variant="outline">
                         <Link to="/membership/success">Check my last payment</Link>
                       </Button>

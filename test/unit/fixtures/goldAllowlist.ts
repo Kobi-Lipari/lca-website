@@ -91,15 +91,6 @@ export const GOLD_BADGE_ALLOWLIST: GoldBadgeEntry[] = [
       'The words of six actions\' tags in ACTION_META (a membership override, a changed pairing, a withdrawn and a reinstated player, a changed payment status and a members export), each on a 20 per cent gold tint, drawn in the audit log\'s rows on its card. Each row looks its tag up by the entry\'s action, which no reading of the JSX can follow to a ground.',
   },
   {
-    file: 'src/areas/admin/components/MembersTable.tsx',
-    class: 'text-gold-ink-badge',
-    count: 1,
-    ground: 'light',
-    readBy: 'statusBadge(m.membership_status)',
-    reason:
-      'The words of the Pending membership tag, on a 15 per cent gold tint, which statusBadge() gives the members table\'s status cell, drawn on the light admin and workspace pages. The cell looks the tag up by the member\'s status inside a function, which no reading of the JSX can follow to a ground.',
-  },
-  {
     file: 'src/areas/admin/components/TournamentList.tsx',
     class: 'text-gold-ink-badge',
     count: 1,
