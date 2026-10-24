@@ -129,15 +129,13 @@ export function ChampionsPage() {
                             <span className="text-3xl font-bold tracking-tight text-ink">{row.champion}</span>
                             {row.notes && <span className="text-base font-medium text-muted-foreground">{row.notes}</span>}
                           </p>
-                          {entry && (
+                          {entry && (entry.wins.length > 1 || r.holders.length > 1) && (
                             <p className="mt-2 text-sm text-ink">
-                              {entry.wins.length > 1
-                                ? <>{entry.wins.length} state titles, the first in {entry.firstYear}.</>
-                                : <>First state title.</>}
+                              {entry.wins.length > 1 && <>{entry.wins.length} state titles, the first in {entry.firstYear}.</>}
                               {r.holders.length > 1 && <> Shared this year.</>}
                             </p>
                           )}
-                          {entry && (
+                          {entry && entry.wins.length > 1 && (
                             <a href={`#${entry.anchor}`} className="mt-3 inline-block text-sm font-medium text-ink underline underline-offset-4"
                               onClick={(e) => { e.preventDefault(); goToEntry(entry.anchor) }}>
                               Every title
