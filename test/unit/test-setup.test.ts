@@ -26,12 +26,39 @@ const lock = JSON.parse(read('package-lock.json')) as {
 
 const EARLIER = ['clubTournaments', 'tournamentQuickFilters', 'externalTags']
 
-describe('switch list matches the brief', () => {
-  const spec = read('docs/redesign/REDESIGN_SPEC.md')
-  const specKeys = [...spec.matchAll(/^\| `([a-zA-Z]+)` \| .* \| (?:Phase 0[^|]*|WS\d+[^|]*) \|$/gm)].map((m) => m[1])
+/**
+ * The rows of the brief's flag table (section 0.2), read as the brief stands:
+ * from its header row, past the line under it, to the end of the table.
+ */
+function flagTableRows(spec: string): string[] {
+  const lines = spec.split('\n')
+  const header = lines.findIndex((l) => l.startsWith('| Flag | Turns on | Can go on in |'))
+  const rows: string[] = []
+  if (header < 0) return rows
+  for (let i = header + 2; i < lines.length && lines[i].startsWith('|'); i++) rows.push(lines[i])
+  return rows
+}
 
-  it('finds the 20 switches in the brief (15 from version 1.2, 5 more from 1.3)', () => {
-    expect(specKeys).toHaveLength(20)
+/**
+ * The switches the flag table names: the backticked name that opens a row,
+ * letters and digits only, so scanner2 counts. The one row that is not a
+ * build switch, member_events_enabled (a site setting), has an underscore and
+ * is left out.
+ */
+const switchNames = (rows: string[]) =>
+  rows.map((l) => /^\| `([a-zA-Z][a-zA-Z0-9]*)` \|/.exec(l)?.[1]).filter((name): name is string => name !== undefined)
+
+describe('switch list matches the brief', () => {
+  const rows = flagTableRows(read('docs/redesign/REDESIGN_SPEC.md'))
+  const specKeys = switchNames(rows)
+
+  it('finds the 42 switches in brief 1.4\'s flag table, and leaves out its one row that is not a switch', () => {
+    expect(specKeys).toHaveLength(42)
+    expect(new Set(specKeys).size).toBe(specKeys.length)
+    expect(rows).toHaveLength(43)
+    const others = rows.filter((l) => !/^\| `[a-zA-Z][a-zA-Z0-9]*` \|/.test(l))
+    expect(others).toHaveLength(1)
+    expect(others[0]).toMatch(/^\| `member_events_enabled` \| \*\*not a build switch:\*\*/)
   })
 
   // A subset check, not an exact one: later work adds its own switches. The
@@ -86,7 +113,7 @@ describe('switch comments in src/lib/features.ts', () => {
   })
 
   it('declares every switch as a plain true or false, never a computed value', () => {
-    const decl = lines.filter((l) => /^ {2}[a-zA-Z]+: (true|false),$/.test(l))
+    const decl = lines.filter((l) => /^ {2}[a-zA-Z][a-zA-Z0-9]*: (true|false),$/.test(l))
     expect(decl).toHaveLength(Object.keys(FEATURES).length)
   })
 
@@ -189,10 +216,29 @@ describe('REDESIGN_STATUS.md, step 2', () => {
     .map((l) => l.split('|').map((c) => c.trim()))
   const row = (id: string) => rows.find((r) => r[1] === id) as string[]
 
-  it('names all 20 switches from the brief and the earlier three in the step 2 record', () => {
-    const spec = read('docs/redesign/REDESIGN_SPEC.md')
-    const specKeys = [...spec.matchAll(/^\| `([a-zA-Z]+)` \| .* \| (?:Phase 0[^|]*|WS\d+[^|]*) \|$/gm)].map((m) => m[1])
-    for (const k of [...specKeys, ...EARLIER]) expect(step2, k).toContain(k)
+  /**
+   * The 20 switches brief 1.3's flag table named, 15 from version 1.2 and 5
+   * from 1.3, in that table's order. The step 2 record is history: it names
+   * what existed at step 2, so it is held to this list, not to the brief's
+   * table, which later versions of the brief extend.
+   */
+  const BRIEF_1_3_SWITCHES = [
+    'newLook', 'themeHeritage', 'themeScholastic', 'newNav', 'siteSearch', 'homeSearch', 'eventStrip', 'eventStripLive',
+    'liveMarker', 'newHome', 'homeResults', 'homeChampions', 'homeLive', 'homeWeek', 'homeRecap', 'homeFeatured',
+    'newTournaments', 'newEventPage', 'festivals', 'householdCheckout',
+  ]
+
+  it('names the 20 switches brief 1.3 named and the earlier three in the step 2 record', () => {
+    expect(new Set(BRIEF_1_3_SWITCHES).size).toBe(20)
+    for (const k of [...BRIEF_1_3_SWITCHES, ...EARLIER]) expect(step2, k).toContain(k)
+  })
+
+  it('keeps each of those 20 as a row of the brief\'s flag table and a switch of src/lib/features.ts', () => {
+    const inTable = switchNames(flagTableRows(read('docs/redesign/REDESIGN_SPEC.md')))
+    for (const k of BRIEF_1_3_SWITCHES) {
+      expect(inTable, k).toContain(k)
+      expect(Object.keys(FEATURES), k).toContain(k)
+    }
   })
 
   it('records the test counts and the lint count for this step', () => {
