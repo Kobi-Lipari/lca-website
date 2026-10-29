@@ -5,11 +5,14 @@
 // default, can be set to Light or Dark, keeps the choice in this browser,
 // marks the pressed option in words, sits in the footer, and a localStorage
 // that throws neither breaks the page nor changes what the device says.
+// Since WS02 step 3 the page's own scheme is handed the page's head as well,
+// so a pick of Light or Dark sets the browser bar's colour there
+// (test/unit/theme-color.test.tsx holds the rest of that).
 // With newLook off see appearance-control-off.test.tsx.
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { APPEARANCE_KEY } from '@/lib/colorScheme'
+import { APPEARANCE_KEY, THEME_COLOR_ATTRIBUTE, THEME_COLOR_DARK, THEME_COLOR_LIGHT } from '@/lib/colorScheme'
 
 vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
@@ -130,6 +133,18 @@ describe('the Appearance control', () => {
     expect(pressed()).toEqual(['Light'])
     expect(() => act(() => fireEvent.click(option('System')))).not.toThrow()
     expect(isDark()).toBe(true)
+  })
+
+  it('a pick of Light or Dark gives the page\'s head that look\'s browser bar colour, first in it, and System takes it away', () => {
+    const own = () => [...document.head.querySelectorAll(`meta[name="theme-color"][${THEME_COLOR_ATTRIBUTE}]`)]
+    expect(own()).toEqual([])
+    act(() => fireEvent.click(option('Dark')))
+    expect(own().map((m) => m.getAttribute('content'))).toEqual([THEME_COLOR_DARK])
+    expect(document.head.firstElementChild).toBe(own()[0])
+    act(() => fireEvent.click(option('Light')))
+    expect(own().map((m) => m.getAttribute('content'))).toEqual([THEME_COLOR_LIGHT])
+    act(() => fireEvent.click(option('System')))
+    expect(own()).toEqual([])
   })
 
   it('stops following the device once the page stops it', () => {

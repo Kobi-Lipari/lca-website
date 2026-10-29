@@ -105,8 +105,13 @@ const NEW_FILES = [
 ]
 
 describe('REDESIGN_STATUS.md, WS02 step 2: the two lines outside the block', () => {
-  it('says in the Status line that steps 1 and 2 are built', () => {
-    expect(statusLine).toBe('**Status:** in progress: nineteen steps in five checkpoints (E for steps 1 to 5, F for 6 to 8, G for 9 to 11, H for 12 to 16, I for 17 to 19); steps 1 and 2 are built.')
+  it('says in the Status line that steps 1 and 2 are built, or, once a later step has landed, steps 1 to that step', () => {
+    // WS02 step 3 moved this pin: each later step writes "steps 1 to N are built", which keeps steps 1 and 2 built.
+    const head = '**Status:** in progress: nineteen steps in five checkpoints (E for steps 1 to 5, F for 6 to 8, G for 9 to 11, H for 12 to 16, I for 17 to 19); '
+    expect(statusLine.startsWith(head)).toBe(true)
+    const built = statusLine.slice(head.length)
+    const later = /^steps 1 to (\d+) are built\.$/.exec(built)
+    expect(built === 'steps 1 and 2 are built.' || (later !== null && Number(later[1]) >= 2), built).toBe(true)
   })
 
   it('keeps WS01\'s part of the date line first and word for word, and puts step 2 before step 1 in WS02\'s part', () => {

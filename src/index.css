@@ -8,6 +8,18 @@
 /* The one display accent of the new look (font-accent). */
 @import "@fontsource/instrument-serif/400.css";
 
+/* Tailwind reads every file in the repository for class names. The documents,
+ * the tests, the scripts and the records at the root are not pages of the
+ * site, so a class name that only they spell is kept out of the stylesheet
+ * (WS02 step 3). One folder or pattern a line. The unit tests read this file
+ * with a plain comment stripper, which takes the slash and star in the last
+ * pattern for the start of a comment and reads on to the end of the next
+ * one, so that line stays last, with the comment below right after it. */
+@source not "../docs";
+@source not "../test";
+@source not "../scripts";
+@source not "../*.md";
+
 /* The class on <html> as well as its descendants, so a dark: utility on the
  * root element itself applies too. :where keeps the variant's specificity at
  * zero, as the shadcn default does. */
@@ -834,6 +846,70 @@
  * option's ring is drawn just inside its edge instead (step 32). */
 :root[data-look="new"] .bg-popover.overflow-y-auto > button:focus-visible {
     outline-offset: -2px;
+}
+
+/*
+ * The chrome's own rings, new look only (WS02 step 3). The new header, the
+ * phone's app bar, the round-state strip and the footer, and the light
+ * surfaces they open, say what ground their controls sit on with an
+ * attribute of their own, data-ring-ground, rather than leaning on the navy
+ * band rule above, which stays for the page heroes until each is rebuilt:
+ *   - navy: the chrome's navy grounds, where the ring is gold;
+ *   - light: a light surface they open (the About and My LCA menus, the
+ *     Menu sheet and drawer, the search panel), where the ring is the look's
+ *     own again: navy on the white menu, gold on the navy menu of dark mode;
+ *   - gold: an opaque gold ground (the gold announcement banner and the
+ *     impersonation banner), where the ring is navy in both modes, never
+ *     gold on gold.
+ * Each sets --focus, the colour the one ring above is drawn in, which every
+ * control inside takes, a light surface inside a navy one included. The
+ * colours are --gold-on-dark's gold and the brand navy, written out as every
+ * --focus of the new look is (test/unit/tokens.test.ts holds them to plain
+ * hex, which every browser reads). The band rule sets the ring's colour
+ * outright and wins over these, so a chrome surface never sits inside
+ * .bg-brand-navy, .bg-lca-navy or [data-ground="dark"].
+ */
+:root[data-look="new"] [data-ring-ground="navy"] {
+    --focus: #c8a94a;
+}
+
+:root[data-look="new"] [data-ring-ground="light"],
+:root[data-look="new"] [data-ring-ground="gold"] {
+    --focus: #1a2744;
+}
+
+/* In dark mode a light surface is the navy of --raised, so its ring is gold
+ * again; on screens only, like the dark tokens, so a printed page keeps the
+ * light look's ring. */
+@media screen {
+    :root[data-look="new"].dark [data-ring-ground="light"] {
+        --focus: #c8a94a;
+    }
+}
+
+/* The skip link shows over whatever is at the top of the window (the navy
+ * header, a gold banner or the page), so its ring is drawn just inside its
+ * own edge, on its own ground, with that ground on both sides of the line
+ * (WS02 step 3). */
+:root[data-look="new"] [data-skip-link]:focus-visible {
+    outline-offset: -4px;
+}
+
+/* The skip link moves the focus to the page's main, which is a landmark and
+ * not a control, so it draws no ring around the whole page (WS02 step 3). */
+:root[data-look="new"] #main-content:focus-visible {
+    outline: none;
+}
+
+/* While a page's code arrives with the chrome on, the loading line in
+ * src/App.tsx (the one element with data-loading-line) holds the window
+ * under the header, and the footer is not drawn at all. The footer then
+ * comes with the page, so it never moves when the page arrives: it does not
+ * drop out of view as a taller page comes, nor rise into view as a page
+ * shorter than the window does (WS02 step 3). With the chrome off the line
+ * carries no such attribute, and this matches nothing. */
+:root[data-look="new"] main:has(> [data-loading-line]) + footer {
+    display: none;
 }
 
 /* Motion, new look only: with reduced motion asked for, nothing moves. A
