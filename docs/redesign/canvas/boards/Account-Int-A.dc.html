@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Int-A · The hub and its rooms</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;font-family:"Geist",system-ui,sans-serif;color:#1a2744;background:#ecebe6}
+.ia-root{width:1440px;box-sizing:border-box;padding:40px 48px 56px;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ia-c{font-family:"Geist Mono",ui-monospace,monospace;font-size:.9em}
+.ia-title{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;background:#1a2744;color:#ffffff;border-radius:14px;padding:22px 26px;border-bottom:4px solid #c8a94a}
+.ia-kick{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#e6cf86}
+.ia-title h1{font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:6px 0 12px}
+.ia-tmeta{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px;line-height:1.42;max-width:1040px;margin:0}
+.ia-tmeta dt{font-weight:600;color:#e6cf86}
+.ia-tmeta dd{margin:0;color:#ffffff}
+.ia-tside{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex:none;width:250px}
+.ia-tside p{font-size:13px;line-height:1.45;color:rgba(255,255,255,.8);text-align:right;margin:0}
+.ia-sample{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;line-height:1.2;white-space:nowrap}
+.ia-legend{display:grid;grid-template-columns:1fr 480px;gap:20px;margin-top:20px;align-items:start}
+.ia-lbox{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:18px 20px}
+.ia-lh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.ia-lgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px 24px;margin-top:12px}
+.ia-lgrid3{grid-template-columns:1fr 1fr 1fr}
+.ia-li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.42}
+.ia-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#c8a94a;color:#1a2744;font-size:13px;font-weight:700;flex:none;line-height:1}
+.ia-rel{position:relative}
+.ia-mk{position:absolute;z-index:6;box-shadow:0 0 0 3px #ffffff}
+.ia-q{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.42;margin-top:10px}
+.ia-qn{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:22px;padding:0 6px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700;flex:none}
+.ia-def{color:#145b3a;font-weight:600}
+.ia-body{font-size:13.5px;line-height:1.45;margin:8px 0 0;color:#1a2744}
+.ia-it{font-size:13px;line-height:1.45;font-style:italic;color:#3d4556;margin:12px 0 0}
+.ia-key{display:grid;grid-template-columns:1fr 1fr;gap:8px 20px;margin-top:10px}
+.ia-key > div{display:flex;align-items:center;gap:10px;font-size:12.5px;line-height:1.35;color:#3d4556}
+.ia-key .ia-tg{min-width:112px;justify-content:center;box-sizing:border-box}
+.ia-tg{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11.5px;font-weight:600;line-height:1.2;white-space:nowrap;border:1px solid transparent;flex:none}
+.ia-tg-today{background:#ffffff;border-color:#145b3a;color:#145b3a}
+.ia-tg-dec{background:#1a2744;color:#ffffff}
+.ia-tg-new{background:#c8a94a;color:#1a2744}
+.ia-tg-prop{background:#ffffff;border-color:#b7791f;color:#8a5a00}
+.ia-tg-adm{background:#ffffff;border-color:#a12d2d;color:#a12d2d}
+.ia-tg-role{background:#ffffff;border-color:#8a8f9c;color:#3d4556}
+.ia-tg-red{background:#e3e2dc;color:#3d4556}
+.ia-tg-later{background:#f5ecd2;color:#664c0c}
+.ia-tg-unpaid{background:#f5ecd2;color:#664c0c}
+.ia-tg-first{background:#fdebd6;color:#7a3d00}
+.ia-tg-live{background:#ff4757;color:#070b14;font-weight:700}
+.ia-sec{margin-top:36px}
+.ia-lab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 6px}
+.ia-lab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ia-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px;box-sizing:border-box}
+.ia-sub{font-size:13.5px;color:#3d4556;line-height:1.45;margin:0 0 14px;max-width:1100px}
+.ia-note{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;background:#e3e2dc;border:1px solid #cfcec6;border-radius:12px;padding:16px 20px;margin-top:36px}
+.ia-note h4{margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#3d4556}
+.ia-note p{margin:0;font-size:13px;line-height:1.45;color:#1a2744}
+.ia-acols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.ia-col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.ia-cell{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.ia-chd{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:12px 14px 10px}
+.ia-chd b{font-size:14px;font-weight:700;display:block;line-height:1.3}
+.ia-who{font-size:12.5px;color:#555c6b;line-height:1.35;display:block;margin-top:2px}
+.ia-who2{font-size:12px;color:#3d4556;line-height:1.35;display:block;margin-top:3px}
+.ia-mbar{background:#1a2744;height:68px;box-sizing:border-box;padding:8px 10px 7px;display:flex;flex-direction:column;justify-content:space-between;border-bottom:3px solid #c8a94a}
+.ia-mrow1{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.9);font-size:10.5px;font-weight:500;white-space:nowrap}
+.ia-mrow1 svg{width:18px;height:18px;fill:#ffffff;flex:none;margin-right:2px}
+.ia-mrow1 .ia-on{color:#e6cf86;box-shadow:inset 0 -1px 0 #c8a94a}
+.ia-mrow2{display:flex;align-items:center;gap:10px}
+.ia-msearch{flex:1;height:24px;box-sizing:border-box;border:1px solid rgba(255,255,255,.4);border-radius:6px;background:rgba(255,255,255,.08);color:rgba(255,255,255,.92);font-size:11px;display:flex;align-items:center;padding:0 8px;gap:6px}
+.ia-msearch svg{width:12px;height:12px;fill:none;stroke:#ffffff;stroke-width:2}
+.ia-mdon{color:#ffffff;font-size:12px;font-weight:500}
+.ia-trig{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 8px;border-radius:6px;background:rgba(255,255,255,.16);color:#ffffff;font-size:12.5px;font-weight:600;border:0;font-family:inherit}
+.ia-pill{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#c8a94a;color:#1a2744;font-size:11px;font-weight:700;box-sizing:border-box}
+.ia-stage{background:#f5f5f2;padding:6px 10px 10px;display:flex;flex-direction:column;align-items:flex-end;border-bottom:1px solid #ecebe5}
+.ia-menu{width:100%;max-width:390px;box-sizing:border-box;background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 14px 30px rgba(16,24,43,.16);padding:6px;position:relative}
+.ia-mr{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;padding:3px 10px;border-radius:8px;box-sizing:border-box}
+.ia-mt{font-size:13.5px;font-weight:600;color:#1a2744;line-height:1.3;display:block}
+.ia-ms{font-size:11.5px;color:#555c6b;line-height:1.35;display:block;margin-top:1px}
+.ia-rt{font-family:"Geist Mono",ui-monospace,monospace;font-size:11px;color:#3d4556;background:#f3f2ed;border-radius:4px;padding:0 4px;white-space:nowrap}
+.ia-mr-todo{background:#fbf7e9;margin-bottom:3px}
+.ia-mr-hov{background:#f3eedc}
+.ia-mr-dash{border:1px dashed #8a8f9c;margin-top:2px}
+.ia-mg{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:7px 10px 3px;display:flex;justify-content:space-between;align-items:center}
+.ia-msep{height:1px;background:#ecebe5;margin:5px 4px}
+.ia-cap{font-size:12.5px;line-height:1.42;color:#3d4556;padding:9px 14px 12px;margin:0}
+.ia-tcard{padding:14px 16px 16px}
+.ia-tcard h3{margin:0 0 6px;font-size:15px;font-weight:700}
+.ia-tcard p{margin:6px 0 0;font-size:13px;line-height:1.45;color:#1a2744}
+.ia-rules{margin:6px 0 0;padding:0 0 0 18px;font-size:13px;line-height:1.45}
+.ia-rules li{margin-top:3px}
+.ia-wtab{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.4;margin-top:8px}
+.ia-wtab th{text-align:left;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:6px 8px;background:#fbfbf8;border-bottom:1px solid #d6d5cd}
+.ia-wtab td{padding:7px 8px;border-bottom:1px solid #ecebe5;vertical-align:top}
+.ia-wtab tr:last-child td{border-bottom:0}
+.ia-wtab s{text-decoration-color:#8f1d24}
+/* phone */
+.ia-phone{width:390px;margin:0 auto;border:10px solid #10182b;border-radius:34px;overflow:hidden;background:#ffffff}
+.ia-pbar{display:flex;align-items:center;gap:9px;height:56px;padding:0 6px 0 14px;background:#1a2744}
+.ia-pbar svg.ia-rk{width:24px;height:24px;fill:#ffffff;flex:none}
+.ia-pbn{display:flex;flex-direction:column;line-height:1.05}
+.ia-pbn b{font-size:14px;color:#ffffff;font-weight:700}
+.ia-pbn span{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#d9c27c;font-weight:600}
+.ia-psrch{margin-left:auto;width:40px;height:40px;border-radius:8px;border:1px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center}
+.ia-psrch svg{width:16px;height:16px;fill:none;stroke:#ffffff;stroke-width:2}
+.ia-sheet{padding:8px 14px 10px}
+.ia-secs{display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:14px}
+.ia-secs span{display:flex;justify-content:space-between;align-items:center;height:28px;border-bottom:1px solid #ecebe5;font-size:12.5px;font-weight:600}
+.ia-secs span i{font-style:normal;color:#555c6b;font-weight:400}
+.ia-pbtns{display:flex;gap:8px;margin:10px 0 4px}
+.ia-pbtns span{flex:1;display:flex;align-items:center;justify-content:center;height:34px;border-radius:8px;font-size:14px;font-weight:600}
+.ia-pb-line{border:1px solid #1a2744;color:#1a2744}
+.ia-pb-navy{background:#1a2744;color:#ffffff}
+.ia-prow{display:flex;justify-content:space-between;align-items:center;min-height:28px;border-bottom:1px solid #ecebe5;font-size:12.5px;font-weight:600}
+.ia-prow small{font-size:12px;color:#555c6b;font-weight:400}
+.ia-prow-plain{font-weight:500}
+.ia-pseg{display:inline-flex;border:1px solid #858b99;border-radius:7px;overflow:hidden;font-size:12px}
+.ia-pseg span{padding:3px 8px}
+.ia-pseg span.on{background:#1a2744;color:#ffffff}
+.ia-ptabs{display:grid;grid-template-columns:repeat(4,1fr);height:56px;border-top:1px solid #d9d8d1;background:#ffffff}
+.ia-ptab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11.5px;color:#3d4556;font-weight:500}
+.ia-ptab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ia-ptab-on{color:#1a2744;font-weight:700}
+.ia-ptab-on::before{content:"";position:absolute;top:-1px;left:14px;right:14px;height:3px;background:#866a1e;border-radius:0 0 2px 2px}
+.ia-ptab .ia-pc{position:absolute;top:5px;left:calc(50% + 6px);min-width:16px;height:16px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+/* B */
+.ia-bgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start}
+.ia-card{position:relative;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px 14px;min-width:0}
+.ia-chead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid #ecebe5}
+.ia-apill{display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:7px;background:#1a2744;color:#ffffff;font-size:14px;font-weight:600;line-height:1;white-space:nowrap}
+.ia-csub{font-size:12.5px;color:#555c6b;line-height:1.35;width:100%}
+.ia-pages{list-style:none;margin:0;padding:0}
+.ia-pages li{padding:8px 0;border-bottom:1px solid #f0efea}
+.ia-pages li:last-child{border-bottom:0}
+.ia-l1{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.ia-l1 b{font-size:14.5px;font-weight:600;line-height:1.3}
+.ia-l2{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-top:3px;font-size:12.5px;line-height:1.4;color:#555c6b}
+.ia-cfoot{font-size:12.5px;line-height:1.45;color:#555c6b;margin:8px 0 0;padding-top:9px;border-top:1px solid #ecebe5}
+.ia-strip{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:12px;padding:14px 18px;margin-top:16px}
+.ia-sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;margin-top:10px}
+.ia-sgrid > div{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.45}
+.ia-e{display:grid;grid-template-columns:760px minmax(0,1fr);gap:24px;align-items:start}
+.ia-dots{list-style:none;margin:0;padding:16px 20px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.ia-dots li{position:relative;padding:4px 0 4px 18px;font-size:13.5px;line-height:1.45}
+.ia-dots li::before{content:"";position:absolute;left:2px;top:11px;width:7px;height:7px;border-radius:50%;background:#1a2744}
+.ia-bk{border:1px solid #d9d8d1;border-radius:12px;overflow:hidden;background:#ffffff}
+.ia-amber{display:flex;align-items:center;gap:8px;min-height:44px;padding:6px 14px;background:#fbf7e9;border-bottom:1px solid #866a1e;font-size:13px;line-height:1.35;color:#1a2744;box-sizing:border-box}
+.ia-amber b{font-weight:600}
+.ia-amber a{color:#1a2744;font-weight:600;margin-left:auto;white-space:nowrap}
+.ia-cband{display:flex;align-items:center;gap:12px;height:52px;padding:0 14px;background:#1a2744;color:rgba(255,255,255,.9);font-size:13px}
+.ia-cband .ia-x{margin-left:auto;display:inline-flex;align-items:center;height:36px;padding:0 12px;border:1px solid rgba(255,255,255,.7);border-radius:8px;color:#ffffff;font-weight:600;font-size:13px;white-space:nowrap}
+.ia-cfill{height:34px;background:#f5f5f2;display:flex;align-items:center;padding:0 14px;font-size:12px;color:#555c6b}
+
+.ia-glance{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.22);border-radius:10px;padding:10px 12px 10px;background:rgba(255,255,255,.04)}
+.ia-gh{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e6cf86;margin:0 0 8px}
+.ia-gwrap{display:flex;gap:14px;align-items:flex-start}
+.ia-gcol{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ia-gpage{background:#fbfaf6;border-radius:6px;overflow:hidden;color:#1a2744}
+.ia-gtop{display:flex;justify-content:space-between;align-items:center;height:20px;padding:0 7px;background:#e3e2dc;font-size:10.5px;font-weight:700;color:#1a2744}
+.ia-gtop i{font-style:normal;font-weight:400;font-family:"Geist Mono",ui-monospace,monospace;font-size:9.5px;color:#3d4556}
+.ia-grow{display:flex;align-items:center;height:21px;padding:0 7px;border-top:1px solid #e3e2dc;font-size:11px;font-weight:600;box-sizing:border-box;white-space:nowrap}
+.ia-grow-sub{padding-left:16px;font-weight:500;color:#3d4556}
+.ia-grooms{display:flex;flex-direction:column;padding-top:20px}
+.ia-groom{display:flex;align-items:center;gap:5px;height:21px;font-size:10.5px;white-space:nowrap;color:#e6cf86}
+.ia-groom b{display:inline-flex;align-items:center;height:16px;padding:0 6px;border-radius:4px;background:#c8a94a;color:#1a2744;font-weight:700}
+.ia-gcap{font-size:11.5px;line-height:1.35;color:rgba(255,255,255,.85);margin:0}
+.ia-tside .ia-gcap,.ia-tside .ia-gfoot{text-align:left;font-size:11.5px;line-height:1.35}
+.ia-tside p.ia-tsnote{font-size:12px;line-height:1.4}
+.ia-gfoot{font-size:11.5px;line-height:1.4;color:#ffffff;margin:9px 0 0;padding-top:7px;border-top:1px solid rgba(255,255,255,.18)}
+</style>
+</helmet>
+<div class="ia-root" style="width:1440px">
+<div class="ia-title"><div>
+<div class="ia-kick">Integration · Round 2 · Option Int-A · part 1 of 2 · the header and the menu</div>
+<h1>The hub and its rooms</h1>
+<dl class="ia-tmeta">
+<dt>Built from</dt><dd>Account-C (one account, many roles) and Nav-IA-Final (the decided structure): the sections stay, the word Workspace goes, every room opens from its section.</dd>
+<dt>Replaces</dt><dd>Nothing yet. Int-A, B and C are the options; the section boards Account-D to S and the screen boards Work-E to L are drawn inside Int-A.</dd>
+<dt>K&#8217;s feedback applied</dt><dd>A good default (a plain member sees You only) · every section drawn in full · roles hosted in My LCA instead of the admin panel · options for each</dd>
+<dt>Sample data</dt><dd>The counts, the sub-lines, and Priya Shah, Camille Broussard and Ren&#233;e Ortego with their seats; routes and role rules are real or tagged Proposed</dd>
+<dt>Source</dt><dd>K, Tue, Oct 13, 2026 (pages 14 and 15) · WS02, WS08, WS13 in docs/redesign/REDESIGN_SPEC.md · replan 4.2, 4.6, 4.8 · routes checked against src/App.tsx lines 113 to 133 and src/components/layout/Navbar.tsx useAccountLinks</dd>
+</dl></div>
+<div class="ia-tside" style="width:430px"><div class="ia-glance ia-rel"><span class="k-num-badge ia-n ia-mk" style="top:-13px;left:-13px;box-shadow:0 0 0 3px #1a2744">2</span><div class="ia-gh" style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span>At a glance · one page, a button out to each room</span><span class="ia-sample" style="text-transform:none;letter-spacing:0">Sample data</span></div><div class="ia-gwrap"><div class="ia-gcol" style="width:104px"><div class="ia-gpage"><div class="ia-gtop">My LCA</div><div class="ia-grow">Today</div><div class="ia-grow">You</div></div><p class="ia-gcap">Avery, a plain member: You only, no chips</p></div><div class="ia-gcol"><div style="display:flex;gap:6px;align-items:flex-start"><div class="ia-gpage" style="width:132px"><div class="ia-gtop">My LCA <i>/dashboard</i></div><div class="ia-grow">Today</div><div class="ia-grow">You</div><div class="ia-grow">Family · Ella</div><div class="ia-grow">Events you direct</div><div class="ia-grow">Your region</div><div class="ia-grow">Board</div><div class="ia-grow ia-grow-sub">LCA office</div></div><div class="ia-grooms"><span class="ia-groom"></span><span class="ia-groom"></span><span class="ia-groom"></span><span class="ia-groom">&#8594; <b>Setup</b><b>Event day</b></span><span class="ia-groom">&#8594; <b>My region</b></span><span class="ia-groom">&#8594; <b>Board inbox</b></span><span class="ia-groom">&#8594; <b>Support tickets</b></span></div></div><p class="ia-gcap">Chris, Mon, Oct 5: five roles, every room one button away</p></div></div><p class="ia-gfoot">No left rail (that is Int-B) and no second home (that is Int-C). Only lca_admin ever opens <span class="ia-c">/admin</span>.</p></div></div></div>
+<div class="ia-legend">
+<div class="ia-lbox"><div class="ia-lh">Notes on this board</div><div class="ia-lgrid"><div class="ia-li"><span class="k-num-badge ia-n">1</span><span>One home at <span class="ia-c">/dashboard</span>, labelled My LCA, for everyone signed in. A plain member sees the You section only: no chips, no role rows, nothing that hints at volunteer work.</span></div><div class="ia-li"><span class="k-num-badge ia-n">2</span><span>Each grant adds one section (Family, Events you direct, Your region, Board, LCA admin, Member lookup). A section summarises its work, takes one-tap decisions inline and opens its room with one button.</span></div><div class="ia-li"><span class="k-num-badge ia-n">3</span><span>The rooms keep the decided paths (<span class="ia-c">/workspace/...</span>, <span class="ia-c">/board/inbox</span>) so WS08, WS09 and WS14 build as written, but no page title, menu row or crumb says Workspace. A room is named for what it is (Setup, Event day, Recap, My region, Board inbox, Support tickets, Member lookup) and carries &#8220;My LCA &#8250; ...&#8221; above it.</span></div><div class="ia-li"><span class="k-num-badge ia-n">4</span><span>Admin stays a separate area at <span class="ia-c">/admin</span>, for lca_admin with a second factor. Officers and the president get rooms for what they can actually do and never open <span class="ia-c">/admin</span> (Q3, open for K).</span></div><div class="ia-li"><span class="k-num-badge ia-n">5</span><span>The My LCA&nbsp;&#9662; menu keeps the WS02 order. The one row &#8220;Workspace / Admin / Board inbox / My region&#8217;s clubs by role&#8221; becomes named rooms, each with its count in words. The trigger count stays personal (<span class="ia-c">src/lib/todo.ts</span>, not yet in the tree).</span></div><div class="ia-li"><span class="k-num-badge ia-n">6</span><span>No mode switch: one header, one account, one menu; a room is a page. Only the hall TV and print leave the chrome. On event day the hub pins the live event under Today; the console never takes the hub over.</span></div></div><p class="ia-it" style="margin-top:14px">The trade-off sits at the foot of column one in section A. The key to the route tags and sections B to D (the route map, what My LCA holds inline, the way there and back) are on part 2, Account-Int-A-2.</p></div>
+<div class="ia-lbox"><div class="ia-lh">Open for K</div>
+<div class="ia-q"><span class="ia-qn">Q1</span><span>Pick the frame: Int-A (this board), Int-B or Int-C. A different pick changes only the breadcrumb, the way back and the menu row on every section and screen board. <span class="ia-def">Default: Int-A, the baseline the section and screen boards are drawn in.</span></span></div>
+<div class="ia-q"><span class="ia-qn">Q2</span><span>Does the word Workspace survive? <span class="ia-def">Default: no.</span> The paths stay; <span class="ia-c">/workspace</span> itself redirects to My LCA (today it is the only home for auditors and one-event directors, so confirm).</span></div>
+<div class="ia-q"><span class="ia-qn">Q3</span><span>Officers and the president: rooms for tickets, documents, email and the lookup in place of the view-only admin panel. <span class="ia-def">Default: withdrawn.</span> Alternative: one row Admin (view only) as today.</span></div>
+<p class="ia-it">The section boards (Account-D to S) and the screen boards (Work-E to L) are drawn inside Int-A and each says in its legend that the frame is swappable: under Int-B the section is the page the left rail opens, under Int-C it is a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do.</p>
+</div></div>
+<section class="ia-sec" aria-labelledby="ia-a"><div class="ia-lab"><span class="ia-code">A</span><h2 id="ia-a">The header and the My LCA&nbsp;&#9662; menu, six people</h2></div>
+<p class="ia-sub">The bar is Nav-Header-Final&#8217;s at 1280px and does not change: rook mark, six sections, Search, Donate · My LCA&nbsp;&#9662;. Only the menu&#8217;s room rows differ between people.</p>
+<div class="ia-acols">
+<div class="ia-col"><div class="ia-cell"><span class="k-num-badge ia-n ia-mk" style="top:-12px;left:-12px">1</span><div class="ia-chd"><span><b>Member · Avery Thibodeaux</b><span class="ia-who">Mon, Oct 5, 2026 · 9:10 AM · on <span class="ia-c">/tournaments</span></span></span></div><div class="ia-mbar"><div class="ia-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ia-on">Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ia-mrow2"><span class="ia-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ia-mdon">Donate</span><button class="ia-trig" type="button" aria-expanded="true" aria-label="My LCA, 3 things to do">My LCA&nbsp;&#9662;<span class="ia-pill" aria-hidden="true">3</span></button></div></div><div class="ia-stage"><div class="ia-menu" role="menu" aria-label="My LCA"><div class="ia-mg"><span>To do · 3</span></div><div class="ia-mr ia-mr-todo"><span><span class="ia-mt">Finish payment · The Baton Rouge Classic</span><span class="ia-ms">$60 · Open section · by Sat, Oct 17</span></span><span class="ia-tg ia-tg-unpaid">Unpaid</span></div><div class="ia-mr ia-mr-todo"><span><span class="ia-mt">Renew US Chess before the Ken Ferguson Memorial Open</span><span class="ia-ms">Ends Thu, Dec 31 · the event is Sat–Mon, Jan 16–18, 2027</span></span><span class="ia-tg ia-tg-first">Ends first</span></div><div class="ia-mr ia-mr-todo"><span><span class="ia-mt">Renew membership</span><span class="ia-ms">Ends Mon, Oct 26 · Adult $15</span></span><span class="ia-tg ia-tg-unpaid">Due soon</span></div><div class="ia-msep"></div><div class="ia-mr ia-mr-hov"><span><span class="ia-mt">My LCA</span><span class="ia-ms">Your dashboard · <span class="ia-rt">/dashboard</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Membership card</span><span class="ia-ms">Show at the TD table · <span class="ia-rt">/dashboard#you</span></span></span></div><div class="ia-msep"></div><div class="ia-mr "><span><span class="ia-mt">Log out</span></span></div></div></div><p class="ia-cap">Four rows plus the to-dos. No Family (no children), no event line (the Classic is 19 days away; the strip starts 6 days before day 1), no room rows. Nothing reads Workspace. The default page for the 300+ members.</p></div><div class="ia-cell"><div class="ia-chd"><span><b>Representative · Priya Shah</b><span class="ia-who">the North Louisiana seat · members.role is member · Mon, Oct 5, 2026 · 9:10 AM</span></span><span class="ia-sample">Sample data</span></div><div class="ia-mbar"><div class="ia-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span class="ia-on">Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ia-mrow2"><span class="ia-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ia-mdon">Donate</span><button class="ia-trig" type="button" aria-expanded="true" aria-label="My LCA, 1 thing to do">My LCA&nbsp;&#9662;<span class="ia-pill" aria-hidden="true">1</span></button></div></div><div class="ia-stage"><div class="ia-menu" role="menu" aria-label="My LCA"><div class="ia-mg"><span>To do · 1</span></div><div class="ia-mr ia-mr-todo"><span><span class="ia-mt">Finish payment · The Baton Rouge Classic</span><span class="ia-ms">$60 · Open section · by Sat, Oct 17</span></span><span class="ia-tg ia-tg-unpaid">Unpaid</span></div><div class="ia-msep"></div><div class="ia-mr "><span><span class="ia-mt">My LCA</span><span class="ia-ms">Your dashboard · <span class="ia-rt">/dashboard</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Membership card</span><span class="ia-ms">Show at the TD table</span></span></div><div class="ia-msep"></div><div class="ia-mg"><span>Your rooms</span></div><div class="ia-mr ia-mr-hov"><span><span class="ia-mt">My region · 1 to check</span><span class="ia-ms">North Louisiana · Shreveport-Bossier, Monroe, Ruston Knights · <span class="ia-rt">/workspace/region</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Board inbox (1)</span><span class="ia-ms">North Louisiana representative · <span class="ia-rt">/board/inbox</span></span></span></div><div class="ia-msep"></div><div class="ia-mr "><span><span class="ia-mt">Log out</span></span></div></div></div><p class="ia-cap">A seat, not a role: both rows come from getMySeats (<span class="ia-c">src/contexts/AuthContext.tsx</span> lines 51 to 55; <span class="ia-c">functions/api/board/my-seats.ts</span>) and go when the term ends. Today this person cannot open <span class="ia-c">/workspace</span> at all (<span class="ia-c">src/App.tsx</span> line 126); replan 4.2 AC 11 opens it to any active regional seat.</p></div><div class="ia-cell ia-tcard"><h3>Two more people, no cell</h3>
+<p><b>Auditor (lca_auditor):</b> Avery&#8217;s menu plus one row, Member lookup &#8594; <span class="ia-rt">/workspace/lookup</span>; never a count.</p>
+<p><b>Club representative (club_rep), only if K keeps the role (question 20):</b> plus Your club &#8594; <span class="ia-rt">/workspace/region/clubs/:id</span> scoped to Houma Chess Club; retired under P2.18 the row does not exist and the person is a member.</p>
+<h3 style="margin-top:14px">Rules of the menu</h3>
+<ol class="ia-rules"><li>The WS02 order never changes: to-dos, My LCA, the event line, Family, Membership card, the rooms by role, Log out.</li><li>Every room row carries its count in words and is gated on the same flag as its route, so no menu holds a dead link.</li><li>One label per destination, from <span class="ia-c">nav.ts</span>.</li><li>The menu never holds a Workspace or Admin panel row.</li></ol></div><div class="ia-cell ia-tcard" style="background:#fbfaf6;border-color:#d9d8d1;padding:12px 14px 12px"><div class="ia-lh">Trade-off of Int-A</div>
+<p class="ia-body" style="font-size:12.5px;line-height:1.42">The page grows with every role: Chris&#8217;s six sections scroll about 3400px at 1440 wide, so sections must collapse and remember it per device, and the Today list must be ranked well or one role&#8217;s noise drowns the rest. Every room needs its own crumb and back control. The rooms share no sidebar, so a representative hopping between nine clubs goes club &#8250; region &#8250; club or uses the room&#8217;s own tabs. Workspace vanishing as a word means WS08&#8217;s and WS09&#8217;s chrome copy is renamed while the paths stay. In return it is exactly what K wrote: a member&#8217;s extra roles and their stuff live in My LCA, and nobody but an admin sees the admin panel.</p></div></div>
+<div class="ia-col"><div class="ia-cell"><div class="ia-chd"><span><b>Parent · Danielle Robichaux</b><span class="ia-who">Sat, Nov 14, 2026 · 11:10 AM · event day · on <span class="ia-c">/news</span></span></span></div><div class="ia-mbar"><div class="ia-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span class="ia-on">News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ia-mrow2"><span class="ia-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ia-mdon">Donate</span><button class="ia-trig" type="button" aria-expanded="true" aria-label="My LCA">My LCA&nbsp;&#9662;</button></div></div><div class="ia-stage"><div class="ia-menu" role="menu" aria-label="My LCA"><div class="ia-mr "><span><span class="ia-mt">My LCA</span><span class="ia-ms">Your dashboard · <span class="ia-rt">/dashboard</span></span></span></div><div class="ia-mr ia-mr-hov"><span><span class="ia-mt">New Orleans Youth Chess November Meet · Maya and Leo&#8217;s boards</span><span class="ia-ms">Today · both playing round 2 · Updated 11:04 AM · <span class="ia-rt">/dashboard#family</span></span></span><span class="ia-tg ia-tg-live">Live · Round 2</span></div><div class="ia-mr "><span><span class="ia-mt">Family</span><span class="ia-ms">Maya and Leo · <span class="ia-rt">/dashboard#family</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Membership card</span><span class="ia-ms">Family card · show at the desk</span></span></div><div class="ia-msep"></div><div class="ia-mr "><span><span class="ia-mt">Log out</span></span></div></div></div><p class="ia-cap">The empty state of the trigger: both entries are paid and no membership is ending, so it carries no number (WS02). The event line names the children, never My board, and opens the day view inside Family, not a room.</p></div><div class="ia-cell"><div class="ia-chd"><span><b>Officer · Camille Broussard</b><span class="ia-who">the Secretary seat with the lca_officer role · Mon, Oct 5, 2026 · 9:10 AM</span></span><span class="ia-sample">Sample data</span></div><div class="ia-mbar"><div class="ia-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span>News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ia-mrow2"><span class="ia-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ia-mdon">Donate</span><button class="ia-trig" type="button" aria-expanded="true" aria-label="My LCA">My LCA&nbsp;&#9662;</button></div></div><div class="ia-stage"><div class="ia-menu" role="menu" aria-label="My LCA"><div class="ia-mr "><span><span class="ia-mt">My LCA</span><span class="ia-ms">Your dashboard · <span class="ia-rt">/dashboard</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Membership card</span><span class="ia-ms">Show at the TD table</span></span></div><div class="ia-msep"></div><div class="ia-mg"><span>Your rooms</span></div><div class="ia-mr ia-mr-hov"><span><span class="ia-mt">Board inbox (2)</span><span class="ia-ms">Secretary · oldest Fri, Oct 2 · <span class="ia-rt">/board/inbox</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Support tickets (4)</span><span class="ia-ms">oldest waiting 3 days · <span class="ia-rt">/workspace/tickets</span></span></span><span class="ia-tg ia-tg-prop">Proposed</span></div><div class="ia-mr "><span><span class="ia-mt">Member lookup</span><span class="ia-ms"><span class="ia-rt">/workspace/lookup</span></span></span></div><div class="ia-mr ia-mr-dash"><span><span class="ia-mt">Email the members</span><span class="ia-ms">president only (lca_observer) · last sent Thu, Oct 8 · <span class="ia-rt">/workspace/email</span></span></span><span class="ia-tg ia-tg-prop">Proposed</span></div><div class="ia-msep"></div><div class="ia-mr "><span><span class="ia-mt">Log out</span></span></div></div></div><p class="ia-cap">No row reads Admin: the view-only admin panel is withdrawn (Q3). Each thing an officer can do is a named room; the president&#8217;s extra row is drawn dashed. Minutes and treasurer&#8217;s reports are edited in place on the About tabs (requireGovernanceEditor, <span class="ia-c">functions/api/governance/documents.ts</span>), so they need no row.</p></div><div class="ia-cell"><div class="ia-chd"><span><b>Phones · the Menu sheet · Chris</b><span class="ia-who">Sun, Oct 25, 2026 · 9:14 AM · under 768px</span></span><span class="ia-sample">Sample data</span></div>
+<div style="padding:4px 14px 0"><div class="ia-phone">
+<div class="ia-pbar"><svg class="ia-rk" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="ia-pbn"><b>Louisiana Chess</b><span>Association</span></span><span class="ia-psrch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span></div>
+<div class="ia-sheet">
+<div class="ia-secs"><span>Tournaments <i>&#9662;</i></span><span>Clubs <i>&#9662;</i></span><span>Scholastic <i>&#9662;</i></span><span>News <i>&#9662;</i></span><span>Membership <i>&#9662;</i></span><span>About <i>&#9662;</i></span></div>
+<div class="ia-pbtns"><span class="ia-pb-line">Donate</span><span class="ia-pb-navy">My LCA</span></div>
+<div class="ia-mg" style="padding:8px 0 2px">Your rooms</div>
+<div class="ia-prow">Events you direct (2)<small>/dashboard#directing</small></div>
+<div class="ia-prow">My region · 4 to check<small>South Central Louisiana</small></div>
+<div class="ia-prow">Board inbox (3)<small>Treasurer</small></div>
+<div class="ia-prow">Support tickets (4)<small>LCA office</small></div>
+<div class="ia-prow">Member lookup<small></small></div>
+<div class="ia-prow ia-prow-plain">LCA on Facebook &#8599; · Contact · Website help</div>
+<div class="ia-prow ia-prow-plain">Appearance<span class="ia-pseg"><span class="on">System</span><span>Light</span><span>Dark</span></span></div>
+<div class="ia-prow ia-prow-plain" style="border-bottom:0">Hide event bar until the next update</div>
+</div>
+<div class="ia-ptabs"><span class="ia-ptab"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"></rect><path d="M3.5 10h17M8 3v4M16 3v4"></path></svg>Tournaments</span><span class="ia-ptab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>Clubs</span><span class="ia-ptab" aria-label="My LCA, 1 thing to do"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 20c1.5-4 4.5-5.5 8-5.5s6.5 1.5 8 5.5"></path></svg>My LCA<span class="ia-pc" aria-hidden="true">1</span></span><span class="ia-ptab ia-ptab-on"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>Close</span></div>
+</div></div>
+<p class="ia-cap">The sheet&#8217;s role rows (Nav-IA-Final frame B, note 8: Workspace, Admin, Board inbox) become the same named rooms. The My LCA tab keeps the personal count; the docked event bar&#8217;s TD console button deep-links to the console.</p></div></div>
+<div class="ia-col"><div class="ia-cell"><div class="ia-chd"><span><b>Many roles · Chris Arceneaux</b><span class="ia-who">Sun, Oct 25, 2026 · 9:14 AM · day 2 of The Baton Rouge Classic · on <span class="ia-c">/news</span></span><span class="ia-who2">member · parent of Ella · director of The Baton Rouge Classic · South Central Louisiana representative · treasurer with the lca_officer role</span></span><span class="ia-sample">Sample data</span></div><div class="ia-mbar"><div class="ia-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span class="ia-on">News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ia-mrow2"><span class="ia-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ia-mdon">Donate</span><button class="ia-trig" type="button" aria-expanded="true" aria-label="My LCA, 1 thing to do">My LCA&nbsp;&#9662;<span class="ia-pill" aria-hidden="true">1</span></button></div></div><div class="ia-stage"><div class="ia-menu" role="menu" aria-label="My LCA"><div class="ia-mg"><span>To do · 1</span></div><div class="ia-mr ia-mr-todo"><span><span class="ia-mt">Finish payment · Ella · New Orleans Youth Chess November Meet</span><span class="ia-ms">$20 · K–5 section · Sat, Nov 14</span></span><span class="ia-tg ia-tg-unpaid">Unpaid</span></div><div class="ia-msep"></div><div class="ia-mr "><span><span class="ia-mt">My LCA</span><span class="ia-ms">Your dashboard · <span class="ia-rt">/dashboard</span></span></span></div><div class="ia-rel"><span class="k-num-badge ia-n ia-mk" style="top:6px;left:-40px">6</span><div class="ia-mr ia-mr-hov"><span><span class="ia-mt">The Baton Rouge Classic · Open event day</span><span class="ia-ms">Today · Round 4 pairs at 9:30 AM · Players see: Round 4 pairings at 9:30 AM · <span class="ia-rt">/workspace/tournaments/:id/live</span></span></span></div></div><div class="ia-mr "><span><span class="ia-mt">Family</span><span class="ia-ms">Ella · <span class="ia-rt">/dashboard#family</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Membership card</span><span class="ia-ms">Show at the TD table</span></span></div><div class="ia-msep"></div><div class="ia-rel"><span class="k-num-badge ia-n ia-mk" style="top:2px;left:-40px">5</span><div class="ia-mg"><span>Your rooms</span></div></div><div class="ia-mr "><span><span class="ia-mt">Events you direct (2)</span><span class="ia-ms"><span class="ia-rt">/dashboard#directing</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">My region · 4 to check</span><span class="ia-ms">South Central Louisiana · <span class="ia-rt">/workspace/region</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Board inbox (3)</span><span class="ia-ms">Treasurer · <span class="ia-rt">/board/inbox</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Support tickets (4)</span><span class="ia-ms">LCA office · <span class="ia-rt">/workspace/tickets</span></span></span><span class="ia-tg ia-tg-prop">Proposed</span></div><div class="ia-mr "><span><span class="ia-mt">Member lookup</span><span class="ia-ms"><span class="ia-rt">/workspace/lookup</span></span></span></div><div class="ia-msep"></div><div class="ia-mr "><span><span class="ia-mt">Log out</span></span></div></div></div><p class="ia-cap">The busy state: eleven rows. Every room row is named for its room with its count in words; none says Workspace. The trigger still says 1, Ella&#8217;s entry: volunteer items never count there (WS02; Nav-IA-Final note 6). Member lookup comes with the lca_officer role (DIRECTORY_ROLES, <span class="ia-c">functions/utils/auth.ts</span> line 257), not with directing.</p></div><div class="ia-cell"><div class="ia-chd"><span><b>Admin · Ren&#233;e Ortego</b><span class="ia-who">lca_admin · second factor on · Mon, Oct 5, 2026 · 9:10 AM</span></span><span class="ia-sample">Sample data</span></div><div class="ia-mbar"><div class="ia-mrow1"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span>Tournaments</span><span>Clubs</span><span>Scholastic</span><span class="ia-on">News</span><span>Membership</span><span>About&nbsp;&#9662;</span></div><div class="ia-mrow2"><span class="ia-msearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Search</span><span class="ia-mdon">Donate</span><button class="ia-trig" type="button" aria-expanded="true" aria-label="My LCA">My LCA&nbsp;&#9662;</button></div></div><div class="ia-stage"><div class="ia-menu" role="menu" aria-label="My LCA"><div class="ia-mr "><span><span class="ia-mt">My LCA</span><span class="ia-ms">Your dashboard · <span class="ia-rt">/dashboard</span></span></span></div><div class="ia-mr "><span><span class="ia-mt">Membership card</span><span class="ia-ms">Show at the TD table</span></span></div><div class="ia-msep"></div><div class="ia-mg"><span>Your rooms</span></div><div class="ia-mr ia-mr-hov"><span><span class="ia-mt">Admin · 12 need attention</span><span class="ia-ms">oldest 3 days · 2 assigned to you · <span class="ia-rt">/admin</span></span></span><span class="ia-tg ia-tg-adm">Admin only</span></div><div class="ia-msep"></div><div class="ia-mr "><span><span class="ia-mt">Log out</span></span></div></div></div><p class="ia-cap">Twelve things wait in Admin and the trigger shows nothing: the count is personal only. The word is Admin, never Admin panel (Nav-IA-Final). An admin who also directs an event or holds a seat gets those rows above Admin, like anyone; requireAdmin needs aal2 (<span class="ia-c">auth.ts</span> lines 141 to 161).</p></div><div class="ia-cell ia-tcard"><h3>What changed from Nav-IA-Final frame B</h3>
+<table class="ia-wtab"><thead><tr><th scope="col">Was</th><th scope="col">Is</th></tr></thead><tbody>
+<tr><td><s>Workspace</s> · <span class="ia-rt">/workspace</span> · By role</td><td>Named rooms, by role: Events you direct (<span class="ia-rt">/dashboard#directing</span>) · My region (<span class="ia-rt">/workspace/region</span>) · Member lookup (<span class="ia-rt">/workspace/lookup</span>) · Support tickets · Email the members <span class="ia-tg ia-tg-new">New in Int-A</span></td></tr>
+<tr><td><s>My region&#8217;s clubs</s> · <span class="ia-rt">/dashboard</span></td><td>My region · <span class="ia-rt">/workspace/region</span> <span class="ia-tg ia-tg-new">New in Int-A</span></td></tr>
+<tr><td>Admin · <span class="ia-rt">/admin</span> · lca_admin</td><td>Admin · 12 need attention, the same route</td></tr>
+<tr><td>Board inbox · <span class="ia-rt">/board/inbox</span></td><td>Unchanged, with its count in words</td></tr>
+</tbody></table></div></div>
+</div>
+</section>
+<section class="ia-sec" aria-labelledby="ia-e"><div class="ia-lab"><span class="ia-code">E</span><h2 id="ia-e">No mode switch, and the admin backstop</h2><span class="ia-sub" style="margin:0">Drawn beside the header because it is the header&#8217;s rule; sections B, C and D are on part 2.</span></div>
+<div class="ia-e"><div class="ia-rel"><span class="k-num-badge ia-n ia-mk" style="top:-12px;right:-10px">6</span><ul class="ia-dots">
+<li>One header on every page, one account, one menu. A room is a page, not a mode; nothing switches the site into TD mode or admin mode.</li>
+<li>Only the hall TV and print leave the chrome (WS07).</li>
+<li>On event day the hub pins the live event under Today (Round 3 · 8 of 13 results confirmed · Open event day) and the strip&#8217;s button is one tap; the console never takes the hub over (Q12).</li>
+<li>Sections collapse and remember it per device. Default order Today · You · Family · Events you direct · Your region · Board · LCA admin · Member lookup, the chips in the same order, a live event&#8217;s section rising under Today on the day (Q10).</li>
+<li>The reverse never happens: nothing of a member&#8217;s, a parent&#8217;s, a TD&#8217;s, a representative&#8217;s or an officer&#8217;s ever opens <span class="ia-c">/admin</span>.</li>
+</ul></div>
+<div><div class="ia-bk"><div class="ia-amber"><span><b>You&#8217;re here as an LCA admin</b> · Chris Arceneaux directs The Baton Rouge Classic · your changes are logged</span><a href="#">Back to Admin</a></div>
+<div class="ia-cband"><span>My LCA &#8250; Events you direct &#8250; The Baton Rouge Classic &#8250; Event day</span><span class="ia-x">Exit console</span></div>
+<div class="ia-cfill">The console below, unchanged</div></div>
+<p class="ia-cap" style="padding:8px 2px 0">The one place the two areas meet: an admin opens any TD&#8217;s console or any representative&#8217;s club from /admin &#8250; Tournaments or Clubs as the backstop (D6, D17; canManageTournament and canManageClub return true for lca_admin, <span class="ia-c">functions/utils/admin/permissions.ts</span> lines 63 and 141; every write goes through <span class="ia-c">functions/utils/audit.ts</span>). The strip stays until Back to Admin.</p></div></div></section>
+<div class="ia-note">
+<div><h4>What</h4><p>Int-A, the first of three ways to join My LCA, the working rooms and Admin: My LCA is the hub for everyone, each role a section on it with one button into its room, and only lca_admin ever opens <span class="ia-c">/admin</span>. Part 1: the header, the menu for six people, no mode switch. Part 2: the route map, what sits inline, the way there and back.</p></div>
+<div><h4>Built from</h4><p>Account-C (one account, many roles), Account-A and B (the You and Family sections), Work-A to D (the console, the club rep workspace, admin home, the setup checklist), Nav-Header-Final (the signed-in bar and the My LCA menu) and Nav-IA-Final (the decided structure and routes), checked against the role inventory in the frame.</p></div>
+<div><h4>K&#8217;s feedback applied</h4><p>A good default: Avery sees You alone, no chips. Every section drawn in full: each one listed here with its inline part, its room and its admin-only part, and drawn on Account-D to S. Roles hosted in My LCA instead of the admin panel. Options for each: Int-A, B and C for the frame, and options per section and per screen.</p></div>
+<div><h4>Open for K</h4><p>Q1 pick the frame (Int-A, B or C; this board is the baseline). Q2 does the word Workspace survive (default no; the paths stay). Q3 officers and the president lose the view-only admin panel and get rooms instead (default withdrawn). The full list of fourteen questions sits with the frame.</p></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

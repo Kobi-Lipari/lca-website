@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>About, board and history · decided, part 2</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ab-root{width:100%;max-width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 40px 56px;background:#ecebe6;color:#1a2744}
+.ab-root *{box-sizing:border-box}
+.ab-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* title strip */
+.ab-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.ab-doc-top{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:28px;align-items:start}
+.ab-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ab-ml{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0}
+.ab-ml b{color:#1a2744;font-weight:600}
+.ab-grey{background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.ab-grey p{font-size:12.5px;line-height:1.45;color:#2b3446;margin:0}
+.ab-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ab-grey ol{margin:0;padding-left:18px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.ab-grey li{margin-bottom:3px}
+.ab-legend{display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px;margin-top:20px}
+.ab-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.ab-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 24px}
+.ab-notes li,.ab-fb li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.ab-notes b,.ab-fb b{font-weight:600}
+.ab-fb{background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #c8a94a;border-radius:12px;padding:18px 20px}
+.ab-fb ol{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:11px}
+.ab-fbk{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:#f4ecd4;color:#664c0c;font-size:12px;font-weight:700;flex:none}
+.ab-fbq{display:block;font-style:italic;color:#3d4556}
+/* frames */
+.ab-sec{margin-top:40px}
+.ab-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.ab-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ab-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ab-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1100px;margin:12px 0 0}
+.ab-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.ab-browser .k-browser-url{max-width:820px}
+.ab-view{position:relative;background:#f5f5f2;overflow:hidden}
+.ab-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+/* decided header and footer */
+.tl-hd-in{gap:0;position:relative}
+.tl-hd .k-brand{margin-right:16px}
+.tl-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.tl-rook-sm{width:24px;height:24px}
+.tl-nav{gap:0}
+.tl-nav a{padding:0 10px;white-space:nowrap}
+.tl-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.tl-navbtn-on{color:#e6cf86;box-shadow:inset 0 -2px 0 #c8a94a}
+.tl-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.tl-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.tl-util{gap:12px}
+.tl-util .k-ulink{padding:0 4px}
+.tl-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:22px;padding-bottom:24px}
+.tl-foot .k-meta{color:rgba(255,255,255,.78)}
+.tl-foot nav a{font-size:14px}
+/* page head and tabs */
+.ab-phead{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.ab-titlerow{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-top:26px}
+.ab-titlerow .k-h1{margin:6px 0 0}
+.ab-subline{font-size:17px;line-height:1.5;color:#3d4556;margin:6px 0 0;max-width:780px}
+.ab-upd{display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-bottom:4px}
+.ab-stamp{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;color:#3d4556}
+.ab-stamp b{color:#1a2744;font-weight:600}
+.ab-tabs{display:flex;align-items:flex-end;gap:4px;margin-top:16px}
+.ab-tab{display:inline-flex;align-items:center;min-height:52px;padding:0 14px;border-bottom:3px solid transparent;color:#555c6b;font-size:16px;font-weight:600;text-decoration:none}
+.ab-tab-on{color:#1a2744;border-bottom-color:#c8a94a}
+.ab-body{padding-top:30px;padding-bottom:44px}
+
+.ab-doc-top2{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:28px;align-items:start}
+/* minutes */
+.ab-mgrid{display:grid;grid-template-columns:minmax(0,1fr) 344px;gap:28px;align-items:start}
+.ab-mtool{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ab-mtool .k-search{flex:1 1 320px;max-width:460px}
+.ab-res{display:flex;align-items:flex-start;gap:10px;margin:14px 0 16px;padding:11px 14px;background:#fbfaf6;border:1px solid #e5e7ed;border-radius:8px;font-size:14px;line-height:1.5;color:#3d4556}
+.ab-res b{color:#1a2744;font-weight:600}
+mark{background:#f0e2b2;color:inherit;padding:0 2px;border-radius:3px}
+.snip{margin-top:6px;font-size:14px;line-height:1.5;color:#3d4556}
+.ab-mt td{vertical-align:top}
+.ab-mt .k-tag{display:inline-block;white-space:normal;line-height:1.35}
+.ab-mt th:nth-child(1){width:148px}
+.ab-mt th:nth-child(3){width:176px}
+.ab-mt th:nth-child(4){width:78px}
+.ab-mt th:nth-child(5){width:132px}
+.ab-mt th:nth-child(6){width:90px}
+.ab-upd2{font-size:13px;color:#555c6b;white-space:nowrap}
+.ab-mrail{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+.ab-mini{display:flex;gap:14px;align-items:center}
+.ab-mini .k-date{width:60px;min-height:60px}
+.ab-mini .k-date b{font-size:22px}
+.ab-alsohit{margin-top:14px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+/* champions */
+.ab-crgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ab-champ{background:#ffffff;border:1px solid #dddcd4;border-top:4px solid #1a2744;border-radius:12px;padding:18px 18px 16px;display:flex;flex-direction:column;gap:8px}
+.crown{width:40px;height:40px;border-radius:50%;background:#1a2744;color:#c8a94a;display:flex;align-items:center;justify-content:center}
+.ab-cname{font-size:20px;line-height:1.3;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.band{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;padding:12px 18px;border-radius:10px;background:#1a2744;color:#ffffff;font-size:14px}
+.band b{color:#e6cf86}
+.ab-hgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:32px;align-items:start}
+.ab-seg button{min-height:44px;padding:0 16px;font:inherit;font-size:14.5px;font-weight:600;border:0;border-right:1px solid #c4c3bb;background:#ffffff;color:#1a2744}
+.ab-seg button:last-child{border-right:0}
+.ab-seg button.k-seg-on{background:#1a2744;color:#ffffff}
+.ab-seg .k-chip-count{margin-left:6px}
+.ab-seg .k-seg-on .k-chip-count{color:rgba(255,255,255,.8)}
+.ab-hn{font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.ab-most{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 12px;font-size:14px}
+/* phones */
+.np-row{display:flex;gap:40px;align-items:flex-start;padding:28px 32px;background:#f5f5f2;border:1px solid #d9d8d1;border-radius:14px}
+.np-col{display:flex;gap:22px;align-items:flex-start;flex:1;min-width:0}
+.np-cap{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px;padding-top:6px}
+.np-cap p{margin:0;font-size:13.5px;line-height:1.5;color:#3d4556}
+.np-cap b{color:#1a2744;font-weight:600}
+.hp-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:56px;padding:0 10px 0 16px;background:#1a2744;color:#ffffff}
+.hp-brand{display:flex;align-items:center;gap:9px;color:#ffffff;text-decoration:none;min-height:44px}
+.hp-rook{width:28px;height:28px;fill:#ffffff;flex:none}
+.hp-bn{display:flex;flex-direction:column;line-height:1.12}
+.hp-bn b{font-size:14px;font-weight:700}
+.hp-bn span{font-size:11px;font-weight:500;color:rgba(255,255,255,.8)}
+.hp-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.55);border-radius:9px;color:#ffffff;box-sizing:border-box}
+.hp-i20{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.hp-tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);height:56px;background:#ffffff;border-top:1px solid #d9d8d1}
+.hp-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;border:0;background:transparent;padding:0;color:#555c6b;text-decoration:none;font-size:12px;font-weight:500;line-height:1.1;cursor:pointer;font-family:inherit}
+.hp-safe{flex:none;height:24px;background:#ffffff;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;box-sizing:border-box}
+.hp-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+.np-main{flex:1;min-height:0;overflow:hidden;background:#f5f5f2;position:relative}
+.np-head{background:#ffffff;padding:12px 16px 0;border-bottom:1px solid #e3e2dc;display:flex;flex-direction:column;gap:4px}
+.np-h1{font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.01em;margin:0}
+.np-tabs{display:flex;gap:0;overflow:hidden;white-space:nowrap;margin:6px -16px 0;padding:0 6px}
+.np-tabs a{display:inline-flex;align-items:center;height:44px;padding:0 10px;font-size:14px;font-weight:600;color:#555c6b;text-decoration:none;border-bottom:3px solid transparent;flex:none}
+.np-tabs a.on{color:#1a2744;border-bottom-color:#c8a94a}
+.np-body{padding:12px 14px 20px;display:flex;flex-direction:column;gap:10px}
+.np-meet{border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.np-meet .k-date{color:#1a2744;width:54px;min-height:54px}
+.np-meet .k-date b{font-size:20px}
+.np-sh{font-size:15px;font-weight:700;margin:6px 0 0}
+.np-list{background:#ffffff;border:1px solid #dddcd4;border-radius:10px;overflow:hidden}
+.np-item{padding:10px 12px;border-bottom:1px solid #ecebe5;display:flex;align-items:center;gap:10px}
+.np-item:last-child{border-bottom:0}
+.np-item .rb{width:26px;height:26px;font-size:12.5px;flex:none}
+.np-grow{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.np-grow b{font-size:14.5px;line-height:1.3}
+.np-grow span{font-size:12.5px;color:#555c6b;line-height:1.35}
+.np-msg{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:10px;border:1px solid #1a2744;background:#ffffff;color:#1a2744;flex:none}
+.rb{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#1a2744;color:#ffffff;font-weight:700;font-size:14px}
+.rb-open{background:#fffaf0;color:#866a1e;border:2px dashed #866a1e}
+.np-open{background:#fffaf0}
+.np-rbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 6px 0 14px;height:48px;background:#ffffff;border-bottom:1px solid #dddcd4}
+.np-rbar button{display:inline-flex;align-items:center;gap:8px;min-height:44px;border:0;background:transparent;font:inherit;font-size:14px;font-weight:600;color:#1a2744;padding:0 8px}
+.np-doc{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.np-doc p{margin:0;font-size:15.5px;line-height:1.65}
+.np-scrim{position:absolute;inset:0;background:rgba(16,24,43,.45)}
+.np-sheet{position:absolute;left:0;right:0;bottom:0;background:#ffffff;border-radius:18px 18px 0 0;box-shadow:0 -12px 30px rgba(16,24,43,.25);display:flex;flex-direction:column}
+.np-grab{width:40px;height:5px;border-radius:3px;background:#c9c8c0;margin:8px auto 2px}
+.np-shead{display:flex;align-items:center;justify-content:space-between;padding:4px 8px 8px 18px;border-bottom:1px solid #ecebe5}
+.np-shead h3{margin:0;font-size:17px;font-weight:700}
+.np-x{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;background:transparent;color:#1a2744}
+.np-toc{display:flex;flex-direction:column;padding:6px 10px}
+.np-toc a{display:flex;align-items:center;min-height:44px;padding:0 10px;border-radius:8px;font-size:15px;color:#1a2744;text-decoration:none}
+.np-toc a.on{background:#ece8da;font-weight:700;box-shadow:inset 3px 0 0 #866a1e}
+.np-sfoot{display:flex;flex-direction:column;gap:2px;padding:6px 10px 12px;border-top:1px solid #ecebe5}
+.np-sfoot a{display:flex;align-items:center;justify-content:space-between;min-height:44px;padding:0 10px;font-size:15px;font-weight:600;color:#1a2744;text-decoration:none}
+</style>
+</helmet>
+<div class="ab-root">
+<section class="ab-doc" aria-label="About this board">
+<div class="ab-doc-top">
+<div>
+<p class="k-kicker">12 · About, board &amp; history · decided design · part 2 of 2</p>
+<h1 class="ab-title">About, board and history · decided, part 2</h1>
+<p class="ab-ml" style="margin-top:8px"><b>Built from:</b> About-C (the minutes archive: one search, matching sentences, status tags, year chips) · About-D (reigning champions cards, the "Also reigning" chips, the homepage band, the honor roll by title, "Show all N years") · About-A (the annual meeting and next meeting cards in the rail) · the decided header, footer and phone bars.</p>
+<p class="ab-ml"><b>Replaces:</b> About-C's minutes section and About-D's champions sections. Dropped: D's player page preview and every player-page link, the ratings column, the timeline, the Opera Game board and the submissions form (a "Missing years" card remains).</p>
+<p class="ab-ml"><b>K's feedback applied (Fri, Oct 9):</b> item 3 (bylaws on a phone, note 21), item 4 (C's minutes, frame 3) and item 5 (the Champions tab, frame 4). Items 1 and 2 are in part 1.</p>
+<p class="ab-ml"><b>Shown:</b> signed out on Fri, Oct 9, 2026: frame 3 at 1440px, frame 4 at 1440px, and two phones at 390 × 844.</p>
+<p class="ab-ml" style="margin-top:8px"><span class="k-sample">Sample data: meeting snippets, decision counts, champion names, scores, venues, title counts</span></p>
+</div>
+<aside class="ab-grey" aria-label="Board note">
+<p><b>What</b>Part 2 of the decided About page: the Minutes tab searching "scholastic", the Champions tab, and the Board and Bylaws tabs on a phone.</p>
+<p><b>Built from</b>About-C's minutes archive and About-D's reigning champions and honor roll, inside part 1's tabs, header and footer.</p>
+<p><b>K's feedback applied</b>C's minutes layout; champions on a tab here, with names linking to each event's results.</p>
+<div><p><b>Open for K</b></p><ol><li>Assumed: the regional representative for a club's region posts that club's news.</li><li>Assumed: the yearly LCA schedule gets a "Season at a glance" strip on the Tournaments page, not here.</li><li>Keep a "Missing years" card on Champions, or leave history gaps to the board inbox?</li></ol></div>
+</aside>
+</div>
+<div class="ab-legend" style="grid-template-columns:minmax(0,1fr) 440px">
+<div class="ab-lbox"><p class="k-label" style="margin:0">Notes on this board</p><ol class="ab-notes"><li><span class="k-num-badge">14</span><span><b>One search, three kinds of document.</b> Minutes, bylaws and the tournament rules. The matching sentence shows in the row with the word marked; a summary line says how many matched in each.</span></li><li><span class="k-num-badge">15</span><span><b>Status in words.</b> "Draft" with when it goes for approval, or "Approved" with the meeting that approved it. Every row also carries its own "Last updated" date.</span></li><li><span class="k-num-badge">16</span><span><b>Year chips with counts</b> and a meeting-type filter (Board, Annual, Special). The rail keeps the next meeting, the annual meeting and the email sign-up.</span></li><li><span class="k-num-badge">17</span><span><b>Reigning champions,</b> one card per title. The name opens the final standings of the event where the title was won. The same data feeds the homepage band.</span></li><li><span class="k-num-badge">18</span><span><b>Honor roll by title</b> with counts; five years shown, then "Show all 67 years". Co-champions share a row; a missing year says so in words.</span></li><li><span class="k-num-badge">19</span><span><b>No player pages.</b> Names in the table and cards link to the event's results; names in "Most titles" are plain text.</span></li><li><span class="k-num-badge">20</span><span><b>Board tab on a phone:</b> meeting card first, compact officer and region rows, 44px Message buttons.</span></li><li><span class="k-num-badge">21</span><span><b>Bylaws on a phone:</b> the contents rail becomes a pinned bar that opens a sheet, with the change log and PDF in it.</span></li></ol></div>
+<aside class="ab-fb" aria-labelledby="ab-fbh2"><p id="ab-fbh2" class="k-label-gold" style="margin:0">K's feedback, and where it landed</p><ol>
+<li><span class="ab-fbk">3</span><span><b class="ab-fbq">"I like how C shows the bylaws..."</b>Desktop reader in part 1, frame 2. Here, the phone version: the contents rail as a sheet (note 21).</span></li>
+<li><span class="ab-fbk">4</span><span><b class="ab-fbq">"...and minutes."</b>Frame 3: C's archive with one search, the matching sentence in the row, status in words and "Last updated" on every meeting (notes 14 to 16).</span></li>
+<li><span class="ab-fbk">5</span><span><b class="ab-fbq">"It would be nice to have the champions displayed on a tab here."</b>Frame 4: the Champions tab, D's reigning cards and honor roll by title (notes 17 to 19).</span></li>
+<li><span class="ab-fbk">1</span><span><b class="ab-fbq">"I like the layout of B the best" and 2, no "Who represents me".</b>Part 1, frame 1; on a phone here (note 20), with the meeting card where the lookup was.</span></li>
+</ol></aside>
+</div>
+</section>
+<section class="ab-sec" aria-labelledby="ab-f3">
+<div class="ab-flab"><span class="ab-code">3</span><h2 id="ab-f3">Minutes tab · a search for "scholastic" in 2026</h2><span class="k-meta">About-C's searchable archive, with "Last updated" on every meeting</span></div>
+<div class="k-browser ab-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/about/minutes?q=scholastic&amp;year=2026</div></div>
+<div class="ab-view">
+<header class="k-header tl-hd"><div class="k-wrap-wide k-header-in tl-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks tl-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="tl-navbtn tl-navbtn-on" type="button" aria-expanded="false" aria-haspopup="true" aria-current="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="tl-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="tl-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility tl-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div></div></header>
+<main>
+<div class="ab-phead"><div class="k-wrap-wide"><div class="ab-titlerow"><div><span class="k-kicker">About LCA</span><h2 class="k-h1">Minutes</h2><p class="ab-subline">Every board meeting and annual meeting, readable on the page. The PDF is there to download, never the only copy.</p></div><div class="ab-upd"><span class="k-sample">Sample data</span><span class="ab-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Last updated <b>Mon, Sep 14, 2026</b></span></span></div></div><nav class="ab-tabs" aria-label="About LCA"><a class="ab-tab" href="#">About</a><a class="ab-tab" href="#">Board &amp; regions</a><a class="ab-tab" href="#">Bylaws</a><a class="ab-tab ab-tab-on" href="#" aria-current="page">Minutes</a><a class="ab-tab" href="#">Champions</a></nav></div></div>
+<div class="k-wrap-wide ab-body">
+<div class="ab-mgrid">
+<div style="min-width:0">
+<div class="ab-mtool">
+<div class="k-search" role="search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input type="search" aria-label="Search minutes, bylaws and rules" value="scholastic"></div>
+<span class="k-num-badge ab-b">14</span>
+<div class="k-row-sm" role="group" aria-label="Meeting type"><button class="k-chip k-chip-on" type="button" aria-pressed="true">All meetings</button><button class="k-chip" type="button" aria-pressed="false">Board</button><button class="k-chip" type="button" aria-pressed="false">Annual</button><button class="k-chip" type="button" aria-pressed="false">Special</button></div>
+</div>
+<div class="k-row-sm" role="group" aria-label="Year" style="margin-top:12px"><span class="k-meta" style="margin-right:4px">Year</span><button class="k-chip k-chip-on" type="button" aria-pressed="true">2026 <span class="k-chip-count">6</span></button><button class="k-chip" type="button" aria-pressed="false">2025 <span class="k-chip-count">7</span></button><button class="k-chip" type="button" aria-pressed="false">2024 <span class="k-chip-count">6</span></button><button class="k-chip" type="button" aria-pressed="false">2023 <span class="k-chip-count">6</span></button><button class="k-chip" type="button" aria-pressed="false">Older</button><span class="k-num-badge ab-b" style="margin-left:6px">16</span></div>
+<div class="ab-res"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span><b>3 of 6 meetings in 2026 mention “scholastic”.</b> The matching sentence shows under each meeting. The same search also found 1 passage in the bylaws and none in the tournament rules (below the table).</span></div>
+<div class="k-tablebox">
+<table class="k-table ab-mt">
+<caption>2026 · 6 meetings <span class="k-sample">Sample data</span></caption>
+<thead><tr><th>Date</th><th>Meeting</th><th>Status <span class="k-num-badge ab-b" style="width:22px;height:22px;font-size:11px;margin-left:4px;vertical-align:middle">15</span></th><th class="k-r">Decisions</th><th>Last updated</th><th class="k-r">Open</th></tr></thead>
+<tbody><tr><td style="white-space:nowrap"><b>Sun, Sep 6, 2026</b></td><td><b>Annual business meeting</b><div class="k-meta">Sulphur · during the State Championship</div><div class="snip">“…members thanked the volunteers who ran the <mark>scholastic</mark> sections in April and…”</div></td><td><span class="k-tag k-tag-soon">Draft · approval at the 2027 annual meeting</span></td><td class="k-r k-num">6</td><td class="ab-upd2">Mon, Sep 14, 2026</td><td class="k-r" style="white-space:nowrap"><a class="k-link" href="#">Read</a> · <a class="k-link" href="#">PDF</a></td></tr><tr><td style="white-space:nowrap"><b>Thu, Aug 13, 2026</b></td><td><b>Board meeting</b><div class="k-meta">Online</div></td><td><span class="k-tag k-tag-soon">Draft · approval <span style="white-space:nowrap">Tue, Nov 10</span></span></td><td class="k-r k-num">4</td><td class="ab-upd2">Mon, Aug 17, 2026</td><td class="k-r" style="white-space:nowrap"><a class="k-link" href="#">Read</a> · <a class="k-link" href="#">PDF</a></td></tr><tr><td style="white-space:nowrap"><b>Tue, Jul 21, 2026</b></td><td><b>Special board meeting</b><div class="k-meta">Online · one item: State Championship site</div></td><td><span class="k-tag k-tag-open">Approved Thu, Aug 13</span></td><td class="k-r k-num">1</td><td class="ab-upd2">Fri, Aug 14, 2026</td><td class="k-r" style="white-space:nowrap"><a class="k-link" href="#">Read</a> · <a class="k-link" href="#">PDF</a></td></tr><tr><td style="white-space:nowrap"><b>Thu, Jun 11, 2026</b></td><td><b>Board meeting</b><div class="k-meta">Online</div><div class="snip">“…proposal for a <mark>scholastic</mark> travel fund for national events, to be…”</div></td><td><span class="k-tag k-tag-open">Approved Thu, Aug 13</span></td><td class="k-r k-num">5</td><td class="ab-upd2">Fri, Aug 14, 2026</td><td class="k-r" style="white-space:nowrap"><a class="k-link" href="#">Read</a> · <a class="k-link" href="#">PDF</a></td></tr><tr><td style="white-space:nowrap"><b>Thu, Apr 9, 2026</b></td><td><b>Board meeting</b><div class="k-meta">Baton Rouge</div><div class="snip">“…State <mark>Scholastic</mark> Championship: entries, volunteers and trophies…”</div></td><td><span class="k-tag k-tag-open">Approved Thu, Jun 11</span></td><td class="k-r k-num">3</td><td class="ab-upd2">Mon, Jun 15, 2026</td><td class="k-r" style="white-space:nowrap"><a class="k-link" href="#">Read</a> · <a class="k-link" href="#">PDF</a></td></tr><tr><td style="white-space:nowrap"><b>Thu, Feb 12, 2026</b></td><td><b>Board meeting</b><div class="k-meta">Online</div></td><td><span class="k-tag k-tag-open">Approved Thu, Apr 9</span></td><td class="k-r k-num">4</td><td class="ab-upd2">Mon, Apr 13, 2026</td><td class="k-r" style="white-space:nowrap"><a class="k-link" href="#">Read</a> · <a class="k-link" href="#">PDF</a></td></tr></tbody>
+</table>
+</div>
+<div class="ab-alsohit">
+<span class="k-label">Also in the bylaws</span>
+<div class="k-between" style="align-items:flex-start"><div class="k-stack-sm" style="gap:2px"><b class="k-small">§ IX.2 · Committees</b><span class="snip" style="margin:0">“…the board may name a <mark>scholastic</mark> committee to plan the State Scholastic Championship…”</span></div><a class="k-link k-small" href="#">Open in the Bylaws tab</a></div>
+</div>
+</div>
+<aside class="ab-mrail">
+<div class="k-card k-card-pad k-stack">
+<div class="k-between"><span class="k-label">Next board meeting</span><span class="k-tag k-tag-open">Agenda posted</span></div>
+<div class="ab-mini"><div class="k-date"><span style="margin:0 0 3px">Tue</span><b>10</b><span>Nov</span></div><div class="k-stack-sm" style="gap:2px"><b class="k-h4">Tue, Nov 10, 2026</b><span class="k-meta">7:00 PM Central · Online</span></div></div>
+<div class="k-row-sm"><a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg>Add to calendar</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Agenda</a></div>
+<span class="k-meta">The Thu, Aug 13 draft goes to the board for approval at this meeting.</span>
+</div>
+<div class="k-card k-card-pad k-stack-sm">
+<span class="k-label">Annual meeting</span>
+<p class="k-small" style="margin:0">Members meet once a year during the State Championship on Labor Day weekend.</p>
+<p class="k-small" style="margin:0"><b>2026:</b> Sun, Sep 6, in Sulphur. Draft minutes posted Mon, Sep 14.</p>
+<p class="k-small" style="margin:0"><b>2027:</b> Labor Day weekend, <span style="white-space:nowrap">Sat–Mon, Sep 4–6</span>. Place to be announced.</p>
+<a class="k-link k-small" href="#">Show annual meetings only</a>
+</div>
+<div class="k-card k-card-pad k-stack-sm">
+<div class="k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg><span class="k-strong">Get governance updates by email</span></div>
+<p class="k-small k-muted" style="margin:0">New minutes, bylaw changes and proposed amendments. A few emails a year.</p>
+<div class="k-row-sm" style="flex-wrap:nowrap"><input class="k-input" aria-label="Email address" placeholder="you@example.com"><button class="k-btn k-btn-navy" type="button">Subscribe</button></div>
+</div>
+</aside>
+</div>
+</div>
+</main>
+<footer class="k-footer tl-foot"><div class="k-wrap-wide tl-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="tl-rook tl-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div></div>
+<p class="ab-cap">A draft reads "Draft" with when it will be approved; an approved set reads "Approved" with the meeting that approved it. "Last updated" is the date the Secretary last changed that meeting's page. Read opens the minutes as a page with its motions listed; PDF is the download.</p>
+</section>
+<section class="ab-sec" aria-labelledby="ab-f4">
+<div class="ab-flab"><span class="ab-code">4</span><h2 id="ab-f4">Champions tab · reigning champions and the honor roll</h2><span class="k-meta">About-D's band and table; every name opens that event's results</span></div>
+<div class="k-browser ab-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/about/champions?title=state</div></div>
+<div class="ab-view">
+<header class="k-header tl-hd"><div class="k-wrap-wide k-header-in tl-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="tl-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks tl-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="tl-navbtn tl-navbtn-on" type="button" aria-expanded="false" aria-haspopup="true" aria-current="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="tl-sbtn" href="/search" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="tl-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility tl-util"><a class="k-ulink" href="#">Donate</a><a class="k-ulink" href="#">Log in</a><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a></div></div></header>
+<main>
+<div class="ab-phead"><div class="k-wrap-wide"><div class="ab-titlerow"><div><span class="k-kicker">About LCA</span><h2 class="k-h1">Champions</h2><p class="ab-subline">Louisiana's state champions, from this Labor Day back as far as the records go. Each name opens the results of the event where the title was won.</p></div><div class="ab-upd"><span class="k-sample">Sample data</span><span class="ab-stamp"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><span>Last updated <b>Mon, Sep 14, 2026</b></span></span></div></div><nav class="ab-tabs" aria-label="About LCA"><a class="ab-tab" href="#">About</a><a class="ab-tab" href="#">Board &amp; regions</a><a class="ab-tab" href="#">Bylaws</a><a class="ab-tab" href="#">Minutes</a><a class="ab-tab ab-tab-on" href="#" aria-current="page">Champions</a></nav></div></div>
+<div class="k-wrap-wide ab-body">
+<div class="k-between" style="margin-bottom:16px"><div class="k-row-sm"><h2 class="k-h2" style="margin:0">Reigning champions</h2><span class="k-num-badge ab-b">17</span></div><a class="k-link k-row-sm" href="#">Next: State Championship, Labor Day weekend 2027<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a></div>
+<div class="ab-crgrid">
+<div class="ab-champ"><div class="crown"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg></div><div class="k-label k-gold-ink">Louisiana State Champion · 2026</div><a class="ab-cname" href="#">Marcus Landry</a><div class="k-meta">4½ of 5 · Sulphur · Sat–Mon, Sep 5–7, 2026</div><div class="k-small k-muted">Third State Championship title</div></div><div class="ab-champ"><div class="crown"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg></div><div class="k-label k-gold-ink">State Scholastic · K–12 · 2026</div><a class="ab-cname" href="#">Priya Shah</a><div class="k-meta">5 of 5 · Sat, Apr 18, 2026 · [City]</div><div class="k-small k-muted">Also 2025 State Champion</div></div><div class="ab-champ"><div class="crown"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 9.5L12 5l9.5 4.5L12 14zM6.5 11.5V16c1.5 1.5 3.5 2.2 5.5 2.2s4-.7 5.5-2.2v-4.5M21.5 9.5v5"></path></svg></div><div class="k-label k-gold-ink">State Scholastic · K–8 · 2026</div><a class="ab-cname" href="#">Theo Guidry</a><div class="k-meta">4½ of 5 · Sat, Apr 18, 2026 · [City]</div><div class="k-small k-muted">First state title</div></div><div class="ab-champ"><div class="crown"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg></div><div class="k-label k-gold-ink">Paul Morphy Open · 2026</div><a class="ab-cname" href="#">Avery Thibodeaux</a><div class="k-meta">Open section · New Orleans · Sat–Sun, Jun 13–14, 2026</div><div class="k-small k-muted">Winner of the Open section</div></div>
+</div>
+<div class="k-row-sm k-small" style="margin-top:14px"><span class="k-muted">Also reigning:</span><a class="k-chip" href="#">K–5 · Maya Robichaux</a><a class="k-chip" href="#">K–3 · [Champion name]</a><a class="k-chip" href="#">TOC Qualifier · Rosa Mendez</a></div>
+<div class="k-stack-sm" style="margin-top:18px"><span class="k-label">The same data runs as a band on the homepage</span>
+<div class="band"><span class="k-row-sm"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8l4 4 4-7 4 7 4-4-1.5 10h-13zM5.5 21h13"></path></svg><b>Reigning champions</b></span><span>State · Marcus Landry</span><span>Scholastic K–12 · Priya Shah</span><span>Morphy Open · Avery Thibodeaux</span><a href="#" style="color:#ffffff;text-decoration:underline">All champions</a></div></div>
+</div>
+<section class="k-cream" style="border-top:1px solid #e4e2d8" aria-labelledby="ab-hr">
+<div class="k-wrap-wide" style="padding-top:30px;padding-bottom:40px">
+<div class="k-between" style="align-items:flex-end;margin-bottom:14px">
+<div class="k-stack-sm" style="max-width:720px"><div class="k-row-sm"><h2 class="k-h2" id="ab-hr" style="margin:0">Honor roll</h2><span class="k-num-badge ab-b">18</span></div><p class="k-body k-muted" style="margin:0">Every champion on file, newest first. Pick a title to filter the list.</p></div>
+<div class="k-search" role="search" style="flex:0 1 300px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><input type="search" aria-label="Find a champion" placeholder="Find a champion or year"></div>
+</div>
+<div class="k-seg ab-seg" role="group" aria-label="Title"><button class="k-seg-on" type="button" aria-pressed="true">State Championship<span class="k-chip-count">67</span></button><button type="button" aria-pressed="false">State Scholastic<span class="k-chip-count">41</span></button><button type="button" aria-pressed="false">Paul Morphy Open<span class="k-chip-count">23</span></button><button type="button" aria-pressed="false">TOC Qualifier<span class="k-chip-count">12</span></button><button type="button" aria-pressed="false">All titles</button></div>
+<div class="ab-hgrid" style="margin-top:16px">
+<div class="k-stack-sm" style="min-width:0">
+<div class="k-tablebox">
+<table class="k-table">
+<caption>Louisiana State Championship · 67 years on file <span class="k-sample">Sample data</span></caption>
+<thead><tr><th>Year</th><th>Champion</th><th class="k-r">Score</th><th>Where and when</th><th>Results</th></tr></thead>
+<tbody><tr class="k-tr-me"><td class="k-num k-strong">2026</td><td><a class="ab-hn" href="#">Marcus Landry</a> <span class="k-meta">· 3rd title</span></td><td class="k-r k-num">4½ of 5</td><td>Sulphur<div class="k-meta">Sat–Mon, Sep 5–7, 2026</div></td><td><a class="k-link k-small" href="#">Standings</a> · <a class="k-link k-small" href="#">Crosstable</a></td></tr><tr><td class="k-num k-strong">2025</td><td><a class="ab-hn" href="#">Priya Shah</a> <span class="k-meta">· 1st title</span></td><td class="k-r k-num">4½ of 5</td><td>Baton Rouge<div class="k-meta">Sat–Mon, Aug 30–Sep 1, 2025</div></td><td><a class="k-link k-small" href="#">Standings</a> · <a class="k-link k-small" href="#">Crosstable</a></td></tr><tr><td class="k-num k-strong">2024</td><td><a class="ab-hn" href="#">Marcus Landry</a> <span class="k-meta">· 2nd title</span></td><td class="k-r k-num">5 of 5</td><td>Lafayette<div class="k-meta">Sat–Mon, Aug 31–Sep 2, 2024</div></td><td><a class="k-link k-small" href="#">Standings</a> · <a class="k-link k-small" href="#">Crosstable</a></td></tr><tr><td class="k-num k-strong">2023</td><td><a class="ab-hn" href="#">Isaac Dupre</a> and <a class="ab-hn" href="#">Sam Nguyen</a> <span class="k-meta">· co-champions</span></td><td class="k-r k-num">4 of 5</td><td>New Orleans<div class="k-meta">Sat–Mon, Sep 2–4, 2023</div></td><td><a class="k-link k-small" href="#">Standings</a> · <a class="k-link k-small" href="#">Crosstable</a></td></tr><tr><td class="k-num k-strong">2022</td><td><a class="ab-hn" href="#">Marcus Landry</a> <span class="k-meta">· 1st title</span></td><td class="k-r k-num">4½ of 5</td><td>Shreveport<div class="k-meta">Sat–Mon, Sep 3–5, 2022</div></td><td><a class="k-link k-small" href="#">Standings</a> · <a class="k-link k-small" href="#">Crosstable</a></td></tr><tr><td class="k-num k-strong">2021</td><td><span class="k-muted">Not on file</span></td><td class="k-r k-muted">None</td><td><span class="k-muted">[City]</span></td><td><span class="k-tag k-tag-soon">Missing · do you have it?</span></td></tr></tbody>
+</table>
+</div>
+<button class="k-btn k-btn-line" type="button">Show all 67 years<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+<div class="k-callout k-row-sm" style="align-items:flex-start;flex-wrap:nowrap"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg><span class="k-small">New champions arrive from final standings: when a director finalizes an event flagged as a state championship, the winner is proposed here and an LCA officer confirms it. Ties become co-champions.</span></div>
+</div>
+<aside class="k-stack">
+<div class="k-card k-card-pad k-stack-sm"><div class="k-row-sm"><span class="k-label">Most State Championship titles</span><span class="k-num-badge ab-b">19</span></div>
+<div class="ab-most"><span>[Historic champion]</span><b class="k-num">5</b><span>Marcus Landry</span><b class="k-num">3</b><span>[Historic champion]</span><b class="k-num">3</b><span>Isaac Dupre</span><b class="k-num">2</b></div>
+<span class="k-meta">Names here are plain text. There are no player pages.</span></div>
+<div class="k-card k-card-pad k-stack-sm"><span class="k-label">Missing years</span><p class="k-small" style="margin:0">We have State Championship records for 67 of the 112 years since 1915. Have a crosstable, a photo or a clipping?</p><a class="k-btn k-btn-line k-btn-sm" href="#" style="align-self:flex-start"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send it to the board</a></div>
+</aside>
+</div>
+</div>
+</section>
+</main>
+<footer class="k-footer tl-foot"><div class="k-wrap-wide tl-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="tl-rook tl-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div></div>
+<p class="ab-cap">Names link to the results of the event where the title was won (final standings, then the crosstable), never to a player page. Scores use ½. On phones the honor roll stacks as one card per year, with the title filter as a dropdown.</p>
+</section>
+<section class="ab-sec" aria-labelledby="ab-fp">
+<div class="ab-flab"><span class="ab-code">5</span><h2 id="ab-fp">On a phone · 390 × 844</h2><span class="k-meta">Left: Board &amp; regions, signed out · Right: the Bylaws reader with the contents sheet open</span></div>
+<div class="np-row">
+<div class="np-col"><div class="k-phone" aria-label="The Board and regions tab on a phone"><div class="k-phone-screen">
+<header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header>
+<main class="np-main">
+<div class="np-head"><span class="k-kicker" style="font-size:11.5px">About LCA</span><h1 class="np-h1">Board &amp; regions</h1><span class="k-meta">Last updated Mon, Sep 14, 2026</span><nav class="np-tabs" aria-label="About LCA"><a href="#">About</a><a class="on" href="#" aria-current="page">Board &amp; regions</a><a href="#">Bylaws</a><a href="#">Minutes</a><a href="#">Champions</a></nav></div>
+<div class="np-body">
+<div class="k-navy np-meet">
+<div class="k-between"><span class="k-label">Next board meeting</span><span class="k-tag k-tag-open">Agenda posted</span></div>
+<div class="k-row" style="gap:12px;flex-wrap:nowrap"><div class="k-date"><b>10</b><span>Nov</span></div><div class="k-stack-sm" style="gap:2px"><b style="font-size:16px">Tue, Nov 10, 2026</b><span class="k-meta">7:00 PM Central · Online</span></div></div>
+<div class="k-row-sm" style="flex-wrap:nowrap"><a class="k-btn k-btn-gold k-btn-sm" href="#" style="flex:1">Add to calendar</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#" style="flex:1">Agenda</a></div>
+</div>
+<p class="np-sh">Officers</p>
+<div class="np-list">
+<div class="np-item"><span class="av" style="width:34px;height:34px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg></span><div class="np-grow"><b>[Officer name]</b><span>President · term ends 2027</span></div><a class="np-msg" href="#" aria-label="Message the President"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg></a></div>
+<div class="np-item"><span class="av" style="width:34px;height:34px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg></span><div class="np-grow"><b>[Officer name]</b><span>Vice President · term ends 2027</span></div><a class="np-msg" href="#" aria-label="Message the Vice President"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg></a></div>
+</div>
+<p class="np-sh">Regions</p>
+<div class="np-list">
+<div class="np-item"><span class="rb">1</span><div class="np-grow"><b>North Louisiana</b><span>[Representative name] · 3 clubs</span></div><a class="np-msg" href="#" aria-label="Message the North Louisiana representative"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg></a></div><div class="np-item np-open"><span class="rb rb-open">2</span><div class="np-grow"><b>Central Louisiana</b><span><span class="k-tag k-tag-soon" style="padding:2px 6px;font-size:11.5px">Seat open</span> Interested?</span></div><a class="k-btn k-btn-gold k-btn-sm" href="#">I'm interested</a></div><div class="np-item"><span class="rb">3</span><div class="np-grow"><b>Southwest Louisiana</b><span>[Representative name] · 2 clubs</span></div><a class="np-msg" href="#" aria-label="Message the Southwest Louisiana representative"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg></a></div>
+</div>
+</div>
+</main>
+<nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div>
+</div></div>
+<div class="np-cap"><div class="k-row-sm"><span class="k-num-badge">20</span><b>Board &amp; regions, first screen</b></div>
+<p>The About tabs scroll sideways under the title. The next board meeting comes first, as on desktop, with Add to calendar and the agenda.</p>
+<p>Officers and regions become compact rows. Each filled seat keeps a 44px Message button; an open seat keeps "Seat open" in words and "I'm interested". The map follows the region list, full width.</p>
+<p>About lives under Menu on phones (decided mobile nav), so no tab is lit here.</p></div>
+</div>
+<div class="np-col"><div class="k-phone" aria-label="The Bylaws reader on a phone, contents sheet open"><div class="k-phone-screen">
+<header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header>
+<main class="np-main">
+<div class="np-head" style="padding-bottom:0"><h1 class="np-h1" style="font-size:22px">Bylaws</h1><span class="k-meta">2026.1 · Last updated Mon, Sep 14, 2026</span><nav class="np-tabs" aria-label="About LCA"><a href="#">About</a><a href="#">Board &amp; regions</a><a class="on" href="#" aria-current="page">Bylaws</a><a href="#">Minutes</a><a href="#">Champions</a></nav></div>
+<div class="np-rbar"><button type="button" aria-expanded="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>Contents · VI Regional representatives</button></div>
+<div class="np-doc">
+<span class="k-kicker" style="font-size:11.5px">Article VI</span>
+<b style="font-size:20px">Regional representatives</b>
+<p>Each of Louisiana's seven regions gets a seat on the board. If a seat sits empty, the board can fill it until the next election.</p>
+<p>§ VI.1 · The board includes one representative for each region…</p>
+</div>
+<div class="np-scrim" aria-hidden="true"></div>
+<div class="np-sheet" role="dialog" aria-label="Contents">
+<div class="np-grab"></div>
+<div class="np-shead"><h3>Contents</h3><button class="np-x" type="button" aria-label="Close contents"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+<nav class="np-toc" aria-label="Articles"><a href="#">IV · Board of directors</a><a href="#">V · Officers</a><a class="on" href="#" aria-current="true">VI · Regional representatives</a><a href="#">VII · Meetings</a><a href="#">VIII · Elections</a><a href="#">IX · Committees</a></nav>
+<div class="np-sfoot"><a href="#">Change log · 3 versions<span class="k-tag k-tag-soon">2 changes in 2026.1</span></a><a href="#">Download PDF<svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg></a></div>
+</div>
+</main>
+<nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div>
+</div></div>
+<div class="np-cap"><div class="k-row-sm"><span class="k-num-badge">21</span><b>Bylaws reader, contents as a sheet</b></div>
+<p>The contents rail becomes a bar pinned under the tabs that names the article on screen. Tapping it opens this sheet; picking an article closes it and scrolls there.</p>
+<p>The sheet also holds the change log (one tap away, with how many changes the current version made) and the PDF download. Close or a swipe down returns to the text.</p>
+<p>"In plain words" boxes and redlines stay in the text, full width.</p></div>
+</div>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":5350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
