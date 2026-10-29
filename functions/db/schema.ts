@@ -539,6 +539,9 @@ export const members = sqliteTable('members', {
   email: text().notNull(),
   fullName: text('full_name').notNull(),
   uscfId: text('uscf_id'),
+  // 'none' (an account with no membership), 'active' or 'expired'. The
+  // stored default is still 'pending' because changing it would rebuild the
+  // table; migration 0057's triggers turn any 'pending' written into 'none'.
   membershipStatus: text('membership_status').default('pending').notNull(),
   membershipExpiry: text('membership_expiry'),
   role: text().default('member').notNull(),
@@ -571,6 +574,13 @@ export const stateChampions = sqliteTable('state_champions', {
   notes: text(),
   tournamentId: text('tournament_id').references(() => tournaments.id, { onDelete: 'set null' }),
   createdAt: text('created_at').default(sql`(datetime('now'))`).notNull(),
+  // Which list the row belongs to: 'state' (the state championship and its
+  // titles) or 'scholastic' (the grade-band sections). The values are kept
+  // by the code, not a CHECK, so the list can grow without a rebuild.
+  kind: text().default('state').notNull(),
+  // A photo of the champion, served from this site (/champions/photos/...)
+  // or an https address. Shown once per person on the public page.
+  photoUrl: text('photo_url'),
 },
 (table) => [
   index('idx_state_champions_year').on(sql`year DESC`, table.title),

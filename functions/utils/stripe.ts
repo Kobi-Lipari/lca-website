@@ -89,6 +89,15 @@ function timingSafeEqualHex(a: string, b: string): boolean {
 export interface RetrievedCheckoutSession {
   payment_status: 'paid' | 'unpaid' | 'no_payment_required'
   payment_intent: string | null
+  /**
+   * Where the checkout itself stands: 'open' while the person can still pay
+   * on Stripe's page, 'complete' once they have finished it, 'expired' when
+   * the page lapsed (about 24 hours) with nothing charged. Null for an
+   * answer that did not carry one.
+   */
+  status: 'open' | 'complete' | 'expired' | null
+  /** The Stripe page to finish paying on; Stripe returns it only while the session is open. */
+  url: string | null
 }
 
 /**
@@ -112,12 +121,17 @@ export async function retrieveCheckoutSession(
   const session = await res.json<{
     payment_status?: string
     payment_intent?: string | { id?: string } | null
+    status?: string
+    url?: string | null
   }>()
 
   const intent = session.payment_intent
+  const status = session.status
   return {
     payment_status: (session.payment_status ?? 'unpaid') as RetrievedCheckoutSession['payment_status'],
     payment_intent: typeof intent === 'string' ? intent : intent?.id ?? null,
+    status: status === 'open' || status === 'complete' || status === 'expired' ? status : null,
+    url: typeof session.url === 'string' && session.url ? session.url : null,
   }
 }
 

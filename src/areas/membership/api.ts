@@ -21,7 +21,7 @@ export interface ApiMember {
   uscf_id: string | null
   uscf_rating: number | null
   uscf_rating_updated_at: string | null
-  membership_status: 'active' | 'expired' | 'pending'
+  membership_status: 'active' | 'expired' | 'none'
   membership_expiry: string | null
   /** 'family' for a family membership; null if never bought. */
   membership_type?: string | null
@@ -192,15 +192,29 @@ export async function createMembershipCheckout(tier: string): Promise<{
   return handleResponse(response)
 }
 
-export async function confirmMembership(paymentId: string): Promise<{
+/**
+ * Checks one payment, or with no id the member's latest membership payment,
+ * so the profile can answer "what is going on?" from any device. The answer's
+ * shape, and the words for each state, live in paymentState.ts: the barrel
+ * '@/lib/api' exports exactly what it did before the split (api-exports.test.ts).
+ */
+export async function confirmMembership(paymentId?: string | null): Promise<{
   member: ApiMember
-  tier?: string
+  tier?: string | null
+  paymentId?: string
+  /** When the payment was started, as the database stores it (UTC, "YYYY-MM-DD HH:MM:SS"). */
+  startedAt?: string
+  /** 'paid' is the only state in which the membership is active; the rest say nothing was charged, or that the answer is not in yet. */
+  paymentState: 'paid' | 'processing' | 'open' | 'expired' | 'unknown' | 'none'
+  /** The Stripe page to finish paying on, only while the checkout is still open. */
+  paymentUrl?: string
   alreadyConfirmed?: boolean
+  pending?: boolean
 }> {
   const response = await fetch('/api/membership/confirm', {
     method: 'POST',
     headers: await authHeaders(),
-    body: JSON.stringify({ paymentId }),
+    body: JSON.stringify(paymentId ? { paymentId } : {}),
   })
   return handleResponse(response)
 }

@@ -16,7 +16,7 @@ export interface ApiChild {
   full_name: string
   uscf_id: string | null
   uscf_rating: number | null
-  membership_status: 'active' | 'expired' | 'pending'
+  membership_status: 'active' | 'expired' | 'none'
   membership_expiry: string | null
   membership_type: string | null
   created_at: string

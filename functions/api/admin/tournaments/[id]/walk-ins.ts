@@ -91,7 +91,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       fullName,
       uscfId,
       uscfRating,
-      membershipStatus: 'pending',
+      membershipStatus: 'none',
       role: 'guest',
     }),
     db.insert(registrations).values({

@@ -530,6 +530,10 @@ export interface ApiChampion {
   notes: string | null
   tournament_id: string | null
   tournament_name: string | null
+  /** Which list the row is on: the state championship or the scholastic sections. */
+  kind: 'state' | 'scholastic'
+  /** A photo of the champion, or null. */
+  photo_url: string | null
 }
 
 export interface ApiChampionshipEvent {
@@ -546,7 +550,15 @@ export async function getChampions(): Promise<{ champions: ApiChampion[]; upcomi
   return handleResponse(response)
 }
 
-export type ChampionInput = { year: number | string; title: string; champion: string; notes?: string | null; tournamentId?: string | null }
+export type ChampionInput = {
+  year: number | string
+  title: string
+  champion: string
+  notes?: string | null
+  tournamentId?: string | null
+  kind?: 'state' | 'scholastic'
+  photoUrl?: string | null
+}
 
 export async function adminAddChampions(rows: ChampionInput[]): Promise<{ added: number }> {
   const response = await fetch('/api/admin/champions', {

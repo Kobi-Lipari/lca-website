@@ -17,7 +17,7 @@ export const onRequestPatch: PagesFunction<Env> = async (ctx) => {
   const expiryProvided = 'membershipExpiry' in body
   const expiry = body.membershipExpiry as string | null | undefined
 
-  if (status !== undefined && !['active', 'expired', 'pending'].includes(status)) {
+  if (status !== undefined && !['active', 'expired', 'none'].includes(status)) {
     return errorResponse('Invalid membership status', 400)
   }
   if (expiryProvided && expiry !== null && typeof expiry !== 'string') {
@@ -31,7 +31,7 @@ export const onRequestPatch: PagesFunction<Env> = async (ctx) => {
   // cron Worker doesn't exist yet — ledger #3). So when an admin sets a new
   // expiry date without explicitly setting a status, derive the status from
   // the date: past → expired, today/future → active. An explicit status in
-  // the same request still wins (so 'pending' can be set manually), and an
+  // the same request still wins (so 'none' can be set by hand), and an
   // explicit-null expiry derives nothing (no date to derive from).
   if (expiryProvided && status === undefined && typeof expiry === 'string') {
     const today = new Date().toISOString().slice(0, 10)

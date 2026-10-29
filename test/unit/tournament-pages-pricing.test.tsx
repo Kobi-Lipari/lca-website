@@ -156,7 +156,7 @@ describe('the tournament page prices from the section objects in the answer', ()
 
   it('after the late date the late line shows and the early line is gone', async () => {
     vi.setSystemTime(AFTER_LATE)
-    const select = await renderDetail(tournamentAnswer(), member({ membership_status: 'pending' }))
+    const select = await renderDetail(tournamentAnswer(), member({ membership_status: 'none' }))
     expect(optionTexts(select)).toEqual(['Open — $65', 'Reserve — $45', 'Free'])
     expect(rowValue('Late entry fee')).toBe('+$15')
     expect(screen.queryByText('Early entry discount')).toBeNull()
@@ -173,7 +173,7 @@ describe('the tournament page prices from the section objects in the answer', ()
 
   it('a section with its own early price shows that price, as checkout charges it', async () => {
     const own = tournamentAnswer({}, [{ name: 'Open', fee: 50, early: 32 }, { name: 'Reserve' }])
-    const select = await renderDetail(own, member({ membership_status: 'pending' }))
+    const select = await renderDetail(own, member({ membership_status: 'none' }))
     // Open's own early price is $32 (not $50 less the $10 discount); Reserve keeps the event's discount.
     expect(optionTexts(select)).toEqual(['Open — $32', 'Reserve — $20'])
     expect(rowValue('Early entry discount')).toBe('−$18')
@@ -183,7 +183,7 @@ describe('the tournament page prices from the section objects in the answer', ()
   it('a section with its own late price shows that price after the late date', async () => {
     vi.setSystemTime(AFTER_LATE)
     const own = tournamentAnswer({}, [{ name: 'Open', fee: 50, late: 58 }, { name: 'Reserve' }])
-    const select = await renderDetail(own, member({ membership_status: 'pending' }))
+    const select = await renderDetail(own, member({ membership_status: 'none' }))
     expect(optionTexts(select)).toEqual(['Open — $58', 'Reserve — $45'])
     expect(rowValue('Late entry fee')).toBe('+$8')
   })
@@ -203,7 +203,7 @@ describe('the tournament page prices from the section objects in the answer', ()
 
 describe('the family panel prices each player from the section objects in the answer', () => {
   const child = (id: string, name: string, over: Partial<ApiChild> = {}): ApiChild => ({
-    id, full_name: name, uscf_id: '9000000' + id.length, uscf_rating: 1000, membership_status: 'pending', membership_expiry: null,
+    id, full_name: name, uscf_id: '9000000' + id.length, uscf_rating: 1000, membership_status: 'none', membership_expiry: null,
     membership_type: null, created_at: '2026-01-01', ...over,
   })
 
@@ -392,7 +392,7 @@ describe('the family panel total follows the clock while the page is open', () =
   beforeEach(() => fakeClockAndTimers(BEFORE_EARLY))
 
   const sam: ApiChild = {
-    id: 'c1', full_name: 'Sam Player', uscf_id: '90000002', uscf_rating: 1000, membership_status: 'pending', membership_expiry: null,
+    id: 'c1', full_name: 'Sam Player', uscf_id: '90000002', uscf_rating: 1000, membership_status: 'none', membership_expiry: null,
     membership_type: null, created_at: '2026-01-01',
   }
   async function renderPanel() {

@@ -11,7 +11,7 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   if (isResponse(auth)) return auth
   const id = context.params.id as string
   const existing = await context.env.DB.prepare('SELECT * FROM state_champions WHERE id = ?').bind(id)
-    .first<{ year: number; title: string; champion: string; notes: string | null; tournament_id: string | null }>()
+    .first<{ year: number; title: string; champion: string; notes: string | null; tournament_id: string | null; kind: string; photo_url: string | null }>()
   if (!existing) return errorResponse('Not found', 404)
   const body = (await parseJsonBody<ChampionInput>(context.request)) ?? {}
   const c = cleanChampion({
@@ -20,11 +20,13 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     champion: body.champion ?? existing.champion,
     notes: body.notes !== undefined ? body.notes : existing.notes,
     tournamentId: body.tournamentId !== undefined ? body.tournamentId : existing.tournament_id,
+    kind: body.kind !== undefined ? body.kind : existing.kind,
+    photoUrl: body.photoUrl !== undefined ? body.photoUrl : existing.photo_url,
   })
   if (!c.ok) return errorResponse(c.error, 400)
   await context.env.DB.prepare(
-    'UPDATE state_champions SET year = ?, title = ?, champion = ?, notes = ?, tournament_id = ? WHERE id = ?',
-  ).bind(c.row.year, c.row.title, c.row.champion, c.row.notes, c.row.tournamentId, id).run()
+    'UPDATE state_champions SET year = ?, title = ?, champion = ?, notes = ?, tournament_id = ?, kind = ?, photo_url = ? WHERE id = ?',
+  ).bind(c.row.year, c.row.title, c.row.champion, c.row.notes, c.row.tournamentId, c.row.kind, c.row.photoUrl, id).run()
   return jsonResponse({ success: true })
 }
 

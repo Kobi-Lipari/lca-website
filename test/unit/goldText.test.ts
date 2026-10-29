@@ -766,10 +766,10 @@ describe('the gold guard on the tree', () => {
     expect(read('src/pages/AdminClubPage.tsx')).toContain('color: clubTextColor(color),')
   })
 
-  it('places every badge and pill token on its kind of ground: a badge\'s dark gold on light grounds, a pill\'s light gold on navy, each branch of the filter dropdowns by its on, and 12 uses by an entry', () => {
+  it('places every badge and pill token on its kind of ground: a badge\'s dark gold on light grounds, a pill\'s light gold on navy, each branch of the filter dropdowns by its on, and 11 uses by an entry', () => {
     const of = (gold: 'ink' | 'pill', ground: Ground) => result.badgeUses.filter((b) => tokenGold(b.use.utility) === gold && b.ground === ground).map((b) => `${b.use.file}:${b.use.line}`)
     // 28 dark gold words and the club badge's, and 5 pills.
-    expect(result.badgeUses).toHaveLength(34)
+    expect(result.badgeUses).toHaveLength(33)
     expect(of('ink', 'light')).toHaveLength(18)
     expect(of('ink', 'navy')).toEqual([])
     expect(of('pill', 'light')).toEqual([])
@@ -804,9 +804,10 @@ describe('the gold guard on the tree', () => {
       'src/pages/BylawsPage.tsx:25 <ThickThinRule> on=light (its default) -> light',
       'src/pages/BylawsPage.tsx:27 <ThickThinRule> on=light (its default) -> light',
       'src/pages/BylawsPage.tsx:31 <ThickThinRule> on=light (its default) -> light',
-      'src/pages/ChampionsPage.tsx:117 <ThickThinRule> on=light (its default) -> light',
-      'src/pages/ChampionsPage.tsx:66 <ThickThinRule> on=light (its default) -> light',
-      'src/pages/ChampionsPage.tsx:96 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:104 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:154 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:183 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:74 <ThickThinRule> on=light (its default) -> light',
       'src/pages/MinutesPage.tsx:21 <ThickThinRule> on=light (its default) -> light',
       'src/pages/ScholasticPage.tsx:69 <StatusBadge> on=light -> light',
       'src/pages/TournamentsPage.tsx:555 <FilterDropdown> on=navy -> navy',
@@ -1103,9 +1104,9 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     }
   }, 60_000)
 
-  it('without the badge allowlist, exactly its 12 uses fail, and each entry takes exactly its own uses', () => {
+  it('without the badge allowlist, exactly its 11 uses fail, and each entry takes exactly its own uses', () => {
     const problems = goldGuard(ROOT, { badges: [] }).problems
-    expect(problems).toHaveLength(12)
+    expect(problems).toHaveLength(11)
     for (const p of problems) expect(p).toContain('A person decides: an entry in GOLD_BADGE_ALLOWLIST')
     expect(new Set(problems.map((p) => p.split(':')[0]))).toEqual(new Set(GOLD_BADGE_ALLOWLIST.map((e) => e.file)))
     for (const [i, e] of GOLD_BADGE_ALLOWLIST.entries()) {
