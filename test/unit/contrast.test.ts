@@ -259,9 +259,15 @@ describe('the chrome\'s own rings, set by data-ring-ground (WS02 step 3)', () =>
     expect(main.map((r) => r.decls.get('outline'))).toEqual(['none'])
   })
 
-  it('is carried, so far, by the two banners alone; the chrome\'s own parts take it on as they are built', () => {
+  it('is carried by the two banners and by the chrome\'s parts built so far: since WS02 step 5 the new header and its two menus', () => {
     const carriers = tsxFiles(ROOT).filter((file) => read(file).includes('data-ring-ground'))
-    expect(carriers.sort()).toEqual(['src/components/AnnouncementBanner.tsx', 'src/components/ImpersonationBanner.tsx'])
+    expect(carriers.sort()).toEqual([
+      'src/components/AnnouncementBanner.tsx',
+      'src/components/ImpersonationBanner.tsx',
+      'src/components/layout/AboutMenu.tsx',
+      'src/components/layout/MyLcaMenu.tsx',
+      'src/components/layout/SiteHeader.tsx',
+    ])
   })
 })
 

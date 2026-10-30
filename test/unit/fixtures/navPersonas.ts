@@ -84,6 +84,14 @@ export interface NavPersona {
   readonly holds: MyLcaPerson | null
   /** The account links today's More menu shows this person, in order. */
   readonly todaysRoleLinks: readonly string[]
+  /**
+   * The labels of the rows the new header's My LCA menu gives this person, in
+   * order, on the a11y-on build (myLcaRail and newMembership off) and before
+   * the sign-in context holds the children (no Family row): plain data for
+   * the browser tests, which cannot load src/lib/nav.ts, and which
+   * test/unit/nav.test.ts holds equal to myLcaRows. Empty when signed out.
+   */
+  readonly myLcaMenuRows: readonly string[]
 }
 
 const DAY = 24 * 60 * 60 * 1000
@@ -196,6 +204,7 @@ interface SignedInFacts {
   /** As AuthContext works it out: a current seat, an LCA admin, or a view-only admin. */
   isBoardMember: boolean
   todaysRoleLinks: string[]
+  myLcaMenuRows: string[]
 }
 
 function signedIn(today: Date, facts: SignedInFacts): NavPersona {
@@ -224,6 +233,7 @@ function signedIn(today: Date, facts: SignedInFacts): NavPersona {
       hasChildren: children.length > 0,
     },
     todaysRoleLinks: facts.todaysRoleLinks,
+    myLcaMenuRows: facts.myLcaMenuRows,
   }
 }
 
@@ -240,6 +250,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       answers: null,
       holds: null,
       todaysRoleLinks: [],
+      myLcaMenuRows: [],
     },
     signedIn(today, {
       key: 'active-member',
@@ -248,6 +259,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       registrations: [entry(today, { id: 'fx-r-done-5', event: 'fx-t-done', memberId: 'fx-m-p5', playerName: 'Riley Fixture', section: 'Open', daysAgo: 37, isChildEntry: 0 })],
       isBoardMember: false,
       todaysRoleLinks: [],
+      myLcaMenuRows: ['My LCA', 'Log out'],
     }),
     signedIn(today, {
       key: 'renews-soon',
@@ -255,6 +267,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       member: { id: 'fx-m-renew', email: 'harper.fixture@example.org', fullName: 'Harper Fixture', status: 'active', endsIn: 20, type: 'adult', role: 'member', clubId: 'fx-club-north', rating: 1504 },
       isBoardMember: false,
       todaysRoleLinks: [],
+      myLcaMenuRows: ['My LCA', 'Log out'],
     }),
     signedIn(today, {
       key: 'expired-member',
@@ -263,6 +276,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       registrations: [entry(today, { id: 'fx-r-done-4', event: 'fx-t-done', memberId: 'fx-m-p4', playerName: 'Morgan Fixture', section: 'Open', daysAgo: 38, isChildEntry: 0 })],
       isBoardMember: false,
       todaysRoleLinks: [],
+      myLcaMenuRows: ['My LCA', 'Log out'],
     }),
     signedIn(today, {
       key: 'parent',
@@ -275,6 +289,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       ],
       isBoardMember: false,
       todaysRoleLinks: [],
+      myLcaMenuRows: ['My LCA', 'Log out'],
     }),
     signedIn(today, {
       key: 'director',
@@ -283,6 +298,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       directs: [{ id: 'fx-t-open', name: 'Fixture Fall Open', date: dateFrom(today, 24), status: 'upcoming' }],
       isBoardMember: false,
       todaysRoleLinks: ['Workspace'],
+      myLcaMenuRows: ['My LCA', 'Workspace', 'Log out'],
     }),
     signedIn(today, {
       key: 'club-rep',
@@ -290,6 +306,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       member: { id: 'fx-m-club-rep', email: 'cameron.fixture@example.org', fullName: 'Cameron Fixture', status: 'active', endsIn: 120, type: 'adult', role: 'club_rep', clubId: 'fx-club-capital', rating: 1590 },
       isBoardMember: false,
       todaysRoleLinks: ['Workspace'],
+      myLcaMenuRows: ['My LCA', 'Workspace', 'Log out'],
     }),
     signedIn(today, {
       key: 'regional-rep',
@@ -300,6 +317,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       managedClubs: [north],
       isBoardMember: true,
       todaysRoleLinks: ['Board inbox', 'My region’s clubs'],
+      myLcaMenuRows: ['My LCA', 'Board inbox', 'My region’s clubs', 'Log out'],
     }),
     signedIn(today, {
       key: 'officer',
@@ -312,6 +330,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       seats: [seat(today, 'fx-seat-officer', 'fixture-secretary', 'Fixture Secretary', 'officer', 200, [])],
       isBoardMember: true,
       todaysRoleLinks: ['Admin panel', 'Board inbox'],
+      myLcaMenuRows: ['My LCA', 'Board inbox', 'Admin (view only)', 'Log out'],
     }),
     signedIn(today, {
       key: 'president',
@@ -320,6 +339,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       seats: [seat(today, 'fx-seat-president', 'fixture-president', 'Fixture President', 'officer', 300, [])],
       isBoardMember: true,
       todaysRoleLinks: ['Admin panel', 'Board inbox'],
+      myLcaMenuRows: ['My LCA', 'Board inbox', 'Admin (view only)', 'Log out'],
     }),
     signedIn(today, {
       key: 'admin',
@@ -328,6 +348,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       aal: 'aal2',
       isBoardMember: true,
       todaysRoleLinks: ['Admin panel', 'Board inbox'],
+      myLcaMenuRows: ['My LCA', 'Board inbox', 'Admin', 'Log out'],
     }),
     signedIn(today, {
       key: 'everything',
@@ -343,6 +364,7 @@ export function navPersonas(today: Date = new Date()): NavPersona[] {
       managedClubs: [capital],
       isBoardMember: true,
       todaysRoleLinks: ['Admin panel', 'Board inbox'],
+      myLcaMenuRows: ['My LCA', 'Board inbox', 'Admin', 'Log out'],
     }),
   ]
 }

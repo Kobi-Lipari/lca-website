@@ -31,8 +31,10 @@
 // phone sheet and the phone tab bar (section 1 and WS01's scope-aware guard):
 // #705718 as the About menu's "You are here" label, #866a1e as text at 13px
 // or more on the sheet's #fbfaf6 row, and #866a1e as the current tab's top
-// bar. Those parts are not built yet, so each entry matches nothing; the
-// guard says so, and fails when one starts to match without its context.
+// bar. The About menu is built (WS02 step 5) and its entry matches its one
+// use, in its context; the sheet and the tab bar are not built yet, so their
+// entries match nothing. The guard says so, and fails when a use does not
+// keep to its context.
 
 export interface GoldAllowEntry {
   /** The TSX file, relative to the repository root. */

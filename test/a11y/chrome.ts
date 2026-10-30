@@ -13,20 +13,24 @@
 //   have, and the parts inside them a spec reads, each found by its role, its
 //   name or its data-slot. A footer that is not drawn has no role, so code
 //   that reads it while it may be hidden reads SITE.footer instead.
-// - The header's names in two lists: CHROME_NAMES, which any header gives,
-//   and TODAYS_NAMES, which only today's gives.
+// - The header's names in three lists: CHROME_NAMES, which any header
+//   gives, TODAYS_NAMES, which only today's gives, and NEW_NAMES, which only
+//   the new header gives.
 // - Which chrome each test build draws at a width (DRAWN and chromeAt), and
 //   two ways for a spec to say that an assertion holds for today's chrome
 //   only: onlyToday at the top of a test whose every assertion does, and
 //   ifToday around the lines of a test that also checks what any chrome
 //   holds. Neither removes or loosens a check: each runs it wherever today's
+//   chrome is drawn. onlyNew and ifNew are their mirrors for an assertion
+//   that holds for the new chrome only, each running it wherever the new
 //   chrome is drawn.
 //
-// Today's chrome is drawn at every width on both builds. Each WS02 step that
+// Since WS02 step 5 the a11y-on build draws the new header from 1024 pixels
+// up and today's below, and today's footer; the a11y-off build keeps today's
+// chrome at every width, since it turns no switch on. Each WS02 step that
 // draws a new part changes DRAWN and test/unit/chrome-helper.test.tsx
-// together: WS02 step 5 the header on a11y-on from 1024 pixels, WS02 step 6
-// the header there at every width, and WS02 step 8 the footer there. The
-// a11y-off build keeps today's chrome, since it turns no switch on.
+// together: WS02 step 6 the header on a11y-on at every width, and WS02 step
+// 8 the footer there.
 //
 // No project collects this file (its name ends neither in .spec.ts nor in
 // baseline.ts), and it imports only types from Playwright and from
@@ -83,11 +87,31 @@ export const CHROME_NAMES = {
   clubs: 'Clubs',
 } as const
 
-/** Names only today's header gives: its two account buttons and its More menu, whose place the My LCA menu takes. */
+/**
+ * Names only today's header gives: its two account buttons and its More
+ * menu, whose place the My LCA menu takes. The new header gives Log out too,
+ * as the My LCA menu's last row, which a spec reads by NEW_NAMES.logOut.
+ */
 export const TODAYS_NAMES = {
   profile: 'Profile',
   logOut: 'Log out',
   more: 'More',
+} as const
+
+/**
+ * Names only the new header gives (brief 1.4's WS02 section): its brand
+ * link, named for the home page; the About and My LCA menus' buttons;
+ * Donate; Renew, in the Join slot once a membership has expired; and Log
+ * out, the My LCA menu's last row, which today's header gives as a button of
+ * its own (TODAYS_NAMES.logOut).
+ */
+export const NEW_NAMES = {
+  home: 'Louisiana Chess Association, home',
+  about: 'About',
+  myLca: 'My LCA',
+  donate: 'Donate',
+  renew: 'Renew',
+  logOut: 'Log out',
 } as const
 
 /** A test build, by its project name (A11Y_VARIANTS in ./global-setup). */
@@ -101,11 +125,11 @@ export type Chrome = 'today' | 'new'
  * Which chrome each test build draws, for each part, as pairs of the width
  * it starts at and the chrome, read from the smallest width up. It is not
  * worked out from the switches: a11y-on has had newNav and newLook on since
- * WS02 step 2 while nothing new is drawn, so only what each step builds can
- * answer it.
+ * WS02 step 2, and draws the new header from 1024 pixels since WS02 step 5,
+ * so only what each step builds can answer it.
  */
 export const DRAWN: Readonly<Record<Build, Readonly<Record<Part, ReadonlyArray<readonly [number, Chrome]>>>>> = {
-  'a11y-on': { header: [[0, 'today']], footer: [[0, 'today']] },
+  'a11y-on': { header: [[0, 'today'], [1024, 'new']], footer: [[0, 'today']] },
   'a11y-off': { header: [[0, 'today']], footer: [[0, 'today']] },
 }
 
@@ -122,6 +146,11 @@ export function chromeAt(build: string, part: Part, width: number): Chrome {
 /** Whether a build draws today's chrome for a part at every one of these widths. */
 export function todayAt(build: string, part: Part, widths: readonly number[]): boolean {
   return widths.every((width) => chromeAt(build, part, width) === 'today')
+}
+
+/** Whether a build draws the new chrome for a part at every one of these widths. */
+export function newAt(build: string, part: Part, widths: readonly number[]): boolean {
+  return widths.every((width) => chromeAt(build, part, width) === 'new')
 }
 
 /** The width of a page's window: the one a test set, or Desktop Chrome's 1280 (playwright.config.ts) where it set none. */
@@ -150,4 +179,29 @@ export async function ifToday(testInfo: TestInfo, part: Part, width: number, wha
     return
   }
   testInfo.annotations.push({ type: 'today only', description: `${what}: not read on ${build} at ${width} pixels, where the new ${part} is drawn` })
+}
+
+/**
+ * At the top of a test whose every assertion holds for the new chrome only:
+ * skips the test, saying why, unless the build asked about (the test's own,
+ * unless it names another) draws the new chrome for that part at every
+ * width the test reads.
+ */
+export function onlyNew(testInfo: TestInfo, part: Part, widths: readonly number[], why: string, build: string = testInfo.project.name): void {
+  test.skip(!newAt(build, part, widths), `the new ${part} only: ${why}`)
+}
+
+/**
+ * Around the lines of a test that hold for the new chrome only, in a test
+ * that also checks what any chrome holds: runs them where the build asked
+ * about (the test's own, unless it names another) draws the new chrome for
+ * that part at that width, and otherwise notes in the report, as an
+ * annotation of type "new only", what was not read.
+ */
+export async function ifNew(testInfo: TestInfo, part: Part, width: number, what: string, run: () => Promise<void> | void, build: string = testInfo.project.name): Promise<void> {
+  if (chromeAt(build, part, width) === 'new') {
+    await run()
+    return
+  }
+  testInfo.annotations.push({ type: 'new only', description: `${what}: not read on ${build} at ${width} pixels, where today's ${part} is drawn` })
 }

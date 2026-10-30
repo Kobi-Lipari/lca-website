@@ -139,8 +139,13 @@ const OWN_READS = [
 const STRIP = String.raw`/("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|\/\*[\s\S]*?\*\//g`
 
 describe('REDESIGN_STATUS.md, WS02 step 4: the lines outside the block', () => {
-  it('says in the Status line that steps 1 to 4 are built, and leaves the PR line naming checkpoint E\'s draft pull request', () => {
-    expect(statusLine).toBe('**Status:** in progress: nineteen steps in five checkpoints (E for steps 1 to 5, F for 6 to 8, G for 9 to 11, H for 12 to 16, I for 17 to 19); steps 1 to 4 are built.')
+  it('says in the Status line that steps 1 to 4 are built, or, once a later step has landed, steps 1 to that step, and leaves the PR line naming checkpoint E\'s draft pull request', () => {
+    // WS02 step 5 moved this pin: each later step writes "steps 1 to N are built", which keeps steps 1 to 4 built.
+    const head = '**Status:** in progress: nineteen steps in five checkpoints (E for steps 1 to 5, F for 6 to 8, G for 9 to 11, H for 12 to 16, I for 17 to 19); '
+    expect(statusLine.startsWith(head)).toBe(true)
+    const built = /^steps 1 to (\d+) are built\.$/.exec(statusLine.slice(head.length))
+    expect(built, statusLine).not.toBeNull()
+    expect(Number(built![1])).toBeGreaterThanOrEqual(4)
     expect(prLine).toBe('**PR:** draft pull request 110, which carries checkpoint E (steps 1 to 5).')
   })
 

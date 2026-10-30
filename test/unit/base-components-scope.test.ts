@@ -9,8 +9,9 @@
 //   by relative path or lazily).
 // - The list of statuses and their words is read by StatusBadge and the
 //   fixture page only.
-// - Only the fixture page draws StatusBadge's status path or the Button's
-//   gold variant, and no caller gives StatusDot a label.
+// - Only the fixture page draws StatusBadge's status path, only the fixture
+//   page and the new header of WS02 step 5 draw the Button's gold variant,
+//   and no caller gives StatusDot a label.
 // - ADMIN_SCROLL, which ScrollPanel generalises, keeps its value and its
 //   ten uses in nine admin files, none of which moves to the panel yet (that
 //   is WS06's and WS08's, as REDESIGN_STATUS.md records).
@@ -60,8 +61,9 @@ describe('the new components are drawn on the fixture page only', () => {
     expect(drawnIn(/<StatusBadge\b[^>]*\bstatus=/)).toEqual([FIXTURE])
   })
 
-  it('only the fixture page draws the gold Button', () => {
-    expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual([FIXTURE])
+  it('only the fixture page and the new header draw the gold Button', () => {
+    // WS02 step 5's header draws Join LCA and Renew as the gold Button, its first place off the fixture page.
+    expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual(['src/components/layout/SiteHeader.tsx', FIXTURE].sort())
   })
 
   it('no caller gives StatusDot a label yet, so its one page caller shows its state\'s words', () => {

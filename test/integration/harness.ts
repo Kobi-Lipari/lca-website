@@ -25,6 +25,9 @@ export interface CreatedStripeSession {
   customerEmail: string | null
   /** Every line on the checkout (one for a single entry, several for a family). */
   lineItems: Array<{ name: string; amountCents: number }>
+  /** Where Stripe sends the payer back to once they have paid, and where if they cancel. */
+  successUrl: string | null
+  cancelUrl: string | null
 }
 
 /** Every email "sent" via Resend during the current test file. */
@@ -300,6 +303,8 @@ export function installFetchInterceptor(): void {
             form.get('line_items[0][price_data][product_data][name]') ?? '',
           clientReferenceId: form.get('client_reference_id'),
           customerEmail: form.get('customer_email'),
+          successUrl: form.get('success_url'),
+          cancelUrl: form.get('cancel_url'),
           lineItems: [...form.keys()]
             .map((k) => k.match(/^line_items\[(\d+)\]\[quantity\]$/)?.[1])
             .filter((i): i is string => i !== undefined)

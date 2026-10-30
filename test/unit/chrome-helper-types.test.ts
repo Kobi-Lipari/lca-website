@@ -11,10 +11,12 @@
 // - onlyToday takes the test's testInfo, the header or the footer, the
 //   widths as a list and why, and the build to ask about when it is not the
 //   test's own; ifToday the same with one width, what it marks and the
-//   check to run; chromeAt answers "today" or "new", never only "today"
+//   check to run; onlyNew and ifNew, their mirrors for the new chrome, take
+//   the same; chromeAt answers "today" or "new", never only "today"
 // - a part is the header or the footer and nothing else, a list of widths
 //   is not one width, and a mark says what it marks
-// - SITE, the two lists of names and the table are read-only to a spec
+// - SITE, the three lists of names and the table are read-only to a spec,
+//   and each list holds only its own header's names
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import ts from 'typescript'
@@ -33,7 +35,7 @@ const PROBE = join(DIR, 'chrome-probe.ts')
 
 const HEADER = [
   'import type { Page, TestInfo } from \'@playwright/test\'',
-  'import { CHROME_NAMES, DRAWN, SITE, TODAYS_NAMES, appearanceControl, brandLink, chromeAt, footerLogo, ifToday, onlyToday, rookMark, siteFooter, siteHeader, todayAt, widthOf, type Chrome } from \'./chrome\'',
+  'import { CHROME_NAMES, DRAWN, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, chromeAt, footerLogo, ifNew, ifToday, newAt, onlyNew, onlyToday, rookMark, siteFooter, siteHeader, todayAt, widthOf, type Chrome } from \'./chrome\'',
   'declare const page: Page',
   'declare const testInfo: TestInfo',
   'declare const other: { name: string }',
@@ -54,6 +56,12 @@ const COMPILES: Record<string, string> = {
   'a name today\'s header alone gives': 'export const profile: \'Profile\' = TODAYS_NAMES.profile',
   'the selectors, handed to the page': 'void page.evaluate((site) => document.querySelector(site.header)?.getBoundingClientRect().height, SITE)',
   'the table, read': 'export const pairs = DRAWN[\'a11y-on\'].header.length',
+  'onlyNew with a list of widths and why': 'onlyNew(testInfo, \'header\', [1024, 1280, 1440], \'the new header\\\'s row\')',
+  'onlyNew asking about another build': 'onlyNew(testInfo, \'header\', [1280], \'the other build\\\'s header\', other.name)',
+  'ifNew with a check that waits': 'void ifNew(testInfo, \'header\', widthOf(page), \'My LCA in the new header\', async () => { await siteHeader(page).getByRole(\'button\', { name: NEW_NAMES.myLca }).count() })',
+  'ifNew asking about another build': 'void ifNew(testInfo, \'header\', 1280, \'no My LCA there\', async () => {}, other.name)',
+  'newAt answering yes or no': 'export const fresh: boolean = newAt(\'a11y-on\', \'header\', [1024, 1280])',
+  'a name the new header alone gives': 'export const home: \'Louisiana Chess Association, home\' = NEW_NAMES.home',
 }
 
 /** Calls that must not compile, with why. */
@@ -73,6 +81,12 @@ const REFUSED: Record<string, string> = {
   'a name of either list changed': 'CHROME_NAMES.logIn = \'Sign in\'',
   'a name today\'s header does not give': 'export const mine = TODAYS_NAMES.myLca',
   'the table changed by a spec': 'DRAWN[\'a11y-on\'].header = [[0, \'new\']]',
+  'onlyNew given one width where it reads a list': 'onlyNew(testInfo, \'header\', 1280, \'why\')',
+  'onlyNew that does not say why': 'onlyNew(testInfo, \'header\', [1280])',
+  'ifNew of a part that is neither': 'void ifNew(testInfo, \'tabs\', 1280, \'what\', () => {})',
+  'ifNew with no check to run': 'void ifNew(testInfo, \'header\', 1280, \'what\')',
+  'a name of the new list changed': 'NEW_NAMES.home = \'Home\'',
+  'a name the new header does not give': 'export const more = NEW_NAMES.more',
 }
 
 interface Compiled {

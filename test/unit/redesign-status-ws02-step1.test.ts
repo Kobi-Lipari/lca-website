@@ -162,8 +162,11 @@ describe('REDESIGN_STATUS.md, WS02 step 1: the WS02 section', () => {
     // The six parts this step opened, once each; every other heading is a later step's block.
     const FIXED = [MAP, STEP, '### WS02 decisions', '### WS02 deviations from the brief', '### WS02 verify items resolved', '### WS02 follow-ups']
     for (const fixed of FIXED) expect(headings.filter((h) => h === fixed), fixed).toHaveLength(1)
-    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(h).toMatch(/^### WS02 step \d+: \S/)
-    for (const h of headings) expect(h.startsWith('### WS02 '), h).toBe(true)
+    // WS02 step 5 widened this rule for the checkpoints' sections, in the form WS01's record took: from checkpoint E on,
+    // each closes with "### Checkpoint X: WS02 steps N to M" after its last step's block.
+    const isCheckpoint = (h: string) => /^### Checkpoint [E-I]: WS02 steps \d+ to \d+$/.test(h)
+    for (const h of headings.filter((l) => !FIXED.includes(l))) expect(/^### WS02 step \d+: \S/.test(h) || isCheckpoint(h), h).toBe(true)
+    for (const h of headings) expect(h.startsWith('### WS02 ') || isCheckpoint(h), h).toBe(true)
     expect(ws02.split('\n').filter((l) => l.startsWith('|'))).toEqual([])
   })
 

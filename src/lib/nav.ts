@@ -7,9 +7,11 @@
 // entry and no page is ever called two things (the decided board
 // Nav-IA-Final, section F).
 //
-// Nothing here draws anything, and no page imports this file yet: the new
-// header, menus, sheet, tabs and footer that read it come later, behind
-// newNav. Everything that depends on a switch takes the switches as its last
+// Nothing here draws anything. The page frame reads the chrome's condition
+// (src/App.tsx), and the new header and its About and My LCA menus read the
+// sections, the rows and the utilities (src/components/layout); the sheet,
+// the tabs and the footer that read the rest come later, behind newNav.
+// Everything that depends on a switch takes the switches as its last
 // argument, which defaults to FEATURES, so a test can try any combination.
 // Icons are names, not components, so the model stays plain data; the part
 // that draws a tab maps the name to its icon.

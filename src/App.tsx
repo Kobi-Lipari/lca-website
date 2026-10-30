@@ -111,7 +111,8 @@ function SkipLink() {
 /**
  * The line shown while a page's code arrives. With the chrome on it holds
  * the height of the window under the header, with today's row at its top
- * (--header-h, which the new header sets, stands at 64px until then), and
+ * (--header-h, which the new header writes from 1024 pixels up; below that,
+ * and before the header has measured itself, it stands at 64px), and
  * it carries data-loading-line: while it shows, the footer is not drawn
  * (src/index.css), so the footer comes with the page and neither drops out
  * of view as a taller page arrives nor rises into view as a shorter one

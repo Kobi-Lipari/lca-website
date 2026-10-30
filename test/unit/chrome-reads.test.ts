@@ -12,16 +12,20 @@
 //   selector of that kind is kept in a string for later; the one exception
 //   is the fixture page's own header, which tokens.spec.ts reads inside its
 //   container
-// - a spec that marks a check as today's imports onlyToday or ifToday from
-//   the helper, hands it the test's testInfo, names the part it marks, the
-//   header or the footer, and says what it marks; every ifToday is awaited,
-//   so what it holds runs, and fails the test, before the test goes on; and
-//   onlyToday comes after the test's own skip for its project, so the other
-//   build goes on giving the reason it gives now
-// - the header's names come from the helper's two lists, never written out;
-//   a read of a name only today's header gives (and of the More menu's
-//   account links) is marked as today's, or sits in a helper only marked
-//   checks call; and a name any header gives is never marked
+// - a spec that marks a check as today's, or as the new chrome's, imports
+//   the mark from the helper (onlyToday or ifToday, onlyNew or ifNew),
+//   hands it the test's testInfo, names the part it marks, the header or the
+//   footer, and says what it marks; every ifToday and ifNew is awaited, so
+//   what it holds runs, and fails the test, before the test goes on; and
+//   onlyToday and onlyNew come after the test's own skip for its project, so
+//   the other build goes on giving the reason it gives now
+// - the header's names come from the helper's three lists, never written
+//   out, each name taken once, since Log out is in two of them; a read of a
+//   name only today's header gives (and of the More menu's account links) is
+//   marked as today's, and a read of a name only the new header gives (and
+//   of a person's My LCA rows, from test/unit/fixtures/navPersonas.ts) is
+//   marked as the new header's, or sits in a helper only checks so marked
+//   call; and a name any header gives is never marked as today's
 // - the reading is not blind: made-up lines of each kind are found, and the
 //   ways the specs read the chrome through the helper are not
 import { readdirSync, readFileSync } from 'node:fs'
@@ -142,20 +146,27 @@ function ownReads(path: string, source: string): Read[] {
   })
 }
 
+/** The helper's marks: a check of today's chrome only, and a check of the new chrome only. */
+const MARK_NAMES = ['onlyToday', 'ifToday', 'onlyNew', 'ifNew'] as const
+type MarkName = (typeof MARK_NAMES)[number]
+const isMarkName = (name: string): name is MarkName => (MARK_NAMES as readonly string[]).includes(name)
+/** The marks that run what they are handed, and so must be awaited. */
+const RUNS: readonly MarkName[] = ['ifToday', 'ifNew']
+
 interface Mark {
   file: string
   line: number
-  name: 'onlyToday' | 'ifToday'
+  name: MarkName
   call: ts.CallExpression
   source: ts.SourceFile
 }
 
-/** Every call of onlyToday and ifToday in a file. */
+/** Every call of onlyToday, ifToday, onlyNew and ifNew in a file. */
 function marksIn(path: string, source: string): Mark[] {
   const file = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
   const marks: Mark[] = []
   const visit = (node: ts.Node) => {
-    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && (node.expression.text === 'onlyToday' || node.expression.text === 'ifToday')) {
+    if (ts.isCallExpression(node) && ts.isIdentifier(node.expression) && isMarkName(node.expression.text)) {
       marks.push({ file: path, line: file.getLineAndCharacterOfPosition(node.getStart(file)).line + 1, name: node.expression.text, call: node, source: file })
     }
     ts.forEachChild(node, visit)
@@ -185,15 +196,29 @@ function isProjectSkip(statement: ts.Statement): boolean {
 
 /** The names the specs read today's header by, which only today's gives: the helper's list, and the More menu's account links. */
 const TODAYS = new Set(['TODAYS_NAMES', 'TODAYS_ACCOUNT_LINKS'])
+/**
+ * The names the specs read the new header by, which only the new header
+ * gives: the helper's list, and the labels of a person's My LCA rows, which
+ * each signed-in person in test/unit/fixtures/navPersonas.ts holds as
+ * myLcaMenuRows.
+ */
+const NEW_LISTS = new Set(['NEW_NAMES', 'myLcaMenuRows'])
 
-/** The values of the helper's two lists of names, read from its text. */
+/** Today's lists and marks, and the new header's. */
+const KINDS = {
+  today: { lists: TODAYS, run: 'ifToday', whole: 'onlyToday' },
+  new: { lists: NEW_LISTS, run: 'ifNew', whole: 'onlyNew' },
+} as const
+type Kind = keyof typeof KINDS
+
+/** The values of the helper's three lists of names, read from its text. */
 function helperNames(): string[] {
   const file = ts.createSourceFile('chrome.ts', read(`${DIR}/chrome.ts`), ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
   const values: string[] = []
   for (const statement of file.statements) {
     if (!ts.isVariableStatement(statement)) continue
     for (const declaration of statement.declarationList.declarations) {
-      if (!ts.isIdentifier(declaration.name) || !['CHROME_NAMES', 'TODAYS_NAMES'].includes(declaration.name.text)) continue
+      if (!ts.isIdentifier(declaration.name) || !['CHROME_NAMES', 'TODAYS_NAMES', 'NEW_NAMES'].includes(declaration.name.text)) continue
       const init = declaration.initializer && ts.isAsExpression(declaration.initializer) ? declaration.initializer.expression : declaration.initializer
       if (init && ts.isObjectLiteralExpression(init)) {
         for (const prop of init.properties) if (ts.isPropertyAssignment(prop) && textOf(prop.initializer) !== null) values.push(textOf(prop.initializer)!)
@@ -209,17 +234,20 @@ interface NameRead {
 }
 
 /**
- * How a file reads the header's names: the reads of today's names that are
- * not marked as today's (inside what an ifToday runs, in a test onlyToday
- * marks, or in a helper of the file whose every call is one of those), the
- * reads of the names any header gives that are marked, and the names a read
- * of the header writes out rather than take from the helper's lists.
+ * How a file reads the header's names, for today's header or the new one:
+ * the reads of that header's own names that are not marked as its own
+ * (inside what an ifToday, or an ifNew, runs, in a test onlyToday, or
+ * onlyNew, marks, or in a helper of the file whose every call is one of
+ * those), the reads of the names any header gives that are so marked, and
+ * the names a read of the header writes out rather than take from the
+ * helper's lists.
  */
-function nameReads(path: string, source: string, names: string[]): { unmarked: NameRead[]; markedAny: NameRead[]; writtenOut: NameRead[] } {
+function nameReads(path: string, source: string, names: string[], kind: Kind = 'today'): { unmarked: NameRead[]; markedAny: NameRead[]; writtenOut: NameRead[] } {
+  const { lists, run, whole } = KINDS[kind]
   const file = ts.createSourceFile(path, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
   const at = (node: ts.Node): NameRead => ({ line: file.getLineAndCharacterOfPosition(node.getStart(file)).line + 1, text: node.parent.getText(file).replace(/\s+/g, ' ').slice(0, 100) })
   const called = (node: ts.Node, name: string): node is ts.CallExpression => ts.isCallExpression(node) && ts.isIdentifier(node.expression) && node.expression.text === name
-  // What an ifToday runs, and the body of each test onlyToday marks as a whole.
+  // What an ifToday (or ifNew) runs, and the body of each test onlyToday (or onlyNew) marks as a whole.
   const marked = new Set<ts.Node>()
   // A helper of the file: a function it declares at its top level, by name.
   const helpers = new Map<ts.Node, string>()
@@ -231,15 +259,15 @@ function nameReads(path: string, source: string, names: string[]): { unmarked: N
       }
     }
   }
-  const todays: ts.Identifier[] = []
+  const own: ts.Identifier[] = []
   const anyChrome: ts.Identifier[] = []
   const calls: ts.CallExpression[] = []
   const writtenOut: NameRead[] = []
   const visit = (node: ts.Node) => {
-    if (called(node, 'ifToday') && node.arguments[4]) marked.add(node.arguments[4])
-    if (called(node, 'onlyToday') && node.parent && ts.isExpressionStatement(node.parent) && ts.isBlock(node.parent.parent)) marked.add(node.parent.parent.parent)
+    if (called(node, run) && node.arguments[4]) marked.add(node.arguments[4])
+    if (called(node, whole) && node.parent && ts.isExpressionStatement(node.parent) && ts.isBlock(node.parent.parent)) marked.add(node.parent.parent.parent)
     if (ts.isIdentifier(node) && !ts.isImportSpecifier(node.parent)) {
-      if (TODAYS.has(node.text)) todays.push(node)
+      if (lists.has(node.text)) own.push(node)
       if (node.text === 'CHROME_NAMES') anyChrome.push(node)
     }
     if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) calls.push(node)
@@ -263,11 +291,11 @@ function nameReads(path: string, source: string, names: string[]): { unmarked: N
     for (let up = node.parent; up; up = up.parent) if (helpers.has(up)) return helpers.get(up)!
     return null
   }
-  // The helpers that read today's names are today's too: each call of one must be marked.
-  const todaysHelpers = new Set(todays.map(helperOf).filter((name): name is string => name !== null))
+  // The helpers that read the header's own names are its own too: each call of one must be marked.
+  const ownHelpers = new Set(own.map(helperOf).filter((name): name is string => name !== null))
   const unmarked = [
-    ...todays.filter((node) => helperOf(node) === null && !inside(node, marked)),
-    ...calls.filter((call) => todaysHelpers.has((call.expression as ts.Identifier).text) && !inside(call, marked) && !todaysHelpers.has(helperOf(call) ?? '')),
+    ...own.filter((node) => helperOf(node) === null && !inside(node, marked)),
+    ...calls.filter((call) => ownHelpers.has((call.expression as ts.Identifier).text) && !inside(call, marked) && !ownHelpers.has(helperOf(call) ?? '')),
   ].map(at)
   const markedAny = anyChrome.filter((node) => inside(node, marked)).map(at)
   return { unmarked, markedAny, writtenOut }
@@ -275,7 +303,14 @@ function nameReads(path: string, source: string, names: string[]): { unmarked: N
 
 const ALL = FILES.map((path) => ({ path, source: read(path) }))
 const MARKS = ALL.flatMap(({ path, source }) => marksIn(path, source))
-const NAMES = helperNames()
+/**
+ * The names the helper's three lists hold, each once. Log out is in two:
+ * TODAYS_NAMES, as today's header's own button, and NEW_NAMES, as the My LCA
+ * menu's last row. The twins in the signed-in specs read what the new header
+ * shows from NEW_NAMES, Log out among them, and the My LCA rows' labels from
+ * each person's myLcaMenuRows, never from TODAYS_ACCOUNT_LINKS.
+ */
+const NAMES = [...new Set(helperNames())]
 
 describe('the reading is not blind', () => {
   it('finds each kind of read of the chrome that does not go through the helper', () => {
@@ -343,6 +378,20 @@ describe('the reading is not blind', () => {
     expect(isAwaited(marks[1].call)).toBe(false)
   })
 
+  it('finds an ifNew that is not awaited, and an onlyNew that comes before the test\'s own skip', () => {
+    const source = [
+      'test(\'a made-up test\', async ({ page }, testInfo) => {',
+      '  onlyNew(testInfo, \'header\', [1280], \'why\')',
+      '  test.skip(testInfo.project.name !== ON, \'a11y-on only\')',
+      '  ifNew(testInfo, \'header\', 1280, \'what\', () => {})',
+      '})',
+    ].join('\n')
+    const marks = marksIn('test/a11y/made-up.spec.ts', source)
+    expect(marks.map((m) => m.name)).toEqual(['onlyNew', 'ifNew'])
+    expect(skipsAfter(marks[0])).toEqual([3])
+    expect(isAwaited(marks[1].call)).toBe(false)
+  })
+
   it('finds a read of today\'s names that is not marked, a helper of them called unmarked, a name any header gives that is marked, and a name written out', () => {
     const source = [
       'async function more(page: Page) { await siteHeader(page).getByRole(\'button\', { name: TODAYS_NAMES.more }).hover() }',
@@ -366,6 +415,35 @@ describe('the reading is not blind', () => {
     expect(found.unmarked.map((r) => r.line)).toEqual([3, 4])
     expect(found.markedAny.map((r) => r.line)).toEqual([6])
     expect(found.writtenOut.map((r) => r.line)).toEqual([10])
+  })
+
+  it('finds a read of the new header\'s names, or of a person\'s My LCA rows, that is not marked as new, and a helper of them called unmarked', () => {
+    const source = [
+      'async function myLca(page: Page) { await siteHeader(page).getByRole(\'button\', { name: NEW_NAMES.myLca }).click() }',
+      'test(\'a made-up test\', async ({ page }, testInfo) => {',
+      '  await expect(siteHeader(page).getByRole(\'button\', { name: NEW_NAMES.myLca })).toBeVisible()',
+      '  await myLca(page)',
+      '  await ifNew(testInfo, \'header\', 1280, \'the new header\\\'s names\', async () => {',
+      '    await myLca(page)',
+      '    await expect(siteHeader(page).getByRole(\'listitem\')).toHaveText([...person.myLcaMenuRows])',
+      '  })',
+      '  await ifToday(testInfo, \'header\', 1280, \'today\\\'s names\', async () => {',
+      '    await expect(siteHeader(page).getByRole(\'button\', { name: NEW_NAMES.logOut })).toBeVisible()',
+      '    await expect(siteHeader(page).getByRole(\'listitem\')).toHaveText([...person.myLcaMenuRows])',
+      '  })',
+      '  await expect(siteHeader(page).getByRole(\'link\', { name: \'Renew\' })).toBeVisible()',
+      '})',
+      'test(\'a made-up test of the new header alone\', async ({ page }, testInfo) => {',
+      '  onlyNew(testInfo, \'header\', [1280], \'why\')',
+      '  await expect(siteHeader(page).getByRole(\'link\', { name: NEW_NAMES.home })).toBeVisible()',
+      '  await myLca(page)',
+      '})',
+    ].join('\n')
+    const found = nameReads('test/a11y/made-up.spec.ts', source, ['Log in', 'Renew', 'My LCA', 'Log out', 'Louisiana Chess Association, home'], 'new')
+    expect(found.unmarked.map((r) => r.line).sort((a, b) => a - b)).toEqual([3, 4, 10, 11])
+    expect(found.writtenOut.map((r) => r.line)).toEqual([13])
+    // Read for today's header, the same lines are not today's own names.
+    expect(nameReads('test/a11y/made-up.spec.ts', source, ['Log out'], 'today').unmarked).toEqual([])
   })
 })
 
@@ -400,10 +478,10 @@ describe('the browser tests read the chrome through the helper alone', () => {
   })
 })
 
-describe('the checks marked as today\'s', () => {
+describe('the checks marked as today\'s, or as the new chrome\'s', () => {
   it('are found in the specs that mark them', () => {
     expect(MARKS.length).toBeGreaterThan(0)
-    expect(new Set(MARKS.map((m) => m.name))).toEqual(new Set(['onlyToday', 'ifToday']))
+    expect(new Set(MARKS.map((m) => m.name))).toEqual(new Set(['onlyToday', 'ifToday', 'onlyNew', 'ifNew']))
   })
 
   it('are marked by names each spec imports from the helper', () => {
@@ -422,25 +500,26 @@ describe('the checks marked as today\'s', () => {
       expect(['header', 'footer'], `${where}: the part`).toContain(textOf(part))
       const said = what ? (textOf(what) ?? '') + (ts.isTemplateExpression(what) ? what.templateSpans.map((s) => s.literal.text).join('') : '') : ''
       expect(said.trim().length, `${where}: what it marks`).toBeGreaterThan(0)
-      if (mark.name === 'ifToday') expect(run !== undefined && (ts.isArrowFunction(run) || ts.isFunctionExpression(run) || ts.isIdentifier(run)), `${where}: what it runs`).toBe(true)
+      if (RUNS.includes(mark.name)) expect(run !== undefined && (ts.isArrowFunction(run) || ts.isFunctionExpression(run) || ts.isIdentifier(run)), `${where}: what it runs`).toBe(true)
     }
   })
 
-  it('await every ifToday, so what it holds runs, and fails the test, before the test goes on', () => {
-    const loose = MARKS.filter((m) => m.name === 'ifToday' && !isAwaited(m.call)).map((m) => `${m.file} line ${m.line}`)
+  it('await every ifToday and every ifNew, so what it holds runs, and fails the test, before the test goes on', () => {
+    const loose = MARKS.filter((m) => RUNS.includes(m.name) && !isAwaited(m.call)).map((m) => `${m.file} line ${m.line}`)
     expect(loose).toEqual([])
   })
 
-  it('put onlyToday after the test\'s own skip for its project, so the other build keeps the reason it gives now', () => {
-    for (const mark of MARKS.filter((m) => m.name === 'onlyToday')) {
+  it('put onlyToday and onlyNew after the test\'s own skip for its project, so the other build keeps the reason it gives now', () => {
+    for (const mark of MARKS.filter((m) => !RUNS.includes(m.name))) {
       expect(skipsAfter(mark), `${mark.file} line ${mark.line}`).toEqual([])
     }
   })
 })
 
 describe('the header\'s names', () => {
-  it('are the helper\'s two lists, which hold the six names the specs read the header by', () => {
-    expect([...NAMES].sort()).toEqual(['Clubs', 'Join LCA', 'Log in', 'Log out', 'More', 'Profile'])
+  it('are the helper\'s three lists, which hold the eleven names the specs read the header by, each once', () => {
+    expect(helperNames()).toHaveLength(12)
+    expect([...NAMES].sort()).toEqual(['About', 'Clubs', 'Donate', 'Join LCA', 'Log in', 'Log out', 'Louisiana Chess Association, home', 'More', 'My LCA', 'Profile', 'Renew'])
   })
 
   it('are read from the lists, never written out in a read of the header', () => {
@@ -451,6 +530,12 @@ describe('the header\'s names', () => {
     const reading = ALL.filter(({ source }) => [...TODAYS].some((name) => source.includes(name)))
     expect(reading.map(({ path }) => path)).toEqual(expect.arrayContaining(['test/a11y/signed-in.spec.ts', 'test/a11y/signed-in-edges.spec.ts']))
     for (const { path, source } of reading) expect(nameReads(path, source, NAMES).unmarked.map((r) => `line ${r.line}: ${r.text}`), path).toEqual([])
+  })
+
+  it('that only the new header gives are read only where a check is marked as the new header\'s, by ifNew or onlyNew, or by a helper only such a check calls', () => {
+    const reading = ALL.filter(({ source }) => [...NEW_LISTS].some((name) => source.includes(name)))
+    expect(reading.map(({ path }) => path)).toEqual(expect.arrayContaining(['test/a11y/signed-in.spec.ts', 'test/a11y/signed-in-edges.spec.ts', 'test/a11y/nav.spec.ts']))
+    for (const { path, source } of reading) expect(nameReads(path, source, NAMES, 'new').unmarked.map((r) => `line ${r.line}: ${r.text}`), path).toEqual([])
   })
 
   it('that any header gives are never marked as today\'s', () => {

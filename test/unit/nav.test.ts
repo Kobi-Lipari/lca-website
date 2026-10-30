@@ -18,7 +18,10 @@
 //   newNews in all four combinations; Donate before and after the Give page.
 // - The My LCA rows for every person in test/unit/fixtures/navPersonas.ts,
 //   with myLcaRail off and on and newMembership off and on, and the role rules
-//   of today's header for the cases the list does not cover.
+//   of today's header for the cases the list does not cover; and the rows each
+//   person's myLcaMenuRows gives the browser tests as plain data, which are
+//   the ones the a11y-on build's switches give before the children reach the
+//   header.
 // - Search's data: the pages, the words parents use and the region aliases.
 // - The guard. newAbout, newNews, newMembership, newClubs and myLcaRail point
 //   rows at pages that later parts build, or take rows away for a rail that a
@@ -31,7 +34,7 @@
 import { readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { FEATURES, type FeatureName, type Features } from '@/lib/features'
+import { FEATURES, FLAG_OVERRIDE_MODE, applyFlagOverrides, type FeatureName, type Features } from '@/lib/features'
 import { MEMBER_ROLES, isViewOnlyAdmin, type MemberRole } from '@/areas/admin/roles'
 import { REGIONS } from '@/lib/regions'
 import {
@@ -77,6 +80,7 @@ import {
   type NavId,
 } from '@/lib/nav'
 import { PERSONA_KEYS, TODAYS_ACCOUNT_LINKS, navPersonas, type NavPersona, type PersonaKey } from './fixtures/navPersonas'
+import { A11Y_VARIANTS } from '../a11y/global-setup'
 
 const ROOT = resolve(__dirname, '../..')
 const read = (path: string) => readFileSync(join(ROOT, path), 'utf8')
@@ -509,6 +513,19 @@ describe('the My LCA menu', () => {
       expect(list[0].label).toBe('My LCA')
       expect(list.at(-1)).toEqual({ id: 'logOut', label: 'Log out', href: null, roleRow: false })
     }
+  })
+
+  it('gives the browser tests, in each person\'s myLcaMenuRows, the rows the new header gives them on the a11y-on build, before the children reach the header', () => {
+    const variant = A11Y_VARIANTS.find((v) => v.name === 'a11y-on')
+    expect(variant, 'the a11y-on build in test/a11y/global-setup.ts').toBeDefined()
+    // The switches as that build has them: the site's own, with the build's names turned on.
+    const onBuild = applyFlagOverrides(FEATURES, FLAG_OVERRIDE_MODE, variant!.flags)
+    expect([onBuild.myLcaRail, onBuild.newMembership], 'myLcaRail and newMembership on the a11y-on build').toEqual([false, false])
+    for (const person of SIGNED_IN) {
+      // The sign-in context holds no children yet, so the header draws no Family row (src/components/layout/MyLcaMenu.tsx).
+      expect(person.myLcaMenuRows, person.key).toEqual(myLcaRows({ ...person.holds, hasChildren: false }, onBuild).map((r) => r.label))
+    }
+    expect(PEOPLE.find((p) => p.key === 'signed-out')!.myLcaMenuRows).toEqual([])
   })
 
   it('reads "Admin" for an LCA admin and "Admin (view only)" for the officers and the president', () => {

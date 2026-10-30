@@ -909,6 +909,16 @@
     display: none;
 }
 
+/* The new header writes its own height to --header-h on the page's root
+ * while it is drawn (src/components/layout/SiteHeader.tsx), so the page
+ * keeps that much room at its top when it scrolls a control into view: a
+ * link or a button the keyboard moves to is never left under the sticky
+ * header (WCAG 2.4.11). Where nothing writes the variable, today's header
+ * among them, nothing is padded (WS02 step 5). */
+:root[data-look="new"] {
+    scroll-padding-top: var(--header-h, 0px);
+}
+
 /* Motion, new look only: with reduced motion asked for, nothing moves. A
  * zero-length animation still fires its end event, which the dialogs wait
  * for before they close. */
