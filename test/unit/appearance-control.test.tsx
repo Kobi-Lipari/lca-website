@@ -5,11 +5,16 @@
 // default, can be set to Light or Dark, keeps the choice in this browser,
 // marks the pressed option in words, sits in the footer, and a localStorage
 // that throws neither breaks the page nor changes what the device says.
+// Since WS02 step 3 the page's own scheme is handed the page's head as well,
+// so a pick of Light or Dark sets the browser bar's colour there
+// (test/unit/theme-color.test.tsx holds the rest of that). Since WS02 step 4
+// it also holds that in today's footer the control sits on the footer's own
+// navy, with nothing between giving a ground or a ring of its own.
 // With newLook off see appearance-control-off.test.tsx.
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { APPEARANCE_KEY } from '@/lib/colorScheme'
+import { APPEARANCE_KEY, THEME_COLOR_ATTRIBUTE, THEME_COLOR_DARK, THEME_COLOR_LIGHT } from '@/lib/colorScheme'
 
 vi.mock('@/lib/features', async (importOriginal) => {
   const real = await importOriginal<typeof import('@/lib/features')>()
@@ -132,6 +137,18 @@ describe('the Appearance control', () => {
     expect(isDark()).toBe(true)
   })
 
+  it('a pick of Light or Dark gives the page\'s head that look\'s browser bar colour, first in it, and System takes it away', () => {
+    const own = () => [...document.head.querySelectorAll(`meta[name="theme-color"][${THEME_COLOR_ATTRIBUTE}]`)]
+    expect(own()).toEqual([])
+    act(() => fireEvent.click(option('Dark')))
+    expect(own().map((m) => m.getAttribute('content'))).toEqual([THEME_COLOR_DARK])
+    expect(document.head.firstElementChild).toBe(own()[0])
+    act(() => fireEvent.click(option('Light')))
+    expect(own().map((m) => m.getAttribute('content'))).toEqual([THEME_COLOR_LIGHT])
+    act(() => fireEvent.click(option('System')))
+    expect(own()).toEqual([])
+  })
+
   it('stops following the device once the page stops it', () => {
     expect(device.listeners.size).toBeGreaterThan(0)
     stop()
@@ -152,5 +169,33 @@ describe('the footer under newLook', () => {
     expect(within(footer).getAllByRole('group', { name: 'Appearance' })).toHaveLength(1)
     expect(within(footer).getByText(/All rights reserved/)).toBeTruthy()
     expect(within(footer).getByText(/Louisiana Chess Association/, { selector: 'p' })).toBeTruthy()
+  })
+
+  it('sits on the footer\'s own navy, with nothing between giving a ground or a ring of its own, so the navy band rule rings it gold', () => {
+    cleanup()
+    render(
+      <MemoryRouter>
+        <Footer />
+      </MemoryRouter>,
+    )
+    const footer = screen.getByRole('contentinfo')
+    const group = within(footer).getByRole('group', { name: 'Appearance' })
+    // The footer is the navy band whose rule in src/index.css gives a control inside it the gold ring.
+    expect(footer.getAttribute('class')!.split(' ')).toContain('bg-brand-navy')
+    // From the group up to the footer, and on each of its buttons, nothing paints a ground or sets a ring of its own.
+    const between: Element[] = []
+    for (let el = group.parentElement; el && el !== footer; el = el.parentElement) between.push(el)
+    expect(between.length).toBeGreaterThan(0)
+    for (const el of [group, ...between]) {
+      expect(el.getAttribute('class') ?? '', el.tagName).not.toMatch(/(?:^|\s)(?:[\w-]+:)*bg-/)
+      expect(el.hasAttribute('data-ground'), el.tagName).toBe(false)
+      expect(el.hasAttribute('data-ring-ground'), el.tagName).toBe(false)
+    }
+    const buttons = within(group).getAllByRole('button')
+    expect(buttons).toHaveLength(3)
+    for (const button of buttons) {
+      expect(button.getAttribute('class') ?? '').not.toMatch(/(?:^|\s)(?:[\w-]+:)*bg-popover\b/)
+      expect(button.hasAttribute('data-ground') || button.hasAttribute('data-ring-ground')).toBe(false)
+    }
   })
 })

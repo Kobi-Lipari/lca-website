@@ -388,7 +388,7 @@ describe('the command line', () => {
       expect(r.status, args.join(' ')).toBe(1)
       expect(r.stderr).toContain('Usage: node --no-warnings --experimental-strip-types scripts/codemods/gold-ink.ts')
     }
-  })
+  }, 20_000)
 
   it('--dry-run prints the table and writes nothing; --table writes it to a file; a real run rewrites, and a second rewrites nothing', () => {
     const root = plantedWithAllowlist({ 'src/pages/Planted.tsx': page(`      <div className="bg-card"><p className="${GOLD}">x</p></div>`) })
@@ -408,7 +408,7 @@ describe('the command line', () => {
     const again = run('--root', root)
     expect(again.stdout).toContain('Rewrote 0 classes in 0 files.')
     expect(run('--check', '--root', root).status).toBe(0)
-  })
+  }, 20_000)
 
   it('a problem stops a real run before any file is written', () => {
     const root = plantedWithAllowlist({

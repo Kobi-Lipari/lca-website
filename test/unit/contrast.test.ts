@@ -51,7 +51,7 @@ import { describe, expect, it } from 'vitest'
 import { groundOf as groundUnder, parseFile, readTree, type Tree } from '../../scripts/codemods/gold-ink'
 import { STATUS_MAP, classStrings, loadMap, parseToken, tokensOf, tsxFiles, type ClassToken } from '../../scripts/codemods/semantic-colours'
 import { HERITAGE_ROUTES, routeScope } from '../../src/lib/themeScopes'
-import { contrast, hexToRgb, indexCssRules, read, ROOT, rootTokens, scopeTokens } from './helpers/cssTokens'
+import { applies, contrast, hexToRgb, indexCssRules, matchesRoot, read, ROOT, rootTokens, scopeTokens, specificity, substitute } from './helpers/cssTokens'
 import { GOLD_ALLOWLIST } from './fixtures/goldAllowlist'
 import { exclusive, jsxTree, type JsxNode, type Piece } from './helpers/jsxClasses'
 
@@ -132,6 +132,142 @@ describe('the focus ring inside a navy band', () => {
     expect(contrast(get(LOOKS.base, '--gold-on-dark'), '#1a2744')).toBeGreaterThanOrEqual(3)
     // The navy ring would vanish there.
     expect(contrast(get(LOOKS.base, '--focus'), '#1a2744')).toBe(1)
+  })
+})
+
+// ── The chrome's own rings (WS02 step 3) ──────────────────────────────────
+//
+// The new header, the phone's app bar, the round-state strip and the footer,
+// the light surfaces they open and the banners' gold ground mark themselves
+// with data-ring-ground (navy, light or gold), and the rules for it in
+// src/index.css set --focus there. Each ring is read as a browser works it
+// out, on the element that carries the value, and held to 3:1 against the
+// ground right next to it (the ring is drawn 2px outside the control), in
+// the light look and in dark mode. The round-state strip is drawn in the
+// live look, whose ring the looks above already hold to 3:1 on its grounds
+// (LOOKS, live and live in dark mode), so it needs no pair of its own.
+
+type RingGround = 'navy' | 'light' | 'gold'
+
+/**
+ * The ring on an element marked data-ring-ground="value": the page's own
+ * --focus, then each rule for that value the page's state matches, by
+ * specificity and then by place in the file, as the cascade takes them.
+ */
+function chromeRing(value: RingGround, dark: boolean): string {
+  const state = { look: true, dark }
+  const page = rootTokens(rules, state)
+  const own = new RegExp(`^(.+) \\[data-ring-ground="${value}"\\]$`)
+  const hits = rules
+    .filter((r) => applies(r) && r.decls.has('--focus'))
+    .flatMap((r) => r.selectors.flatMap((s) => {
+      const m = own.exec(s)
+      return m && matchesRoot(m[1], state) ? [{ rule: r, spec: specificity(s) }] : []
+    }))
+    .sort((a, b) => a.spec - b.spec || a.rule.order - b.rule.order)
+  let focus = get(page, '--focus')
+  for (const { rule } of hits) focus = substitute(rule.decls.get('--focus')!, page)
+  return focus
+}
+
+/** The navy of the header, the app bar and the footer, the same in both modes (the brief's table). */
+const CHROME_NAVY = '#1a2744'
+/** The current rows of the light surfaces in the light look: the sheet's and the About menu's. */
+const SHEET_ROW = '#fbfaf6'
+const ABOUT_ROW = '#f3eedc'
+/** The banners' opaque gold. */
+const GOLD_GROUND = '#c8a94a'
+
+describe('the chrome\'s own rings, set by data-ring-ground (WS02 step 3)', () => {
+  it('gives the navy chrome the gold ring, at 3:1 or more on its navy, in the light look and in dark mode', () => {
+    for (const dark of [false, true]) {
+      expect(chromeRing('navy', dark), `dark ${dark}`).toBe('#c8a94a')
+      expect(chromeRing('navy', dark)).toBe(get(dark ? LOOKS.dark : LOOKS.base, '--gold-on-dark'))
+      expect(contrast(chromeRing('navy', dark), CHROME_NAVY)).toBeGreaterThanOrEqual(3)
+    }
+  })
+
+  it('gives each light surface the look\'s own ring back: navy on white and on the current rows in the light look', () => {
+    const ring = chromeRing('light', false)
+    expect(ring).toBe(get(LOOKS.base, '--focus'))
+    for (const ground of [get(LOOKS.base, '--raised'), SHEET_ROW, ABOUT_ROW]) {
+      expect(contrast(ring, ground), ground).toBeGreaterThanOrEqual(3)
+    }
+  })
+
+  it('and gold on the navy of dark mode\'s light surfaces, on --raised and on a row with a tenth of white over it', () => {
+    const ring = chromeRing('light', true)
+    expect(ring).toBe(get(LOOKS.dark, '--focus'))
+    const raised = get(LOOKS.dark, '--raised')
+    expect(raised).toBe('#1a2744')
+    for (const ground of [raised, over('#ffffff', 0.1, raised)]) {
+      expect(contrast(ring, ground), ground).toBeGreaterThanOrEqual(3)
+    }
+  })
+
+  it('gives the banners\' gold ground a navy ring in both modes, where the dark mode ring alone would be gold on gold', () => {
+    for (const dark of [false, true]) {
+      expect(chromeRing('gold', dark), `dark ${dark}`).toBe('#1a2744')
+      expect(contrast(chromeRing('gold', dark), GOLD_GROUND)).toBeGreaterThanOrEqual(3)
+    }
+    // What a control on the gold ground drew before: the look's own ring, gold on gold in dark mode.
+    expect(get(LOOKS.dark, '--focus')).toBe(GOLD_GROUND)
+    expect(contrast(get(LOOKS.dark, '--focus'), GOLD_GROUND)).toBe(1)
+  })
+
+  it('sets the colour by --focus alone, so the one ring draws it, and the rules wait for the new look', () => {
+    const marked = rules.filter((r) => r.selectors.some((s) => s.includes('[data-ring-ground')))
+    expect(marked.length).toBe(3)
+    for (const r of marked) {
+      expect([...r.decls.keys()], r.selector).toEqual(['--focus'])
+      for (const s of r.selectors) expect(s.startsWith(':root[data-look="new"]'), s).toBe(true)
+    }
+    // Without the new look none of them applies, and the ring is today's.
+    for (const value of ['navy', 'light', 'gold'] as const) {
+      const own = new RegExp(`^(.+) \\[data-ring-ground="${value}"\\]$`)
+      for (const r of marked) for (const s of r.selectors) {
+        const m = own.exec(s)
+        if (m) expect(matchesRoot(m[1], { look: false, dark: true }), s).toBe(false)
+      }
+    }
+  })
+
+  it('leaves the navy band rule and its menu exception as they were, for the page heroes', () => {
+    const gold = rules.filter((r) => r.decls.get('outline-color') === 'var(--gold-on-dark)')
+    expect(gold.map((r) => r.selectors)).toEqual([[
+      ':root[data-look="new"] .bg-lca-navy :focus-visible',
+      ':root[data-look="new"] .bg-brand-navy :focus-visible',
+      ':root[data-look="new"] [data-ground="dark"] :focus-visible',
+    ]])
+    const back = rules.filter((r) => r.decls.get('outline-color') === 'var(--focus)')
+    expect(back.map((r) => r.selectors)).toEqual([gold[0].selectors.map((s) => s.replace(/ :focus-visible$/, ' .bg-popover :focus-visible'))])
+    // The chrome's rules come after both, and set no colour outright, so the band rule keeps the heroes' ring.
+    const chrome = rules.filter((r) => r.selectors.some((s) => s.includes('[data-ring-ground')))
+    for (const r of chrome) expect(r.order).toBeGreaterThan(back[0].order)
+  })
+
+  it('draws the skip link\'s ring inside its own edge, on its own ground, at 3:1 or more in both modes', () => {
+    const skip = rules.filter((r) => r.selectors.includes(':root[data-look="new"] [data-skip-link]:focus-visible'))
+    expect(skip).toHaveLength(1)
+    // Inside the edge, with a gap of the link's own ground beyond the 2px line.
+    expect(parseFloat(skip[0].decls.get('outline-offset') ?? '0')).toBeLessThanOrEqual(-4)
+    for (const tokens of [LOOKS.base, LOOKS.dark]) {
+      expect(contrast(get(tokens, '--focus'), get(tokens, '--raised'))).toBeGreaterThanOrEqual(3)
+    }
+    // The main it moves the focus to is a landmark, not a control, and draws no ring.
+    const main = rules.filter((r) => r.selectors.includes(':root[data-look="new"] #main-content:focus-visible'))
+    expect(main.map((r) => r.decls.get('outline'))).toEqual(['none'])
+  })
+
+  it('is carried by the two banners and by the chrome\'s parts built so far: since WS02 step 5 the new header and its two menus', () => {
+    const carriers = tsxFiles(ROOT).filter((file) => read(file).includes('data-ring-ground'))
+    expect(carriers.sort()).toEqual([
+      'src/components/AnnouncementBanner.tsx',
+      'src/components/ImpersonationBanner.tsx',
+      'src/components/layout/AboutMenu.tsx',
+      'src/components/layout/MyLcaMenu.tsx',
+      'src/components/layout/SiteHeader.tsx',
+    ])
   })
 })
 

@@ -1,13 +1,25 @@
 // src/components/layout/Navbar.tsx
+//
+// The site's header. With the chrome on (newNav and newLook, chromeOn in
+// src/lib/nav.ts) and a window 1024 pixels wide or wider, it is the new
+// header, src/components/layout/SiteHeader.tsx. Otherwise it is today's
+// header, below, which every visitor sees with every switch off; with the
+// chrome on it also stands in below 1024 pixels until the tablet header and
+// the phone's app bar are built. Today's header marks the link of the page
+// a visitor is on with aria-current="page", in the bar, the More menu and
+// the drawer, and is otherwise as it was (test/unit/header-today.test.tsx).
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, Menu, UserCircle, X } from 'lucide-react'
 import { LcaMark } from '@/components/LcaMark'
+import { SiteHeader } from '@/components/layout/SiteHeader'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
 import { WORKSPACE_ROLES, canAccessAdmin } from '@/areas/admin/roles'
+import { useWideScreen } from '@/hooks/useWideScreen'
 import { FEATURES } from '@/lib/features'
+import { chromeOn } from '@/lib/nav'
 import { cn } from '@/lib/utils'
 import lcaLogo from '@/assets/lca-logo.webp'
 
@@ -161,6 +173,7 @@ function MoreMenu({ groups }: { groups: NavLink[][] }) {
                     key={link.href}
                     role="menuitem"
                     to={link.href}
+                    aria-current={isLinkActive(location.pathname, link) ? 'page' : undefined}
                     className={cn(
                       'block px-4 py-2 text-sm hover:bg-white/10 hover:text-lca-gold',
                       isLinkActive(location.pathname, link) ? 'text-lca-gold' : 'text-white/80',
@@ -184,6 +197,7 @@ function NavLinkItem({ link }: { link: NavLink }) {
   return (
     <Link
       to={link.href}
+      aria-current={isLinkActive(location.pathname, link) ? 'page' : undefined}
       className={cn(
         'text-sm font-medium transition-colors',
         isLinkActive(location.pathname, link)
@@ -201,6 +215,7 @@ function DrawerLink({ link, onNavigate }: { link: NavLink; onNavigate: () => voi
   return (
     <Link
       to={link.href}
+      aria-current={isLinkActive(location.pathname, link) ? 'page' : undefined}
       className={cn(
         'rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 hover:text-lca-gold',
         isLinkActive(location.pathname, link) ? 'text-lca-gold' : 'text-white/90',
@@ -212,7 +227,22 @@ function DrawerLink({ link, onNavigate }: { link: NavLink; onNavigate: () => voi
   )
 }
 
+/**
+ * The site's header: the new one with the chrome on, and today's otherwise.
+ * It calls no hook itself, so the branch it takes is chosen before any hook
+ * of the header it draws runs.
+ */
 export function Navbar() {
+  return chromeOn() ? <ChromeHeader /> : <TodaysHeader />
+}
+
+/** With the chrome on: the new header from 1024 pixels up, and today's below it until the tablet header and the app bar are built. */
+function ChromeHeader() {
+  return useWideScreen() ? <SiteHeader /> : <TodaysHeader />
+}
+
+/** Today's header. */
+function TodaysHeader() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { user, loading, signOut } = useAuth()
   const navigate = useNavigate()

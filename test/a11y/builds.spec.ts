@@ -4,9 +4,11 @@
 // what that build adds for the accessibility tests:
 //
 // - the server on each port serves its own dist folder: the switches inside
-//   the page are the ones its build was made with (newLook and themeHeritage
-//   on in a11y-on, nothing on in a11y-off), read from the feature module the
-//   site itself loaded
+//   the page are the ones its build was made with (in a11y-on the two looks,
+//   newLook and themeHeritage, and the five of the new chrome, newNav,
+//   siteSearch, eventStrip, eventStripLive and liveMarker; nothing in
+//   a11y-off), read from the feature module the site itself loaded, and every
+//   other switch is off in both
 // - /__fixtures/:name exists in both test builds, draws the base look for
 //   every name today, tells a visitor which names exist for an unknown one,
 //   and follows the plain-language rules: a weekday on the date, "7:00 PM",
@@ -19,7 +21,8 @@ import { join } from 'node:path'
 import { expect, test } from './support'
 import { A11Y_VARIANTS, ROOT } from './global-setup'
 
-const SWITCHES_ON = ['newLook', 'themeHeritage']
+/** The switches the a11y-on build turns on, in the order test/a11y/global-setup.ts gives them. */
+const SWITCHES_ON = ['newLook', 'themeHeritage', 'newNav', 'siteSearch', 'eventStrip', 'eventStripLive', 'liveMarker']
 
 /** The build folder of the project the test is running in. */
 function variantOf(project: string) {
@@ -51,11 +54,11 @@ test.describe('which build is served', () => {
     for (const [name, value] of Object.entries(switches!)) {
       expect(value, `${name} in ${testInfo.project.name}`).toBe(on.includes(name))
     }
-    // The ones the project is named for.
+    // The ones the project is named for, and the new chrome's.
     expect(switches!.newLook).toBe(testInfo.project.name === 'a11y-on')
     expect(switches!.themeHeritage).toBe(testInfo.project.name === 'a11y-on')
+    expect(switches!.newNav).toBe(testInfo.project.name === 'a11y-on')
     // Switches the site has not turned on stay off in both.
-    expect(switches!.newNav).toBe(false)
     expect(switches!.themeScholastic).toBe(false)
   })
 

@@ -35,11 +35,18 @@
 // /about asks the server for no data of its own, so each page is read once
 // the header's brand link, the footer and the page's heading are drawn, not
 // on network idle. Reads only.
+//
+// The header and the footer are read through test/a11y/chrome.ts. What holds
+// for today's header or footer alone says so through it (the mark's size, its
+// place beside today's words, the brand link's name, today's brand column in
+// the footer and the logo's file, and every check of a11y-off), and runs
+// wherever today's chrome is drawn.
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import AxeBuilder from '@axe-core/playwright'
 import type { Locator, Page, Response } from '@playwright/test'
+import { SITE, brandLink, footerImages, footerLogo, headerImages, ifToday, onlyToday, rookMark, siteFooter } from './chrome'
 import { expect, test } from './support'
 
 const ON = 'a11y-on'
@@ -67,8 +74,8 @@ test.use({ colorScheme: 'light', reducedMotion: 'reduce' })
 async function openAbout(page: Page, width: number) {
   await page.setViewportSize({ width, height: 800 })
   await page.goto('/about')
-  await expect(page.locator('header a[href="/"]')).toBeVisible()
-  await expect(page.locator('footer')).toBeVisible()
+  await expect(brandLink(page)).toBeVisible()
+  await expect(siteFooter(page)).toBeVisible()
   await expect(page.getByRole('heading', { level: 1, name: 'About LCA' })).toBeVisible()
   await page.evaluate(() => document.fonts.ready)
 }
@@ -143,36 +150,42 @@ test.describe('the header', () => {
         await page.emulateMedia({ colorScheme: scheme })
         await openAbout(page, width)
         expect(await page.locator('html').evaluate((el) => el.classList.contains('dark')), scheme).toBe(scheme === 'dark')
-        const header = page.locator('header')
-        await expect(header.locator('img')).toHaveCount(0)
-        const mark = header.locator('[data-slot="lca-mark"]')
+        await expect(headerImages(page)).toHaveCount(0)
+        const mark = rookMark(page)
         await expect(mark).toHaveCount(1)
         await expect(mark).toBeVisible()
-        const drawn = await mark.evaluate((svg) => {
+        const drawn = await mark.evaluate((svg, site) => {
           const paths = [...svg.querySelectorAll('path')]
           const box = svg.getBoundingClientRect()
-          const words = svg.nextElementSibling!.getBoundingClientRect()
+          // Today's markup: the brand link's words right after the mark, which is the link's own child.
+          const words = svg.nextElementSibling?.getBoundingClientRect() ?? null
           return {
             d: paths.map((p) => p.getAttribute('d')),
             fill: getComputedStyle(paths[0]).fill,
-            ground: getComputedStyle(svg.closest('header')!).backgroundColor,
+            ground: getComputedStyle(svg.closest(site.header)!).backgroundColor,
             hidden: svg.getAttribute('aria-hidden'),
             box: [box.width, box.height],
-            beforeWords: box.right <= words.left,
-            inLink: svg.parentElement!.getAttribute('href'),
+            beforeWords: words !== null && box.right <= words.left,
+            inLink: svg.parentElement?.getAttribute('href') ?? null,
           }
-        })
+        }, SITE)
         expect(drawn.d, scheme).toEqual([ROOK])
-        expect(drawn.box, scheme).toEqual([size, size])
+        await ifToday(testInfo, 'header', width, `the rook mark ${size} pixels square`, () => {
+          expect(drawn.box, scheme).toEqual([size, size])
+        })
         expect(drawn.fill, scheme).toBe(WHITE)
         expect(drawn.ground, scheme).toBe(NAVY)
         expect(ratio(drawn.fill, drawn.ground), scheme).toBeGreaterThanOrEqual(3)
         expect(drawn.hidden, scheme).toBe('true')
-        expect(drawn.inLink, scheme).toBe('/')
-        expect(drawn.beforeWords, scheme).toBe(true)
+        await ifToday(testInfo, 'header', width, 'the mark the brand link\'s own child, before its words', () => {
+          expect(drawn.inLink, scheme).toBe('/')
+          expect(drawn.beforeWords, scheme).toBe(true)
+        })
         // Hidden from screen readers: the link is named once, by its words, and holds no image.
-        const link = header.locator('a[href="/"]')
-        await expect(link).toHaveAccessibleName(NAME)
+        const link = brandLink(page)
+        await ifToday(testInfo, 'header', width, `the brand link named "${NAME}"`, async () => {
+          await expect(link).toHaveAccessibleName(NAME)
+        })
         await expect(link.getByRole('img')).toHaveCount(0)
         if (width === 390) expect(await scrollsSideways(page), scheme).toBe(false)
         console.log(`Header at ${width} pixels, ${scheme} device (${testInfo.project.name}): the rook mark ${size} pixels, fill ${drawn.fill} on ${drawn.ground}, ${ratio(drawn.fill, drawn.ground).toFixed(2)}:1, the link named "${NAME}".`)
@@ -183,18 +196,18 @@ test.describe('the header', () => {
 
   test('a11y-off at 1280, 768 and 390 pixels: today\'s image, 44 by 44, and no mark; the link named by the image and by its words', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== OFF, 'today\'s header is drawn with newLook off, on a11y-off')
+    onlyToday(testInfo, 'header', WIDTHS, 'today\'s image in the brand link, 44 by 44, named with the words')
     for (const width of WIDTHS) {
       await openAbout(page, width)
-      const header = page.locator('header')
-      await expect(header.locator('[data-slot="lca-mark"]')).toHaveCount(0)
-      const img = header.locator('img')
+      await expect(rookMark(page)).toHaveCount(0)
+      const img = headerImages(page)
       await expect(img).toHaveCount(1)
       await expect(img).toHaveAttribute('alt', NAME)
       const drawn = await logoAsDrawn(img)
       expect(drawn.path, String(width)).toMatch(LOGO_PATH)
       expect(drawn.natural).toEqual([400, 399])
       expect(await img.evaluate((el) => [el.getBoundingClientRect().width, el.getBoundingClientRect().height])).toEqual([44, 44])
-      await expect(header.locator('a[href="/"]')).toHaveAccessibleName(`${NAME} ${NAME}`)
+      await expect(brandLink(page)).toHaveAccessibleName(`${NAME} ${NAME}`)
       if (width === 390) expect(await scrollsSideways(page)).toBe(false)
     }
   })
@@ -205,36 +218,45 @@ test.describe('the footer', () => {
     test.skip(testInfo.project.name !== ON, 'LcaLogo is drawn in the footer under the new look, on a11y-on')
     const fetched = logoResponses(page)
     await openAbout(page, 1280)
-    const footer = page.locator('footer')
-    await expect(footer.locator('img')).toHaveCount(1)
-    const logo = footer.locator('[data-slot="lca-logo"]')
-    await expect(logo).toHaveCount(1)
-    await expect(logo).toHaveAttribute('alt', '')
-    await expect(footer.getByRole('img')).toHaveCount(0)
-    await expect(footer.getByText(NAME, { exact: true })).toHaveCount(1)
+    const footer = siteFooter(page)
+    const logo = footerLogo(page)
+    await ifToday(testInfo, 'footer', 1280, 'today\'s brand column: one image, the logo, with empty words beside the name, named once', async () => {
+      await expect(footerImages(page)).toHaveCount(1)
+      await expect(logo).toHaveCount(1)
+      await expect(logo).toHaveAttribute('alt', '')
+      await expect(footer.getByRole('img')).toHaveCount(0)
+      await expect(footer.getByText(NAME, { exact: true })).toHaveCount(1)
+    })
     const drawn = await logoAsDrawn(logo)
-    expect(drawn.natural).toEqual([400, 399])
+    await ifToday(testInfo, 'footer', 1280, 'the logo\'s file, 400 by 399', () => {
+      expect(drawn.natural).toEqual([400, 399])
+    })
     expect(drawn.width).toBe(56)
-    expect(drawn.path).toMatch(LOGO_PATH)
+    await ifToday(testInfo, 'footer', 1280, 'the logo\'s address, the official file\'s', () => {
+      expect(drawn.path).toMatch(LOGO_PATH)
+    })
     expect(drawn.fit).toBe('contain')
     expect(drawn.recolour).toEqual([])
     // The bytes the page fetched for it are the file in the repository.
-    const response = fetched.find((r) => new URL(r.url()).pathname === drawn.path)!
-    expect(response.headers()['content-type']).toBe('image/webp')
-    const body = await response.body()
-    expect(body.length).toBe(16468)
-    expect(sha256(body)).toBe(sha256(LOGO))
-    expect(body.equals(LOGO)).toBe(true)
+    await ifToday(testInfo, 'footer', 1280, 'the bytes fetched being src/assets/lca-logo.webp', async () => {
+      const response = fetched.find((r) => new URL(r.url()).pathname === drawn.path)!
+      expect(response.headers()['content-type']).toBe('image/webp')
+      const body = await response.body()
+      expect(body.length).toBe(16468)
+      expect(sha256(body)).toBe(sha256(LOGO))
+      expect(body.equals(LOGO)).toBe(true)
+    })
     expect(external).toEqual([])
   })
 
   test('a11y-off: today\'s image of the same file, 56 by 56', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== OFF, 'today\'s footer is drawn with newLook off, on a11y-off')
+    onlyToday(testInfo, 'footer', [1280], 'today\'s image of the logo in the footer, 56 by 56')
     const fetched = logoResponses(page)
     await openAbout(page, 1280)
-    const img = page.locator('footer img')
+    const img = footerImages(page)
     await expect(img).toHaveCount(1)
-    await expect(page.locator('footer [data-slot="lca-logo"]')).toHaveCount(0)
+    await expect(footerLogo(page)).toHaveCount(0)
     await expect(img).toHaveAttribute('alt', NAME)
     const drawn = await logoAsDrawn(img)
     expect(drawn.natural).toEqual([400, 399])
@@ -358,7 +380,7 @@ test.describe('axe on the header, the footer and /about', () => {
       await openAbout(page, width)
       const report: string[] = []
       const found: string[] = []
-      for (const [what, scope] of [['the header', 'header'], ['the footer', 'footer'], ['/about', null]] as const) {
+      for (const [what, scope] of [['the header', SITE.header], ['the footer', SITE.footer], ['/about', null]] as const) {
         let axe = new AxeBuilder({ page }).withTags(AXE_TAGS)
         if (scope) axe = axe.include(scope)
         const results = await axe.analyze()

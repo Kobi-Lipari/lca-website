@@ -9,6 +9,12 @@
 // - the script and createColorScheme agree with isDarkScheme for every
 //   stored value and device setting; storage that throws leaves the page on
 //   the device setting; nothing adds .dark while newLook is off
+// - the script, longer since WS02 step 3, puts the browser bar colour's meta
+//   first in the head for Light or Dark and nothing for System, and a
+//   document with no head still gets data-look and the dark class; built
+//   from the site's own index.html, the page's charset meta still ends
+//   inside its first 1024 bytes (test/unit/theme-color.test.tsx reads the
+//   colour the page ends up with)
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -23,6 +29,8 @@ import {
   parseAppearance,
   PREPAINT_SCRIPT,
   SYSTEM_DARK_QUERY,
+  THEME_COLOR_ATTRIBUTE,
+  themeColorFor,
   type MediaQueryLike,
   type RootLike,
   type StorageLike,
@@ -72,14 +80,14 @@ describe('prepaintPlugin in a real vite build', () => {
   })
   afterEach(() => vi.unstubAllEnvs())
 
+  /** A one-page site's page, the default for buildPage. */
+  const ONE_PAGE = '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <title>Page</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/main.js"></script>\n  </body>\n</html>\n'
+
   /** Builds a one-page site with the plugin and returns its index.html. */
-  async function buildPage(mode: string, flags: string | undefined, featuresFile?: string): Promise<string> {
+  async function buildPage(mode: string, flags: string | undefined, featuresFile?: string, page = ONE_PAGE): Promise<string> {
     const root = mkdtempSync(join(tmpdir(), 'lca-prepaint-'))
     dirs.push(root)
-    writeFileSync(
-      join(root, 'index.html'),
-      '<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="UTF-8" />\n    <title>Page</title>\n  </head>\n  <body>\n    <div id="root"></div>\n    <script type="module" src="/main.js"></script>\n  </body>\n</html>\n',
-    )
+    writeFileSync(join(root, 'index.html'), page)
     writeFileSync(join(root, 'main.js'), "document.getElementById('root').textContent = 'hello'\n")
     if (flags === undefined) vi.stubEnv('VITE_FLAGS', '')
     else vi.stubEnv('VITE_FLAGS', flags)
@@ -117,6 +125,23 @@ describe('prepaintPlugin in a real vite build', () => {
     expect(head.startsWith(`<script>${PREPAINT_SCRIPT}</script>`)).toBe(true)
     expect(html.indexOf('<meta charset="UTF-8" />')).toBeLessThan(1024)
     expect(html.indexOf(PREPAINT_SCRIPT)).toBeLessThan(html.indexOf('type="module"'))
+  }, 60_000)
+
+  it('built from the site\'s own index.html, the longer script still leaves the charset meta ending inside the first 1024 bytes', async () => {
+    // The site's page, with its module script pointed at the small one this build makes.
+    const site = read('index.html')
+    expect(site).toContain('src="/src/main.tsx"')
+    const html = await buildPage('a11y', 'newLook', undefined, site.replace('src="/src/main.tsx"', 'src="/main.js"'))
+    const head = html.slice(html.indexOf('<head>') + '<head>'.length).trimStart()
+    expect(head.startsWith(`<script>${PREPAINT_SCRIPT}</script>`)).toBe(true)
+    const charset = '<meta charset="UTF-8" />'
+    const bytes = Buffer.from(html, 'utf8')
+    const at = bytes.indexOf(charset)
+    const end = at + Buffer.byteLength(charset)
+    expect(at).toBeGreaterThan(0)
+    // The standard wants the whole meta inside the first 1024 bytes; what is left is the room for a longer script.
+    expect(end).toBeLessThanOrEqual(1024)
+    console.log(`The charset meta starts at byte ${at} and ends at byte ${end}: ${1024 - end} bytes to spare before 1024; the script is ${PREPAINT_SCRIPT.length} characters.`)
   }, 60_000)
 
   it('puts it in every build once the switch is written as true', async () => {
@@ -188,21 +213,47 @@ function fakeRoot(): RootLike & { attrs: Record<string, string>; classes: Set<st
   }
 }
 
+/** An element stand-in: its tag and attributes. */
+function fakeElement(tag: string) {
+  const attrs: Record<string, string> = {}
+  return { tag, attrs, setAttribute: (n: string, v: string) => void (attrs[n] = v) }
+}
+
+/** A <head> stand-in holding the script, as when the browser runs it: its elements, in order. */
+function fakeHead() {
+  const children: object[] = [fakeElement('script')]
+  return {
+    children,
+    get firstChild() {
+      return children[0] ?? null
+    },
+    insertBefore(node: object, child: object | null) {
+      const at = child === null ? -1 : children.indexOf(child)
+      children.splice(at < 0 ? children.length : at, 0, node)
+      return node
+    },
+  }
+}
+
 describe('PREPAINT_SCRIPT', () => {
   /**
    * Runs the script as the browser would, in a fresh context with only a
    * document and a window: `storage` is what window.localStorage gives (or
    * throws), `device` is the prefers-color-scheme answer, or null for a
-   * browser without matchMedia.
+   * browser without matchMedia. The document has the root and, since WS02
+   * step 3, a head and a way to make an element, for the browser bar's
+   * colour; `page` gives back the root and the head.
    */
-  function run(storage: () => StorageLike, device: boolean | null) {
+  function page(storage: () => StorageLike, device: boolean | null) {
     const root = fakeRoot()
+    const head = fakeHead()
     const window: Record<string, unknown> = {}
     Object.defineProperty(window, 'localStorage', { get: storage })
     if (device !== null) window.matchMedia = (q: string) => ({ matches: q === SYSTEM_DARK_QUERY && device })
-    runInNewContext(PREPAINT_SCRIPT, { document: { documentElement: root }, window })
-    return root
+    runInNewContext(PREPAINT_SCRIPT, { document: { documentElement: root, head, createElement: fakeElement }, window })
+    return { root, head }
   }
+  const run = (storage: () => StorageLike, device: boolean | null) => page(storage, device).root
 
   it('is plain ES5 with no template, arrow function, let or const', () => {
     expect(PREPAINT_SCRIPT).not.toMatch(/=>|`|\blet\b|\bconst\b/)
@@ -232,6 +283,45 @@ describe('PREPAINT_SCRIPT', () => {
   it('stays light where the browser has no matchMedia, unless Dark was picked', () => {
     expect(run(() => memoryStorage(), null).classes.has('dark')).toBe(false)
     expect(run(() => memoryStorage({ [APPEARANCE_KEY]: 'dark' }), null).classes.has('dark')).toBe(true)
+  })
+
+  it.each([null, 'light', 'dark', 'system', 'Dark', 'nonsense'])('with %j stored, puts the browser bar colour\'s meta first in the head for Light or Dark, and nothing for System', (stored) => {
+    for (const device of [false, true, null]) {
+      const { head } = page(() => memoryStorage(stored === null ? {} : { [APPEARANCE_KEY]: stored }), device)
+      const colour = themeColorFor(parseAppearance(stored))
+      if (colour === null) {
+        expect(head.children.map((c) => (c as { tag: string }).tag)).toEqual(['script'])
+        continue
+      }
+      expect(head.children).toHaveLength(2)
+      const [meta, script] = head.children as Array<{ tag: string; attrs: Record<string, string> }>
+      expect(script.tag).toBe('script')
+      expect(meta).toEqual({ tag: 'meta', attrs: { name: 'theme-color', content: colour, [THEME_COLOR_ATTRIBUTE]: stored }, setAttribute: expect.any(Function) })
+    }
+  })
+
+  it('adds no meta when storage throws, on reading it or on reaching it', () => {
+    const blocked = memoryStorage({ [APPEARANCE_KEY]: 'dark' }, true)
+    const unreachable = () => {
+      throw new Error('SecurityError')
+    }
+    for (const storage of [() => blocked, unreachable]) {
+      for (const device of [false, true]) expect(page(storage, device).head.children).toHaveLength(1)
+    }
+  })
+
+  it('with the stand-in of before WS02 step 3, a document of documentElement alone, still sets data-look and the dark class and throws nothing', () => {
+    for (const stored of [null, 'light', 'dark']) {
+      for (const device of [false, true]) {
+        const root = fakeRoot()
+        const window: Record<string, unknown> = {}
+        Object.defineProperty(window, 'localStorage', { get: () => memoryStorage(stored === null ? {} : { [APPEARANCE_KEY]: stored }) })
+        window.matchMedia = (q: string) => ({ matches: q === SYSTEM_DARK_QUERY && device })
+        expect(() => runInNewContext(PREPAINT_SCRIPT, { document: { documentElement: root }, window })).not.toThrow()
+        expect(root.attrs['data-look']).toBe('new')
+        expect(root.classes.has('dark'), `${stored} on a ${device ? 'dark' : 'light'} device`).toBe(isDarkScheme(parseAppearance(stored), device))
+      }
+    }
   })
 })
 

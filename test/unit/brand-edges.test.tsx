@@ -388,7 +388,8 @@ describe('where the tree draws the rook and the official logo', () => {
   it('draws the rook in the header and the LCA tag only, and the official logo in the footer and on /about only', () => {
     // A new place is one of D1's places left for later: record it in REDESIGN_STATUS.md, then add it here.
     // The seal (step 31) draws the rook inside its own SVG, at the head of a heritage page.
-    expect(importers('@/components/LcaMark')).toEqual(['src/components/Seal.tsx', 'src/components/StatusBadge.tsx', 'src/components/layout/Navbar.tsx'])
+    // WS02 step 5's new header leads with it too (SiteHeader.tsx, D1's place in the record).
+    expect(importers('@/components/LcaMark')).toEqual(['src/components/Seal.tsx', 'src/components/StatusBadge.tsx', 'src/components/layout/Navbar.tsx', 'src/components/layout/SiteHeader.tsx'])
     expect(importers('@/components/LcaLogo')).toEqual(['src/components/layout/Footer.tsx', 'src/pages/AboutPage.tsx'])
     // D1's places that exist and are left for later draw neither yet.
     for (const page of ['ChampionsPage', 'BoardPage', 'BylawsPage', 'MinutesPage', 'AnnualMeetingPage', 'HomePage']) {

@@ -57,9 +57,11 @@
 //   color property, which is words whatever its string holds), text anywhere
 //   but the phone sheet's "You are here" on its #fbfaf6 row, or a line or
 //   fill anywhere but the phone tab bar's current tab.
-// The last two are WS02's parts, listed in the fixture as WS02_GOLD. They are
-// not built yet, so each entry matches nothing today, which the guard says;
-// when one is built it must keep to its context or the guard fails.
+// The last two are WS02's parts, listed in the fixture as WS02_GOLD. WS02
+// step 5 built the About menu, whose entry matches its one use, in its
+// context; the sheet and the tab bar are not built yet, so their entries
+// match nothing, which the guard says. Each built part must keep to its
+// context or the guard fails.
 //
 // Every failure is planted in a temporary tree first, with the class names
 // put together when the test runs, so Tailwind, which reads this file, builds
@@ -828,12 +830,18 @@ describe('the gold guard on the tree', () => {
     expect(read('functions/db/schema.ts')).toContain(`color: text().default('${BRAND_GOLD}')`)
   })
 
-  it('the WS02 entries match nothing yet: their parts are not built, and neither gold appears in the code of any TSX file', () => {
-    expect(result.ws02Matched).toEqual([])
-    for (const w of WS02_GOLD) expect(result.tree.files.has(w.file), w.file).toBe(false)
+  it('the WS02 entries: the About menu\'s "You are here" matches in its file, beside its words, at its size and on its ground; the sheet and the tab bar are not built, and neither gold appears in the code of any other TSX file', () => {
+    // WS02 step 5 builds the About menu with its one gold use; the sheet and the tab bar come with WS02 steps 6 and 7.
+    const about = WS02_GOLD.find((w) => w.file.endsWith('/AboutMenu.tsx'))!
+    const line = read(about.file).split('\n').findIndex((l) => l.includes(c('text-[#', '705718]'))) + 1
+    expect(line).toBeGreaterThan(0)
+    expect(result.ws02Matched).toEqual([`${about.file}:${line}`])
+    for (const w of WS02_GOLD) expect(result.tree.files.has(w.file), w.file).toBe(w === about)
     for (const parsed of result.tree.files.values()) {
-      expect(hexUses(parsed, HERITAGE_GOLD), parsed.file).toEqual([])
+      const uses = hexUses(parsed, HERITAGE_GOLD)
+      expect(uses.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(parsed.file === about.file ? [`${about.file}:${line} text`] : [])
       expect(hexUses(parsed, DARK_GOLD), parsed.file).toEqual([])
+      for (const use of uses) expect(inContext(use, about), `${use.file}:${use.line}`).toBe(true)
     }
   })
 

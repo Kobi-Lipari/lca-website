@@ -205,6 +205,23 @@ describe('newLook on: the official logo in the footer', () => {
     expect(footer.queryAllByRole('img')).toHaveLength(0)
     expect(footer.getAllByText(NAME)).toHaveLength(1)
   })
+
+  it('has nothing from the logo up to the footer that could recolour it: no opacity, filter, blend or brightness class', () => {
+    // The classes that change how a picture is drawn, with or without a variant in front.
+    const RECOLOURS = /^(?:[\w-]+:)*(?:opacity|filter|blur|brightness|contrast|grayscale|invert|saturate|sepia|hue-rotate|drop-shadow|mix-blend|bg-blend|backdrop)(?:-|$)/
+    // Not blind: it catches each kind, and passes the classes the footer does carry.
+    for (const cls of ['opacity-90', 'hover:opacity-90', 'filter', 'brightness-110', 'grayscale', 'mix-blend-multiply', 'backdrop-blur']) expect(RECOLOURS.test(cls), cls).toBe(true)
+    for (const cls of ['text-white/60', 'bg-brand-navy', 'rounded-xl', 'object-contain', 'border-t-[3px]']) expect(RECOLOURS.test(cls), cls).toBe(false)
+    const logo = drawn('footer', true).querySelector('[data-slot="lca-logo"]')!
+    const found: string[] = []
+    let reached = false
+    for (let el: Element | null = logo; el && !reached; el = el.parentElement) {
+      for (const cls of (el.getAttribute('class') ?? '').split(/\s+/).filter(Boolean)) if (RECOLOURS.test(cls)) found.push(`<${el.tagName.toLowerCase()}> ${cls}`)
+      reached = el.tagName === 'FOOTER'
+    }
+    expect(reached).toBe(true)
+    expect(found).toEqual([])
+  })
 })
 
 describe('newLook on: the official logo on /about', () => {
