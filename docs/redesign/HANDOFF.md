@@ -25,6 +25,7 @@ Brought up to date on Fri, Oct 23, 2026, after WS01 finished and merged. The hea
 - B, steps 9 to 15: PR 104, merged Mon, Oct 12, 2026 at 10:29 PM UTC (`748a5ef`).
 - C, steps 16 to 19: PR 107, merged Tue, Oct 13, 2026 at 2:03 AM UTC (`7151bff`).
 - D, steps 20 to 32: PR 108, merged Thu, Oct 22, 2026 at about 6:53 PM UTC (`34b721c`), with `redesign/ws01-design-system` at `ffee346` as its last commit. GitHub stamps the merge at 6:52:31 PM UTC.
+- E, WS02 steps 1 to 5: PR 110, merged Fri, Oct 30, 2026 at about 3:20 PM UTC (`8d7df98`), with `redesign/ws02-navigation` at `c0e17fc` as its last commit.
 
 How checkpoint D was merged:
 - A merge-safety review came first: three read-only judges, one lens each (what a visitor sees with every switch off; the infrastructure and the deploy; the owner's rules and the record), and three refuters for each blocking finding.
@@ -267,3 +268,31 @@ Five more changes, each built on a branch off main with the full gate and merged
 The standing notes above stay as they are: the tournament test-data seeder for directors, the newsletter waiting on K's answers, "300+ members" stays, and the demo walkthrough last.
 
 WS02 resumed on Thursday, October 29, 2026 after K's weekly limit reset. Step 3 (the page frame, the chrome's rings, the browser bar colour and the loading line) was finished from the parked tree and committed to `redesign/ws02-navigation` as 519b2c2, and pull request 110's description now covers steps 1 to 3. Main's seven merges (pull requests 111 to 117) are being merged into the branch with the gate before step 4 starts.
+
+## Checkpoint E merged (Friday, October 30, 2026)
+
+WS02 steps 1 to 5 went to `main` as pull request 110. What happened after the resumption on Thursday, October 29, 2026:
+
+- **Step 3** was committed as `519b2c2` (Thursday, October 29, 2026).
+- **Main's seven live fixes** (pull requests 111 to 117) were merged into the branch as `42289d4`, with the full gate. One command-line test per run timed out at its 5 second limit and passed alone; integration was 810 tests in 59 files.
+- **Step 4** was committed as `7568680` (Friday, October 30, 2026, 00:26 UTC). The browser tests now read the header and footer through one helper, `test/a11y/chrome.ts`. The `stripComments` fix went in with it, and two gold-ink tests have 20 second limits.
+- **Step 5** was committed as `350fe48` (Friday, October 30, 2026, 12:55 UTC). It holds the new desktop header, the About and My LCA menus, the Donate dialog in the same tab, the squeeze, the header height variable, the WS02 gold, and the Checkpoint E section of the record.
+
+How checkpoint E was merged, as checkpoint D was:
+- A merge-safety review came first: three read-only judges, one lens each, and three refuters for each blocking finding. The infrastructure judge said merge; the visitor judge and the rules judge said fix first.
+- Upheld (3 to 0): the record and the pull request text said both new dialog files load only when Donate is pressed. The dialog parts that the donation dialog shares with the scanner page are fetched on every visit to `/scanner` with every switch off (27 files where there were 26, 509 bytes more, nothing drawn differently).
+- Refuted (3 to 0) as wording rather than blocking: the same point in the pull request text, and the subject of merge commit `42289d4`, which names two dates without weekdays. It is left in history. The lesson: merge subjects carry weekdays.
+- The fixes went into one commit, `c0e17fc` ("Put right what the merge review of checkpoint E found"). It corrected the record: the dialog files, the migration job does not start, and the rollback's sentence on bringing the checkpoint back. It corrected the pull request text: the error screen's instant on a stale tab, tabs opened before the deploy still need one refresh, the banners' `data-ring-ground` markup with every switch off, `aria-current` marks the section's link, the banners' ring change shows in dark mode, and the scroll padding rule is 0 until the new header writes its height. The pull request was retitled to name all five steps.
+- CI was green on `c0e17fc` (Build and test, Accessibility, and the Pages build). Pull request 110 merged into `main` as `8d7df98` on Friday, October 30, 2026 at about 3:20 PM UTC (GitHub stamps it 15:20:44 UTC). The merge commit's message names the day.
+- On the push to `main` the Pages build and CI ran. The migration job and the worker deploy did not start, since nothing under `migrations/`, `workers/`, `functions/` or `domain/` changed.
+- The live check at 15:21 UTC that day: the live site's stylesheet (`index-CeRsG6FF.css`) and switches chunk (`features--b6t5tBm.js`) carry the same content hashes as a local production build of the merged tree. The main script's name differs, as the Pages build sets its own build-time values. All 42 switches are off in production, so nothing a visitor sees has changed.
+- `redesign/ws02-navigation` was fast-forwarded to `8d7df98`. Checkpoint F (steps 6 to 8) starts from it with step 6, the Menu sheet, the tablet header and the phone's app bar, and gets a new draft pull request after step 6's commit.
+
+Left for later by the review:
+- `test/unit/e2e-preview-guard.test.ts`: its command-line test keeps the 5 second default and timed out once under load. Give it 20 seconds in a later step.
+- `test/unit/source-not-lines.test.ts` imports `@tailwindcss/oxide`, which `package.json` does not declare. Declare it at 4.3.3, pinned, in a later step.
+- Two step 1 record tests spell the banned working words as plain text inside their own patterns. Build them from pieces, as steps 2 to 5 do.
+
+Two nits from step 5's review carry into step 6:
+- The lazy donation dialog's Suspense in `SiteHeader.tsx` has no error boundary of its own.
+- Log in passes the page as "from" on `/forgot-password` and `/reset-password` too.
