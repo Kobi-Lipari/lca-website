@@ -21,9 +21,9 @@
 //   page runs is written into the stylesheet only when some file spells it
 //   whole, and with the lines a test or a document no longer counts.
 // - The unit tests' plain reading of src/index.css (test/unit/helpers/
-//   cssTokens.ts), whose comment stripper takes the slash and star in
-//   "../*.md" for the start of a comment, keeps every rule and every
-//   statement it keeps without the four lines.
+//   cssTokens.ts) keeps every rule and every statement it keeps without the
+//   four lines. Its comment stripper keeps a quoted string whole, so it
+//   reads the fourth line, "../*.md" and all, as a browser reads it.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import { Scanner } from '@tailwindcss/oxide'
@@ -297,5 +297,23 @@ describe('the unit tests\' plain reading of src/index.css', () => {
     const variant = lines.findIndex((line) => line.startsWith('@custom-variant dark '))
     expect(variant).toBeGreaterThan(-1)
     expect(lines.slice(0, variant).every((line) => line.startsWith('@import '))).toBe(true)
+  })
+
+  it('reads the fourth line whole, and strips a stylesheet as a browser reads it, a quoted slash and star being no comment', () => {
+    // The four lines come through the stripper as they are written, in their order.
+    expect(stripComments(CSS).split('\n').filter((line) => line.startsWith('@source'))).toEqual(LINES)
+    // A made-up stylesheet: a quoted slash and star, a comment holding quotes, and a comment after a string on one line.
+    const made = [
+      '@source not "../*.md";',
+      '/* a comment that says "../*" and it\'s done */',
+      '.a::before { content: "/* not a comment */"; } /* a comment after it */',
+      ".b::after { content: '*/'; }",
+    ].join('\n')
+    expect(stripComments(made)).toBe([
+      '@source not "../*.md";',
+      '',
+      '.a::before { content: "/* not a comment */"; } ',
+      ".b::after { content: '*/'; }",
+    ].join('\n'))
   })
 })

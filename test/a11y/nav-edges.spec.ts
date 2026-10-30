@@ -23,7 +23,13 @@
 //
 // Reads only; the announcements and the impersonation target are stubbed in
 // the browser with made-up fixture data in the seed's style.
+//
+// The header and the footer are read through test/a11y/chrome.ts. The footer
+// is read by its selector, not its role, while the loading line may hide
+// it, and the one check here that holds for today's footer alone, on
+// a11y-off while a page's code is held, says so through it.
 import type { Locator, Page, Route, TestInfo } from '@playwright/test'
+import { SITE, brandLink, ifToday } from './chrome'
 import { expect, openDrawn, test } from './support'
 
 const ON = 'a11y-on'
@@ -174,7 +180,7 @@ test.describe('the skip link at its edges', () => {
       await expect(skip).toBeVisible()
       // Forward to the header's brand link, and back again.
       await page.keyboard.press('Tab')
-      await expect(page.locator('header a[href="/"]')).toBeFocused()
+      await expect(brandLink(page)).toBeFocused()
       await page.keyboard.press('Shift+Tab')
       await expect(skip, `${width}: Shift+Tab from the brand link`).toBeFocused()
       expect((await box()).position).toBe('fixed')
@@ -220,12 +226,12 @@ async function holdCode(page: Page) {
 
 /** The frame while the loading line is on screen: the line's box, its row's place in it, the header's, and the footer's, drawn or not. */
 function frameWhileLoading(page: Page) {
-  return page.evaluate((loading) => {
+  return page.evaluate(({ loading, site }) => {
     const main = document.querySelector('main')!
     const line = main.querySelector('[role="status"]') as HTMLElement
     const words = [...line.querySelectorAll('span')].find((s) => s.textContent === loading)!
-    const header = document.querySelector('header')!
-    const footer = document.querySelector('footer')!
+    const header = document.querySelector(site.header)!
+    const footer = document.querySelector(site.footer)!
     return {
       window: window.innerHeight,
       header: header.getBoundingClientRect().height,
@@ -234,11 +240,11 @@ function frameWhileLoading(page: Page) {
       wordsTop: words.getBoundingClientRect().top,
       footer: { display: getComputedStyle(footer).display, top: footer.getBoundingClientRect().top, height: footer.getBoundingClientRect().height },
     }
-  }, LOADING)
+  }, { loading: LOADING, site: SITE })
 }
 
-/** Whether the footer is drawn now. */
-const footerDrawn = (page: Page) => page.locator('footer').evaluate((el) => getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().height > 0)
+/** Whether the footer is drawn now, read by its selector, since a footer that is not drawn has no role to find it by. */
+const footerDrawn = (page: Page) => page.locator(SITE.footer).evaluate((el) => getComputedStyle(el).display !== 'none' && el.getBoundingClientRect().height > 0)
 
 test.describe('the loading line while a page\'s code is held back', () => {
   test.use({ reducedMotion: 'reduce' })
@@ -270,8 +276,10 @@ test.describe('the loading line while a page\'s code is held back', () => {
             expect(at.footer, `${width}${banner ? ', with a banner' : ''}: the footer is not drawn while the line shows`).toEqual({ display: 'none', top: 0, height: 0 })
           } else {
             expect(at.line.height, `${width}: today's line`).toBeLessThan(300)
-            expect(at.footer.display).toBe('block')
-            expect(at.footer.top, `${width}: today's footer is inside the window while the code is held`).toBeLessThan(at.window)
+            await ifToday(testInfo, 'footer', width, 'today\'s footer drawn inside the window while the code is held', () => {
+              expect(at.footer.display).toBe('block')
+              expect(at.footer.top, `${width}: today's footer is inside the window while the code is held`).toBeLessThan(at.window)
+            })
           }
           await code.release()
           for (const locator of PAGES[route](page)) await expect(locator).toBeVisible({ timeout: 15_000 })

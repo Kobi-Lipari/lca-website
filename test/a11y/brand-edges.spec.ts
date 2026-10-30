@@ -36,10 +36,17 @@
 // Each page is read once what its test reads is drawn (the header's brand
 // link, the footer and the page's heading, or a fixture's statuses), never
 // on network idle. Reads only.
+//
+// The header and the footer are read through test/a11y/chrome.ts. What holds
+// for today's header or footer alone says so through it (the mark's sizes,
+// today's 64 pixel bar and the words beside the mark, the logo's file in the
+// footer, and today's images with newLook off), and runs wherever today's
+// chrome is drawn.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import AxeBuilder from '@axe-core/playwright'
 import type { Locator, Page } from '@playwright/test'
+import { SITE, brandLink, footerImages, footerLogo, headerImages, ifToday, onlyToday, rookMark, siteFooter } from './chrome'
 import { expect, test } from './support'
 
 const ON = 'a11y-on'
@@ -57,8 +64,8 @@ test.use({ colorScheme: 'light', reducedMotion: 'reduce' })
 async function openAbout(page: Page, width: number) {
   await page.setViewportSize({ width, height: 800 })
   await page.goto('/about')
-  await expect(page.locator('header a[href="/"]')).toBeVisible()
-  await expect(page.locator('footer')).toBeVisible()
+  await expect(brandLink(page)).toBeVisible()
+  await expect(siteFooter(page)).toBeVisible()
   await expect(page.getByRole('heading', { level: 1, name: 'About LCA' })).toBeVisible()
   await page.evaluate(() => document.fonts.ready)
 }
@@ -120,27 +127,29 @@ test.describe('the header\'s rook at the edges of its width rule', () => {
     test.skip(testInfo.project.name !== ON, 'the rook mark is drawn under the new look, on a11y-on')
     for (const [width, size] of EDGES) {
       await openAbout(page, width)
-      const header = page.locator('header')
-      await expect(header.locator('img')).toHaveCount(0)
-      const mark = header.locator('[data-slot="lca-mark"]')
+      await expect(headerImages(page)).toHaveCount(0)
+      const mark = rookMark(page)
       await expect(mark).toHaveCount(1)
-      const m = await mark.evaluate((svg) => {
+      const m = await mark.evaluate((svg, site) => {
         const box = svg.getBoundingClientRect()
-        const bar = svg.closest('header')!.firstElementChild!.getBoundingClientRect()
-        const words = svg.nextElementSibling!.getBoundingClientRect()
+        // Today's markup: the header's first child is its bar, and the brand link's words come right after the mark.
+        const bar = svg.closest(site.header)!.firstElementChild?.getBoundingClientRect() ?? null
+        const words = svg.nextElementSibling?.getBoundingClientRect() ?? null
         return {
           box: [box.width, box.height],
-          fromBarTop: box.top - bar.top,
-          barHeight: bar.height,
-          beforeWords: box.right <= words.left,
-          headerFits: svg.closest('header')!.scrollWidth <= document.documentElement.clientWidth,
+          fromBarTop: bar ? box.top - bar.top : null,
+          barHeight: bar ? bar.height : null,
+          beforeWords: words !== null && box.right <= words.left,
+          headerFits: svg.closest(site.header)!.scrollWidth <= document.documentElement.clientWidth,
           pageFits: document.documentElement.scrollWidth <= document.documentElement.clientWidth,
         }
+      }, SITE)
+      await ifToday(testInfo, 'header', width, `the rook mark ${size} pixels square, in the middle of today's 64 pixel bar and before the words`, () => {
+        expect(m.box, `${width}`).toEqual([size, size])
+        expect(m.barHeight, `${width}`).toBe(64)
+        expect(m.fromBarTop, `${width}: in the middle of the bar`).toBe((64 - size) / 2)
+        expect(m.beforeWords, `${width}`).toBe(true)
       })
-      expect(m.box, `${width}`).toEqual([size, size])
-      expect(m.barHeight, `${width}`).toBe(64)
-      expect(m.fromBarTop, `${width}: in the middle of the bar`).toBe((64 - size) / 2)
-      expect(m.beforeWords, `${width}`).toBe(true)
       expect(m.headerFits, `${width}: the header fits the window`).toBe(true)
       expect(m.pageFits, `${width}: /about does not scroll sideways`).toBe(true)
     }
@@ -149,17 +158,17 @@ test.describe('the header\'s rook at the edges of its width rule', () => {
 
   test('a11y-off: today\'s image, 44 by 44 in the middle of the bar, at every one of those widths', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== OFF, 'today\'s header is drawn with newLook off, on a11y-off')
+    onlyToday(testInfo, 'header', EDGES.map(([width]) => width), 'today\'s image, 44 by 44 in the middle of today\'s bar')
     for (const [width] of EDGES) {
       await openAbout(page, width)
-      const header = page.locator('header')
-      await expect(header.locator('[data-slot="lca-mark"]')).toHaveCount(0)
-      const img = header.locator('img')
+      await expect(rookMark(page)).toHaveCount(0)
+      const img = headerImages(page)
       await expect(img).toHaveCount(1)
-      const m = await img.evaluate((el) => {
+      const m = await img.evaluate((el, site) => {
         const box = el.getBoundingClientRect()
-        const bar = el.closest('header')!.firstElementChild!.getBoundingClientRect()
-        return { box: [box.width, box.height], fromBarTop: box.top - bar.top, headerFits: el.closest('header')!.scrollWidth <= document.documentElement.clientWidth }
-      })
+        const bar = el.closest(site.header)!.firstElementChild!.getBoundingClientRect()
+        return { box: [box.width, box.height], fromBarTop: box.top - bar.top, headerFits: el.closest(site.header)!.scrollWidth <= document.documentElement.clientWidth }
+      }, SITE)
       expect(m, `${width}`).toEqual({ box: [44, 44], fromBarTop: 10, headerFits: true })
     }
   })
@@ -172,15 +181,21 @@ test.describe('forced colours (a Windows contrast theme)', () => {
       await page.emulateMedia({ forcedColors: 'active', colorScheme: scheme })
       await openAbout(page, 1280)
       expect(await page.evaluate(() => matchMedia('(forced-colors: active)').matches)).toBe(true)
-      const m = await page.locator('header [data-slot="lca-mark"]').evaluate((svg) => ({
-        fill: getComputedStyle(svg.querySelector('path')!).fill,
-        words: getComputedStyle(svg.nextElementSibling!.firstElementChild!).color,
-        ground: getComputedStyle(svg.closest('header')!).backgroundColor,
-      }))
+      const m = await rookMark(page).evaluate((svg, site) => {
+        // Today's markup: the brand link's first line of words, right after the mark.
+        const words = svg.nextElementSibling?.firstElementChild ?? null
+        return {
+          fill: getComputedStyle(svg.querySelector('path')!).fill,
+          words: words ? getComputedStyle(words).color : null,
+          ground: getComputedStyle(svg.closest(site.header)!).backgroundColor,
+        }
+      }, SITE)
       const seen = `${scheme} theme: the rook ${m.fill}, the words ${m.words}, on ${m.ground}`
       console.log(`Forced colours, ${seen}, ${ratio(m.fill, m.ground).toFixed(2)}:1.`)
       expect.soft(ratio(m.fill, m.ground), seen).toBeGreaterThanOrEqual(3)
-      expect.soft(m.fill, seen).toBe(m.words)
+      await ifToday(testInfo, 'header', 1280, 'the rook in the forced colour of the words beside it in today\'s brand link', () => {
+        expect.soft(m.fill, seen).toBe(m.words)
+      })
     }
   })
 
@@ -200,13 +215,25 @@ test.describe('forced colours (a Windows contrast theme)', () => {
     for (const scheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ forcedColors: 'active', colorScheme: scheme })
       await openAbout(page, 1280)
-      const logos = testInfo.project.name === ON
-        ? [page.locator('footer [data-slot="lca-logo"]'), page.locator('main [data-slot="lca-logo-mat"] [data-slot="lca-logo"]')]
-        : [page.locator('header img'), page.locator('footer img')]
+      // On a11y-on the footer's logo and /about's framed one, which is not the chrome's; with newLook off, today's two images.
+      const inFooter = footerLogo(page)
+      const logos: Locator[] = []
+      if (testInfo.project.name === ON) {
+        logos.push(inFooter, page.locator('main [data-slot="lca-logo-mat"] [data-slot="lca-logo"]'))
+      } else {
+        await ifToday(testInfo, 'header', 1280, 'today\'s image in the header, with newLook off', () => {
+          logos.push(headerImages(page))
+        })
+        await ifToday(testInfo, 'footer', 1280, 'today\'s image in the footer, with newLook off', () => {
+          logos.push(footerImages(page))
+        })
+      }
       for (const logo of logos) {
         await expect(logo).toHaveCount(1)
         await expect.poll(() => logo.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0)).toBe(true)
-        expect(await logo.evaluate((el: HTMLImageElement) => [el.naturalWidth, el.naturalHeight])).toEqual([400, 399])
+        const file = async () => expect(await logo.evaluate((el: HTMLImageElement) => [el.naturalWidth, el.naturalHeight])).toEqual([400, 399])
+        if (logo === inFooter) await ifToday(testInfo, 'footer', 1280, 'the footer logo\'s file, 400 by 399', file)
+        else await file()
         expect(await recolouring(logo), scheme).toEqual([])
       }
     }
@@ -321,7 +348,7 @@ test.describe('axe at a phone\'s width with a dark device', () => {
     expect(await page.locator('html').evaluate((el) => el.classList.contains('dark'))).toBe(true)
     const report: string[] = []
     const found: string[] = []
-    for (const [what, scope] of [['the header', 'header'], ['the footer', 'footer'], ['/about', null]] as const) {
+    for (const [what, scope] of [['the header', SITE.header], ['the footer', SITE.footer], ['/about', null]] as const) {
       let axe = new AxeBuilder({ page }).withTags(AXE_TAGS)
       if (scope) axe = axe.include(scope)
       const results = await axe.analyze()
@@ -345,20 +372,20 @@ test.describe('the header and the footer fit a phone\'s window on every page', (
       await page.setViewportSize({ width, height: 800 })
       for (const path of PAGES) {
         await page.goto(path)
-        await expect(page.locator('header a[href="/"]')).toBeVisible()
-        await expect(page.locator('footer')).toBeVisible()
+        await expect(brandLink(page)).toBeVisible()
+        await expect(siteFooter(page)).toBeVisible()
         // The page's own heading rather than main: main holds only the
         // loading line until the page's code arrives, and /about and the
         // governance pages then draw a second main inside it.
         await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible()
         await page.evaluate(() => document.fonts.ready)
-        const m = await page.evaluate(() => {
+        const m = await page.evaluate((site) => {
           const room = document.documentElement.clientWidth
-          return ['header', 'footer'].map((part) => {
-            const el = document.querySelector(part)!
+          return ([['header', site.header], ['footer', site.footer]] as const).map(([part, selector]) => {
+            const el = document.querySelector(selector)!
             return { part, fits: el.scrollWidth <= room && el.getBoundingClientRect().right <= room, width: el.scrollWidth }
           })
-        })
+        }, SITE)
         for (const p of m) if (!p.fits) wide.push(`${path} at ${width} pixels: the ${p.part} is ${p.width} pixels wide`)
       }
     }
@@ -377,7 +404,7 @@ test.describe('the site\'s icon', () => {
     expect(body.equals(FAVICON)).toBe(true)
     expect([...body.toString('utf8').matchAll(/<path[^>]* d="([^"]+)"/g)].map((m) => m[1])).toEqual([ROOK])
     if (testInfo.project.name === ON) {
-      expect(await page.locator('header [data-slot="lca-mark"] path').getAttribute('d')).toBe(ROOK)
+      expect(await rookMark(page).locator('path').getAttribute('d')).toBe(ROOK)
     }
   })
 })

@@ -11,10 +11,7 @@
 /* Tailwind reads every file in the repository for class names. The documents,
  * the tests, the scripts and the records at the root are not pages of the
  * site, so a class name that only they spell is kept out of the stylesheet
- * (WS02 step 3). One folder or pattern a line. The unit tests read this file
- * with a plain comment stripper, which takes the slash and star in the last
- * pattern for the start of a comment and reads on to the end of the next
- * one, so that line stays last, with the comment below right after it. */
+ * (WS02 step 3). One folder or pattern a line. */
 @source not "../docs";
 @source not "../test";
 @source not "../scripts";

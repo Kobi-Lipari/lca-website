@@ -25,7 +25,12 @@
 //   runs (no flash), and a throwing localStorage leaves the page on the
 //   device setting
 // - figures in font-mono use Geist Mono; reduced motion stops transitions
+//
+// The Appearance control and the footer are read through test/a11y/chrome.ts.
+// That a11y-off draws no Appearance control holds for today's footer, so it
+// says so through it.
 import type { Locator, Page, TestInfo } from '@playwright/test'
+import { appearanceControl, ifToday, siteFooter, widthOf } from './chrome'
 import { expect, openDrawn, test } from './support'
 
 const ON = 'a11y-on'
@@ -105,7 +110,9 @@ test.describe('newLook off: today\'s look is untouched', () => {
     const served = await (await request.get('/')).text()
     expect(served).not.toContain(APPEARANCE_KEY)
     expect(served.match(/<script\b/g)).toHaveLength(1)
-    await expect(page.getByRole('group', { name: 'Appearance' })).toHaveCount(0)
+    await ifToday(testInfo, 'footer', widthOf(page), 'no Appearance control in today\'s footer with newLook off', async () => {
+      await expect(appearanceControl(page)).toHaveCount(0)
+    })
   })
 
   test('a focused Button draws today\'s ring on the fixture and the three pages', async ({ page }, testInfo) => {
@@ -229,7 +236,7 @@ test.describe('newLook on: Appearance', () => {
   test.use({ reducedMotion: 'reduce' })
 
   const isDark = (page: Page) => page.evaluate(() => document.documentElement.classList.contains('dark'))
-  const appearance = (page: Page) => page.getByRole('group', { name: 'Appearance' })
+  const appearance = appearanceControl
 
   test('follows the device by default, live as it changes', async ({ page }, testInfo) => {
     only(testInfo, ON)
@@ -318,7 +325,7 @@ test.describe('newLook on: Appearance', () => {
     await system.scrollIntoViewIfNeeded()
     await keyboardFocus(page, system)
     const ring = await ringOf(system)
-    const footer = await page.locator('footer').evaluate((el) => getComputedStyle(el).backgroundColor)
+    const footer = await siteFooter(page).evaluate((el) => getComputedStyle(el).backgroundColor)
     expect(ring.outlineColor).toBe(GOLD)
     expect(ring.outlineWidth).toBe('2px')
     expect(footer).toBe(NAVY)

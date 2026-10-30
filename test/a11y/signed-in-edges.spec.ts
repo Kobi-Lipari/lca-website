@@ -20,20 +20,22 @@
 //   list of refused calls can be trusted
 //
 // It runs on both builds, like the signed-in spec: today's header is the
-// same on a11y-on and a11y-off. Reads only: every call here that would write
-// is refused, so nothing is written to either project's local database.
+// same on a11y-on and a11y-off. The header is read through
+// test/a11y/chrome.ts, and each check of Profile, Log out or the More menu's
+// account links, which today's header alone gives, says so through it; the
+// first test asks it about the other build's header while that build's page
+// is open. Reads only: every call here that would write is refused, so
+// nothing is written to either project's local database.
 import type { Locator, Page } from '@playwright/test'
+import { CHROME_NAMES, TODAYS_NAMES, ifToday, siteHeader, widthOf } from './chrome'
 import { expect, test } from './support'
 import { A11Y_VARIANTS } from './global-setup'
 import { PLANTED_MARK, sessionInPage, signInAs, waitForMemberAnswers } from './signedIn'
 import { TODAYS_ACCOUNT_LINKS, navPersona } from '../unit/fixtures/navPersonas'
 
-/** Today's header: the page's banner, outside the main content. */
-const bar = (page: Page) => page.getByRole('banner')
-
-/** The More menu's account links, opened the way a mouse opens it at this width. */
+/** Today's More menu's account links, opened the way a mouse opens it at this width. */
 async function accountLinks(page: Page): Promise<Locator> {
-  await bar(page).getByRole('button', { name: 'More' }).hover()
+  await siteHeader(page).getByRole('button', { name: TODAYS_NAMES.more }).hover()
   const menu = page.getByRole('menu')
   await expect(menu).toBeVisible()
   return menu.getByRole('menuitem').filter({ hasText: new RegExp(`^(?:${TODAYS_ACCOUNT_LINKS.join('|')})$`) })
@@ -42,24 +44,32 @@ async function accountLinks(page: Page): Promise<Locator> {
 test('plants the session on the build\'s own address only', async ({ page, external, baseURL }, testInfo) => {
   const other = A11Y_VARIANTS.find((v) => v.name !== testInfo.project.name)!
   const visit = await signInAs(page, navPersona('admin'), baseURL!)
+  // The other build's page: what is read of its header is asked of the helper with that build's name.
   await page.goto(`http://127.0.0.1:${other.port}/`)
-  await expect(bar(page).getByRole('link', { name: 'Log in' })).toBeVisible()
-  await expect(bar(page).getByRole('link', { name: 'Profile' })).toHaveCount(0)
+  await expect(siteHeader(page).getByRole('link', { name: CHROME_NAMES.logIn })).toBeVisible()
+  await ifToday(testInfo, 'header', widthOf(page), 'no Profile in the other build\'s header', async () => {
+    await expect(siteHeader(page).getByRole('link', { name: TODAYS_NAMES.profile })).toHaveCount(0)
+  }, other.name)
   expect(await page.evaluate(() => Object.keys(localStorage).filter((key) => key.startsWith('sb-')))).toEqual([])
   expect(await page.evaluate((mark) => sessionStorage.getItem(mark), PLANTED_MARK)).toBeNull()
   expect(visit.answered.filter((call) => call !== 'GET /api/live/now')).toEqual([])
 
+  // The build's own page again.
   await page.goto('/')
-  await expect(bar(page).getByRole('link', { name: 'Profile' }), visit.notRead).toBeVisible()
+  await ifToday(testInfo, 'header', widthOf(page), 'Profile in today\'s header once the session is read', async () => {
+    await expect(siteHeader(page).getByRole('link', { name: TODAYS_NAMES.profile }), visit.notRead).toBeVisible()
+  })
   await waitForMemberAnswers(visit)
-  await expect(await accountLinks(page)).toHaveText(['Admin panel', 'Board inbox'])
+  await ifToday(testInfo, 'header', widthOf(page), 'today\'s account links in the More menu', async () => {
+    await expect(await accountLinks(page)).toHaveText(['Admin panel', 'Board inbox'])
+  })
   expect(await sessionInPage(page)).not.toBeNull()
   expect(visit.signInCalls).toEqual([])
   expect(visit.apiErrors).toEqual([])
   expect(external).toEqual([])
 })
 
-test('waits for the member\'s answers, not for Profile, which shows before them', async ({ page, external, baseURL }) => {
+test('waits for the member\'s answers, not for Profile, which shows before them', async ({ page, external, baseURL }, testInfo) => {
   const own = new URL(baseURL!).origin
   const visit = await signInAs(page, navPersona('admin'), baseURL!)
   let release!: () => void
@@ -74,33 +84,43 @@ test('waits for the member\'s answers, not for Profile, which shows before them'
     },
   )
   await page.goto('/')
-  await expect(bar(page).getByRole('link', { name: 'Profile' }), visit.notRead).toBeVisible()
-  await expect(bar(page).getByRole('button', { name: 'Log out' })).toBeVisible()
+  await ifToday(testInfo, 'header', widthOf(page), 'Profile and Log out in today\'s header before the member\'s answers', async () => {
+    await expect(siteHeader(page).getByRole('link', { name: TODAYS_NAMES.profile }), visit.notRead).toBeVisible()
+    await expect(siteHeader(page).getByRole('button', { name: TODAYS_NAMES.logOut })).toBeVisible()
+  })
   // Signed in, but the member and the seats have not arrived: no account link yet.
-  await expect(await accountLinks(page)).toHaveCount(0)
+  await ifToday(testInfo, 'header', widthOf(page), 'no account link yet in today\'s More menu', async () => {
+    await expect(await accountLinks(page)).toHaveCount(0)
+  })
   expect(visit.answered.filter((call) => call !== 'GET /api/live/now')).toEqual([])
   await expect(waitForMemberAnswers(visit, 1_500)).rejects.toThrow(/were not both answered within 1\.5 s/)
 
   release()
   await waitForMemberAnswers(visit)
-  await expect(await accountLinks(page)).toHaveText(['Admin panel', 'Board inbox'])
+  await ifToday(testInfo, 'header', widthOf(page), 'today\'s account links in the More menu', async () => {
+    await expect(await accountLinks(page)).toHaveText(['Admin panel', 'Board inbox'])
+  })
   expect(visit.signInCalls).toEqual([])
   expect(visit.apiErrors).toEqual([])
   expect(external).toEqual([])
 })
 
-test('waits for each page\'s own answers: a new page waits again, a link the site follows itself does not', async ({ page, external, baseURL }) => {
+test('waits for each page\'s own answers: a new page waits again, a link the site follows itself does not', async ({ page, external, baseURL }, testInfo) => {
   const own = new URL(baseURL!).origin
   const visit = await signInAs(page, navPersona('admin'), baseURL!)
   await page.goto('/')
-  await expect(bar(page).getByRole('link', { name: 'Profile' }), visit.notRead).toBeVisible()
+  await ifToday(testInfo, 'header', widthOf(page), 'Profile in today\'s header once the session is read', async () => {
+    await expect(siteHeader(page).getByRole('link', { name: TODAYS_NAMES.profile }), visit.notRead).toBeVisible()
+  })
   await waitForMemberAnswers(visit)
-  await expect(await accountLinks(page)).toHaveText(['Admin panel', 'Board inbox'])
+  await ifToday(testInfo, 'header', widthOf(page), 'today\'s account links in the More menu', async () => {
+    await expect(await accountLinks(page)).toHaveText(['Admin panel', 'Board inbox'])
+  })
 
   // The header's Clubs link changes the address without loading a page: the
   // site keeps the member it has, and so does the wait.
   const firstPage = [...visit.answeredOnThisPage]
-  await bar(page).getByRole('link', { name: 'Clubs', exact: true }).click()
+  await siteHeader(page).getByRole('link', { name: CHROME_NAMES.clubs, exact: true }).click()
   await expect(page).toHaveURL(/\/clubs$/)
   expect(visit.answeredOnThisPage.slice(0, firstPage.length)).toEqual(firstPage)
   await waitForMemberAnswers(visit, 1_500)
@@ -117,24 +137,30 @@ test('waits for each page\'s own answers: a new page waits again, a link the sit
     },
   )
   await page.goto('/')
-  await expect(bar(page).getByRole('link', { name: 'Profile' })).toBeVisible()
-  await expect(await accountLinks(page)).toHaveCount(0)
+  await ifToday(testInfo, 'header', widthOf(page), 'Profile in today\'s header, and no account link yet', async () => {
+    await expect(siteHeader(page).getByRole('link', { name: TODAYS_NAMES.profile })).toBeVisible()
+    await expect(await accountLinks(page)).toHaveCount(0)
+  })
   expect(visit.answeredOnThisPage.filter((call) => call !== 'GET /api/live/now')).toEqual([])
   expect(visit.answered).toEqual(expect.arrayContaining(['GET /api/me', 'GET /api/board/my-seats']))
   await expect(waitForMemberAnswers(visit, 1_500)).rejects.toThrow(/were not both answered within 1\.5 s/)
 
   release()
   await waitForMemberAnswers(visit)
-  await expect(await accountLinks(page)).toHaveText(['Admin panel', 'Board inbox'])
+  await ifToday(testInfo, 'header', widthOf(page), 'today\'s account links in the More menu', async () => {
+    await expect(await accountLinks(page)).toHaveText(['Admin panel', 'Board inbox'])
+  })
   expect(visit.signInCalls).toEqual([])
   expect(visit.apiErrors).toEqual([])
   expect(external).toEqual([])
 })
 
-test('opens nothing on the server, and a refused call is listed', async ({ page, external, baseURL }) => {
+test('opens nothing on the server, and a refused call is listed', async ({ page, external, baseURL }, testInfo) => {
   const visit = await signInAs(page, navPersona('everything'), baseURL!)
   await page.goto('/')
-  await expect(bar(page).getByRole('link', { name: 'Profile' }), visit.notRead).toBeVisible()
+  await ifToday(testInfo, 'header', widthOf(page), 'Profile in today\'s header once the session is read', async () => {
+    await expect(siteHeader(page).getByRole('link', { name: TODAYS_NAMES.profile }), visit.notRead).toBeVisible()
+  })
   await waitForMemberAnswers(visit)
   const token = (await sessionInPage(page))!.access_token
   const headers = { Authorization: `Bearer ${token}` }

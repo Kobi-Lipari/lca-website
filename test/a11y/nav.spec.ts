@@ -40,7 +40,12 @@
 //
 // Reads only; the announcement and the impersonation target are stubbed in
 // the browser with made-up fixture data in the seed's style.
+//
+// The header, the footer and the Appearance control are read through
+// test/a11y/chrome.ts. The one check here that holds for today's header
+// alone, the first Tab on a11y-off going into it, says so through it.
 import type { Browser, Locator, Page, Route, TestInfo } from '@playwright/test'
+import { SITE, appearanceControl, brandLink, ifToday, widthOf, type SiteSelectors } from './chrome'
 import { expect, openDrawn, prepareLocalPage, test } from './support'
 
 const ON = 'a11y-on'
@@ -163,11 +168,11 @@ async function plantImpersonation(page: Page) {
 
 /** The skip link as drawn now: its box against the window, its ring, its ground, and what is drawn at its middle. */
 function skipLinkAsDrawn(page: Page) {
-  return page.getByRole('link', { name: SKIP }).evaluate((el) => {
+  return page.getByRole('link', { name: SKIP }).evaluate((el, site) => {
     const s = getComputedStyle(el)
     const box = el.getBoundingClientRect()
     const atMiddle = document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
-    const header = document.querySelector('header')
+    const header = document.querySelector(site.header)
     return {
       box: { x: box.x, y: box.y, width: box.width, height: box.height },
       window: { width: window.innerWidth, height: window.innerHeight },
@@ -182,7 +187,7 @@ function skipLinkAsDrawn(page: Page) {
       words: (el.textContent ?? '').trim(),
       href: el.getAttribute('href'),
     }
-  })
+  }, SITE)
 }
 
 test.describe('the skip link with the chrome on', () => {
@@ -252,7 +257,7 @@ test.describe('the skip link with the chrome on', () => {
           await page.keyboard.press('Tab')
           await expect(skip).toBeFocused()
           await page.keyboard.press('Tab')
-          await expect(page.locator('header a[href="/"]'), scheme).toBeFocused()
+          await expect(brandLink(page), scheme).toBeFocused()
           // Once the focus has left it, the link is hidden again.
           expect(await skip.evaluate((el) => getComputedStyle(el).position)).toBe('absolute')
         }
@@ -268,7 +273,7 @@ test.describe('the skip link with the chrome on', () => {
     const more = page.getByRole('link', { name: GOLD_ANNOUNCEMENT.linkLabel })
     const dismiss = page.getByRole('button', { name: `Dismiss: ${GOLD_ANNOUNCEMENT.linkLabel}` })
     const exit = page.getByRole('button', { name: 'Exit' })
-    const brand = page.locator('header a[href="/"]')
+    const brand = brandLink(page)
     /** Presses Tab once for each control, which must take the focus in this order. */
     const tabsThrough = async (order: Locator[], where: string) => {
       for (const [i, control] of order.entries()) {
@@ -305,8 +310,10 @@ test.describe('the skip link with the chrome on', () => {
       expect(await main.getAttribute('id'), route).toBeNull()
       expect(await main.getAttribute('tabindex'), route).toBeNull()
       // The first Tab goes where it always went: into the header.
-      await page.keyboard.press('Tab')
-      await expect(page.locator('header a[href="/"]'), route).toBeFocused()
+      await ifToday(testInfo, 'header', widthOf(page), 'the first Tab going into today\'s header, to its brand link', async () => {
+        await page.keyboard.press('Tab')
+        await expect(brandLink(page), route).toBeFocused()
+      })
     }
     expect(external).toEqual([])
   })
@@ -323,13 +330,14 @@ interface Watched {
  * Put in place before the page's scripts run (an init script, so it runs
  * again on every load): a buffered layout-shift observer, which also sees
  * the shifts from before it was made, keeping with each shift what moved.
+ * The chrome's selectors come in as its argument.
  */
-function watchShifts() {
+function watchShifts(site: SiteSelectors) {
   const w = window as unknown as Watched
   w.__shifts = []
   const describe = (node: Node | null, before: DOMRectReadOnly, after: DOMRectReadOnly) => {
     const el = node instanceof Element ? node : node?.parentElement ?? null
-    const area = !el ? 'gone' : el.closest('footer') ? 'footer' : el.closest('header') ? 'header' : el.closest('main') ? 'main' : el.tagName.toLowerCase()
+    const area = !el ? 'gone' : el.closest(site.footer) ? 'footer' : el.closest(site.header) ? 'header' : el.closest('main') ? 'main' : el.tagName.toLowerCase()
     const words = (el?.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 30)
     return `${area}: ${el ? el.tagName.toLowerCase() : 'a node'} "${words}" from ${Math.round(before.y)} to ${Math.round(after.y)}`
   }
@@ -378,7 +386,7 @@ async function firstVisit(browser: Browser, testInfo: TestInfo, route: string, s
   try {
     const page = await context.newPage()
     const external = await prepareLocalPage(page)
-    await page.addInitScript(watchShifts)
+    await page.addInitScript(watchShifts, SITE)
     const code = held ? await holdCode(page) : null
     await page.goto(route, { waitUntil: 'commit' })
     let lineSeen = false
@@ -476,7 +484,7 @@ const expectedBar = (pick: 'System' | 'Light' | 'Dark', device: 'light' | 'dark'
 
 test.describe('the browser bar\'s colour follows an Appearance pick', () => {
   test.use({ reducedMotion: 'reduce' })
-  const appearance = (page: Page) => page.getByRole('group', { name: 'Appearance' })
+  const appearance = appearanceControl
 
   test('a11y-on: for System, Light and Dark picked in the Appearance control, on a light and on a dark device, the page\'s colour is the pick\'s look, or the device\'s for System', async ({ page, external }, testInfo) => {
     only(testInfo, ON)
