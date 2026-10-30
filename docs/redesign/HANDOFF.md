@@ -13,14 +13,14 @@ This file, `docs/redesign/tools/`, `docs/redesign/ws01-manifest.json`, `docs/red
 1. Check where things really stand before acting: `git ls-remote origin` shows the heads of `main` and the branches (under "Branches and pull requests" are the values of Fri, Oct 23), and the lead's check-in, which fires every three hours, reads the same state before it does anything.
 2. Subscribe to activity on PR 106 (draft, documentation only). Subscribe to each WS02 checkpoint's draft pull request as it opens.
 3. Read the end of `docs/redesign/ws01-lead-notes.md` (its last three sections: the focus-ring flake, the merge-safety review of checkpoint D, and the merge and the live check), then `docs/redesign/ws02-plan-notes.md`, then the WS02 lead's notes, `<scratchpad>/ws02-lead-notes.md`, which win over the manifest where they differ. "Brief 1.4 and WS02" below says what they hold.
-4. Then carry on with WS02 slice 1 on `redesign/ws02-navigation`, which is being prepared and has no commits yet. The October 19 design round (the boards still to be redrawn) runs alongside and is described below.
+4. Then carry on with WS02 on `redesign/ws02-navigation`: checkpoint E (slices 1 to 5) is merged, and slice 6 opens checkpoint F (see "Checkpoint E merged" below). The October 19 design round (the boards still to be redrawn) runs alongside and is described below.
 5. K's notes of Wed, Oct 22: finish the project in this session, with no handoff to the PC needed unless it is useful, and keep going past WS01's step 32 (brief 1.4, then WS02 and on).
 
 ## Branches and pull requests
 
-Brought up to date on Fri, Oct 23, 2026, after WS01 finished and merged. The heads are as `git ls-remote origin` showed them that day, except `redesign/ws02-navigation`, which is not pushed yet and is read from the clone.
+Brought up to date on Fri, Oct 23, 2026, after WS01 finished and merged, and again on Fri, Oct 30, 2026, after checkpoint E merged. The heads are as `git ls-remote origin` showed them on Fri, Oct 30, 2026.
 
-**`main`**, head `34b721c`. WS01 is finished and merged: all 32 steps, in four checkpoints, each a pull request.
+**`main`**, head `8d7df98` (Fri, Oct 30, 2026). WS01 is finished and merged (all 32 steps, in four checkpoints), the live fixes of Oct 23 and 24 (pull requests 111 to 117) are merged, and WS02's checkpoint E (steps 1 to 5) is merged; each checkpoint is a pull request.
 - A, steps 1 to 8: PR 105, merged Fri, Oct 9, 2026 at 3:06 AM UTC (`4f0882f`).
 - B, steps 9 to 15: PR 104, merged Mon, Oct 12, 2026 at 10:29 PM UTC (`748a5ef`).
 - C, steps 16 to 19: PR 107, merged Tue, Oct 13, 2026 at 2:03 AM UTC (`7151bff`).
@@ -48,7 +48,7 @@ The production database is at `0054_requires_lca_membership.sql`. In the contain
 
 **`preview-new-look`**, head `676b987`, a throwaway branch. It is `main` with only `newLook` and `themeHeritage` turned on in `src/lib/features.ts`, pushed on Fri, Oct 23, 2026 for K's board meeting demo at `https://preview-new-look.lca-website.pages.dev`. It is never merged, and it is deleted after the meeting.
 
-**`redesign/ws02-navigation`**, cut from `main` at `34b721c` on Fri, Oct 23, 2026, with no commits yet. WS02 slice 1 is being prepared on it. Each WS02 checkpoint is a draft pull request from it against `main`.
+**`redesign/ws02-navigation`**, cut from `main` at `34b721c` on Fri, Oct 23, 2026; at `8d7df98` on Fri, Oct 30, 2026 (fast-forwarded onto checkpoint E's merge commit), with steps 1 to 5 merged and step 6 next. Each WS02 checkpoint is a draft pull request from it against `main`.
 
 **`audit/integrity-and-tests`**, PR 102 (integrity fixes: payments, registration races, member delete, times). Open since Sun, Oct 4, 2026, and it cannot merge. It was cut from `4c1a466` (Fri, Oct 2, 2026), and `main` is 38 commits ahead of that (counted on Fri, Oct 23). Since then `main` has changed at least four of the files it edits (`functions/api/registrations.ts`, `functions/api/registrations/[id].ts`, `functions/api/registrations/batch.ts` and `functions/api/admin/tournaments/[id]/walk-ins.ts`) and moved two of them (`functions/utils/membershipActivation.ts` into `functions/utils/membership/`, and `src/components/AdminAnnouncementPanel.tsx` into `src/areas/admin/components/`). What waits on K is under "Waiting on K".
 
@@ -140,7 +140,7 @@ So 1.4 lands in WS02 slice 1, on `redesign/ws02-navigation`, together with:
 - The plan notes hold the questions for K with their defaults, and a Review section that maps the reviewer's items to steps.
 - Where the lead's notes and the plan differ, the notes win. For instance, the plan notes allow that PR 106 might already carry 1.4's test changes; it will not, and slice 1 makes them.
 
-**Where it stands (Fri, Oct 23, 2026).** Nothing is committed on `redesign/ws02-navigation`; slice 1 is being prepared. The order in which K's other branches merge does not matter: PR 106 merges cleanly before or after any WS02 checkpoint.
+**Where it stands (Fri, Oct 30, 2026).** Checkpoint E (slices 1 to 5) is merged into `main` as `8d7df98`; slice 6 is next on `redesign/ws02-navigation`. The order in which K's other branches merge does not matter: PR 106 merges cleanly before or after any WS02 checkpoint.
 
 ## How boards reach the canvas
 
@@ -267,7 +267,7 @@ Five more changes, each built on a branch off main with the full gate and merged
 
 The standing notes above stay as they are: the tournament test-data seeder for directors, the newsletter waiting on K's answers, "300+ members" stays, and the demo walkthrough last.
 
-WS02 resumed on Thursday, October 29, 2026 after K's weekly limit reset. Step 3 (the page frame, the chrome's rings, the browser bar colour and the loading line) was finished from the parked tree and committed to `redesign/ws02-navigation` as 519b2c2, and pull request 110's description now covers steps 1 to 3. Main's seven merges (pull requests 111 to 117) are being merged into the branch with the gate before step 4 starts.
+WS02 resumed on Thursday, October 29, 2026 after K's weekly limit reset. Step 3 (the page frame, the chrome's rings, the browser bar colour and the loading line) was finished from the parked tree and committed to `redesign/ws02-navigation` as 519b2c2, and pull request 110's description now covers steps 1 to 3. Main's seven merges (pull requests 111 to 117) were merged into the branch with the gate before step 4 started (42289d4); what followed is under "Checkpoint E merged" below.
 
 ## Checkpoint E merged (Friday, October 30, 2026)
 
