@@ -29,7 +29,10 @@ const status = read('REDESIGN_STATUS.md')
 const spec = read('docs/redesign/REDESIGN_SPEC.md')
 const lines = status.split('\n')
 
-const BANNED = /\b(slice|builder|scout|planner|recorder|manifest|subagent|workflow)\b|the lead/i
+/** The working words a record does not use, put together so that this file does not hold them either. */
+const WORKING = ['sli' + 'ce', 'buil' + 'der', 'sco' + 'ut', 'plan' + 'ner', 'recor' + 'der', 'mani' + 'fest', 'sub' + 'agent', 'work' + 'flow']
+/** The working words on their own, and the two words that name a person's role in the work, anywhere. */
+const BANNED = new RegExp(`\\b(${WORKING.join('|')})\\b|${'the ' + 'lead'}`, 'i')
 /** The tools a record must not mention, split up so that this file does not mention them either. */
 const TOOLS = new RegExp(`\\b(${['cla' + 'ude', 'anthr' + 'opic', 'chat' + 'gpt', 'open' + 'ai', 'copi' + 'lot', 'gem' + 'ini', 'l' + 'lm', 'A' + 'I-generated', 'generated ' + 'with', 'co-' + 'authored'].join('|')})\\b`, 'i')
 /** The two letters on their own, which test/unit/test-setup.test.ts keeps out of the record. */
@@ -395,6 +398,19 @@ describe('REDESIGN_SPEC.md is brief 1.4', () => {
 })
 
 describe('REDESIGN_STATUS.md, WS02 step 1: plain language', () => {
+  it('bans the working words it always banned, each on its own, and the two words of a person\'s role anywhere, built from pieces since WS02 step 7', () => {
+    for (const word of WORKING) {
+      expect(BANNED.test(word), word).toBe(true)
+      expect(BANNED.test(`A ${word.toUpperCase()} here.`), word).toBe(true)
+      // Each word on its own, as before: a longer word that starts with it is not banned.
+      expect(BANNED.test(`${word}s`), `${word}s`).toBe(false)
+      expect(BANNED.test(`${word}ing`), `${word}ing`).toBe(false)
+    }
+    for (const text of ['the ' + 'lead', 'The ' + 'Lead said so', 'the ' + 'leading line']) expect(BANNED.test(text), text).toBe(true)
+    for (const text of ['a lead', 'slight', 'build', 'flow', 'agent', 'plan', 'record']) expect(BANNED.test(text), text).toBe(false)
+    expect(BANNED.flags).toBe('i')
+  })
+
   it('keeps the dashes, the working words, any tool\'s name and the old initials out of what the step wrote', () => {
     const written = [ws02, ...headerLines, mergedOwn, dateLine, rule8, briefText, verifyClosing]
     for (const text of written) expect(text).not.toBe('')

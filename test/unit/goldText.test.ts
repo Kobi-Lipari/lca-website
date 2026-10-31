@@ -58,9 +58,10 @@
 //   but the phone sheet's "You are here" on its #fbfaf6 row, or a line or
 //   fill anywhere but the phone tab bar's current tab.
 // The last two are WS02's parts, listed in the fixture as WS02_GOLD. WS02
-// step 5 built the About menu, whose entry matches its one use, in its
-// context; the sheet and the tab bar are not built yet, so their entries
-// match nothing, which the guard says. Each built part must keep to its
+// step 5 built the About menu, WS02 step 6 the Menu sheet and WS02 step 7
+// the tab bar, whose entries each match their one use, in its context: the
+// tab bar's is the current tab's bar, a line and not words, on the tab
+// bar's surface above the look's hairline. Each built part must keep to its
 // context or the guard fails.
 //
 // Every failure is planted in a temporary tree first, with the class names
@@ -793,9 +794,16 @@ describe('the gold guard on the tree', () => {
     // a tag for every status and two with words of their own, each with
     // on="light", the only on its type takes. Since step 31 the heritage
     // pages draw ThickThinRule, whose on says its ground, light (its
-    // default) or a navy band; each is drawn on a light ground.
+    // default) or a navy band; each is drawn on a light ground. Since WS02
+    // step 6 the Appearance control's on says its ground too: navy in the
+    // footer, its default, and light in the Menu sheet, whose line is read
+    // from the sheet's file.
+    const sheet = read('src/components/layout/MobileMenu.tsx').split('\n').findIndex((l) => l.includes('<AppearanceControl')) + 1
+    expect(sheet).toBeGreaterThan(0)
     expect([...result.onPlaces].sort()).toEqual([
       'src/areas/governance/components/GovLayout.tsx:93 <ThickThinRule> on=light (its default) -> light',
+      'src/components/layout/Footer.tsx:116 <AppearanceControl> on=navy (its default) -> navy',
+      `src/components/layout/MobileMenu.tsx:${sheet} <AppearanceControl> on=light -> light`,
       'src/pages/AboutPage.tsx:47 <ThickThinRule> on=light (its default) -> light',
       'src/pages/AdminEmailPage.tsx:379 <MultiSelectDropdown> on=light (its default) -> light',
       'src/pages/AdminEmailPage.tsx:380 <MultiSelectDropdown> on=light (its default) -> light',
@@ -830,18 +838,29 @@ describe('the gold guard on the tree', () => {
     expect(read('functions/db/schema.ts')).toContain(`color: text().default('${BRAND_GOLD}')`)
   })
 
-  it('the WS02 entries: the About menu\'s "You are here" matches in its file, beside its words, at its size and on its ground; the sheet and the tab bar are not built, and neither gold appears in the code of any other TSX file', () => {
-    // WS02 step 5 builds the About menu with its one gold use; the sheet and the tab bar come with WS02 steps 6 and 7.
+  it('the WS02 entries: the About menu\'s "You are here" and the Menu sheet\'s each match in their file, beside their words, at their size and on their ground, and the tab bar\'s current tab its bar in its file, a line and not words; neither gold appears in the code of any other TSX file', () => {
+    // WS02 step 5 built the About menu with its one gold use, WS02 step 6 the sheet with its own and WS02 step 7 the tab bar with its bar.
     const about = WS02_GOLD.find((w) => w.file.endsWith('/AboutMenu.tsx'))!
-    const line = read(about.file).split('\n').findIndex((l) => l.includes(c('text-[#', '705718]'))) + 1
-    expect(line).toBeGreaterThan(0)
-    expect(result.ws02Matched).toEqual([`${about.file}:${line}`])
-    for (const w of WS02_GOLD) expect(result.tree.files.has(w.file), w.file).toBe(w === about)
+    const tabBar = WS02_GOLD.find((w) => w.file.endsWith('/BottomTabs.tsx'))!
+    const sheet = WS02_GOLD.find((w) => w.file.endsWith('/MobileMenu.tsx'))!
+    const lineOf = (file: string, cls: string) => read(file).split('\n').findIndex((l) => l.includes(cls)) + 1
+    const aboutLine = lineOf(about.file, c('text-[#', '705718]'))
+    const tabBarLine = lineOf(tabBar.file, c('border-t-[#', '866a1e]'))
+    const sheetLine = lineOf(sheet.file, c('text-[#', '866a1e]'))
+    for (const line of [aboutLine, tabBarLine, sheetLine]) expect(line).toBeGreaterThan(0)
+    // In the order the guard reads the files, by their paths.
+    expect(result.ws02Matched).toEqual([`${about.file}:${aboutLine}`, `${tabBar.file}:${tabBarLine}`, `${sheet.file}:${sheetLine}`])
+    for (const w of WS02_GOLD) expect(result.tree.files.has(w.file), w.file).toBe(true)
     for (const parsed of result.tree.files.values()) {
-      const uses = hexUses(parsed, HERITAGE_GOLD)
-      expect(uses.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(parsed.file === about.file ? [`${about.file}:${line} text`] : [])
-      expect(hexUses(parsed, DARK_GOLD), parsed.file).toEqual([])
-      for (const use of uses) expect(inContext(use, about), `${use.file}:${use.line}`).toBe(true)
+      const heritage = hexUses(parsed, HERITAGE_GOLD)
+      const dark = hexUses(parsed, DARK_GOLD)
+      expect(heritage.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(parsed.file === about.file ? [`${about.file}:${aboutLine} text`] : [])
+      const darkHere = parsed.file === sheet.file ? [`${sheet.file}:${sheetLine} text`] : parsed.file === tabBar.file ? [`${tabBar.file}:${tabBarLine} bar`] : []
+      expect(dark.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(darkHere)
+      for (const use of heritage) expect(inContext(use, about), `${use.file}:${use.line}`).toBe(true)
+      // The sheet's words in their context; the tab bar's bar is a line, which the guard fits by its use alone.
+      for (const use of dark.filter((u) => u.as === 'text')) expect(inContext(use, sheet), `${use.file}:${use.line}`).toBe(true)
+      for (const use of dark.filter((u) => u.as === 'bar')) expect([use.file, tabBar.use], `${use.file}:${use.line}`).toEqual([tabBar.file, 'bar'])
     }
   })
 

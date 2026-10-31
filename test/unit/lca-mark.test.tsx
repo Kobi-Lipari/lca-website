@@ -125,8 +125,9 @@ describe('LcaMark: the favicon\'s rook, in the colour of its words', () => {
     const files = readdirSync(join(ROOT, 'src'), { recursive: true, encoding: 'utf8' }).filter((f) => /\.tsx$/.test(f))
     const calls = files.flatMap((f) => [...readFileSync(join(ROOT, 'src', f), 'utf8').matchAll(/<LcaMark\b[^>]*>/g)].map((m) => `src/${f}: ${m[0]}`))
     // Today's header's brand link, the LCA tag and the heritage seal (src/components/Seal.tsx), which colours the group around the mark,
-    // and since WS02 step 5 the new header's brand link (src/components/layout/SiteHeader.tsx), a size alone like today's.
-    expect(calls).toHaveLength(4)
+    // since WS02 step 5 the new header's brand link (src/components/layout/SiteHeader.tsx), a size alone like today's, and since
+    // WS02 step 6 the app bar's brand link (src/components/layout/MobileAppBar.tsx), a size alone as well.
+    expect(calls).toHaveLength(5)
     expect(calls.filter((c) => c.startsWith('src/components/Seal.tsx: '))).toHaveLength(1)
     for (const call of calls) {
       const classes = call.match(/className="([^"]*)"/)?.[1].split(/\s+/) ?? []

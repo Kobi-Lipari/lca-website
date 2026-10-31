@@ -30,8 +30,11 @@
 // - The error screen's Refresh button reloads the page whatever the mark
 //   says, so a tab that has used its one reload still has a way back.
 // - Every import the site makes on demand, and what its failure meets: a
-//   page or a component loaded with lazy() meets the error screen, the one
-//   error boundary in src; a look's stylesheet is left to
+//   page or a component loaded with lazy() meets the error screen, but for
+//   the parts the header and the app bar fetch on demand (the donation
+//   dialog and the Menu sheet), which meet their own boundary in
+//   src/components/layout/OnDemand.tsx, the one other error boundary in
+//   src; a look's stylesheet is left to
 //   src/lib/scopeStylesheets.ts; and an import that a handler awaits inside
 //   its own try meets that handler's catch, which the first reload in a tab
 //   comes before: the catch meets a TypeError in place of the loader's
@@ -319,9 +322,12 @@ describe('what each import the site makes on demand meets when its file is gone'
     expect(found("/* import('./nothing') */ const url = 'https://lca.test/a'")).toEqual([])
   })
 
-  it('has only one error boundary in src, the error screen, and src/main.tsx wraps the app in it', () => {
+  it('has two error boundaries in src, the error screen, which src/main.tsx wraps the app in, and the bars\' own around what they fetch on demand', () => {
+    // WS02 step 6 added the second: a donation dialog or a Menu sheet whose
+    // file cannot be fetched closes, says so under the bar, and leaves the
+    // page as it was, rather than taking the whole page to the error screen.
     const boundaries = sourceFiles().filter((path) => /getDerivedStateFromError|componentDidCatch/.test(code(path)))
-    expect(boundaries).toEqual(['src/components/errors/ErrorBoundary.tsx'])
+    expect(boundaries.sort()).toEqual(['src/components/errors/ErrorBoundary.tsx', 'src/components/layout/OnDemand.tsx'])
     expect(between(read('src/main.tsx'), '<ErrorBoundary>', '</ErrorBoundary>')).toContain('<App />')
   })
 

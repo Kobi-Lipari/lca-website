@@ -4,14 +4,15 @@
 // page, which exists only in the accessibility test build, so no page a
 // visitor sees changes (the step's acceptance criterion 7).
 //
-// - FilterChip, DateBlock and ScrollPanel are imported by the fixture page
-//   and by nothing else under src, however the import is written (by alias,
-//   by relative path or lazily).
+// - FilterChip and DateBlock are imported by the fixture page and by nothing
+//   else under src, however the import is written (by alias, by relative
+//   path or lazily), and ScrollPanel by the fixture page and, since WS02
+//   step 6, the Menu sheet, whose list scrolls inside it.
 // - The list of statuses and their words is read by StatusBadge and the
 //   fixture page only.
 // - Only the fixture page draws StatusBadge's status path, only the fixture
-//   page and the new header of WS02 step 5 draw the Button's gold variant,
-//   and no caller gives StatusDot a label.
+//   page, the new header of WS02 step 5 and the Menu sheet of WS02 step 6
+//   draw the Button's gold variant, and no caller gives StatusDot a label.
 // - ADMIN_SCROLL, which ScrollPanel generalises, keeps its value and its
 //   ten uses in nine admin files, none of which moves to the panel yet (that
 //   is WS06's and WS08's, as REDESIGN_STATUS.md records).
@@ -49,8 +50,13 @@ function drawnIn(pattern: RegExp): string[] {
 }
 
 describe('the new components are drawn on the fixture page only', () => {
-  it.each(['filter-chip', 'DateBlock', 'ScrollPanel'])('%s is imported by the fixture page and nothing else under src', (name) => {
+  it.each(['filter-chip', 'DateBlock'])('%s is imported by the fixture page and nothing else under src', (name) => {
     expect(importersOf(name)).toEqual([FIXTURE])
+  })
+
+  it('ScrollPanel is imported by the fixture page and the Menu sheet, and nothing else under src', () => {
+    // WS02 step 6's sheet scrolls its list inside the panel (decision D16), its first place off the fixture page.
+    expect(importersOf('ScrollPanel')).toEqual(['src/components/layout/MobileMenu.tsx', FIXTURE].sort())
   })
 
   it('the statuses and their words are read by StatusBadge and the fixture page only', () => {
@@ -61,9 +67,9 @@ describe('the new components are drawn on the fixture page only', () => {
     expect(drawnIn(/<StatusBadge\b[^>]*\bstatus=/)).toEqual([FIXTURE])
   })
 
-  it('only the fixture page and the new header draw the gold Button', () => {
-    // WS02 step 5's header draws Join LCA and Renew as the gold Button, its first place off the fixture page.
-    expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual(['src/components/layout/SiteHeader.tsx', FIXTURE].sort())
+  it('only the fixture page, the new header and the Menu sheet draw the gold Button', () => {
+    // WS02 step 5's header draws Join LCA and Renew as the gold Button, its first place off the fixture page, and WS02 step 6's sheet does the same.
+    expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual(['src/components/layout/MobileMenu.tsx', 'src/components/layout/SiteHeader.tsx', FIXTURE].sort())
   })
 
   it('no caller gives StatusDot a label yet, so its one page caller shows its state\'s words', () => {

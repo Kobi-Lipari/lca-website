@@ -22,10 +22,12 @@
 // - the header's names come from the helper's three lists, never written
 //   out, each name taken once, since Log out is in two of them; a read of a
 //   name only today's header gives (and of the More menu's account links) is
-//   marked as today's, and a read of a name only the new header gives (and
+//   marked as today's, and a read of a name only the new chrome gives (and
 //   of a person's My LCA rows, from test/unit/fixtures/navPersonas.ts) is
-//   marked as the new header's, or sits in a helper only checks so marked
-//   call; and a name any header gives is never marked as today's
+//   marked as the new chrome's, or sits in a helper only checks so marked
+//   call, Menu among them since WS02 step 6, which nav.spec.ts's block for
+//   the tablet header, the app bar and the Menu sheet reads in checks so
+//   marked; and a name any header gives is never marked as today's
 // - the reading is not blind: made-up lines of each kind are found, and the
 //   ways the specs read the chrome through the helper are not
 import { readdirSync, readFileSync } from 'node:fs'
@@ -517,9 +519,9 @@ describe('the checks marked as today\'s, or as the new chrome\'s', () => {
 })
 
 describe('the header\'s names', () => {
-  it('are the helper\'s three lists, which hold the eleven names the specs read the header by, each once', () => {
-    expect(helperNames()).toHaveLength(12)
-    expect([...NAMES].sort()).toEqual(['About', 'Clubs', 'Donate', 'Join LCA', 'Log in', 'Log out', 'Louisiana Chess Association, home', 'More', 'My LCA', 'Profile', 'Renew'])
+  it('are the helper\'s three lists, which hold the twelve names the specs read the header by, each once, Menu among them since WS02 step 6', () => {
+    expect(helperNames()).toHaveLength(13)
+    expect([...NAMES].sort()).toEqual(['About', 'Clubs', 'Donate', 'Join LCA', 'Log in', 'Log out', 'Louisiana Chess Association, home', 'Menu', 'More', 'My LCA', 'Profile', 'Renew'])
   })
 
   it('are read from the lists, never written out in a read of the header', () => {

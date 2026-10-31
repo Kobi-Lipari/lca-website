@@ -1,9 +1,11 @@
 // src/components/layout/SiteHeader.tsx
 //
-// The new header (WS02), for windows 1024 pixels wide and wider. Navbar
-// draws it with the chrome on (newNav and newLook, chromeOn in
-// src/lib/nav.ts) and today's header otherwise, and below 1024 pixels until
-// the tablet header and the phone's app bar are built.
+// The new header (WS02), which Navbar draws with the chrome on (newNav and
+// newLook, chromeOn in src/lib/nav.ts) in two forms: the desktop form for
+// windows 1024 pixels wide and wider, and the tablet form, its narrower
+// form, from 768 to 1023 pixels. Below 768 pixels the phone's app bar,
+// src/components/layout/MobileAppBar.tsx, is drawn instead. Crossing 1024
+// pixels keeps this header and changes its form.
 //
 // One navy row, 64 pixels high, that stays at the top of the window and
 // never condenses (brief 1.4; the decided board's bar that shrinks on scroll
@@ -12,28 +14,41 @@
 // - the brand link to the home page, always named "Louisiana Chess
 //   Association, home": the rook mark (LcaMark, decision D1), hidden from
 //   screen readers, beside the two-line name, with no plate;
-// - the six sections from src/lib/nav.ts, About opening the About menu
-//   (src/components/layout/AboutMenu.tsx); the one the page is in carries
-//   aria-current="page" and a gold line at its foot, drawn inside its box so
-//   nothing in the row moves when the page changes, and an underline in
-//   forced colours, which draw no such line;
+// - the sections from src/lib/nav.ts: all six in the desktop form, About
+//   opening the About menu (src/components/layout/AboutMenu.tsx), and
+//   Tournaments and Clubs alone in the tablet form; the one the page is in
+//   carries aria-current="page" and a gold line at its foot, drawn inside
+//   its box so nothing in the row moves when the page changes, and an
+//   underline in forced colours, which draw no such line;
 // - the utilities: Donate, then Log in, which hands /login the page the
 //   person is on, or the My LCA menu (src/components/layout/MyLcaMenu.tsx)
-//   once they are signed in, then Join LCA or Renew, the gold button, by the
-//   member's status.
+//   once they are signed in; then, in the desktop form, Join LCA or Renew,
+//   the gold button, by the member's status, and in the tablet form the
+//   bordered Menu button, which opens the Menu sheet
+//   (src/components/layout/MobileMenu.tsx) as a drawer from the right, where
+//   Join LCA and Renew are. In the page frame the sheet is the one the dock's
+//   provider holds (src/components/layout/BottomDock.tsx), which the phone's
+//   app bar and its Menu tab open too, so a drawer open as the window
+//   narrows below 768 pixels stays open as the phone's sheet, and the
+//   phone's sheet stays open as the drawer; the window widening into the
+//   desktop form closes it, with the focus on the brand link, since that form
+//   has no Menu button to come back to.
 //
 // Donate opens the donation dialog until the Give page exists behind
 // newMembership, then goes to /give. The dialog's code is fetched the first
-// time it opens rather than with the header, which every page loads, since
-// its form parts would otherwise join the script every visitor waits for;
-// once drawn it stays drawn, closed, so it closes as it always has and
-// hands the focus back.
+// time it opens, and the sheet's the first time Menu is pressed, rather than
+// with the header, which every page loads, since their parts would otherwise
+// join the script every visitor waits for; once drawn each stays drawn,
+// closed, so it closes as it always has and hands the focus back. Both are
+// drawn inside the bars' own boundary (OnDemand), so a file that cannot be
+// fetched closes what was opening and says so, and the page stays.
 //
-// When the row is too tight it gives way in a fixed order, measured from
-// the row's natural width rather than set by breakpoint: first Donate leaves
-// the bar for the About menu's last row, then the two-line name hides while
-// the link keeps its name. No section, Log in or My LCA, Join LCA or Renew
-// ever leaves the bar.
+// When the desktop row is too tight it gives way in a fixed order, measured
+// from the row's natural width rather than set by breakpoint: first Donate
+// leaves the bar for the About menu's last row, then the two-line name hides
+// while the link keeps its name. No section, Log in or My LCA, Join LCA or
+// Renew ever leaves the bar. In the tablet form Donate never leaves it, and
+// the name is the one part that gives way.
 //
 // The header writes its height to --header-h on the page's root while it is
 // drawn, which the page's scroll padding reads (src/index.css), so a control
@@ -41,22 +56,36 @@
 // read through its variable, not the navy band classes, whose gold focus
 // ring rule would outrank the menus' own; data-ring-ground="navy" gives its
 // controls the gold ring.
-import { lazy, Suspense, useLayoutEffect, useRef, useState, type RefObject } from 'react'
+import { lazy, useId, useLayoutEffect, useRef, useState, type RefObject } from 'react'
+import { Menu as MenuIcon } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import { LcaMark } from '@/components/LcaMark'
 import { AboutMenu } from '@/components/layout/AboutMenu'
 import { MyLcaMenu } from '@/components/layout/MyLcaMenu'
+import { OnDemand } from '@/components/layout/OnDemand'
+import { useDock } from '@/components/layout/dockParts'
+import {
+  HOME_NAME,
+  MENU_BUTTON,
+  joinSlotOf,
+  logInFrom,
+  useClosedOnPageChange,
+  useHeaderHeight,
+  useOnDemandPart,
+} from '@/components/layout/headerParts'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/auth-context'
-import type { AuthContextValue } from '@/contexts/AuthContext'
-import { headerSections, headerUtilities, navEntry, sectionFor, type JoinSlot } from '@/lib/nav'
+import { headerSections, headerUtilities, navEntry, navLabel, sectionFor } from '@/lib/nav'
 import { cn } from '@/lib/utils'
 
 /** The donation dialog, fetched the first time Donate is pressed. */
 const DonateDialog = lazy(() => import('@/components/DonateButton').then((m) => ({ default: m.DonateDialog })))
 
-/** The brand link's name, the same whether its two-line name shows or not. */
-const HOME_NAME = 'Louisiana Chess Association, home'
+/** The Menu sheet, fetched the first time Menu is pressed in the tablet form. */
+const MobileMenu = lazy(() => import('@/components/layout/MobileMenu').then((m) => ({ default: m.MobileMenu })))
+
+/** The header's two forms: the desktop's from 1024 pixels up, and the tablet's from 768 to 1023. */
+export type HeaderForm = 'desktop' | 'tablet'
 
 /**
  * A section of the row: 15 pixels at weight 500, 12 pixels a side and 44
@@ -80,21 +109,6 @@ function sectionClass(current: boolean): string {
 /** Donate, Log in and the My LCA button: 14 pixels at weight 500, 44 high, underlined on hover. */
 const UTILITY = 'inline-flex min-h-11 items-center px-2 text-sm font-medium underline-offset-4 hover:underline'
 
-/**
- * The slot after My LCA for someone signed in, by the member's status:
- * Renew once a membership has expired, Join LCA for someone with no
- * membership, and nothing for an active member, within 30 days of its end
- * too. Nothing while the member is loading, or when it could not be read,
- * rather than a wrong offer.
- */
-function joinSlotOf(auth: AuthContextValue): JoinSlot {
-  const status = auth.member?.membership_status
-  if (auth.memberLoading || !status) return null
-  if (status === 'expired') return 'renew'
-  if (status === 'none') return 'joinLca'
-  return null
-}
-
 /** How far the row has given way: 0, everything in the bar; 1, Donate in the About menu; 2, the two-line name hidden as well. */
 type Level = 0 | 1 | 2
 
@@ -108,12 +122,12 @@ interface RowWidths {
   mark: number
   brandGap: number
   words: number
-  /** The six sections. */
+  /** The sections. */
   nav: number
   /** Donate, and the gap after it inside the utilities. */
   donate: number
   utilitiesGap: number
-  /** Log in or My LCA, with the join slot. */
+  /** Log in or My LCA, with the join slot or the Menu button. */
   account: number
 }
 
@@ -122,11 +136,12 @@ interface RowWidths {
  * width is a sum of widths kept from when each part was last drawn, so it
  * does not change with the level, and the level depends on the room alone:
  * it cannot flap at its edge. When even the last level does not fit, the
- * row stays at it and no part leaves.
+ * row stays at it and no part leaves. Where Donate never leaves the bar, as
+ * in the tablet form, every level counts it, so the row goes from 0 to 2.
  */
-function squeezeLevel(w: RowWidths): Level {
+function squeezeLevel(w: RowWidths, donateLeaves: boolean): Level {
   const natural = (level: Level) =>
-    w.mark + (level < 2 ? w.brandGap + w.words : 0) + w.gap + w.nav + w.gap + (level < 1 ? w.donate + w.utilitiesGap : 0) + w.account
+    w.mark + (level < 2 ? w.brandGap + w.words : 0) + w.gap + w.nav + w.gap + (level < 1 || !donateLeaves ? w.donate + w.utilitiesGap : 0) + w.account
   return ([0, 1] as const).find((level) => natural(level) <= w.room) ?? 2
 }
 
@@ -142,12 +157,12 @@ interface RowParts {
 /**
  * The level the row is at, worked out in a ResizeObserver's callback over
  * the row and each part that can change width (fonts arriving, someone
- * signing in, the window resized). A hidden part measures nothing, so the
- * width Donate and the name had when last drawn is kept while they hide.
- * The observer's first callback comes as it starts watching, so nothing is
- * measured, and no state is set, in the effect itself.
+ * signing in, the window resized, the form changing). A hidden part measures
+ * nothing, so the width Donate and the name had when last drawn is kept while
+ * they hide. The observer's first callback comes as it starts watching, so
+ * nothing is measured, and no state is set, in the effect itself.
  */
-function useSqueeze(parts: RowParts): Level {
+function useSqueeze(parts: RowParts, donateLeaves: boolean): Level {
   const [level, setLevel] = useState<Level>(0)
   const kept = useRef({ words: 0, donate: 0 })
   useLayoutEffect(() => {
@@ -165,52 +180,38 @@ function useSqueeze(parts: RowParts): Level {
       if (width(donate) > 0) kept.current.donate = width(donate)
       const rowStyle = getComputedStyle(row)
       setLevel(
-        squeezeLevel({
-          room: row.clientWidth - px(rowStyle.paddingLeft) - px(rowStyle.paddingRight),
-          gap: px(rowStyle.columnGap),
-          mark: width(brand.querySelector('[data-slot="lca-mark"]')),
-          brandGap: px(getComputedStyle(brand).columnGap),
-          words: kept.current.words,
-          nav: width(nav),
-          donate: kept.current.donate,
-          utilitiesGap: donate.parentElement ? px(getComputedStyle(donate.parentElement).columnGap) : 0,
-          account: width(account),
-        }),
+        squeezeLevel(
+          {
+            room: row.clientWidth - px(rowStyle.paddingLeft) - px(rowStyle.paddingRight),
+            gap: px(rowStyle.columnGap),
+            mark: width(brand.querySelector('[data-slot="lca-mark"]')),
+            brandGap: px(getComputedStyle(brand).columnGap),
+            words: kept.current.words,
+            nav: width(nav),
+            donate: kept.current.donate,
+            utilitiesGap: donate.parentElement ? px(getComputedStyle(donate.parentElement).columnGap) : 0,
+            account: width(account),
+          },
+          donateLeaves,
+        ),
       )
     }
     const watch = new ResizeObserver(measure)
     for (const el of [row, words, nav, donate, account]) watch.observe(el)
     return () => watch.disconnect()
-  }, [parts.row, parts.brand, parts.words, parts.nav, parts.donate, parts.account])
+  }, [parts.row, parts.brand, parts.words, parts.nav, parts.donate, parts.account, donateLeaves])
   return level
 }
 
-/**
- * Writes the header's height to --header-h on the page's root, now and
- * whenever it changes, and takes it off when the header goes. It is written
- * on the element, not through React, so a change of height draws nothing
- * again. The header is the whole sticky stack at the top of the page today;
- * the event strip joins it later.
- */
-function useHeaderHeight(header: RefObject<HTMLElement | null>) {
-  useLayoutEffect(() => {
-    const el = header.current
-    if (!el) return
-    const root = document.documentElement
-    const write = () => root.style.setProperty('--header-h', `${el.offsetHeight}px`)
-    write()
-    const watch = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(write)
-    watch?.observe(el)
-    return () => {
-      watch?.disconnect()
-      root.style.removeProperty('--header-h')
-    }
-  }, [header])
+export interface SiteHeaderProps {
+  /** The desktop form, from 1024 pixels up (the default), or the tablet form, from 768 to 1023. */
+  form?: HeaderForm
 }
 
-export function SiteHeader() {
+export function SiteHeader({ form = 'desktop' }: SiteHeaderProps) {
   const auth = useAuth()
   const location = useLocation()
+  const tablet = form === 'tablet'
   const headerRef = useRef<HTMLElement>(null)
   const rowRef = useRef<HTMLDivElement>(null)
   const brandRef = useRef<HTMLAnchorElement>(null)
@@ -218,37 +219,64 @@ export function SiteHeader() {
   const navRef = useRef<HTMLElement>(null)
   const donateRef = useRef<HTMLSpanElement>(null)
   const accountRef = useRef<HTMLDivElement>(null)
+  const menuRef = useRef<HTMLButtonElement>(null)
   /** The control the focus goes back to when the donation dialog closes. */
   const donateFrom = useRef<HTMLElement | null>(null)
-  const [donateOpen, setDonateOpen] = useState(false)
-  /** Whether the donation dialog has been opened yet, and so fetched and drawn. */
-  const [donateDrawn, setDonateDrawn] = useState(false)
+  const dock = useDock()
+  const ownSheetId = useId()
+  const donation = useOnDemandPart()
+  const ownSheet = useOnDemandPart()
+  // The one sheet of the dock's provider, or, drawn on its own, a drawer of its own.
+  const sheet = dock?.sheet ?? ownSheet
+  const sheetId = dock?.sheetId ?? ownSheetId
 
   useHeaderHeight(headerRef)
-  const level = useSqueeze({ row: rowRef, brand: brandRef, words: wordsRef, nav: navRef, donate: donateRef, account: accountRef })
+  // The provider closes its own sheet on a change of page and from 1024
+  // pixels up; these two close the header's own, when it is drawn alone.
+  useClosedOnPageChange(ownSheet)
+  const level = useSqueeze({ row: rowRef, brand: brandRef, words: wordsRef, nav: navRef, donate: donateRef, account: accountRef }, !tablet)
+  // The drawer has no Menu button to come back to from 1024 pixels up, so
+  // the window widening into the desktop form closes it.
+  if (!tablet && ownSheet.open) ownSheet.setOpen(false)
+
+  /**
+   * Where the focus goes back to once the drawer, or a part that failed,
+   * has closed: the Menu button, or the brand link, the header's first
+   * control, once the Menu button has gone with the tablet form; in the page
+   * frame, the dock's way back, which ends on the brand link too.
+   */
+  const back = (): HTMLElement | null => (dock ? dock.returnFocus() : (menuRef.current ?? brandRef.current))
+  /**
+   * The same for the drawer, but for one that goes with this header while
+   * it is still open, as the window crosses 768 pixels; the provider is
+   * asked whether the sheet is open now, as the app bar asks it.
+   */
+  const backFromSheet = (): HTMLElement | null => (dock?.isSheetOpen() ? null : back())
 
   const section = sectionFor(location.pathname)
   const signedIn = !auth.loading && !!auth.user
   const [, account, slot] = headerUtilities({ signedIn, joinSlot: signedIn ? joinSlotOf(auth) : undefined })
   const donate = navEntry('donate')
-  const joinEntry = slot ? navEntry(slot) : null
+  const joinEntry = !tablet && slot ? navEntry(slot) : null
   const logIn = navEntry('logIn')
   // Log in hands /login the page the person is on, its query and its hash
   // too, which src/pages/LoginPage.tsx returns them to once they are signed
-  // in. On /login itself it keeps the page it was handed.
-  const here = `${location.pathname}${location.search}${location.hash}`
-  const from = location.pathname === logIn.href ? (location.state as { from?: string } | null)?.from : here
+  // in. On the sign-in pages it hands on the page that page was handed.
+  const from = logInFrom(location)
+  // The tablet form's two sections: Tournaments and Clubs, the first two,
+  // which the phone's first two tabs reuse as well.
+  const sections = tablet ? headerSections().slice(0, 2) : headerSections()
 
   function openDonate(from: HTMLElement | null) {
     donateFrom.current = from
-    setDonateDrawn(true)
-    setDonateOpen(true)
+    donation.show()
   }
 
   return (
     <header
       ref={headerRef}
       data-slot="site-header"
+      data-form={form}
       data-ring-ground="navy"
       className="sticky top-0 z-50 h-16 bg-(--color-brand-navy) text-white shadow-md print:hidden"
     >
@@ -262,7 +290,7 @@ export function SiteHeader() {
         </Link>
 
         <nav ref={navRef} aria-label="Main" data-slot="site-header-sections" className="flex flex-none items-center">
-          {headerSections().map((id) => {
+          {sections.map((id) => {
             const current = section === id
             if (id === 'about') {
               return <AboutMenu key={id} current={current} buttonClassName={sectionClass(current)} squeezed={level > 0} onDonate={openDonate} />
@@ -278,7 +306,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="ml-auto flex flex-none items-center gap-1">
-          <span ref={donateRef} data-slot="site-header-donate" hidden={level > 0} className="flex">
+          <span ref={donateRef} data-slot="site-header-donate" hidden={!tablet && level > 0} className="flex">
             {donate.href === null ? (
               <button type="button" onClick={(event) => openDonate(event.currentTarget)} className={UTILITY}>
                 {donate.label}
@@ -304,13 +332,51 @@ export function SiteHeader() {
                 <Link to={joinEntry.href}>{joinEntry.label}</Link>
               </Button>
             )}
+            {tablet && (
+              <button
+                ref={menuRef}
+                type="button"
+                aria-haspopup="dialog"
+                aria-expanded={sheet.open}
+                aria-controls={sheet.open ? sheetId : undefined}
+                onClick={(event) => (dock ? dock.openSheet(event.currentTarget) : ownSheet.show())}
+                className={MENU_BUTTON}
+              >
+                <MenuIcon aria-hidden="true" className="size-5" />
+                {navLabel('menu')}
+              </button>
+            )}
           </div>
         </div>
       </div>
-      {donate.href === null && donateDrawn && (
-        <Suspense fallback={null}>
-          <DonateDialog open={donateOpen} onOpenChange={setDonateOpen} returnFocus={() => donateFrom.current} />
-        </Suspense>
+      {sheet.drawn && (
+        <OnDemand
+          notice="The menu could not be loaded. Reload the page to try again."
+          onFailed={() => sheet.setOpen(false)}
+          returnFocus={back}
+          tries={sheet.tries}
+        >
+          <MobileMenu
+            open={sheet.open}
+            onOpenChange={sheet.setOpen}
+            shape="drawer"
+            id={sheetId}
+            returnFocus={backFromSheet}
+            onDonate={() => openDonate(menuRef.current)}
+          />
+        </OnDemand>
+      )}
+      {donate.href === null && donation.drawn && (
+        // The control that asked for the dialog: Donate, the About menu's
+        // button when Donate is in that menu, or Menu for the sheet's Donate.
+        <OnDemand
+          notice="The donation form could not be loaded. Reload the page to try again."
+          onFailed={() => donation.setOpen(false)}
+          returnFocus={() => donateFrom.current}
+          tries={donation.tries}
+        >
+          <DonateDialog open={donation.open} onOpenChange={donation.setOpen} returnFocus={() => donateFrom.current} />
+        </OnDemand>
       )}
     </header>
   )

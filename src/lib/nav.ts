@@ -8,9 +8,12 @@
 // Nav-IA-Final, section F).
 //
 // Nothing here draws anything. The page frame reads the chrome's condition
-// (src/App.tsx), and the new header and its About and My LCA menus read the
-// sections, the rows and the utilities (src/components/layout); the sheet,
-// the tabs and the footer that read the rest come later, behind newNav.
+// (src/App.tsx), and the new header in its desktop and tablet forms, the
+// phone's app bar, the About and My LCA menus and the Menu sheet read the
+// sections, the rows and the utilities (src/components/layout); the phone's
+// dock and its tab bar read the tabs, the current tab and the pages that
+// hide the tab bar; the footer that reads the rest comes later, behind
+// newNav.
 // Everything that depends on a switch takes the switches as its last
 // argument, which defaults to FEATURES, so a test can try any combination.
 // Icons are names, not components, so the model stays plain data; the part
@@ -481,6 +484,8 @@ export interface NavSheet {
   readonly utilities: readonly NavId[]
   /** Today's role rows until the volunteer rail is on, then the Admin row the person holds. */
   readonly roles: readonly NavId[]
+  /** Log out for someone signed in, the account group's last row, after the role rows; nothing for someone signed out. */
+  readonly logOut: readonly NavId[]
   /** LCA on Facebook, Contact and Website help. */
   readonly links: readonly NavId[]
   /** The theme switch, and Hide event bar while event mode is on. */
@@ -526,9 +531,10 @@ export function sheetRowLabel(row: SheetRow): string {
 
 /**
  * The Menu sheet: the six sections with the current one open; Donate, Log in
- * or My LCA, and the join slot, in the bar's order; the role rows; LCA on
- * Facebook, Contact and Website help; the theme switch; and Hide event bar
- * while event mode is on.
+ * or My LCA, and the join slot, in the bar's order; the role rows; Log out
+ * for someone signed in, as the My LCA menu ends with it; LCA on Facebook,
+ * Contact and Website help; the theme switch; and Hide event bar while event
+ * mode is on.
  */
 export function navSheet(input: SheetInput, features: Features = FEATURES): NavSheet {
   const current = sectionFor(input.pathname)
@@ -544,6 +550,7 @@ export function navSheet(input: SheetInput, features: Features = FEATURES): NavS
     })),
     utilities: live(headerUtilities(input), features),
     roles,
+    logOut: input.signedIn ? live(['logOut'], features) : [],
     links: live(['facebook', 'contact', 'websiteHelp'], features),
     controls: live(['appearance', ...(input.eventMode ? (['hideEventBar'] as const) : [])], features),
   }

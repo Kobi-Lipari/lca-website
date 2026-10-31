@@ -15,13 +15,20 @@
 //   from the site's own index.html, the page's charset meta still ends
 //   inside its first 1024 bytes (test/unit/theme-color.test.tsx reads the
 //   colour the page ends up with)
+// - since WS02 step 7 the plugin also gives the page's viewport tag
+//   viewport-fit=cover with the chrome on, newNav and newLook both, read the
+//   same way (newNavInBuild beside newLookInBuild), and today's tag with
+//   either off: the site's own index.html built with each mix of the two,
+//   through VITE_FLAGS and through the file itself, holds the one tag it
+//   should, and a page without today's tag, or with it twice, stops a build
+//   that would rewrite it
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runInNewContext } from 'node:vm'
 import { build } from 'vite'
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
-import viteConfig, { newLookInBuild, prepaintPlugin } from '../../vite.config'
+import viteConfig, { COVER_VIEWPORT, newLookInBuild, newNavInBuild, prepaintPlugin, switchInBuild, TODAYS_VIEWPORT, withCoverViewport } from '../../vite.config'
 import {
   APPEARANCE_KEY,
   createColorScheme,
@@ -70,6 +77,61 @@ describe('newLookInBuild', () => {
   it('refuses a file where the switch is missing or written twice', () => {
     expect(() => newLookInBuild('const SWITCHES = {}', 'production', undefined)).toThrow(/found 0/)
     expect(() => newLookInBuild('  newLook: false,\n  newLook: true,\n', 'production', undefined)).toThrow(/found 2/)
+  })
+})
+
+describe('newNavInBuild', () => {
+  it('reads the value written in src/lib/features.ts, which is off today', () => {
+    expect(newNavInBuild(FEATURES_SOURCE, 'production', undefined)).toBe(false)
+    expect(newNavInBuild(FEATURES_SOURCE, 'production', undefined)).toBe(FEATURES.newNav)
+  })
+
+  it.each([
+    ['production', 'newNav'],
+    ['development', 'newNav'],
+    ['A11Y', 'newNav'],
+    ['a11y', ''],
+    ['a11y', undefined],
+    ['a11y', 'newLook'],
+    ['a11y', 'newNav'],
+    ['a11y', ' newLook , newNav'],
+    ['a11y', 'newLook,themeHeritage,newNav,siteSearch,eventStrip,eventStripLive,liveMarker'],
+  ])('agrees with applyFlagOverrides in mode %s with VITE_FLAGS %j', (mode, flags) => {
+    expect(newNavInBuild(FEATURES_SOURCE, mode, flags)).toBe(applyFlagOverrides(FEATURES, mode, flags).newNav)
+  })
+
+  it('is on in every mode once the switch is written as true, and reads newNav alone, never newLook', () => {
+    const on = FEATURES_SOURCE.replace(/^(\s*newNav:\s*)false,/m, '$1true,')
+    expect(on).not.toBe(FEATURES_SOURCE)
+    for (const mode of ['production', 'development', 'a11y']) expect(newNavInBuild(on, mode, undefined)).toBe(true)
+    const look = FEATURES_SOURCE.replace(/^(\s*newLook:\s*)false,/m, '$1true,')
+    expect(newNavInBuild(look, 'production', undefined)).toBe(false)
+    expect(newLookInBuild(on, 'production', undefined)).toBe(false)
+  })
+
+  it('refuses a file where the switch is missing or written twice, in the words newLookInBuild uses', () => {
+    expect(() => newNavInBuild('const SWITCHES = {}', 'production', undefined)).toThrow('src/lib/features.ts should set newNav once, as true or false; found 0 settings.')
+    expect(() => newNavInBuild('  newNav: false,\n  newNav: true,\n', 'production', undefined)).toThrow(/found 2/)
+    expect(() => switchInBuild('newLook', 'const SWITCHES = {}', 'production', undefined)).toThrow('src/lib/features.ts should set newLook once, as true or false; found 0 settings.')
+  })
+})
+
+describe('the viewport tag with viewport-fit=cover', () => {
+  it('is today\'s tag, byte for byte as index.html writes it once, with viewport-fit=cover after what it holds', () => {
+    const site = read('index.html')
+    expect(site.split(TODAYS_VIEWPORT)).toHaveLength(2)
+    expect(COVER_VIEWPORT).toBe(TODAYS_VIEWPORT.replace('initial-scale=1.0"', 'initial-scale=1.0, viewport-fit=cover"'))
+    const covered = withCoverViewport(site)
+    expect(covered.split(COVER_VIEWPORT)).toHaveLength(2)
+    expect(covered).not.toContain(TODAYS_VIEWPORT)
+    // Nothing else in the page changes.
+    expect(covered.replace(COVER_VIEWPORT, TODAYS_VIEWPORT)).toBe(site)
+  })
+
+  it('refuses a page without today\'s tag, or with it twice, rather than write a tag the page did not have', () => {
+    expect(() => withCoverViewport('<head></head>')).toThrow('index.html should hold today\'s viewport tag once; found 0.')
+    expect(() => withCoverViewport(`${TODAYS_VIEWPORT}${TODAYS_VIEWPORT}`)).toThrow(/found 2\./)
+    expect(() => withCoverViewport(COVER_VIEWPORT)).toThrow(/found 0\./)
   })
 })
 
@@ -152,6 +214,43 @@ describe('prepaintPlugin in a real vite build', () => {
     writeFileSync(file, FEATURES_SOURCE.replace(/^(\s*newLook:\s*)false,/m, '$1true,'))
     const html = await buildPage('production', undefined, file)
     expect(html).toContain(`<script>${PREPAINT_SCRIPT}</script>`)
+  }, 60_000)
+
+  /** The viewport tags a built page holds. */
+  const viewportTags = (html: string) => html.match(/<meta name="viewport"[^>]*>/g) ?? []
+  /** The site's own page, with its module script pointed at the small one these builds make. */
+  const sitePage = () => read('index.html').replace('src="/src/main.tsx"', 'src="/main.js"')
+
+  it('gives the site\'s own page viewport-fit=cover with newLook and newNav both on in the a11y build, once, and today\'s tag with either off or both, the charset still in the first 1024 bytes', async () => {
+    for (const [flags, cover] of [['', false], ['newLook', false], ['newNav', false], ['newLook,newNav', true]] as const) {
+      const html = await buildPage('a11y', flags, undefined, sitePage())
+      expect(viewportTags(html), flags).toEqual([cover ? COVER_VIEWPORT : TODAYS_VIEWPORT])
+      expect(html.split('viewport-fit').length - 1, flags).toBe(cover ? 1 : 0)
+      const charset = '<meta charset="UTF-8" />'
+      const bytes = Buffer.from(html, 'utf8')
+      expect(bytes.indexOf(charset) + Buffer.byteLength(charset), flags).toBeLessThanOrEqual(1024)
+    }
+  }, 60_000)
+
+  it('reads both switches from the file itself in the production build, viewport-fit=cover only where both are written as true, and today\'s tag with every switch as the file has it now', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'lca-features-'))
+    dirs.push(dir)
+    for (const [look, nav, cover] of [[true, true, true], [true, false, false], [false, true, false], [false, false, false]] as const) {
+      const file = join(dir, `features-${look}-${nav}.ts`)
+      writeFileSync(file, FEATURES_SOURCE.replace(/^(\s*newLook:\s*)false,/m, `$1${look},`).replace(/^(\s*newNav:\s*)false,/m, `$1${nav},`))
+      const html = await buildPage('production', 'newLook,newNav', file, sitePage())
+      expect(viewportTags(html), `newLook ${look}, newNav ${nav}`).toEqual([cover ? COVER_VIEWPORT : TODAYS_VIEWPORT])
+    }
+    // The file as it is: both off, and VITE_FLAGS counts in the a11y build alone.
+    expect(viewportTags(await buildPage('production', 'newLook,newNav', undefined, sitePage()))).toEqual([TODAYS_VIEWPORT])
+  }, 60_000)
+
+  it('stops a build that would rewrite a page without today\'s viewport tag, or with it twice, and builds such a page as before with either switch off', async () => {
+    await expect(buildPage('a11y', 'newLook,newNav')).rejects.toThrow(/index\.html should hold today's viewport tag once; found 0\./)
+    const twice = ONE_PAGE.replace('    <title>', `    ${TODAYS_VIEWPORT}\n    ${TODAYS_VIEWPORT}\n    <title>`)
+    await expect(buildPage('a11y', 'newLook,newNav', undefined, twice)).rejects.toThrow(/found 2\./)
+    expect(viewportTags(await buildPage('a11y', 'newLook'))).toEqual([])
+    expect(viewportTags(await buildPage('a11y', 'newNav', undefined, twice))).toEqual([TODAYS_VIEWPORT, TODAYS_VIEWPORT])
   }, 60_000)
 })
 

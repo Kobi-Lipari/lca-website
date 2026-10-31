@@ -892,6 +892,23 @@
     outline-offset: -4px;
 }
 
+/* The phone's tab bar sits at the window's foot, where a ring set 2 pixels
+ * outside a tab would be cut by the window's edge, so each tab's ring is
+ * drawn just inside it, on the tab bar's own surface: the look's navy on
+ * white, its gold in dark mode (WS02 step 7). */
+:root[data-look="new"] [data-slot="tab-bar"] a:focus-visible,
+:root[data-look="new"] [data-slot="tab-bar"] button:focus-visible {
+    outline-offset: -4px;
+}
+
+/* The Menu sheet's list scrolls inside a region that fills the sheet from
+ * edge to edge, so a ring set outside the region would be cut by the sheet
+ * on most of its sides; the region's ring is drawn just inside it instead,
+ * whole and in view (WS02 step 7). */
+:root[data-look="new"] [data-slot="menu-sheet"] [data-slot="scroll-panel"]:focus-visible {
+    outline-offset: -3px;
+}
+
 /* The skip link moves the focus to the page's main, which is a landmark and
  * not a control, so it draws no ring around the whole page (WS02 step 3). */
 :root[data-look="new"] #main-content:focus-visible {
@@ -909,14 +926,48 @@
     display: none;
 }
 
-/* The new header writes its own height to --header-h on the page's root
- * while it is drawn (src/components/layout/SiteHeader.tsx), so the page
- * keeps that much room at its top when it scrolls a control into view: a
- * link or a button the keyboard moves to is never left under the sticky
- * header (WCAG 2.4.11). Where nothing writes the variable, today's header
- * among them, nothing is padded (WS02 step 5). */
+/* The new chrome's bar writes its own height to --header-h on the page's
+ * root while it is drawn: 64 pixels for the new header, in its desktop form
+ * from 1024 pixels up and its tablet form from 768
+ * (src/components/layout/SiteHeader.tsx), and 56 for the phone's app bar
+ * below 768 (src/components/layout/MobileAppBar.tsx). So the page keeps
+ * that much room at its top when it scrolls a control into view: a link or
+ * a button the keyboard moves to is never left under the sticky bar (WCAG
+ * 2.4.11). Where nothing writes the variable, today's header among them,
+ * nothing is padded (WS02 steps 5 and 6). The phone's dock writes its own
+ * height to --bottom-chrome-h the same way
+ * (src/components/layout/BottomDock.tsx), and the page keeps that much room
+ * at its foot as well, so a control the keyboard moves to is never left
+ * under the dock (WS02 step 7, decision D16). */
 :root[data-look="new"] {
     scroll-padding-top: var(--header-h, 0px);
+    scroll-padding-bottom: var(--bottom-chrome-h, 0px);
+}
+
+/* A control of a sticky bar is in view wherever the page is scrolled, so
+ * while the focus is in the bar the page keeps no room at its top for it:
+ * Tab onto the bar never scrolls the page (WS02 step 7). */
+:root[data-look="new"]:has([data-slot="site-header"] :focus-visible),
+:root[data-look="new"]:has([data-slot="app-bar"] :focus-visible) {
+    scroll-padding-top: 0px;
+}
+
+/* The dock is fixed over the window's foot, so the page keeps the dock's
+ * height as room after its last line: the footer is the last thing in the
+ * page's flow, after the main, so the room is kept under the footer rather
+ * than in the main, and the footer's last line is never under the dock.
+ * With no dock the variable is unset and nothing changes (WS02 step 7). */
+:root[data-look="new"] #main-content + footer {
+    margin-bottom: var(--bottom-chrome-h, 0px);
+}
+
+/* With the chrome on the page's viewport reaches under a phone's notch
+ * (viewport-fit=cover, which vite.config.ts writes then), so the page's
+ * flow keeps its sides inside the safe area, as the bars keep theirs. Under
+ * today's viewport tag every inset is 0, and nothing moves (WS02 step 7). */
+:root[data-look="new"] body {
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
 }
 
 /* Motion, new look only: with reduced motion asked for, nothing moves. A

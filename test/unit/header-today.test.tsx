@@ -13,8 +13,9 @@
 // - signed out, and as three signed-in people: an LCA admin who holds a
 //   seat, the director of an event and a regional representative, so every
 //   account link of the More menu is drawn;
-// - with newLook and newNav each off and on: with both on (the chrome) and
-//   no matchMedia here, the header below 1024 pixels, which is today's;
+// - with newLook and newNav in the three mixes that leave the chrome off:
+//   with both on (the chrome), Navbar draws the new chrome's header at
+//   every width, which test/unit/site-header.test.tsx holds;
 // - closed, with the More menu opened by a click, and with the drawer
 //   opened by the menu button as well.
 //
@@ -101,12 +102,15 @@ const PEOPLE = [
   { title: 'a regional representative', auth: visitor({ role: 'member', isBoardMember: true, managedClubs: 1 }), links: ['Board inbox', 'My region’s clubs'] },
 ] as const
 
-/** newLook and newNav, each off and on. */
+/**
+ * newLook and newNav in the three mixes where Navbar draws today's header.
+ * With both on, the chrome, it draws the new chrome's header at every width,
+ * which test/unit/site-header.test.tsx holds, so that mix is not drawn here.
+ */
 const SWITCHES = [
   { newLook: false, newNav: false },
   { newLook: true, newNav: false },
   { newLook: false, newNav: true },
-  { newLook: true, newNav: true },
 ] as const
 
 /** What one drawing gives: the markup closed, with the More menu open, and with the drawer open as well, and what is marked current with both open. */
