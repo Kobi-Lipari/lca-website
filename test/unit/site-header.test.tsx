@@ -23,9 +23,11 @@
 //   jsdom lays nothing out: Donate into the About menu first, then the name
 //   hidden, and the level the room's alone at each edge;
 // - --header-h on the page's root while the header is drawn;
-// - Navbar's choice: the new header with the chrome on and the window 1024
-//   pixels wide or wider, today's header below that and with either switch
-//   off, whatever the width, and a change of width swapping the two.
+// - Navbar's choice: with the chrome on, the new header in its desktop form
+//   from 1024 pixels, in its tablet form from 768 to 1023, and the phone's
+//   app bar below 768 and where there is no matchMedia; today's header only
+//   with a switch off, whatever the width; one banner at every width, and a
+//   change of width swapping them.
 //
 // The two menus are test/unit/site-header-menus.test.tsx.
 import { readFileSync } from 'node:fs'
@@ -513,20 +515,25 @@ describe('--header-h', () => {
 // ── Navbar's choice ────────────────────────────────────────────────────────
 
 describe('Navbar\'s choice of header', () => {
-  /** A stand-in for the browser's media query, which jsdom lacks: it answers the 1024-pixel query, and can say the answer changed. */
-  function stubWidth(wide: boolean) {
-    let answer = wide
+  /**
+   * A stand-in for the browser's media query, which jsdom lacks: it answers
+   * each min-width query from the window's width, and can say the width
+   * changed.
+   */
+  function stubWidth(px: number) {
+    let width = px
     const listeners = new Set<() => void>()
     vi.stubGlobal('matchMedia', (query: string) => ({
       get matches() {
-        return query === '(min-width: 1024px)' && answer
+        const line = /^\(min-width: (\d+)px\)$/.exec(query)
+        return line !== null && width >= Number(line[1])
       },
       media: query,
       addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
       removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
     }))
-    return (next: boolean) => {
-      answer = next
+    return (next: number) => {
+      width = next
       act(() => listeners.forEach((listener) => listener()))
     }
   }
@@ -541,28 +548,46 @@ describe('Navbar\'s choice of header', () => {
     )
   }
 
-  /** Which header is drawn, by what only each has. */
+  /**
+   * Which header is drawn, by what only each has: the new header's form
+   * (desktop or tablet), the app bar's slot, and today's More button.
+   */
   const drawn = () => {
     const banner = screen.getByRole('banner')
-    if (banner.getAttribute('data-slot') === 'site-header') return 'new'
+    if (banner.getAttribute('data-slot') === 'site-header') return banner.getAttribute('data-form')
+    if (banner.getAttribute('data-slot') === 'app-bar') return 'app bar'
     expect(within(banner).getByRole('button', { name: 'More' })).toBeTruthy()
     return 'today'
   }
 
+  /** The widths drawn at, from a wide desktop's down to the smallest phone's, with the bar each draws with the chrome on. */
+  const WIDTHS = [
+    [1920, 'desktop'],
+    [1280, 'desktop'],
+    [1024, 'desktop'],
+    [1023, 'tablet'],
+    [900, 'tablet'],
+    [768, 'tablet'],
+    [767, 'app bar'],
+    [390, 'app bar'],
+    [320, 'app bar'],
+  ] as const
+
   it('draws the new header with the chrome on and a window 1024 pixels wide or wider', () => {
-    stubWidth(true)
+    stubWidth(1024)
     drawNavbar()
-    expect(drawn()).toBe('new')
+    expect(drawn()).toBe('desktop')
     expect(screen.getAllByRole('banner')).toHaveLength(1)
   })
 
-  it('draws today\'s header below 1024 pixels with the chrome on, its drawer and aria-current with it', () => {
-    stubWidth(false)
-    drawNavbar('/tournaments')
-    expect(drawn()).toBe('today')
-    fireEvent.click(screen.getByRole('button', { name: 'Open menu' }))
-    const marked = [...screen.getByRole('banner').querySelectorAll('[aria-current="page"]')].map((el) => el.textContent)
-    expect(marked).toEqual(['Tournaments', 'Tournaments'])
+  it('draws the new header in its tablet form from 768 to 1023 pixels, and the phone\'s app bar below 768, with the chrome on', () => {
+    for (const [width, bar] of WIDTHS) {
+      stubWidth(width)
+      drawNavbar()
+      expect(drawn(), `${width} pixels`).toBe(bar)
+      expect(screen.getAllByRole('banner'), `${width} pixels`).toHaveLength(1)
+      cleanup()
+    }
   })
 
   it.each([
@@ -571,28 +596,48 @@ describe('Navbar\'s choice of header', () => {
     [{ newNav: false, newLook: true }],
   ])('draws today\'s header with %j, at any width', (switches) => {
     Object.assign(flags, switches)
-    for (const wide of [true, false]) {
-      stubWidth(wide)
+    for (const [width] of WIDTHS) {
+      stubWidth(width)
       drawNavbar()
-      expect(drawn(), `wide ${wide}`).toBe('today')
+      expect(drawn(), `${width} pixels`).toBe('today')
+      expect(screen.getAllByRole('banner'), `${width} pixels`).toHaveLength(1)
       cleanup()
     }
   })
 
-  it('swaps the two when the window crosses 1024 pixels, one header at a time', () => {
-    const cross = stubWidth(false)
+  it('swaps the bars as the window crosses 1024 and 768 pixels, one banner at a time, the new header kept across 1024 with its form changed', () => {
+    const resize = stubWidth(1280)
     drawNavbar()
-    expect(drawn()).toBe('today')
-    cross(true)
-    expect(drawn()).toBe('new')
-    expect(screen.getAllByRole('banner')).toHaveLength(1)
-    cross(false)
-    expect(drawn()).toBe('today')
+    const banners = () => screen.getAllByRole('banner')
+    expect(drawn()).toBe('desktop')
+    const kept = header()
+    resize(1023)
+    expect(drawn()).toBe('tablet')
+    expect(banners()).toEqual([kept])
+    resize(767)
+    expect(drawn()).toBe('app bar')
+    expect(banners()).toHaveLength(1)
+    expect(kept.isConnected).toBe(false)
+    resize(768)
+    expect(drawn()).toBe('tablet')
+    expect(banners()).toHaveLength(1)
+    const tablet = header()
+    resize(1024)
+    expect(drawn()).toBe('desktop')
+    expect(banners()).toEqual([tablet])
+    // Straight from the desktop's width to a phone's, and back.
+    resize(390)
+    expect(drawn()).toBe('app bar')
+    expect(banners()).toHaveLength(1)
+    resize(1280)
+    expect(drawn()).toBe('desktop')
+    expect(banners()).toHaveLength(1)
   })
 
-  it('draws today\'s header where there is no matchMedia, as in the unit tests that draw the whole app', () => {
+  it('draws the phone\'s app bar where there is no matchMedia, as in the unit tests that draw the whole app', () => {
     vi.stubGlobal('matchMedia', undefined)
     drawNavbar()
-    expect(drawn()).toBe('today')
+    expect(drawn()).toBe('app bar')
+    expect(screen.getAllByRole('banner')).toHaveLength(1)
   })
 })

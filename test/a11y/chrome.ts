@@ -9,13 +9,16 @@
 //   evaluateAll, addInitScript or axe's include as an argument.
 // - Locators for a spec's own code: the header by its banner role and the
 //   footer by its contentinfo role, the roles today's <header> and <footer>
-//   have and the new header, the phone's app bar and the new footer will
-//   have, and the parts inside them a spec reads, each found by its role, its
-//   name or its data-slot. A footer that is not drawn has no role, so code
-//   that reads it while it may be hidden reads SITE.footer instead.
-// - The header's names in three lists: CHROME_NAMES, which any header
-//   gives, TODAYS_NAMES, which only today's gives, and NEW_NAMES, which only
-//   the new header gives.
+//   have, the new header and the phone's app bar have, and the new footer
+//   will have, and the parts inside them a spec reads, each found by its
+//   role, its name or its data-slot. A footer that is not drawn has no role,
+//   so code that reads it while it may be hidden reads SITE.footer instead.
+//   The Menu sheet the new bars open is drawn outside the banner, and is
+//   found on the page by its own locators.
+// - The header's names in three lists: CHROME_NAMES, which today's header
+//   and the new header from 1024 pixels up give, TODAYS_NAMES, which only
+//   today's gives, and NEW_NAMES, which only the new chrome's bars and its
+//   sheet give.
 // - Which chrome each test build draws at a width (DRAWN and chromeAt), and
 //   two ways for a spec to say that an assertion holds for today's chrome
 //   only: onlyToday at the top of a test whose every assertion does, and
@@ -25,12 +28,13 @@
 //   that holds for the new chrome only, each running it wherever the new
 //   chrome is drawn.
 //
-// Since WS02 step 5 the a11y-on build draws the new header from 1024 pixels
-// up and today's below, and today's footer; the a11y-off build keeps today's
-// chrome at every width, since it turns no switch on. Each WS02 step that
-// draws a new part changes DRAWN and test/unit/chrome-helper.test.tsx
-// together: WS02 step 6 the header on a11y-on at every width, and WS02 step
-// 8 the footer there.
+// Since WS02 step 6 the a11y-on build draws the new chrome's header at every
+// width (the desktop header from 1024 pixels, the tablet header from 768
+// and the phone's app bar below), and today's footer until WS02 step 8; the
+// a11y-off build keeps today's chrome at every width, since it turns no
+// switch on. Each WS02 step that draws a new part changes DRAWN and
+// test/unit/chrome-helper.test.tsx together: WS02 step 8 the footer on
+// a11y-on at every width.
 //
 // No project collects this file (its name ends neither in .spec.ts nor in
 // baseline.ts), and it imports only types from Playwright and from
@@ -74,13 +78,20 @@ export const footerLogo = (page: Page): Locator => siteFooter(page).locator(SITE
 export const footerImages = (page: Page): Locator => siteFooter(page).locator('img')
 /**
  * The Appearance control, the group named Appearance, found on the page as
- * the specs have always found it. Today it is the footer's alone; the step
- * that draws the phone's sheet, which brief 1.4 gives a shortcut to it,
- * decides whether to look for it in one place.
+ * the specs have always found it: the footer's while the Menu sheet is
+ * closed, and the sheet's while it is open, since the sheet hides the rest
+ * of the page from assistive technology. WS02 step 6, which drew the sheet
+ * with a shortcut to the control (brief 1.4), so decided; sheetAppearance
+ * reads the sheet's alone.
  */
 export const appearanceControl = (page: Page): Locator => page.getByRole('group', { name: 'Appearance' })
 
-/** Names both headers give, today's and the new one (brief 1.4's WS02 section). */
+/**
+ * Names today's header and the new header from 1024 pixels up both give
+ * (brief 1.4's WS02 section). The tablet header gives Log in and Clubs and
+ * no Join LCA, which its Menu sheet gives; the phone's app bar gives none of
+ * the three, only its brand link and Menu.
+ */
 export const CHROME_NAMES = {
   logIn: 'Log in',
   joinLca: 'Join LCA',
@@ -99,11 +110,14 @@ export const TODAYS_NAMES = {
 } as const
 
 /**
- * Names only the new header gives (brief 1.4's WS02 section): its brand
- * link, named for the home page; the About and My LCA menus' buttons;
- * Donate; Renew, in the Join slot once a membership has expired; and Log
- * out, the My LCA menu's last row, which today's header gives as a button of
- * its own (TODAYS_NAMES.logOut).
+ * Names only the new chrome's bars and its sheet give (brief 1.4's WS02
+ * section): the brand link, named for the home page; the About and My LCA
+ * menus' buttons; Donate; Renew, in the Join slot once a membership has
+ * expired; Log out, the My LCA menu's last row and the sheet's, which
+ * today's header gives as a button of its own (TODAYS_NAMES.logOut); and
+ * Menu, the bordered button of the tablet header and the phone's app bar
+ * and the name of the sheet it opens, which today's header does not give
+ * (its drawer's toggle is named Open menu or Close menu).
  */
 export const NEW_NAMES = {
   home: 'Louisiana Chess Association, home',
@@ -112,7 +126,18 @@ export const NEW_NAMES = {
   donate: 'Donate',
   renew: 'Renew',
   logOut: 'Log out',
+  menu: 'Menu',
 } as const
+
+/**
+ * The Menu sheet while it is open: the dialog named Menu, which the tablet
+ * header's and the app bar's Menu button opens. It is drawn at the end of
+ * the page's body, outside the banner, so it is found on the page, by its
+ * name exactly.
+ */
+export const menuSheet = (page: Page): Locator => page.getByRole('dialog', { name: NEW_NAMES.menu, exact: true })
+/** The theme switch inside the open Menu sheet: the group named Appearance there. */
+export const sheetAppearance = (page: Page): Locator => menuSheet(page).getByRole('group', { name: 'Appearance', exact: true })
 
 /** A test build, by its project name (A11Y_VARIANTS in ./global-setup). */
 export type Build = A11yVariant['name']
@@ -125,11 +150,14 @@ export type Chrome = 'today' | 'new'
  * Which chrome each test build draws, for each part, as pairs of the width
  * it starts at and the chrome, read from the smallest width up. It is not
  * worked out from the switches: a11y-on has had newNav and newLook on since
- * WS02 step 2, and draws the new header from 1024 pixels since WS02 step 5,
- * so only what each step builds can answer it.
+ * WS02 step 2, drew the new header from 1024 pixels in WS02 step 5, and
+ * draws the new chrome's header at every width since WS02 step 6 (the
+ * desktop header from 1024 pixels, the tablet header from 768 and the app
+ * bar below), with today's footer until WS02 step 8, so only what each step
+ * builds can answer it.
  */
 export const DRAWN: Readonly<Record<Build, Readonly<Record<Part, ReadonlyArray<readonly [number, Chrome]>>>>> = {
-  'a11y-on': { header: [[0, 'today'], [1024, 'new']], footer: [[0, 'today']] },
+  'a11y-on': { header: [[0, 'new']], footer: [[0, 'today']] },
   'a11y-off': { header: [[0, 'today']], footer: [[0, 'today']] },
 }
 

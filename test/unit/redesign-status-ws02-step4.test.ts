@@ -146,7 +146,10 @@ describe('REDESIGN_STATUS.md, WS02 step 4: the lines outside the block', () => {
     const built = /^steps 1 to (\d+) are built\.$/.exec(statusLine.slice(head.length))
     expect(built, statusLine).not.toBeNull()
     expect(Number(built![1])).toBeGreaterThanOrEqual(4)
-    expect(prLine).toBe('**PR:** draft pull request 110, which carries checkpoint E (steps 1 to 5).')
+    // WS02 step 6 moved this pin to a general form: from checkpoint F the line names two pull requests.
+    expect(prLine.startsWith('**PR:** ')).toBe(true)
+    expect(prLine).toContain('pull request 110')
+    expect(prLine).toContain('checkpoint E (steps 1 to 5)')
   })
 
   it('keeps WS01\'s part of the date line first and word for word, and puts step 4 before step 3 before step 2 before step 1 in WS02\'s part', () => {

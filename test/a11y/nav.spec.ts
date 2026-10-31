@@ -75,6 +75,35 @@
 //   open across a deploy, whose donation dialog's file has gone, reloading
 //   once on the first press of Donate and then opening the dialog; and on
 //   a11y-off, the page's root with no --header-h and no scroll padding.
+// - The tablet header, the phone's app bar and the Menu sheet (WS02 step 6),
+//   which the a11y-on build draws below 1024 pixels, where the checks of
+//   today's header standing in above now note what they did not read, or
+//   skip. The app bar at 320, 390 and 767 by 844: one navy row 56 pixels
+//   tall that keeps its place when the page scrolls, the brand link named
+//   for the home page with its 28 pixel mark hidden and on no plate, the
+//   two-line name and the Menu button, nothing overlapping, wrapping or
+//   wider than the window, --header-h 56 and no nav named Main. The tablet
+//   header at 768, 900 and 1023, signed out and as an active member: one row
+//   64 pixels tall, Tournaments and Clubs alone in its nav with aria-current
+//   and the line on the page's own, Donate opening the donation dialog, Log
+//   in or the My LCA menu, the Menu button, --header-h 64. The sheet at 390
+//   by 844, the window's own box, and the drawer at 768 by 1024 and 1023 by
+//   800, 400 pixels wide against the window's right edge over a scrim: named
+//   Menu, opening on "Close menu", holding the focus inside it both ways,
+//   closed by Esc, by its close control and, for the drawer, by a press on
+//   the scrim, each time with the focus back on Menu; the page behind it
+//   still while its list scrolls, by keyboard and by touch in a window 480
+//   pixels tall; its rows on /clubs signed out, "You are here" in its gold
+//   on its tint, and for four people signed in, with no row the build's
+//   switches leave out; a row followed; the theme switch in it; its Donate
+//   and its Log in, which hands /login the page, or on /forgot-password
+//   nothing, as the desktop header's does; axe on each bar and on the open
+//   sheet and drawer, light and dark; the rings on the bars and in the
+//   sheet; the window narrowed from 1280 to 1023 to 767 and widened back,
+//   each bar drawn in place in the same page with its --header-h, and a
+//   drawer open at 1023 closed as the window crosses 1024 or 767. On
+//   a11y-off, today's header at 390 and 768 with no app bar, no tablet form
+//   and no --header-h.
 //
 // Reads only; the announcement and the impersonation target are stubbed in
 // the browser with made-up fixture data in the seed's style, and the people
@@ -91,8 +120,8 @@
 import AxeBuilder from '@axe-core/playwright'
 import type { Browser, Locator, Page, Route, TestInfo } from '@playwright/test'
 import {
-  CHROME_NAMES, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, ifNew, ifToday, onlyNew, onlyToday, rookMark, siteHeader, widthOf,
-  type SiteSelectors,
+  CHROME_NAMES, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, ifNew, ifToday, menuSheet, onlyNew, onlyToday, rookMark, sheetAppearance,
+  siteHeader, widthOf, type SiteSelectors,
 } from './chrome'
 import { sessionInPage, signInAs, waitForMemberAnswers } from './signedIn'
 import { expect, openDrawn, prepareLocalPage, test } from './support'
@@ -1793,6 +1822,771 @@ test.describe('the new desktop header at its edges', () => {
       await openQuiet(page, '/')
       expect(await headerState(page), `${width}`).toEqual({ slot: null, written: '', padding: 'auto' })
       expect(await page.evaluate(() => document.documentElement.getAttribute('data-look')), `${width}: the new look is off`).toBeNull()
+    }
+    expect(external).toEqual([])
+  })
+})
+
+// ── The tablet header, the phone's app bar and the Menu sheet ──────────────
+
+/** The widths the phone's app bar is drawn at with the chrome on: below 768 pixels. */
+const PHONE = [320, 390, 767] as const
+/** The widths the tablet header is drawn at with the chrome on: from 768 to 1023 pixels. */
+const TABLET = [768, 900, 1023] as const
+/** The sheet's current section in the light look: "You are here" in #866a1e on the row's #fbfaf6. */
+const SHEET_HERE_WORDS = 'rgb(134, 106, 30)'
+const SHEET_HERE_ROW = 'rgb(251, 250, 246)'
+/** The sheet's own close control, the first thing in it. */
+const CLOSE_MENU = 'Close menu'
+/** The sheet's list, the region that scrolls inside it. */
+const SHEET_LIST = 'Sections and links'
+/** The sheet's rows the a11y-on build leaves out, since it turns none of their switches on (newTournaments, newNews and newClubs). */
+const WAITING_ROWS = ['This weekend', 'Results', 'Suggest a club']
+/** The Clubs section's rows on the a11y-on build, as src/lib/nav.ts gives them with newClubs off; test/unit/mobile-menu.test.tsx holds the sheet to that file. */
+const CLUBS_ROWS = ['All clubs', 'Club map', 'List or update your club']
+/** The sheet's links under the account group, as src/lib/nav.ts gives them. */
+const SHEET_LINKS = ['LCA on Facebook ↗', 'Contact', 'Website help']
+
+/** The bordered Menu button of the tablet header or the phone's app bar. */
+const menuButtonOf = (page: Page) => siteHeader(page).getByRole('button', { name: NEW_NAMES.menu, exact: true })
+
+/**
+ * The bar's Menu button as the page holds it: what it says of the sheet, and
+ * whether it is hidden from screen readers, as the whole page behind an open
+ * sheet is, so it is read from the page while the sheet is open.
+ */
+const menuState = (page: Page) =>
+  page.evaluate((site) => {
+    const button = document.querySelector(site.header)?.querySelector('button[aria-haspopup="dialog"]') ?? null
+    return { expanded: button?.getAttribute('aria-expanded') ?? null, controls: button?.getAttribute('aria-controls') ?? null, hidden: !!button?.closest('[aria-hidden="true"]') }
+  }, SITE)
+
+/** Opens the Menu sheet by the bar's Menu button, and waits until it is open with the focus on its close control. */
+async function openSheet(page: Page) {
+  const menu = siteHeader(page).getByRole('button', { name: NEW_NAMES.menu, exact: true })
+  // A press at the button's place, as a finger or a mouse makes it. A
+  // locator's click first scrolls the page to bring the button clear of the
+  // page's scroll padding, which no person's press does, and the bar is
+  // always in view.
+  // A sheet that has just closed leaves its scrim fading for a moment over the page, where a press
+  // would land on the scrim; it is gone long before a person presses again.
+  await expect(page.locator('[data-slot="menu-sheet-scrim"]')).toHaveCount(0)
+  const box = await menu.boundingBox()
+  expect(box, 'the Menu button drawn').not.toBeNull()
+  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2)
+  const sheet = menuSheet(page)
+  await expect(sheet).toBeVisible()
+  await expect(sheet.getByRole('button', { name: CLOSE_MENU })).toBeFocused()
+  // Drawn where it comes to rest: no motion is left to run.
+  await sheet.evaluate((el) => Promise.all(el.getAnimations({ subtree: true }).map((a) => a.finished)))
+  return { menu, sheet }
+}
+
+/**
+ * The bar as drawn: the header's box, ground and place, its brand link and
+ * mark, the two lines of its name while they show, every control of its row
+ * in the row's order with its box and whether its words wrapped, the links
+ * of its nav named Main, and --header-h on the page's root.
+ */
+function barAsDrawn(page: Page) {
+  return page.evaluate((site) => {
+    const header = document.querySelector(site.header)!
+    const wraps = (el: Element) => {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.textContent?.trim()) continue
+        const range = document.createRange()
+        range.selectNodeContents(node)
+        if (range.getClientRects().length > 1) return true
+      }
+      return false
+    }
+    const shown = (el: Element) => el.getClientRects().length > 0 && !el.closest('[hidden]')
+    const part = (el: Element) => {
+      const box = el.getBoundingClientRect()
+      return {
+        words: (el.getAttribute('aria-label') ?? el.textContent ?? '').replace(/\s+/g, ' ').trim(),
+        href: el.getAttribute('href'),
+        x: box.x, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height,
+        line: getComputedStyle(el).boxShadow,
+        current: el.getAttribute('aria-current'),
+        wraps: wraps(el),
+      }
+    }
+    const brand = header.querySelector(site.brandLink)!
+    const mark = brand.querySelector(site.mark)
+    const markBox = mark?.getBoundingClientRect() ?? null
+    const name = brand.querySelector('[data-slot="app-bar-name"], [data-slot="site-header-name"]')
+    const nav = header.querySelector('nav[aria-label="Main"]')
+    const box = header.getBoundingClientRect()
+    const s = getComputedStyle(header)
+    return {
+      slot: header.getAttribute('data-slot'),
+      form: header.getAttribute('data-form'),
+      window: { width: window.innerWidth, scrollY: window.scrollY },
+      page: { scrollWidth: document.documentElement.scrollWidth },
+      header: { top: box.top, bottom: box.bottom, width: box.width, height: box.height, ground: s.backgroundColor, position: s.position, scrollWidth: header.scrollWidth, clientWidth: header.clientWidth },
+      brand: {
+        name: brand.getAttribute('aria-label'),
+        ground: getComputedStyle(brand).backgroundColor,
+        markFirst: !!mark && brand.firstElementChild === mark,
+        markHidden: mark?.getAttribute('aria-hidden') ?? null,
+        markGround: mark ? getComputedStyle(mark).backgroundColor : null,
+        mark: markBox ? [markBox.width, markBox.height] : null,
+      },
+      name: name && shown(name) ? [...name.children].map((line) => ({ words: (line.textContent ?? '').trim(), wraps: wraps(line) })) : null,
+      controls: [...header.querySelectorAll('a, button')].filter(shown).map(part),
+      nav: nav ? [...nav.querySelectorAll('a')].map(part) : null,
+      written: document.documentElement.style.getPropertyValue('--header-h'),
+    }
+  }, SITE)
+}
+
+/** Each control of a bar's row inside the bar, after the one before it, never over it, and each on one line. */
+function expectOneRow(drawn: Awaited<ReturnType<typeof barAsDrawn>>, where: string) {
+  for (const [i, c] of drawn.controls.entries()) {
+    expect(c.top, `${where}: ${c.words} inside the bar`).toBeGreaterThanOrEqual(drawn.header.top)
+    expect(c.bottom, `${where}: ${c.words} inside the bar`).toBeLessThanOrEqual(drawn.header.bottom)
+    expect(c.right, `${where}: ${c.words} inside the window`).toBeLessThanOrEqual(drawn.window.width)
+    if (i > 0) expect(c.x, `${where}: ${c.words} after ${drawn.controls[i - 1].words}, not over it`).toBeGreaterThanOrEqual(drawn.controls[i - 1].right - 0.5)
+    expect(c.wraps, `${where}: ${c.words} on one line`).toBe(false)
+  }
+}
+
+/** The sheet's rows as drawn, top to bottom: each section with its state and the rows it shows, the buttons, the account rows and the links. */
+function sheetRows(sheet: Locator) {
+  return sheet.evaluate((el) => {
+    const text = (node: Element) => (node.textContent ?? '').replace(/\s+/g, ' ').trim()
+    return {
+      sections: [...el.querySelectorAll('[data-slot="menu-sheet-sections"] > li')].map((li) => {
+        const head = li.querySelector(':scope > button, :scope > a')!
+        const here = li.querySelector(':scope > [aria-hidden="true"]')
+        return {
+          name: text(head.querySelector('span > span')!),
+          open: head.getAttribute('aria-expanded'),
+          here: here ? text(here) : null,
+          current: [...li.querySelectorAll('[aria-current="page"]')].map(text),
+          rows: [...li.querySelectorAll(':scope > ul a')].map(text),
+        }
+      }),
+      buttons: [...el.querySelectorAll('[data-slot="menu-sheet-buttons"] > *')].map(text),
+      account: [...el.querySelectorAll('[data-slot="menu-sheet-account"] li > *')].map(text),
+      links: [...el.querySelectorAll('[data-slot="menu-sheet-links"] a')].map(text),
+    }
+  })
+}
+
+/** A control's ring once the keyboard is on it, and the ground the ring is drawn on: the nearest box around the control that paints one. */
+async function ringOnGround(page: Page, control: Locator) {
+  await keyboardFocus(page, control)
+  const ring = await ringOf(control)
+  const ground = await control.evaluate((el) => {
+    for (let at = el.parentElement; at; at = at.parentElement) {
+      const colour = getComputedStyle(at).backgroundColor
+      if (colour !== 'rgba(0, 0, 0, 0)' && colour !== 'transparent') return colour
+    }
+    return 'rgb(255, 255, 255)'
+  })
+  const name = await control.evaluate((el) => (el.getAttribute('aria-label') ?? el.textContent ?? '').replace(/\s+/g, ' ').trim())
+  return { name, ring, ground, ratio: ratio(ring.colour, ground) }
+}
+
+test.describe('the tablet header, the phone\'s app bar and the Menu sheet with the chrome on', () => {
+  test.use({ reducedMotion: 'reduce' })
+
+  test('a11y-on at 320, 390 and 767 by 844, signed out: the phone\'s app bar, one navy row 56 pixels tall on the header itself that keeps its height and its place when the page scrolls 600 pixels, the brand link named for the home page with its mark hidden, 28 pixels and on no plate, the two-line name and the Menu button that says it opens a dialog; nothing overlapping, wrapping or wider than the window, --header-h 56 pixels, and no nav named Main', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the app bar comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', PHONE, 'the phone\'s app bar, below 768 pixels')
+    const seen: Record<string, unknown> = {}
+    for (const width of PHONE) {
+      await page.setViewportSize({ width, height: 844 })
+      await openQuiet(page, '/')
+      await expect(siteHeader(page), `${width}: one header`).toHaveCount(1)
+      await expect(siteHeader(page)).toHaveAttribute('data-slot', 'app-bar')
+      await expect(brandLink(page)).toHaveAccessibleName(NEW_NAMES.home)
+      const menu = menuButtonOf(page)
+      await expect(menu).toHaveAttribute('aria-haspopup', 'dialog')
+      await expect(menu).toHaveAttribute('aria-expanded', 'false')
+      const drawn = await barAsDrawn(page)
+      // One navy row, 56 pixels tall, on the header itself, no wider than the window.
+      expect([drawn.header.height, drawn.header.ground, drawn.header.position], `${width}`).toEqual([56, NAVY, 'sticky'])
+      expect(drawn.header.width, `${width}`).toBeLessThanOrEqual(width)
+      expect(drawn.header.scrollWidth, `${width}: nothing in the bar runs past it`).toBeLessThanOrEqual(drawn.header.clientWidth)
+      expect(drawn.page.scrollWidth, `${width}: the page is no wider than the window`).toBeLessThanOrEqual(width)
+      // The brand link: its name, the rook first in it, hidden, 28 pixels square, on no plate, and the two-line name.
+      expect(drawn.brand.name).toBe(NEW_NAMES.home)
+      expect([drawn.brand.markFirst, drawn.brand.markHidden], `${width}`).toEqual([true, 'true'])
+      expect(drawn.brand.mark, `${width}: the mark 28 pixels square`).toEqual([28, 28])
+      expect([drawn.brand.ground, drawn.brand.markGround], `${width}: no plate behind the mark`).toEqual([CLEAR, CLEAR])
+      expect(drawn.name, `${width}`).toEqual([{ words: 'Louisiana Chess', wraps: false }, { words: 'Association', wraps: false }])
+      // The row: the brand link, then the Menu button, and nothing else.
+      expect(drawn.controls.map((c) => c.words), `${width}`).toEqual([NEW_NAMES.home, NEW_NAMES.menu])
+      expectOneRow(drawn, `${width}`)
+      expect(drawn.nav, `${width}: no nav in the bar`).toBeNull()
+      await expect(page.getByRole('navigation', { name: 'Main', exact: true }), `${width}: no nav named Main on the page, so no tab bar`).toHaveCount(0)
+      expect(drawn.written, `${width}`).toBe('56px')
+      // It keeps its height and its place at the top of the window when the page scrolls.
+      await page.evaluate(() => window.scrollTo(0, 600))
+      await frames(page)
+      const scrolled = await barAsDrawn(page)
+      expect(scrolled.window.scrollY, `${width}: the page scrolled`).toBe(600)
+      expect([scrolled.header.top, scrolled.header.height], `${width}: after the scroll`).toEqual([0, 56])
+      expect(scrolled.controls.map((c) => Math.round(c.x)), `${width}: the controls where they were`).toEqual(drawn.controls.map((c) => Math.round(c.x)))
+      seen[width] = { drawn, scrolled: scrolled.header }
+    }
+    await testInfo.attach('app-bar-row.json', { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  for (const key of ['signed-out', 'active-member'] as const) {
+    test(`a11y-on at 768, 900 and 1023 by 1024, ${navPersona(key).title}: the tablet header, one row 64 pixels tall, the brand link named for the home page, Tournaments and Clubs alone in its nav, aria-current and the line on the page's own and none on /, Donate opening today's donation dialog, ${key === 'signed-out' ? 'Log in' : 'the My LCA menu'} and the Menu button, nothing overlapping or wrapping, no tab bar, --header-h 64 pixels`, async ({ page, external, baseURL }, testInfo) => {
+      only(testInfo, ON, 'the tablet header comes with the chrome, on a11y-on')
+      onlyNew(testInfo, 'header', TABLET, 'the tablet header, from 768 to 1023 pixels')
+      const person = navPersona(key)
+      const visit = await signInAs(page, person, baseURL!)
+      const seen: Record<string, unknown> = {}
+      for (const width of TABLET) {
+        await page.setViewportSize({ width, height: 1024 })
+        for (const [route, current] of [['/', null], ['/tournaments', SECTION_WORDS[0]], ['/clubs', SECTION_WORDS[1]]] as const) {
+          await openHeader(page, route)
+          if (person.user) {
+            await waitForMemberAnswers(visit)
+            await expect(siteHeader(page).getByRole('button', { name: NEW_NAMES.myLca }), visit.notRead).toBeVisible()
+          }
+          const where = `${width} on ${route}`
+          await expect(siteHeader(page), `${where}: one header`).toHaveCount(1)
+          await expect(siteHeader(page)).toHaveAttribute('data-form', 'tablet')
+          await expect(brandLink(page)).toHaveAccessibleName(NEW_NAMES.home)
+          await expect(menuButtonOf(page)).toHaveAttribute('aria-haspopup', 'dialog')
+          const drawn = await barAsDrawn(page)
+          expect([drawn.slot, drawn.header.height, drawn.header.ground], where).toEqual(['site-header', 64, NAVY])
+          expect(drawn.header.scrollWidth, `${where}: nothing in the bar runs past it`).toBeLessThanOrEqual(drawn.header.clientWidth)
+          expect(drawn.page.scrollWidth, `${where}: the page is no wider than the window`).toBeLessThanOrEqual(width)
+          expect([drawn.brand.markFirst, drawn.brand.markHidden], where).toEqual([true, 'true'])
+          // Tournaments and Clubs alone, the page's own section marked, with its line.
+          expect(drawn.nav?.map((l) => l.words), where).toEqual(SECTION_WORDS.slice(0, 2))
+          expect(drawn.nav?.filter((l) => l.current === 'page').map((l) => l.words), where).toEqual(current ? [current] : [])
+          for (const l of drawn.nav ?? []) expect(drawnShadows(l.line), `${where}: ${l.words}'s line`).toEqual(l.words === current ? [SECTION_LINE] : [])
+          // The row: the brand link, the two sections, Donate, Log in or My LCA, and Menu.
+          const account = drawn.controls[4]
+          expect(drawn.controls.map((c) => c.words).filter((_, i) => i !== 4), where).toEqual([NEW_NAMES.home, ...SECTION_WORDS.slice(0, 2), NEW_NAMES.donate, NEW_NAMES.menu])
+          if (person.user) expect(account.words, where).toBe(NEW_NAMES.myLca)
+          else expect([account.href, account.words.length > 0], `${where}: the link to the sign-in page`).toEqual(['/login', true])
+          expect(drawn.controls, `${where}: six controls`).toHaveLength(6)
+          expectOneRow(drawn, where)
+          await expect(page.getByRole('navigation', { name: 'Main', exact: true }), `${where}: the one nav named Main, the bar's, so no tab bar`).toHaveCount(1)
+          expect(drawn.written, where).toBe('64px')
+          seen[where] = { drawn }
+        }
+      }
+      // Donate opens today's donation dialog in one press, and Esc closes it with nothing sent and the focus back on Donate.
+      const sent: string[] = []
+      page.on('request', (request) => {
+        if (new URL(request.url()).pathname.startsWith('/api/donations')) sent.push(`${request.method()} ${request.url()}`)
+      })
+      const donate = siteHeader(page).getByRole('button', { name: NEW_NAMES.donate })
+      await donate.click()
+      const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
+      await expect(dialog).toBeVisible()
+      await expect(page.getByRole('dialog')).toHaveCount(1)
+      await page.keyboard.press('Escape')
+      await expect(dialog).toHaveCount(0)
+      await expect(donate).toBeFocused()
+      expect(sent, 'nothing sent').toEqual([])
+      await testInfo.attach(`tablet-header-${key}.json`, { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+      expect(visit.apiErrors).toEqual([])
+      expect(external).toEqual([])
+    })
+  }
+
+  for (const [width, height] of [[390, 844], [768, 1024], [1023, 800]] as const) {
+    const drawer = width >= 768
+    test(`a11y-on at ${width} by ${height}: the Menu button opens the sheet ${drawer ? 'as a drawer 400 pixels wide against the window\'s right edge and its full height, the page under a scrim' : 'over the whole window'}; named Menu, it opens on "Close menu", keeps the focus inside it, Tab from its last control to its first and Shift+Tab back, and closes on Esc${drawer ? ', on its close control and on a press on the scrim' : ' and on its close control'}, each time with the focus back on Menu`, async ({ page, external }, testInfo) => {
+      only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
+      onlyNew(testInfo, 'header', [width], `the new chrome's Menu sheet, ${drawer ? 'the tablet header\'s drawer' : 'the app bar\'s'}`)
+      await page.setViewportSize({ width, height })
+      await openQuiet(page, '/')
+      const { menu, sheet } = await openSheet(page)
+      await expect(sheet).toHaveAccessibleName(NEW_NAMES.menu)
+      await expect(sheet).toHaveAttribute('data-shape', drawer ? 'drawer' : 'full')
+      // The button says the sheet is open and names it; the bar, like the rest of the page behind the sheet, is hidden from screen readers meanwhile.
+      expect(await menuState(page)).toEqual({ expanded: 'true', controls: await sheet.getAttribute('id'), hidden: true })
+      // Its box, and the scrim's over the page.
+      const boxes = await sheet.evaluate((el) => {
+        const box = el.getBoundingClientRect()
+        const scrim = document.querySelector('[data-slot="menu-sheet-scrim"]')!.getBoundingClientRect()
+        return {
+          sheet: [box.x, box.y, box.width, box.height, box.right],
+          scrim: [scrim.x, scrim.y, scrim.width, scrim.height],
+          window: [window.innerWidth, window.innerHeight],
+        }
+      })
+      expect(boxes.window).toEqual([width, height])
+      if (drawer) expect(boxes.sheet, 'the drawer: 400 pixels wide, at the right edge, the window\'s full height').toEqual([width - 400, 0, 400, height, width])
+      else expect(boxes.sheet, 'the sheet: the window\'s own box').toEqual([0, 0, width, height, width])
+      expect(boxes.scrim, 'the scrim over the whole window').toEqual([0, 0, width, height])
+      // The focus stays inside: Tab from its last control comes back to its first, and Shift+Tab goes the other way.
+      const close = sheet.getByRole('button', { name: CLOSE_MENU })
+      const last = sheetAppearance(page).getByRole('button', { name: 'Dark' })
+      const lastOne = await sheet.evaluate((el) => {
+        const stops = [...el.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex="0"]')].filter((s) => s.getClientRects().length > 0)
+        return (stops.at(-1)?.textContent ?? '').trim()
+      })
+      expect(lastOne, 'the sheet\'s last control').toBe('Dark')
+      await last.focus()
+      await page.keyboard.press('Tab')
+      await expect(close).toBeFocused()
+      await page.keyboard.press('Shift+Tab')
+      await expect(last).toBeFocused()
+      // Esc closes it, and the focus is back on Menu.
+      await page.keyboard.press('Escape')
+      await expect(sheet).toHaveCount(0)
+      await expect(menu).toBeFocused()
+      expect(await menuState(page)).toEqual({ expanded: 'false', controls: null, hidden: false })
+      // So does its close control.
+      await openSheet(page)
+      await close.click()
+      await expect(sheet).toHaveCount(0)
+      await expect(menu).toBeFocused()
+      if (drawer) {
+        // And a press on the scrim, beside the drawer.
+        await openSheet(page)
+        await page.mouse.click(Math.round((width - 400) / 2), Math.round(height / 2))
+        await expect(sheet).toHaveCount(0)
+        await expect(menu).toBeFocused()
+      }
+      await expect(page.getByRole('dialog')).toHaveCount(0)
+      expect(external).toEqual([])
+    })
+  }
+
+  test.describe('in a window 480 pixels tall, on a touch screen', () => {
+    test.use({ viewport: { width: 390, height: 480 }, hasTouch: true })
+
+    test('a11y-on at 390 by 480: while the sheet is open the page behind it stays where it is, and its list scrolls inside it, by keyboard, End, Home and Page Down on its region, and by a touch drag', async ({ page, external }, testInfo) => {
+      only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
+      onlyNew(testInfo, 'header', [390], 'the app bar\'s sheet')
+      await openQuiet(page, '/')
+      await page.evaluate(() => window.scrollTo(0, 300))
+      await frames(page)
+      const before = await page.evaluate(() => window.scrollY)
+      expect(before, 'the page scrolled before the sheet opens').toBe(300)
+      const { menu, sheet } = await openSheet(page)
+      expect(await page.evaluate(() => window.scrollY), 'the page where it was as the sheet opens').toBe(before)
+      // About open as well, so the list runs well past the sheet's foot.
+      await sheet.getByRole('button', { name: SECTION_WORDS[5] }).click()
+      await expect(sheet.getByRole('button', { name: SECTION_WORDS[5] })).toHaveAttribute('aria-expanded', 'true')
+      const list = sheet.getByRole('region', { name: SHEET_LIST })
+      const scroll = () => list.evaluate((el) => ({ top: el.scrollTop, room: el.scrollHeight - el.clientHeight, page: window.scrollY }))
+      const start = await scroll()
+      expect(start.room, 'the list is longer than the sheet in a window 480 pixels tall').toBeGreaterThan(100)
+      expect(start.top).toBe(0)
+      // The list's place once any scroll the browser animates has run its course: two frames
+      // apart, the same.
+      const settled = () =>
+        list.evaluate(
+          (el) =>
+            new Promise<void>((done) => {
+              let last = -1
+              const look = () => {
+                if (el.scrollTop === last) return done()
+                last = el.scrollTop
+                requestAnimationFrame(() => requestAnimationFrame(look))
+              }
+              look()
+            }),
+        )
+      // By keyboard, on the region, which is in the tab order: Page Down a page from the top, then
+      // End and Home, each key pressed once the last one's scroll has come to rest, as a person
+      // reading would, since a key pressed into the last frames of another's scroll can be lost.
+      await list.focus()
+      await page.keyboard.press('PageDown')
+      await expect.poll(async () => (await scroll()).top, 'Page Down moves it a page').toBeGreaterThan(0)
+      await settled()
+      expect((await scroll()).page, 'the page behind has not moved').toBe(before)
+      await page.keyboard.press('End')
+      await expect.poll(async () => (await scroll()).top, 'End takes the list to its foot').toBeGreaterThanOrEqual(start.room - 1)
+      await settled()
+      expect((await scroll()).page, 'the page behind has not moved').toBe(before)
+      await page.keyboard.press('Home')
+      await expect.poll(async () => (await scroll()).top, 'Home takes it back to its top').toBe(0)
+      await settled()
+      expect((await scroll()).page, 'the page behind has not moved').toBe(before)
+      // By touch: a finger's drag, sent as the touch events a touch screen sends, a start, twelve
+      // moves of 20 pixels and an end, which the dialog's scroll lock reads as it reads a finger's
+      // and the browser turns into a scroll. Chromium's own synthesized scroll gesture sends the
+      // page no move, so the lock never sees it, and its scroll lands on no scroller in some runs.
+      const cdp = await page.context().newCDPSession(page)
+      const drag = async (x: number, from: number, by: number) => {
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: from }] })
+        for (let step = 1; step <= 12; step++) {
+          await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: from + (by * step) / 12 }] })
+          await frames(page)
+        }
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
+      }
+      // Up the list, from low in it: the list scrolls, and the page behind does not.
+      const box = (await list.boundingBox())!
+      await drag(Math.round(box.x + box.width / 2), Math.round(box.y + box.height * 0.8), -240)
+      await expect.poll(async () => (await scroll()).top, 'a touch drag scrolls the list').toBeGreaterThan(0)
+      await settled()
+      const dragged = await scroll()
+      expect(dragged.page, 'the page behind has not moved').toBe(before)
+      // Down the sheet's own bar, which does not scroll: nothing moves, the list or the page behind.
+      const bar = (await sheet.locator('[data-slot="menu-sheet-bar"]').boundingBox())!
+      await drag(Math.round(bar.x + 40), Math.round(bar.y + bar.height / 2), 240)
+      await settled()
+      expect(await scroll(), 'a drag on the bar moves nothing').toEqual(dragged)
+      // Closed, the sheet leaves the page where it was, the focus back on Menu.
+      await page.keyboard.press('Escape')
+      await expect(sheet).toHaveCount(0)
+      await expect(menu).toBeFocused()
+      expect(await page.evaluate(() => window.scrollY), 'the page where it was once the sheet has closed').toBe(before)
+      await testInfo.attach('sheet-scroll.json', { body: JSON.stringify({ before, start, dragged, how: 'keyboard on the region, and touch events as a finger\'s drag sends them' }, null, 2), contentType: 'application/json' })
+      expect(external).toEqual([])
+    })
+  })
+
+  test('a11y-on at 390 by 844 on /clubs, signed out, light and dark: the sheet\'s rows, Clubs open with "You are here" in rgb(134, 106, 30) on rgb(251, 250, 246) at 13 pixels and weight 600 in the light look and in the sheet\'s ink in dark mode, on a white or a #1a2744 sheet; the buttons Donate, Log in and Join LCA; and no row the build\'s switches leave out', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390], 'the app bar\'s sheet')
+    await page.setViewportSize({ width: 390, height: 844 })
+    const seen: Record<string, unknown> = {}
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      await openHeader(page, '/clubs')
+      const { sheet } = await openSheet(page)
+      const rows = await sheetRows(sheet)
+      expect(rows.sections.map((s) => s.name), scheme).toEqual([...SECTION_WORDS])
+      const clubs = rows.sections[1]
+      expect([clubs.open, clubs.here], `${scheme}: Clubs open, with "You are here"`).toEqual(['true', 'You are here'])
+      expect(clubs.rows, scheme).toEqual(CLUBS_ROWS)
+      expect(clubs.current, `${scheme}: the page's own row`).toEqual([CLUBS_ROWS[0]])
+      for (const s of rows.sections.filter((section) => section !== clubs)) {
+        expect([s.here, s.current], `${scheme}: ${s.name}`).toEqual([null, []])
+        expect(s.open === 'true', `${scheme}: ${s.name} shut`).toBe(false)
+      }
+      expect(rows.buttons, scheme).toEqual([NEW_NAMES.donate, CHROME_NAMES.logIn, CHROME_NAMES.joinLca])
+      expect(rows.account, `${scheme}: no account rows for someone signed out`).toEqual([])
+      expect(rows.links, scheme).toEqual(SHEET_LINKS)
+      // The colours of "You are here", its row and the sheet.
+      const here = await sheet.locator('[data-slot="menu-sheet-sections"] > li > [aria-hidden="true"]').evaluate((words) => {
+        const s = getComputedStyle(words)
+        const sheetEl = words.closest('[data-slot="menu-sheet"]')!
+        return {
+          words: words.textContent?.trim(), colour: s.color, size: s.fontSize, weight: s.fontWeight,
+          row: getComputedStyle(words.parentElement!).backgroundColor, ground: getComputedStyle(sheetEl).backgroundColor, ink: getComputedStyle(sheetEl).color,
+        }
+      })
+      seen[scheme] = { rows, here }
+      expect(here.words).toBe('You are here')
+      expect([here.size, here.weight], scheme).toEqual(['13px', '600'])
+      if (scheme === 'light') {
+        expect([here.colour, here.row, here.ground]).toEqual([SHEET_HERE_WORDS, SHEET_HERE_ROW, WHITE])
+      } else {
+        // In dark mode the row takes the look's muted ground and the words the sheet's ink, never the gold.
+        expect(here.colour, 'the sheet\'s ink').toBe(here.ink)
+        expect(here.row).not.toBe(SHEET_HERE_ROW)
+        expect(here.ground).toBe(NAVY)
+      }
+      expect(ratio(here.colour, here.row), scheme).toBeGreaterThanOrEqual(4.5)
+      // Tournaments opened too: no row the build's switches leave out, in either section.
+      await sheet.getByRole('button', { name: SECTION_WORDS[0] }).click()
+      const opened = await sheetRows(sheet)
+      const all = opened.sections.flatMap((s) => s.rows)
+      expect(all.filter((row) => WAITING_ROWS.includes(row)), scheme).toEqual([])
+      expect(opened.sections[0].rows, scheme).toEqual(['All tournaments', 'Scoresheet scanner'])
+      await page.keyboard.press('Escape')
+      await expect(sheet).toHaveCount(0)
+    }
+    await testInfo.attach('sheet-rows.json', { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  for (const key of ['active-member', 'expired-member', 'director', 'admin'] as const) {
+    test(`a11y-on at 390 by 844, signed in as ${navPersona(key).title}: the sheet's buttons, Donate and My LCA${key === 'expired-member' ? ' with Renew beside them' : ''}, and its account rows, the person's My LCA rows after My LCA, Log out last; no row the build's switches leave out`, async ({ page, external, baseURL }, testInfo) => {
+      only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
+      onlyNew(testInfo, 'header', [390], 'the app bar\'s sheet for someone signed in')
+      const person = navPersona(key)
+      const visit = await signInAs(page, person, baseURL!)
+      await page.setViewportSize({ width: 390, height: 844 })
+      await openHeader(page, '/tournaments')
+      await waitForMemberAnswers(visit)
+      const { sheet } = await openSheet(page)
+      await expect(sheet.getByRole('link', { name: NEW_NAMES.myLca, exact: true }), visit.notRead).toBeVisible()
+      const rows = await sheetRows(sheet)
+      expect(rows.buttons).toEqual([NEW_NAMES.donate, NEW_NAMES.myLca, ...(key === 'expired-member' ? [NEW_NAMES.renew] : [])])
+      expect(rows.account, 'the role rows and the Admin row the person holds, then Log out').toEqual(person.myLcaMenuRows.slice(1))
+      expect(rows.account.at(-1)).toBe(NEW_NAMES.logOut)
+      expect(rows.links).toEqual(SHEET_LINKS)
+      for (const s of rows.sections) expect(s.rows.filter((row) => WAITING_ROWS.includes(row)), s.name).toEqual([])
+      await testInfo.attach(`sheet-rows-${key}.json`, { body: JSON.stringify(rows, null, 2), contentType: 'application/json' })
+      expect(visit.apiErrors).toEqual([])
+      expect(external).toEqual([])
+    })
+  }
+
+  test('a11y-on at 390 by 844: a row followed in the sheet closes it and opens the row\'s page, the focus back on Menu; a section\'s own link does the same', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390], 'the app bar\'s sheet')
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openQuiet(page, '/')
+    let opened = await openSheet(page)
+    await opened.sheet.getByRole('button', { name: SECTION_WORDS[0] }).click()
+    await opened.sheet.getByRole('link', { name: 'All tournaments' }).click()
+    await expect(page).toHaveURL(/\/tournaments$/)
+    await expect(menuSheet(page)).toHaveCount(0)
+    await expect(opened.menu).toBeFocused()
+    // The page drawn before the sheet opens again: the address changes at once, but the router
+    // draws the page once its code has arrived, and a sheet opened in between is shut as the page
+    // arrives, a change of page like any other.
+    await expect(PAGES['/tournaments'](page)[0], 'the page of the row followed, drawn').toBeVisible()
+    opened = await openSheet(page)
+    // On the page it opened, its section is open and the page's own row marked.
+    await expect(opened.sheet.getByRole('button', { name: SECTION_WORDS[0] })).toHaveAttribute('aria-expanded', 'true')
+    await expect(opened.sheet.getByRole('link', { name: 'All tournaments' })).toHaveAttribute('aria-current', 'page')
+    await opened.sheet.getByRole('link', { name: /^Scholastic/ }).click()
+    await expect(page).toHaveURL(/\/scholastic$/)
+    await expect(menuSheet(page)).toHaveCount(0)
+    await expect(opened.menu).toBeFocused()
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844: the theme switch in the sheet is the footer\'s control drawn again; Dark picked there sets the page\'s dark class and the browser bar\'s colour as the footer\'s control does, one group named Appearance is found while the sheet is open, and the footer\'s shows Dark once it has closed', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390], 'the app bar\'s sheet')
+    await page.emulateMedia({ colorScheme: 'light' })
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openQuiet(page, '/')
+    const isDark = () => page.evaluate(() => document.documentElement.classList.contains('dark'))
+    expect(await isDark()).toBe(false)
+    const { menu, sheet } = await openSheet(page)
+    // The page behind the sheet is hidden from screen readers, so the one group named Appearance found is the sheet's.
+    await expect(appearanceControl(page)).toHaveCount(1)
+    await expect(sheetAppearance(page)).toHaveCount(1)
+    expect(await appearanceControl(page).evaluate((group) => !!group.closest('[data-slot="menu-sheet"]')), 'the group found is the sheet\'s').toBe(true)
+    await sheetAppearance(page).getByRole('button', { name: 'Dark' }).click()
+    await expect(sheetAppearance(page).getByRole('button', { name: 'Dark' })).toHaveAttribute('aria-pressed', 'true')
+    expect(await isDark()).toBe(true)
+    expect(await barColour(page)).toBe(BAR.dark)
+    await page.keyboard.press('Escape')
+    await expect(sheet).toHaveCount(0)
+    await expect(menu).toBeFocused()
+    // The footer's control, the one group named Appearance once more, shows the pick.
+    await expect(appearanceControl(page)).toHaveCount(1)
+    expect(await appearanceControl(page).evaluate((group) => !!group.closest('[data-slot="menu-sheet"]'))).toBe(false)
+    await expect(appearanceControl(page).getByRole('button', { name: 'Dark' })).toHaveAttribute('aria-pressed', 'true')
+    // And a pick there shows in the sheet the next time it opens.
+    await appearanceControl(page).getByRole('button', { name: 'System' }).click()
+    expect(await isDark()).toBe(false)
+    expect(await barColour(page)).toBe(BAR.light)
+    await menuButtonOf(page).click()
+    await expect(sheetAppearance(page).getByRole('button', { name: 'System' })).toHaveAttribute('aria-pressed', 'true')
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844: Donate in the sheet closes it and opens today\'s donation dialog, and Esc closes the dialog with nothing sent, the focus back on Menu and the page where it was', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390], 'the app bar\'s sheet')
+    const sent: string[] = []
+    page.on('request', (request) => {
+      if (new URL(request.url()).pathname.startsWith('/api/donations')) sent.push(`${request.method()} ${request.url()}`)
+    })
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openQuiet(page, '/')
+    await page.evaluate(() => window.scrollTo(0, 300))
+    await frames(page)
+    const { menu, sheet } = await openSheet(page)
+    await sheet.getByRole('button', { name: NEW_NAMES.donate }).click()
+    const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
+    await expect(dialog).toBeVisible()
+    await expect(sheet).toHaveCount(0)
+    await expect(page.getByRole('dialog')).toHaveCount(1)
+    await expect(dialog.getByRole('button', { name: 'Continue to payment' })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(dialog).toHaveCount(0)
+    await expect(menu).toBeFocused()
+    expect(await page.evaluate(() => window.scrollY), 'the page where it was').toBe(300)
+    expect(sent, 'nothing sent').toEqual([])
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844, signed out: Log in in the sheet on /tournaments?when=weekend#list hands /login that whole address, path, query and hash, and closes the sheet', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390], 'the app bar\'s sheet')
+    const address = '/tournaments?when=weekend#list'
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openHeader(page, address)
+    const { sheet } = await openSheet(page)
+    await sheet.getByRole('link', { name: CHROME_NAMES.logIn }).click()
+    await expect(page).toHaveURL(/\/login$/)
+    await expect(menuSheet(page)).toHaveCount(0)
+    // The router keeps a location's state in the page's history entry, under usr.
+    expect(await page.evaluate(() => (window.history.state as { usr?: unknown } | null)?.usr ?? null)).toEqual({ from: address })
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 1280 by 800 and at 390 by 844 through the sheet, signed out: on /forgot-password, Log in hands /login no page of its own, so signing in never brings the person back to a password form', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new header and the Menu sheet come with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [1280, 390], 'the desktop header\'s Log in, and the sheet\'s')
+    const handed = () => page.evaluate(() => ((window.history.state as { usr?: { from?: unknown } } | null)?.usr ?? null))
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await openHeader(page, '/forgot-password')
+    await siteHeader(page).getByRole('link', { name: CHROME_NAMES.logIn }).click()
+    await expect(page).toHaveURL(/\/login$/)
+    expect((await handed())?.from, 'the desktop header, at 1280').toBeUndefined()
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openHeader(page, '/forgot-password')
+    const { sheet } = await openSheet(page)
+    await sheet.getByRole('link', { name: CHROME_NAMES.logIn }).click()
+    await expect(page).toHaveURL(/\/login$/)
+    expect((await handed())?.from, 'the sheet, at 390').toBeUndefined()
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on, light and dark: axe, with the WCAG 2.0 to 2.2 A and AA rules, finds nothing in the app bar at 390, in its sheet open, in the tablet header at 900 or in its drawer open, on /tournaments', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new chrome\'s bars come with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390, 900], 'the app bar, the tablet header and the Menu sheet')
+    const report: string[] = []
+    const found: string[] = []
+    const run = async (what: string, scheme: string, include: string) => {
+      const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).include(include).analyze()
+      report.push(`axe on ${what} (${scheme}): ${results.passes.length} rules passed, ${results.violations.length} with findings.`)
+      found.push(...axeFindings(results).map((f) => `${what}, ${scheme}: ${f}`))
+      const ran = new Set([...results.passes, ...results.incomplete, ...results.inapplicable].map((r) => r.id))
+      for (const rule of ['color-contrast', 'link-name', 'button-name']) expect(ran, `${what}, ${scheme}: ${rule}`).toContain(rule)
+    }
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      for (const [width, height, bar] of [[390, 844, 'the app bar'], [900, 1024, 'the tablet header']] as const) {
+        await page.setViewportSize({ width, height })
+        await openHeader(page, '/tournaments')
+        await run(bar, scheme, SITE.header)
+        await openSheet(page)
+        await run(`${bar}'s ${width < 768 ? 'sheet' : 'drawer'} open`, scheme, '[data-slot="menu-sheet"]')
+        await page.keyboard.press('Escape')
+        await expect(menuSheet(page)).toHaveCount(0)
+      }
+    }
+    console.log(report.join('\n'))
+    expect(found, report.join('\n')).toEqual([])
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on, light and dark: the gold ring on the app bar\'s controls at 390 and the tablet row\'s at 900, and the look\'s own ring on the sheet\'s, each at 3:1 or more on its ground', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new chrome\'s bars come with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390, 900], 'the app bar, the tablet header and the Menu sheet')
+    const seen: Record<string, unknown> = {}
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      // The app bar's two controls, on its navy, and the sheet's on its light surface.
+      await page.setViewportSize({ width: 390, height: 844 })
+      await openHeader(page, '/clubs')
+      for (const control of [brandLink(page), menuButtonOf(page)]) {
+        const r = await ringOnGround(page, control)
+        seen[`${scheme} app bar ${r.name}`] = r
+        expect([r.ring.style, r.ring.width], r.name).toEqual(['solid', '2px'])
+        expect([r.ring.colour, r.ground], `${scheme} app bar: ${r.name}`).toEqual([GOLD, NAVY])
+        expect(r.ratio, `${scheme} app bar: ${r.name}`).toBeGreaterThanOrEqual(3)
+      }
+      const { sheet } = await openSheet(page)
+      const sheetControls = [
+        sheet.getByRole('button', { name: CLOSE_MENU }),
+        sheet.getByRole('button', { name: SECTION_WORDS[1] }),
+        sheet.getByRole('link', { name: CLUBS_ROWS[0] }),
+        sheet.getByRole('link', { name: /^Scholastic/ }),
+        sheet.getByRole('button', { name: NEW_NAMES.donate }),
+        sheet.getByRole('link', { name: CHROME_NAMES.logIn }),
+        sheet.getByRole('link', { name: CHROME_NAMES.joinLca }),
+        sheet.getByRole('link', { name: SHEET_LINKS[0] }),
+        sheetAppearance(page).getByRole('button', { name: 'Dark' }),
+      ]
+      for (const control of sheetControls) {
+        const r = await ringOnGround(page, control)
+        seen[`${scheme} sheet ${r.name}`] = r
+        expect([r.ring.style, r.ring.width], r.name).toEqual(['solid', '2px'])
+        expect(r.ring.colour, `${scheme} sheet: ${r.name}`).toBe(scheme === 'light' ? NAVY : GOLD)
+        expect(r.ratio, `${scheme} sheet: ${r.name} on ${r.ground}`).toBeGreaterThanOrEqual(3)
+      }
+      await page.keyboard.press('Escape')
+      await expect(sheet).toHaveCount(0)
+      // The tablet row's controls, on its navy.
+      await page.setViewportSize({ width: 900, height: 1024 })
+      await openHeader(page, '/clubs')
+      const row = siteHeader(page).locator('[data-slot="site-header-row"]').locator('a, button')
+      const count = await row.count()
+      expect(count, 'the brand link, two sections, Donate, Log in and Menu').toBe(6)
+      for (let i = 0; i < count; i++) {
+        const r = await ringOnGround(page, row.nth(i))
+        seen[`${scheme} tablet ${r.name}`] = r
+        expect([r.ring.style, r.ring.width], r.name).toEqual(['solid', '2px'])
+        expect([r.ring.colour, r.ground], `${scheme} tablet: ${r.name}`).toEqual([GOLD, NAVY])
+        expect(r.ratio, `${scheme} tablet: ${r.name}`).toBeGreaterThanOrEqual(3)
+      }
+    }
+    await testInfo.attach('bar-and-sheet-rings.json', { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on: the window narrowed from 1280 to 1023 to 767 and widened back draws the desktop header, the tablet header and the app bar in place, one banner at a time, with no new page load and --header-h 64, 64, 56 and 64; a drawer open at 1023 closes as the window crosses 1024 or 767', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new chrome\'s bars come with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [1280, 1023, 767], 'the desktop header, the tablet header and the app bar')
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await openQuiet(page, '/')
+    // A mark on the page itself, which a new page load would lose.
+    await page.evaluate(() => ((window as unknown as { fxSamePage: boolean }).fxSamePage = true))
+    const bar = () =>
+      page.evaluate((site) => {
+        const header = document.querySelector(site.header)!
+        return { slot: header.getAttribute('data-slot'), form: header.getAttribute('data-form'), written: document.documentElement.style.getPropertyValue('--header-h') }
+      }, SITE)
+    const steps = [
+      [1280, { slot: 'site-header', form: 'desktop', written: '64px' }],
+      [1023, { slot: 'site-header', form: 'tablet', written: '64px' }],
+      [767, { slot: 'app-bar', form: null, written: '56px' }],
+      [1023, { slot: 'site-header', form: 'tablet', written: '64px' }],
+      [1280, { slot: 'site-header', form: 'desktop', written: '64px' }],
+    ] as const
+    for (const [width, expected] of steps) {
+      await page.setViewportSize({ width, height: 800 })
+      await expect.poll(() => bar(), `${width}`).toEqual(expected)
+      await expect(siteHeader(page), `${width}: one banner`).toHaveCount(1)
+      await expect(brandLink(page)).toHaveAccessibleName(NEW_NAMES.home)
+    }
+    expect(await page.evaluate(() => (window as unknown as { fxSamePage?: boolean }).fxSamePage), 'the same page, never loaded again').toBe(true)
+    // A drawer open at 1023 closes as the window crosses 1024, where the desktop header has no Menu button, and as it crosses 767.
+    for (const crossed of [1024, 767]) {
+      await page.setViewportSize({ width: 1023, height: 800 })
+      await expect.poll(() => bar()).toEqual(steps[1][1])
+      await openSheet(page)
+      await page.setViewportSize({ width: crossed, height: 800 })
+      await expect(menuSheet(page), `crossing to ${crossed}`).toHaveCount(0)
+      await expect(page.getByRole('dialog')).toHaveCount(0)
+      await expect(siteHeader(page)).toHaveCount(1)
+    }
+    expect(await page.evaluate(() => (window as unknown as { fxSamePage?: boolean }).fxSamePage), 'the same page, never loaded again').toBe(true)
+    expect(external).toEqual([])
+  })
+
+  test('a11y-off at 390 by 844 and 768 by 1024: today\'s header, with no app bar, no tablet form and no --header-h, as today', async ({ page, external }, testInfo) => {
+    only(testInfo, OFF, 'today\'s site, on a11y-off')
+    onlyToday(testInfo, 'header', [390, 768], 'today\'s header below 1024 pixels')
+    for (const [width, height] of [[390, 844], [768, 1024]] as const) {
+      await page.setViewportSize({ width, height })
+      await openHeader(page, '/')
+      await expect(siteHeader(page)).toHaveCount(1)
+      const state = await page.evaluate((site) => {
+        const header = document.querySelector(site.header)!
+        return {
+          slot: header.getAttribute('data-slot'),
+          form: header.getAttribute('data-form'),
+          appBars: document.querySelectorAll('[data-slot="app-bar"]').length,
+          sheets: document.querySelectorAll('[data-slot="menu-sheet"]').length,
+          written: document.documentElement.style.getPropertyValue('--header-h'),
+        }
+      }, SITE)
+      expect(state, `${width}`).toEqual({ slot: null, form: null, appBars: 0, sheets: 0, written: '' })
+      if (width === 390) await expect(siteHeader(page).getByRole('button', { name: OPEN_MENU }), 'today\'s menu button').toBeVisible()
     }
     expect(external).toEqual([])
   })

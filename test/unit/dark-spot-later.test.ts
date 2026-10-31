@@ -117,10 +117,11 @@ describe('the classes the dark spot run credits to a later step', () => {
   it('credits none of the raw colours kept for a reason of their own, so a dark mode failure in one fails the spec', () => {
     const kinds = new Set(allowlist.map((e) => parseToken(e.class).utility.replace(/^(bg-white)$/, 'a white veil').replace(/-\[#[0-9a-fA-F]+\]$/, ' hex')))
     expect([...kinds].sort()).toEqual(['a white veil', 'bg hex', 'bg-slate-400', 'bg-slate-500', 'border hex', 'border-gray-300', 'text hex'])
-    // WS02 step 5 added two hex classes for the About menu's gold, which are
-    // not WS01's: WS01's ten are the allowlist's hex classes less those, named beside them.
-    const WS02_FILES = ['src/components/layout/AboutMenu.tsx']
-    expect(allowlist.filter((e) => WS02_FILES.includes(e.file)).map((e) => e.class).sort()).toEqual(['bg-[#f3eedc]', 'text-[#705718]'])
+    // WS02 steps 5 and 6 added two hex classes each, for the About menu's gold
+    // and the Menu sheet's, which are not WS01's: WS01's ten are the
+    // allowlist's hex classes less those, named beside them.
+    const WS02_FILES = ['src/components/layout/AboutMenu.tsx', 'src/components/layout/MobileMenu.tsx']
+    expect(allowlist.filter((e) => WS02_FILES.includes(e.file)).map((e) => e.class).sort()).toEqual(['bg-[#f3eedc]', 'bg-[#fbfaf6]', 'text-[#705718]', 'text-[#866a1e]'])
     expect(allowlist.filter((e) => /\[#/.test(e.class) && !WS02_FILES.includes(e.file)).map((e) => e.class).sort()).toEqual([
       'bg-[#1e4d7b]', 'bg-[#1e4d7b]', 'bg-[#9b1c1c]', 'bg-[#9b1c1c]', 'bg-[#f2efe6]', 'bg-[#f2efe6]',
       'hover:bg-[#1877F2]', 'hover:border-[#1877F2]', 'hover:text-[#1877F2]', 'text-[#1877F2]',

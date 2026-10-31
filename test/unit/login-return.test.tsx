@@ -17,7 +17,14 @@
 // - Log in in today's header hands nothing, as it always has, so the
 //   person lands on the dashboard as before;
 // - a password that is not taken leaves the person on /login, with the
-//   page still to come back to.
+//   page still to come back to;
+// - since WS02 step 6, Log in in the tablet header and in the Menu sheet,
+//   which the phone's app bar opens, brings the person back to the page
+//   the same way;
+// - and on the password pages, /forgot-password and /reset-password, Log
+//   in in the new header's two forms and in the sheet hands on the page
+//   that page was handed, or nothing, so the person comes back to where
+//   they came from, or to the dashboard, never to a password form.
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { User } from '@supabase/supabase-js'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -49,8 +56,12 @@ vi.mock('@/lib/mfa', () => ({
 }))
 
 const { SiteHeader } = await import('@/components/layout/SiteHeader')
+const { MobileAppBar } = await import('@/components/layout/MobileAppBar')
 const { Navbar } = await import('@/components/layout/Navbar')
 const { LoginPage } = await import('@/pages/LoginPage')
+
+/** The headers a test draws: the new header's two forms, the phone's app bar (Log in in its sheet), and today's. */
+type Header = 'new' | 'tablet' | 'app bar' | 'today'
 
 interface Signing {
   signIn: ReturnType<typeof vi.fn>
@@ -85,11 +96,18 @@ function Where() {
   return <output data-testid="where">{`${location.pathname}${location.search}${location.hash}`}</output>
 }
 
-function draw(path: string | { pathname: string; state?: unknown }, header: 'new' | 'today', auth: AuthContextValue) {
+const HEADERS = {
+  new: <SiteHeader />,
+  tablet: <SiteHeader form="tablet" />,
+  'app bar': <MobileAppBar />,
+  today: <Navbar />,
+}
+
+function draw(path: string | { pathname: string; state?: unknown }, header: Header, auth: AuthContextValue) {
   return render(
     <AuthContext.Provider value={auth}>
       <MemoryRouter initialEntries={[path]}>
-        {header === 'new' ? <SiteHeader /> : <Navbar />}
+        {HEADERS[header]}
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<Where />} />
@@ -101,6 +119,18 @@ function draw(path: string | { pathname: string; state?: unknown }, header: 'new
 
 const where = () => screen.getByTestId('where').textContent
 const banner = () => within(screen.getByRole('banner'))
+
+/** Presses Log in where the header gives it: in the bar, or in the Menu sheet the app bar opens. */
+async function pressLogIn(header: Exclude<Header, 'today'>) {
+  if (header === 'app bar') {
+    fireEvent.click(banner().getByRole('button', { name: 'Menu' }))
+    const sheet = await screen.findByRole('dialog', { name: 'Menu' })
+    fireEvent.click(within(sheet).getByRole('link', { name: 'Log in' }))
+  } else {
+    fireEvent.click(banner().getByRole('link', { name: 'Log in' }))
+  }
+  expect(await screen.findByRole('heading', { level: 1, name: 'Log In' })).toBeTruthy()
+}
 
 /** Fills in the sign-in form and sends it. */
 function signInWith(email = 'fixture.member@example.org', password = 'fixture-password') {
@@ -164,4 +194,34 @@ describe('the page a person comes back to after Log in', () => {
     await waitFor(() => expect(where()).toBe('/news?tag=state#latest'))
     expect(signing.signIn).toHaveBeenCalledTimes(2)
   })
+})
+
+describe('the page a person comes back to, from the tablet header and the Menu sheet (WS02 step 6)', () => {
+  it.each(['tablet', 'app bar'] as const)('from the %s on /tournaments?when=weekend#list, is that page, its query and its hash', async (header) => {
+    draw('/tournaments?when=weekend#list', header, visitor(signing))
+    await pressLogIn(header)
+    signInWith()
+    await waitFor(() => expect(where()).toBe('/tournaments?when=weekend#list'))
+  })
+})
+
+describe('the page a person comes back to, from the password pages (WS02 step 6)', () => {
+  const PAGES = ['/forgot-password', '/reset-password'] as const
+  const BARS = ['new', 'tablet', 'app bar'] as const
+
+  for (const page of PAGES) {
+    it.each(BARS)(`on ${page} handed a page, from the %s, is that page, never ${page}`, async (header) => {
+      draw({ pathname: page, state: { from: '/clubs?region=north#map' } }, header, visitor(signing))
+      await pressLogIn(header)
+      signInWith()
+      await waitFor(() => expect(where()).toBe('/clubs?region=north#map'))
+    })
+
+    it.each(BARS)(`on ${page} handed nothing, from the %s, is the dashboard, never ${page}`, async (header) => {
+      draw(page, header, visitor(signing))
+      await pressLogIn(header)
+      signInWith()
+      await waitFor(() => expect(where()).toBe('/dashboard'))
+    })
+  }
 })
