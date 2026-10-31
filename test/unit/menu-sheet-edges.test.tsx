@@ -303,9 +303,10 @@ describe('the link the sheet marks as the page', () => {
       const menu = markedInAboutMenu(path)
       draw(path)
       expect(nameOf(sectionItems().find((item) => item.className.split(/\s+/).includes('bg-[#fbfaf6]'))!), `${path}, ${mix}`).toBe('About')
-      expect(markedInSheet(), `${path}, ${mix}`).toEqual(menu)
-      // One row at most: none where a switch has moved the page's row to an address of its own.
+      // One row at most: none where a switch has moved the page's row to an address of its own, and
+      // there, since WS02 step 7, the About section's own control says the section is current.
       expect(menu.length, `${path}, ${mix}`).toBeLessThanOrEqual(1)
+      expect(markedInSheet(), `${path}, ${mix}`).toEqual(menu.length > 0 ? menu : ['About true'])
       cleanup()
     }
   })
@@ -332,7 +333,7 @@ describe('the link the sheet marks as the page', () => {
     expect(markedInSheet()).toEqual([`${expected} page`])
   })
 
-  it('is one link at most in the whole sheet, every section open, on every page a section owns, with every mix of the switches its rows wait for', { timeout: 120_000 }, () => {
+  it('is one control at most in the whole sheet, every section open, on every page a section owns, with every mix of the switches its rows wait for: a link of the page, or the section\'s own control where none of its links is the page', { timeout: 120_000 }, () => {
     const PATHS = ['/', '/tournaments', '/tournaments/fx-open-2026', '/scanner', '/clubs', '/clubs/fx-club-north', '/scholastic', '/news', '/news/fx-post', '/membership', '/membership/success', '/donate/success', ...ABOUT_PATHS, '/support', '/dashboard', '/login']
     const SWITCHES = ['newTournaments', 'newNews', 'newClubs', 'newAbout'] as const
     for (let mask = 0; mask < 1 << SWITCHES.length; mask++) {
@@ -343,10 +344,17 @@ describe('the link the sheet marks as the page', () => {
         openEverySection()
         const marked = [...sheet().querySelectorAll('[aria-current]')]
         expect(marked.length, `${path} with ${JSON.stringify(on)}`).toBeLessThanOrEqual(1)
-        // What is marked is a link of the page's own section, never a button, the account rows or the links under them.
+        // What is marked is a link of the page's own section, never a button, the account rows or the links under them;
+        // or, since WS02 step 7, where none of the section's links is the page, the section's own control, as current.
         for (const el of marked) {
-          expect(el.tagName, path).toBe('A')
-          expect(el.closest('[data-slot="menu-sheet-sections"] > li')!.className.split(/\s+/), path).toContain('bg-[#fbfaf6]')
+          const item = el.closest('[data-slot="menu-sheet-sections"] > li')!
+          expect(item.className.split(/\s+/), path).toContain('bg-[#fbfaf6]')
+          if (el.getAttribute('aria-current') === 'page') {
+            expect(el.tagName, path).toBe('A')
+          } else {
+            expect(el.getAttribute('aria-current'), path).toBe('true')
+            expect(el, path).toBe(item.querySelector(':scope > button, :scope > a'))
+          }
         }
         cleanup()
       }

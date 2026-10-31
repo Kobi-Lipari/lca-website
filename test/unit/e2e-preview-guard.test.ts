@@ -210,11 +210,14 @@ describe('playwright.config.ts as Playwright loads it', () => {
 })
 
 describe('the Playwright command line', () => {
+  // Each test here starts Playwright's command line, which takes some seconds
+  // under a loaded machine, so each is given 20 seconds, as the gold-ink
+  // codemod's command line tests are (WS02 step 7).
   it('refuses to start the e2e project with no address', () => {
     const r = playwright(['--project=e2e-preview', '--list'], '')
     expect(r.status).not.toBe(0)
     expect(`${r.stdout}${r.stderr}`).toMatch(/E2E_BASE_URL is empty/)
-  })
+  }, 20_000)
 
   it.each(['https://www.louisianachess.org', 'https://louisianachess.org', 'https://lca-website.pages.dev'])(
     'refuses to start the e2e project against %s',
@@ -224,6 +227,7 @@ describe('the Playwright command line', () => {
       expect(`${r.stdout}${r.stderr}`).toMatch(/points at the live site/)
       expect(`${r.stdout}${r.stderr}`).not.toMatch(/Total: \d+ tests?/)
     },
+    20_000,
   )
 
   it('lists both end-to-end specs for a branch preview', () => {
@@ -232,13 +236,13 @@ describe('the Playwright command line', () => {
     expect(r.stdout).toContain('test/e2e/register-family.spec.ts')
     expect(r.stdout).toContain('test/e2e/publish-round.spec.ts')
     expect(r.stdout).toMatch(/Total: 2 tests in 2 files/)
-  })
+  }, 20_000)
 
   it('does not ask for an address when only the accessibility projects are named', () => {
     const r = playwright(['--project=a11y-on', '--project=a11y-off', '--list'])
     expect(r.status, r.stderr).toBe(0)
     expect(r.stdout).not.toContain('test/e2e')
-  })
+  }, 20_000)
 
   it('reports both end-to-end specs as skipped (fixme) and runs nothing against the address', () => {
     const r = playwright(['--project=e2e-preview', '--reporter=json'], UNROUTABLE)

@@ -20,6 +20,12 @@
 //   hands the focus back to Donate when it closes;
 // - the sheet's Donate handed on to the bar's donation dialog: once the
 //   dialog closes the page is given back and the focus is on Menu.
+//
+// The bars are drawn here as Navbar draws them, without the dock's provider
+// the page frame puts round them since WS02 step 7, so each bar holds its
+// own sheet, the app bar keeps its Menu button, and a sheet still goes with
+// the bar that drew it; the one sheet that stays open across 768 pixels is
+// test/unit/bottom-dock.test.tsx's to show, and the browser's.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { User } from '@supabase/supabase-js'
 import { MemoryRouter } from 'react-router-dom'

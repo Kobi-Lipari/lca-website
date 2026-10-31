@@ -104,6 +104,23 @@
 //   drawer open at 1023 closed as the window crosses 1024 or 767. On
 //   a11y-off, today's header at 390 and 768 with no app bar, no tablet form
 //   and no --header-h.
+// - The phone's tab bar and the Menu tab (WS02 step 7), which the a11y-on
+//   build draws in the dock below 768 pixels. The cases of the block above
+//   that the tab bar changes read the sheet's control through the helper's
+//   menuControl, the Menu tab below 768 pixels: the app bar beside the tab
+//   bar holds its brand link alone and the page one nav named Main, the tab
+//   bar's; the sheet stops at the dock's top, the tab bar undimmed; and a
+//   drawer open at 1023 stays open as the window crosses 767, as the full
+//   sheet. Then AC3 at 390 and 320 by 844, light and dark: the Menu tab
+//   opens the sheet, reading Close with aria-expanded while it is open and
+//   naming it, the focus on "Close menu", Tab and Shift+Tab held inside it;
+//   Esc, the close control and a press on the Close tab, made at the tab's
+//   place, each close it with the focus back on the Menu tab, which reads
+//   Menu again. AC6 at 390: Donate two taps away, the Menu tab and then the
+//   first of the sheet's three buttons, opening today's donation dialog,
+//   with the focus back on the Menu tab once it closes. AC16 at 390: Log in
+//   on the tab bar on a page with a query and a hash hands /login that whole
+//   address, and on /forgot-password the page that page was handed.
 //
 // Reads only; the announcement and the impersonation target are stubbed in
 // the browser with made-up fixture data in the seed's style, and the people
@@ -120,8 +137,8 @@
 import AxeBuilder from '@axe-core/playwright'
 import type { Browser, Locator, Page, Route, TestInfo } from '@playwright/test'
 import {
-  CHROME_NAMES, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, ifNew, ifToday, menuSheet, onlyNew, onlyToday, rookMark, sheetAppearance,
-  siteHeader, widthOf, type SiteSelectors,
+  CHROME_NAMES, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, ifNew, ifToday, menuControl, menuSheet, menuTab, onlyNew, onlyToday, rookMark,
+  sheetAppearance, siteHeader, tabBar, widthOf, type SiteSelectors,
 } from './chrome'
 import { sessionInPage, signInAs, waitForMemberAnswers } from './signedIn'
 import { expect, openDrawn, prepareLocalPage, test } from './support'
@@ -1847,23 +1864,29 @@ const CLUBS_ROWS = ['All clubs', 'Club map', 'List or update your club']
 /** The sheet's links under the account group, as src/lib/nav.ts gives them. */
 const SHEET_LINKS = ['LCA on Facebook ↗', 'Contact', 'Website help']
 
-/** The bordered Menu button of the tablet header or the phone's app bar. */
-const menuButtonOf = (page: Page) => siteHeader(page).getByRole('button', { name: NEW_NAMES.menu, exact: true })
+/**
+ * The control that opens the Menu sheet: the bordered Menu button of the
+ * tablet header, and below 768 pixels, since WS02 step 7, the tab bar's Menu
+ * tab, where the app bar draws no Menu button beside the tab bar.
+ */
+const menuButtonOf = (page: Page) => menuControl(page)
 
 /**
- * The bar's Menu button as the page holds it: what it says of the sheet, and
- * whether it is hidden from screen readers, as the whole page behind an open
- * sheet is, so it is read from the page while the sheet is open.
+ * The control that opens the sheet as the page holds it, the tablet header's
+ * Menu button or the Menu tab: what it says of the sheet, and whether it is
+ * hidden from screen readers, as the whole page behind an open sheet is, so
+ * it is read from the page while the sheet is open.
  */
 const menuState = (page: Page) =>
-  page.evaluate((site) => {
-    const button = document.querySelector(site.header)?.querySelector('button[aria-haspopup="dialog"]') ?? null
-    return { expanded: button?.getAttribute('aria-expanded') ?? null, controls: button?.getAttribute('aria-controls') ?? null, hidden: !!button?.closest('[aria-hidden="true"]') }
-  }, SITE)
+  menuControl(page).evaluate((button) => ({
+    expanded: button.getAttribute('aria-expanded'),
+    controls: button.getAttribute('aria-controls'),
+    hidden: !!button.closest('[aria-hidden="true"]'),
+  }))
 
-/** Opens the Menu sheet by the bar's Menu button, and waits until it is open with the focus on its close control. */
+/** Opens the Menu sheet by the control that opens it at the window's width, and waits until it is open with the focus on its close control. */
 async function openSheet(page: Page) {
-  const menu = siteHeader(page).getByRole('button', { name: NEW_NAMES.menu, exact: true })
+  const menu = menuControl(page)
   // A press at the button's place, as a finger or a mouse makes it. A
   // locator's click first scrolls the page to bring the button clear of the
   // page's scroll padding, which no person's press does, and the bar is
@@ -1994,7 +2017,7 @@ async function ringOnGround(page: Page, control: Locator) {
 test.describe('the tablet header, the phone\'s app bar and the Menu sheet with the chrome on', () => {
   test.use({ reducedMotion: 'reduce' })
 
-  test('a11y-on at 320, 390 and 767 by 844, signed out: the phone\'s app bar, one navy row 56 pixels tall on the header itself that keeps its height and its place when the page scrolls 600 pixels, the brand link named for the home page with its mark hidden, 28 pixels and on no plate, the two-line name and the Menu button that says it opens a dialog; nothing overlapping, wrapping or wider than the window, --header-h 56 pixels, and no nav named Main', async ({ page, external }, testInfo) => {
+  test('a11y-on at 320, 390 and 767 by 844, signed out: the phone\'s app bar, one navy row 56 pixels tall on the header itself that keeps its height and its place when the page scrolls 600 pixels, the brand link named for the home page with its mark hidden, 28 pixels and on no plate, the two-line name, and beside the tab bar no Menu button, the Menu tab saying it opens a dialog; nothing overlapping, wrapping or wider than the window, --header-h 56 pixels, and one nav named Main, the tab bar\'s', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the app bar comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', PHONE, 'the phone\'s app bar, below 768 pixels')
     const seen: Record<string, unknown> = {}
@@ -2019,11 +2042,12 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
       expect(drawn.brand.mark, `${width}: the mark 28 pixels square`).toEqual([28, 28])
       expect([drawn.brand.ground, drawn.brand.markGround], `${width}: no plate behind the mark`).toEqual([CLEAR, CLEAR])
       expect(drawn.name, `${width}`).toEqual([{ words: 'Louisiana Chess', wraps: false }, { words: 'Association', wraps: false }])
-      // The row: the brand link, then the Menu button, and nothing else.
-      expect(drawn.controls.map((c) => c.words), `${width}`).toEqual([NEW_NAMES.home, NEW_NAMES.menu])
+      // The row: the brand link, and nothing else beside the tab bar, whose Menu tab opens the sheet (WS02 step 7).
+      expect(drawn.controls.map((c) => c.words), `${width}`).toEqual([NEW_NAMES.home])
       expectOneRow(drawn, `${width}`)
       expect(drawn.nav, `${width}: no nav in the bar`).toBeNull()
-      await expect(page.getByRole('navigation', { name: 'Main', exact: true }), `${width}: no nav named Main on the page, so no tab bar`).toHaveCount(0)
+      await expect(page.getByRole('navigation', { name: 'Main', exact: true }), `${width}: one nav named Main on the page, the tab bar's`).toHaveCount(1)
+      expect(await page.getByRole('navigation', { name: 'Main', exact: true }).getAttribute('data-slot'), `${width}`).toBe('tab-bar')
       expect(drawn.written, `${width}`).toBe('56px')
       // It keeps its height and its place at the top of the window when the page scrolls.
       await page.evaluate(() => window.scrollTo(0, 600))
@@ -2101,7 +2125,7 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
 
   for (const [width, height] of [[390, 844], [768, 1024], [1023, 800]] as const) {
     const drawer = width >= 768
-    test(`a11y-on at ${width} by ${height}: the Menu button opens the sheet ${drawer ? 'as a drawer 400 pixels wide against the window\'s right edge and its full height, the page under a scrim' : 'over the whole window'}; named Menu, it opens on "Close menu", keeps the focus inside it, Tab from its last control to its first and Shift+Tab back, and closes on Esc${drawer ? ', on its close control and on a press on the scrim' : ' and on its close control'}, each time with the focus back on Menu`, async ({ page, external }, testInfo) => {
+    test(`a11y-on at ${width} by ${height}: ${drawer ? 'the Menu button opens the sheet as a drawer 400 pixels wide against the window\'s right edge and its full height, the page under a scrim' : 'the Menu tab opens the sheet over the window above the tab bar, the tab bar undimmed'}; named Menu, it opens on "Close menu", keeps the focus inside it, Tab from its last control to its first and Shift+Tab back, and closes on Esc${drawer ? ', on its close control and on a press on the scrim' : ' and on its close control'}, each time with the focus back on Menu`, async ({ page, external }, testInfo) => {
       only(testInfo, ON, 'the Menu sheet comes with the chrome, on a11y-on')
       onlyNew(testInfo, 'header', [width], `the new chrome's Menu sheet, ${drawer ? 'the tablet header\'s drawer' : 'the app bar\'s'}`)
       await page.setViewportSize({ width, height })
@@ -2111,20 +2135,31 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
       await expect(sheet).toHaveAttribute('data-shape', drawer ? 'drawer' : 'full')
       // The button says the sheet is open and names it; the bar, like the rest of the page behind the sheet, is hidden from screen readers meanwhile.
       expect(await menuState(page)).toEqual({ expanded: 'true', controls: await sheet.getAttribute('id'), hidden: true })
-      // Its box, and the scrim's over the page.
-      const boxes = await sheet.evaluate((el) => {
+      // Its box, and the scrim's over the page: above the dock where one is drawn (WS02 step 7), which is the tab bar's height.
+      const boxes = await sheet.evaluate((el, site) => {
         const box = el.getBoundingClientRect()
         const scrim = document.querySelector('[data-slot="menu-sheet-scrim"]')!.getBoundingClientRect()
+        const dockBox = document.querySelector(site.dock)?.getBoundingClientRect() ?? null
         return {
           sheet: [box.x, box.y, box.width, box.height, box.right],
           scrim: [scrim.x, scrim.y, scrim.width, scrim.height],
           window: [window.innerWidth, window.innerHeight],
+          dock: dockBox ? [dockBox.top, dockBox.height] : null,
         }
-      })
+      }, SITE)
       expect(boxes.window).toEqual([width, height])
-      if (drawer) expect(boxes.sheet, 'the drawer: 400 pixels wide, at the right edge, the window\'s full height').toEqual([width - 400, 0, 400, height, width])
-      else expect(boxes.sheet, 'the sheet: the window\'s own box').toEqual([0, 0, width, height, width])
-      expect(boxes.scrim, 'the scrim over the whole window').toEqual([0, 0, width, height])
+      if (drawer) {
+        expect(boxes.dock, 'no dock from 768 pixels up').toBeNull()
+        expect(boxes.sheet, 'the drawer: 400 pixels wide, at the right edge, the window\'s full height').toEqual([width - 400, 0, 400, height, width])
+        expect(boxes.scrim, 'the scrim over the whole window').toEqual([0, 0, width, height])
+      } else {
+        expect(boxes.dock, 'the dock under the sheet').not.toBeNull()
+        const [dockTop, dockHeight] = boxes.dock!
+        expect(dockTop + dockHeight, 'the dock at the window\'s foot').toBe(height)
+        expect(boxes.sheet, 'the sheet: the window\'s box down to the dock\'s top').toEqual([0, 0, width, dockTop, width])
+        expect(boxes.scrim, 'the scrim down to the dock\'s top too, so the tab bar is not dimmed').toEqual([0, 0, width, dockTop])
+        await expect(menuTab(page)).toHaveText('Close')
+      }
       // The focus stays inside: Tab from its last control comes back to its first, and Shift+Tab goes the other way.
       const close = sheet.getByRole('button', { name: CLOSE_MENU })
       const last = sheetAppearance(page).getByRole('button', { name: 'Dark' })
@@ -2473,16 +2508,17 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
     expect(external).toEqual([])
   })
 
-  test('a11y-on, light and dark: the gold ring on the app bar\'s controls at 390 and the tablet row\'s at 900, and the look\'s own ring on the sheet\'s, each at 3:1 or more on its ground', async ({ page, external }, testInfo) => {
+  test('a11y-on, light and dark: the gold ring on the app bar\'s brand link at 390 and the tablet row\'s controls at 900, and the look\'s own ring on the sheet\'s, each at 3:1 or more on its ground', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new chrome\'s bars come with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [390, 900], 'the app bar, the tablet header and the Menu sheet')
     const seen: Record<string, unknown> = {}
     for (const scheme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme: scheme })
-      // The app bar's two controls, on its navy, and the sheet's on its light surface.
+      // The app bar's one control beside the tab bar, its brand link, on its navy, and the sheet's on its light surface;
+      // the Menu tab's ring, on the tab bar's own surface, is test/a11y/dock.spec.ts's (WS02 step 7).
       await page.setViewportSize({ width: 390, height: 844 })
       await openHeader(page, '/clubs')
-      for (const control of [brandLink(page), menuButtonOf(page)]) {
+      for (const control of [brandLink(page)]) {
         const r = await ringOnGround(page, control)
         seen[`${scheme} app bar ${r.name}`] = r
         expect([r.ring.style, r.ring.width], r.name).toEqual(['solid', '2px'])
@@ -2528,7 +2564,7 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
     expect(external).toEqual([])
   })
 
-  test('a11y-on: the window narrowed from 1280 to 1023 to 767 and widened back draws the desktop header, the tablet header and the app bar in place, one banner at a time, with no new page load and --header-h 64, 64, 56 and 64; a drawer open at 1023 closes as the window crosses 1024 or 767', async ({ page, external }, testInfo) => {
+  test('a11y-on: the window narrowed from 1280 to 1023 to 767 and widened back draws the desktop header, the tablet header and the app bar in place, one banner at a time, with no new page load and --header-h 64, 64, 56 and 64; a drawer open at 1023 closes as the window crosses 1024, and stays open as the sheet above the tab bar as it crosses 767', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new chrome\'s bars come with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [1280, 1023, 767], 'the desktop header, the tablet header and the app bar')
     await page.setViewportSize({ width: 1280, height: 800 })
@@ -2554,16 +2590,29 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
       await expect(brandLink(page)).toHaveAccessibleName(NEW_NAMES.home)
     }
     expect(await page.evaluate(() => (window as unknown as { fxSamePage?: boolean }).fxSamePage), 'the same page, never loaded again').toBe(true)
-    // A drawer open at 1023 closes as the window crosses 1024, where the desktop header has no Menu button, and as it crosses 767.
-    for (const crossed of [1024, 767]) {
-      await page.setViewportSize({ width: 1023, height: 800 })
-      await expect.poll(() => bar()).toEqual(steps[1][1])
-      await openSheet(page)
-      await page.setViewportSize({ width: crossed, height: 800 })
-      await expect(menuSheet(page), `crossing to ${crossed}`).toHaveCount(0)
-      await expect(page.getByRole('dialog')).toHaveCount(0)
-      await expect(siteHeader(page)).toHaveCount(1)
-    }
+    // A drawer open at 1023 closes as the window crosses 1024, where the desktop header has no Menu button.
+    await page.setViewportSize({ width: 1023, height: 800 })
+    await expect.poll(() => bar()).toEqual(steps[1][1])
+    await openSheet(page)
+    await page.setViewportSize({ width: 1024, height: 800 })
+    await expect(menuSheet(page), 'crossing to 1024').toHaveCount(0)
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await expect(siteHeader(page)).toHaveCount(1)
+    // As it crosses 767 the one sheet the bars and the tab bar share stays open (WS02 step 7): the app bar draws it
+    // as the full sheet above the tab bar, its Menu tab reading Close, and Esc closes it.
+    await page.setViewportSize({ width: 1023, height: 800 })
+    await expect.poll(() => bar()).toEqual(steps[1][1])
+    await openSheet(page)
+    await page.setViewportSize({ width: 767, height: 800 })
+    await expect.poll(() => bar(), 'crossing to 767').toEqual(steps[2][1])
+    await expect(menuSheet(page)).toHaveCount(1)
+    await expect(menuSheet(page)).toHaveAttribute('data-shape', 'full')
+    await expect(page.getByRole('dialog')).toHaveCount(1)
+    await expect(menuTab(page)).toHaveText('Close')
+    await page.keyboard.press('Escape')
+    await expect(menuSheet(page)).toHaveCount(0)
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+    await expect(siteHeader(page)).toHaveCount(1)
     expect(await page.evaluate(() => (window as unknown as { fxSamePage?: boolean }).fxSamePage), 'the same page, never loaded again').toBe(true)
     expect(external).toEqual([])
   })
@@ -2588,6 +2637,139 @@ test.describe('the tablet header, the phone\'s app bar and the Menu sheet with t
       expect(state, `${width}`).toEqual({ slot: null, form: null, appBars: 0, sheets: 0, written: '' })
       if (width === 390) await expect(siteHeader(page).getByRole('button', { name: OPEN_MENU }), 'today\'s menu button').toBeVisible()
     }
+    expect(external).toEqual([])
+  })
+})
+
+// ── The phone's tab bar and the Menu tab ───────────────────────────────────
+
+/**
+ * The tab bar's words as src/lib/nav.ts gives them: the browser tests cannot
+ * load that file, so they are written here, as SECTION_WORDS is, and
+ * test/unit/bottom-dock.test.tsx holds them to navTabs, navLabel and the
+ * Menu tab's words while the sheet is open. A helper, read only by checks
+ * marked as the new chrome's, since Menu is a name only the new chrome
+ * gives.
+ */
+const tabWords = () => ['Tournaments', CHROME_NAMES.clubs, CHROME_NAMES.logIn, NEW_NAMES.menu] as const
+const CLOSE_TAB = 'Close'
+
+/** The Menu tab as the page holds it, read through the helper's selector, since the open sheet hides it from assistive technology. */
+const tabState = (page: Page) =>
+  menuTab(page).evaluate((tab) => ({
+    words: (tab.textContent ?? '').trim(),
+    expanded: tab.getAttribute('aria-expanded'),
+    controls: tab.getAttribute('aria-controls'),
+    hidden: !!tab.closest('[aria-hidden="true"]'),
+  }))
+
+/** A press at the middle of a control's box, as a finger or a mouse makes it, never through a locator's click. */
+async function pressAt(page: Page, control: Locator) {
+  const box = await control.boundingBox()
+  expect(box, 'the control drawn').not.toBeNull()
+  await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2)
+}
+
+test.describe('the phone\'s tab bar and the Menu tab with the chrome on (WS02 step 7)', () => {
+  test.use({ reducedMotion: 'reduce' })
+
+  for (const width of [390, 320] as const) {
+    test(`a11y-on at ${width} by 844, light and dark: AC3, the Menu tab opens the sheet, reading Close with aria-expanded and naming the sheet while it is open, the focus on "Close menu" and held inside the sheet both ways; Esc, the close control and a press on the Close tab each close it with the focus back on the Menu tab, which reads Menu again`, async ({ page, external }, testInfo) => {
+      only(testInfo, ON, 'the tab bar comes with the chrome, on a11y-on')
+      onlyNew(testInfo, 'header', [width], 'the tab bar and the app bar\'s sheet')
+      await page.setViewportSize({ width, height: 844 })
+      const seen: Record<string, unknown> = {}
+      for (const scheme of ['light', 'dark'] as const) {
+        await page.emulateMedia({ colorScheme: scheme })
+        await openQuiet(page, '/')
+        await expect(tabBar(page)).toHaveCount(1)
+        await expect(tabBar(page).locator('a, button')).toHaveText([...tabWords()])
+        expect(await tabState(page), `${scheme}: shut`).toEqual({ words: NEW_NAMES.menu, expanded: 'false', controls: null, hidden: false })
+        await expect(menuTab(page)).toHaveAttribute('aria-haspopup', 'dialog')
+        const tab = menuTab(page)
+        const sheet = menuSheet(page)
+        const close = sheet.getByRole('button', { name: CLOSE_MENU })
+        const last = sheetAppearance(page).getByRole('button', { name: 'Dark' })
+        const ways = ['Esc', 'the close control', 'a press on the Close tab'] as const
+        for (const way of ways) {
+          await expect(page.locator('[data-slot="menu-sheet-scrim"]')).toHaveCount(0)
+          await pressAt(page, tab)
+          await expect(sheet).toBeVisible()
+          await expect(sheet).toHaveAttribute('data-shape', 'full')
+          await expect(close).toBeFocused()
+          // The tab reads Close and names the sheet, behind the sheet and hidden from screen readers with the rest of the page.
+          expect(await tabState(page), `${scheme}, ${way}: open`).toEqual({ words: CLOSE_TAB, expanded: 'true', controls: await sheet.getAttribute('id'), hidden: true })
+          // The focus stays inside: Tab from its last control comes back to its first, and Shift+Tab goes the other way.
+          await last.focus()
+          await page.keyboard.press('Tab')
+          await expect(close).toBeFocused()
+          await page.keyboard.press('Shift+Tab')
+          await expect(last).toBeFocused()
+          if (way === 'Esc') await page.keyboard.press('Escape')
+          else if (way === 'the close control') await close.click()
+          // A locator's click would wait for the tab to take presses, which it does not while the modal sheet holds them:
+          // the press at its place lands outside the sheet, which closes it, and opens nothing.
+          else await pressAt(page, tab)
+          await expect(sheet, `${scheme}, ${way}`).toHaveCount(0)
+          await expect(tab, `${scheme}, ${way}: the focus back on the Menu tab`).toBeFocused()
+          expect(await tabState(page), `${scheme}, ${way}: shut again`).toEqual({ words: NEW_NAMES.menu, expanded: 'false', controls: null, hidden: false })
+          await expect(page.getByRole('dialog')).toHaveCount(0)
+        }
+        seen[scheme] = await tabState(page)
+      }
+      await testInfo.attach(`menu-tab-${width}.json`, { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+      expect(external).toEqual([])
+    })
+  }
+
+  test('a11y-on at 390 by 844: AC6, Donate two taps away, the Menu tab and then the first of the sheet\'s three buttons, which opens today\'s donation dialog; Esc closes it with nothing sent, the focus back on the Menu tab', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the tab bar comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390], 'the tab bar and the app bar\'s sheet')
+    const sent: string[] = []
+    page.on('request', (request) => {
+      if (new URL(request.url()).pathname.startsWith('/api/donations')) sent.push(`${request.method()} ${request.url()}`)
+    })
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openQuiet(page, '/')
+    // The first tap: the Menu tab.
+    await pressAt(page, menuTab(page))
+    const sheet = menuSheet(page)
+    await expect(sheet).toBeVisible()
+    const buttons = sheet.locator('[data-slot="menu-sheet-buttons"] > *')
+    await expect(buttons).toHaveText([NEW_NAMES.donate, CHROME_NAMES.logIn, CHROME_NAMES.joinLca])
+    // The second tap: Donate, the first of the three buttons after the sections.
+    await pressAt(page, buttons.first())
+    const dialog = page.getByRole('dialog', { name: 'Support the Louisiana Chess Association' })
+    await expect(dialog).toBeVisible()
+    await expect(sheet).toHaveCount(0)
+    await expect(page.getByRole('dialog')).toHaveCount(1)
+    await page.keyboard.press('Escape')
+    await expect(dialog).toHaveCount(0)
+    await expect(menuTab(page)).toBeFocused()
+    expect(sent, 'nothing sent').toEqual([])
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844, signed out: AC16, Log in on the tab bar on /tournaments?when=weekend#list hands /login that whole address, path, query and hash, and on /forgot-password no page of its own, never the password page', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the tab bar comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390], 'the tab bar\'s Log in')
+    // The router keeps a location's state in the page's history entry, under usr.
+    const handed = () => page.evaluate(() => ((window.history.state as { usr?: unknown } | null)?.usr ?? null))
+    const logIn = () => tabBar(page).getByRole('link', { name: CHROME_NAMES.logIn, exact: true })
+    const address = '/tournaments?when=weekend#list'
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openHeader(page, address)
+    await expect(logIn()).toHaveAttribute('href', '/login')
+    await pressAt(page, logIn())
+    await expect(page).toHaveURL(/\/login$/)
+    expect(await handed()).toEqual({ from: address })
+    // On /login the Log in tab is the current tab.
+    await expect(logIn()).toHaveAttribute('aria-current', 'page')
+    // On a password page reached on its own, the tab hands /login no page, so signing in never brings the person back to a password form.
+    await openHeader(page, '/forgot-password')
+    await pressAt(page, logIn())
+    await expect(page).toHaveURL(/\/login$/)
+    expect(((await handed()) as { from?: unknown } | null)?.from).toBeUndefined()
     expect(external).toEqual([])
   })
 })

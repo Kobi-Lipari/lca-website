@@ -83,10 +83,13 @@ interface Where {
  * The page Log in hands /login to bring the person back to once they are
  * signed in, which src/pages/LoginPage.tsx reads as one string: the page they
  * are on, its query and its hash too; on the sign-in pages, the page that
- * page was handed, or nothing, so they land on the dashboard.
+ * page was handed, or nothing, so they land on the dashboard. A sign-in page
+ * is known the way the router finds it, whatever its letters' case and with
+ * or without slashes at its end, so /Login and /login/ are /login.
  */
 export function logInFrom(where: Where): string | undefined {
-  if (SIGN_IN_PAGES.includes(where.pathname)) return (where.state as { from?: string } | null)?.from
+  const page = where.pathname.replace(/\/+$/, '').toLowerCase() || '/'
+  if (SIGN_IN_PAGES.includes(page)) return (where.state as { from?: string } | null)?.from
   return `${where.pathname}${where.search}${where.hash}`
 }
 

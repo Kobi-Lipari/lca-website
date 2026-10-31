@@ -31,10 +31,9 @@
 // phone sheet and the phone tab bar (section 1 and WS01's scope-aware guard):
 // #705718 as the About menu's "You are here" label, #866a1e as text at 13px
 // or more on the sheet's #fbfaf6 row, and #866a1e as the current tab's top
-// bar. The About menu (WS02 step 5) and the sheet (WS02 step 6) are built,
-// and each entry matches its one use, in its context; the tab bar is not
-// built yet (WS02 step 7), so its entry matches nothing. The guard says so,
-// and fails when a use does not keep to its context.
+// bar. The About menu (WS02 step 5), the sheet (WS02 step 6) and the tab bar
+// (WS02 step 7) are built, and each entry matches its one use, in its
+// context. The guard fails when a use does not keep to its context.
 
 export interface GoldAllowEntry {
   /** The TSX file, relative to the repository root. */
@@ -179,6 +178,6 @@ export const WS02_GOLD: Ws02GoldEntry[] = [
     file: 'src/components/layout/BottomTabs.tsx',
     use: 'bar',
     reason:
-      'The phone tab bar marks the current tab with a 3px top bar in #866a1e, a line and not words. The tab\'s label stays navy, and brand gold #c8a94a is never its text.',
+      'The phone tab bar marks the current tab with a 3px top bar in #866a1e, a line and not words, on the tab bar\'s surface (bg-surface, white in the light look) above its line in the look\'s hairline token (--hairline, #e5e7ed), 5.13:1 on the white. The tab\'s label stays navy, and brand gold #c8a94a is never its text.',
   },
 ]

@@ -264,7 +264,9 @@ describe('the Menu sheet, from the app bar', () => {
     const menu = pressMenu()
     const sheet = await screen.findByRole('dialog', { name: 'Menu' })
     expect(sheet.getAttribute('data-shape')).toBe('full')
-    expect(sheet.className.split(/\s+/)).toContain('inset-0')
+    // The window from its top to the dock's, which, drawn on its own as here, is unset: the whole window.
+    expect(sheet.className.split(/\s+/)).toEqual(expect.arrayContaining(['inset-x-0', 'top-0', 'bottom-[var(--bottom-chrome-h,0px)]']))
+    expect(document.documentElement.style.getPropertyValue('--bottom-chrome-h')).toBe('')
     expect(menu.getAttribute('aria-expanded')).toBe('true')
     expect(menu.getAttribute('aria-controls')).toBe(sheet.id)
     expect(sheet.id).not.toBe('')

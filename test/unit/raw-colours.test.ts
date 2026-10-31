@@ -20,10 +20,11 @@
 // and the check-in toggle's hover line), or an entry of
 // test/unit/fixtures/raw-colours-allowlist.json, with its reason and the
 // number of uses, which must match: a new use fails, and a removed use must
-// take its count down, so the list only shrinks, but for the two times it
+// take its count down, so the list only shrinks, but for the three times it
 // grew, by WS02's planned gold entries (WS02 step 5's two, the About menu's
-// "You are here" and its row's tint, and WS02 step 6's two, the Menu sheet's
-// "You are here" and its section's tint), each held in its context by
+// "You are here" and its row's tint, WS02 step 6's two, the Menu sheet's
+// "You are here" and its section's tint, and WS02 step 7's one, the phone
+// tab bar's current tab's bar), each held in its context by
 // test/unit/goldText.test.ts, with WS01's entries unchanged. A keep entry
 // that reaches further allows nothing here, because it would let any number
 // of new uses through: the translucent white veils step 23's map keeps in
@@ -37,7 +38,8 @@
 // fails in the very file that held it, and that the gold tokens are not raw.
 // The gold hex classes the list allows since are WS02's, the About menu's
 // "You are here" and the Menu sheet's, which the gold guard places in their
-// context.
+// context, and the tab bar's current tab's bar, a line the guard places in
+// its file.
 //
 // Class strings are read with the codemod's own parser: string literals,
 // template text, and the quoted strings of commented-out code. Club colours
@@ -171,12 +173,13 @@ describe('the raw colour ratchet on the tree', () => {
     // text classes to the gold tokens), the translucent white veils on navy
     // (34), and the classes the status map keeps for a whole file (5: the
     // print page's row rules 2 and the dots 3); and, written apart, the two
-    // hex classes of the About menu's gold, which WS02 step 5 added (2), and
-    // the two of the Menu sheet's gold, which WS02 step 6 added (2).
+    // hex classes of the About menu's gold, which WS02 step 5 added (2), the
+    // two of the Menu sheet's gold, which WS02 step 6 added (2), and the one
+    // of the tab bar's gold line, which WS02 step 7 added (1).
     const keptRaw = [...result.kept].filter(([k]) => result.uses.some((u) => key(u.file, u.token) === k)).reduce((a, [, n]) => a + n, 0)
     const fromList = allowlist.reduce((a, e) => a + e.count, 0)
     expect(keptRaw).toBe(5 + 18 + 1 + 7 + 1)
-    expect(fromList).toBe(10 + 34 + 5 + 2 + 2)
+    expect(fromList).toBe(10 + 34 + 5 + 2 + 2 + 1)
     expect(result.uses.length).toBe(keptRaw + fromList)
     const veils = allowlist.filter((e) => parseToken(e.class).utility === 'bg-white')
     expect(veils.reduce((a, e) => a + e.count, 0)).toBe(34)
@@ -216,9 +219,10 @@ describe('the raw colour ratchet on the tree', () => {
 
   it('the hex colours left are the banners\' fixed grounds, Facebook\'s blue and the map\'s paper: no gold text (step 25)', () => {
     // The WS02 gold uses, kept apart from the hexes at the close of WS01: WS02
-    // step 5's About menu, its "You are here" and its row's tint, and WS02
-    // step 6's Menu sheet, its "You are here" and its section's tint.
-    const WS02_FILES = ['src/components/layout/AboutMenu.tsx', 'src/components/layout/MobileMenu.tsx']
+    // step 5's About menu, its "You are here" and its row's tint, WS02 step
+    // 6's Menu sheet, its "You are here" and its section's tint, and WS02
+    // step 7's tab bar, its current tab's bar.
+    const WS02_FILES = ['src/components/layout/AboutMenu.tsx', 'src/components/layout/BottomTabs.tsx', 'src/components/layout/MobileMenu.tsx']
     const ws02 = result.uses.filter((u) => u.kind === 'a hex colour' && WS02_FILES.includes(u.file))
     const hexUses = result.uses.filter((u) => u.kind === 'a hex colour' && !WS02_FILES.includes(u.file))
     const hexes = new Set(hexUses.map((u) => u.token.match(/#[0-9a-fA-F]+/)![0].toLowerCase()))
@@ -227,13 +231,14 @@ describe('the raw colour ratchet on the tree', () => {
     expect(hexUses).toHaveLength(10)
     expect(new Set(hexUses.map((u) => u.file)).size).toBe(7)
     expect(allowlist.some((e) => /step 25/.test(e.reason))).toBe(false)
-    // WS02's beside them: #705718, #866a1e, #f3eedc and #fbfaf6, 4 classes in 2 files, each with its entry.
+    // WS02's beside them: #705718, #866a1e, #f3eedc and #fbfaf6, 5 classes in 3 files, each with its entry.
     expect([...new Set(ws02.map((u) => u.token.match(/#[0-9a-fA-F]+/)![0].toLowerCase()))].sort()).toEqual(['#705718', '#866a1e', '#f3eedc', '#fbfaf6'])
-    expect(ws02).toHaveLength(4)
-    expect(new Set(ws02.map((u) => u.file)).size).toBe(2)
+    expect(ws02).toHaveLength(5)
+    expect(new Set(ws02.map((u) => u.file)).size).toBe(3)
     expect(allowlist.filter((e) => WS02_FILES.includes(e.file)).map((e) => `${e.class} ${e.count}`).sort()).toEqual([
       'bg-[#f3eedc] 1',
       'bg-[#fbfaf6] 1',
+      'border-t-[#866a1e] 1',
       'text-[#705718] 1',
       'text-[#866a1e] 1',
     ])

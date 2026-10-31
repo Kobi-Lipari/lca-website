@@ -10,8 +10,10 @@
 // Nothing here draws anything. The page frame reads the chrome's condition
 // (src/App.tsx), and the new header in its desktop and tablet forms, the
 // phone's app bar, the About and My LCA menus and the Menu sheet read the
-// sections, the rows and the utilities (src/components/layout); the tabs and
-// the footer that read the rest come later, behind newNav.
+// sections, the rows and the utilities (src/components/layout); the phone's
+// dock and its tab bar read the tabs, the current tab and the pages that
+// hide the tab bar; the footer that reads the rest comes later, behind
+// newNav.
 // Everything that depends on a switch takes the switches as its last
 // argument, which defaults to FEATURES, so a test can try any combination.
 // Icons are names, not components, so the model stays plain data; the part

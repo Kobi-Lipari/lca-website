@@ -58,10 +58,11 @@
 //   but the phone sheet's "You are here" on its #fbfaf6 row, or a line or
 //   fill anywhere but the phone tab bar's current tab.
 // The last two are WS02's parts, listed in the fixture as WS02_GOLD. WS02
-// step 5 built the About menu and WS02 step 6 the Menu sheet, whose entries
-// each match their one use, in its context; the tab bar is not built yet, so
-// its entry matches nothing, which the guard says. Each built part must keep
-// to its context or the guard fails.
+// step 5 built the About menu, WS02 step 6 the Menu sheet and WS02 step 7
+// the tab bar, whose entries each match their one use, in its context: the
+// tab bar's is the current tab's bar, a line and not words, on the tab
+// bar's surface above the look's hairline. Each built part must keep to its
+// context or the guard fails.
 //
 // Every failure is planted in a temporary tree first, with the class names
 // put together when the test runs, so Tailwind, which reads this file, builds
@@ -837,24 +838,29 @@ describe('the gold guard on the tree', () => {
     expect(read('functions/db/schema.ts')).toContain(`color: text().default('${BRAND_GOLD}')`)
   })
 
-  it('the WS02 entries: the About menu\'s "You are here" and the Menu sheet\'s each match in their file, beside their words, at their size and on their ground; the tab bar is not built, and neither gold appears in the code of any other TSX file', () => {
-    // WS02 step 5 built the About menu with its one gold use and WS02 step 6 the sheet with its own; the tab bar comes with WS02 step 7.
+  it('the WS02 entries: the About menu\'s "You are here" and the Menu sheet\'s each match in their file, beside their words, at their size and on their ground, and the tab bar\'s current tab its bar in its file, a line and not words; neither gold appears in the code of any other TSX file', () => {
+    // WS02 step 5 built the About menu with its one gold use, WS02 step 6 the sheet with its own and WS02 step 7 the tab bar with its bar.
     const about = WS02_GOLD.find((w) => w.file.endsWith('/AboutMenu.tsx'))!
+    const tabBar = WS02_GOLD.find((w) => w.file.endsWith('/BottomTabs.tsx'))!
     const sheet = WS02_GOLD.find((w) => w.file.endsWith('/MobileMenu.tsx'))!
     const lineOf = (file: string, cls: string) => read(file).split('\n').findIndex((l) => l.includes(cls)) + 1
     const aboutLine = lineOf(about.file, c('text-[#', '705718]'))
+    const tabBarLine = lineOf(tabBar.file, c('border-t-[#', '866a1e]'))
     const sheetLine = lineOf(sheet.file, c('text-[#', '866a1e]'))
-    expect(aboutLine).toBeGreaterThan(0)
-    expect(sheetLine).toBeGreaterThan(0)
-    expect(result.ws02Matched).toEqual([`${about.file}:${aboutLine}`, `${sheet.file}:${sheetLine}`])
-    for (const w of WS02_GOLD) expect(result.tree.files.has(w.file), w.file).toBe(w === about || w === sheet)
+    for (const line of [aboutLine, tabBarLine, sheetLine]) expect(line).toBeGreaterThan(0)
+    // In the order the guard reads the files, by their paths.
+    expect(result.ws02Matched).toEqual([`${about.file}:${aboutLine}`, `${tabBar.file}:${tabBarLine}`, `${sheet.file}:${sheetLine}`])
+    for (const w of WS02_GOLD) expect(result.tree.files.has(w.file), w.file).toBe(true)
     for (const parsed of result.tree.files.values()) {
       const heritage = hexUses(parsed, HERITAGE_GOLD)
       const dark = hexUses(parsed, DARK_GOLD)
       expect(heritage.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(parsed.file === about.file ? [`${about.file}:${aboutLine} text`] : [])
-      expect(dark.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(parsed.file === sheet.file ? [`${sheet.file}:${sheetLine} text`] : [])
+      const darkHere = parsed.file === sheet.file ? [`${sheet.file}:${sheetLine} text`] : parsed.file === tabBar.file ? [`${tabBar.file}:${tabBarLine} bar`] : []
+      expect(dark.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(darkHere)
       for (const use of heritage) expect(inContext(use, about), `${use.file}:${use.line}`).toBe(true)
-      for (const use of dark) expect(inContext(use, sheet), `${use.file}:${use.line}`).toBe(true)
+      // The sheet's words in their context; the tab bar's bar is a line, which the guard fits by its use alone.
+      for (const use of dark.filter((u) => u.as === 'text')) expect(inContext(use, sheet), `${use.file}:${use.line}`).toBe(true)
+      for (const use of dark.filter((u) => u.as === 'bar')) expect([use.file, tabBar.use], `${use.file}:${use.line}`).toEqual([tabBar.file, 'bar'])
     }
   })
 

@@ -17,7 +17,8 @@
 //   gives;
 // - the bordered Menu button, which opens the Menu sheet as a drawer from
 //   the right, the focus back on it after Esc, the drawer closed when the
-//   page changes or the window widens into the desktop form;
+//   page changes or the window widens into the desktop form, the focus then
+//   on the brand link, the header's first control (WS02 step 7);
 // - when the row is tight, the two-line name hides and the link keeps its
 //   name, and Donate never leaves the bar (the widths stubbed, as jsdom lays
 //   nothing out);
@@ -267,6 +268,20 @@ describe('the Menu button and the drawer', () => {
     expect(header().getAttribute('data-form')).toBe('tablet')
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(menuButton().getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('gives the focus to the brand link, the header\'s first control, when the window widens into the desktop form with the drawer open, never to the page\'s body (WS02 step 7)', async () => {
+    draw('/clubs')
+    const menu = menuButton()
+    menu.focus()
+    fireEvent.click(menu)
+    const drawer = await screen.findByRole('dialog', { name: 'Menu' })
+    await waitFor(() => expect(document.activeElement).toBe(within(drawer).getByRole('button', { name: 'Close menu' })))
+    fireEvent.click(screen.getByRole('button', { name: 'Change the form', hidden: true }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    expect(bar().queryByRole('button', { name: 'Menu' })).toBeNull()
+    await waitFor(() => expect(document.activeElement).toBe(bar().getByRole('link', { name: HOME })))
+    expect(document.activeElement).not.toBe(document.body)
   })
 
   it('opens the donation dialog from the drawer\'s Donate, the focus back on Menu once it closes', async () => {

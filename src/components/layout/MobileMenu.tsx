@@ -7,8 +7,11 @@
 // and close control as they are, and only the content comes from the
 // primitive itself, since the wrapper's content is a centred box with a
 // close button of its own. Its shape comes from the bar that opens it: the
-// whole window from the app bar, and a drawer 400 pixels wide from the right
-// from the tablet header, over a scrim.
+// window from the app bar, from its top down to the phone's dock where one is
+// drawn, so the tab bar stays in view with its Menu tab reading Close (WS02
+// step 7), and a drawer 400 pixels wide from the right from the tablet
+// header, over a scrim that leaves the dock undimmed as well. Each keeps its
+// words and controls inside a phone's safe area.
 //
 // The primitive keeps the focus inside the sheet while it is open, closes
 // it on Esc and on a press outside it, hides the page behind it from
@@ -30,6 +33,9 @@
 //   section the page is in starts open each time the sheet opens, on its
 //   own tint with "You are here" beside its name, hidden from screen
 //   readers, and the link of the page itself carries aria-current="page";
+//   on a page the section owns that none of its links is, the section's own
+//   control carries aria-current="true" instead, so a screen reader still
+//   hears which section the page is in (WS02 step 7);
 // - the bar's buttons in the bar's order: Donate, Log in or My LCA, and
 //   Join LCA or Renew by the member's status, the gold Button;
 // - for someone signed in, today's role rows and the Admin row the person
@@ -65,7 +71,7 @@ import { cn } from '@/lib/utils'
 export interface MobileMenuProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  /** The whole window, from the phone's app bar, or a drawer 400 pixels wide from the right, from the tablet header. */
+  /** The window down to the phone's dock, from the phone's app bar, or a drawer 400 pixels wide from the right, from the tablet header. */
   shape: 'full' | 'drawer'
   /** The sheet's id, which the Menu button's aria-controls names while it is open. */
   id: string
@@ -75,11 +81,18 @@ export interface MobileMenuProps {
   onDonate: () => void
 }
 
-/** The sheet's two shapes. Both are a column the height of the window, the list scrolling inside it. */
+/**
+ * The sheet's two shapes, each a column the list scrolls inside. The full
+ * sheet runs from the window's top to the top of the phone's dock, the
+ * dock's height, --bottom-chrome-h, which is unset where no dock is drawn,
+ * so the sheet is then the whole window; its words and controls keep inside
+ * a phone's safe area at the top and the sides. The drawer is the window's
+ * height, against its right edge, inside the safe area on that side.
+ */
 const SHAPES = {
-  full: 'inset-0',
+  full: 'inset-x-0 top-0 bottom-[var(--bottom-chrome-h,0px)] pt-[env(safe-area-inset-top)] pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)]',
   drawer:
-    'inset-y-0 right-0 w-[400px] max-w-full border-l border-hairline shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right',
+    'inset-y-0 right-0 w-[400px] max-w-full border-l border-hairline pr-[env(safe-area-inset-right)] shadow-xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=open]:slide-in-from-right data-[state=closed]:slide-out-to-right',
 } as const
 
 /** The close control's name: the visible word, Close, and what it closes. */
@@ -156,7 +169,8 @@ export function MobileMenu({ open, onOpenChange, shape, id, returnFocus, onDonat
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogPortal>
-        <DialogOverlay data-slot="menu-sheet-scrim" className="bg-black/50" />
+        {/* The scrim stops at the dock's top too, so the tab bar is never dimmed. */}
+        <DialogOverlay data-slot="menu-sheet-scrim" className="bottom-[var(--bottom-chrome-h,0px)] bg-black/50" />
         <SheetContent
           id={id}
           data-slot="menu-sheet"
@@ -211,6 +225,8 @@ export function MobileMenu({ open, onOpenChange, shape, id, returnFocus, onDonat
                 const isShown = disclosure && shown.has(section.section)
                 const listId = `${listIds}-${section.section}`
                 const marked = here ? currentLink(location.pathname, disclosure ? entries : [page]) : null
+                // On a page the section owns that none of its links is, the section's own control says it is current.
+                const sectionCurrent = here && !marked ? 'true' : undefined
                 const words = (
                   <span className={cn('flex flex-1 flex-col leading-tight', here && 'pr-24')}>
                     <span>{page.label}</span>
@@ -225,6 +241,7 @@ export function MobileMenu({ open, onOpenChange, shape, id, returnFocus, onDonat
                         type="button"
                         aria-expanded={isShown}
                         aria-controls={isShown ? listId : undefined}
+                        aria-current={sectionCurrent}
                         onClick={() => toggle(section.section)}
                         className={cn(HEAD, 'w-[calc(100%-0.5rem)] text-left')}
                       >
@@ -232,7 +249,7 @@ export function MobileMenu({ open, onOpenChange, shape, id, returnFocus, onDonat
                         <ChevronDown aria-hidden="true" className={cn('size-5 flex-none transition-transform', isShown && 'rotate-180')} />
                       </button>
                     ) : (
-                      <Link to={page.href ?? '/'} aria-current={marked ? 'page' : undefined} onClick={close} className={HEAD}>
+                      <Link to={page.href ?? '/'} aria-current={marked ? 'page' : sectionCurrent} onClick={close} className={HEAD}>
                         {words}
                       </Link>
                     )}

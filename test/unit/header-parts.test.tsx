@@ -9,7 +9,9 @@
 //   the same letters among them;
 // - the page Log in hands /login: the page the person is on, its query and
 //   its hash; on a sign-in page, the page that page was handed, or nothing,
-//   whatever else its state holds, and never the sign-in page itself;
+//   whatever else its state holds, and never the sign-in page itself, a
+//   sign-in page known as the router knows it, whatever its letters' case
+//   and with slashes at its end, since WS02 step 7;
 // - the Join slot by the member's status: Renew once a membership has
 //   expired, Join LCA for someone with no membership, and nothing for an
 //   active member, a status the site does not know, a member not read yet
@@ -87,6 +89,15 @@ describe('the page Log in hands /login', () => {
     for (const page of ['/login-help', '/loginx', '/forgot-password-old', '/reset-passwords', '/logins/fx']) {
       expect(logInFrom(at(page, { state: { from: '/clubs' } })), page).toBe(page)
     }
+  })
+
+  it.each(['/Login', '/login/', '/FORGOT-PASSWORD', '/reset-password//', '/Reset-Password/'])('knows %s for a sign-in page as the router does, whatever its letters\' case and with slashes at its end, and hands on the page it was handed (WS02 step 7)', (page) => {
+    expect(logInFrom(at(page, { state: { from: '/clubs?region=north#map' } }))).toBe('/clubs?region=north#map')
+    expect(logInFrom(at(page, { search: '?email=fx%40example.org', hash: '#access_token=fx-token' }))).toBeUndefined()
+  })
+
+  it.each(['/login-help', '/logins', '/Login-Help/'])('still takes %s, which only begins with a sign-in page\'s letters, for a page of its own, its query and hash handed with it (WS02 step 7)', (page) => {
+    expect(logInFrom(at(page, { search: '?q=fx', hash: '#top', state: { from: '/clubs' } }))).toBe(`${page}?q=fx#top`)
   })
 })
 

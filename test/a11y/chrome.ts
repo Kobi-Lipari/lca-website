@@ -14,7 +14,11 @@
 //   role, its name or its data-slot. A footer that is not drawn has no role,
 //   so code that reads it while it may be hidden reads SITE.footer instead.
 //   The Menu sheet the new bars open is drawn outside the banner, and is
-//   found on the page by its own locators.
+//   found on the page by its own locators. So are the phone's dock and its
+//   tab bar (WS02 step 7), fixed to the window's foot after the footer, and
+//   the Menu tab in it; menuControl is the control a spec opens the sheet
+//   with at any width, the Menu tab while the tab bar is drawn and the bar's
+//   bordered Menu button otherwise.
 // - The header's names in three lists: CHROME_NAMES, which today's header
 //   and the new header from 1024 pixels up give, TODAYS_NAMES, which only
 //   today's gives, and NEW_NAMES, which only the new chrome's bars and its
@@ -32,9 +36,12 @@
 // width (the desktop header from 1024 pixels, the tablet header from 768
 // and the phone's app bar below), and today's footer until WS02 step 8; the
 // a11y-off build keeps today's chrome at every width, since it turns no
-// switch on. Each WS02 step that draws a new part changes DRAWN and
-// test/unit/chrome-helper.test.tsx together: WS02 step 8 the footer on
-// a11y-on at every width.
+// switch on. Each WS02 step that draws a new part of the header or the
+// footer changes DRAWN and test/unit/chrome-helper.test.tsx together: WS02
+// step 8 the footer on a11y-on at every width. The dock is neither, so
+// DRAWN does not answer for it: the a11y-on build draws it below 768 pixels
+// wherever it does not hide, which a spec reads through dock, tabBar and
+// menuTab, and the a11y-off build never draws it.
 //
 // No project collects this file (its name ends neither in .spec.ts nor in
 // baseline.ts), and it imports only types from Playwright and from
@@ -57,6 +64,10 @@ export const SITE = {
   logo: '[data-slot="lca-logo"]',
   /** A link to one of the site's own pages, as the footer holds them. */
   footerLinks: 'a[href^="/"]',
+  /** The phone's dock, fixed to the window's foot below 768 pixels with the chrome on (WS02 step 7). */
+  dock: '[data-slot="bottom-dock"]',
+  /** The tab bar in the dock, the nav named Main below 768 pixels. */
+  tabBar: '[data-slot="tab-bar"]',
 } as const
 
 /** SITE's type, for the code a spec runs inside the page. */
@@ -138,6 +149,27 @@ export const NEW_NAMES = {
 export const menuSheet = (page: Page): Locator => page.getByRole('dialog', { name: NEW_NAMES.menu, exact: true })
 /** The theme switch inside the open Menu sheet: the group named Appearance there. */
 export const sheetAppearance = (page: Page): Locator => menuSheet(page).getByRole('group', { name: 'Appearance', exact: true })
+
+/** The phone's dock, while it is drawn: nothing at all where it hides (WS02 step 7). */
+export const dock = (page: Page): Locator => page.locator(SITE.dock)
+/** The tab bar in the dock, by its slot: the header's nav from 768 pixels up is named Main too. */
+export const tabBar = (page: Page): Locator => page.locator(SITE.tabBar)
+/**
+ * The Menu tab, the tab bar's button that opens the Menu sheet, named Menu
+ * while the sheet is shut and Close while it is open. It is read through
+ * SITE.tabBar, a selector, since the open sheet hides the rest of the page
+ * from assistive technology and a role locator would find no Close tab.
+ */
+export const menuTab = (page: Page): Locator => tabBar(page).locator('button[aria-haspopup="dialog"]')
+/**
+ * The control that opens the Menu sheet at a window's width: the Menu tab
+ * while the tab bar is drawn, and the bordered Menu button of the tablet
+ * header or the phone's app bar otherwise (where the dock hides, the app
+ * bar draws its own again). Read by selectors, as menuTab is, the last in
+ * the page's order, since the dock comes after the bars.
+ */
+export const menuControl = (page: Page): Locator =>
+  page.locator(`${SITE.tabBar} button[aria-haspopup="dialog"], [data-slot="site-header"] button[aria-haspopup="dialog"], [data-slot="app-bar"] button[aria-haspopup="dialog"]`).last()
 
 /** A test build, by its project name (A11Y_VARIANTS in ./global-setup). */
 export type Build = A11yVariant['name']

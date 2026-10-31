@@ -23,7 +23,11 @@
 //   the new chrome's bars, SiteHeader.tsx in its desktop and tablet forms
 //   and the phone's app bar, MobileAppBar.tsx, which its selectors and
 //   locators find as they find today's, and the open Menu sheet and its
-//   theme switch, which menuSheet and sheetAppearance find by name exactly.
+//   theme switch, which menuSheet and sheetAppearance find by name exactly;
+//   and since WS02 step 7 the phone's dock, its tab bar and its Menu tab,
+//   which dock, tabBar and menuTab find by their slots, open sheet or not,
+//   and menuControl, the Menu tab while the tab bar is drawn and the bar's
+//   Menu button otherwise.
 //
 // Each WS02 step that draws a new part of the chrome on a test build
 // changes DRAWN in test/a11y/chrome.ts and the first block here together.
@@ -38,8 +42,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
 import {
-  CHROME_NAMES, DRAWN, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, chromeAt, footerImages, footerLogo, headerImages, ifNew, ifToday,
-  menuSheet, newAt, rookMark, sheetAppearance, siteFooter, siteHeader, todayAt, widthOf, type Chrome,
+  CHROME_NAMES, DRAWN, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, chromeAt, dock, footerImages, footerLogo, headerImages, ifNew, ifToday,
+  menuControl, menuSheet, menuTab, newAt, rookMark, sheetAppearance, siteFooter, siteHeader, tabBar, todayAt, widthOf, type Chrome,
 } from '../a11y/chrome'
 
 const flags = vi.hoisted(() => ({ newLook: false }))
@@ -61,6 +65,7 @@ const { Navbar } = await import('@/components/layout/Navbar')
 const { Footer } = await import('@/components/layout/Footer')
 const { SiteHeader } = await import('@/components/layout/SiteHeader')
 const { MobileAppBar } = await import('@/components/layout/MobileAppBar')
+const { BottomDock, DockProvider } = await import('@/components/layout/BottomDock')
 
 const ROOT = resolve(__dirname, '../..')
 /**
@@ -101,6 +106,7 @@ interface Found {
   all: () => Element[]
   locator: (css: string) => Found
   getByRole: (role: string, options?: ByRoleOptions) => Found
+  last: () => Found
 }
 /** A locator over this document: each one resolves to the elements it finds, as Playwright's would on the page. */
 function found(find: () => Element[]): Found {
@@ -108,6 +114,7 @@ function found(find: () => Element[]): Found {
     all: find,
     locator: (css) => found(() => find().flatMap((el) => [...el.querySelectorAll(css)])),
     getByRole: (role, options) => found(() => find().flatMap((el) => within(el as HTMLElement).queryAllByRole(role, options))),
+    last: () => found(() => find().slice(-1)),
   }
 }
 /** A stand-in for a Playwright page over this document. */
@@ -455,5 +462,70 @@ describe('what the helper finds in the new header', () => {
     const source = readFileSync(join(ROOT, 'test/a11y/chrome.ts'), 'utf8')
     expect(source).toContain("export const menuSheet = (page: Page): Locator => page.getByRole('dialog', { name: NEW_NAMES.menu, exact: true })")
     expect(source).toContain("export const sheetAppearance = (page: Page): Locator => menuSheet(page).getByRole('group', { name: 'Appearance', exact: true })")
+  })
+})
+
+describe('what the helper finds of the phone\'s dock (WS02 step 7)', () => {
+  /** The phone's bars as the page frame draws them with the chrome on: the app bar, the page and the dock, in one provider. */
+  function drawDock(path = '/clubs') {
+    flags.newLook = true
+    return render(
+      <AuthContext.Provider value={SIGNED_OUT}>
+        <MemoryRouter initialEntries={[path]}>
+          <DockProvider>
+            <MobileAppBar />
+            <main className="flex-1" />
+            <Footer />
+            <BottomDock />
+          </DockProvider>
+        </MemoryRouter>
+      </AuthContext.Provider>,
+    ).container
+  }
+
+  it('finds the one dock and its tab bar by their slots, the tab bar the nav named Main, after the footer', () => {
+    const container = drawDock()
+    expect(all(dock(page))).toEqual([...container.querySelectorAll(SITE.dock)])
+    expect(all(dock(page))).toHaveLength(1)
+    expect(all(tabBar(page))).toEqual([screen.getByRole('navigation', { name: 'Main' })])
+    expect(all(dock(page))[0].contains(all(tabBar(page))[0])).toBe(true)
+    const footer = container.querySelector(SITE.footer)!
+    expect(footer.compareDocumentPosition(all(dock(page))[0]) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0)
+  })
+
+  it('finds the Menu tab by menuTab, Menu while the sheet is shut and Close while it is open, when the open sheet hides it from a role locator', async () => {
+    drawDock()
+    const [tab] = all(menuTab(page))
+    expect(all(menuTab(page))).toHaveLength(1)
+    expect(tab.textContent).toBe(NEW_NAMES.menu)
+    fireEvent.click(tab)
+    await screen.findByRole('dialog', { name: NEW_NAMES.menu })
+    expect(all(menuTab(page))).toEqual([tab])
+    expect(tab.textContent).toBe('Close')
+    // A role locator finds no tab bar while the sheet is open: what is behind it is hidden from assistive technology.
+    expect(screen.queryAllByRole('navigation', { name: 'Main' })).toEqual([])
+  })
+
+  it('finds by menuControl the Menu tab while the tab bar is drawn, and the bar\'s Menu button where the dock hides', () => {
+    drawDock('/clubs')
+    expect(all(menuControl(page))).toEqual(all(menuTab(page)))
+    expect(banner().queryAllByRole('button', { name: NEW_NAMES.menu })).toEqual([])
+    cleanup()
+    drawDock('/donate/success')
+    expect(all(dock(page))).toEqual([])
+    expect(all(menuTab(page))).toEqual([])
+    expect(all(menuControl(page))).toEqual(banner().getAllByRole('button', { name: NEW_NAMES.menu }))
+    cleanup()
+    drawBar('tablet', SIGNED_OUT)
+    expect(all(menuControl(page))).toEqual(banner().getAllByRole('button', { name: NEW_NAMES.menu }))
+  })
+
+  it('builds each of the four from the slots and the dialog button, never from a name', () => {
+    const source = readFileSync(join(ROOT, 'test/a11y/chrome.ts'), 'utf8')
+    expect(source).toContain("export const dock = (page: Page): Locator => page.locator(SITE.dock)")
+    expect(source).toContain("export const tabBar = (page: Page): Locator => page.locator(SITE.tabBar)")
+    expect(source).toContain("export const menuTab = (page: Page): Locator => tabBar(page).locator('button[aria-haspopup=\"dialog\"]')")
+    expect(source).toContain('page.locator(`${SITE.tabBar} button[aria-haspopup="dialog"], [data-slot="site-header"] button[aria-haspopup="dialog"], [data-slot="app-bar"] button[aria-haspopup="dialog"]`).last()')
+    expect([SITE.dock, SITE.tabBar]).toEqual(['[data-slot="bottom-dock"]', '[data-slot="tab-bar"]'])
   })
 })

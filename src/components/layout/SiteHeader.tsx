@@ -26,7 +26,13 @@
 //   the gold button, by the member's status, and in the tablet form the
 //   bordered Menu button, which opens the Menu sheet
 //   (src/components/layout/MobileMenu.tsx) as a drawer from the right, where
-//   Join LCA and Renew are.
+//   Join LCA and Renew are. In the page frame the sheet is the one the dock's
+//   provider holds (src/components/layout/BottomDock.tsx), which the phone's
+//   app bar and its Menu tab open too, so a drawer open as the window
+//   narrows below 768 pixels stays open as the phone's sheet, and the
+//   phone's sheet stays open as the drawer; the window widening into the
+//   desktop form closes it, with the focus on the brand link, since that form
+//   has no Menu button to come back to.
 //
 // Donate opens the donation dialog until the Give page exists behind
 // newMembership, then goes to /give. The dialog's code is fetched the first
@@ -57,6 +63,7 @@ import { LcaMark } from '@/components/LcaMark'
 import { AboutMenu } from '@/components/layout/AboutMenu'
 import { MyLcaMenu } from '@/components/layout/MyLcaMenu'
 import { OnDemand } from '@/components/layout/OnDemand'
+import { useDock } from '@/components/layout/dockParts'
 import {
   HOME_NAME,
   MENU_BUTTON,
@@ -215,16 +222,36 @@ export function SiteHeader({ form = 'desktop' }: SiteHeaderProps) {
   const menuRef = useRef<HTMLButtonElement>(null)
   /** The control the focus goes back to when the donation dialog closes. */
   const donateFrom = useRef<HTMLElement | null>(null)
-  const sheetId = useId()
+  const dock = useDock()
+  const ownSheetId = useId()
   const donation = useOnDemandPart()
-  const sheet = useOnDemandPart()
+  const ownSheet = useOnDemandPart()
+  // The one sheet of the dock's provider, or, drawn on its own, a drawer of its own.
+  const sheet = dock?.sheet ?? ownSheet
+  const sheetId = dock?.sheetId ?? ownSheetId
 
   useHeaderHeight(headerRef)
-  useClosedOnPageChange(sheet)
+  // The provider closes its own sheet on a change of page and from 1024
+  // pixels up; these two close the header's own, when it is drawn alone.
+  useClosedOnPageChange(ownSheet)
   const level = useSqueeze({ row: rowRef, brand: brandRef, words: wordsRef, nav: navRef, donate: donateRef, account: accountRef }, !tablet)
   // The drawer has no Menu button to come back to from 1024 pixels up, so
   // the window widening into the desktop form closes it.
-  if (!tablet && sheet.open) sheet.setOpen(false)
+  if (!tablet && ownSheet.open) ownSheet.setOpen(false)
+
+  /**
+   * Where the focus goes back to once the drawer, or a part that failed,
+   * has closed: the Menu button, or the brand link, the header's first
+   * control, once the Menu button has gone with the tablet form; in the page
+   * frame, the dock's way back, which ends on the brand link too.
+   */
+  const back = (): HTMLElement | null => (dock ? dock.returnFocus() : (menuRef.current ?? brandRef.current))
+  /**
+   * The same for the drawer, but for one that goes with this header while
+   * it is still open, as the window crosses 768 pixels; the provider is
+   * asked whether the sheet is open now, as the app bar asks it.
+   */
+  const backFromSheet = (): HTMLElement | null => (dock?.isSheetOpen() ? null : back())
 
   const section = sectionFor(location.pathname)
   const signedIn = !auth.loading && !!auth.user
@@ -312,7 +339,7 @@ export function SiteHeader({ form = 'desktop' }: SiteHeaderProps) {
                 aria-haspopup="dialog"
                 aria-expanded={sheet.open}
                 aria-controls={sheet.open ? sheetId : undefined}
-                onClick={sheet.show}
+                onClick={(event) => (dock ? dock.openSheet(event.currentTarget) : ownSheet.show())}
                 className={MENU_BUTTON}
               >
                 <MenuIcon aria-hidden="true" className="size-5" />
@@ -326,7 +353,7 @@ export function SiteHeader({ form = 'desktop' }: SiteHeaderProps) {
         <OnDemand
           notice="The menu could not be loaded. Reload the page to try again."
           onFailed={() => sheet.setOpen(false)}
-          returnFocus={() => menuRef.current}
+          returnFocus={back}
           tries={sheet.tries}
         >
           <MobileMenu
@@ -334,7 +361,7 @@ export function SiteHeader({ form = 'desktop' }: SiteHeaderProps) {
             onOpenChange={sheet.setOpen}
             shape="drawer"
             id={sheetId}
-            returnFocus={() => menuRef.current}
+            returnFocus={backFromSheet}
             onDonate={() => openDonate(menuRef.current)}
           />
         </OnDemand>

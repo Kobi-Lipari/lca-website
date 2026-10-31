@@ -24,7 +24,11 @@
 // - and on the password pages, /forgot-password and /reset-password, Log
 //   in in the new header's two forms and in the sheet hands on the page
 //   that page was handed, or nothing, so the person comes back to where
-//   they came from, or to the dashboard, never to a password form.
+//   they came from, or to the dashboard, never to a password form;
+// - since WS02 step 7, Log in on the phone's tab bar, drawn in the dock
+//   beside the app bar as the page frame draws them, brings the person back
+//   to the page the same way, its query and its hash included, and on a
+//   password page hands on the page that page was handed.
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { User } from '@supabase/supabase-js'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -58,6 +62,7 @@ vi.mock('@/lib/mfa', () => ({
 const { SiteHeader } = await import('@/components/layout/SiteHeader')
 const { MobileAppBar } = await import('@/components/layout/MobileAppBar')
 const { Navbar } = await import('@/components/layout/Navbar')
+const { BottomDock, DockProvider } = await import('@/components/layout/BottomDock')
 const { LoginPage } = await import('@/pages/LoginPage')
 
 /** The headers a test draws: the new header's two forms, the phone's app bar (Log in in its sheet), and today's. */
@@ -224,4 +229,43 @@ describe('the page a person comes back to, from the password pages (WS02 step 6)
       await waitFor(() => expect(where()).toBe('/dashboard'))
     })
   }
+})
+
+describe('the page a person comes back to, from the tab bar (WS02 step 7)', () => {
+  /** The phone's bars as the page frame draws them with the chrome on: the app bar, the page and the dock with its tab bar, in one provider. */
+  function drawTabs(path: string | { pathname: string; state?: unknown }) {
+    return render(
+      <AuthContext.Provider value={visitor(signing)}>
+        <MemoryRouter initialEntries={[path]}>
+          <DockProvider>
+            <MobileAppBar />
+            <Routes>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="*" element={<Where />} />
+            </Routes>
+            <BottomDock />
+          </DockProvider>
+        </MemoryRouter>
+      </AuthContext.Provider>,
+    )
+  }
+  /** Presses Log in on the tab bar. */
+  async function pressTab() {
+    fireEvent.click(within(screen.getByRole('navigation', { name: 'Main' })).getByRole('link', { name: 'Log in' }))
+    expect(await screen.findByRole('heading', { level: 1, name: 'Log In' })).toBeTruthy()
+  }
+
+  it('on /tournaments?when=weekend#list, is that page, its query and its hash, once the password is taken', async () => {
+    drawTabs('/tournaments?when=weekend#list')
+    await pressTab()
+    signInWith()
+    await waitFor(() => expect(where()).toBe('/tournaments?when=weekend#list'))
+  })
+
+  it('on /forgot-password handed a page, is that page, never the password form', async () => {
+    drawTabs({ pathname: '/forgot-password', state: { from: '/clubs?region=north#map' } })
+    await pressTab()
+    signInWith()
+    await waitFor(() => expect(where()).toBe('/clubs?region=north#map'))
+  })
 })

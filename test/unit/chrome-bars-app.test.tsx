@@ -12,7 +12,11 @@
 //   and before the main, the desktop header from 1024, the tablet header
 //   from 768 and the app bar below; what a keyboard reaches first is the
 //   skip link, then the brand link, named for the home page, then the bar's
-//   own controls in the order each bar has them;
+//   own controls in the order each bar has them, which for the app bar
+//   beside the phone's tab bar is none, since WS02 step 7: the tab bar's
+//   four tabs come last, after the footer, and the bar draws no Menu
+//   button while they are there. The stand-in for matchMedia answers the
+//   width queries alone, so the reflow fallback's query answers false;
 // - --header-h on the page's root, the bar's own height, 64 or 56 pixels;
 // - with every switch off, with newNav on alone and with newLook on alone,
 //   today's header at every width, no skip link, no tablet form, no app bar
@@ -114,16 +118,16 @@ afterEach(() => {
   document.documentElement.style.removeProperty('--header-h')
 })
 
-describe('with the chrome on, each width\'s bar inside the page frame', () => {
-  /** Each width, the bar it draws, the bar's height, and its own controls after the brand link, signed out. */
+describe('with the chrome on, each width\'s bar inside the page frame, and the phone\'s tab bar after the footer', () => {
+  /** Each width, the bar it draws, the bar's height, its own controls after the brand link, signed out, and the tab bar's tabs, last in the page. */
   const WIDTHS = [
-    [1280, 'desktop', '64px', ['Tournaments', 'Clubs', 'Scholastic', 'News', 'Membership', 'About', 'Donate', 'Log in', 'Join LCA']],
-    [1023, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu']],
-    [900, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu']],
-    [768, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu']],
-    [767, 'app bar', '56px', ['Menu']],
-    [390, 'app bar', '56px', ['Menu']],
-    [320, 'app bar', '56px', ['Menu']],
+    [1280, 'desktop', '64px', ['Tournaments', 'Clubs', 'Scholastic', 'News', 'Membership', 'About', 'Donate', 'Log in', 'Join LCA'], []],
+    [1023, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu'], []],
+    [900, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu'], []],
+    [768, 'tablet', '64px', ['Tournaments', 'Clubs', 'Donate', 'Log in', 'Menu'], []],
+    [767, 'app bar', '56px', [], ['Tournaments', 'Clubs', 'Log in', 'Menu']],
+    [390, 'app bar', '56px', [], ['Tournaments', 'Clubs', 'Log in', 'Menu']],
+    [320, 'app bar', '56px', [], ['Tournaments', 'Clubs', 'Log in', 'Menu']],
   ] as const
 
   beforeEach(() => {
@@ -131,7 +135,7 @@ describe('with the chrome on, each width\'s bar inside the page frame', () => {
     flags.newLook = true
   })
 
-  it.each(WIDTHS)('at %i pixels, the %s: one header after the skip link and before the main, the skip link then the brand link first, then the bar\'s own controls, and --header-h %s', async (width, bar, height, controls) => {
+  it.each(WIDTHS)('at %i pixels, the %s: one header after the skip link and before the main, the skip link then the brand link first, then the bar\'s own controls, and --header-h %s; below 768 the tab bar\'s four tabs last, after the footer', async (width, bar, height, controls, tabs) => {
     stubWidth(width)
     barHeights()
     const container = await site()
@@ -151,6 +155,16 @@ describe('with the chrome on, each width\'s bar inside the page frame', () => {
     expect(stops.slice(2, 2 + controls.length).map(nameOf)).toEqual([...controls])
     expect(stops.slice(2, 2 + controls.length).every((el) => header.contains(el))).toBe(true)
     expect(header.contains(stops[2 + controls.length])).toBe(false)
+    // The tab bar, the one nav named Main below 768 pixels, after the footer: what a keyboard reaches last.
+    const footer = container.querySelector('footer')!
+    const tabBar = container.querySelector('[data-slot="tab-bar"]')
+    expect(tabBar === null, `${width}: no tab bar from 768 pixels up`).toBe(tabs.length === 0)
+    if (tabBar) {
+      expect(stops.slice(-tabs.length).map(nameOf)).toEqual([...tabs])
+      expect(stops.slice(-tabs.length).every((el) => tabBar.contains(el))).toBe(true)
+      expect(follows(footer, tabBar)).toBe(true)
+      expect(screen.getAllByRole('navigation', { name: 'Main' })).toEqual([tabBar])
+    }
     expect(document.documentElement.style.getPropertyValue('--header-h')).toBe(height)
     // Nothing of the sheet until Menu is pressed.
     expect(document.querySelector('[data-slot="menu-sheet"], [data-slot="menu-sheet-scrim"]')).toBeNull()

@@ -18,10 +18,15 @@
 // - drawn to a string, as a server would, it answers false whatever the
 //   browser would say, so nothing can draw the new header before the page
 //   has asked.
+//
+// Since WS02 step 7, useReflowFallback answers the reflow fallback the same
+// way, one query for a window under 480 pixels tall or under 300 wide, where
+// the phone's dock hides and the app bar scrolls away with the page, and
+// holds the same five cases.
 import { act, cleanup, render, screen } from '@testing-library/react'
 import { renderToString } from 'react-dom/server'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { TABLET_QUERY, WIDE_QUERY, useTabletScreen, useWideScreen } from '@/hooks/useWideScreen'
+import { REFLOW_QUERY, TABLET_QUERY, WIDE_QUERY, useReflowFallback, useTabletScreen, useWideScreen } from '@/hooks/useWideScreen'
 
 function Answer() {
   return <output data-testid="answer">{useWideScreen() ? 'wide' : 'narrow'}</output>
@@ -29,6 +34,10 @@ function Answer() {
 
 function TabletAnswer() {
   return <output data-testid="answer">{useTabletScreen() ? 'tablet or wider' : 'phone'}</output>
+}
+
+function ReflowAnswer() {
+  return <output data-testid="answer">{useReflowFallback() ? 'reflow' : 'stacked'}</output>
 }
 
 /** What Navbar reads: both answers, drawn by the one part. */
@@ -162,6 +171,50 @@ describe('useTabletScreen', () => {
   it('answers false when drawn to a string, as a server draws, whatever the browser would say', () => {
     stubMatchMedia(true)
     expect(renderToString(<TabletAnswer />)).toContain('phone')
+  })
+})
+
+describe('useReflowFallback', () => {
+  it('answers false with no matchMedia, as in the unit tests that draw the whole app, where the dock is drawn', () => {
+    vi.stubGlobal('matchMedia', undefined)
+    render(<ReflowAnswer />)
+    expect(answer()).toBe('stacked')
+  })
+
+  it('asks exactly the one query for a window under 480 pixels tall or under 300 wide, and answers what the browser says', () => {
+    expect(REFLOW_QUERY).toBe('(max-height: 479.98px), (max-width: 299.98px)')
+    for (const reflow of [true, false]) {
+      const media = stubMatchMedia(reflow)
+      render(<ReflowAnswer />)
+      expect(answer(), `reflow ${reflow}`).toBe(reflow ? 'reflow' : 'stacked')
+      expect(new Set(media.state.asked)).toEqual(new Set([REFLOW_QUERY]))
+      cleanup()
+      vi.unstubAllGlobals()
+    }
+  })
+
+  it('draws the part that asked again when the answer changes, either way, and as often as it does', () => {
+    const media = stubMatchMedia(false)
+    render(<ReflowAnswer />)
+    expect(answer()).toBe('stacked')
+    media.change(true)
+    expect(answer()).toBe('reflow')
+    media.change(false)
+    expect(answer()).toBe('stacked')
+  })
+
+  it('takes off the listener it added once the part that asked is gone', () => {
+    const media = stubMatchMedia(true)
+    const { unmount } = render(<ReflowAnswer />)
+    expect(media.listening()).toBe(1)
+    unmount()
+    expect(media.listening()).toBe(0)
+    expect(media.state.removed).toEqual(media.state.added)
+  })
+
+  it('answers false when drawn to a string, as a server draws, whatever the browser would say', () => {
+    stubMatchMedia(true)
+    expect(renderToString(<ReflowAnswer />)).toContain('stacked')
   })
 })
 

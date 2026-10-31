@@ -29,8 +29,8 @@
 // - the theme switch: the footer's control drawn again with a label id of
 //   its own, the footer's still appearance-label with both drawn, and a pick
 //   in one shown in the other;
-// - the rows inside the ScrollPanel region, the two shapes' classes, and
-//   data-ring-ground="light".
+// - the rows inside the ScrollPanel region, the region's ring drawn inside
+//   it (WS02 step 7), the two shapes' classes, and data-ring-ground="light".
 //
 // The focus trap and the scroll are the browser's to prove
 // (test/a11y/nav.spec.ts); the bars that open the sheet are
@@ -44,6 +44,7 @@ import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
 import type { JoinSlot, NavSheet } from '@/lib/nav'
 import { PERSONA_KEYS, navPersona, navPersonas, type NavPersona } from './fixtures/navPersonas'
+import { parseRules, read } from './helpers/cssTokens'
 
 /** The switches the sheet reads; each test starts from the a11y-on build's (test/a11y/global-setup.ts). */
 const A11Y_ON = {
@@ -387,6 +388,36 @@ describe('the section the page is in', () => {
     expect(marked.map((el) => `${el.textContent} ${el.getAttribute('aria-current')}`)).toEqual(page ? [`${page} page`] : [])
   })
 
+  it.each([
+    ['/donate/success', {}, 'Membership', 'A'],
+    ['/donate', {}, 'Membership', 'A'],
+    ['/governance/board', { newAbout: true }, 'About', 'BUTTON'],
+    ['/governance/minutes/2026-03', { newAbout: true }, 'About', 'BUTTON'],
+    ['/champions', { newNews: true }, 'About', 'BUTTON'],
+  ] as const)('at %s with %j, a page %s owns that none of its links is, gives the section\'s own control aria-current="true" and marks nothing else (WS02 step 7)', (path, switches, current, tag) => {
+    Object.assign(flags, switches)
+    draw(path)
+    const item = sectionItems().find((i) => nameOf(i) === current)!
+    expect(item.className.split(/\s+/)).toContain('bg-[#fbfaf6]')
+    const marked = [...sheet().querySelectorAll('[aria-current]')]
+    expect(marked).toEqual([headOf(item)])
+    expect([marked[0].tagName, marked[0].getAttribute('aria-current')]).toEqual([tag, 'true'])
+    // Its name is as before: the cue is the state, not more words.
+    expect(nameOf(item)).toBe(current)
+  })
+
+  it.each([
+    ['/membership', 'Membership', 'Membership page'],
+    ['/governance/board', 'About', 'Board & regions page'],
+    ['/about', 'About', 'About LCA page'],
+  ] as const)('at %s, a page a link of %s is, marks that link alone with aria-current="page", and the section\'s own control with none (WS02 step 7)', (path, current, mark) => {
+    draw(path)
+    const item = sectionItems().find((i) => nameOf(i) === current)!
+    const marked = [...sheet().querySelectorAll('[aria-current]')]
+    expect(marked.map((el) => `${(el.textContent ?? '').trim()} ${el.getAttribute('aria-current')}`)).toEqual([mark])
+    if (headOf(item).tagName === 'BUTTON') expect(headOf(item).hasAttribute('aria-current')).toBe(false)
+  })
+
   it('opens each time on the section the page is in, whatever was left open the time before', async () => {
     const { onOpenChange } = draw('/tournaments')
     const head = (name: string) => headOf(sectionItems().find((item) => nameOf(item) === name)!)
@@ -535,9 +566,19 @@ describe('the dialog', () => {
     expect(controls.length).toBeGreaterThan(20)
   })
 
+  it('draws its list region\'s ring inside the region under the new look, by the one rule that sets an offset of -3px, which reaches the region in the sheet (WS02 step 7)', () => {
+    // The region fills the sheet from edge to edge, so a ring drawn outside it would be cut by the sheet.
+    const rules = parseRules(read('src/index.css')).filter((r) => r.decls.get('outline-offset') === '-3px')
+    expect(rules.map((r) => r.selectors)).toEqual([[':root[data-look="new"] [data-slot="menu-sheet"] [data-slot="scroll-panel"]:focus-visible']])
+    draw('/')
+    const region = inSheet().getByRole('region', { name: 'Sections and links' })
+    // A line 2 pixels wide set 3 pixels inside the box lies wholly inside it.
+    expect(region.matches('[data-slot="menu-sheet"] [data-slot="scroll-panel"]')).toBe(true)
+  })
+
   it.each([
-    ['full', ['inset-0'], ['w-[400px]', 'right-0', 'border-l']],
-    ['drawer', ['inset-y-0', 'right-0', 'w-[400px]', 'max-w-full', 'border-l', 'border-hairline'], ['inset-0']],
+    ['full', ['inset-x-0', 'top-0', 'bottom-[var(--bottom-chrome-h,0px)]', 'pt-[env(safe-area-inset-top)]', 'pr-[env(safe-area-inset-right)]', 'pl-[env(safe-area-inset-left)]'], ['inset-0', 'w-[400px]', 'right-0', 'border-l']],
+    ['drawer', ['inset-y-0', 'right-0', 'w-[400px]', 'max-w-full', 'border-l', 'border-hairline', 'pr-[env(safe-area-inset-right)]'], ['inset-0', 'bottom-[var(--bottom-chrome-h,0px)]']],
   ] as const)('takes the %s shape\'s classes, as a light surface with the look\'s own ring', (shape, has, hasNot) => {
     draw('/', undefined, { shape })
     const classes = sheet().className.split(/\s+/)
