@@ -35,7 +35,7 @@ const HERO_STATS = [
 
 /**
  * Initials for a club with no image. "Chess", "Club" and friends are in
- * almost every name, so including them would make most cards read "CC" —
+ * almost every name, so including them would make most cards read "CC",
  * dropping them leaves the part that actually identifies the club: Baton
  * Rouge Chess Club becomes BR, Strategic Thoughts NOLA becomes ST.
  */

@@ -449,7 +449,7 @@ describe('REDESIGN_STATUS.md, WS02 step 8: the lists', () => {
     for (const entry of tagged(verify)) expect(entry.slice(entry.indexOf('.**') + 4), head(entry)).toMatch(/^(Confirmed|Measured|Not found)\b/)
     expect(line('- **The grep check (WS02 step 8).**')).toMatch(/Measured: .*\d+ lines/)
     // The dashes the clubs page keeps on lines this step does not write are named, not passed over.
-    expect(line('- **The grep check (WS02 step 8).**')).toContain('Three dashes stay in `src/pages/ClubsPage.tsx`')
+    expect(line('- **The grep check (WS02 step 8).**')).toContain('Two dashes stay in `src/pages/ClubsPage.tsx`')
   })
 
   it('gives the closing search\'s kinds, each with its files and a count by file, adding up to the lines it found', () => {
