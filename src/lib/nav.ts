@@ -12,8 +12,8 @@
 // phone's app bar, the About and My LCA menus and the Menu sheet read the
 // sections, the rows and the utilities (src/components/layout); the phone's
 // dock and its tab bar read the tabs, the current tab and the pages that
-// hide the tab bar; the footer that reads the rest comes later, behind
-// newNav.
+// hide the tab bar; and the new footer reads the rest: its columns, the
+// buttons beside its logo and the links of its trust line.
 // Everything that depends on a switch takes the switches as its last
 // argument, which defaults to FEATURES, so a test can try any combination.
 // Icons are names, not components, so the model stays plain data; the part
@@ -296,9 +296,15 @@ export const SECTION_NOTES: { readonly [S in SectionId]?: string } = {
 /** The words beside the current section in the sheet and the current row of the About menu. */
 export const YOU_ARE_HERE = 'You are here'
 
-/** True when the path is the address or under it, the rule today's header uses. */
+/**
+ * True when the path is the address or under it. The path is compared in
+ * small letters, as the router matches a route whatever its letters' case,
+ * so /Clubs is under /clubs; every address here is written in small letters.
+ * Today's header keeps its own rule.
+ */
 export function pathIsUnder(pathname: string, address: string): boolean {
-  return pathname === address || pathname.startsWith(`${address}/`)
+  const path = pathname.toLowerCase()
+  return path === address || path.startsWith(`${address}/`)
 }
 
 /** The section that owns a path, or null for a page outside the six. */

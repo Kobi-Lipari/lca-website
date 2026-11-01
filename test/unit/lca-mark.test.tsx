@@ -16,12 +16,16 @@
 // - LcaLogo draws one img of src/assets/lca-logo.webp, the official file (a
 //   400 by 399 picture, read from the file's own header, with the hash it
 //   has today), at the size it is given, with its words or with none, in its
-//   own fixed shape and with nothing else.
+//   own fixed shape and with nothing else. Since WS02 step 8 the new
+//   footer's 56 pixel place passes sized, and the img then offers the two
+//   copies made for that place, 56 and 112 pixels square, read from their
+//   own headers with the hashes they were made with, the 400 pixel file
+//   still its fallback.
 // - What their types let a caller write, compiled with the site's settings
 //   as test/unit/base-components-types.test.ts compiles its probe: a fill, a
 //   colour or a style given to the mark, and a class, a style, a filter, a
 //   colour, an opacity or another file given to the logo do not compile, so
-//   no caller can recolour either.
+//   no caller can recolour either; nor does a sized logo at another size.
 //
 // The class names the refused calls plant are put together when the test
 // runs, so Tailwind, which reads this file, builds no CSS for them.
@@ -32,6 +36,8 @@ import { cleanup, render, screen } from '@testing-library/react'
 import ts from 'typescript'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import lcaLogo from '@/assets/lca-logo.webp'
+import lcaLogo112 from '@/assets/lca-logo-112.webp'
+import lcaLogo56 from '@/assets/lca-logo-56.webp'
 import { LcaLogo } from '@/components/LcaLogo'
 import { LcaMark } from '@/components/LcaMark'
 
@@ -163,6 +169,23 @@ describe('LcaLogo: the official logo, as it is', () => {
     expect(img.children).toHaveLength(0)
   })
 
+  it('sized, as the new footer passes it: the same img at 56 by 56, offering the 56 and 112 pixel copies at densities 1 and 2, the official file its fallback', () => {
+    const { container } = render(<LcaLogo width={56} height={56} alt="" sized />)
+    expect(container.children).toHaveLength(1)
+    const img = container.firstElementChild as HTMLImageElement
+    expect(img.tagName).toBe('IMG')
+    expect(img.getAttribute('src')).toBe(lcaLogo)
+    expect(img.getAttribute('srcset')).toBe(`${lcaLogo56} 1x, ${lcaLogo112} 2x`)
+    expect(lcaLogo56).toMatch(/lca-logo-56\.webp$/)
+    expect(lcaLogo112).toMatch(/lca-logo-112\.webp$/)
+    expect([img.getAttribute('width'), img.getAttribute('height'), img.getAttribute('alt')]).toEqual(['56', '56', ''])
+    expect(img.getAttribute('class')).toBe('rounded-xl object-contain')
+    expect(img.getAttribute('data-slot')).toBe('lca-logo')
+    // Seven attributes: the six of every logo, and the srcset.
+    expect(img.getAttributeNames().sort()).toEqual(['alt', 'class', 'data-slot', 'height', 'src', 'srcset', 'width'])
+    expect(img.children).toHaveLength(0)
+  })
+
   it('takes empty words where the name stands beside it, and is then left out by a screen reader', () => {
     const { container } = render(<LcaLogo width={56} height={56} alt="" />)
     const img = container.firstElementChild as HTMLImageElement
@@ -191,9 +214,29 @@ describe('LcaLogo: the official logo, as it is', () => {
     expect(createHash('sha256').update(file).digest('hex')).toBe('eb15b1d5e928557db8bdc02de89e56f583d75cdc01f4b669b3ba09079e7463ec')
   })
 
-  it('imports the file the header and the footer drew, and no other', () => {
+  it.each([
+    ['src/assets/lca-logo-56.webp', 56, 1818, '5c1992cc7ae3e4cc3e3fefc2ce45e862df2112a273f9f0070051951b85437ec3'],
+    ['src/assets/lca-logo-112.webp', 112, 4596, '845e5220835af0faf4cc95f7d9546595fc876ce119cb1364783449292db3137f'],
+  ] as const)('%s is a lossy picture %i pixels square, as scripts/images.mjs made it from the official file', (path, size, bytes, hash) => {
+    const file = readFileSync(join(ROOT, path))
+    expect(file.subarray(0, 4).toString('latin1')).toBe('RIFF')
+    expect(file.subarray(8, 12).toString('latin1')).toBe('WEBP')
+    expect(file.subarray(12, 16).toString('latin1')).toBe('VP8 ')
+    expect(file.subarray(23, 26).toString('hex')).toBe('9d012a')
+    expect(file.readUInt16LE(26) & 0x3fff).toBe(size)
+    expect(file.readUInt16LE(28) & 0x3fff).toBe(size)
+    expect(file.length).toBe(bytes)
+    // Made again by the script, the same bytes; a copy changed by hand is a decision someone makes.
+    expect(createHash('sha256').update(file).digest('hex')).toBe(hash)
+  })
+
+  it('imports the file the header and the footer drew, and since WS02 step 8 its two sized copies, and no other', () => {
     const source = readFileSync(join(ROOT, 'src/components/LcaLogo.tsx'), 'utf8')
-    expect(source.match(/^import .+$/gm)).toEqual(["import lcaLogo from '@/assets/lca-logo.webp'"])
+    expect(source.match(/^import .+$/gm)).toEqual([
+      "import lcaLogo from '@/assets/lca-logo.webp'",
+      "import lcaLogo56 from '@/assets/lca-logo-56.webp'",
+      "import lcaLogo112 from '@/assets/lca-logo-112.webp'",
+    ])
     for (const file of ['src/components/layout/Navbar.tsx', 'src/components/layout/Footer.tsx']) {
       expect(readFileSync(join(ROOT, file), 'utf8'), file).toContain("import lcaLogo from '@/assets/lca-logo.webp'")
     }
@@ -221,6 +264,7 @@ const COMPILES: Record<string, string> = {
   'the LCA tag\'s mark': '<LcaMark title="" slot="status-mark" className="size-[11px]" />',
   'the footer\'s logo, with empty words': '<LcaLogo width={56} height={56} alt="" />',
   'the About page\'s logo, with its name': '<LcaLogo width={160} height={160} />',
+  'the new footer\'s logo, from its sized files': '<LcaLogo width={56} height={56} alt="" sized />',
 }
 
 /** Calls that must not compile, each with the words of the error that refuses it. */
@@ -230,7 +274,9 @@ const REFUSED: Record<string, [string, string]> = {
   'a mark given a style': ["<LcaMark style={{ color: '#c8a94a' }} />", "Property 'style' does not exist"],
   'a mark in a slot that is no part': ['<LcaMark slot="logo" />', 'is not assignable to type'],
   'a mark whose title is not words': ['<LcaMark title={1915} />', "Type 'number' is not assignable to type 'string'"],
-  'a logo with no size': ['<LcaLogo />', 'missing the following properties'],
+  // Since WS02 step 8 the logo's props are a union (a size of any kind, or sized at 56), and for a call that
+  // gives no size the compiler names the type it cannot meet rather than the properties it misses.
+  'a logo with no size': ['<LcaLogo />', "is not assignable to type 'IntrinsicAttributes & LcaLogoProps'"],
   'a logo with a width alone': ['<LcaLogo width={56} />', "Property 'height' is missing"],
   'a logo given a class': [`<LcaLogo width={56} height={56} className="${GREY}" />`, "Property 'className' does not exist"],
   'a logo given a style': [`<LcaLogo width={56} height={56} style={{ filter: '${GREY}(1)' }} />`, "Property 'style' does not exist"],
@@ -239,6 +285,7 @@ const REFUSED: Record<string, [string, string]> = {
   'a logo given an opacity': ['<LcaLogo width={56} height={56} opacity={0.5} />', "Property 'opacity' does not exist"],
   'a logo given another file': ['<LcaLogo width={56} height={56} src="/lca-logo.jpg" />', "Property 'src' does not exist"],
   'a logo whose size is text': ['<LcaLogo width="56" height="56" />', "Type 'string' is not assignable to type 'number'"],
+  'a sized logo at another size': ['<LcaLogo width={160} height={160} sized />', "Types of property 'sized' are incompatible"],
 }
 
 interface Probe {

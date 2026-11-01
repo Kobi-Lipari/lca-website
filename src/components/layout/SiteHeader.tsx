@@ -336,6 +336,7 @@ export function SiteHeader({ form = 'desktop' }: SiteHeaderProps) {
               <button
                 ref={menuRef}
                 type="button"
+                data-slot="menu-button"
                 aria-haspopup="dialog"
                 aria-expanded={sheet.open}
                 aria-controls={sheet.open ? sheetId : undefined}

@@ -22,13 +22,20 @@
 //   through VITE_FLAGS and through the file itself, holds the one tag it
 //   should, and a page without today's tag, or with it twice, stops a build
 //   that would rewrite it
+// - since WS02 step 8 the chrome's build also writes the build's date into
+//   the page, one build-date meta right after the viewport tag, holding the
+//   instant the build ran in Date's own form, which Date.parse reads, no
+//   later than the test's own clock; with either switch off there is none,
+//   and the page is the one the same build gives with no switch on, byte
+//   for byte; withBuildDate refuses a page that does not hold the covered
+//   tag once, and an instant in any other form
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { runInNewContext } from 'node:vm'
 import { build } from 'vite'
 import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
-import viteConfig, { COVER_VIEWPORT, newLookInBuild, newNavInBuild, prepaintPlugin, switchInBuild, TODAYS_VIEWPORT, withCoverViewport } from '../../vite.config'
+import viteConfig, { COVER_VIEWPORT, newLookInBuild, newNavInBuild, prepaintPlugin, switchInBuild, TODAYS_VIEWPORT, withBuildDate, withCoverViewport } from '../../vite.config'
 import {
   APPEARANCE_KEY,
   createColorScheme,
@@ -135,6 +142,27 @@ describe('the viewport tag with viewport-fit=cover', () => {
   })
 })
 
+describe('the build\'s date beside the covered viewport tag (WS02 step 8)', () => {
+  const INSTANT = '2026-10-31T03:00:00.000Z'
+
+  it('writes one meta on the line after the covered tag, at its indent, and changes nothing else in the page', () => {
+    const covered = withCoverViewport(read('index.html'))
+    const dated = withBuildDate(covered, INSTANT)
+    const meta = `<meta name="build-date" content="${INSTANT}" />`
+    expect(dated.split(meta)).toHaveLength(2)
+    expect(dated.replace(`\n    ${meta}`, '')).toBe(covered)
+    expect(dated.indexOf(meta)).toBeGreaterThan(dated.indexOf(COVER_VIEWPORT))
+  })
+
+  it('refuses a page without the covered tag, or with it twice, and an instant in any form but the build\'s own', () => {
+    expect(() => withBuildDate(read('index.html'), INSTANT)).toThrow('index.html should hold the viewport tag with viewport-fit=cover once; found 0.')
+    expect(() => withBuildDate(`${COVER_VIEWPORT}${COVER_VIEWPORT}`, INSTANT)).toThrow(/found 2\./)
+    for (const bad of ['', '2026-10-31', '2026-10-31T03:00:00Z', '2026-10-31T03:00:00.000+00:00', 'Sat, Oct 31, 2026']) {
+      expect(() => withBuildDate(COVER_VIEWPORT, bad), bad).toThrow(/The build's date should be an instant/)
+    }
+  })
+})
+
 describe('prepaintPlugin in a real vite build', () => {
   const dirs: string[] = []
   afterAll(() => {
@@ -229,6 +257,40 @@ describe('prepaintPlugin in a real vite build', () => {
       const charset = '<meta charset="UTF-8" />'
       const bytes = Buffer.from(html, 'utf8')
       expect(bytes.indexOf(charset) + Buffer.byteLength(charset), flags).toBeLessThanOrEqual(1024)
+    }
+  }, 60_000)
+
+  /** The build-date metas a built page holds, each with its content. */
+  const buildDates = (html: string) => [...html.matchAll(/<meta name="build-date" content="([^"]*)" \/>/g)].map((m) => m[1])
+
+  it('writes the build\'s date into the page only with newLook and newNav both on, once, after the charset and right after the viewport tag, an instant of the build no later than now; with either off, none: newNav alone gives the page the build with no switch gives, byte for byte, and newLook alone its script as before', async () => {
+    const started = Date.now()
+    const plain = await buildPage('a11y', '', undefined, sitePage())
+    expect(plain).not.toContain('build-date')
+    for (const flags of ['newNav', 'newLook', 'newLook,newNav'] as const) {
+      const html = await buildPage('a11y', flags, undefined, sitePage())
+      if (flags !== 'newLook,newNav') {
+        expect(buildDates(html), flags).toEqual([])
+        expect(html, flags).not.toContain('build-date')
+        // newNav alone changes nothing at all; newLook alone adds its script, as before.
+        if (flags === 'newNav') expect(html).toBe(plain)
+        else expect(html).toContain(`<script>${PREPAINT_SCRIPT}</script>`)
+        continue
+      }
+      const dates = buildDates(html)
+      expect(dates).toHaveLength(1)
+      const [instant] = dates
+      expect(instant).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+      const at = Date.parse(instant)
+      expect(Number.isNaN(at)).toBe(false)
+      expect(at).toBeGreaterThanOrEqual(started - 1000)
+      expect(at).toBeLessThanOrEqual(Date.now())
+      const meta = `<meta name="build-date" content="${instant}" />`
+      expect(html.indexOf('<meta charset="UTF-8" />')).toBeLessThan(html.indexOf(meta))
+      // On the line right after the viewport tag.
+      const lines = html.split('\n')
+      const tag = lines.findIndex((line) => line.includes(COVER_VIEWPORT))
+      expect(lines[tag + 1].trim()).toBe(meta)
     }
   }, 60_000)
 

@@ -62,6 +62,30 @@ export function withCoverViewport(html: string): string {
   return html.replace(TODAYS_VIEWPORT, COVER_VIEWPORT)
 }
 
+/** The name of the meta that holds the build's date, which the new footer reads (src/components/layout/footerParts.ts). */
+export const BUILD_DATE_META = 'build-date'
+
+/** An instant as the build writes it: Date's toISOString, in UTC, to the millisecond. */
+const BUILD_INSTANT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+
+/**
+ * The page with the build's date written into it: one meta right after the
+ * viewport tag, on a line of its own at that tag's indent,
+ * <meta name="build-date" content="the instant" />. A page that does not
+ * hold the viewport tag with viewport-fit=cover exactly once, or an instant
+ * not in the build's own form, stops the build, so the meta is never
+ * written anywhere else or twice.
+ */
+export function withBuildDate(html: string, instant: string): string {
+  if (!BUILD_INSTANT.test(instant)) throw new Error(`The build's date should be an instant such as 2026-10-31T14:42:00.000Z; found ${JSON.stringify(instant)}.`)
+  const found = html.split(COVER_VIEWPORT).length - 1
+  if (found !== 1) throw new Error(`index.html should hold the viewport tag with viewport-fit=cover once; found ${found}.`)
+  const at = html.indexOf(COVER_VIEWPORT)
+  const indent = html.slice(html.lastIndexOf('\n', at) + 1, at)
+  const end = at + COVER_VIEWPORT.length
+  return `${html.slice(0, end)}\n${indent}<meta name="${BUILD_DATE_META}" content="${instant}" />${html.slice(end)}`
+}
+
 /**
  * Puts the color scheme script (PREPAINT_SCRIPT in src/lib/colorScheme.ts)
  * at the top of the page head when newLook is on, so the new look and dark
@@ -71,23 +95,53 @@ export function withCoverViewport(html: string): string {
  * gives the page's viewport tag viewport-fit=cover, since only the new
  * chrome pads for a phone's notch; with either switch off the tag is today's.
  * Both switches are read from one reading of the file.
+ *
+ * With the chrome on it also writes the build's date into the page, as a
+ * meta beside the viewport tag (withBuildDate), which the new footer's trust
+ * line shows as "Site last updated" (WS02 step 8): the instant the build
+ * ran, in UTC, which the footer shows as its Louisiana day. Each build with
+ * the chrome on writes its own, the CI build and the Pages build alike, so
+ * the date is the build's, not the commit's. It goes into index.html alone,
+ * which every deploy writes anew and nothing names by a hash, so no other
+ * file changes for it and no file is renamed; with either switch off nothing
+ * is written for it at all.
  */
 export function prepaintPlugin(featuresFile = path.resolve(__dirname, 'src/lib/features.ts')): Plugin {
   let newLook = false
   let cover = false
+  let instant = ''
   return {
     name: 'lca-prepaint',
     configResolved(config) {
       const source = readFileSync(featuresFile, 'utf8')
       newLook = newLookInBuild(source, config.mode, config.env.VITE_FLAGS)
       cover = newNavInBuild(source, config.mode, config.env.VITE_FLAGS) && newLook
+      // The build's own instant, worked out once for the build.
+      instant = new Date().toISOString()
     },
     transformIndexHtml(html) {
       if (!newLook) return undefined
       const tags = [{ tag: 'script', children: PREPAINT_SCRIPT, injectTo: 'head-prepend' as const }]
-      return cover ? { html: withCoverViewport(html), tags } : tags
+      return cover ? { html: withBuildDate(withCoverViewport(html), instant), tags } : tags
     },
   }
+}
+
+/**
+ * The new footer's two sized copies of the logo (src/assets/lca-logo-56.webp
+ * and lca-logo-112.webp), by their path.
+ */
+export const SIZED_LOGO = /[\\/]src[\\/]assets[\\/]lca-logo-(?:56|112)\.webp$/
+
+/**
+ * Whether an imported file is written into the script that imports it as a
+ * data address: never for the logo's two sized copies, which stay files of
+ * their own, fetched only by the page that draws them, rather than riding in
+ * the main script every visitor loads (the 56 pixel copy is under Vite's
+ * 4,096 byte line); every other file by Vite's own rule (undefined).
+ */
+export function inlineAsset(file: string): false | undefined {
+  return SIZED_LOGO.test(file) ? false : undefined
 }
 
 export default defineConfig({
@@ -97,6 +151,8 @@ export default defineConfig({
     prepaintPlugin(),
   ],
   build: {
+    // The logo's sized copies stay files of their own (inlineAsset).
+    assetsInlineLimit: inlineAsset,
     rolldownOptions: {
       output: {
         // The switches keep a chunk of their own (features-[hash].js) now

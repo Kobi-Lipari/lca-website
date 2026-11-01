@@ -12,9 +12,11 @@
 //   that this file plants in the dock's action place: on a long page and a
 //   shorter one, each scrolled to its end, no fixed element's box overlaps a
 //   line of the main's or the footer's words or one of their controls, and
-//   the footer ends where the dock begins; Tab through the long page leaves
-//   no control the focus lands on under the dock or the sticky bar; from
-//   768 pixels up there is no dock, no tab bar and no place for a bar.
+//   the footer's last line ends where the dock begins, the room under it the
+//   footer's own padding since WS02 step 8; Tab through the long page, the
+//   tab bar's four tabs right after the main and the footer after them,
+//   leaves no control the focus lands on under the dock or the sticky bar;
+//   from 768 pixels up there is no dock, no tab bar and no place for a bar.
 // - Where it hides: on the three pages that hide the tab bar, each also in
 //   a second spelling the router takes (the page a member comes back to
 //   from paying for a member signed in, since it sends a visitor who is
@@ -244,7 +246,8 @@ const coverings = (page: Page) =>
         const name = el.getAttribute('data-slot') ?? el.tagName.toLowerCase()
         return targets.filter((t) => over(a, t.area)).map((t) => `${name} over ${t.what}`)
       }),
-      footerBottom: footer ? footer.getBoundingClientRect().bottom : null,
+      // The footer's last line: its box less its own bottom padding, which is the dock's room since WS02 step 8.
+      footerBottom: footer ? footer.getBoundingClientRect().bottom - parseFloat(getComputedStyle(footer).paddingBottom) : null,
       scrolled: window.scrollY,
       end: document.documentElement.scrollHeight - window.innerHeight,
     }
@@ -255,6 +258,8 @@ interface Stop {
   again: boolean
   name: string
   part: 'skip' | 'bar' | 'dock' | 'page'
+  /** A control of the page that is the footer's, which comes after the dock in the page's order since WS02 step 8. */
+  inFooter: boolean
   box: Box
   bar: Box | null
   dock: Box | null
@@ -275,6 +280,7 @@ const stopNow = (page: Page): Promise<Stop | null> =>
       again,
       name: `${el.tagName.toLowerCase()} ${(el.getAttribute('aria-label') ?? el.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 40)}`,
       part: part as Stop['part'],
+      inFooter: !!document.querySelector(site.footer)?.contains(el),
       box: area(el.getBoundingClientRect()),
       bar: header ? area(header.getBoundingClientRect()) : null,
       dock: drawnDock ? area(drawnDock.getBoundingClientRect()) : null,
@@ -282,13 +288,15 @@ const stopNow = (page: Page): Promise<Stop | null> =>
   }, SITE)
 
 /**
- * Tab from the top of the page, one press at a time, until the focus
- * reaches the dock, or leaves the page or comes round again where there is
- * none: each control the focus lands on, as stopNow reads it.
+ * Tab from the top of the page, one press at a time, until the focus leaves
+ * the page or comes round again: each control the focus lands on, as
+ * stopNow reads it. Since WS02 step 8 the dock comes after the main and
+ * before the footer, so the walk goes on past the tab bar to the footer's
+ * last control.
  */
 async function tabWalk(page: Page): Promise<Stop[]> {
   const stops: Stop[] = []
-  for (let n = 0; n < 300; n++) {
+  for (let n = 0; n < 400; n++) {
     await page.keyboard.press('Tab')
     const at = await stopNow(page)
     if (at === null) {
@@ -297,7 +305,6 @@ async function tabWalk(page: Page): Promise<Stop[]> {
     }
     if (at.again) break
     stops.push(at)
-    if (at.part === 'dock') break
   }
   return stops
 }
@@ -309,7 +316,7 @@ test.describe('the dock\'s room on the page with the chrome on (WS02 step 7)', (
 
   for (const width of [...PHONES, ...TABLETS]) {
     const drawn = width < 768
-    test(`a11y-on at ${width} by ${HEIGHT}, light and dark, with the tab bar alone and with the action bar fixture: ${drawn ? 'on / and /forgot-password scrolled to their ends no fixed element covers a line of the main\'s or the footer\'s words or a control, and the footer ends at the dock\'s top; Tab through / leaves no control under the dock or the app bar' : 'no dock, no tab bar and no place for a bar; on / and /forgot-password scrolled to their ends nothing fixed covers the page, and Tab through / leaves no control under the tablet header'}`, async ({ page, external }, testInfo) => {
+    test(`a11y-on at ${width} by ${HEIGHT}, light and dark, with the tab bar alone and with the action bar fixture: ${drawn ? 'on / and /forgot-password scrolled to their ends no fixed element covers a line of the main\'s or the footer\'s words or a control, and the footer\'s last line ends at the dock\'s top; Tab through / leaves no control under the dock or the app bar' : 'no dock, no tab bar and no place for a bar; on / and /forgot-password scrolled to their ends nothing fixed covers the page, and Tab through / leaves no control under the tablet header'}`, async ({ page, external }, testInfo) => {
       only(testInfo, ON, 'the dock comes with the chrome, on a11y-on')
       onlyNew(testInfo, 'header', [width], 'the dock beside the app bar, or no dock beside the tablet header')
       test.setTimeout(180_000)
@@ -348,11 +355,11 @@ test.describe('the dock\'s room on the page with the chrome on (WS02 step 7)', (
             expect(covered.fixed.map((f) => f.slot), `${what}: the fixed elements`).toEqual(drawn ? ['bottom-dock'] : [])
             expect(covered.covered, `${what}: nothing covered`).toEqual([])
             const dockTop = drawn ? HEIGHT - TAB_BAR_H - (fixture ? ACTION_BAR_H : 0) : HEIGHT
-            expect(Math.abs((covered.footerBottom ?? 0) - dockTop), `${what}: the footer ends at ${dockTop}`).toBeLessThanOrEqual(0.5)
+            expect(Math.abs((covered.footerBottom ?? 0) - dockTop), `${what}: the footer's last line ends at ${dockTop}`).toBeLessThanOrEqual(0.5)
           }
           // The reading is not blind: with the room under the footer taken away, the dock covers the footer's last lines.
           if (drawn && scheme === 'light' && route === '/') {
-            const style = await page.addStyleTag({ content: ':root[data-look="new"] #main-content + footer { margin-bottom: 0 !important; }' })
+            const style = await page.addStyleTag({ content: ':root[data-look="new"] #main-content ~ footer { padding-bottom: 0 !important; }' })
             await scrollToEnd(page)
             const without = await coverings(page)
             expect(without.covered.length, `${route} with no room under the footer: the dock over its last lines`).toBeGreaterThan(0)
@@ -371,7 +378,18 @@ test.describe('the dock\'s room on the page with the chrome on (WS02 step 7)', (
           const inPage = stops.filter((s) => s.part === 'page')
           seen[what] = stops.map((s) => `${s.part}: ${s.name} ${Math.round(s.box.top)} to ${Math.round(s.box.bottom)}`)
           expect(inPage.length, `${what}: the page's controls`).toBeGreaterThan(20)
-          expect(stops.at(-1)?.part, `${what}: the last stop`).toBe(drawn ? 'dock' : 'page')
+          // The footer's last control is the walk's last stop, and the tab bar's four tabs come right after the main's
+          // controls, before the footer's (WS02 step 8).
+          expect(stops.at(-1)?.part, `${what}: the last stop`).toBe('page')
+          expect(stops.at(-1)?.inFooter, `${what}: the last stop the footer's`).toBe(true)
+          const inDock = stops.flatMap((s, i) => (s.part === 'dock' ? [i] : []))
+          expect(inDock.length, `${what}: the tab bar's tabs`).toBe(drawn ? 4 : 0)
+          if (drawn) {
+            const firstInFooter = stops.findIndex((s) => s.inFooter)
+            expect(inDock, `${what}: the four tabs, one after another`).toEqual([inDock[0], inDock[0] + 1, inDock[0] + 2, inDock[0] + 3])
+            expect(inDock[3] + 1, `${what}: the footer right after the tabs`).toBe(firstInFooter)
+            expect(stops.slice(0, inDock[0]).some((s) => s.inFooter), `${what}: no footer control before the tabs`).toBe(false)
+          }
           for (const stop of inPage) {
             expect(!!stop.bar && overlap(stop.box, stop.bar), `${what}: ${stop.name} under the bar`).toBe(false)
             expect(!!stop.dock && overlap(stop.box, stop.dock), `${what}: ${stop.name} under the dock`).toBe(false)

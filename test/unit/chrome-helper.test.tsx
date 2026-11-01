@@ -136,14 +136,14 @@ describe('which chrome each test build draws', () => {
     expect(Object.keys(DRAWN)).toEqual(BUILDS)
   })
 
-  it('is the new chrome\'s header at every width on a11y-on, and today\'s chrome everywhere else, since WS02 step 6', () => {
+  it('is the new chrome at every width on a11y-on, its header since WS02 step 6 and its footer since WS02 step 8, and today\'s chrome on a11y-off', () => {
     expect(DRAWN).toEqual({
-      'a11y-on': { header: [[0, 'new']], footer: [[0, 'today']] },
+      'a11y-on': { header: [[0, 'new']], footer: [[0, 'new']] },
       'a11y-off': { header: [[0, 'today']], footer: [[0, 'today']] },
     })
     for (const build of BUILDS) {
       for (const part of ['header', 'footer'] as const) {
-        const isNew = build === 'a11y-on' && part === 'header'
+        const isNew = build === 'a11y-on'
         for (const width of WIDTHS) expect(chromeAt(build, part, width), `${build}, the ${part} at ${width} pixels`).toBe(isNew ? 'new' : 'today')
         expect(todayAt(build, part, WIDTHS), `${build}, the ${part}`).toBe(!isNew)
         expect(newAt(build, part, WIDTHS), `${build}, the ${part} at every width`).toBe(isNew)
@@ -155,9 +155,11 @@ describe('which chrome each test build draws', () => {
     expect(chromeAt('a11y-on', 'header', 1023)).toBe('new')
     expect(chromeAt('a11y-on', 'header', 1024)).toBe('new')
     expect(todayAt('a11y-on', 'header', [390])).toBe(false)
-    expect(todayAt('a11y-on', 'footer', [390, 1023, 1280])).toBe(true)
-    expect(newAt('a11y-on', 'footer', [1280])).toBe(false)
+    // The new footer at every width, the folded one below 768 pixels and the plain one from there.
+    expect(todayAt('a11y-on', 'footer', [390, 1023, 1280])).toBe(false)
+    expect(newAt('a11y-on', 'footer', [320, 390, 767, 768, 1280])).toBe(true)
     expect(newAt('a11y-off', 'header', [1280])).toBe(false)
+    expect(newAt('a11y-off', 'footer', [390])).toBe(false)
   })
 
   it('throws on a build it does not hold, naming it', () => {
@@ -166,9 +168,9 @@ describe('which chrome each test build draws', () => {
     expect(() => todayAt('a11y-maybe', 'footer', [390])).toThrow(/a11y-maybe/)
   })
 
-  it('runs what ifToday holds where today\'s chrome is drawn, and adds nothing to the report; where the new header is drawn it notes what it did not read', async () => {
+  it('runs what ifToday holds where today\'s chrome is drawn, and adds nothing to the report; where the new header or the new footer is drawn it notes what it did not read', async () => {
     const info = (build: string) => ({ project: { name: build }, annotations: [] as { type: string; description?: string }[] }) as unknown as TestInfo
-    // Today's header: a11y-off at every width; today's footer on both builds.
+    // Today's header and today's footer: a11y-off at every width.
     for (const [build, width] of [['a11y-off', 1280], ['a11y-off', 390]] as const) {
       const testInfo = info(build)
       let ran = 0
@@ -191,14 +193,15 @@ describe('which chrome each test build draws', () => {
       expect(read, `a11y-on at ${width}`).toBe(false)
       expect(noted.annotations, `a11y-on at ${width}`).toEqual([{ type: 'today only', description: `the brand link's name: not read on a11y-on at ${width} pixels, where the new header is drawn` }])
     }
-    // Today's footer is still read there.
+    // The new footer, on a11y-on at every width since WS02 step 8: today's footer is read there no more, and the report says so.
     const testInfo = info('a11y-on')
     let ran = false
     await ifToday(testInfo, 'footer', 390, 'the footer\'s logo', () => {
       ran = true
     })
-    expect(ran).toBe(true)
-    expect(testInfo.annotations).toEqual([])
+    expect(ran).toBe(false)
+    expect(testInfo.annotations).toEqual([{ type: 'today only', description: 'the footer\'s logo: not read on a11y-on at 390 pixels, where the new footer is drawn' }])
+    testInfo.annotations.length = 0
     ran = false
     // Asked about the other build, whose page a spec may have open, it runs.
     await ifToday(testInfo, 'header', 1280, 'the other build\'s names', () => {
@@ -222,7 +225,17 @@ describe('which chrome each test build draws', () => {
       expect(ran, `a11y-on at ${width}`).toBe(1)
       expect(testInfo.annotations, `a11y-on at ${width}`).toEqual([])
     }
-    for (const [build, part, width] of [['a11y-off', 'header', 390], ['a11y-off', 'header', 1280], ['a11y-on', 'footer', 390], ['a11y-on', 'footer', 1280]] as const) {
+    // The new footer, on a11y-on at every width since WS02 step 8: what ifNew holds for it runs there.
+    for (const width of [390, 1280]) {
+      const testInfo = info('a11y-on')
+      let ran = false
+      await ifNew(testInfo, 'footer', width, 'the new footer\'s fold', () => {
+        ran = true
+      })
+      expect(ran, `a11y-on, the footer at ${width}`).toBe(true)
+      expect(testInfo.annotations, `a11y-on, the footer at ${width}`).toEqual([])
+    }
+    for (const [build, part, width] of [['a11y-off', 'header', 390], ['a11y-off', 'header', 1280], ['a11y-off', 'footer', 390], ['a11y-off', 'footer', 1280]] as const) {
       const testInfo = info(build)
       let ran = false
       await ifNew(testInfo, part, width, 'the new chrome\'s names', () => {
@@ -242,31 +255,34 @@ describe('which chrome each test build draws', () => {
     await expect(ifNew(off, 'header', 1280, 'nowhere', () => {}, 'a11y-maybe')).rejects.toThrow(/a11y-maybe/)
   })
 
-  it('reads a part\'s pairs from the smallest width up: with a later table in place, WS02 step 8\'s new footer at every width, today\'s footer is drawn nowhere on a11y-on', async () => {
-    // The table as WS02 step 8 will make it on a11y-on, put in place for this case alone.
+  it('reads a part\'s pairs from the smallest width up: with a split table in place, today\'s footer below 768 pixels and the new one from there, each width reads its own pair', async () => {
+    // A table that changes at a width, as an earlier step's did for the header, put in place for this case alone.
     const onBuild = DRAWN['a11y-on'] as { footer: ReadonlyArray<readonly [number, Chrome]> }
     const kept = onBuild.footer
-    onBuild.footer = [[0, 'new']]
+    onBuild.footer = [[0, 'today'], [768, 'new']]
     try {
-      expect(WIDTHS.map((width) => chromeAt('a11y-on', 'footer', width))).toEqual(WIDTHS.map(() => 'new'))
-      expect(chromeAt('a11y-on', 'header', 1440)).toBe('new')
+      expect(WIDTHS.map((width) => chromeAt('a11y-on', 'footer', width))).toEqual(WIDTHS.map((width) => (width >= 768 ? 'new' : 'today')))
+      expect(chromeAt('a11y-on', 'footer', 767)).toBe('today')
+      expect(chromeAt('a11y-on', 'footer', 768)).toBe('new')
       expect(chromeAt('a11y-off', 'footer', 1440)).toBe('today')
+      expect(todayAt('a11y-on', 'footer', [320, 390])).toBe(true)
       expect(todayAt('a11y-on', 'footer', [390, 768])).toBe(false)
-      expect(newAt('a11y-on', 'footer', [320, 390, 768, 1024])).toBe(true)
+      expect(newAt('a11y-on', 'footer', [768, 1024])).toBe(true)
       const testInfo = { project: { name: 'a11y-on' }, annotations: [] as { type: string; description?: string }[] } as unknown as TestInfo
       let ran = false
-      await ifToday(testInfo, 'footer', 390, 'the footer\'s logo', () => {
+      await ifToday(testInfo, 'footer', 1280, 'the footer\'s logo', () => {
         ran = true
       })
       expect(ran).toBe(false)
-      expect(testInfo.annotations).toEqual([{ type: 'today only', description: 'the footer\'s logo: not read on a11y-on at 390 pixels, where the new footer is drawn' }])
+      expect(testInfo.annotations).toEqual([{ type: 'today only', description: 'the footer\'s logo: not read on a11y-on at 1280 pixels, where the new footer is drawn' }])
     } finally {
       onBuild.footer = kept
     }
-    // The real table is back: the new chrome's header at every width, today's footer.
+    // The real table is back: the new chrome at every width, its header and, since WS02 step 8, its footer.
     expect(chromeAt('a11y-on', 'header', 390)).toBe('new')
     expect(chromeAt('a11y-on', 'header', 1440)).toBe('new')
-    expect(chromeAt('a11y-on', 'footer', 390)).toBe('today')
+    expect(chromeAt('a11y-on', 'footer', 390)).toBe('new')
+    expect(chromeAt('a11y-on', 'footer', 1440)).toBe('new')
   })
 
   it('takes a page\'s width from the window a test set, or Desktop Chrome\'s 1280', () => {
@@ -466,7 +482,7 @@ describe('what the helper finds in the new header', () => {
 })
 
 describe('what the helper finds of the phone\'s dock (WS02 step 7)', () => {
-  /** The phone's bars as the page frame draws them with the chrome on: the app bar, the page and the dock, in one provider. */
+  /** The phone's bars as the page frame draws them with the chrome on: the app bar, the page, the dock and the footer, in that order since WS02 step 8, in one provider. */
   function drawDock(path = '/clubs') {
     flags.newLook = true
     return render(
@@ -475,22 +491,22 @@ describe('what the helper finds of the phone\'s dock (WS02 step 7)', () => {
           <DockProvider>
             <MobileAppBar />
             <main className="flex-1" />
-            <Footer />
             <BottomDock />
+            <Footer />
           </DockProvider>
         </MemoryRouter>
       </AuthContext.Provider>,
     ).container
   }
 
-  it('finds the one dock and its tab bar by their slots, the tab bar the nav named Main, after the footer', () => {
+  it('finds the one dock and its tab bar by their slots, the tab bar the nav named Main, before the footer', () => {
     const container = drawDock()
     expect(all(dock(page))).toEqual([...container.querySelectorAll(SITE.dock)])
     expect(all(dock(page))).toHaveLength(1)
     expect(all(tabBar(page))).toEqual([screen.getByRole('navigation', { name: 'Main' })])
     expect(all(dock(page))[0].contains(all(tabBar(page))[0])).toBe(true)
     const footer = container.querySelector(SITE.footer)!
-    expect(footer.compareDocumentPosition(all(dock(page))[0]) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0)
+    expect(all(dock(page))[0].compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0)
   })
 
   it('finds the Menu tab by menuTab, Menu while the sheet is shut and Close while it is open, when the open sheet hides it from a role locator', async () => {
@@ -520,12 +536,13 @@ describe('what the helper finds of the phone\'s dock (WS02 step 7)', () => {
     expect(all(menuControl(page))).toEqual(banner().getAllByRole('button', { name: NEW_NAMES.menu }))
   })
 
-  it('builds each of the four from the slots and the dialog button, never from a name', () => {
+  it('builds each of the four from the slots alone, never from a name or from the dialog button, which another control may be (since WS02 step 8)', () => {
     const source = readFileSync(join(ROOT, 'test/a11y/chrome.ts'), 'utf8')
     expect(source).toContain("export const dock = (page: Page): Locator => page.locator(SITE.dock)")
     expect(source).toContain("export const tabBar = (page: Page): Locator => page.locator(SITE.tabBar)")
-    expect(source).toContain("export const menuTab = (page: Page): Locator => tabBar(page).locator('button[aria-haspopup=\"dialog\"]')")
-    expect(source).toContain('page.locator(`${SITE.tabBar} button[aria-haspopup="dialog"], [data-slot="site-header"] button[aria-haspopup="dialog"], [data-slot="app-bar"] button[aria-haspopup="dialog"]`).last()')
-    expect([SITE.dock, SITE.tabBar]).toEqual(['[data-slot="bottom-dock"]', '[data-slot="tab-bar"]'])
+    expect(source).toContain('export const menuTab = (page: Page): Locator => tabBar(page).locator(SITE.menuTab)')
+    expect(source).toContain('page.locator(`${SITE.tabBar} ${SITE.menuTab}, [data-slot="site-header"] ${SITE.menuButton}, [data-slot="app-bar"] ${SITE.menuButton}`).last()')
+    expect(source).not.toContain('aria-haspopup')
+    expect([SITE.dock, SITE.tabBar, SITE.menuButton, SITE.menuTab]).toEqual(['[data-slot="bottom-dock"]', '[data-slot="tab-bar"]', '[data-slot="menu-button"]', '[data-slot="menu-tab"]'])
   })
 })

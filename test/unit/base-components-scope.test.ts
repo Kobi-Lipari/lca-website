@@ -67,9 +67,10 @@ describe('the new components are drawn on the fixture page only', () => {
     expect(drawnIn(/<StatusBadge\b[^>]*\bstatus=/)).toEqual([FIXTURE])
   })
 
-  it('only the fixture page, the new header and the Menu sheet draw the gold Button', () => {
-    // WS02 step 5's header draws Join LCA and Renew as the gold Button, its first place off the fixture page, and WS02 step 6's sheet does the same.
-    expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual(['src/components/layout/MobileMenu.tsx', 'src/components/layout/SiteHeader.tsx', FIXTURE].sort())
+  it('only the fixture page, the new header, the Menu sheet and the new footer draw the gold Button', () => {
+    // WS02 step 5's header draws Join LCA and Renew as the gold Button, its first place off the fixture page, WS02 step 6's sheet does the same,
+    // and so does WS02 step 8's new footer, in its brand block.
+    expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual(['src/components/layout/MobileMenu.tsx', 'src/components/layout/SiteFooter.tsx', 'src/components/layout/SiteHeader.tsx', FIXTURE].sort())
   })
 
   it('no caller gives StatusDot a label yet, so its one page caller shows its state\'s words', () => {

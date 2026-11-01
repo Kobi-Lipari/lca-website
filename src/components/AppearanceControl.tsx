@@ -1,12 +1,13 @@
 // src/components/AppearanceControl.tsx
 //
-// System · Light · Dark, for the new look. It sits in two places: the
-// current footer, on navy, behind newLook until the footer is rebuilt (its
-// default), and the Menu sheet of the new chrome
+// System · Light · Dark, for the new look. It sits in three places: today's
+// footer, on navy, behind newLook, with appearance-label (its defaults); the
+// new footer of the new chrome (src/components/layout/SiteFooter.tsx), on
+// navy, with a label id of its own; and the Menu sheet of the new chrome
 // (src/components/layout/MobileMenu.tsx), on the sheet's light ground, with
-// on="light" and a label id of its own, so a page that draws both never
-// holds one id twice. Both write the choice through the one module that
-// keeps it, so a pick in one shows in the other. System follows the device
+// on="light" and a label id of its own, so a page that draws two never
+// holds one id twice. Each writes the choice through the one module that
+// keeps it, so a pick in one shows in the others. System follows the device
 // setting; the choice is kept in this browser only. The pressed option is
 // marked in words for screen readers (aria-pressed) and on screen by its
 // fill, border and weight, never by colour alone.
@@ -22,7 +23,7 @@ const LABELS: Record<Appearance, string> = {
 
 interface AppearanceControlProps {
   className?: string
-  /** The id of its label, which names its group: the footer's is appearance-label, so another place gives its own. */
+  /** The id of its label, which names its group: today's footer's is appearance-label, so the new footer and the sheet give their own. */
   labelId?: string
   /**
    * The ground it is drawn on: navy, the footer's, where its words and lines

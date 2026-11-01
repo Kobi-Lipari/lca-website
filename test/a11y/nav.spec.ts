@@ -121,6 +121,56 @@
 //   with the focus back on the Menu tab once it closes. AC16 at 390: Log in
 //   on the tab bar on a page with a query and a hash hands /login that whole
 //   address, and on /forgot-password the page that page was handed.
+// - The new footer (WS02 step 8), which the a11y-on build draws at every
+//   width. AC7 at 390 by 844 and 1280 by 800, light and dark: the Contact
+//   column opens with LouisianaChess@gmail.com as a mailto link, and the
+//   trust line ends with "Site last updated" and a <time> whose dateTime is
+//   the page's build-date, an instant no later than the test's own now, and
+//   whose words are that instant's Louisiana day with its weekday and year.
+//   AC8 and AC11 at both sizes: the footer's links and buttons are the
+//   entries' words and addresses in their order, Play's four, Community's
+//   five, About LCA's five and Contact's five, the brand block's two and the
+//   trust line's two; and Board & regions, Bylaws & rules, Minutes, State
+//   champions, Scholastic and Contact each name one page, in the same words
+//   wherever the header, the sheet, the tab bar and the footer draw a link to
+//   it. AC13 at 390 by 844 on /, /tournaments and /about from a fresh load:
+//   Tab reaches "Skip to content" first, the tab bar's four tabs right after
+//   the main's last control, then the footer's Join LCA and Donate, its four
+//   fold buttons, Contact's open, Contact's links, the trust line's two links
+//   and the three Appearance buttons; Enter opens each closed fold and Tab
+//   reaches each of its links, so every link of the footer is reached by
+//   keyboard, none of them under the dock. The fold at 390: each column its
+//   own switch, kept across 768 pixels and a change of page, and nothing
+//   moving whether reduced motion is asked for or not; at 768, 1023 and 1280
+//   plain headings over every list. With the browser's default font at 20,
+//   24 and 14 pixels, where the stylesheet's rem and the window's pixels
+//   fall on either side of 768 or 1024, the layout follows the fold: at 800
+//   and 1100 plain headings over the tablet's two columns and the desktop's
+//   five parts, each heading in line with its links and the trust line in
+//   rows with its dots, and at 700 the four fold buttons over one column,
+//   the trust line one fact a line. AC18 at 1280: the governance links and
+//   State champions at today's addresses, each page there when followed, and
+//   no Calendar, Results or Suggest a club. Q32 on / at 1280 by 800: the logo
+//   with nothing behind it but the footer's navy, from the 56 pixel file at a
+//   density of 1 and the 112 pixel file at a density of 2, the bytes fetched
+//   those of each file in the repository, and no response carrying the 400
+//   pixel file's bytes; on /about the footer's logo is the 56 pixel file
+//   beside the page's own 400 pixel one. The gold ring on the footer's navy
+//   at 3:1 or more, light and dark; axe on the footer on / and /about at 390
+//   and 1280, light and dark, its folds as they start, all open and all
+//   closed, each scan made with the whole footer on the screen, clear of the
+//   bars, finding nothing. The two pages the footer's links reach:
+//   /contact?subject=club and ?subject=membership fill the subject with the
+//   links' words, a press on the footer's links while on /contact fills it
+//   again, and /contact alone leaves it empty; /clubs#map brings the map
+//   under the header once the clubs load, and a press on Club map brings it
+//   back. Tab from the main's last control reaches the four tabs and then the
+//   footer's first control, and Shift+Tab goes back the same way. The Menu
+//   tab and the bars' Menu buttons are found by their slots, and /Clubs and
+//   /SCHOLASTIC mark the current tab, the app bar's section and the header's
+//   section as /clubs and /scholastic do. On a11y-off the contact page fills
+//   nothing whatever the address, and the clubs page's map has no id and the
+//   page never scrolls to #map.
 //
 // Reads only; the announcement and the impersonation target are stubbed in
 // the browser with made-up fixture data in the seed's style, and the people
@@ -133,12 +183,14 @@
 // test/a11y/chrome.ts. The checks here that hold for today's header alone
 // (the first Tab on a11y-off going into it, the stand-in below 1024 pixels
 // and today's header on a11y-off) say so through it, and so do the checks
-// that hold for the new header alone.
+// that hold for the new header or the new footer alone.
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import AxeBuilder from '@axe-core/playwright'
-import type { Browser, Locator, Page, Route, TestInfo } from '@playwright/test'
+import type { Browser, Locator, Page, Response, Route, TestInfo } from '@playwright/test'
 import {
-  CHROME_NAMES, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, ifNew, ifToday, menuControl, menuSheet, menuTab, onlyNew, onlyToday, rookMark,
-  sheetAppearance, siteHeader, tabBar, widthOf, type SiteSelectors,
+  CHROME_NAMES, NEW_NAMES, SITE, TODAYS_NAMES, appearanceControl, brandLink, footerLogo, ifNew, ifToday, menuControl, menuSheet, menuTab, onlyNew, onlyToday,
+  rookMark, sheetAppearance, siteFooter, siteHeader, tabBar, widthOf, type SiteSelectors,
 } from './chrome'
 import { sessionInPage, signInAs, waitForMemberAnswers } from './signedIn'
 import { expect, openDrawn, prepareLocalPage, test } from './support'
@@ -2770,6 +2822,1032 @@ test.describe('the phone\'s tab bar and the Menu tab with the chrome on (WS02 st
     await pressAt(page, logIn())
     await expect(page).toHaveURL(/\/login$/)
     expect(((await handed()) as { from?: unknown } | null)?.from).toBeUndefined()
+    expect(external).toEqual([])
+  })
+})
+
+// ── The new footer (AC7, AC8, AC11, AC13, AC18 and Q32) ────────────────────
+
+/** The association's address, the Contact column's first link. */
+const EMAIL = 'LouisianaChess@gmail.com'
+/**
+ * The new footer's four columns on the a11y-on build, with newTournaments,
+ * newNews, newClubs, newAbout and newMembership off, as src/lib/nav.ts
+ * gives them: each column's heading and its links, each link's words and
+ * address, in order. Donate has no address: it opens the donation dialog.
+ * The browser tests cannot load that file; test/unit/footer.test.tsx holds
+ * the footer to it, entry by entry.
+ */
+const FOOTER_COLUMNS = [
+  ['Play', [['Tournaments', '/tournaments'], ['Scholastic', '/scholastic'], ['State champions', '/champions'], ['Scoresheet scanner', '/scanner']]],
+  ['Community', [['Clubs', '/clubs'], ['Club map', '/clubs#map'], ['List or update your club', '/contact?subject=club'], ['News', '/news'], FACEBOOK_ROW]],
+  ['About LCA', [['About LCA', '/about'], ['Board & regions', '/governance/board'], ['Bylaws & rules', '/governance/bylaws'], ['Minutes', '/governance/minutes'], ['Annual meeting', '/meeting']]],
+  ['Contact', [[EMAIL, `mailto:${EMAIL}`], ['Contact', '/contact'], ['Membership help', '/contact?subject=membership'], ['Website help', '/support'], ['Donate', null]]],
+] as const
+/** The brand block's two buttons for a visitor signed out: the join slot, Join LCA, and Donate. */
+const FOOTER_BRAND = [['Join LCA', '/membership'], ['Donate', null]] as const
+/** The trust line's two links. */
+const FOOTER_TRUST = [['Bylaws & rules', '/governance/bylaws'], ['Minutes', '/governance/minutes']] as const
+/** The trust line's facts, before its links. */
+const TRUST_FACTS = ['US Chess state affiliate', 'Louisiana\'s chess community since 1915'] as const
+/** The Appearance control's three buttons. */
+const APPEARANCE_BUTTONS = ['System', 'Light', 'Dark'] as const
+/**
+ * The labels that name one page each (AC11), with that page's address on
+ * the a11y-on build: wherever the chrome draws a link to the page, its
+ * words are the label, and no link with those words goes anywhere else.
+ */
+const ONE_LABEL = [
+  ['Board & regions', '/governance/board'],
+  ['Bylaws & rules', '/governance/bylaws'],
+  ['Minutes', '/governance/minutes'],
+  ['State champions', '/champions'],
+  ['Scholastic', '/scholastic'],
+  ['Contact', '/contact'],
+] as const
+/** The links the a11y-on build leaves out of the footer, since it turns none of their switches on, and the pages they wait for. */
+const FOOTER_WAITING = ['Calendar', 'Results', 'Suggest a club'] as const
+const NOT_BUILT = ['/tournaments?view=calendar', '/results', '/clubs/suggest', '/about/board', '/about/bylaws', '/about/minutes', '/about/champions', '/give'] as const
+/** The map's place as the test builds draw it, which hold no maps key (test/a11y/global-setup.ts): there once the clubs have loaded. */
+const MAP_STAND_IN = /to enable the map\.$/
+
+/** A footer control as the focus names it: a link by its words, or a button by its words when it has no address. */
+const stopName = (words: string, href: string | null) => `${href === null ? 'button' : 'a'} ${words}`
+
+/** The footer's controls in the page's order below 768 pixels for a visitor signed out, each with what it says of its list: Contact's fold is the one open. */
+const FOLDED_ORDER: readonly (readonly [string, string | null])[] = [
+  ...FOOTER_BRAND.map(([words, href]) => [stopName(words, href), null] as const),
+  ...FOOTER_COLUMNS.map(([title]) => [`button ${title}`, String(title === 'Contact')] as const),
+  ...FOOTER_COLUMNS[3][1].map(([words, href]) => [stopName(words, href), null] as const),
+  ...FOOTER_TRUST.map(([words, href]) => [stopName(words, href), null] as const),
+  ...APPEARANCE_BUTTONS.map((words) => [`button ${words}`, null] as const),
+]
+
+/** The repository's root, where the logo's files are read from. */
+const ROOT = join(import.meta.dirname, '../..')
+/** The logo's three files as the repository holds them: the 400 pixel original, and the two sized for the footer (WS02 step 8). */
+const LOGO_400 = readFileSync(join(ROOT, 'src/assets/lca-logo.webp'))
+const LOGO_56 = readFileSync(join(ROOT, 'src/assets/lca-logo-56.webp'))
+const LOGO_112 = readFileSync(join(ROOT, 'src/assets/lca-logo-112.webp'))
+/** The address the build gives each sized file: its name with its hash. Which file was fetched is proved by its bytes, not by its name. */
+const LOGO_56_PATH = /^\/assets\/lca-logo-56-[\w-]+\.webp$/
+const LOGO_112_PATH = /^\/assets\/lca-logo-112-[\w-]+\.webp$/
+
+/** The width and height in a lossy WebP file's frame header. */
+function webpSize(file: Buffer): [number, number] {
+  expect(file.subarray(0, 4).toString('latin1')).toBe('RIFF')
+  expect(file.subarray(8, 12).toString('latin1')).toBe('WEBP')
+  expect(file.subarray(12, 16).toString('latin1')).toBe('VP8 ')
+  expect(file.subarray(23, 26).toString('hex')).toBe('9d012a')
+  return [file.readUInt16LE(26) & 0x3fff, file.readUInt16LE(28) & 0x3fff]
+}
+
+/** An instant's day in Louisiana, as the site writes a date with its year: "Sat, Oct 31, 2026". */
+function louisianaDay(instant: string): string {
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).formatToParts(new Date(instant))
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value
+  return `${part('weekday')}, ${part('month')} ${part('day')}, ${part('year')}`
+}
+
+/**
+ * The new footer as drawn: its slot and ring ground, the brand block's
+ * name, sentence and controls, each column's name, heading and links with
+ * its fold, the trust line's items, links, dots and date beside the page's
+ * build-date, and the Appearance control's buttons. Each control with its
+ * tag, its words, its address and how it opens.
+ */
+function footerAsDrawn(page: Page) {
+  return page.evaluate((site) => {
+    const footer = document.querySelector(site.newFooter)!
+    const words = (el: Element | null) => (el?.textContent ?? '').replace(/\s+/g, ' ').trim()
+    const control = (el: Element) => ({ kind: el.tagName.toLowerCase(), words: words(el), href: el.getAttribute('href'), target: el.getAttribute('target'), rel: el.getAttribute('rel') })
+    const brand = footer.querySelector(site.footerBrand)!
+    const trust = footer.querySelector(site.trustLine)!
+    const time = trust.querySelector('time')
+    return {
+      slot: footer.getAttribute('data-slot'),
+      ring: footer.getAttribute('data-ring-ground'),
+      ground: getComputedStyle(footer).backgroundColor,
+      name: words(brand.querySelector('span')),
+      sentence: words(brand.querySelector('p')),
+      brand: [...brand.querySelectorAll('a, button')].map(control),
+      columns: [...footer.querySelectorAll(site.footerColumn)].map((nav) => {
+        const heading = nav.querySelector(':scope > h2')
+        const toggle = heading?.querySelector('button') ?? null
+        const list = nav.querySelector(':scope > ul')!
+        return {
+          tag: nav.tagName.toLowerCase(),
+          name: words(document.getElementById(nav.getAttribute('aria-labelledby') ?? '')),
+          heading: words(heading),
+          fold: toggle ? { expanded: toggle.getAttribute('aria-expanded'), names: toggle.getAttribute('aria-controls') === list.id } : null,
+          shown: list.getClientRects().length > 0,
+          links: [...list.querySelectorAll(':scope > li > a, :scope > li > button')].map(control),
+        }
+      }),
+      trust: {
+        name: trust.getAttribute('aria-label'),
+        items: [...trust.children].map((li) => words(li.lastElementChild)),
+        dots: [...trust.querySelectorAll(':scope > li > [aria-hidden="true"]')].map((dot) => words(dot)),
+        links: [...trust.querySelectorAll('a, button')].map(control),
+        time: time ? { dateTime: time.getAttribute('datetime') ?? '', words: words(time) } : null,
+        meta: document.querySelector('meta[name="build-date"]')?.getAttribute('content') ?? null,
+      },
+      appearance: [...footer.querySelectorAll(`${site.footerBase} [role="group"] button`)].map((button) => words(button)),
+      controls: footer.querySelectorAll('a, button').length,
+    }
+  }, SITE)
+}
+
+/** The four fold buttons below 768 pixels, in the columns' order. */
+const foldButtons = (page: Page) => siteFooter(page).locator(`${SITE.footerColumn} > h2 > button`)
+
+/**
+ * Each column's fold as drawn: its heading's words, whether the heading
+ * holds a button, what the button says of its list and whether it names
+ * it, whether the list is hidden and shows, the chevron's turn, and the
+ * transitions and animations of the button, the chevron and the list.
+ */
+const foldsAsDrawn = (page: Page) =>
+  siteFooter(page).locator(SITE.footerColumn).evaluateAll((navs) =>
+    navs.map((nav) => {
+      const heading = nav.querySelector(':scope > h2')!
+      const button = heading.querySelector('button')
+      const chevron = button?.querySelector('svg') ?? null
+      const list = nav.querySelector(':scope > ul') as HTMLElement
+      const parts = [button, chevron, list].filter((el): el is NonNullable<typeof el> => el !== null)
+      return {
+        words: (heading.textContent ?? '').trim(),
+        button: button !== null,
+        expanded: button?.getAttribute('aria-expanded') ?? null,
+        names: button !== null && button.getAttribute('aria-controls') === list.id,
+        hidden: list.hidden,
+        shown: list.getClientRects().length > 0,
+        turn: chevron ? getComputedStyle(chevron).rotate : null,
+        transitions: parts.map((el) => getComputedStyle(el).transitionDuration),
+        animations: parts.flatMap((el) => el.getAnimations()).length,
+      }
+    }),
+  )
+
+/** Opens every fold, or closes every one, by a press on each button that says otherwise. */
+async function setFolds(page: Page, open: boolean) {
+  const buttons = foldButtons(page)
+  const count = await buttons.count()
+  for (let i = 0; i < count; i++) {
+    const button = buttons.nth(i)
+    if ((await button.getAttribute('aria-expanded')) !== String(open)) await button.click()
+    await expect(button).toHaveAttribute('aria-expanded', String(open))
+  }
+}
+
+/**
+ * Puts the whole footer on the screen, clear of the bars that stay in the
+ * window: the window made tall enough to hold it under the bar, and the
+ * page scrolled to its end, where the footer's last line ends at the dock's
+ * top. axe's target-size rule counts a link that a fixed bar lies over at
+ * the moment of the scan as too small to press, where a person scrolls it
+ * out from under the bar; so a scan made this way reads every control of
+ * the footer whole, as it is drawn.
+ */
+async function wholeFooterInView(page: Page, width: number, height: number) {
+  const tall = await siteFooter(page).evaluate((footer) => Math.ceil(footer.getBoundingClientRect().height))
+  await page.setViewportSize({ width, height: Math.max(height, tall + 160) })
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight))
+  await frames(page)
+  const clear = await page.evaluate((site) => {
+    const box = document.querySelector(site.newFooter)!.getBoundingClientRect()
+    const bar = document.querySelector(site.header)?.getBoundingClientRect() ?? null
+    return box.top >= (bar?.bottom ?? 0) - 0.5 && box.bottom <= window.innerHeight + 0.5
+  }, SITE)
+  expect(clear, `at ${width}: the whole footer on the screen, below the bar`).toBe(true)
+}
+
+/** Every link inside a part of the chrome, with the words that name its page (a sheet section's name without its note, a menu row's without "You are here", a tab's without its icon) and its address. */
+const namedLinks = (part: Locator) =>
+  part.evaluate((root) =>
+    [...root.querySelectorAll('a[href]')].map((a) => {
+      const name = a.querySelector(':scope > span > span:first-child') ?? a.querySelector(':scope > span:not([aria-hidden="true"])') ?? a
+      return { words: (name.textContent ?? '').replace(/\s+/g, ' ').trim(), href: a.getAttribute('href') }
+    }),
+  )
+
+/** A top and a bottom, as a box is read against the bars. */
+interface Edges {
+  top: number
+  bottom: number
+}
+
+/** Whether a box lies under another, by more than half a pixel. */
+const under = (box: Edges, over: Edges | null) => !!over && box.bottom > over.top + 0.5 && box.top < over.bottom - 0.5
+
+/** One stop of a walk with the keyboard: the control as the focus names it, the part of the frame it is in, what it says of a list it opens, and its box against the bar's and the dock's. */
+interface WalkStop {
+  again: boolean
+  name: string
+  part: 'skip' | 'bar' | 'main' | 'dock' | 'footer' | 'other'
+  expanded: string | null
+  controls: string | null
+  box: Edges
+  bar: Edges | null
+  dock: Edges | null
+}
+
+/** Where the focus is, as a stop of a walk, or null while it is on nothing; the page remembers each control, so a walk knows when the focus comes round. */
+const walkStop = (page: Page): Promise<WalkStop | null> =>
+  page.evaluate((site) => {
+    const el = document.activeElement as HTMLElement | null
+    if (!el || el === document.body || el === document.documentElement) return null
+    const remembered = window as unknown as { fxWalked?: WeakSet<Element> }
+    remembered.fxWalked ??= new WeakSet()
+    const again = remembered.fxWalked.has(el)
+    remembered.fxWalked.add(el)
+    const edges = (r: DOMRect) => ({ top: r.top, bottom: r.bottom })
+    const bar = document.querySelector(site.header)
+    const drawnDock = document.querySelector(site.dock)
+    const part = el.hasAttribute('data-skip-link')
+      ? 'skip'
+      : drawnDock?.contains(el)
+        ? 'dock'
+        : document.querySelector(site.newFooter)?.contains(el)
+          ? 'footer'
+          : document.querySelector('main')?.contains(el)
+            ? 'main'
+            : bar?.contains(el)
+              ? 'bar'
+              : 'other'
+    return {
+      again,
+      name: `${el.tagName.toLowerCase()} ${(el.getAttribute('aria-label') ?? el.textContent ?? '').replace(/\s+/g, ' ').trim()}`,
+      part: part as WalkStop['part'],
+      expanded: el.getAttribute('aria-expanded'),
+      controls: el.getAttribute('aria-controls'),
+      box: edges(el.getBoundingClientRect()),
+      bar: bar ? edges(bar.getBoundingClientRect()) : null,
+      dock: drawnDock ? edges(drawnDock.getBoundingClientRect()) : null,
+    }
+  }, SITE)
+
+/** Tab from the top of the page, one press at a time, until the focus leaves the page or comes round again: every stop on the way. */
+async function walkFromTop(page: Page): Promise<WalkStop[]> {
+  const stops: WalkStop[] = []
+  for (let n = 0; n < 400; n++) {
+    await page.keyboard.press('Tab')
+    const at = await walkStop(page)
+    if (at === null) {
+      if (stops.length > 0) break
+      continue
+    }
+    if (at.again) break
+    stops.push(at)
+  }
+  return stops
+}
+
+/** A tab of the tab bar as the focus names it, by its place: the first three are links, and the Menu tab a button. */
+const asTabStop = (words: string, i: number) => `${i < 3 ? 'a' : 'button'} ${words}`
+
+/**
+ * The footer's logo as drawn: the file the browser took and its natural
+ * size, its box, its srcset and its words, what is painted behind it
+ * between it and the footer and what recolours it, the footer's own
+ * ground, and whether it is what is drawn at its middle.
+ */
+const sizedLogoAsDrawn = async (logo: Locator) => {
+  await expect.poll(() => logo.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true)
+  return logo.evaluate((img: HTMLImageElement, site) => {
+    const footer = img.closest(site.newFooter)!
+    const behind: string[] = []
+    const recolour: string[] = []
+    for (let at: Element | null = img; at && at !== footer; at = at.parentElement) {
+      const s = getComputedStyle(at)
+      const tag = `<${at.tagName.toLowerCase()}>`
+      if (s.backgroundColor !== 'rgba(0, 0, 0, 0)' || s.backgroundImage !== 'none' || s.boxShadow !== 'none') behind.push(`${tag} ${s.backgroundColor} ${s.backgroundImage} ${s.boxShadow}`)
+      if (s.filter !== 'none' || s.opacity !== '1' || s.mixBlendMode !== 'normal') recolour.push(`${tag} filter ${s.filter}, opacity ${s.opacity}, blend ${s.mixBlendMode}`)
+    }
+    const box = img.getBoundingClientRect()
+    img.scrollIntoView({ block: 'center' })
+    const middle = img.getBoundingClientRect()
+    const atMiddle = document.elementFromPoint(middle.x + middle.width / 2, middle.y + middle.height / 2)
+    return {
+      path: new URL(img.currentSrc).pathname,
+      natural: [img.naturalWidth, img.naturalHeight],
+      box: [box.width, box.height],
+      srcset: img.getAttribute('srcset'),
+      alt: img.getAttribute('alt'),
+      fit: getComputedStyle(img).objectFit,
+      behind,
+      recolour,
+      ground: getComputedStyle(footer).backgroundColor,
+      onTop: atMiddle === img,
+    }
+  }, SITE)
+}
+
+/** Every response a page receives from now on, kept to read its bytes, and how many of the page's requests are still on their way. */
+function watchResponses(page: Page) {
+  const seen: Response[] = []
+  let open = 0
+  page.on('request', () => {
+    open += 1
+  })
+  page.on('requestfinished', () => {
+    open -= 1
+  })
+  page.on('requestfailed', () => {
+    open -= 1
+  })
+  page.on('response', (response) => {
+    seen.push(response)
+  })
+  return { seen, open: () => open }
+}
+
+/** The bytes of each response that has any, with its address: a redirect has none. */
+async function bodiesOf(responses: readonly Response[]) {
+  const bodies = await Promise.all(responses.map(async (response) => {
+    try {
+      return { url: response.url(), body: await response.body() }
+    } catch {
+      return null
+    }
+  }))
+  return bodies.filter((b): b is { url: string; body: Buffer } => b !== null)
+}
+
+/**
+ * Scrolls through the page to its end, half a window at a time, so every
+ * image that loads as it nears the screen has been asked for, then waits
+ * until nothing the page asked for is still on its way.
+ */
+async function throughThePage(page: Page, open: () => number) {
+  await page.evaluate(async () => {
+    for (let y = 0; y < document.documentElement.scrollHeight; y += window.innerHeight / 2) {
+      window.scrollTo(0, y)
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))
+    }
+  })
+  await expect.poll(open, 'every request the page made answered').toBe(0)
+}
+
+test.describe('the new footer with the chrome on (WS02 step 8)', () => {
+  test.use({ reducedMotion: 'reduce' })
+
+  test('a11y-on at 390 by 844 and 1280 by 800, light and dark: AC7, the Contact column opens with LouisianaChess@gmail.com as a mailto link, and the trust line ends with "Site last updated" and the build\'s date, a <time> whose dateTime is the page\'s build-date, an instant no later than now, and whose words are its Louisiana day with its weekday and year', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [390, 1280], 'the new footer\'s Contact column and trust line')
+    const seen: Record<string, unknown> = {}
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      for (const [width, height] of SIZES) {
+        await page.setViewportSize({ width, height })
+        await openQuiet(page, '/')
+        const where = `${scheme} at ${width}`
+        // The Contact column, open below 768 pixels as it starts, and its first link the association's address.
+        const email = siteFooter(page).getByRole('navigation', { name: 'Contact', exact: true }).getByRole('listitem').first().getByRole('link')
+        await expect(email, where).toBeVisible()
+        await expect(email, where).toHaveAccessibleName(EMAIL)
+        await expect(email, where).toHaveAttribute('href', `mailto:${EMAIL}`)
+        expect(await email.getAttribute('target'), `${where}: the mail program, not a new tab`).toBeNull()
+        await expect(email.locator('svg'), `${where}: its icon hidden from screen readers`).toHaveAttribute('aria-hidden', 'true')
+        // The trust line, its date read against the clock the moment it is read.
+        const drawn = await footerAsDrawn(page)
+        const now = Date.now()
+        const time = drawn.trust.time
+        expect(time, `${where}: the date`).not.toBeNull()
+        expect(drawn.trust.name, where).toBe('About this site')
+        expect(drawn.trust.items, where).toEqual([...TRUST_FACTS, ...FOOTER_TRUST.map(([words]) => words), `Site last updated ${time!.words}`])
+        expect(time!.dateTime, `${where}: the page's build-date`).toBe(drawn.trust.meta)
+        expect(time!.dateTime, where).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+        expect(Date.parse(time!.dateTime), `${where}: the build's instant, no later than now`).toBeLessThanOrEqual(now)
+        expect(time!.words, where).toMatch(/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat), (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}, \d{4}$/)
+        expect(time!.words, `${where}: the Louisiana day of ${time!.dateTime}`).toBe(louisianaDay(time!.dateTime))
+        // A middle dot between the items from 768 pixels up, hidden from screen readers, and one item a line below.
+        expect(drawn.trust.dots, where).toEqual(width < 768 ? [] : ['·', '·', '·', '·'])
+        seen[where] = drawn.trust
+      }
+    }
+    await testInfo.attach('footer-trust-line.json', { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844 and 1280 by 800: AC8 and AC11, the footer\'s links and buttons are the entries\' words and addresses in their order, Play\'s four, Community\'s five, About LCA\'s five and Contact\'s five, the brand block\'s two and the trust line\'s two; and Board & regions, Bylaws & rules, Minutes, State champions, Scholastic and Contact each name one page, in the same words wherever the header, the sheet, the tab bar and the footer draw a link to it', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [390, 1280], 'the new footer\'s links and buttons')
+    onlyNew(testInfo, 'header', [390, 1280], 'the desktop header\'s About menu, the Menu sheet and the tab bar')
+    /** A link or a button as the footer draws an entry: a page in the same tab, the address and the Facebook page leaving the site, the Facebook page in a new tab. */
+    const entry = ([words, href]: readonly [string, string | null]) => ({
+      kind: href === null ? 'button' : 'a',
+      words,
+      href,
+      target: href?.startsWith('https:') ? '_blank' : null,
+      rel: href === null || href.startsWith('/') ? null : 'noopener noreferrer',
+    })
+    const places: Record<string, { words: string; href: string | null }[]> = {}
+    for (const [width, height] of SIZES) {
+      await page.setViewportSize({ width, height })
+      await openQuiet(page, '/')
+      const drawn = await footerAsDrawn(page)
+      const where = `at ${width}`
+      expect([drawn.slot, drawn.ring, drawn.ground], where).toEqual(['site-footer', 'navy', NAVY])
+      expect([drawn.name, drawn.sentence], `${where}: the brand block's words`).toEqual(['Louisiana Chess Association', 'Tournaments, clubs and scholastic chess across the state, run by volunteers.'])
+      expect(drawn.brand, `${where}: the brand block's buttons`).toEqual(FOOTER_BRAND.map(entry))
+      expect(drawn.columns.map((c) => [c.tag, c.name, c.heading]), `${where}: four navs, each named by its heading`).toEqual(FOOTER_COLUMNS.map(([title]) => ['nav', title, title]))
+      for (const [i, [title, links]] of FOOTER_COLUMNS.entries()) expect(drawn.columns[i].links, `${where}: ${title}`).toEqual(links.map(entry))
+      expect(drawn.trust.links, `${where}: the trust line`).toEqual(FOOTER_TRUST.map(entry))
+      expect(drawn.appearance, `${where}: the Appearance control`).toEqual([...APPEARANCE_BUTTONS])
+      const links = FOOTER_COLUMNS.reduce((sum, [, column]) => sum + column.length, 0)
+      const folds = width < 768 ? FOOTER_COLUMNS.length : 0
+      expect(drawn.controls, `${where}: no other link or button`).toBe(FOOTER_BRAND.length + folds + links + FOOTER_TRUST.length + APPEARANCE_BUTTONS.length)
+      places[`the footer ${where}`] = await namedLinks(siteFooter(page))
+      if (width >= 1024) {
+        await aboutButton(page).click()
+        await expect(aboutPanel(page)).toBeVisible()
+        places[`the header ${where}, its About menu open`] = await namedLinks(siteHeader(page))
+        await page.keyboard.press('Escape')
+        await expect(aboutPanel(page)).toHaveCount(0)
+      } else {
+        places[`the tab bar ${where}`] = await namedLinks(tabBar(page))
+        const { sheet } = await openSheet(page)
+        await sheet.getByRole('button', { name: NEW_NAMES.about, exact: true }).click()
+        places[`the sheet ${where}, its About section open`] = await namedLinks(sheet)
+        await page.keyboard.press('Escape')
+        await expect(menuSheet(page)).toHaveCount(0)
+      }
+    }
+    // How many links each part draws to each of the six pages, in ONE_LABEL's order: the tab bar draws none of them,
+    // the footer's trust line repeats Bylaws & rules and Minutes, and the sheet draws Contact in its About section and among its links.
+    const drawnTo: Record<string, readonly number[]> = {
+      'the footer at 390': [1, 2, 2, 1, 1, 1],
+      'the tab bar at 390': [0, 0, 0, 0, 0, 0],
+      'the sheet at 390, its About section open': [1, 1, 1, 1, 1, 2],
+      'the footer at 1280': [1, 2, 2, 1, 1, 1],
+      'the header at 1280, its About menu open': [1, 1, 1, 1, 1, 1],
+    }
+    expect(Object.keys(places)).toEqual(Object.keys(drawnTo))
+    for (const [where, links] of Object.entries(places)) {
+      for (const [i, [label, href]] of ONE_LABEL.entries()) {
+        const times = drawnTo[where][i]
+        expect(links.filter((l) => l.href === href).map((l) => l.words), `${where}: every link to ${href} reads ${label}`).toEqual(Array(times).fill(label))
+        expect(links.filter((l) => l.words === label).map((l) => l.href), `${where}: every link reading ${label} goes to ${href}`).toEqual(Array(times).fill(href))
+      }
+    }
+    await testInfo.attach('footer-one-label.json', { body: JSON.stringify(places, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  for (const route of ['/', '/tournaments', '/about']) {
+    test(`a11y-on at 390 by 844, ${route} from a fresh load: AC13, Tab reaches "${SKIP}" first, the tab bar's four tabs right after the main's last control, then the footer's Join LCA, Donate, its four fold buttons with Contact's open, Contact's links, the trust line's two links and the three Appearance buttons; Enter opens each closed fold and Tab reaches each of its links, every control of the footer reached by keyboard and none under the dock`, async ({ page, external }, testInfo) => {
+      only(testInfo, ON, 'the new footer and the tab bar come with the chrome, on a11y-on')
+      onlyNew(testInfo, 'footer', [390], 'the new footer\'s fold')
+      onlyNew(testInfo, 'header', [390], 'the app bar beside the tab bar')
+      test.setTimeout(180_000)
+      await page.setViewportSize({ width: 390, height: 844 })
+      await openQuiet(page, route)
+      const stops = await walkFromTop(page)
+      const at = (i: number) => `${route}, stop ${i + 1}: ${stops[i]?.name}`
+      expect([stops[0]?.part, stops[0]?.name], 'the first stop').toEqual(['skip', `a ${SKIP}`])
+      const inDock = stops.flatMap((s, i) => (s.part === 'dock' ? [i] : []))
+      expect(inDock.length, `${route}: the tab bar's tabs`).toBe(4)
+      const first = inDock[0]
+      expect(inDock, `${route}: the four tabs, one after another`).toEqual([first, first + 1, first + 2, first + 3])
+      expect(stops.slice(first, first + 4).map((s) => s.name)).toEqual(tabWords().map(asTabStop))
+      expect(stops[first - 1]?.part, `${at(first - 1)}, the stop before the tabs, the main's last control`).toBe('main')
+      expect(stops.slice(0, first).filter((s) => s.part === 'footer').map((s) => s.name), `${route}: no stop of the footer before the tabs`).toEqual([])
+      const inFooter = stops.slice(first + 4)
+      expect(inFooter.map((s) => s.part), `${route}: the footer's stops, right after the tabs, to the walk's end`).toEqual(inFooter.map(() => 'footer'))
+      expect(inFooter.map((s) => [s.name, s.expanded]), `${route}: the footer's stops`).toEqual(FOLDED_ORDER)
+      // Each fold button names its list.
+      for (const stop of inFooter.filter((s) => s.expanded !== null)) expect(stop.controls, `${route}: ${stop.name} names its list`).toBeTruthy()
+      for (const [i, stop] of stops.entries()) {
+        if (stop.part === 'main' || stop.part === 'footer') expect(under(stop.box, stop.dock), `${at(i)} under the dock`).toBe(false)
+        if (stop.part === 'footer') expect(under(stop.box, stop.bar), `${at(i)} under the app bar`).toBe(false)
+      }
+      // Enter on each closed fold opens it and Tab reaches each of its links, so every control of the footer is reached by keyboard.
+      const reached = new Set(inFooter.map((s) => s.name))
+      await keyboardFocus(page, foldButtons(page).first())
+      for (const [i, [title, links]] of FOOTER_COLUMNS.entries()) {
+        const fold = foldButtons(page).nth(i)
+        await expect(fold, `${route}: on ${title}'s fold`).toBeFocused()
+        await expect(fold).toHaveText(title)
+        if ((await fold.getAttribute('aria-expanded')) === 'false') {
+          await page.keyboard.press('Enter')
+          await expect(fold, `${route}: Enter opens ${title}`).toHaveAttribute('aria-expanded', 'true')
+          await expect(fold).toBeFocused()
+        }
+        for (const [words, href] of links) {
+          await page.keyboard.press('Tab')
+          const stop = await walkStop(page)
+          expect([stop?.part, stop?.name], `${route}: ${title}'s links`).toEqual(['footer', stopName(words, href)])
+          expect(under(stop!.box, stop!.dock), `${route}: ${words} under the dock`).toBe(false)
+          expect(under(stop!.box, stop!.bar), `${route}: ${words} under the app bar`).toBe(false)
+          reached.add(stop!.name)
+        }
+        if (i < FOOTER_COLUMNS.length - 1) await page.keyboard.press('Tab')
+      }
+      const every = await siteFooter(page).locator('a, button').evaluateAll((els) => els.map((el) => `${el.tagName.toLowerCase()} ${(el.textContent ?? '').replace(/\s+/g, ' ').trim()}`))
+      expect(every.length, `${route}: the footer's controls`).toBe(30)
+      expect(every.filter((name) => !reached.has(name)), `${route}: every control of the footer reached by keyboard`).toEqual([])
+      await testInfo.attach(`footer-tab-order-${route.replace(/\//g, '') || 'home'}.json`, { body: JSON.stringify(stops.map((s) => `${s.part}: ${s.name}${s.expanded === null ? '' : ` (aria-expanded ${s.expanded})`}`), null, 2), contentType: 'application/json' })
+      expect(external).toEqual([])
+    })
+  }
+
+  test('a11y-on: the fold, at 390 by 844 each column\'s heading an h2 holding a button that names its list, Contact open and the rest closed, each its own switch, kept across 768 pixels and a change of page, nothing moving whether reduced motion is asked for or not; at 768 by 1024, 1023 by 800 and 1280 by 800 plain headings over every list; the brand block and the base line never fold', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [390, 768, 1023, 1024, 1280], 'the new footer\'s fold')
+    const heights: Record<string, number> = {}
+    const height = () => siteFooter(page).evaluate((el) => Math.round(el.getBoundingClientRect().height))
+    /** Each column's state, in the columns' order: whether its button says open. */
+    const opened = async () => (await foldsAsDrawn(page)).map((f) => f.expanded)
+    /** Whether anything in the folds moves or would move: every transition 0s and no animation. */
+    const still = async (what: string) => {
+      const folds = await foldsAsDrawn(page)
+      expect(folds.flatMap((f) => f.transitions).filter((d) => d !== '0s'), `${what}: a transition`).toEqual([])
+      expect(folds.map((f) => f.animations), `${what}: an animation`).toEqual([0, 0, 0, 0])
+    }
+    /** The brand block and the base line, drawn whole at every width, with nothing in them that opens or closes. */
+    const neverFolded = async (what: string) => {
+      await expect(siteFooter(page).locator(SITE.footerBrand), what).toBeVisible()
+      await expect(siteFooter(page).locator(SITE.footerBase), what).toBeVisible()
+      await expect(siteFooter(page).locator(`${SITE.footerBrand} [aria-expanded], ${SITE.footerBase} [aria-expanded]`), what).toHaveCount(0)
+    }
+    await page.setViewportSize({ width: 390, height: 844 })
+    for (const motion of ['reduce', 'no-preference'] as const) {
+      await page.emulateMedia({ reducedMotion: motion })
+      await openQuiet(page, '/')
+      const start = await foldsAsDrawn(page)
+      expect(start.map((f) => [f.words, f.button, f.expanded, f.names]), `${motion}: each heading a button naming its list`).toEqual(FOOTER_COLUMNS.map(([title]) => [title, true, String(title === 'Contact'), true]))
+      expect(start.map((f) => [f.hidden, f.shown]), `${motion}: the closed lists hidden`).toEqual(FOOTER_COLUMNS.map(([title]) => [title !== 'Contact', title === 'Contact']))
+      expect(start.map((f) => f.turn), `${motion}: the open fold's chevron turned`).toEqual(FOOTER_COLUMNS.map(([title]) => (title === 'Contact' ? '180deg' : 'none')))
+      await still(`${motion}, as it starts`)
+      await neverFolded(`${motion} at 390`)
+      if (motion === 'reduce') heights['390, as it starts'] = await height()
+      // Each column its own switch.
+      const buttons = foldButtons(page)
+      const steps = [
+        [0, ['true', 'false', 'false', 'true']],
+        [1, ['true', 'true', 'false', 'true']],
+        [0, ['false', 'true', 'false', 'true']],
+        [3, ['false', 'true', 'false', 'false']],
+      ] as const
+      for (const [i, after] of steps) {
+        await buttons.nth(i).click()
+        expect(await opened(), `${motion}: a press on ${FOOTER_COLUMNS[i][0]}`).toEqual(after)
+        await still(`${motion}, after a press on ${FOOTER_COLUMNS[i][0]}`)
+      }
+      expect((await foldsAsDrawn(page)).map((f) => [f.hidden, f.shown, f.turn]), motion).toEqual([[true, false, 'none'], [false, true, '180deg'], [true, false, 'none'], [true, false, 'none']])
+    }
+    // Every list open, for its height, then closed again but Community.
+    await setFolds(page, true)
+    heights['390, every list open'] = await height()
+    for (const i of [0, 2, 3]) await foldButtons(page).nth(i).click()
+    expect(await opened()).toEqual(['false', 'true', 'false', 'false'])
+    // Kept across 768 pixels: plain from 800, and as it was once the window narrows again.
+    await page.setViewportSize({ width: 800, height: 1024 })
+    await expect(foldButtons(page)).toHaveCount(0)
+    await page.setViewportSize({ width: 390, height: 844 })
+    await expect(foldButtons(page)).toHaveCount(4)
+    expect(await opened(), 'kept across 768 pixels').toEqual(['false', 'true', 'false', 'false'])
+    // Kept across a change of page: News, followed from the open Community column.
+    await siteFooter(page).getByRole('link', { name: 'News', exact: true }).click()
+    await expect(page).toHaveURL(/\/news$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'News & updates' })).toBeVisible()
+    await expect(siteFooter(page)).toBeVisible()
+    expect(await opened(), 'kept across a change of page').toEqual(['false', 'true', 'false', 'false'])
+    // From 768 pixels up: plain headings over every list, the brand block and the base line as below.
+    for (const [width, h] of [[768, 1024], [1023, 800], [1024, 800], [1280, 800]] as const) {
+      await page.setViewportSize({ width, height: h })
+      await openQuiet(page, '/')
+      const folds = await foldsAsDrawn(page)
+      expect(folds.map((f) => [f.words, f.button, f.expanded, f.hidden, f.shown]), `${width}: plain headings over every list`).toEqual(FOOTER_COLUMNS.map(([title]) => [title, false, null, false, true]))
+      await expect(siteFooter(page).locator(`${SITE.footerColumn} h2 button`), `${width}: no button in a heading`).toHaveCount(0)
+      await neverFolded(`at ${width}`)
+      heights[String(width)] = await height()
+    }
+    await testInfo.attach('footer-heights.json', { body: JSON.stringify(heights, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on with the browser\'s default font at 20 pixels at 800 by 1000, at 24 at 1100 by 1000 and at 14 at 700 by 1000, where the stylesheet\'s rem and the window\'s pixels fall on either side of 768 or 1024: the footer\'s layout follows its fold, plain headings over the tablet\'s two columns and the desktop\'s five parts, each heading in line with its links and the trust line in rows with its dots, and the four fold buttons over one column with the trust line one fact a line and no dot', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [700, 800, 1100], 'the new footer\'s layout and fold')
+    // The browser's own default font size, which the stylesheet's rem follow and the window's pixels do not.
+    const cdp = await page.context().newCDPSession(page)
+    const seen: Record<string, unknown> = {}
+    const CASES = [
+      { font: 20, width: 800, form: 'tablet', tracks: 2, pixels: '(min-width: 768px)', rem: '(width >= 48rem)' },
+      { font: 24, width: 1100, form: 'desktop', tracks: 5, pixels: '(min-width: 1024px)', rem: '(width >= 64rem)' },
+      { font: 14, width: 700, form: 'phone', tracks: 0, pixels: '(min-width: 768px)', rem: '(width >= 48rem)' },
+    ] as const
+    for (const { font, width, form, tracks, pixels, rem } of CASES) {
+      await cdp.send('Page.setFontSizes', { fontSizes: { standard: font } })
+      await page.setViewportSize({ width, height: 1000 })
+      await openQuiet(page, '/')
+      const where = `${form}'s layout at ${width} with a ${font} pixel font`
+      const drawn = await siteFooter(page).evaluate(
+        (footer, { site, queries }) => {
+          /** Where the first of an element's words starts on the screen. */
+          const wordsLeft = (el: Element) => {
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT)
+            for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+              if (!(node.textContent ?? '').trim()) continue
+              const range = document.createRange()
+              range.selectNodeContents(node)
+              return range.getBoundingClientRect().left
+            }
+            return null
+          }
+          const parts = footer.querySelector(site.footerBrand)!.parentElement!
+          const trust = footer.querySelector(site.trustLine)!
+          const template = getComputedStyle(parts).gridTemplateColumns
+          return {
+            queries: queries.map((q) => matchMedia(q).matches),
+            folds: footer.querySelectorAll(`${site.footerColumn} > h2 > button`).length,
+            parts: { display: getComputedStyle(parts).display, tracks: template === 'none' ? 0 : template.split(' ').length },
+            columns: [...footer.querySelectorAll(site.footerColumn)].map((nav) => {
+              const link = nav.querySelector(':scope > ul > li > a, :scope > ul > li > button')
+              const shown = link !== null && link.getClientRects().length > 0
+              return { words: wordsLeft(nav.querySelector(':scope > h2')!), link: shown ? link!.getBoundingClientRect().left : null }
+            }),
+            trust: {
+              display: getComputedStyle(trust).display,
+              dots: trust.querySelectorAll(':scope > li > [aria-hidden="true"]').length,
+              items: [...trust.children].map((li) => {
+                const r = li.getBoundingClientRect()
+                return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }
+              }),
+            },
+            sideways: footer.scrollWidth - footer.clientWidth,
+          }
+        },
+        { site: SITE, queries: [pixels, rem] },
+      )
+      seen[where] = drawn
+      // The two rulers part here: the window's pixels say one thing and the stylesheet's rem the other.
+      expect(drawn.queries, `${where}: ${pixels} and ${rem}`).toEqual(form === 'phone' ? [false, true] : [true, false])
+      expect(drawn.folds, `${where}: the fold buttons`).toBe(form === 'phone' ? 4 : 0)
+      expect(drawn.parts, `${where}: the parts`).toEqual(form === 'phone' ? { display: 'block', tracks: 0 } : { display: 'grid', tracks })
+      // Each heading's words in line with its links, wherever its list shows: Contact's alone below 768, as the fold starts.
+      const aligned = drawn.columns.filter((c) => c.link !== null)
+      expect(aligned.length, `${where}: the lists shown`).toBe(form === 'phone' ? 1 : 4)
+      for (const column of aligned) expect(Math.abs(column.words! - column.link!), `${where}: a heading and its first link`).toBeLessThanOrEqual(1)
+      // The trust line: rows with a dot between its items, or one fact a line with none.
+      expect([drawn.trust.display, drawn.trust.dots], `${where}: the trust line`).toEqual(form === 'phone' ? ['block', 0] : ['flex', 4])
+      drawn.trust.items.slice(1).forEach((item, i) => {
+        const before = drawn.trust.items[i]
+        if (form === 'phone') expect(item.top, `${where}: a fact on a line of its own`).toBeGreaterThanOrEqual(before.bottom - 0.5)
+        else if (Math.abs(item.top - before.top) < 1) expect(item.left, `${where}: two facts on one row`).toBeGreaterThanOrEqual(before.right - 0.5)
+      })
+      expect(drawn.sideways, `${where}: nothing wider than the footer`).toBeLessThanOrEqual(0)
+    }
+    await testInfo.attach('footer-at-other-font-sizes.json', { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 1280 by 800: AC18, the footer\'s governance links and State champions at today\'s addresses, in its columns and its trust line, each page there when followed; no Calendar, Results or Suggest a club, and no link to a page that is not built', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [1280], 'the new footer\'s links')
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await openQuiet(page, '/')
+    const drawn = await footerAsDrawn(page)
+    const links = [...drawn.brand, ...drawn.columns.flatMap((c) => c.links), ...drawn.trust.links]
+    const to = (words: string) => links.filter((l) => l.words === words).map((l) => l.href)
+    expect(to('Board & regions')).toEqual(['/governance/board'])
+    expect(to('Bylaws & rules'), 'the column\'s and the trust line\'s').toEqual(['/governance/bylaws', '/governance/bylaws'])
+    expect(to('Minutes'), 'the column\'s and the trust line\'s').toEqual(['/governance/minutes', '/governance/minutes'])
+    expect(to('State champions')).toEqual(['/champions'])
+    for (const words of FOOTER_WAITING) expect(to(words), `${words}, waiting for its switch`).toEqual([])
+    expect(links.filter((l) => (NOT_BUILT as readonly (string | null)[]).includes(l.href)), 'no link to a page that is not built').toEqual([])
+    // Each followed from the footer reaches its page, with its own heading.
+    const pages = [
+      [SITE.footerColumn, 'Board & regions', '/governance/board', 'Board & regional leadership'],
+      [SITE.footerColumn, 'Bylaws & rules', '/governance/bylaws', 'Bylaws & rules'],
+      [SITE.footerColumn, 'Minutes', '/governance/minutes', 'Meeting minutes'],
+      [SITE.footerColumn, 'State champions', '/champions', 'State champions'],
+      [SITE.trustLine, 'Bylaws & rules', '/governance/bylaws', 'Bylaws & rules'],
+      [SITE.trustLine, 'Minutes', '/governance/minutes', 'Meeting minutes'],
+    ] as const
+    for (const [part, words, path, heading] of pages) {
+      await openQuiet(page, '/')
+      await siteFooter(page).locator(part).getByRole('link', { name: words, exact: true }).click()
+      await expect(page, words).toHaveURL(new RegExp(`${path}$`))
+      await expect(page.getByRole('heading', { level: 1, name: heading }), `${words}: its page`).toBeVisible()
+      await expect(page.getByRole('heading', { name: 'Page not found' })).toHaveCount(0)
+    }
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 1280 by 800 on /: Q32, the footer\'s logo with nothing behind it but the footer\'s navy, from the 56 pixel file at a density of 1 and the 112 pixel file at a density of 2, the bytes fetched for each those of its file in the repository, and no response on the page carrying the bytes of the 400 pixel file; on /about the footer\'s logo is still the 56 pixel file beside the page\'s own 400 pixel one', async ({ page, browser, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [1280], 'the new footer\'s sized logo')
+    const report: Record<string, unknown> = {}
+    // A density of 1.
+    const watched = watchResponses(page)
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await openQuiet(page, '/')
+    await throughThePage(page, watched.open)
+    const one = await sizedLogoAsDrawn(footerLogo(page))
+    await expect(footerLogo(page)).toHaveCount(1)
+    expect(one.path, 'the 56 pixel file').toMatch(LOGO_56_PATH)
+    expect(one.natural).toEqual([56, 56])
+    expect(one.box, 'drawn 56 pixels wide').toEqual([56, 56])
+    expect(one.srcset, 'the two files at their densities').toMatch(/^\/assets\/lca-logo-56-[\w-]+\.webp 1x, \/assets\/lca-logo-112-[\w-]+\.webp 2x$/)
+    expect([one.alt, one.fit], 'its words empty beside the name, fitted').toEqual(['', 'contain'])
+    expect(one.behind, 'nothing painted behind it').toEqual([])
+    expect(one.ground, 'but the footer\'s navy').toBe(NAVY)
+    expect(one.recolour, 'nothing recolouring it').toEqual([])
+    expect(one.onTop, 'nothing drawn over it').toBe(true)
+    const bodies = await bodiesOf(watched.seen)
+    const fetched = bodies.find((b) => new URL(b.url).pathname === one.path)
+    expect(fetched, 'the 56 pixel file fetched').toBeDefined()
+    expect(fetched!.body.equals(LOGO_56), 'its bytes those of src/assets/lca-logo-56.webp').toBe(true)
+    expect(webpSize(fetched!.body)).toEqual([56, 56])
+    expect(bodies.filter((b) => b.body.equals(LOGO_400)).map((b) => b.url), 'no response carrying the 400 pixel file').toEqual([])
+    await testInfo.attach('footer-logo-56.webp', { body: fetched!.body, contentType: 'image/webp' })
+    report['density 1'] = { path: one.path, bytes: fetched!.body.length, natural: one.natural, responses: bodies.length }
+
+    // A density of 2, in a context of its own: the browser takes the 112 pixel file and reports its size corrected for the density.
+    const context = await browser.newContext({ baseURL: testInfo.project.use.baseURL, viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, reducedMotion: 'reduce' })
+    try {
+      const dense = await context.newPage()
+      const outside = await prepareLocalPage(dense)
+      const denseWatched = watchResponses(dense)
+      await openQuiet(dense, '/')
+      await throughThePage(dense, denseWatched.open)
+      const two = await sizedLogoAsDrawn(footerLogo(dense))
+      expect(two.path, 'the 112 pixel file').toMatch(LOGO_112_PATH)
+      expect(two.natural, 'its size corrected for a density of 2').toEqual([56, 56])
+      expect(two.box).toEqual([56, 56])
+      expect(two.behind).toEqual([])
+      expect(two.ground).toBe(NAVY)
+      const denseBodies = await bodiesOf(denseWatched.seen)
+      const denseFile = denseBodies.find((b) => new URL(b.url).pathname === two.path)
+      expect(denseFile, 'the 112 pixel file fetched').toBeDefined()
+      expect(denseFile!.body.equals(LOGO_112), 'its bytes those of src/assets/lca-logo-112.webp').toBe(true)
+      expect(webpSize(denseFile!.body), 'its frame header').toEqual([112, 112])
+      expect(denseBodies.filter((b) => b.body.equals(LOGO_400)).map((b) => b.url), 'no response carrying the 400 pixel file').toEqual([])
+      expect(outside).toEqual([])
+      await testInfo.attach('footer-logo-112.webp', { body: denseFile!.body, contentType: 'image/webp' })
+      report['density 2'] = { path: two.path, bytes: denseFile!.body.length, natural: two.natural, header: webpSize(denseFile!.body), responses: denseBodies.length }
+    } finally {
+      await context.close()
+    }
+
+    // /about: the page's own logo, drawn at 160 pixels with no sized prop, keeps the 400 pixel file; the footer's is the 56.
+    const aboutWatched = watchResponses(page)
+    await openQuiet(page, '/about')
+    await throughThePage(page, aboutWatched.open)
+    const footerOnAbout = await sizedLogoAsDrawn(footerLogo(page))
+    expect(footerOnAbout.path, 'the footer\'s logo on /about').toMatch(LOGO_56_PATH)
+    const own = page.locator('main [data-slot="lca-logo-mat"] img')
+    await expect(own).toHaveCount(1)
+    await expect.poll(() => own.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true)
+    const ownPath = await own.evaluate((img: HTMLImageElement) => new URL(img.currentSrc).pathname)
+    const aboutBodies = await bodiesOf(aboutWatched.seen)
+    expect(aboutBodies.find((b) => new URL(b.url).pathname === ownPath)?.body.equals(LOGO_400), 'the page\'s own logo, the 400 pixel file').toBe(true)
+    report['/about'] = { footer: footerOnAbout.path, page: ownPath }
+    await testInfo.attach('footer-logo.json', { body: JSON.stringify(report, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844 and 1280 by 800, light and dark: the gold ring on the footer\'s navy, at 3:1 or more, on its join slot, its Donate, a fold button, its links and an Appearance button', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [390, 1280], 'the new footer\'s rings')
+    const seen: Record<string, unknown> = {}
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      for (const [width, height] of SIZES) {
+        await page.setViewportSize({ width, height })
+        await openQuiet(page, '/')
+        const footer = siteFooter(page)
+        const brand = footer.locator(SITE.footerBrand)
+        const controls = [
+          brand.getByRole('link', { name: FOOTER_BRAND[0][0], exact: true }),
+          brand.getByRole('button', { name: FOOTER_BRAND[1][0], exact: true }),
+          ...(width < 768 ? [foldButtons(page).first()] : []),
+          footer.locator(SITE.footerColumn).getByRole('link', { name: 'Website help', exact: true }),
+          footer.locator(SITE.trustLine).getByRole('link', { name: FOOTER_TRUST[1][0], exact: true }),
+          appearanceControl(page).getByRole('button', { name: APPEARANCE_BUTTONS[0], exact: true }),
+        ]
+        for (const control of controls) {
+          const r = await ringOnGround(page, control)
+          const where = `${scheme} at ${width}: ${r.name}`
+          seen[where] = r
+          expect([r.ring.style, r.ring.width], where).toEqual(['solid', '2px'])
+          expect([r.ring.colour, r.ground], where).toEqual([GOLD, NAVY])
+          expect(r.ratio, where).toBeGreaterThanOrEqual(3)
+        }
+      }
+    }
+    await testInfo.attach('footer-rings.json', { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on, light and dark: axe, with the WCAG 2.0 to 2.2 A and AA rules, finds nothing in the new footer on / and /about at 390, its folds as they start, all open and all closed, or at 1280, each scan made with the whole footer on the screen', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [390, 1280], 'the new footer')
+    const report: string[] = []
+    const found: string[] = []
+    const run = async (what: string) => {
+      const results = await new AxeBuilder({ page }).withTags(WCAG_TAGS).include(SITE.newFooter).analyze()
+      report.push(`axe on the footer, ${what}: ${results.passes.length} rules passed, ${results.violations.length} with findings.`)
+      found.push(...axeFindings(results).map((f) => `${what}: ${f}`))
+      const ran = new Set([...results.passes, ...results.incomplete, ...results.inapplicable].map((r) => r.id))
+      for (const rule of ['color-contrast', 'link-name', 'button-name', 'list', 'listitem', 'aria-allowed-attr']) expect(ran, `${what}: ${rule}`).toContain(rule)
+    }
+    for (const scheme of ['light', 'dark'] as const) {
+      await page.emulateMedia({ colorScheme: scheme })
+      for (const route of ['/', '/about']) {
+        for (const [width, height] of SIZES) {
+          await page.setViewportSize({ width, height })
+          await openQuiet(page, route)
+          const where = `${route} at ${width}, ${scheme}`
+          if (width >= 768) {
+            await wholeFooterInView(page, width, height)
+            await run(where)
+            continue
+          }
+          await wholeFooterInView(page, width, height)
+          await run(`${where}, its folds as they start`)
+          await setFolds(page, true)
+          await wholeFooterInView(page, width, height)
+          await run(`${where}, every fold open`)
+          await setFolds(page, false)
+          await wholeFooterInView(page, width, height)
+          await run(`${where}, every fold closed`)
+        }
+      }
+    }
+    console.log(report.join('\n'))
+    expect(found, report.join('\n')).toEqual([])
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844 and 1280 by 800: the contact page, /contact?subject=club and ?subject=membership filling the subject with the footer\'s links\' words; a press on the footer\'s Membership help, and on List or update your club, while on /contact fills it again over the person\'s own words; /contact alone and any other subject leave it empty', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [390, 1280], 'the new footer\'s two links to the contact page')
+    const subject = page.getByLabel('Subject', { exact: true })
+    for (const [width, height] of SIZES) {
+      await page.setViewportSize({ width, height })
+      const addresses = [
+        ['/contact?subject=club', 'List or update your club'],
+        ['/contact?subject=membership', 'Membership help'],
+        ['/contact', ''],
+        ['/contact?subject=news', ''],
+      ] as const
+      for (const [address, words] of addresses) {
+        await openDrawn(page, address, [page.getByRole('heading', { level: 1, name: 'Contact us' }), subject])
+        await expect(subject, `${width}, ${address}`).toHaveValue(words)
+      }
+      // While on /contact, each of the footer's two links fills the subject again, over what the person wrote.
+      await openDrawn(page, '/contact', [subject])
+      await subject.fill('A question about my rating')
+      await siteFooter(page).getByRole('link', { name: 'Membership help', exact: true }).click()
+      await expect(page).toHaveURL(/\/contact\?subject=membership$/)
+      await expect(subject, `${width}: Membership help pressed`).toHaveValue('Membership help')
+      // Below 768 pixels the Community column starts closed.
+      if (width < 768) await siteFooter(page).getByRole('button', { name: 'Community', exact: true }).click()
+      await siteFooter(page).getByRole('link', { name: 'List or update your club', exact: true }).click()
+      await expect(page).toHaveURL(/\/contact\?subject=club$/)
+      await expect(subject, `${width}: List or update your club pressed`).toHaveValue('List or update your club')
+    }
+    expect(external).toEqual([])
+  })
+
+  test('a11y-off: the contact page fills no subject whatever the address, as today', async ({ page, external }, testInfo) => {
+    only(testInfo, OFF, 'today\'s site, on a11y-off')
+    const subject = page.getByLabel('Subject', { exact: true })
+    for (const address of ['/contact?subject=club', '/contact?subject=membership', '/contact']) {
+      await openDrawn(page, address, [page.getByRole('heading', { level: 1, name: 'Contact us' }), subject])
+      await expect(subject, address).toHaveValue('')
+    }
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844 and 1280 by 800: the clubs page, /clubs#map bringing the map\'s wrapper, the page\'s one #map, under the header once the clubs load, a press on the footer\'s Club map bringing it back, and /clubs alone staying at the top', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [390, 1280], 'the new footer\'s Club map')
+    const standIn = page.locator('main').getByText(MAP_STAND_IN)
+    /** The map's wrapper against the header: how far below the header's foot its top is, and how far the page is scrolled. */
+    const mapAt = () =>
+      page.evaluate((site) => {
+        const map = document.getElementById('map')
+        const bar = document.querySelector(site.header)!
+        return map ? { gap: Math.round(map.getBoundingClientRect().top - bar.getBoundingClientRect().bottom), scrollY: window.scrollY } : null
+      }, SITE)
+    const seen: Record<string, unknown> = {}
+    for (const [width, height] of SIZES) {
+      await page.setViewportSize({ width, height })
+      await openDrawn(page, '/clubs#map', [standIn])
+      await expect(page.locator('#map'), `${width}: one #map`).toHaveCount(1)
+      await expect(page.locator('#map').getByText(MAP_STAND_IN), `${width}: the map's wrapper`).toBeVisible()
+      // Under the header, by the wrapper's own 80 pixel margin, and the page scrolled to it.
+      await expect.poll(async () => (await mapAt())?.gap, `${width}: the map under the header`).toBe(80)
+      const arrived = (await mapAt())!
+      expect(arrived.scrollY, `${width}: the page scrolled`).toBeGreaterThan(0)
+      seen[`${width}, /clubs#map`] = arrived
+      // A press on the footer's Club map, the page scrolled to the footer for it, brings the map back.
+      if (width < 768) await siteFooter(page).getByRole('button', { name: 'Community', exact: true }).click()
+      await siteFooter(page).getByRole('link', { name: 'Club map', exact: true }).click()
+      await expect(page).toHaveURL(/\/clubs#map$/)
+      await expect.poll(async () => (await mapAt())?.gap, `${width}: the map back under the header`).toBe(80)
+      seen[`${width}, Club map pressed`] = await mapAt()
+      // /clubs alone stays at the top.
+      await openDrawn(page, '/clubs', [standIn])
+      await frames(page)
+      await page.waitForTimeout(300)
+      expect(await page.evaluate(() => window.scrollY), `${width}: /clubs alone`).toBe(0)
+    }
+    await testInfo.attach('clubs-map.json', { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
+    expect(external).toEqual([])
+  })
+
+  test('a11y-off at 390 by 844 and 1280 by 800: the clubs page gives its map no id and never scrolls to #map, as today', async ({ page, external }, testInfo) => {
+    only(testInfo, OFF, 'today\'s site, on a11y-off')
+    for (const [width, height] of SIZES) {
+      await page.setViewportSize({ width, height })
+      await openDrawn(page, '/clubs#map', [page.locator('main').getByText(MAP_STAND_IN)])
+      await frames(page)
+      await page.waitForTimeout(300)
+      await expect(page.locator('#map'), `${width}: no #map`).toHaveCount(0)
+      expect(await page.evaluate(() => window.scrollY), `${width}: the page where it opened`).toBe(0)
+    }
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on at 390 by 844 on /: Tab from the main\'s last control reaches the tab bar\'s four tabs and then the footer\'s first control, Join LCA, and Shift+Tab goes back the same way', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the dock and the new footer come with the chrome, on a11y-on')
+    onlyNew(testInfo, 'footer', [390], 'the new footer after the dock')
+    onlyNew(testInfo, 'header', [390], 'the app bar beside the tab bar')
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openQuiet(page, '/')
+    // The main's last control in the page's order that the keyboard can reach.
+    await page.evaluate(() => {
+      const reachable = (el: HTMLElement) => el.tabIndex >= 0 && !(el as HTMLButtonElement).disabled && el.getClientRects().length > 0 && !el.closest('[hidden], [inert], [aria-hidden="true"]')
+      const controls = [...document.querySelectorAll<HTMLElement>('main a[href], main button, main input, main select, main textarea, main [tabindex]')].filter(reachable)
+      controls.at(-1)!.setAttribute('data-fx-last', '')
+    })
+    await keyboardFocus(page, page.locator('[data-fx-last]'))
+    const last = await focused(page)
+    const forward: string[] = []
+    for (let i = 0; i < 5; i++) {
+      await page.keyboard.press('Tab')
+      forward.push(await focused(page))
+    }
+    expect(forward, 'the four tabs, then the footer\'s first control').toEqual([...tabWords().map(asTabStop), stopName(...FOOTER_BRAND[0])])
+    const back: string[] = []
+    for (let i = 0; i < 5; i++) {
+      await page.keyboard.press('Shift+Tab')
+      back.push(await focused(page))
+    }
+    expect(back, 'back through the four tabs to the main\'s last control').toEqual([...tabWords().map(asTabStop).reverse(), last])
+    expect(external).toEqual([])
+  })
+
+  test('a11y-on: the Menu tab and the bars\' bordered Menu buttons are found by their own slots, one at a time, and /Clubs and /SCHOLASTIC mark the current tab, the app bar\'s section and the desktop header\'s section as /clubs and /scholastic do', async ({ page, external }, testInfo) => {
+    only(testInfo, ON, 'the new chrome comes with the chrome, on a11y-on')
+    onlyNew(testInfo, 'header', [390, 900, 1280], 'the app bar, the tab bar, the tablet header and the desktop header')
+    // At 390 beside the tab bar: the Menu tab, and no Menu button in the app bar.
+    await page.setViewportSize({ width: 390, height: 844 })
+    await openHeader(page, '/')
+    await expect(page.locator(SITE.menuTab)).toHaveCount(1)
+    await expect(menuTab(page)).toHaveText(NEW_NAMES.menu)
+    await expect(menuTab(page)).toHaveAttribute('data-tab', 'menu')
+    await expect(page.locator(SITE.menuButton)).toHaveCount(0)
+    await expect(menuControl(page)).toHaveAttribute('data-slot', 'menu-tab')
+    // On a page that hides the tab bar, the app bar's own Menu button.
+    await openHeader(page, '/donate/success')
+    await expect(tabBar(page)).toHaveCount(0)
+    await expect(page.locator(SITE.menuButton)).toHaveCount(1)
+    await expect(siteHeader(page).locator(SITE.menuButton)).toHaveText(NEW_NAMES.menu)
+    await expect(menuControl(page)).toHaveAttribute('data-slot', 'menu-button')
+    // At 900, the tablet header's.
+    await page.setViewportSize({ width: 900, height: 1024 })
+    await openHeader(page, '/')
+    await expect(page.locator(SITE.menuTab)).toHaveCount(0)
+    await expect(page.locator(SITE.menuButton)).toHaveCount(1)
+    await expect(siteHeader(page).locator(SITE.menuButton)).toHaveText(NEW_NAMES.menu)
+    await expect(menuControl(page)).toHaveAttribute('data-slot', 'menu-button')
+    // The letter case: the router matches /Clubs and /SCHOLASTIC as /clubs and /scholastic, and so do the marks.
+    await page.setViewportSize({ width: 390, height: 844 })
+    const phone = [['/clubs', 'clubs', null], ['/Clubs', 'clubs', null], ['/scholastic', 'menu', 'Scholastic'], ['/SCHOLASTIC', 'menu', 'Scholastic']] as const
+    for (const [route, tab, section] of phone) {
+      await openHeader(page, route)
+      const current = tabBar(page).locator('[aria-current="page"]')
+      await expect(current, route).toHaveCount(1)
+      await expect(current, `${route}: the current tab`).toHaveAttribute('data-tab', tab)
+      const named = siteHeader(page).locator('[data-slot="app-bar-section"]')
+      if (section) await expect(named, `${route}: the app bar's section`).toHaveText(section)
+      else await expect(named, `${route}: no section named beside Clubs`).toHaveCount(0)
+    }
+    await page.setViewportSize({ width: 1280, height: 800 })
+    const desktop = [['/clubs', CHROME_NAMES.clubs], ['/Clubs', CHROME_NAMES.clubs], ['/scholastic', 'Scholastic'], ['/SCHOLASTIC', 'Scholastic']] as const
+    for (const [route, words] of desktop) {
+      await openHeader(page, route)
+      const current = siteHeader(page).locator('[data-slot="site-header-sections"] [aria-current="page"]')
+      await expect(current, route).toHaveCount(1)
+      await expect(current, `${route}: the header's current section`).toHaveText(words)
+    }
     expect(external).toEqual([])
   })
 })

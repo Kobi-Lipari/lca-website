@@ -40,9 +40,9 @@
 //   fallback, and a Menu button that holds the focus kept until it lets it
 //   go; the sheet kept open as the window crosses 768 pixels and closed at
 //   1024 with the focus on the brand link;
-// - the whole site (src/App.tsx): the dock after the footer inside the
-//   provider with the chrome on, the footer still the main's next sibling,
-//   and neither with either switch off.
+// - the whole site (src/App.tsx): the dock after the main and before the
+//   footer inside the provider with the chrome on, since WS02 step 8, the
+//   footer the frame's last child, and neither with either switch off.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { User } from '@supabase/supabase-js'
 import { useState, type ReactNode } from 'react'
@@ -150,7 +150,7 @@ const dockEl = () => document.querySelector<HTMLElement>('[data-slot="bottom-doc
 const tabBar = () => document.querySelector<HTMLElement>('[data-slot="tab-bar"]')!
 const tabs = () => [...tabBar().querySelectorAll<HTMLElement>('a, button')]
 const nameOf = (el: Element) => (el.getAttribute('aria-label') ?? el.textContent ?? '').replace(/\s+/g, ' ').trim()
-const menuTab = () => tabBar().querySelector<HTMLButtonElement>('button[aria-haspopup="dialog"]')!
+const menuTab = () => tabBar().querySelector<HTMLButtonElement>('[data-slot="menu-tab"]')!
 const sheetState = () => screen.getByTestId('sheet').textContent
 const written = () => document.documentElement.style.getPropertyValue('--bottom-chrome-h')
 
@@ -249,6 +249,13 @@ describe('the dock', () => {
     expect(classes.filter((c) => /^z-/.test(c))).toEqual(['z-40'])
   })
 
+  it('carries the scroll lock\'s full-width class, so the dock keeps its width and its tabs their places while the Menu sheet holds the page still on a screen with a scrollbar (WS02 step 8)', () => {
+    draw('/clubs')
+    // react-remove-scroll-bar, which the dialogs' scroll lock draws on, gives this class a right margin of the scrollbar's width while a lock is on, and nothing otherwise.
+    expect(dockEl()!.className.split(/\s+/)).toContain('width-before-scroll-bar')
+    expect(dockEl()!.style.marginRight).toBe('')
+  })
+
   it('holds, top to bottom, the page action bar\'s place, the event bar\'s place and the tab bar, the two places empty, so the tab bar alone is its height', () => {
     draw('/clubs')
     const parts = [...dockEl()!.children]
@@ -338,6 +345,11 @@ describe('the tab bar', () => {
     ['/contact', 'Menu'],
     ['/', null],
     ['/support', null],
+    // The router matches a route whatever its letters' case, and so does the current mark since WS02 step 8.
+    ['/Clubs', 'Clubs'],
+    ['/TOURNAMENTS/fx-open-2026', 'Tournaments'],
+    ['/SCHOLASTIC', 'Menu'],
+    ['/Login', 'Log in'],
   ] as const)('at %s marks %s as the current tab: aria-current="page", its label bold and its bar across its top', (path, current) => {
     draw(path)
     const marked = tabs().filter((tab) => tab.hasAttribute('aria-current'))
@@ -696,28 +708,47 @@ describe('where the focus goes back to', () => {
   }
 
   it('is the control that opened the sheet while it is still in the page', () => {
-    const at = page('<header data-slot="app-bar"><a data-slot="app-bar-brand" href="/">Home</a></header><nav data-slot="tab-bar"><button aria-haspopup="dialog">Menu</button></nav><button id="opener">Opener</button>')
+    const at = page('<header data-slot="app-bar"><a data-slot="app-bar-brand" href="/">Home</a></header><nav data-slot="tab-bar"><button data-slot="menu-tab" aria-haspopup="dialog">Menu</button></nav><button id="opener">Opener</button>')
     expect(wayBack(at('#opener'))).toBe(at('#opener'))
   })
 
-  it('else the bordered Menu button of the bar drawn, the app bar\'s or the tablet header\'s, then the Menu tab, then the brand link of the bar drawn', () => {
+  it('else the bordered Menu button of the bar drawn, the app bar\'s or the tablet header\'s, then the Menu tab, then the brand link of the bar drawn, each by its slot', () => {
     const gone = document.createElement('button')
-    let at = page('<header data-slot="app-bar"><a data-slot="app-bar-brand" href="/">Home</a><button aria-haspopup="dialog">Menu</button></header><nav data-slot="tab-bar"><button aria-haspopup="dialog">Menu</button></nav>')
+    let at = page('<header data-slot="app-bar"><a data-slot="app-bar-brand" href="/">Home</a><button data-slot="menu-button" aria-haspopup="dialog">Menu</button></header><nav data-slot="tab-bar"><button data-slot="menu-tab" aria-haspopup="dialog">Menu</button></nav>')
     expect(wayBack(gone)).toBe(at('[data-slot="app-bar"] button'))
-    at = page('<header data-slot="site-header"><a data-slot="site-header-brand" href="/">Home</a><button aria-haspopup="dialog">Menu</button></header>')
+    at = page('<header data-slot="site-header"><a data-slot="site-header-brand" href="/">Home</a><button data-slot="menu-button" aria-haspopup="dialog">Menu</button></header>')
     expect(wayBack(null)).toBe(at('[data-slot="site-header"] button'))
-    at = page('<header data-slot="app-bar"><a data-slot="app-bar-brand" href="/">Home</a></header><nav data-slot="tab-bar"><a href="/clubs">Clubs</a><button aria-haspopup="dialog">Menu</button></nav>')
+    at = page('<header data-slot="app-bar"><a data-slot="app-bar-brand" href="/">Home</a></header><nav data-slot="tab-bar"><a href="/clubs">Clubs</a><button data-slot="menu-tab" aria-haspopup="dialog">Menu</button></nav>')
     expect(wayBack(gone)).toBe(at('[data-slot="tab-bar"] button'))
     at = page('<header data-slot="site-header"><a data-slot="site-header-brand" href="/">Home</a><button aria-haspopup="menu">About</button></header>')
     expect(wayBack(gone)).toBe(at('[data-slot="site-header-brand"]'))
     page('<main><button>Nothing of the chrome</button></main>')
     expect(wayBack(gone)).toBeNull()
   })
+
+  it('finds the Menu button past another control that opens a dialog earlier in the bar, as Search will in the tablet row and the app bar, and the Menu tab past one in the tab bar (WS02 step 8)', () => {
+    const gone = document.createElement('button')
+    let at = page('<header data-slot="site-header"><a data-slot="site-header-brand" href="/">Home</a><button id="search" aria-haspopup="dialog">Search</button><button data-slot="menu-button" aria-haspopup="dialog">Menu</button></header>')
+    expect(wayBack(gone)).toBe(at('[data-slot="menu-button"]'))
+    expect(wayBack(gone)).not.toBe(at('#search'))
+    at = page('<header data-slot="app-bar"><a data-slot="app-bar-brand" href="/">Home</a><button id="search" aria-haspopup="dialog">Search</button><button data-slot="menu-button" aria-haspopup="dialog">Menu</button></header>')
+    expect(wayBack(gone)).toBe(at('[data-slot="menu-button"]'))
+    // With no Menu button in the bar, a dialog control there is never taken for Menu: the Menu tab is.
+    at = page('<header data-slot="app-bar"><a data-slot="app-bar-brand" href="/">Home</a><button id="search" aria-haspopup="dialog">Search</button></header><nav data-slot="tab-bar"><button id="other" aria-haspopup="dialog">Other</button><button data-slot="menu-tab" aria-haspopup="dialog">Menu</button></nav>')
+    expect(wayBack(gone)).toBe(at('[data-slot="menu-tab"]'))
+  })
+
+  it('finds the drawn bars\' Menu controls by their slots: the app bar\'s and the tablet header\'s bordered button and the tab bar\'s Menu tab', () => {
+    drawBars('/clubs')
+    expect(menuTab().getAttribute('data-tab')).toBe('menu')
+    expect(menuTab().getAttribute('data-slot')).toBe('menu-tab')
+    expect(tabBar().querySelectorAll('[data-slot="menu-tab"]')).toHaveLength(1)
+  })
 })
 
 // ── Inside the page's bars ─────────────────────────────────────────────────
 
-/** The page's bars as the page frame draws them with the chrome on: the header, a page, and the dock, in one provider. */
+/** The page's bars as the page frame draws them with the chrome on: the header, a page, the dock and the footer, in that order (since WS02 step 8), in one provider. */
 function drawBars(path = '/clubs', auth = visitor(), extra: ReactNode = null) {
   return render(
     <AuthContext.Provider value={auth}>
@@ -730,10 +761,10 @@ function drawBars(path = '/clubs', auth = visitor(), extra: ReactNode = null) {
             </Routes>
             {extra}
           </main>
+          <BottomDock />
           <footer>
             <a href="/contact">Contact</a>
           </footer>
-          <BottomDock />
         </DockProvider>
       </MemoryRouter>
     </AuthContext.Provider>,
@@ -775,6 +806,8 @@ describe('the app bar beside the tab bar', () => {
     ['/about', 'About'],
     ['/governance/board', 'About'],
     ['/contact', 'About'],
+    // In any letter case, as the router reads the address, since WS02 step 8.
+    ['/SCHOLASTIC', 'Scholastic'],
   ] as const)('at %s names the section the Menu tab stands for, %s, in the bar\'s white at the row\'s end', (path, words) => {
     drawBars(path)
     const named = banner().querySelectorAll('[data-slot="app-bar-section"]')
@@ -1000,16 +1033,16 @@ describe('the page frame, src/App.tsx', () => {
     return view!.container
   }
 
-  it('with the chrome on draws the dock after the footer, the last thing in the frame, the footer still the main\'s next sibling', async () => {
+  it('with the chrome on draws the dock after the main and before the footer, the footer the last thing in the frame (since WS02 step 8)', async () => {
     const container = await site()
     const main = container.querySelector('main')!
     const footer = container.querySelector('footer')!
-    expect(main.nextElementSibling).toBe(footer)
-    expect(footer.nextElementSibling).toBe(dockEl())
-    expect(dockEl()!.nextElementSibling).toBeNull()
+    expect(main.nextElementSibling).toBe(dockEl())
+    expect(dockEl()!.nextElementSibling).toBe(footer)
+    expect(footer.nextElementSibling).toBeNull()
     expect(screen.getAllByRole('navigation', { name: 'Main' })).toEqual([tabBar()])
-    // The skip link first, then the bar, the main, the footer and the dock, in the page's order.
-    const order = [container.querySelector('[data-skip-link]')!, banner(), main, footer, dockEl()!]
+    // The skip link first, then the bar, the main, the dock and the footer, in the page's order.
+    const order = [container.querySelector('[data-skip-link]')!, banner(), main, dockEl()!, footer]
     for (let i = 1; i < order.length; i++) expect(order[i - 1].compareDocumentPosition(order[i]) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0)
   })
 

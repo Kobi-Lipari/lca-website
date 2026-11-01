@@ -78,7 +78,7 @@ function Where() {
   return <output data-testid="where">{`${location.pathname}${location.search}${location.hash}`}</output>
 }
 
-/** The page's bars as the page frame draws them with the chrome on: the header, the page, a footer and the dock, in one provider. */
+/** The page's bars as the page frame draws them with the chrome on: the header, the page, the dock and a footer, in that order (since WS02 step 8), in one provider. */
 function drawBars(path = '/clubs', extra: ReactNode = null, auth = visitor()) {
   return render(
     <AuthContext.Provider value={auth}>
@@ -91,10 +91,10 @@ function drawBars(path = '/clubs', extra: ReactNode = null, auth = visitor()) {
             </Routes>
             {extra}
           </main>
+          <BottomDock />
           <footer>
             <a href="/contact">Contact</a>
           </footer>
-          <BottomDock />
         </DockProvider>
       </MemoryRouter>
     </AuthContext.Provider>,

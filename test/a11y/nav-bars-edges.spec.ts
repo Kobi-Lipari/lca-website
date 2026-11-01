@@ -17,11 +17,12 @@
 //   holds the page's scroll or its presses, nothing of it is hidden from
 //   screen readers, a press in it reaches it, and it scrolls under the wheel.
 // - The keyboard alone, from the top of the page, at 390 and at 900 pixels:
-//   the skip link, the brand link and each bar's own controls in their
-//   order, and at 390, since WS02 step 7, the tab bar's four tabs last, after
-//   the footer; Enter or Space on Menu opening the sheet on its close
-//   control; a section's disclosure opened and closed with Enter; Esc
-//   closing it with the focus back on Menu and the page where it was.
+//   the skip link, the brand link and each bar's own controls in their order,
+//   and at 390 the tab bar's four tabs (WS02 step 7) right after the page's
+//   own controls and before the footer's, since WS02 step 8 put the dock
+//   before the footer; Enter or Space on Menu opening the sheet on its close
+//   control; a section's disclosure opened and closed with Enter; Esc closing
+//   it with the focus back on Menu and the page where it was.
 // - A small phone, 320 by 568: everything in the sheet inside it, its three
 //   buttons each on one line, and its list scrolling up and down alone.
 // - The tablet header's My LCA menu at 768 and 1023 pixels, for an LCA
@@ -32,18 +33,19 @@
 //   no scrim and no hold on the page; and with the page scrolled, the wheel
 //   over the scrim moves nothing while the wheel over the drawer's list
 //   scrolls the list alone.
-// - The phone's dock and its tab bar at their edges (WS02 step 7): a
-//   phone's safe areas, given through the browser's own emulation of them,
-//   kept clear by the app bar, the tab bar, the sheet, the skip link and,
-//   on a phone on its side, the tablet header and its drawer, while today's
-//   site on a11y-off moves by none of them; the one sheet open as a phone
-//   turns and as the window crosses 768 pixels, and where the focus goes as
-//   it closes; the reflow fallback's lines as the browser reads them; the
-//   tab bar's words at the 360 pixel step and its hairline; a tap on the
-//   Close tab; the viewport tag of the pages the server writes a preview
-//   into; the dock back once a focused field leaves the page; Shift+Tab
-//   back up the page clear of both bars; the sheet above a taller dock; and
-//   Donate first in the sheet for a member whose membership has run out.
+// - The phone's dock and its tab bar at their edges (WS02 step 7): a phone's
+//   safe areas, given through the browser's own emulation of them, kept clear
+//   by the app bar, the tab bar, the sheet, the skip link and, on a phone on
+//   its side, the tablet header and its drawer, while today's site on
+//   a11y-off moves by none of them; the one sheet open as a phone turns and
+//   as the window crosses 768 pixels, and where the focus goes as it closes;
+//   the reflow fallback's lines as the browser reads them; the tab bar's
+//   words at the 360 pixel step and its hairline; a tap on the Close tab; the
+//   viewport tag of the pages the server writes a preview into; the dock back
+//   once a focused field leaves the page; Shift+Tab back up the page from its
+//   last control, the footer's since WS02 step 8, clear of both bars; the
+//   sheet above a taller dock; and Donate first in the sheet for a member
+//   whose membership has run out.
 //
 // Reads only; the person signed in is test/a11y/signedIn.ts's, whose calls
 // are answered in the browser. The header, the sheet, the dock and the tab
@@ -51,7 +53,7 @@
 // holds for the new chrome's bars alone, so each test says so through it;
 // the two read what each build serves, or today's site on a11y-off.
 import type { Locator, Page, TestInfo } from '@playwright/test'
-import { CHROME_NAMES, NEW_NAMES, SITE, brandLink, dock, menuControl, menuSheet, menuTab, onlyNew, sheetAppearance, siteHeader, tabBar } from './chrome'
+import { CHROME_NAMES, NEW_NAMES, SITE, appearanceControl, brandLink, dock, menuControl, menuSheet, menuTab, onlyNew, sheetAppearance, siteHeader, tabBar } from './chrome'
 import { sessionInPage, signInAs, waitForMemberAnswers } from './signedIn'
 import { expect, openDrawn, test } from './support'
 import { navPersona } from '../unit/fixtures/navPersonas'
@@ -205,7 +207,7 @@ test.describe('the tablet header, the app bar and the Menu sheet at their edges'
 
   for (const width of [390, 900] as const) {
     const tablet = width >= 768
-    test(`a11y-on at ${width} by 844, the keyboard alone from the top of the page: the skip link, the brand link and the ${tablet ? 'tablet header\'s controls in their order' : 'app bar\'s controls, then the page and the footer, and last the tab bar\'s four tabs'}; ${tablet ? 'Space' : 'Enter'} on Menu opens the sheet on its close control, a section's disclosure opens and closes on Enter, and Esc closes the sheet with the focus back on Menu and the page where it was`, async ({ page, external }, testInfo) => {
+    test(`a11y-on at ${width} by 844, the keyboard alone from the top of the page: the skip link, the brand link and the ${tablet ? 'tablet header\'s controls in their order' : 'app bar\'s controls, then the page, and right after it the tab bar\'s four tabs, before the footer'}; ${tablet ? 'Space' : 'Enter'} on Menu opens the sheet on its close control, a section's disclosure opens and closes on Enter, and Esc closes the sheet with the focus back on Menu and the page where it was`, async ({ page, external }, testInfo) => {
       only(testInfo, ON, 'the new chrome\'s bars come with the chrome, on a11y-on')
       onlyNew(testInfo, 'header', [width], `the ${tablet ? 'tablet header and its drawer' : 'app bar and its sheet'}`)
       await page.setViewportSize({ width, height: 844 })
@@ -220,8 +222,8 @@ test.describe('the tablet header, the app bar and the Menu sheet at their edges'
         }
         expect(reached).toEqual(order)
       } else {
-        // Beside the tab bar the app bar's one control is its brand link, and the tab bar comes last, after the
-        // footer (WS02 step 7): every stop from the top of the page to the Menu tab, each with the part it is in.
+        // Beside the tab bar the app bar's one control is its brand link, and the tab bar comes right after the
+        // page, before the footer (WS02 step 8): every stop from the top of the page to the Menu tab, each with the part it is in.
         const parts: string[] = []
         for (let i = 0; i < 400 && !(reached.at(-1) === `button ${NEW_NAMES.menu}` && parts.at(-1) === 'tab bar'); i++) {
           await page.keyboard.press('Tab')
@@ -233,8 +235,9 @@ test.describe('the tablet header, the app bar and the Menu sheet at their edges'
         expect(parts.slice(2).includes('bar'), 'no other control of the app bar').toBe(false)
         expect(reached.slice(-4)).toEqual(['a Tournaments', `a ${CHROME_NAMES.clubs}`, `a ${CHROME_NAMES.logIn}`, `button ${NEW_NAMES.menu}`])
         expect(parts.slice(-4)).toEqual(['tab bar', 'tab bar', 'tab bar', 'tab bar'])
-        expect(parts.at(-5), 'the stop before the tabs is the footer\'s').toBe('footer')
-        expect(parts.slice(0, -4).includes('tab bar'), 'the tab bar reached only after the footer').toBe(false)
+        expect(parts.at(-5), 'the stop before the tabs is the page\'s').toBe('page')
+        expect(parts.includes('footer'), 'no stop of the footer before the tabs').toBe(false)
+        expect(parts.slice(0, -4).includes('tab bar'), 'the tab bar reached right after the main, before the footer').toBe(false)
       }
       const menu = menuButton(page)
       await expect(menu).toBeFocused()
@@ -480,15 +483,15 @@ const roomNow = (page: Page) =>
     }
   })
 
-/** The bar's own bordered Menu buttons drawn now, read in the page, since the open sheet hides the bar from assistive technology. */
+/** The bar's own bordered Menu buttons drawn now, by their slot, read in the page, since the open sheet hides the bar from assistive technology. */
 const barMenus = (page: Page) =>
-  page.evaluate((site) => [...(document.querySelector(site.header)?.querySelectorAll('button[aria-haspopup="dialog"]') ?? [])].map((b) => ({ expanded: b.getAttribute('aria-expanded'), controls: b.getAttribute('aria-controls') })), SITE)
+  page.evaluate((site) => [...(document.querySelector(site.header)?.querySelectorAll(site.menuButton) ?? [])].map((b) => ({ expanded: b.getAttribute('aria-expanded'), controls: b.getAttribute('aria-controls') })), SITE)
 
 /** Whether the focus is on the bar's own bordered Menu button. */
 const onBarMenu = (page: Page) =>
   page.evaluate((site) => {
     const el = document.activeElement
-    return !!el && el.matches('button[aria-haspopup="dialog"]') && !!el.closest(site.header)
+    return !!el && el.matches(site.menuButton) && !!el.closest(site.header)
   }, SITE)
 
 /** The Menu sheet's box and its scrim's, as drawn now. */
@@ -569,6 +572,9 @@ const stopNow = (page: Page): Promise<Stop | null> =>
     }
   }, SITE)
 
+/** The page's last control with the chrome on: the footer's, the last button of its Appearance control. */
+const lastControl = (page: Page) => appearanceControl(page).getByRole('button', { name: 'Dark', exact: true })
+
 /** Shift+Tab from where the focus is, one press at a time, until it reaches the sticky bar or the skip link: each control the focus lands on. */
 async function walkBack(page: Page): Promise<Stop[]> {
   const stops: Stop[] = []
@@ -585,7 +591,7 @@ async function walkBack(page: Page): Promise<Stop[]> {
 test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', () => {
   test.use({ reducedMotion: 'reduce' })
 
-  test('a11y-on at 390 by 844 with a phone\'s safe areas, 47 pixels under its status bar and 34 over its home indicator: the app bar\'s row below the status bar, the bar and --header-h 103 pixels; the tab bar\'s row whole above the home indicator, the dock and --bottom-chrome-h 91 pixels; the skip link inside the safe area; the sheet from the window\'s top to the dock\'s with its close control below the status bar; and the footer ending at the dock\'s top', async ({ page, external }, testInfo) => {
+  test('a11y-on at 390 by 844 with a phone\'s safe areas, 47 pixels under its status bar and 34 over its home indicator: the app bar\'s row below the status bar, the bar and --header-h 103 pixels; the tab bar\'s row whole above the home indicator, the dock and --bottom-chrome-h 91 pixels; the skip link inside the safe area; the sheet from the window\'s top to the dock\'s with its close control below the status bar; and the footer\'s last line ending at the dock\'s top', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the dock comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [390], 'the app bar and the dock inside a phone\'s safe areas')
     await page.setViewportSize({ width: 390, height: 844 })
@@ -630,11 +636,15 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
     await page.keyboard.press('Escape')
     await expect(sheet).toHaveCount(0)
     await expect(menuTab(page)).toBeFocused()
-    // The page's end: the footer's last line clear of the dock and its home indicator.
+    // The page's end: the footer's last line clear of the dock and its home indicator. Since WS02 step 8 the room
+    // is the footer's own bottom padding, so its box runs on under the dock; its box less that padding ends at the dock's top.
     await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }))
     await frames(page)
-    const footerBottom = await page.evaluate((site) => document.querySelector(site.footer)!.getBoundingClientRect().bottom, SITE)
-    expect(Math.abs(footerBottom - 753), `the footer ends at ${footerBottom}, the dock's top 753`).toBeLessThanOrEqual(0.5)
+    const footerBottom = await page.evaluate((site) => {
+      const footer = document.querySelector(site.footer)!
+      return footer.getBoundingClientRect().bottom - parseFloat(getComputedStyle(footer).paddingBottom)
+    }, SITE)
+    expect(Math.abs(footerBottom - 753), `the footer's last line ends at ${footerBottom}, the dock's top 753`).toBeLessThanOrEqual(0.5)
     expect(external).toEqual([])
   })
 
@@ -816,7 +826,7 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
     const barNow = () =>
       page.evaluate((site) => {
         const header = document.querySelector(site.header)!
-        return { slot: header.getAttribute('data-slot'), position: getComputedStyle(header).position, menus: header.querySelectorAll('button[aria-haspopup="dialog"]').length }
+        return { slot: header.getAttribute('data-slot'), position: getComputedStyle(header).position, menus: header.querySelectorAll(site.menuButton).length }
       }, SITE)
     for (const [width, height, drawn] of [[390, 480, true], [390, 479, false], [300, 640, true], [299, 640, false], [300, 480, true]] as const) {
       await page.setViewportSize({ width, height })
@@ -887,6 +897,15 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
       expect(response.status(), route).toBe(200)
       const html = await response.text()
       expect([...html.matchAll(/<meta name="viewport" content="([^"]*)"/g)].map((m) => m[1]), route).toEqual([want])
+      // Since WS02 step 8 the chrome's build also writes the build's date into its shell, one meta right after the
+      // viewport tag, which the new footer reads; the build with the chrome off writes none.
+      const dates = [...html.matchAll(/<meta name="viewport" content="[^"]*" \/>\s*<meta name="build-date" content="([^"]*)" \/>/g)].map((m) => m[1])
+      expect(dates.length, `${route}: the build's date beside the viewport tag`).toBe(testInfo.project.name === ON ? 1 : 0)
+      expect(html.split('name="build-date"').length - 1, `${route}: one build-date meta at most`).toBe(testInfo.project.name === ON ? 1 : 0)
+      for (const date of dates) {
+        expect(date, route).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+        expect(Date.parse(date), route).toBeLessThanOrEqual(Date.now())
+      }
     }
     // The event's page is the one the server wrote its preview into.
     expect(await (await request.get('/tournaments/fx-t-open')).text()).toContain('content="Fixture Fall Open"')
@@ -925,7 +944,7 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
   })
 
   for (const [width, height] of [[390, 844], [320, 568]] as const) {
-    test(`a11y-on at ${width} by ${height}, Shift+Tab from the Menu tab back up to the top of the page, with the tab bar alone and with an action bar of 64 pixels planted in the dock: every control of the page the focus lands on is clear of the app bar and of the dock; with no room kept at the page's top, one is left under the app bar`, async ({ page, external }, testInfo) => {
+    test(`a11y-on at ${width} by ${height}, Shift+Tab from the page's last control, the footer's, back up to the top of the page through the tab bar's four tabs, with the tab bar alone and with an action bar of 64 pixels planted in the dock: every control of the page the focus lands on is clear of the app bar and of the dock; with no room kept at the page's top, one is left under the app bar`, async ({ page, external }, testInfo) => {
       only(testInfo, ON, 'the dock comes with the chrome, on a11y-on')
       onlyNew(testInfo, 'header', [width], 'the app bar and the dock')
       test.setTimeout(120_000)
@@ -938,11 +957,15 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
           expect(await plantActionBar(page)).toBe(true)
           await expect.poll(() => roomNow(page).then((r) => r.written[1])).toBe(`${57 + ACTION_BAR_H}px`)
         }
-        await menuTab(page).focus()
+        // Since WS02 step 8 the dock comes after the main and before the footer, so a walk back from the Menu tab would
+        // pass the main's controls alone; the walk starts from the page's last control, the footer's, so it passes every
+        // control of the footer and of the main, and the four tabs between them.
+        await lastControl(page).focus()
         const stops = await walkBack(page)
         const inPage = stops.filter((s) => s.part === 'page')
         seen[what] = stops.map((s) => `${s.part}: ${s.name} ${Math.round(s.box.top)} to ${Math.round(s.box.bottom)}`)
         expect(stops.at(-1)?.part, `${what}: the walk ends in the app bar`).toBe('bar')
+        expect(stops.filter((s) => s.part === 'dock').length, `${what}: the four tabs on the way`).toBe(4)
         expect(inPage.length, `${what}: the page's controls`).toBeGreaterThan(20)
         for (const stop of inPage) {
           expect(!!stop.bar && overlap(stop.box, stop.bar), `${what}: ${stop.name} under the app bar`).toBe(false)
@@ -953,7 +976,7 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
       // The walk is not blind: with no room kept at the page's top, a control the focus moves up to is left under the app bar.
       await openHome(page)
       await page.addStyleTag({ content: ':root[data-look="new"] { scroll-padding-top: 0px !important; }' })
-      await menuTab(page).focus()
+      await lastControl(page).focus()
       const unpadded = (await walkBack(page)).filter((s) => s.part === 'page' && !!s.bar && overlap(s.box, s.bar))
       expect(unpadded.length, 'with no room at the top: controls left under the app bar').toBeGreaterThan(0)
       await testInfo.attach(`shift-tab-${width}-by-${height}.json`, { body: JSON.stringify(seen, null, 2), contentType: 'application/json' })
@@ -961,7 +984,7 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
     })
   }
 
-  test('a11y-on, the page scrolled 600 pixels in a window 800 tall: Tab onto each control of the sticky bar moves the page by 0 pixels, the desktop header\'s at 1280, the tablet header\'s at 900 and the app bar\'s at 390, and so does Tab from the footer onto each tab; with the room at the page\'s top kept while the focus is in the bar, the page moves', async ({ page, external }, testInfo) => {
+  test('a11y-on, the page scrolled 600 pixels in a window 800 tall: Tab onto each control of the sticky bar moves the page by 0 pixels, the desktop header\'s at 1280, the tablet header\'s at 900 and the app bar\'s at 390, and so does Tab from the main\'s last control onto each tab; with the room at the page\'s top kept while the focus is in the bar, the page moves', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new chrome\'s bars come with the chrome, on a11y-on')
     onlyNew(testInfo, 'header', [1280, 900, 390], 'the desktop header, the tablet header and the app bar')
     test.setTimeout(120_000)
@@ -997,22 +1020,23 @@ test.describe('the phone\'s dock and the tab bar at their edges (WS02 step 7)', 
       expect(moved.some((stop) => stop.scrolled !== 600), `${width}: with the room kept, Tab onto the bar moves the page`).toBe(true)
       await style.evaluate((el) => (el as HTMLStyleElement).remove())
     }
-    // Tab from the footer's last control onto each tab moves nothing: the tab bar is fixed to the window.
+    // Tab from the main's last control onto each tab moves nothing: the tab bar is fixed to the window, and since
+    // WS02 step 8 it comes right after the main in the page's order, the footer after it.
     await page.setViewportSize({ width: 390, height: 800 })
     await openHome(page)
-    await page.evaluate((site) => {
-      const all = [...document.querySelector(site.footer)!.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+    await page.evaluate(() => {
+      const all = [...document.querySelector('main')!.querySelectorAll<HTMLElement>('a[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])')]
       all.at(-1)!.focus()
-    }, SITE)
+    })
     await frames(page)
-    const atFooter = await scrolled()
+    const atMain = await scrolled()
     const tabs: string[] = []
     for (let n = 0; n < 4; n++) {
       await page.keyboard.press('Tab')
       const at = await stopNow(page)
-      expect(at?.part, `Tab ${n + 1} from the footer`).toBe('dock')
+      expect(at?.part, `Tab ${n + 1} from the main's last control`).toBe('dock')
       tabs.push(at!.name)
-      expect(await scrolled(), `Tab onto ${at!.name}`).toBe(atFooter)
+      expect(await scrolled(), `Tab onto ${at!.name}`).toBe(atMain)
     }
     expect(tabs).toEqual(['a Tournaments', `a ${CHROME_NAMES.clubs}`, `a ${CHROME_NAMES.logIn}`, `button ${NEW_NAMES.menu}`])
     await testInfo.attach('tab-onto-the-bars.json', { body: JSON.stringify(record, null, 2), contentType: 'application/json' })

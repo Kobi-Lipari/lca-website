@@ -87,6 +87,7 @@ export function BottomTabs() {
               <li key={tab.id} className="flex">
                 <button
                   type="button"
+                  data-slot="menu-tab"
                   data-tab={tab.id}
                   aria-haspopup="dialog"
                   aria-expanded={open}

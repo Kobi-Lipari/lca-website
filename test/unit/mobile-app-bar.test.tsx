@@ -183,6 +183,24 @@ describe('the app bar and its brand link', () => {
     expect(bar().queryByRole('button', { name: /search/i })).toBeNull()
     expect(header().textContent).toBe('Louisiana ChessAssociationMenu')
   })
+
+  it('beside the tab bar, names the section of an address in any letter case as of the address in small letters, as the router reads it (WS02 step 8)', async () => {
+    const { BottomDock, DockProvider } = await import('@/components/layout/BottomDock')
+    for (const [path, words] of [['/SCHOLASTIC', 'Scholastic'], ['/News/Fx-Post', 'News'], ['/Governance/Board', 'About'], ['/scholastic', 'Scholastic']] as const) {
+      render(
+        <AuthContext.Provider value={visitor()}>
+          <MemoryRouter initialEntries={[path]}>
+            <DockProvider>
+              <MobileAppBar />
+              <BottomDock />
+            </DockProvider>
+          </MemoryRouter>
+        </AuthContext.Provider>,
+      )
+      expect(header().querySelector('[data-slot="app-bar-section"]')?.textContent, path).toBe(words)
+      cleanup()
+    }
+  })
 })
 
 // ── The bar's height ───────────────────────────────────────────────────────

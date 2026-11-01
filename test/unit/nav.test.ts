@@ -70,6 +70,7 @@ import {
   navSheet,
   navTabs,
   openedAddresses,
+  pathIsUnder,
   routeMatches,
   searchOn,
   searchPages,
@@ -319,6 +320,31 @@ describe('the phone\'s tabs', () => {
       ['/', null], ['/support', null], ['/search', null], ['/workspace', null], ['/admin', null],
     ]
     for (const [pathname, tab] of CURRENT) expect(currentTab(pathname), pathname).toBe(tab)
+  })
+
+  it('reads a path in any letter case as the router does, so /Clubs and /SCHOLASTIC are the pages /clubs and /scholastic are (WS02 step 8)', () => {
+    // The rule every current mark and section name reads paths by.
+    expect(pathIsUnder('/Clubs', '/clubs')).toBe(true)
+    expect(pathIsUnder('/CLUBS/Fx-Club-North', '/clubs')).toBe(true)
+    expect(pathIsUnder('/Governance/Minutes', '/governance')).toBe(true)
+    expect(pathIsUnder('/ClubsX', '/clubs')).toBe(false)
+    expect(pathIsUnder('/', '/clubs')).toBe(false)
+    const CAPITALS: Array<[string, string | null, string | null]> = [
+      ['/Clubs', 'clubs', 'clubs'],
+      ['/SCHOLASTIC', 'scholastic', 'menu'],
+      ['/Tournaments/Fx-T-Open', 'tournaments', 'tournaments'],
+      ['/Governance/Minutes', 'about', 'menu'],
+      ['/LOGIN', null, 'account'],
+      ['/Dashboard', null, 'account'],
+      ['/Support', null, null],
+    ]
+    for (const [pathname, section, tab] of CAPITALS) {
+      expect(sectionFor(pathname), pathname).toBe(section)
+      expect(currentTab(pathname), pathname).toBe(tab)
+      // The same answer as the path in small letters.
+      expect(sectionFor(pathname)).toBe(sectionFor(pathname.toLowerCase()))
+      expect(currentTab(pathname)).toBe(currentTab(pathname.toLowerCase()))
+    }
   })
 })
 

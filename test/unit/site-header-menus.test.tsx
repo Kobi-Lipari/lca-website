@@ -295,6 +295,9 @@ describe('the About menu\'s rows', () => {
     ['/meeting', 'Annual meeting'],
     ['/champions', 'State champions'],
     ['/contact', 'Contact'],
+    // In any letter case, as the router reads the address, since WS02 step 8.
+    ['/Governance/Minutes', 'Minutes'],
+    ['/CHAMPIONS', 'State champions'],
   ] as const)('at %s, "You are here" on %s alone, with aria-current', (path, current) => {
     const { current: marked, here } = at(path)
     expect(marked).toEqual([current])

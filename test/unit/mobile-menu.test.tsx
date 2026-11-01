@@ -27,8 +27,8 @@
 //   the page; Join LCA or Renew the gold Button;
 // - LCA on Facebook in a new tab, with noopener noreferrer;
 // - the theme switch: the footer's control drawn again with a label id of
-//   its own, the footer's still appearance-label with both drawn, and a pick
-//   in one shown in the other;
+//   its own, the new footer's own label id another again since WS02 step 8,
+//   neither appearance-label, and a pick in one shown in the other;
 // - the rows inside the ScrollPanel region, the region's ring drawn inside
 //   it (WS02 step 7), the two shapes' classes, and data-ring-ground="light".
 //
@@ -358,6 +358,9 @@ describe('the section the page is in', () => {
     ['/contact', 'About', 'Contact'],
     ['/', null, null],
     ['/dashboard', null, null],
+    // In any letter case, as the router reads the address, since WS02 step 8.
+    ['/SCHOLASTIC', 'Scholastic', 'ScholasticKids and school chess'],
+    ['/Governance/Minutes', 'About', 'Minutes'],
   ] as const)('at %s is %s, open, on its tint with "You are here", and aria-current is on %s alone', (path, current, page) => {
     draw(path)
     const items = sectionItems()
@@ -673,7 +676,7 @@ describe('the links', () => {
 // ── The theme switch ───────────────────────────────────────────────────────
 
 describe('the theme switch in the sheet', () => {
-  it('is the footer\'s control drawn again with a label id of its own, the footer\'s still appearance-label, no id twice on the page, and a pick in one shown in the other', () => {
+  it('is the footer\'s control drawn again with a label id of its own, the new footer\'s another of its own since WS02 step 8, no id twice on the page, and a pick in one shown in the other', () => {
     draw('/', undefined, { withFooter: true })
     // While the sheet is open, the page behind it is hidden from screen readers: one group named Appearance is found.
     const own = inSheet().getByRole('group', { name: 'Appearance' })
@@ -683,9 +686,14 @@ describe('the theme switch in the sheet', () => {
     const footers = both.filter((group) => group !== own)
     expect(footers).toHaveLength(1)
     const [footer] = footers
-    expect(footer.getAttribute('aria-labelledby')).toBe('appearance-label')
+    // With the chrome on the footer drawn is the new one, whose control has a label id of its own, as the sheet's has.
+    const footerLabel = footer.getAttribute('aria-labelledby')!
+    expect(footerLabel).not.toBe('appearance-label')
+    expect(document.getElementById('appearance-label')).toBeNull()
+    expect(document.getElementById(footerLabel)!.textContent).toBe('Appearance')
     const ownLabel = own.getAttribute('aria-labelledby')!
     expect(ownLabel).not.toBe('appearance-label')
+    expect(ownLabel).not.toBe(footerLabel)
     expect(document.getElementById(ownLabel)!.textContent).toBe('Appearance')
     expect(sheet().contains(document.getElementById(ownLabel))).toBe(true)
     const ids = [...document.querySelectorAll('[id]')].map((el) => el.id)

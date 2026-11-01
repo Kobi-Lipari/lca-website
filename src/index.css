@@ -920,9 +920,11 @@
  * under the header, and the footer is not drawn at all. The footer then
  * comes with the page, so it never moves when the page arrives: it does not
  * drop out of view as a taller page comes, nor rise into view as a page
- * shorter than the window does (WS02 step 3). With the chrome off the line
- * carries no such attribute, and this matches nothing. */
-:root[data-look="new"] main:has(> [data-loading-line]) + footer {
+ * shorter than the window does (WS02 step 3). The phone's dock may stand
+ * between the main and the footer in the page's order, so the footer is
+ * found as any later sibling of the main (WS02 step 8). With the chrome off
+ * the line carries no such attribute, and this matches nothing. */
+:root[data-look="new"] main:has(> [data-loading-line]) ~ footer {
     display: none;
 }
 
@@ -953,12 +955,14 @@
 }
 
 /* The dock is fixed over the window's foot, so the page keeps the dock's
- * height as room after its last line: the footer is the last thing in the
- * page's flow, after the main, so the room is kept under the footer rather
- * than in the main, and the footer's last line is never under the dock.
- * With no dock the variable is unset and nothing changes (WS02 step 7). */
-:root[data-look="new"] #main-content + footer {
-    margin-bottom: var(--bottom-chrome-h, 0px);
+ * height as room after its last line: the footer is the page's flow's end,
+ * after the main and after the dock in the page's order, so the room is
+ * kept under the footer rather than in the main, as the footer's own
+ * padding, on its own navy, and the footer's last line is never under the
+ * dock (WS02 steps 7 and 8). With no dock the variable is unset and nothing
+ * changes. */
+:root[data-look="new"] #main-content ~ footer {
+    padding-bottom: var(--bottom-chrome-h, 0px);
 }
 
 /* With the chrome on the page's viewport reaches under a phone's notch

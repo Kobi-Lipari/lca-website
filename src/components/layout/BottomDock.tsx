@@ -103,7 +103,14 @@ export function BottomDock() {
   return dock?.tabBar ? <DrawnDock bars={dock.bars} /> : null
 }
 
-/** The dock as drawn: its two places and the tab bar, its height on the page's root. */
+/**
+ * The dock as drawn: its two places and the tab bar, its height on the
+ * page's root. It carries width-before-scroll-bar, the class the dialogs'
+ * scroll lock (react-remove-scroll-bar) gives a right margin of the
+ * scrollbar's width while the Menu sheet holds the page still, so the dock
+ * and its tabs keep their places when a desktop browser's scrollbar goes
+ * (WS02 step 8); with no lock on, the class does nothing.
+ */
 function DrawnDock({ bars }: { bars: DockBars }) {
   const ref = useRef<HTMLDivElement>(null)
   useBottomChromeHeight(ref)
@@ -112,7 +119,7 @@ function DrawnDock({ bars }: { bars: DockBars }) {
     <div
       ref={ref}
       data-slot="bottom-dock"
-      className="fixed inset-x-0 bottom-0 z-40 flex flex-col pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] print:hidden"
+      className="width-before-scroll-bar fixed inset-x-0 bottom-0 z-40 flex flex-col pr-[env(safe-area-inset-right)] pl-[env(safe-area-inset-left)] print:hidden"
     >
       {events === 0 && <div data-slot="dock-action" ref={bars.placeRef('action')} />}
       <div data-slot="dock-event" ref={bars.placeRef('event')} />

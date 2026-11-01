@@ -124,10 +124,15 @@ export function useDock(): Dock | null {
   return useContext(DockContext)
 }
 
-/** The bars' bordered Menu buttons, the Menu tab and the bars' brand links, in the order the focus tries them. */
+/**
+ * The bars' bordered Menu buttons, the Menu tab and the bars' brand links,
+ * in the order the focus tries them, each found by a slot of its own (WS02
+ * step 8), so another control that opens a dialog, as Search will beside
+ * the Menu button, is never taken for Menu.
+ */
 const WAY_BACK = [
-  '[data-slot="app-bar"] button[aria-haspopup="dialog"], [data-slot="site-header"] button[aria-haspopup="dialog"]',
-  '[data-slot="tab-bar"] button[aria-haspopup="dialog"]',
+  '[data-slot="app-bar"] [data-slot="menu-button"], [data-slot="site-header"] [data-slot="menu-button"]',
+  '[data-slot="tab-bar"] [data-slot="menu-tab"]',
   '[data-slot="app-bar-brand"], [data-slot="site-header-brand"]',
 ] as const
 

@@ -205,6 +205,10 @@ describe('the sections', () => {
     ['/support', null],
     ['/login', null],
     ['/dashboard', null],
+    // The router matches a route whatever its letters' case, and so does the mark since WS02 step 8.
+    ['/Clubs', 'Clubs'],
+    ['/SCHOLASTIC', 'Scholastic'],
+    ['/Governance/Minutes', 'About'],
   ] as const)('at %s marks %s, with aria-current, its line and its underline in forced colours, and nothing else', (path, current) => {
     draw(path)
     const items = [...screen.getByRole('navigation', { name: 'Main' }).querySelectorAll(':scope > a, :scope > div > button')]

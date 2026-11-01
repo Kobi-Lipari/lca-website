@@ -162,9 +162,11 @@ function PageFrame({ chrome, children }: { chrome: boolean; children: ReactNode 
 }
 
 /**
- * The page. With the chrome on, the phone's dock comes after the footer,
- * the last thing in the page but the Menu sheet, which is drawn at the
- * body's end. With the chrome off the page is today's.
+ * The page. With the chrome on, the phone's dock comes after the main and
+ * before the footer, so Tab reaches the tab bar right after the page itself
+ * and the footer after the tab bar; the footer is the last thing in the page
+ * but the Menu sheet, which is drawn at the body's end. With the chrome off
+ * the page is today's.
  */
 function App() {
   // Read on every draw, not when the module loads, so the switches a test sets are the ones it sees.
@@ -240,8 +242,8 @@ function App() {
           </Routes>
         </Suspense>
       </main>
-      <Footer />
       {chrome && <BottomDock />}
+      <Footer />
     </PageFrame>
   )
 }

@@ -8,11 +8,16 @@
 //   newLook and newNav, through VITE_FLAGS in the accessibility test build
 //   and through src/lib/features.ts in any build, the page is left as it
 //   is, given the prepaint script alone, or given the script and
-//   viewport-fit=cover, the one line of the viewport tag the only one that
-//   changes;
+//   viewport-fit=cover; since WS02 step 8 the chrome's page also gets the
+//   build's date, one meta on a line of its own right after the viewport
+//   tag, so the viewport tag's line changes and the meta's is added, and
+//   nothing else (the build's clock is held at a made-up instant here);
 // - the code splitting's groups: the switches' file first, and the class
 //   helpers' file, which takes in src/lib/utils.ts, clsx, tailwind-merge
 //   and the helper library tslib wherever npm puts them, and nothing else;
+//   and, since WS02 step 8, the rule that keeps the logo's two sized copies
+//   files of their own, never written into a script, every other file left
+//   to Vite's own rule;
 // - each test of test/unit/e2e-preview-guard.test.ts that starts
 //   Playwright's command line has 20 seconds or more, none left on
 //   vitest's 5 second default, under a loaded machine;
@@ -23,8 +28,8 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'n
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import ts from 'typescript'
-import { afterAll, describe, expect, it } from 'vitest'
-import viteConfig, { COVER_VIEWPORT, TODAYS_VIEWPORT, prepaintPlugin } from '../../vite.config'
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import viteConfig, { COVER_VIEWPORT, TODAYS_VIEWPORT, inlineAsset, prepaintPlugin } from '../../vite.config'
 import { PREPAINT_SCRIPT } from '@/lib/colorScheme'
 
 const ROOT = resolve(__dirname, '../..')
@@ -49,12 +54,22 @@ function transformed(mode: string, flags: string | undefined, featuresFile?: str
 const SCRIPT = { tag: 'script', children: PREPAINT_SCRIPT, injectTo: 'head-prepend' }
 /** The site's own page with viewport-fit=cover. */
 const COVERED = SITE_PAGE.replace(TODAYS_VIEWPORT, COVER_VIEWPORT)
+/** A made-up instant the build's clock is held at, so the meta the plugin writes is known. */
+const NOW = '2026-10-31T14:42:00.000Z'
+/** The site's own page as the chrome's build gives it: viewport-fit=cover, and the build's date on the next line, at the tag's indent. */
+const DATED = COVERED.replace(COVER_VIEWPORT, `${COVER_VIEWPORT}\n    <meta name="build-date" content="${NOW}" />`)
 
 describe('the viewport plugin\'s hooks, called as vite calls them', () => {
   const dirs: string[] = []
   afterAll(() => {
     for (const dir of dirs) rmSync(dir, { recursive: true, force: true })
   })
+  // Each build works out its own instant once; here its clock is held at NOW.
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date(NOW))
+  })
+  afterEach(() => vi.useRealTimers())
   /** A features file with the two switches written as given. */
   function featuresFile(look: boolean, nav: boolean): string {
     const dir = mkdtempSync(join(tmpdir(), 'lca-dock-features-'))
@@ -80,7 +95,7 @@ describe('the viewport plugin\'s hooks, called as vite calls them', () => {
     const result = transformed('a11y', flags)
     if (gives === 'the page as it is') expect(result).toBeUndefined()
     else if (gives === 'the script alone') expect(result).toEqual([SCRIPT])
-    else expect(result).toEqual({ html: COVERED, tags: [SCRIPT] })
+    else expect(result).toEqual({ html: DATED, tags: [SCRIPT] })
   })
 
   it.each(['production', 'development', 'test', 'A11Y'])('in the %s build, which reads no VITE_FLAGS, leaves the page as it is though VITE_FLAGS names both switches', (mode) => {
@@ -89,13 +104,13 @@ describe('the viewport plugin\'s hooks, called as vite calls them', () => {
 
   it('reads both switches from the features file in any build: the tag with both written on, the script alone with newLook on alone, and the page as it is with newNav on alone', () => {
     for (const mode of ['production', 'development', 'a11y']) {
-      expect(transformed(mode, undefined, featuresFile(true, true)), mode).toEqual({ html: COVERED, tags: [SCRIPT] })
+      expect(transformed(mode, undefined, featuresFile(true, true)), mode).toEqual({ html: DATED, tags: [SCRIPT] })
       expect(transformed(mode, undefined, featuresFile(true, false)), mode).toEqual([SCRIPT])
       expect(transformed(mode, undefined, featuresFile(false, true)), mode).toBeUndefined()
       expect(transformed(mode, undefined, featuresFile(false, false)), mode).toBeUndefined()
     }
     // Written on in the file, a switch needs no VITE_FLAGS; written off, VITE_FLAGS turns it on in the accessibility test build alone.
-    expect(transformed('a11y', 'newNav', featuresFile(true, false))).toEqual({ html: COVERED, tags: [SCRIPT] })
+    expect(transformed('a11y', 'newNav', featuresFile(true, false))).toEqual({ html: DATED, tags: [SCRIPT] })
     expect(transformed('production', 'newNav', featuresFile(true, false))).toEqual([SCRIPT])
   })
 
@@ -110,10 +125,22 @@ describe('the viewport plugin\'s hooks, called as vite calls them', () => {
     expect(COVERED.indexOf('<meta charset="UTF-8" />')).toBeLessThan(COVERED.indexOf(COVER_VIEWPORT))
   })
 
+  it('with the chrome on, adds the build\'s date as one line right after the viewport tag, at its indent, and changes no other line of the page', () => {
+    const result = transformed('a11y', 'newLook,newNav') as { html: string }
+    expect(result.html).toBe(DATED)
+    const before = COVERED.split('\n')
+    const after = result.html.split('\n')
+    const at = before.findIndex((line) => line.includes(COVER_VIEWPORT))
+    expect(at).toBeGreaterThan(0)
+    expect(after).toEqual([...before.slice(0, at + 1), `    <meta name="build-date" content="${NOW}" />`, ...before.slice(at + 1)])
+    expect(result.html.match(/name="build-date"/g)).toHaveLength(1)
+    expect(result.html.indexOf('<meta charset="UTF-8" />')).toBeLessThan(result.html.indexOf('name="build-date"'))
+  })
+
   it('gives each build its own answer: one build\'s switches never carry over to the next made with the same plugin', () => {
     const plugin = prepaintPlugin() as unknown as Hooks
     plugin.configResolved({ mode: 'a11y', env: { VITE_FLAGS: 'newLook,newNav' } })
-    expect(plugin.transformIndexHtml(SITE_PAGE)).toEqual({ html: COVERED, tags: [SCRIPT] })
+    expect(plugin.transformIndexHtml(SITE_PAGE)).toEqual({ html: DATED, tags: [SCRIPT] })
     plugin.configResolved({ mode: 'a11y', env: { VITE_FLAGS: 'newLook' } })
     expect(plugin.transformIndexHtml(SITE_PAGE)).toEqual([SCRIPT])
     plugin.configResolved({ mode: 'a11y', env: {} })
@@ -162,6 +189,20 @@ describe('the build\'s code splitting', () => {
     expect(group('features').test('/repo/src/lib/features.ts')).toBe(true)
     expect(group('utils').test('/repo/src/lib/features.ts')).toBe(false)
     expect(group('features').test('/repo/src/lib/utils.ts')).toBe(false)
+  })
+
+  it('keeps the logo\'s two sized copies files of their own, by either kind of slash, and leaves every other file to Vite\'s own rule (WS02 step 8)', () => {
+    expect((viteConfig as { build?: { assetsInlineLimit?: unknown } }).build?.assetsInlineLimit).toBe(inlineAsset)
+    for (const path of ['/repo/src/assets/lca-logo-56.webp', '/repo/src/assets/lca-logo-112.webp', 'C:\\repo\\src\\assets\\lca-logo-56.webp']) expect(inlineAsset(path), path).toBe(false)
+    for (const path of [
+      '/repo/src/assets/lca-logo.webp',
+      '/repo/src/assets/lca-logo-56.png',
+      '/repo/src/assets/lca-logo-560.webp',
+      '/repo/src/assets/generated/lca-logo-56.webp',
+      '/repo/src/assets/react.svg',
+      '/repo/src/assets/generated/LCA_Slide_1-640.webp',
+      '/repo/node_modules/@fontsource-variable/geist/files/geist-latin-wght-normal.woff2',
+    ]) expect(inlineAsset(path), path).toBeUndefined()
   })
 })
 
