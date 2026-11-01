@@ -13,19 +13,20 @@ This file, `docs/redesign/tools/`, `docs/redesign/ws01-manifest.json`, `docs/red
 1. Check where things really stand before acting: `git ls-remote origin` shows the heads of `main` and the branches (under "Branches and pull requests" are the values of Fri, Oct 23), and the lead's check-in, which fires every three hours, reads the same state before it does anything.
 2. Subscribe to activity on PR 106 (draft, documentation only). Subscribe to each WS02 checkpoint's draft pull request as it opens.
 3. Read the end of `docs/redesign/ws01-lead-notes.md` (its last three sections: the focus-ring flake, the merge-safety review of checkpoint D, and the merge and the live check), then `docs/redesign/ws02-plan-notes.md`, then the WS02 lead's notes, `<scratchpad>/ws02-lead-notes.md`, which win over the manifest where they differ. "Brief 1.4 and WS02" below says what they hold.
-4. Then carry on with WS02 on `redesign/ws02-navigation`: checkpoint E (slices 1 to 5) is merged, and slice 6 opens checkpoint F (see "Checkpoint E merged" below). The October 19 design round (the boards still to be redrawn) runs alongside and is described below.
+4. Then carry on with WS02 on `redesign/ws02-navigation`: checkpoints E and F (slices 1 to 8) are merged, and slice 9 opens checkpoint G, search (see "Checkpoint E merged" and "Checkpoint F merged" below). The October 19 design round (the boards still to be redrawn) runs alongside and is described below.
 5. K's notes of Wed, Oct 22: finish the project in this session, with no handoff to the PC needed unless it is useful, and keep going past WS01's step 32 (brief 1.4, then WS02 and on).
 
 ## Branches and pull requests
 
-Brought up to date on Fri, Oct 23, 2026, after WS01 finished and merged, and again on Fri, Oct 30, 2026, after checkpoint E merged. The heads are as `git ls-remote origin` showed them on Fri, Oct 30, 2026.
+Brought up to date on Fri, Oct 23, 2026, after WS01 finished and merged, again on Fri, Oct 30, 2026, after checkpoint E merged, and again on Sun, Nov 1, 2026, after checkpoint F merged. The heads are as `git ls-remote origin` showed them on Sun, Nov 1, 2026.
 
-**`main`**, head `8d7df98` (Fri, Oct 30, 2026). WS01 is finished and merged (all 32 steps, in four checkpoints), the live fixes of Oct 23 and 24 (pull requests 111 to 117) are merged, and WS02's checkpoint E (steps 1 to 5) is merged; each checkpoint is a pull request.
+**`main`**, head `ed03823` (Sun, Nov 1, 2026). WS01 is finished and merged (all 32 steps, in four checkpoints), the live fixes of Oct 23 and 24 (pull requests 111 to 117) are merged, and WS02's checkpoints E (steps 1 to 5) and F (steps 6 to 8) are merged; each checkpoint is a pull request.
 - A, steps 1 to 8: PR 105, merged Fri, Oct 9, 2026 at 3:06 AM UTC (`4f0882f`).
 - B, steps 9 to 15: PR 104, merged Mon, Oct 12, 2026 at 10:29 PM UTC (`748a5ef`).
 - C, steps 16 to 19: PR 107, merged Tue, Oct 13, 2026 at 2:03 AM UTC (`7151bff`).
 - D, steps 20 to 32: PR 108, merged Thu, Oct 22, 2026 at about 6:53 PM UTC (`34b721c`), with `redesign/ws01-design-system` at `ffee346` as its last commit. GitHub stamps the merge at 6:52:31 PM UTC.
 - E, WS02 steps 1 to 5: PR 110, merged Fri, Oct 30, 2026 at about 3:20 PM UTC (`8d7df98`), with `redesign/ws02-navigation` at `c0e17fc` as its last commit.
+- F, WS02 steps 6 to 8: PR 118, merged Sun, Nov 1, 2026 at 11:23 AM UTC (`ed03823`), with `redesign/ws02-navigation` at `80839da` as its last commit.
 
 How checkpoint D was merged:
 - A merge-safety review came first: three read-only judges, one lens each (what a visitor sees with every switch off; the infrastructure and the deploy; the owner's rules and the record), and three refuters for each blocking finding.
@@ -48,7 +49,7 @@ The production database is at `0054_requires_lca_membership.sql`. In the contain
 
 **`preview-new-look`**, head `676b987`, a throwaway branch. It is `main` with only `newLook` and `themeHeritage` turned on in `src/lib/features.ts`, pushed on Fri, Oct 23, 2026 for K's board meeting demo at `https://preview-new-look.lca-website.pages.dev`. It is never merged, and it is deleted after the meeting.
 
-**`redesign/ws02-navigation`**, cut from `main` at `34b721c` on Fri, Oct 23, 2026; at `8d7df98` on Fri, Oct 30, 2026 (fast-forwarded onto checkpoint E's merge commit), with steps 1 to 5 merged and step 6 next. Each WS02 checkpoint is a draft pull request from it against `main`.
+**`redesign/ws02-navigation`**, cut from `main` at `34b721c` on Fri, Oct 23, 2026; at `ed03823` on Sun, Nov 1, 2026 (fast-forwarded onto checkpoint F's merge commit, whose tree is `80839da`'s), with steps 1 to 8 merged and step 9 next. Before that it stood at `8d7df98` on Fri, Oct 30, 2026, on checkpoint E's merge commit. Each WS02 checkpoint is a draft pull request from it against `main`.
 
 **`audit/integrity-and-tests`**, PR 102 (integrity fixes: payments, registration races, member delete, times). Open since Sun, Oct 4, 2026, and it cannot merge. It was cut from `4c1a466` (Fri, Oct 2, 2026), and `main` is 38 commits ahead of that (counted on Fri, Oct 23). Since then `main` has changed at least four of the files it edits (`functions/api/registrations.ts`, `functions/api/registrations/[id].ts`, `functions/api/registrations/batch.ts` and `functions/api/admin/tournaments/[id]/walk-ins.ts`) and moved two of them (`functions/utils/membershipActivation.ts` into `functions/utils/membership/`, and `src/components/AdminAnnouncementPanel.tsx` into `src/areas/admin/components/`). What waits on K is under "Waiting on K".
 
@@ -140,7 +141,7 @@ So 1.4 lands in WS02 slice 1, on `redesign/ws02-navigation`, together with:
 - The plan notes hold the questions for K with their defaults, and a Review section that maps the reviewer's items to steps.
 - Where the lead's notes and the plan differ, the notes win. For instance, the plan notes allow that PR 106 might already carry 1.4's test changes; it will not, and slice 1 makes them.
 
-**Where it stands (Fri, Oct 30, 2026).** Checkpoint E (slices 1 to 5) is merged into `main` as `8d7df98`; slice 6 is next on `redesign/ws02-navigation`. The order in which K's other branches merge does not matter: PR 106 merges cleanly before or after any WS02 checkpoint.
+**Where it stands (Sun, Nov 1, 2026).** Checkpoints E (slices 1 to 5) and F (slices 6 to 8) are merged into `main`, as `8d7df98` and `ed03823`; the record's Status reads "steps 1 to 8 are built", and slice 9, which opens checkpoint G, is next on `redesign/ws02-navigation`. The order in which K's other branches merge does not matter: PR 106 merges cleanly before or after any WS02 checkpoint.
 
 ## How boards reach the canvas
 
@@ -296,3 +297,46 @@ Left for later by the review:
 Two nits from step 5's review carry into step 6:
 - The lazy donation dialog's Suspense in `SiteHeader.tsx` has no error boundary of its own.
 - Log in passes the page as "from" on `/forgot-password` and `/reset-password` too.
+
+## Checkpoint F merged (Sunday, November 1, 2026)
+
+WS02 steps 6 to 8 went to `main` as pull request 118. What happened after checkpoint E merged:
+
+- **Step 6** was committed as `19fd34f` (Saturday, October 31, 2026, 02:52 UTC). It built the Menu sheet, the tablet header and the phone's app bar. The sheet is a modal dialog on the dialog parts the donation dialog already uses: it covers a phone's window down to the tab bar and is a drawer 400 pixels wide on a tablet. The tablet header is one navy row 64 pixels high; the app bar is one navy row 56 pixels high. The bars got an error boundary of their own around what they fetch on demand, and Log in on `/forgot-password` and `/reset-password` hands `/login` the page it was handed. Both came from step 5's review. Pull request 118 was opened as a draft after this commit.
+- **Step 7** was committed as `7683c68` (Saturday, October 31, 2026, 14:44 UTC). It built the tab bar and the dock, which holds the tab bar and leaves places for a page's own bar and the event bar. With the chrome on, the built page's viewport tag carries `viewport-fit=cover`; with either switch off it is today's. A second code-splitting group, the `utils` chunk, holds the small helper library the packages share. It also built the three items checkpoint E's review left for later: the 20 second limits on the command line tests, `@tailwindcss/oxide` declared as a development package, and the step 1 record tests built from pieces.
+- **Step 8** was committed as `e76858c` (Sunday, November 1, 2026, 08:52 UTC). It built the new footer at every width: the logo from two sized files with no plate, four columns that fold under heading buttons below 768 pixels, and a base line with the trust line and the build's date. The date is a `build-date` meta that the plugin writing the viewport tag puts into the built page only with the chrome on, so the built page holds none with every switch off. The dock now comes before the footer. Two pages changed: the contact page fills its subject from the footer's links, and the clubs page brings its map into view for Club map.
+
+The reviews, one line each:
+- Step 6: two focus losses in the bars' failure path (blocking, fixed); the page-count rise from the helper library's split was taken as the build gives it and step 7 measured again; nits carried to step 7.
+- Step 7: two blocking (a focus loss when a phone's window jumped straight to 1024 pixels with the sheet open; the record stale after the tester), fixed; a should-fix on the judgement calls, fixed; nits carried to step 8 (the dock's width under the scroll lock, a slot on the Menu buttons, letter case in the current tab).
+- Step 8: one blocking (the record and the browser runs predated the tester's files), fixed; a should-fix (the footer's layout followed the stylesheet's own breakpoints while its fold followed the window, so the two parted at another default font size), fixed; nits carried to step 9 (the failure notice at the footer's top, the brand block's empty cell, the contact page's seat, the trust line's dots at 768 to 1023 pixels, the fold keeping the focus).
+
+How checkpoint F was merged, as checkpoint E was:
+- A merge-safety review came first: three read-only judges, one lens each (visitor, infrastructure, and rules and record), and three refuters for each blocking finding. The visitor and infrastructure judges said merge; the rules and record judge said fix first.
+- The one blocking finding (the record said integration tests were among the changed files; none was) was refuted 3 to 0 as not blocking, and the fact was confirmed. The should-fix items were all text, and they went into one commit, `80839da`: the per-page fetch counts completed for eleven pages, the helper library's move from the main script into `utils-*.js` stated, three footer comment dashes (not two) named, the grep check counts re-measured, 35 renamed files (`index.html` keeps its name), the "other files" line without integration tests, the newLook-alone clause for two rules that compute to 0, K's lists completed, the date line saying checkpoint E is merged, the clubs page's comment dash at line 38 made a comma, and the gold codemod's two command line tests given 20 seconds.
+- Nits left for later: three WS01 record tests spell their banned words as plain text (rebuild them from pieces when next touched); `index.html`'s description holds an em dash, which is K's word, recorded since step 3.
+- CI was green on `80839da` (Build and test, Accessibility with Playwright and axe, and the Pages preview, Sunday, November 1, 2026, 11:05 to 11:22 UTC). Pull request 118 merged into `main` as `ed03823` on Sunday, November 1, 2026 at 11:23 AM UTC (6:23 AM Central), with a merge commit. `main` had not moved from `8d7df98`, so the merge commit's tree is `80839da`'s.
+- On the push to `main` Pages rebuilt the site. The migration job did not start and the worker was not deployed, since nothing under `migrations/`, `workers/`, `functions/utils/` or `domain/` changed. The production database is unchanged.
+- The live check at 11:25 UTC that day: the live site's stylesheet (`index-BP5ORuyk.css`) and switches chunk (`features--b6t5tBm.js`) carry the same names as a local production build of the merged tree, and the switches chunk is byte for byte the one checkpoint E shipped. It holds 42 entries, all off. The live page's viewport tag is today's and the page holds no `build-date` meta. The local build also holds `MobileMenu-QkI59fPU.js`, `utils-DmiqQ2Hc.js`, `lca-logo-56-CcKcDPdg.webp` and `lca-logo-112-rAGZeUR0.webp`, which no page fetches with every switch off.
+- `redesign/ws02-navigation` was fast-forwarded to `ed03823`.
+
+The figures at the close of step 8, measured on the tree that merged:
+- `npm run lint`: 13 errors and 13 warnings.
+- Unit tests: 6,329 in 234 files. Integration tests: 821 in 60.
+- Browser tests: 995, of which 659 run and 336 are skipped, three runs in a row. The baseline is unchanged (`test/a11y/baseline.json`, sha256 `ce04ac06f0b3906739738413ef7aa3a21b0e8b0b9e3fe1c09dbca15f9f4dcbef`).
+- `dist/assets` holds 189 files. Every page still fetches 7 files, and no page fetches more than before.
+
+Lessons the review of checkpoint F added, beside checkpoint E's (merge subjects carry weekdays):
+- A per-page fetch list covers every page whose chunks changed, not only the pages the step named. Nine more pages than the record named fetched fewer files, because three small icons moved into the main script.
+- A claim that a library "stays" somewhere is measured against the merge base, not the previous step. The record said the helper library stayed in the main script; against the merge base it moved into `utils-*.js`.
+- Record counts are re-measured after every late edit. The grep check counts in the record went stale after late edits.
+- The record's "other files" line lists only kinds that changed. It named integration tests, and none changed.
+
+For K, before the switches go on: nothing is needed for the merge. On a throwaway preview with `newNav` and `newLook` both on, K looks at the Checkpoint F list in `REDESIGN_STATUS.md`: the tablet header, the app bar and the sheet; the tab bar on a phone; the new footer at its widths, with its folds, the logo and the date; and each judgement call of steps 6 to 8. With `newLook` alone, K looks at today's chrome under the new look, today's footer among it, since no test build draws it any more.
+
+## Checkpoint G opens (Sunday, November 1, 2026)
+
+Checkpoint G is steps 9 to 11, search, on the same branch from `ed03823`. Its draft pull request is opened after step 9's commit, and step 10 names its number in the record. Step 9 is the first of the three. Its shape, from the lead's corrections:
+- **The listing rule.** `functions/utils/events/listing.ts` (new) exports `listedWhere(alias)`, today's rule `<alias>.is_visible = 1` as a fragment for the handlers' prepared-statement style. A unit test fails when a public query of tournaments in a listed file names `is_visible` itself instead of calling it. The seven inline uses that exist today are not rewritten here; the record lists them, with file and line, for WS03's shared event query.
+- **The search endpoint.** A new public endpoint returns five groups: tournaments, clubs, news, results and champions. Partner events sit inside the tournaments group, with the organizer's link and the state, never a count and never a Register affordance. "Upcoming" and "completed within 3 years" are decided by the Central calendar day, worked out once per request. A normaliser in `domain/` (lowercase, accents stripped, "&" to "and", "saint" to "st") is applied in code, with a bounded query ahead of it. The answer is cached for 60 seconds, and the endpoint answers from the database alone where the edge cache does not exist. It is live from the merge while `siteSearch` stays off, holds no member, registration, email or player-name field, and has no rate limit until WS07's helper. Because the merge changes `functions/utils/` and `domain/`, it redeploys the daily-emails worker, which bundles nothing the step adds.
+- **The footer items carried from step 8's reviews.** The failure notice is brought into view; the brand block uses two columns only when a join slot is drawn; the contact page resets its seat when the address changes; the trust line's dots are drawn only from 1024 pixels if the row still wraps between 768 and 1023; and the fold keeps the focus as the window crosses 768 pixels.
