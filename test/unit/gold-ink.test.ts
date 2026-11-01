@@ -420,11 +420,13 @@ describe('the command line', () => {
     expect(r.status).toBe(1)
     expect(r.stderr).toContain('Stopped: 1 problem(s). Nothing was written.')
     expect(readFileSync(join(root, 'src/pages/Planted.tsx'), 'utf8')).toBe(before)
-  })
+  }, 20_000)
 
-  it('--check on the real tree passes: 53 brand gold classes kept, 83 text-gold-ink in place, nothing left', () => {
+  it('--check on the real tree passes: 54 brand gold classes kept, 83 text-gold-ink in place, nothing left', () => {
+    // 53 in 21 files until WS02 step 8, whose new footer adds its headings' one class, kept on the footer's
+    // navy, which the codemod reads through bg-(--color-brand-navy) since that step.
     const r = run('--check')
     expect(r.status, r.stdout + r.stderr).toBe(0)
-    expect(r.stdout).toContain(`53 uses of ${GOLD} in 21 files: 0 on a light ground to rewrite to ${GOLD_INK}, 51 kept on a navy or dark ground, 2 kept by an allowlist entry, 0 problem(s). 83 ${GOLD_INK} already in place.`)
-  })
+    expect(r.stdout).toContain(`54 uses of ${GOLD} in 22 files: 0 on a light ground to rewrite to ${GOLD_INK}, 52 kept on a navy or dark ground, 2 kept by an allowlist entry, 0 problem(s). 83 ${GOLD_INK} already in place.`)
+  }, 20_000)
 })

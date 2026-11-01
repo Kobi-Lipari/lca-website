@@ -225,11 +225,12 @@ describe('REDESIGN_STATUS.md, step 26: the step block', () => {
   })
 
   it('states the counts the allowlist and the status map hold now', () => {
-    // WS02 step 5 added two entries for the About menu's gold, which are not
-    // WS01's: the figures this record states are the allowlist less those,
-    // named beside them.
-    const WS02_FILES = ['src/components/layout/AboutMenu.tsx']
-    expect(allowlist.filter((e) => WS02_FILES.includes(e.file)).map((e) => `${e.class} ${e.count}`).sort()).toEqual(['bg-[#f3eedc] 1', 'text-[#705718] 1'])
+    // WS02 steps 5 and 6 added two entries each, for the About menu's gold and
+    // the Menu sheet's, and WS02 step 7 one, for the tab bar's gold line, which
+    // are not WS01's: the figures this record states are the allowlist less
+    // those, named beside them.
+    const WS02_FILES = ['src/components/layout/AboutMenu.tsx', 'src/components/layout/BottomTabs.tsx', 'src/components/layout/MobileMenu.tsx']
+    expect(allowlist.filter((e) => WS02_FILES.includes(e.file)).map((e) => `${e.class} ${e.count}`).sort()).toEqual(['bg-[#f3eedc] 1', 'bg-[#fbfaf6] 1', 'border-t-[#866a1e] 1', 'text-[#705718] 1', 'text-[#866a1e] 1'])
     const ws01 = allowlist.filter((e) => !WS02_FILES.includes(e.file))
     const uses = ws01.reduce((n, e) => n + e.count, 0)
     expect([ws01.length, uses]).toEqual([35, 49])

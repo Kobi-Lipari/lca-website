@@ -24,6 +24,10 @@
 //   cssTokens.ts) keeps every rule and every statement it keeps without the
 //   four lines. Its comment stripper keeps a quoted string whole, so it
 //   reads the fourth line, "../*.md" and all, as a browser reads it.
+// - The scanner this file imports, @tailwindcss/oxide, is a devDependency of
+//   its own in package.json (WS02 step 7), pinned exactly at the version the
+//   lock holds, and the lock holds one copy of it, the one the build's
+//   Tailwind plugin runs, so what is read here is what the build reads.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve, sep } from 'node:path'
 import { Scanner } from '@tailwindcss/oxide'
@@ -315,5 +319,28 @@ describe('the unit tests\' plain reading of src/index.css', () => {
       '.a::before { content: "/* not a comment */"; } ',
       ".b::after { content: '*/'; }",
     ].join('\n'))
+  })
+})
+
+describe('the scanner this file reads with', () => {
+  const pkg = JSON.parse(read('package.json')) as { dependencies?: Record<string, string>; devDependencies?: Record<string, string> }
+  const lock = JSON.parse(read('package-lock.json')) as { packages: Record<string, { version?: string; dev?: boolean; devDependencies?: Record<string, string>; dependencies?: Record<string, string> }> }
+  const NAME = '@tailwindcss/oxide'
+
+  it('is a devDependency of its own, pinned exactly, never a runtime one', () => {
+    expect(pkg.devDependencies?.[NAME]).toMatch(/^\d+\.\d+\.\d+$/)
+    expect(pkg.dependencies?.[NAME]).toBeUndefined()
+  })
+
+  it('is locked at the version package.json pins, for the root and for the package, and kept out of the site build', () => {
+    expect(lock.packages[`node_modules/${NAME}`]?.version).toBe(pkg.devDependencies?.[NAME])
+    expect(lock.packages[''].devDependencies?.[NAME]).toBe(pkg.devDependencies?.[NAME])
+    expect(lock.packages[`node_modules/${NAME}`]?.dev).toBe(true)
+  })
+
+  it('is the one copy the lock holds, the one the build\'s Tailwind plugin asks for at the same version', () => {
+    const copies = Object.keys(lock.packages).filter((path) => path.endsWith(`node_modules/${NAME}`))
+    expect(copies).toEqual([`node_modules/${NAME}`])
+    expect(lock.packages['node_modules/@tailwindcss/vite']?.dependencies?.[NAME]).toBe(pkg.devDependencies?.[NAME])
   })
 })

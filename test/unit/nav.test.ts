@@ -70,6 +70,7 @@ import {
   navSheet,
   navTabs,
   openedAddresses,
+  pathIsUnder,
   routeMatches,
   searchOn,
   searchPages,
@@ -202,7 +203,7 @@ describe('entries: one label for each destination', () => {
       ['search pages', searchPages(ALL_ON)],
     ]
     const sheet = navSheet({ pathname: '/tournaments', signedIn: true, person: SIGNED_IN.at(-1)!.holds, eventMode: true }, ALL_ON)
-    lists.push(['sheet', [...sheet.sections.flatMap((s) => [s.section, ...s.rows.map((r) => r.entry)]), ...sheet.utilities, ...sheet.roles, ...sheet.links, ...sheet.controls]])
+    lists.push(['sheet', [...sheet.sections.flatMap((s) => [s.section, ...s.rows.map((r) => r.entry)]), ...sheet.utilities, ...sheet.roles, ...sheet.logOut, ...sheet.links, ...sheet.controls]])
     for (const person of SIGNED_IN) lists.push([`My LCA rows of ${person.key}`, myLcaRows(person.holds, ALL_OFF).map((r) => r.id)])
     for (const [name, ids] of lists) {
       expect(ids.length, name).toBeGreaterThan(0)
@@ -253,10 +254,16 @@ describe('sections, the header and the sheet', () => {
     expect(at('/support')).toEqual([])
   })
 
-  it('fills the sheet in the board\'s order: sections, the bar\'s buttons, the role rows, the links, then the controls', () => {
+  it('fills the sheet in the board\'s order: sections, the bar\'s buttons, the role rows, Log out for someone signed in, the links, then the controls', () => {
     const out = navSheet({ pathname: '/', signedIn: false }, ALL_OFF)
     expect(labels(out.utilities)).toEqual(['Donate', 'Log in', 'Join LCA'])
     expect(out.roles).toEqual([])
+    expect(out.logOut).toEqual([])
+    // WS02 step 6: the account group ends with Log out for someone signed in, as the My LCA menu does, with or without a person's rows.
+    expect(labels(navSheet({ pathname: '/', signedIn: true }, ALL_OFF).logOut)).toEqual(['Log out'])
+    expect(navSheet({ pathname: '/', signedIn: true, person: SIGNED_IN.at(-1)!.holds }, ALL_OFF).logOut).toEqual(['logOut'])
+    expect(navSheet({ pathname: '/', signedIn: false, person: SIGNED_IN.at(-1)!.holds }, ALL_OFF).logOut).toEqual([])
+    expect(Object.keys(out)).toEqual(['sections', 'utilities', 'roles', 'logOut', 'links', 'controls'])
     expect(labels(out.links)).toEqual(['LCA on Facebook ↗', 'Contact', 'Website help'])
     expect(labels(out.controls)).toEqual(['Appearance'])
     // Hide event bar only while event mode is on, and only while the strip can show.
@@ -313,6 +320,31 @@ describe('the phone\'s tabs', () => {
       ['/', null], ['/support', null], ['/search', null], ['/workspace', null], ['/admin', null],
     ]
     for (const [pathname, tab] of CURRENT) expect(currentTab(pathname), pathname).toBe(tab)
+  })
+
+  it('reads a path in any letter case as the router does, so /Clubs and /SCHOLASTIC are the pages /clubs and /scholastic are (WS02 step 8)', () => {
+    // The rule every current mark and section name reads paths by.
+    expect(pathIsUnder('/Clubs', '/clubs')).toBe(true)
+    expect(pathIsUnder('/CLUBS/Fx-Club-North', '/clubs')).toBe(true)
+    expect(pathIsUnder('/Governance/Minutes', '/governance')).toBe(true)
+    expect(pathIsUnder('/ClubsX', '/clubs')).toBe(false)
+    expect(pathIsUnder('/', '/clubs')).toBe(false)
+    const CAPITALS: Array<[string, string | null, string | null]> = [
+      ['/Clubs', 'clubs', 'clubs'],
+      ['/SCHOLASTIC', 'scholastic', 'menu'],
+      ['/Tournaments/Fx-T-Open', 'tournaments', 'tournaments'],
+      ['/Governance/Minutes', 'about', 'menu'],
+      ['/LOGIN', null, 'account'],
+      ['/Dashboard', null, 'account'],
+      ['/Support', null, null],
+    ]
+    for (const [pathname, section, tab] of CAPITALS) {
+      expect(sectionFor(pathname), pathname).toBe(section)
+      expect(currentTab(pathname), pathname).toBe(tab)
+      // The same answer as the path in small letters.
+      expect(sectionFor(pathname)).toBe(sectionFor(pathname.toLowerCase()))
+      expect(currentTab(pathname)).toBe(currentTab(pathname.toLowerCase()))
+    }
   })
 })
 
@@ -557,6 +589,7 @@ describe('the My LCA menu', () => {
         const sheet = navSheet({ pathname: '/', signedIn: true, person }, features)
         expect([...sheet.roles, ...sheet.utilities].map(navLabel).join(' ')).not.toMatch(/Workspace/)
         expect(sheet.roles).toEqual(adminRowFor(person.role) ? [adminRowFor(person.role)] : [])
+        expect(sheet.logOut).toEqual(['logOut'])
       }
       expect(searchPages(features).map(navLabel).join(' ')).not.toMatch(/Workspace/)
     }

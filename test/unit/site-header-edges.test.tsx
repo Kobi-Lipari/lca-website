@@ -26,9 +26,10 @@
 //   directed, with myLcaRail and newMembership off and on: the rows, their
 //   order and their addresses are src/lib/nav.ts's for what the sign-in
 //   context holds, the children not known, and Log out the one button;
-// - --header-h through Navbar: written while the new header is drawn, taken
-//   off when the window narrows and today's header stands in, written again
-//   when it widens, and never written by today's header.
+// - --header-h through Navbar: 64 pixels for the new header's desktop and
+//   tablet forms and 56 for the phone's app bar, written by whichever bar is
+//   drawn, written anew as the window crosses each line, and never written
+//   by today's header.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import type { User } from '@supabase/supabase-js'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -160,20 +161,24 @@ function levelShown(): 0 | 1 | 2 {
   return nameHidden ? 2 : donateHidden ? 1 : 0
 }
 
-/** A stand-in for the browser's media query: it answers the 1024-pixel query, and can say the answer changed. */
-function stubWidth(wide: boolean) {
-  let answer = wide
+/**
+ * A stand-in for the browser's media query: it answers each min-width query
+ * from the window's width, and can say the width changed.
+ */
+function stubWidth(px: number) {
+  let width = px
   const listeners = new Set<() => void>()
   vi.stubGlobal('matchMedia', (query: string) => ({
     get matches() {
-      return query === '(min-width: 1024px)' && answer
+      const line = /^\(min-width: (\d+)px\)$/.exec(query)
+      return line !== null && width >= Number(line[1])
     },
     media: query,
     addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
     removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
   }))
-  return (next: boolean) => {
-    answer = next
+  return (next: number) => {
+    width = next
     act(() => listeners.forEach((listener) => listener()))
   }
 }
@@ -681,10 +686,15 @@ describe('the My LCA menu for every role and holding (AC8)', () => {
 // ── --header-h through Navbar (AC3, AC11) ──────────────────────────────────
 
 describe('--header-h through Navbar (AC3, AC11)', () => {
-  /** jsdom lays nothing out, so the header's height is given: what offsetHeight reads for the new header. */
+  /**
+   * jsdom lays nothing out, so each bar's height is given: what offsetHeight
+   * reads for the new header, in either form, 56 for the phone's app bar,
+   * and 65 for anything else, today's header among them.
+   */
   function headerHeight(px: number) {
     vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
-      return this.getAttribute('data-slot') === 'site-header' ? px : 65
+      const slot = this.getAttribute('data-slot')
+      return slot === 'site-header' ? px : slot === 'app-bar' ? 56 : 65
     })
   }
   const written = () => document.documentElement.style.getPropertyValue('--header-h')
@@ -699,19 +709,35 @@ describe('--header-h through Navbar (AC3, AC11)', () => {
   }
   const banners = () => screen.getAllByRole('banner')
 
-  it('is written while the new header is drawn, taken off as the window narrows and today\'s header stands in, and written again as it widens', () => {
+  /** The one bar drawn: the new header's form, or the app bar's slot. */
+  const bar = () => {
+    expect(banners()).toHaveLength(1)
+    return banners()[0].getAttribute('data-form') ?? banners()[0].getAttribute('data-slot')
+  }
+
+  it('is written while each bar is drawn, 64 pixels for the desktop and tablet forms and 56 for the app bar, and written anew as the window crosses each line', () => {
     headerHeight(64)
-    const cross = stubWidth(true)
+    const resize = stubWidth(1280)
     drawNavbar()
-    expect(banners()).toHaveLength(1)
-    expect(banners()[0].getAttribute('data-slot')).toBe('site-header')
+    expect(bar()).toBe('desktop')
     expect(written()).toBe('64px')
-    cross(false)
-    expect(banners()).toHaveLength(1)
-    expect(banners()[0].getAttribute('data-slot')).toBeNull()
-    expect(written()).toBe('')
-    cross(true)
-    expect(banners()[0].getAttribute('data-slot')).toBe('site-header')
+    resize(1023)
+    expect(bar()).toBe('tablet')
+    expect(written()).toBe('64px')
+    resize(767)
+    expect(bar()).toBe('app-bar')
+    expect(written()).toBe('56px')
+    resize(768)
+    expect(bar()).toBe('tablet')
+    expect(written()).toBe('64px')
+    resize(1024)
+    expect(bar()).toBe('desktop')
+    expect(written()).toBe('64px')
+    resize(320)
+    expect(bar()).toBe('app-bar')
+    expect(written()).toBe('56px')
+    resize(1280)
+    expect(bar()).toBe('desktop')
     expect(written()).toBe('64px')
   })
 
@@ -722,29 +748,34 @@ describe('--header-h through Navbar (AC3, AC11)', () => {
   ])('is never written by today\'s header, with %j, at any width', (switches) => {
     Object.assign(flags, switches)
     headerHeight(64)
-    for (const wide of [true, false]) {
-      stubWidth(wide)
+    for (const width of [1280, 1024, 1023, 768, 767, 390]) {
+      stubWidth(width)
       drawNavbar()
-      expect(written(), `wide ${wide}`).toBe('')
+      expect(written(), `${width} pixels`).toBe('')
       cleanup()
     }
   })
 
   it('is taken off when the chrome is turned off and the page draws today\'s header again', () => {
     headerHeight(64)
-    stubWidth(true)
-    const { unmount } = drawNavbar()
-    expect(written()).toBe('64px')
-    unmount()
-    expect(written()).toBe('')
-    flags.newNav = false
-    drawNavbar()
-    expect(written()).toBe('')
+    for (const width of [1280, 900, 390]) {
+      flags.newNav = true
+      stubWidth(width)
+      const { unmount } = drawNavbar()
+      expect(written(), `${width} pixels`).toBe(width < 768 ? '56px' : '64px')
+      unmount()
+      expect(written(), `${width} pixels`).toBe('')
+      flags.newNav = false
+      drawNavbar()
+      expect(written(), `${width} pixels`).toBe('')
+      cleanup()
+    }
   })
 
   it('leaves alone a --header-h the page did not get from the new header, with today\'s header drawn', () => {
     document.documentElement.style.setProperty('--header-h', '99px')
-    stubWidth(false)
+    flags.newNav = false
+    stubWidth(390)
     drawNavbar()
     expect(written()).toBe('99px')
   })

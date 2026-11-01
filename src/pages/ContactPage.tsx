@@ -1,6 +1,7 @@
 // src/pages/ContactPage.tsx
 
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Mail, MapPin, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { getBoardSeats, submitContact, type ApiBoardSeat } from '@/lib/api'
 import { usePageTitle } from '@/hooks/usePageTitle'
+import { chromeOn, navLabel, type NavId } from '@/lib/nav'
 
 const LCA_EMAIL = 'LouisianaChess@gmail.com'
 
@@ -17,15 +19,45 @@ function initialSeatRef(): string {
   return new URLSearchParams(window.location.search).get('to') ?? ''
 }
 
+/**
+ * The subjects the new footer's two contact links name with ?subject= (WS02
+ * step 8), each the entry whose label fills the subject field: List or
+ * update your club, and Membership help.
+ */
+const SUBJECTS: ReadonlyMap<string, NavId> = new Map([
+  ['club', 'listClub'],
+  ['membership', 'membershipHelp'],
+])
+
+/** The subject an address names with ?subject=, as its entry's label, or null for none and for any other value. */
+function subjectAsked(search: string): string | null {
+  const id = SUBJECTS.get(new URLSearchParams(search).get('subject') ?? '')
+  return id ? navLabel(id) : null
+}
+
 export function ContactPage() {
   usePageTitle('Contact')
+  const { search } = useLocation()
+  // With the chrome on, a subject the address names fills the subject field
+  // (the footer's List or update your club and Membership help); with it off
+  // the page reads no subject from the address, as today.
+  const chrome = chromeOn()
+  const asked = chrome ? subjectAsked(search) : null
   const [form, setForm] = useState({
     name: '',
     email: '',
-    subject: '',
+    subject: asked ?? '',
     body: '',
     seatRef: initialSeatRef(),
   })
+  // A new address while the page stays, as a press on one of the footer's
+  // links from this page, fills the subject again, adjusted while drawing as
+  // React recommends; the person's own words stay until the address changes.
+  const [lastSearch, setLastSearch] = useState(search)
+  if (chrome && search !== lastSearch) {
+    setLastSearch(search)
+    if (asked) setForm((f) => ({ ...f, subject: asked }))
+  }
   const [seats, setSeats] = useState<ApiBoardSeat[]>([])
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')
   const [error, setError] = useState<string | null>(null)

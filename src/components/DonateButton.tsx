@@ -123,7 +123,10 @@ export function DonateDialog({ open, onOpenChange, trigger, returnFocus, handOff
           const to = returnFocus?.()
           if (!to || !to.isConnected) return
           event.preventDefault()
-          to.focus()
+          // Without scrolling, as the dialog's own focus moves are made: the
+          // control named is in a bar fixed to the top of the window, and the
+          // page's scroll padding would otherwise move the page under it.
+          to.focus({ preventScroll: true })
         }}
       >
         <DialogHeader>

@@ -6,8 +6,8 @@
 //
 // - its Log in links, in the bar and in the drawer, hand /login no page, as
 //   the copy's do, so a visitor who signs in from today's header lands on
-//   the dashboard as before; with the chrome on, below 1024 pixels, where it
-//   stands in for the new header, the same;
+//   the dashboard as before, with either switch off (with both on, the
+//   chrome, Navbar draws the new chrome's header at every width);
 // - aria-current="page" follows the visitor from page to page in the one
 //   header, moving off the link they left and onto the one they followed;
 // - an address that only starts like a link's, as /tournamentsx or
@@ -104,11 +104,8 @@ describe('today\'s Log in links (AC7: the new header\'s Log in alone hands /logi
     [{ newLook: false, newNav: false }],
     [{ newLook: true, newNav: false }],
     [{ newLook: false, newNav: true }],
-    [{ newLook: true, newNav: true }],
   ])('hand /login no page, in the bar and in the drawer, with %j', (switches) => {
     Object.assign(flags, switches)
-    // With the chrome on, the window is narrower than 1024 pixels, where today's header stands in.
-    vi.stubGlobal('matchMedia', (query: string) => ({ matches: false, media: query, addEventListener: () => {}, removeEventListener: () => {} }))
     draw('/tournaments?when=weekend#list')
     fireEvent.click(within(header()).getAllByRole('link', { name: 'Log in' })[0])
     expect(where(), 'the bar\'s').toBe('/login from nothing')

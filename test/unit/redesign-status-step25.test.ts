@@ -78,18 +78,23 @@ describe('REDESIGN_STATUS.md, step 25: the AC2 row', () => {
     ]) expect(row, piece).toContain(piece)
   })
 
-  it('states the counts the tree holds now: the brand gold left is the navy uses and the allowlist\'s', () => {
+  it('states the counts the tree held at step 25, the brand gold left being the navy uses and the allowlist\'s, which the tree still holds but for the one WS02 step 8 adds on the new footer\'s navy', () => {
     const plan = planGold(ROOT, GOLD_ALLOWLIST, 'check')
     expect(plan.problems).toEqual([])
     const gold = plan.uses.filter((u) => u.utility === GOLD)
     const navy = gold.filter((u) => u.ground === 'navy').length
     const allowed = GOLD_ALLOWLIST.reduce((n, e) => n + e.count, 0)
     expect(gold.length).toBe(navy + allowed)
-    expect(row).toContain(`the ${navy} on navy or a dark ground stay, and so do the ${allowed} in objects of strings`)
+    // The row is step 25's record, closed history, and keeps its figure. Since then the one brand gold class added is
+    // the new footer's (WS02 step 8): its column headings on its navy, which the guard places there; the rest is as
+    // step 25 left it.
+    const since = gold.filter((u) => u.file === 'src/components/layout/SiteFooter.tsx')
+    expect(since.map((u) => u.ground)).toEqual(['navy'])
+    expect(row).toContain(`the ${navy - since.length} on navy or a dark ground stay, and so do the ${allowed} in objects of strings`)
     // The run itself: 135 in 43 files, 82 rewritten, and the 34 hex classes in 20 files.
     expect(row).toContain('every `text-lca-gold` (135 in 43 TSX files) and rewrote the 82 on a light ground, 2 of them in commented-out code')
     expect(row).toContain('moved the 34 gold hex text classes in 20 files')
-    expect(gold.length + 82).toBe(135)
+    expect(gold.length - since.length + 82).toBe(135)
   })
 })
 

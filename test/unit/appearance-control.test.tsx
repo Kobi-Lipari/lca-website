@@ -9,7 +9,11 @@
 // so a pick of Light or Dark sets the browser bar's colour there
 // (test/unit/theme-color.test.tsx holds the rest of that). Since WS02 step 4
 // it also holds that in today's footer the control sits on the footer's own
-// navy, with nothing between giving a ground or a ring of its own.
+// navy, with nothing between giving a ground or a ring of its own. Since
+// WS02 step 6 the control takes a label id of its own (labelId), so the Menu
+// sheet can draw it beside the footer's without one id twice on the page,
+// and the ground it is drawn on (on): navy, the footer's and its default,
+// with white words and lines, or light, the sheet's, with the sheet's ink.
 // With newLook off see appearance-control-off.test.tsx.
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -154,6 +158,56 @@ describe('the Appearance control', () => {
     stop()
     expect(device.listeners.size).toBe(0)
     stop = startColorScheme()
+  })
+})
+
+describe('its label id and its ground (WS02 step 6)', () => {
+  it('names its group by appearance-label unless given an id of its own, so two controls never share one id', () => {
+    render(<AppearanceControl labelId="fx-sheet-appearance" on="light" />)
+    const groups = screen.getAllByRole('group', { name: 'Appearance' })
+    expect(groups).toHaveLength(2)
+    expect(groups.map((g) => g.getAttribute('aria-labelledby'))).toEqual(['appearance-label', 'fx-sheet-appearance'])
+    expect(document.querySelectorAll('[id="appearance-label"]')).toHaveLength(1)
+    expect(document.querySelectorAll('[id="fx-sheet-appearance"]')).toHaveLength(1)
+    for (const group of groups) {
+      const label = document.getElementById(group.getAttribute('aria-labelledby')!)!
+      expect(label.textContent).toBe('Appearance')
+      // The label sits just before the group, in the same control.
+      expect(label.nextElementSibling).toBe(group)
+    }
+  })
+
+  it('on navy, its default, draws white words and lines; on light, none, the pressed option marked by the sheet\'s ink line, its muted fill and its weight, 44 pixels high', () => {
+    render(<AppearanceControl labelId="fx-sheet-appearance" on="light" />)
+    const [navy, light] = screen.getAllByRole('group', { name: 'Appearance' })
+    const classes = (el: Element) => (el.getAttribute('class') ?? '').split(/\s+/)
+    expect(classes(document.getElementById('appearance-label')!)).toContain('text-white/70')
+    for (const button of within(navy).getAllByRole('button')) expect(classes(button).some((c) => c.includes('white'))).toBe(true)
+    const lightLabel = document.getElementById('fx-sheet-appearance')!
+    expect(classes(lightLabel)).toEqual(expect.arrayContaining(['text-sm', 'font-semibold']))
+    expect(classes(lightLabel).some((c) => c.includes('white'))).toBe(false)
+    for (const button of within(light).getAllByRole('button')) {
+      const own = classes(button)
+      expect(own.some((c) => c.includes('white')), button.textContent ?? '').toBe(false)
+      expect(own, button.textContent ?? '').toContain('h-11')
+      expect(own, button.textContent ?? '').not.toContain('h-8')
+      const isPressed = button.getAttribute('aria-pressed') === 'true'
+      expect(own.includes('border-ink'), button.textContent ?? '').toBe(isPressed)
+      expect(own.includes('bg-muted'), button.textContent ?? '').toBe(isPressed)
+      expect(own.includes('font-semibold'), button.textContent ?? '').toBe(isPressed)
+      expect(own.includes('border-hairline'), button.textContent ?? '').toBe(!isPressed)
+    }
+  })
+
+  it('shows a pick made in one in the other, whatever ground each is drawn on', () => {
+    render(<AppearanceControl labelId="fx-sheet-appearance" on="light" />)
+    const [navy, light] = screen.getAllByRole('group', { name: 'Appearance' })
+    act(() => fireEvent.click(within(light).getByRole('button', { name: 'Dark' })))
+    expect(within(navy).getByRole('button', { name: 'Dark' }).getAttribute('aria-pressed')).toBe('true')
+    expect(isDark()).toBe(true)
+    act(() => fireEvent.click(within(navy).getByRole('button', { name: 'Light' })))
+    expect(within(light).getByRole('button', { name: 'Light' }).getAttribute('aria-pressed')).toBe('true')
+    expect(isDark()).toBe(false)
   })
 })
 

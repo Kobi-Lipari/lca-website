@@ -47,6 +47,8 @@ import type { ReactElement, ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import lcaLogo from '@/assets/lca-logo.webp'
+import lcaLogo112 from '@/assets/lca-logo-112.webp'
+import lcaLogo56 from '@/assets/lca-logo-56.webp'
 import { AuthContext } from '@/contexts/auth-context'
 import type { AuthContextValue } from '@/contexts/AuthContext'
 import { LcaLogo, type LcaLogoProps } from '@/components/LcaLogo'
@@ -298,6 +300,16 @@ describe('LcaLogo at its edges', () => {
     expect(container.firstElementChild!.childNodes).toHaveLength(0)
     expect(container.querySelector('picture, source, [srcset]')).toBeNull()
   })
+
+  it('sized, as the new footer passes it since WS02 step 8: still one img and nothing round it, no picture element and no source, its srcset the two sized copies', () => {
+    const { container } = render(<LcaLogo width={56} height={56} alt="" sized />)
+    expect(container.children).toHaveLength(1)
+    expect(attributesOf(container.firstElementChild!)).toEqual({
+      'data-slot': 'lca-logo', src: lcaLogo, srcset: `${lcaLogo56} 1x, ${lcaLogo112} 2x`, width: '56', height: '56', alt: '', class: 'rounded-xl object-contain',
+    })
+    expect(container.firstElementChild!.childNodes).toHaveLength(0)
+    expect(container.querySelector('picture, source')).toBeNull()
+  })
 })
 
 /** A signed-in board member with the admin role, as the header sees one: every account link under More. */
@@ -388,9 +400,17 @@ describe('where the tree draws the rook and the official logo', () => {
   it('draws the rook in the header and the LCA tag only, and the official logo in the footer and on /about only', () => {
     // A new place is one of D1's places left for later: record it in REDESIGN_STATUS.md, then add it here.
     // The seal (step 31) draws the rook inside its own SVG, at the head of a heritage page.
-    // WS02 step 5's new header leads with it too (SiteHeader.tsx, D1's place in the record).
-    expect(importers('@/components/LcaMark')).toEqual(['src/components/Seal.tsx', 'src/components/StatusBadge.tsx', 'src/components/layout/Navbar.tsx', 'src/components/layout/SiteHeader.tsx'])
-    expect(importers('@/components/LcaLogo')).toEqual(['src/components/layout/Footer.tsx', 'src/pages/AboutPage.tsx'])
+    // WS02 step 5's new header leads with it too (SiteHeader.tsx, D1's place in the record), and WS02 step 6's
+    // phone app bar (MobileAppBar.tsx, D1's place in the record as well); the tablet header is SiteHeader.tsx's narrower form.
+    // WS02 step 8's new footer draws the official logo in the footer's brand block (SiteFooter.tsx), D1's place for it.
+    expect(importers('@/components/LcaMark')).toEqual([
+      'src/components/Seal.tsx',
+      'src/components/StatusBadge.tsx',
+      'src/components/layout/MobileAppBar.tsx',
+      'src/components/layout/Navbar.tsx',
+      'src/components/layout/SiteHeader.tsx',
+    ])
+    expect(importers('@/components/LcaLogo')).toEqual(['src/components/layout/Footer.tsx', 'src/components/layout/SiteFooter.tsx', 'src/pages/AboutPage.tsx'])
     // D1's places that exist and are left for later draw neither yet.
     for (const page of ['ChampionsPage', 'BoardPage', 'BylawsPage', 'MinutesPage', 'AnnualMeetingPage', 'HomePage']) {
       const text = read(`src/pages/${page}.tsx`)

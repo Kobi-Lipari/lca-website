@@ -149,8 +149,8 @@ const TALL = 'min-h-[calc(100vh-var(--header-h,64px))]'
 
 /** The rules of src/index.css that hide an element while the loading line shows. */
 const hiding = indexCssRules().filter((r) => r.decls.get('display') === 'none' && r.selectors.some((s) => s.includes('[data-loading-line]')))
-/** The one selector those rules use, which the page's own document is asked for here. */
-const FOOTER_WHILE_LOADING = ':root[data-look="new"] main:has(> [data-loading-line]) + footer'
+/** The one selector those rules use, which the page's own document is asked for here: since WS02 step 8 the footer as any later sibling of the main, the dock standing between them. */
+const FOOTER_WHILE_LOADING = ':root[data-look="new"] main:has(> [data-loading-line]) ~ footer'
 /** What that selector reaches in the page drawn now, under the new look, as the script in the page head marks <html>. */
 function hiddenNow(): Element[] {
   document.documentElement.setAttribute('data-look', 'new')
@@ -305,11 +305,13 @@ describe('with the chrome on: newNav and newLook', () => {
     const line = screen.getByRole('status')
     const main = container.querySelector('main')!
     const footer = container.querySelector('footer')!
-    // The line is the main's own child and the only element so marked, and the footer comes right after the main.
+    // The line is the main's own child and the only element so marked, and the footer comes after the main in the
+    // frame, with the phone's dock between them since WS02 step 8.
     expect(line.getAttribute('data-loading-line')).toBe('')
     expect(line.parentElement).toBe(main)
     expect(container.querySelectorAll('[data-loading-line]')).toHaveLength(1)
-    expect(main.nextElementSibling).toBe(footer)
+    expect(footer.parentElement).toBe(main.parentElement)
+    expect(main.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0)
     expect(hiddenNow()).toEqual([footer])
   })
 })

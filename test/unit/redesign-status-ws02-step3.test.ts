@@ -127,7 +127,10 @@ describe('REDESIGN_STATUS.md, WS02 step 3: the lines outside the block', () => {
     const built = /^steps 1 to (\d+) are built\.$/.exec(statusLine.slice(head.length))
     expect(built, statusLine).not.toBeNull()
     expect(Number(built![1])).toBeGreaterThanOrEqual(3)
-    expect(prLine).toBe('**PR:** draft pull request 110, which carries checkpoint E (steps 1 to 5).')
+    // WS02 step 6 moved this pin to a general form: from checkpoint F the line names two pull requests.
+    expect(prLine.startsWith('**PR:** ')).toBe(true)
+    expect(prLine).toContain('pull request 110')
+    expect(prLine).toContain('checkpoint E (steps 1 to 5)')
   })
 
   it('keeps WS01\'s part of the date line first and word for word, and puts step 3 before step 2 before step 1 in WS02\'s part', () => {
@@ -388,12 +391,15 @@ describe('REDESIGN_STATUS.md, WS02 step 3: its claims against the files', () => 
     expect(frame).toContain('The main takes `tabindex="-1"` from that click and gives it back as soon as the focus leaves it')
   })
 
-  it('names the rule that keeps the footer from being drawn while the loading line shows, as src/index.css writes it, and the marker src/App.tsx puts on that line alone', () => {
-    const rule = ':root[data-look="new"] main:has(> [data-loading-line]) + footer'
-    expect(read('src/index.css')).toContain(`${rule} {\n    display: none;\n}`)
+  it('names the rule that keeps the footer from being drawn while the loading line shows, in the stylesheet as it stands and in the record as step 3 wrote it, and the marker src/App.tsx puts on that line alone', () => {
+    // Since WS02 step 8, which put the phone's dock between the main and the footer, the stylesheet finds the
+    // footer as any later sibling of the main; step 3's bullet keeps the rule as step 3 wrote it.
+    const live = ':root[data-look="new"] main:has(> [data-loading-line]) ~ footer'
+    const written = ':root[data-look="new"] main:has(> [data-loading-line]) + footer'
+    expect(read('src/index.css')).toContain(`${live} {\n    display: none;\n}`)
     expect(read('src/App.tsx').match(/data-loading-line=""/g)).toHaveLength(1)
     const frame = bullet(block, '- **The skip link and the loading line.**')
-    expect(frame).toContain(`\`${rule}\``)
+    expect(frame).toContain(`\`${written}\``)
     expect(frame).toContain('`data-loading-line`')
     expect(frame).toContain('`/donate/success`')
   })

@@ -145,7 +145,10 @@ describe('REDESIGN_STATUS.md, WS02 step 5: the lines outside the block', () => {
     const built = /^steps 1 to (\d+) are built\.$/.exec(statusLine.slice(start.length))
     expect(built, statusLine).not.toBeNull()
     expect(Number(built![1])).toBeGreaterThanOrEqual(5)
-    expect(prLine).toBe('**PR:** draft pull request 110, which carries checkpoint E (steps 1 to 5).')
+    // WS02 step 6 moved this pin to a general form: from checkpoint F the line names two pull requests.
+    expect(prLine.startsWith('**PR:** ')).toBe(true)
+    expect(prLine).toContain('pull request 110')
+    expect(prLine).toContain('checkpoint E (steps 1 to 5)')
   })
 
   it('keeps WS01\'s part of the date line first and word for word, and puts step 5 before step 4 before step 3 before step 2 before step 1 in WS02\'s part', () => {
@@ -342,7 +345,10 @@ describe('REDESIGN_STATUS.md, WS02 step 5: the lists', () => {
     const at = heads.indexOf(planned[0])
     expect(at).toBeGreaterThan(-1)
     expect(heads.slice(at, at + planned.length + own.length)).toEqual([...planned, ...own])
-    expect(heads[at + planned.length + own.length]).toBe('The footer\'s logo file (WS02 step 8).')
+    // WS02 step 6 moved this pin: the entries of WS02 steps 6 and 7 come right after this step's own, in step order, and WS02 step 8's first after them.
+    const footer = heads.indexOf('The footer\'s logo file (WS02 step 8).')
+    expect(footer).toBeGreaterThanOrEqual(at + planned.length + own.length)
+    for (const later of heads.slice(at + planned.length + own.length, footer)) expect(later, later).toMatch(/\(WS02 step [67]\)\.$/)
     // None takes a phrase of the brief's own deviation bullets, or the words the step 1 record test finds them by.
     for (const entry of entries(deviations).filter((l) => own.includes(head(l)))) {
       expect(entry).not.toContain('the `/about` tabs')

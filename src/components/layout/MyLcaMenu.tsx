@@ -1,8 +1,11 @@
 // src/components/layout/MyLcaMenu.tsx
 //
 // The new header's My LCA menu (WS02), in the place of Log in once a person
-// is signed in: My LCA ▾ and the short list it opens, its rows from
-// myLcaRows in src/lib/nav.ts for what the person holds. That is My LCA,
+// is signed in, in the header's desktop and tablet forms alike: My LCA ▾ and
+// the short list it opens, its rows from myLcaRows in src/lib/nav.ts for
+// what the person holds (the person as src/components/layout/headerParts.ts
+// reads them from the sign-in context, which the Menu sheet reads too). That
+// is My LCA,
 // today's role rows (Workspace, Board inbox and My region's clubs, by the
 // conditions today's header uses) until myLcaRail gives My LCA its rail, the
 // Admin row the person holds, and Log out, which signs the person out and
@@ -18,6 +21,7 @@
 import { useRef } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
+import { personOf } from '@/components/layout/headerParts'
 import { useNavMenu } from '@/components/layout/navMenu'
 import { useAuth } from '@/contexts/auth-context'
 import { myLcaRows, navLabel } from '@/lib/nav'
@@ -33,19 +37,13 @@ export function MyLcaMenu({ buttonClassName }: MyLcaMenuProps) {
   const buttonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const menu = useNavMenu({ wrapper: wrapperRef, button: buttonRef, panel: panelRef })
-  const { role, isBoardMember, managedClubs, directedTournamentIds, signOut } = useAuth()
+  const auth = useAuth()
   const navigate = useNavigate()
-  const rows = myLcaRows({
-    role,
-    isBoardMember,
-    managedClubs: managedClubs.length,
-    directedEvents: directedTournamentIds.length,
-    hasChildren: false,
-  })
+  const rows = myLcaRows(personOf(auth))
 
   async function logOut() {
     menu.close()
-    await signOut()
+    await auth.signOut()
     navigate('/')
   }
 

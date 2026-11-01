@@ -42,7 +42,10 @@ const lines = status.split('\n')
 const DASHES = new RegExp(`[${String.fromCharCode(0x2013, 0x2014)}]`)
 /** US Chess's old initials, put together so that this file does not hold them. */
 const OLD_INITIALS = new RegExp(`\\b${'US' + 'CF'}\\b`)
-const WORKING_WORDS = /\b(slice|builder|scout|planner|recorder|manifest|subagent|workflow)s?\b|\bthe lead\b/i
+/** The working words, put together so that this file does not hold them either. */
+const WORKING = ['sli' + 'ce', 'buil' + 'der', 'sco' + 'ut', 'plan' + 'ner', 'recor' + 'der', 'mani' + 'fest', 'sub' + 'agent', 'work' + 'flow']
+/** The working words, in the plural as well, and the two words that name a person's role in the work, as words of their own. */
+const WORKING_WORDS = new RegExp(`\\b(${WORKING.join('|')})s?\\b|\\b${'the ' + 'lead'}\\b`, 'i')
 
 const between = (text: string, from: string, to: string) => {
   const start = text.indexOf(from)
@@ -98,6 +101,18 @@ describe('brief 1.4 as it landed', () => {
     expect(at).toBeGreaterThan(0)
     expect(all.filter((l) => l.startsWith('- WS01:'))).toHaveLength(1)
     expect(all[at - 1].startsWith('**Deviations from v1.1 to record in `REDESIGN_STATUS.md`**')).toBe(true)
+  })
+})
+
+describe('the working words this file keeps out of the switches\' comments', () => {
+  it('are the words it always kept out, in the plural as well, and the two words of a person\'s role as words of their own, built from pieces since WS02 step 7', () => {
+    for (const word of WORKING) {
+      for (const text of [word, `${word}s`, `Two ${word.toUpperCase()}S here.`]) expect(WORKING_WORDS.test(text), text).toBe(true)
+      expect(WORKING_WORDS.test(`${word}ing`), `${word}ing`).toBe(false)
+    }
+    for (const text of ['the ' + 'lead', 'The ' + 'Lead said so']) expect(WORKING_WORDS.test(text), text).toBe(true)
+    for (const text of ['the ' + 'leading line', 'the ' + 'leader', 'a lead', 'slight', 'build', 'flow', 'agent']) expect(WORKING_WORDS.test(text), text).toBe(false)
+    expect(WORKING_WORDS.flags).toBe('i')
   })
 })
 

@@ -1,23 +1,26 @@
 // src/components/layout/Navbar.tsx
 //
 // The site's header. With the chrome on (newNav and newLook, chromeOn in
-// src/lib/nav.ts) and a window 1024 pixels wide or wider, it is the new
-// header, src/components/layout/SiteHeader.tsx. Otherwise it is today's
-// header, below, which every visitor sees with every switch off; with the
-// chrome on it also stands in below 1024 pixels until the tablet header and
-// the phone's app bar are built. Today's header marks the link of the page
-// a visitor is on with aria-current="page", in the bar, the More menu and
-// the drawer, and is otherwise as it was (test/unit/header-today.test.tsx).
+// src/lib/nav.ts) it is the new chrome's header at every width: the new
+// header, src/components/layout/SiteHeader.tsx, in its desktop form from
+// 1024 pixels up and its tablet form from 768 to 1023, and the phone's app
+// bar, src/components/layout/MobileAppBar.tsx, below 768 and wherever the
+// window's width cannot be asked. With either switch off it is today's
+// header, below, which every visitor sees with every switch off. Today's
+// header marks the link of the page a visitor is on with
+// aria-current="page", in the bar, the More menu and the drawer, and is
+// otherwise as it was (test/unit/header-today.test.tsx).
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ChevronDown, Menu, UserCircle, X } from 'lucide-react'
 import { LcaMark } from '@/components/LcaMark'
+import { MobileAppBar } from '@/components/layout/MobileAppBar'
 import { SiteHeader } from '@/components/layout/SiteHeader'
 import { Button } from '@/components/ui/button'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import { useAuth } from '@/contexts/auth-context'
 import { WORKSPACE_ROLES, canAccessAdmin } from '@/areas/admin/roles'
-import { useWideScreen } from '@/hooks/useWideScreen'
+import { useTabletScreen, useWideScreen } from '@/hooks/useWideScreen'
 import { FEATURES } from '@/lib/features'
 import { chromeOn } from '@/lib/nav'
 import { cn } from '@/lib/utils'
@@ -228,17 +231,25 @@ function DrawerLink({ link, onNavigate }: { link: NavLink; onNavigate: () => voi
 }
 
 /**
- * The site's header: the new one with the chrome on, and today's otherwise.
- * It calls no hook itself, so the branch it takes is chosen before any hook
- * of the header it draws runs.
+ * The site's header: the new chrome's with the chrome on, and today's
+ * otherwise. It calls no hook itself, so the branch it takes is chosen
+ * before any hook of the header it draws runs.
  */
 export function Navbar() {
   return chromeOn() ? <ChromeHeader /> : <TodaysHeader />
 }
 
-/** With the chrome on: the new header from 1024 pixels up, and today's below it until the tablet header and the app bar are built. */
+/**
+ * With the chrome on: the new header from 768 pixels up, in its desktop form
+ * from 1024 and its tablet form below that, the same element either way, so
+ * crossing 1024 keeps it and changes its form; and the app bar below 768,
+ * and where there is no matchMedia to ask, as in the unit tests that draw
+ * the whole app. Both widths are asked on every draw.
+ */
 function ChromeHeader() {
-  return useWideScreen() ? <SiteHeader /> : <TodaysHeader />
+  const wide = useWideScreen()
+  const tablet = useTabletScreen()
+  return wide || tablet ? <SiteHeader form={wide ? 'desktop' : 'tablet'} /> : <MobileAppBar />
 }
 
 /** Today's header. */
