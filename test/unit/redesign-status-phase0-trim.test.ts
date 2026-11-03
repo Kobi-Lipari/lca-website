@@ -1,10 +1,17 @@
 // test/unit/redesign-status-phase0-trim.test.ts
 //
 // The record of the Phase 0 public-answer trim in REDESIGN_STATUS.md: its
-// own section after WS15, and the lines the trim wrote elsewhere (the date
-// line's Phase 0 piece, the two WS01 follow-ups it closes and the WS02
-// follow-up it answers). It reads the record alone, never the code, so a
-// later workstream that changes a file the trim touched changes nothing here.
+// own section after WS15, and the lines the trim wrote elsewhere: the date
+// line's Phase 0 piece, the two WS01 follow-ups it closes, the sentence it
+// added to the WS01 follow-up on minor names on the entrants list and the
+// WS02 follow-up it answers; and, since the merge-safety review, the lines
+// that record WS02 step 9's merge, which the trim's change wrote ahead of
+// WS02 step 10: the date line's "and step 9", the WS02 PR line, step 9's
+// bullet on its merge, the sentence that ends step 9's follow-up on
+// checkpoint G's pull request and the WS02 follow-up on the one-reload mark.
+// It reads this section and those lines alone, never every table row or
+// heading of the file, and the record alone, never the code, so a later
+// workstream that changes a file the trim touched changes nothing here.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -61,9 +68,28 @@ const ws01FollowUps = between(status, '### Follow-ups', '\n## WS02')
 const ws02FollowUps = between(status, '### WS02 follow-ups', '\n## ')
 const ws01Entry = (head: string) => entries(ws01FollowUps).find((l) => l.startsWith(`- **${head}`)) ?? ''
 const trimFollowUp = entries(ws02FollowUps).find((l) => l.startsWith('- **The public-answer trim still to merge (WS02 step 1).**')) ?? ''
+/** The sentence the trim added to the WS01 follow-up on minor names, which says where `publicName` is wired and leaves the follow-up open. */
+const MINOR_NAMES = 'Wired in the Phase 0 trim (Tuesday, November 3, 2026), behind `ROSTER_SHORT_NAMES`, with `members.guardian_id` and `registrations.grade` as the signs: see the Phase 0 section.'
+const minorNames = ws01Entry('Minor names on the entrants list (step 4).')
+
+/** The WS02 section, and in it the lines that record WS02 step 9's merge, which the trim's change wrote ahead of WS02 step 10. */
+const ws02 = between(status, '## WS02: Information architecture and navigation', '\n## WS03:')
+const prLine = ws02.split('\n').find((l) => l.startsWith('**PR:**')) ?? ''
+/** The PR line from checkpoint G on, which names pull request 119 and its merge. */
+const prPiece = prLine.includes('checkpoint G (steps 9 to 11)') ? prLine.slice(prLine.indexOf('checkpoint G (steps 9 to 11)')) : ''
+const step9Merge = bullet(between(ws02, '\n### WS02 step 9: the listing rule and the search endpoint\n', '\n### '), '- **This step\'s merge.**')
+const RECORDED = 'The Phase 0 trim\'s change to this file has since recorded the merge, ahead of WS02 step 10:'
+const checkpointG = entries(ws02FollowUps).find((l) => l.startsWith('- **Checkpoint G\'s section and its pull request (WS02 step 9).**')) ?? ''
+const recorded = checkpointG.includes(RECORDED) ? checkpointG.slice(checkpointG.indexOf(RECORDED)) : ''
+const reloadMark = entries(ws02FollowUps).find((l) => l.startsWith('- **From the review of WS02 step 9: one reload a tab, not one a deploy (WS02 step 18).**')) ?? ''
+/** The date line's piece that says step 9 is merged, with no semicolon or bracket, as the WS02 record tests allow a piece. */
+const MERGED = 'WS02, checkpoints E and F and step 9 are merged'
 
 /** Every text this change wrote in the record. */
-const written = [section, PIECE, ws01Entry('Public responses expose personal and internal fields'), ws01Entry('Name suffixes'), trimFollowUp]
+const written = [
+  section, PIECE, ws01Entry('Public responses expose personal and internal fields'), ws01Entry('Name suffixes'), minorNames, trimFollowUp,
+  MERGED, prPiece, step9Merge, recorded, reloadMark,
+]
 
 describe('REDESIGN_STATUS.md, the Phase 0 trim: where its section stands', () => {
   it('is one section, after WS15, and the last of the file', () => {
@@ -75,9 +101,15 @@ describe('REDESIGN_STATUS.md, the Phase 0 trim: where its section stands', () =>
   it('opens with its status, branch and pull request, not merged yet, in words other than the merge-pending phrase', () => {
     const statusLine = section.split('\n').find((l) => l.startsWith('**Status:**')) ?? ''
     expect(statusLine.startsWith('**Status:** built on branch `phase0/public-answer-trim` on Tuesday, November 3, 2026, from WS02 step 9\'s commit `b7c11e6`; not merged yet.')).toBe(true)
-    expect(statusLine).toContain('**Branch:** `phase0/public-answer-trim`, cut from `b7c11e6`.')
-    expect(statusLine).toContain('**PR:** none yet.')
-    expect(statusLine).toContain('once WS02 step 9\'s own has merged into `main`')
+    // WS02 step 9's pull request merged first; then main was merged into the branch and the trim's own pull request opened.
+    for (const piece of [
+      'pull request, 119, merged into `main` as `27fe278` on Tuesday, November 3, 2026 at 11:46 AM UTC', '`main` was then merged into this branch as `157ecd2`',
+      'draft pull request 120 was opened from the branch on Tuesday, November 3, 2026 at 4:00 PM UTC',
+      '**Branch:** `phase0/public-answer-trim`, cut from `b7c11e6`, with `2da1513`, the trim; `157ecd2`, the merge of `main`; `190e118`',
+      '**PR:** draft pull request 120, not merged into `main` yet.',
+    ]) expect(statusLine, piece).toContain(piece)
+    expect(statusLine).not.toContain('none yet')
+    expect(statusLine).not.toContain('is opened once')
   })
 
   it('holds its four sections in order, each heading starting "### Phase 0 ", and every entry in them tagged (Phase 0)', () => {
@@ -130,6 +162,7 @@ describe('REDESIGN_STATUS.md, the Phase 0 trim: what it records', () => {
     for (const piece of [
       '`members.guardian_id` set', '`registrations.grade` set', '`IS NOT NULL`', '`computeStandings`', '(D3)', '"Leo Robichaux V" and "Leo Robichaux 3rd" are "Leo R."', '`v`, `2nd` and `3rd`',
       'the roster alone is shortened, as the notes for this change, brief line 1184 and Q38 have it', 'before the event\'s first result as after it',
+      'The roster rule leaves two questions for K, each a follow-up below',
     ]) {
       expect(roster, piece).toContain(piece)
     }
@@ -172,7 +205,10 @@ describe('REDESIGN_STATUS.md, the Phase 0 trim: what it records', () => {
     const checks = bullet(section, '- Checks:')
     for (const piece of ['13 errors and 13 warnings', '`npm run typecheck:functions`', '`npm run check:bundle`', '`npm run test:a11y`']) expect(checks, piece).toContain(piece)
     const merge = bullet(section, '- **What the merge does.**')
-    for (const piece of ['No migration', '`deploy-worker.yml`', '`lca-daily-emails`', '`git revert -m 1 <merge sha>`']) expect(merge, piece).toContain(piece)
+    for (const piece of [
+      'No migration', '`deploy-worker.yml`', '`lca-daily-emails`', '`git revert -m 1 <merge sha>`', 'since pull request 119 merged as `27fe278`',
+      '`190e118` removes the link', '`pages-build-deployment`', 'it undoes the repair as well', 'revert the revert commit',
+    ]) expect(merge, piece).toContain(piece)
   })
 
   it('records the verify items the notes asked for and the follow-ups for K, WS09, WS05 and the next WS02 step', () => {
@@ -184,7 +220,10 @@ describe('REDESIGN_STATUS.md, the Phase 0 trim: what it records', () => {
       expect(entries(verify).some((l) => l.startsWith(`- **${head}`)), head).toBe(true)
     }
     const followUps = subsection('Phase 0 follow-ups')
-    for (const piece of ['Q14', 'Q38', 'WS09', 'WS05', 'The next WS02 step records this merge', 'US Chess ID', 'its print page\'s standings']) expect(followUps, piece).toContain(piece)
+    for (const piece of ['Q14', 'Q38', 'WS09', 'WS05', 'The next WS02 step records this merge', 'US Chess ID', 'its print page\'s standings', 'K answers the two questions the roster rule leaves']) {
+      expect(followUps, piece).toContain(piece)
+    }
+    expect(section).not.toMatch(/\bone question\b/)
     const deviations = subsection('Phase 0 deviations from the brief')
     for (const piece of ['brief line 3295', '`test/unit/contracts-pending.ts`', '`registrations.grade`', '`publicName`']) {
       expect(deviations, piece).toContain(piece)
@@ -205,28 +244,46 @@ describe('REDESIGN_STATUS.md, the Phase 0 trim: what it records', () => {
 })
 
 describe('REDESIGN_STATUS.md, the Phase 0 trim: the lines it wrote elsewhere', () => {
-  it('gives the date line a Phase 0 piece inside its WS02 part, before step 9, keeping its pinned start and end', () => {
-    expect(dateLine).toContain(`; WS02, checkpoints E and F are merged; ${PIECE}; step 9: `)
+  it('gives the date line a Phase 0 piece inside its WS02 part, after the piece that says step 9 is merged and before step 9, keeping its pinned start and end', () => {
+    expect(dateLine).toContain(`; ${MERGED}; ${PIECE}; step 9: `)
     expect(dateLine.endsWith('step 1: record and brief 1.4)')).toBe(true)
     expect(dateLine).toMatch(/^Last updated: \S+ \(WS01, step 32: /)
   })
 
-  it('closes the two WS01 follow-ups it does, with one sentence each', () => {
+  it('closes the two WS01 follow-ups it does, with one sentence each, and ends the one on minor names with a sentence that leaves it open', () => {
     for (const head of ['Public responses expose personal and internal fields', 'Name suffixes']) {
       expect(ws01Entry(head).endsWith(` ${DONE}`), head).toBe(true)
       expect(ws01Entry(head).split(DONE), head).toHaveLength(2)
     }
     expect(ws01FollowUps.split(DONE)).toHaveLength(3)
+    // WS01's words stay, and the one sentence says where publicName is wired, not that the follow-up is done.
+    expect(minorNames.startsWith('- **Minor names on the entrants list (step 4).** `publicName` is ready but unused.')).toBe(true)
+    expect(minorNames.endsWith(` ${MINOR_NAMES}`)).toBe(true)
+    expect(minorNames.split(MINOR_NAMES)).toHaveLength(2)
+    expect(minorNames).not.toContain(DONE)
+    // The section names this edit among the lines the trim wrote elsewhere.
+    expect(bullet(section, '- **Closing search.**')).toContain('the sentence the WS01 follow-up "Minor names on the entrants list (step 4)" gains')
   })
 
-  it('answers the WS02 follow-up with a sentence, every word WS02 step 1 pinned kept', () => {
+  it('answers the WS02 follow-up with a sentence, every word WS02 step 1 pinned kept, and records WS02 step 9\'s merge in the WS02 section', () => {
     for (const piece of ['`clubEmailHidden`', '`rosterShortNames`', 'as WS02 step 1 declared them']) expect(trimFollowUp, piece).toContain(piece)
     expect(trimFollowUp.endsWith('The trim is built on a branch of its own, `phase0/public-answer-trim`, from WS02 step 9 (Tuesday, November 3, 2026), and keeps both switches as declared, adding only their server halves, `CLUB_EMAIL_HIDDEN` and `ROSTER_SHORT_NAMES`: see the Phase 0 section.')).toBe(true)
+    // WS02 step 9's merge, in the PR line, the step's own bullet and the end of its follow-up on checkpoint G's pull request.
+    expect(prPiece).toContain('draft pull request 119 carried WS02 step 9 alone, merged into `main` as `27fe278` on Tuesday, November 3, 2026')
+    for (const piece of [
+      'Merged into `main` as `27fe278` on Tuesday, November 3, 2026 at 11:46 AM UTC', 'a merge commit on head `e58891c`', 'green at 11:44 AM UTC', 'run 41630254243',
+      'from 11:47 AM to 12:00 PM UTC', '`index-BP5ORuyk.css`', '`features--b6t5tBm.js`', 'all 42 switches off', 'no `build-date` meta',
+      '`GET /api/search?q=chess` answered 200', '`Cache-Control: public, max-age=60`', 'with no `q` answered 400',
+    ]) expect(step9Merge, piece).toContain(piece)
+    for (const piece of ['pull request 119', '`27fe278`']) expect(recorded, piece).toContain(piece)
+    // The mark that keeps the stale-tab reload to once, which the review of WS02 step 9 carried to WS02 step 18.
+    for (const piece of ['`sessionStorage`', 'never cleared', 'Refresh button', 'two deploys in one tab']) expect(reloadMark, piece).toContain(piece)
   })
 })
 
 describe('REDESIGN_STATUS.md, the Phase 0 trim: plain words', () => {
-  it('holds no dash, working word, tool, bare letters, old initials, unfilled name or merge-pending phrase', () => {
+  it('reads every piece it means to, and holds no dash, working word, tool, bare letters, old initials, unfilled name or merge-pending phrase', () => {
+    for (const text of written) expect(text).not.toBe('')
     for (const text of written) {
       expect(text).not.toMatch(DASHES)
       expect(text).not.toMatch(BANNED)
