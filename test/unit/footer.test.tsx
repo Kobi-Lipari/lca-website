@@ -31,7 +31,7 @@
 //   element whose dateTime is the instant, the evening before in Louisiana
 //   for a small hour of the morning in UTC; a meta that holds no instant,
 //   or none at all, gives no item; the dots between the items drawn from
-//   768 pixels up, hidden from screen readers, and none below;
+//   1024 pixels up, hidden from screen readers, and none below (WS02 step 9);
 // - the fold: below 768 pixels, and where the width cannot be asked, each
 //   heading holds a button with aria-expanded naming its list with
 //   aria-controls, Contact open and the rest closed and hidden, each its
@@ -452,9 +452,11 @@ describe('the trust line', () => {
     expect(footer().textContent).not.toContain('Site last updated')
   })
 
-  it('puts a middle dot between its items from 768 pixels up, hidden from screen readers, and none below, where each item is a line of its own', () => {
+  // From 1024 pixels since WS02 step 9, which measured the row wrapping at 800 pixels with its last fact first on the
+  // second line, a dot before it; from 768 to 1023 a gap parts the items instead.
+  it('puts a middle dot between its items from 1024 pixels up, hidden from screen readers, and none below, where the row may wrap or each item is a line of its own', () => {
     plantBuildDate('2026-10-31T14:42:00.000Z')
-    for (const width of [1280, 768]) {
+    for (const width of [1280, 1024]) {
       stubWidth(width)
       draw()
       const dots = [...trust().querySelectorAll('[aria-hidden="true"]')]
@@ -467,7 +469,7 @@ describe('the trust line', () => {
       expect([...trust().children].every((child) => child.tagName === 'LI')).toBe(true)
       cleanup()
     }
-    for (const width of [390, null]) {
+    for (const width of [1023, 800, 768, 390, null]) {
       stubWidth(width)
       draw()
       expect(trust().querySelectorAll('[aria-hidden="true"]'), `${width}`).toHaveLength(0)
@@ -574,6 +576,109 @@ describe('the fold below 768 pixels', () => {
     expect(folds().map((b) => b!.getAttribute('aria-expanded'))).toEqual(['false', 'true', 'false', 'true'])
   })
 
+  describe('the focus as the window crosses 768 pixels (WS02 step 9)', () => {
+    /** A window whose width the test moves, its media queries told as a browser tells them; gives the mover. */
+    function liveWidth(start: number) {
+      const now = { width: start }
+      const listeners = new Set<() => void>()
+      vi.stubGlobal('matchMedia', (query: string) => ({
+        get matches() {
+          const m = /^\(min-width: ([\d.]+)px\)$/.exec(query.trim())
+          return m ? now.width >= Number(m[1]) : false
+        },
+        media: query,
+        addEventListener: (_type: string, listener: () => void) => listeners.add(listener),
+        removeEventListener: (_type: string, listener: () => void) => listeners.delete(listener),
+      }))
+      return (width: number) => {
+        now.width = width
+        act(() => listeners.forEach((listener) => listener()))
+      }
+    }
+    /** A column's first link, as the footer draws it at any width. */
+    const firstLink = (column: number) => columns()[column].querySelector('ul a, ul button') as HTMLElement
+    let moves: ReturnType<typeof vi.spyOn>
+    beforeEach(() => {
+      moves = vi.spyOn(HTMLElement.prototype, 'focus')
+    })
+    afterEach(() => {
+      moves.mockRestore()
+    })
+    /** The element the focus was last moved to by a call, and what the call was given. */
+    const lastMove = () => ({ to: moves.mock.contexts.at(-1), options: moves.mock.calls.at(-1)?.[0] })
+
+    it('narrowing below 768, hands the focus of a link whose column closes to that column\'s fold button, leaving the column closed, without scrolling', () => {
+      const resize = liveWidth(1280)
+      draw()
+      const tournaments = within(columns()[0]).getByRole('link', { name: 'Tournaments' })
+      act(() => tournaments.focus())
+      resize(390)
+      const [play] = folds()
+      expect(document.activeElement).toBe(play)
+      expect(play!.getAttribute('aria-expanded')).toBe('false')
+      expect(lastMove()).toEqual({ to: play, options: { preventScroll: true } })
+    })
+
+    it('narrowing below 768, leaves the focus on a link of the column that stays open, Contact', () => {
+      const resize = liveWidth(1280)
+      draw()
+      const email = firstLink(3)
+      act(() => email.focus())
+      const before = moves.mock.calls.length
+      resize(390)
+      expect(document.activeElement).toBe(email)
+      expect(moves.mock.calls.length).toBe(before)
+    })
+
+    it('widening past 768, hands the focus of a fold button, which goes, to its column\'s first link, without scrolling, from one fold button to another too', () => {
+      const resize = liveWidth(390)
+      draw()
+      const [play, community] = folds()
+      act(() => play!.focus())
+      act(() => community!.focus())
+      resize(1280)
+      expect(folds()).toEqual([null, null, null, null])
+      expect(document.activeElement).toBe(within(columns()[1]).getByRole('link', { name: 'Clubs' }))
+      expect(lastMove()).toEqual({ to: document.activeElement, options: { preventScroll: true } })
+    })
+
+    it('widening past 768 after the fold button let the focus go with no control taking it, moves nothing', () => {
+      const resize = liveWidth(390)
+      draw()
+      const [play] = folds()
+      act(() => play!.focus())
+      act(() => play!.blur())
+      expect(document.activeElement).toBe(document.body)
+      const before = moves.mock.calls.length
+      resize(1280)
+      expect(document.activeElement).toBe(document.body)
+      expect(moves.mock.calls.length).toBe(before)
+    })
+
+    it('widening past 768 after the focus moved from the fold button to another control, moves nothing', () => {
+      const resize = liveWidth(390)
+      draw()
+      const [play] = folds()
+      act(() => play!.focus())
+      const donate = within(footer().querySelector('[data-slot="footer-brand"]') as HTMLElement).getByRole('button', { name: 'Donate' })
+      act(() => donate.focus())
+      const before = moves.mock.calls.length
+      resize(1280)
+      expect(document.activeElement).toBe(donate)
+      expect(moves.mock.calls.length).toBe(before)
+    })
+
+    it('moves nothing on the first draw, nor as the window crosses 768 pixels with no footer control holding the focus', () => {
+      const resize = liveWidth(390)
+      draw()
+      const before = moves.mock.calls.length
+      resize(500)
+      resize(1280)
+      resize(1100)
+      expect(moves.mock.calls.length).toBe(before)
+    })
+  })
+
   it('never folds the brand block or the base line', () => {
     stubWidth(390)
     draw()
@@ -646,7 +751,27 @@ describe('the layout around the fold', () => {
     expect(drawn.dots).toBe(0)
   })
 
-  it.each([768, 1023])('at %s pixels, where the headings are plain: the tablet\'s layout, the brand block across two columns over the four, and the trust line a row with its dots', (width) => {
+  it('at 390 pixels, draws Donate alone across the brand block\'s row while a member loads, and Join LCA beside it once the member has none (WS02 step 9)', () => {
+    stubWidth(390)
+    const tree = (auth: AuthContextValue) => (
+      <AuthContext.Provider value={auth}>
+        <MemoryRouter>
+          <SiteFooter />
+        </MemoryRouter>
+      </AuthContext.Provider>
+    )
+    const { rerender } = render(tree(visitor({ memberLoading: true })))
+    // The join slot follows the header's rule, which offers nothing while the member loads, so Donate takes the row.
+    expect(layout().buttons).toEqual(['grid', 'grid-cols-1', 'gap-2.5'])
+    const row = () => footer().querySelector('[data-slot="footer-brand"] p')!.nextElementSibling!
+    expect([...row().children].map((el) => el.textContent)).toEqual(['Donate'])
+    rerender(tree(visitor({ status: 'none' })))
+    // Once the member has loaded with no membership, Join LCA comes first and Donate moves to the right half.
+    expect(layout().buttons).toEqual(['grid', 'grid-cols-2', 'gap-2.5'])
+    expect([...row().children].map((el) => el.textContent)).toEqual(['Join LCA', 'Donate'])
+  })
+
+  it.each([768, 1023])('at %s pixels, where the headings are plain: the tablet\'s layout, the brand block across two columns over the four, and the trust line a row with a gap and no dot', (width) => {
     stubWidth(width)
     plantBuildDate('2026-10-31T14:42:00.000Z')
     draw()
@@ -662,8 +787,9 @@ describe('the layout around the fold', () => {
     for (const list of drawn.lists) expect(list).toEqual([])
     expect(drawn.link).toEqual(expect.arrayContaining(['min-h-[34px]', 'text-[14.5px]']))
     expect(drawn.base).toEqual(['border-t', 'border-white/15', 'pt-4', 'mt-[34px]', 'flex', 'flex-wrap', 'items-center', 'justify-between', 'gap-x-6', 'gap-y-3', 'pb-5'])
-    expect(drawn.trust).toEqual(['flex', 'flex-wrap', 'items-center', 'text-[13.5px]', 'leading-[1.45]', 'text-white/80'])
-    expect(drawn.dots).toBe(4)
+    // From 768 to 1023 pixels a gap parts the trust line's facts and no dot is drawn, since WS02 step 9.
+    expect(drawn.trust).toEqual(['flex', 'flex-wrap', 'items-center', 'text-[13.5px]', 'gap-x-6', 'leading-[1.45]', 'text-white/80'])
+    expect(drawn.dots).toBe(0)
   })
 
   it.each([1024, 1280])('at %s pixels: the desktop\'s layout, the brand block and the four columns in one row of five over the base line', (width) => {

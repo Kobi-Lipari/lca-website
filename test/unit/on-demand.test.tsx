@@ -103,7 +103,7 @@ afterEach(() => {
 })
 
 /** What the boundary wrote to the console for a part it could not load. */
-const ownLines = () => logged.mock.calls.filter((call: unknown[]) => call[0] === 'A part of the header could not be loaded:')
+const ownLines = () => logged.mock.calls.filter((call: unknown[]) => call[0] === 'A part of the chrome could not be loaded:')
 
 describe('the boundary, with a loader handed in', () => {
   it('draws nothing while the part arrives, and the part once it has, with no notice', async () => {
@@ -202,6 +202,61 @@ describe('the new header, when what it fetches cannot be had', () => {
     expect(screen.getAllByRole('alert').map((alert) => alert.querySelector('p')!.textContent)).toEqual([MENU_NOTICE, DONATE_NOTICE])
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(document.activeElement).toBe(donate)
+    pageStands()
+  })
+})
+
+describe('the notice brought into view (WS02 step 9)', () => {
+  /** Each element scrollIntoView was called on, with what it was given: jsdom has no such call, so it is stood in for here and taken away after. */
+  let scrolled: Array<{ el: Element; options: unknown }> = []
+  beforeEach(() => {
+    scrolled = []
+    Element.prototype.scrollIntoView = function (this: Element, options?: unknown) {
+      scrolled.push({ el: this, options })
+    }
+  })
+  afterEach(() => {
+    delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView
+  })
+
+  it('brings a bar\'s notice into the window as far as it needs, once each time it shows, the focus staying on the control that asked', async () => {
+    drawApp(<MobileAppBar />)
+    const menu = press(within(screen.getByRole('banner')).getByRole('button', { name: 'Menu' }))
+    const notice = await screen.findByRole('alert')
+    expect(scrolled).toEqual([{ el: notice, options: { block: 'nearest' } }])
+    expect(document.activeElement).toBe(menu)
+    fireEvent.click(within(notice).getByRole('button', { name: 'Dismiss' }))
+    press(menu)
+    const again = await screen.findByRole('alert')
+    expect(scrolled).toHaveLength(2)
+    expect(scrolled[1]).toEqual({ el: again, options: { block: 'nearest' } })
+    pageStands()
+  })
+
+  it('brings the notice into view for a boundary first drawn with a part that has failed already, as a bar drawn again across a width is', async () => {
+    const Gone = lazy(() => Promise.reject(new TypeError('Failed to fetch dynamically imported module: /assets/Gone.js')))
+    const first = render(
+      <OnDemand notice={MENU_NOTICE} onFailed={() => {}} tries={1}>
+        <Gone />
+      </OnDemand>,
+    )
+    await screen.findByRole('alert')
+    first.unmount()
+    scrolled = []
+    render(
+      <OnDemand notice={MENU_NOTICE} onFailed={() => {}} tries={1}>
+        <Gone />
+      </OnDemand>,
+    )
+    const notice = await screen.findByRole('alert')
+    expect(scrolled).toEqual([{ el: notice, options: { block: 'nearest' } }])
+  })
+
+  it('shows the notice as before where the browser has no such call', async () => {
+    delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView
+    drawApp(<MobileAppBar />)
+    press(within(screen.getByRole('banner')).getByRole('button', { name: 'Menu' }))
+    expect((await screen.findByRole('alert')).textContent).toBe(`${MENU_NOTICE}Dismiss`)
     pageStands()
   })
 })

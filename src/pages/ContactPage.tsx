@@ -13,7 +13,7 @@ import { chromeOn, navLabel, type NavId } from '@/lib/nav'
 
 const LCA_EMAIL = 'LouisianaChess@gmail.com'
 
-/** Read ?to= without coupling this page to a router version. */
+/** ?to= read once from window.location as the page first draws (?subject= comes through the router); with the chrome on a new address resets the seat from its own ?to=, empty when it has none, and fills the subject when it names one, the person's own words staying through one that names none. */
 function initialSeatRef(): string {
   if (typeof window === 'undefined') return ''
   return new URLSearchParams(window.location.search).get('to') ?? ''
@@ -50,13 +50,13 @@ export function ContactPage() {
     body: '',
     seatRef: initialSeatRef(),
   })
-  // A new address while the page stays, as a press on one of the footer's
-  // links from this page, fills the subject again, adjusted while drawing as
-  // React recommends; the person's own words stay until the address changes.
+  // A new address while the page stays, as a footer link pressed here, resets
+  // the seat from its own ?to= and fills the subject when it names one, the
+  // person's own words staying otherwise; adjusted while drawing.
   const [lastSearch, setLastSearch] = useState(search)
   if (chrome && search !== lastSearch) {
     setLastSearch(search)
-    if (asked) setForm((f) => ({ ...f, subject: asked }))
+    setForm((f) => ({ ...f, seatRef: new URLSearchParams(search).get('to') ?? '', ...(asked ? { subject: asked } : {}) }))
   }
   const [seats, setSeats] = useState<ApiBoardSeat[]>([])
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle')

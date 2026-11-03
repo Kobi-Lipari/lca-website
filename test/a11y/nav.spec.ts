@@ -147,7 +147,7 @@
 //   fall on either side of 768 or 1024, the layout follows the fold: at 800
 //   and 1100 plain headings over the tablet's two columns and the desktop's
 //   five parts, each heading in line with its links and the trust line in
-//   rows with its dots, and at 700 the four fold buttons over one column,
+//   rows, its dots at 1100 alone, and at 700 the four fold buttons over one column,
 //   the trust line one fact a line. AC18 at 1280: the governance links and
 //   State champions at today's addresses, each page there when followed, and
 //   no Calendar, Results or Suggest a club. Q32 on / at 1280 by 800: the logo
@@ -3221,8 +3221,8 @@ test.describe('the new footer with the chrome on (WS02 step 8)', () => {
         expect(Date.parse(time!.dateTime), `${where}: the build's instant, no later than now`).toBeLessThanOrEqual(now)
         expect(time!.words, where).toMatch(/^(Sun|Mon|Tue|Wed|Thu|Fri|Sat), (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}, \d{4}$/)
         expect(time!.words, `${where}: the Louisiana day of ${time!.dateTime}`).toBe(louisianaDay(time!.dateTime))
-        // A middle dot between the items from 768 pixels up, hidden from screen readers, and one item a line below.
-        expect(drawn.trust.dots, where).toEqual(width < 768 ? [] : ['·', '·', '·', '·'])
+        // A middle dot between the items from 1024 pixels up (768 before WS02 step 9), hidden from screen readers, and none below.
+        expect(drawn.trust.dots, where).toEqual(width < 1024 ? [] : ['·', '·', '·', '·'])
         seen[where] = drawn.trust
       }
     }
@@ -3428,7 +3428,7 @@ test.describe('the new footer with the chrome on (WS02 step 8)', () => {
     expect(external).toEqual([])
   })
 
-  test('a11y-on with the browser\'s default font at 20 pixels at 800 by 1000, at 24 at 1100 by 1000 and at 14 at 700 by 1000, where the stylesheet\'s rem and the window\'s pixels fall on either side of 768 or 1024: the footer\'s layout follows its fold, plain headings over the tablet\'s two columns and the desktop\'s five parts, each heading in line with its links and the trust line in rows with its dots, and the four fold buttons over one column with the trust line one fact a line and no dot', async ({ page, external }, testInfo) => {
+  test('a11y-on with the browser\'s default font at 20 pixels at 800 by 1000, at 24 at 1100 by 1000 and at 14 at 700 by 1000, where the stylesheet\'s rem and the window\'s pixels fall on either side of 768 or 1024: the footer\'s layout follows its fold, plain headings over the tablet\'s two columns and the desktop\'s five parts, each heading in line with its links and the trust line in rows, with its dots in the desktop\'s alone, and the four fold buttons over one column with the trust line one fact a line and no dot', async ({ page, external }, testInfo) => {
     only(testInfo, ON, 'the new footer comes with the chrome, on a11y-on')
     onlyNew(testInfo, 'footer', [700, 800, 1100], 'the new footer\'s layout and fold')
     // The browser's own default font size, which the stylesheet's rem follow and the window's pixels do not.
@@ -3491,8 +3491,8 @@ test.describe('the new footer with the chrome on (WS02 step 8)', () => {
       const aligned = drawn.columns.filter((c) => c.link !== null)
       expect(aligned.length, `${where}: the lists shown`).toBe(form === 'phone' ? 1 : 4)
       for (const column of aligned) expect(Math.abs(column.words! - column.link!), `${where}: a heading and its first link`).toBeLessThanOrEqual(1)
-      // The trust line: rows with a dot between its items, or one fact a line with none.
-      expect([drawn.trust.display, drawn.trust.dots], `${where}: the trust line`).toEqual(form === 'phone' ? ['block', 0] : ['flex', 4])
+      // The trust line: rows with a dot between its items in the desktop's form, rows with none in the tablet's, or one fact a line with none.
+      expect([drawn.trust.display, drawn.trust.dots], `${where}: the trust line`).toEqual(form === 'phone' ? ['block', 0] : form === 'tablet' ? ['flex', 0] : ['flex', 4])
       drawn.trust.items.slice(1).forEach((item, i) => {
         const before = drawn.trust.items[i]
         if (form === 'phone') expect(item.top, `${where}: a fact on a line of its own`).toBeGreaterThanOrEqual(before.bottom - 0.5)

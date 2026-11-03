@@ -287,6 +287,29 @@ describe('the join slot beside Donate, the same as the desktop header\'s', () =>
     expect(words.at(-1)).toBe('Donate')
     expect(words).toHaveLength(offered.length + 1)
   })
+
+  // Since WS02 step 9, on a phone the brand block's row has two columns only when a join link is drawn beside Donate,
+  // and Donate takes the whole row otherwise, never beside an empty cell.
+  it.each([
+    ['a visitor signed out', {}, 'Join LCA'],
+    ['a visitor while the sign-in is still read', { loading: true }, 'Join LCA'],
+    ['someone signed in while the sign-in is still read', { user: true, loading: true, status: 'active' }, 'Join LCA'],
+    ['someone signed in whose member is still loading', { user: true, memberLoading: true }, null],
+    ['someone signed in whose member could not be read', { user: true }, null],
+    ['a member with no membership', { user: true, status: 'none' }, 'Join LCA'],
+    ['a member whose membership has expired', { user: true, status: 'expired', expiry: '2026-06-30' }, 'Renew'],
+    ['an active member', { user: true, status: 'active', expiry: '2027-06-30' }, null],
+    ['an active member within 30 days of the end', { user: true, status: 'active', expiry: '2026-11-15' }, null],
+  ] as const)('at 390 pixels, for %s: two columns only with a join link, Donate alone across the row otherwise', (_who, who, joins) => {
+    stubWidth(390)
+    draw(visitor(who as Who))
+    const row = brand().querySelector('p')!.nextElementSibling!
+    const classes = row.className.split(/\s+/)
+    expect(classes[0]).toBe('grid')
+    expect(classes).toContain(joins ? 'grid-cols-2' : 'grid-cols-1')
+    expect(classes).not.toContain(joins ? 'grid-cols-1' : 'grid-cols-2')
+    expect([...row.children].map((el) => el.textContent)).toEqual(joins ? [joins, 'Donate'] : ['Donate'])
+  })
 })
 
 // ── Donate whose form cannot be loaded ─────────────────────────────────────
@@ -294,6 +317,18 @@ describe('the join slot beside Donate, the same as the desktop header\'s', () =>
 describe('Donate when the donation form cannot be loaded', () => {
   const brandDonate = () => within(brand()).getByRole('button', { name: 'Donate' })
   const contactDonate = () => within(columns()[3]).getByRole('button', { name: 'Donate' })
+
+  /** Each element scrollIntoView was called on, with what it was given: jsdom has no such call, so it is stood in for here and taken away after. */
+  let scrolled: Array<{ el: Element; options: unknown }> = []
+  beforeEach(() => {
+    scrolled = []
+    Element.prototype.scrollIntoView = function (this: Element, options?: unknown) {
+      scrolled.push({ el: this, options })
+    }
+  })
+  afterEach(() => {
+    delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView
+  })
 
   it('says so in the footer\'s own notice at the footer\'s top, on its own light ground, keeps the focus on the Donate pressed, and gives it back to it when the notice is put away', async () => {
     const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
@@ -310,6 +345,9 @@ describe('Donate when the donation form cannot be loaded', () => {
     expect(screen.queryByRole('dialog')).toBeNull()
     expect(document.activeElement).toBe(pressed)
     expect(logged).toHaveBeenCalled()
+    // Since WS02 step 9 the notice, at the footer's top, is brought into the window, only as far as it needs, once, and the
+    // focus stays on the Donate pressed, low on the page as it may be.
+    expect(scrolled).toEqual([{ el: notice, options: { block: 'nearest' } }])
     fireEvent.click(within(notice).getByRole('button', { name: 'Dismiss' }))
     await waitFor(() => expect(within(footer()).queryByRole('alert')).toBeNull())
     expect(document.activeElement).toBe(pressed)
@@ -319,12 +357,15 @@ describe('Donate when the donation form cannot be loaded', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     gone.donation = true
     draw()
-    for (const pressed of [brandDonate(), contactDonate()]) {
+    for (const [press, pressed] of [brandDonate(), contactDonate()].entries()) {
       act(() => pressed.focus())
       fireEvent.click(pressed)
       const notice = await within(footer()).findByRole('alert')
       expect(notice.textContent, pressed.closest('nav') ? 'Contact' : 'brand').toContain(NOTICE)
       expect(document.activeElement).toBe(pressed)
+      // Each press that shows the notice brings it into view once.
+      expect(scrolled).toHaveLength(press + 1)
+      expect(scrolled[press]).toEqual({ el: notice, options: { block: 'nearest' } })
       fireEvent.click(within(notice).getByRole('button', { name: 'Dismiss' }))
       await waitFor(() => expect(within(footer()).queryByRole('alert')).toBeNull())
       expect(document.activeElement).toBe(pressed)

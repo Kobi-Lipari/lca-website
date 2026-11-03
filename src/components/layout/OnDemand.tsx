@@ -15,10 +15,12 @@
 // light surface of its own, until its one button puts it away. The notice
 // follows the bar's row in the header, past the bar's own height, so the
 // bar keeps its height and a second notice, should both parts fail, sits
-// under the first rather than over it. The site keeps a failed fetch's
-// answer for the page's life, so asking for the part again (tries counts
-// each time) shows the notice again rather than a second failure;
-// reloading the page fetches the files again.
+// under the first rather than over it; the footer draws its own at its top.
+// Each time it shows, the notice is brought into the window, as far as it
+// needs to be and no further, so a press low on a phone's page sees it. The
+// site keeps a failed fetch's answer for the page's life, so asking for the
+// part again (tries counts each time) shows the notice again rather than a
+// second failure; reloading the page fetches the files again.
 //
 // The focus is never left with nothing to hold it, which would send the
 // next Tab back to the start of the page. The control that asked for the
@@ -26,7 +28,7 @@
 // sheet's Donate goes with the sheet, the focus goes to the control the bar
 // names (returnFocus), the Menu button that opened the sheet; and putting
 // the notice away gives the focus to that same control.
-import { Component, Suspense, type ErrorInfo, type ReactNode } from 'react'
+import { Component, Suspense, createRef, type ErrorInfo, type ReactNode } from 'react'
 import { focusIsHeld } from '@/components/layout/headerParts'
 
 interface OnDemandProps {
@@ -56,6 +58,9 @@ interface OnDemandState {
 export class OnDemand extends Component<OnDemandProps, OnDemandState> {
   state: OnDemandState = { failed: false, dismissed: false, tries: this.props.tries }
 
+  /** The notice, while it is drawn. */
+  private readonly notice = createRef<HTMLDivElement>()
+
   static getDerivedStateFromProps(props: OnDemandProps, state: OnDemandState): Partial<OnDemandState> | null {
     // A new ask after a failure tries again, and its failure shows the notice again.
     return props.tries !== state.tries ? { failed: false, dismissed: false, tries: props.tries } : null
@@ -66,11 +71,18 @@ export class OnDemand extends Component<OnDemandProps, OnDemandState> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('A part of the header could not be loaded:', error, info)
+    console.error('A part of the chrome could not be loaded:', error, info)
     this.props.onFailed()
     // The control that asked keeps the focus; if it has gone, nothing in the
     // page holds the focus, so it goes to the control the bar names.
     if (!focusIsHeld()) this.giveFocusBack()
+    // The notice is in the page by now, whether the boundary was drawn before
+    // the part failed or first drawn with a part that had failed already, as
+    // a bar drawn again across a width is. Brought into the window only as
+    // far as it needs, and not at all when it is in view, as a sticky bar's
+    // notice is; the focus stays where it is. A browser with no such call,
+    // as the unit tests' page has none, is left as it is.
+    this.notice.current?.scrollIntoView?.({ block: 'nearest' })
   }
 
   /** Puts the focus on the control the bar names, without scrolling the page under the bar fixed to the window's top. */
@@ -84,6 +96,7 @@ export class OnDemand extends Component<OnDemandProps, OnDemandState> {
     if (this.state.dismissed) return null
     return (
       <div
+        ref={this.notice}
         role="alert"
         data-slot="on-demand-notice"
         data-ring-ground="light"

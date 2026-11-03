@@ -11,7 +11,10 @@
 //   other value, or none, leaves it empty, as today; a new address while
 //   the page stays fills it again, and the person's own words stay until
 //   the address changes; with the chrome off, in each of the three mixes
-//   that leave it off, the field is empty whatever the address says;
+//   that leave it off, the field is empty whatever the address says. Since
+//   WS02 step 9 a new address while the page stays also resets the board
+//   seat from its own ?to=, empty when it names none, with the chrome on,
+//   and leaves the seat as first read with it off;
 // - the clubs page, src/pages/ClubsPage.tsx: its map's wrapper is given
 //   id="map", and an address that ends in #map, the footer's Club map,
 //   brings it into view once the clubs are drawn, at once and from its top,
@@ -46,7 +49,11 @@ const CLUBS: ApiClubListItem[] = [
 vi.mock('@/lib/supabase', () => ({ supabase: {} }))
 vi.mock('@/lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api')>()),
-  getBoardSeats: async () => [],
+  // Two board seats, so the contact page's seat can be read in its Send to list.
+  getBoardSeats: async () => [
+    { id: 's1', slug: 'president', role: 'President', category: 'officer', sort_order: 1, is_shared: 0, holder_name: 'Fixture Holder', holder_count: 1 },
+    { id: 's2', slug: 'treasurer', role: 'Treasurer', category: 'officer', sort_order: 2, is_shared: 0, holder_name: 'Fixture Keeper', holder_count: 1 },
+  ],
   getClubs: async () => CLUBS,
 }))
 // The map needs Google's script; its wrapper is what is read here.
@@ -78,6 +85,8 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.unstubAllGlobals()
+  // The seat's cases set the page's own address, which the page reads ?to= from as it first draws.
+  window.history.replaceState(null, '', '/')
 })
 
 // ── The contact page ───────────────────────────────────────────────────────
@@ -92,10 +101,19 @@ function drawContact(path: string) {
       <Link to="/contact?subject=membership">to membership help</Link>
       <Link to="/contact?subject=club">to the club form</Link>
       <Link to="/contact">to the contact page alone</Link>
+      <Link to="/contact?to=treasurer">to the treasurer</Link>
     </MemoryRouter>,
   )
 }
 const subject = () => screen.getByLabelText('Subject') as HTMLInputElement
+/** The board seat the message goes to, as the Send to list shows it. */
+const seat = () => (screen.getByLabelText('Send to') as HTMLSelectElement).value
+/** The contact page at an address that names a seat, the page's own address set to it as a browser's would be, once the seats are in. */
+async function drawAtSeat(path: string) {
+  window.history.replaceState(null, '', path)
+  drawContact(path)
+  await screen.findByRole('option', { name: /Treasurer/ })
+}
 
 describe('the contact page with the chrome on', () => {
   it('fills the subject from the footer\'s two links, their addresses and their words read from their entries', () => {
@@ -126,9 +144,33 @@ describe('the contact page with the chrome on', () => {
     fireEvent.click(screen.getByText('to the club form'))
     expect(subject().value).toBe('List or update your club')
   })
+
+  it('resets the board seat from each new address while the page stays: empty for one that names no seat, the one named otherwise (WS02 step 9)', async () => {
+    await drawAtSeat('/contact?to=president')
+    expect(seat()).toBe('president')
+    expect(screen.getByText('Your message will go to the President.')).toBeTruthy()
+    fireEvent.click(screen.getByText('to the club form'))
+    expect(seat()).toBe('')
+    expect(subject().value).toBe('List or update your club')
+    expect(screen.getByText('Reach the board, or ask a general question.')).toBeTruthy()
+    fireEvent.click(screen.getByText('to the treasurer'))
+    expect(seat()).toBe('treasurer')
+    expect(screen.getByText('Your message will go to the Treasurer.')).toBeTruthy()
+    // The subject the club form filled stays, since this address names none.
+    expect(subject().value).toBe('List or update your club')
+  })
 })
 
 describe('the contact page with the chrome off', () => {
+  it.each(CHROME_OFF.map((mix) => [mixName(mix), mix] as const))('with %s, the seat stays as the page first read it through a new address (WS02 step 9)', async (_name, mix) => {
+    Object.assign(flags, mix)
+    await drawAtSeat('/contact?to=president')
+    expect(seat()).toBe('president')
+    fireEvent.click(screen.getByText('to the treasurer'))
+    expect(seat()).toBe('president')
+    expect(screen.getByText('Your message will go to the President.')).toBeTruthy()
+  })
+
   it.each(CHROME_OFF.map((mix) => [mixName(mix), mix] as const))('with %s, the subject is empty whatever the address says, and a new address fills nothing', (_name, mix) => {
     Object.assign(flags, mix)
     for (const path of ['/contact?subject=club', '/contact?subject=membership', '/contact']) {
