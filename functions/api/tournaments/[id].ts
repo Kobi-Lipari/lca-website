@@ -1,12 +1,14 @@
 // functions/api/tournaments/[id].ts
-import type { Env, TournamentRow } from '../../types'
+import type { Env, MemberRow, TournamentRow } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { isObserver, requireAuthedMember, isResponse } from '../../utils/auth'
+import { canManageTournament } from '../../utils/admin/permissions'
 import { computeStandings, tournamentPrizes } from '../../utils/events/tournament-manage'
 import { parseJsonArray } from '../../utils/json'
 import { getDb } from '../../db/client'
 import { loadSections, toTournamentResponse } from '../../utils/events/sectionsRepo'
 import { loadSchedules } from '../../utils/events/schedulesRepo'
+import { ROSTER_SHORT_NAMES, publicRoster, publicTournamentAnswer, type RosterRead } from '../../utils/events/publicAnswer'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -21,35 +23,41 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   if (!tournament) return errorResponse('Tournament not found', 404)
 
-  if (!tournament.is_visible) {
-    let isPrivileged = false
-    try {
-      const authed = await requireAuthedMember(context.request, context.env)
-      if (!isResponse(authed)) {
-        const { canManageTournament } = await import('../../utils/admin/permissions')
-        isPrivileged = isObserver(authed.member) ||
-          await canManageTournament(context.env.DB, authed.member, tournamentId)
-      }
-    } catch { /* not logged in */ }
-    if (!isPrivileged) return errorResponse('Tournament not found', 404)
-  }
+  // Who is asking, read once. The people who manage the event (an admin, an
+  // observer, the organizing club's rep or an assigned director) may open it
+  // while it is a hidden draft, and are the only ones answered created_by,
+  // keep_apart and report_settings and, once ROSTER_SHORT_NAMES is set, every
+  // entrant's full name in the roster.
+  let member: MemberRow | null = null
+  let manages = false
+  try {
+    const authed = await requireAuthedMember(context.request, context.env)
+    if (!isResponse(authed)) {
+      member = authed.member
+      manages = isObserver(member) || await canManageTournament(context.env.DB, member, tournamentId)
+    }
+  } catch { /* not logged in */ }
+
+  if (!tournament.is_visible && !manages) return errorResponse('Tournament not found', 404)
 
   // The live sections: an archived one takes no entries, so the page
   // offering entry never lists it. Prizes are read from the same rows. The
   // round times come from the live schedules.
   const db = getDb(context.env.DB)
-  const answer = toTournamentResponse(tournament, await loadSections(db, tournamentId), await loadSchedules(db, tournamentId))
+  const answer = publicTournamentAnswer(
+    toTournamentResponse(tournament, await loadSections(db, tournamentId), await loadSchedules(db, tournamentId)),
+    manages,
+  )
 
   const customDetails = parseJsonArray(tournament.custom_details)
 
   let myRegistration: Record<string, unknown> | null = null
   try {
-    const authed = await requireAuthedMember(context.request, context.env)
-    if (!isResponse(authed)) {
+    if (member) {
       myRegistration = await context.env.DB.prepare(
         'SELECT * FROM registrations WHERE tournament_id = ? AND member_id = ?',
       )
-        .bind(tournamentId, authed.member.id)
+        .bind(tournamentId, member.id)
         .first<Record<string, unknown>>()
 
       if (myRegistration?.bye_rounds) {
@@ -61,21 +69,25 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
         } catch { /* leave as string */ }
       }
     }
-  } catch { /* not logged in */ }
+  } catch { /* the page shows no entry of the viewer's own */ }
 
   // Public roster: payment_status is deliberately NOT selected — whether a
   // named individual has paid is between them and the organizer. Withdrawn
   // players are included (with the flag) so displays can grey/exclude them.
+  // guardian_link and entry_marked say whether the entrant is under 18 (D15):
+  // a guardian link, or an entry that confirmed a scholastic range.
+  // publicRoster reads them and leaves them out of the answer.
   const roster = await context.env.DB.prepare(
     `SELECT r.member_id, r.section, r.withdrawn_at, r.rating_at_entry,
-            m.full_name, m.uscf_id, m.uscf_rating
+            m.full_name, m.uscf_id, m.uscf_rating,
+            m.guardian_id IS NOT NULL AS guardian_link, r.grade IS NOT NULL AS entry_marked
      FROM registrations r
      JOIN members m ON m.id = r.member_id
      WHERE r.tournament_id = ? AND r.waitlisted_at IS NULL
      ORDER BY m.full_name ASC`,
   )
     .bind(tournamentId)
-    .all()
+    .all<RosterRead>()
 
   const waitlist = await context.env.DB.prepare(
     `SELECT COUNT(*) AS n FROM registrations
@@ -100,6 +112,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .all()
 
   // Single standings brain — shared with the manage endpoint
+  // It reads the full roster, before publicRoster writes the answer's, so the
+  // standings and the prizes keep full names (D3).
   const standings = computeStandings(
     (pairings.results ?? []) as never,
     (roster.results ?? []) as Parameters<typeof computeStandings>[1],
@@ -117,7 +131,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       is_rated: tournament.is_rated ?? 1,
       waitlist_count: waitlist?.n ?? 0,
     },
-    roster: roster.results ?? [],
+    roster: publicRoster(roster.results ?? [], ROSTER_SHORT_NAMES && !manages),
     pairings: pairings.results ?? [],
     standings,
     prizes,

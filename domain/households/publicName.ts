@@ -40,8 +40,8 @@ const SURNAME_PARTICLES = new Set([
   'la', 'le', 'saint', 'sainte', 'st', 'st.', 'ste', 'ste.', 'ter', 'van', 'von',
 ])
 
-/** Name endings that are not a surname. */
-const SUFFIXES = new Set(['jr', 'jr.', 'sr', 'sr.', 'ii', 'iii', 'iv'])
+/** Name endings that are not a surname: "Leo Robichaux V" and "Leo Robichaux 3rd" are "Leo R.". */
+const SUFFIXES = new Set(['jr', 'jr.', 'sr', 'sr.', 'ii', 'iii', 'iv', 'v', '2nd', '3rd'])
 
 const isSuffix = (word: string) => SUFFIXES.has(word.toLowerCase())
 

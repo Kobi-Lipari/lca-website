@@ -41,14 +41,18 @@ export const clubTournamentSchema = z.strictObject({
   rounds: z.number().int().min(0),
 })
 
-/** GET /api/clubs/[id] (getClub). Public; hidden drafts are left out. */
+/**
+ * GET /api/clubs/[id] (getClub). Public; hidden drafts are left out. Each
+ * officer is answered by role and name alone, never with an email, whoever
+ * asks. The club's contact_email is left out once CLUB_EMAIL_HIDDEN is set
+ * (functions/utils/clubs/publicAnswer.ts), so it is optional here alone.
+ */
 export const clubDetailResponseSchema = z.strictObject({
-  club: clubRowSchema,
+  club: clubRowSchema.partial({ contact_email: true }),
   officers: z.array(z.strictObject({
     id: idSchema,
     role: z.string(),
     full_name: z.string(),
-    email: z.string(),
   })),
   tournaments: z.array(clubTournamentSchema),
   news: z.array(z.strictObject({
