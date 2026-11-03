@@ -119,12 +119,20 @@ const goldButtonClass =
  * Senior, so the line above the cards says so, and the other three tiers
  * are one click or one arrow key away.
  *
- * One exception: a member whose membership is an active Family one starts on
- * Family, because renewing as Adult would end their children's family
- * coverage. An expired Family membership, or any other tier, starts on Adult.
+ * One exception: a guardian whose own Family membership is active starts on
+ * Family, because renewing as another tier ends their children's cover when
+ * that membership runs out. A child it covers starts on Adult like everyone
+ * else. The family membership is the guardian's, not the child's, but the
+ * site writes the same type and status (family, active) on each covered
+ * child's record too (syncFamilyCoverage in functions/utils/family.ts), so
+ * guardian_id, the guardian's member id on a child's record, is what tells
+ * the two apart. An expired Family membership, or any other tier, starts on
+ * Adult.
  */
 function startingTier(member: ApiMember | null): string {
-  return member?.membership_type === 'family' && member.membership_status === 'active' ? 'family' : 'adult'
+  const ownActiveFamily =
+    member?.membership_type === 'family' && member.membership_status === 'active' && !member.guardian_id
+  return ownActiveFamily ? 'family' : 'adult'
 }
 
 /** Scholastic's and Senior's prices, said the same way whichever tier the choice starts on. */
@@ -144,7 +152,7 @@ const FAMILY_CHOICE_NOTE =
   `Adult is $${MEMBERSHIP_TIER_PRICES.adult} a year, a little more than ${LOWER_PRICES}`
 
 /** Why the choice starts on Family, said under the line to that member only. */
-const FAMILY_REASON = 'Your family membership covers your children; renewing as Family keeps that.'
+const FAMILY_REASON = 'Your family membership covers your children. Renewing as another tier ends their cover when your current membership runs out.'
 
 /** A tier's own extras under its price, each with a tick. Every tier's list is empty for now. */
 function TierBenefitList({ items, className }: { items: string[]; className?: string }) {
@@ -457,13 +465,16 @@ export function MembershipPage() {
             </li>
           </ol>
 
-          <p className="mt-6 text-sm text-muted-foreground">
-            Already a member?{' '}
-            <Link to="/login" className="font-medium text-ink hover:underline">
-              Log in to renew
-            </Link>{' '}
-            or manage your account.
-          </p>
+          {/* A signed-in member already has the choice above, so only a visitor who is signed out is asked to log in. */}
+          {!user && (
+            <p className="mt-6 text-sm text-muted-foreground">
+              Already a member?{' '}
+              <Link to="/login" className="font-medium text-ink hover:underline">
+                Log in to renew
+              </Link>{' '}
+              or manage your account.
+            </p>
+          )}
         </div>
       </section>
     </div>

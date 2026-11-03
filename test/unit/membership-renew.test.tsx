@@ -11,13 +11,18 @@
 // - signed in, the four cards are one choice, "Choose your membership", with
 //   Adult chosen to start, the line above them saying that Adult is a little
 //   more than Scholastic and Senior, and one gold button under them that
-//   names the choice and its price: "Renew as Adult, $15 a year", "Join as"
-//   for a member with no membership yet, and "Join or renew as" while the
-//   member's record is still on its way;
-// - one exception: a member whose Family membership is active starts on
-//   Family, with a sentence under the price line saying that renewing as
-//   Family keeps their children covered; an expired Family member, and a
-//   member of any other tier, starts on Adult;
+//   names the choice and its price ("Renew as Adult" with Adult's price a
+//   year), "Join as" for a member with no membership yet, and "Join or
+//   renew as" while the member's record is still on its way;
+// - one exception: a guardian whose own Family membership is active starts
+//   on Family, with a sentence under the price line saying that renewing as
+//   another tier ends their children's cover when their current membership
+//   runs out; an expired Family member, and a member of any other tier,
+//   starts on Adult;
+// - a child that a guardian's family membership covers, signed in with an
+//   account of their own, starts on Adult like everyone else and is told
+//   nothing about children of their own: the site writes family and active
+//   on the child's record too, and only guardian_id tells the two apart;
 // - "Selected" is on the chosen card only, beside its gold ring, and moves
 //   with a click on a card or an arrow key in the group;
 // - the button starts the checkout for the chosen tier as the page always
@@ -25,7 +30,10 @@
 //   this very tab sent to the payment page, never a new window; the choice
 //   holds while the checkout is asked for, and a failure says why;
 // - an active member sees the choice too, with their banner, and a word on
-//   renewing early; every date a person reads carries its weekday.
+//   renewing early; every date a person reads carries its weekday;
+// - "Already a member? Log in to renew" is there for a visitor who is
+//   signed out only; a signed-in member, with or without their record yet,
+//   has the choice instead.
 //
 // Every price is read from domain/membership/tiers.ts, as the page and the
 // checkout read it. jsdom carries out no arrow key on a radio, so the case
@@ -70,8 +78,8 @@ const KEY = 'lca_pending_payment_id'
 const DASHES = new RegExp(`[${String.fromCharCode(0x2013, 0x2014)}]`)
 const label = (verb: string, tier: Tier) => `${verb} as ${tier.short}, $${P[tier.id]} a year`
 
-/** A member as GET /api/me answers one. */
-function member(status: ApiMember['membership_status'], expiry: string | null, type: string | null = null): ApiMember {
+/** A member as GET /api/me answers one; guardian_id is null unless the member is a guardian's child. */
+function member(status: ApiMember['membership_status'], expiry: string | null, type: string | null = null, guardian: string | null = null): ApiMember {
   return {
     id: 'fx-renew-1',
     email: 'renew@example.com',
@@ -82,10 +90,22 @@ function member(status: ApiMember['membership_status'], expiry: string | null, t
     membership_status: status,
     membership_expiry: expiry,
     membership_type: type,
+    guardian_id: guardian,
     role: 'member',
     club_id: null,
     created_at: '2025-10-24 12:00:00',
   }
+}
+
+/**
+ * A child that a guardian's family membership covers, signed in with an
+ * account of their own, as GET /api/me answers one: the site writes family
+ * and active on the child's own record too (syncFamilyCoverage in
+ * functions/utils/family.ts), so guardian_id is the one sign that the
+ * membership is the guardian's.
+ */
+function coveredChild(status: ApiMember['membership_status'], expiry: string | null): ApiMember {
+  return { ...member(status, expiry, 'family', 'fx-renew-guardian'), id: 'fx-renew-child', full_name: 'Robin Fixture' }
 }
 
 /** The page, for a visitor signed out (no user), or signed in with or without their member record yet. */
@@ -386,9 +406,10 @@ describe('the choice for other signed-in members', () => {
 })
 
 describe('the tier the choice starts on, from what the member holds', () => {
-  // Everyone starts on Adult except a member whose Family membership is
-  // active, who starts on Family so a renewal does not end their children's
-  // cover by accident. An expired Family membership starts on Adult.
+  // Everyone starts on Adult except a guardian whose own Family membership
+  // is active, who starts on Family so a renewal does not end their
+  // children's cover by accident. An expired Family membership starts on
+  // Adult, and so does a child that a family membership covers.
   const held: Array<[string, ApiMember]> = [
     ['an expired Family membership', member('expired', '2026-10-24', 'family')],
     ['an expired Scholastic membership', member('expired', '2026-10-24', 'scholastic')],
@@ -408,7 +429,7 @@ describe('the tier the choice starts on, from what the member holds', () => {
     `Family is chosen to start, at $${P.family} a year, and covers you and up to ${FAMILY_MEMBERSHIP_CHILDREN} children. ` +
     `Adult is $${P.adult} a year, a little more than Scholastic ($${P.scholastic}, for K-12 students) ` +
     `or Senior ($${P.senior}, for 65 and up), so if one of those fits you, choose it below.`
-  const REASON = 'Your family membership covers your children; renewing as Family keeps that.'
+  const REASON = 'Your family membership covers your children. Renewing as another tier ends their cover when your current membership runs out.'
   /** The paragraphs that describe the group, in the order a screen reader is given them. */
   const described = () => group().getAttribute('aria-describedby')!.split(' ').map((id) => document.getElementById(id)!)
 
@@ -418,7 +439,7 @@ describe('the tier the choice starts on, from what the member holds', () => {
     expect(checkoutButton().textContent).toBe(label(verbOf(who), ADULT))
     expect(described().map((p) => p.textContent)).toEqual([ADULT_NOTE])
     expect(screen.queryByText(REASON)).toBeNull()
-    expect(document.body.textContent).not.toMatch(/Family is chosen to start|renewing as Family keeps that/)
+    expect(document.body.textContent).not.toMatch(/Family is chosen to start|Your family membership covers your children/)
   })
 
   it('a member with an active Family membership starts on Family, is told why under the price line, and can switch to Adult', () => {
@@ -505,6 +526,52 @@ describe('the tier the choice starts on, from what the member holds', () => {
     expect(api.createMembershipCheckout).toHaveBeenCalledTimes(1)
     expect(api.createMembershipCheckout).toHaveBeenCalledWith('adult')
   })
+
+  describe('a child that a guardian\'s family membership covers, signed in with an account of their own', () => {
+    /** The Family card's own words, which every member reads. */
+    const FAMILY_CARD = `Covers you and up to ${FAMILY_MEMBERSHIP_CHILDREN} children. Add your children on your profile and they are covered automatically.`
+    /** Each piece of text on the page that speaks of children, in page order. */
+    const aboutChildren = () => [...document.body.querySelectorAll('*')].filter((el) => el.children.length === 0 && /children/i.test(el.textContent!)).map((el) => el.textContent)
+
+    it('starts on Adult like everyone else, with the Adult price line alone describing the group and no word on children of their own, and can switch to Scholastic', () => {
+      const child = coveredChild('active', '2027-10-25')
+      // The record says family and active, as the guardian's does; guardian_id alone says the membership is the guardian's.
+      expect(child).toMatchObject({ membership_type: 'family', membership_status: 'active', guardian_id: 'fx-renew-guardian' })
+      renderPage({ user: true, who: child })
+      expectChosen(ADULT)
+      expect(checkoutButton().textContent).toBe(`Renew as Adult, $${P.adult} a year`)
+      const note = within(group()).getByText(/^Adult is chosen to start/)
+      expect(note.textContent).toBe(ADULT_NOTE)
+      expect(group().getAttribute('aria-describedby')).toBe(note.id)
+      // Nothing says a membership of theirs covers children: the only words about children are the price line's and the Family card's.
+      expect(screen.queryByText(REASON)).toBeNull()
+      expect(document.body.textContent).not.toMatch(/Family is chosen to start|Your family membership covers your children|ends their cover/)
+      expect(aboutChildren()).toEqual([ADULT_NOTE, FAMILY_CARD])
+      // Their banner says how long the cover runs, with the weekday.
+      expect(screen.getByRole('button', { name: 'View my profile' }).closest('section')!.textContent).toBe('Your membership is active through Mon, Oct 25, 2027. View my profile')
+      // Scholastic is one click away, and the button follows.
+      fireEvent.click(radio(SCHOLASTIC))
+      expectChosen(SCHOLASTIC)
+      expect(checkoutButton().textContent).toBe(`Renew as Scholastic, $${P.scholastic} a year`)
+    })
+
+    it('stays on Adult when the child\'s record arrives after the page is drawn', () => {
+      const first = renderPage({ user: true, who: null })
+      expectChosen(ADULT, 'Join or renew')
+      first.rerender(page({ user: true, who: coveredChild('active', '2027-10-25') }))
+      expectChosen(ADULT)
+      expect(described().map((p) => p.textContent)).toEqual([ADULT_NOTE])
+      expect(screen.queryByText(REASON)).toBeNull()
+    })
+
+    it('starts on Adult once the cover has run out, too', () => {
+      renderPage({ user: true, who: coveredChild('expired', '2026-10-23') })
+      expectChosen(ADULT)
+      expect(described().map((p) => p.textContent)).toEqual([ADULT_NOTE])
+      expect(screen.queryByText(REASON)).toBeNull()
+      expect(screen.getByText(/Your membership has/).textContent).toBe('Your membership has expired (it ran through Fri, Oct 23, 2026). Renew below to keep your member benefits.')
+    })
+  })
 })
 
 describe('the checkout in flight and after a failure, for the tier chosen', () => {
@@ -580,6 +647,31 @@ describe('reading order and the choice line', () => {
     expect(note).toMatch(/a little more than Scholastic/)
     expect(note).not.toMatch(DASHES)
     expect(note).not.toMatch(/\bmembers? (save|pay|price|rate|discount)/i)
+  })
+})
+
+describe('the line "Already a member? Log in to renew" under How Membership Works', () => {
+  it('is there for a visitor who is not signed in, with its link to /login', () => {
+    renderPage({ user: false, who: null })
+    const link = screen.getByRole('link', { name: 'Log in to renew' })
+    expect(link.getAttribute('href')).toBe('/login')
+    expect(link.closest('p')!.textContent).toBe('Already a member? Log in to renew or manage your account.')
+    expect(screen.getAllByText(/^Already a member\?/)).toHaveLength(1)
+  })
+
+  const signedIn: Array<[string, ApiMember | null]> = [
+    ['a member whose membership has expired', member('expired', '2026-10-24')],
+    ['a member whose membership is active', member('active', '2027-10-24')],
+    ['a member with no membership yet', member('none', null)],
+    ['a member whose record is still on its way', null],
+  ]
+
+  it.each(signedIn)('is not there for %s, who has the choice instead', (_what, who) => {
+    renderPage({ user: true, who })
+    expect(group()).toBeTruthy()
+    expect(screen.queryByRole('link', { name: 'Log in to renew' })).toBeNull()
+    expect(document.querySelector('a[href="/login"]')).toBeNull()
+    expect(document.body.textContent).not.toMatch(/Already a member\?|Log in to renew/)
   })
 })
 
