@@ -249,7 +249,7 @@ describe('REDESIGN_STATUS.md, WS02 step 9: the Checkpoint F section\'s merged op
   it('opens with the merge commit, its day and its time, and keeps the rest of its first paragraph', () => {
     expect(opening).toMatch(/^\*\*Merged into `main` as `ed03823` on Sunday, November 1, 2026 at 11:23 AM UTC\*\*/)
     for (const piece of [
-      '`80839da`', '11:05 AM to 11:22 AM UTC', '11:25 AM UTC', '`index-BP5ORuyk.css`', '`features--b6t5tBm.js`', '42 entries, every one off',
+      '`80839da`', '11:05 AM to 11:20 AM UTC', '11:25 AM UTC', '`index-BP5ORuyk.css`', '`features--b6t5tBm.js`', '42 entries, every one off',
       '5:23 AM Central', '`MobileMenu-QkI59fPU.js`', 'It changes no database.',
     ]) expect(opening, piece).toContain(piece)
     expect(checkpoint).not.toContain('Not merged yet')
