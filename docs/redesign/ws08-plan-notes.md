@@ -90,7 +90,7 @@ The manifest's `deviations_from_brief` holds the full text of each, with its ste
 
 ## Questions for K, with defaults (silence keeps each)
 
-1. **The standing directors today.** Before `standingDirectors` goes on, K reads the members who hold the `tournament_director` role on production and takes the role from anyone who should not create events. One read-only statement, run by the lead or by K with K's own credentials, never a write, the output never pasted anywhere with an email address a visitor could see:
+1. **The standing directors today.** Before `standingDirectors` goes on, K reads the members who hold the `tournament_director` role on production and takes the role from anyone who should not create events. One read-only statement, run by K alone with K's own credentials (brief 0.2: every read of production is K's), never a write; K reports the names back, never the emails:
 
    `SELECT id, full_name, email, membership_status, club_id FROM members WHERE role = 'tournament_director' ORDER BY full_name;`
 
@@ -101,7 +101,7 @@ The manifest's `deviations_from_brief` holds the full text of each, with its ste
 
    Default: the seat as migration 0025 derived it from "President"; if its slug differs on production, the rule reads whichever slug K names (one constant in `functions/utils/events/creation.ts`).
 3. **Q2, club reps.** Default: unchanged. A `club_rep` creates its own club's events as hidden drafts and names their directors, as today; no step widens or removes it, and a club rep who holds the President seat keeps that path.
-4. **Q4, who holds the standing director role.** Default: today's `tournament_director` role, granted and taken on the Members page by an LCA admin, shown as "Standing director" once the switch is on, with one line on what it allows as the role option's title. K decides who holds it.
+4. **Q4, who holds the standing director role.** Default: today's `tournament_director` role, granted and taken on the Members page by an LCA admin, shown as "Standing director" once the switch is on, with one line on what it allows shown as visible help text beside the role choice (a title attribute reaches mouse users only). K decides who holds it.
 5. **Q37, a standing director's event.** Default: LCA-run, as the brief writes it: no club, listed the moment it is published, the membership switch locked on, LCA's tag and affiliate when those land. The president's events are read the same way (the table's membership row), so the server refuses a club for both.
 6. **Q3, connected accounts.** Default: none is built and no payment is routed to one; every online payment stays in LCA's account, a standing director's fees wait there, and LCA passes them on by hand after the event, as G2 says.
 7. **When `standingDirectors` goes on.** Default: after checkpoint L has merged and K has looked at the pages on a throwaway preview built with the switch and `CREATION_ROLES_ON` on together, with `standingDirectors` moved out of the WS08 list in `test/unit/features.test.ts` in the same change (the switch test and features.test.ts fail anything else), after `npm run db:migrate:preview` from the branch, and after the two reads above.
