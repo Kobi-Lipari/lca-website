@@ -43,6 +43,10 @@ function playwright(args: string[], e2eBaseUrl?: string) {
   delete env.LCA_PW_PROJECTS
   delete env.E2E_BASE_URL
   delete env.CI
+  // Playwright's git commit info plugin runs when GITHUB_ACTIONS is set and prints
+  // to standard output when git is slow or the shallow clone lacks the base, which
+  // breaks the JSON report this guard parses; the runs here are never CI's own.
+  delete env.GITHUB_ACTIONS
   if (e2eBaseUrl !== undefined) env.E2E_BASE_URL = e2eBaseUrl
   return spawnSync(process.execPath, [PLAYWRIGHT_CLI, 'test', ...args], { cwd: ROOT, env, encoding: 'utf8', timeout: 90_000 })
 }
