@@ -760,9 +760,11 @@ describe('the gold guard on the tree', () => {
     // clubTextColor gives the gold-ink token for brand gold, and each of the five sits on a light ground.
     expect(result.styleInk).toEqual([
       'src/pages/AdminClubPage.tsx:406 the style colour color: clubTextColor(color) -> light',
-      'src/pages/ClubDetailPage.tsx:239 the style colour color: textColor -> light',
-      'src/pages/ClubDetailPage.tsx:293 the style colour color: textColor -> light',
-      'src/pages/ClubDetailPage.tsx:335 the style colour color: textColor -> light',
+      // Lines 239, 293 and 335 until the Phase 0 trim, whose switch import, its
+      // reading and the contact link's branches above them move them to 248, 302 and 349.
+      'src/pages/ClubDetailPage.tsx:248 the style colour color: textColor -> light',
+      'src/pages/ClubDetailPage.tsx:302 the style colour color: textColor -> light',
+      'src/pages/ClubDetailPage.tsx:349 the style colour color: textColor -> light',
       // Line 74 until WS02 step 8, whose one import line among the page's imports moves it to 75.
       'src/pages/ClubsPage.tsx:75 the style colour color: clubTextColor(club.color) -> light',
     ])

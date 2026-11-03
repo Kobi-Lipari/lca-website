@@ -119,6 +119,39 @@ describe('GET /api/tournaments contract', () => {
     }
   })
 
+  it('role safety: created_by, keep_apart and report_settings only on the rows of events the viewer manages', async () => {
+    const clubId = await seedClub()
+    const otherClub = await seedClub()
+    const ours = await seedTournament({ clubId })
+    const theirs = await seedTournament({ clubId: otherClub })
+    const directed = await seedTournament()
+    const creator = await seedAdmin()
+    for (const id of [ours, theirs, directed]) {
+      await env.DB.prepare(`UPDATE tournaments SET created_by = ?, keep_apart = 'none', report_settings = '{}' WHERE id = ?`).bind(creator, id).run()
+    }
+    const director = await seedMember({ role: 'tournament_director' })
+    await seedTournamentDirector(directed, director)
+    const managersOnly = ['created_by', 'keep_apart', 'report_settings']
+
+    /** The events among the three whose row carries the three keys; a row carries all three or none. */
+    const carried = async (as?: string) => {
+      const body = await expectContract(await invoke(tournamentsGet, { as, path: '/api/tournaments' }), contract.response)
+      const rows = body.tournaments.filter((t) => [ours, theirs, directed].includes(t.id))
+      expect(rows, String(as)).toHaveLength(3)
+      for (const t of rows) expect([0, 3], `${String(as)} ${t.id}`).toContain(managersOnly.filter((key) => Object.hasOwn(t, key)).length)
+      return rows.filter((t) => Object.hasOwn(t, 'keep_apart')).map((t) => t.id).sort()
+    }
+    expect(await carried()).toEqual([])
+    expect(await carried(await seedMember())).toEqual([])
+    expect(await carried(await seedMember({ clubId }))).toEqual([])
+    expect(await carried(await seedMember({ role: 'club_rep', clubId: otherClub }))).toEqual([theirs])
+    expect(await carried(await seedMember({ role: 'club_rep', clubId }))).toEqual([ours])
+    expect(await carried(director)).toEqual([directed])
+    for (const role of ['lca_admin', 'lca_observer', 'lca_officer']) {
+      expect(await carried(await seedMember({ role })), role).toEqual([ours, theirs, directed].sort())
+    }
+  })
+
   it('keeps drafts out of the public and plain-member lists', async () => {
     const draft = await seedTournament({ isVisible: false })
     const member = await seedMember()

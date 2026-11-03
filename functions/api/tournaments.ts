@@ -5,6 +5,7 @@ import { isObserver, requireAuthedMember, isResponse } from '../utils/auth'
 import { getDb } from '../db/client'
 import { loadSectionsFor, toTournamentResponse } from '../utils/events/sectionsRepo'
 import { loadSchedulesFor } from '../utils/events/schedulesRepo'
+import { eventsManagedBy, publicTournamentAnswer } from '../utils/events/publicAnswer'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -55,7 +56,14 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const ids = rows.map((t) => t.id)
   const sections = await loadSectionsFor(db, ids)
   const schedules = await loadSchedulesFor(db, ids)
-  const tournaments = rows.map((t) => toTournamentResponse(t, sections.get(t.id) ?? [], schedules.get(t.id) ?? []))
+  // created_by, keep_apart and report_settings go only to the people who
+  // manage each event, decided row by row with one read of the viewer's
+  // director assignments, never one query an event.
+  const manages = await eventsManagedBy(context.env.DB, viewer)
+  const tournaments = rows.map((t) => publicTournamentAnswer(
+    toTournamentResponse(t, sections.get(t.id) ?? [], schedules.get(t.id) ?? []),
+    manages(t),
+  ))
 
   return jsonResponse({ tournaments })
 }

@@ -283,7 +283,7 @@ describe('no answer carries the sections or the round schedule as JSON text', ()
 // ── The same fields for the pages ─────────────────────────────────────
 
 describe('the pages read what they read before', () => {
-  it('every column of the tournaments row passes through unchanged, except the two JSON columns', async () => {
+  it('every column of the tournaments row passes through unchanged, except the two JSON columns and, read signed out, the three only managers get', async () => {
     const setup = await seedTiered()
     const { tournamentId } = setup
     await env.DB.prepare(
@@ -300,8 +300,18 @@ describe('the pages read what they read before', () => {
 
     const { tournaments } = await readEverywhere(setup)
     const row = (await tournamentRow(tournamentId))!
+    // The list and the detail are read signed out, and since the Phase 0
+    // trim neither answers a visitor these three; every answer an admin
+    // reads still carries them, equal to the row.
+    const signedOut = ['list', 'detail']
+    const managersOnly = ['created_by', 'keep_apart', 'report_settings']
+    expect(columns).toEqual(expect.arrayContaining(managersOnly))
     for (const [endpoint, tournament] of Object.entries(tournaments)) {
       for (const column of columns.filter((c) => c !== 'sections' && c !== 'round_schedule')) {
+        if (signedOut.includes(endpoint) && managersOnly.includes(column)) {
+          expect(Object.hasOwn(tournament, column), `${endpoint}.${column}`).toBe(false)
+          continue
+        }
         // The detail and manage pages answer custom_details as a list; the rest leave it as stored.
         if (column === 'custom_details' && (endpoint === 'detail' || endpoint === 'manage')) {
           expect(tournament[column], `${endpoint}.${column}`).toEqual([{ title: 'Parking', body: 'Free.' }])
