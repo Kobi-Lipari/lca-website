@@ -37,6 +37,7 @@ import {
   walkInRequestSchema,
   walkInResponseSchema,
 } from './registration'
+import { searchQuerySchema, searchResponseSchema } from './search'
 
 export const CONTRACT_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as const
 export type ContractMethod = (typeof CONTRACT_METHODS)[number]
@@ -91,6 +92,9 @@ export const contracts = {
   },
   'registrations/[id]': {
     PATCH: { request: updateRegistrationRequestSchema, response: updateRegistrationResponseSchema },
+  },
+  search: {
+    GET: { query: searchQuerySchema, response: searchResponseSchema },
   },
   'tournaments/[id]': {
     GET: { response: tournamentDetailResponseSchema },

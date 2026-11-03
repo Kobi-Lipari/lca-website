@@ -18,7 +18,8 @@
 //   beside the association's name in words, so the logo's own words are
 //   empty; the board's one sentence; and the join slot, by the header's
 //   rule (Join LCA for a visitor signed out, Renew once a membership has
-//   expired, nothing for an active member), beside Donate;
+//   expired, nothing for an active member), beside Donate, which takes the
+//   phone's row alone when no join link is drawn;
 // - the four columns, Play, Community, About LCA and Contact, each a nav
 //   named by its heading. From 768 pixels up the headings are plain and
 //   every list shows. Below 768, and where the window's width cannot be
@@ -26,12 +27,17 @@
 //   saying so with aria-expanded and naming the list with aria-controls:
 //   Contact starts open and the others closed, each its own switch, and
 //   nothing slides or turns slowly at any motion setting. A closed list
-//   stays in the page, hidden, so the button always names a list;
-// - the base line, never folded: the trust line, its facts with a middle
-//   dot between them from 768 pixels up, which a screen reader does not
-//   read, and one fact a line below that, ending with the build's date when
-//   the page holds one (footerParts.ts), and today's Appearance control,
-//   with a label of its own, so the page never holds one id twice.
+//   stays in the page, hidden, so the button always names a list. As the
+//   window crosses 768 pixels the focus stays on the footer: a link whose
+//   column closes hands it to that column's button, and a fold button that
+//   goes hands it to its column's first link;
+// - the base line, never folded: the trust line, its facts in a row with a
+//   middle dot between them from 1024 pixels up, which a screen reader does
+//   not read, in a row with a gap and no dot from 768 to 1023, where the row
+//   wraps and a dot would begin a line, and one fact a line below that,
+//   ending with the build's date when the page holds one (footerParts.ts),
+//   and today's Appearance control, with a label of its own, so the page
+//   never holds one id twice.
 //
 // Its three layouts, the phone's below 768 pixels (and where the width
 // cannot be asked), the tablet's from 768 and the desktop's from 1024, are
@@ -56,14 +62,14 @@
 // ring, and the boundary's notice keeps the look's own on its light ground.
 // The room the phone's dock needs under the footer's last line is the
 // footer's own bottom padding (src/index.css), so the footer sets none.
-import { lazy, useId, useRef, useState } from 'react'
+import { lazy, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { ChevronDown, Mail } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { AppearanceControl } from '@/components/AppearanceControl'
 import { LcaLogo } from '@/components/LcaLogo'
 import { OnDemand } from '@/components/layout/OnDemand'
 import { lastUpdated } from '@/components/layout/footerParts'
-import { joinSlotOf, useOnDemandPart } from '@/components/layout/headerParts'
+import { focusIsHeld, joinSlotOf, useOnDemandPart } from '@/components/layout/headerParts'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/auth-context'
 import { useTabletScreen, useWideScreen } from '@/hooks/useWideScreen'
@@ -144,10 +150,13 @@ interface FooterGroupProps {
   open: boolean
   onToggle: () => void
   onDonate: OpenDonate
+  /** The fold button took the focus, and lost it, so the footer knows which column's button holds it. */
+  onFoldFocus: (title: string) => void
+  onFoldBlur: () => void
 }
 
 /** One column: a nav named by its heading, over its list. */
-function FooterGroup({ column, folds, open, onToggle, onDonate }: FooterGroupProps) {
+function FooterGroup({ column, folds, open, onToggle, onDonate, onFoldFocus, onFoldBlur }: FooterGroupProps) {
   const headingId = useId()
   const listId = useId()
   return (
@@ -159,6 +168,8 @@ function FooterGroup({ column, folds, open, onToggle, onDonate }: FooterGroupPro
             aria-expanded={open}
             aria-controls={listId}
             onClick={onToggle}
+            onFocus={() => onFoldFocus(column.title)}
+            onBlur={onFoldBlur}
             className="flex min-h-[52px] w-full items-center justify-between gap-3 px-4 text-left text-base font-semibold"
           >
             {column.title}
@@ -196,6 +207,51 @@ export function SiteFooter() {
   const [open, setOpen] = useState<Readonly<Record<string, boolean>>>(() => Object.fromEntries(footerColumns().map((column) => [column.title, opensAtStart(column)])))
   // The page's build-date meta, read once: the meta never changes while the page is open.
   const [updated] = useState(lastUpdated)
+  /** The footer itself, where the focus is looked for as the fold changes. */
+  const footerRef = useRef<HTMLElement | null>(null)
+  /** The column whose fold button holds the focus: noted as it takes it, and forgotten once the focus is seen to leave it. */
+  const foldFocus = useRef<string | null>(null)
+  /** The fold as the footer was last drawn, so the focus moves only when it changes, never on the first draw. */
+  const foldedBefore = useRef(folds)
+
+  // The focus kept as the window crosses 768 pixels. Narrowing below it, a
+  // focused link in a column whose list is now closed would be hidden with the
+  // focus on it, so the focus moves to that column's fold button, leaving the
+  // column closed. Widening past it, the fold button that held the focus is
+  // gone and the focus has fallen to the page, so it goes to the first link of
+  // that button's column. Each move leaves the page where it is.
+  useLayoutEffect(() => {
+    if (foldedBefore.current === folds) return
+    foldedBefore.current = folds
+    const root = footerRef.current
+    if (!root) return
+    if (folds) {
+      const active = document.activeElement
+      const list = active instanceof Element && root.contains(active) ? active.closest('ul[hidden]') : null
+      if (!list) return
+      const toggles = [...root.querySelectorAll<HTMLButtonElement>('h2 > button[aria-controls]')]
+      toggles.find((toggle) => toggle.getAttribute('aria-controls') === list.id)?.focus({ preventScroll: true })
+      return
+    }
+    const title = foldFocus.current
+    foldFocus.current = null
+    if (title === null || focusIsHeld()) return
+    const columns = [...root.querySelectorAll<HTMLElement>('[data-slot="footer-column"]')]
+    const column = columns.find((nav) => nav.querySelector('h2')?.textContent === title)
+    column?.querySelector<HTMLElement>('ul a, ul button')?.focus({ preventScroll: true })
+  }, [folds])
+
+  // The focus taken by anything but one of the footer's fold buttons forgets
+  // the note, so a later widening moves nothing.
+  useEffect(() => {
+    const forget = (event: FocusEvent) => {
+      const target = event.target
+      if (target instanceof Element && target.matches('h2 > button[aria-controls]') && footerRef.current?.contains(target)) return
+      foldFocus.current = null
+    }
+    document.addEventListener('focusin', forget)
+    return () => document.removeEventListener('focusin', forget)
+  }, [])
 
   const signedIn = !auth.loading && !!auth.user
   // The join slot by the header's rule: Join LCA for a visitor signed out, and for someone signed in Join LCA, Renew or nothing.
@@ -209,6 +265,18 @@ export function SiteFooter() {
     donation.show()
   }
 
+  function noteFoldFocus(title: string) {
+    foldFocus.current = title
+  }
+
+  // Every blur the handler sees forgets the note. The one that comes as the
+  // window widens and the button is taken out of the page comes while React
+  // is changing the page, when it hands no event on, so the note is still
+  // there for the move above.
+  function forgetFoldFocus() {
+    foldFocus.current = null
+  }
+
   const trust = [
     ...TRUST_FACTS.map((fact) => ({ key: fact, item: <>{fact}</> })),
     ...TRUST_LINE_LINKS.map((id) => ({ key: id, item: <EntryLink id={id} className={trustLinkClass(folds)} onDonate={openDonate} /> })),
@@ -218,7 +286,7 @@ export function SiteFooter() {
   ]
 
   return (
-    <footer data-slot="site-footer" data-ring-ground="navy" className="border-t-[3px] border-lca-gold bg-(--color-brand-navy) text-white print:hidden">
+    <footer ref={footerRef} data-slot="site-footer" data-ring-ground="navy" className="border-t-[3px] border-lca-gold bg-(--color-brand-navy) text-white print:hidden">
       {donate.href === null && donation.drawn && (
         <OnDemand
           notice="The donation form could not be loaded. Reload the page to try again."
@@ -239,7 +307,8 @@ export function SiteFooter() {
               <span className="text-[17px] leading-tight font-bold">Louisiana Chess Association</span>
             </div>
             <p className={cn('mt-3.5 mb-4 text-sm leading-normal text-white/80', !folds && 'max-w-[270px]')}>{SENTENCE}</p>
-            <div className={folds ? 'grid grid-cols-2 gap-2.5' : 'flex flex-wrap gap-2.5'}>
+            {/* Two columns on a phone only when a join link stands beside Donate, which otherwise takes the row. */}
+            <div className={folds ? cn('grid', join?.href ? 'grid-cols-2' : 'grid-cols-1', 'gap-2.5') : 'flex flex-wrap gap-2.5'}>
               {FOOTER_BRAND_ACTIONS.map((id) => {
                 if (id === 'joinLca') {
                   return join?.href ? (
@@ -260,6 +329,8 @@ export function SiteFooter() {
               open={!!open[column.title]}
               onToggle={() => setOpen((now) => ({ ...now, [column.title]: !now[column.title] }))}
               onDonate={openDonate}
+              onFoldFocus={noteFoldFocus}
+              onFoldBlur={forgetFoldFocus}
             />
           ))}
         </div>
@@ -267,11 +338,13 @@ export function SiteFooter() {
           data-slot="footer-base"
           className={cn('border-t border-white/15 pt-4', folds ? 'px-4 pb-[22px]' : 'mt-[34px] flex flex-wrap items-center justify-between gap-x-6 gap-y-3 pb-5')}
         >
-          {/* Its size before its line height: a size class that comes after one drops it when the two are joined. */}
-          <ul aria-label="About this site" data-slot="trust-line" className={cn(folds ? 'text-sm' : 'flex flex-wrap items-center text-[13.5px]', 'leading-[1.45] text-white/80')}>
+          {/* Its size before its line height: a size class that comes after one drops it when the two are joined. From 768
+              to 1023 pixels the row wraps with its last fact first on the second line, so a gap parts the facts there and the
+              dots between them are drawn from 1024 pixels up alone. */}
+          <ul aria-label="About this site" data-slot="trust-line" className={cn(folds ? 'text-sm' : 'flex flex-wrap items-center text-[13.5px]', !folds && !wide && 'gap-x-6', 'leading-[1.45] text-white/80')}>
             {trust.map(({ key, item }, i) => (
               <li key={key} className="flex min-h-[26px] items-center">
-                {!folds && i > 0 && (
+                {wide && i > 0 && (
                   <span aria-hidden="true" className="mx-2.5 text-white/60">
                     ·
                   </span>

@@ -114,7 +114,7 @@ afterEach(() => {
 })
 
 /** What the boundary wrote to the console for a part it could not load. */
-const ownLines = () => logged.mock.calls.filter((call: unknown[]) => call[0] === 'A part of the header could not be loaded:')
+const ownLines = () => logged.mock.calls.filter((call: unknown[]) => call[0] === 'A part of the chrome could not be loaded:')
 
 describe.each([
   ['the phone\'s app bar', () => <MobileAppBar />],
