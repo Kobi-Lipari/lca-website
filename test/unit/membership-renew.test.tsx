@@ -429,7 +429,7 @@ describe('the tier the choice starts on, from what the member holds', () => {
     `Family is chosen to start, at $${P.family} a year, and covers you and up to ${FAMILY_MEMBERSHIP_CHILDREN} children. ` +
     `Adult is $${P.adult} a year, a little more than Scholastic ($${P.scholastic}, for K-12 students) ` +
     `or Senior ($${P.senior}, for 65 and up), so if one of those fits you, choose it below.`
-  const REASON = 'Your family membership covers your children. Renewing as another tier ends their cover when your current membership runs out.'
+  const REASON = 'Your family membership covers the children on your account. Renewing as another tier ends their cover when your current membership runs out.'
   /** The paragraphs that describe the group, in the order a screen reader is given them. */
   const described = () => group().getAttribute('aria-describedby')!.split(' ').map((id) => document.getElementById(id)!)
 
@@ -439,7 +439,7 @@ describe('the tier the choice starts on, from what the member holds', () => {
     expect(checkoutButton().textContent).toBe(label(verbOf(who), ADULT))
     expect(described().map((p) => p.textContent)).toEqual([ADULT_NOTE])
     expect(screen.queryByText(REASON)).toBeNull()
-    expect(document.body.textContent).not.toMatch(/Family is chosen to start|Your family membership covers your children/)
+    expect(document.body.textContent).not.toMatch(/Family is chosen to start|Your family membership covers/)
   })
 
   it('a member with an active Family membership starts on Family, is told why under the price line, and can switch to Adult', () => {
@@ -498,6 +498,27 @@ describe('the tier the choice starts on, from what the member holds', () => {
     expectChosen(SENIOR)
   })
 
+  it('counts a press of the button as a pick: a Family record that arrives while the Adult checkout is asked for leaves the choice on Adult', async () => {
+    let release!: (reason: unknown) => void
+    api.createMembershipCheckout.mockReturnValueOnce(new Promise((_resolve, reject) => { release = reject }))
+    const family = member('active', '2027-10-24', 'family')
+    expect(family).toMatchObject({ membership_type: 'family', membership_status: 'active', guardian_id: null })
+    const view = renderPage({ user: true, who: null })
+    expectChosen(ADULT, 'Join or renew')
+    fireEvent.click(checkoutButton())
+    expect(api.createMembershipCheckout).toHaveBeenCalledTimes(1)
+    expect(api.createMembershipCheckout).toHaveBeenCalledWith('adult')
+    // The record arrives while the checkout is still asked for.
+    view.rerender(page({ user: true, who: family }))
+    expect(checkoutButton().textContent).toBe('Starting checkout…')
+    for (const t of TIERS) expect(radio(t).checked, t.id).toBe(t === ADULT)
+    release(new Error('Card service is down.'))
+    expect((await screen.findByRole('alert')).textContent).toBe('Card service is down.')
+    expectChosen(ADULT)
+    expect(checkoutButton().textContent).toBe(`Renew as Adult, $${P.adult} a year`)
+    expect(api.createMembershipCheckout).toHaveBeenCalledTimes(1)
+  })
+
   it.each(held)('a member with %s can switch to each other tier, and the button follows', (_what, who) => {
     renderPage({ user: true, who })
     for (const t of [SCHOLASTIC, FAMILY, SENIOR, ADULT]) {
@@ -545,7 +566,7 @@ describe('the tier the choice starts on, from what the member holds', () => {
       expect(group().getAttribute('aria-describedby')).toBe(note.id)
       // Nothing says a membership of theirs covers children: the only words about children are the price line's and the Family card's.
       expect(screen.queryByText(REASON)).toBeNull()
-      expect(document.body.textContent).not.toMatch(/Family is chosen to start|Your family membership covers your children|ends their cover/)
+      expect(document.body.textContent).not.toMatch(/Family is chosen to start|Your family membership covers|ends their cover/)
       expect(aboutChildren()).toEqual([ADULT_NOTE, FAMILY_CARD])
       // Their banner says how long the cover runs, with the weekday.
       expect(screen.getByRole('button', { name: 'View my profile' }).closest('section')!.textContent).toBe('Your membership is active through Mon, Oct 25, 2027. View my profile')

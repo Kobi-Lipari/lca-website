@@ -152,7 +152,7 @@ const FAMILY_CHOICE_NOTE =
   `Adult is $${MEMBERSHIP_TIER_PRICES.adult} a year, a little more than ${LOWER_PRICES}`
 
 /** Why the choice starts on Family, said under the line to that member only. */
-const FAMILY_REASON = 'Your family membership covers your children. Renewing as another tier ends their cover when your current membership runs out.'
+const FAMILY_REASON = 'Your family membership covers the children on your account. Renewing as another tier ends their cover when your current membership runs out.'
 
 /** A tier's own extras under its price, each with a tick. Every tier's list is empty for now. */
 function TierBenefitList({ items, className }: { items: string[]; className?: string }) {
@@ -191,9 +191,11 @@ function JoinNowLink() {
 function TierChoice({ member }: { member: ApiMember | null }) {
   const noteId = useId()
   const reasonId = useId()
-  // The member's own pick wins. Until they make one, the choice follows the
-  // record, so an active Family member whose record arrives after the page
-  // is drawn still starts on Family.
+  // The member's own pick, or a press of the button, wins over the record.
+  // Until they do either, the choice follows the record, so an active Family
+  // member whose record arrives after the page is drawn still starts on
+  // Family, and a record that arrives while a checkout is asked for leaves
+  // the choice on the tier that checkout is for.
   const [picked, setPicked] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -207,6 +209,7 @@ function TierChoice({ member }: { member: ApiMember | null }) {
   const verb = status === 'none' ? 'Join' : status ? 'Renew' : 'Join or renew'
 
   async function handleCheckout() {
+    setPicked(chosen.id)
     setLoading(true)
     setError(null)
     try {
