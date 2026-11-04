@@ -22,14 +22,17 @@
 //   for a child that a guardian's family membership covers, signed in with
 //   an account of their own, who cannot hold that membership (the site
 //   writes family and active on the child's record too, and only
-//   guardian_id tells the two apart);
+//   guardian_id tells the two apart); a record with a guardian but no
+//   family cover follows the tier held last, else Adult, as any other does;
 // - the line above the cards for each start, word for word, every price
 //   from the price list: Adult's line, that Adult is a little more than
 //   Scholastic and Senior; for Scholastic, Senior and Family, that it is the
-//   membership held last, then every tier's price; for the child, that they
-//   were a child on a family membership; and under it, for a guardian whose
-//   own Family membership is active only, that renewing as another tier
-//   ends their children's cover when their current membership runs out;
+//   membership the member holds while it is active, or held last once it
+//   has expired, then every tier's price; for the covered child, that they
+//   are, or were, a child on a family membership; and under it, for a
+//   guardian whose own Family membership is active only, that renewing as
+//   another tier ends their children's cover when their current membership
+//   runs out;
 // - the box to tick for Scholastic and Senior, and for no other tier: its
 //   exact words, Scholastic's asking both that the member is under 18,
 //   below the Adult card's 18 and up, and a student in kindergarten
@@ -106,11 +109,14 @@ const EVERY_PRICE =
   `Adult is $${P.adult} a year; Scholastic is $${P.scholastic}, for K-12 students; ` +
   `Senior is $${P.senior}, for 65 and up; Family is $${P.family} and covers you and up to ${FAMILY_MEMBERSHIP_CHILDREN} children. ` +
   'If another fits you, choose it below.'
-/** The lines when the choice starts on the tier the member held last. */
+/** The lines when the choice starts on the tier the member held last, once that membership has expired. */
 const SCHOLASTIC_NOTE = `Scholastic is chosen to start, the membership you held last, at $${P.scholastic} a year. ${EVERY_PRICE}`
 const SENIOR_NOTE = `Senior is chosen to start, the membership you held last, at $${P.senior} a year. ${EVERY_PRICE}`
 const FAMILY_NOTE = `Family is chosen to start, the membership you held last, at $${P.family} a year. ${EVERY_PRICE}`
-/** The line for a child that a guardian's family membership covers. */
+/** The same lines while that membership is active: the membership the member holds. */
+const SCHOLASTIC_NOTE_HELD = `Scholastic is chosen to start, the membership you hold, at $${P.scholastic} a year. ${EVERY_PRICE}`
+const SENIOR_NOTE_HELD = `Senior is chosen to start, the membership you hold, at $${P.senior} a year. ${EVERY_PRICE}`
+const FAMILY_NOTE_HELD = `Family is chosen to start, the membership you hold, at $${P.family} a year. ${EVERY_PRICE}`
 /** The covered child's line: in the present tense while the cover runs, in the past once it has run out. */
 const CHILD_NOTE = `Scholastic is chosen to start, at $${P.scholastic} a year, since you are a child on a family membership. ${EVERY_PRICE}`
 const CHILD_NOTE_PAST = `Scholastic is chosen to start, at $${P.scholastic} a year, since you were a child on a family membership. ${EVERY_PRICE}`
@@ -147,8 +153,8 @@ function member(status: ApiMember['membership_status'], expiry: string | null, t
  * A child that a guardian's family membership covers, signed in with an
  * account of their own, as GET /api/me answers one: the site writes family
  * and active on the child's own record too (syncFamilyCoverage in
- * functions/utils/family.ts), so guardian_id is the one sign that the
- * membership is the guardian's.
+ * functions/utils/family.ts), so guardian_id on a family record is the one
+ * sign that the membership is the guardian's.
  */
 function coveredChild(status: ApiMember['membership_status'], expiry: string | null): ApiMember {
   return { ...member(status, expiry, 'family', 'fx-renew-guardian'), id: 'fx-renew-child', full_name: 'Robin Fixture' }
@@ -487,16 +493,19 @@ describe('the tier the choice starts on, from what the member holds', () => {
   // The tier the member held last, whether the membership is active or has
   // expired: Adult, Scholastic, Senior or Family on the record. Adult for no
   // membership yet, for no tier on the record, for a single event
-  // membership and for a tier the price list does not hold. A child that a
-  // family membership covers starts on Scholastic (the cases at the end).
+  // membership and for a tier the price list does not hold. The line says
+  // "the membership you hold" while it is active and "the membership you
+  // held last" once it has expired. A child that a family membership covers
+  // starts on Scholastic; a record with a guardian and no family cover does
+  // not (the cases at the end).
   // Only a guardian whose own Family membership is active is told that
   // renewing as another tier ends their children's cover.
   const starts: Array<[string, string, ApiMember, Tier, string]> = [
     ['an active Adult membership', 'Adult', member('active', '2027-10-24', 'adult'), ADULT, ADULT_NOTE],
     ['an expired Adult membership', 'Adult', member('expired', '2026-10-24', 'adult'), ADULT, ADULT_NOTE],
-    ['an active Scholastic membership', 'Scholastic', member('active', '2027-10-24', 'scholastic'), SCHOLASTIC, SCHOLASTIC_NOTE],
+    ['an active Scholastic membership', 'Scholastic', member('active', '2027-10-24', 'scholastic'), SCHOLASTIC, SCHOLASTIC_NOTE_HELD],
     ['an expired Scholastic membership', 'Scholastic', member('expired', '2026-10-24', 'scholastic'), SCHOLASTIC, SCHOLASTIC_NOTE],
-    ['an active Senior membership', 'Senior', member('active', '2027-10-24', 'senior'), SENIOR, SENIOR_NOTE],
+    ['an active Senior membership', 'Senior', member('active', '2027-10-24', 'senior'), SENIOR, SENIOR_NOTE_HELD],
     ['an expired Senior membership', 'Senior', member('expired', '2026-10-24', 'senior'), SENIOR, SENIOR_NOTE],
     ['an expired Family membership', 'Family', member('expired', '2026-10-24', 'family'), FAMILY, FAMILY_NOTE],
     ['no membership yet', 'Adult', member('none', null), ADULT, ADULT_NOTE],
@@ -528,9 +537,9 @@ describe('the tier the choice starts on, from what the member holds', () => {
     renderPage({ user: true, who: member('active', '2027-10-24', 'family') })
     expectChosen(FAMILY)
     expect(checkoutButton().textContent).toBe(`Renew as Family, $${P.family} a year`)
-    // The price line says Family is the one chosen, as the membership held last, with the children it covers and every price from the price list, and the reason comes straight after it.
+    // The price line says Family is the one chosen, as the membership the member holds, with the children it covers and every price from the price list, and the reason comes straight after it.
     const [note, reason] = described()
-    expect(note.textContent).toBe(FAMILY_NOTE)
+    expect(note.textContent).toBe(FAMILY_NOTE_HELD)
     expect(note.textContent).toContain(`Family is $${P.family} and covers you and up to ${FAMILY_MEMBERSHIP_CHILDREN} children.`)
     expect(reason.textContent).toBe(REASON)
     expect(note.nextElementSibling).toBe(reason)
@@ -681,7 +690,7 @@ describe('the tier the choice starts on, from what the member holds', () => {
       expect(group().getAttribute('aria-describedby')).toBe(note.id)
       // Nothing says a membership of theirs covers children: the only words about children are the price line's and the Family card's.
       expect(screen.queryByText(REASON)).toBeNull()
-      expect(document.body.textContent).not.toMatch(/the membership you held last|Your family membership covers|ends their cover/)
+      expect(document.body.textContent).not.toMatch(/the membership you (hold|held last)|Your family membership covers|ends their cover/)
       expect(aboutChildren()).toEqual([CHILD_NOTE, FAMILY_CARD])
       // The box asks whether Scholastic still fits, and the button waits for the tick.
       expect(box().checked).toBe(false)
@@ -718,6 +727,47 @@ describe('the tier the choice starts on, from what the member holds', () => {
       await waitFor(() => expect(window.location.href).toBe(to))
       expect(api.createMembershipCheckout).toHaveBeenCalledTimes(1)
       expect(api.createMembershipCheckout).toHaveBeenCalledWith('scholastic')
+    })
+  })
+
+  describe('a record with a guardian on it but no family cover', () => {
+    // guardian_id alone does not make a covered child: the start on
+    // Scholastic and the child's line need the family cover on the record
+    // too. Without it the record follows the tier held last, else Adult.
+    const withGuardian = (status: ApiMember['membership_status'], expiry: string | null, type: string | null) =>
+      ({ ...member(status, expiry, type, 'fx-renew-guardian'), id: 'fx-renew-ward', full_name: 'Robin Fixture' })
+    const rows: Array<[string, string, ApiMember, Tier, string, string]> = [
+      ['no membership yet (no type on the record)', 'Adult', withGuardian('none', null, null), ADULT, ADULT_NOTE, 'Join'],
+      ['an active Adult membership of its own', 'Adult', withGuardian('active', '2027-10-24', 'adult'), ADULT, ADULT_NOTE, 'Renew'],
+      ['an expired Scholastic membership of its own', 'Scholastic', withGuardian('expired', '2026-10-24', 'scholastic'), SCHOLASTIC, SCHOLASTIC_NOTE, 'Renew'],
+    ]
+
+    it.each(rows)('with %s starts on %s, with that start\'s line and no word of a family membership', (_what, _start, who, tier, note, verb) => {
+      expect(who.guardian_id).toBe('fx-renew-guardian')
+      expect(who.membership_type).not.toBe('family')
+      renderPage({ user: true, who })
+      expectChosen(tier, verb)
+      expect(checkoutButton().textContent).toBe(label(verb, tier))
+      expect(described().map((p) => p.textContent)).toEqual([note])
+      expect(note).not.toMatch(/family membership|a child on/i)
+      expect(document.body.textContent).not.toMatch(/since you (are|were) a child|Your family membership covers|ends their cover/)
+      expect(screen.queryByText(REASON)).toBeNull()
+      expect(checkoutButton().disabled).toBe(!!BOX[tier.id])
+    })
+
+    it('with an active Adult membership of its own reads Adult\'s line, word for word', () => {
+      renderPage({ user: true, who: withGuardian('active', '2027-10-24', 'adult') })
+      const line = described()[0].textContent!
+      expect(line.startsWith(`Adult is chosen to start, at $${P.adult} a year. `)).toBe(true)
+      expect(line).toBe(ADULT_NOTE)
+    })
+
+    it('with an expired Scholastic membership of its own reads the line for the membership held last, not the child\'s', () => {
+      renderPage({ user: true, who: withGuardian('expired', '2026-10-24', 'scholastic') })
+      const line = described()[0].textContent!
+      expect(line).toBe(SCHOLASTIC_NOTE)
+      expect(line).toContain('the membership you held last')
+      expect(line).not.toBe(CHILD_NOTE_PAST)
     })
   })
 })
@@ -893,7 +943,7 @@ describe('the box a member ticks for Scholastic and Senior', () => {
     expectChosen(SENIOR)
   })
 
-  it('is a real checkbox with its label tied to it by htmlFor, in the price line\'s ink, drawn as the radios are and with no ring of its own, so the site\'s own focus ring draws on it', () => {
+  it('is a real checkbox with its label tied to it by htmlFor, in the price line\'s ink, drawn as the radios are and with no ring of its own, so it takes the focus outline every control gets', () => {
     renderPage({ user: true, who: member('active', '2027-10-24', 'senior') })
     const b = box()
     expect(b.tagName).toBe('INPUT')
@@ -916,8 +966,14 @@ describe('the box a member ticks for Scholastic and Senior', () => {
     // The tick is in the ink, as the radios' is, and no class draws a ring, an outline or gold.
     expect(b.className.split(' ')).toEqual(['mt-0.5', ...radio(ADULT).className.split(' ')])
     expect(`${b.className} ${tied[0].className} ${line.className}`).not.toMatch(/\b(?:focus|ring|outline)|gold/)
-    // The site's own ring: one rule for every control with none of its own.
-    expect(read('src/index.css')).toMatch(/:root\[data-look="new"\] :focus-visible \{\s*outline: 2px solid var\(--focus\);/)
+    // With no outline of its own, the box takes the outline every control
+    // without one gets, as the radios do. With newLook off, as on the live
+    // site, that is the browser's own focus outline in the base layer's
+    // colour, outline-ring/50 on every element; with newLook on, the new
+    // look's ring overrides it. Two facts, two rules.
+    const css = read('src/index.css')
+    expect(css).toMatch(/@layer base \{\s*\* \{\s*@apply border-border outline-ring\/50;/)
+    expect(css).toMatch(/:root\[data-look="new"\] :focus-visible \{\s*outline: 2px solid var\(--focus\);/)
   })
 
   it('reads in order: the cards, the box, the button, the line under it, then the word on renewing early for an active member', () => {

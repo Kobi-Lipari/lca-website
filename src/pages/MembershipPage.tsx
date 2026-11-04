@@ -136,7 +136,11 @@ const goldButtonClass =
  * the same type and status (family, active) on each covered child's record
  * as on the guardian's (syncFamilyCoverage in functions/utils/family.ts), so
  * guardian_id, the guardian's member id on a child's record, is what tells
- * the two apart.
+ * the two apart. Only a record that carries that cover counts, guardian_id
+ * set and the type family (isCoveredChild below): a record with a guardian
+ * and no family cover, with no membership yet or one of the child's own,
+ * follows the rule above, its own tier among the four, else Adult. The line
+ * above the choice (choiceNote) asks the same question.
  *
  * Before this (from Tuesday, November 3, 2026) the choice started on Adult
  * for everyone but a guardian with an active Family membership, in case a
@@ -148,10 +152,15 @@ const goldButtonClass =
  */
 function startingTier(member: ApiMember | null): string {
   if (!member) return 'adult'
-  if (member.guardian_id) return 'scholastic'
+  if (isCoveredChild(member)) return 'scholastic'
   const held = member.membership_type
   const hadOne = member.membership_status === 'active' || member.membership_status === 'expired'
   return hadOne && isMembershipTier(held) ? held : 'adult'
+}
+
+/** A child a guardian's family membership covers: a guardian on the record, and the family cover on it too. */
+function isCoveredChild(member: ApiMember | null): boolean {
+  return !!member?.guardian_id && member.membership_type === 'family'
 }
 
 /** Scholastic's and Senior's prices, as the line for a start on Adult says them. */
@@ -181,14 +190,15 @@ const PRICE_LIST_NOTE =
  * The line above a signed-in member's choice, by the tier it starts on, so
  * it never names a tier that is not chosen: Adult's own line, or for
  * Scholastic, Senior and Family why the choice starts there (the membership
- * held last, or for a child on a family membership, that they are or were
- * one), then every tier's price.
+ * the member holds while it is active and held last once it is not, or for a
+ * child on a family membership, that they are or were one), then every
+ * tier's price.
  */
 function choiceNote(start: MembershipTier, child: boolean, active: boolean): string {
   if (start.id === 'adult') return CHOICE_NOTE
   const why = child
     ? `${start.short} is chosen to start, at $${start.price} a year, since you ${active ? 'are' : 'were'} a child on a family membership.`
-    : `${start.short} is chosen to start, the membership you held last, at $${start.price} a year.`
+    : `${start.short} is chosen to start, ${active ? 'the membership you hold' : 'the membership you held last'}, at $${start.price} a year.`
   return `${why} ${PRICE_LIST_NOTE}`
 }
 
@@ -212,7 +222,11 @@ function TierBenefitList({ items, className }: { items: string[]; className?: st
   )
 }
 
-/** Each card's way in for a visitor who is not signed in: sign-up, which brings them back here. */
+/**
+ * Each card's way in for a visitor who is not signed in: the sign-up page,
+ * handed this page as where they came from. Sign-up does not read that
+ * today; a new account goes on to the dashboard, or to the email to confirm.
+ */
 function JoinNowLink() {
   return (
     <Button asChild className={cn('mt-6 w-full', goldButtonClass)}>
@@ -225,8 +239,9 @@ function JoinNowLink() {
 
 /**
  * A signed-in member's join or renewal: the four tiers as one group of radio
- * buttons, chosen to start on the tier the member held last (startingTier
- * above), a box to tick when the choice is Scholastic or Senior, and one gold
+ * buttons, chosen to start on the tier the member held last, or on Scholastic
+ * for a child a family membership covers (startingTier above), a box to tick
+ * when the choice is Scholastic or Senior, and one gold
  * button under them that names the choice and its price and starts the
  * checkout for that tier.
  */
@@ -237,8 +252,8 @@ function TierChoice({ member }: { member: ApiMember | null }) {
   const waitId = useId()
   // The member's own pick, or a press of the button, wins over the record.
   // Until they do either, the choice follows the record, so a member whose
-  // record arrives after the page is drawn still starts on the tier they
-  // held last, and a record that arrives while a checkout is asked for
+  // record arrives after the page is drawn still starts where startingTier
+  // puts them, and a record that arrives while a checkout is asked for
   // leaves the choice on the tier that checkout is for.
   const [picked, setPicked] = useState<string | null>(null)
   // The tier the member ticked the box for. A change of tier by the member
@@ -303,7 +318,7 @@ function TierChoice({ member }: { member: ApiMember | null }) {
       >
         <legend className="text-lg font-semibold text-ink">Choose your membership</legend>
         <p id={noteId} className="mt-1 max-w-3xl text-sm text-ink">
-          {choiceNote(start, !!member?.guardian_id, member?.membership_status === 'active')}
+          {choiceNote(start, isCoveredChild(member), member?.membership_status === 'active')}
         </p>
         {coversChildren && (
           <p id={reasonId} className="mt-1 max-w-3xl text-sm text-ink">
@@ -352,7 +367,7 @@ function TierChoice({ member }: { member: ApiMember | null }) {
             )
           })}
         </div>
-        {/* A real box with its own label, in the price line's ink and the radios' tick. It has no ring or outline of its own, so the site's focus ring draws on it. */}
+        {/* A real box with its own label, in the price line's ink and the radios' tick. It has no ring or outline class of its own, so it takes the focus outline every control without one gets, as the radios do: with newLook off, as on the live site, the browser's own outline in the base layer's colour (outline-ring/50 in src/index.css); with newLook on, the new look's ring. */}
         {chosen.confirmation && (
           <div className="mt-6 flex items-start gap-2 text-sm text-ink">
             <input
