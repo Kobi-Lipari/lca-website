@@ -25,6 +25,8 @@ export interface ApiMember {
   membership_expiry: string | null
   /** 'family' for a family membership; null if never bought. */
   membership_type?: string | null
+  /** The guardian's member id when this row is a guardian's child, such as a child covered by a family membership; null or absent otherwise. */
+  guardian_id?: string | null
   /** US Chess membership expiry, from the nightly sync. */
   uscf_expiration?: string | null
   role: string
@@ -62,8 +64,8 @@ export interface ApiDirectedTournament {
 
 /**
  * What GET /api/admin/members returns. A tournament_director receives only
- * the fields their read-only view renders — id, name, email, USCF id,
- * membership status and expiry — so everything an admin alone can see is
+ * the fields their read-only view renders (id, name, email, US Chess id,
+ * membership status and expiry), so everything an admin alone can see is
  * optional here, and the members table reads those only under isAdmin.
  */
 export interface ApiAdminMember
@@ -221,7 +223,7 @@ export async function confirmMembership(paymentId?: string | null): Promise<{
 
 export async function createDonationCheckout(amount: number): Promise<{ paymentId: string; paymentUrl: string }> {
   // Anyone may donate, but sending the session lets the server attribute the
-  // payment to a signed-in member. The client no longer states who it is —
+  // payment to a signed-in member. The client no longer states who it is:
   // the server reads that from the token.
   const response = await fetch('/api/donations/checkout', {
     method: 'POST',
