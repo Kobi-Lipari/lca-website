@@ -24,8 +24,10 @@
 //   worker on a change under domain/ or functions/utils/, and none of
 //   checkpoint J's four files of code there is in the worker's imports;
 //   and the create's insert and the setup save's read name every column of
-//   tournaments through Drizzle, so both fail on a database without 0059
-//   and run on one with it;
+//   tournaments through Drizzle: without 0059 the insert fails, while the
+//   read, whose names stand unqualified in double quotes, passes where
+//   SQLite reads a name it cannot find as a string, as D1 does, and both
+//   run with 0059;
 // - the follow-up for K: it quotes ordering rule 2 word for word, nothing
 //   migrates lca-db-preview on its own, and the preview's migrate script
 //   runs the guard before wrangler.
@@ -33,7 +35,7 @@
 // the follow-up quotes, and the files the section names.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { dirname, join, relative, resolve } from 'node:path'
-import type { DatabaseSync } from 'node:sqlite'
+import { DatabaseSync } from 'node:sqlite'
 import { eq } from 'drizzle-orm'
 import ts from 'typescript'
 import { describe, expect, it } from 'vitest'
@@ -42,7 +44,7 @@ import { getDb } from '../../functions/db/client'
 import { tournaments } from '../../functions/db/schema'
 import { nextMigrationNumber } from '../../scripts/db/generate'
 import { splitSql } from '../shared/splitSql'
-import { migrationFiles, openMigratedDb } from './helpers/sqlite'
+import { applyMigrations, migrationFiles, openMigratedDb } from './helpers/sqlite'
 import { block, fileLines } from './helpers/workflow'
 
 const ROOT = resolve(__dirname, '../..')
@@ -361,7 +363,7 @@ describe('what the merge of checkpoint J does, as the block says', () => {
     expect(merge).toContain('none of those files is in its import closure')
   })
 
-  it('the create and the setup save name every column of tournaments through Drizzle, so both fail without 0059 and run with it', () => {
+  it('the create and the setup save name every column of tournaments through Drizzle: without 0059 the insert fails and the read passes where SQLite reads a name it cannot find as a string, as D1 does, and both run with 0059', () => {
     // Among the queries that do, not the only ones: a later step may read tournaments the same way.
     expect(fullColumnQueries()).toEqual(expect.arrayContaining(['functions/api/admin/tournaments.ts', 'functions/api/admin/tournaments/[id].ts']))
     // The two queries as the handlers build them, on the Drizzle the handlers use; building one sends nothing anywhere.
@@ -369,17 +371,39 @@ describe('what the merge of checkpoint J does, as the block says', () => {
     const insert = db.insert(tournaments).values({ id: 'probe-1', name: 'Bayou Open', location: 'Houma, LA', date: '2026-12-12' }).toSQL()
     const select = db.select().from(tournaments).where(eq(tournaments.id, 'probe-1')).toSQL()
     for (const query of [insert, select]) expect(query.sql).toContain('"review_notified_at"')
-    const before = openMigratedDb({ files: migrationFiles().filter((f) => f < '0059') })
+    // The read names every column on its own, unqualified, in double quotes, the mark among them.
+    expect(select.sql).toMatch(/^select (?:"\w+", )*"review_notified_at"(?:, "\w+")* from "tournaments" where /)
+    const files = migrationFiles().filter((f) => f < '0059')
+    const before = openMigratedDb({ files })
     expect(() => runBuilt(before, insert)).toThrow(/table tournaments has no column named review_notified_at/)
+    // node:sqlite, opened as these tests open it, refuses a double-quoted name it cannot find, where D1 reads it as a string.
     expect(() => rowsOf(before, select)).toThrow(/no such column: "?review_notified_at/)
+    // Opened to read such a name as D1 does, a database without 0059 still refuses the insert, and answers the read
+    // with the text of the mark's name in the mark's place, as the setup save gets it.
+    const asD1 = new DatabaseSync(':memory:', { enableDoubleQuotedStringLiterals: true })
+    asD1.exec('PRAGMA foreign_keys = ON')
+    applyMigrations(asD1, files)
+    expect(() => runBuilt(asD1, insert)).toThrow(/table tournaments has no column named review_notified_at/)
+    asD1.prepare('INSERT INTO tournaments (id, name, location, date) VALUES (?, ?, ?, ?)').run('probe-1', 'Bayou Open', 'Houma, LA', '2026-12-12')
+    const names = [...select.sql.slice(0, select.sql.indexOf(' from ')).matchAll(/"(\w+)"/g)].map((m) => m[1])
+    const rows = rowsOf(asD1, select) as Array<Record<string, unknown>>
+    expect(rows).toHaveLength(1)
+    const values = Object.values(rows[0])
+    expect(values).toHaveLength(names.length)
+    expect(values[names.indexOf('id')]).toBe('probe-1')
+    expect(values[names.indexOf('review_notified_at')]).toBe('review_notified_at')
     const after = openMigratedDb()
     runBuilt(after, insert)
     expect(rowsOf(after, select)).toHaveLength(1)
-    for (const piece of ['two of which need 0059', '`POST /api/admin/tournaments`', '`PATCH /api/admin/tournaments/[id]`', 'the create and every save through `PATCH /api/admin/tournaments/[id]` answer 500']) {
+    for (const piece of [
+      'one of which needs 0059', '`POST /api/admin/tournaments`', '`PATCH /api/admin/tournaments/[id]`',
+      'the create answers 500 for every create that passes its checks',
+      'its read of the event names each column unqualified, in double quotes, and SQLite reads a double-quoted name it cannot find as a string',
+    ]) {
       expect(merge, piece).toContain(piece)
     }
     const followUp = entryOf(followUps, 'K migrates the preview database before checkpoint J\'s preview (WS08 step 2).')
-    expect(followUp).toContain('the create and every save through `PATCH /api/admin/tournaments/[id]` answer 500 on the branch\'s preview')
+    expect(followUp).toContain('Without 0059, the create answers 500 on the branch\'s preview for every create that passes its checks')
   })
 })
 

@@ -13,9 +13,11 @@
 // the merge does to production; the Status line's tail while this step is
 // the latest, tied to the section's opening; the PR line; the four sentences
 // this step adds to the map; its tagged entries in the four lists, the
-// sentence that ends the follow-up WS08 step 1 handed to it, and the three
+// sentence that ends the follow-up WS08 step 1 handed to it, the three
 // follow-ups it hands on, all three to WS08 step 4, right after WS08 step
-// 2's last; the plain-language rules over everything it wrote; and the date.
+// 2's last, and the two for K that end the list; the pins it moves in the
+// closed tests of WS08 steps 1 and 2; the plain-language rules over
+// everything it wrote; and the date.
 // The files the step touches are read only to find them and hold them to the
 // plain-language rules.
 import { existsSync, readFileSync } from 'node:fs'
@@ -124,8 +126,13 @@ const GUEST = 'A guest\'s assignment lists a hidden draft (WS08 step 2).'
 /** The follow-ups this step hands on, all three to WS08 step 4, right after the one on a guest's assignment. */
 const HANDED = [
   'The create\'s fee list and a section\'s own early and late prices (WS08 step 4).',
-  'Checkpoint J\'s pull request and merge in the record (WS08 step 4).',
+  'Checkpoint J\'s merge in the record (WS08 step 4).',
   'An empty club id refused with the LCA-run words (WS08 step 4).',
+]
+/** The two follow-ups for K this step writes, which end the list, right after the three it hands on. */
+const FOR_K = [
+  'K watches migrate-db.yml apply 0059 when checkpoint J merges (WS08 step 3).',
+  'Who may mark the State Championship (WS08 step 3).',
 ]
 
 /** The files this step adds: this record's test, and the six files of tests written once the create was built. */
@@ -145,8 +152,8 @@ const NEW_INTEGRATION = NEW_FILES.filter((name) => name.startsWith('test/integra
 const CHANGED = ['functions/api/admin/tournaments.ts', 'REDESIGN_STATUS.md']
 /** The test files this step extends, each with its count written in the block. */
 const CHANGED_TESTS = ['test/integration/tournament-create.test.ts', 'test/integration/contracts/admin-tournaments.test.ts']
-/** The closed test one of whose pins this step moves, named among the changed files with its count as before. */
-const MOVED = ['test/unit/redesign-status-ws08-step1-claims.test.ts']
+/** The closed tests whose pins this step moves, each named among the changed files with its count as before. */
+const MOVED = ['test/unit/redesign-status-ws08-step1-claims.test.ts', 'test/unit/redesign-status-ws08-step2.test.ts', 'test/unit/redesign-status-ws08-step2-claims.test.ts']
 const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
 /** A number as the record writes it, with or without its thousands' commas. */
 const num = (text: string) => Number(text.replace(/,/g, ''))
@@ -163,7 +170,7 @@ const followUp = (name: string) => entries(followUps).find((l) => head(l) === na
 
 /** Everything this step wrote, each piece on its own. */
 const written = [
-  block, checkpoint, ...tagged(decisions), ...tagged(deviations), ...tagged(verify), ...HANDED.map(followUp), closing(followUp(SEAT), RESOLVED),
+  block, checkpoint, ...tagged(decisions), ...tagged(deviations), ...tagged(verify), ...HANDED.map(followUp), ...FOR_K.map(followUp), closing(followUp(SEAT), RESOLVED),
   statusLine.slice(STATUS_PREFIX.length), prLine, ...PROVED.map(([id, opens]) => closing(mapItem(id), opens)), Q37, date?.[0] ?? '',
 ]
 
@@ -256,21 +263,31 @@ describe('REDESIGN_STATUS.md, WS08 step 3: the step block', () => {
     ]) expect(tests, piece).toContain(piece)
   })
 
-  it('says nothing a visitor sees ships with every switch off, and names the one pin it moves, in WS08 step 1\'s claims test, with its reason', () => {
+  it('says nothing a visitor sees ships with every switch off, and names the pins it moves in the closed tests of WS08 steps 1 and 2, each with its reason', () => {
     const ships = bullet(block, '- **What ships with every switch off.**')
     expect(ships.startsWith('- **What ships with every switch off.** Nothing a visitor sees or hears.')).toBe(true)
     expect(ships).toContain('`POST /api/admin/tournaments` answers, writes and refuses as before while `CREATION_ROLES_ON` is unset')
     const pins = bullet(block, '- **Pins moved.**')
-    expect(pins.startsWith('- **Pins moved.** One, in a test closed with WS08 step 1, because D20\'s sentence in the map takes the standard form; nothing else in that test changes but what its line below says, and no other test\'s exact list, count, line number or fixture moves.')).toBe(true)
+    expect(pins.startsWith('- **Pins moved.** In three tests closed with earlier steps: one expectation in WS08 step 1\'s claims test, because D20\'s sentence in the map takes the standard form, and two expectations of WS08 step 2\'s record test and one case of its claims test, because a database without 0059 fails the create alone and not the setup save, as the three sentences on the window now say; nothing else in those tests changes but what their lines below say, and no other test\'s exact list, count, line number or fixture moves.')).toBe(true)
     expect(pins).toContain('the case at lines 54 to 60 keeps its body and gains its state in its name')
-    // The one pin moved: its test, its old and new expectation, and why it moves.
+    // The pins moved, a line for each closed test: its test, its old and new expectations, and why they move.
     const moved = pins.split('\n').filter((l) => /^\s+- /.test(l))
-    expect(moved).toHaveLength(1)
+    expect(moved).toHaveLength(3)
     for (const piece of [
       '`test/unit/redesign-status-ws08-step1-claims.test.ts`: in its case "reads only what step 1 wrote, so a sentence a later step adds to an item leaves both checks as they were"',
       '`toBe(mapItem(\'D20\'))` to `toBe(ownOf(mapItem(\'D20\')))`', 'the old expectation held D20 to no such sentence',
       'so it was going to fail the day D20 was proved', 'the moved pin still checks that `ownOf` cuts a later sentence off D20',
     ]) expect(moved[0], piece).toContain(piece)
+    for (const piece of [
+      '`test/unit/redesign-status-ws08-step2.test.ts`: in its case on what the merge of checkpoint J does',
+      'to "the create answers 500 for every create that passes its checks, while every refusal answers as today"',
+      'to "Without 0059, the create answers 500 on the branch\'s preview for every create that passes its checks"',
+      'which a D1 database without 0059 does not give',
+    ]) expect(moved[1], piece).toContain(piece)
+    for (const piece of [
+      '`test/unit/redesign-status-ws08-step2-claims.test.ts`: its case on the two queries that name every column of `tournaments`',
+      'answers the text `review_notified_at` in the mark\'s place', '"two of which need 0059" to "one of which needs 0059"',
+    ]) expect(moved[2], piece).toContain(piece)
   })
 
   it('gives its judgement calls, D20\'s standard form among them, the lint as unchanged, the build against the base, and each figure of the checks once', () => {
@@ -312,15 +329,19 @@ describe('REDESIGN_STATUS.md, WS08 step 3: the Checkpoint J section', () => {
     ]) expect(checkpoint.split('\n').filter((l) => l.startsWith(name)), name).toHaveLength(1)
   })
 
-  it('says what the merge does to production: the migration, the worker with its bundle unchanged, the create as today, the window and nothing a visitor sees', () => {
+  it('says what the merge does to production against main\'s head: the migration, the worker with its bundle unchanged, the create as today, the window on the create alone and nothing a visitor sees', () => {
     const production = bullet(checkpoint, '- **What the merge does to production.**')
     for (const piece of [
-      'Measured against `main`\'s head as last fetched, `f58efd5`',
+      'Measured against `main`\'s head, `3463307` (pull request 122, the renewal page), which was merged into this branch as `5a3ae15`',
+      'measured on `33476b1`, WS08 step 3\'s commit, against `f58efd5`', 'gave the same result',
       '`migrate-db.yml` starts', 'applies 0059 to production: three nullable columns', 'so no row changes and no table is rebuilt',
       '`deploy-worker.yml` starts', 'redeploys the daily-emails worker with its bundle unchanged, since nothing it imports changed',
       'gives the same `index.js`, 32,757 bytes, byte for byte',
       '`POST /api/admin/tournaments` answers, writes and refuses as today while `CREATION_ROLES_ON` is unset',
-      'the create and every save through `PATCH /api/admin/tournaments/[id]`', 'answer 500', 'watch it apply 0059, and re-run it at once if it fails',
+      'the create answers 500 for every create that passes its checks, while every refusal answers as today',
+      'The setup save through `PATCH /api/admin/tournaments/[id]`, publishing and unpublishing included, passes',
+      'SQLite reads a double-quoted name it cannot find as a string', '25 to 45 seconds after the push',
+      'watch it apply 0059, and re-run it at once if it fails', 'the main script `index-BK-tB9L4.js` at 549,814 bytes',
       'path for path and byte for byte', 'Nothing a visitor sees',
     ]) expect(production, piece).toContain(piece)
   })
@@ -330,7 +351,11 @@ describe('REDESIGN_STATUS.md, WS08 step 3: the Checkpoint J section', () => {
     const preview = bullet(checkpoint, '- **What K looks at on a throwaway preview.**')
     expect(preview.startsWith('- **What K looks at on a throwaway preview.** Nothing yet: checkpoint J changes no page, and the pages come in checkpoint L')).toBe(true)
     const rollback = bullet(checkpoint, '- **Rollback.**')
-    for (const piece of ['`git revert -m 1 <merge sha>` on `main` and push', '0059 stays on production', 'never in 0059']) expect(rollback, piece).toContain(piece)
+    for (const piece of [
+      '`git revert -m 1 <merge sha>` on `main` and push', '0059 stays on production', 'never in 0059',
+      'The revert also starts `migrate-db.yml`, since it deletes `migrations/0059_ticket_kinds.sql`',
+      'carry `review_notified_at`, null, to everyone, signed-out visitors included',
+    ]) expect(rollback, piece).toContain(piece)
   })
 })
 
@@ -399,7 +424,7 @@ describe('REDESIGN_STATUS.md, WS08 step 3: the lines outside the block', () => {
     expect(tagged(deviations)[0]).toContain('"Standing directors and the president create LCA-run events, not a club\'s."')
   })
 
-  it('ends the follow-up WS08 step 1 handed to it in place, leaves the guest\'s as it was, and hands three to WS08 step 4 right after it', () => {
+  it('ends the follow-up WS08 step 1 handed to it in place, leaves the guest\'s as it was, hands three to WS08 step 4 right after it, and ends the list with two for K', () => {
     const heads = entries(followUps).map(head)
     // WS08 step 1's follow-up keeps its place and its words, and ends with this step's sentence.
     expect(heads.indexOf(SEAT)).toBe(3)
@@ -410,23 +435,36 @@ describe('REDESIGN_STATUS.md, WS08 step 3: the lines outside the block', () => {
     expect(seat.split(RESOLVED)).toHaveLength(2)
     expect(seat.indexOf(RESOLVED)).toBeGreaterThan(seat.indexOf('the seat adds nothing on create'))
     expect(closing(seat, RESOLVED)).toContain('`const clubId = person.repClubId ?? (body.clubId ?? null)`')
-    expect(tagged(followUps).map(head)).toEqual([SEAT])
+    expect(tagged(followUps).map(head)).toEqual([SEAT, ...FOR_K])
     // The guest's follow-up stays as WS08 step 2 wrote it, and this step's three come right after it.
     const at = heads.indexOf(GUEST)
     expect(at).toBeGreaterThan(-1)
     expect(followUp(GUEST).endsWith('Owner: WS08 step 3 or the console part.')).toBe(true)
     expect(heads.slice(at + 1, at + 1 + HANDED.length)).toEqual(HANDED)
+    expect(heads.slice(at + 1 + HANDED.length)).toEqual(FOR_K)
     expect(followUp(HANDED[0])).toContain('`sectionFeeOverrides` in `domain/events/sections.ts`')
+    expect(followUp(HANDED[1])).toContain('Once checkpoint J has merged, the Checkpoint J section opens with the merge, its commit and its day')
     expect(followUp(HANDED[1])).toContain('as WS02 step 6 and WS02 step 9 recorded checkpoint E\'s and checkpoint F\'s')
     // An empty club id, refused with the LCA-run words where the create's later checks read it as no club, for WS08 step 4 to read as null.
     for (const piece of [
       'a standing director or the president who sends `clubId: ""` is refused with the `LCA_RUN_ONLY` words',
       'the check at line 95 of `functions/api/admin/tournaments.ts` tests `clubId !== null`', 'read an empty string as no club',
+      'The same empty string makes today\'s create fail with a 500 for an LCA admin, since the insert writes it as the event\'s club id',
       'The wizard sends null for no club, so only a request made by hand meets it, and nothing is written.',
-      'WS08 step 4, which touches the create\'s fee list, reads an empty string as null before that check.',
+      'reads an empty `clubId` as null at the handler\'s club line, line 90, before that check, for every creator, with a case for an LCA admin and one for a standing director.',
     ]) {
       expect(followUp(HANDED[2]), piece).toContain(piece)
     }
+    // The two for K: the migration job on the push of the merge, and who may mark the State Championship.
+    for (const piece of [
+      'usually finishes applying the file 25 to 45 seconds after the push', 'the Pages build goes live 1 to 3 minutes after the push',
+      'by as little as half a minute', 'opens if the job fails, waits for a runner or runs slow',
+      'K watches it and re-runs it at once if it fails, fixing the Cloudflare secret first if it fails on the credentials, as it did on Friday, October 9, 2026.',
+    ]) expect(followUp(FOR_K[0]), piece).toContain(piece)
+    for (const piece of [
+      '`is_state_championship`', '(`functions/api/admin/tournaments/[id].ts`, line 169)', 'a right the brief\'s table does not list',
+      'K decides whether only an LCA admin may mark it; if so, a later WS08 step refuses it for everyone else, with a case.',
+    ]) expect(followUp(FOR_K[1]), piece).toContain(piece)
   })
 })
 

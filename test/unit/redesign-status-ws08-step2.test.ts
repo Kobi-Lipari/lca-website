@@ -216,12 +216,13 @@ describe('REDESIGN_STATUS.md, WS08 step 2: the step block', () => {
     ]) expect(contract, piece).toContain(piece)
   })
 
-  it('says what the merge of checkpoint J does: the migration on production, no row changed, the worker redeployed with its bundle unchanged, and the create and the setup save at 500 until 0059 is on production', () => {
+  it('says what the merge of checkpoint J does: the migration on production, no row changed, the worker redeployed with its bundle unchanged, and the create alone at 500 until 0059 is on production, the setup save passing', () => {
     const merge = bullet(block, '- **What the merge of checkpoint J does.**')
     for (const piece of [
       '`migrate-db.yml` applies 0059 to production', 'no row changed and no table rebuilt', '`deploy-worker.yml` redeploys the daily-emails worker',
       '`domain/contracts/events.ts`', 'with its bundle unchanged', 'byte for byte', 'none of those files is in its import closure',
-      'from the moment the new Pages build is live until 0059 is on production, the create and every save through `PATCH /api/admin/tournaments/[id]` answer 500',
+      'from the moment the new Pages build is live until 0059 is on production, the create answers 500 for every create that passes its checks, while every refusal answers as today',
+      'The setup save through `PATCH /api/admin/tournaments/[id]`, publishing and unpublishing included, passes in that window',
       'watch it apply 0059, and re-run it at once if it fails',
     ]) expect(merge, piece).toContain(piece)
   })
@@ -325,9 +326,10 @@ describe('REDESIGN_STATUS.md, WS08 step 2: the lines outside the block', () => {
     for (const piece of [
       '"K migrates the preview database from the branch before reviewing each checkpoint\'s preview. He runs `npm run db:migrate:preview` from the branch, with his own Cloudflare credentials, before he looks at the preview, not after the merge."',
       'ordering rule 2', '`migrate-db.yml`', '`lca-db-preview`', '`scripts/db/preview-guard.ts`',
-      'Without 0059, the create and every save through `PATCH /api/admin/tournaments/[id]` answer 500 on the branch\'s preview', 'the migration comes before anyone uses checkpoint J\'s preview',
+      'Without 0059, the create answers 500 on the branch\'s preview for every create that passes its checks',
+      'the setup save through `PATCH /api/admin/tournaments/[id]`, publishing and unpublishing included, passes', 'the migration comes before anyone uses checkpoint J\'s preview',
     ]) expect(entry, piece).toContain(piece)
-    // A preview without 0059 does not read as before: the branch's create and setup save fail on it.
+    // A preview without 0059 does not answer as before: the branch's create fails on it.
     expect(entry).not.toContain('reads as before')
     // The follow-up on a guest's assignment comes right after it.
     expect(heads[at + 1]).toBe(GUEST)
