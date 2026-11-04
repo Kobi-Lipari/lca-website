@@ -98,7 +98,7 @@ describe('the WS08 map: which items wait for a later part', () => {
     const d20 = `${mapItem('D20')}${later}`
     expect(d20).toMatch(/\bwait/i)
     speaksOfNoWaiting('D20', d20)
-    expect(ownOf(`${mapItem('D20')} Handed on in WS08 step 10: the admin home part waits.`)).toBe(mapItem('D20'))
+    expect(ownOf(`${mapItem('D20')} Handed on in WS08 step 10: the admin home part waits.`)).toBe(ownOf(mapItem('D20')))
   })
 })
 

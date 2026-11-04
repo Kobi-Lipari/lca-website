@@ -5,16 +5,33 @@
 // adminUpdateTournament in src/lib/api.ts send; the answers are every
 // column of the tournament with its section rows, ids included. Refusals
 // keep the plain { error } body, and a body that breaks the request contract
-// gets { error, fields }.
+// gets { error, fields }. Every case runs with CREATION_ROLES_ON unset, as in
+// the tree, but one, which turns it on through a getter on the mocked module,
+// read by the create at each request.
 import { env } from 'cloudflare:test'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { contracts, errorBodySchema, fieldErrorBodySchema } from '../../../domain/contracts'
 import { onRequestPost as createTournament } from '../../../functions/api/admin/tournaments'
 import { onRequestPatch as patchTournament } from '../../../functions/api/admin/tournaments/[id]'
 import { seedAdmin, seedClub, seedDirector, seedMember, seedTournament, seedTournamentDirector } from '../factories'
 import { expectContract, invoke, resetHarness } from '../harness'
 
+const flags = vi.hoisted(() => ({ rolesOn: false }))
+vi.mock('../../../functions/utils/events/creation', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../../functions/utils/events/creation')>()
+  return {
+    ...real,
+    get CREATION_ROLES_ON() {
+      return flags.rolesOn
+    },
+  }
+})
+
 beforeEach(resetHarness)
+afterEach(() => {
+  flags.rolesOn = false
+  vi.restoreAllMocks()
+})
 
 const create = contracts['admin/tournaments'].POST
 const edit = contracts['admin/tournaments/[id]'].PATCH
@@ -80,6 +97,7 @@ describe('POST /api/admin/tournaments contract', () => {
     expect(tournament.sections.map((s) => [s.name, s.entryFee])).toEqual([['Open', 15]])
   })
 
+  // With CREATION_ROLES_ON unset, as here, a standing director (seedDirector) is refused as today.
   it('role safety: a rep for another club, a director and a member are refused with { error }', async () => {
     const own = await seedClub()
     const other = await seedClub()
@@ -94,6 +112,17 @@ describe('POST /api/admin/tournaments contract', () => {
       await expectContract(res, errorBodySchema)
     }
     expect(await env.DB.prepare('SELECT COUNT(*) AS n FROM tournaments').first<{ n: number }>()).toEqual(before)
+  })
+
+  it('with CREATION_ROLES_ON set, answers a standing director creating an LCA-run event, with the director as its creator', async () => {
+    flags.rolesOn = true
+    const director = await seedDirector()
+    const result = await invoke(createTournament, { method: 'POST', as: director, body: wizardBody() })
+    expect(result.status).toBe(201)
+    const { tournament } = await expectContract(result, create.response)
+    expect(tournament.created_by).toBe(director)
+    expect(tournament.club_id).toBeNull()
+    expect(tournament.is_visible).toBe(0)
   })
 
   it('role safety: no sign-in is 401 with { error } and creates nothing', async () => {

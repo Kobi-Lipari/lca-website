@@ -4,11 +4,13 @@ import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../utils/response'
 import { recordAdminAction } from '../../utils/admin/audit'
 import { getDb } from '../../db/client'
-import { tournaments } from '../../db/schema'
+import { tournamentDirectors, tournaments } from '../../db/schema'
 import { createTournamentRequestSchema } from '../../../domain/contracts/events'
 import { buildSaveSections, isSectionsConflict, loadSections, runBatch, toTournamentResponse } from '../../utils/events/sectionsRepo'
 import { loadSchedules } from '../../utils/events/schedulesRepo'
-import { SECTIONS_CHANGED_MESSAGE } from '../../../domain/events/sections'
+import { CREATION_ROLES_ON, creationPerson } from '../../utils/events/creation'
+import { SECTIONS_CHANGED_MESSAGE, asSectionInput, type SectionListItem, type TierFees } from '../../../domain/events/sections'
+import { FEES_NEED_PAYOUT_ACCOUNT, LCA_RUN_ONLY, canChargeFees, canCreate, feesRaised } from '../../../domain/events/creation'
 import { LCA_RUN_NEEDS_MEMBERSHIP } from '../../../domain/membership/requirement'
 
 function slugify(value: string): string {
@@ -26,6 +28,26 @@ function withoutId<S extends { id?: string }>(section: S): S {
   return copy
 }
 
+/**
+ * The prices a create sets, as the list feesRaised (domain/events/creation.ts)
+ * compares: one entry for each section of the request, keyed "section:" and
+ * its name, at the section's own price when it sends a number and otherwise
+ * the event's, as the section writer stores it; and one entry for the event's
+ * own fee, keyed "event", which no section's key can be. Each entry carries
+ * its regular price alone, early and late null, so against an empty list any
+ * price above $0 is a raise.
+ */
+function createdFees(sections: readonly SectionListItem[], entryFee: number): Array<{ key: string; fees: TierFees }> {
+  const regularOnly = (regular: number): TierFees => ({ regular, early: null, late: null })
+  return [
+    ...sections.map(asSectionInput).map((section) => ({
+      key: `section:${section.name}`,
+      fees: regularOnly(typeof section.entryFee === 'number' ? section.entryFee : entryFee),
+    })),
+    { key: 'event', fees: regularOnly(entryFee) },
+  ]
+}
+
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -34,10 +56,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const { member } = authed
 
-  const isAdmin = member.role === 'lca_admin'
-  const isClubRep = member.role === 'club_rep'
+  // Who may create is the creation rules' answer (domain/events/creation.ts)
+  // for the person their database half reads. CREATION_ROLES_ON is read here,
+  // at each request; while it is unset the seat and the tournament_director
+  // role grant nothing, so the rules answer as today's checks did.
+  const rolesOn = CREATION_ROLES_ON
+  const person = await creationPerson(context.env.DB, member, rolesOn)
+  const isAdmin = person.grant === 'admin'
 
-  if (!isAdmin && !isClubRep) {
+  // No grant, no create, as before for everyone but an LCA admin and a club
+  // rep. A club rep is let through whatever its grant: one with no club is
+  // answered after the body check, as before.
+  if (person.grant === 'none' && member.role !== 'club_rep') {
     return errorResponse('Forbidden', 403)
   }
 
@@ -49,13 +79,31 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // A club rep always creates for their own club. A rep with no club would
   // create an event nobody but an admin could ever manage, so refuse instead.
-  if (isClubRep && !member.club_id) {
+  if (member.role === 'club_rep' && !member.club_id) {
     return errorResponse('Your account is not linked to a club yet. Ask an LCA admin to assign you one.', 403)
   }
-  if (isClubRep && body.clubId && body.clubId !== member.club_id) {
+  if (person.repClubId && body.clubId && body.clubId !== person.repClubId) {
     return errorResponse('Club reps can only create tournaments for their club', 403)
   }
-  const clubId = isClubRep ? member.club_id : (body.clubId ?? null)
+  // A club rep's event is its club's, whatever else the rep holds, so a club
+  // rep who holds the President seat creates as a club rep.
+  const clubId = person.repClubId ?? (body.clubId ?? null)
+
+  // A standing director's and the president's events are LCA-run (Q37, and
+  // for the president the membership row of the brief's table); a president
+  // who wants a club's event asks an LCA admin.
+  if (clubId !== null && person.repClubId === null && (person.grant === 'president' || person.grant === 'standing_director')) {
+    return errorResponse(LCA_RUN_ONLY, 403)
+  }
+  if (!canCreate(person, clubId, rolesOn)) {
+    return errorResponse('Forbidden', 403)
+  }
+  // D24: a price above $0 needs a grant on the fee list. Every grant that may
+  // create is on it for now, so no creator is refused here yet; WS09's
+  // representatives will be the first who can be.
+  if (feesRaised([], createdFees(body.sections ?? [], body.entryFee)) && !canChargeFees(person, { clubId, createdBy: member.id }, rolesOn)) {
+    return errorResponse(FEES_NEED_PAYOUT_ACCOUNT, 403)
+  }
 
   if (clubId) {
     const club = await context.env.DB.prepare('SELECT id FROM clubs WHERE id = ?')
@@ -83,8 +131,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   // A club-run event starts without the LCA membership requirement (clubs
   // get tournament creation first, free of charge); an LCA-run event always
-  // has it. Only an admin or a club rep reaches this point, and a rep's event
-  // is always their own club's, so either may set it.
+  // has it. Only an admin or the club's own rep reaches this point with a
+  // club, since a standing director and the president create LCA-run events
+  // only, so either may set it.
   if (body.requiresLcaMembership === false && !clubId) {
     return errorResponse(LCA_RUN_NEEDS_MEMBERSHIP, 400)
   }
@@ -121,8 +170,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     customDetails: body.customDetails?.length ? JSON.stringify(body.customDetails) : null,
     requiresLcaMembership,
   })
+  // A standing director and the president run the event they create as its
+  // first director, the row canManageTournament admits them by, written in the
+  // same batch as the event. An admin and a club rep, a club rep who holds the
+  // seat among them, manage it by their role and get no row, which would
+  // outlive the role.
+  const firstDirector = (person.grant === 'president' || person.grant === 'standing_director') && person.repClubId === null
+    ? [db.insert(tournamentDirectors).values({ tournamentId: id, memberId: member.id }).onConflictDoNothing()]
+    : []
   try {
-    await runBatch(db, [insert, ...plan.queries])
+    await runBatch(db, [insert, ...firstDirector, ...plan.queries])
   } catch (err) {
     if (isSectionsConflict(err)) return errorResponse(SECTIONS_CHANGED_MESSAGE, 409)
     throw err
@@ -138,7 +195,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   await recordAdminAction(context.env.DB, member, {
     action: 'tournament_create',
     targetLabel: body.name,
-    detail: { tournament_id: id },
+    // The grant the person created with joins the entry once CREATION_ROLES_ON
+    // is set; while it is unset the entry is as before.
+    detail: rolesOn ? { tournament_id: id, grant: person.grant } : { tournament_id: id },
   })
 
   return jsonResponse({ tournament: toTournamentResponse(tournament, await loadSections(db, id), await loadSchedules(db, id)) }, 201)
