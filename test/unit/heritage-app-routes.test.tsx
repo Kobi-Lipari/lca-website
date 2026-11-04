@@ -10,6 +10,9 @@
 //   child, holding the page's heading; the page has one main, the site's;
 //   the header and the footer are outside every scope; and the scope is the
 //   only data-theme on the page.
+// - Switch on, on each of the six pages the header, its brand link, the
+//   footer and the footer's first four links carry the classes they carry
+//   on the home page (WS02 step 4).
 // - Switch on, a page that is not one of the six (Contact, the donation
 //   thanks) is drawn with no scope at all, and so is the home page.
 // - Moving from one heritage page to another keeps the one scope element,
@@ -167,6 +170,27 @@ describe('themeHeritage on: the six pages in the layout\'s scope', () => {
     expect(at.themes).toEqual(['heritage'])
     expect(h1.getAttribute('data-heritage')).toBe('display')
     expect(warn).not.toHaveBeenCalled()
+  })
+
+  it.each(Object.keys(HEADINGS))('%s draws the header, its brand link, the footer and the footer\'s first four links with the classes the home page gives them', async (path) => {
+    /** The class attributes of the parts of the chrome a heritage page must leave as they are. */
+    const frame = (container: HTMLElement) => {
+      const header = container.querySelector('header')!
+      const footer = container.querySelector('footer')!
+      return {
+        header: header.getAttribute('class'),
+        brand: header.querySelector('a[href="/"]')!.getAttribute('class'),
+        footer: footer.getAttribute('class'),
+        footerLinks: [...footer.querySelectorAll('a[href^="/"]')].slice(0, 4).map((a) => a.getAttribute('class')),
+      }
+    }
+    const home = frame(await site('/'))
+    expect(home.footerLinks).toHaveLength(4)
+    for (const value of [home.header, home.brand, home.footer, ...home.footerLinks]) expect(value).toBeTruthy()
+    cleanup()
+    const container = await site(path)
+    await heading(HEADINGS[path])
+    expect(frame(container)).toEqual(home)
   })
 
   it.each(Object.entries(REDIRECTS))('the old address %s lands on %s, in the scope', async (from, to) => {

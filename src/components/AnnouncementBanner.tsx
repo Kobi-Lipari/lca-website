@@ -21,9 +21,15 @@ const TONES: Record<string, string> = {
  * The tones on a dark ground that is not a navy band. They carry
  * data-ground="dark", so under the new look the focus ring on their link and
  * dismiss button turns gold. The navy tone is a bg-brand-navy box, which the
- * ring rule already covers, and the gold tone keeps the navy ring.
+ * ring rule already covers. The gold tone, and a tone the banner does not
+ * know, which it draws gold, carry data-ring-ground="gold" instead: under
+ * the new look their ring is navy in the light look and in dark mode alike,
+ * never the dark mode's gold ring on the gold (src/index.css).
  */
 const DARK_GROUND_TONES = new Set(['urgent', 'info'])
+
+/** The classes a tone draws; a tone the banner does not know is drawn gold. */
+const toneOf = (tone: string) => TONES[tone] ?? TONES.gold
 
 const SIZES: Record<string, string> = {
   default: 'px-4 py-2 text-sm',
@@ -70,10 +76,11 @@ export function AnnouncementBanner() {
           key={a.id}
           className={cn(
             'flex items-center justify-center gap-3 text-center',
-            TONES[a.tone] ?? TONES.gold,
+            toneOf(a.tone),
             SIZES[a.size] ?? SIZES.default,
           )}
           data-ground={DARK_GROUND_TONES.has(a.tone) ? 'dark' : undefined}
+          data-ring-ground={toneOf(a.tone) === TONES.gold ? 'gold' : undefined}
         >
           <span>
             {a.message}

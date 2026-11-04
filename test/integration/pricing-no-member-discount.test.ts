@@ -72,7 +72,7 @@ describe('a member and a non-member pay the same', () => {
   it.each(TIERS)('family entry, $label: the parent who is a member and the child who is not', async (tier) => {
     const tournamentId = await eventAt(tier)
     const parent = await seedMember({ membershipStatus: 'active' })
-    const child = await seedMember({ membershipStatus: 'pending' })
+    const child = await seedMember({ membershipStatus: 'none' })
     await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(parent, child).run()
     const res = await invoke(batchPost, {
       method: 'POST', as: parent, body: { tournamentId, entries: [{ section: 'Open' }, { memberId: child, section: 'Open' }] },

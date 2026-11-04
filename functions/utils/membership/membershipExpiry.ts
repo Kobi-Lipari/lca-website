@@ -22,7 +22,7 @@ export interface ExpirySweepResult {
  *    which is how paid-through is read everywhere else, including the roster
  *    sheet's own Active/Expired rule.
  *
- *  - Only 'active' rows. 'pending' means never paid and has no term to end;
+ *  - Only 'active' rows. 'none' means never paid and has no term to end;
  *    writing 'expired' over it would claim a membership that never existed.
  *
  *  - Rows with no expiry are left alone. A NULL there means nobody has ever

@@ -1,11 +1,18 @@
+// src/pages/MembershipSuccessPage.tsx
+//
+// Where a membership payment stands, in plain words. Stripe sends the member
+// here after checkout with the payment id in the address; the profile links
+// here with no id to check the latest payment from any device. Every state
+// says whether anything was charged and what to do next.
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, Clock } from 'lucide-react'
+import { CheckCircle2, Clock, CreditCard } from 'lucide-react'
 
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/contexts/auth-context'
 import { confirmMembership } from '@/lib/api'
+import { paymentStateCopy, type MembershipPaymentCheck } from '@/areas/membership/paymentState'
 import { cn } from '@/lib/utils'
 import { FAMILY_MEMBERSHIP_CHILDREN } from '@/lib/family'
 
@@ -15,56 +22,30 @@ const goldButtonClass =
 function MembershipSuccessContent() {
   const [searchParams] = useSearchParams()
   const { refreshMember } = useAuth()
+  // The id Stripe sent back, else the one kept when checkout started, else
+  // nothing: the server then checks the member's latest payment.
   const paymentId =
     searchParams.get('paymentId') ?? sessionStorage.getItem('lca_pending_payment_id')
 
-  // Nothing to wait for without a payment id, so the missing-id state is the
-  // first render rather than something an effect corrects afterwards.
-  const [loading, setLoading] = useState(!!paymentId)
-  const [error, setError] = useState<string | null>(
-    paymentId ? null : 'No payment ID found. Complete checkout from the membership page first.',
-  )
-  const [status, setStatus] = useState<'active' | 'pending' | null>(null)
-  const [tier, setTier] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [check, setCheck] = useState<MembershipPaymentCheck | null>(null)
 
-  async function checkStatus() {
-    if (!paymentId) return
-
-    try {
-      const result = await confirmMembership(paymentId)
-      setTier(result.tier ?? null)
-      if (result.alreadyConfirmed) {
-        sessionStorage.removeItem('lca_pending_payment_id')
-        await refreshMember()
-        setStatus('active')
-      } else {
-        // Webhook hasn't landed yet — this is expected, usually resolves within a few seconds
-        setStatus('pending')
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not check payment status')
-    } finally {
-      setLoading(false)
+  // A paid answer also refreshes the signed-in member, so the header and
+  // the profile stop saying pending without another page load.
+  async function settle(result: MembershipPaymentCheck) {
+    if (result.paymentState === 'paid') {
+      sessionStorage.removeItem('lca_pending_payment_id')
+      await refreshMember()
     }
+    return result
   }
 
   useEffect(() => {
-    if (!paymentId) return
     let cancelled = false
     confirmMembership(paymentId)
-      .then(async (result) => {
-        if (cancelled) return
-        setTier(result.tier ?? null)
-        if (result.alreadyConfirmed) {
-          sessionStorage.removeItem('lca_pending_payment_id')
-          await refreshMember()
-          if (!cancelled) setStatus('active')
-        } else {
-          // The webhook has not landed yet — expected, and usually resolves
-          // within a few seconds.
-          setStatus('pending')
-        }
-      })
+      .then(settle)
+      .then((result) => { if (!cancelled) setCheck(result) })
       .catch((err) => {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Could not check payment status')
       })
@@ -76,47 +57,41 @@ function MembershipSuccessContent() {
   async function handleRetry() {
     setLoading(true)
     setError(null)
-    await checkStatus()
+    try {
+      setCheck(await settle(await confirmMembership(paymentId)))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not check payment status')
+    } finally {
+      setLoading(false)
+    }
   }
+
+  const state = check?.paymentState ?? null
+  const tier = check?.tier ?? null
+  const copy = state ? paymentStateCopy(state, check?.startedAt) : null
 
   return (
     <div className="mx-auto max-w-lg px-6 py-16 text-center">
       {loading && (
-        <p className="text-muted-foreground">Checking your payment status…</p>
+        <p className="text-muted-foreground" role="status">Checking your payment…</p>
       )}
 
       {!loading && error && (
         <>
           <p className="text-destructive">{error}</p>
-          <Button asChild className="mt-6" variant="outline">
+          <Button type="button" className={cn('mt-6', goldButtonClass)} onClick={handleRetry}>
+            Check again
+          </Button>
+          <Button asChild className="mt-3" variant="outline">
             <Link to="/membership">Back to membership</Link>
           </Button>
         </>
       )}
 
-      {!loading && !error && status === 'pending' && (
+      {!loading && !error && copy && state === 'paid' && (
         <>
-          <Clock className="mx-auto size-12 text-gold-ink" />
-          <h1 className="mt-4 text-2xl font-bold text-ink">
-            Payment received — activating your membership
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            Stripe confirmed your payment. It usually takes just a few seconds for
-            your membership to activate. If this doesn't update shortly, try
-            refreshing.
-          </p>
-          <Button type="button" className={cn('mt-8', goldButtonClass)} onClick={handleRetry}>
-            Check again
-          </Button>
-        </>
-      )}
-
-      {!loading && !error && status === 'active' && (
-        <>
-          <CheckCircle2 className="mx-auto size-12 text-ok-600" />
-          <h1 className="mt-4 text-2xl font-bold text-ink">
-            Membership confirmed
-          </h1>
+          <CheckCircle2 className="mx-auto size-12 text-ok-600" aria-hidden="true" />
+          <h1 className="mt-4 text-2xl font-bold text-ink">{copy.heading}</h1>
           {tier === 'family' ? (
             <>
               <p className="mt-2 text-muted-foreground">
@@ -144,6 +119,37 @@ function MembershipSuccessContent() {
               </Button>
             </>
           )}
+        </>
+      )}
+
+      {!loading && !error && copy && state !== 'paid' && (
+        <>
+          {state === 'processing' || state === 'unknown'
+            ? <Clock className="mx-auto size-12 text-gold-ink" aria-hidden="true" />
+            : <CreditCard className="mx-auto size-12 text-muted-foreground" aria-hidden="true" />}
+          <h1 className="mt-4 text-2xl font-bold text-ink">{copy.heading}</h1>
+          <p className="mt-2 text-muted-foreground">{copy.body}</p>
+          <div className="mt-8 flex flex-col items-center gap-3">
+            {copy.canFinishPaying && check?.paymentUrl && (
+              <Button asChild className={goldButtonClass}>
+                <a href={check.paymentUrl}>Finish paying</a>
+              </Button>
+            )}
+            {copy.canCheckAgain && (
+              <Button type="button" className={goldButtonClass} onClick={handleRetry}>
+                Check again
+              </Button>
+            )}
+            <Button asChild variant={copy.canFinishPaying || copy.canCheckAgain ? 'outline' : 'default'}
+              className={copy.canFinishPaying || copy.canCheckAgain ? undefined : goldButtonClass}>
+              <Link to="/membership">{state === 'none' || state === 'expired' ? 'Go to the membership page' : 'Back to membership'}</Link>
+            </Button>
+            {copy.offerSupport && (
+              <Link to="/support" className="text-sm font-medium text-ink underline">
+                Write to support
+              </Link>
+            )}
+          </div>
         </>
       )}
     </div>

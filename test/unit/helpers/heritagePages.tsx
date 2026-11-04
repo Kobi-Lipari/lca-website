@@ -32,7 +32,7 @@ export const HERITAGE_PAGES: ReadonlyArray<{ name: string; route: string; Page: 
   { name: 'bylaws', route: '/governance/bylaws', Page: BylawsPage, drawnWhen: 'Fixture bylaws' },
   { name: 'minutes', route: '/governance/minutes', Page: MinutesPage, drawnWhen: 'Fixture treasurer\'s report' },
   { name: 'meeting', route: '/meeting', Page: AnnualMeetingPage, drawnWhen: 'Join the meeting' },
-  { name: 'champions', route: '/champions', Page: ChampionsPage, drawnWhen: 'All champions' },
+  { name: 'champions', route: '/champions', Page: ChampionsPage, drawnWhen: 'Winner of a year' },
 ]
 
 /** A page's element in the router and the signed-in state it needs, at its own address. */

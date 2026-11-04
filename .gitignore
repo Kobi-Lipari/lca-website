@@ -15,6 +15,7 @@
 audit-orphans.mjs
 dist/
 node_modules/
+node_modules
 prod-schema.txt
 scripts/launch-emails-sent.json
 scripts/lca-import.tsv

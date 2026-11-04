@@ -6,8 +6,9 @@
 // a11y-on and a11y-off (npm run test:a11y)
 //   The site built twice with `vite build --mode a11y` by
 //   test/a11y/global-setup.ts, which npm run test:a11y runs first: once with
-//   the switches newLook and themeHeritage on (dist-a11y-on) and once with
-//   none (dist-a11y-off, the site as visitors see it today). Each build is
+//   the switches newLook, themeHeritage, newNav, siteSearch, eventStrip,
+//   eventStripLive and liveMarker on (dist-a11y-on) and once with none
+//   (dist-a11y-off, the site as visitors see it today). Each build is
 //   served by `wrangler pages dev`, with the functions folder, on its own
 //   port, on its own local database built from the migrations and
 //   scripts/seed/fixtures.sql (.wrangler/a11y/on and .wrangler/a11y/off;

@@ -71,8 +71,13 @@
 // Reads only; the one answer stubbed is the documents list on the short
 // page, given as empty, and the moves inside the site hold the pages' data
 // back until the page has arrived, then let the real answers through.
+//
+// The header and the footer are read through test/a11y/chrome.ts, the code
+// that runs inside the page with its selectors, SITE. Everything read of
+// them here holds for any header and footer, today's or the new ones.
 import AxeBuilder from '@axe-core/playwright'
 import type { Locator, Page, Route } from '@playwright/test'
+import { SITE, siteFooter, type SiteSelectors } from './chrome'
 import { DRAWN_TIMEOUT, expect, openDrawn, test } from './support'
 
 const ON = 'a11y-on'
@@ -179,7 +184,7 @@ test.describe('what the home page asks for', () => {
     page.on('request', (request) => asked.push(local(request.url())))
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1, name: 'Play. Compete. Connect.' })).toBeVisible()
-    await expect(page.locator('footer')).toBeVisible()
+    await expect(siteFooter(page)).toBeVisible()
     await page.waitForLoadState('networkidle')
     await page.evaluate(() => document.fonts.ready)
     // Whatever the page asks for while it sits a moment longer counts too.
@@ -621,7 +626,7 @@ test.describe('controls inside heritage and base, shot in the same run', () => {
 // ── The six pages in the scope (AC12) ────────────────────────────────────────
 
 /** How a heritage page is drawn: the scopes, the landmarks, the faces inside the heritage scope, and the hooks, rules and seals. */
-function readPage() {
+function readPage(site: SiteSelectors) {
   const describe = (el: Element) => `${el.tagName.toLowerCase()} "${(el.textContent ?? '').trim().slice(0, 40)}"`
   const scope = document.querySelector('[data-layout="heritage"]')
   const own = scope ? [...scope.querySelectorAll('*')].filter((el) => el.closest('[data-theme]') === scope) : []
@@ -634,8 +639,8 @@ function readPage() {
     scopeTag: scope?.tagName ?? null,
     mains: document.querySelectorAll('main').length,
     inMain: scope !== null && main !== null && main.contains(scope),
-    headerOutside: document.querySelector('header')?.closest('[data-theme]') === null,
-    footerOutside: document.querySelector('footer')?.closest('[data-theme]') === null,
+    headerOutside: document.querySelector(site.header)?.closest('[data-theme]') === null,
+    footerOutside: document.querySelector(site.footer)?.closest('[data-theme]') === null,
     headingInScope: scope !== null && heading?.closest('[data-theme]') === scope,
     headingHook: heading?.getAttribute('data-heritage') ?? null,
     headingFamily: heading ? family(heading) : '',
@@ -657,7 +662,7 @@ test.describe('the six pages in the heritage scope', () => {
       await openDrawn(page, p.route, content(page, p))
       await expect(page.locator('main').getByText(LOADING, { exact: true })).toHaveCount(0)
       await page.evaluate(() => document.fonts.ready)
-      const r = await page.evaluate(readPage)
+      const r = await page.evaluate(readPage, SITE)
       if (testInfo.project.name === OFF) {
         expect({ themes: r.themes, hooks: r.hooks, rules: r.rules, seals: r.seals }).toEqual({ themes: [], hooks: [], rules: 0, seals: 0 })
       } else {
@@ -750,16 +755,16 @@ test.describe('the paper ground on a short page', () => {
         await expect(page.getByText('No documents yet.')).toHaveCount(2)
         await page.evaluate(() => document.fonts.ready)
         // The footer's top in the middle of the window, or as far down as the page goes.
-        await page.evaluate(() => window.scrollTo(0, document.querySelector('footer')!.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2))
+        await page.evaluate((site) => window.scrollTo(0, document.querySelector(site.footer)!.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2), SITE)
         await frames(page)
-        const at = await page.evaluate(() => {
+        const at = await page.evaluate((site) => {
           const scope = document.querySelector('[data-layout="heritage"]')!
           return {
             ground: getComputedStyle(scope).backgroundColor,
             scopeBottom: scope.getBoundingClientRect().bottom,
-            footerTop: document.querySelector('footer')!.getBoundingClientRect().top,
+            footerTop: document.querySelector(site.footer)!.getBoundingClientRect().top,
           }
-        })
+        }, SITE)
         const rows = [at.footerTop - 2]
         // On a window taller than the page, the stretch between the scope and the footer too.
         if (at.footerTop - at.scopeBottom > 8) rows.push((at.scopeBottom + at.footerTop) / 2)
@@ -821,12 +826,12 @@ interface Moved {
 
 /** Starts counting layout shifts from now on, each with its time, whether an input came just before it, and what moved and where it sits. */
 async function countShifts(page: Page) {
-  await page.evaluate(() => {
+  await page.evaluate((site) => {
     const w = window as unknown as Moved
     w.__moved = []
     const where = (node: Node | null, before: DOMRectReadOnly, after: DOMRectReadOnly) => {
       const el = node instanceof Element ? node : node?.parentElement ?? null
-      const area = !el ? 'gone' : el.closest('footer') ? 'footer' : el.closest('header') ? 'header' : el.closest('[data-layout="heritage"]') ? 'heritage scope' : el.closest('main') ? 'main' : el.tagName.toLowerCase()
+      const area = !el ? 'gone' : el.closest(site.footer) ? 'footer' : el.closest(site.header) ? 'header' : el.closest('[data-layout="heritage"]') ? 'heritage scope' : el.closest('main') ? 'main' : el.tagName.toLowerCase()
       const words = (el?.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 30)
       const what = `${el ? el.tagName.toLowerCase() : 'a node'} "${words}" from ${Math.round(before.y)} to ${Math.round(after.y)}`
       return { area, what }
@@ -842,7 +847,7 @@ async function countShifts(page: Page) {
         })
       }
     }).observe({ type: 'layout-shift' })
-  })
+  }, SITE)
 }
 
 /** What the six pages ask the server for: the governance documents, the board, its seats and the champions. */
@@ -1073,30 +1078,30 @@ test.describe('the ornaments and the cards as drawn', () => {
 // ── The header and the footer keep the base look ─────────────────────────────
 
 /** How the header, its brand link and the footer are drawn. */
-function readFrame() {
+function readFrame(site: SiteSelectors) {
   const look = (el: Element | null) => {
     if (!el) return null
     const s = getComputedStyle(el)
     return { ground: s.backgroundColor, words: s.color, lines: `${s.borderTopColor} ${s.borderBottomColor}`, family: s.fontFamily, size: s.fontSize }
   }
-  const header = document.querySelector('header')
-  const footer = document.querySelector('footer')
+  const header = document.querySelector(site.header)
+  const footer = document.querySelector(site.footer)
   return {
     header: look(header),
-    brand: look(header?.querySelector('a[href="/"]') ?? null),
+    brand: look(header?.querySelector(site.brandLink) ?? null),
     footer: look(footer),
-    footerLinks: [...(footer?.querySelectorAll('a[href^="/"]') ?? [])].slice(0, 4).map((a) => look(a)),
+    footerLinks: [...(footer?.querySelectorAll(site.footerLinks) ?? [])].slice(0, 4).map((a) => look(a)),
   }
 }
 
 /** The footer's own ground, as painted: points just under its gold line and just above its foot, at both edges, with the footer scrolled into view. */
 async function footerPaint(page: Page): Promise<string[]> {
-  const at = await page.evaluate(() => {
-    const footer = document.querySelector('footer')!
+  const at = await page.evaluate((site) => {
+    const footer = document.querySelector(site.footer)!
     footer.scrollIntoView({ block: 'end' })
     const r = footer.getBoundingClientRect()
     return { top: r.top, bottom: Math.min(r.bottom, window.innerHeight), width: window.innerWidth }
-  })
+  }, SITE)
   await frames(page)
   const points = [[2, at.top + 8], [at.width - 3, at.top + 8], [2, at.bottom - 4], [at.width - 3, at.bottom - 4]] as const
   return coloursAt(page, await page.screenshot(), [...points])
@@ -1109,7 +1114,7 @@ test.describe('the header and the footer on a heritage page', () => {
       await page.emulateMedia({ colorScheme: scheme })
       await openDrawn(page, '/', [page.getByRole('heading', { level: 1, name: 'Play. Compete. Connect.' })])
       await page.evaluate(() => document.fonts.ready)
-      const home = await page.evaluate(readFrame)
+      const home = await page.evaluate(readFrame, SITE)
       expect(home.header).not.toBeNull()
       expect(home.footer).not.toBeNull()
       expect(home.footerLinks.length).toBeGreaterThan(0)
@@ -1118,7 +1123,7 @@ test.describe('the header and the footer on a heritage page', () => {
       for (const p of PAGES) {
         await openDrawn(page, p.route, content(page, p))
         await page.evaluate(() => document.fonts.ready)
-        expect(await page.evaluate(readFrame), `${p.route}, ${scheme} (${testInfo.project.name})`).toEqual(home)
+        expect(await page.evaluate(readFrame, SITE), `${p.route}, ${scheme} (${testInfo.project.name})`).toEqual(home)
         // The layout casts its ground down under the footer; the footer, drawn after it, covers it.
         expect(await footerPaint(page), `${p.route}, ${scheme}: the footer's ground as painted`).toEqual(homePaint)
       }

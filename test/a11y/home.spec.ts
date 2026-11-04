@@ -31,10 +31,18 @@
 // Each test waits for the hero's heading and, on a11y-on, for its picture
 // to load, not for network idle alone; the page's two lists may answer late
 // or draw their error line, which does not change the hero. Reads only.
+//
+// The footer and the header are read through test/a11y/chrome.ts. On a11y-on
+// every img on / is read whatever chrome is drawn: each has a width and a
+// height, and the hero's picture, 2048 by 1237, is the one image outside the
+// footer. The exact list names today's footer logo at 56 by 56, so it says
+// through the helper that it holds for today's footer, as the a11y-off test
+// does as a whole, and runs wherever today's chrome is drawn.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import AxeBuilder from '@axe-core/playwright'
 import type { Page, Response } from '@playwright/test'
+import { SITE, footerImages, footerLogo, ifToday, onlyToday, widthOf } from './chrome'
 import { expect, test } from './support'
 
 const ON = 'a11y-on'
@@ -270,20 +278,29 @@ test.describe('every image on / has a width and a height', () => {
   test('a11y-on: the hero\'s picture and the footer\'s logo, each with both', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== ON, 'the new look\'s images, on a11y-on')
     await openStillHome(page)
-    await expect(page.locator('footer [data-slot="lca-logo"]')).toBeVisible()
-    const images = await page.locator('img').evaluateAll((els) => els.map((el) => ({ where: el.closest('[data-ground="dark"]') ? 'hero' : el.closest('footer') ? 'footer' : el.closest('header') ? 'header' : 'page', width: el.getAttribute('width'), height: el.getAttribute('height') })))
+    await expect(footerLogo(page)).toBeVisible()
+    // The chrome is asked first, so an image is the hero's only outside the header and the footer.
+    const images = await page.locator('img').evaluateAll((els, site) => els.map((el) => ({ where: el.closest(site.footer) ? 'footer' : el.closest(site.header) ? 'header' : el.closest('[data-ground="dark"]') ? 'hero' : 'page', width: el.getAttribute('width'), height: el.getAttribute('height') })), SITE)
     testInfo.annotations.push({ type: 'measured', description: `img elements on / (a11y-on): ${JSON.stringify(images)}` })
-    expect(images).toEqual([
-      { where: 'hero', width: '2048', height: '1237' },
-      { where: 'footer', width: '56', height: '56' },
-    ])
+    // Whatever chrome is drawn: every image has a width and a height, and the
+    // hero's picture, at its own size, is the one image outside the footer.
+    expect(images.filter((image) => !/^\d+$/.test(image.width ?? '') || !/^\d+$/.test(image.height ?? '')), 'an img on / without a width or a height').toEqual([])
+    expect(images.filter((image) => image.where !== 'footer')).toEqual([{ where: 'hero', width: '2048', height: '1237' }])
+    await ifToday(testInfo, 'footer', widthOf(page), 'the img elements on / as an exact list, the hero\'s and today\'s footer logo at 56 by 56', async () => {
+      expect(images).toEqual([
+        { where: 'hero', width: '2048', height: '1237' },
+        { where: 'footer', width: '56', height: '56' },
+      ])
+    })
   })
 
   test('a11y-off: today\'s two, the header\'s and the footer\'s logo, sized by their classes with no width or height attributes, measured', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== OFF, 'today\'s images, on a11y-off')
+    onlyToday(testInfo, 'header', [widthOf(page)], 'today\'s image in the header, sized by its classes')
+    onlyToday(testInfo, 'footer', [widthOf(page)], 'today\'s image in the footer, sized by its classes')
     await openHome(page)
-    await expect(page.locator('footer img')).toBeVisible()
-    const images = await page.locator('img').evaluateAll((els) => els.map((el) => ({ where: el.closest('footer') ? 'footer' : el.closest('header') ? 'header' : 'page', width: el.getAttribute('width'), height: el.getAttribute('height'), className: el.getAttribute('class') })))
+    await expect(footerImages(page)).toBeVisible()
+    const images = await page.locator('img').evaluateAll((els, site) => els.map((el) => ({ where: el.closest(site.footer) ? 'footer' : el.closest(site.header) ? 'header' : 'page', width: el.getAttribute('width'), height: el.getAttribute('height'), className: el.getAttribute('class') })), SITE)
     const note = `img elements on / (a11y-off): ${JSON.stringify(images)}`
     console.log(note)
     testInfo.annotations.push({ type: 'measured', description: note })

@@ -252,8 +252,8 @@ describe('entering a club-run event', () => {
       const single = await invoke(registerPost, { method: 'POST', as: await seedMember({ membershipStatus: 'expired' }), body: { tournamentId, section: 'Open' } })
       expect(single.status, `single, requirement ${required}`).toBe(201)
 
-      const parent = await seedMember({ membershipStatus: 'pending' })
-      const child = await seedMember({ membershipStatus: 'pending' })
+      const parent = await seedMember({ membershipStatus: 'none' })
+      const child = await seedMember({ membershipStatus: 'none' })
       await env.DB.prepare('UPDATE members SET guardian_id = ? WHERE id = ?').bind(parent, child).run()
       const family = await invoke(batchPost, { method: 'POST', as: parent, body: { tournamentId, entries: [{ section: 'Open' }, { memberId: child, section: 'Open' }] } })
       expect(family.status, `family, requirement ${required}`).toBe(201)

@@ -1,6 +1,6 @@
 // src/pages/ClubsPage.tsx
 import { useEffect, useRef, useState, type CSSProperties } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { Calendar, LocateFixed, MapPin, Search, X } from 'lucide-react'
 
 import { getClubs, type ApiClubListItem } from '@/lib/api'
@@ -12,6 +12,7 @@ import { LCAMap } from '@/areas/clubs/components/LCAMap'
 import { clubLocation, directionsUrl } from '@/areas/clubs/clubMap'
 import { LCA } from '@/lib/brand'
 import { FEATURES } from '@/lib/features'
+import { chromeOn } from '@/lib/nav'
 import { REGIONS } from '@/lib/regions'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -34,7 +35,7 @@ const HERO_STATS = [
 
 /**
  * Initials for a club with no image. "Chess", "Club" and friends are in
- * almost every name, so including them would make most cards read "CC" —
+ * almost every name, so including them would make most cards read "CC",
  * dropping them leaves the part that actually identifies the club: Baton
  * Rouge Chess Club becomes BR, Strategic Thoughts NOLA becomes ST.
  */
@@ -210,6 +211,20 @@ export function ClubsPage() {
   const [locateError, setLocateError] = useState<string | null>(null)
   const cardRefs = useRef(new Map<string, HTMLDivElement>())
   const mapWrapRef = useRef<HTMLDivElement>(null)
+  const { hash, key: arrival } = useLocation()
+  const chrome = chromeOn()
+
+  // With the chrome on, the footer's Club map link (/clubs#map) brings the
+  // map into view once the clubs are drawn, since the router scrolls to no
+  // hash: at once, whatever the motion setting, kept clear of the header by
+  // the wrapper's scroll margin and the page's scroll padding. A new arrival
+  // at #map, as a second press of the link, scrolls again. With the chrome
+  // off the map has no id and the page never scrolls to it, as today.
+  const mapAsked = chrome && hash === '#map'
+  const mapDrawn = !loading && !error
+  useEffect(() => {
+    if (mapAsked && mapDrawn) mapWrapRef.current?.scrollIntoView({ block: 'start' })
+  }, [mapAsked, mapDrawn, arrival])
 
   useEffect(() => {
     getClubs()
@@ -392,7 +407,7 @@ export function ClubsPage() {
         ) : (
           <div className="grid gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)] lg:gap-6">
             {/* Map: on top for phones, on the right and pinned in place on desktop. */}
-            <div ref={mapWrapRef} className="scroll-mt-20 lg:order-2">
+            <div ref={mapWrapRef} {...(chrome ? { id: 'map' } : {})} className="scroll-mt-20 lg:order-2">
               <div className="lg:sticky lg:top-20">
                 <div className="h-[320px] sm:h-[400px] lg:h-[calc(100vh-7rem)] lg:max-h-[720px] lg:min-h-[480px]">
                   <LCAMap

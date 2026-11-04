@@ -67,6 +67,15 @@ describe('first name and last initial', () => {
     expect(minor('Leo Robichaux, Jr.')).toBe('Leo R.')
   })
 
+  it('ignores V, 2nd and 3rd as well, in any case', () => {
+    expect(minor('Leo Robichaux V')).toBe('Leo R.')
+    expect(minor('Leo Robichaux 3rd')).toBe('Leo R.')
+    expect(minor('Leo Smith 3rd')).toBe('Leo S.')
+    expect(minor('Leo Smith 2nd')).toBe('Leo S.')
+    expect(minor('leo smith 3RD')).toBe('leo S.')
+    expect(minor('Robichaux, Leo, V')).toBe('Leo R.')
+  })
+
   it('reads a "Last, First" name the way US Chess writes it', () => {
     expect(minor('Robichaux, Leo')).toBe('Leo R.')
   })

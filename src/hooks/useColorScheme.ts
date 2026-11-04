@@ -1,7 +1,8 @@
 // src/hooks/useColorScheme.ts
 //
 // The page's light and dark state (src/lib/colorScheme.ts), wired to this
-// browser: localStorage, the prefers-color-scheme query and <html>. With
+// browser: localStorage, the prefers-color-scheme query, <html>, and the
+// head, where a pick of Light or Dark sets the browser bar's colour. With
 // newLook off it never touches the page.
 //
 // src/main.tsx calls startColorScheme() once when newLook is on, so the page
@@ -20,6 +21,7 @@ function pageScheme(): ColorScheme {
       root: document.documentElement,
       getStorage: () => window.localStorage,
       systemQuery: () => (typeof window.matchMedia === 'function' ? window.matchMedia(SYSTEM_DARK_QUERY) : null),
+      head: () => document.head,
     })
   }
   return scheme

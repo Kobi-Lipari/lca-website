@@ -34,13 +34,13 @@ export const DOCUMENTS: Partial<Record<ApiGovernanceDocument['category'], ApiGov
   treasurer: [doc('fx-report', 'treasurer', 'Fixture treasurer\'s report', null)],
 }
 
-const champion = (id: string, year: number, title: string, name: string): ApiChampion => ({ id, year, title, champion: name, notes: null, tournament_id: null, tournament_name: null })
+const champion = (id: string, year: number, title: string, name: string, kind: ApiChampion['kind'] = 'state'): ApiChampion => ({ id, year, title, champion: name, notes: null, tournament_id: null, tournament_name: null, kind, photo_url: null })
 
 export const CHAMPIONS: { champions: ApiChampion[]; upcoming: ApiChampionshipEvent[] } = {
   champions: [
     champion('fx-c1', 2026, 'State Champion', 'Player One'),
     champion('fx-c2', 2025, 'State Champion', 'Player Two'),
-    champion('fx-c3', 2026, 'Scholastic Champion', 'Player Three'),
+    champion('fx-c3', 2026, 'Scholastic Champion', 'Player Three', 'scholastic'),
   ],
   upcoming: [{ id: 'fx-t-state', name: 'Fixture State Championship', date: '2026-11-07', end_date: '2026-11-08', location: 'Fixture City', status: 'upcoming' as ApiChampionshipEvent['status'] }],
 }

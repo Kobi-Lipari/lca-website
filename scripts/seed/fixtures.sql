@@ -179,13 +179,13 @@ ON CONFLICT(id) DO UPDATE SET
 -- ---------------------------------------------------------------------------
 -- Champions, one of them linked to the finished event.
 -- ---------------------------------------------------------------------------
-INSERT INTO state_champions (id, year, title, champion, notes, tournament_id)
+INSERT INTO state_champions (id, year, title, champion, notes, tournament_id, kind)
 VALUES
-  ('fx-champ-1', CAST(strftime('%Y', 'now') AS INTEGER), 'Fixture State Champion', 'Avery Fixture', 'Won with 2½ of 3.', 'fx-t-done'),
-  ('fx-champ-2', CAST(strftime('%Y', 'now') AS INTEGER) - 1, 'Fixture Scholastic Champion', 'Robin Fixture', NULL, NULL)
+  ('fx-champ-1', CAST(strftime('%Y', 'now') AS INTEGER), 'Fixture State Champion', 'Avery Fixture', 'Won with 2½ of 3.', 'fx-t-done', 'state'),
+  ('fx-champ-2', CAST(strftime('%Y', 'now') AS INTEGER) - 1, 'Fixture Scholastic Champion', 'Robin Fixture', NULL, NULL, 'scholastic')
 ON CONFLICT(id) DO UPDATE SET
   year = excluded.year, title = excluded.title, champion = excluded.champion, notes = excluded.notes,
-  tournament_id = excluded.tournament_id;
+  tournament_id = excluded.tournament_id, kind = excluded.kind;
 
 -- ---------------------------------------------------------------------------
 -- News: one pinned post and one ordinary post, both published.

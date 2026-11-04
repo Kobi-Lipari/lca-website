@@ -1,10 +1,11 @@
 // src/App.tsx
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, type ReactNode } from 'react'
 import { Loader2 } from 'lucide-react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { RoleProtectedRoute } from '@/components/auth/RoleProtectedRoute'
 import { ADMIN_PANEL_ROLES, WORKSPACE_ROLES } from '@/areas/admin/roles'
+import { BottomDock, DockProvider } from '@/components/layout/BottomDock'
 import { Footer } from '@/components/layout/Footer'
 import { Navbar } from '@/components/layout/Navbar'
 import { HomePage } from '@/pages/HomePage'
@@ -12,6 +13,7 @@ import { AnnouncementBanner } from '@/components/AnnouncementBanner'
 import { ImpersonationBanner } from '@/components/ImpersonationBanner'
 import { PasswordRecoveryRedirect } from '@/components/auth/PasswordRecoveryRedirect'
 import { FEATURES } from '@/lib/features'
+import { chromeOn } from '@/lib/nav'
 const AboutPage = lazy(() => import('@/pages/AboutPage').then(m => ({ default: m.AboutPage })))
 const AnnualMeetingPage = lazy(() => import('@/pages/AnnualMeetingPage').then(m => ({ default: m.AnnualMeetingPage })))
 const AdminClubPage = lazy(() => import('@/pages/AdminClubPage').then(m => ({ default: m.AdminClubPage })))
@@ -70,26 +72,114 @@ const HERITAGE_PAGES = (
     <Route path="/governance/minutes" element={<MinutesPage />} />
   </>
 )
-function App() {
+/** The page's main, where "Skip to content" takes the focus. */
+const MAIN_ID = 'main-content'
+
+/**
+ * "Skip to content", drawn only with the chrome on (newNav and newLook,
+ * chromeOn in src/lib/nav.ts): the first thing Tab reaches on every page,
+ * before the banners and the header. It is hidden until it has the focus,
+ * then drawn at the top left of the window above the header, on a ground of
+ * its own (its ring is drawn inside it, src/index.css), inside a phone's
+ * safe area, clear of its notch and status bar. It moves the focus
+ * to the page's main without putting #main-content in the address; the href
+ * keeps it there for a browser that runs no script.
+ *
+ * The main can take the focus only from here, and only until it lets it go:
+ * a main that could always take it would take it from a click on any of its
+ * text, and the next Tab would then start from the main's top rather than
+ * from where the click was.
+ */
+function SkipLink() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <a
+      href={`#${MAIN_ID}`}
+      data-skip-link=""
+      onClick={(event) => {
+        const main = document.getElementById(MAIN_ID)
+        if (!main) return
+        event.preventDefault()
+        main.setAttribute('tabindex', '-1')
+        main.addEventListener('blur', () => main.removeAttribute('tabindex'), { once: true })
+        main.focus()
+      }}
+      className="sr-only rounded-md bg-raised text-sm font-semibold text-ink shadow-md focus:not-sr-only focus:fixed focus:left-[calc(1rem+env(safe-area-inset-left))] focus:top-[calc(1rem+env(safe-area-inset-top))] focus:z-[60] focus:px-4 focus:py-2 print:hidden"
+    >
+      Skip to content
+    </a>
+  )
+}
+
+/**
+ * The line shown while a page's code arrives. With the chrome on it holds
+ * the height of the window under the header, with today's row at its top
+ * (--header-h, which the bar drawn writes: 64 pixels for the new header,
+ * in its desktop form from 1024 pixels up and its tablet form from 768,
+ * and 56 for the phone's app bar below 768; before the bar has measured
+ * itself it stands at 64px), and
+ * it carries data-loading-line: while it shows, the footer is not drawn
+ * (src/index.css), so the footer comes with the page and neither drops out
+ * of view as a taller page arrives nor rises into view as a shorter one
+ * does (the brief's AC23). With the chrome off it is today's line.
+ */
+function LoadingLine({ tall }: { tall: boolean }) {
+  if (!tall) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex items-center justify-center gap-2 py-24 text-muted-foreground"
+      >
+        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+        <span className="text-sm">Loading…</span>
+      </div>
+    )
+  }
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      data-loading-line=""
+      className="min-h-[calc(100vh-var(--header-h,64px))] py-24 text-muted-foreground"
+    >
+      <div className="flex items-center justify-center gap-2">
+        <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+        <span className="text-sm">Loading…</span>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * The page frame, one column at least the window's height. With the chrome
+ * on, the provider of the phone's dock, src/components/layout/BottomDock.tsx,
+ * is around the whole frame and holds the one Menu sheet the bars and the
+ * tab bar share; with the chrome off the frame is today's alone.
+ */
+function PageFrame({ chrome, children }: { chrome: boolean; children: ReactNode }) {
+  const frame = <div className="flex min-h-screen flex-col">{children}</div>
+  return chrome ? <DockProvider>{frame}</DockProvider> : frame
+}
+
+/**
+ * The page. With the chrome on, the phone's dock comes after the main and
+ * before the footer, so Tab reaches the tab bar right after the page itself
+ * and the footer after the tab bar; the footer is the last thing in the page
+ * but the Menu sheet, which is drawn at the body's end. With the chrome off
+ * the page is today's.
+ */
+function App() {
+  // Read on every draw, not when the module loads, so the switches a test sets are the ones it sees.
+  const chrome = chromeOn()
+  return (
+    <PageFrame chrome={chrome}>
+      {chrome && <SkipLink />}
       <PasswordRecoveryRedirect />
       <ImpersonationBanner />
       <AnnouncementBanner />
       <Navbar />
-      <main className="flex-1">
-        <Suspense
-          fallback={
-            <div
-              role="status"
-              aria-live="polite"
-              className="flex items-center justify-center gap-2 py-24 text-muted-foreground"
-            >
-              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-              <span className="text-sm">Loading…</span>
-            </div>
-          }
-        >
+      <main className="flex-1" {...(chrome ? { id: MAIN_ID } : {})}>
+        <Suspense fallback={<LoadingLine tall={chrome} />}>
           <Routes>
             {/* ── Public ── */}
             <Route path="/" element={<HomePage />} />
@@ -121,7 +211,7 @@ function App() {
                 Board members, and GovLayout links to the rest from there. */}
             <Route path="/governance" element={<Navigate to="/governance/board" replace />} />
             <Route path="/state-champions" element={<Navigate to="/champions" replace />} />
-            {/* RulesPage retired — its content merged into /governance/bylaws */}
+            {/* RulesPage retired: its content merged into /governance/bylaws */}
             <Route path="/governance/rules" element={<Navigate to="/governance/bylaws" replace />} />
             {/* ── Protected ── */}
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
@@ -152,8 +242,9 @@ function App() {
           </Routes>
         </Suspense>
       </main>
+      {chrome && <BottomDock />}
       <Footer />
-    </div>
+    </PageFrame>
   )
 }
 export default App

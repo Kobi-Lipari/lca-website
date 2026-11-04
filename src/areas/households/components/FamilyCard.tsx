@@ -24,7 +24,7 @@ import { FAMILY_MEMBERSHIP_CHILDREN as LIMIT } from '@/lib/family'
 const STATUS: Record<string, { label: string; className: string }> = {
   active: { label: 'Member', className: 'bg-ok-100 text-ok' },
   expired: { label: 'Expired', className: 'bg-destructive/10 text-destructive' },
-  pending: { label: 'Not a member', className: 'bg-muted text-muted-foreground' },
+  none: { label: 'No family membership', className: 'bg-muted text-muted-foreground' },
 }
 
 export function FamilyCard({ planActive, setup = false }: {
@@ -203,8 +203,8 @@ export function FamilyCard({ planActive, setup = false }: {
                       })()}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', (STATUS[c.membership_status] ?? STATUS.pending).className)}>
-                        {(STATUS[c.membership_status] ?? STATUS.pending).label}
+                      <span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', (STATUS[c.membership_status] ?? STATUS.none).className)}>
+                        {(STATUS[c.membership_status] ?? STATUS.none).label}
                       </span>
                       <button type="button" onClick={() => startEdit(c)} className="p-1 text-muted-foreground hover:text-ink" aria-label={`Edit ${c.full_name}`}>
                         <Pencil className="size-4" />

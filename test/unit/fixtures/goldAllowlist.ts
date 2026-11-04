@@ -31,8 +31,9 @@
 // phone sheet and the phone tab bar (section 1 and WS01's scope-aware guard):
 // #705718 as the About menu's "You are here" label, #866a1e as text at 13px
 // or more on the sheet's #fbfaf6 row, and #866a1e as the current tab's top
-// bar. Those parts are not built yet, so each entry matches nothing; the
-// guard says so, and fails when one starts to match without its context.
+// bar. The About menu (WS02 step 5), the sheet (WS02 step 6) and the tab bar
+// (WS02 step 7) are built, and each entry matches its one use, in its
+// context. The guard fails when a use does not keep to its context.
 
 export interface GoldAllowEntry {
   /** The TSX file, relative to the repository root. */
@@ -89,15 +90,6 @@ export const GOLD_BADGE_ALLOWLIST: GoldBadgeEntry[] = [
     readBy: 'meta.className',
     reason:
       'The words of six actions\' tags in ACTION_META (a membership override, a changed pairing, a withdrawn and a reinstated player, a changed payment status and a members export), each on a 20 per cent gold tint, drawn in the audit log\'s rows on its card. Each row looks its tag up by the entry\'s action, which no reading of the JSX can follow to a ground.',
-  },
-  {
-    file: 'src/areas/admin/components/MembersTable.tsx',
-    class: 'text-gold-ink-badge',
-    count: 1,
-    ground: 'light',
-    readBy: 'statusBadge(m.membership_status)',
-    reason:
-      'The words of the Pending membership tag, on a 15 per cent gold tint, which statusBadge() gives the members table\'s status cell, drawn on the light admin and workspace pages. The cell looks the tag up by the member\'s status inside a function, which no reading of the JSX can follow to a ground.',
   },
   {
     file: 'src/areas/admin/components/TournamentList.tsx',
@@ -186,6 +178,6 @@ export const WS02_GOLD: Ws02GoldEntry[] = [
     file: 'src/components/layout/BottomTabs.tsx',
     use: 'bar',
     reason:
-      'The phone tab bar marks the current tab with a 3px top bar in #866a1e, a line and not words. The tab\'s label stays navy, and brand gold #c8a94a is never its text.',
+      'The phone tab bar marks the current tab with a 3px top bar in #866a1e, a line and not words, on the tab bar\'s surface (bg-surface, white in the light look) above its line in the look\'s hairline token (--hairline, #e5e7ed), 5.13:1 on the white. The tab\'s label stays navy, and brand gold #c8a94a is never its text.',
   },
 ]

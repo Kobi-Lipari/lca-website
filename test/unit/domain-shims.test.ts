@@ -179,6 +179,10 @@ const DEFINITIONS: Array<[string, string]> = [
   ['TIER_PRICES', ''],
   ['publicName', 'domain/households/publicName.ts'],
   ['firstNameLastInitial', 'domain/households/publicName.ts'],
+  // The search's normaliser and its match (WS02 step 9), read by the search
+  // endpoint and, from WS02 step 11, by the site's matching of its own pages.
+  ['normalizeSearchText', 'domain/format/searchText.ts'],
+  ['matchesSearch', 'domain/format/searchText.ts'],
 ]
 
 describe('each rule is defined once, in domain/', () => {

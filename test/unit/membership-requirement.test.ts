@@ -71,7 +71,7 @@ describe('needsMembershipAtCheckout', () => {
   const clubOn = { club_id: 'club-1', requires_lca_membership: 1, date: '2026-10-24' }
   const member = { membership_status: 'active', membership_expiry: '2027-06-30' }
   const lapsesBefore = { membership_status: 'active', membership_expiry: '2026-10-01' }
-  const nonMember = { membership_status: 'pending', membership_expiry: null }
+  const nonMember = { membership_status: 'none', membership_expiry: null }
 
   it('asks a player without a current membership to add one for an event that requires it', () => {
     expect(needsMembershipAtCheckout(nonMember, lcaRun)).toBe(true)

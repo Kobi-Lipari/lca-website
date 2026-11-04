@@ -104,7 +104,7 @@ describe('walk-in guest, guards and body edges', () => {
     expect(res.status).toBe(201)
     const body = await expectContract(res, walkIn.response)
     expect(await env.DB.prepare('SELECT full_name, uscf_id, uscf_rating, role, membership_status, email FROM members WHERE id = ?').bind(body.guestId).first())
-      .toEqual({ full_name: 'Door Player', uscf_id: '12345678', uscf_rating: 1432, role: 'guest', membership_status: 'pending', email: `${body.guestId}@walkin.lca.invalid` })
+      .toEqual({ full_name: 'Door Player', uscf_id: '12345678', uscf_rating: 1432, role: 'guest', membership_status: 'none', email: `${body.guestId}@walkin.lca.invalid` })
     expect(body.registration).toMatchObject({ rating_at_entry: 1432, payment_status: 'pending' })
     expect(await env.DB.prepare('SELECT status FROM payments WHERE reference_id = ?').bind(body.registration.id).first()).toEqual({ status: 'pending' })
     expect(emailOutbox).toHaveLength(0)
@@ -223,7 +223,7 @@ describe('waitlist offers read the sections table', () => {
     // Left in the row and not read: there is no member price.
     await setColumns(tournamentId, { member_discount: 5 })
     const member = await waitlisted(tournamentId, 'Ghost', { membershipStatus: 'active' })
-    const guest = await waitlisted(tournamentId, 'Ghost', { membershipStatus: 'pending' })
+    const guest = await waitlisted(tournamentId, 'Ghost', { membershipStatus: 'none' })
     expect(await expectContract(await offerSpot(admin, tournamentId, member.reg), offer.response)).toEqual({ success: true, amount: 40 })
     expect(await expectContract(await offerSpot(admin, tournamentId, guest.reg), offer.response)).toEqual({ success: true, amount: 40 })
   })
