@@ -105,6 +105,8 @@ export interface TournamentRow {
   report_settings: string | null
   is_state_championship: number
   requires_lca_membership: number
+  /** When the D22 notice went to the LCA admins, at the first publish; null until then (0059). */
+  review_notified_at: string | null
 }
 
 export interface RegistrationRow {

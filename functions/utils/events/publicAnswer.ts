@@ -5,7 +5,8 @@
 // (the Phase 0 trim of the public answers, D15 and D29):
 // - created_by, keep_apart and report_settings, which no public page reads,
 //   are answered only to the event's managers, with no switch (brief 0.2:
-//   a field no page reads needs none);
+//   a field no page reads needs none), and review_notified_at with them
+//   since WS08 step 2 (MANAGER_ONLY_TOURNAMENT_KEYS);
 // - once ROSTER_SHORT_NAMES is set, the detail's roster writes each entrant
 //   under 18 as first name and last initial (publicName in
 //   domain/households/publicName.ts); the standings and the prizes are
@@ -39,8 +40,8 @@ export type PublicTournamentAnswer<Answer> = Omit<Answer, ManagerOnlyKey> & Part
 /**
  * A tournament as a public answer gives it: the answer toTournamentResponse
  * made, unchanged for someone who manages the event, and otherwise without
- * created_by, keep_apart and report_settings, the keys left out rather than
- * set to null. The answer handed in is not changed.
+ * the keys MANAGER_ONLY_TOURNAMENT_KEYS names, left out rather than set to
+ * null. The answer handed in is not changed.
  */
 export function publicTournamentAnswer<Answer extends object>(answer: Answer, manages: boolean): PublicTournamentAnswer<Answer> {
   if (manages) return answer

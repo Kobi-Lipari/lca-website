@@ -181,28 +181,32 @@ describe('GET /api/tournaments/[id] contract', () => {
     }
   })
 
-  it('role safety: created_by, keep_apart and report_settings go to the event\'s managers alone; a visitor, a plain member and another club\'s rep get none of the three', async () => {
+  it('role safety: created_by, keep_apart, report_settings and review_notified_at go to the event\'s managers alone; a visitor, a plain member and another club\'s rep get none of the four', async () => {
     const clubId = await seedClub()
     const otherClub = await seedClub()
     const creator = await seedMember({ role: 'club_rep', clubId })
     const tournamentId = await seedTournament({ clubId })
     const settings = JSON.stringify({ affiliateId: 'A6000001' })
-    await env.DB.prepare(`UPDATE tournaments SET created_by = ?, keep_apart = 'family_club', report_settings = ? WHERE id = ?`)
-      .bind(creator, settings, tournamentId).run()
-    const managersOnly = ['created_by', 'keep_apart', 'report_settings']
+    const notified = '2026-11-03 21:00:00'
+    await env.DB.prepare(`UPDATE tournaments SET created_by = ?, keep_apart = 'family_club', report_settings = ?, review_notified_at = ? WHERE id = ?`)
+      .bind(creator, settings, notified, tournamentId).run()
+    // The trim's three keys, and review_notified_at, which WS08 step 2 added.
+    const managersOnly = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at']
 
     for (const as of [undefined, await seedMember(), await seedMember({ role: 'club_rep', clubId: otherClub })]) {
       const result = await invoke(tournamentGet, { as, params: { id: tournamentId } })
       expect(result.status, String(as)).toBe(200)
       const body = await expectContract(result, contract.response)
       for (const key of managersOnly) expect(Object.hasOwn(body.tournament, key), `${String(as)} ${key}`).toBe(false)
-      expect(await result.response.text()).not.toContain('A6000001')
+      const text = await result.response.text()
+      expect(text).not.toContain('A6000001')
+      expect(text).not.toContain(notified)
     }
     const director = await seedDirector()
     await seedTournamentDirector(tournamentId, director)
     for (const as of [await seedAdmin(), creator, director, await seedMember({ role: 'lca_observer' })]) {
       const body = await expectContract(await invoke(tournamentGet, { as, params: { id: tournamentId } }), contract.response)
-      expect(body.tournament, as).toMatchObject({ created_by: creator, keep_apart: 'family_club', report_settings: settings })
+      expect(body.tournament, as).toMatchObject({ created_by: creator, keep_apart: 'family_club', report_settings: settings, review_notified_at: notified })
     }
   })
 })

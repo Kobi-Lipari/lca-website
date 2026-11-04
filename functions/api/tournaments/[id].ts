@@ -25,9 +25,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
   // Who is asking, read once. The people who manage the event (an admin, an
   // observer, the organizing club's rep or an assigned director) may open it
-  // while it is a hidden draft, and are the only ones answered created_by,
-  // keep_apart and report_settings and, once ROSTER_SHORT_NAMES is set, every
-  // entrant's full name in the roster.
+  // while it is a hidden draft, and are the only ones answered the keys
+  // MANAGER_ONLY_TOURNAMENT_KEYS names and, once ROSTER_SHORT_NAMES is set,
+  // every entrant's full name in the roster.
   let member: MemberRow | null = null
   let manages = false
   try {
@@ -71,7 +71,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     }
   } catch { /* the page shows no entry of the viewer's own */ }
 
-  // Public roster: payment_status is deliberately NOT selected — whether a
+  // Public roster: payment_status is deliberately NOT selected, since whether a
   // named individual has paid is between them and the organizer. Withdrawn
   // players are included (with the flag) so displays can grey/exclude them.
   // guardian_link and entry_marked say whether the entrant is under 18 (D15):
@@ -111,7 +111,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .bind(tournamentId)
     .all()
 
-  // Single standings brain — shared with the manage endpoint
+  // Single standings brain, shared with the manage endpoint
   // It reads the full roster, before publicRoster writes the answer's, so the
   // standings and the prizes keep full names (D3).
   const standings = computeStandings(

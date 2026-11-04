@@ -119,7 +119,7 @@ describe('GET /api/tournaments contract', () => {
     }
   })
 
-  it('role safety: created_by, keep_apart and report_settings only on the rows of events the viewer manages', async () => {
+  it('role safety: created_by, keep_apart, report_settings and review_notified_at only on the rows of events the viewer manages', async () => {
     const clubId = await seedClub()
     const otherClub = await seedClub()
     const ours = await seedTournament({ clubId })
@@ -131,14 +131,15 @@ describe('GET /api/tournaments contract', () => {
     }
     const director = await seedMember({ role: 'tournament_director' })
     await seedTournamentDirector(directed, director)
-    const managersOnly = ['created_by', 'keep_apart', 'report_settings']
+    // The trim's three keys, and review_notified_at, which WS08 step 2 added.
+    const managersOnly = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at']
 
-    /** The events among the three whose row carries the three keys; a row carries all three or none. */
+    /** The events among the three whose row carries the four keys; a row carries all four or none. */
     const carried = async (as?: string) => {
       const body = await expectContract(await invoke(tournamentsGet, { as, path: '/api/tournaments' }), contract.response)
       const rows = body.tournaments.filter((t) => [ours, theirs, directed].includes(t.id))
       expect(rows, String(as)).toHaveLength(3)
-      for (const t of rows) expect([0, 3], `${String(as)} ${t.id}`).toContain(managersOnly.filter((key) => Object.hasOwn(t, key)).length)
+      for (const t of rows) expect([0, 4], `${String(as)} ${t.id}`).toContain(managersOnly.filter((key) => Object.hasOwn(t, key)).length)
       return rows.filter((t) => Object.hasOwn(t, 'keep_apart')).map((t) => t.id).sort()
     }
     expect(await carried()).toEqual([])

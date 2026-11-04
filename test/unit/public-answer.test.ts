@@ -1,9 +1,10 @@
 // test/unit/public-answer.test.ts
 //
 // The Phase 0 trim of the public answers, piece by piece, with no database:
-// - publicTournamentAnswer leaves created_by, keep_apart and report_settings
-//   out of a tournament answer for anyone who does not manage the event, the
-//   keys gone rather than null, and hands a manager the answer as it was;
+// - publicTournamentAnswer leaves created_by, keep_apart, report_settings
+//   and review_notified_at out of a tournament answer for anyone who does
+//   not manage the event, the keys gone rather than null, and hands a manager
+//   the answer as it was;
 // - eventsManagedBy, the list's manager rule, gives the same people as the
 //   detail's (an admin, an observer, the organizing club's rep and an
 //   assigned director, a guest never) and reads the assignments once;
@@ -11,7 +12,7 @@
 //   that confirmed a scholastic range) as first name and last initial when
 //   it is asked to shorten, and leaves every name as stored when it is not;
 // - publicClubAnswer leaves the club's contact_email out once told to;
-// - the contracts: the three keys optional on the public list row and the
+// - the contracts: the four keys optional on the public list row and the
 //   public detail and required on the admin's answers, contact_email
 //   optional on the club page's answer alone, and no officer's email;
 // - the daily-emails worker, which deploys on any change under
@@ -33,13 +34,14 @@ import {
 import { publicClubAnswer } from '../../functions/utils/clubs/publicAnswer'
 import { eventsManagedBy, publicRoster, publicTournamentAnswer, type RosterRead } from '../../functions/utils/events/publicAnswer'
 
-const MANAGERS_ONLY = ['created_by', 'keep_apart', 'report_settings']
+// The trim's three keys, and review_notified_at, which WS08 step 2 added.
+const MANAGERS_ONLY = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at']
 
-/** A tournament answer with the three keys and a few others. */
-const answer = () => ({ id: 't1', name: 'Fall Open', club_id: 'c1', created_by: 'm9', keep_apart: 'family', report_settings: '{"affiliateId":"A6000001"}', sections: [] })
+/** A tournament answer with the four keys and a few others. */
+const answer = () => ({ id: 't1', name: 'Fall Open', club_id: 'c1', created_by: 'm9', keep_apart: 'family', report_settings: '{"affiliateId":"A6000001"}', review_notified_at: '2026-11-03 21:00:00', sections: [] })
 
 describe('publicTournamentAnswer', () => {
-  it('names the three keys the contracts make optional, in one list', () => {
+  it('names the four keys the contracts make optional, in one list', () => {
     expect([...MANAGER_ONLY_TOURNAMENT_KEYS]).toEqual(MANAGERS_ONLY)
   })
 
@@ -48,7 +50,7 @@ describe('publicTournamentAnswer', () => {
     expect(publicTournamentAnswer(given, true)).toBe(given)
   })
 
-  it('leaves the three keys out for anyone else, not as null, and keeps every other key', () => {
+  it('leaves the four keys out for anyone else, not as null, and keeps every other key', () => {
     const trimmed = publicTournamentAnswer(answer(), false)
     for (const key of MANAGERS_ONLY) expect(Object.hasOwn(trimmed, key), key).toBe(false)
     expect(trimmed).toEqual({ id: 't1', name: 'Fall Open', club_id: 'c1', sections: [] })
@@ -61,7 +63,7 @@ describe('publicTournamentAnswer', () => {
     expect(given).toEqual(answer())
   })
 
-  it('is a no-op on an answer that carries none of the three', () => {
+  it('is a no-op on an answer that carries none of the four', () => {
     expect(publicTournamentAnswer({ id: 't1' }, false)).toEqual({ id: 't1' })
   })
 })
@@ -202,7 +204,7 @@ const optionalKeys = (shape: Record<string, { safeParse: (v: unknown) => { succe
   Object.keys(shape).filter((key) => shape[key].safeParse(undefined).success).sort()
 
 describe('the contracts', () => {
-  it('make the three optional on the public list row and the public detail, and nothing else', () => {
+  it('make the four optional on the public list row and the public detail, and nothing else', () => {
     expect(optionalKeys(tournamentListItemSchema.shape)).toEqual(MANAGERS_ONLY)
     expect(optionalKeys(tournamentDetailSchema.shape)).toEqual(MANAGERS_ONLY)
   })
@@ -212,8 +214,8 @@ describe('the contracts', () => {
     expect(optionalKeys(tournamentManageResponseSchema.shape.tournament.shape)).toEqual([])
   })
 
-  it('keep the same keys in the public row as before, 45, the three among them', () => {
-    expect(Object.keys(tournamentListItemSchema.shape)).toHaveLength(45)
+  it('keep 46 keys in the public row, the four among them', () => {
+    expect(Object.keys(tournamentListItemSchema.shape)).toHaveLength(46)
     expect(Object.keys(tournamentListItemSchema.shape)).toEqual(expect.arrayContaining(MANAGERS_ONLY))
   })
 

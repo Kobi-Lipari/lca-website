@@ -5,16 +5,16 @@
 // assumed, Q14 and Q38). public-answer-trim.test.ts and the role-safety
 // cases in contracts/ hold the main rules; this file holds what they leave
 // open:
-// - who is answered created_by, keep_apart and report_settings, written out
-//   viewer by viewer rather than read off canManageTournament: a session
-//   that fails, an auditor, a member of the organizing club, a director of
-//   another event, the event's creator once they no longer run it, a guest
-//   with an assignment, a rep who directs another club's event; the hidden
-//   draft; and a manager answered the stored nulls where anyone else gets
-//   no key at all;
+// - who is answered the manager-only keys, written out viewer by viewer
+//   rather than read off canManageTournament: a session that fails, an
+//   auditor, a member of the organizing club, a director of another event,
+//   the event's creator once they no longer run it, a guest with an
+//   assignment, a rep who directs another club's event; the hidden draft;
+//   and a manager answered the stored nulls where anyone else gets no key
+//   at all;
 // - the manage page's answer, which only the event's managers reach, keeps
-//   the three and every full name with both constants set, and turns
-//   everyone else away with none of it;
+//   the manager-only keys and every full name with both constants set, and
+//   turns everyone else away with none of it;
 // - with CLUB_EMAIL_HIDDEN set no public answer carries a club's address
 //   (the club list, the club page's answer, the search and the page's link
 //   preview), while the club's admin page still answers it to the club's
@@ -75,15 +75,16 @@ const detailContract = contracts['tournaments/[id]'].GET
 const manageContract = contracts['admin/tournaments/[id]/manage'].GET
 const clubContract = contracts['clubs/[id]'].GET
 
-const MANAGERS_ONLY = ['created_by', 'keep_apart', 'report_settings'] as const
+// The trim's three keys, and review_notified_at, which WS08 step 2 added.
+const MANAGERS_ONLY = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at'] as const
 /** The event's US Chess affiliate, a word no other part of any answer holds. */
 const AFFILIATE = 'A6000417'
 const SETTINGS = JSON.stringify({ affiliateId: AFFILIATE })
 
-/** Which of the three an answer's tournament carries, in the list's order. */
+/** Which of the four an answer's tournament carries, in the list's order. */
 const keysOf = (tournament: object) => MANAGERS_ONLY.filter((key) => Object.hasOwn(tournament, key))
 
-// ── Who is answered the three ────────────────────────────────────────
+// ── Who is answered the manager-only keys ────────────────────────────
 
 interface Viewer {
   label: string
@@ -94,10 +95,10 @@ interface Viewer {
 }
 
 /**
- * A club with a visible event and a hidden draft, both carrying the three
- * fields, another club with an event of its own, and sixteen kinds of
- * viewer. The rep who made the two has since handed the club over and is a
- * plain member again.
+ * A club with a visible event and a hidden draft, both carrying the
+ * manager-only keys, another club with an event of its own, and sixteen
+ * kinds of viewer. The rep who made the two has since handed the club over
+ * and is a plain member again.
  */
 async function seedEventsAndViewers() {
   const clubId = await seedClub({ name: 'Bayou Pawns' })
@@ -140,8 +141,8 @@ const signIn = (viewer: Viewer) => ({ as: viewer.as, headers: viewer.headers })
 const listed = async (viewer: Viewer) =>
   expectContract(await invoke(tournamentsGet, { ...signIn(viewer), path: '/api/tournaments' }), listContract.response)
 
-describe('who is answered created_by, keep_apart and report_settings, viewer by viewer', () => {
-  it('a visible event: both answers carry the three, as stored, to its managers alone, and no one else\'s answer holds a trace of them', async () => {
+describe('who is answered the manager-only keys, viewer by viewer', () => {
+  it('a visible event: both answers carry the manager-only keys, as stored, to its managers alone, and no one else\'s answer holds a trace of them', async () => {
     const { creator, event, viewers } = await seedEventsAndViewers()
     for (const viewer of viewers) {
       const row = (await listed(viewer)).tournaments.find((t) => t.id === event)
@@ -165,7 +166,7 @@ describe('who is answered created_by, keep_apart and report_settings, viewer by 
     }
   })
 
-  it('a hidden draft: its managers find it in the list and the detail with the three; everyone else finds it in neither, and its 404 holds none of it', async () => {
+  it('a hidden draft: its managers find it in the list and the detail with the manager-only keys; everyone else finds it in neither, and its 404 holds none of it', async () => {
     const { creator, draft, viewers } = await seedEventsAndViewers()
     for (const viewer of viewers) {
       const row = (await listed(viewer)).tournaments.find((t) => t.id === draft)
@@ -238,7 +239,7 @@ describe('who is answered created_by, keep_apart and report_settings, viewer by 
 // ── The manage page's answer ─────────────────────────────────────────
 
 describe('the manage page\'s answer, which only the event\'s managers reach', () => {
-  it('keeps the three and every full name with both constants set, for each kind of manager, and turns everyone else away with none of it', async () => {
+  it('keeps the manager-only keys and every full name with both constants set, for each kind of manager, and turns everyone else away with none of it', async () => {
     const clubId = await seedClub()
     const otherClub = await seedClub()
     const rep = await seedMember({ role: 'club_rep', clubId })
