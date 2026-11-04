@@ -84,7 +84,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // child's entries go to the person who manages them.
   await context.env.DB.prepare(
     `INSERT INTO members (id, email, full_name, uscf_id, membership_status, role, club_id, guardian_id)
-     VALUES (?, ?, ?, ?, 'pending', 'member', ?, ?)`,
+     VALUES (?, ?, ?, ?, 'none', 'member', ?, ?)`,
   )
     .bind(id, parent.email, fullName, uscfId, parent.club_id ?? null, parent.id)
     .run()

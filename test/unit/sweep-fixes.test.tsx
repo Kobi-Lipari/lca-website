@@ -262,7 +262,7 @@ const CLUB: ApiClubDetail = {
 async function renderClubPage(color: string) {
   api.getClub.mockResolvedValue({
     club: { ...CLUB, color },
-    officers: [{ role: 'president', full_name: 'Avery Fixture', email: 'avery.fixture@example.org' }],
+    officers: [{ role: 'president', full_name: 'Avery Fixture' }],
     tournaments: [],
     news: [{ id: 'n1', title: 'Fixture club news', news_date: 'Sat, Oct 24, 2026', excerpt: 'A made-up note.' }],
   })

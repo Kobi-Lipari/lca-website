@@ -186,14 +186,15 @@ export const scheduleInputSchema = z.looseObject({
 const wallClockTextSchema = z.string()
 
 /**
- * One row of GET /api/tournaments: every column of tournaments, with the
- * live sections from tournament_sections, round_schedule as the primary
- * schedule's rounds and the live schedules from tournament_schedules
- * (toTournamentResponse in functions/utils/events/sectionsRepo.ts), plus
- * the club's name and colour from the join. custom_details and
- * report_settings stay raw JSON text on this endpoint.
+ * One row of GET /api/tournaments as the event's managers are answered it:
+ * every column of tournaments, with the live sections from
+ * tournament_sections, round_schedule as the primary schedule's rounds and
+ * the live schedules from tournament_schedules (toTournamentResponse in
+ * functions/utils/events/sectionsRepo.ts), plus the club's name and colour
+ * from the join. custom_details and report_settings stay raw JSON text on
+ * this endpoint.
  */
-export const tournamentListItemSchema = z.strictObject({
+const managedTournamentListItemSchema = z.strictObject({
   id: idSchema,
   name: z.string(),
   location: z.string(),
@@ -242,6 +243,28 @@ export const tournamentListItemSchema = z.strictObject({
   club_name: z.string().nullable(),
   club_color: z.string().nullable(),
 })
+
+/**
+ * The columns of a tournament that the two public answers, GET
+ * /api/tournaments and GET /api/tournaments/[id], carry only for the people
+ * who manage the event (an LCA admin, an observer, the organizing club's rep
+ * and an assigned director): created_by, keep_apart and report_settings.
+ * For anyone else, signed out included, the answer leaves the three keys
+ * out rather than sending them empty. The admin answers always carry them.
+ */
+export const MANAGER_ONLY_TOURNAMENT_KEYS = ['created_by', 'keep_apart', 'report_settings'] as const
+
+/** The same three keys as the mask zod's partial() takes. */
+const managerOnly = Object.fromEntries(MANAGER_ONLY_TOURNAMENT_KEYS.map((key) => [key, true])) as {
+  [Key in (typeof MANAGER_ONLY_TOURNAMENT_KEYS)[number]]: true
+}
+
+/**
+ * One row of GET /api/tournaments as anyone is answered it: the row its
+ * managers get, with created_by, keep_apart and report_settings present only
+ * when the viewer manages that event.
+ */
+export const tournamentListItemSchema = managedTournamentListItemSchema.partial(managerOnly)
 
 /** A prize slot as the setup sends it. Loose, like every request schema. */
 const prizeSlotInputSchema = z.looseObject({
@@ -337,9 +360,10 @@ export const sectionListItemSchema = z.union([sectionNameSchema, sectionSchema])
  * settings save return it: every column of tournaments, with its live
  * sections from the table, ids included, round_schedule as the primary
  * schedule's rounds and the live schedules (toTournamentResponse).
- * custom_details and report_settings stay raw JSON text.
+ * custom_details and report_settings stay raw JSON text. Every key is
+ * required: the admin answers go to the event's managers alone.
  */
-export const adminTournamentSchema = tournamentListItemSchema
+export const adminTournamentSchema = managedTournamentListItemSchema
   .omit({ club_name: true, club_color: true })
 
 export const adminTournamentResponseSchema = z.strictObject({
@@ -493,8 +517,11 @@ export const prizeAwardSchema = z.strictObject({
  * the live sections from the table (archived ones are not offered for
  * entry), round_schedule and the schedules from the schedule tables,
  * custom_details read into an array, and how many players wait for a spot.
+ * created_by, keep_apart and report_settings are there only when the viewer
+ * manages the event (MANAGER_ONLY_TOURNAMENT_KEYS).
  */
 export const tournamentDetailSchema = adminTournamentSchema
+  .partial(managerOnly)
   .omit({ custom_details: true })
   .extend({
     custom_details: storedJsonListSchema,
@@ -504,8 +531,12 @@ export const tournamentDetailSchema = adminTournamentSchema
 /**
  * GET /api/tournaments/[id] (getTournament). Public for a visible event;
  * a hidden one answers 404 unless the viewer can manage it or observes.
- * The roster leaves out payment status and the waitlist. Prizes are
- * published once the event is completed, and [] before.
+ * The roster leaves out payment status and the waitlist. Once
+ * ROSTER_SHORT_NAMES is set (functions/utils/events/publicAnswer.ts), an
+ * under-18 entrant's full_name is written as first name and last initial
+ * for anyone who does not manage the event, in the roster alone; the
+ * standings and the prizes keep full names (D3). Prizes are published once
+ * the event is completed, and [] before.
  */
 export const tournamentDetailResponseSchema = z.strictObject({
   tournament: tournamentDetailSchema,

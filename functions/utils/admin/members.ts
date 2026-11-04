@@ -41,7 +41,7 @@ export async function upsertMemberFromAuth(
     await db
       .prepare(
         `INSERT INTO members (id, email, full_name, uscf_id, membership_status, role)
-         VALUES (?, ?, ?, ?, 'pending', 'member')`,
+         VALUES (?, ?, ?, ?, 'none', 'member')`,
       )
       .bind(user.id, email, fullName, uscfId)
       .run()

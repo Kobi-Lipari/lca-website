@@ -1,6 +1,6 @@
 // functions/api/admin/champions.ts
 //
-// POST: add one champion { year, title, champion, notes?, tournamentId? },
+// POST: add one champion { year, title, champion, notes?, tournamentId?, kind?, photoUrl? },
 // or many at once { rows: [...] } (for entering past years in bulk).
 // Admins only; observers read the public list like everyone else.
 import type { Env } from '../../types'
@@ -26,7 +26,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     rows.push(c.row)
   }
   await context.env.DB.batch(rows.map((r) => context.env.DB.prepare(
-    `INSERT INTO state_champions (year, title, champion, notes, tournament_id) VALUES (?, ?, ?, ?, ?)`,
-  ).bind(r.year, r.title, r.champion, r.notes, r.tournamentId)))
+    `INSERT INTO state_champions (year, title, champion, notes, tournament_id, kind, photo_url) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+  ).bind(r.year, r.title, r.champion, r.notes, r.tournamentId, r.kind, r.photoUrl)))
   return jsonResponse({ added: rows.length }, 201)
 }

@@ -25,6 +25,9 @@ export interface CreatedStripeSession {
   customerEmail: string | null
   /** Every line on the checkout (one for a single entry, several for a family). */
   lineItems: Array<{ name: string; amountCents: number }>
+  /** Where Stripe sends the payer back to once they have paid, and where if they cancel. */
+  successUrl: string | null
+  cancelUrl: string | null
 }
 
 /** Every email "sent" via Resend during the current test file. */
@@ -57,7 +60,9 @@ export const emailBehavior: {
 export const stripeBehavior: {
   succeed: boolean
   sessionPaymentStatus: 'paid' | 'unpaid' | 'no_payment_required'
-} = { succeed: true, sessionPaymentStatus: 'paid' }
+  /** What a retrieved Checkout Session says about the page itself: still open, finished, or lapsed. */
+  sessionStatus: 'open' | 'complete' | 'expired'
+} = { succeed: true, sessionPaymentStatus: 'paid', sessionStatus: 'complete' }
 
 /**
  * Extra user_metadata for the stubbed Supabase user. Real accounts carry a
@@ -144,6 +149,7 @@ export function resetHarness(): void {
   emailBehavior.failFor = null
   stripeBehavior.succeed = true
   stripeBehavior.sessionPaymentStatus = 'paid'
+  stripeBehavior.sessionStatus = 'complete'
   authBehavior.extraMetadata = {}
   uscfBehavior.reachable = true
   uscfBehavior.members = {}
@@ -267,10 +273,14 @@ export function installFetchInterceptor(): void {
       // Retrieving one session: GET /v1/checkout/sessions/{id}
       const PREFIX = '/v1/checkout/sessions/'
       if (request.method === 'GET' && url.pathname.startsWith(PREFIX)) {
+        const id = url.pathname.slice(PREFIX.length)
         return Response.json({
-          id: url.pathname.slice(PREFIX.length),
+          id,
           payment_status: stripeBehavior.sessionPaymentStatus,
           payment_intent: 'pi_from_retrieve',
+          status: stripeBehavior.sessionStatus,
+          // Stripe hands the page's address back only while it can still be used.
+          url: stripeBehavior.sessionStatus === 'open' ? `https://checkout.stripe.test/${id}` : null,
         })
       }
 
@@ -293,6 +303,8 @@ export function installFetchInterceptor(): void {
             form.get('line_items[0][price_data][product_data][name]') ?? '',
           clientReferenceId: form.get('client_reference_id'),
           customerEmail: form.get('customer_email'),
+          successUrl: form.get('success_url'),
+          cancelUrl: form.get('cancel_url'),
           lineItems: [...form.keys()]
             .map((k) => k.match(/^line_items\[(\d+)\]\[quantity\]$/)?.[1])
             .filter((i): i is string => i !== undefined)

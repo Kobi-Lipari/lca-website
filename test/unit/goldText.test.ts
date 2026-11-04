@@ -57,9 +57,12 @@
 //   color property, which is words whatever its string holds), text anywhere
 //   but the phone sheet's "You are here" on its #fbfaf6 row, or a line or
 //   fill anywhere but the phone tab bar's current tab.
-// The last two are WS02's parts, listed in the fixture as WS02_GOLD. They are
-// not built yet, so each entry matches nothing today, which the guard says;
-// when one is built it must keep to its context or the guard fails.
+// The last two are WS02's parts, listed in the fixture as WS02_GOLD. WS02
+// step 5 built the About menu, WS02 step 6 the Menu sheet and WS02 step 7
+// the tab bar, whose entries each match their one use, in its context: the
+// tab bar's is the current tab's bar, a line and not words, on the tab
+// bar's surface above the look's hairline. Each built part must keep to its
+// context or the guard fails.
 //
 // Every failure is planted in a temporary tree first, with the class names
 // put together when the test runs, so Tailwind, which reads this file, builds
@@ -735,10 +738,13 @@ describe('the gold guard on the tree', () => {
     const uses = goldUses(result.tree)
     const gold = uses.filter((u) => u.utility === GOLD)
     const ink = uses.filter((u) => u.utility === GOLD_INK)
-    // 53 brand gold classes in 21 files: 51 on navy or a dark ground, and the 2 the reading cannot place, in the allowlist.
-    expect(gold).toHaveLength(53)
-    expect(new Set(gold.map((u) => u.file)).size).toBe(21)
-    expect(gold.filter((u) => u.ground === 'navy')).toHaveLength(51)
+    // 54 brand gold classes in 22 files: 52 on navy or a dark ground, and the 2 the reading cannot place, in the allowlist.
+    // WS02 step 8's new footer adds the 54th, its headings' one class, on the footer's navy (bg-(--color-brand-navy),
+    // which the guard reads as navy since that step); WS01's 53 in 21 files are as they were.
+    expect(gold).toHaveLength(54)
+    expect(new Set(gold.map((u) => u.file)).size).toBe(22)
+    expect(gold.filter((u) => u.ground === 'navy')).toHaveLength(52)
+    expect(gold.filter((u) => u.file === 'src/components/layout/SiteFooter.tsx').map((u) => u.ground)).toEqual(['navy'])
     expect(gold.filter((u) => u.ground === 'unplaced').map((u) => `${u.file}:${u.line}`)).toEqual(['src/components/StatusBadge.tsx:28', 'src/pages/TournamentDetailPage.tsx:39'])
     expect(gold.filter((u) => u.ground === 'light')).toEqual([])
     // Every text-gold-ink is on a light ground: the 82 step 25 wrote, and the word beside the News page's pin under the new look.
@@ -754,10 +760,13 @@ describe('the gold guard on the tree', () => {
     // clubTextColor gives the gold-ink token for brand gold, and each of the five sits on a light ground.
     expect(result.styleInk).toEqual([
       'src/pages/AdminClubPage.tsx:406 the style colour color: clubTextColor(color) -> light',
-      'src/pages/ClubDetailPage.tsx:239 the style colour color: textColor -> light',
-      'src/pages/ClubDetailPage.tsx:293 the style colour color: textColor -> light',
-      'src/pages/ClubDetailPage.tsx:335 the style colour color: textColor -> light',
-      'src/pages/ClubsPage.tsx:74 the style colour color: clubTextColor(club.color) -> light',
+      // Lines 239, 293 and 335 until the Phase 0 trim, whose switch import, its
+      // reading and the contact link's branches above them move them to 248, 302 and 349.
+      'src/pages/ClubDetailPage.tsx:248 the style colour color: textColor -> light',
+      'src/pages/ClubDetailPage.tsx:302 the style colour color: textColor -> light',
+      'src/pages/ClubDetailPage.tsx:349 the style colour color: textColor -> light',
+      // Line 74 until WS02 step 8, whose one import line among the page's imports moves it to 75.
+      'src/pages/ClubsPage.tsx:75 the style colour color: clubTextColor(club.color) -> light',
     ])
     // The five places a club's colour is words, which were brand gold for a club that had not picked a colour.
     expect(read('src/pages/ClubDetailPage.tsx').match(/style=\{\{ color: textColor \}\}/g)).toHaveLength(3)
@@ -766,14 +775,15 @@ describe('the gold guard on the tree', () => {
     expect(read('src/pages/AdminClubPage.tsx')).toContain('color: clubTextColor(color),')
   })
 
-  it('places every badge and pill token on its kind of ground: a badge\'s dark gold on light grounds, a pill\'s light gold on navy, each branch of the filter dropdowns by its on, and 12 uses by an entry', () => {
+  it('places every badge and pill token on its kind of ground: a badge\'s dark gold on light grounds, a pill\'s light gold on navy, each branch of the filter dropdowns by its on, and 11 uses by an entry', () => {
     const of = (gold: 'ink' | 'pill', ground: Ground) => result.badgeUses.filter((b) => tokenGold(b.use.utility) === gold && b.ground === ground).map((b) => `${b.use.file}:${b.use.line}`)
     // 28 dark gold words and the club badge's, and 5 pills.
-    expect(result.badgeUses).toHaveLength(34)
+    expect(result.badgeUses).toHaveLength(33)
     expect(of('ink', 'light')).toHaveLength(18)
     expect(of('ink', 'navy')).toEqual([])
     expect(of('pill', 'light')).toEqual([])
-    expect(of('pill', 'navy')).toEqual(['src/components/FilterDropdown.tsx:47', 'src/components/MultiSelectDropdown.tsx:59', 'src/components/PageHero.tsx:84', 'src/pages/ContactPage.tsx:61'])
+    // The contact page's pill sat at line 61 until WS02 step 8, whose 32 lines above it (the footer's subjects) move it to 93.
+    expect(of('pill', 'navy')).toEqual(['src/components/FilterDropdown.tsx:47', 'src/components/MultiSelectDropdown.tsx:59', 'src/components/PageHero.tsx:84', 'src/pages/ContactPage.tsx:93'])
     // What the reading cannot place is the badge allowlist's, use for use: the tags in objects of strings and the home hero's pill.
     const unplaced = result.badgeUses.filter((b) => b.ground === 'unplaced').map((b) => `${b.use.file} ${b.use.token}`)
     expect(unplaced.sort()).toEqual(GOLD_BADGE_ALLOWLIST.flatMap((e) => Array.from({ length: e.count }, () => `${e.file} ${e.class}`)).sort())
@@ -791,9 +801,20 @@ describe('the gold guard on the tree', () => {
     // a tag for every status and two with words of their own, each with
     // on="light", the only on its type takes. Since step 31 the heritage
     // pages draw ThickThinRule, whose on says its ground, light (its
-    // default) or a navy band; each is drawn on a light ground.
+    // default) or a navy band; each is drawn on a light ground. Since WS02
+    // step 6 the Appearance control's on says its ground too: navy in the
+    // footer, its default, and light in the Menu sheet, whose line is read
+    // from the sheet's file; and since WS02 step 8 navy in the new footer,
+    // its default, its line read from the new footer's file the same way.
+    const sheet = read('src/components/layout/MobileMenu.tsx').split('\n').findIndex((l) => l.includes('<AppearanceControl')) + 1
+    expect(sheet).toBeGreaterThan(0)
+    const newFooter = read('src/components/layout/SiteFooter.tsx').split('\n').findIndex((l) => l.includes('<AppearanceControl')) + 1
+    expect(newFooter).toBeGreaterThan(0)
     expect([...result.onPlaces].sort()).toEqual([
       'src/areas/governance/components/GovLayout.tsx:93 <ThickThinRule> on=light (its default) -> light',
+      'src/components/layout/Footer.tsx:116 <AppearanceControl> on=navy (its default) -> navy',
+      `src/components/layout/MobileMenu.tsx:${sheet} <AppearanceControl> on=light -> light`,
+      `src/components/layout/SiteFooter.tsx:${newFooter} <AppearanceControl> on=navy (its default) -> navy`,
       'src/pages/AboutPage.tsx:47 <ThickThinRule> on=light (its default) -> light',
       'src/pages/AdminEmailPage.tsx:379 <MultiSelectDropdown> on=light (its default) -> light',
       'src/pages/AdminEmailPage.tsx:380 <MultiSelectDropdown> on=light (its default) -> light',
@@ -804,9 +825,10 @@ describe('the gold guard on the tree', () => {
       'src/pages/BylawsPage.tsx:25 <ThickThinRule> on=light (its default) -> light',
       'src/pages/BylawsPage.tsx:27 <ThickThinRule> on=light (its default) -> light',
       'src/pages/BylawsPage.tsx:31 <ThickThinRule> on=light (its default) -> light',
-      'src/pages/ChampionsPage.tsx:117 <ThickThinRule> on=light (its default) -> light',
-      'src/pages/ChampionsPage.tsx:66 <ThickThinRule> on=light (its default) -> light',
-      'src/pages/ChampionsPage.tsx:96 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:104 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:154 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:183 <ThickThinRule> on=light (its default) -> light',
+      'src/pages/ChampionsPage.tsx:74 <ThickThinRule> on=light (its default) -> light',
       'src/pages/MinutesPage.tsx:21 <ThickThinRule> on=light (its default) -> light',
       'src/pages/ScholasticPage.tsx:69 <StatusBadge> on=light -> light',
       'src/pages/TournamentsPage.tsx:555 <FilterDropdown> on=navy -> navy',
@@ -827,12 +849,29 @@ describe('the gold guard on the tree', () => {
     expect(read('functions/db/schema.ts')).toContain(`color: text().default('${BRAND_GOLD}')`)
   })
 
-  it('the WS02 entries match nothing yet: their parts are not built, and neither gold appears in the code of any TSX file', () => {
-    expect(result.ws02Matched).toEqual([])
-    for (const w of WS02_GOLD) expect(result.tree.files.has(w.file), w.file).toBe(false)
+  it('the WS02 entries: the About menu\'s "You are here" and the Menu sheet\'s each match in their file, beside their words, at their size and on their ground, and the tab bar\'s current tab its bar in its file, a line and not words; neither gold appears in the code of any other TSX file', () => {
+    // WS02 step 5 built the About menu with its one gold use, WS02 step 6 the sheet with its own and WS02 step 7 the tab bar with its bar.
+    const about = WS02_GOLD.find((w) => w.file.endsWith('/AboutMenu.tsx'))!
+    const tabBar = WS02_GOLD.find((w) => w.file.endsWith('/BottomTabs.tsx'))!
+    const sheet = WS02_GOLD.find((w) => w.file.endsWith('/MobileMenu.tsx'))!
+    const lineOf = (file: string, cls: string) => read(file).split('\n').findIndex((l) => l.includes(cls)) + 1
+    const aboutLine = lineOf(about.file, c('text-[#', '705718]'))
+    const tabBarLine = lineOf(tabBar.file, c('border-t-[#', '866a1e]'))
+    const sheetLine = lineOf(sheet.file, c('text-[#', '866a1e]'))
+    for (const line of [aboutLine, tabBarLine, sheetLine]) expect(line).toBeGreaterThan(0)
+    // In the order the guard reads the files, by their paths.
+    expect(result.ws02Matched).toEqual([`${about.file}:${aboutLine}`, `${tabBar.file}:${tabBarLine}`, `${sheet.file}:${sheetLine}`])
+    for (const w of WS02_GOLD) expect(result.tree.files.has(w.file), w.file).toBe(true)
     for (const parsed of result.tree.files.values()) {
-      expect(hexUses(parsed, HERITAGE_GOLD), parsed.file).toEqual([])
-      expect(hexUses(parsed, DARK_GOLD), parsed.file).toEqual([])
+      const heritage = hexUses(parsed, HERITAGE_GOLD)
+      const dark = hexUses(parsed, DARK_GOLD)
+      expect(heritage.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(parsed.file === about.file ? [`${about.file}:${aboutLine} text`] : [])
+      const darkHere = parsed.file === sheet.file ? [`${sheet.file}:${sheetLine} text`] : parsed.file === tabBar.file ? [`${tabBar.file}:${tabBarLine} bar`] : []
+      expect(dark.map((u) => `${u.file}:${u.line} ${u.as}`), parsed.file).toEqual(darkHere)
+      for (const use of heritage) expect(inContext(use, about), `${use.file}:${use.line}`).toBe(true)
+      // The sheet's words in their context; the tab bar's bar is a line, which the guard fits by its use alone.
+      for (const use of dark.filter((u) => u.as === 'text')) expect(inContext(use, sheet), `${use.file}:${use.line}`).toBe(true)
+      for (const use of dark.filter((u) => u.as === 'bar')) expect([use.file, tabBar.use], `${use.file}:${use.line}`).toEqual([tabBar.file, 'bar'])
     }
   })
 
@@ -905,6 +944,19 @@ describe('the gold guard on a planted tree', () => {
       `      <div className="bg-card"><p className="${GOLD_INK}">On a card</p></div>`,
     ].join('\n')
     expect(guard({ 'src/pages/Planted.tsx': page(body) })).toEqual([])
+  })
+
+  it('reads the navy that stays navy as the new chrome writes it, through its variable, as navy: brand gold words on it pass (WS02 step 8)', () => {
+    const body = `      <footer className="${c('bg-(--color-', 'brand-navy)')} text-white"><h2 className="${GOLD_TEXT}">On the new footer's navy</h2></footer>`
+    expect(guard({ 'src/pages/Planted.tsx': page(body) })).toEqual([])
+  })
+
+  it('places no ground that is navy only from one width up: brand gold words under md:bg-(--color-brand-navy) are on a ground the script does not know (WS02 step 8)', () => {
+    const body = `      <div className="${c('md:bg-(--color-', 'brand-navy)')}"><p className="${GOLD_TEXT}">Navy from 768 pixels only</p></div>`
+    const problems = guard({ 'src/pages/Planted.tsx': page(body) })
+    expect(problems).toHaveLength(1)
+    expect(problems[0]).toMatch(/^src\/pages\/Planted\.tsx:\d+ /)
+    expect(problems[0]).toContain('md:bg-(--color-brand-navy) on <div> (line 6), a ground this script does not know')
   })
 
   describe('a ground the reading cannot place: the home page hero\'s darkened photo, and a hex ground on which neither gold reads 4.5:1', () => {
@@ -1103,9 +1155,9 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     }
   }, 60_000)
 
-  it('without the badge allowlist, exactly its 12 uses fail, and each entry takes exactly its own uses', () => {
+  it('without the badge allowlist, exactly its 11 uses fail, and each entry takes exactly its own uses', () => {
     const problems = goldGuard(ROOT, { badges: [] }).problems
-    expect(problems).toHaveLength(12)
+    expect(problems).toHaveLength(11)
     for (const p of problems) expect(p).toContain('A person decides: an entry in GOLD_BADGE_ALLOWLIST')
     expect(new Set(problems.map((p) => p.split(':')[0]))).toEqual(new Set(GOLD_BADGE_ALLOWLIST.map((e) => e.file)))
     for (const [i, e] of GOLD_BADGE_ALLOWLIST.entries()) {
@@ -1135,7 +1187,8 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     [
       'a club\'s initials put back in the club\'s colour, without clubTextColor',
       { file: 'src/pages/ClubsPage.tsx', from: 'style={{ color: clubTextColor(club.color) }}', to: 'style={{ color }}' },
-      'src/pages/ClubsPage.tsx:74 ',
+      // Line 74 until WS02 step 8 added one import line above it.
+      'src/pages/ClubsPage.tsx:75 ',
       'can be brand gold, as text on a light ground',
     ],
     [
@@ -1147,7 +1200,8 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     [
       'brand gold as a hex text class on the contact page',
       { file: 'src/pages/ContactPage.tsx', from: '<Mail className="mt-0.5 size-5 flex-shrink-0 text-gold-ink" />', to: `<Mail className="mt-0.5 size-5 flex-shrink-0 ${HEX_GOLD}" />` },
-      'src/pages/ContactPage.tsx:126 ',
+      // Line 126 until WS02 step 8 added 32 lines above it for the footer's subjects.
+      'src/pages/ContactPage.tsx:158 ',
       'is brand gold as text on a light ground',
     ],
     [

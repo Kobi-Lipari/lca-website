@@ -46,6 +46,12 @@ export type AdminAction =
   | 'document_add'
   | 'document_edit'
   | 'document_remove'
+  // Written only by scripts/apply-memberships.mjs: a member's email changed
+  // on the sign-in account and the row, and an existing row linked to a
+  // guardian. The audit page has no label or filter for them yet, so it
+  // lists them under All actions by these names.
+  | 'email_change'
+  | 'guardian_link'
 
 export interface AuditEntry {
   action: AdminAction

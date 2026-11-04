@@ -278,7 +278,7 @@ describe('POST /api/admin/tournaments/[id]/waitlist contract', () => {
   it('a paid spot emails the player the amount owed', async () => {
     const admin = await seedAdmin()
     const tournamentId = await seedTournament({ maxPlayers: 1 })
-    const { reg } = await waitlisted(tournamentId, 'Open', { membershipStatus: 'pending' })
+    const { reg } = await waitlisted(tournamentId, 'Open', { membershipStatus: 'none' })
     const res = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg } })
     expect(await expectContract(res, offer.response)).toEqual({ success: true, amount: 25 })
     expect(emailOutbox.some((m) => m.text?.includes('$25.00'))).toBe(true)

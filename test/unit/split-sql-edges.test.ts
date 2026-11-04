@@ -96,7 +96,8 @@ describe('the real migrations', () => {
     const triggers = files.flatMap((f) => splitSql(read(f)).filter((s) => /^CREATE\s+TRIGGER\b/i.test(s)).map((s) => ({ f, s })))
     expect(triggers.map((t) => t.s.match(/TRIGGER\s+(?:IF NOT EXISTS\s+)?(\w+)/i)?.[1]).sort())
       .toEqual([
-        'members_role_insert', 'members_role_insert', 'members_role_update', 'members_role_update',
+        'members_role_insert', 'members_role_insert', 'members_role_insert', 'members_role_update', 'members_role_update', 'members_role_update',
+        'members_status_none_insert', 'members_status_none_update',
         'registrations_fill_section_insert', 'registrations_fill_section_update',
         'tournaments_sections_sync_insert', 'tournaments_sections_sync_update',
       ])
@@ -120,7 +121,7 @@ describe('the real migrations', () => {
     const db = new DatabaseSync(':memory:')
     db.exec('PRAGMA foreign_keys = ON')
     for (const f of files) for (const s of splitSql(read(f))) db.exec(s)
-    expect((db.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type = 'trigger'").get() as { n: number }).n).toBe(6)
+    expect((db.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE type = 'trigger'").get() as { n: number }).n).toBe(8)
     db.close()
   })
 })

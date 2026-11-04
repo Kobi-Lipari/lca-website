@@ -174,7 +174,7 @@ describe('the home page\'s still picture', () => {
 describe('what the pictures are made from, and with', () => {
   const script = readFileSync(join(ROOT, 'scripts/images.mjs'), 'utf8')
 
-  it('leaves hero.png out: the script reads the five slides only, writes nothing from it, and no page names it', () => {
+  it('leaves hero.png out: the script reads the five slides only for the hero, writes nothing from it, and no page names it', () => {
     expect(script).toContain("const SOURCES = ['LCA_Slide_1.jpg', 'LCA_Slide_2.jpg', 'LCA_Slide_3.jpg', 'LCA_Slide_4.jpg', 'LCA_Slide_5.jpg']")
     expect(script).toContain('const WIDTHS = [640, 1024, 1600]')
     expect(script).toContain('const LIMIT = 200_000')

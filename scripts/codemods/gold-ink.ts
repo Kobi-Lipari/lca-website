@@ -111,8 +111,13 @@ const USAGE = 'Usage: node --no-warnings --experimental-strip-types scripts/code
 export const GOLD = 'text-lca-gold'
 export const GOLD_INK = 'text-gold-ink'
 
-/** The navy fills, which stay #1a2744 in every look. */
-const NAVY_FILLS = new Set(['bg-brand-navy', 'bg-lca-navy', 'bg-black'])
+/**
+ * The navy fills, which stay #1a2744 in every look. bg-(--color-brand-navy)
+ * is the same navy, the navy that stays navy, as the new chrome writes it
+ * (the new header, the phone's app bar and the new footer), read through its
+ * variable so the navy band rule of src/index.css does not reach it.
+ */
+const NAVY_FILLS = new Set(['bg-brand-navy', 'bg-lca-navy', 'bg-black', 'bg-(--color-brand-navy)'])
 /** Components whose own ground is navy, so everything passed to them is drawn on it. */
 export const NAVY_COMPONENTS = new Set(['PageHero', 'Navbar', 'Footer'])
 /** Components that paint a light ground of their own: a card, and what a dialog or menu draws in its portal. */

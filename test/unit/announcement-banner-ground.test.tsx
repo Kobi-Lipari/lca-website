@@ -8,14 +8,23 @@
 // in the ring rule), and a tone the banner does not know falls back to gold.
 // The link and the dismiss button sit inside the marked element, where the
 // rule reaches them.
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+//
+// WS02 step 3 gives the gold ground a marker of its own, data-ring-ground
+// ="gold", so under the new look the ring there is navy in dark mode too:
+// on the gold tone and on a tone the banner does not know, which it draws
+// gold, and on the impersonation banner, whose Exit button sits inside it.
+// It is not data-ground, so every data-ground above stays as it was.
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { AuthContextValue } from '@/contexts/AuthContext'
 
 const api = vi.hoisted(() => ({ getAnnouncements: vi.fn() }))
 vi.mock('@/lib/supabase', () => ({ supabase: {} }))
 vi.mock('@/lib/api', async (importOriginal) => ({ ...(await importOriginal<typeof import('@/lib/api')>()), ...api }))
 
 const { AnnouncementBanner } = await import('@/components/AnnouncementBanner')
+const { ImpersonationBanner } = await import('@/components/ImpersonationBanner')
+const { AuthContext } = await import('@/contexts/auth-context')
 
 const banner = (id: string, tone: string, message: string) => ({
   id, tone, size: 'default', message, linkUrl: '/tournaments', linkLabel: `More about ${id}`,
@@ -77,5 +86,67 @@ describe('the announcement banner on a dark ground', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss: More about fx-ann-urgent' }))
     expect(screen.queryByText('cancelled for weather', { exact: false })).toBeNull()
     expect((await bannerOf('Pairings go up')).getAttribute('data-ground')).toBe('dark')
+  })
+})
+
+describe('the gold ground\'s own marker (WS02 step 3)', () => {
+  it.each([
+    ['gold', 'Registration for the Fixture Open closes Friday, October 23 at 7:00 PM.', 'gold', null],
+    ['an unknown tone', 'A tone the banner does not know.', 'gold', null],
+    ['navy', 'The Fixture Quads are full.', null, null],
+    ['urgent', 'The Fixture Open is cancelled for weather.', null, 'dark'],
+    ['info', 'Pairings go up Saturday, October 24 at 9:00 AM.', null, 'dark'],
+  ])('the %s tone carries data-ring-ground %j, and data-ground %j as before', async (_, message, ring, ground) => {
+    render(<AnnouncementBanner />)
+    const el = await bannerOf(message)
+    expect(el.getAttribute('data-ring-ground')).toBe(ring)
+    expect(el.getAttribute('data-ground')).toBe(ground)
+  })
+
+  it('holds the gold tones\' link and dismiss button inside the marked element, and keeps their classes', async () => {
+    render(<AnnouncementBanner />)
+    for (const [message, id] of [['closes Friday', 'fx-ann-gold'], ['does not know', 'fx-ann-unknown']] as const) {
+      const el = await bannerOf(message)
+      expect(el.getAttribute('data-ring-ground')).toBe('gold')
+      expect(el.contains(screen.getByRole('link', { name: `More about ${id}` }))).toBe(true)
+      expect(el.contains(screen.getByRole('button', { name: `Dismiss: More about ${id}` }))).toBe(true)
+      expect(el.className).toContain('bg-lca-gold text-brand-navy')
+    }
+    // No element carries both markers.
+    expect(document.querySelectorAll('[data-ring-ground][data-ground]')).toHaveLength(0)
+  })
+
+  it('marks the impersonation banner\'s gold root, with the Exit button inside it and its classes as they were', () => {
+    const exit = vi.fn(async () => {})
+    const auth = {
+      user: null, session: null, member: null, role: 'lca_admin', seats: [], managedClubs: [], isBoardMember: false,
+      assuranceLevel: 'aal2', mfaRequired: false, loading: false, directedTournamentIds: [], signOut: async () => {},
+      impersonating: { id: 'fx-m-p5', fullName: 'Riley Fixture', email: 'riley.fixture@example.org' },
+      exitImpersonation: exit,
+    } as unknown as AuthContextValue
+    const { container } = render(
+      <AuthContext.Provider value={auth}>
+        <ImpersonationBanner />
+      </AuthContext.Provider>,
+    )
+    const root = container.firstElementChild as HTMLElement
+    expect(root.getAttribute('data-ring-ground')).toBe('gold')
+    expect(root.getAttribute('data-ground')).toBeNull()
+    expect(root.className).toBe('flex items-center justify-center gap-3 bg-lca-gold px-4 py-2 text-sm font-medium text-brand-navy')
+    expect(within(root).getByText('Viewing as Riley Fixture (riley.fixture@example.org)')).toBeTruthy()
+    const button = within(root).getByRole('button', { name: 'Exit' })
+    expect(button.className).toContain('hover:bg-brand-navy/10')
+    fireEvent.click(button)
+    expect(exit).toHaveBeenCalledTimes(1)
+  })
+
+  it('draws no impersonation banner, and so no marker, when no one is being viewed as', () => {
+    const auth = { impersonating: null, exitImpersonation: async () => {} } as unknown as AuthContextValue
+    const { container } = render(
+      <AuthContext.Provider value={auth}>
+        <ImpersonationBanner />
+      </AuthContext.Provider>,
+    )
+    expect(container.innerHTML).toBe('')
   })
 })

@@ -7,9 +7,17 @@
 // src/assets/generated/ as LCA_Slide_<n>-<width>.<avif|webp>. A picture's
 // height follows its width, so each file keeps its photo's own shape.
 //
+// It also writes the official logo (src/assets/lca-logo.webp, 400 by 399
+// pixels, 16,468 bytes) at the two sizes the new footer's 56 pixel place
+// draws it at (WS02 step 8): 56 pixels wide for a screen of ordinary
+// density and 112 for a sharp one, as WebP, into src/assets beside their
+// source as lca-logo-56.webp and lca-logo-112.webp. Each keeps the logo's
+// own shape, which rounds to a square at both sizes.
+//
 // The files are committed, so a build never runs this or needs sharp: run it
-// by hand (npm run images) after a slide photo changes, then commit what it
-// writes. src/assets/hero.png is left out, because no page or file uses it.
+// by hand (npm run images) after a slide photo or the logo changes, then
+// commit what it writes. src/assets/hero.png is left out, because no page or
+// file uses it.
 //
 // Each file must be 200,000 bytes or less, the brief's 200 KB budget for the
 // homepage picture a phone downloads (a 390 pixel wide phone at three times
@@ -48,6 +56,15 @@ const WIDTHS = [640, 1024, 1600]
 /** The most bytes a written file may hold. */
 const LIMIT = 200_000
 
+/** The official logo, by file name in src/assets, the source of its two sized copies. */
+const LOGO = 'lca-logo.webp'
+
+/** The logo's widths, in pixels: the new footer's 56 pixel place at a density of 1, and twice that for a density of 2. */
+const LOGO_WIDTHS = [56, 112]
+
+/** The logo's encoder quality as WebP: a little higher than the photos', since a logo's lettering shows any blur. */
+const LOGO_QUALITY = 90
+
 /**
  * The encoder quality of each format: `all` for every file, and the files
  * that need less to stay at LIMIT or under, by "<photo>@<width>", each with
@@ -79,6 +96,11 @@ function outputName(source, width, format) {
   return `${source.replace(/\.jpg$/, '')}-${width}.${format}`
 }
 
+/** The name a sized copy of the logo gets: at 56 pixels, lca-logo-56.webp. */
+function logoName(width) {
+  return `${LOGO.replace(/\.webp$/, '')}-${width}.webp`
+}
+
 /** The quality a format is written at for one photo at one width. */
 function qualityFor(format, source, width) {
   const table = QUALITY[format]
@@ -102,7 +124,16 @@ async function main() {
       }
     }
   }
-  for (const f of written) {
+  // The logo's two sized copies, beside their source rather than in the
+  // hero's folder, which holds the hero's files alone.
+  const logos = []
+  for (const width of LOGO_WIDTHS) {
+    const name = logoName(width)
+    const { data, info } = await sharp(join(SOURCE_DIR, LOGO)).resize({ width }).webp(ENCODE.webp(LOGO_QUALITY)).toBuffer({ resolveWithObject: true })
+    writeFileSync(join(SOURCE_DIR, name), data)
+    logos.push({ name, width: info.width, height: info.height, quality: LOGO_QUALITY, bytes: statSync(join(SOURCE_DIR, name)).size })
+  }
+  for (const f of [...written, ...logos]) {
     const size = f.bytes.toLocaleString('en-US').padStart(8)
     console.log(`${f.name.padEnd(24)} ${String(f.width).padStart(4)} by ${String(f.height).padEnd(4)} quality ${String(f.quality).padStart(2)}  ${size} bytes`)
   }
@@ -111,7 +142,7 @@ async function main() {
     console.error(`${over.length} file(s) over ${LIMIT.toLocaleString('en-US')} bytes: ${over.map((f) => f.name).join(', ')}. Lower their quality in QUALITY and run this again.`)
     return 1
   }
-  console.log(`Wrote ${written.length} files to src/assets/generated, each ${LIMIT.toLocaleString('en-US')} bytes or less.`)
+  console.log(`Wrote ${written.length} files to src/assets/generated, each ${LIMIT.toLocaleString('en-US')} bytes or less, and the logo's ${logos.length} to src/assets.`)
   return 0
 }
 

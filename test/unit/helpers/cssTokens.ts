@@ -33,9 +33,15 @@ export interface CssRule {
   order: number
 }
 
-/** The stylesheet without comments. */
+/**
+ * The stylesheet without comments. A quoted string is kept whole, so a slash
+ * and a star inside quotes, as in the pattern "../*.md", start no comment. A
+ * string ends on its own line, as a string in a stylesheet must, so a lone
+ * quote mark (an apostrophe in a comment, say) does not swallow the lines
+ * after it.
+ */
 export function stripComments(css: string): string {
-  return css.replace(/\/\*[\s\S]*?\*\//g, '')
+  return css.replace(/("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*')|\/\*[\s\S]*?\*\//g, (_comment, quoted: string | undefined) => quoted ?? '')
 }
 
 /** Every rule in the stylesheet, including those inside @media and @layer. */

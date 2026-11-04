@@ -6,14 +6,18 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
-export function jsonResponse(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      'Content-Type': 'application/json',
-      ...corsHeaders,
-    },
-  })
+/**
+ * A JSON answer with the CORS headers every endpoint sends. The optional
+ * third argument adds headers of the caller's own, set over these by name,
+ * so a header it names is added, or replaces one of the same name here
+ * however its letters are written, one value and never two: GET /api/search
+ * says how long its answer may be kept this way. A call with one or two
+ * arguments gets these headers alone, as before.
+ */
+export function jsonResponse(data: unknown, status = 200, headers: Record<string, string> = {}): Response {
+  const merged = new Headers({ 'Content-Type': 'application/json', ...corsHeaders })
+  for (const [name, value] of Object.entries(headers)) merged.set(name, value)
+  return new Response(JSON.stringify(data), { status, headers: merged })
 }
 
 export function errorResponse(message: string, status: number): Response {

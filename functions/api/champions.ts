@@ -9,7 +9,7 @@ export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const champions = await context.env.DB.prepare(
-    `SELECT c.id, c.year, c.title, c.champion, c.notes, c.tournament_id, t.name AS tournament_name
+    `SELECT c.id, c.year, c.title, c.champion, c.notes, c.tournament_id, c.kind, c.photo_url, t.name AS tournament_name
        FROM state_champions c
        LEFT JOIN tournaments t ON t.id = c.tournament_id AND t.is_visible = 1
       ORDER BY c.year DESC, c.title ASC, c.champion ASC`,

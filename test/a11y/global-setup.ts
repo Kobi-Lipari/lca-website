@@ -3,8 +3,11 @@
 // Prepares everything the accessibility tests run on, from a clean checkout:
 //
 //   1. builds the site twice with `vite build --mode a11y`:
-//        dist-a11y-on   VITE_FLAGS=newLook,themeHeritage
+//        dist-a11y-on   VITE_FLAGS=newLook,themeHeritage,newNav,siteSearch,eventStrip,eventStripLive,liveMarker
 //        dist-a11y-off  no switches turned on (the site as it is today)
+//      a11y-on turns on the new look, the heritage look and the five switches
+//      of the new header, menus, footer, search and event strip, which show
+//      only with the new look on as well (chromeOn in src/lib/nav.ts).
 //      The mode is what lets src/lib/features.ts read VITE_FLAGS and what
 //      adds the /__fixtures/:name page; every value the build reads is given
 //      on the command line here, so a developer's own .env files never leak
@@ -70,7 +73,7 @@ export interface A11yVariant {
 }
 
 export const A11Y_VARIANTS: readonly A11yVariant[] = [
-  { name: 'a11y-on', dist: 'dist-a11y-on', flags: 'newLook,themeHeritage', port: 8801, inspectorPort: 9231, persist: `${A11Y_PERSIST}/on` },
+  { name: 'a11y-on', dist: 'dist-a11y-on', flags: 'newLook,themeHeritage,newNav,siteSearch,eventStrip,eventStripLive,liveMarker', port: 8801, inspectorPort: 9231, persist: `${A11Y_PERSIST}/on` },
   { name: 'a11y-off', dist: 'dist-a11y-off', flags: '', port: 8802, inspectorPort: 9232, persist: `${A11Y_PERSIST}/off` },
 ]
 

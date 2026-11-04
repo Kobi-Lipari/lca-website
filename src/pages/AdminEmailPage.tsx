@@ -34,7 +34,7 @@ const ROLE_OPTIONS = [
 ]
 const STATUS_OPTIONS = [
   { value: 'active', label: 'Active' },
-  { value: 'pending', label: 'Pending' },
+  { value: 'none', label: 'No membership' },
   { value: 'expired', label: 'Expired' },
 ]
 

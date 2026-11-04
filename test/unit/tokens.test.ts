@@ -440,6 +440,8 @@ describe('a printed page takes the light look (step 24)', () => {
       // Heritage's controls in dark mode take the page's tokens again (step 31, AC13), the muted pill found by its two classes.
       ['button', 'status-badge', 'status-dot', 'filter-chip', 'date-block'].map((slot) => `:root[data-look="new"].dark [data-theme="heritage"] [data-slot="${slot}"]`)
         .concat(['.bg-muted.text-muted-foreground', 'input', 'textarea', 'select'].map((tag) => `:root[data-look="new"].dark [data-theme="heritage"] ${tag}`)),
+      // A light surface the chrome opens is navy in dark mode, so its ring turns gold again there (WS02 step 3).
+      [':root[data-look="new"].dark [data-ring-ground="light"]'],
     ])
     // No other rule of the new look names .dark or the live look, and only a screen-only rule sets a dark colour scheme.
     for (const rule of rules.filter((r) => r.within !== SCREEN_ONLY)) {

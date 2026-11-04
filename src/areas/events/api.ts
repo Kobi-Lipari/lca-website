@@ -72,7 +72,9 @@ export interface ApiPrizeAward {
  * A tournament as GET /api/tournaments returns it (tournamentListItemSchema):
  * every column of tournaments, the live sections with their ids, the round
  * schedule as a list, and the club's name and colour from the join.
- * custom_details stays the stored JSON text on this endpoint.
+ * custom_details stays the stored JSON text on this endpoint. created_by,
+ * keep_apart and report_settings come only on the rows of events the
+ * viewer manages.
  */
 export type ApiTournamentListItem = TournamentListItem
 
@@ -106,7 +108,9 @@ export interface ApiCustomDetail {
  * with custom_details read into a list and round_schedule the main
  * schedule's rounds. Only the event page gets waitlist_count. The contract
  * promises custom_details only as objects; this is the shape the setup form
- * writes into it.
+ * writes into it. The event page gets created_by, keep_apart and
+ * report_settings only when the viewer manages the event; the manage page
+ * always gets them.
  */
 export type ApiTournamentDetail = Omit<TournamentDetailResponse['tournament'], 'waitlist_count' | 'custom_details'> & {
   waitlist_count?: number
@@ -530,6 +534,10 @@ export interface ApiChampion {
   notes: string | null
   tournament_id: string | null
   tournament_name: string | null
+  /** Which list the row is on: the state championship or the scholastic sections. */
+  kind: 'state' | 'scholastic'
+  /** A photo of the champion, or null. */
+  photo_url: string | null
 }
 
 export interface ApiChampionshipEvent {
@@ -546,7 +554,15 @@ export async function getChampions(): Promise<{ champions: ApiChampion[]; upcomi
   return handleResponse(response)
 }
 
-export type ChampionInput = { year: number | string; title: string; champion: string; notes?: string | null; tournamentId?: string | null }
+export type ChampionInput = {
+  year: number | string
+  title: string
+  champion: string
+  notes?: string | null
+  tournamentId?: string | null
+  kind?: 'state' | 'scholastic'
+  photoUrl?: string | null
+}
 
 export async function adminAddChampions(rows: ChampionInput[]): Promise<{ added: number }> {
   const response = await fetch('/api/admin/champions', {

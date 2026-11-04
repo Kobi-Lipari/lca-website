@@ -5,10 +5,10 @@ import { LcaLogo } from '@/components/LcaLogo'
 import { FacebookIcon } from '@/components/ui/FacebookIcon'
 import lcaLogo from '@/assets/lca-logo.webp'
 import { FEATURES } from '@/lib/features'
+import { SiteFooter } from '@/components/layout/SiteFooter'
+import { chromeOn } from '@/lib/nav'
 
-// Every link points somewhere DISTINCT. When pages grow filters/anchors
-// (e.g. /tournaments?filter=past), add richer links back then — no fake
-// destinations in the meantime.
+// Every link of today's footer points somewhere distinct, and a richer link waits for the page that has it.
 const footerSections = [
   {
     title: 'Play',
@@ -47,13 +47,13 @@ const footerSections = [
   },
 ]
 
-export function Footer() {
+function TodaysFooter() {
   const year = new Date().getFullYear()
   return (
     <footer className="border-t-[3px] border-lca-gold bg-brand-navy text-white print:hidden">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-[1.1fr_2fr] lg:gap-16">
-          {/* Brand column — identity, social, and actions as one anchored block */}
+          {/* Brand column, identity, social, and actions as one anchored block */}
           <div>
             <div className="flex items-center gap-3.5">
               {/* Under the new look the logo's words are empty: the name beside it says them once. */}
@@ -86,7 +86,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Link columns — left-aligned on a shared grid so every column
+          {/* Link columns, left-aligned on a shared grid so every column
               scans down one clean edge */}
           <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4">
             {footerSections.map((section) => (
@@ -123,4 +123,16 @@ export function Footer() {
       </div>
     </footer>
   )
+}
+
+/**
+ * The site's footer. With the chrome on (newNav and newLook, chromeOn in
+ * src/lib/nav.ts) it is the new footer, src/components/layout/SiteFooter.tsx,
+ * at every width. With either switch off it is today's footer, above, which
+ * every visitor sees with every switch off, drawn as it always was
+ * (test/unit/footer-today.test.tsx). It calls no hook itself, so the branch
+ * it takes is chosen before any hook of the footer it draws runs.
+ */
+export function Footer() {
+  return chromeOn() ? <SiteFooter /> : <TodaysFooter />
 }

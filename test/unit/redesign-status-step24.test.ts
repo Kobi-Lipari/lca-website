@@ -90,9 +90,17 @@ describe('REDESIGN_STATUS.md, step 24: the acceptance row', () => {
     const STEP_24 = { uses: 91, files: 33, hex: 44, veils: 34 }
     const GOLD_RETIRED = 34
     const STATUS_BADGE_KEPT = 8
-    const uses = allowlist.reduce((n, e) => n + e.count, 0)
-    const hex = allowlist.filter((e) => /\[#/.test(e.class)).reduce((n, e) => n + e.count, 0)
-    const veils = allowlist.filter((e) => /(^|:)bg-white\//.test(e.class)).reduce((n, e) => n + e.count, 0)
+    // WS02 steps 5 and 6 added two entries each, for the About menu's gold and
+    // the Menu sheet's, and WS02 step 7 one, for the tab bar's gold line, which
+    // are not WS01's: WS01's figures are the allowlist less those, named
+    // beside them.
+    const WS02_FILES = ['src/components/layout/AboutMenu.tsx', 'src/components/layout/BottomTabs.tsx', 'src/components/layout/MobileMenu.tsx']
+    const ws02 = allowlist.filter((e) => WS02_FILES.includes(e.file))
+    expect(ws02.map((e) => `${e.class} ${e.count}`).sort()).toEqual(['bg-[#f3eedc] 1', 'bg-[#fbfaf6] 1', 'border-t-[#866a1e] 1', 'text-[#705718] 1', 'text-[#866a1e] 1'])
+    const ws01 = allowlist.filter((e) => !WS02_FILES.includes(e.file))
+    const uses = ws01.reduce((n, e) => n + e.count, 0)
+    const hex = ws01.filter((e) => /\[#/.test(e.class)).reduce((n, e) => n + e.count, 0)
+    const veils = ws01.filter((e) => /(^|:)bg-white\//.test(e.class)).reduce((n, e) => n + e.count, 0)
     expect([uses + GOLD_RETIRED + STATUS_BADGE_KEPT, hex + GOLD_RETIRED, veils]).toEqual([STEP_24.uses, STEP_24.hex, STEP_24.veils])
     expect(allowlist.filter((e) => e.file === 'src/components/StatusBadge.tsx').map((e) => e.class)).toEqual(['bg-white/10'])
     expect(row).toContain(`\`test/unit/fixtures/raw-colours-allowlist.json\` counts ${STEP_24.uses} uses in ${STEP_24.files} files`)

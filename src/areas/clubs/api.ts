@@ -19,7 +19,12 @@ export interface ApiClubDetail {
   location: string | null
   description: string | null
   meeting_schedule: string | null
-  contact_email: string | null
+  /**
+   * The admin's answers always carry it. The public club page's answer
+   * leaves it out once CLUB_EMAIL_HIDDEN is set on the server, and the page
+   * draws no address while clubEmailHidden is on.
+   */
+  contact_email?: string | null
   created_at: string
   color: string
   image_url: string | null
@@ -29,10 +34,10 @@ export interface ApiClubDetail {
   longitude?: number | null
 }
 
+/** An officer as the public club page's answer gives one: by role and name, never with an email. */
 export interface ApiClubOfficer {
   role: string
   full_name: string
-  email: string
 }
 
 export interface ApiClubTournament {

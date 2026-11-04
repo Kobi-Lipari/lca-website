@@ -6,6 +6,7 @@ import type { Env } from '../../types'
 import { errorResponse, handleOptions, jsonResponse } from '../../utils/response'
 import { getDb } from '../../db/client'
 import { sectionResponsesFor } from '../../utils/events/sectionsRepo'
+import { CLUB_EMAIL_HIDDEN, publicClubAnswer } from '../../utils/clubs/publicAnswer'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
 
@@ -20,8 +21,9 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     return errorResponse('Club not found', 404)
   }
 
+  // Each officer by role and name: the public answer carries no officer's email.
   const officers = await context.env.DB.prepare(
-    `SELECT co.id, co.role, m.full_name, m.email
+    `SELECT co.id, co.role, m.full_name
      FROM club_officers co
      JOIN members m ON co.member_id = m.id
      WHERE co.club_id = ?
@@ -54,7 +56,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     .all()
 
   return jsonResponse({
-    club,
+    club: publicClubAnswer(club, CLUB_EMAIL_HIDDEN),
     officers: officers.results,
     tournaments: tournaments.results.map((t) => ({
       id: t.id,

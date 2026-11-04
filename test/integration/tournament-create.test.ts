@@ -130,10 +130,10 @@ describe('membership PATCH derives status from expiry', () => {
       method: 'PATCH',
       as: adminId,
       params: { id: memberId },
-      body: { membershipExpiry: '2030-01-01', membershipStatus: 'pending' },
+      body: { membershipExpiry: '2030-01-01', membershipStatus: 'none' },
     })
     expect(res.status).toBe(200)
     const { member: updated } = (await res.json()) as { member: { membership_status: string } }
-    expect(updated.membership_status).toBe('pending')
+    expect(updated.membership_status).toBe('none')
   })
 })

@@ -29,6 +29,34 @@
       "when": 1791548166077,
       "tag": "0003_requires_lca_membership",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792766247542,
+      "tag": "0004_champions_lists_and_photos",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792766259796,
+      "tag": "0005_champions_import",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1792784829792,
+      "tag": "0006_membership_none",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792791991870,
+      "tag": "0007_state_champion_2026",
+      "breakpoints": true
     }
   ]
 }

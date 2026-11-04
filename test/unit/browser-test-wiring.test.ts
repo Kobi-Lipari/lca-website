@@ -468,6 +468,7 @@ describe('the files of the browser test layer', () => {
     'playwright.config.ts',
     'test/a11y/global-setup.ts',
     'test/a11y/support.ts',
+    'test/a11y/chrome.ts',
     'test/a11y/smoke.spec.ts',
     'test/a11y/baseline.ts',
     'test/a11y/builds.spec.ts',

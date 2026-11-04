@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { LCAMap } from '@/areas/clubs/components/LCAMap'
 import { LCA } from '@/lib/brand'
+import { FEATURES } from '@/lib/features'
 
 const LCA_GOLD = LCA.gold
 const NAVY = LCA.navy
@@ -132,6 +133,10 @@ export function ClubDetailPage() {
   const textColor = clubTextColor(club.color)
   const imageUrl = club.image_url
   const buttonText = readableTextOn(color)
+  // With clubEmailHidden on, the page offers the contact form in place of
+  // the club's address and never draws the address, even from an answer
+  // that still carries it (D29; WS09's relay replaces the link).
+  const emailHidden = FEATURES.clubEmailHidden
 
   const upcoming = tournaments.filter((t) => t.status === 'upcoming' || t.status === 'active')
   const recent = tournaments.filter((t) => t.status === 'completed').slice(0, 5)
@@ -185,10 +190,14 @@ export function ClubDetailPage() {
               {club.meeting_schedule}
             </span>
           )}
-          {club.contact_email && (
+          {(emailHidden || club.contact_email) && (
             <span className="inline-flex items-center gap-1.5">
               <Mail className="size-4 flex-shrink-0 text-lca-gold" />
-              {club.contact_email}
+              {emailHidden ? (
+                <Link to="/contact" className="underline underline-offset-2 hover:text-white">
+                  Contact this club through LCA
+                </Link>
+              ) : club.contact_email}
             </span>
           )}
         </div>
@@ -325,17 +334,23 @@ export function ClubDetailPage() {
                       <dd className="text-muted-foreground">{club.location}</dd>
                     </div>
                   )}
-                  {club.contact_email && (
+                  {(emailHidden || club.contact_email) && (
                     <div>
                       <dt className="font-medium text-ink">Contact</dt>
                       <dd>
-                        <a
-                          href={`mailto:${club.contact_email}`}
-                          className={cn('hover:underline', clubTextOnDark(club.color))}
-                          style={{ color: textColor }}
-                        >
-                          {club.contact_email}
-                        </a>
+                        {emailHidden ? (
+                          <Link to="/contact" className="font-medium text-ink underline underline-offset-2">
+                            Contact this club through LCA
+                          </Link>
+                        ) : (
+                          <a
+                            href={`mailto:${club.contact_email}`}
+                            className={cn('hover:underline', clubTextOnDark(club.color))}
+                            style={{ color: textColor }}
+                          >
+                            {club.contact_email}
+                          </a>
+                        )}
                       </dd>
                     </div>
                   )}

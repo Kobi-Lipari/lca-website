@@ -92,7 +92,7 @@ describe('children on an account', () => {
 
 describe('family membership', () => {
   it('buying a family membership covers up to three children, including ones added later', async () => {
-    const parent = await seedMember({ membershipStatus: 'pending' })
+    const parent = await seedMember({ membershipStatus: 'none' })
     const kids = [await addChild(parent, 'A'), await addChild(parent, 'B')]
 
     const checkout = await invoke(membershipCheckout, { method: 'POST', as: parent, body: { tier: 'family' } })
@@ -116,11 +116,11 @@ describe('family membership', () => {
     const status = async (id: string) => (await env.DB.prepare('SELECT membership_status FROM members WHERE id = ?')
       .bind(id).first<{ membership_status: string }>())?.membership_status
     expect(await status(third.id)).toBe('active')
-    expect(await status(fourth.id)).toBe('pending')
+    expect(await status(fourth.id)).toBe('none')
   })
 
   it('an adult membership does not cover children', async () => {
-    const parent = await seedMember({ membershipStatus: 'pending' })
+    const parent = await seedMember({ membershipStatus: 'none' })
     const kid = await addChild(parent, 'Not Covered')
     const checkout = await invoke(membershipCheckout, { method: 'POST', as: parent, body: { tier: 'adult' } })
     const { paymentId } = await checkout.json<{ paymentId: string }>()
@@ -128,7 +128,7 @@ describe('family membership', () => {
 
     const row = await env.DB.prepare('SELECT membership_status FROM members WHERE id = ?')
       .bind(kid.id).first<{ membership_status: string }>()
-    expect(row?.membership_status).toBe('pending')
+    expect(row?.membership_status).toBe('none')
   })
 })
 

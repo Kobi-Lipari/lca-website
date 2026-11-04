@@ -105,8 +105,11 @@ describe('the AC1 matrix reads what the criterion names', () => {
     expect(layout).toContain('scope="heritage"')
     expect(layout).toContain('data-layout="heritage"')
     expect(matrix).toContain('main.querySelector(\'[data-layout="heritage"]\')')
+    // The matrix reads its looks on the build that turns newLook and
+    // themeHeritage on; that build's whole list of switches is
+    // test/a11y/builds.spec.ts's to hold.
     const on = A11Y_VARIANTS.find((v) => v.name === 'a11y-on')
-    expect(on?.flags.split(',')).toEqual(['newLook', 'themeHeritage'])
+    expect(on?.flags.split(',')).toEqual(expect.arrayContaining(['newLook', 'themeHeritage']))
     expect(matrix).toMatch(/const ON = 'a11y-on'/)
   })
 

@@ -21,10 +21,12 @@ export interface ApiMember {
   uscf_id: string | null
   uscf_rating: number | null
   uscf_rating_updated_at: string | null
-  membership_status: 'active' | 'expired' | 'pending'
+  membership_status: 'active' | 'expired' | 'none'
   membership_expiry: string | null
   /** 'family' for a family membership; null if never bought. */
   membership_type?: string | null
+  /** The guardian's member id when this row is a guardian's child, such as a child covered by a family membership; null or absent otherwise. */
+  guardian_id?: string | null
   /** US Chess membership expiry, from the nightly sync. */
   uscf_expiration?: string | null
   role: string
@@ -62,8 +64,8 @@ export interface ApiDirectedTournament {
 
 /**
  * What GET /api/admin/members returns. A tournament_director receives only
- * the fields their read-only view renders — id, name, email, USCF id,
- * membership status and expiry — so everything an admin alone can see is
+ * the fields their read-only view renders (id, name, email, US Chess id,
+ * membership status and expiry), so everything an admin alone can see is
  * optional here, and the members table reads those only under isAdmin.
  */
 export interface ApiAdminMember
@@ -192,22 +194,36 @@ export async function createMembershipCheckout(tier: string): Promise<{
   return handleResponse(response)
 }
 
-export async function confirmMembership(paymentId: string): Promise<{
+/**
+ * Checks one payment, or with no id the member's latest membership payment,
+ * so the profile can answer "what is going on?" from any device. The answer's
+ * shape, and the words for each state, live in paymentState.ts: the barrel
+ * '@/lib/api' exports exactly what it did before the split (api-exports.test.ts).
+ */
+export async function confirmMembership(paymentId?: string | null): Promise<{
   member: ApiMember
-  tier?: string
+  tier?: string | null
+  paymentId?: string
+  /** When the payment was started, as the database stores it (UTC, "YYYY-MM-DD HH:MM:SS"). */
+  startedAt?: string
+  /** 'paid' is the only state in which the membership is active; the rest say nothing was charged, or that the answer is not in yet. */
+  paymentState: 'paid' | 'processing' | 'open' | 'expired' | 'unknown' | 'none'
+  /** The Stripe page to finish paying on, only while the checkout is still open. */
+  paymentUrl?: string
   alreadyConfirmed?: boolean
+  pending?: boolean
 }> {
   const response = await fetch('/api/membership/confirm', {
     method: 'POST',
     headers: await authHeaders(),
-    body: JSON.stringify({ paymentId }),
+    body: JSON.stringify(paymentId ? { paymentId } : {}),
   })
   return handleResponse(response)
 }
 
 export async function createDonationCheckout(amount: number): Promise<{ paymentId: string; paymentUrl: string }> {
   // Anyone may donate, but sending the session lets the server attribute the
-  // payment to a signed-in member. The client no longer states who it is —
+  // payment to a signed-in member. The client no longer states who it is:
   // the server reads that from the token.
   const response = await fetch('/api/donations/checkout', {
     method: 'POST',

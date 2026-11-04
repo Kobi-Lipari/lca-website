@@ -130,7 +130,7 @@ describe('the price the page shows is the amount the server charges', () => {
   })
 
   const offerFor = async (tournamentId: string, admin: Awaited<ReturnType<typeof seedAdmin>>) => {
-    const memberId = await seedMember({ membershipStatus: 'pending' })
+    const memberId = await seedMember({ membershipStatus: 'none' })
     const reg = await seedRegistration({ tournamentId, memberId, section: 'Open', paymentStatus: 'pending' })
     await env.DB.prepare(`UPDATE registrations SET waitlisted_at = datetime('now') WHERE id = ?`).bind(reg).run()
     const res = await invoke(waitlistPost, { method: 'POST', as: admin, params: { id: tournamentId }, body: { registrationId: reg } })
