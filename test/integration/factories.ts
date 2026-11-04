@@ -61,6 +61,8 @@ export interface SeedTournamentOptions {
   isRated?: boolean
   isVisible?: boolean
   clubId?: string | null
+  /** The member written as the event's creator (created_by); none by default. */
+  createdBy?: string | null
 }
 
 /**
@@ -78,8 +80,8 @@ export async function seedTournament(opts: SeedTournamentOptions = {}): Promise<
   await env.DB.prepare(
     `INSERT INTO tournaments
        (id, name, location, date, entry_fee, rounds, max_players,
-        status, registration_status, registration_closes_at, is_rated, is_visible, club_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        status, registration_status, registration_closes_at, is_rated, is_visible, club_id, created_by)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   ).bind(
     id,
     opts.name ?? `Tournament ${id}`,
@@ -94,6 +96,7 @@ export async function seedTournament(opts: SeedTournamentOptions = {}): Promise<
     opts.isRated ? 1 : 0,
     opts.isVisible === false ? 0 : 1,
     opts.clubId ?? null,
+    opts.createdBy ?? null,
   ).run()
   const saved = await saveSections(getDb(env.DB), id, normalizeLegacySections(sections), { reportSettings: null })
   if (!saved.ok) throw new Error(`seedTournament: ${saved.error}`)
@@ -129,4 +132,27 @@ export async function seedTournamentDirector(
   await env.DB.prepare(
     `INSERT INTO tournament_directors (tournament_id, member_id) VALUES (?, ?)`,
   ).bind(tournamentId, memberId).run()
+}
+
+/**
+ * Gives the member a current term on the President seat, the board_members
+ * row whose slug is 'president' (migration 0025 derives it from the seat
+ * 0011 seeds): one board_seat_assignments row with no end. It adds that term
+ * and ends none, unlike the seats page, which ends the sitting holder's term
+ * before seating someone on an unshared seat, so a test that models a
+ * handover ends the old term itself. The seat's row is added, active, if the
+ * database lacks it. holdsPresidentSeat in functions/utils/events/creation.ts
+ * reads the same.
+ */
+export async function seedPresident(memberId: string): Promise<void> {
+  let seat = await env.DB.prepare(`SELECT id FROM board_members WHERE slug = 'president'`).first<{ id: string }>()
+  if (!seat) {
+    seat = { id: nextId('seat') }
+    await env.DB.prepare(
+      `INSERT INTO board_members (id, role, name, slug, category, is_active) VALUES (?, 'President', 'TBD', 'president', 'officer', 1)`,
+    ).bind(seat.id).run()
+  }
+  await env.DB.prepare(
+    `INSERT INTO board_seat_assignments (id, seat_id, member_id, started_at) VALUES (?, ?, ?, datetime('now'))`,
+  ).bind(nextId('term'), seat.id, memberId).run()
 }

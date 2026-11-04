@@ -73,8 +73,8 @@ export interface ApiPrizeAward {
  * every column of tournaments, the live sections with their ids, the round
  * schedule as a list, and the club's name and colour from the join.
  * custom_details stays the stored JSON text on this endpoint. created_by,
- * keep_apart and report_settings come only on the rows of events the
- * viewer manages.
+ * keep_apart, report_settings and review_notified_at come only on the rows
+ * of events the viewer manages.
  */
 export type ApiTournamentListItem = TournamentListItem
 
@@ -108,9 +108,9 @@ export interface ApiCustomDetail {
  * with custom_details read into a list and round_schedule the main
  * schedule's rounds. Only the event page gets waitlist_count. The contract
  * promises custom_details only as objects; this is the shape the setup form
- * writes into it. The event page gets created_by, keep_apart and
- * report_settings only when the viewer manages the event; the manage page
- * always gets them.
+ * writes into it. The event page gets created_by, keep_apart,
+ * report_settings and review_notified_at only when the viewer manages the
+ * event; the manage page always gets them.
  */
 export type ApiTournamentDetail = Omit<TournamentDetailResponse['tournament'], 'waitlist_count' | 'custom_details'> & {
   waitlist_count?: number

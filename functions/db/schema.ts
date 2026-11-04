@@ -112,6 +112,8 @@ export const tournaments = sqliteTable('tournaments', {
   // Entering needs a current LCA membership (domain/membership/requirement.ts).
   // On by default; club-run events start with it off (0054).
   requiresLcaMembership: integer('requires_lca_membership').default(1).notNull(),
+  // When the D22 notice to the LCA admins went, at this event's first publish; it is sent only while NULL (0059).
+  reviewNotifiedAt: text('review_notified_at'),
 },
 (table) => [
   index('idx_tournaments_club_id').on(table.clubId),
@@ -287,6 +289,10 @@ export const supportTickets = sqliteTable('support_tickets', {
   updatedAt: text('updated_at').default(sql`(datetime('now'))`).notNull(),
   seatId: text('seat_id').references(() => boardMembers.id),
   number: integer(),
+  // NULL for an ordinary ticket; else 'listing_report', 'event_report' or 'payout_request' (0059).
+  kind: text(),
+  // The clearinghouse listing or the tournament the ticket is about (0059).
+  aboutId: text('about_id'),
 },
 (table) => [
   uniqueIndex('idx_support_tickets_number').on(table.number),

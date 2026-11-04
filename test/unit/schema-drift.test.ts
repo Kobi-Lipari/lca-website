@@ -186,8 +186,8 @@ describe('functions/db/schema.ts matches the migrations', () => {
   it('compares every column of every table', () => {
     const counted = userTables(db).reduce((n, t) => n + dbColumns(db, t).size, 0)
     const modelled = drizzleTables.reduce((n, t) => n + getTableConfig(t).columns.length, 0)
-    expect(counted).toBe(316)
-    expect(modelled).toBe(316)
+    expect(counted).toBe(319)
+    expect(modelled).toBe(319)
   })
 })
 

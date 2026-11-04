@@ -60,7 +60,8 @@ afterEach(() => {
 const clubContract = contracts['clubs/[id]'].GET
 const detailContract = contracts['tournaments/[id]'].GET
 const listContract = contracts['tournaments'].GET
-const MANAGERS_ONLY = ['created_by', 'keep_apart', 'report_settings']
+// The trim's three keys, and review_notified_at, which WS08 step 2 added.
+const MANAGERS_ONLY = ['created_by', 'keep_apart', 'report_settings', 'review_notified_at']
 const label = (as: string | undefined) => as ?? 'signed out'
 
 // ── The club page's answer ───────────────────────────────────────────
@@ -268,7 +269,7 @@ describe('GET /api/tournaments/[id]\'s roster with ROSTER_SHORT_NAMES unset and 
 
 // ── Who manages an event, in the list and in the detail ──────────────
 
-describe('the list and the detail answer the three keys to the same people', () => {
+describe('the list and the detail answer the four keys to the same people', () => {
   it('for every kind of viewer and both kinds of event, as the detail\'s own rule names them', async () => {
     const clubId = await seedClub()
     const clubEvent = await seedTournament({ clubId })

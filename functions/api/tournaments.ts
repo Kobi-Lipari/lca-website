@@ -24,7 +24,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       }
     }
   } catch {
-    // Not logged in — public view only
+    // Not logged in: public view only
   }
 
   const base = `SELECT t.*, c.color AS club_color, c.name AS club_name
@@ -56,7 +56,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const ids = rows.map((t) => t.id)
   const sections = await loadSectionsFor(db, ids)
   const schedules = await loadSchedulesFor(db, ids)
-  // created_by, keep_apart and report_settings go only to the people who
+  // The keys MANAGER_ONLY_TOURNAMENT_KEYS names go only to the people who
   // manage each event, decided row by row with one read of the viewer's
   // director assignments, never one query an event.
   const manages = await eventsManagedBy(context.env.DB, viewer)
