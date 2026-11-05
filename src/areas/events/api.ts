@@ -143,8 +143,18 @@ export async function getNews(): Promise<ApiNewsItem[]> {
   return data.news
 }
 
-export async function getTournaments(): Promise<ApiTournamentListItem[]> {
-  const response = await fetch('/api/tournaments')
+/**
+ * The tournament list. Signed out by default, as every page has read it:
+ * the listed events alone. With signedIn the request carries the sign-in,
+ * so the answer also holds the hidden drafts the person may manage and, on
+ * the rows of the events they manage, the fields only managers get,
+ * created_by among them (functions/api/tournaments.ts). Only the two
+ * creation pages ask for it, and only behind standingDirectors.
+ */
+export async function getTournaments(options: { signedIn?: boolean } = {}): Promise<ApiTournamentListItem[]> {
+  const response = options.signedIn
+    ? await fetch('/api/tournaments', { headers: await authHeaders() })
+    : await fetch('/api/tournaments')
   const data = await handleResponse<{ tournaments: ApiTournamentListItem[] }>(
     response,
   )
@@ -201,7 +211,7 @@ export async function adminCreateTournament(body: {
 /**
  * Single wrapper for PATCH /api/admin/tournaments/:id.
  * (Consolidates the former untyped `adminUpdateTournament` and
- * `adminUpdateTournamentFull` — same route, one typed body.)
+ * `adminUpdateTournamentFull`: same route, one typed body.)
  *
  * Every field is optional: the backend uses field-present semantics
  * (undefined = keep existing, explicit null = clear), so callers should
@@ -351,7 +361,7 @@ export async function adminGetTournamentManage(tournamentId: string) {
   }>(response)
 }
 
-// ── USCF rating report ───────────────────────────────────────────
+// ── US Chess rating report ───────────────────────────────────────
 
 export interface ApiRatingReportRound {
   round: number

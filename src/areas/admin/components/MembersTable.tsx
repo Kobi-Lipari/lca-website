@@ -12,7 +12,8 @@ import type {
   ApiClubListItem,
   ApiSeatHolder,
 } from '@/lib/api'
-import { MEMBER_ROLES, ROLE_LABELS, type MemberRole } from '@/areas/admin/roles'
+import { MEMBER_ROLES, ROLE_LABELS, STANDING_DIRECTOR_LINE, type MemberRole } from '@/areas/admin/roles'
+import { FEATURES } from '@/lib/features'
 import { cn } from '@/lib/utils'
 import { ADMIN_SCROLL } from '@/lib/brand'
 
@@ -23,7 +24,7 @@ type MembershipFilter = 'active' | 'all'
 /**
  * Inline name editor for the members table.
  *
- * Commits on blur or Enter rather than on every keystroke — the other cells
+ * Commits on blur or Enter rather than on every keystroke: the other cells
  * here are selects and date pickers where a change event is a whole edit, but
  * a text field would otherwise fire a request per character. Escape abandons
  * the edit and restores what was there.
@@ -79,7 +80,7 @@ function NameCell({
   )
 }
 
-/** Edit handlers — required when isAdmin, unused in the read-only lookup. */
+/** Edit handlers: required when isAdmin, unused in the read-only lookup. */
 export interface MembersTableAdminProps {
   clubs: ApiClubListItem[]
   savingId: string | null
@@ -107,9 +108,9 @@ export function MembersTable({ members, admin }: {
   const [filter, setFilter] = useState<MembershipFilter>('active')
   const [search, setSearch] = useState('')
 
-  // Search matches name, email, or USCF ID (case-insensitive substring).
+  // Search matches name, email, or US Chess ID (case-insensitive substring).
   // When a search is typed, it looks across ALL members regardless of the
-  // active/all toggle — so "is this person in the system?" always gets a
+  // active/all toggle, so "is this person in the system?" always gets a
   // truthful answer, with the status badge/select showing whether they're
   // active. With no search, the toggle behaves as before.
   const query = search.trim().toLowerCase()
@@ -127,6 +128,12 @@ export function MembersTable({ members, admin }: {
     : filter === 'active'
       ? members.filter((m) => m.membership_status === 'active')
       : members
+
+  // With standingDirectors on, the role select of a member who holds the
+  // standing director role has the one line on what it allows beside it, as
+  // visible text the select names as its description, and never as a title,
+  // which a mouse alone would reach.
+  const standingLine = (m: ApiAdminMember) => FEATURES.standingDirectors && m.role === 'tournament_director'
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
@@ -269,10 +276,16 @@ export function MembersTable({ members, admin }: {
                         className="rounded-md border bg-background px-2 py-1 text-sm"
                         value={m.role}
                         disabled={admin!.savingId === m.id}
+                        aria-describedby={standingLine(m) ? `standing-director-line-${m.id}` : undefined}
                         onChange={(e) => admin!.onRoleChange(m.id, e.target.value as MemberRole)}
                       >
                         {MEMBER_ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
                       </select>
+                      {standingLine(m) && (
+                        <p id={`standing-director-line-${m.id}`} className="mt-1 max-w-[240px] text-xs text-muted-foreground">
+                          {STANDING_DIRECTOR_LINE}
+                        </p>
+                      )}
                     </td>
                   )}
                   {canEdit && (

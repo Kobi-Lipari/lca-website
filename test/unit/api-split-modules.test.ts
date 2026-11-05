@@ -7,10 +7,14 @@
 //
 // - the committed map (scripts/moves/api-split.json) names every export in
 //   the snapshot and the three private helpers, gives each to http or one of
-//   the eight areas, and each real module declares exactly what the map gives it
+//   the eight areas, and each real module declares exactly what the map gives
+//   it, with the names the area modules have gained since the split
+//   (fixtures/api-added-since-split.json), which the map and the snapshot,
+//   the split's own record, leave out
 // - the placement rules in REDESIGN_STATUS.md hold: the request helpers and
-//   ApiError in http, the contract-derived types in events, the scan call in
-//   live, the member export's helper private to membership
+//   ApiError in http, the contract-derived types in events, and the two
+//   answer types membership has gained since, the scan call in live, the
+//   member export's helper private to membership
 // - the modules import in one direction: nothing imports the barrel, http
 //   imports no area, areas import one another only as types and without a
 //   cycle, and the runtime import graph from the barrel has no cycle
@@ -35,6 +39,10 @@ vi.mock('@/lib/supabase', () => ({
 const ROOT = join(__dirname, '../..')
 const SNAPSHOT = JSON.parse(readFileSync(join(__dirname, 'fixtures/api-exports.json'), 'utf8')) as string[]
 const MAP = JSON.parse(readFileSync(join(ROOT, 'scripts/moves/api-split.json'), 'utf8')) as Record<string, string>
+/** What the area modules gained after the split: the paths they call, and the names they export with the module that declares each. */
+const ADDED = JSON.parse(readFileSync(join(__dirname, 'fixtures/api-added-since-split.json'), 'utf8')) as { paths: string[]; exports: Record<string, string> }
+/** The split's map with the names added since, each to its module. */
+const JOINED: Record<string, string> = { ...MAP, ...ADDED.exports }
 const AREAS = ['events', 'registration', 'households', 'live', 'membership', 'clubs', 'admin', 'governance']
 const PRIVATE_HELPERS = ['authHeaders', 'handleResponse', 'exportQuery']
 const BARREL = 'src/lib/api.ts'
@@ -84,19 +92,25 @@ function resolveSrc(from: string, spec: string): string | null {
 }
 
 describe('the committed map', () => {
-  it('names every export in the snapshot and the three private helpers, and nothing else', () => {
+  it('names every export in the snapshot and the three private helpers, and nothing else, and with the names added since the split names those too', () => {
     expect(Object.keys(MAP).sort()).toEqual([...SNAPSHOT, ...PRIVATE_HELPERS].sort())
+    expect(Object.keys(JOINED).sort()).toEqual([...SNAPSHOT, ...Object.keys(ADDED.exports), ...PRIVATE_HELPERS].sort())
+  })
+
+  it('takes no name the split already placed into the names added since, and gives each added name to one of the eight areas', () => {
+    expect(Object.keys(ADDED.exports).filter((name) => name in MAP || SNAPSHOT.includes(name))).toEqual([])
+    expect(Object.entries(ADDED.exports).filter(([, target]) => !AREAS.includes(target))).toEqual([])
   })
 
   it('gives each name to http or one of the eight areas', () => {
-    const bad = Object.entries(MAP).filter(([, target]) => target !== 'http' && !AREAS.includes(target))
+    const bad = Object.entries(JOINED).filter(([, target]) => target !== 'http' && !AREAS.includes(target))
     expect(bad).toEqual([])
     for (const target of ['http', ...AREAS]) expect(Object.values(MAP).filter((t) => t === target).length, target).toBeGreaterThan(0)
   })
 
-  it('matches the real modules: each declares exactly the names the map gives it', () => {
+  it('matches the real modules: each declares exactly the names the map gives it, with the names added since the split', () => {
     for (const target of ['http', ...AREAS]) {
-      const mapped = Object.entries(MAP).filter(([, t]) => t === target).map(([name]) => name).sort()
+      const mapped = Object.entries(JOINED).filter(([, t]) => t === target).map(([name]) => name).sort()
       expect(declared(moduleOf(target)).sort(), moduleOf(target)).toEqual(mapped)
     }
   })
@@ -105,13 +119,20 @@ describe('the committed map', () => {
     for (const name of ['authHeaders', 'handleResponse', 'ApiError']) expect(MAP[name], name).toBe('http')
   })
 
-  it('puts the contract-derived types with the events module, which keeps their type-only contract import', () => {
+  it('puts the contract-derived types with the events module, which keeps their type-only contract import, and the two answer types added since with membership, which takes them the same way', () => {
     for (const name of ['ApiTournamentSection', 'ApiSchedule', 'ApiRoundScheduleItem', 'ApiTournamentListItem', 'ApiTournamentDetail']) {
       expect(MAP[name], name).toBe('events')
     }
     const contracts = importsOf(moduleOf('events')).filter((i) => i.specifier === '@domain/contracts')
     expect(contracts).toEqual([{ specifier: '@domain/contracts', typeOnly: true, reexport: false }])
-    for (const file of MODULES.filter((f) => f !== moduleOf('events'))) {
+    // Membership's answers to the creation endpoints, added since the split, are the contracts' own types.
+    for (const name of ['ApiTournamentCreation', 'ApiPayoutRequest']) expect(JOINED[name], name).toBe('membership')
+    expect(importsOf(moduleOf('membership')).filter((i) => i.specifier.startsWith('@domain/'))).toEqual([{ specifier: '@domain/contracts', typeOnly: true, reexport: false }])
+    const membership = read(moduleOf('membership'))
+    expect(membership).toContain("import type { PayoutRequestResponse, TournamentCreationResponse } from '@domain/contracts'")
+    expect(membership).toMatch(/export type ApiTournamentCreation = TournamentCreationResponse\b/)
+    expect(membership).toMatch(/export type ApiPayoutRequest = PayoutRequestResponse\b/)
+    for (const file of MODULES.filter((f) => f !== moduleOf('events') && f !== moduleOf('membership'))) {
       expect(importsOf(file).filter((i) => i.specifier.startsWith('@domain/')), file).toEqual([])
     }
   })
@@ -307,6 +328,55 @@ describe('calls through the barrel send what they sent before', () => {
     answer({ member: {}, registrations: [], directedTournaments: [] })
     await getMe()
     expect(sent().headers).toEqual({ 'Content-Type': 'application/json' })
+  })
+
+  it('asks what the member may create and sends a payout request, signed in, to the two paths added since the split', async () => {
+    const { getTournamentCreation, requestPayoutAccount, ApiError } = await import('@/lib/api')
+    expect([...ADDED.paths].sort()).toEqual(['/api/me/payout-request', '/api/me/tournament-creation'])
+    session.token = 'tok-5'
+    const grant = { grant: 'standing_director', canCreate: true, canChargeFees: true, clubId: null }
+    answer(grant)
+    expect(await getTournamentCreation()).toEqual(grant)
+    expect(sent().url).toBe('/api/me/tournament-creation')
+    expect(sent().init.method).toBeUndefined()
+    expect(sent().init.body).toBeUndefined()
+    expect(sent().headers).toEqual({ 'Content-Type': 'application/json', Authorization: 'Bearer tok-5' })
+
+    const ticket = { ticket: { id: 'k1', kind: 'payout_request', status: 'open' }, created: true }
+    for (const [tournamentId, body] of [['t1', '{"tournamentId":"t1"}'], [null, '{"tournamentId":null}'], [undefined, '{}']] as const) {
+      calls.mockClear()
+      answer(ticket, 201)
+      expect(await requestPayoutAccount(tournamentId), String(tournamentId)).toEqual(ticket)
+      expect(sent().url).toBe('/api/me/payout-request')
+      expect(sent().init.method).toBe('POST')
+      expect(sent().init.body, String(tournamentId)).toBe(body)
+      expect(sent().headers).toEqual({ 'Content-Type': 'application/json', Authorization: 'Bearer tok-5' })
+    }
+
+    // A refusal reads as ApiError with the server's words, as every call's does.
+    answer({ error: 'Not available yet.' }, 403)
+    const refused = await requestPayoutAccount().then(() => null, (e: unknown) => e)
+    expect(refused).toBeInstanceOf(ApiError)
+    expect(refused).toMatchObject({ message: 'Not available yet.', status: 403 })
+  })
+
+  it('reads the tournament list signed out, as every page has, and signed in only when asked', async () => {
+    const { getTournaments } = await import('@/lib/api')
+    session.token = 'tok-6'
+    answer({ tournaments: [{ id: 't1' }] })
+    expect(await getTournaments()).toEqual([{ id: 't1' }])
+    expect(calls.mock.calls[0]).toEqual(['/api/tournaments'])
+
+    calls.mockClear()
+    answer({ tournaments: [] })
+    await getTournaments({ signedIn: false })
+    expect(calls.mock.calls[0]).toEqual(['/api/tournaments'])
+
+    calls.mockClear()
+    answer({ tournaments: [] })
+    await getTournaments({ signedIn: true })
+    expect(sent().url).toBe('/api/tournaments')
+    expect(sent().headers).toEqual({ 'Content-Type': 'application/json', Authorization: 'Bearer tok-6' })
   })
 
   it('sends a scan as a POST of the photo with its own content type and the token', async () => {
