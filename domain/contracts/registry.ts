@@ -25,6 +25,7 @@ import {
   tournamentsListResponseSchema,
   updateTournamentRequestSchema,
 } from './events'
+import { payoutRequestRequestSchema, payoutRequestResponseSchema, tournamentCreationResponseSchema } from './me'
 import {
   batchRegistrationRequestSchema,
   batchRegistrationResponseSchema,
@@ -83,6 +84,12 @@ export const contracts = {
   },
   'clubs/[id]': {
     GET: { response: clubDetailResponseSchema },
+  },
+  'me/payout-request': {
+    POST: { request: payoutRequestRequestSchema, response: payoutRequestResponseSchema },
+  },
+  'me/tournament-creation': {
+    GET: { response: tournamentCreationResponseSchema },
   },
   registrations: {
     POST: { request: createRegistrationRequestSchema, response: createRegistrationResponseSchema },
