@@ -323,6 +323,25 @@ describe('naming and removing directors with CREATION_ROLES_ON set (D21, criteri
     expect(await logCount()).toBe(log)
   })
 
+  it('the president is refused naming and removing on a club\'s published event whose creator is the president, with today\'s words, and nothing is written', async () => {
+    const president = await seedSeatedObserver()
+    const club = await seedClub()
+    // An event the seat holder made earlier, as the club's rep or as an LCA admin, is not one the president drafted.
+    const event = await seedTournament({ clubId: club, createdBy: president })
+    const director = await seedMember()
+    await seedTournamentDirector(event, director)
+    const log = await logCount()
+
+    const named = await nameDirector(president, event, await seedMember())
+    expect(named.status).toBe(403)
+    expect(await named.json()).toEqual({ error: NAMING_WORDS })
+    const removed = await removeNamed(president, event, director)
+    expect(removed.status).toBe(403)
+    expect(await removed.json()).toEqual({ error: NAMING_WORDS })
+    expect(await directorsOf(event)).toEqual([director])
+    expect(await logCount()).toBe(log)
+  })
+
   it('an LCA admin names and removes on any event, the president\'s draft among them', async () => {
     const admin = await seedAdmin()
     const event = await draftBy(await seedSeatedObserver())

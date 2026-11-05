@@ -87,12 +87,17 @@ export function canChargeFees(person: CreationPerson, event: CreationEvent, role
  * Whether the person may name or remove the event's directors (D21): an LCA
  * admin on any event; a club rep on their own club's events, whatever the
  * grant (today's rule); and, with rolesOn, the president on an event the
- * president created. A standing director never does, nor does anyone else.
+ * president created that the president could create now (canCreate, as
+ * canDeleteDraft reads the creator), an LCA-run event, since the president
+ * creates no other. A club's event the seat holder made earlier, as a club's
+ * rep or as an LCA admin, is not one the president drafted, so the seat gives
+ * no right to name there. A standing director never does, nor does anyone
+ * else.
  */
 export function canAssignDirectors(person: CreationPerson, event: CreationEvent, rolesOn: boolean): boolean {
   if (person.grant === 'admin') return true
   if (repsClub(person, event.clubId)) return true
-  return rolesOn && person.grant === 'president' && event.createdBy === person.memberId
+  return rolesOn && person.grant === 'president' && event.createdBy === person.memberId && canCreate(person, event.clubId, true)
 }
 
 /**

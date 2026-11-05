@@ -9,18 +9,19 @@
 //   LCA admin and the organizing club's rep, worked out here from the two
 //   roles its gate named then. Set, it admits those and, besides them, only
 //   someone with a current term on the President seat, whatever their role,
-//   on an event they created. A visitor gets 401, and an event that does not
-//   exist 404 before the rule, in both states. Unset, nothing reads the
-//   seat; set, the seat is read once a call, only after the event is found
-//   and never for an LCA admin.
+//   on an LCA-run event they created. A visitor gets 401, and an event that
+//   does not exist 404 before the rule, in both states. Unset, nothing reads
+//   the seat; set, the seat is read once a call, only after the event is
+//   found and never for an LCA admin.
 // - The seat as it is at each request: a term that has ended, a term on
 //   another seat and the seat made inactive give nothing; a handover and two
 //   holders at once give each president their own drafts and no other's.
 // - The right is the event's creator, not a director row: the president
 //   named on an LCA admin's event names nothing there, and the president who
 //   removes their own row from their draft still names on it; a draft an LCA
-//   admin moves to a club stays the president's to name on, and becomes the
-//   club rep's as well.
+//   admin moves to a club is no longer the president's to name on, since the
+//   president names only on an LCA-run event they created, and becomes the
+//   club rep's.
 // - Replays: the president's naming and removing write what an LCA admin's
 //   write, and a second naming adds no row.
 // - The gate comes before the body, and the body's checks are as before.
@@ -213,7 +214,9 @@ describe.each(STATES)('every person against every kind of event, with CREATION_R
         const id = where === 'missing' ? `no-such-event-${++seq}` : await seedTournament({ isVisible: false, clubId, createdBy })
         const standing = where === 'missing' ? null : await seedMember()
         if (standing) await seedTournamentDirector(id, standing)
-        const admits = admittedBefore(p, clubId) || (rolesOn && p.seat && createdBy !== null && createdBy === p.as)
+        // The seat names only on an LCA-run event its holder created: an event with a club the holder made earlier, as a club's
+        // rep or as an LCA admin, is not one the president drafted (checkpoint K's review).
+        const admits = admittedBefore(p, clubId) || (rolesOn && p.seat && clubId === null && createdBy !== null && createdBy === p.as)
         const status = !signedIn ? 401 : where === 'missing' ? 404 : null
 
         const helper = await seedMember()
@@ -344,7 +347,7 @@ describe('with CREATION_ROLES_ON set, the right is the event\'s creator, not a d
     expect(await logOf('director_remove', id)).toEqual([{ actor_id: president, target_member_id: president }])
   })
 
-  it('a draft the president made that an LCA admin moves to a club stays the president\'s to name on, becomes the club rep\'s as well, and not another club\'s rep\'s', async () => {
+  it('a draft the president made that an LCA admin moves to a club is no longer the president\'s to name on, since the president names only on an LCA-run event they created, and becomes the club rep\'s, not another club\'s rep\'s', async () => {
     const club = await seedClub()
     const otherClub = await seedClub()
     const admin = await seedAdmin()
@@ -355,7 +358,7 @@ describe('with CREATION_ROLES_ON set, the right is the event\'s creator, not a d
     expect((await name(rep, id, await seedMember())).status).toBe(403)
     expect((await save(admin, id, { clubId: club })).status).toBe(200)
     expect((await eventOf(id))?.club_id).toBe(club)
-    for (const [as, status] of [[president, 201], [rep, 201], [otherRep, 403]] as const) {
+    for (const [as, status] of [[president, 403], [rep, 201], [otherRep, 403]] as const) {
       const helper = await seedMember()
       expect((await name(as, id, helper)).status, as).toBe(status)
       expect((await directorsOf(id)).includes(helper), as).toBe(status === 201)

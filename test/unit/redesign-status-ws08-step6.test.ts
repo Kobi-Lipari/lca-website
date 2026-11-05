@@ -17,6 +17,14 @@
 // items, and no follow-up of its own; the plain-language rules over
 // everything the step wrote; and the date. The files the step touches are
 // read only to find them and hold them to the plain-language rules.
+// What checkpoint K's merge-safety review wrote is pinned with the step's
+// own: the files of the narrowed rule and their pins in the block, the
+// decision on the president's naming, the clause that ends D21's sentence
+// in the map, the sentence that ends the follow-up on the fee tiers, the
+// follow-up for K in a judgement call, since every place in the list of
+// follow-ups moves a closed pin, and the Checkpoint K section's words; and
+// the figures add up as the step's gate gave them or, once refilled after
+// the review's gate, with the cases the review added.
 import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -110,8 +118,8 @@ const TAIL = 'steps 1 to 6 are built; checkpoint K waits for its merge into `mai
 const latestStep = Math.max(0, ...[...ws08.matchAll(/^### WS08 step (\d+): /gm)].map((m) => Number(m[1])))
 /** The PR line's part for checkpoint J, which WS08 step 4 wrote and this step keeps word for word. */
 const J_PART = '**PR:** checkpoint J (steps 1 to 3) was draft pull request 123, merged into `main` as `73943e1` on Wednesday, November 4, 2026; '
-/** The PR line's part for checkpoint K, as this step writes it, before the pull request has a number. */
-const K_PART = 'checkpoint K (steps 4 to 6) is a draft pull request to be opened from this branch now that WS08 step 6 is built, its number written here once it is open; '
+/** The PR line's part for checkpoint K, as this step writes it once the pull request is open, by its number. */
+const K_PART = 'checkpoint K (steps 4 to 6) is draft pull request 124, opened from this branch on Thursday, November 5, 2026 once WS08 step 6 was built; '
 
 const NOTICE_TEST = '`test/integration/published-review.test.ts`'
 const EDGES_TEST = '`test/integration/published-review-edges.test.ts`'
@@ -151,6 +159,17 @@ const CHANGED = ['functions/api/admin/tournaments/[id].ts', 'REDESIGN_STATUS.md'
 const MOVED = ['test/integration/directors-edges.test.ts']
 /** The closed test whose setup alone changes, so the notice's pauses take no time there, named the same way. */
 const PACED = ['test/integration/tournament-create.test.ts']
+/** The files checkpoint K's merge-safety review changed for the narrowed rule: the rules, and the unit and integration tests that hold them. */
+const REVIEWED_CODE = ['domain/events/creation.ts']
+const REVIEWED_UNIT = ['test/unit/creation-rules.test.ts', 'test/unit/creation-rules-matrix.test.ts']
+const REVIEWED_INTEGRATION = ['test/integration/directors.test.ts']
+const REVIEWED = [...REVIEWED_CODE, ...REVIEWED_UNIT, ...REVIEWED_INTEGRATION]
+/** The clause the review adds at the end of D21's sentence of WS08 step 5, before its planned step. */
+const D21_CLAUSE = '; narrowed at checkpoint K\'s review to LCA-run events the president created (WS08 step 6).'
+/** The follow-up of WS08 step 4 the review adds a sentence to, and the words that sentence opens with. */
+const TIERS = 'The fee tiers\' follow-ups wait for the Fees step (WS08 step 4).'
+const TIERS_OPENS = 'For the Fees step, from checkpoint K\'s merge-safety review: '
+const followUp = (name: string) => entries(followUps).find((l) => head(l) === name) ?? ''
 const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')
 /** A number as the record writes it, with or without its thousands' commas. */
 const num = (text: string) => Number(text.replace(/,/g, ''))
@@ -166,6 +185,7 @@ const bareLetters = (text: string) =>
 const written = [
   block, checkpoint, ...tagged(decisions), ...tagged(deviations), ...tagged(verify), statusLine.slice(STATUS_PREFIX.length),
   closing(prLine, 'checkpoint K (steps 4 to 6)'), ...SENTENCES.map(([id, opens]) => sentenceOf(id, opens)), date?.[0] ?? '',
+  closing(mapItem('D21'), D21_CLAUSE), closing(followUp(TIERS), TIERS_OPENS),
 ]
 
 describe('REDESIGN_STATUS.md, WS08 step 6: the step block', () => {
@@ -215,12 +235,16 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the step block', () => {
     for (const name of [...CHANGED, ...MOVED, ...PACED]) expect(changed, name).toContain(`\`${name}\``)
     for (const name of [...MOVED, ...PACED]) expect(changed, name).toMatch(new RegExp(`\`${escape(name)}\` \\(\\d+, as before: `))
     for (const name of [...MOVED, ...PACED]) expect(changed, name).toMatch(new RegExp(`\`${escape(name)}\` \\([^)]*\`setTimeout\` now calls back at once`))
-    expect(files).toContain('No other file is added or changed: nothing under `src/`, `domain/`, `migrations/`, `workers/`, `scripts/` or `scanner/`, nothing else under `functions/`, nor `package.json` or the lock file.')
+    for (const name of REVIEWED) expect(changed, name).toContain(`\`${name}\``)
+    for (const name of [...REVIEWED_UNIT, ...REVIEWED_INTEGRATION]) expect(changed, name).toMatch(new RegExp(`\`${escape(name)}\` \\(\\d+, (?:\\d+ before|as before): `))
+    expect(changed).toContain('at checkpoint K\'s merge-safety review, for the narrowed rule, `domain/events/creation.ts`')
+    expect(files).toContain('No other file is added or changed: nothing under `src/`, `migrations/`, `workers/`, `scripts/` or `scanner/`, nothing else under `domain/` or `functions/`, nor `package.json` or the lock file.')
     expect(files).toContain('every case reading the stored row, the activity log and the outbox after the call')
     const beyond = files.split('\n').find((l) => l.startsWith('  - Files beyond the step\'s list: ')) ?? ''
     for (const name of [...MOVED, ...PACED, ...WRITTEN_AFTER]) expect(beyond, name).toContain(`\`${name}\``)
     expect(beyond).toContain('closed with WS08 step 5')
     expect(beyond).toContain('the three files of tests written once the notice was built')
+    for (const name of [...REVIEWED, ...MOVED]) expect(closing(beyond, 'At checkpoint K\'s merge-safety review'), name).toContain(`\`${name}\``)
     expect(fresh).toContain('and three files of tests written once the notice was built: ')
   })
 
@@ -278,7 +302,7 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the step block', () => {
     ]) expect(worker, piece).toContain(piece)
   })
 
-  it('says nothing a visitor sees ships with every switch off, and names the one pin it moves with its old and new expectation and its reason', () => {
+  it('says nothing a visitor sees ships with every switch off, and names the one pin it moves and those of checkpoint K\'s review, each with its old and new expectation and its reason', () => {
     const ships = bullet(block, '- **What ships with every switch off.**')
     expect(ships.startsWith('- **What ships with every switch off.** Nothing a visitor sees or hears.')).toBe(true)
     for (const piece of [
@@ -289,7 +313,26 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the step block', () => {
     const pins = bullet(block, '- **Pins moved.**')
     expect(pins.startsWith('- **Pins moved.** One, in `test/integration/directors-edges.test.ts`, closed with WS08 step 5,')).toBe(true)
     const moved = pins.split('\n').filter((l) => /^\s+- /.test(l))
-    expect(moved).toHaveLength(1)
+    expect(moved).toHaveLength(4)
+    for (const piece of [
+      'at checkpoint K\'s merge-safety review, four more, two in that test and two in `test/unit/creation-rules-matrix.test.ts`, closed with WS08 step 1',
+      'with two cases added to `test/unit/creation-rules.test.ts`', 'because `canAssignDirectors` no longer admits the president on an event with a club',
+      'Each of the review\'s is a pin on live behaviour the review changed, not on words a record wrote',
+    ]) expect(pins.split('\n')[0], piece).toContain(piece)
+    for (const piece of [
+      '`test/integration/directors-edges.test.ts`, at checkpoint K\'s review',
+      '`(rolesOn && p.seat && createdBy !== null && createdBy === p.as)` to `(rolesOn && p.seat && clubId === null && createdBy !== null && createdBy === p.as)`',
+      'unless they are that club\'s rep, where the rule as WS08 step 5 wrote it admitted them', 'the president\'s naming after the move, 201 to 403',
+    ]) expect(moved[1], piece).toContain(piece)
+    for (const piece of [
+      '`test/unit/creation-rules-matrix.test.ts`, closed with WS08 step 1', '`on && e.createdBy === ME` to `on && e.createdBy === ME && e.clubId === null`',
+      'the list loses its three lines for a club\'s event the president created', 'keeps its two lines for an LCA-run event',
+    ]) expect(moved[2], piece).toContain(piece)
+    for (const piece of [
+      '`test/unit/creation-rules.test.ts`, closed with WS08 step 1: no expectation moves',
+      '"the president, a club event the president created as its rep or as an admin before, set", false',
+      '"a club rep who holds the seat, its own club\'s event it created, set", true',
+    ]) expect(moved[3], piece).toContain(piece)
     for (const piece of [
       '`[\'is_visible\']` for every person, to `[\'is_visible\', \'review_notified_at\']` for "a standing director, their own draft"',
       'since that publish is the first publish of a standing director\'s event', 'the plan does not name this pin', 'the case is otherwise as WS08 step 5 left it',
@@ -308,7 +351,11 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the step block', () => {
       'since `members.email` is not unique', 'the query reads `full_name` as the plan writes it', 'and not in `functions/utils/email.ts` beside the other templates',
       'passes the event\'s id through `encodeURIComponent`', '`eventDays` compares the two days as written out',
       'The publish\'s row carries its two keys on every publish while the constant is set', 'is no publish: it sends nothing and writes no row',
-      'No follow-up is added', 'The Status line\'s tail says the checkpoint waits for its merge',
+      'One follow-up for K is added at checkpoint K\'s merge-safety review, "The president\'s naming on events made before the term"',
+      'should reach only events created during the current term on the President seat', '`started_at` in the term\'s row of `board_seat_assignments`',
+      'until then the rule admits the LCA-run events the holder created under any grant',
+      'It is written here and not as an entry of the follow-ups, since every place in that list moves a pin of a closed record test',
+      'The Status line\'s tail says the checkpoint waits for its merge',
       'The notice reads the grant the creator holds at each publish while the constant is set, and the mark is set only when the notice goes',
       'an event first published while the constant was unset gets its one notice at its first publish once the constant is set',
       'a club rep\'s draft whose creator has become a tournament director among them',
@@ -354,14 +401,18 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the Checkpoint K section', () => {
       'Every change a visitor could notice waits for `CREATION_ROLES_ON`, which stays unset, and `standingDirectors`, which stays off',
       'an LCA admin\'s create with an empty club id, which WS08 step 4\'s deviation sets out and which K may still have wait for the constant',
       'it stays unset until checkpoint L', 'No page draws anything new.',
+      'D21 on the directors endpoint, the president naming one-event directors on an LCA-run event the president created',
     ]) expect(opening, piece).toContain(piece)
+    // Checkpoint K's review narrowed the president's naming to LCA-run events, so the section no longer says "an event the president created" alone.
+    expect(checkpoint).not.toContain('one-event directors on an event the president created')
   })
 
-  it('has a bullet for each of its three steps and each part a checkpoint\'s section gives, once each', () => {
+  it('has a bullet for each of its three steps and each part a checkpoint\'s section gives, once each, the step 5 bullet giving the president\'s naming as checkpoint K\'s review narrowed it', () => {
     for (const name of [
       '- **WS08 step 4:**', '- **WS08 step 5:**', '- **WS08 step 6:**', '- **What the merge does to production.**', '- **Before merging.**',
       '- **Rollback.**', '- **What K looks at on a throwaway preview.**', '- **Checks at the end of the checkpoint.**',
     ]) expect(checkpoint.split('\n').filter((l) => l.startsWith(name)), name).toHaveLength(1)
+    expect(bullet(checkpoint, '- **WS08 step 5:**')).toContain('with the constant set, the president names and removes one-event directors on an LCA-run event the president created;')
   })
 
   it('says what the merge does to production against main\'s head: no migration, the worker with its bundle unchanged, the endpoints as today, the rows that wait, the site\'s files measured and nothing a visitor sees', () => {
@@ -372,6 +423,8 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the Checkpoint K section', () => {
       '`deploy-worker.yml` starts', 'redeploys the daily-emails worker with its bundle unchanged, since none of the files this checkpoint adds or changes is in its import closure',
       'a dry run of its bundle on `9215a72`, WS08 step 5\'s commit, and on the finished tree gives the same `index.js`, 32,757 bytes, byte for byte',
       'answer, write and refuse as today', 'its answers today\'s byte for byte, as `test/integration/tournament-delete-edges.test.ts` holds',
+      'and reads the event\'s section rows once more, for a comparison that refuses nothing while the constant is unset',
+      '`requireAdmin` after one read of the caller\'s role (`requireAuthedMember`), so an LCA admin\'s token is checked twice, with today\'s answers',
       'The activity log gains nothing while the constant is unset', '`tournament_delete` (WS08 step 5)', '`review_notified` and `review_notices_sent` (WS08 step 6)',
       'No email can go, since the notice is called only while the constant is set', 'No window. Checkpoint K carries no migration',
       'a production build of `main`\'s tree at `73943e1` and one of the finished tree give 227 files each in `dist`, 189 of them in `dist/assets`',
@@ -387,9 +440,19 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the Checkpoint K section', () => {
     for (const piece of [
       'No preview migration is needed: checkpoint K carries no migration, and the preview database already holds 0059', 'nothing runs on production by hand',
       'K decides before the merge whether the empty club id waits for the constant', 'who may mark the State Championship',
+      'migrated from the branch on Wednesday, November 4, 2026 at about 7:05 PM UTC, before checkpoint J merged, as ordering rule 2 has it',
+      'The State Championship mark is written at line 225 of `functions/api/admin/tournaments/[id].ts` at `e592afe`',
+      '`GET /api/champions` (`functions/api/champions.ts`), which answers the champions page', 'its "State Championship" badge',
+      'the LCA admins\' notice email does not mention the mark',
     ]) expect(before, piece).toContain(piece)
+    expect(checkpoint).not.toContain('before checkpoint J\'s review')
     const preview = bullet(checkpoint, '- **What K looks at on a throwaway preview.**')
     expect(preview.startsWith('- **What K looks at on a throwaway preview.** Nothing: checkpoint K changes no page a visitor sees, and the pages come in checkpoint L')).toBe(true)
+    for (const piece of [
+      'the run of `npm run db:migrate:preview` on Wednesday, November 4, 2026, before checkpoint J merged, already migrated',
+      'a standing director\'s first publish there emails every LCA admin in the preview\'s database, if the preview has an email key',
+      'that is the email to look at, and only the preview\'s admins get it',
+    ]) expect(preview, piece).toContain(piece)
     const rollback = bullet(checkpoint, '- **Rollback.**')
     for (const piece of ['`git revert -m 1 <merge sha>` on `main` and push', 'No migration job starts', 'nothing in the database needs undoing', 'revert the revert commit']) {
       expect(rollback, piece).toContain(piece)
@@ -428,7 +491,7 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the lines outside the block', () => {
     expect(prLine.startsWith(J_PART)).toBe(true)
     const kPart = between(prLine, 'checkpoint K (steps 4 to 6)', 'checkpoint L (steps 7 to 10)')
     expect(kPart).toMatch(/to be opened|pull request \d+|merged/)
-    if (latestStep === 6 && /\(a draft pull request to be opened\)/.test(opening)) expect(kPart).toBe(K_PART)
+    if (latestStep === 6 && /\(draft pull request 124\)/.test(opening)) expect(kPart).toBe(K_PART)
     if (latestStep < 10) expect(prLine.endsWith('checkpoint L (steps 7 to 10) opens as a draft pull request after WS08 step 10, each merged on its own.')).toBe(true)
     expect(prLine).not.toContain('is pending')
     expect(prLine).not.toMatch(/\bnone yet\b/)
@@ -466,15 +529,18 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the lines outside the block', () => {
     // The words of WS08 steps 1 and 2 stand in front of the new sentences.
     expect(mapItem('AC13')).toContain('Built in WS08 step 2: the column, `tournaments.review_notified_at`, nullable, in migration 0059. Proved in WS08 step 6 by')
     expect(mapItem('D22')).toContain('and the LCA admins are told after the fact, once per event, by email. Proved in WS08 step 6 by')
+    // Checkpoint K's review ends D21's sentence of WS08 step 5 with one clause, in front of its planned step.
+    expect(mapItem('D21').endsWith(`with it unset the president is refused, as today${D21_CLAUSE} Planned: WS08 step 5.`)).toBe(true)
   })
 })
 
 describe('REDESIGN_STATUS.md, WS08 step 6: the four lists', () => {
-  it('records its three decisions, its three deviations and its eight verify items, each tagged and each verify item confirmed, and no follow-up', () => {
+  it('records its four decisions, the review\'s among them, its three deviations and its eight verify items, each tagged and each verify item confirmed, and no entry in the follow-ups', () => {
     expect(tagged(decisions).map(head)).toEqual([
       'D22: listed at once, told after the fact (WS08 step 6).',
       'The mark decides the send (WS08 step 6).',
       'Two-day dates day by day (WS08 step 6).',
+      'The president names directors on LCA-run events alone (WS08 step 6).',
     ])
     expect(tagged(deviations).map(head)).toEqual([
       'The notice is email only (WS08 step 6).',
@@ -493,13 +559,23 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the four lists', () => {
     ])
     for (const entry of tagged(verify)) expect(entry.slice(entry.indexOf('.**') + 4), head(entry)).toMatch(/^Confirmed\b/)
     expect(tagged(followUps)).toEqual([])
+    // The review's sentence ends WS08 step 4's follow-up on the fee tiers, once.
+    const tiers = followUp(TIERS)
+    expect(tiers.split(TIERS_OPENS)).toHaveLength(2)
+    expect(tiers.indexOf(TIERS_OPENS)).toBeGreaterThan(tiers.indexOf('Owner: the console part, with the Fees step.'))
+    expect(tiers.endsWith('`priceEntry` adds both lines at checkout, so the rule, which reads what each tier costs and not when it applies, lets a save charge more than any one price it read; the Fees step reads it with the others.')).toBe(true)
     for (const list of [decisions, deviations, verify, followUps]) {
       for (const entry of entries(list)) expect(entry).toMatch(/^- \*\*[^*]+ \(WS08 step (?:[1-9]|10)\)\.\*\* \S/)
     }
   })
 
   it('says in each decision what it decides', () => {
-    const [d22, mark, days] = tagged(decisions)
+    const [d22, mark, days, naming] = tagged(decisions)
+    for (const piece of [
+      'At checkpoint K\'s merge-safety review, `canAssignDirectors` is narrowed', 'read from `created_by` and `club_id` through `canCreate`, as `canDeleteDraft` reads the creator\'s grant',
+      'an event the seat holder made earlier as a club\'s rep or as an LCA admin is not one the president drafted',
+      'One case is left: an LCA-run event the holder made as an LCA admin before the term', 'With the constant unset nothing changes.',
+    ]) expect(naming, piece).toContain(piece)
     for (const piece of [
       'a standing director\'s event lists the moment it is published', 'nothing holds it', 'the LCA admins are told by one email each, after the fact',
       'The notice reads the grant the event\'s creator holds at the publish, through `creatorGrant`, and not the publisher\'s', 'With the constant unset nothing is sent and no mark is set.',
@@ -526,6 +602,7 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the four lists', () => {
     for (const piece of [
       'and not through `waitUntil`', 'so the row can say whether the mark was set and how many emails went', 'waits for one email to each admin, 400 ms apart', 'an email that fails does not fail the save',
       'nor does a failure of the database inside the notice, which the notice catches and logs',
+      '`waitUntil` was weighed and set aside because the publish\'s row could then not say what the notice did (the harness can wait for `waitUntil` work, so the tests alone would not have decided it)',
     ]) {
       expect(inline, piece).toContain(piece)
     }
@@ -599,7 +676,7 @@ describe('REDESIGN_STATUS.md, WS08 step 6: plain language', () => {
   })
 
   it('keeps every file the step adds or changes free of a dash, a tool\'s name, the two letters on their own and the old initials', () => {
-    for (const file of [...NEW_FILES, ...CHANGED, ...MOVED, ...PACED]) {
+    for (const file of [...NEW_FILES, ...CHANGED, ...MOVED, ...PACED, ...REVIEWED]) {
       expect(existsSync(join(ROOT, file)), file).toBe(true)
       if (file === 'REDESIGN_STATUS.md') continue
       const text = read(file)
@@ -623,6 +700,12 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the date', () => {
 
 describe('REDESIGN_STATUS.md, WS08 step 6: the figures agree', () => {
   const files = bullet(block, '- **Files.**')
+  /** The cases checkpoint K's review added to the files named, from their counts in the Files bullet, each as before or with its count before. */
+  const reviewGains = (names: readonly string[]) => names.reduce((sum, name) => {
+    const found = new RegExp(`\`${escape(name)}\` \\((\\d+), (?:(\\d+) before|as before): `).exec(files)
+    expect(found, name).not.toBeNull()
+    return sum + Number(found![1]) - Number(found![2] ?? found![1])
+  }, 0)
 
   it('gives unit counts that add up: the base\'s and the new unit files\', four files more', () => {
     const unit = /unit ([\d,]+) tests in (\d+) files \(([\d,]+) in (\d+) on the base\), every one passing/.exec(checksLine)
@@ -632,7 +715,9 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the figures agree', () => {
     const fresh = NEW_UNIT.map((name) => Number(new RegExp(`\`${escape(name)}\` \\((\\d+): `).exec(files)?.[1]))
     for (const n of fresh) expect(Number.isNaN(n)).toBe(false)
     expect(NEW_UNIT).toHaveLength(4)
-    expect(num(before) + fresh.reduce((a, n) => a + n, 0)).toBe(num(after))
+    // The Checks line gives the step's own gate, or, once refilled after checkpoint K's review, the gate after it, with the review's cases.
+    const counted = num(before) + fresh.reduce((a, n) => a + n, 0)
+    expect([counted, counted + reviewGains(REVIEWED_UNIT)]).toContain(num(after))
     expect(Number(afterFiles) - Number(beforeFiles)).toBe(NEW_UNIT.length)
   })
 
@@ -644,7 +729,9 @@ describe('REDESIGN_STATUS.md, WS08 step 6: the figures agree', () => {
     const fresh = NEW_INTEGRATION.map((name) => Number(new RegExp(`\`${escape(name)}\` \\((\\d+): `).exec(files)?.[1]))
     for (const n of fresh) expect(Number.isNaN(n)).toBe(false)
     expect(NEW_INTEGRATION).toHaveLength(2)
-    expect(num(before) + fresh.reduce((a, n) => a + n, 0)).toBe(num(after))
+    // As for the unit tests: the step's own gate, or the gate after checkpoint K's review, with the review's cases.
+    const counted = num(before) + fresh.reduce((a, n) => a + n, 0)
+    expect([counted, counted + reviewGains([...REVIEWED_INTEGRATION, ...MOVED])]).toContain(num(after))
     expect(Number(afterFiles) - Number(beforeFiles)).toBe(NEW_INTEGRATION.length)
   })
 
