@@ -1,18 +1,39 @@
 // test/integration/role-safety.test.ts
 // Guard rails before handing out roles: what directors can do to payments,
-// that their changes are logged, and that admins can delete any ticket.
-import { beforeEach, describe, expect, it } from 'vitest'
+// that their changes are logged, that admins can delete any ticket, and, with
+// the creation roles on, what a one-event director may not do to the event
+// they direct (WS08 step 5). CREATION_ROLES_ON is false in the tree; the
+// creation roles' case reads it through a getter on the mocked module, as
+// test/integration/tournament-create.test.ts does, and every other case runs
+// with it unset, as before.
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { env } from 'cloudflare:test'
-import { invoke, resetHarness } from './harness'
-import { seedAdmin, seedClub, seedMember, seedRegistration, seedTournament, seedTournamentDirector } from './factories'
+import { errorBodySchema } from '../../domain/contracts'
+import { expectContract, invoke, resetHarness } from './harness'
+import { seedAdmin, seedClub, seedMember, seedPresident, seedRegistration, seedTournament, seedTournamentDirector } from './factories'
 
 import { onRequestPatch as registrationPatch } from '../../functions/api/registrations/[id]'
-import { onRequestPatch as tournamentPatch } from '../../functions/api/admin/tournaments/[id]'
+import { onRequestDelete as tournamentDelete, onRequestPatch as tournamentPatch } from '../../functions/api/admin/tournaments/[id]'
+import { onRequestDelete as directorRemove, onRequestPost as directorAssign } from '../../functions/api/admin/tournaments/[id]/directors'
 import { onRequestPatch as clubPatch } from '../../functions/api/admin/clubs/[id]'
 import { onRequestPost as supportPost } from '../../functions/api/support'
 import { onRequestDelete as adminTicketDelete } from '../../functions/api/admin/support/[id]'
 
+const flags = vi.hoisted(() => ({ rolesOn: false }))
+vi.mock('../../functions/utils/events/creation', async (importOriginal) => {
+  const real = await importOriginal<typeof import('../../functions/utils/events/creation')>()
+  return {
+    ...real,
+    get CREATION_ROLES_ON() {
+      return flags.rolesOn
+    },
+  }
+})
+
 beforeEach(resetHarness)
+afterEach(() => {
+  flags.rolesOn = false
+})
 
 async function logCount(action: string): Promise<number> {
   const row = await env.DB.prepare('SELECT COUNT(*) AS n FROM admin_audit_log WHERE action = ?')
@@ -88,5 +109,41 @@ describe('support tickets', () => {
     const gone = await env.DB.prepare('SELECT id FROM support_tickets WHERE id = ?').bind(ticketId).first()
     expect(gone).toBeNull()
     expect(await logCount('ticket_delete')).toBe(1)
+  })
+})
+
+describe('creation roles', () => {
+  beforeEach(() => {
+    flags.rolesOn = true
+  })
+
+  it('a one-event director cannot name or remove a director, flip the membership switch or delete the event, with CREATION_ROLES_ON set: each refusal is { error }, and nothing is written', async () => {
+    // The president's unpublished draft with no entries, and the member the president named to run it.
+    const president = await seedMember({ role: 'lca_observer' })
+    await seedPresident(president)
+    const tournamentId = await seedTournament({ isVisible: false, createdBy: president })
+    await seedTournamentDirector(tournamentId, president)
+    const director = await seedMember()
+    await seedTournamentDirector(tournamentId, director)
+    const stored = async () => ({
+      event: await env.DB.prepare('SELECT * FROM tournaments WHERE id = ?').bind(tournamentId).first(),
+      directors: (await env.DB.prepare('SELECT member_id FROM tournament_directors WHERE tournament_id = ? ORDER BY member_id').bind(tournamentId).all()).results,
+      log: (await env.DB.prepare('SELECT COUNT(*) AS n FROM admin_audit_log').first<{ n: number }>())?.n,
+    })
+    const before = await stored()
+
+    const params = { id: tournamentId }
+    const answers = [
+      ['naming a director', await invoke(directorAssign, { method: 'POST', as: director, params, body: { memberId: await seedMember() } })],
+      ['removing one', await invoke(directorRemove, { method: 'DELETE', as: director, params, body: { memberId: president } })],
+      ['the membership switch', await invoke(tournamentPatch, { method: 'PATCH', as: director, params, body: { requiresLcaMembership: false } })],
+      ['the delete', await invoke(tournamentDelete, { method: 'DELETE', as: director, params })],
+    ] as const
+    for (const [what, answer] of answers) {
+      expect(answer.status, what).toBe(403)
+      await expectContract(answer, errorBodySchema)
+    }
+    // The event, its two directors and the activity log are as they were: no row for any of the four.
+    expect(await stored()).toEqual(before)
   })
 })

@@ -14,7 +14,7 @@ const FILTERS: { value: string; label: string }[] = [
   { value: 'membership_override', label: 'Membership overrides' },
   { value: 'club_change', label: 'Club changes' },
   { value: 'impersonation_start', label: 'Impersonation' },
-  { value: 'tournament_create,tournament_publish,tournament_unpublish,round_paired,round_delete,pairing_edit,tournament_complete,announcement_sent,director_assign,director_remove,registration_withdraw,registration_reinstate,waitlist_offer', label: 'Events' },
+  { value: 'tournament_create,tournament_publish,tournament_unpublish,tournament_delete,round_paired,round_delete,pairing_edit,tournament_complete,announcement_sent,director_assign,director_remove,registration_withdraw,registration_reinstate,waitlist_offer', label: 'Events' },
   { value: 'payment_change', label: 'Payments' },
   { value: 'club_edit,officer_add,officer_remove', label: 'Club edits' },
   { value: 'seat_assign,seat_end,seat_regions', label: 'Board seats' },
@@ -58,6 +58,7 @@ const ACTION_META: Record<
   tournament_create: { label: 'Created event', icon: Trophy, className: 'bg-ok-100 text-ok' },
   tournament_publish: { label: 'Made event public', icon: Globe, className: 'bg-ok-100 text-ok' },
   tournament_unpublish: { label: 'Hid event', icon: EyeOff, className: 'bg-muted text-muted-foreground' },
+  tournament_delete: { label: 'Deleted event', icon: Trash2, className: 'bg-bad-100 text-bad-800' },
   round_delete: { label: 'Deleted round', icon: Trash2, className: 'bg-bad-100 text-bad-800' },
   round_paired: { label: 'Paired round', icon: Trophy, className: 'bg-ok-100 text-ok' },
   pairing_edit: { label: 'Changed a pairing', icon: Pencil, className: 'bg-lca-gold/20 text-gold-ink-badge' },
@@ -182,7 +183,7 @@ export function AuditLogPanel() {
 
   // A start with no matching end means the admin closed the tab rather than
   // clicking "stop impersonating". Worth surfacing, but as "unknown", not as
-  // "still active" — nothing here can actually know that.
+  // "still active": nothing here can actually know that.
   const unclosedImpersonations = useMemo(() => {
     const ended = new Set(
       entries

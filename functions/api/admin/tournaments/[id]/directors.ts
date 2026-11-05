@@ -3,6 +3,8 @@ import type { Env, MemberRow } from '../../../../types'
 import { isObserver, isResponse, requireAuthedMember } from '../../../../utils/auth'
 import { canManageTournament } from '../../../../utils/admin/permissions'
 import { recordAdminAction } from '../../../../utils/admin/audit'
+import { CREATION_ROLES_ON, creationPerson } from '../../../../utils/events/creation'
+import { canAssignDirectors } from '../../../../../domain/events/creation'
 import {
   errorResponse,
   handleOptions,
@@ -28,9 +30,11 @@ async function listDirectors(env: Env, tournamentId: string) {
   return directors.results ?? []
 }
 
-// Shared gate for assigning/removing: admins, or the rep of the club that
-// organizes the event. Assigning someone gives them this event only; it
-// never changes their role.
+// Shared gate for assigning/removing (D21): an LCA admin on any event, the
+// rep of the club that organizes it, and, once CREATION_ROLES_ON is set, the
+// president on an event the president created. canAssignDirectors decides,
+// the one place the rule is written. Assigning someone gives them this event
+// only; it never changes their role.
 async function requireCanAssign(
   context: EventContext<Env, string, unknown>,
 ): Promise<
@@ -42,21 +46,22 @@ async function requireCanAssign(
   if (isResponse(authed)) return authed
 
   const tournament = await context.env.DB.prepare(
-    'SELECT id, name, club_id FROM tournaments WHERE id = ?',
+    'SELECT id, name, club_id, created_by FROM tournaments WHERE id = ?',
   )
     .bind(tournamentId)
-    .first<{ id: string; name: string; club_id: string | null }>()
+    .first<{ id: string; name: string; club_id: string | null; created_by: string | null }>()
 
   if (!tournament) {
     return errorResponse('Tournament not found', 404)
   }
 
-  // Only admins and the organizing club's rep hand out director access.
-  // Directors run the event; they don't give others access to it.
-  const isAdmin = authed.member.role === 'lca_admin'
-  const isOwnRep = authed.member.role === 'club_rep' &&
-    !!tournament.club_id && authed.member.club_id === tournament.club_id
-  if (!isAdmin && !isOwnRep) {
+  // Directors run the event; they don't give others access to it. A club
+  // rep's right on its own club's events comes through repClubId, whatever
+  // else the rep holds. CREATION_ROLES_ON is read here, at each request; while
+  // it is unset the seat is never read and the answer is today's.
+  const rolesOn = CREATION_ROLES_ON
+  const person = await creationPerson(context.env.DB, authed.member, rolesOn)
+  if (!canAssignDirectors(person, { clubId: tournament.club_id, createdBy: tournament.created_by }, rolesOn)) {
     return errorResponse('Only admins and the organizing club\'s rep can assign directors', 403)
   }
 

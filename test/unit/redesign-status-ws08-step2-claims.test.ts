@@ -430,10 +430,10 @@ function runCommands(lines: string[]): string[] {
 describe('the follow-up for K on the preview database', () => {
   const followUp = entryOf(followUps, 'K migrates the preview database before checkpoint J\'s preview (WS08 step 2).')
 
-  it('quotes ordering rule 2 word for word', () => {
-    const rule = status.split('\n').find((l) => l.startsWith('2. **K migrates the preview database')) ?? ''
+  it('quotes ordering rule 2 word for word, as WS08 step 4 reworded it', () => {
+    const rule = status.split('\n').find((l) => l.startsWith('2. **The preview database is migrated from the branch')) ?? ''
     const plain = rule.replace(/^2\. /, '').replace(/\*\*/g, '')
-    const quoted = /ordering rule 2 applies to it: "([^"]+)"/.exec(followUp)
+    const quoted = /ordering rule 2 now reads: "([^"]+)"/.exec(followUp)
     expect(quoted, 'the quotation').not.toBeNull()
     expect(quoted![1].endsWith('.')).toBe(true)
     expect(plain.startsWith(quoted![1])).toBe(true)

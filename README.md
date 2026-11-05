@@ -140,14 +140,16 @@ Each of these runs `scripts/db/preview-guard.ts` first. The guard reads
 preview id is missing or a placeholder, if it is production's id, or if the
 command would act on `lca-db`.
 
-- **Migrate the preview before reviewing it.** K runs
-  `npm run db:migrate:preview` from the branch, with his own Cloudflare
-  credentials, before reviewing each checkpoint's preview, not after the
-  merge. Once a branch adds tables the code reads, a preview bound to an
-  unmigrated database shows errors. Merging to `main` applies migrations to
-  production only (`.github/workflows/migrate-db.yml`); nothing migrates the
-  preview database automatically. The first run on the new, empty database
-  applies every migration from `0001` on.
+- **Migrate the preview before reviewing it.** The preview database is
+  migrated from the branch before anyone reviews a checkpoint's preview, not
+  after the merge: `npm run db:migrate:preview` is run from the branch, from
+  the cloud session that prepares the checkpoint or by K with K's own
+  Cloudflare credentials, and never against production. Once a branch adds
+  tables the code reads, a preview bound to an unmigrated database shows
+  errors. Merging to `main` applies migrations to production only
+  (`.github/workflows/migrate-db.yml`); nothing migrates the preview database
+  automatically. The first run on the new, empty database applies every
+  migration from `0001` on.
 - **Logins are shared.** Previews use the production Supabase project, so
   signing in on a preview uses a real account.
 - **Secrets are separate.** Set preview secrets in the Pages dashboard under
@@ -162,9 +164,9 @@ command would act on `lca-db`.
   site.
 - One preview database serves every branch, so a migration applied from one
   branch is there for all of them.
-- Development containers and automated checks never target the preview
-  database: tests use a local in-memory D1, and only K runs the preview
-  scripts.
+- Tests and automated checks never target the preview database: tests use a
+  local in-memory D1, and the preview scripts run only by hand, from the cloud
+  session that prepares a checkpoint or by K.
 
 ### Testing
 

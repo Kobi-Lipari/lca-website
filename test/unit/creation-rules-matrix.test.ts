@@ -11,8 +11,8 @@
 // - setting it only widens who may create, name directors and delete a
 //   draft, and only narrows who may set a fee above $0, and what it widens
 //   is the president's and the standing director's LCA-run events, the
-//   president's naming on events the president created, and a creator's
-//   delete of an unpublished draft with no entries;
+//   president's naming on LCA-run events the president created, and a
+//   creator's delete of an unpublished draft with no entries;
 // - set, the table's rows hold for every grant: a club's events are created
 //   by an LCA admin and the club's own rep alone, an LCA-run event by an LCA
 //   admin, the president and a standing director alone, a standing director
@@ -116,14 +116,11 @@ describe('setting CREATION_ROLES_ON only widens creating, naming and deleting, a
     ])
   })
 
-  it('what it widens: the president\'s naming on an event the president created, and nothing else on naming', () => {
+  it('what it widens: the president\'s naming on an LCA-run event the president created, and nothing else on naming', () => {
     const widened = PEOPLE.flatMap((p) => EVENTS.filter((e) => canAssignDirectors(p, e, true) && !canAssignDirectors(p, e, false)).map((e) => `${who(p)}, ${what(e)}`))
     expect(widened).toEqual([
       `president, an LCA-run event created by ${ME}`,
-      `president, ${OWN} created by ${ME}`,
-      `president, ${OTHER} created by ${ME}`,
       `president beside the rep of ${OWN}, an LCA-run event created by ${ME}`,
-      `president beside the rep of ${OWN}, ${OTHER} created by ${ME}`,
     ])
   })
 
@@ -161,11 +158,11 @@ describe('with CREATION_ROLES_ON set, the table holds for every grant', () => {
     }
   })
 
-  it('a standing director names no event\'s directors (D21), and the president only those of an event the president created', () => {
+  it('a standing director names no event\'s directors (D21), and the president only those of an LCA-run event the president created', () => {
     for (const e of EVENTS) {
       for (const on of STATES) {
         expect(canAssignDirectors({ grant: 'standing_director', memberId: ME, repClubId: null }, e, on), `${what(e)}, ${state(on)}`).toBe(false)
-        expect(canAssignDirectors({ grant: 'president', memberId: ME, repClubId: null }, e, on), `${what(e)}, ${state(on)}`).toBe(on && e.createdBy === ME)
+        expect(canAssignDirectors({ grant: 'president', memberId: ME, repClubId: null }, e, on), `${what(e)}, ${state(on)}`).toBe(on && e.createdBy === ME && e.clubId === null)
         expect(canAssignDirectors({ grant: 'none', memberId: ME, repClubId: null }, e, on), `${what(e)}, ${state(on)}`).toBe(false)
       }
     }

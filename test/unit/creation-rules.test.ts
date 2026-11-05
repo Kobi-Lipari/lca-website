@@ -127,6 +127,8 @@ describe('canAssignDirectors: who may name or remove an event\'s directors (D21)
     ['the president, an event the president created, unset', PRESIDENT, event(null, ME), false, false],
     ['the president, an event someone else created, set', PRESIDENT, event(null, SOMEONE), true, false],
     ['the president, a club event someone else created, set', PRESIDENT, event(CLUB, SOMEONE), true, false],
+    ['the president, a club event the president created as its rep or as an admin before, set', PRESIDENT, event(CLUB, ME), true, false],
+    ['a club rep who holds the seat, its own club\'s event it created, set', REP_PRESIDENT, event(CLUB, ME), true, true],
     ['a standing director, an event they created, set: never', STANDING, event(null, ME), true, false],
     ['no grant, an event they created, set', NONE, event(null, ME), true, false],
   ]
