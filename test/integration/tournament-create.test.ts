@@ -9,6 +9,9 @@
 //      with no director row, and everyone else is refused; unset, the standing
 //      director and the president are refused, as today. A club rep's path, a
 //      club rep who holds the President seat included, runs in both states.
+//      An empty club id is no club for every creator, and the fee check reads
+//      each section's prices as the section writer stores them, a section's
+//      own late price among them (WS08 step 4).
 //   2. A creator who has lost the grant that let them create, a former club
 //      rep or a former LCA admin, keeps nothing on the event, in both states:
 //      each first runs the event by its role, a cash payment among what it
@@ -235,6 +238,32 @@ describe('tournament creation with CREATION_ROLES_ON set (criterion 12, D20)', (
     expect(free.status).toBe(201)
     expect(await eventCount()).toBe(events + 1)
   })
+
+  it('the fee check reads a section\'s own late price as the section writer stores it: a free section with its own late price of $10 is refused with canChargeFees made to refuse, and created for a creator it lets charge (D24)', async () => {
+    const body = { ...tournamentBody(), entryFee: 0, sections: [{ name: 'Open', entryFee: 0, fees: { late: 10 } }] }
+    const director = await seedDirector()
+    const events = await eventCount()
+    flags.refuseFees = true
+    const refused = await create(director, body)
+    expect(refused.status).toBe(403)
+    expect(await refused.json()).toEqual({ error: FEES_NEED_PAYOUT_ACCOUNT })
+    expect(await eventCount()).toBe(events)
+    flags.refuseFees = false
+    const res = await create(director, body)
+    expect(res.status).toBe(201)
+    const id = await createdId(res)
+    const section = await env.DB.prepare('SELECT name, fee_regular, fee_early, fee_late FROM tournament_sections WHERE tournament_id = ?').bind(id).first()
+    expect(section).toEqual({ name: 'Open', fee_regular: 0, fee_early: null, fee_late: 10 })
+  })
+
+  it('a standing director who sends an empty club id creates an LCA-run event, the empty id read as no club rather than refused with the LCA-run words', async () => {
+    const director = await seedDirector()
+    const res = await create(director, { ...tournamentBody(), clubId: '' })
+    expect(res.status).toBe(201)
+    const id = await createdId(res)
+    expect(await draftOf(id)).toEqual({ club_id: null, created_by: director, is_visible: 0, requires_lca_membership: 1 })
+    expect(await directorsOf(id)).toEqual([director])
+  })
 })
 
 describe('tournament creation with CREATION_ROLES_ON unset, as today (criterion 12)', () => {
@@ -287,6 +316,15 @@ describe('tournament creation with CREATION_ROLES_ON unset, as today (criterion 
     const id = await createdId(res)
     expect(await directorsOf(id)).toEqual([])
     expect(await auditDetailOf(id)).toEqual({ tournament_id: id })
+  })
+
+  it('an LCA admin who sends an empty club id creates an LCA-run event, where the insert once failed on the club\'s foreign key', async () => {
+    const admin = await seedAdmin()
+    const res = await create(admin, { ...tournamentBody(), clubId: '' })
+    expect(res.status).toBe(201)
+    const id = await createdId(res)
+    expect(await draftOf(id)).toEqual({ club_id: null, created_by: admin, is_visible: 0, requires_lca_membership: 1 })
+    expect(await directorsOf(id)).toEqual([])
   })
 })
 

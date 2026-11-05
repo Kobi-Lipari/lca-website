@@ -47,6 +47,11 @@
 // SELECT * row without toTournamentResponse. The round schedule in that
 // answer comes from the schedule rows (schedulesRepo.ts, K2g), never from
 // the round_schedule column.
+//
+// savedSectionFees works out, before a save is planned, what an entrant
+// would pay in each section row, archived ones included, once this writer
+// has stored a list, so the fee rule (D24) can compare a save with the
+// stored prices.
 import { and, asc, count, desc, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm'
 import type { BatchItem } from 'drizzle-orm/batch'
 import type { Db } from '../../db/client'
@@ -68,6 +73,7 @@ import {
   type SectionInput,
   type SectionListItem,
   type SectionRecord,
+  type TierFees,
   type TierTournament,
 } from '../../../domain/events/sections'
 import type { SectionWithRules } from '../../../domain/events/sectionRules'
@@ -582,6 +588,76 @@ export async function saveSections(
   if (!plan.ok) return plan
   await runBatch(db, plan.queries)
   return { ok: true }
+}
+
+/** A section's prices, keyed for feesRaised in domain/events/creation.ts. */
+export interface SectionFeesEntry {
+  key: string
+  fees: TierFees
+}
+
+/**
+ * What an entrant would pay in each of the event's section rows once `list`
+ * is saved over `stored`, priced with tierFees from `tournament`, the event's
+ * pricing columns as the same save writes them. `stored` is every row of the
+ * event as buildSaveSections reads them, archived ones included and in
+ * loadSections' order, or [] for an event not made yet. An archived row
+ * counts as a live one does: an entry can stay in a section after it is
+ * archived, and the waitlist's offer prices that entry from its row.
+ *
+ * With no list (null or left out) every row stays as it is. Otherwise every
+ * element is read as buildSaveSections stores it: matched to a row by id,
+ * else to the live row of its name, else to the latest archived row of that
+ * name, which comes back, else new; its regular price is its entryFee when
+ * that is a number and null otherwise, as columnsFromLegacy writes
+ * fee_regular, so a bare name, or a section whose fee is left out, null or
+ * not a number, pays the event's entry_fee; and its early and late prices
+ * come from its fees only when they carry no regular price
+ * (sectionFeeOverrides), otherwise staying the matched row's, null for a new
+ * section. After the elements, in the stored order, comes every row the list
+ * does not take, at its own prices: an archived row stays archived, and a
+ * live row the list leaves out is archived by the writer, neither losing its
+ * prices. Each entry is keyed by its row's id, or by "new:" and its place in
+ * the list, so a renamed section, and one brought back from the archive, is
+ * compared with its own row. The writer's own checks of a list are not made
+ * here: an id that names no row of the event is read as a new section.
+ */
+export function savedSectionFees(
+  stored: readonly SectionRecord[],
+  list: readonly SectionListItem[] | null | undefined,
+  tournament: TierTournament,
+): SectionFeesEntry[] {
+  const asStored = (row: SectionRecord): SectionFeesEntry => ({ key: row.id, fees: tierFees(row, tournament) })
+  if (list == null) return stored.map(asStored)
+  const input = list.map(asSectionInput)
+  const byId = new Map(stored.map((row) => [row.id, row]))
+  const claimed = new Set<string>()
+  // By id first, every row an id names claimed before any name is matched.
+  const matches = input.map((section) => {
+    const row = section.id === undefined ? undefined : byId.get(section.id)
+    if (row) claimed.add(row.id)
+    return row
+  })
+  input.forEach((section, i) => {
+    if (section.id !== undefined) return
+    const row = stored.find((r) => r.archivedAt === null && r.name === section.name && !claimed.has(r.id))
+      ?? stored.find((r) => r.archivedAt !== null && r.name === section.name && !claimed.has(r.id))
+    if (row) {
+      matches[i] = row
+      claimed.add(row.id)
+    }
+  })
+  const sent = input.map((section, i) => {
+    const row = matches[i]
+    const fees = sectionFeeOverrides(section)
+    const prices = {
+      feeRegular: columnsFromLegacy(toLegacySection(section)).feeRegular,
+      feeEarly: fees?.early !== undefined ? fees.early : (row?.feeEarly ?? null),
+      feeLate: fees?.late !== undefined ? fees.late : (row?.feeLate ?? null),
+    }
+    return { key: row ? row.id : `new:${i}`, fees: tierFees(prices, tournament) }
+  })
+  return [...sent, ...stored.filter((row) => !claimed.has(row.id)).map(asStored)]
 }
 
 /**

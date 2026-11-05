@@ -6,10 +6,10 @@ import { recordAdminAction } from '../../utils/admin/audit'
 import { getDb } from '../../db/client'
 import { tournamentDirectors, tournaments } from '../../db/schema'
 import { createTournamentRequestSchema } from '../../../domain/contracts/events'
-import { buildSaveSections, isSectionsConflict, loadSections, runBatch, toTournamentResponse } from '../../utils/events/sectionsRepo'
+import { buildSaveSections, isSectionsConflict, loadSections, runBatch, savedSectionFees, toTournamentResponse } from '../../utils/events/sectionsRepo'
 import { loadSchedules } from '../../utils/events/schedulesRepo'
 import { CREATION_ROLES_ON, creationPerson } from '../../utils/events/creation'
-import { SECTIONS_CHANGED_MESSAGE, asSectionInput, type SectionListItem, type TierFees } from '../../../domain/events/sections'
+import { SECTIONS_CHANGED_MESSAGE } from '../../../domain/events/sections'
 import { FEES_NEED_PAYOUT_ACCOUNT, LCA_RUN_ONLY, canChargeFees, canCreate, feesRaised } from '../../../domain/events/creation'
 import { LCA_RUN_NEEDS_MEMBERSHIP } from '../../../domain/membership/requirement'
 
@@ -26,26 +26,6 @@ function withoutId<S extends { id?: string }>(section: S): S {
   const copy: S = { ...section }
   delete copy.id
   return copy
-}
-
-/**
- * The prices a create sets, as the list feesRaised (domain/events/creation.ts)
- * compares: one entry for each section of the request, keyed "section:" and
- * its name, at the section's own price when it sends a number and otherwise
- * the event's, as the section writer stores it; and one entry for the event's
- * own fee, keyed "event", which no section's key can be. Each entry carries
- * its regular price alone, early and late null, so against an empty list any
- * price above $0 is a raise.
- */
-function createdFees(sections: readonly SectionListItem[], entryFee: number): Array<{ key: string; fees: TierFees }> {
-  const regularOnly = (regular: number): TierFees => ({ regular, early: null, late: null })
-  return [
-    ...sections.map(asSectionInput).map((section) => ({
-      key: `section:${section.name}`,
-      fees: regularOnly(typeof section.entryFee === 'number' ? section.entryFee : entryFee),
-    })),
-    { key: 'event', fees: regularOnly(entryFee) },
-  ]
 }
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -85,6 +65,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (person.repClubId && body.clubId && body.clubId !== person.repClubId) {
     return errorResponse('Club reps can only create tournaments for their club', 403)
   }
+  // An empty club id names no club, for every creator, so the LCA-run check,
+  // the club's lookup and the insert below all read it as none.
+  if (body.clubId === '') body.clubId = null
   // A club rep's event is its club's, whatever else the rep holds, so a club
   // rep who holds the President seat creates as a club rep.
   const clubId = person.repClubId ?? (body.clubId ?? null)
@@ -98,10 +81,19 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (!canCreate(person, clubId, rolesOn)) {
     return errorResponse('Forbidden', 403)
   }
-  // D24: a price above $0 needs a grant on the fee list. Every grant that may
-  // create is on it for now, so no creator is refused here yet; WS09's
-  // representatives will be the first who can be.
-  if (feesRaised([], createdFees(body.sections ?? [], body.entryFee)) && !canChargeFees(person, { clubId, createdBy: member.id }, rolesOn)) {
+  // A new event has no section rows yet, so an id sent with a section (the
+  // wizard copies the sections of an existing event as the list gave them)
+  // names another event's row: each section is added as a new one.
+  const sections = body.sections?.length
+    ? body.sections.map((s) => (typeof s === 'string' ? s : withoutId(s)))
+    : [{ name: 'Open', entryFee: body.entryFee }]
+
+  // D24: a price above $0 at any tier of any section, each read as the
+  // section writer will store it (savedSectionFees, the save's comparison
+  // too), needs a grant on the fee list. Every grant that may create is on it
+  // for now, so no creator is refused here yet; WS09's representatives will
+  // be the first who can be.
+  if (feesRaised([], savedSectionFees([], sections, { entry_fee: body.entryFee })) && !canChargeFees(person, { clubId, createdBy: member.id }, rolesOn)) {
     return errorResponse(FEES_NEED_PAYOUT_ACCOUNT, 403)
   }
 
@@ -111,13 +103,6 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       .first()
     if (!club) return errorResponse('Club not found', 404)
   }
-
-  // A new event has no section rows yet, so an id sent with a section (the
-  // wizard copies the sections of an existing event as the list gave them)
-  // names another event's row: each section is added as a new one.
-  const sections = body.sections?.length
-    ? body.sections.map((s) => (typeof s === 'string' ? s : withoutId(s)))
-    : [{ name: 'Open', entryFee: body.entryFee }]
 
   const id = (isAdmin && body.id?.trim()) || `${slugify(body.name)}-${Date.now().toString(36)}`
   const taken = await context.env.DB.prepare('SELECT 1 FROM tournaments WHERE id = ?').bind(id).first()

@@ -129,9 +129,15 @@ export function lcaAffiliateAllowed(event: CreationEvent): boolean {
   return true
 }
 
-/** What an entrant pays at each tier, early, regular and late: a tier with no price of its own charges the regular price. */
+/**
+ * What an entrant pays at each tier, early, regular and late: a tier with no
+ * price of its own charges the regular price, and a price below $0 charges
+ * $0, as checkout never charges less (priceEntry in
+ * domain/registration/pricing.ts).
+ */
 function paidByTier(fees: TierFees): readonly [number, number, number] {
-  return [fees.early ?? fees.regular, fees.regular, fees.late ?? fees.regular]
+  const paid = (price: number) => Math.max(0, price)
+  return [paid(fees.early ?? fees.regular), paid(fees.regular), paid(fees.late ?? fees.regular)]
 }
 
 /** A price no one paid: what a key with no match in the earlier list reads as. */
@@ -143,10 +149,11 @@ const UNPRICED = [0, 0, 0] as const
  * the same key, a missing early or late price (null) reading as that entry's
  * regular price in both lists, since an event with no early price charges
  * regular before its deadline and one with no late price charges regular
- * after it; a key with no match in before reads as $0 at every tier. True
- * when any price in after is above before's, so an equal list, an echoed
- * answer, a lowered price, a discount that appears and an entry left out of
- * after are never raises. Both lists are built with tierFees
+ * after it, and a price below $0 reading as $0; a key with no match in before
+ * reads as $0 at every tier. True when any price in after is above before's,
+ * so an equal list, an echoed answer, a lowered price, a discount that
+ * appears, a price below $0 set to $0 and an entry left out of after are
+ * never raises. Both lists are built with tierFees
  * (domain/events/sections.ts).
  */
 export function feesRaised(

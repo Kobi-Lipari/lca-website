@@ -188,7 +188,7 @@ describe('REDESIGN_STATUS.md', () => {
     const rules = section(/^Ordering rules/)
     expect(rules).toMatch(/branch is pushed only after/i)
     expect(rules).toMatch(/preview database slice is committed/i)
-    expect(rules).toMatch(/K migrates the preview database from the branch before reviewing each checkpoint/i)
+    expect(rules).toMatch(/The preview database is migrated from the branch before anyone reviews a checkpoint's preview, not after the merge/i)
     expect(rules).toContain('npm run db:migrate:preview')
     expect(rules).toMatch(/not after the merge/i)
   })
