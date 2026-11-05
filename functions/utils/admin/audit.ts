@@ -20,6 +20,7 @@ export type AdminAction =
   | 'tournament_create'
   | 'tournament_publish'
   | 'tournament_unpublish'
+  | 'tournament_delete'
   | 'round_delete'
   | 'round_paired'
   | 'pairing_edit'
@@ -66,7 +67,7 @@ export interface AuditEntry {
  * Writes one row to the admin audit log.
  *
  * Never throws. An audit write failing should not turn a successful role
- * change into a 500 the admin retries — that would risk applying the action
+ * change into a 500 the admin retries, which would risk applying the action
  * twice while still recording nothing. A failure is logged for the Worker
  * tail and swallowed; the gap is visible as a missing row rather than as a
  * broken feature.

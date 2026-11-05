@@ -280,10 +280,10 @@ describe('README.md: Safe previews', () => {
     }
   })
 
-  it('says K migrates the preview from the branch before each checkpoint review, not after the merge', () => {
-    expect(safe).toMatch(/K runs `npm run db:migrate:preview` from the branch/)
+  it('says the preview is migrated from the branch before anyone reviews a checkpoint\'s preview, not after the merge, by the cloud session that prepares it or by K', () => {
+    expect(safe).toMatch(/The preview database is migrated from the branch before anyone reviews a checkpoint's preview, not after the merge/)
     expect(safe).toMatch(/own Cloudflare credentials/)
-    expect(safe).toMatch(/before reviewing each checkpoint's preview, not after the merge/)
+    expect(safe).toMatch(/`npm run db:migrate:preview` is run from the branch, from the cloud session that prepares the checkpoint or by K/)
     expect(safe).toMatch(/unmigrated database shows errors/)
   })
 

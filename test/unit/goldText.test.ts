@@ -1243,7 +1243,7 @@ describe('the gold guard on the tree without its allowlist, and on a copy of the
     [
       'the audit log\'s rows, which read six listed badges, moved onto navy',
       { file: 'src/areas/admin/components/AuditLogPanel.tsx', from: 'rounded-xl border bg-card`}>', to: 'rounded-xl border bg-brand-navy`}>' },
-      'src/areas/admin/components/AuditLogPanel.tsx:270 ',
+      'src/areas/admin/components/AuditLogPanel.tsx:271 ',
       'reads text-gold-ink-badge through meta.className on a navy ground',
     ],
   ])('fails on %s', (_, change, where, message) => {

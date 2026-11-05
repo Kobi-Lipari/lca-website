@@ -17,7 +17,17 @@
 //      each first runs the event by its role, a cash payment among what it
 //      changes, and once the role is gone the same requests and the delete
 //      are refused with "Forbidden".
-//   3. PATCHing membershipExpiry without a status derives the status from the date.
+//   3. Who may delete an event (the delete half of criterion 14, WS08 step
+//      5). Set, an event's creator deletes it while they hold the grant that
+//      let them create it and it is an unpublished draft with no entries, and
+//      gets the same 403 once it is published, has an entry or the grant is
+//      gone, and for an event that does not exist, and when a publish, an
+//      entry or a change of club lands after the check, or another delete
+//      takes the draft first; an LCA admin deletes any event with two-step
+//      sign-in, as before; every delete goes in the activity log with the
+//      grant, once however often it is sent at once. Unset, the delete is
+//      today's: an LCA admin's alone, with no row in the log.
+//   4. PATCHing membershipExpiry without a status derives the status from the date.
 // CREATION_ROLES_ON is false in the tree. Here it is read through a getter on
 // the mocked module, so each case runs in the state its name gives; the
 // handler reads the constant at each request, through the module. The fee
@@ -108,6 +118,7 @@ const eventCount = () => countOf('SELECT COUNT(*) AS n FROM tournaments')
 const directorRowCount = () => countOf('SELECT COUNT(*) AS n FROM tournament_directors')
 
 const create = (as: string, body: Record<string, unknown> = tournamentBody()) => invoke(createTournament, { method: 'POST', as, body })
+const remove = (as: string, id: string, aal: 'aal1' | 'aal2' = 'aal2') => invoke(deleteTournament, { method: 'DELETE', as, params: { id }, aal })
 const createdId = async (res: Awaited<ReturnType<typeof create>>) => (await res.json<{ tournament: { id: string } }>()).tournament.id
 
 /** The president as the brief keeps the role: an LCA observer with a current term on the President seat. */
@@ -455,6 +466,318 @@ describe.each(STATES)('a creator who has lost the grant, with CREATION_ROLES_ON 
     // The event, its name and the entry's payment are as they were.
     expect((await env.DB.prepare('SELECT name FROM tournaments WHERE id = ?').bind(event).first<{ name: string }>())?.name).toBe('Bayou Open')
     expect(await paymentOf()).toBe('paid')
+  })
+})
+
+/** The activity log's tournament_delete rows about the event: who deleted it, the event's name, and the detail. */
+async function deleteLogOf(tournamentId: string) {
+  const { results } = await env.DB.prepare(
+    "SELECT actor_id, target_label, detail FROM admin_audit_log WHERE action = 'tournament_delete' AND json_extract(detail, '$.tournament_id') = ?",
+  ).bind(tournamentId).all<{ actor_id: string; target_label: string; detail: string }>()
+  return results.map((r) => ({ ...r, detail: JSON.parse(r.detail) as unknown }))
+}
+const deleteRows = () => countOf("SELECT COUNT(*) AS n FROM admin_audit_log WHERE action = 'tournament_delete'")
+const entriesOf = (tournamentId: string) =>
+  env.DB.prepare('SELECT COUNT(*) AS n FROM registrations WHERE tournament_id = ?').bind(tournamentId).first<{ n: number }>().then((r) => r?.n ?? 0)
+
+/** requireAdmin's answer to an admin whose session has no second factor, as today. */
+const MFA_REQUIRED = {
+  error: 'Two-factor authentication is required for admin access. Set it up in your account security settings.',
+  mfaRequired: true,
+}
+
+describe('deleting a draft with CREATION_ROLES_ON set (criterion 14)', () => {
+  beforeEach(() => {
+    flags.rolesOn = true
+  })
+
+  it('a standing director deletes the unpublished draft they created, with no entries: the event and its director row go, and the activity log names the grant', async () => {
+    const director = await seedDirector()
+    const id = await createdId(await create(director))
+    expect(await directorsOf(id)).toEqual([director])
+    const res = await remove(director, id)
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ success: true })
+    expect(await draftOf(id)).toBeNull()
+    expect(await directorsOf(id)).toEqual([])
+    expect(await deleteLogOf(id)).toEqual([
+      { actor_id: director, target_label: 'Club Probe Open', detail: { tournament_id: id, entries: 0, was_visible: 0, grant: 'standing_director' } },
+    ])
+  })
+
+  it.each([
+    ['once the draft is published', async (id: string, director: string) => {
+      const published = await invoke(patchTournament, { method: 'PATCH', as: director, params: { id }, body: { isVisible: true } })
+      expect(published.status).toBe(200)
+    }],
+    ['once it has an entry', async (id: string) => {
+      await seedRegistration({ tournamentId: id, memberId: await seedMember() })
+    }],
+    ['once their role is gone', async (_id: string, director: string) => {
+      await env.DB.prepare("UPDATE members SET role = 'member' WHERE id = ?").bind(director).run()
+    }],
+  ] as const)('the standing director is refused the delete %s, with "Forbidden", and nothing is deleted or logged', async (_when, change) => {
+    const director = await seedDirector()
+    const id = await createdId(await create(director))
+    await change(id, director)
+    const before = { event: await draftOf(id), entries: await entriesOf(id) }
+    const res = await remove(director, id)
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: 'Forbidden' })
+    expect({ event: await draftOf(id), entries: await entriesOf(id) }).toEqual(before)
+    expect(await directorsOf(id)).toEqual([director])
+    expect(await deleteLogOf(id)).toEqual([])
+  })
+
+  it('a standing director gets the same 403 for an event that does not exist as for another\'s hidden draft, so the answer says nothing about a draft', async () => {
+    const director = await seedDirector()
+    const others = await createdId(await create(await seedDirector()))
+    const logged = await deleteRows()
+    const answers = [await remove(director, 'no-such-event'), await remove(director, others)]
+    for (const res of answers) {
+      expect(res.status).toBe(403)
+      expect(await res.json()).toEqual({ error: 'Forbidden' })
+    }
+    expect(await draftOf(others)).not.toBeNull()
+    expect(await deleteRows()).toBe(logged)
+  })
+
+  it('the president deletes a draft the president created, and not one an LCA admin created', async () => {
+    const president = await seedSeatedObserver()
+    const own = await createdId(await create(president))
+    const adminsDraft = await createdId(await create(await seedAdmin()))
+    const refused = await remove(president, adminsDraft)
+    expect(refused.status).toBe(403)
+    expect(await refused.json()).toEqual({ error: 'Forbidden' })
+    expect(await draftOf(adminsDraft)).not.toBeNull()
+    const res = await remove(president, own)
+    expect(res.status).toBe(200)
+    expect(await draftOf(own)).toBeNull()
+    expect(await directorsOf(own)).toEqual([])
+    expect(await deleteLogOf(own)).toEqual([
+      { actor_id: president, target_label: 'Club Probe Open', detail: { tournament_id: own, entries: 0, was_visible: 0, grant: 'president' } },
+    ])
+    expect(await deleteLogOf(adminsDraft)).toEqual([])
+  })
+
+  it('a club rep deletes the unpublished draft it created for its own club, and not another club\'s, nor its own club\'s draft an LCA admin created', async () => {
+    const own = await seedClub()
+    const other = await seedClub()
+    const rep = await seedMember({ role: 'club_rep', clubId: own })
+    const mine = await createdId(await create(rep))
+    const theirs = await createdId(await create(await seedMember({ role: 'club_rep', clubId: other })))
+    const adminsForOwnClub = await createdId(await create(await seedAdmin(), tournamentBody(own)))
+    for (const id of [theirs, adminsForOwnClub]) {
+      const refused = await remove(rep, id)
+      expect(refused.status, id).toBe(403)
+      expect(await refused.json(), id).toEqual({ error: 'Forbidden' })
+      expect(await draftOf(id), id).not.toBeNull()
+    }
+    const res = await remove(rep, mine)
+    expect(res.status).toBe(200)
+    expect(await draftOf(mine)).toBeNull()
+    expect(await deleteLogOf(mine)).toEqual([
+      { actor_id: rep, target_label: 'Club Probe Open', detail: { tournament_id: mine, entries: 0, was_visible: 0, grant: 'club_rep' } },
+    ])
+    expect([await deleteLogOf(theirs), await deleteLogOf(adminsForOwnClub)]).toEqual([[], []])
+  })
+
+  it('an LCA admin deletes any event, a published one with an entry and a director among them, the activity log naming the grant as admin, and without two-step sign-in gets today\'s 403', async () => {
+    const admin = await seedAdmin()
+    const id = await seedTournament()
+    await seedRegistration({ tournamentId: id, memberId: await seedMember() })
+    await seedTournamentDirector(id, await seedMember())
+    const noSecondFactor = await remove(admin, id, 'aal1')
+    expect(noSecondFactor.status).toBe(403)
+    expect(await noSecondFactor.json()).toEqual(MFA_REQUIRED)
+    expect(await draftOf(id)).not.toBeNull()
+    expect(await deleteLogOf(id)).toEqual([])
+
+    const res = await remove(admin, id)
+    expect(res.status).toBe(200)
+    expect(await draftOf(id)).toBeNull()
+    expect(await directorsOf(id)).toEqual([])
+    expect(await entriesOf(id)).toBe(0)
+    expect(await deleteLogOf(id)).toEqual([
+      { actor_id: admin, target_label: `Tournament ${id}`, detail: { tournament_id: id, entries: 1, was_visible: 1, grant: 'admin' } },
+    ])
+  })
+
+  it('an LCA admin asking to delete an event that does not exist gets today\'s 404, and nothing is logged', async () => {
+    const logged = await deleteRows()
+    const res = await remove(await seedAdmin(), 'no-such-event')
+    expect(res.status).toBe(404)
+    expect(await res.json()).toEqual({ error: 'Tournament not found' })
+    expect(await deleteRows()).toBe(logged)
+  })
+})
+
+/**
+ * Runs `landing` once, as the delete's batch is about to run, the way a save,
+ * an entry or another delete lands between the creator's check and the
+ * deletes; the batch then runs as it would have. Any batch `landing` makes
+ * runs through, since only the first call is held.
+ */
+function landsBeforeTheBatch(landing: () => Promise<void>) {
+  const batch = env.DB.batch.bind(env.DB)
+  return vi.spyOn(env.DB, 'batch').mockImplementationOnce(async (statements) => {
+    await landing()
+    return batch(statements)
+  })
+}
+
+/** The activity log's rows of one action about the event, by who wrote them. */
+async function actorsOf(action: string, tournamentId: string): Promise<string[]> {
+  const { results } = await env.DB.prepare(
+    "SELECT actor_id FROM admin_audit_log WHERE action = ? AND json_extract(detail, '$.tournament_id') = ? ORDER BY created_at, id",
+  ).bind(action, tournamentId).all<{ actor_id: string }>()
+  return results.map((r) => r.actor_id)
+}
+
+describe('a creator\'s delete with CREATION_ROLES_ON set, when the draft changes after the check (criterion 14)', () => {
+  beforeEach(() => {
+    flags.rolesOn = true
+  })
+
+  it('a publish by the one-event director the president named, landing after the check, deletes nothing: the president gets the one 403, and the published event keeps its rows and its publish row', async () => {
+    const president = await seedSeatedObserver()
+    const id = await createdId(await create(president))
+    const director = await seedMember()
+    await seedTournamentDirector(id, director)
+    const batches = landsBeforeTheBatch(async () => {
+      const published = await invoke(patchTournament, { method: 'PATCH', as: director, params: { id }, body: { isVisible: true } })
+      expect(published.status).toBe(200)
+    })
+
+    const res = await remove(president, id)
+    expect(batches).toHaveBeenCalled()
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: 'Forbidden' })
+    expect((await draftOf(id))?.is_visible).toBe(1)
+    expect(await directorsOf(id)).toEqual([president, director].sort())
+    expect(await actorsOf('tournament_publish', id)).toEqual([director])
+    expect(await deleteLogOf(id)).toEqual([])
+  })
+
+  it('an entry landing after the check deletes nothing: the standing director gets the one 403, and the draft keeps its entry and its director row', async () => {
+    const director = await seedDirector()
+    const id = await createdId(await create(director))
+    landsBeforeTheBatch(async () => {
+      await seedRegistration({ tournamentId: id, memberId: await seedMember() })
+    })
+
+    const res = await remove(director, id)
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: 'Forbidden' })
+    expect(await draftOf(id)).toEqual({ club_id: null, created_by: director, is_visible: 0, requires_lca_membership: 1 })
+    expect(await entriesOf(id)).toBe(1)
+    expect(await directorsOf(id)).toEqual([director])
+    expect(await deleteLogOf(id)).toEqual([])
+  })
+
+  it('an LCA admin moving a club rep\'s draft to another club, landing after the check, deletes nothing: the rep gets the one 403', async () => {
+    const own = await seedClub()
+    const other = await seedClub()
+    const rep = await seedMember({ role: 'club_rep', clubId: own })
+    const admin = await seedAdmin()
+    const id = await createdId(await create(rep))
+    landsBeforeTheBatch(async () => {
+      const moved = await invoke(patchTournament, { method: 'PATCH', as: admin, params: { id }, body: { clubId: other } })
+      expect(moved.status).toBe(200)
+    })
+
+    const res = await remove(rep, id)
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: 'Forbidden' })
+    expect(await draftOf(id)).toEqual({ club_id: other, created_by: rep, is_visible: 0, requires_lca_membership: 0 })
+    expect(await deleteLogOf(id)).toEqual([])
+  })
+
+  it('another delete of the same draft landing first: that one deletes it and is logged, and this one gets the one 403 and writes no second row', async () => {
+    const director = await seedDirector()
+    const id = await createdId(await create(director))
+    landsBeforeTheBatch(async () => {
+      const first = await remove(director, id)
+      expect(first.status).toBe(200)
+    })
+
+    const res = await remove(director, id)
+    expect(res.status).toBe(403)
+    expect(await res.json()).toEqual({ error: 'Forbidden' })
+    expect(await draftOf(id)).toBeNull()
+    expect(await directorsOf(id)).toEqual([])
+    expect((await deleteLogOf(id)).map((r) => r.actor_id)).toEqual([director])
+  })
+
+  it('two deletes of the same draft sent at once: one deletes it and the other gets the one 403, and the activity log has one row', async () => {
+    const director = await seedDirector()
+    const id = await createdId(await create(director))
+
+    const answers = await Promise.all([remove(director, id), remove(director, id)])
+    expect(answers.map((a) => a.status).sort()).toEqual([200, 403])
+    expect(await draftOf(id)).toBeNull()
+    expect(await deleteLogOf(id)).toHaveLength(1)
+  })
+
+  it('an LCA admin\'s delete sent twice at once deletes the event once and is logged once, each answer today\'s', async () => {
+    const admin = await seedAdmin()
+    const id = await seedTournament()
+    await seedRegistration({ tournamentId: id, memberId: await seedMember() })
+
+    const answers = await Promise.all([remove(admin, id), remove(admin, id)])
+    const statuses = answers.map((a) => a.status)
+    expect(statuses).toContain(200)
+    for (const status of statuses) expect([200, 404]).toContain(status)
+    expect(await draftOf(id)).toBeNull()
+    expect((await deleteLogOf(id)).map((r) => [r.actor_id, r.detail])).toEqual([
+      [admin, { tournament_id: id, entries: 1, was_visible: 1, grant: 'admin' }],
+    ])
+  })
+})
+
+describe('deleting with CREATION_ROLES_ON unset, as today (criterion 14)', () => {
+  it('a standing director and the president are refused the unpublished draft they created and direct, with no entries, and nothing is deleted', async () => {
+    for (const creator of [await seedDirector(), await seedSeatedObserver()]) {
+      const id = await seedTournament({ isVisible: false, createdBy: creator })
+      await seedTournamentDirector(id, creator)
+      const res = await remove(creator, id)
+      expect(res.status).toBe(403)
+      expect(await res.json()).toEqual({ error: 'Forbidden' })
+      expect(await draftOf(id)).not.toBeNull()
+      expect(await directorsOf(id)).toEqual([creator])
+      expect(await deleteLogOf(id)).toEqual([])
+    }
+  })
+
+  it('a non-admin asking to delete an event that does not exist gets 403, not 404, since requireAdmin answers first, as today', async () => {
+    const logged = await deleteRows()
+    for (const as of [await seedDirector(), await seedMember({ role: 'club_rep', clubId: await seedClub() }), await seedMember()]) {
+      const res = await remove(as, 'no-such-event')
+      expect(res.status).toBe(403)
+      expect(await res.json()).toEqual({ error: 'Forbidden' })
+    }
+    expect(await deleteRows()).toBe(logged)
+  })
+
+  it('an LCA admin deletes an event as today, with no row in the activity log; a missing id gets 404 and a session without two-step sign-in today\'s 403', async () => {
+    const admin = await seedAdmin()
+    const id = await seedTournament()
+    await seedRegistration({ tournamentId: id, memberId: await seedMember() })
+    const logged = await deleteRows()
+    const noSecondFactor = await remove(admin, id, 'aal1')
+    expect(noSecondFactor.status).toBe(403)
+    expect(await noSecondFactor.json()).toEqual(MFA_REQUIRED)
+    expect(await draftOf(id)).not.toBeNull()
+    const missing = await remove(admin, 'no-such-event')
+    expect(missing.status).toBe(404)
+    expect(await missing.json()).toEqual({ error: 'Tournament not found' })
+    const res = await remove(admin, id)
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ success: true })
+    expect(await draftOf(id)).toBeNull()
+    expect(await entriesOf(id)).toBe(0)
+    expect(await deleteLogOf(id)).toEqual([])
+    expect(await deleteRows()).toBe(logged)
   })
 })
 

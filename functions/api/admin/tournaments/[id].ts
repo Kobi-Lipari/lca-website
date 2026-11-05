@@ -1,7 +1,7 @@
 // functions/api/admin/tournaments/[id].ts
 import { eq } from 'drizzle-orm'
-import type { Env, TournamentRow } from '../../../types'
-import { isResponse, requireTournamentManager, requireAdmin } from '../../../utils/auth'
+import type { Env, MemberRow, TournamentRow } from '../../../types'
+import { isResponse, requireTournamentManager, requireAdmin, requireAuthedMember } from '../../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../../utils/response'
 import { recordAdminAction } from '../../../utils/admin/audit'
 import { getDb } from '../../../db/client'
@@ -27,7 +27,7 @@ import {
 import { CREATION_ROLES_ON, creationPerson } from '../../../utils/events/creation'
 import { SECTIONS_CHANGED_MESSAGE, type TierTournament } from '../../../../domain/events/sections'
 import { SCHEDULE_FORMS_MESSAGE, SCHEDULES_CHANGED_MESSAGE } from '../../../../domain/events/schedules'
-import { FEES_NEED_PAYOUT_ACCOUNT, canChargeFees, feesRaised } from '../../../../domain/events/creation'
+import { FEES_NEED_PAYOUT_ACCOUNT, canChargeFees, canDeleteDraft, feesRaised, type CreationGrant } from '../../../../domain/events/creation'
 import { LCA_RUN_NEEDS_MEMBERSHIP } from '../../../../domain/membership/requirement'
 
 export const onRequestOptions: PagesFunction<Env> = async () => handleOptions()
@@ -286,23 +286,141 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
   })
 }
 
+/** How many entries the event has, withdrawn ones included: every registrations row. */
+async function entryCount(db: D1Database, tournamentId: string): Promise<number> {
+  const row = await db.prepare('SELECT COUNT(*) AS n FROM registrations WHERE tournament_id = ?').bind(tournamentId).first<{ n: number }>()
+  return row?.n ?? 0
+}
+
+/** The six deletes of an event, in the order they run: the rows under it, then the event's own row. */
+const EVENT_DELETES = [
+  'DELETE FROM registrations WHERE tournament_id = ?',
+  'DELETE FROM tournament_games WHERE tournament_id = ?',
+  'DELETE FROM tournament_directors WHERE tournament_id = ?',
+  'DELETE FROM tournament_reminders WHERE tournament_id = ?',
+  'DELETE FROM tournament_attendee_reminders WHERE tournament_id = ?',
+  'DELETE FROM tournaments WHERE id = ?',
+] as const
+
+/**
+ * What the guard of a creator's delete raises: json_extract with a malformed
+ * path, as the section and schedule guards raise it (sectionsRepo), with a
+ * path of its own, so the error can be told apart from any other.
+ */
+const DRAFT_GUARD_PATH = '$draft changed'
+const DRAFT_GUARD_ERROR = `bad JSON path: '${DRAFT_GUARD_PATH}`
+
+/**
+ * The first statement of a creator's delete batch. It fails the batch, so
+ * nothing is deleted, when the event, as the batch runs, is no longer what
+ * canDeleteDraft was asked about: published, moved to another club, or with
+ * an entry, any of which can land between the rule and the deletes. The
+ * path holds the event's id, so SQLite raises it only for the row the WHERE
+ * keeps.
+ */
+function draftGuard(db: D1Database, tournamentId: string, clubId: string | null): D1PreparedStatement {
+  return db.prepare(
+    `SELECT json_extract('{}', '${DRAFT_GUARD_PATH} ' || id) FROM tournaments
+      WHERE id = ? AND (is_visible IS NOT 0 OR club_id IS NOT ? OR EXISTS (SELECT 1 FROM registrations WHERE tournament_id = ?))`,
+  ).bind(tournamentId, clubId, tournamentId)
+}
+
+/** True when a batch failed because draftGuard raised. The error's causes are read too, as isSectionsConflict reads them. */
+function isDraftChanged(err: unknown): boolean {
+  for (let e: unknown = err, depth = 0; e != null && depth < 5; depth++) {
+    const message = typeof e === 'object' && typeof (e as { message?: unknown }).message === 'string'
+      ? (e as { message: string }).message
+      : String(e)
+    if (message.includes(DRAFT_GUARD_ERROR)) return true
+    e = typeof e === 'object' ? (e as { cause?: unknown }).cause : undefined
+  }
+  return false
+}
+
+/** Whether a run of `DELETE FROM tournaments` took the event's row, which only one delete of an event can. */
+const tookEvent = (result: D1Result | undefined) => (result?.meta.changes ?? 0) > 0
+
+/** The activity log's row for a delete, which a caller writes only while CREATION_ROLES_ON is set. */
+function recordDelete(db: D1Database, member: MemberRow, existing: TournamentRow, entries: number, grant: CreationGrant): Promise<void> {
+  return recordAdminAction(db, member, {
+    action: 'tournament_delete',
+    targetLabel: existing.name,
+    detail: { tournament_id: existing.id, entries, was_visible: existing.is_visible, grant },
+  })
+}
+
+/**
+ * Deletes an event and every row under it (adminDeleteTournament). An LCA
+ * admin, with two-step sign-in, deletes any event, as before. Once
+ * CREATION_ROLES_ON is set, so may the event's creator, while they still hold
+ * the grant that let them create it and the event is an unpublished draft
+ * with no entries, as canDeleteDraft decides. The role is read first, so an
+ * admin, and everyone while the constant is unset, is answered by
+ * requireAdmin before anything about the event is read, and the six deletes
+ * run one at a time, as before. Anyone else gets the same 403 whether the
+ * event exists or not, so the answer says nothing about a hidden draft, and
+ * the creator's six deletes run in one batch led by draftGuard, so a draft
+ * published, moved or entered after the rule was asked is not deleted. The
+ * delete goes in the activity log only while the constant is set, and only
+ * from the request that took the event's row.
+ */
 export const onRequestDelete: PagesFunction<Env> = async (context) => {
   const tournamentId = context.params.id as string
-  const authResult = await requireAdmin(context.request, context.env)
-  if (isResponse(authResult)) return authResult
+  const authed = await requireAuthedMember(context.request, context.env)
+  if (isResponse(authed)) return authed
+  const { member } = authed
+  // Read here, at each request, as the save reads it.
+  const rolesOn = CREATION_ROLES_ON
 
+  if (member.role === 'lca_admin' || !rolesOn) {
+    // Today's path: requireAdmin answers anyone but an admin, and an admin
+    // without two-step sign-in, before the event is read.
+    const authResult = await requireAdmin(context.request, context.env)
+    if (isResponse(authResult)) return authResult
+
+    const existing = await context.env.DB.prepare(
+      'SELECT * FROM tournaments WHERE id = ?',
+    ).bind(tournamentId).first<TournamentRow>()
+
+    if (!existing) return errorResponse('Tournament not found', 404)
+    // Counted only for the activity log's row.
+    const entries = rolesOn ? await entryCount(context.env.DB, tournamentId) : 0
+
+    // One statement at a time, in today's order, as before.
+    let removed: D1Result | undefined
+    for (const statement of EVENT_DELETES) removed = await context.env.DB.prepare(statement).bind(tournamentId).run()
+
+    // An admin's delete sent twice at once is logged by the one that took the event's row.
+    if (rolesOn && tookEvent(removed)) await recordDelete(context.env.DB, member, existing, entries, 'admin')
+    return jsonResponse({ success: true })
+  }
+
+  // The creator's path, once the constant is set: a missing event and one
+  // the person may not delete get the same answer.
   const existing = await context.env.DB.prepare(
     'SELECT * FROM tournaments WHERE id = ?',
-  ).bind(tournamentId).first()
+  ).bind(tournamentId).first<TournamentRow>()
+  const entries = await entryCount(context.env.DB, tournamentId)
+  const person = await creationPerson(context.env.DB, member, rolesOn)
+  if (!existing || !canDeleteDraft(person, { clubId: existing.club_id, createdBy: existing.created_by, isVisible: existing.is_visible, entries }, rolesOn)) {
+    return errorResponse('Forbidden', 403)
+  }
 
-  if (!existing) return errorResponse('Tournament not found', 404)
+  // The same six deletes, in one batch led by draftGuard, which checks the
+  // draft again as the batch runs.
+  let results: D1Result[]
+  try {
+    results = await context.env.DB.batch([
+      draftGuard(context.env.DB, tournamentId, existing.club_id),
+      ...EVENT_DELETES.map((statement) => context.env.DB.prepare(statement).bind(tournamentId)),
+    ])
+  } catch (err) {
+    if (isDraftChanged(err)) return errorResponse('Forbidden', 403)
+    throw err
+  }
+  // Another delete took the draft first: answered as a missing draft is, and not logged twice.
+  if (!tookEvent(results.at(-1))) return errorResponse('Forbidden', 403)
 
-  await context.env.DB.prepare('DELETE FROM registrations WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournament_games WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournament_directors WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournament_reminders WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournament_attendee_reminders WHERE tournament_id = ?').bind(tournamentId).run()
-  await context.env.DB.prepare('DELETE FROM tournaments WHERE id = ?').bind(tournamentId).run()
-
+  await recordDelete(context.env.DB, member, existing, entries, person.grant)
   return jsonResponse({ success: true })
 }

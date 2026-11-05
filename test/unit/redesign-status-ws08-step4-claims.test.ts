@@ -149,13 +149,17 @@ const statementAt = (statements: ts.Statement[], source: ts.SourceFile, starts: 
 const feeRule = patchStatements.find((s) => ts.isIfStatement(s) && s.expression.getText(save) === 'feesRaised(before, after)') as ts.IfStatement | undefined
 
 describe('the save reads CREATION_ROLES_ON at each request', () => {
-  it('imports it from functions/utils/events/creation.ts, the module the tests\' getter mocks, and reads it inside onRequestPatch alone, never at the top of its module', () => {
+  it('imports it from functions/utils/events/creation.ts, the module the tests\' getter mocks, and reads it inside onRequestPatch, and inside onRequestDelete since WS08 step 5, once each, never at the top of its module', () => {
     const from = [...importsOf(save)].filter(([, names]) => names.includes('CREATION_ROLES_ON')).map(([module]) => module)
     expect(from).toEqual(['../../../utils/events/creation'])
     expect(resolve(ROOT, 'functions/api/admin/tournaments', from[0])).toBe(join(ROOT, 'functions/utils/events/creation'))
     const reads = nodesOf(save).filter((n): n is ts.Identifier => ts.isIdentifier(n) && n.text === 'CREATION_ROLES_ON' && !ts.isImportSpecifier(n.parent))
-    expect(reads).toHaveLength(1)
-    expect(reads[0].getStart(save) >= patchFn.body.getStart(save) && reads[0].getEnd() <= patchFn.body.getEnd()).toBe(true)
+    /** The reads inside a handler's body. */
+    const inside = (fn: ts.ArrowFunction) => reads.filter((r) => r.getStart(save) >= fn.body.getStart(save) && r.getEnd() <= fn.body.getEnd())
+    // The save's read, and the delete's, which WS08 step 5 adds in its own handler: every read is inside one.
+    expect(reads).toHaveLength(2)
+    expect(inside(patchFn)).toHaveLength(1)
+    expect(inside(handlerBody(save, 'onRequestDelete'))).toHaveLength(1)
     expect(bulletOf(block, '- **The rule.**')).toContain('the constant is read inside the handler at each request')
   })
 })
