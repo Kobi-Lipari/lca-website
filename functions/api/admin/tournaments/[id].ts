@@ -25,6 +25,7 @@ import {
   type SaveSchedulesInput,
 } from '../../../utils/events/schedulesRepo'
 import { CREATION_ROLES_ON, creationPerson } from '../../../utils/events/creation'
+import { sendPublishedReviewNotice } from '../../../utils/events/publishedReview'
 import { SECTIONS_CHANGED_MESSAGE, type TierTournament } from '../../../../domain/events/sections'
 import { SCHEDULE_FORMS_MESSAGE, SCHEDULES_CHANGED_MESSAGE } from '../../../../domain/events/schedules'
 import { FEES_NEED_PAYOUT_ACCOUNT, canChargeFees, canDeleteDraft, feesRaised, type CreationGrant } from '../../../../domain/events/creation'
@@ -61,6 +62,9 @@ function pricingOf(event: {
  * (another save at the same moment), the batch fails as a whole and the
  * answer is 409. A save that raises what an entrant pays, once
  * CREATION_ROLES_ON is set, needs someone canChargeFees lets set a fee (D24).
+ * Once it is set, the first publish of a standing director's event also
+ * tells the LCA admins by email (D22), and the publish's row in the activity
+ * log says whether the mark was set and how many emails went.
  */
 export const onRequestPatch: PagesFunction<Env> = async (context) => {
   const tournamentId = context.params.id as string
@@ -268,11 +272,24 @@ export const onRequestPatch: PagesFunction<Env> = async (context) => {
     })
   }
 
+  // D22: on the change from unpublished to published, and only while
+  // CREATION_ROLES_ON is set (rolesOn, read above for the fee rule), the LCA
+  // admins are told by email that a standing director's event is listed.
+  // sendPublishedReviewNotice sets the mark in the statement that decides the
+  // send and sends in this request, after the save's own writes, so the row
+  // below can say what it did. It never throws: an email that fails, or a
+  // failure of its own reads and writes, is logged there, and the save still
+  // writes the row and answers. With the constant unset the row is today's.
+  let notice: { notified: boolean; sent: number } | null = null
+  if (rolesOn && isVisible && !existing.isVisible) notice = await sendPublishedReviewNotice(context.env, tournamentId)
+
   if (Number(isVisible) !== Number(existing.isVisible)) {
     await recordAdminAction(context.env.DB, authResult.member, {
       action: isVisible ? 'tournament_publish' : 'tournament_unpublish',
       targetLabel: String(body.name ?? existing.name),
-      detail: { tournament_id: tournamentId },
+      detail: notice
+        ? { tournament_id: tournamentId, review_notified: notice.notified, review_notices_sent: notice.sent }
+        : { tournament_id: tournamentId },
     })
   }
 

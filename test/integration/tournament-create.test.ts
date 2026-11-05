@@ -489,6 +489,13 @@ const MFA_REQUIRED = {
 describe('deleting a draft with CREATION_ROLES_ON set (criterion 14)', () => {
   beforeEach(() => {
     flags.rolesOn = true
+    // A standing director's publish sends D22's notice to every LCA admin the
+    // file has seeded by then, 400 ms apart (WS08 step 6). Here setTimeout
+    // calls back on the next microtask, so the waits take no time.
+    vi.spyOn(globalThis, 'setTimeout').mockImplementation(((callback: () => void) => {
+      queueMicrotask(callback)
+      return 0
+    }) as unknown as typeof setTimeout)
   })
 
   it('a standing director deletes the unpublished draft they created, with no entries: the event and its director row go, and the activity log names the grant', async () => {

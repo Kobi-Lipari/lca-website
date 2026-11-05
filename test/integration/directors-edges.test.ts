@@ -578,6 +578,13 @@ describe('with CREATION_ROLES_ON set, the one-event director the president names
 describe('with CREATION_ROLES_ON set, the table\'s rows on the membership switch and on publishing, grant by grant', () => {
   beforeEach(() => {
     flags.rolesOn = true
+    // The standing director's publish sends D22's notice to every LCA admin
+    // the file has seeded by then, 400 ms apart (WS08 step 6). Here
+    // setTimeout calls back on the next microtask, so the waits take no time.
+    vi.spyOn(globalThis, 'setTimeout').mockImplementation(((callback: () => void) => {
+      queueMicrotask(callback)
+      return 0
+    }) as unknown as typeof setTimeout)
   })
 
   /** Today's refusal of the membership switch for anyone but an LCA admin and the organizing club's rep. */
@@ -630,7 +637,8 @@ describe('with CREATION_ROLES_ON set, the table\'s rows on the membership switch
       const published = await save(as, id, { isVisible: true })
       if (publish === 200) {
         expect(published.status, label).toBe(200)
-        expect(changed(before, await eventOf(id)), label).toEqual(['is_visible'])
+        // A standing director's first publish also sets the review mark, D22's notice to the LCA admins (WS08 step 6).
+        expect(changed(before, await eventOf(id)), label).toEqual(as === standing ? ['is_visible', 'review_notified_at'] : ['is_visible'])
         expect(await logOf('tournament_publish', id), label).toEqual([{ actor_id: as, target_member_id: null }])
       } else {
         expect([published.status, await published.json()], label).toEqual([403, { error: 'Forbidden' }])
