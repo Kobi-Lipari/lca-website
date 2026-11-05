@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My LCA · E-2 · The side-column page in its other states (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.af-root{box-sizing:border-box;padding:16px 0 14px;background:#ecebe6;color:#1a2744;position:relative}
+.af-root *{box-sizing:border-box}
+.af-mk{position:absolute;z-index:40;box-shadow:0 0 0 3px #ffffff}
+/* board doc */
+.af-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 18px}
+.af-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.af-title{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.af-ml{font-size:13px;line-height:1.42;color:#3d4556;margin:4px 0 0}
+.af-ml b{color:#1a2744;font-weight:600}
+.af-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.af-fr{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#ffffff;border:1px solid #c9c8c0;color:#1a2744;font-size:12.5px;font-weight:600}
+.af-rcol{flex:none;width:600px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.af-grey{width:600px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1.2fr;gap:10px 16px}
+.af-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.af-grey > div > p + p{margin-top:8px}
+.af-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.af-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.af-grey li{margin-bottom:4px}
+.af-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 14px;margin-top:14px}
+.af-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px}
+.af-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.42;color:#2b3446}
+.af-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.af-notes b{font-weight:600;color:#1a2744}
+/* frame label */
+.af-flab{display:flex;align-items:center;gap:12px;margin:16px 40px 8px}
+.af-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.af-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.af-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.af-swap{display:flex;gap:10px;align-items:flex-start;margin:0 40px 10px;font-size:13px;line-height:1.45;color:#555c6b;position:relative}
+.af-swap .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.af-frame{width:1440px;background:#f5f5f2;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10);position:relative}
+.af-tier{position:absolute;right:-64px;top:14px;font-size:11px;line-height:1.2;color:#6b7180;border:1px dashed #b9b7ad;border-radius:5px;padding:2px 5px;background:#fbfaf6}
+/* header (decided, Nav-Header-Final) */
+.af-hd{position:relative;z-index:20}
+.af-hd-in{display:flex;align-items:center;gap:0;height:68px;min-height:68px;padding:0 40px;position:relative}
+.af-hd .k-brand{margin-right:16px}
+.af-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.af-rook-sm{width:24px;height:24px;fill:#ffffff;flex:none}
+.af-nav{gap:0}
+.af-nav a{padding:0 10px !important;white-space:nowrap}
+.af-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.af-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.af-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.af-util{gap:12px}
+.af-util .k-ulink{padding:0 4px}
+.af-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:inset 0 -2px 0 #c8a94a;border-radius:0}
+.af-my-open{background:rgba(255,255,255,.12);border-radius:8px;box-shadow:none}
+.af-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+/* footer */
+.af-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:22px 40px 24px}
+.af-foot .k-meta{color:rgba(255,255,255,.78)}
+.af-foot nav a{font-size:14px}
+/* the card band */
+.af-band{background:#1a2744;color:#ffffff;border-bottom:2px solid #c8a94a;position:relative}
+.af-band-in{width:1120px;margin:0 auto;height:232px;display:grid;grid-template-columns:330px 380px 350px;gap:30px;align-items:center;position:relative}
+.af-bk{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#c8a94a;margin:0}
+.af-bname{font-size:36px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:8px 0 6px;color:#ffffff}
+.af-bline{font-size:16px;line-height:1.45;color:#e8ecf4;margin:0}
+.af-blinks{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.af-wbtn{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:8px;border:1px solid rgba(255,255,255,.75);color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;white-space:nowrap}
+.af-plate{width:380px;height:150px;background:#223256;border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:16px 16px 16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:relative}
+.af-pl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c8a94a}
+.af-pn{font-size:20px;line-height:1.2;font-weight:700;color:#ffffff;margin-top:6px}
+.af-pm{font-size:13px;line-height:1.45;color:#e8ecf4}
+.af-qr{background:#ffffff;border-radius:8px;padding:6px;line-height:0;flex:none}
+.af-under{font-size:13px;line-height:1.45;color:#e8ecf4;margin:8px 0 0}
+.af-wallet{display:inline-flex;align-items:center;gap:6px;color:#a9b4ca;font-size:12.5px}
+.af-wallet i{font-style:normal;border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:1px 7px;font-size:11.5px;color:#c9d0de}
+.af-usc{background:#223256;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:7px}
+.af-uk{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e6cf86;margin:0}
+.af-ut{font-size:14px;line-height:1.4;color:#ffffff;margin:0}
+.af-um{font-size:12.5px;line-height:1.4;color:#c9d0de;margin:0}
+.af-ul{color:#ffffff;font-size:13.5px;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px;display:inline-flex;align-items:center;gap:5px}
+.af-amber{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#fdebd6;color:#7a3d00;font-size:12px;font-weight:600;white-space:nowrap}
+.af-find{position:absolute;right:0;bottom:-23px;display:inline-flex;align-items:center;gap:8px;height:46px;padding:0 18px;border-radius:8px;background:#ffffff;color:#1a2744;border:1px solid #1a2744;font-size:15px;font-weight:600;text-decoration:none;box-shadow:0 8px 20px rgba(16,24,43,.18);z-index:3}
+/* body */
+.af-body{width:1120px;margin:0 auto;padding:34px 0 36px;display:grid;grid-template-columns:220px 876px;gap:24px;align-items:start;position:relative}
+.af-rail{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:12px 10px;position:relative}
+.af-rt{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#555c6b;margin:2px 8px 8px}
+.af-rr{display:flex;justify-content:space-between;align-items:center;min-height:40px;padding:0 10px 0 13px;border-radius:6px;color:#1a2744;font-size:14.5px;text-decoration:none;border-left:3px solid transparent}
+.af-rr-on{border-left-color:#1a2744;font-weight:700;background:#f3f2ec;border-radius:0 6px 6px 0}
+.af-rc{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 6px;border-radius:999px;background:#eceef2;color:#3d4555;font-size:12px;font-weight:700}
+.af-rnote{font-size:12px;line-height:1.4;color:#555c6b;margin:8px 10px 2px}
+.af-sec + .af-sec{margin-top:30px}
+.af-sh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:0 0 10px}
+.af-h2{font-size:24px;line-height:1.2;font-weight:700;letter-spacing:-.01em;margin:0}
+.af-h2 small{font-size:15px;font-weight:500;color:#555c6b;margin-left:8px;letter-spacing:0}
+.af-shr{font-size:13px;color:#555c6b}
+.af-todos{display:flex;flex-direction:column;gap:8px}
+.af-todo{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:6px 20px;align-items:center;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:10px 16px}
+.af-tt{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.af-tt b{font-size:16px;font-weight:600}
+.af-tl1{font-size:14px;line-height:1.45;color:#555c6b;margin:4px 0 0}
+.af-tact{display:flex;align-items:center;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+.af-tag-g{background:#f6efd9;color:#1a2744}
+.af-tag-a{background:#fdebd6;color:#1a2744}
+/* entries timeline */
+.af-tl{list-style:none;margin:0;padding:0;position:relative}
+.af-tl:before{content:"";position:absolute;left:27px;top:14px;bottom:24px;width:2px;background:#dedcd2}
+.af-item{display:flex;gap:16px;align-items:flex-start;padding:4px 0;position:relative}
+.af-when{width:56px;flex:none;display:flex;justify-content:center;position:relative;z-index:1}
+.af-when .k-date{width:56px;min-height:56px}
+.af-when .k-date b{font-size:20px;line-height:1}
+.af-when .k-date span{margin-top:2px;font-size:10.5px}
+.af-wd{font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.k-date-navy .af-wd{color:#e6cf86}
+.af-ib{flex:1;min-width:0;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:10px 16px}
+.af-big{border:2px solid #1a2744;padding:16px 18px;box-shadow:0 6px 18px rgba(26,39,68,.08)}
+.af-dead .af-ib{background:transparent;border:1px dashed #c9c6ba;padding:9px 16px}
+.af-nm{font-size:16.5px;font-weight:600;margin:3px 0 0}
+.af-nm small{font-size:13.5px;font-weight:400;color:#555c6b;margin-left:6px}
+.af-acts{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:6px}
+.af-out{color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;white-space:nowrap}
+.af-rem{font-size:13px;color:#3d4556}
+.af-count2{height:6px;border-radius:3px;background:#eceae2;overflow:hidden;margin:8px 0 2px;max-width:420px}
+.af-count2 i{display:block;height:100%;background:#1a2744}
+.af-track{list-style:none;margin:12px 0 4px;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.af-track li{position:relative;padding:30px 12px 0 0;font-size:12.5px;line-height:1.35;color:#555c6b}
+.af-track li b{display:block;color:#1a2744;font-size:13px;font-weight:600}
+.af-track li:before{content:"";position:absolute;top:11px;left:0;right:0;height:3px;background:#e3e1d8}
+.af-track li.af-done:before{background:#1a2744}
+.af-track li:last-child:before{right:auto;width:25px}
+.af-dot{position:absolute;top:0;left:0;width:25px;height:25px;border-radius:50%;background:#ffffff;border:2px solid #c9c6ba;display:flex;align-items:center;justify-content:center;z-index:1}
+.af-done .af-dot{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.af-now .af-dot{background:#f6efd9;border-color:#866a1e;color:#866a1e}
+.af-note{display:flex;gap:8px;align-items:flex-start;background:#f6efd9;border-radius:8px;padding:10px 12px;font-size:13.5px;line-height:1.45;margin-top:10px;color:#1a2744}
+.af-foot1{font-size:14px;color:#3d4556;padding-top:4px}
+.af-clubline{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13.5px;color:#3d4556}
+.af-clubline .k-i{color:#555c6b}
+/* receipts */
+.af-two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.af-box{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;overflow:hidden}
+.af-boxh{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #ecebe5;background:#fbfbf8}
+.af-boxh b{font-size:15px}
+.af-rw{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 12px;padding:8px 16px;border-bottom:1px solid #f0efe9;align-items:center}
+.af-rw:last-child{border-bottom:0}
+.af-rw b{font-size:14px;font-weight:600}
+.af-rw span{font-size:12.5px;color:#555c6b}
+.af-rw .af-amt{font-size:14px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;color:#1a2744}
+.af-rw .af-lk{font-size:12.5px;text-align:right}
+.af-boxf{padding:10px 16px;border-top:1px solid #ecebe5;font-size:13px}
+/* settings */
+.af-sets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.af-set{display:flex;gap:10px;align-items:flex-start;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:12px 14px}
+.af-set .k-small{font-size:13.5px;line-height:1.42}
+.af-set .k-check{font-size:13.5px;gap:8px}
+.af-set .k-check input{width:18px;height:18px}
+.af-set b{font-size:15px}
+.af-seth{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.af-seth .k-i{color:#1a2744}
+.af-ico{width:32px;height:32px;border-radius:10px;background:#f1efe8;display:flex;align-items:center;justify-content:center;flex:none;color:#1a2744}
+.af-mailc{grid-column:1 / -1;display:flex;align-items:center;gap:16px;background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:14px 16px;flex-wrap:wrap;position:relative}
+.af-mgrid{display:grid;grid-template-columns:repeat(2,auto);gap:6px 28px;margin-left:auto}
+.af-mailc .k-check{font-size:13.5px;gap:7px;white-space:nowrap}
+.af-mailc .k-check input{width:18px;height:18px;margin:1px 0 0}
+
+.af-row{display:flex;gap:40px;align-items:flex-start;margin:0 40px}
+.af-col{display:flex;flex-direction:column;gap:8px;position:relative}
+.af-cap{font-size:13px;line-height:1.45;color:#3d4556;margin:0}
+.af-cap b{color:#1a2744;font-weight:600}
+.af-scale{position:relative;overflow:hidden;border:1px solid #cfcec6;border-radius:10px;background:#f5f5f2;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.af-scale-in{width:1440px;transform:scale(.6);transform-origin:0 0;position:absolute;top:0;left:0}
+.af-empty{background:transparent;padding:4px 0 0}
+.af-empty p{font-size:17px;line-height:1.5;margin:0 0 12px;color:#1a2744}
+.af-grey1{font-size:15px;color:#555c6b}
+/* phone */
+.af-phwrap{position:relative;flex:none}
+.af-phone{width:390px;height:844px;box-sizing:content-box;border:10px solid #10182b;border-radius:52px;background:#10182b;position:absolute;top:0;left:0;transform-origin:0 0;box-shadow:0 24px 50px rgba(16,24,43,.2)}
+.af-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#f5f5f2}
+.af-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 40px;font-size:15px;font-weight:600;position:relative}
+.af-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.af-app{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff;border-bottom:1px solid rgba(255,255,255,.12)}
+.af-app .af-rook{width:28px;height:28px}
+.af-appn{display:flex;flex-direction:column;line-height:1.12}
+.af-appn b{font-size:14px;font-weight:700;white-space:nowrap}
+.af-appn span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.af-sicon{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.af-pmain{flex:1;min-height:0;overflow:hidden;position:relative}
+.af-pband{background:#1a2744;color:#ffffff;padding:14px 16px 14px;border-bottom:2px solid #c8a94a}
+.af-pband h3{font-size:23px;line-height:1.15;font-weight:700;margin:0;color:#ffffff}
+.af-pband .af-bline{font-size:13.5px;margin-top:3px}
+.af-pplate{margin-top:10px;background:#223256;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:12px 12px 12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.af-pplate .af-pn{font-size:17px;margin-top:4px}
+.af-pplate .af-pm{font-size:12px}
+.af-pus{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;color:#e8ecf4}
+.af-pus .af-amber{font-size:11.5px;padding:2px 7px}
+.af-pchips{display:flex;gap:6px;padding:10px 12px;background:#ffffff;border-bottom:1px solid #e3e2dc;overflow:hidden}
+.af-pchips .k-chip{min-height:36px;padding:0 12px;font-size:13.5px;flex:none}
+.af-ppad{padding:14px 12px}
+.af-pcard{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:12px 14px;margin-top:10px}
+.af-pcard b{font-size:15px;display:block;margin-top:6px}
+.af-pcard p{font-size:13px;line-height:1.4;color:#555c6b;margin:4px 0 10px}
+.af-tabs{flex:none;background:#ffffff;border-top:1px solid #d9d8d1;display:grid;grid-template-columns:repeat(4,1fr);height:56px}
+.af-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#1a2744;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.af-tab svg{width:20px;height:20px}
+.af-tab.on{font-weight:700}
+.af-tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.af-tcount{position:absolute;top:5px;left:calc(50% + 5px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#1a2744;color:#ffffff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #ffffff}
+/* full-screen card */
+.af-fs{flex:1;background:#1a2744;color:#ffffff;display:flex;flex-direction:column;align-items:center;padding:16px 22px;text-align:center}
+.af-done{align-self:flex-end;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid rgba(255,255,255,.7);color:#ffffff;font-size:15px;font-weight:600;text-decoration:none}
+.af-fsq{background:#ffffff;border-radius:14px;padding:12px;line-height:0;margin:18px 0 14px}
+/* insets */
+.af-inset{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 14px 34px rgba(16,24,43,.08);position:relative}
+.af-ihead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid #ecebe5;background:#fbfbf8}
+.af-ihead b{font-size:14px}
+.af-tband{background:#1a2744;color:#ffffff;border-bottom:2px solid #c8a94a;padding:14px 18px;display:grid;grid-template-columns:minmax(0,1fr) 236px 170px;gap:14px;align-items:center}
+.af-tband h3{font-size:20px;line-height:1.15;font-weight:700;margin:4px 0 4px;color:#ffffff}
+.af-tband .af-bline{font-size:12.5px;line-height:1.4}
+.af-tplate{background:#223256;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:10px 10px 10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.af-tplate .af-pn{font-size:14px;margin-top:3px}
+.af-tplate .af-pm{font-size:11.5px}
+.af-tus{background:#223256;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:10px 12px;font-size:12px;line-height:1.4;color:#e8ecf4}
+.af-tbody{padding:10px 18px 14px;display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px}
+.af-guard{display:flex;align-items:center;gap:8px;font-size:13.5px;color:#1a2744;margin:0 0 8px}
+.af-guard .k-i{color:#555c6b}
+.af-trow{background:#ffffff;border:1px solid #e3e1d8;border-radius:10px;padding:10px 12px}
+.af-trow b{font-size:14px;display:block;margin:5px 0 2px;line-height:1.35}
+.af-trow p{font-size:12.5px;color:#555c6b;margin:0 0 8px}
+.af-tset{background:#fbfbf8;border:1px solid #e3e1d8;border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.4;color:#3d4556}
+.af-tset b{display:block;font-size:13.5px;color:#1a2744;margin-bottom:2px}
+.af-mstrip{background:#1a2744;height:52px;display:flex;justify-content:flex-end;align-items:center;padding:0 10px}
+.af-dd{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.22);padding:8px;margin:8px 8px 10px 8px;color:#1a2744}
+.af-ddrow{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;padding:4px 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14.5px;font-weight:500}
+.af-ddt{display:block}
+.af-ddsub{font-size:12px;color:#555c6b;font-weight:400;white-space:nowrap}
+.af-ddsub2{display:block;font-size:12px;color:#555c6b;font-weight:400;margin-top:1px;line-height:1.35}
+.af-todo2{background:#fbf7e9;margin-bottom:4px}
+.af-ddlabel{font-size:11.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;padding:8px 10px 4px}
+.af-ddsep{height:1px;background:#e3e2dc;margin:6px 4px}
+.af-xp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-8deg);background:#eceef2;color:#3d4555;border:1px solid #9aa1b0;border-radius:999px;padding:4px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+/* page head (D) */
+.ad-head{background:#fbfaf6;border-bottom:1px solid #e3e1d8}
+.ad-head-in{width:1120px;margin:0 auto;padding:18px 0 14px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;position:relative}
+.ad-kick{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#1a2744;margin:0}
+.ad-h1{font-size:36px;line-height:1.1;font-weight:700;letter-spacing:-.015em;margin:8px 0 6px}
+.ad-sub{font-size:14px;line-height:1.45;color:#555c6b;margin:0}
+.ad-hbtns{display:flex;gap:10px;flex:none}
+/* membership section (D) */
+.ad-mline{font-size:16px;line-height:1.45;margin:0 0 12px;color:#1a2744}
+.ad-mrow{display:grid;grid-template-columns:420px 440px;gap:16px;align-items:start}
+.ad-card{background:#1a2744;color:#ffffff;border-radius:16px;padding:16px 16px 16px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:140px;box-shadow:0 10px 24px rgba(26,39,68,.16);position:relative}
+.ad-cl{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#c8a94a}
+.ad-cn{font-size:22px;line-height:1.2;font-weight:700;color:#ffffff;margin-top:6px}
+.ad-cm{font-size:13.5px;line-height:1.45;color:#e8ecf4}
+.ad-qr{background:#ffffff;border-radius:8px;padding:6px;line-height:0;flex:none}
+.ad-under{font-size:13px;line-height:1.45;color:#555c6b;margin:10px 0 0}
+.ad-wallet{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:13px;color:#6b7180}
+.ad-wallet s{text-decoration:none}
+.ad-pill{display:inline-flex;align-items:center;padding:1px 8px;border-radius:999px;background:#eceef2;color:#3d4555;font-size:11.5px;font-weight:600}
+.ad-usc{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:14px 18px 14px}
+.ad-usc h3{font-size:16px;margin:0 0 8px;font-weight:700}
+.ad-dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0;margin:0}
+.ad-dl dt,.ad-dl dd{margin:0;padding:5px 0;border-bottom:1px solid #f0efe9;font-size:14px;line-height:1.35}
+.ad-dl dt{color:#555c6b}
+.ad-dl dd{color:#1a2744;font-weight:600;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.ad-amber{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:#fdebd6;color:#7a3d00;font-size:12px;font-weight:600;white-space:nowrap}
+.ad-chk{font-size:13px;line-height:1.45;color:#555c6b;margin:8px 0 4px}
+.ad-h2mk{position:relative}
+
+/* D-2 */
+.ad-phead{background:#fbfaf6;padding:14px 16px 14px;border-bottom:1px solid #e3e1d8}
+.ad-phead h3{font-size:24px;line-height:1.15;font-weight:700;margin:6px 0 4px}
+.ad-phead p{font-size:13.5px;line-height:1.4;color:#555c6b;margin:0 0 10px}
+.ad-pcard{background:#1a2744;color:#ffffff;border-radius:14px;padding:14px 14px 14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ad-pcard .ad-cn{font-size:18px}
+.ad-pcard .ad-cm{font-size:12.5px}
+.ad-pus{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:10px 14px;margin-top:10px}
+.ad-pus .ad-dl{grid-template-columns:110px minmax(0,1fr)}
+.ad-pus .ad-dl dt,.ad-pus .ad-dl dd{font-size:13px;padding:4px 0}
+.ad-sheetbg{position:absolute;inset:0;background:rgba(16,24,43,.55)}
+.ad-sheet{position:absolute;left:0;right:0;bottom:0;top:120px;background:#1a2744;border-radius:22px 22px 0 0;padding:14px 22px;display:flex;flex-direction:column;align-items:center;text-align:center;color:#ffffff}
+.ad-grab{width:44px;height:5px;border-radius:3px;background:rgba(255,255,255,.45)}
+.ad-states{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;padding:14px 18px;box-shadow:0 14px 34px rgba(16,24,43,.08)}
+.ad-states dt{font-size:14px;font-weight:700;margin:0}
+.ad-states dd{font-size:13.5px;line-height:1.45;color:#3d4556;margin:2px 0 12px}
+.ad-thead{background:#fbfaf6;border-bottom:1px solid #e3e1d8;padding:14px 18px 12px}
+.ad-thead h3{font-size:22px;line-height:1.15;font-weight:700;margin:4px 0 3px}
+.ad-thead p{font-size:13px;line-height:1.4;color:#555c6b;margin:0}
+/* E: three columns */
+.ae-head{background:#fbfaf6;border-bottom:1px solid #e3e1d8}
+.ae-head-in{width:1248px;margin:0 auto;padding:18px 0 14px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;position:relative}
+.ae-body{width:1248px;margin:0 auto;padding:24px 0 28px;display:grid;grid-template-columns:220px 660px 320px;gap:24px;align-items:start;position:relative}
+.ae-body .af-todo{grid-template-columns:minmax(0,1fr);gap:8px;padding:12px 16px 12px}
+.ae-body .af-tact{justify-content:flex-start}
+.ae-body .af-tier{right:12px;top:auto;bottom:12px}
+.ae-body .af-when{width:52px}
+.ae-body .af-when .k-date{width:52px;min-height:52px}
+.ae-body .af-tl:before{left:25px}
+.ae-body .af-two{grid-template-columns:minmax(0,1fr);gap:12px}
+.ae-body .af-sets{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ae-body .af-mgrid{grid-template-columns:repeat(2,auto);gap:6px 36px}
+.ae-remline{display:block;font-size:13px;color:#3d4556;margin-top:6px}
+.ae-btnrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+/* the side column */
+.ae-sidewrap{align-self:stretch;display:flex;flex-direction:column;justify-content:space-between;gap:24px;position:relative}
+.ae-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+.ae-sc{background:#ffffff;border:1px solid #e3e1d8;border-radius:12px;padding:12px 16px 13px;position:relative}
+.ae-sc h3{font-size:15px;line-height:1.25;font-weight:700;margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ae-mline{font-size:15px;line-height:1.4;font-weight:600;margin:4px 0 4px;color:#1a2744}
+.ae-links{font-size:13.5px;color:#555c6b}
+.ae-card{background:#1a2744;color:#ffffff;border-radius:14px;padding:14px 12px 14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:128px;box-shadow:0 10px 24px rgba(26,39,68,.16);position:relative}
+.ae-cl{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#c8a94a}
+.ae-cn{font-size:19px;line-height:1.2;font-weight:700;color:#ffffff;margin-top:5px}
+.ae-cm{font-size:12.5px;line-height:1.45;color:#e8ecf4}
+.ae-qr{background:#ffffff;border-radius:8px;padding:5px;line-height:0;flex:none}
+.ae-under{font-size:12.5px;line-height:1.45;color:#555c6b;margin:8px 0 0}
+.ae-wallet{display:flex;align-items:center;gap:6px;margin-top:4px;font-size:12.5px;color:#6b7180;flex-wrap:wrap}
+.ae-pill{display:inline-flex;align-items:center;padding:1px 7px;border-radius:999px;background:#eceef2;color:#3d4555;font-size:11px;font-weight:600}
+.ae-copt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:6px;font-size:12.5px;color:#555c6b}
+.ae-dl{display:grid;grid-template-columns:104px minmax(0,1fr);gap:0;margin:0}
+.ae-dl dt,.ae-dl dd{margin:0;padding:4px 0;border-bottom:1px solid #f0efe9;font-size:13.5px;line-height:1.35}
+.ae-dl dt{color:#555c6b}
+.ae-dl dd{color:#1a2744;font-weight:600}
+.ae-amber{display:inline-flex;align-items:center;margin-top:4px;padding:2px 8px;border-radius:6px;background:#fdebd6;color:#7a3d00;font-size:12px;font-weight:600;white-space:nowrap}
+.ae-chk{font-size:12.5px;line-height:1.45;color:#555c6b;margin:7px 0 3px}
+.ae-small{font-size:13px;line-height:1.45;color:#3d4556;margin:0}
+.ae-small b{color:#1a2744;font-weight:600}
+.ae-sfoot{margin-top:8px;padding-top:8px;border-top:1px solid #f0efe9;font-size:13px}
+.ae-club{display:flex;gap:8px;align-items:flex-start}
+.ae-club .k-i{color:#555c6b;flex:none;margin-top:2px}
+/* sticky annotation */
+.ae-stick{position:absolute;top:24px;bottom:28px;right:-44px;width:20px;border-left:2px dashed #b9b7ad}
+.ae-stick span{position:absolute;top:8px;left:6px;writing-mode:vertical-rl;font-size:11.5px;line-height:1.2;color:#6b7180;background:#f5f5f2;padding:6px 2px;white-space:nowrap}
+.ae-ghost{border:1.5px dashed #b9b7ad;border-radius:12px;padding:12px;background:rgba(255,255,255,.35);position:relative}
+.ae-ghost p{font-size:12px;line-height:1.4;color:#6b7180;margin:0 0 10px}
+.ae-gcard{background:#1a2744;border-radius:10px;padding:10px 10px 10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;opacity:.75}
+.ae-gbar{height:10px;border-radius:5px;background:#e3e1d8;margin-top:8px}
+/* compaction (E) */
+.af-title{font-size:26px}
+.ae-body .af-todos{gap:6px}
+.ae-body .af-todo{padding:9px 14px 10px;gap:6px}
+.ae-body .af-tl1{font-size:13.5px;line-height:1.4}
+.ae-body .af-ib{padding:8px 14px}
+.ae-body .af-big{padding:12px 16px}
+.ae-body .af-dead .af-ib{padding:7px 14px}
+.ae-body .af-track li{padding:28px 10px 0 0;font-size:12px;line-height:1.3}
+.ae-body .af-note{font-size:13px;line-height:1.4}
+.ae-body .af-rw{padding:5px 16px}
+.ae-body .af-boxh{padding:8px 16px}
+.ae-body .af-set{padding:9px 12px}
+.ae-body .af-set .k-small{font-size:12.5px;line-height:1.38}
+.ae-body .af-sec + .af-sec{margin-top:18px}
+.af-title{font-size:24px}
+.ae-body .af-rw{align-items:baseline;padding:6px 16px;gap:0 12px}
+.ae-body .af-rw > :nth-child(2){order:3}
+.ae-body .af-rw > :nth-child(3){order:2}
+.ae-body .af-rw b{font-size:13px}
+.ae-body .ae-pay .af-rw{grid-template-columns:minmax(0,1fr) 140px 40px 160px}
+.ae-body .ae-ev .af-rw{grid-template-columns:minmax(0,1fr) 140px 84px 70px}
+.ae-head-in{padding:14px 0 12px}
+.ae-body{padding:20px 0 22px}
+.ae-body .af-rw > :nth-child(1){order:1}
+.ae-body .af-rw > :nth-child(4){order:4}
+.ae-body .af-rw span{white-space:nowrap}
+.ae-dl dd.ae-span{grid-column:1 / -1;padding-top:0}
+.ae-amber{margin-top:0}
+.ae-body .af-todo{padding:8px 14px 9px}
+.ae-body .af-item{padding:2px 0}
+.ae-body .af-sec + .af-sec{margin-top:14px}
+.ae-body .af-sh{margin:0 0 6px}
+.ae-body .af-set{padding:8px 12px}
+.ae-body .af-note{margin-top:6px}
+.af-foot-in{padding:14px 40px 14px}
+.ae-head-in{padding:12px 0 10px}
+.af-flab{margin:12px 40px 8px}
+.ae-body{padding:16px 0 16px}
+.af-root{padding:16px 0 8px}
+.ae-stick{top:16px;bottom:16px}
+.ae-body .ae-pay .af-rw{grid-template-columns:minmax(0,1fr) 160px 36px 162px}
+.ae-body .ae-ev .af-rw{grid-template-columns:minmax(0,1fr) 160px 90px 70px}
+/* E-2 */
+.ae2-row{display:flex;gap:40px;align-items:flex-start;margin:0 40px}
+.ae-donebtn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;border-radius:8px;border:1px solid rgba(255,255,255,.7);color:#ffffff;font-size:15px;font-weight:600;text-decoration:none}
+.ae-sheetbg{position:absolute;inset:0;background:rgba(16,24,43,.55)}
+.ae-sheet{position:absolute;left:0;right:0;bottom:0;top:auto;background:#1a2744;border-radius:22px 22px 0 0;padding:10px 20px 18px;display:flex;flex-direction:column;align-items:center;text-align:center;color:#ffffff;box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+.ae-grab{width:44px;height:5px;border-radius:3px;background:rgba(255,255,255,.45);flex:none}
+.ae-shtop{align-self:stretch;display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.ae-shtop b{font-size:15px;color:#ffffff}
+.ae-sqr{background:#ffffff;border-radius:12px;padding:10px;line-height:0;margin:10px 0 8px}
+.ae-pamber{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;background:#fdebd6;color:#7a3d00;font-size:12px;font-weight:600;white-space:nowrap;margin-top:4px}
+.ae-mini{background:#1a2744;color:#ffffff;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.ae-mini .ae-qr{align-self:flex-start}
+.ae-tgrid{display:grid;grid-template-columns:minmax(0,1fr) 196px;gap:14px;padding:12px 18px 12px}
+.ae-ghostrow{display:flex;align-items:center;gap:8px;min-height:30px;margin:2px 0 2px;padding:0 10px 0 13px;border:1px dashed #c9c6ba;border-radius:6px;font-size:12px;color:#6b7180;text-decoration:line-through;text-decoration-color:#9aa1b0}
+.ae-states{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;padding:16px 18px;box-shadow:0 14px 34px rgba(16,24,43,.08);display:grid;grid-template-columns:340px 1fr 1fr;gap:28px;width:1360px}
+.ae-states dt{font-size:14px;font-weight:700;margin:0}
+.ae-states dd{font-size:13px;line-height:1.45;color:#3d4556;margin:2px 0 10px}
+.ae-wf{border:1px solid #d9d8d1;border-radius:10px;background:#f5f5f2;overflow:hidden}
+.ae-wfbar{height:22px;background:#1a2744}
+.ae-wfin{padding:10px;display:grid;gap:8px}
+.ae-blk{background:#ffffff;border:1px solid #e3e1d8;border-radius:6px;font-size:11.5px;line-height:1.3;color:#3d4556;padding:6px 8px}
+.ae-blk b{color:#1a2744;font-weight:600}
+.ae-nv{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.ae-nv b{color:#ffffff}
+.ae-sel{display:flex;justify-content:space-between;align-items:center;background:#ffffff;border:1px solid #9aa1b0;border-radius:6px;padding:5px 8px;font-size:11.5px;color:#1a2744;font-weight:600}
+.ae-wfcap{font-size:13px;line-height:1.45;color:#3d4556;margin:8px 0 0}
+.ae-wfcap b{color:#1a2744}
+.ae2-sh{font-size:15px;font-weight:700;margin:0 0 8px}
+</style>
+</helmet>
+<div class="af-root" style="width:1440px;height:2250px">
+<section class="af-doc" aria-label="About this board">
+<div class="af-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">14 · My LCA · option E · part 2 of 2</p><span class="af-round">ROUND 2</span><span class="af-fr">Frame: Int-A, swappable</span></div>
+<h1 class="af-title">My LCA · E · The side-column page in its other states</h1>
+<p class="af-ml" style="margin-top:8px"><b>Built from:</b> Account-E part 1 (the head, the four-row rail, the side column) · Account-D-2 (Nia, Maya, the phone and the menu) · Account-A's card and QR · Account-I and J for Maya's family facts · the decided header, phone bar and tabs (Nav-Header-Final, Nav-Mobile-Final).</p>
+<p class="af-ml"><b>Replaces:</b> Account-A's empty state and phone card; Account-B's view of Maya only as a parent sees her.</p>
+<p class="af-ml"><b>K's feedback applied (Tue, Oct 13):</b> the good default holds when nothing is entered, on a phone, on a narrower screen and for a teen with her own login; nothing on any of them hints at roles.</p>
+<p style="margin:10px 0 0"><span class="k-sample">Sample data · Nia Broussard, Maya's details, all counts</span></p>
+</div>
+<div class="af-rcol"><aside class="af-grey" aria-label="Board note">
+<div><p><b>What</b>Part 2 of option E: the new-member empty state, the phone with the card sheet half open, Maya's own My LCA in E's columns, the rail and menu insets, and how the column behaves on narrower screens.</p><p><b>Built from</b>Account-E part 1; Account-D-2; Account-A, I and J; the decided chrome.</p></div>
+<div><p><b>K's feedback applied</b>A good default in every state; roles hosted in My LCA (frame Int-A); options for each.</p><p style="margin-top:8px"><b>Open for K</b></p><ol><li>Below 1024 the column drops under the head and stops being sticky. Is that the right point to let go of it?</li><li>Should the phone sheet also offer "Print a copy", or keep that in Card options on desktop only?</li></ol></div>
+</aside></div>
+</div>
+<div class="af-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="af-notes">
+<li><span class="k-num-badge">1</span><span><b>Empty state:</b> Today is one sentence and two buttons, no box, no picture. The column still shows the card; US Chess reads none on file; one grey line asks to follow a club. Rail: four rows, no counts.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Phone:</b> there is no side column, so "Show my card" returns full width under the name and the rail becomes a chip row that sticks under the bar.</span></li>
+<li><span class="k-num-badge">3</span><span><b>The card sheet:</b> a tap opens it half way with a 160px QR, the membership line and the US Chess status; Done closes it. On D the card is a section you scroll to.</span></li>
+<li><span class="k-num-badge">4</span><span><b>A teen's own My LCA:</b> her card in a narrow right column, one line says who gets copies, an unpaid entry offers Ask my guardian to pay. No Family section, no chips.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Rail and menu:</b> four rows, no Membership row, since the card never leaves the screen. The menu is Int-A cell A1; the reminder is not a to-do, so the count stays 3.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Drawn inside Int-A, swappable:</b> Int-B makes these states of the You page the left rail opens; Int-C keeps them as My LCA beside Your work. Only crumb, way back and menu row change.</span></li>
+</ol>
+</div>
+</section>
+<p class="af-swap" style="margin-top:14px"><span class="k-num-badge">6</span><span>Drawn inside Int-A (My LCA as the hub). The frame is swappable: under Int-B these are states of the You page the left rail opens; under Int-C they are My LCA with Your work beside it. Only the breadcrumb, the way back and the menu row change. Pick the frame on Account-Int-A, B or C.</span></p>
+<div class="ae2-row" style="margin-top:8px"><div class="af-col" style="width:864px"><div class="af-flab" style="margin:0 0 2px"><span class="af-code">B</span><h2>New member, nothing entered · Sat, Oct 3, 2026 · 4:10 PM</h2></div><p class="af-cap">The same page at 60%, signed in as Nia Broussard, joined Sat, Mar 14, 2026. <b>Empty state.</b> No count on My LCA ▾.</p><div class="af-scale" style="width:864px;height:660px"><div class="af-scale-in"><header class="k-header af-hd"><div class="af-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="af-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks af-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="af-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav><a class="af-sbtn" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="af-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility af-util"><a class="k-ulink" href="#">Donate</a><button class="af-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-current="page" aria-label="My LCA"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header><section class="ae-head" aria-label="Page heading"><div class="ae-head-in"><div><div class="k-row-sm" style="gap:12px"><p class="ad-kick">My LCA</p><span class="k-sample">Sample data · Nia Broussard is invented</span></div><h1 class="ad-h1">Nia Broussard</h1><p class="ad-sub">Adult member · valid through Sun, Mar 14, 2027</p></div><div class="ad-hbtns"><a class="k-btn k-btn-navy" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Find a tournament</a></div></div></section><div class="ae-body"><div><nav class="af-rail" aria-label="On this page"><p class="af-rt">On this page</p><a class="af-rr af-rr-on" href="#" aria-current="location">Today</a><a class="af-rr" href="#">Entries</a><a class="af-rr" href="#">Receipts</a><a class="af-rr" href="#">Settings</a></nav></div><main><section class="af-sec"><div class="af-sh"><h2 class="af-h2">Today<small>Sat, Oct 3</small></h2></div><div class="af-empty"><p>You're a member through Sun, Mar 14, 2027. Nothing entered yet.</p><div class="k-row-sm"><a class="k-btn k-btn-navy" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Find a tournament</a><a class="k-btn k-btn-line" href="#">Add a family member</a></div></div></section><section class="af-sec"><div class="af-sh"><h2 class="af-h2">Entries</h2></div><p class="af-grey1" style="margin:0">Nothing entered or saved. <a class="k-link" href="#">Tournaments this month ›</a></p></section><section class="af-sec"><div class="af-sh"><h2 class="af-h2">Receipts and history</h2></div><div class="af-two"><div class="af-box ae-pay"><div class="af-boxh"><b>Past payments · 1 receipt</b></div><div class="af-rw"><b>LCA membership, Adult</b><span class="af-amt">$15</span><span>Sat, Mar 14, 2026</span><a class="k-link af-lk" href="#">Send me this receipt again</a></div></div><div class="af-box"><div class="af-boxh"><b>Events played · 0</b></div><div class="af-rw" style="display:block"><span>Your results appear here after your first rated event.</span></div></div></div></section><section class="af-sec"><div class="af-sh"><h2 class="af-h2">Settings</h2></div><div class="af-sets"><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg>Profile</b><div class="k-small k-muted">Name, email and phone. Entry lists show "Nia Broussard".</div><a class="k-link k-small" href="#">Edit</a></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg>US Chess ID</b><div class="k-small k-muted">none</div><a class="k-link k-small" href="#">Add</a></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.01"></path></svg>Privacy</b><label class="k-check k-small" style="margin-top:4px"><input type="checkbox" checked> Show me on Who's coming lists</label><label class="k-check k-small" style="margin-top:4px"><input type="checkbox" checked> Show my results on my player page</label></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H6.5A1.5 1.5 0 0 0 5 4.5v15A1.5 1.5 0 0 0 6.5 21h11a1.5 1.5 0 0 0 1.5-1.5V8l-5-5zM14 3v5h5M8.5 13h7M8.5 17h5"></path></svg>Payments</b><div class="k-small k-muted">No card saved. Stripe can keep one when you next pay.</div><a class="k-link k-small" href="#">Manage</a></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>Family</b><div class="k-small k-muted">Add a family member to register them. Children don't need an email or a login.</div><a class="k-link k-small" href="#">Add a family member</a></div></div><div class="af-set"><div><b class="af-seth"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2"></rect><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"></path></svg>Sign-in and security</b><div class="k-small k-muted">Email link or Google account · <span style="white-space:nowrap">Two-factor: off</span></div><a class="k-link k-small" href="#">Manage</a></div></div></div></section></main><div class="ae-sidewrap"><aside class="ae-side" aria-label="Your membership"><div class="ae-sc"><p class="k-label">Membership</p><p class="ae-mline">Adult · valid through Sun, Mar 14, 2027</p><p class="ae-links" style="margin:0"><a class="k-link" href="#">Turn on auto-renew</a></p></div><div><div class="ae-card"><div><div class="ae-cl">Member</div><div class="ae-cn">Nia Broussard</div><div class="ae-cm" style="margin-top:5px">Adult · <span class="k-mono">LCA-26-0412</span></div><div class="ae-cm">Valid through Sun, Mar 14, 2027</div></div><div class="ae-qr"><svg viewBox="0 0 25 25" width="88" height="88" shape-rendering="crispEdges" role="img" aria-label="Check-in QR code"><g transform="matrix(0 1 1 0 0 0)"><path fill="#1a2744" stroke="none" d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h3v1h-3zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM15 3h2v1h-2zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM13 7h3v1h-3zM1 8h4v1h-4zM6 8h2v1h-2zM9 8h2v1h-2zM12 8h1v1h-1zM14 8h4v1h-4zM20 8h1v1h-1zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h2v1h-2zM7 9h4v1h-4zM12 9h1v1h-1zM14 9h2v1h-2zM20 9h2v1h-2zM24 9h1v1h-1zM0 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM8 10h3v1h-3zM12 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM0 11h1v1h-1zM2 11h4v1h-4zM7 11h3v1h-3zM11 11h2v1h-2zM18 11h3v1h-3zM24 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM14 12h1v1h-1zM18 12h1v1h-1zM23 12h1v1h-1zM1 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM22 13h3v1h-3zM1 14h2v1h-2zM5 14h2v1h-2zM8 14h1v1h-1zM10 14h2v1h-2zM15 14h1v1h-1zM17 14h2v1h-2zM24 14h1v1h-1zM0 15h5v1h-5zM8 15h1v1h-1zM11 15h3v1h-3zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h4v1h-4zM0 16h3v1h-3zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h5v1h-5zM22 16h3v1h-3zM12 17h1v1h-1zM15 17h2v1h-2zM20 17h1v1h-1zM23 17h2v1h-2zM0 18h7v1h-7zM10 18h1v1h-1zM15 18h2v1h-2zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM10 19h1v1h-1zM16 19h1v1h-1zM20 19h2v1h-2zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM13 20h1v1h-1zM15 20h6v1h-6zM22 20h2v1h-2zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM17 21h2v1h-2zM20 21h1v1h-1zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM9 22h2v1h-2zM13 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM20 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM23 24h1v1h-1z"></path></g></svg></div></div><p class="ae-under">Show this at the desk. The QR checks you in.</p><div class="ae-wallet"><span>Add to Apple Wallet · Google Wallet</span><span class="ae-pill">after D4</span></div></div><div class="ae-sc"><h3>US Chess</h3><dl class="ae-dl"><dt>US Chess ID</dt><dd>none on file · <a class="k-link" href="#">Add it</a></dd><dt style="border-bottom:0">Membership</dt><dd style="border-bottom:0;font-weight:500">not checked until you add an ID</dd></dl></div><div class="ae-sc"><h3>Receipts</h3><p class="ae-small" style="color:#555c6b">Last payment</p><p class="ae-small"><b>LCA membership, Adult</b></p><p class="ae-small">Sat, Mar 14, 2026 · <b>$15</b></p><a class="k-link k-small" href="#">Send me this receipt again</a></div><p class="ae-small" style="color:#555c6b;padding:0 4px">Follow a club to see it here · <a class="k-link" href="#">Find a club</a></p></aside></div></div></div></div><span class="k-num-badge af-mk" style="top:276px;left:-12px">1</span></div><div class="af-col" style="width:456px"><div class="af-flab" style="margin:0 0 2px"><span class="af-code">C</span><h2>Phone · the card sheet, half open</h2></div><p class="af-cap">390 wide, drawn at 76%. Mon, Oct 5 · 7:40 AM. A tap on "Show my card".</p><div style="position:relative;padding-left:40px"><div class="af-phwrap" style="width:313px;height:660px"><div class="af-phone" style="transform:scale(0.764)"><div class="af-scr"><div class="af-status"><span>7:40</span><span class="af-island"></span><span>5G</span></div><div class="af-app"><svg class="af-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="af-appn"><b>Louisiana Chess</b><span>Association</span></span><span class="af-sicon" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span></div><div class="af-pmain"><section class="ad-phead"><p class="ad-kick">My LCA</p><h3>Avery Thibodeaux</h3><p>Adult member · valid through Mon, Oct 26, 2026</p><a class="k-btn k-btn-line k-btn-block" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Show my card</a></section><div class="af-pchips"><button class="k-chip k-chip-on" type="button">Today <span class="k-chip-count">4</span></button><button class="k-chip" type="button">Entries <span class="k-chip-count">2</span></button><button class="k-chip" type="button">Receipts</button><button class="k-chip" type="button">Settings</button></div><div class="af-ppad"><div class="af-h2" style="font-size:20px">Today<small style="font-size:13.5px">Mon, Oct 5</small></div><div class="af-pcard"><span class="k-tag af-tag-g">Payment pending</span><b>Pay for The Baton Rouge Classic</b><p>Your Open section entry is saved but not paid.</p></div></div><div class="ae-sheetbg"></div><div class="ae-sheet" role="dialog" aria-label="Your membership card"><span class="ae-grab"></span><div class="ae-shtop"><b>Your membership card</b><a class="ae-donebtn" href="#">Done</a></div><div class="ae-cl" style="margin-top:2px">Member</div><div class="ae-cn" style="font-size:22px;margin-top:2px">Avery Thibodeaux</div><div class="ae-cm">Adult · <span class="k-mono">LCA-25-1183</span></div><div class="ae-sqr"><svg viewBox="0 0 25 25" width="160" height="160" shape-rendering="crispEdges" role="img" aria-label="Check-in QR code"><g transform="matrix(0 1 1 0 0 0)"><path fill="#1a2744" stroke="none" d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h3v1h-3zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM15 3h2v1h-2zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM13 7h3v1h-3zM1 8h4v1h-4zM6 8h2v1h-2zM9 8h2v1h-2zM12 8h1v1h-1zM14 8h4v1h-4zM20 8h1v1h-1zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h2v1h-2zM7 9h4v1h-4zM12 9h1v1h-1zM14 9h2v1h-2zM20 9h2v1h-2zM24 9h1v1h-1zM0 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM8 10h3v1h-3zM12 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM0 11h1v1h-1zM2 11h4v1h-4zM7 11h3v1h-3zM11 11h2v1h-2zM18 11h3v1h-3zM24 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM14 12h1v1h-1zM18 12h1v1h-1zM23 12h1v1h-1zM1 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM22 13h3v1h-3zM1 14h2v1h-2zM5 14h2v1h-2zM8 14h1v1h-1zM10 14h2v1h-2zM15 14h1v1h-1zM17 14h2v1h-2zM24 14h1v1h-1zM0 15h5v1h-5zM8 15h1v1h-1zM11 15h3v1h-3zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h4v1h-4zM0 16h3v1h-3zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h5v1h-5zM22 16h3v1h-3zM12 17h1v1h-1zM15 17h2v1h-2zM20 17h1v1h-1zM23 17h2v1h-2zM0 18h7v1h-7zM10 18h1v1h-1zM15 18h2v1h-2zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM10 19h1v1h-1zM16 19h1v1h-1zM20 19h2v1h-2zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM13 20h1v1h-1zM15 20h6v1h-6zM22 20h2v1h-2zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM17 21h2v1h-2zM20 21h1v1h-1zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM9 22h2v1h-2zM13 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM20 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM23 24h1v1h-1z"></path></g></svg></div><div class="ae-cm" style="font-size:14px">Adult · valid through Mon, Oct 26, 2026</div><div class="ae-cm" style="font-size:13px;margin-top:4px;color:#c9d0de">US Chess <span class="k-mono">30188264</span> · ends Thu, Dec 31</div><span class="ae-pamber">Ends before your Sat, Jan 16 event</span><div class="ae-cm" style="font-size:13px;margin-top:8px">Show this at the desk. The QR checks you in.</div></div></div><nav class="af-tabs" aria-label="Sections"><a class="af-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="af-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11A6.5 6.5 0 0 1 18.5 10c0 5.4-6.5 11-6.5 11z"></path><circle cx="12" cy="10" r="2.3"></circle></svg><span>Clubs</span></a><a class="af-tab on" href="#" aria-current="page" aria-label="My LCA, 3 things to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="af-tcount" aria-hidden="true">3</span></a><button class="af-tab" type="button" style="border:0;background:transparent;font:inherit;font-size:12px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></nav></div></div></div><span class="k-num-badge af-mk" style="top:226px;left:0px">2</span><span class="k-num-badge af-mk" style="top:400px;left:0px">3</span></div></div></div>
+<div class="ae2-row" style="margin-top:30px;gap:28px"><div class="af-col" style="width:640px"><div class="af-flab" style="margin:0 0 2px"><span class="af-code">D</span><h2>A claimed profile: Maya's own My LCA</h2></div><p class="af-cap">Mon, Nov 16, 2026 · 6:15 PM. Her own login since Sun, Nov 15 (a later moment than Account-I and J), drawn in E's columns.</p><div class="af-inset"><div class="ad-thead"><div class="k-row-sm" style="gap:10px"><p class="ad-kick">My LCA</p><span class="k-sample">Sample data</span></div><h3>Maya Robichaux</h3><p>Scholastic · covered by the Robichaux Family plan through Sun, Mar 14, 2027</p><p class="af-guard" style="margin:6px 0 0"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.4 3.6 5.2"></path></svg>Danielle R. gets copies of your emails</p></div><div class="ae-tgrid"><div style="display:flex;flex-direction:column;gap:10px"><div class="af-trow"><div class="k-row-sm"><span class="k-tag af-tag-g">Payment pending</span><span class="k-meta">Today · Mon, Nov 16</span></div><b>Ken Ferguson Memorial Scholastic, K–8 · Sun, Jan 17, 2027 · $25 · early price until Fri, Jan 8</b><div class="k-row-sm" style="margin-top:6px"><a class="k-btn k-btn-navy k-btn-sm" href="#">Ask my guardian to pay</a><a class="k-btn k-btn-ghost k-btn-sm" href="#">Pay now</a></div></div><div class="af-tset"><b>I'm 18 or older: manage my profile myself</b>Takes effect after 7 days; your guardians are told at once.</div></div><div class="ae-mini" role="img" aria-label="Membership card for Maya Robichaux"><div class="ae-cl">Member</div><div><div class="ae-cn" style="font-size:16px;margin-top:0">Maya Robichaux</div><div class="ae-cm" style="font-size:12px">Scholastic · Family plan</div><div class="ae-cm" style="font-size:12px">Valid through Sun, Mar 14, 2027</div></div><div class="ae-qr"><svg viewBox="0 0 25 25" width="72" height="72" shape-rendering="crispEdges" role="img" aria-label="Check-in QR code"><g transform="matrix(0 1 1 0 0 0)"><path fill="#1a2744" stroke="none" d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h1v1h-1zM14 0h1v1h-1zM18 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h3v1h-3zM14 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h2v1h-2zM13 2h4v1h-4zM18 2h1v1h-1zM20 2h3v1h-3zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM15 3h2v1h-2zM18 3h1v1h-1zM20 3h3v1h-3zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM12 4h4v1h-4zM18 4h1v1h-1zM20 4h3v1h-3zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM13 5h2v1h-2zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h7v1h-7zM9 7h2v1h-2zM13 7h3v1h-3zM1 8h4v1h-4zM6 8h2v1h-2zM9 8h2v1h-2zM12 8h1v1h-1zM14 8h4v1h-4zM20 8h1v1h-1zM22 8h2v1h-2zM1 9h1v1h-1zM3 9h2v1h-2zM7 9h4v1h-4zM12 9h1v1h-1zM14 9h2v1h-2zM20 9h2v1h-2zM24 9h1v1h-1zM0 10h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM8 10h3v1h-3zM12 10h1v1h-1zM14 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM0 11h1v1h-1zM2 11h4v1h-4zM7 11h3v1h-3zM11 11h2v1h-2zM18 11h3v1h-3zM24 11h1v1h-1zM3 12h1v1h-1zM5 12h2v1h-2zM14 12h1v1h-1zM18 12h1v1h-1zM23 12h1v1h-1zM1 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM17 13h1v1h-1zM22 13h3v1h-3zM1 14h2v1h-2zM5 14h2v1h-2zM8 14h1v1h-1zM10 14h2v1h-2zM15 14h1v1h-1zM17 14h2v1h-2zM24 14h1v1h-1zM0 15h5v1h-5zM8 15h1v1h-1zM11 15h3v1h-3zM15 15h1v1h-1zM18 15h1v1h-1zM20 15h4v1h-4zM0 16h3v1h-3zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h5v1h-5zM22 16h3v1h-3zM12 17h1v1h-1zM15 17h2v1h-2zM20 17h1v1h-1zM23 17h2v1h-2zM0 18h7v1h-7zM10 18h1v1h-1zM15 18h2v1h-2zM18 18h1v1h-1zM20 18h1v1h-1zM22 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM10 19h1v1h-1zM16 19h1v1h-1zM20 19h2v1h-2zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h3v1h-3zM6 20h1v1h-1zM8 20h2v1h-2zM13 20h1v1h-1zM15 20h6v1h-6zM22 20h2v1h-2zM0 21h1v1h-1zM2 21h3v1h-3zM6 21h1v1h-1zM8 21h2v1h-2zM17 21h2v1h-2zM20 21h1v1h-1zM0 22h1v1h-1zM2 22h3v1h-3zM6 22h1v1h-1zM9 22h2v1h-2zM13 22h1v1h-1zM18 22h1v1h-1zM22 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM20 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h1v1h-1zM14 24h3v1h-3zM18 24h2v1h-2zM21 24h1v1h-1zM23 24h1v1h-1z"></path></g></svg></div></div></div><p class="k-meta" style="margin:0 18px 12px">She cannot add children, remove guardians or see her guardians' receipts. No Family section, no chips.</p></div><span class="k-num-badge af-mk" style="top:92px;left:-12px">4</span></div><div class="af-col" style="width:300px"><div class="af-flab" style="margin:0 0 2px"><span class="af-code">i</span><h2>The rail, Today selected</h2></div><p class="af-cap">On this page at the top of Frame A.</p><div class="af-inset" style="padding:14px"><nav class="af-rail" aria-label="On this page" style="border:0;padding:0"><p class="af-rt">On this page</p><a class="af-rr af-rr-on" href="#" aria-current="location">Today<span class="af-rc">4</span></a><span class="ae-ghostrow" aria-hidden="true">Membership</span><a class="af-rr" href="#">Entries<span class="af-rc">2</span></a><a class="af-rr" href="#">Receipts</a><a class="af-rr" href="#">Settings</a></nav><p class="k-meta" style="margin:10px 0 0">The dashed row is D's Membership row, gone on E because the card is always in view. A bar and bold text mark the current row, never colour alone. Nothing under the rail: no line about roles.</p></div><span class="k-num-badge af-mk" style="top:58px;right:-12px">5</span></div><div class="af-col" style="width:340px"><div class="af-flab" style="margin:0 0 2px"><span class="af-code">ii</span><h2>My LCA ▾ for Avery</h2></div><p class="af-cap">WS02 order, to-dos in WS13's ranking (Int-A cell A1). Identical to D's.</p><div class="af-inset" style="background:#f5f5f2"><div class="af-mstrip"><button class="af-my af-my-open" type="button" aria-haspopup="menu" aria-expanded="true" aria-label="My LCA, 3 things to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="af-count" aria-hidden="true">3</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7"></path></svg></button></div><div class="af-dd" role="menu" aria-label="My LCA"><div class="af-ddlabel">To do · 3</div><a class="af-ddrow af-todo2" href="#" role="menuitem"><span><span class="af-ddt">Finish payment · The Baton Rouge Classic</span><span class="af-ddsub2">$60 · your Open entry</span></span><span class="k-tag k-tag-soon">Unpaid</span></a><a class="af-ddrow af-todo2" href="#" role="menuitem"><span><span class="af-ddt">US Chess membership</span><span class="af-ddsub2">Ends Thu, Dec 31, before the Ken Ferguson Memorial Open</span></span><span class="k-tag k-tag-soon">Ends first</span></a><a class="af-ddrow af-todo2" href="#" role="menuitem"><span><span class="af-ddt">Renew membership</span><span class="af-ddsub2">Expires Mon, Oct 26</span></span><span class="k-tag k-tag-soon">Due soon</span></a><div class="af-ddsep"></div><a class="af-ddrow" href="#" role="menuitem"><span class="af-ddt">My LCA</span><span class="af-ddsub">Your dashboard</span></a><a class="af-ddrow" href="#" role="menuitem"><span class="af-ddt">Membership card</span><span class="af-ddsub">Show at the desk</span></a><div class="af-ddsep"></div><button class="af-ddrow" type="button" role="menuitem" style="border:0;background:transparent;width:100%;font:inherit;font-size:14.5px;font-weight:500;cursor:pointer"><span class="af-ddt">Log out</span></button></div></div></div></div>
+<div class="ae2-row" style="margin-top:30px"><div class="af-col"><div class="af-flab" style="margin:0 0 2px"><span class="af-code">S</span><h2>States of this page, and narrower screens</h2></div><div class="ae-states"><dl style="margin:0"><dt>Busy</dt><dd>Frame A on part 1: four Today items, two entries, three saved events, two deadlines.</dd><dt>Empty</dt><dd>Frame B: a new member with nothing entered. Today is a sentence and two buttons; the column still holds the card.</dd><dt>Event day (not drawn, Account-A's rule)</dt><dd>The Sat, Oct 24 row rises under Today with "Playing today · Round 1 at 10:00 AM · My board". The card stays in the column for the desk.</dd><dt>Teen with her own login</dt><dd style="margin-bottom:0">Frame D: the same columns, one line about copies, Ask my guardian to pay.</dd></dl><div><p class="ae2-sh">At 1024 wide</p><div class="ae-wf" aria-hidden="true"><div class="ae-wfbar"></div><div class="ae-wfin" style="grid-template-columns:minmax(0,1fr) 120px"><div style="display:grid;gap:8px"><div class="ae-sel">Jump to: Today<span>▾</span></div><div class="ae-blk"><b>Today</b> · four items</div><div class="ae-blk"><b>Entries</b> · timeline</div><div class="ae-blk"><b>Receipts</b> · <b>Settings</b></div></div><div style="display:grid;gap:8px;align-content:start"><div class="ae-blk ae-nv"><b>Card</b> · QR</div><div class="ae-blk"><b>US Chess</b></div><div class="ae-blk"><b>Receipts</b></div></div></div></div><p class="ae-wfcap">The side column narrows to <b>280</b> and stays sticky; the card stays in it. The rail folds into a <b>"Jump to"</b> select above Today.</p></div><div><p class="ae2-sh">Below 1024</p><div class="ae-wf" aria-hidden="true"><div class="ae-wfbar"></div><div class="ae-wfin"><div class="ae-blk"><b>Avery Thibodeaux</b> · the head</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div class="ae-blk ae-nv"><b>Card</b> · QR</div><div class="ae-blk"><b>US Chess</b> · ends Thu, Dec 31</div></div><div class="ae-sel">Jump to: Today<span>▾</span></div><div class="ae-blk"><b>Today</b> · <b>Entries</b> · <b>Receipts</b> · <b>Settings</b></div></div></div><p class="ae-wfcap">The column drops under the head as <b>one row</b>, the card at the left and US Chess at the right, and <b>stops being sticky</b>. On a phone it becomes the sheet (Frame C).</p></div></div></div></div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2250}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

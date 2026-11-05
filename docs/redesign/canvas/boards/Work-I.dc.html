@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · I · The queue is the home (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.wi-root{width:1440px;box-sizing:border-box;padding:32px 0 48px;background:#ecebe6;color:#1a2744}
+.wi-root *{box-sizing:border-box}
+.wi-pad{margin:0 32px}
+.wi-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.wi-title{font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 4px}
+.wi-ml{font-size:14px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1100px}
+.wi-ml b{color:#1a2744;font-weight:600}
+.wi-kq{margin:12px 0 0;padding:10px 14px;border-left:4px solid #c8a94a;background:#ffffff;border-radius:0 8px 8px 0;font-size:14px;line-height:1.5;color:#1a2744;max-width:1100px}
+.wi-legend{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.wi-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.wi-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 22px}
+.wi-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.wi-notes b{font-weight:600}
+.wi-fl2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start;margin-top:14px}
+.wi-frameline{margin:0;padding:12px 14px;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;font-size:13px;line-height:1.5;color:#3d4556}
+.wi-frameline b{color:#1a2744}
+.wi-crumbs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.wi-c3{border:1px solid #e3e2dc;border-radius:8px;background:#ffffff;padding:8px 10px;font-size:13px;line-height:1.4}
+.wi-c3 span{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.wi-c3 small{display:block;font-size:12px;color:#555c6b;margin-top:2px}
+.wi-top{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:24px;align-items:start}
+.wi-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:12px 18px}
+.wi-grey p{margin:0;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wi-grey b{display:block;color:#1a2744;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px}
+.wi-grey ul{margin:2px 0 0;padding-left:18px;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wi-grey li{margin-bottom:4px}
+
+.wi-sec{margin-top:28px}
+.wi-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 32px 12px}
+.wi-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.wi-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.wi-browser{border-radius:0;border-left:0;border-right:0;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.wi-view{background:#f5f5f2;position:relative}
+
+/* header (decided chrome) */
+.wi-hd-in{gap:0;position:relative;padding:0 24px;max-width:none}
+.wi-hd .k-brand{margin-right:16px}
+.wi-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.wi-rook-sm{width:24px;height:24px}
+.wi-nav{gap:0}
+.wi-nav a{padding:0 10px;white-space:nowrap}
+.wi-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.wi-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.wi-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.wi-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+
+.wi-crumb{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:0 40px;background:#ffffff;border-bottom:1px solid #ecebe5}
+.wi-crumb nav{display:flex;align-items:center;gap:8px;font-size:14px;color:#555c6b}
+.wi-crumb nav a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wi-crumb nav b{color:#1a2744;font-weight:600}
+.wi-back{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:#1a2744;font-size:14px;font-weight:600;text-decoration:none}
+
+/* admin shell */
+.wi-shell{display:grid;grid-template-columns:220px 1100px;gap:40px;padding:24px 40px 32px;align-items:start}
+.wi-side{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 8px 12px;position:relative}
+.wi-side-h{padding:4px 10px 10px;border-bottom:1px solid #ecebe5;margin-bottom:4px}
+.wi-side-h b{display:block;font-size:18px;font-weight:700}
+.wi-side-h a{display:inline-flex;align-items:center;gap:4px;min-height:32px;font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wi-grp{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding:12px 10px 3px}
+.wi-sn{display:flex;align-items:center;gap:8px;min-height:34px;padding:4px 10px;border-radius:8px;color:#1a2744;text-decoration:none;font-size:14px;font-weight:500;line-height:1.25;border-left:3px solid transparent}
+.wi-sn small{display:block;font-size:12px;color:#555c6b;font-weight:400}
+.wi-sn-on{background:#f3eedc;border-left-color:#866a1e;font-weight:700}
+.wi-cnt{margin-left:auto;font-size:12px;font-weight:700;background:#1a2744;color:#ffffff;border-radius:99px;padding:2px 8px;line-height:1.3}
+.wi-sn .k-tag{margin-left:auto}
+.wi-sn-amber{margin-left:auto;font-size:11.5px;font-weight:600;color:#664c0c;background:#f5ecd2;border-radius:6px;padding:2px 6px;white-space:nowrap}
+.wi-side-f{margin-top:10px;padding:10px 10px 2px;border-top:1px solid #ecebe5;font-size:12.5px;line-height:1.4;color:#3d4556;display:flex;gap:8px;align-items:flex-start}
+.wi-side-f b{color:#1a2744}
+
+.wi-main{min-width:0;display:flex;flex-direction:column;gap:16px}
+.wi-today{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap;min-height:48px;padding:8px 14px 8px 20px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;font-size:13.5px;line-height:1.4;color:#3d4556;position:relative}
+.wi-today .k-label{color:#1a2744}
+.wi-today a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:3px}
+.wi-sep{color:#9aa1b0}
+.wi-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:1px}
+.wi-titlerow{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+.wi-titlerow h1{margin:0;font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;display:flex;align-items:center;gap:12px}
+.wi-titlerow h1 .wi-tsub{font-weight:500;color:#555c6b;font-size:22px}
+.wi-jump{width:420px;flex:none}
+.wi-jump .k-input{font-size:15px}
+.wi-tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;position:relative}
+.wi-tile{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border:1px solid #dddcd4;border-radius:10px;background:#ffffff;color:#1a2744;text-decoration:none;min-height:92px}
+.wi-tile b{font-size:26px;line-height:1.1;font-weight:700}
+.wi-tile .k-label{font-size:11px;letter-spacing:.06em}
+.wi-tile span.wi-ts{font-size:12.5px;line-height:1.3;color:#555c6b}
+.wi-tile-zero{background:#fbfbf8}
+.wi-tile-zero b{color:#6b7180}
+.wi-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.wi-bar .k-chip{min-height:36px}
+.wi-sort{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 10px;border:1px solid #c4c3bb;border-radius:8px;background:#ffffff;font-size:13.5px;font-weight:600;color:#1a2744}
+.wi-sort span{font-weight:500;color:#555c6b}
+.wi-dig{font-size:14px;align-items:center}
+.wi-dig input{margin:0}
+
+.wi-table{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:visible;position:relative}
+.wi-tr{display:grid;grid-template-columns:minmax(0,1fr) 136px 112px 176px 180px;gap:14px;align-items:center;min-height:64px;padding:8px 16px;border-bottom:1px solid #ecebe5;position:relative}
+.wi-tr.wi-last{border-bottom:0}
+.wi-th{min-height:38px;padding-top:0;padding-bottom:0;background:#fbfbf8;border-radius:12px 12px 0 0;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b}
+.wi-item{min-width:0;display:flex;flex-direction:column;gap:2px}
+.wi-item b{font-size:14.5px;font-weight:600;line-height:1.3;color:#1a2744}
+.wi-item span{font-size:13px;line-height:1.35;color:#555c6b}
+.wi-src{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:6px;font-size:12px;font-weight:600;line-height:1.2;white-space:nowrap}
+.wi-src::before{content:"";width:7px;height:7px;border-radius:2px;background:currentColor;flex:none}
+.wi-s-appr{background:#f3eedc;color:#5c4a12}
+.wi-s-sup{background:#e8edf4;color:#2d3a52}
+.wi-s-board{background:#ece8f3;color:#3f2f63}
+.wi-s-fail{background:#fdebd6;color:#7a3d00}
+.wi-s-club{background:#e1f0e7;color:#145b3a}
+.wi-wait{font-size:14px;color:#1a2744}
+.wi-late{display:inline-flex;flex-direction:column;padding:4px 8px;border-radius:6px;background:#f5ecd2;color:#664c0c;font-size:14px;font-weight:700;line-height:1.2}
+.wi-late small{font-size:11.5px;font-weight:600}
+.wi-own{font-size:14px;line-height:1.3;color:#1a2744}
+.wi-own small{display:block;font-size:12px;color:#555c6b}
+.wi-assign{display:inline-flex;align-items:center;gap:4px;font-size:14px}
+.wi-act{display:flex;justify-content:flex-end}
+.wi-b40{min-height:40px;padding:0 14px;font-size:14px}
+.wi-rbadge{position:absolute;left:-14px;top:50%;margin-top:-14px;box-shadow:0 0 0 3px #ffffff;z-index:3}
+.wi-tfoot{padding:12px 16px;background:#fbfbf8;border-top:1px solid #ecebe5;border-radius:0 0 12px 12px;font-size:13px;line-height:1.5;color:#3d4556}
+.wi-badge{position:absolute;z-index:5;box-shadow:0 0 0 3px #ffffff}
+
+.wi-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 24px 20px}
+.wi-foot .k-meta{color:rgba(255,255,255,.78)}
+
+/* lower rows */
+.wi-row{display:grid;gap:20px;margin:0 32px;align-items:start}
+.wi-inset{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;position:relative}
+.wi-ihead{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fbfbf8;border-bottom:1px solid #ecebe5;font-size:13px;color:#555c6b;line-height:1.35}
+.wi-ihead b{color:#1a2744;font-size:14px}
+.wi-icode{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 7px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700;flex:none}
+.wi-ibody{padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.wi-ibody .k-input{min-height:40px;font-size:14px}
+.wi-ibody .k-field label{font-size:13.5px}
+.wi-icap{margin:0;font-size:13px;line-height:1.45;color:#555c6b}
+.wi-icap b{color:#1a2744}
+.wi-dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0;border:1px solid #e3e2dc;border-radius:10px;overflow:hidden}
+.wi-dl dt,.wi-dl dd{margin:0;padding:8px 12px;font-size:13.5px;line-height:1.4;border-bottom:1px solid #ecebe5}
+.wi-dl dt{background:#fbfbf8;color:#555c6b;font-weight:600}
+.wi-dl dd{color:#1a2744}
+.wi-dl .wi-dlast{border-bottom:0}
+.wi-ok{background:#e1f0e7;color:#145b3a}
+.wi-hl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:8px 0;border-bottom:1px solid #ecebe5;align-items:center}
+.wi-hl:last-child{border-bottom:0}
+.wi-hl b{font-size:14px}
+.wi-hl span.k-meta{grid-column:1}
+.wi-hl .k-tag{grid-row:1 / span 2;grid-column:2}
+.wi-card{border:1px solid #e3e2dc;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:#ffffff}
+.wi-card h3{margin:0;font-size:15.5px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.wi-bnr{background:#1a2744;color:#ffffff;border-radius:8px;padding:8px 12px;font-size:13.5px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.wi-bnr a{color:#e6cf86;font-weight:600}
+.wi-switch{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+.wi-switch i{display:inline-block;width:38px;height:22px;border-radius:99px;background:#1a2744;position:relative}
+.wi-switch i::after{content:"";position:absolute;right:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#ffffff}
+
+.wi-thumb{border:1px solid #cfcec6;border-radius:10px;overflow:hidden;background:#f5f5f2}
+.wi-tcrumb{padding:6px 10px;font-size:11.5px;color:#3d4556;background:#ffffff;border-bottom:1px solid #ecebe5}
+.wi-backstop{background:#fbf7e9;border-bottom:1px solid #866a1e;padding:7px 10px;font-size:12px;color:#1a2744}
+.wi-cons{background:#1a2744;color:#ffffff;padding:10px 12px}
+
+.wi-menu{border:1px solid #d9d8d1;border-radius:12px;box-shadow:0 10px 24px rgba(16,24,43,.12);padding:6px;background:#ffffff}
+.wi-mi{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:40px;padding:4px 10px;border-radius:8px;font-size:14px;font-weight:500}
+.wi-mi small{font-size:12px;color:#555c6b;font-weight:400}
+.wi-mi-on{box-shadow:inset 0 0 0 2px #c8a94a;background:#fbf7e9;font-weight:600}
+.wi-msep{height:1px;background:#e3e2dc;margin:4px}
+.wi-mlab{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;padding:6px 10px 2px}
+.wi-sect{border:1px solid #dddcd4;border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;background:#ffffff}
+.wi-sect h4{margin:0;font-size:17px;font-weight:700}
+.wi-mtag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;background:#eceef3;color:#1a2744;font-size:11.5px;font-weight:600;white-space:nowrap}
+.wi-st{display:flex;flex-direction:column;gap:10px}
+.wi-mini{border:1px solid #e3e2dc;border-radius:10px;background:#f5f5f2;padding:12px;display:flex;flex-direction:column;gap:8px}
+.wi-mt{display:grid;grid-template-columns:minmax(0,1fr) 92px 70px 72px;gap:8px;align-items:center;padding:7px 10px;background:#ffffff;border-bottom:1px solid #ecebe5;font-size:12.5px;line-height:1.3}
+.wi-mt:last-child{border-bottom:0}
+.wi-mtiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.wi-mtile{background:#ffffff;border:1px solid #e3e2dc;border-radius:7px;padding:5px 7px;font-size:10.5px;line-height:1.25;color:#555c6b}
+.wi-mtile b{display:block;font-size:16px;color:#1a2744}
+</style>
+</helmet>
+<div class="wi-root" style="width:1440px;height:3100px">
+
+<section class="wi-doc wi-pad" aria-label="About this board">
+<div class="wi-top"><div style="min-width:0">
+  <div class="k-between"><p class="k-kicker" style="margin:0">15 · Workspace and admin · round 2 · option I · part 1 of 2</p><span class="k-sample">Sample data · queue items, names, counts, times</span></div>
+  <h1 class="wi-title">Admin · I · The queue is the home (round 2)</h1>
+  <p class="wi-ml"><b>Built from:</b> Work-C and WS08 as amended by the replan 4.6, Account-Q's admin summary and queue data, the decided header and footer (Nav-Header-Final, Tourn-List-Final) · Round 2 · <b>Frame:</b> Int-A, swappable · <b>Replaces:</b> Work-C, with Work-J (one is picked)</p>
+  <p class="wi-ml"><b>K's feedback applied:</b> the screens joined to the whole, with options for each: Admin opens from My LCA and returns to it; I (the queue is the home) and J (a dashboard home) are its two homes.</p>
+  <p class="wi-ml"><b>Shown:</b> /admin on Mon, Oct 5, 2026 at 8:12 AM, signed in with a second factor as Denise Fontenot, LCA admin (Sample data). <b>Continues on Work-I-2:</b> the backstop, Log in as, the way in and back, the empty and busy states.</p>
+  <p class="wi-kq"><b>K, page 15, Tue, Oct 13:</b> "for 15, it seems all the pages here are all their separate ideas and are good on their own right, i think its proper to think about how we plan to integrate each of them into the whole and also get mockup options for each to pin down a good vision."</p>
+  </div>
+<aside class="wi-grey" aria-label="Board note">
+      <p><b>What</b>/admin opens on the merged Needs attention queue, one table over six sources with owner, waiting and an action per row. The panels moved to their sidebar groups. Work-J's home is a dashboard with the queue's top five.</p>
+      <p><b>Built from</b>Work-C's queue, tiles, digest, banner, automations, audit log and Log in as; WS08 as amended by replan 4.6; Account-Q's queue data; the decided chrome.</p>
+      <p><b>K's feedback applied</b>Admin joined to the whole: in from the My LCA menu row and the LCA admin section, the crumb My LCA › Admin, Back to My LCA. The word is Admin, never Admin panel.</p>
+      <div><p><b>Open for K</b></p>
+        <ul>
+          <li>I (the queue is the home) or J (a dashboard home).</li>
+          <li>Officers and the president: rooms (drawn) or one "Admin (view only)" row.</li>
+          <li>May Assign offer an officer for support tickets, as on Isaac Dupre's row?</li>
+        </ul>
+      </div>
+    </aside>
+</div>
+<div class="wi-legend">
+    <div class="wi-lbox">
+      <p class="k-label" style="margin:0">Notes on this board</p>
+      <ol class="wi-notes">
+        <li><span class="k-num-badge">1</span><span><b>The home is the queue:</b> one table over six sources, with owner, waiting time and an action per row. Nothing else sits on /admin.</span></li>
+        <li><span class="k-num-badge">2</span><span><b>Counts double as filters;</b> no vanity stats. A tile at 0 stays, so the six sources are always named.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>Approvals are the club events representatives submit.</b> Champion submissions are gone (P2.36), and so is the club rep request.</span></li>
+        <li><span class="k-num-badge">4</span><span><b>An open seat's club reports land here</b> (P2.16); a report unanswered for 14 days lands here too, even when a seat holds it.</span></li>
+        <li><span class="k-num-badge">5</span><span><b>Banner, automations, membership switch, audit log and Log in as moved</b> to Site, Members and Audit; the Today strip tells the admin whether to look.</span></li>
+        <li><span class="k-num-badge">6</span><span><b>Admin only, with a second factor.</b> Officers and the president get rooms instead of a view-only Admin (open for K).</span></li>
+      </ol>
+      <div class="wi-fl2"><p class="wi-frameline"><b>Frame.</b> Drawn inside Int-A (My LCA as the hub). The frame is swappable: under Int-B Admin stays a separate area reached from the header; under Int-C it is a card on Your work. Admin itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</p>
+      <div class="wi-crumbs3">
+        <div class="wi-c3"><span>Int-A · baseline</span>My LCA › Admin<small>From the menu row or the LCA admin section</small></div>
+        <div class="wi-c3"><span>Int-B</span>My LCA › Admin<small>From the header only, never a rail row</small></div>
+        <div class="wi-c3"><span>Int-C</span>My LCA › Your work › Admin<small>From the Admin card on Your work</small></div>
+      </div></div>
+    </div>
+    
+  </div>
+</section>
+
+<section class="wi-sec" aria-labelledby="wi-fa">
+  <div class="wi-flab"><span class="wi-code">A</span><h2 id="wi-fa">Admin at 1440 · Needs attention is the home</h2><span class="k-meta">Mon, Oct 5, 2026 · 8:12 AM · 12 items, oldest 9 days · Denise Fontenot, LCA admin</span></div>
+  <div class="k-browser wi-browser">
+    <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin</div></div>
+    <div class="wi-view">
+      <header class="k-header wi-hd"><div class="k-header-in wi-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="wi-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks wi-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="wi-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="wi-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="wi-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility" style="gap:12px"><a class="k-ulink" href="#">Donate</a><button class="wi-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, nothing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+
+      <div class="wi-crumb">
+        <nav aria-label="Breadcrumb"><a href="#">My LCA</a><span aria-hidden="true">›</span><b aria-current="page">Admin</b></nav>
+        <a class="wi-back" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to My LCA</a>
+      </div>
+
+      <div class="wi-shell">
+        <nav class="wi-side" aria-label="Admin sections">
+          <div class="wi-side-h"><b>Admin</b><a href="#"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to My LCA</a></div>
+          <a class="wi-sn wi-sn-on" href="#" aria-current="page">Needs attention<span class="wi-cnt">12</span></a>
+          <div class="wi-grp">Members</div>
+          <a class="wi-sn" href="#">Members &amp; export</a>
+          <a class="wi-sn" href="#">Roles &amp; access</a>
+          <a class="wi-sn" href="#">Log in as a member</a>
+          <div class="wi-grp">Tournaments</div>
+          <a class="wi-sn" href="#">Tournaments</a>
+          <a class="wi-sn" href="#">New tournament</a>
+          <a class="wi-sn" href="#">Season schedule</a>
+          <div class="wi-grp">Clubs</div>
+          <a class="wi-sn" href="#"><span>Clubs<small>Create, rename, region, delete</small></span></a>
+          <div class="wi-grp">Content</div>
+          <a class="wi-sn" href="#">News</a>
+          <a class="wi-sn" href="#">Site banner<span class="k-tag k-tag-live">Live</span></a>
+          <a class="wi-sn" href="#">Festivals</a>
+          <div class="wi-grp">Board</div>
+          <a class="wi-sn" href="#">Board seats &amp; regions</a>
+          <a class="wi-sn" href="#"><span>Board inbox<small>Every seat</small></span></a>
+          <div class="wi-grp">Email</div>
+          <a class="wi-sn" href="#">Group email &amp; history</a>
+          <div class="wi-grp">Site</div>
+          <a class="wi-sn" href="#">Membership required for all</a>
+          <a class="wi-sn" href="#"><span>Automations &amp; health<small>1 needs a look</small></span><span class="wi-sn-amber">Check</span></a>
+          <div class="wi-grp">Audit</div>
+          <a class="wi-sn" href="#">Audit log</a>
+          <div class="wi-side-f"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="flex:none;margin-top:1px"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span>Signed in with your second factor · <b>Denise Fontenot</b></span></div>
+          <span class="k-num-badge wi-badge" style="right:-14px;bottom:14px">6</span>
+        </nav>
+
+        <div class="wi-main">
+          <div class="wi-today" aria-label="Today">
+            <span class="k-num-badge wi-badge" style="left:-14px;top:10px">5</span>
+            <span class="k-label">Today</span>
+            <span><b class="k-ink">Mon, Oct 5, 2026</b></span><span class="wi-sep">·</span>
+            <span><span class="wi-dot" style="background:#b8860b"></span><a href="#">Daily emails ran 6:00 AM</a> · 41 sent, 2 failed, both in the queue</span><span class="wi-sep">·</span>
+            <span><span class="wi-dot" style="background:#b3202f"></span><a href="#">Site banner</a> live until Sun, Oct 11</span><span class="wi-sep">·</span>
+            <span><span class="wi-dot" style="background:#2e7d4f"></span>Gulf South sync 5:00 AM · OK</span>
+          </div>
+
+          <div class="wi-titlerow">
+            <h1><span class="k-num-badge">1</span>Needs attention · 12 <span class="wi-tsub">· oldest 9 days</span></h1>
+            <div class="k-field wi-jump"><label for="wi-q">Jump to</label><input id="wi-q" class="k-input" placeholder="A member, tournament, club, ticket or email · press /"></div>
+          </div>
+
+          <div class="wi-tiles" aria-label="Sources, each a filter">
+            <span class="k-num-badge wi-badge" style="left:-14px;top:-12px">2</span>
+            <a class="wi-tile" href="#"><span class="k-label">Support</span><b>4</b><span class="wi-ts">oldest 3 days</span></a>
+            <a class="wi-tile" href="#"><span class="k-label">Board inbox</span><b>2</b><span class="wi-ts">1 to the full board</span></a>
+            <a class="wi-tile" href="#"><span class="k-label">Approvals</span><b>3</b><span class="wi-ts">club events</span></a>
+            <a class="wi-tile" href="#"><span class="k-label">Failed emails</span><b>2</b><span class="wi-ts">last 24 hours</span></a>
+            <a class="wi-tile" href="#"><span class="k-label">Club reports</span><b>1</b><span class="wi-ts">open seat</span></a>
+            <a class="wi-tile wi-tile-zero" href="#"><span class="k-label">Listing reports</span><b>0</b><span class="wi-ts">partner listings</span></a>
+          </div>
+
+          <div class="wi-bar">
+            <div class="k-row-sm">
+              <span class="k-chip k-chip-on">All <span class="k-chip-count">12</span></span>
+              <span class="k-chip">Assigned to me <span class="k-chip-count">2</span></span>
+              <span class="k-chip">Waiting 2+ days <span class="k-chip-count">6</span></span>
+              <span class="k-chip">Open seats <span class="k-chip-count">1</span></span>
+            </div>
+            <div class="k-row-sm" style="gap:16px">
+              <label class="k-check wi-dig"><input type="checkbox" checked><span>Email me this queue weekdays at 7:00 AM</span></label>
+              <span class="wi-sort"><span>Sort</span> Longest waiting first<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span>
+            </div>
+          </div>
+
+          <div class="wi-table" role="table" aria-label="Needs attention">
+            <div class="wi-tr wi-th" role="row"><span>Item</span><span>Source</span><span>Waiting</span><span>Owner</span><span style="text-align:right">Action</span></div>
+<div class="wi-tr" role="row"><span class="k-num-badge wi-rbadge">4</span><div class="wi-item"><b>Casa de Ajedrez · "Now meets at the Sulphur library, not the church"</b><span>From a visitor · Sat, Sep 26 · the Southwest Louisiana seat is open, so it is yours</span></div><div><span class="wi-src wi-s-club">Club report</span></div><div><span class="wi-late">9 days<small>over a week</small></span></div><div><a class="k-link wi-assign" href="#">Assign<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">Reply or Update listing</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>Champions: missing years 1987 to 1991</b><span>From the Champions tab · board inbox</span></div><div><span class="wi-src wi-s-board">Board inbox</span></div><div><span class="wi-wait">6 days</span></div><div><span class="wi-own">[Secretary]</span></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">Open</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>Bid to host the 2027 State Championship</b><span>[Club or organizer] · board inbox</span></div><div><span class="wi-src wi-s-board">Board inbox</span></div><div><span class="wi-wait">4 days</span></div><div><span class="wi-own">Full board</span></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">Open</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>US Chess ID lookup can't find me</b><span>Jordan Lee · support ticket</span></div><div><span class="wi-src wi-s-sup">Support</span></div><div><span class="wi-wait">3 days</span></div><div><a class="k-link wi-assign" href="#">Assign<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">Reply</button></div></div>
+<div class="wi-tr" role="row"><span class="k-num-badge wi-rbadge">3</span><div class="wi-item"><b>Baton Rouge Chess Club November Saturday G/90</b><span>Club event submitted by Chris Arceneaux, South Central Louisiana representative</span></div><div><span class="wi-src wi-s-appr">Approval</span></div><div><span class="wi-wait">2 days</span></div><div><a class="k-link wi-assign" href="#">Assign<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></div><div class="wi-act"><button class="k-btn k-btn-navy wi-b40" type="button">Review</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>Can't add my son to our family account</b><span>Danielle Robichaux · support ticket</span></div><div><span class="wi-src wi-s-sup">Support</span></div><div><span class="wi-wait">2 days</span></div><div><span class="wi-own"><b>You</b></span></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">Reply</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>Monroe Chess Club Quick Quads</b><span>Club event submitted by [North Louisiana representative]</span></div><div><span class="wi-src wi-s-appr">Approval</span></div><div><span class="wi-wait">1 day</span></div><div><span class="wi-own"><b>You</b></span></div><div class="wi-act"><button class="k-btn k-btn-navy wi-b40" type="button">Review</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>Wrong section on my registration</b><span>Isaac Dupre · support ticket</span></div><div><span class="wi-src wi-s-sup">Support</span></div><div><span class="wi-wait">1 day</span></div><div><span class="wi-own">Chris Arceneaux<small>Treasurer · LCA officer</small></span></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">Open</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>Membership receipt bounced</b><span>To n***@[domain] · mailbox full</span></div><div><span class="wi-src wi-s-fail">Failed email</span></div><div><span class="wi-wait">6 h</span></div><div><a class="k-link wi-assign" href="#">Assign<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">Fix and resend</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>Shreveport-Bossier Chess Club Fall Open</b><span>Club event submitted by [North Louisiana representative]</span></div><div><span class="wi-src wi-s-appr">Approval</span></div><div><span class="wi-wait">5 h</span></div><div><a class="k-link wi-assign" href="#">Assign<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></div><div class="wi-act"><button class="k-btn k-btn-navy wi-b40" type="button">Review</button></div></div>
+<div class="wi-tr" role="row"><div class="wi-item"><b>Receipt for my membership renewal</b><span>Sam Nguyen · support ticket</span></div><div><span class="wi-src wi-s-sup">Support</span></div><div><span class="wi-wait">4 h</span></div><div><a class="k-link wi-assign" href="#">Assign<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">Reply</button></div></div>
+<div class="wi-tr wi-last" role="row"><div class="wi-item"><b>Group email "Lafayette Open this weekend"</b><span>3 addresses bounced · 2 marked as spam</span></div><div><span class="wi-src wi-s-fail">Failed email</span></div><div><span class="wi-wait">2 h</span></div><div><a class="k-link wi-assign" href="#">Assign<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></a></div><div class="wi-act"><button class="k-btn k-btn-line wi-b40" type="button">See addresses</button></div></div>
+            <div class="wi-tfoot">Failures stay in this list until someone resolves them; nothing important appears only as a pop-up. A visitor report with no answer in 14 days joins this queue even when a seat holds it. <b class="k-ink">Assign</b> opens a short picker: Denise Fontenot (you), Rachel Boudreaux, and for support tickets Chris Arceneaux, treasurer.</div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="k-footer wi-foot"><div class="wi-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="wi-rook wi-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+    </div>
+  </div>
+</section>
+
+<section class="wi-sec" aria-labelledby="wi-fb">
+  <div class="wi-flab"><span class="wi-code">B</span><h2 id="wi-fb">Where a row leads, where the panels went, and Admin without a second factor</h2><span class="k-meta">Insets at 1:1</span></div>
+  <div class="wi-row" style="grid-template-columns:560px 560px minmax(0,1fr)">
+    <div class="wi-inset">
+      <div class="wi-ihead"><span class="wi-icode">I1</span><span><b>Review</b> · the sheet row "Baton Rouge Chess Club November Saturday G/90" opens</span></div>
+      <div class="wi-ibody">
+        <div class="k-stack-sm" style="gap:4px"><span class="wi-src wi-s-appr" style="align-self:flex-start">Approval</span><h3 style="margin:0;font-size:19px;font-weight:700">Baton Rouge Chess Club November Saturday G/90</h3><span class="k-meta">Club event submitted by Chris Arceneaux, South Central Louisiana representative · waiting 2 days</span></div>
+        <dl class="wi-dl">
+          <dt>Date</dt><dd>Sat, Nov 7, 2026</dd>
+          <dt>Where</dt><dd>Baton Rouge</dd>
+          <dt>Sections</dt><dd>1 section · G/90</dd>
+          <dt>Entry fee</dt><dd>$10</dd>
+          <dt class="wi-dlast">LCA membership</dt><dd class="wi-dlast">Not required <span class="k-meta">(set by the representative)</span></dd>
+        </dl>
+        <div class="k-row-sm"><button class="k-btn k-btn-gold" type="button">Approve and publish</button><button class="k-btn k-btn-line" type="button">Ask for changes</button><a class="k-link" href="#" style="font-size:14px;margin-left:4px">Open the setup</a></div>
+        <p class="wi-icap"><b>Ask for changes</b> sends a note to Chris and keeps the event a draft. Approving puts it on the calendar and leaves this queue.</p>
+      </div>
+    </div>
+    <div class="wi-inset">
+      <div class="wi-ihead"><span class="wi-icode">I2</span><span><b>Admin › Site</b> · where the home's panels went</span></div>
+      <div class="wi-ibody" style="gap:10px">
+        <div class="wi-card">
+          <h3>Site banner <span class="k-tag k-tag-live">Live now</span></h3>
+          <div class="wi-bnr"><span>Lafayette Open this weekend · Sat–Sun, Oct 10–11</span><a href="#">Details</a></div>
+          <div class="k-between"><span class="k-meta">Ends by itself Sun, Oct 11</span><div class="k-row-sm"><button class="k-btn k-btn-line k-btn-sm" type="button">Change</button><button class="k-btn k-btn-ghost k-btn-sm" type="button">Take down now</button></div></div>
+        </div>
+        <div class="wi-card" style="gap:0">
+          <h3 style="margin-bottom:4px">Automations <span class="k-small" style="font-weight:600;color:#664c0c">1 needs a look</span></h3>
+          <div class="wi-hl"><b>Gulf South event sync</b><span class="k-meta">Ran 5:00 AM</span><span class="k-tag k-tag-open">OK</span></div>
+          <div class="wi-hl"><b>Daily emails</b><span class="k-meta">Ran 6:00 AM · 41 sent, 2 failed</span><span class="k-tag k-tag-soon">Check</span></div>
+          <div class="wi-hl"><b>Stripe payments</b><span class="k-meta">Last webhook 8:14 AM</span><span class="k-tag k-tag-open">OK</span></div>
+          <div class="wi-hl"><b>Facebook mirror</b><span class="k-meta">Refreshed 7:00 AM</span><span class="k-tag k-tag-open">OK</span></div>
+          <div class="wi-hl"><b>Monthly club check emails</b><span class="k-meta">Next run Mon, Nov 2</span><span class="k-tag">Scheduled</span></div>
+        </div>
+        <div class="wi-card" style="flex-direction:row;align-items:center;justify-content:space-between"><span style="font-size:14.5px;font-weight:600">Membership required for all LCA events</span><span class="wi-switch"><i aria-hidden="true"></i>On</span></div>
+      </div>
+    </div>
+    <div class="wi-inset">
+      <div class="wi-ihead"><span class="wi-icode">S3</span><span><b>No second factor</b></span></div>
+      <div class="wi-ibody">
+        <svg class="k-i" viewBox="0 0 24 24" aria-hidden="true" style="width:28px;height:28px"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg>
+        <h3 style="margin:0;font-size:17px;font-weight:700;line-height:1.3">Set up your second factor to open Admin</h3>
+        <a class="k-btn k-btn-navy k-btn-sm" href="#" style="align-self:flex-start">Set it up</a>
+        <span class="k-meta">Opens /account/security. Nothing else of Admin shows until it is on.</span>
+        <p class="wi-icap">An admin who has not enrolled sees this page and nothing else; their own My LCA is unaffected.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3100}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

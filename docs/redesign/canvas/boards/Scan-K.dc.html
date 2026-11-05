@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scanner · K · Fixing a misread: Fix in place (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.sk-root{box-sizing:border-box;padding:14px 0 16px;background:#ecebe6;color:#1a2744}
+.sk-root *{box-sizing:border-box}
+.sk-rel{position:relative}
+.sk-mk{position:absolute;z-index:6;width:22px;height:22px;font-size:11.5px;box-shadow:0 0 0 2px #ffffff}
+.sk-mk-in{position:static;width:22px;height:22px;font-size:11.5px;box-shadow:0 0 0 2px #ffffff}
+/* board document */
+.sk-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 18px}
+.sk-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.sk-title{font-size:30px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.sk-ml{font-size:13.5px;line-height:1.45;color:#3d4556;margin:2px 0 0;max-width:720px}
+.sk-ml b{color:#1a2744;font-weight:600}
+.sk-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.sk-grey{flex:none;width:620px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:10px 16px}
+.sk-grey > div > p + p{margin-top:8px}
+.sk-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.sk-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.sk-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.sk-grey li{margin-bottom:3px}
+.sk-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 14px;margin-top:14px}
+.sk-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
+.sk-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.4;color:#2b3446}
+.sk-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.sk-notes b{font-weight:600;color:#1a2744}
+.sk-notes code,.sk-grey code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#1a2744;background:#efeee8;border-radius:4px;padding:0 3px}
+.sk-flab{display:flex;align-items:center;gap:12px;margin:12px 40px 6px}
+.sk-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.sk-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.sk-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.sk-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.sk-frame .k-browser-url{max-width:760px}
+.sk-page{background:#f5f5f2;position:relative}
+/* decided header */
+.sk-hd{position:relative;z-index:20}
+.sk-hd-in{padding:0 24px;gap:0;height:68px;min-height:68px}
+.sk-brand{margin-right:16px}
+.sk-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.sk-nav{gap:0}
+.sk-nav a,.sk-navbtn{padding:0 8px !important;white-space:nowrap}
+.sk-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500;cursor:pointer}
+.sk-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.sk-search span{color:rgba(255,255,255,.9)}
+.sk-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.sk-util .k-ulink{padding:0 4px}
+.sk-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500;cursor:pointer}
+/* page head */
+.sk-band{background:#ffffff;border-bottom:1px solid #dddcd4}
+.sk-band-in{padding:12px 24px 14px}
+.sk-stepper{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:4px 0 0;padding:0}
+.sk-stepper li{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid #dddcd4;font-size:14px;color:#555c6b;background:#ffffff}
+.sk-stepper li.sk-done{color:#2f6b45;border-color:#b9d3c1;background:#f1f7f2}
+.sk-stepper li.sk-now{color:#ffffff;background:#1a2744;border-color:#1a2744;font-weight:600}
+.sk-stepper li.sk-off{background:#f3f3f0;color:#555c6b}
+.sk-tdonly{display:inline-flex;align-items:center;gap:6px;border:1px dashed #9aa1b0;border-radius:10px;padding:2px}
+.sk-tdnote{font-size:11.5px;color:#555c6b}
+/* main grid */
+.sk-main{padding:18px 24px 22px}
+.sk-grid{display:grid;grid-template-columns:330px minmax(0,1fr) 380px;gap:24px;align-items:start}
+.sk-col{padding:16px 18px}
+.sk-photo{background:#3b4150;border-radius:10px;padding:16px 14px}
+.sa-sheet{background:#fbfaf3;border-radius:3px;transform:rotate(-1.4deg);box-shadow:0 10px 22px rgba(0,0,0,.35);padding:10px 12px 12px}
+.sa-sh-h{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:#6b6f78;border-bottom:1px solid #cfccbd;padding:3px 0}
+.sa-sh-h i{font-family:'Geist Mono',monospace;font-size:12.5px;color:#2b3a67}
+.sa-r{display:grid;grid-template-columns:24px 1fr 1fr;height:21px;align-items:center;border-bottom:1px solid #dcd9cb}
+.sa-r b{font-size:9.5px;color:#8b8a80;font-weight:500;text-align:center}
+.sa-r span{position:relative;height:100%;display:flex;align-items:center;padding-left:8px;box-shadow:inset 1px 0 0 #dcd9cb;font-family:'Geist Mono',monospace;font-style:italic;font-size:13.5px;color:#2b3a67}
+.sa-r span.sa-hl{outline:2px solid #c8a94a;outline-offset:-1px;background:#f3e6bd}
+.sa-r span.sa-hl2{outline:1px dashed #2f6b45;outline-offset:-1px}
+.sa-smudge{position:absolute;left:5px;top:3px;width:26px;height:14px;border-radius:50%;background:rgba(60,62,72,.38);filter:blur(3px)}
+.sk-sw{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:#1a2744;border:0;background:transparent;padding:0;min-height:44px;cursor:pointer}
+.sk-sw i{display:block;width:36px;height:20px;border-radius:99px;background:#1a2744;position:relative;flex:none}
+.sk-sw i::after{content:"";position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#ffffff}
+.sk-game{border-radius:10px;background:#f5f5f2;padding:8px 14px;font-size:15px;color:#1a2744}
+.sk-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sk-chips .k-chip{min-height:34px;padding:0 11px;font-size:13.5px}
+.sk-mt th,.sk-mt td{padding:4px 9px;font-size:14px}
+.sk-mt th{padding:6px 9px;font-size:11.5px}
+.sk-mt td{position:relative;height:39px}
+.sk-mt td.sk-no{color:#555c6b;font-size:12px;width:28px;text-align:center}
+.sk-mt td.sk-mv{font-family:'Geist Mono',monospace;font-weight:500;color:#1a2744}
+.sk-mt td.sk-split{box-shadow:inset 2px 0 0 #dddcd4}
+.sk-mt td.sk-sel{background:#1a2744;color:#ffffff}
+.sk-mt td.sk-auto{background:#fbf3dc}
+.sk-mt td.sk-okc{background:#eef5f0}
+.sk-mt td.sk-hov{background:#f0f1f5;box-shadow:inset 0 0 0 1px #b9bfcc}
+.sk-mini{display:block;font-family:Geist,sans-serif;font-size:11px;font-weight:600;margin-top:1px;white-space:nowrap}
+.sk-mini-auto{color:#866a1e}
+.sk-mini-ok{color:#2f6b45}
+.sk-mini-sel{color:#e6cf86}
+.sk-pen{position:absolute;right:6px;top:7px;width:12px;height:12px;fill:none;stroke:#7d8494;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sk-sel .sk-pen{stroke:rgba(255,255,255,.75)}
+.sk-checks{list-style:none;margin:0;padding:0}
+.sk-checks li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45;color:#1a2744;padding:2px 0}
+.sk-checks li.sk-warn{color:#866a1e;font-weight:600}
+.sk-ok{color:#2f6b45}
+.sk-lock{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:10px;border-top:1px solid #ecebe5}
+.k-btn[disabled],.sk-btn-off{background:#e6e5df !important;border-color:#e6e5df !important;color:#6b7180 !important;cursor:not-allowed}
+/* board */
+.sk-bwrap{display:grid;grid-template-columns:14px minmax(0,1fr);grid-template-rows:auto 16px;column-gap:4px}
+.sk-ranks{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;text-align:center;font-size:11px;color:#555c6b}
+.sk-files{grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:11px;color:#555c6b;padding-top:2px}
+.sk-bd > div{display:flex;align-items:center;justify-content:center}
+.pc{width:74%;height:74%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;box-sizing:border-box;font-size:15px}
+.pw{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.pb{background:#1a2744;color:#ffffff;border:2px solid #1a2744}
+.pp{width:54%;height:54%;font-size:10px}
+.lm{box-shadow:inset 0 0 0 3px #c8a94a}
+.sk-bd-s{width:140px;flex:none;border-width:1px}
+.sk-bd-s .pc{font-size:7.5px;border-width:1px}
+.sk-bd-s .pp{font-size:5px}
+.sk-bd-s .lm{box-shadow:inset 0 0 0 2px #c8a94a}
+.sk-bd-p{width:196px;flex:none}
+.sk-bd-p .pc{font-size:10px;border-width:1.5px}
+.sk-bd-p .pp{font-size:7px}
+.sk-bd-p .lm{box-shadow:inset 0 0 0 2px #c8a94a}
+.sk-nav2{display:flex;align-items:center;gap:6px}
+.sk-crop{display:grid;grid-template-columns:28px 1fr 1fr;height:40px;align-items:center;background:#fbfaf3;border:1px solid #d6d2c2;border-radius:8px;overflow:hidden}
+.sk-crop b{font-size:11px;color:#8b8a80;text-align:center;font-weight:500}
+.sk-crop span{position:relative;height:100%;display:flex;align-items:center;padding-left:10px;box-shadow:inset 1px 0 0 #dcd9cb;font-family:'Geist Mono',monospace;font-style:italic;font-size:18px;color:#2b3a67}
+.sk-crop span.sk-hl{outline:2px solid #c8a94a;outline-offset:-2px;background:#f3e6bd}
+.sk-crop .sa-smudge{left:8px;top:11px;width:34px;height:20px}
+.sk-opt{display:flex;align-items:center;gap:12px;min-height:44px;padding:5px 12px;border:1px solid #c4c3bb;border-radius:10px;background:#ffffff}
+.sk-opt input{width:18px;height:18px;accent-color:#1a2744;flex:none;margin:0}
+.sk-opt b{display:block;font-family:'Geist Mono',monospace;font-size:16px;color:#1a2744}
+.sk-opt small{display:block;font-size:12.5px;line-height:1.35;color:#555c6b}
+.sk-opt-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.sk-more{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0;border:0;background:transparent;color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px;cursor:pointer}
+.sk-cut{font-size:13.5px;color:#3d4556;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+/* decided footer */
+.sk-foot{background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}
+.sk-foot a{color:#ffffff;text-decoration:none}
+.sk-din{padding:22px 48px 0}
+.sk-dgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);gap:36px}
+.sk-fbrand{display:flex;align-items:center;gap:12px}
+.sk-plate{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6;color:#1a2744;flex:none;line-height:1}
+.sk-plate b{font-size:14px;font-weight:700;letter-spacing:.02em;color:#1a2744}
+.sk-plate small{font-size:7.5px;font-weight:600;color:#555c6b;margin-top:3px;white-space:nowrap}
+.sk-bname{font-size:17px;font-weight:700;line-height:1.25;color:#ffffff}
+.sk-bp{font-size:14px;line-height:1.45;color:rgba(255,255,255,.82);margin:10px 0 12px;max-width:270px}
+.sk-btns{display:flex;gap:10px}
+.sk-foot a.k-btn-gold{color:#1a2744}
+.sk-dh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86;margin:4px 0 8px}
+.sk-dl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.sk-dl li{display:flex;align-items:center;gap:8px;min-height:27px}
+.sk-dl a{display:inline-flex;align-items:center;gap:7px;font-size:14.5px;line-height:1.3}
+.sk-dbase{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:14px;padding:12px 0 14px;border-top:1px solid rgba(255,255,255,.18)}
+.sk-trust{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.82);margin:0}
+.sk-trust a{color:#ffffff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.55)}
+.sk-app{display:flex;align-items:center;gap:10px;flex:none}
+.sk-applab{font-size:13.5px;color:rgba(255,255,255,.82)}
+.sk-seg{display:inline-flex;border:1px solid rgba(255,255,255,.45);border-radius:9px;overflow:hidden}
+.sk-seg button{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 13px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer}
+.sk-seg button + button{border-left:1px solid rgba(255,255,255,.25)}
+.sk-seg button[aria-checked="true"]{background:#c8a94a;color:#1a2744;font-weight:600}
+.sk-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* bottom band */
+.sk-bandx{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:32px;margin:0 40px;align-items:start}
+.sk-blab{display:flex;align-items:center;gap:10px;margin:0 0 10px;white-space:nowrap}
+.sk-blab h2{margin:0;font-size:17px;line-height:1.2;font-weight:600}
+.sk-blab .k-meta{margin-left:4px}
+.sk-sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 16px}
+.sk-cap{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#1a2744;margin:0 0 5px;min-height:19px;white-space:nowrap}
+.sk-cap span{font-weight:400;color:#555c6b;font-size:12.5px}
+.sk-fr{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 8px 22px rgba(16,24,43,.07);position:relative}
+.sk-st{height:220px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.sk-mrow{display:grid;grid-template-columns:22px 1fr 1fr;align-items:center;height:26px;border-bottom:1px solid #ecebe5;font-size:13px}
+.sk-mrow b{font-size:11px;font-weight:500;color:#555c6b;text-align:center}
+.sk-mrow span{font-family:'Geist Mono',monospace;font-weight:500;padding-left:8px}
+.sk-pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:99px;font-size:12.5px;border:1px solid #dddcd4;background:#ffffff;color:#555c6b;white-space:nowrap}
+.sk-pill-ok{color:#2f6b45;border-color:#b9d3c1;background:#f1f7f2}
+.sk-pill-now{color:#ffffff;background:#1a2744;border-color:#1a2744;font-weight:600}
+.sk-msg{border-radius:10px;padding:10px 12px;font-size:13.5px;line-height:1.4}
+.sk-msg-red{background:#f6e3e3;color:#5e1218}
+.sk-msg-gold{background:#f5ecd2;color:#5c450f}
+.sk-msg-grey{background:#efefea;color:#2b3446}
+.sk-msg-cream{background:#fbf7e9;color:#1a2744;border:1px solid #e3d4a2}
+.sk-dim{opacity:.38}
+.sk-spin{width:22px;height:22px;flex:none;border-radius:50%;border:3px solid #ece4c8;border-top-color:#c8a94a;border-right-color:#c8a94a}
+.sk-mini-opt{display:flex;align-items:center;gap:8px;min-height:34px;padding:4px 10px;border:1px solid #c4c3bb;border-radius:8px;font-size:12.5px;color:#555c6b}
+.sk-mini-opt b{font-family:'Geist Mono',monospace;font-size:13.5px;color:#1a2744}
+.sk-mini-opt i{width:14px;height:14px;border-radius:50%;border:1.5px solid #858b99;flex:none}
+.sk-row2{display:grid;grid-template-columns:380px minmax(0,1fr);gap:16px;margin-top:18px;align-items:start}
+.sk-sure{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.sk-small3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px 12px}
+.sk-sm{padding:9px 12px;display:flex;flex-direction:column;gap:6px}
+.sk-input{display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:14px;color:#6b7180}
+/* phone */
+.sk-pcol{display:flex;flex-direction:column}
+.sk-pstatus{flex:none;height:44px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 28px 0 36px;font-size:14px;font-weight:600;position:relative}
+.sk-island{position:absolute;left:50%;top:9px;width:110px;height:30px;margin-left:-55px;border-radius:18px;background:#000000}
+.sk-papp{flex:none;height:54px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff}
+.sk-pbname{display:flex;flex-direction:column;line-height:1.12;color:#ffffff}
+.sk-pbname b{font-size:14px;font-weight:700;white-space:nowrap}
+.sk-pbname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.sk-psbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.sk-ptabs{flex:none;display:grid;grid-template-columns:repeat(3,1fr);background:#ffffff;border-bottom:1px solid #dddcd4}
+.sk-ptabs a{display:flex;align-items:center;justify-content:center;min-height:44px;font-size:14px;font-weight:500;color:#555c6b;text-decoration:none}
+.sk-ptabs a.on{color:#1a2744;font-weight:700;box-shadow:inset 0 -3px 0 #866a1e}
+.sk-pbody{flex:1;position:relative;background:#f5f5f2;overflow:hidden}
+.sk-scrim{position:absolute;inset:0;background:rgba(16,24,43,.42)}
+.sk-psheet{position:absolute;left:0;right:0;bottom:0;top:62px;background:#ffffff;border-radius:18px 18px 0 0;display:flex;flex-direction:column;box-shadow:0 -10px 30px rgba(16,24,43,.25)}
+.sk-grab{width:40px;height:5px;border-radius:3px;background:#c9c8c0;margin:8px auto 4px;flex:none}
+.sk-pscroll{flex:1;overflow:hidden;padding:4px 14px 8px;display:flex;flex-direction:column;gap:8px}
+.sk-pact{flex:none;display:grid;grid-template-columns:1.3fr 1fr;gap:10px;padding:10px 14px 12px;border-top:1px solid #e3e2dc;background:#ffffff}
+.sk-tabbar{flex:none;background:#ffffff;border-top:1px solid #d9d8d1}
+.sk-tabbar-in{display:grid;grid-template-columns:repeat(4,1fr);height:54px}
+.sk-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#1a2744;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.sk-tab svg{width:20px;height:20px}
+.sk-tab.on{font-weight:700}
+.sk-tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.sk-safe{height:22px;position:relative}
+.sk-homeind{position:absolute;left:50%;bottom:7px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.sk-popt{display:flex;align-items:center;gap:10px;min-height:44px;padding:4px 10px;border:1px solid #c4c3bb;border-radius:10px;background:#ffffff}
+.sk-popt input{width:18px;height:18px;accent-color:#1a2744;flex:none;margin:0}
+.sk-popt b{display:block;font-family:'Geist Mono',monospace;font-size:15px;color:#1a2744;line-height:1.2}
+.sk-popt small{display:block;font-size:11.5px;line-height:1.3;color:#555c6b}
+.sk-popt-on{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+</style>
+</helmet>
+<div class="sk-root" style="width:1440px;height:2800px">
+
+<section class="sk-doc" aria-label="About this board">
+<div class="sk-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">16 · Scanner · part 4 of 8 · option 2 of 2</p><span class="sk-round">ROUND 2</span></div>
+<h1 class="sk-title">Scanner · K · Fixing a misread: Fix in place</h1>
+<p class="sk-ml" style="margin-top:6px"><b>Built from:</b> Scan-A panels 1 to 4 and Scan-B screen 3; today's MoveEditor, fixMove and Undo; decided chrome.</p>
+<p class="sk-ml"><b>Replaces:</b> Scan-A panel 3 and the MoveEditor dialog. Option 1 for this part is Scan-J, One check per screen.</p>
+<p class="sk-ml"><b>K's feedback applied:</b> one scanner in parts, with options per part (Tue, Oct 13, 2026); nothing dropped.</p>
+</div>
+<aside class="sk-grey" aria-label="Board note">
+<p><b>What</b>Part 4, option 2: any move in the list opens the fix panel beside the board, flagged or not. Flags filter the list.</p>
+<div>
+<p><b>Built from</b>Scan-A panels 1 to 4, Scan-B screen 3, the MoveEditor as a panel.</p>
+<p><b>K's feedback applied</b>One scanner in parts, with options per part.</p>
+</div>
+<div>
+<p><b>Open for K</b></p>
+<ol>
+<li>Pick this, Scan-J, or both by width.</li>
+<li>Photo retention: drawn kept 30 days, so the crop shows that evening.</li>
+<li>A guardian's OK once per child or per game.</li>
+<li>Limit reset at midnight UTC or Central.</li>
+</ol>
+</div>
+</aside>
+</div>
+<div class="sk-lbox">
+<div class="k-between"><p class="k-label">Notes on this board</p><span class="k-sample">Sample data · players, round, scans used, guardian name · moves are Morphy's Opera Game (1858)</span></div>
+<ol class="sk-notes">
+<li><span class="k-num-badge">1</span><span><b>Any cell opens the panel,</b> flagged or not, so a sure move can be changed too (frame B). From Scan-A panel 3 and today's cell editor.</span></li>
+<li><span class="k-num-badge">2</span><span><b>Flags are a filter</b> (Needs a look 1), never a queue. With many flags, Walk through them one by one becomes Scan-J's stepper.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Confirm keeps moves 1 to 12</b> and works the rest out again in the browser (forcedSans, fixMove). Undo last change restores the last game.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Something else? Type the move</b> finds any legal move (looseSan: "rd7" leaves Rxd7). Cut the game here is for a move nobody can read.</span></li>
+<li><span class="k-num-badge">5</span><span><b>Save &amp; share opens</b> only when every Check this is resolved (WS15 acceptance 3). Reading never corrects; only the decoder applies legality.</span></li>
+<li><span class="k-num-badge">6</span><span><b>The decoder runs in the browser,</b> so fixing works offline; saving waits. A junior's game says "only your family sees it". Open: retention, consent.</span></li>
+</ol>
+</div>
+</section>
+
+<div class="sk-flab"><span class="sk-code">A</span><h2>Laptop · Marcus has clicked the flagged cell, 13...Rxd7</h2><span class="k-meta">Sun, Sep 6, 8:04 PM, at home · 1440px</span><span class="sk-urlchip">/scanner/review/landry-shah-r4</span></div>
+<div class="sk-frame">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/scanner/review/landry-shah-r4</div></div>
+<div class="sk-page">
+
+<header class="k-header sk-hd">
+<div class="k-header-in sk-hd-in">
+<a class="k-brand sk-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="sk-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks sk-nav" aria-label="Main">
+<a class="k-nav-on" href="#" aria-current="page">Tournaments</a>
+<a href="#">Clubs</a>
+<a href="#">Scholastic</a>
+<a href="#">News</a>
+<a href="#">Membership</a>
+<button class="sk-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+</nav>
+<a class="sk-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="sk-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility sk-util" style="gap:12px">
+<a class="k-ulink" href="#">Donate</a>
+<button class="sk-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, signed in as Marcus Landry"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+</div>
+</div>
+</header>
+
+<div class="sk-band">
+<div class="sk-band-in k-between" style="align-items:flex-end">
+<div class="k-stack-sm">
+<div class="k-row-sm"><span class="k-kicker">Scoresheet scanner · members only</span><span class="k-sample">Sample data · players, round, scans used · moves are Morphy's Opera Game (1858)</span></div>
+<div class="k-row" style="gap:16px;flex-wrap:nowrap"><h1 class="k-h1" style="margin:0;white-space:nowrap">Check your game</h1>
+<ol class="sk-stepper" aria-label="Progress" style="margin:4px 0 0">
+<li class="sk-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Photo<span class="sk-sr">, done</span></li>
+<li class="sk-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Read · 17 moves<span class="sk-sr">, done</span></li>
+<li class="sk-now" aria-current="step">Check · 1 move left<span class="sk-sr">, current step</span></li>
+<li class="sk-off"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save &amp; share<span class="sk-sr">, closed until every flag is resolved</span></li>
+</ol></div>
+</div>
+<div class="k-stack-sm" style="align-items:flex-end">
+<div class="k-row-sm">
+<a class="k-btn k-btn-ghost k-btn-sm" href="#" style="border-color:#c4c3bb"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan another sheet</a>
+<span class="sk-tdonly sk-rel"><span class="sk-tdnote" style="position:absolute;right:4px;top:-19px;white-space:nowrap">Dashed: shown to directors only</span><a class="k-btn k-btn-ghost k-btn-sm" href="#" style="border-color:#c4c3bb"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Directors: scan a whole round</a></span>
+</div>
+<span class="k-small k-muted">17 of 20 scans left today · resets at midnight</span>
+</div>
+</div>
+</div>
+<main class="sk-main">
+<div class="sk-grid">
+
+<section class="k-card sk-col k-stack-sm" aria-labelledby="sk-ph">
+<div class="k-between"><h2 id="sk-ph" class="k-h3" style="margin:0">Your photo</h2><span class="k-small k-muted">Sheet 1 of 1</span></div>
+<div class="sk-photo" role="img" aria-label="Photo of the handwritten scoresheet, moves 1 to 17. Black's move 13 is outlined in gold and smudged; Black's move 9 is outlined dashed green, checked.">
+<div class="sa-sheet">
+<div class="sa-sh-h"><span>White <i>M. Landry</i></span><span>Black <i>P. Shah</i></span></div>
+<div class="sa-sh-h"><span>Event <i>LA State Ch.</i></span><span>Rd <i>4</i> · Bd <i>6</i></span></div>
+<div class="sa-r"><b>1</b><span>e4</span><span>e5</span></div>
+<div class="sa-r"><b>2</b><span>Nf3</span><span>d6</span></div>
+<div class="sa-r"><b>3</b><span>d4</span><span>Bg4</span></div>
+<div class="sa-r"><b>4</b><span>dxe5</span><span>Bxf3</span></div>
+<div class="sa-r"><b>5</b><span>Qxf3</span><span>dxe5</span></div>
+<div class="sa-r"><b>6</b><span>Bc4</span><span>Nf6</span></div>
+<div class="sa-r"><b>7</b><span>Qb8</span><span>Qe7</span></div>
+<div class="sa-r"><b>8</b><span>Nc3</span><span>c6</span></div>
+<div class="sa-r"><b>9</b><span>Bg5</span><span class="sa-hl2"><em class="sa-smudge"></em>b5</span></div>
+<div class="sa-r"><b>10</b><span>Nxb5</span><span>cxb5</span></div>
+<div class="sa-r"><b>11</b><span>Bxb5+</span><span>Nbd7</span></div>
+<div class="sa-r"><b>12</b><span>O-O-O</span><span>Rd8</span></div>
+<div class="sa-r"><b>13</b><span>Rxd7</span><span class="sa-hl"><em class="sa-smudge"></em>Rxd7</span></div>
+<div class="sa-r"><b>14</b><span>Rd1</span><span>Qe6</span></div>
+<div class="sa-r"><b>15</b><span>Bxd7+</span><span>Nxd7</span></div>
+<div class="sa-r"><b>16</b><span>Qb8+</span><span>Nxb8</span></div>
+<div class="sa-r"><b>17</b><span>Rd8#</span><span></span></div>
+<div class="sa-r"><b>18</b><span></span><span></span></div>
+<div class="sa-sh-h" style="border-bottom:0"><span>Result <i>1-0</i></span><span>Signed <i>ML</i> · <i>PS</i></span></div>
+</div>
+</div>
+<div class="k-row-sm">
+<button class="k-iconbtn" type="button" aria-label="Zoom out"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Zoom in"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+<button class="sk-sw" type="button" role="switch" aria-checked="true" style="margin-left:6px"><i></i>Show what we read</button>
+</div>
+<span class="k-small k-muted">Tap a move on the sheet or in the list; the other side follows.</span>
+</section>
+
+<div class="k-stack" style="gap:16px">
+<section class="k-card sk-col k-stack" aria-labelledby="sk-mh" style="gap:9px">
+<div class="k-between"><h2 id="sk-mh" class="k-h3" style="margin:0">Moves</h2><a class="k-link k-small" href="#">Edit game details</a></div>
+<div class="sk-game"><b>Marcus Landry</b> <span class="k-muted">2014</span> vs <b>Priya Shah</b> <span class="k-muted">1803</span> · <b>1-0</b><div class="k-small k-muted">Louisiana State Championship 2026 · Open · Round 4 · Board 6 · Sun, Sep 6 · names and colours matched from the pairings</div></div>
+<div class="sk-chips sk-rel" role="group" aria-label="Show moves">
+<button class="k-chip k-chip-on" type="button" aria-pressed="true">All moves <span class="k-chip-count">17</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Needs a look <span class="k-chip-count">1</span></button>
+<button class="k-chip" type="button" aria-pressed="false">Fixed automatically <span class="k-chip-count">1</span></button>
+<button class="k-chip" type="button" aria-pressed="false">You checked <span class="k-chip-count">1</span></button>
+<span class="k-num-badge sk-mk" style="top:-12px;right:-8px">2</span>
+</div>
+<span class="k-small k-muted">Tap any move to change it. Everything after it is worked out again from your correction.</span>
+<div class="k-tablebox sk-rel" style="overflow:visible">
+<table class="k-table sk-mt">
+<thead><tr><th class="k-c">#</th><th>White</th><th>Black</th><th class="k-c">#</th><th>White</th><th>Black</th></tr></thead>
+<tbody>
+<tr><td class="sk-no">1</td><td class="sk-mv">e4</td><td class="sk-mv">e5</td><td class="sk-no sk-split">10</td><td class="sk-mv">Nxb5</td><td class="sk-mv">cxb5</td></tr>
+<tr><td class="sk-no">2</td><td class="sk-mv">Nf3</td><td class="sk-mv">d6</td><td class="sk-no sk-split">11</td><td class="sk-mv">Bxb5+</td><td class="sk-mv">Nbd7</td></tr>
+<tr><td class="sk-no">3</td><td class="sk-mv">d4</td><td class="sk-mv">Bg4</td><td class="sk-no sk-split">12</td><td class="sk-mv">O-O-O</td><td class="sk-mv">Rd8</td></tr>
+<tr><td class="sk-no">4</td><td class="sk-mv">dxe5</td><td class="sk-mv">Bxf3</td><td class="sk-no sk-split">13</td><td class="sk-mv">Rxd7</td><td class="sk-mv sk-sel" aria-selected="true">Rxd7<svg class="sk-pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg><span class="sk-mini sk-mini-sel">Check this</span></td></tr>
+<tr><td class="sk-no">5</td><td class="sk-mv sk-hov">Qxf3<svg class="sk-pen" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg><span class="sk-mini" style="color:#3d4556;font-weight:500">Click to change</span></td><td class="sk-mv">dxe5</td><td class="sk-no sk-split">14</td><td class="sk-mv">Rd1</td><td class="sk-mv">Qe6</td></tr>
+<tr><td class="sk-no">6</td><td class="sk-mv">Bc4</td><td class="sk-mv">Nf6</td><td class="sk-no sk-split">15</td><td class="sk-mv">Bxd7+</td><td class="sk-mv">Nxd7</td></tr>
+<tr><td class="sk-no">7</td><td class="sk-mv sk-auto">Qb3<span class="sk-mini sk-mini-auto">Fixed automatically</span></td><td class="sk-mv">Qe7</td><td class="sk-no sk-split">16</td><td class="sk-mv">Qb8+</td><td class="sk-mv">Nxb8</td></tr>
+<tr><td class="sk-no">8</td><td class="sk-mv">Nc3</td><td class="sk-mv">c6</td><td class="sk-no sk-split">17</td><td class="sk-mv">Rd8#</td><td class="sk-mv"></td></tr>
+<tr><td class="sk-no">9</td><td class="sk-mv">Bg5</td><td class="sk-mv sk-okc">b5<span class="sk-mini sk-mini-ok">You checked</span></td><td class="sk-no sk-split"></td><td class="sk-mv"></td><td class="sk-mv"></td></tr>
+</tbody>
+</table>
+<span class="k-num-badge sk-mk" style="top:186px;left:-11px">1</span>
+</div>
+<div style="display:flex;gap:14px;align-items:flex-start"><span class="k-small k-muted" style="flex:1">7. Qb3 was read as "Qb8", which isn't a legal move there; Qb3 is the only legal match, so it was fixed without asking.</span><div class="k-stack-sm" style="align-items:flex-end;gap:2px;flex:none"><button class="k-btn k-btn-ghost k-btn-sm" type="button" style="border-color:#c4c3bb"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg>Undo last change</button><span class="k-meta">Last change: you checked 9...b5</span></div></div>
+</section>
+
+<section class="k-card sk-col k-stack-sm" aria-labelledby="sk-gc">
+<h2 id="sk-gc" class="k-label" style="margin:0">Game checks</h2>
+<ul class="sk-checks" style="display:grid;grid-template-columns:auto auto;column-gap:22px;justify-content:start">
+<li><svg class="k-i sk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>Every move is legal in order</span></li>
+<li><svg class="k-i sk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>No position repeated three times</span></li>
+<li style="grid-column:1 / -1"><svg class="k-i sk-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span>17. Rd8# is checkmate, which matches the result written on the sheet, 1-0</span></li>
+<li class="sk-warn" style="align-items:center;grid-column:1 / -1"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg><span style="flex:1">1 move to check before you can save</span><span class="k-num-badge sk-mk-in">5</span><button class="k-btn k-btn-sm sk-btn-off" type="button" disabled><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save &amp; share</button></li>
+</ul>
+</section>
+</div>
+
+<section class="k-card sk-col k-stack" aria-labelledby="sk-fh" style="gap:9px">
+<div class="k-between"><h2 id="sk-fh" class="k-h3" style="margin:0">After 13. Rxd7</h2><span class="k-tag k-tag-soon">Check this</span></div>
+<div class="sk-bwrap">
+<div class="sk-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+<div class="k-board sk-bd" role="img" aria-label="Position after 13. Rxd7, Black to move. White: king c1, queen b3, rooks d7 and h1, bishops b5 and g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e7, rooks d8 and h8, knight f6, bishop f8, pawns a7 e5 f7 g7 h7. Rxd7's squares d8 and d7 ringed in gold.">
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d lm"><span class="pc pb">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+<div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l lm"><span class="pc pw">R</span></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+<div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+<div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div>
+</div>
+<div class="sk-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div>
+</div>
+<div class="sk-nav2">
+<button class="k-iconbtn" type="button" aria-label="First move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5l-7 7 7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Previous move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Next move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Last move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l7 7-7 7"></path></svg></button>
+<span class="k-small k-muted" style="margin-left:auto">Move 13 · Black</span>
+</div>
+<div class="k-stack-sm" style="gap:6px">
+<div class="sk-crop" role="img" aria-label="Row 13 from your photo: White Rxd7, Black's move smudged"><b>13</b><span>Rxd7</span><span class="sk-hl"><em class="sa-smudge"></em>Rxd7</span></div>
+</div>
+<fieldset class="k-stack-sm" style="border:0;margin:0;padding:0;gap:8px">
+<legend class="k-label" style="padding:0;margin-bottom:8px">Smudged on the sheet. Which move is it?</legend>
+<label class="sk-opt sk-opt-on"><input type="radio" name="sk-m13" checked><span><b>Rxd7</b><small>Fits every move that follows</small></span></label>
+<label class="sk-opt"><input type="radio" name="sk-m13"><span><b>Qxd7</b><small>Legal here, but then 15. Bxd7+ would capture nothing</small></span></label>
+<label class="sk-opt"><input type="radio" name="sk-m13"><span><b>Nxd7</b><small>Legal here, but then 15...Nxd7 has no knight left</small></span></label>
+</fieldset>
+<div class="k-row-sm sk-rel"><button class="sk-more" type="button" aria-expanded="false">Something else? Type the move<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button><span class="k-num-badge sk-mk-in" style="margin-left:auto">4</span></div>
+<div class="k-row-sm sk-rel"><button class="k-btn k-btn-gold" type="button">Confirm Rxd7</button><button class="k-btn k-btn-ghost" type="button" style="border-color:#c4c3bb">Skip for now</button><span class="k-num-badge sk-mk-in" style="margin-left:auto">3</span></div>
+<a class="sk-cut" href="#">Cut the game here · keeps moves 1 to 12</a>
+</section>
+
+</div>
+</main>
+<footer class="sk-foot">
+<div class="sk-din">
+<div class="sk-dgrid">
+<div>
+<a class="sk-fbrand" href="#" aria-label="Louisiana Chess Association, home"><span class="sk-plate" aria-hidden="true"><b>LCA</b><small>official logo</small></span><span class="sk-bname" aria-hidden="true">Louisiana Chess Association</span></a>
+<p class="sk-bp">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+<div class="sk-btns"><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Donate</a></div>
+</div>
+<nav aria-labelledby="sk-d1"><h2 class="sk-dh" id="sk-d1">Play</h2><ul class="sk-dl"><li><a href="#">Tournaments</a></li><li><a href="#">Scholastic</a></li><li><a href="#">State champions</a></li><li><a href="#">Scoresheet scanner</a></li></ul></nav>
+<nav aria-labelledby="sk-d2"><h2 class="sk-dh" id="sk-d2">Community</h2><ul class="sk-dl"><li><a href="#">Clubs</a></li><li><a href="#">Club map</a></li><li><a href="#">List or update your club</a></li><li><a href="#">News</a></li><li><a href="#" target="_blank" rel="noopener noreferrer">LCA on Facebook ↗<span class="sk-sr"> (opens in a new tab)</span></a></li></ul></nav>
+<nav aria-labelledby="sk-d3"><h2 class="sk-dh" id="sk-d3">About LCA</h2><ul class="sk-dl"><li><a href="#">About LCA</a></li><li><a href="#">Board &amp; regions</a></li><li><a href="#">Bylaws &amp; rules</a></li><li><a href="#">Minutes</a></li><li><a href="#">Annual meeting</a></li></ul></nav>
+<nav aria-labelledby="sk-d4"><h2 class="sk-dh" id="sk-d4">Contact</h2><ul class="sk-dl"><li><a href="mailto:LouisianaChess@gmail.com"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>LouisianaChess@gmail.com</a></li><li><a href="#">Contact</a></li><li><a href="#">Membership help</a></li><li><a href="#">Website help</a></li><li><a href="#">Donate</a></li></ul></nav>
+</div>
+<div class="sk-dbase">
+<p class="sk-trust">US Chess state affiliate · Louisiana's chess community since 1915 · <a href="#">Bylaws &amp; rules</a> · <a href="#">Minutes</a> · Site last updated Sun, Sep 6, 2026</p>
+<div class="sk-app"><span class="sk-applab" id="sk-ap">Appearance:</span><div class="sk-seg" role="radiogroup" aria-labelledby="sk-ap"><button type="button" role="radio" aria-checked="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>System</button><button type="button" role="radio" aria-checked="false">Light</button><button type="button" role="radio" aria-checked="false">Dark</button></div></div>
+</div>
+</div>
+</footer>
+
+</div>
+</div>
+
+<div class="sk-bandx" style="margin-top:16px">
+<div>
+<div class="sk-blab"><span class="sk-code">B</span><h2>A sure move · six states · offline, junior and the limit</h2><span class="k-meta">Each state is a cut of the moves pane and the fix panel</span></div>
+<div class="sk-sgrid">
+
+<div>
+<p class="sk-cap">1 · Empty <span>nothing flagged</span></p>
+<div class="sk-fr sk-st">
+<div class="k-row-sm"><span class="sk-pill sk-pill-ok"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Check · done</span><span class="sk-pill">Needs a look 0</span></div>
+<div class="sk-msg sk-msg-grey">Nothing to check. Tap any move to change it.</div>
+<div><div class="sk-mrow"><b>12</b><span>O-O-O</span><span>Rd8</span></div><div class="sk-mrow"><b>13</b><span>Rxd7</span><span>Rxd7</span></div></div>
+<div class="k-row-sm" style="margin-top:auto"><button class="k-btn k-btn-gold k-btn-sm" type="button">Save &amp; share</button><span class="k-meta">Open</span></div>
+</div>
+</div>
+
+<div>
+<p class="sk-cap">2 · Updating <span>after Confirm</span></p>
+<div class="sk-fr sk-st">
+<div class="sk-rel">
+<div class="sk-dim"><div class="sk-mrow"><b>13</b><span>Rxd7</span><span>Rxd7</span></div><div class="sk-mrow"><b>14</b><span>Rd1</span><span>Qe6</span></div><div class="sk-mrow"><b>15</b><span>Bxd7+</span><span>Nxd7</span></div></div>
+<div role="status" class="k-row-sm" style="position:absolute;left:0;right:0;top:22px;background:#ffffff;border:1px solid #dddcd4;border-radius:8px;padding:6px 10px;gap:8px;font-size:13.5px;font-weight:600"><span class="sk-spin" aria-hidden="true"></span>Updating the rest of the game…</div>
+</div>
+<div class="k-row-sm"><button class="k-btn k-btn-sm sk-btn-off" type="button" disabled>Confirm Rxd7</button><button class="k-btn k-btn-sm sk-btn-off" type="button" disabled>Skip for now</button></div>
+<span class="k-meta" style="margin-top:auto">Under a second on a laptop. The panel's buttons wait.</span>
+</div>
+</div>
+
+<div>
+<p class="sk-cap">3 · Failure <span>the update didn't finish</span></p>
+<div class="sk-fr sk-st">
+<div class="sk-msg sk-msg-red"><b>Couldn't update the game.</b> Please try that move again.</div>
+<div><div class="sk-mrow"><b>13</b><span>Rxd7</span><span>Rxd7</span></div></div>
+<div class="k-row-sm"><button class="k-btn k-btn-sm k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5"></path><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"></path></svg>Undo last change</button><button class="k-btn k-btn-sm k-btn-gold" type="button">Try again</button></div>
+<span class="k-meta" style="margin-top:auto">Nothing after move 12 is changed until it works.</span>
+</div>
+</div>
+
+<div>
+<p class="sk-cap">4 · No candidate fits</p>
+<div class="sk-fr sk-st">
+<div class="sk-msg sk-msg-gold">None of these fit the next moves. Type what was played, or cut the game here.</div>
+<div class="sk-mini-opt"><i></i><b>Qxd7</b>15. Bxd7+ would capture nothing</div>
+<div class="sk-mini-opt"><i></i><b>Nxd7</b>15...Nxd7 has no knight left</div>
+<div class="k-row" style="margin-top:auto;gap:14px"><button class="sk-more" type="button" style="font-size:13px;min-height:28px">Type the move</button><a class="sk-cut" href="#" style="font-size:13px">Cut the game here</a></div>
+</div>
+</div>
+
+<div>
+<p class="sk-cap">5 · Many flags <span class="k-sample" style="font-size:11px;padding:1px 8px;color:#664c0c;font-weight:600">Sample data · another sheet</span></p>
+<div class="sk-fr sk-st">
+<div class="k-row-sm"><span class="sk-pill">All moves 58</span><span class="sk-pill sk-pill-now">Needs a look 9</span></div>
+<button class="k-btn k-btn-line k-btn-sm" type="button" style="align-self:flex-start">Walk through them one by one</button>
+<div class="sk-msg sk-msg-grey" style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px"><span><b>Check 1 of 9</b> · Move 31 · White</span><button class="k-btn k-btn-navy k-btn-sm" type="button" style="min-height:32px">Next</button></div>
+<span class="k-meta" style="margin-top:auto">Scan-J's stepper, kept beside the board on a laptop. Fix in the list instead goes back.</span>
+</div>
+</div>
+
+<div>
+<p class="sk-cap">6 · Skipped <span>Skip for now</span></p>
+<div class="sk-fr sk-st">
+<div class="k-row-sm"><span class="sk-pill" style="color:#664c0c;border-color:#d8c58c;background:#fbf3dc">Check · 1 skipped</span></div>
+<div><div class="sk-mrow"><b>13</b><span>Rxd7</span><span style="background:#fbf3dc;margin-right:6px;border-radius:4px">Rxd7&#160;<small style="font-family:Geist,sans-serif;font-size:11px;font-weight:600;color:#866a1e">Skipped</small></span></div></div>
+<div class="k-row-sm" style="margin-top:auto"><button class="k-btn k-btn-sm sk-btn-off" type="button" disabled><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save &amp; share</button></div>
+<span class="k-meta">Resolve 1 flagged move to save</span>
+</div>
+</div>
+
+</div>
+
+<div class="sk-row2">
+<div>
+<p class="sk-cap">A sure move <span>Marcus clicks 7. Qb3 (frame B)</span></p>
+<div class="sk-fr sk-sure">
+<span class="k-num-badge sk-mk" style="top:10px;right:10px">1</span>
+<div class="k-row-sm" style="padding-right:30px;justify-content:space-between"><h3 class="k-h4" style="margin:0">After 7. Qb3</h3><span class="k-tag k-tag-soon">Fixed automatically</span></div>
+<div style="display:flex;gap:12px;align-items:flex-start">
+<div class="k-board sk-bd sk-bd-s" role="img" aria-label="Position after 7. Qb3, Black to move. White: king e1, queen b3, rooks a1 and h1, bishops c1 and c4, knight b1, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen d8, rooks a8 and h8, knights b8 and f6, bishop f8, pawns a7 b7 c7 e5 f7 g7 h7. The queen's move f3 to b3 ringed in gold.">
+<div class="k-sq-l"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+<div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l lm"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l lm"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+<div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+<div class="k-sq-d"><span class="pc pw">R</span></div><div class="k-sq-l"><span class="pc pw">N</span></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div>
+</div>
+<div class="k-stack-sm" style="flex:1;min-width:0;gap:6px">
+<div class="sk-crop" style="grid-template-columns:24px 1fr 1fr;height:36px"><b>7</b><span class="sk-hl" style="font-size:16px">Qb8</span><span style="font-size:16px">Qe7</span></div>
+<span class="k-meta" style="line-height:1.3">Written on the sheet as "Qb8"</span>
+<label class="sk-opt sk-opt-on" style="min-height:0;padding:6px 8px;gap:8px;align-items:flex-start"><input type="radio" name="sk-m7" checked style="margin-top:3px"><span><b>Qb3</b><small>the only legal match for what is written</small></span></label>
+</div>
+</div>
+<div class="sk-input"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg>Something else? Type the move</div>
+<div class="k-row-sm"><button class="k-btn k-btn-gold k-btn-sm" type="button">Keep Qb3</button><button class="k-btn k-btn-line k-btn-sm" type="button">Change</button></div>
+</div>
+</div>
+
+<div class="sk-small3">
+<div style="grid-column:1 / -1">
+<p class="sk-cap">Offline <span>the panel is unchanged</span></p>
+<div class="sk-fr sk-sm">
+<span class="k-num-badge sk-mk" style="top:8px;right:8px">6</span>
+<div class="k-row-sm"><span class="sk-pill sk-pill-ok">Photo</span><span class="sk-pill sk-pill-ok">Read · 17 moves</span><span class="sk-pill sk-pill-now">Check · 1 move left</span></div>
+<div class="sk-msg sk-msg-grey k-row-sm" style="gap:8px;flex-wrap:nowrap;padding:8px 10px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9a14 14 0 0 1 18 0M6.5 12.5a9 9 0 0 1 11 0M10 16a4 4 0 0 1 4 0M4 4l16 16"></path></svg><span>You're offline. Checking works in this browser; saving waits for a connection.</span></div>
+</div>
+</div>
+<div>
+<p class="sk-cap">Junior <span class="k-sample" style="font-size:11px;padding:1px 8px;color:#664c0c;font-weight:600">Sample data · guardian Meera Shah</span></p>
+<div class="sk-fr sk-sm">
+<div style="font-size:13.5px;line-height:1.35"><b>Marcus Landry</b> <span class="k-muted">2014</span> vs <b>Priya Shah</b> <span class="k-muted">1803</span> · <b>1-0</b></div>
+<div class="sk-msg sk-msg-cream" style="display:flex;align-items:flex-start;gap:8px;padding:7px 10px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg><span><b>Priya's game</b> · only your family sees it</span></div>
+<span class="k-meta">Game details: <b style="color:#1a2744">Whose game: Priya · you manage this profile</b>. Sharing waits for your OK at Save.</span>
+</div>
+</div>
+<div>
+<p class="sk-cap">Limit reached <span>fixing is never limited</span></p>
+<div class="sk-fr sk-sm">
+<span class="k-small"><b>0 of 20 scans left today</b> · resets at midnight</span><button class="k-btn k-btn-sm sk-btn-off" type="button" disabled style="align-self:flex-start">Scan another sheet</button>
+<span class="k-meta">You've used all 20 scans for today. Reviewing and saving games already read still works.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="sk-pcol">
+<div class="sk-blab"><span class="sk-code">C</span><h2>The phone, 390px</h2></div>
+<p class="sk-cap">13...Rxd7 tapped <span>the sheet scrolls inside itself (D16)</span></p>
+<div class="k-phone"><div class="k-phone-screen">
+<div class="sk-pstatus" aria-hidden="true"><span>8:04</span><span class="sk-island"></span><span>5G</span></div>
+<div class="sk-papp"><a class="k-row-sm" href="#" style="gap:8px;text-decoration:none" aria-label="Louisiana Chess Association, home"><svg class="sk-rook" viewBox="0 0 100 100" aria-hidden="true" style="width:28px;height:28px"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="sk-pbname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="sk-psbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<nav class="sk-ptabs" aria-label="Review"><a href="#">Photo</a><a class="on" href="#" aria-current="page">Moves</a><a href="#">Board</a></nav>
+<div class="sk-pbody">
+<div style="padding:8px 12px">
+<div class="k-row-sm" style="justify-content:space-between"><span class="sk-pill sk-pill-now">Check · 1 move left</span><span class="k-meta">17 of 20 scans left today</span></div>
+<div class="sk-mrow" style="margin-top:6px"><b>12</b><span>O-O-O</span><span>Rd8</span></div>
+</div>
+<div class="sk-scrim"></div>
+<div class="sk-psheet" role="dialog" aria-label="Fix move 13, Black">
+<div class="sk-grab"></div>
+<div class="sk-pscroll">
+<div class="k-row-sm" style="justify-content:space-between"><b style="font-size:16px">After 13. Rxd7</b><span class="k-tag k-tag-soon">Check this</span></div>
+<div style="display:flex;gap:10px;align-items:flex-start">
+<div class="k-board sk-bd sk-bd-p" role="img" aria-label="Position after 13. Rxd7, Black to move, the same position as the laptop panel">
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d lm"><span class="pc pb">R</span></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div>
+<div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l lm"><span class="pc pw">R</span></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div>
+<div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div>
+<div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div>
+<div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div>
+<div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div>
+</div>
+<div class="k-stack-sm" style="flex:1;min-width:0;gap:6px">
+<span class="k-meta">Move 13 · Black</span>
+<div class="sk-crop" style="grid-template-columns:26px 1fr;height:40px"><b>13</b><span class="sk-hl" style="font-size:16px"><em class="sa-smudge"></em>Rxd7</span></div>
+<span class="k-small" style="line-height:1.35">Smudged on the sheet. Which move is it?</span>
+</div>
+</div>
+<label class="sk-popt sk-popt-on"><input type="radio" name="sk-p13" checked><span><b>Rxd7</b><small>Fits every move that follows</small></span></label>
+<label class="sk-popt"><input type="radio" name="sk-p13"><span><b>Qxd7</b><small>Legal here, but then 15. Bxd7+ would capture nothing</small></span></label>
+<label class="sk-popt"><input type="radio" name="sk-p13"><span><b>Nxd7</b><small>Legal here, but then 15...Nxd7 has no knight left</small></span></label>
+<button class="sk-more" type="button" aria-expanded="false" style="align-self:flex-start">Something else? Type the move</button>
+</div>
+<div class="sk-pact"><button class="k-btn k-btn-gold" type="button">Confirm Rxd7</button><button class="k-btn k-btn-line" type="button">Skip for now</button></div>
+</div>
+</div>
+<nav class="sk-tabbar" aria-label="Main"><div class="sk-tabbar-in">
+<a class="sk-tab on" href="#" aria-current="page"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a>
+<a class="sk-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a>
+<a class="sk-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span></a>
+<button class="sk-tab" type="button" aria-expanded="false" style="border:0;background:transparent;font:inherit;font-size:12px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button>
+</div><div class="sk-safe"><span class="sk-homeind"></span></div></nav>
+</div></div>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

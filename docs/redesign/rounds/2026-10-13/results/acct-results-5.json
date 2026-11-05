@@ -1,0 +1,308 @@
+{
+ "label": "acct-5",
+ "results": [
+  {
+   "board": {
+    "file": "Work-G.dc.html",
+    "title": "Workspace · G · My region, one list with the club beside it (round 2)",
+    "width": 1440,
+    "page": "workspace",
+    "name": "My region · list with the club beside it",
+    "idea": "My region is one list of the region's clubs with what needs doing at the top; a club opens in a panel beside the list (Listing · Tonight · News · Events), so the representative works through nine clubs without leaving the page.",
+    "differs": "Work-G keeps the club beside the list in a side panel; Work-H gives each club a card that opens its own full page."
+   },
+   "drawn": {
+    "file": "Work-G.dc.html",
+    "title": "Workspace · G · My region, one list with the club beside it (round 2)",
+    "width": 1440,
+    "height": 2950,
+    "second_file": "Work-G-2.dc.html",
+    "second_title": "Workspace · G-2 · My region, the panel tabs, email and states (round 2)",
+    "second_height": 2250,
+    "note": "What: My region at /workspace/region, shown on Mon, Oct 5, 2026 at 8:40 AM. It is one list of the nine clubs Chris Arceneaux keeps as South Central Louisiana representative, with the Needs doing cards on top: the monthly check, 4 clubs not checked in 90 days, and 2 reports waiting. The chosen club (Houma) opens in a sticky panel beside the list, with the tabs Listing · Tonight · News · Events. Work-G-2 holds the Tonight, News and Events tabs, the monthly email on a phone (Mon, Nov 2), the states, and the way in and back. Work-H is the other option: a card for each club that opens the club's own page.\n\nBuilt from: Work-B (freshness check, visitor reports, the Tonight switch, the listing editor, club news, the page checklist), replan 3.3, 3.4 and 4.2, Account-M's nine-club region data, and the decided signed-in header and footer. Drawn inside Int-A, and the frame can be swapped: the legend gives the three crumbs (My LCA › My region · My LCA rail › My region · My LCA › Your work › My region).\n\nK's feedback applied: the working screen is now joined to the whole. The way in is the Your region section's Open My region, the Today item and the menu row 'My region · 4 to check'. Every screen carries the crumb 'My LCA › My region' and Back to My LCA. Work-B's club rep framing, its Members tab, the computed schedule and 'Suggest for LCA News' are gone. Open for K: G or H; question 20 (may a club's own rep edit its listing in this same panel); confirm that Lafayette Open 2026 is a partner event and so shows no count.",
+    "unresolved": [
+     "The spec gives Lafayette Open 2026 as 'published · 31 registered · TD named', but the decided Tourn-List-Final calls it a partner event, and the copy rules say a partner event never gets a count. The row reads 'Lafayette Open 2026 · Sat–Sun, Oct 10–11 · Partner event' with no count and no TD. This is listed under Open for K.",
+     "Frame A is drawn at 1440 with the list at 872px and the panel at 500px (the spec says 860 and 520), so that the seven list columns fit. To keep the board under 3000px, the region filter chips are shortened to South Central · Central · Bayou.",
+     "The spec wanted everything on one board, but it measured 4424px, so it is split. Work-G (2936px rendered, declared 2950) holds the title strip, the legend and Frame A. Work-G-2 (2215px rendered, declared 2250) holds insets G1 to G3, Frame B (the monthly email), the states and the way-in inset.",
+     "The left column under the clubs list has some empty space next to the taller sticky panel. A dashed note badged 1 sits there to explain the sticky panel. It was left that way on purpose, not padded with invented content.",
+     "These details are invented and covered by the Sample data badge: the club colours and initials logos, Houma's longer statement, venue fields, reply text and past news posts, and the 'Checked Oct 2026' months in the Nov 2 email. Work-G-2's states also gain a 'report at 14 days' state (Sat, Oct 10) that the spec did not list."
+    ]
+   },
+   "review": {
+    "file": "Work-G.dc.html (part 2: Work-G-2.dc.html)",
+    "height": 2950,
+    "second_height": 2350,
+    "counts": "Work-G renders at 2936px, declared as 2950 (root and $preview). Work-G-2 rendered at 2339px after the menu fix, so I raised it from 2250 to 2350. Both are under the 3000 limit. Legend: 6 numbered notes on each part. Design badges: Work-G has 1 to 6; Work-G-2 has 2, 3, 4 and 5. Region data matches the spec and Work-H. Nine clubs are listed: 5 in South Central, 2 in Central, 2 in Bayou. 4 are amber with \"Not checked since Jun 2026\" in words. There are 2 open reports (Houma, 9 days; Bunkie, 1 day), 1 event in LCA review (Baton Rouge November Saturday G/90), and the next monthly check is Mon, Nov 2. I checked 13 dates against their weekdays and all are right, including Wed, Jun 30, 2027 and Mon, Aug 17. Em dashes: 0. {{holes}}: 0. Iframes and animation: none. Tags are balanced in both files. No USCF, no .5, no grade, birthdate or financial-need question. Gold is used only as fill, border or underline; gold-ink text uses #866a1e. Header and footer markup match Tourn-List-Final. The My LCA count is 1. The menu rows now match Work-H: To do · 1, My LCA, Family, Membership card, Events you direct (3), My region · 4 to check, Board inbox (3), Support tickets (4), Log out. \"Admin\" appears only as a destination for lca_admin, the Workspace word is not in the drawn chrome, and there is no mode switch. Not drawn: members list, roster, sign-in QR, computed next meeting, Tonight state as a fact, freshness badge. The only overflow left is the intended note badges set at -12px on two Needs doing cards.",
+    "changes": [
+     "Work-G: the club list no longer cuts the 'How it meets' statement at two lines with an ellipsis. Houma's statement lost 'Library' and Baton Rouge lost 'Saturdays 10:00 AM ... G/90+30'. The rows grow to fit and the page height does not change, because the panel sets it.",
+     "Work-G: the 'Open' tags now read '1 report · 9 days' and '1 suggestion · 1 day' with a non-breaking space. Before, they broke as '9 / days'.",
+     "Work-G: the visitor's quote in the panel now reads 'closes at 8:00 PM ... until 8:30 PM?' instead of '8 PM' and '8:30?', to follow the 7:00 PM rule.",
+     "Work-G: Lafayette Open 2026 is a partner event on Tourn-List-Final. Its row now carries the link 'Registers on the organizer's site ↗' under 'Partner event', with no count and no Register button.",
+     "Work-G: Frame A's heading now reads 'the list stays, Houma Chess Club opens in the panel beside it', so the difference from Work-H is visible at a glance.",
+     "Work-G-2: the My LCA menu inset was missing two rows. It now has the 'To do · 1' row (Pay $20 · Ella's November Meet entry) and 'Log out', so it matches the frame's menu order and Work-H. Height raised from 2250 to 2350, in both the root and $preview."
+    ],
+    "remaining_concerns": [
+     "Lafayette Open status conflict: the spec's region data gives the Lafayette Open '31 registered · TD named', which makes it an LCA event. The decided boards make it a partner event. Work-G follows the decided boards and puts the question to K under Open for K. Account-M and Account-N still draw '31 registered' for it, which breaks the partner rule on those boards. I did not edit them, because they are outside this review.",
+     "Work-H-2 (the sibling, not in this review) still quotes the visitor as 'closes at 8 PM ... until 8:30?'. Its reviewer should change it to '8:00 PM ... 8:30 PM?' to match Work-G.",
+     "Column widths: the spec asks for a list 860 wide and a panel 520 wide. The board draws 872 and 500. The difference is small and nothing clips, so I left it.",
+     "Monthly email date: the inset is dated Mon, Nov 2 but still shows Houma's report open (37 days old by then). It also shows Baton Rouge and Lafayette as last checked in September. The caption explains that the report row is shown on purpose. The months are sample data and plausible."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Work-H.dc.html",
+    "title": "Workspace · H · My region, a card per club, each its own page (round 2)",
+    "width": 1440,
+    "page": "workspace",
+    "name": "My region · a card per club",
+    "idea": "My region is a board of nine club cards, each stamped with its state in words; a card opens the club's own page at /workspace/region/clubs/:id with the editor at full width, so each club is a place of its own with a stable link.",
+    "differs": "Work-H opens each club as its own full page from a card; Work-G keeps the club in a side panel beside one list."
+   },
+   "drawn": {
+    "file": "Work-H.dc.html",
+    "title": "Workspace · H · My region, a card per club, each its own page (round 2)",
+    "width": 1440,
+    "height": 2950,
+    "second_file": "Work-H-2.dc.html",
+    "second_title": "Workspace · H-2 · My region, the club's own page and the monthly email (round 2)",
+    "second_height": 2950,
+    "note": "What: My region at /workspace/region is a board of nine club cards. Each card shows its state in words, such as \"Not checked since Jun 2026\", \"1 report · 9 days\" or \"Event in LCA review\". Each card has a one-tap \"Still accurate\" button, which reads \"Answer it, then confirm\" while a report or suggestion is open, and an Open button. Open takes you to the club's own page at /workspace/region/clubs/:id (part 2). That page has the editor at full width with the live club card, the search-result preview, the page checklist and the visitor report banner, plus the Tonight, News and Events tabs as insets. Part 2 also has the Mon, Nov 2 monthly email on a phone and the states (empty, the day the check lands, a thin club, no seat). Part 1 shows the way in from My LCA (the Your region section, the Today item, the menu row \"My region · 4 to check\") and the way back.\n\nBuilt from: Work-B (the accuracy check, visitor reports, the Tonight notice, the editor with its live card, club news, club events behind LCA review, the page checklist), the replan's My region text (DESIGN_REPLAN_phase2.md 3.3, 3.4 and 4.2), the nine-club region data shared with Work-G and Account-M and N, and the decided header and footer from Tourn-List-Final and Nav-Header-Final. Drawn inside Int-A, and the frame is swappable: the legend shows the crumb under Int-A, Int-B and Int-C.\n\nK's feedback applied: page 15, \"integrate each of them into the whole and also get mockup options for each\". The club rep workspace becomes the representative's room, opened from My LCA, with \"My LCA › My region › Houma Chess Club\" and a Back link on every screen. There is no members list and the word Workspace never appears. Work-H is one option and Work-G (the club in a side panel) is the other. Open for K: Work-G or Work-H; Question 20 (if the club's own rep stays as its author, they would open this same club page for their one club); whether to keep the Tonight notice the representative posts by hand.",
+    "unresolved": [
+     "The shared region data gives Lafayette Chess Club 'Lafayette Open 2026 · published · 31 registered · TD named', but the decided Tourn-List-Final shows the Lafayette Open as a partner event. Partner events never get a count, so the Lafayette card has no event stamp. The shared data and Work-G may need correcting to match.",
+     "The spec asks for Frames A, B and C plus the states, the way-in inset and the legend on one board under 3000px. That did not fit, so it is split into two boards. Work-H holds the title strip, the legend, Frame A and the way-in inset. Work-H-2 holds Frame B (the club page with insets H1 to H3), Frame C (the phone email) and the states strip. Both are 1440 by 2950. Rendered content is 2913px on Work-H and 2944px on Work-H-2.",
+     "Cards are 424px wide, not the spec's 440, because the room sits inside a 1360px browser frame on a fixed 1440 board.",
+     "The phone in Frame C is cropped to 736px tall (390 wide) so Work-H-2 stays under 3000px; the whole email still fits on the screen.",
+     "In the club page header, 'Still accurate' is drawn disabled with the words 'Answer the report first', because Houma's report is open. This follows the spec's rule that a report blocks the confirm until it is answered.",
+     "Invented content carries a Sample data badge: the statement text, the field values, the photos, the past news posts, the 14 followers, the club colours and the Thu, Oct 15 empty-state date."
+    ]
+   },
+   "review": {
+    "file": "Work-H.dc.html (part 1) and Work-H-2.dc.html (part 2)",
+    "height": 2950,
+    "second_height": 2950,
+    "counts": "I rendered both boards at 1440 with the height set to auto. Work-H comes out at 2935px and Work-H-2 at 2944px, so the declared 2950 (root and $preview) is right for both and under the 3000 limit.\n\nLegends: 6 numbered notes on each board, and every badge drawn on the design maps to one of them. Work-H has badges 1, 2, 3, 5 and 6. Work-H-2 has badges 1 to 6.\n\nCards: 9 club cards in a 3 by 3 grid, sorted Bunkie, Gonzales, Heart of Worship, Pineville, Houma, then Baton Rouge, Bluebonnet, Lafayette and Morgan City. That matches the spec order.\n- 4 amber stamps reading 'Not checked since Jun 2026', each with a clock mark and the words.\n- 3 open-item stamps: Houma '1 report · 9 days', Bunkie '1 suggestion · 1 day', Baton Rouge 'Event in LCA review'.\n- 2 cards (Bunkie and Houma) have 'Still accurate' disabled and reading 'Answer it, then confirm'.\n- 3 clubs read 'Schedule not listed · Suggest an update' (Gonzales, Lafayette, Morgan City).\n\nRoutes: /workspace/region and /workspace/region/clubs/houma-chess-club. The three breadcrumbs (Int-A, Int-B /my/..., Int-C /work/...) and the frame line are in both legends.\n\nHeader and menu: the header matches Tourn-List-Final. Work-H-2 uses the decided tight version (rook only, short Search), which Nav-Header-Final sets for 1024 to 1279px. The My LCA count is 1. The menu rows (Pay $20 for Ella's November Meet entry, My LCA, Family, Membership card, Events you direct (3), My region · 4 to check, Board inbox (3), Support tickets (4), Log out) and the rail rows (3, 4, 7) match Account-G, Account-M and Work-G-2. There is no Admin row and no mode switch. The word Workspace appears only in URLs and the board title.\n\nWay in and back:\n- In: the Your region section with 'Open My region', the Today item ending 'Check the four', and the menu row.\n- Back: 'Back to My LCA' on the room, and the club page's crumb 'My LCA › My region › Houma Chess Club' with 'Back to My region'.\n\nRules checked by script on the visible text: 0 em dashes, 0 dates without a weekday, 0 times without minutes, 0 'USCF', 0 '.5', 0 AI references, 0 grade, birthdate or financial-need questions. Gold #c8a94a is only used as a fill or border, never as text on a light ground. Each board has a Sample data badge.\n\nSpec content: no members list, no computed next meeting, and no Tonight state shown as a fact. The Tonight tab is a notice the representative sets by hand. The 'Checked Sep 2026' stamps are the dates the representative confirmed, not freshness badges.\n\nAll 9 dates on the board fall on the weekdays given: Mon, Oct 5; Sat, Sep 26; Sun, Oct 4; Mon, Nov 2; Thu, Oct 15; Mon, Aug 17; Tue, Aug 18; Mon, Aug 31; Wed, Jun 30, 2027.\n\nStructure: no unclosed or mismatched tags in either file, no {{holes}}, no iframes, no animation, and the skeleton matches an existing board.\n\nNote for the canvas sticky (from the board): 'My region as nine club cards stamped in words; a card opens the club's own page at /workspace/region/clubs/:id with the editor at full width (part 2, Work-H-2). Option H against Work-G, which keeps the club in a side panel beside one list. Drawn inside Int-A; the frame is swappable.'",
+    "changes": [
+     "Work-H.dc.html: the two disabled 'Answer it, then confirm' buttons now carry disabled=\"disabled\", so every attribute is quoted as the file rules require.",
+     "Work-H-2.dc.html: 'Answer the report first' now carries disabled=\"disabled\" and the Tonight checkbox checked=\"checked\", for the same reason.",
+     "Work-H-2.dc.html: the Tonight tab's 'On as usual · Moved · Cancelled' switch in inset H1 did not fill its 300px box. It now spans the full width, and 'On as usual' stays on one line. I checked this in a fresh render.",
+     "Heights unchanged: both boards still render under the declared 2950 (2935 and 2944)."
+    ],
+    "remaining_concerns": [
+     "Frame B shows the club header's 'Still accurate' button disabled as 'Answer the report first', because Houma has an open report. The spec's header list names 'Still accurate'. I kept it disabled because it matches the card rule ('a report or suggestion blocks it until answered').",
+     "Work-H-2's monthly email (Mon, Nov 2) still shows Houma's report open, 37 days after it came in and past the 14-day point where it also goes to the admins. This matches Work-G-2 deliberately, so I did not change it, but K may find it odd.",
+     "The shared data's Lafayette Open (published, 31 registered, TD named) is not drawn on Lafayette's card. Other boards treat it as a partner event, and partner events never carry a count. The board's grey note says so. The spec only asks for stamps on Houma, Bunkie and Baton Rouge, so this agrees with it.",
+     "Bunkie's suggestion text ('The club moved to the Bunkie Public Library') does not appear on Work-H. Only its stamp does, because the opened club drawn is Houma. That is correct for this layout but differs from Work-G, which quotes the suggestion."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Work-I.dc.html",
+    "title": "Admin · I · The queue is the home (round 2)",
+    "width": 1440,
+    "page": "workspace",
+    "name": "Admin · the queue is the home",
+    "idea": "/admin opens straight on the merged Needs attention queue, one table over six sources with owner, waiting time and an action per row; the banner, automations, audit log and Log in as live in their sidebar groups, not on the home.",
+    "differs": "Work-I's home is the queue and nothing else; Work-J's home is a dashboard of panels with the queue's top five."
+   },
+   "drawn": {
+    "file": "Work-I.dc.html",
+    "title": "Admin · I · The queue is the home (round 2)",
+    "width": 1440,
+    "height": 3100,
+    "second_file": "Work-I-2.dc.html",
+    "second_title": "Admin · I-2 · The way in, the backstop, the states (round 2)",
+    "second_height": 1600,
+    "note": "What: /admin opens straight on the merged Needs attention queue. It is one table over six sources (Support, Board inbox, Approvals, Failed emails, Club listing reports, Partner reports), and each row shows its owner, how long it has waited and one action. The sidebar is grouped: Needs attention, Members, Tournaments, Clubs, Content, Board, Email, Site, Audit. The banner, automations, membership switch, audit log and Log in as now sit in their sidebar groups, and a one-line Today strip says whether any of them need a look. Part 2 (Work-I-2) draws the TD-console backstop, Log in as, the way in from My LCA and back, and the empty and busy states. Work-J is the other option: its home is a dashboard with the queue's top five.\n\nBuilt from: Work-C (queue, count tiles, weekday 7:00 AM digest, self-expiring banner, automations, Log in as with a reason), WS08 as amended by replan 4.6, Account-Q and Q-2 (queue data, backstop strip, menu row), Work-A's console band, and the decided header and footer (Nav-Header-Final, Tourn-List-Final). Drawn inside Int-A. The frame is swappable, and the three breadcrumbs are in the legend.\n\nK's feedback applied: Admin is joined to the whole. You get in from the My LCA menu row \"Admin · 12 need attention\" or the LCA admin section's Open Admin. The crumb reads My LCA › Admin, and Back to My LCA sits in the crumb line and under the sidebar title. The word is Admin, never Admin panel. The club rep request row, champion submissions and the old \"Club listings\" source are gone. Open for K: pick I or J; officers and the president get rooms (drawn) or keep one \"Admin (view only)\" row; may Assign offer an officer for support tickets; Exit console from the backstop goes to Admin › Tournaments (drawn) or to My LCA.",
+    "unresolved": [
+     "The spec's chip counts did not match its own rows. 'Assigned to me 3' is drawn as 2, because only rows 3 and 4 are owned by You; row 6 belongs to Chris Arceneaux. 'Waiting 2+ days 5' is drawn as 6, because six rows have waited 2 days or more (9d, 6d, 4d, 3d, 2d, 2d). Work-J will need the same correction: its 'Assigned to you · 3: rows 3, 4 and 6' also counts Chris's row.",
+     "The board would not fit under 3200px with every inset the spec lists, so it is split in two. Work-I (3100) holds the title strip, Frame A, I1 Review, I2 Site and the no-second-factor state. Work-I-2 (1600) holds I3 backstop, I4 Log in as, the way in and back, and the empty and busy states. The spec did not name a second board.",
+     "The admin's name follows the spec (Denise Fontenot, Sample data). Account-Q draws the same admin seat as Rachel Boudreaux, who appears here as the second admin in the Assign picker. The two boards should settle on one person.",
+     "The source names follow the spec's removes field and Account-Q: 'Club listing reports' for the spec's 'Club reports' and 'Partner reports' (partner listing reports) for its 'Listing reports'.",
+     "The Today strip reads '41 sent, 2 failed, both in the queue' instead of '(rows 10 and 11)', because the table is sorted longest-waiting first and those rows are no longer numbered 10 and 11.",
+     "The Assign picker is described in the table foot, not drawn as an open popover. As a popover it would have hidden the rows under it."
+    ]
+   },
+   "review": {
+    "file": "Work-I.dc.html (part 2: Work-I-2.dc.html)",
+    "height": 3100,
+    "second_height": 1600,
+    "counts": "Work-I renders at 3070.5px, declared 3100 with a matching $preview (limit 3200). Work-I-2 renders at 1580.9px, declared 1600 with a matching $preview (limit 3000). The queue has 12 rows. The tiles add up to 12 (Support 4, Board inbox 2, Approvals 3, Failed emails 2, Club reports 1, Listing reports 0). The rows are sorted longest-waiting first, and only the 9-day row is amber, with \"over a week\" written beside it. Chips: All 12, Assigned to me 2, Waiting 2+ days 6, Open seats 1. These match the row data and Work-J-2. The spec's 3 and 5 do not: only rows 3 and 4 belong to \"You\", and six rows wait 2 days or more. Legend: 6 notes on part 1; part 2 has 4 notes, numbered 1, 2, 5 and 6 to match part 1. Every region in the spec is present. Part 1 has frame A (header, crumb, grouped sidebar with Needs attention current, Today strip, jump box, title, tiles, chips, 7:00 AM digest checkbox, table, foot) and insets I1 (Review sheet), I2 (Site page holding the banner, five automations and the membership switch) and S3 (no second factor). Part 2 has I3 (backstop strip, Exit console to Admin › Tournaments), I4 (Log in as, with a reason), the way in and back (LCA admin section with Open Admin, the My LCA ▾ menu row), the empty and busy states, and the three breadcrumbs in the legend. Dates and weekdays checked: Mon Oct 5, Sat Sep 26, Sat Oct 3, Sat Oct 10 to Sun Oct 11, Sat Oct 24, Sat Nov 7 and Mon Nov 2, all in 2026. Rule scan: no em dashes, USCF, .5, AI references, grade, birthdate, holes, iframes or animation. Gold #c8a94a appears only as underline colour, borders and button fill, never as text on a light ground. The header and footer markup match Tourn-List-Final.",
+    "changes": [
+     "Work-I tiles: renamed 'Club listing reports' and 'Partner reports' to the spec's 'Club reports' (open seat) and 'Listing reports' (partner listings). They now match Work-J-2 and the Account-Q section line; the shorter sub-line no longer wraps.",
+     "Work-I row 12 source tag: 'Club listing report' renamed to 'Club report', as in Work-J and the busy state on Work-I-2.",
+     "Work-I frame B heading: added 'and Admin without a second factor' so the S3 inset in that row is named.",
+     "Work-I-2 way-in inset: the LCA admin section's source line now reads 'Club reports 1 · Listing reports 0', as in the spec.",
+     "Work-I-2 empty state: the tiles are renamed to Club reports and Listing reports.",
+     "Work-I-2 My LCA ▾ menu: removed the 'To do · nothing' label. The row now reads 'Admin · 12 need attention' on one line, the spec's text and the same as Work-J-2. The caption now says there are no to-do rows, so the trigger shows no count.",
+     "Work-I-2 inset row: columns went from 400/400/rest to 390/360/rest, and the menu column to 248px, so the menu row no longer wraps and the admin section is not cramped.",
+     "Work-I-2 I4 header: shortened to 'Members › Log in as a member' so it no longer runs into note badge 5.",
+     "Re-rendered after each change and checked the crops. No overflow outside the root; the only scroll overflow is note badge 6, which sits on the sidebar edge on purpose. Declared heights are unchanged because both natural heights round up to the values already declared."
+    ],
+    "remaining_concerns": [
+     "Spec data conflict: the spec says 'Assigned to me 3' and 'Waiting 2+ days 5', and Work-J's spec says 'Assigned to you · 3: rows 3, 4 and 6'. Row 6 is owned by Chris Arceneaux, so the data gives 2 and 6. I kept 2 and 6 to match the rows and Work-J-2; the spec text should be corrected.",
+     "Sibling inconsistency outside these files: Account-Q-2's My LCA ▾ menu inset gives the admin a personal to-do row ('Pay $60 · The Baton Rouge Classic', To do · 1). Work-I-2 and Work-J-2 show Denise with no to-do rows and no header count, as the spec says ('count 0 for this admin'). Either Account-Q-2 is drawing a different admin or one side should change.",
+     "Account-Q names the sources 'Club listing reports' and 'Partner listing reports'. Work-I and Work-J now use the spec's shorter 'Club reports' and 'Listing reports'. One naming should be chosen across all three.",
+     "Rachel Boudreaux, the second name in the Assign picker, comes from Account-Q, Account-Q-2 and Account-R. Like the other names it is covered only by the board-level 'Sample data' badge.",
+     "Part 2's legend keeps part 1's numbers (1, 2, 5, 6), with 'Notes 3 and 4 are on part 1' in the frame line. That is consistent but reads oddly on its own; renumbering would break the match with part 1.",
+     "Today strip: the red dot beside 'Site banner live until Sun, Oct 11' follows the kit's red Live tag, but red can read as an error. The words carry the status, so I left it.",
+     "Sticky note text for the canvas: 'Admin · I · The queue is the home. /admin opens straight on the merged Needs attention queue: 12 items over six sources, with owner, waiting time and an action per row. The banner, automations, membership switch, audit log and Log in as live in their sidebar groups (Site, Members, Audit), not on the home. Work-J is the alternative: a dashboard home with the queue's top five. Drawn inside Int-A (My LCA › Admin, Back to My LCA); the frame is swappable. Part 2 (Work-I-2) shows the backstop, Log in as, the way in and back, and the empty and busy states.'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Work-J.dc.html",
+    "title": "Admin · J · A dashboard home, the queue beside it (round 2)",
+    "width": 1440,
+    "page": "workspace",
+    "name": "Admin · a dashboard home",
+    "idea": "/admin opens on an overview: the queue's five most urgent rows with 'Open the queue (12)', the live banner, the automations health, the latest audit lines and five shortcuts; Needs attention is its own full page one click away.",
+    "differs": "Work-J's home is a dashboard of panels with the queue's top five; Work-I's home is the whole queue and nothing else."
+   },
+   "drawn": {
+    "file": "Work-J.dc.html",
+    "title": "Admin · J · A dashboard home, the queue beside it (round 2)",
+    "width": 1440,
+    "height": 3150,
+    "second_file": "Work-J-2.dc.html",
+    "second_title": "Admin · J-2 · The queue page, the review sheet and the way in (round 2)",
+    "second_height": 2950,
+    "note": "What: /admin opens on an overview page. It shows the five most urgent queue items with \"Open the queue (12)\", what is assigned to you, the live site banner, the health of the automations, the latest audit log lines and five shortcuts. Needs attention has its own full page one click away, drawn on part 2 with the review sheet, the admin's backstop strip in a TD console and Log in as. This board also shows the empty, busy and no-second-factor states, the tablet at 1024 wide, and the way in from My LCA and back.\n\nBuilt from: Work-C's home layout (banner, automations, audit log and Log in as all on the home); WS08 with replan 4.6 (one merged queue over six sources and the grouped sidebar: Needs attention · Members · Tournaments · Clubs · Content · Board · Email · Site · Audit); Work-I's twelve queue items and its insets; the decided header and footer.\n\nK's feedback applied: page 15, \"integrate each of them into the whole and also get mockup options for each\". Admin is now the lca_admin's own area. It opens from the LCA admin section of My LCA and from the menu row \"Admin · 12 need attention\", and the crumb reads \"My LCA › Admin\". \"Back to My LCA\" sits in the crumb bar and in the sidebar, and the word Workspace appears nowhere. Open for K: Work-I (the queue is the home) or Work-J (an overview showing the top five). The frame can be swapped for Int-B or Int-C.",
+    "unresolved": [
+     "The spec says 'Assigned to you · 3' (rows 3, 4 and 6), but the shared queue data gives row 6 to Chris Arceneaux. The board shows 'Assigned to you · 2' plus a 'Handed on by you · 1' line, and the queue chip reads 'Assigned to me 2'. Work-I and Account-Q should match whichever count K keeps.",
+     "Work-I's chip 'Waiting 2+ days 5' does not match the data: rows 12, 9, 8, 5, 1 and 4 all wait 2 days or more, which makes 6. The board shows 6.",
+     "The spec's 'Stripe payments · last webhook 8:14 AM' comes after the shown time of 8:12 AM. The board shows 8:04 AM.",
+     "The spec's audit line 'Chris Arceneaux · Exported members: New Orleans Metro' contradicts the frame's default that exports are for admins only and the treasurer gets none. It is replaced with 'Sat, Oct 3 · 9:05 AM · Chris Arceneaux · Submitted Baton Rouge Chess Club November Saturday G/90 for LCA review', which also fits queue row 1.",
+     "This spec names the admin Denise Fontenot (Sample data); Account-Q draws the same admin as Rachel Boudreaux. One name should be chosen across the admin boards.",
+     "The busy state's ages (oldest 12 days, 'Waiting 2+ days · 14') are invented and covered by the Sample data badge. The bracket placeholders [North Louisiana representative], [Secretary], [Club or organizer] and n***@[domain] come from Work-C's data and are kept.",
+     "To keep Work-J-2 under 3000px, the tablet inset J1 sits in the states row of the main board, not with the insets on part 2.",
+     "Inset I3 dates the Baton Rouge Classic event day Sat, Oct 24, 2026, following the frame. First-round Work-A showed Sun, Oct 25."
+    ]
+   },
+   "review": {
+    "file": "Work-J.dc.html (part 2: Work-J-2.dc.html)",
+    "height": 3150,
+    "second_height": 2950,
+    "counts": "Work-J renders at 3140px, declared 3150 (limit 3200). Work-J-2 renders at 2924px, declared 2950 (limit 3000). Both $preview values match. Legend: 6 numbered notes on each part. On Work-J, badges 1, 2, 4 (twice), 5 and 6 sit on the design; note 3 points to part 2, which carries badges 2 to 5. Queue data: 12 items (Support 4, Board inbox 2, Approvals 3, Failed emails 2, Club reports 1, Listing reports 0), and the six tiles add up to 12. The home card has 5 rows (rows 12, 9, 8, 5, 1 as the spec ranks them). Assigned to you is 2 (rows 3 and 4) plus 1 handed on (row 6, which is Chris's). The chips read All 12, Assigned to me 2, Waiting 2+ days 6, Open seats 1, the same as sibling Work-I. 6 is the correct count from the data; the spec's 5 is wrong. 5 shortcuts. Automations has 5 rows with 1 needing a look. Audit log has 4 lines. 4 state panels: Empty, Busy (40), Not enrolled, and J1 tablet. Part 2 holds insets I1, I3 and I4 plus the way in and back. Rule scans of the rendered text found 0 em dashes, 0 USCF, 0 '.5', 0 AI references, 0 grade or birthdate fields and 0 dates without a weekday. Every time is in the 7:00 PM form. 'Workspace' appears only in the page-15 kicker and in the sentence 'The words Admin panel and Workspace appear nowhere'. Gold #c8a94a is only a background or an underline, never text on a light ground (the kicker is #866a1e, the sidebar note #664c0c). Overflow check: nothing overflows, clips or overlaps on either part. The only hit was the visually-hidden table caption, which is meant to be hidden. The header and footer match Tourn-List-Final's decided chrome: the same nav, Search ⌘K, Donate and My LCA ▾ with no count for Denise, and the same footer. Frame checks: crumb 'My LCA › Admin' with 'Back to My LCA' in both the crumb bar and the sidebar; the grouped sidebar is in the spec's order with Home current on part 1 and Needs attention current on part 2. The menu reads My LCA · Membership card · Admin · 12 need attention · Log out, so the Admin row comes after the personal rows. The way in is drawn (Account-Q's LCA admin section with Open Admin and 'Needs attention · 12 · oldest 9 days'), and all three crumbs (Int-A, B, C) are shown. Admin is drawn as lca_admin only with a second factor, it opens as a page under the same header with no mode switch, and every legend says the frame is swappable.",
+    "changes": [
+     "Work-J Frame A label now states how this board differs: 'five of the 12 rows with the panels beside them; Work-I opens on all 12 and nothing else', so the idea and the contrast read at a glance.",
+     "Work-J caption under Frame A now opens with 'Against Work-I, whose home is the whole table: here the top five...', kept to two lines so the height does not grow.",
+     "Work-J Site banner card: the date 'Sat–Sun, Oct 10–11' no longer breaks across lines (white-space: nowrap); it now wraps whole onto the second line.",
+     "Re-rendered after each edit and viewed full resolution crops. The natural height stays at 3140, so the declared 3150 and $preview are unchanged. Work-J-2 needed no edits: it renders cleanly at 2924, declared 2950."
+    ],
+    "remaining_concerns": [
+     "The spec's 'Assigned to you · 3' (rows 3, 4 and 6) conflicts with its own queue data, where row 6's owner is Chris Arceneaux. The board shows 2 plus 'Handed on by you · 1', matching Work-I's chip 'Assigned to me 2'. The Open for K note explains this, but the spec text still says 3.",
+     "The spec's 'Waiting 2+ days 5' is wrong: six rows wait 2 days or more. Both Work-I and Work-J show 6. The spec should be corrected.",
+     "The spec's audit line 'Sun 6:15 PM · Chris Arceneaux · Exported members: New Orleans Metro' was replaced in round 1 with Chris submitting the Baton Rouge G/90 on Sat, Oct 3, 9:05 AM. The frame keeps export admin-only, Chris is not an admin, and New Orleans Metro is not his region. I kept the change; it should be confirmed against the spec.",
+     "Stripe 'Last webhook 8:04 AM' on Work-J differs from Work-I's 8:14 AM, which is the spec's figure but comes after the 8:12 AM moment shown. Work-I should be brought to 8:04 AM, or the spec fixed.",
+     "In Work-J-2's I3 backstop band the crumb reads 'My LCA › Admin › Tournaments › Event day' without the event name, which appears only on the line below it. It is acceptable, but it differs from the TD's crumb form 'My LCA › The Baton Rouge Classic › Event day'.",
+     "The frame's role inventory says the LCA admin section's line is 'oldest 3 days', while every Work-I, Work-J and Account-Q board uses 'oldest 9 days' from the shared queue data. The boards agree with each other; the frame text is stale.",
+     "Sticky note text for the canvas: '/admin opens on an overview: the queue's five most urgent rows with \"Open the queue (12)\", the items assigned to this admin, the live banner, the automations health, the latest audit lines and five shortcuts. Needs attention is its own full page one click away (part 2). Against Work-I, whose home is the whole queue and nothing else.'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Work-K.dc.html",
+    "title": "Workspace · K · Setup checklist, every step on one page (round 2)",
+    "width": 1440,
+    "page": "workspace",
+    "name": "Setup checklist · every step on one page",
+    "idea": "All ten setup steps sit on one form that scrolls in its own container, with the steps rail and the page preview pinned beside it; an experienced director sees and fixes anything in one scroll.",
+    "differs": "Work-K shows every step on one page; Work-L shows one step at a time with Back and Save and continue."
+   },
+   "drawn": {
+    "file": "Work-K.dc.html",
+    "title": "Workspace · K · Setup checklist, every step on one page (round 2)",
+    "width": 1440,
+    "height": 3350,
+    "second_file": "Work-K-2.dc.html",
+    "second_title": "Workspace · K · Setup checklist, every step on one page (round 2) · part 2",
+    "second_height": 2150,
+    "note": "What: the setup room at /workspace/tournaments/:id/setup with all ten steps on one form. The form scrolls in its own container, with the steps rail, the live event card and the link preview pinned beside it, so an experienced director sees and fixes anything in one scroll. The event is the 2027 Paul Morphy Open, cloned from 2026, on Thu, Oct 8, 2026 at 7:40 PM, with 8 of 10 steps done. Prizes and Directors are still To do, and Publish is greyed with the reason in words. Part 2 (Work-K-2) draws three insets: K1, a representative's club event with the membership switch live and Submit for LCA review; K2, a new event with nothing cloned; K3, the live State Championship stopping a change that would strand 3 paid players. It also draws the way in from My LCA and the way back. Work-L shows the same steps one at a time.\n\nBuilt from: Work-D, Event-Final-Setup and WS08 as amended (replan 4.6), with Account-K and Work-G for the doors in. The header and footer are the decided ones. Drawn inside Int-A; the frame is swappable, and the legend shows the three breadcrumbs side by side.\n\nK's feedback applied: the screen is joined to the whole, with options for each. You get in from Setup on Events you direct, from the Today item, or from Admin or My region for a new event. The crumb starts at My LCA. Back to My LCA sits in the bar, and \"Done · Back to My LCA\" appears after Publish. Removed: the member discount and every member price line, the Workspace crumb, the club rep's review button and any Text option. LCA membership is Required to enter and locked for directors. Where in the room is set per section. Open for K: K or L; registration settings inside Publish or as their own step; Publish blocked until prizes are confirmed, or allowed with prizes \"to be announced\"; whether a standing TD may start a draft; whether the Today item opens the first step still To do or the top of the form.",
+    "unresolved": [
+     "The spec asks for Frame A plus insets K1 to K3 and the way-in inset under one 3400px board. Drawn with every step visible, Frame A alone takes about 2600px, so the insets and the way in and back went to a second board, Work-K-2.dc.html (2150 tall). The spec does not name a second board, so the canvas index needs an entry for it.",
+     "Registration settings (opening date, 24-hour waitlist claim, the 'X of 60 registered' line, family checkout) have no step of their own in the spec's ten steps. They are drawn inside step 10 Publish and listed as open for K.",
+     "Account-K (this round) shows the Paul Morphy draft as 'Setup 2 of 10, Next: check the sections'. This board follows its own spec: 'Setup 8 of 10, Next: confirm the prize list'. One of the two boards needs aligning.",
+     "Status counting: '8 of 10 done' counts Schedule (Done, 1 note), Side events (Done, off) and Publish (Scheduled, last step) as done, since the spec has only Prizes and Directors To do.",
+     "Invented details, each under a Sample data badge: K1's club event (Sat, Nov 7, 2026, 3 rounds, G/90, $20 Regular) and the K3 entry counts from Event-Final-Setup."
+    ]
+   },
+   "review": {
+    "file": "Work-K.dc.html (part 2: Work-K-2.dc.html)",
+    "height": 3350,
+    "second_height": 2150,
+    "counts": "Legend notes: 6 on Work-K and 6 on Work-K-2, and the Work-K notes match spec notes 1 to 6. The frame line and the three crumbs (Int-A, Int-B, Int-C) are on both parts. The grey What / Built from / K's feedback applied / Open for K note is on both. Form steps: all 10 numbered cards, each with a status word. Rail: 8 of 10 done, with Prizes and Directors To do. Section table: 4 rows (Open 15, U1800 20, U1400 15, U1000 10), each with its Where in the room text. Fee grid: 4×3, one price per section per tier. Schedule: 6 rows with weekdays and times, plus the tight-turnaround note. Publish: 3 publish checkboxes and 2 timing choices. Right column: rail, live event card and link preview with its counterexample. Insets: K1, K2 and K3 plus way-in panels W1 to W4, all in part 2. Natural rendered heights after fixes: Work-K 3336px (declared 3350, under the 3400 limit) and Work-K-2 2105px (declared 2150, under 3000). Rule checks came back clean: 0 em dashes, 0 USCF, 0 \".5\", 0 AI references, 0 grade, birthdate or financial-need questions, no member price or discount (the only matches are \"There is no member price\" / \"No member price\"), no gold used as text (the only #c8a94a values are underline decoration colours and gold backgrounds with navy text), no animation, iframes or {{holes}}. Tags are balanced in both files. Every date was checked for its weekday (for example Sat Jun 12 2027, Mon May 31, Sat Nov 7 2026, Sat–Mon Sep 4–6 2027, Mon Sep 28 2026). Header and footer markup match Tourn-List-Final; the header carries the My LCA ▾ count of 1. Overflow scan: only the intended −12px badge offsets and the rail's highlighted row, which has negative margins. No element passes the 1440 width and no siblings overlap.",
+    "changes": [
+     "Work-K title strip: 'Shown' now gives the route the spec names (/workspace/tournaments/2027-paul-morphy-open/setup, Thu, Oct 8, 2026, 7:40 PM, Chris Arceneaux, the named director). It matches Work-L's strip. The pointer to part 2 moved into the kicker so the strip stays on one line per field.",
+     "Work-K band: the greyed Publish button was gold at 55% opacity with washed-out text. It is now a solid pale gold with dark grey text, still disabled, and still has the reason in words beside it ('Publish unlocks when 7 Prizes and 9 Directors are done').",
+     "Work-K step 8 Side events: the tag 'Done · off' and the rail row 'Done · off' now read 'Off', matching Work-L's rail and the spec.",
+     "Work-K step 10 Publish: the tag 'Scheduled · last step' now reads 'Last step'. Calling the step scheduled contradicted the draft status ('Draft · publishes when Prizes and Directors are done') and the spec's status words.",
+     "Work-K step 2: the Where in the room hint now carries the spec's example ('such as Room B, boards 1–8').",
+     "Work-K step 10: the URL line was 2px wider than its column. It is now 12px type so 'Copy' no longer clips.",
+     "Work-K root: bottom padding 28 → 20 and a shorter feedback line in the strip, so the board renders at 3336 inside the 3350 declared height.",
+     "Work-K-2 inset K1: moved from Mon, Oct 5 to Sat, Oct 3, 2026, 8:50 AM. Added 10:00 AM and Jones Creek Branch Library to the event line. The crumb now ends 'Setup'. Added the line 'After it, My region lists the event \"In LCA review · submitted Sat, Oct 3\" with Edit and Withdraw.' This matches Account-M and the sibling Work-L-2, which both have this club event submitted on Sat, Oct 3. On Oct 5 it could not still show a Submit button.",
+     "Work-K-2 W2: the note 'the chip names the event, never the role word' contradicted the frame, whose chip is 'Director · <event>'. It now reads 'never a system role name'."
+    ],
+    "remaining_concerns": [
+     "Inset K1's date now differs from the Work-K spec text (Mon, Oct 5, 8:50 AM). It follows Account-M and Work-L-2 (submitted Sat, Oct 3) so the boards agree; the spec line should be corrected to match.",
+     "8 of 10 done counts step 10 Publish as done while its status word is 'Last step'. Both the spec and Work-L use this arithmetic, so I left it, but a reader may count only 7 Done tags plus Off.",
+     "The band still says 'Chris Arceneaux, tournament director' as the spec writes it. The frame's corrections warn against giving Chris the tournament_director role, and the lowercase phrase could be read as that role. 'the named director' would be safer if K is sensitive to it.",
+     "The sticky right column ends about a third of the way down the 900px form, which leaves empty space beside steps 4 to 10. This is correct for a column pinned at the top of the scroll, and the pin chip says it stays in view, but the pinning is described in words more than shown.",
+     "Insets K1 to K3 sit on the part 2 file, not under frame A, because of the 3400 limit. The legend and the kicker both say so.",
+     "Canvas sticky note text: 'Work-K · Setup checklist, every step on one page. All ten steps on one form that scrolls in its own container, with the steps rail and live previews pinned beside it. Drawn inside Int-A (My LCA › Events you direct › 2027 Paul Morphy Open › Setup, Back to My LCA). No member price; LCA membership locked for directors, live only on a club event for the region's representative or an admin. Part 2 (Work-K-2): club event submit for review, new event, live event stop, the way in and back. Compare with Work-L (one step at a time).'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Work-L.dc.html",
+    "title": "Workspace · L · Setup checklist, one step at a time (round 2)",
+    "width": 1440,
+    "page": "workspace",
+    "name": "Setup checklist · one step at a time",
+    "idea": "The same ten steps, one on screen at a time: the rail at the left is the progress list, the step fills the middle with Back and Save and continue, and the preview sits under the step, so a first-time director is led through without a long form.",
+    "differs": "Work-L shows one step at a time with Back and Save and continue; Work-K shows every step on one scrolling page."
+   },
+   "drawn": {
+    "file": "Work-L.dc.html",
+    "title": "Workspace · L · Setup checklist, one step at a time (round 2)",
+    "width": 1440,
+    "height": 3350,
+    "second_file": "Work-L-2.dc.html",
+    "second_title": "Workspace · L-2 · Setup checklist, the tablet, the club event and the states (round 2)",
+    "second_height": 2950,
+    "note": "What: This is the setup checklist at /workspace/tournaments/:id/setup, showing one step at a time. The rail on the left lists all ten steps, each with its status in words. The current step fills the middle with Back, Skip for now (which marks the step To do) and Save and continue. The preview beside it outlines what this step changes on the public page. Frame A shows step 2, Sections, for the 2027 Paul Morphy Open on Thu, Oct 8, 2026 at 7:40 PM, with Chris Arceneaux as the named director. Frame B shows Fees and Publish, each alone on screen. Work-L-2 adds the tablet at 1024, the representative's club event with the membership switch live (K1), an empty new event (K2), a live event that won't strand paid players (K3), and the ways in and back. Work-K, its pair, puts every step on one scrolling page.\n\nBuilt from: Work-D (clone banner, presets, fee ladder, schedule check, link preview), Event-Final-Setup (steps, Where in the room, the page-shows choice, the live 2027 Louisiana State Championship), WS08 as amended by replan 4.6, Account-K (the Setup button), Account-M (the club event in LCA review), Account-G (the Today item), and the decided header, footer and My LCA menu. Drawn inside Int-A; the frame can be swapped, and the three crumbs are in the legend.\n\nK's feedback applied: The checklist is joined to the whole. You get in from Events you direct (\"Setup 8 of 10\" opens 7 Prizes, the first step still To do), from the Today item or from the menu row. The crumb starts at My LCA. You get out through Back to My LCA or the \"Done · Back to My LCA\" line. There is no member price and no Workspace in the crumb. LCA membership is Required to enter, locked for directors, and only an admin or the region's representative can switch it, on a club's own event. Open for K: K or L; whether Setup opens the first step still To do or always step 1; whether Skip is allowed on every step; on the tablet, a chip row or a step menu; whether club events are reviewed by LCA or published straight away.",
+    "unresolved": [
+     "The spec's idea says the preview 'sits under the step', but Frame A asks for a 360-wide sticky preview column. At 1440 it is drawn as a column (about 340 wide, so the three columns fit inside the page padding), and it sits under the step only on the tablet in Frame C.",
+     "Inset K1's spec time is Mon, Oct 5, 8:50 AM, with 'Submit for LCA review' still to press. Account-M and Work-G say the November Saturday G/90 was already submitted on Sat, Oct 3, so K1 is drawn as saved on Sat, Oct 3, 8:50 AM to agree with them.",
+     "The board was too tall for one 3400px frame: title strip, Frames A and B, Frame C, K1 to K3 and the way in run to about 4,000px. Frame C, the insets, the states and the way in moved to Work-L-2 (2950px, under its 3000px limit).",
+     "Work-K-2 did not exist when this was drawn, so insets K1 to K3 could not be checked against it. They use the shared data instead: the club event and its fees ($15 online until Fri, Nov 6 and $20 at the door, marked Sample data), and for K3 the decided board's live State Championship with 23 registered and 3 paid in U1000.",
+     "Chris's personal to-do row in the menu reads 'To do: Finish payment · Ella · November Meet', as Work-E-2 has it. Account-G has the same entry as $20 due Mon, Oct 5, so whether it is still open on Thu, Oct 8 depends on that board."
+    ]
+   },
+   "review": {
+    "file": "Work-L.dc.html (main, 1440 x 3350) and Work-L-2.dc.html (second, 1440 x 2950)",
+    "height": 3350,
+    "second_height": 2950,
+    "counts": "Measured heights with the root set to auto. Work-L: 3349.9px, declared 3350, under the 3400 cap. Work-L-2: 2935.4px, declared 2950, under the 3000 cap. Both have $preview equal to the root height, and the overflow scan reports nothing at 1440. Legend notes: 6 on Work-L and 5 on Work-L-2. Every date in both files carries its weekday (scripted check found no bare date). Times are all in the 7:40 PM form. No em dash, USCF, AI reference, Text option, {{hole}}, iframe or animation. No member discount: \"member price\" appears only in the sentence \"There is no member price\" (Work-L Fees B1, Work-L-2 K1, and the notes). No grade or birthdate is asked; the only mention is the decided wording 'one yes/no question (\"In 8th grade or below?\"), never a grade or birthdate'. Gold #c8a94a is used only as a ground, a border or an underline colour, or as text on navy (the share-card kicker). Gold-ink text uses #866a1e, and the tags use the kit's #664c0c. Every status colour has a word beside it: the rail, the Jump to line, and the tablet chips with their key line \"Done: 1, 3, 5, 6 · 1 note: 4 · To do: 7, 9 · Off: 8 · Last step: 10\". The header and footer match Tourn-List-Final's decided chrome, signed in with My LCA ▾ and a count of 1. The menu rows follow Int-A: To do, My LCA, Family, Membership card, Events you direct (3), My region · 4 to check, Board inbox (3), Support tickets (4), Log out. There is no Workspace or Admin row and no mode switch. The way in is drawn (the Setup 8 of 10 button opens 7 Prizes, plus the Today item \"Director · 2027 Paul Morphy Open\" and the new-event doors for an admin and the representative). The way back is drawn (Back to My LCA to /dashboard#directing, crumbs, and \"Done · Back to My LCA\"). The spec's regions are all present: Frame A (crumb, band with the greyed Publish and its reason, folded clone banner, 260 rail with aria-current, 760 step with chips, entry limit, table with Cap and Where in the room, scholastic line, the 56px Back · Skip for now (marks To do) · Save and continue bar, Jump to row, and the preview with \"What this step changes\"), B1 Fees with the locked switch, B2 Publish with the greyed scheduled publish, C tablet at 1024, K1, K2, K3, W1 to W4, the frame line and the three breadcrumbs. Drawn person: Chris Arceneaux as the named director and as South Central Louisiana's representative. The data matches Work-K and Work-K-2.",
+    "changes": [
+     "Work-L: the Frame A browser URL bar wrapped onto two lines and spilled out of its box. It now holds one line, 760px wide, nowrap.",
+     "Work-L and Work-L-2: the legend's three route lines broke mid-word ('/setu' and 'p'). They now break after '/tournaments/' (a <wbr> plus overflow-wrap:anywhere).",
+     "Work-L-2 W1: the role chip 'Director · 2027 Paul Morphy Open' was nowrap and ran 46px past its column. It now wraps inside the column.",
+     "Work-L-2 grey note: 'The club's rep no longer creates events' stated a settled outcome, but the frame's open_for_k question 20 is still open. It now reads 'The region's representative creates club events (P2.19); the club rep's part is open for K.' The text is shortened so the board stays at 2950.",
+     "Re-rendered and checked the PNG after each change. Heights are unchanged at 3350 and 2950, so no declared height or $preview needed editing."
+    ],
+    "remaining_concerns": [
+     "K1 date: the spec puts the representative's club event on Mon, Oct 5, 8:50 AM. Work-L-2 and the sibling Work-K-2 both use Sat, Oct 3, 8:50 AM, and Account-M lists the same event as 'submitted Sat, Oct 3'. I kept Oct 3 so the three boards agree. If the spec date wins, Work-K-2, Work-L-2 and Account-M all need to change together.",
+     "The preview column in Frame A measures 340px, not the spec's 360. The grid (260 + 760 + gaps inside 1440) leaves no more room, and it reads fine, so I left it.",
+     "The band copy 'Chris Arceneaux, tournament director' comes word for word from the Work-K spec and matches Work-K. In lowercase it could be read as the tournament_director role, which the frame's corrections took away from Chris. 'Chief TD' would remove the doubt if K prefers.",
+     "The tablet header in frame C is a compact sketch (rook, Louisiana Chess, My LCA 1, Menu) rather than a copy of a decided 1024 header. Nav-Header-Final's tablet state was not checked against it.",
+     "The canvas sticky note text for each board stays as the designer wrote it in the grey 'What' paragraph. Work-L: 'The setup checklist, one step on screen at a time: the rail is the progress list, the step fills the middle with Back and Save and continue, the preview shows what the step changes. Work-K puts all ten steps on one scrolling page.'"
+    ]
+   }
+  }
+ ]
+}

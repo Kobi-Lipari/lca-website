@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Workspace · F · TD console, everything in view (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.wf-root{width:1440px;box-sizing:border-box;padding:28px 0 24px;background:#ecebe6;color:#1a2744}
+.wf-root *{box-sizing:border-box}
+.wf-pad{margin:0 32px}
+.wf-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 24px 20px}
+.wf-title{font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 4px}
+.wf-ml{font-size:14px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1200px}
+.wf-ml b{color:#1a2744;font-weight:600}
+.wf-kq{margin:10px 0 0;padding:9px 14px;border-left:4px solid #c8a94a;background:#ffffff;border-radius:0 8px 8px 0;font-size:14px;line-height:1.5;color:#1a2744;max-width:1200px}
+.wf-legend{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.wf-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px}
+.wf-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 22px}
+.wf-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13px;line-height:1.42}
+.wf-notes b{font-weight:600}
+.wf-fl2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px;align-items:start;margin-top:12px}
+.wf-frameline{margin:0;padding:10px 14px;border:1px dashed #b9b7ad;border-radius:10px;background:#fbfbf8;font-size:13px;line-height:1.5;color:#3d4556}
+.wf-frameline b{color:#1a2744}
+.wf-crumbs3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.wf-c3{border:1px solid #e3e2dc;border-radius:8px;background:#ffffff;padding:7px 9px;font-size:12.5px;line-height:1.35}
+.wf-c3 span{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.wf-c3 span i{font-style:normal;text-transform:none;letter-spacing:0;font-weight:500;font-family:"Geist Mono",monospace;font-size:10.5px;display:block}
+.wf-c3 small{display:block;font-size:12px;color:#555c6b;margin-top:2px}
+.wf-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:12px 18px;display:grid;grid-template-columns:1fr 1.1fr 1.2fr 1.1fr;gap:20px}
+.wf-grey p{margin:0;font-size:13px;line-height:1.42;color:#3d4556}
+.wf-grey b{display:block;color:#1a2744;font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;margin-bottom:2px}
+.wf-grey ul{margin:2px 0 0;padding-left:18px;font-size:13px;line-height:1.45;color:#3d4556}
+.wf-grey li{margin-bottom:3px}
+.wf-sec{margin-top:20px}
+.wf-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 32px 10px}
+.wf-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.wf-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.wf-browser{border-radius:0;border-left:0;border-right:0;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.wf-view{background:#f5f5f2;position:relative}
+.wf-b{position:absolute;z-index:6;box-shadow:0 0 0 3px #ffffff}
+.wf-rel{position:relative}
+.wf-hd-in{gap:0;position:relative;padding:0 24px;max-width:none}
+.wf-hd .k-brand{margin-right:16px}
+.wf-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.wf-rook-sm{width:24px;height:24px}
+.wf-nav{gap:0}
+.wf-nav a{padding:0 10px;white-space:nowrap}
+.wf-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.wf-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.wf-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.wf-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.wf-count{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:#fbfaf6;color:#1a2744;font-size:12px;font-weight:700}
+.wf-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px 38px 20px}
+.wf-foot .k-meta{color:rgba(255,255,255,.78)}
+.wf-foot nav a{font-size:14px}
+.mono{font-family:'Geist Mono',monospace}
+.nw{white-space:nowrap}
+.pc{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 4px;border-radius:5px;font-family:'Geist Mono',monospace;font-weight:500;font-size:12px;line-height:1;flex:none}
+.pc-w{background:#ffffff;color:#1a2744;border:1.5px solid #1a2744}
+.pc-b{background:#1a2744;color:#ffffff;border:1.5px solid #1a2744}
+.rbox{display:inline-flex;align-items:center;justify-content:center;min-width:48px;height:26px;padding:0 7px;border-radius:7px;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;background:#ecebe6;color:#1a2744}
+.rbox-pend{background:#ffffff;border:1.5px dashed #8a6d1c;color:#3d4454}
+.st{display:inline-flex;align-items:center;gap:6px;min-height:26px;padding:2px 10px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap;line-height:1.2}
+.st .k-i{width:15px;height:15px}
+.st-ok{background:#e8ebf2;color:#1a2744}
+.st-agree{background:#e2f0e5;color:#1d5a31}
+.st-wait{background:#fbefd2;color:#5e4300}
+.st-bad{background:#f6e3e1;color:#8b2a21}
+.st-none{background:#f0efea;color:#4a5160}
+
+/* crumb + band + rail */
+.wf-crumb{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;padding:0 38px;background:#f5f3ea;border-bottom:1px solid #e3e1d6}
+.wf-crumb nav{display:flex;align-items:center;gap:8px;font-size:14px;color:#555c6b}
+.wf-crumb nav a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.wf-crumb nav b{color:#1a2744;font-weight:600}
+.wf-exit{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 14px;border:1.5px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;text-decoration:none}
+.wf-band{background:#1a2744;color:#ffffff;padding:14px 38px 12px}
+.wf-band-in{display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.wf-kick{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#e6cf86}
+.wf-band h1{margin:4px 0 2px;font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.015em;color:#ffffff}
+.wf-bsub{font-size:15px;color:#d9dbe2}
+.wf-psee{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:#ffffff}
+.wf-psee span{color:#c9cdd6}
+.wf-next{text-align:right}
+.wf-next .k-label{color:#c9cdd6}
+.wf-next b{display:block;font-size:24px;line-height:1.2;color:#ffffff;margin:2px 0 8px}
+.wf-sync{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#e4e7ee;background:#24345a;border-radius:999px;padding:6px 14px;margin-top:14px}
+.wf-rail{background:#14203a;padding:0 38px;position:relative}
+.wf-rail ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+.wf-rail li{border-top:4px solid #3a4a6e;padding:7px 0 9px;min-height:56px;font-size:12.5px;line-height:1.3;color:#c9cdd6}
+.wf-rail li a{color:inherit;text-decoration:none;display:block}
+.wf-rail li b{display:block;color:#ffffff;font-size:14px;font-weight:600}
+.wf-rail li.wf-done{border-top-color:#8fa3c9}
+.wf-rail li.wf-now{border-top-color:#c8a94a;background:rgba(200,169,74,.10)}
+.wf-rail li.wf-now b{color:#e6cf86}
+.wf-nowtag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:5px;background:#c8a94a;color:#1a2744;font-size:11px;font-weight:700;vertical-align:1px}
+
+/* body */
+.wf-body{display:grid;grid-template-columns:860px 480px;gap:24px;padding:22px 38px 0;align-items:start;position:relative}
+.wf-col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.wf-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;position:relative}
+.wf-ch{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:12px 18px;border-bottom:1px solid #e9e8e2}
+.wf-ch h3{margin:0;font-size:18px;line-height:1.3;font-weight:650;font-weight:600}
+.wf-ch p{margin:4px 0 0;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wf-pidi{display:inline-block;margin-right:8px;padding:2px 7px;border-radius:5px;background:#eceef3;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#3d4556;vertical-align:3px}
+.wf-pid{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+/* queue */
+.wf-q{border:2px solid #1a2744}
+.wf-qbar{display:flex;height:10px;border-radius:5px;overflow:hidden;background:#f0efea;width:300px;margin:8px 0 0 auto}
+.wf-qbar i{display:block;height:100%}
+.wf-qkey{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;margin-top:7px;font-size:12.5px;color:#3d4454}
+.wf-qkey span{display:inline-flex;align-items:center;gap:5px}
+.wf-sw{display:inline-block;width:14px;height:10px;border-radius:2px}
+.wf-qrow{display:grid;grid-template-columns:52px 200px minmax(0,1fr) 262px;gap:14px;align-items:center;padding:9px 18px;border-bottom:1px solid #eeede8;background:#ffffff}
+.wf-qrow-bad{background:#fffafa;box-shadow:inset 4px 0 0 #b3202f}
+.wf-qbd{font-size:12px;color:#555c6b;font-weight:600;text-align:center;line-height:1.15}
+.wf-qbd b{display:block;font-size:28px;color:#1a2744;font-weight:700}
+.wf-qp{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:600;line-height:1.2}
+.wf-qp .mono{white-space:nowrap}
+.wf-qp + .wf-qp{margin-top:6px}
+.wf-qp .mono{font-size:12.5px;color:#555c6b;font-weight:400}
+.wf-qrep{font-size:13.5px;line-height:1.4;color:#3d4454}
+.wf-qrep b{color:#1a2744}
+.wf-qline{display:flex;align-items:flex-start;gap:7px}
+.wf-qline + .wf-qline{margin-top:5px}
+.wf-qline .rbox{flex:none}
+.wf-qst{margin-top:8px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;font-size:13px;color:#3d4556;line-height:1.4}
+.wf-qact{display:grid;grid-template-columns:1fr 1.25fr;gap:8px}
+.wf-qact .k-btn{min-height:56px;padding:0 8px;font-size:14.5px;white-space:normal;text-align:center;line-height:1.2}
+.wf-qact .wf-full{grid-column:1 / -1}
+.wf-qact-2 .k-btn{grid-column:auto}
+.wf-qfoot{display:flex;justify-content:space-between;gap:12px;padding:11px 18px;background:#fafaf7;border-radius:0 0 10px 10px;font-size:13px;color:#3d4556}
+/* grid */
+.wf-gtools{padding:10px 18px 8px}
+.wf-hint{font-size:12.5px;color:#555c6b;margin:6px 0 0}
+.wf-gr{display:grid;grid-template-columns:34px 56px minmax(0,1fr) 156px minmax(0,1fr) 156px 50px;gap:8px;align-items:center;min-height:56px;padding:4px 18px;border-top:1px solid #eeede8}
+.wf-gh{min-height:36px;background:#fafaf7;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.wf-gbd{font-weight:700;font-size:18px;text-align:center}
+.wf-gsec{font-size:12.5px;color:#3d4556;font-weight:600}
+.wf-gnm{font-size:14.5px;font-weight:600;line-height:1.2;min-width:0}
+.wf-gnm span{display:block;font-family:'Geist Mono',monospace;font-size:12px;font-weight:400;color:#555c6b;margin-top:2px}
+.wf-gnm-r{text-align:left}
+.wf-rbs{display:flex;gap:6px}
+.wf-rb{width:48px;height:48px;border-radius:9px;border:1px solid #c4c3bb;background:#ffffff;font-family:'Geist Mono',monospace;font-size:14px;font-weight:500;color:#1a2744;display:inline-flex;align-items:center;justify-content:center}
+.wf-rb-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.wf-gr-bad{background:#fffafa;box-shadow:inset 4px 0 0 #b3202f}
+.wf-gr-wait{background:#fffcf3;box-shadow:inset 4px 0 0 #8a6d1c}
+.wf-gact{font-size:14px;font-weight:600;color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#c8a94a;text-decoration-thickness:2px}
+.wf-gfoot{display:flex;justify-content:space-between;gap:12px;padding:11px 18px;border-top:1px solid #e3e2dc;background:#fafaf7;border-radius:0 0 12px 12px;font-size:13px;color:#3d4556}
+.wf-phone{display:flex;align-items:center;gap:18px;padding:10px 18px;background:#ffffff;border:1px dashed #b9b7ad;border-radius:12px}
+.wf-phone .wf-pv{flex:1;font-size:13.5px;line-height:1.45;color:#3d4556}
+.wf-phone .wf-pv b{color:#1a2744}
+.wf-pbtn{min-height:48px;padding:0 14px;border-radius:10px;border:1px solid #c4c3bb;background:#ffffff;font:inherit;font-size:15px;font-weight:600;color:#1a2744}
+/* right */
+.wf-steps{padding:4px 16px 10px}
+.wf-step{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;padding:9px 0;border-bottom:1px solid #eeede8}
+.wf-step:last-child{border-bottom:0}
+.wf-stepn{width:30px;height:30px;border-radius:50%;background:#efede6;color:#555c6b;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.wf-step-now .wf-stepn{background:#1a2744;color:#ffffff}
+.wf-step h4{margin:3px 0 2px;font-size:16px;font-weight:600;line-height:1.3}
+.wf-step p{margin:0 0 4px;font-size:13px;line-height:1.45;color:#3d4556}
+.wf-step-off h4{color:#3d4556}
+.wf-big{min-height:56px;width:100%;font-size:16px;justify-content:center;margin-top:4px}
+.wf-dis{background:#e9e8e3;color:#5a6070;border-color:#d6d5ce;cursor:default}
+.wf-lock{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#555c6b;margin-top:4px}
+.wf-seg{display:flex;border:1px solid #b9bcc4;border-radius:10px;overflow:hidden;background:#ffffff;margin:4px 0 2px}
+.wf-seg span{flex:1;display:flex;align-items:center;justify-content:center;min-height:40px;padding:0 8px;font-size:13.5px;font-weight:600;color:#5a6070;text-align:center}
+.wf-seg .on{background:#dfe2ea;color:#1a2744}
+.wf-cb{padding:12px 18px 14px;display:flex;flex-direction:column;gap:9px}
+.wf-opt{display:grid;grid-template-columns:20px 64px minmax(0,1fr);gap:10px;align-items:center;padding:10px 12px;border:1px solid #dddcd4;border-radius:10px}
+.wf-opt-on{border:2px solid #1a2744;background:#f7f8fb}
+.wf-rad{width:18px;height:18px;border-radius:50%;border:2px solid #858b99;background:#ffffff}
+.wf-opt-on .wf-rad{border-color:#1a2744;box-shadow:inset 0 0 0 4px #ffffff;background:#1a2744}
+.wf-th{height:40px;border-radius:5px;background:#1a2744;padding:4px;display:grid;gap:3px}
+.wf-th i{display:block;background:#3f5078;border-radius:1px}
+.wf-th i.h{background:#c8a94a}
+.wf-opt b{font-size:14.5px;display:block;line-height:1.3}
+.wf-opt span.d{font-size:12.5px;color:#555c6b;line-height:1.35;display:block}
+.wf-sug{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:5px;background:#e2f0e5;color:#1d5a31;font-size:11.5px;font-weight:700;vertical-align:1px}
+.wf-tog{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px;font-weight:600;min-height:40px;border-top:1px solid #eeede8;padding-top:8px}
+.wf-sw2{display:inline-flex;align-items:center;gap:8px;font-size:13.5px}
+.wf-sw2 i{display:inline-block;width:40px;height:24px;border-radius:99px;background:#1a2744;position:relative}
+.wf-sw2 i::after{content:"";position:absolute;right:3px;top:3px;width:18px;height:18px;border-radius:50%;background:#ffffff}
+.wf-keys{font-size:12.5px;line-height:1.5;color:#3d4556}
+.wf-keys kbd{display:inline-block;font-family:'Geist Mono',monospace;font-size:11.5px;border:1px solid #c4c3bb;border-bottom-width:2px;border-radius:4px;padding:0 5px;margin:0 2px;background:#fafaf7;color:#1a2744}
+.wf-chk{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}
+.wf-chk label{display:inline-flex;align-items:center;gap:7px;min-height:32px}
+.wf-chk input{width:18px;height:18px;margin:0;accent-color:#1a2744}
+.wf-ta{width:100%;min-height:58px;padding:9px 12px;border:1px solid #858b99;border-radius:8px;font:inherit;font-size:14.5px;line-height:1.45;color:#1a2744;background:#ffffff;resize:none}
+.wf-log{font-size:12.5px;color:#3d4556;padding:5px 0;border-top:1px solid #eeede8;line-height:1.4}
+.wf-prow{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:52px;padding:0 14px;border:1px solid #c4c3bb;border-radius:10px;background:#ffffff;font-size:14.5px;font-weight:600;color:#1a2744}
+.wf-prow > span:first-child{display:inline-flex;align-items:center;gap:10px}
+.wf-prow small{font-size:12.5px;color:#555c6b;font-weight:500}
+.wf-sub{font-size:12.5px;line-height:1.45;color:#555c6b}
+/* full width */
+.wf-full{padding:16px 38px 16px;display:flex;flex-direction:column;gap:12px}
+.wf-coll{display:flex;align-items:center;gap:18px;padding:10px 18px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;position:relative}
+.wf-coll h3{margin:0;font-size:18px;font-weight:600}
+.wf-cnts{display:flex;gap:8px;flex-wrap:wrap}
+.wf-cnt{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#f0efea;font-size:13.5px;color:#1a2744}
+.wf-cnt b{font-size:15px}
+.wf-ptr{font-size:12.5px;color:#555c6b;margin-left:auto;text-align:right;line-height:1.35}
+.wf-ptr b{color:#1a2744}
+.wf-co{background:#f3f2ed;border:1px dashed #a9a79c;border-radius:12px;padding:14px 18px;position:relative}
+.wf-co-h{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.wf-co-h h3{margin:0;font-size:18px;font-weight:600;color:#3d4556}
+.wf-co-h p{margin:4px 0 0;font-size:13.5px;color:#3d4556;line-height:1.45}
+.wf-co-grid{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.wf-checks{display:grid;grid-template-columns:1fr 1fr}
+.wf-checks li:nth-child(odd){border-right:1px solid #eeede8}
+.wf-checks li:last-child{grid-column:1 / -1;border-right:0}
+.wf-checks{list-style:none;margin:0;padding:0;border:1px solid #e3e2dc;border-radius:10px;background:#ffffff}
+.wf-checks li{display:flex;align-items:center;gap:10px;padding:6px 12px;border-bottom:1px solid #eeede8;font-size:13.5px;line-height:1.4}
+.wf-checks li:last-child{border-bottom:0}
+.wf-checks li .t{flex:1}
+.wf-files{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.wf-file{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 10px;border:1px solid #e3e2dc;border-radius:10px;background:#ffffff;font-size:13.5px}
+.wf-fn{font-family:'Geist Mono',monospace;font-size:14px;color:#1a2744}
+.wf-smchips .k-chip{min-height:34px;padding:0 11px;font-size:13.5px}
+.wf-opts2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wf-opt2{display:flex;flex-direction:column;gap:5px;padding:8px 10px;border:1px solid #dddcd4;border-radius:10px;position:relative}
+.wf-opt2 b{font-size:13.5px;line-height:1.3}
+.wf-opt2 .wf-rad{position:absolute;top:10px;right:10px}
+.wf-opt2.wf-opt-on{border:2px solid #1a2744;background:#f7f8fb}
+.wf-opt2.wf-opt-on .wf-rad{border-color:#1a2744;box-shadow:inset 0 0 0 4px #ffffff;background:#1a2744}
+.wf-opt2 .wf-th{width:72px;height:40px}
+.wf-pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.wf-pgrid .wf-prow{flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;min-height:56px;padding:6px 12px}
+.wf-pgrid .wf-prow small{padding-left:28px}
+.wf-mid{min-height:44px;width:100%;justify-content:center;margin-top:2px}
+</style>
+</helmet>
+<div class="wf-root" style="width:1440px">
+<section class="wf-doc wf-pad" aria-label="About this board">
+  <p class="k-kicker" style="margin:0">15 · Workspace and admin · round 2 · option F · part 1 of 2</p>
+  <div class="k-between" style="flex-wrap:nowrap"><h1 class="wf-title">Workspace · F · TD console, everything in view (round 2)</h1><span class="k-sample" style="flex:none">Sample data · players, ratings, results, times, counts</span></div>
+  <p class="wf-ml"><b>Built from:</b> Work-A, Live-Final-Pairings-2 (Reported results queue), Live-Final-Standings frame B (close-out), Live-Final-TV inset B1 (Hall TV settings), the decided header and footer (Nav-Header-Final, Tourn-List-Final) · Round 2 · <b>Frame:</b> Int-A, swappable · <b>Replaces:</b> Work-A, with Work-E (one is picked)</p>
+  <p class="wf-ml"><b>K's feedback applied:</b> a good default, every section drawn in full, roles hosted in My LCA, options for each, the screens joined to the whole: the console opens from My LCA and returns to it, and F is drawn against E. <b>Shown:</b> Sat, Oct 24, 2026, 9:31 PM, Chris Arceneaux, Chief TD, 1440 wide; part 2 (Work-F-2): insets F1 and F2, frame B at 1024×768, states, way in and back.</p>
+  <p class="wf-kq"><b>K, page 15, Tue, Oct 13:</b> "for 15, it seems all the pages here are all their separate ideas and are good on their own right, i think its proper to think about how we plan to integrate each of them into the whole and also get mockup options for each to pin down a good vision."</p>
+  <div class="wf-legend">
+    <div class="wf-lbox">
+      <p class="k-label" style="margin:0">Notes on this board</p>
+      <ol class="wf-notes">
+        <li><span class="k-num-badge">1</span><span><b>One page, two columns:</b> the work on the left, the tools on the right, check-in and close-out below; the rail sticks under the header and jumps to a panel, never hiding one.</span></li>
+        <li><span class="k-num-badge">2</span><span><b>Reports steer, never set:</b> one report lands at once, disagreements first; the TD confirms in one tap or enters a different result. Both reports stay on the record.</span></li>
+        <li><span class="k-num-badge">3</span><span><b>The one live button is always in reach:</b> the Next step card top right, and a floating copy on a tablet (Work-F-2, frame B).</span></li>
+        <li><span class="k-num-badge">4</span><span><b>Announcements reach email, the hall TV and the event page banner;</b> no texts until SMS exists (D8).</span></li>
+        <li><span class="k-num-badge">5</span><span><b>Close-out runs its checks before round 5 ends,</b> so the TD sees what to fix during the day.</span></li>
+        <li><span class="k-num-badge">6</span><span><b>Trade-off in words:</b> more scrolling at a tablet than Work-E, but nothing is ever out of sight.</span></li>
+      </ol>
+      <div class="wf-fl2"><p class="wf-frameline"><b>Frame.</b> Drawn inside Int-A (My LCA as the hub, rooms open from each section). The frame is swappable: under Int-B this room is the page the left rail opens; under Int-C it opens from a card on Your work. The room itself does not change; only the breadcrumb, the way back and the menu row do. Pick the frame on Account-Int-A, B or C.</p>
+      <div class="wf-crumbs3">
+        <div class="wf-c3"><span>Int-A · baseline <i>/workspace/…/live</i></span>My LCA › Events you direct › The Baton Rouge Classic › Event day</div>
+        <div class="wf-c3"><span>Int-B <i>/my/events/:id/live</i></span>My LCA rail › The Baton Rouge Classic › Event day</div>
+        <div class="wf-c3"><span>Int-C <i>/work/tournaments/:id/live</i></span>My LCA › Your work › The Baton Rouge Classic › Event day</div>
+      </div></div>
+    </div>
+    <aside class="wf-grey" aria-label="Board note">
+      <p><b>What</b>Every event-day panel on one scrolled page in two columns, check-in and close-out below. Work-E shows one stage at a time instead.</p>
+      <p><b>Built from</b>Work-A's one-page console and what it keeps (band, rail, gated Next step, tap grid, Print and QR, Announcements, offline badge); the decided live boards' queue, close-out and Hall TV settings.</p>
+      <p><b>K's feedback applied</b>In from Events you direct, the menu's event line or the live strip; out by Exit console or any crumb to My LCA. Gone: the countdown, texts, the club on rows, Workspace.</p>
+      <div><p><b>Open for K</b></p>
+        <ul>
+          <li>E (one stage at a time) or F (everything in view).</li>
+          <li>Run the close-out checks during the day (drawn) or only after round 5.</li>
+          <li>The frame: Int-A, B or C.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+<section class="wf-sec" aria-labelledby="wf-fa">
+  <div class="wf-flab"><span class="wf-code">A</span><h2 id="wf-fa">The console at 1440 · every panel on one scrolled page</h2><span class="k-meta">Sat, Oct 24, 2026 · 9:31 PM · Round 3 · Chris Arceneaux, Chief TD</span></div>
+  <div class="k-browser wf-browser">
+    <div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/workspace/tournaments/the-baton-rouge-classic/live</div></div>
+    <div class="wf-view">
+      <header class="k-header wf-hd"><div class="k-header-in wf-hd-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="wf-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks wf-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="wf-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="wf-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="wf-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility" style="gap:12px"><a class="k-ulink" href="#">Donate</a><button class="wf-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, 1 thing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><span class="wf-count" aria-hidden="true">1</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+      <div class="wf-crumb">
+        <nav aria-label="Breadcrumb"><a href="#">My LCA</a><span aria-hidden="true">›</span><a href="#">Events you direct</a><span aria-hidden="true">›</span><a href="#">The Baton Rouge Classic</a><span aria-hidden="true">›</span><b aria-current="page">Event day</b></nav>
+        <a class="wf-exit" href="#">Exit console</a>
+      </div>
+      <section class="wf-band">
+        <div class="wf-band-in">
+          <div>
+            <div class="wf-kick">Event day · Sat, Oct 24 · 9:31 PM</div>
+            <h1>The Baton Rouge Classic</h1>
+            <div class="wf-bsub">Baton Rouge · 26 players · 4 sections · 5 rounds · G/90+30 (90 min each + 30 sec per move)</div>
+          </div>
+          <div class="wf-next">
+            <span class="k-label">Round 4 starts</span>
+            <b>Sun, Oct 25 · 9:30 AM</b>
+            <div class="k-row-sm" style="justify-content:flex-end;gap:8px"><a class="k-btn k-btn-on-dark k-btn-sm" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"></rect><path d="M8 20h8M12 16v4"></path></svg>Hall TV</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Public page</a></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:10px"><div class="wf-psee" style="margin:0"><span>Players see:</span>Round 3 in progress · 8 of 13 results confirmed</div><span class="wf-sync" style="margin:0"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18h10.5a4 4 0 0 0 .5-7.97A6 6 0 0 0 6.2 9.6 4.2 4.2 0 0 0 7 18z"></path><path d="M9.5 13.5l2 2 3.5-3.5"></path></svg>Saved on this tablet · synced 9:31 PM · keeps working if the venue Wi-Fi drops</span></div>
+      </section>
+      <nav class="wf-rail" aria-label="Jump to a panel">
+  <span class="k-num-badge wf-b" style="top:-14px;right:30px">6</span>
+  <ol>
+    <li class="wf-done"><a href="#check-in"><b>Check-in</b>Closed Sat 9:52 AM</a></li>
+    <li class="wf-done"><a href="#round-3"><b>Round 1</b>Done</a></li>
+    <li class="wf-done"><a href="#round-3"><b>Round 2</b>Done</a></li>
+    <li class="wf-now"><a href="#round-3" aria-current="step"><b>Round 3 <span class="wf-nowtag">Now</span></b>8 of 13 confirmed</a></li>
+    <li><a href="#round-3"><b>Round 4</b>Sun 9:30 AM</a></li>
+    <li><a href="#round-3"><b>Round 5</b>Sun 2:00 PM</a></li>
+    <li><a href="#hall-tv"><b>Hall TV</b>All on one screen</a></li>
+    <li><a href="#close-out"><b>Close-out</b>After round 5</a></li>
+  </ol>
+</nav>
+      <div class="wf-body">
+        <span class="k-num-badge wf-b" style="top:6px;left:896px">1</span>
+        <div class="wf-col"><section class="wf-card wf-q" id="round-3" aria-labelledby="q-h">
+  <span class="k-num-badge wf-b" style="top:-14px;left:-14px">2</span>
+  <div class="wf-ch">
+    <div><h3 id="q-h"><span class="wf-pidi">Panel 1</span>Reported results · Round 3 · <span style="font-weight:500;color:#555c6b">3 to check</span></h3><p>Players' reports steer you; they never set a result. Disagreements first, then oldest first.</p></div>
+    <div style="text-align:right;flex:none"><b style="font-size:14.5px">8 of 13 confirmed · 3 reported, waiting · 2 not reported</b>
+      <div class="wf-qbar" role="img" aria-label="8 confirmed, 3 reported and waiting, 2 not reported"><i style="width:61.5%;background:#1a2744"></i><i style="width:23.1%;background:repeating-linear-gradient(135deg,#d9b44a 0 4px,#f3e0a4 4px 8px)"></i><i style="width:15.4%;background:#f0efea"></i></div>
+      <div class="wf-qkey"><span><i class="wf-sw" style="background:#1a2744"></i>Confirmed by TD</span><span><i class="wf-sw" style="background:repeating-linear-gradient(135deg,#d9b44a 0 3px,#f3e0a4 3px 6px)"></i>Reported, waiting</span><span><i class="wf-sw" style="background:#f0efea;border:1px solid #c4c3bb"></i>Not reported</span></div>
+    </div>
+  </div>
+  <div class="wf-qrow wf-qrow-bad">
+  <div class="wf-qbd">Board<b>2</b>Open</div>
+  <div><div class="wf-qp"><span class="pc pc-w">W</span>Jean-Paul Fontenot <span class="mono">2011</span></div><div class="wf-qp"><span class="pc pc-b">B</span>Kevin Tran <span class="mono">1942</span></div></div>
+  <div><div class="wf-qrep"><div class="wf-qline"><span class="rbox rbox-pend">1–0</span><span><b>White won</b> · Jean-Paul Fontenot (White), <span class="nw">9:20 PM</span></span></div><div class="wf-qline"><span class="rbox rbox-pend">½–½</span><span><b>Draw</b> · Kevin Tran (Black), <span class="nw">9:21 PM</span></span></div></div><div class="wf-qst"><span class="st st-bad"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.5 20h19L12 3.5z"></path><path d="M12 10v4.5M12 17.3v.2"></path></svg>Reports disagree</span><span>Each says something different. Check with both.</span></div></div>
+  <div class="wf-qact"><button class="k-btn k-btn-line" type="button">Confirm 1–0</button><button class="k-btn k-btn-line" type="button">Confirm ½–½</button><button class="k-btn k-btn-navy wf-full" type="button">Enter a different result</button></div>
+</div>
+  <div class="wf-qrow">
+  <div class="wf-qbd">Board<b>6</b>U1800</div>
+  <div><div class="wf-qp"><span class="pc pc-w">W</span>Devin Batiste <span class="mono">1521</span></div><div class="wf-qp"><span class="pc pc-b">B</span>Elise Fontenot <span class="mono">1460</span></div></div>
+  <div><div class="wf-qrep"><div class="wf-qline"><span class="rbox rbox-pend">½–½</span><span><b>Draw</b>, reported by Elise Fontenot (Black) · <span class="nw">9:12 PM</span></span></div></div><div class="wf-qst"><span class="st st-wait"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Opponent has not reported</span><span>Devin was asked at 9:12 PM.</span></div></div>
+  <div class="wf-qact"><button class="k-btn k-btn-navy" type="button">Confirm ½–½</button><button class="k-btn k-btn-line" type="button">Enter a different result</button></div>
+</div>
+  <div class="wf-qrow">
+  <div class="wf-qbd">Board<b>9</b>U1400</div>
+  <div><div class="wf-qp"><span class="pc pc-w">W</span>Jordan Lee <span class="mono">1388</span></div><div class="wf-qp"><span class="pc pc-b">B</span>Maya Robichaux <span class="mono">1102</span></div></div>
+  <div><div class="wf-qrep"><div class="wf-qline"><span class="rbox rbox-pend">1–0</span><span><b>White won</b>, reported by Jordan Lee (White) · <span class="nw">9:18 PM</span></span></div></div><div class="wf-qst"><span class="st st-none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10"></path></svg>Opponent can't report</span><span>Maya has no login, and guardians don't report for a child.</span></div></div>
+  <div class="wf-qact"><button class="k-btn k-btn-navy" type="button">Confirm 1–0</button><button class="k-btn k-btn-line" type="button">Enter a different result</button></div>
+</div>
+  <div class="wf-qfoot"><span>Not reported yet: boards 11 and 13 (U1000). Results you enter below or from a paper sheet skip this queue.</span><a class="k-link nw" href="#">Reporting history for this round</a></div>
+</section><section class="wf-card" aria-labelledby="g-h">
+  <div class="wf-ch" style="align-items:center">
+    <div><h3 id="g-h"><span class="wf-pidi">Panel 2</span>Round 3 results · <span style="font-weight:500;color:#555c6b">8 of 13 in</span></h3></div>
+    <div class="k-seg" role="group" aria-label="Round"><button class="k-seg-on" type="button">Round 3</button><button type="button">Round 4</button></div>
+  </div>
+  <div class="wf-gtools">
+    <div class="k-row-sm wf-smchips">
+      <span class="k-chip k-chip-on">All sections <span class="k-chip-count">13</span></span>
+      <span class="k-chip">Open <span class="k-chip-count">4</span></span>
+      <span class="k-chip">U1800 <span class="k-chip-count">3</span></span>
+      <span class="k-chip">U1400 <span class="k-chip-count">3</span></span>
+      <span class="k-chip">U1000 <span class="k-chip-count">3</span></span>
+      <span class="k-chip">Needs a look <span class="k-chip-count">3</span></span>
+    </div>
+    <p class="wf-hint">Tap a result. With a keyboard: 1 White wins, 2 draw, 3 Black wins, arrows move between boards. Press and hold for forfeits.</p>
+  </div>
+  <div role="table" aria-label="Round 3 results, all sections">
+    <div class="wf-gr wf-gh" role="row"><span>Bd</span><span>Section</span><span>White</span><span>Result</span><span>Black</span><span>Status</span><span>Action</span></div>
+    <div class="wf-gr" role="row"><span class="wf-gbd">1</span><span class="wf-gsec">Open</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Marcus Landry<span>2104</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb wf-rb-on">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Priya Shah<span>1803</span></span><span><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span><a class="wf-gact" href="#">Edit</a></div><div class="wf-gr wf-gr-bad" role="row"><span class="wf-gbd">2</span><span class="wf-gsec">Open</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Jean-Paul Fontenot<span>2011</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Kevin Tran<span>1942</span></span><span><span class="st st-bad"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5L2.5 20h19L12 3.5z"></path><path d="M12 10v4.5M12 17.3v.2"></path></svg>Reports disagree</span></span><a class="wf-gact" href="#">Review</a></div><div class="wf-gr" role="row"><span class="wf-gbd">3</span><span class="wf-gsec">Open</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Neil Robichaux<span>1987</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb wf-rb-on">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Luke Arceneaux<span>1898</span></span><span><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span><a class="wf-gact" href="#">Edit</a></div><div class="wf-gr" role="row"><span class="wf-gbd">4</span><span class="wf-gsec">Open</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Avery Thibodeaux<span>1912</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb wf-rb-on">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Ravi Menon<span>1876</span></span><span><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span><a class="wf-gact" href="#">Edit</a></div><div class="wf-gr" role="row"><span class="wf-gbd">5</span><span class="wf-gsec">U1800</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Camille Broussard<span>1744</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb wf-rb-on">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Nora Hebert<span>1577</span></span><span><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span><a class="wf-gact" href="#">Edit</a></div><div class="wf-gr wf-gr-wait" role="row"><span class="wf-gbd">6</span><span class="wf-gsec">U1800</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Devin Batiste<span>1521</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Elise Fontenot<span>1460</span></span><span><span class="st st-wait"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Reported by Black</span></span><a class="wf-gact" href="#">Review</a></div><div class="wf-gr" role="row"><span class="wf-gbd">7</span><span class="wf-gsec">U1800</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Isaac Dupre<span>1688</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb wf-rb-on">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Lauren Guillory<span>1641</span></span><span><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span><a class="wf-gact" href="#">Edit</a></div><div class="wf-gr" role="row"><span class="wf-gbd">8</span><span class="wf-gsec">U1400</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Olivia Landreneau<span>1366</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb wf-rb-on">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Rosa Mendez<span>1219</span></span><span><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span><a class="wf-gact" href="#">Edit</a></div><div class="wf-gr wf-gr-wait" role="row"><span class="wf-gbd">9</span><span class="wf-gsec">U1400</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Jordan Lee<span>1388</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Maya Robichaux<span>1102</span></span><span><span class="st st-wait"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Reported by White</span></span><a class="wf-gact" href="#">Review</a></div><div class="wf-gr" role="row"><span class="wf-gbd">10</span><span class="wf-gsec">U1400</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Theo Guidry<span>1295</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb wf-rb-on">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Andre Charbonnet<span>1240</span></span><span><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span><a class="wf-gact" href="#">Edit</a></div><div class="wf-gr" role="row"><span class="wf-gbd">11</span><span class="wf-gsec">U1000</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Sofia Alvarez<span>962</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Lily Nguyen<span>790</span></span><span><span class="st st-none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10"></path></svg>Not reported</span></span><a class="wf-gact" href="#">Enter</a></div><div class="wf-gr" role="row"><span class="wf-gbd">12</span><span class="wf-gsec">U1000</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Ben Landry<span>915</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb wf-rb-on">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Mateo Reyes<span>702</span></span><span><span class="st st-ok"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Confirmed by TD</span></span><a class="wf-gact" href="#">Edit</a></div><div class="wf-gr" role="row"><span class="wf-gbd">13</span><span class="wf-gsec">U1000</span><span class="wf-gnm"><span class="pc pc-w" style="display:inline-flex;margin-right:6px;vertical-align:1px">W</span>Khadija Williams<span>880</span></span><span class="wf-rbs" aria-label="Result"><span class="wf-rb">1–0</span><span class="wf-rb">½–½</span><span class="wf-rb">0–1</span></span><span class="wf-gnm"><span class="pc pc-b" style="display:inline-flex;margin-right:6px;vertical-align:1px">B</span>Tommy Pham<span>846</span></span><span><span class="st st-none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10"></path></svg>Not reported</span></span><a class="wf-gact" href="#">Enter</a></div>
+  </div>
+  <div class="wf-gfoot"><span><b class="k-ink">Last change 9:29 PM</b> · board 10 · <a class="k-link" href="#">Undo</a></span><span>Public pages show 8 results; boards 2, 6, 9, 11 and 13 stay blank until you confirm.</span></div>
+</section><section class="wf-phone" aria-label="What players see on their phones after a game">
+  <div class="wf-pv"><span class="wf-pidi">Panel 3</span><b class="k-ink">What players see on their phones after a game:</b><br><b>"Round 3 · Board 9 · you had White vs Maya Robichaux"</b><br>One report is enough; mismatches land in the queue above.</div>
+  <div class="k-row-sm" style="gap:8px"><span class="wf-pbtn" style="display:inline-flex;align-items:center">I won</span><span class="wf-pbtn" style="display:inline-flex;align-items:center">Draw</span><span class="wf-pbtn" style="display:inline-flex;align-items:center">I lost</span></div>
+</section></div>
+        <div class="wf-col"><section class="wf-card" style="border:2px solid #1a2744" aria-labelledby="n-h">
+  <span class="k-num-badge wf-b" style="top:-14px;right:-14px">3</span>
+  <div class="wf-ch" style="border-bottom:0;padding-bottom:4px"><div><h3 id="n-h"><span class="wf-pidi">Tool 1</span>Next step <span style="font-weight:400;font-size:13.5px;color:#3d4556">· one big button at a time</span></h3></div></div>
+  <div class="wf-steps">
+    <div class="wf-step wf-step-now"><span class="wf-stepn">1</span><div>
+      <h4>Confirm round 3 results <span class="st st-wait" style="margin-left:4px;vertical-align:2px">5 left</span></h4>
+      <p>Board 2 (Open): the reports disagree. Talk to both, then confirm.</p>
+      <button class="k-btn k-btn-navy wf-big" type="button">Review board 2</button></div></div>
+    <div class="wf-step wf-step-off"><span class="wf-stepn">2</span><div>
+      <h4>Pair round 4</h4>
+      <p style="margin-bottom:0">21 here · 2 half-point byes · 2 not here yet · 1 withdrew.<br>If Isaac Dupre and Rosa Mendez aren't here when you pair:</p>
+      <div class="wf-seg"><span class="on">Leave them out (0 points)</span><span>Pair them anyway</span></div>
+      <button class="k-btn wf-mid wf-dis" type="button" disabled>Pair round 4</button>
+      <div class="wf-lock"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Unlocks when every round 3 result is confirmed</div></div></div>
+    <div class="wf-step wf-step-off"><span class="wf-stepn">3</span><div>
+      <h4>Publish round 4 and notify</h4>
+      <p>Posts pairings on the event page and hall TV, emails all 25 remaining players their board and colour (or bye), updates their wallet passes.</p>
+      <button class="k-btn wf-mid wf-dis" type="button" disabled>Publish round 4 and notify</button>
+      <div class="k-between" style="margin-top:4px"><label class="k-check" style="font-size:13.5px;align-items:center"><input type="checkbox" checked style="margin:0"> Also print pairings by board</label><span class="wf-lock" style="margin:0"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Unlocks after pairing</span></div></div></div>
+  </div>
+</section><section class="wf-card" id="hall-tv" aria-labelledby="t-h">
+  <div class="wf-ch" style="display:block"><div class="k-between" style="flex-wrap:nowrap"><h3 id="t-h"><span class="wf-pidi">Tool 2</span>Hall TV</h3><button class="k-btn k-btn-navy k-btn-sm" type="button" style="flex:none">Open the TV screen <svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M17 13.5V19H5V7h5.5"></path></svg></button></div><p>26 players · 4 sections · All on one screen (Suggested) · <span class="st st-agree"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Saved</span></p></div>
+  <div class="wf-cb">
+    <div class="wf-opts2" role="radiogroup" aria-label="Show sections">
+      <div class="wf-opt2"><span class="wf-rad" aria-hidden="true"></span><div class="wf-th" style="grid-template-columns:1fr 1fr;grid-template-rows:3px 1fr 1fr 1fr" aria-hidden="true"><i class="h" style="grid-column:1 / -1;width:40%"></i><i></i><i></i><i></i><i></i><i></i><i></i></div><b>One at a time, cycling every 15 seconds</b></div>
+      <div class="wf-opt2 wf-opt-on"><span class="wf-rad" aria-hidden="true"></span><div class="wf-th" style="grid-template-columns:1fr 1fr;grid-template-rows:2px 1fr 1fr 2px 1fr 1fr" aria-hidden="true"><i class="h"></i><i class="h"></i><i></i><i></i><i></i><i></i><i class="h"></i><i class="h"></i><i></i><i></i><i></i><i></i></div><b>All on one screen <span class="wf-sug">Suggested</span></b><span class="wf-sub">26 players, 13 boards fit</span></div>
+    </div>
+    <div class="wf-tog"><span>Show standings after results come in</span><span class="wf-sw2"><i aria-hidden="true"></i>On</span></div>
+    <div class="wf-keys"><b class="k-ink">TD keys:</b> <kbd>Space</kbd> pauses, <kbd>←</kbd><kbd>→</kbd> step, <kbd>A</kbd> all on one screen, <kbd>S</kbd> standings now</div>
+  </div>
+</section><section class="wf-card" aria-labelledby="a-h">
+  <span class="k-num-badge wf-b" style="top:-14px;right:-14px">4</span>
+  <div class="wf-ch"><div><h3 id="a-h"><span class="wf-pidi">Tool 3</span>Announcements</h3></div></div>
+  <div class="wf-cb">
+    <div class="k-row-sm wf-smchips"><span class="k-chip k-chip-on">Pairings are up</span><span class="k-chip">Round start time</span><span class="k-chip">Lunch break</span><span class="k-chip">Custom</span></div>
+    <div class="wf-seg" style="margin:0"><span class="on" style="background:#1a2744;color:#ffffff">Everyone · 25</span><span style="color:#1a2744">One section</span><span style="color:#1a2744">Not here · 2</span></div>
+    <div class="wf-chk"><label><input type="checkbox" checked> Email</label><label><input type="checkbox" checked> Hall TV</label><label><input type="checkbox" checked> Event page banner</label></div>
+    <div class="k-field" style="gap:0"><label for="wf-msg" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Message</label><textarea id="wf-msg" class="wf-ta" rows="2">Round 4 pairings are up. Play starts at 9:30 AM. Find your board on the wall chart or on the event page.</textarea></div>
+    <button class="k-btn k-btn-navy" type="button" style="min-height:52px;width:100%"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15L6 16zM10 20.5a2 2 0 0 0 4 0"></path></svg>Send to 25 players</button>
+    <div><div class="wf-log">Sat 6:52 PM · "Round 3 pairings are up" · 26 people · email, TV, banner</div><div class="wf-log">Sat 2:21 PM · "Round 2 starts at 2:30 PM" · 26 people · TV, banner</div></div>
+  </div>
+</section><section class="wf-card" aria-labelledby="p-h">
+  <div class="wf-ch"><div><h3 id="p-h"><span class="wf-pidi">Tool 4</span>Print and QR</h3></div></div>
+  <div class="wf-cb" style="gap:8px"><div class="wf-pgrid">
+    <span class="wf-prow"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3.5h10V9M7 14h10v6.5H7z"></path><rect x="3.5" y="9" width="17" height="8" rx="1.5"></rect></svg>Pairings by board</span><small>Round 3</small></span>
+    <span class="wf-prow"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"></path></svg>Alphabetical wall chart</span><small>Round 3</small></span>
+    <span class="wf-prow"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20.5h7M10 17h4"></path></svg>Standings</span><small>After round 2</small></span>
+    <span class="wf-prow"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Crosstable</span><small>All sections</small></span>
+    <span class="wf-prow"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7"></rect><rect x="13.5" y="3.5" width="7" height="7"></rect><rect x="3.5" y="13.5" width="7" height="7"></rect><path d="M13.5 13.5h3v3h-3zM18 18h2.5v2.5H18z"></path></svg>Door poster with QR</span><small>Check-in and pairings</small></span></div>
+    <p class="wf-sub" style="margin:0">Prints from the tablet or saves a PDF. Byes labelled on every sheet: pairing bye (1), requested (½), absent (0).</p>
+  </div>
+</section></div>
+      </div>
+      <div class="wf-full"><section class="wf-coll" id="check-in" aria-labelledby="c-h">
+  <div><h3 id="c-h"><span class="wf-pidi">Panel 4</span>Round 4 check-in · <span style="font-weight:500;color:#555c6b">opens Sun 8:30 AM</span></h3></div>
+  <div class="wf-cnts"><span class="wf-cnt"><b>21</b> here</span><span class="wf-cnt"><b>2</b> byes</span><span class="wf-cnt" style="background:#fbefd2;color:#5e4300"><b>2</b> not here</span><span class="wf-cnt"><b>1</b> withdrew</span></div>
+  <span class="wf-ptr">Shown folded to its header until it opens.<br><b>Drawn open: Work-F-2, inset F1</b> (Sun, Oct 25, 9:14 AM)</span>
+  <button class="k-btn k-btn-line" type="button" style="min-height:48px;flex:none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Open check-in <svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+</section><section class="wf-co" id="close-out" aria-labelledby="co-h">
+  <span class="k-num-badge wf-b" style="top:-14px;left:-14px">5</span>
+  <div class="wf-co-h">
+    <div><h3 id="co-h"><span class="wf-pidi">Panel 5</span>Close-out · after round 5</h3>
+      <p>US Chess rating report due Sun, Nov 1, 2026, 7 days after the last round. The checks run now, so you fix things during the day. <b class="k-ink">3 of 5 passing so far.</b></p></div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none"><span class="st st-wait"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>Not yet tested with US Chess</span><span class="wf-ptr" style="margin:0"><b>Drawn live: Work-F-2, inset F2</b><br>Sun, Oct 25, 5:40 PM</span></div>
+  </div>
+  <div class="wf-co-grid">
+    <ul class="wf-checks">
+      <li><span style="color:#5e4300;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><span class="t">Every result confirmed by a TD, no reports waiting: 3 reports and 2 boards open in round 3</span><span class="st st-wait">Not yet</span></li>
+      <li><span style="color:#1d5a31;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="t">All results entered in 4 sections so far; forfeits marked and left out of rating</span><span class="st st-agree">Passed so far</span></li>
+      <li><span style="color:#5e4300;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span><span class="t">US Chess IDs on file and memberships current for 25 of 26 players: Rosa Mendez's US Chess membership ended Mon, Oct 12 · <a class="k-link" href="#">Email her the renewal link</a></span><span class="st st-wait">Not passed</span></li>
+      <li><span style="color:#1d5a31;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="t">Bye limits respected</span><span class="st st-agree">Passed</span></li>
+      <li><span style="color:#1d5a31;display:flex"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span><span class="t">Affiliate ID, Chief TD's US Chess ID, city, state and ZIP filled in</span><span class="st st-agree">Passed</span></li>
+    </ul>
+    <div class="wf-files">
+      <div class="wf-file"><span><span class="wf-fn">THEXPORT.DBF</span> </span><span class="st st-none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10"></path></svg>Held until round 5</span></div>
+      <div class="wf-file"><span><span class="wf-fn">TSEXPORT.DBF</span> </span><span class="st st-none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10"></path></svg>Held until round 5</span></div>
+      <div class="wf-file"><span><span class="wf-fn">TDEXPORT.DBF</span> </span><span class="st st-none"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10"></path></svg>Held until round 5</span></div>
+      <button class="k-btn wf-dis" type="button" disabled style="min-height:48px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download all three (.zip)</button>
+      <span class="wf-sub" style="flex:1;min-width:200px">Opens after round 5, once every check passes.</span>
+    </div>
+  </div>
+</section></div>
+      <footer class="k-footer wf-foot"><div class="wf-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="wf-rook wf-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+    </div>
+  </div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

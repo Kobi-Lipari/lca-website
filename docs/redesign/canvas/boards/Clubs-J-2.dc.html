@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Clubs · J · Clubs-J-2 · Near me, phones, forms and states (round 3)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.ch-root{box-sizing:border-box;padding:16px 0 16px;background:#ecebe6;color:#1a2744}
+.ch-root *{box-sizing:border-box}
+.ch-mk{position:absolute;z-index:40;box-shadow:0 0 0 3px #ffffff}
+.ch-root p{margin:0}
+
+/* board doc */
+.ch-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:16px 22px 16px}
+.ch-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.ch-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.ch-ml{font-size:13px;line-height:1.45;color:#3d4556;margin:3px 0 0}
+.ch-ml b{color:#1a2744;font-weight:600}
+.ch-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.ch-grey{flex:none;width:500px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+.ch-grey p{font-size:12px;line-height:1.42;color:#2b3446;margin:0}
+.ch-grey p + p{margin-top:8px}
+.ch-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.ch-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.42;color:#2b3446}
+.ch-grey li{margin-bottom:4px}
+.ch-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 12px;margin-top:12px}
+.ch-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px 20px}
+.ch-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.42;color:#2b3446}
+.ch-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.ch-notes b{font-weight:600;color:#1a2744}
+
+/* frame label */
+.ch-flab{display:flex;align-items:center;gap:12px;margin:12px 40px 6px}
+.ch-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ch-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.ch-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.ch-urlchip b{font-weight:500;color:#1a2744;background:#f4ecd4;border-radius:3px;padding:0 2px}
+.ch-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.ch-page{background:#f5f5f2;position:relative}
+
+/* header */
+.ch-hd-in{gap:0;position:relative;min-height:64px}
+.ch-hd .k-brand{margin-right:16px}
+.ch-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.ch-rook-sm{width:24px;height:24px}
+.ch-nav{gap:0}
+.ch-nav a{padding:0 10px;white-space:nowrap}
+.ch-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;cursor:pointer}
+.ch-sbtn{display:inline-flex;align-items:center;gap:8px;width:200px;height:44px;padding:0 8px 0 12px;margin-right:14px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.ch-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.ch-util{gap:10px}
+.ch-util .k-ulink{padding:0 4px}
+.ch-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:16px;padding-bottom:16px}
+.ch-foot .k-meta{color:rgba(255,255,255,.78)}
+.ch-foot nav a{font-size:14px}
+
+/* title strip */
+.ch-strip{background:#fbfaf6;border-bottom:1px solid #e3e2dc;height:56px}
+.ch-strip-in{display:flex;align-items:center;gap:16px;height:56px}
+.ch-strip .k-kicker{font-size:12px}
+.ch-h1{font-size:28px;line-height:1;font-weight:700;letter-spacing:-.015em;margin:0;white-space:nowrap}
+.ch-slead{font-size:15px;color:#555c6b;white-space:nowrap}
+
+/* first screen */
+.ch-first{position:relative;display:grid;grid-template-columns:460px 980px;height:780px;border-bottom:1px solid #dddcd4}
+.ch-drawer{position:relative;background:#ffffff;border-right:1px solid #d6d5cd;overflow:hidden;display:flex;flex-direction:column;z-index:2;box-shadow:4px 0 14px rgba(16,24,43,.06)}
+.ch-top{flex:none;height:150px;padding:16px 16px 0;border-bottom:1px solid #e3e2dc;position:relative}
+.ch-field{display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border:1px solid #858b99;border-radius:10px;background:#ffffff;color:#6b7180;font-size:15px}
+.ch-field svg{color:#555c6b}
+.ch-row2{display:flex;align-items:center;gap:8px;margin-top:10px}
+.ch-near{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px 0 10px;border:1.5px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;white-space:nowrap}
+.ch-near-done{border-color:#c9c8c0;color:#6b7180;background:#f6f6f3}
+.ch-seg{display:inline-flex;border:1px solid #858b99;border-radius:8px;overflow:hidden;background:#ffffff;height:36px}
+.ch-seg span{display:inline-flex;align-items:center;padding:0 12px;font-size:13.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-seg span + span{border-left:1px solid #c9c8c0}
+.ch-seg .on{background:#1a2744;color:#ffffff}
+.ch-seg .off{color:#8a8f9c;background:#f6f6f3}
+.ch-filt{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;margin-left:auto;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14px;font-weight:600;white-space:nowrap}
+.ch-cap{margin:10px 26px 0 0 !important;font-size:12px;line-height:1.4;color:#555c6b}
+.ch-list{flex:1;overflow:hidden;position:relative}
+.ch-scroll{position:absolute;right:3px;top:6px;width:5px;border-radius:3px;background:#c9c8c0;z-index:3}
+.ch-card{position:relative;display:block;height:84px;padding:11px 16px 0;border-bottom:1px solid #ecebe5;background:#ffffff;text-decoration:none;color:#1a2744;overflow:hidden}
+.ch-hov{background:#fbf7e9}
+.ch-sel{background:#fbf7e9;box-shadow:inset 3px 0 0 #c8a94a}
+.ch-l1{display:flex;align-items:baseline;gap:8px;height:21px}
+.ch-nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;color:#1a2744}
+.ch-nm b{font-size:15px;font-weight:600;color:#1a2744}
+.ch-town{font-size:13px;color:#555c6b}
+.ch-mi{flex:none;font-size:13px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-chev{flex:none;align-self:center;color:#8a8f9c;display:inline-flex;margin-right:-4px}
+.ch-l23{margin:3px 22px 0 0 !important;font-size:13.5px;line-height:1.38;color:#3d4556;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ch-l2{margin:3px 22px 0 0 !important;font-size:13px;line-height:1.42;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-l2 a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-l3{margin:1px 22px 0 0 !important;font-size:13px;line-height:1.42;color:#6b7180;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-missing{display:flex;align-items:center;height:48px;padding:0 16px;font-size:14px}
+.ch-missing a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+
+/* map */
+.ch-map{position:relative;width:980px;height:780px;overflow:hidden;background:#f7f6f1}
+.ch-map > svg{position:absolute;left:0;top:0}
+.ch-ov{position:absolute;z-index:5}
+.ch-shadow{box-shadow:0 2px 10px rgba(16,24,43,.18)}
+.ch-zoom{display:flex;flex-direction:column;border-radius:8px;background:#ffffff;overflow:hidden;border:1px solid #c9c8c0}
+.ch-zoom span{display:flex;align-items:center;justify-content:center;width:44px;height:44px;font-size:22px;font-weight:500;color:#1a2744}
+.ch-zoom span + span{border-top:1px solid #e3e2dc}
+.ch-zoom .dis{color:#b3b7c0;background:#f6f6f3}
+.ch-mcap{display:flex;align-items:center;gap:14px;height:32px;padding:0 12px;border-radius:8px;background:#ffffff;border:1px solid #d9d8d1;font-size:12px;color:#2b3446;white-space:nowrap}
+.ch-mcap span{display:inline-flex;align-items:center;gap:6px}
+.ch-tip{position:absolute;z-index:6;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:600;line-height:1;border-radius:7px;padding:7px 10px;white-space:nowrap;box-shadow:0 6px 14px rgba(16,24,43,.25)}
+.ch-tip::after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;width:10px;height:10px;background:#1a2744;transform:rotate(45deg)}
+.ch-ann{position:absolute;z-index:7;background:#fffaf0;border:1.5px dashed #8a7a4a;border-radius:10px;padding:8px 12px;font-size:12.5px;line-height:1.42;color:#3d2f08;box-shadow:0 6px 16px rgba(16,24,43,.10)}
+.ch-ann b{font-weight:700;color:#3d2f08}
+
+/* pill in the field */
+.ch-pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 6px 0 10px;border-radius:999px;background:#eceef3;color:#1a2744;font-size:13.5px;font-weight:600;white-space:nowrap}
+.ch-pill i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#ffffff;font-style:normal}
+
+/* below the fold */
+.ch-band{padding:16px 0 16px}
+.ch-cream{background:#fbfaf6;border-bottom:1px solid #e6e5de}
+.ch-bh{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.ch-bh h2{margin:0;font-size:22px;line-height:1.2;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.ch-bh p{font-size:14px;line-height:1.45;color:#3d4556}
+.ch-who{display:grid;grid-template-columns:300px minmax(0,1fr);gap:28px;align-items:start}
+.ch-who h2{margin:0;font-size:22px;line-height:1.2;font-weight:700;letter-spacing:-.01em}
+.ch-who-l p{font-size:13.5px;line-height:1.5;color:#3d4556;margin-top:8px !important}
+.ch-reps{width:100%;border-collapse:collapse;font-size:13.5px;line-height:1.35;background:#ffffff;border:1px solid #e3e2dc;border-radius:10px}
+.ch-reps th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:5px 14px;border-bottom:1px solid #e3e2dc}
+.ch-reps td{padding:4px 14px;border-bottom:1px solid #f0efe9;color:#2b3446;vertical-align:top}
+.ch-reps tr:last-child td{border-bottom:0}
+.ch-reps td:first-child{font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-reps td.act{text-align:right;white-space:nowrap}
+.ch-reps td.act a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-open{color:#555c6b}
+.ch-fn{margin-top:8px !important;font-size:12px;color:#555c6b;display:flex;align-items:center;gap:10px}
+.ch-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.ch-small{border:1px solid #e3e2dc;border-radius:12px;background:#ffffff;padding:12px 16px}
+.ch-small h3{margin:0;font-size:16px;line-height:1.3;font-weight:700}
+.ch-small p{margin:3px 0 6px !important;font-size:13.5px;line-height:1.45;color:#3d4556}
+.ch-small a{font-size:14px;color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+
+
+/* tighter doc block */
+.ch-root{padding:12px 0 8px}
+.ch-title{font-size:30px}
+.ch-notes li{line-height:1.38}
+.ch-doc{padding:14px 22px 14px}
+.ch-ml{font-size:12.5px;line-height:1.42}
+.ch-lbox{margin-top:10px;padding:10px 16px 10px}
+.ch-notes{margin-top:8px}
+.ch-flab{margin:8px 40px 6px}
+.ch-grey{width:480px}
+/* option J: bar, wide map, directory grid */
+.cj-in{width:1360px;margin:0 auto;position:relative}
+.cj-bar{background:#ffffff;border-bottom:1px solid #e3e2dc;height:56px;position:relative;z-index:3}
+.cj-bar-in{display:flex;align-items:center;gap:10px;height:56px}
+.cj-field{display:flex;align-items:center;gap:8px;width:360px;height:40px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#6b7180;font-size:15px;flex:none}
+.cj-field svg{color:#555c6b}
+.cj-near{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 14px 0 11px;border:1.5px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14.5px;font-weight:600;white-space:nowrap}
+.cj-near-done{border-color:#c9c8c0;color:#6b7180;background:#f6f6f3}
+.cj-seg{display:inline-flex;border:1px solid #858b99;border-radius:8px;overflow:hidden;background:#ffffff;height:40px;margin-left:auto}
+.cj-seg span{display:inline-flex;align-items:center;padding:0 14px;font-size:14px;font-weight:600;color:#1a2744;white-space:nowrap}
+.cj-seg span + span{border-left:1px solid #c9c8c0}
+.cj-seg .on{background:#1a2744;color:#ffffff}
+.cj-seg .off{color:#8a8f9c;background:#f6f6f3}
+.cj-filt{display:inline-flex;align-items:center;gap:7px;height:40px;padding:0 14px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:14.5px;font-weight:600;white-space:nowrap}
+.cj-pill{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 5px 0 10px;border-radius:999px;background:#eceef3;color:#1a2744;font-size:13.5px;font-weight:600;white-space:nowrap}
+.cj-pill i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#ffffff;font-style:normal}
+
+.cj-map{position:relative;height:500px;overflow:hidden;background:#d9e3ed;border-bottom:1px solid #d6d5cd}
+.cj-map > svg{position:absolute;left:0;top:0}
+.cj-pop{position:absolute;z-index:8;width:300px;background:#ffffff;border:1px solid #cfcec6;border-radius:12px;box-shadow:0 16px 36px rgba(16,24,43,.24);padding:12px 14px 12px}
+.cj-pop h3{margin:0;padding-right:28px;font-size:15px;line-height:1.3;font-weight:600;color:#1a2744}
+.cj-pt{font-size:13px;line-height:1.4;color:#555c6b;margin-top:1px !important}
+.cj-pl{font-size:13.5px;line-height:1.4;color:#1a2744;margin-top:6px !important}
+.cj-pb{display:flex;align-items:center;gap:8px;margin-top:10px}
+.cj-pb .k-btn{min-height:34px;padding:0 12px;font-size:13.5px}
+.cj-px{position:absolute;right:8px;top:8px;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;color:#555c6b}
+.cj-tail-l{position:absolute;left:-7px;width:13px;height:13px;background:#ffffff;border-left:1px solid #cfcec6;border-bottom:1px solid #cfcec6;transform:rotate(45deg)}
+
+.cj-dir{background:#f5f5f2;padding-bottom:0}
+.cj-dh{display:flex;align-items:baseline;justify-content:space-between;gap:16px;height:60px;padding-top:22px}
+.cj-dh h2{margin:0;font-size:20px;line-height:24px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.cj-dh p{font-size:13px;color:#555c6b;white-space:nowrap}
+.cj-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,432px);column-gap:32px;row-gap:16px}
+.cj-card{position:relative;height:96px;padding:15px 16px 0;background:#ffffff;border:1px solid #dddcd4;border-radius:12px;overflow:hidden}
+.cj-hov{background:#fbf7e9}
+.cj-sel{background:#fbf7e9;border-color:#e3d6a8;box-shadow:inset 3px 0 0 #c8a94a}
+.cj-l1{display:flex;align-items:baseline;gap:8px;height:21px}
+.cj-nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;color:#1a2744}
+.cj-nm::after{content:"";position:absolute;inset:0}
+.cj-nm b{font-size:15px;font-weight:600;color:#1a2744}
+.cj-town{font-size:13px;color:#555c6b}
+.cj-mi{flex:none;font-size:13px;font-weight:600;color:#1a2744;white-space:nowrap}
+.cj-l23{margin-top:5px !important;font-size:13.5px;line-height:1.38;color:#3d4556;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cj-l2{margin-top:5px !important;font-size:13px;line-height:1.42;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cj-l2 a{position:relative;z-index:2;color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.cj-l3{margin-top:1px !important;font-size:13px;line-height:1.42;color:#6b7180;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cj-missing{display:flex;align-items:center;height:48px;margin-top:0;font-size:14px}
+.cj-missing a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#c8a94a;text-decoration-thickness:2px;text-underline-offset:4px}
+.cj-empty{border:1px dashed #d6d5cd;border-radius:12px;height:96px}
+
+.cj-fold{position:absolute;left:0;right:0;height:0;border-top:2px dashed #b3202f;z-index:30;pointer-events:none}
+.cj-fold span{position:absolute;right:16px;top:-13px;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;font-weight:500;color:#ffffff;background:#b3202f;border-radius:6px;padding:3px 8px}
+.cj-flab .k-meta{flex:1;min-width:0}
+.cj-mcap{display:flex;align-items:center;gap:14px;height:32px;padding:0 12px;border-radius:8px;background:#ffffff;border:1px solid #d9d8d1;font-size:12px;color:#2b3446;white-space:nowrap}
+.cj-mcap span{display:inline-flex;align-items:center;gap:6px}
+.ch-notes4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.ch-root{padding:12px 0 10px}
+.ch-sec{margin:14px 40px 0}
+.ch-sech{display:flex;align-items:center;gap:12px;margin:0 0 8px}
+.ch-sech h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.ch-g1{display:grid;grid-template-columns:532px 390px 390px;gap:24px;align-items:start}
+.ch-g2{display:grid;grid-template-columns:420px 420px 472px;gap:24px;align-items:start}
+.ch-g3{display:grid;grid-template-columns:390px 255px 300px minmax(0,1fr);gap:24px;align-items:start}
+.ch-doc2{margin:0;padding:16px 18px 16px}
+.ch-doc2 .ch-title{font-size:28px}
+.ch-doc2 .ch-grey{width:auto;margin-top:10px}
+.ch-doc2 .ch-notes{grid-template-columns:1fr;gap:7px}
+.ch-pcol{display:flex;flex-direction:column;gap:6px;position:relative}
+.ch-pcap{font-size:14.5px;font-weight:600;height:20px;display:flex;align-items:center;gap:8px}
+.ch-pnote{font-size:12.5px;line-height:1.45;color:#3d4556}
+.ch-pscr{position:absolute;inset:0;overflow:hidden;background:#f7f6f1}
+.ch-pstat{position:absolute;left:0;right:0;top:0;height:34px;background:#1a2744;color:#ffffff;font-size:13px;font-weight:600;padding:9px 0 0 28px;z-index:6}
+.ch-papp{position:absolute;left:0;right:0;top:34px;height:52px;background:#1a2744;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 14px;z-index:6}
+.ch-papp .k-brand{gap:8px}
+.ch-papp .k-brand-name b{font-size:14.5px}
+.ch-papp .k-brand-name span{font-size:10px}
+.ch-pbtns{display:flex;align-items:center;gap:2px;color:#ffffff}
+.ch-pbtns span{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px}
+.ch-pmap{position:absolute;left:0;top:86px;width:366px;height:734px}
+.ch-psheet{position:absolute;left:0;right:0;bottom:0;z-index:7;background:#ffffff;border-radius:18px 18px 0 0;box-shadow:0 -8px 26px rgba(26,39,68,.22);display:flex;flex-direction:column;overflow:hidden}
+.ch-handle{width:40px;height:5px;border-radius:3px;background:#c9c8c0;margin:8px auto 6px;flex:none}
+.ch-sht{font-size:15.5px;font-weight:700;padding:0 14px}
+.ch-shrow{display:flex;align-items:center;gap:8px;padding:8px 14px 8px}
+.ch-shrow .ch-filt{margin-left:auto}
+.ch-psheet .ch-card{height:auto;min-height:0;padding:10px 14px 10px}
+.ch-psheet .ch-card .ch-nm b{font-size:14.5px}
+.ch-psheet .ch-l23{font-size:13px;margin-right:6px !important}
+.ch-psheet .ch-l2{margin-right:6px !important;white-space:normal}
+.ch-psheet .ch-l3{display:none}
+.ch-chip-w{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px 0 11px;border-radius:999px;background:#ffffff;border:1px solid #c9c8c0;color:#1a2744;font-size:14px;font-weight:600;white-space:nowrap}
+.ch-homechip{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:#ffffff;border:1px solid #c9c8c0;color:#1a2744}
+.ch-pcap11{display:flex;align-items:center;gap:10px;height:24px;padding:0 9px;border-radius:7px;background:#ffffff;border:1px solid #d9d8d1;font-size:11px;color:#2b3446;white-space:nowrap}
+.ch-pcap11 span{display:inline-flex;align-items:center;gap:4px}
+.ch-fab{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:9;display:inline-flex;align-items:center;gap:7px;height:46px;padding:0 20px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:15px;font-weight:600;box-shadow:0 6px 18px rgba(26,39,68,.35)}
+
+/* sheets and forms */
+.ch-sheet{width:420px;background:#ffffff;border:1px solid #cfcec6;border-radius:14px;box-shadow:0 12px 30px rgba(16,24,43,.12);overflow:hidden;position:relative}
+.ch-sh{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:12px 16px 10px;border-bottom:1px solid #ecebe5}
+.ch-sh b{font-size:16px;line-height:1.3}
+.ch-sb{padding:10px 16px 12px;display:flex;flex-direction:column;gap:7px}
+.ch-q{font-size:13px;font-weight:700;color:#1a2744}
+.ch-sc{display:flex;flex-wrap:wrap;gap:6px}
+.ch-sc .k-chip{min-height:28px;padding:0 10px;font-size:12.5px}
+.ch-f{display:flex;flex-direction:column;gap:3px}
+.ch-f label{font-size:13px;font-weight:600;color:#1a2744}
+.ch-in{display:flex;align-items:center;height:34px;padding:0 10px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:13.5px;color:#6b7180;white-space:nowrap;overflow:hidden}
+.ch-ta{height:52px;align-items:flex-start;padding-top:8px}
+.ch-turn{display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;border:1px solid #d6d5cd;border-radius:6px;background:#fafaf8;font-size:12.5px;color:#3d4556}
+.ch-turn i{display:inline-block;width:18px;height:18px;border-radius:50%;background:#e1f0e7;box-shadow:inset 0 0 0 2px #145b3a}
+.ch-done{display:flex;gap:8px;align-items:flex-start;padding:9px 12px;border-radius:10px;background:#e1f0e7;color:#145b3a;font-size:12.5px;line-height:1.45}
+.ch-done b{font-weight:700}
+.ch-route{font-size:12px;line-height:1.42;color:#3d4556;margin-top:6px !important}
+.ch-sw{display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:#1a2744;padding:10px 16px;background:#fbfaf6;border-bottom:1px solid #ecebe5}
+.ch-tog{position:relative;display:inline-block;width:36px;height:22px;border-radius:999px;background:#c4c3bb;flex:none}
+.ch-tog::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#ffffff}
+.ch-tog-on{background:#1a2744}
+.ch-tog-on::after{left:17px}
+.ch-tog-txt{font-size:12px;font-weight:600;color:#555c6b;margin-left:auto}
+
+/* states */
+.ch-scol{display:flex;flex-direction:column;gap:12px}
+.ch-st{position:relative;background:#ffffff;border:1px solid #d6d5cd;border-radius:12px;padding:9px 14px 10px}
+.ch-st h3{margin:0 0 8px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ch-st h3 span{display:inline-flex;align-items:center;justify-content:center;height:20px;padding:0 6px;border-radius:5px;background:#eceef3;font-size:11.5px;font-weight:700}
+.ch-st .ch-field{height:40px;font-size:14px}
+.ch-focus{border:2px solid #1a2744;box-shadow:0 0 0 3px #c9d5ea}
+.ch-typed{color:#1a2744 !important}
+.ch-caret{display:inline-block;width:1.5px;height:18px;background:#1a2744;margin-left:-6px}
+.ch-msg{display:flex;align-items:flex-start;gap:7px;margin-top:8px !important;padding:8px 10px;border-radius:8px;background:#eef2f8;color:#1a2744;font-size:12.5px;line-height:1.45}
+.ch-msg a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-scap{font-size:12px;line-height:1.45;color:#555c6b;margin-top:8px !important}
+.ch-mini{display:flex;align-items:baseline;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid #f0efe9;font-size:13px}
+.ch-mini b{font-weight:600}
+.ch-mini span{color:#555c6b}
+.ch-mini i{font-style:normal;font-weight:600;white-space:nowrap}
+.ch-st .ch-card{height:auto;padding:9px 0 9px;border-bottom:0}
+.ch-st .ch-l23,.ch-st .ch-l2,.ch-st .ch-l3{margin-right:0 !important}
+.ch-st .ch-l2{white-space:normal}
+.ch-st .ch-card{overflow:visible}
+.ch-st .ch-l1{height:auto}
+.ch-fp{width:300px;border:1px solid #cfcec6;border-radius:12px;background:#ffffff;box-shadow:0 12px 28px rgba(16,24,43,.16);padding:10px 12px 10px;margin-top:6px}
+.ch-fp p.h{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;margin:0 0 3px !important}
+.ch-cb{display:flex;align-items:center;gap:8px;height:20px;font-size:13px;color:#1a2744}
+.ch-cb i{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:4px;border:1.5px solid #858b99;background:#ffffff;flex:none;font-style:normal;color:#ffffff}
+.ch-cb i.on{background:#1a2744;border-color:#1a2744}
+.ch-cb em{font-style:normal;margin-left:auto;font-size:12px;font-weight:600;color:#555c6b}
+.ch-fpf{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid #ecebe5}
+.ch-fpf a{font-size:13.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-xchip{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 6px 0 10px;border-radius:999px;background:#eceef3;font-size:12.5px;font-weight:600;color:#1a2744;white-space:nowrap}
+.ch-empty{margin-top:8px !important;padding:12px;border:1px dashed #c9c8c0;border-radius:8px;font-size:13px;color:#3d4556;text-align:center}
+.ch-empty a{color:#1a2744;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.ch-kb{margin:0;padding-left:18px;font-size:12.5px;line-height:1.5;color:#2b3446}
+.ch-rules{background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:10px 14px;margin-top:12px}
+.ch-rules p{font-size:11.5px;line-height:1.45;color:#2b3446}
+.ch-rules p + p{margin-top:4px !important}
+.ch-rules b{font-weight:700;color:#1a2744}
+.ch-rules code{font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#1a2744}
+
+.ch-g1{grid-template-columns:532px 390px 390px}
+.ch-sec{margin-top:10px}
+.cj-g3{display:grid;grid-template-columns:444px 444px 424px;gap:24px;align-items:start}
+.cj-g4{display:grid;grid-template-columns:270px 320px 430px 292px;gap:16px;align-items:start}
+.ch-doc2 .ch-notes li{font-size:12px}
+.ch-doc2 .ch-ml{font-size:12.5px}
+.ch-doc2 .ch-grey{margin-top:10px}
+/* phones */
+.cj-pstrip{position:absolute;left:0;right:0;top:86px;height:44px;background:#fbfaf6;border-bottom:1px solid #e3e2dc;display:flex;align-items:center;gap:6px;padding:0 14px}
+.cj-pstrip b{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.cj-pstrip span{font-size:13px;color:#555c6b}
+.cj-pmap{position:absolute;left:0;top:130px;width:366px;height:320px;overflow:hidden;border-bottom:1px solid #d6d5cd}
+.cj-pmap > svg{position:absolute;left:0;top:0}
+.cj-pfield{display:flex;align-items:center;gap:8px;height:40px;padding:0 10px;border:1px solid #c9c8c0;border-radius:10px;background:#ffffff;color:#6b7180;font-size:14.5px;flex:1}
+.cj-picon{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:10px;background:#ffffff;border:1.5px solid #1a2744;color:#1a2744;flex:none}
+.cj-pbar{position:absolute;left:0;right:0;background:#ffffff;border-bottom:1px solid #e3e2dc;z-index:5;padding:0 12px}
+.cj-pbar-row{display:flex;align-items:center;gap:8px;height:46px}
+.cj-pbar b{font-size:14.5px;font-weight:700;white-space:nowrap}
+.cj-pbar .cj-seg{height:34px;margin-left:auto}
+.cj-pbar .cj-seg span{padding:0 10px;font-size:13px}
+.cj-pbar .cj-filt{height:34px;padding:0 10px;font-size:13.5px}
+.cj-plist{position:absolute;left:0;right:0;list-style:none;margin:0;padding:10px 10px 0;display:flex;flex-direction:column;gap:8px}
+.cj-plist .cj-card{height:auto;padding:10px 12px 11px}
+.cj-plist .cj-nm b{font-size:14.5px}
+.cj-plist .cj-town{font-size:12.5px}
+.cj-plist .cj-l23{font-size:13px}
+.cj-plist .cj-l2,.cj-plist .cj-l3{font-size:12.5px}
+.cj-up{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);z-index:9;display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 18px;border-radius:999px;background:#1a2744;color:#ffffff;font-size:15px;font-weight:600;box-shadow:0 6px 18px rgba(26,39,68,.35)}
+.cj-pcap2{display:flex;align-items:center;gap:10px;height:24px;padding:0 9px;border-radius:7px;background:#ffffff;border:1px solid #d9d8d1;font-size:11px;color:#2b3446;white-space:nowrap}
+.cj-pcap2 span{display:inline-flex;align-items:center;gap:4px}
+.cj-g3 .ch-sheet{width:444px}
+.cj-2c{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px}
+/* frame B */
+.cj-fb{height:780px;overflow:hidden}
+.cj-ann{position:absolute;z-index:7;background:#fffaf0;border:1.5px dashed #8a7a4a;border-radius:10px;padding:9px 12px;font-size:12.5px;line-height:1.45;color:#3d2f08;box-shadow:0 6px 16px rgba(16,24,43,.10)}
+.cj-ann b{font-weight:700}
+/* states */
+.cj-scard{height:auto !important;background:#ffffff;border:1px solid #dddcd4;border-radius:10px;padding:9px 12px 10px;position:relative}
+.cj-scard .cj-l1{height:auto}
+.cj-scard .cj-l2{white-space:normal}
+.cj-sh2{display:flex;align-items:baseline;gap:8px;margin-top:8px !important;font-size:14px;font-weight:600;color:#1a2744}
+.cj-sh2 a{font-size:12.5px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.cj-skip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:7px;background:#1a2744;color:#ffffff;font-size:13px;font-weight:600;box-shadow:0 0 0 3px #c9d5ea}
+.cj-rules{background:#efefea;border:1px solid #dfded6;border-radius:12px;padding:12px 14px}
+.cj-rules p{font-size:12px;line-height:1.48;color:#2b3446}
+.cj-rules p + p{margin-top:6px !important}
+.cj-rules b{font-weight:700;color:#1a2744}
+.cj-rules code{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:11.5px;color:#1a2744}
+
+.cj-r1{display:grid;grid-template-columns:minmax(0,1fr) 312px 312px;gap:24px;align-items:start}
+.cj-r1 .k-phone{zoom:.8}
+.ch-doc2 .ch-notes{grid-template-columns:1fr 1fr;gap:8px 18px}
+.ch-doc2 .ch-notes li.wide{grid-column:1 / -1}
+.cj-r2{display:grid;grid-template-columns:893px minmax(0,1fr);gap:24px;align-items:start}
+.cj-r2 .ch-flab{margin:0 0 6px}
+.cj-zB{zoom:.62;position:relative}
+.cj-zB .ch-frame{box-shadow:0 10px 30px rgba(16,24,43,.10)}
+.cj-r3{display:grid;grid-template-columns:340px 340px 300px minmax(0,1fr);gap:16px;align-items:start}
+.cj-r3 .ch-sheet{zoom:.8;width:425px}
+.cj-r3 .ch-pcol{gap:6px}
+.cj-col{display:flex;flex-direction:column;gap:12px}
+.cj-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.cj-bnote{background:#ffffff;border:1px solid #d6d5cd;border-radius:12px;padding:10px 14px 12px}
+.cj-bnote h3{margin:0 0 4px;font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:8px}
+.cj-bnote p{font-size:12.5px;line-height:1.45;color:#2b3446}
+.cj-bnote p + p{margin-top:6px !important}
+.cj-bnote b{font-weight:700;color:#1a2744}
+.cj-ps{font-size:12px;color:#6b7180;margin-top:4px !important}
+.cj-pair .ch-field{font-size:13px;padding:0 8px;gap:6px}
+.cj-pair .ch-st{padding:9px 10px 10px}
+.cj-near-on{background:#1a2744;color:#ffffff}
+</style>
+</helmet>
+<div class="ch-root" style="width:1440px;height:1950px">
+<div class="ch-sec" style="margin-top:0"><div class="cj-r1">
+<section class="ch-doc ch-doc2" aria-label="About this board">
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker">8 · Clubs directory · round 3 · option J · board 2</p><span class="ch-round">ROUND 3</span></div>
+<h1 class="ch-title" style="font-size:25px">Clubs · J-2 · Near me, phones, forms, states</h1>
+<p class="ch-ml" style="margin-top:6px"><b>Built from:</b> Clubs-E's Near me frame, phones and two forms, cut to what option J keeps. Goes with Clubs-J (frame A).</p>
+<p class="ch-ml"><b>Replaces:</b> E's Near me drawer, its map-plus-sheet phones, its three-step Start a club form, its Suggest an update sheet (Day picker, Repeats, Starts, Ends, Venue) and the email mock.</p>
+<p class="ch-ml"><b>K's feedback applied (Fri, Oct 9 and Tue, Oct 13):</b> map answers near me; simpler than E; every club browsable; nothing weekly; listings by each club's representative.</p>
+<p style="margin-top:6px"><span class="k-sample">Sample data: road miles, representative names, scholastic flags. Clubs and meeting lines are real.</span></p>
+<div class="ch-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="ch-notes">
+<li><span class="k-num-badge">1</span><span><b>Near me keeps the page's shape:</b> the map zooms to about 75 miles around you; the grid splits under Near you · within 75 miles of 70808 and The rest of Louisiana, with miles. ✕ on the pill or ⌂ is the way back.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The phone is the page, scrolled:</b> map panel, bar, one column of three-line cards. No sheet, no Map/List switch. A tapped pin opens one card over the map; Map ↑ scrolls back up.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Suggest an update is one text box,</b> shared with the club page. It reaches the club's representative, the region's representative copied.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Start a club and Suggest a club are one form</b> with a switch, routed by zip_regions; LCA admins while a seat is open.</span></li>
+<li><span class="k-num-badge">5</span><span><b>States keep the grid whole:</b> only a typed club name and Filters narrow it, each with a way back. No Meets today, no Tonight, no day filter.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Rules and data:</b> cards read clubs.meeting_text (the club's own line, from page 9) and clubs.schedule_status, never club_schedules; miles from club_distances (road, cached); location kept only in <span style="white-space:nowrap">?near=</span>. Shreveport-Bossier is one club, pinned once.</span></li>
+</ol>
+</div>
+<aside class="ch-grey" aria-label="Board note" style="grid-template-columns:1fr 1fr 1.25fr">
+<div><p><b>What</b>Board 2 of option J: Near me, two phones, the two forms and the edge states.</p></div>
+<div><p><b>Built from</b>Clubs-E only. Frame B is drawn at 62%, the forms at 80%.</p><p><b>K's feedback applied</b>Simpler, every club browsable, no weekly claims.</p></div>
+<div><p><b>Open for K</b></p><ol><li>On the phone, should the bar stick once scrolled (drawn) or scroll away?</li><li>Is Scholastic friendly a filter you want, given clubs set it themselves?</li></ol></div>
+</aside>
+</section>
+<div class="ch-pcol">
+<p class="ch-pcap"><span class="ch-code">P1</span>Landing, nothing pressed</p>
+<div class="k-phone"><div class="ch-pscr" style="background:#f5f5f2">
+<div class="ch-pstat">4:40</div>
+<div class="ch-papp"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ch-rook ch-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><div class="ch-pbtns"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></span></div></div>
+<div class="cj-pstrip"><b>Chess clubs in Louisiana</b><span>· 25 clubs</span></div>
+<div class="cj-pmap"><svg width="366" height="320" viewBox="0 0 366 320" role="img" aria-label="Louisiana at state zoom with 17 marks for 25 clubs"><rect x="0" y="0" width="366" height="320" fill="#d9e3ed"></rect><g transform="translate(1.1 40.1) scale(0.37)"><path d="M-2000 -2000 L3000 -2000 L3000 505 L1134.7 497.2 L908.3 487.3 L851.7 480.7 L809.2 493.9 L773.9 517.0 L500 560 L166.8 596.2 L101.7 620.9 L16.8 662.2 L-138.8 777.7 L-2000 1800Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1" vector-effect="non-scaling-stroke"></path><path d="M138.5 48.4 L138.5 -2000" fill="none" stroke="#c9c8c0" stroke-width="1.2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"></path><path d="M1245 -2000 L1245 501" fill="none" stroke="#c9c8c0" stroke-width="1.2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"></path><path d="M138.5 48.4 L544.6 51.7 L554.5 76.4 L544.6 109.5 L565.8 142.4 L578.6 175.5 L561.6 208.5 L533.3 236.5 L514.9 266.2 L500.8 307.5 L495.1 340.5 L480.9 381.7 L748.4 381.7 L741.3 414.7 L744.1 444.4 L744.1 472.5 L755.5 493.9 L766.8 513.7 L773.9 517.0 L759.7 538.4 L780.9 563.2 L795.1 588.0 L773.9 609.4 L795.1 637.5 L823.4 658.9 L844.6 678.7 L816.3 703.4 L795.1 720.0 L773.9 687.0 L738.5 662.2 L710.2 675.4 L696.0 695.2 L667.7 698.5 L632.4 691.9 L597.0 698.5 L568.7 682.0 L533.3 665.5 L512.1 637.5 L480.9 629.2 L448.4 620.9 L413.0 612.7 L377.7 620.9 L335.2 612.7 L285.7 591.2 L236.2 584.7 L186.6 591.2 L166.8 596.2 L164.0 555.0 L183.8 530.2 L185.2 480.7 L197.9 431.2 L207.9 390.0 L210.7 352.0 L189.5 315.7 L168.2 282.7 L138.5 218.4Z" fill="#f7f6f1" stroke="#9aa0ad" stroke-width="1.3" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><ellipse cx="696" cy="518.6" rx="48.1" ry="22.3" fill="#d3e0ec"></ellipse><ellipse cx="639.4" cy="503.8" rx="12.7" ry="9.9" fill="#d3e0ec"></ellipse><ellipse cx="752.6" cy="541.7" rx="21.2" ry="13.2" fill="#d3e0ec"></ellipse><ellipse cx="243.2" cy="569.8" rx="12.7" ry="11.6" fill="#d3e0ec"></ellipse><ellipse cx="164" cy="569.8" rx="7.1" ry="14.8" fill="#d3e0ec"></ellipse><ellipse cx="554.5" cy="566.5" rx="7.1" ry="11.6" fill="#d3e0ec"></ellipse><ellipse cx="503.6" cy="551.7" rx="7.1" ry="9.9" fill="#d3e0ec"></ellipse><ellipse cx="189.5" cy="332.2" rx="5.7" ry="36.3" fill="#d3e0ec"></ellipse><path d="M544.6 -2000 L544.6 51.7 L554.5 76.4 L544.6 109.5 L565.8 142.4 L578.6 175.5 L561.6 208.5 L533.3 236.5 L514.9 266.2 L500.8 307.5 L495.1 340.5 L480.9 381.7 L495.1 414.7 L514.9 439.5 L533.3 455.9 L540.4 472.5 L540.4 493.9 L561.6 522.0 L589.9 535.2 L625.3 540.1 L656.4 546.7 L681.9 558.3 L705.9 556.6 L721.5 571.4 L745.6 604.5 L773.9 637.5 L802.2 670.5 L816.3 695.2" fill="none" stroke="#bfd0e3" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M60 -400 L138.5 18.7 L161.2 76.4 L181.0 126.0 L207.9 183.7 L250.3 233.2 L285.7 274.5 L328.1 302.5 L363.5 328.9 L398.9 353.6 L441.3 371.8 L475.3 380.0" fill="none" stroke="#bfd0e3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M466.8 381.7 L464.0 427.9 L469.6 472.5 L480.9 513.7 L505.0 555.0 L526.2 583.0 L540.4 602.8 L533.3 637.5" fill="none" stroke="#bfd0e3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M-2000 610 L-700 600 L-49.5 586 L73.4 538.4 L172.5 525.3 L231.9 508.8 L257.4 507.1 L342.3 510.4 L424.3 512.0 L462.6 492.3 L505.0 480.7 L543.2 474.1 L561.6 484.0 L580.0 503.8 L625.3 530.2 L667.7 548.4 L700.3 553.3 L721.5 538.4 L741.3 503.8 L780.9 487.3 L880.0 477.4 L993.2 464.2 L1250 470 L3000 455" fill="none" stroke="#d6d3c8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M561.6 475.8 L604.1 469.2 L645.1 467.5 L696.0 475.8 L738.5 497.2" fill="none" stroke="#d6d3c8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M-2000 110 L-700 120 L31.0 134.2 L179.6 137.5 L257.4 130.9 L336.6 129.2 L410.2 134.2 L483.8 147.4 L543.2 158.9 L653.6 163.9 L684 167 L1000 160 L3000 -200" fill="none" stroke="#d6d3c8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M150 -2000 L150 -200 L179.6 147.4 L222.0 200.2 L272.9 256.3 L321.1 299.2 L363.5 332.2 L384.7 381.7 L410.2 423.0 L418.7 464.2 L424.3 510.4" fill="none" stroke="#d6d3c8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M700 -2000 L684 167 L646.5 249.7 L646.5 381.7 L645.1 467.5 L643.7 535.2" fill="none" stroke="#d6d3c8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M-2000 610 L-700 600 L-49.5 586 L73.4 538.4 L172.5 525.3 L231.9 508.8 L257.4 507.1 L342.3 510.4 L424.3 512.0 L462.6 492.3 L505.0 480.7 L543.2 474.1 L561.6 484.0 L580.0 503.8 L625.3 530.2 L667.7 548.4 L700.3 553.3 L721.5 538.4 L741.3 503.8 L780.9 487.3 L880.0 477.4 L993.2 464.2 L1250 470 L3000 455" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M561.6 475.8 L604.1 469.2 L645.1 467.5 L696.0 475.8 L738.5 497.2" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M-2000 110 L-700 120 L31.0 134.2 L179.6 137.5 L257.4 130.9 L336.6 129.2 L410.2 134.2 L483.8 147.4 L543.2 158.9 L653.6 163.9 L684 167 L1000 160 L3000 -200" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M150 -2000 L150 -200 L179.6 147.4 L222.0 200.2 L272.9 256.3 L321.1 299.2 L363.5 332.2 L384.7 381.7 L410.2 423.0 L418.7 464.2 L424.3 510.4" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M700 -2000 L684 167 L646.5 249.7 L646.5 381.7 L645.1 467.5 L643.7 535.2" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></g><text x="70.1" y="103.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Shreveport</text><text x="152.9" y="103.2" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Monroe</text><text x="144.6" y="165.3" text-anchor="start" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Pineville</text><text x="158.1" y="242.9" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Lafayette</text><text x="205.2" y="202.9" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Baton Rouge</text><text x="260.2" y="265.5" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">New Orleans</text><text x="226.2" y="280.8" text-anchor="middle" font-size="10" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Houma</text><circle cx="70.1" cy="89.2" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="125.6" cy="88.5" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="152.9" cy="89.2" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="136.6" cy="161.8" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="149.7" cy="183.3" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="91.6" cy="190.5" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="155" cy="210" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="86.9" cy="227.7" r="4" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle><circle cx="158.1" cy="228.9" r="4" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle><circle cx="205.2" cy="214.9" r="8.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="205.2" y="218.5" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">2</text><circle cx="215.7" cy="227.7" r="4" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle><circle cx="260.2" cy="245.5" r="8.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="260.2" y="249.1" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">8</text><circle cx="260.2" cy="220.4" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="275.4" cy="225.3" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="283.7" cy="210" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="226.2" cy="266.8" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="200.5" cy="260.7" r="4.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle></svg>
+<div style="position:absolute;left:10px;right:10px;top:10px;display:flex;gap:8px;z-index:5"><div class="cj-pfield ch-shadow"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>City, ZIP or club name</span></div><span class="cj-picon ch-shadow" role="button" aria-label="Near me"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7.5"></circle><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path></svg></span></div>
+<div class="cj-pcap2 ch-shadow" style="position:absolute;left:10px;bottom:10px;z-index:5"><span><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="4" fill="#1a2744"></circle></svg>times listed</span><span><svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="3.6" fill="#ffffff" stroke="#1a2744" stroke-width="1.5"></circle></svg>not listed</span><span><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6.5" fill="#1a2744"></circle><text x="7" y="10" text-anchor="middle" font-size="8" font-weight="700" fill="#ffffff">8</text></svg>several clubs, tap to open</span></div>
+</div>
+<div class="cj-pbar" style="top:450px"><div class="cj-pbar-row"><b>All 25 clubs</b><span class="cj-seg"><span class="on">A to Z</span><span class="off">Nearest</span></span><span class="cj-filt"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg> Filters</span></div></div>
+<ul class="cj-plist" style="top:497px"><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Baton Rouge Chess Club</b><span class="cj-town"> · Baton Rouge</span></a></div><p class="cj-l23">Saturdays 10:00 AM at Jones Creek Branch Library (G/90+30). Casual play Wednesdays 6:00 PM at Boba ParTea on O'Neil Lane.</p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Beauregard Parish Youth Chess</b><span class="cj-town"> · DeRidder</span></a></div><p class="cj-l23">Every Wednesday during the summer months, 1:00–2:00 PM.</p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Bluebonnet Chess Club</b><span class="cj-town"> · Baton Rouge</span></a></div><p class="cj-l23">1st and 3rd Sundays of the month, 4:30–5:30 PM, at Bluebonnet Library.</p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Bunkie Chess Club</b><span class="cj-town"> · Bunkie</span></a></div><p class="cj-l23">Tuesdays 4:00–6:00 PM at the Bunkie Library. Free to join, open to ages 8 to 108.</p></li></ul>
+</div></div>
+<span class="k-num-badge ch-mk" style="left:-10px;top:330px">2</span>
+</div>
+<div class="ch-pcol">
+<p class="ch-pcap"><span class="ch-code">P2</span>Near me, scrolled <span class="k-sample" style="padding:1px 7px;font-size:11px">Sample miles</span></p>
+<div class="k-phone"><div class="ch-pscr" style="background:#f5f5f2">
+<div class="ch-pstat">4:40</div>
+<div class="ch-papp"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="ch-rook ch-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><div class="ch-pbtns"><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></span><span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg></span></div></div>
+<div class="cj-pbar" style="top:86px;box-shadow:0 4px 12px rgba(16,24,43,.10)">
+<div class="cj-pbar-row" style="height:44px"><span class="cj-pill"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7.5"></circle><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path></svg> Near you: 70808 <i aria-label="Clear the place"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></i></span><span class="cj-filt" style="margin-left:auto"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg> Filters</span></div>
+<div class="cj-pbar-row" style="height:44px;border-top:1px solid #f0efe9"><b style="font-size:13.5px">Near you · within 75 miles</b><span class="cj-seg"><span>A to Z</span><span class="on">Nearest</span></span></div>
+</div>
+<ul class="cj-plist" style="top:175px"><li class="cj-card cj-sel"><div class="cj-l1"><a class="cj-nm" href="#"><b>Baton Rouge Chess Club</b><span class="cj-town"> · Baton Rouge</span></a><span class="cj-mi">about 3 mi</span></div><p class="cj-l23">Saturdays 10:00 AM at Jones Creek Branch Library (G/90+30). Casual play Wednesdays 6:00 PM at Boba ParTea on O'Neil Lane.</p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Bluebonnet Chess Club</b><span class="cj-town"> · Baton Rouge</span></a><span class="cj-mi">about 5 mi</span></div><p class="cj-l23">1st and 3rd Sundays of the month, 4:30–5:30 PM, at Bluebonnet Library.</p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Gonzales Chess Club</b><span class="cj-town"> · Gonzales</span></a><span class="cj-mi">about 20 mi</span></div><p class="cj-l2">Schedule not listed · Know when they meet? <a href="#">Suggest an update</a></p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Lafayette Chess Club</b><span class="cj-town"> · Lafayette</span></a><span class="cj-mi">about 55 mi</span></div><p class="cj-l2">Schedule not listed · Know when they meet? <a href="#">Suggest an update</a></p><p class="cj-l3">All skill levels welcome. Hosts the Louisiana Open every Memorial Day weekend and the Lafayette Open in October.</p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Heart of Worship Church Chess</b><span class="cj-town"> · Opelousas</span></a><span class="cj-mi">about 60 mi</span></div><p class="cj-l23">Fridays 5:30–7:00 PM. Open to anyone; join before church for chess.</p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Houma Chess Club</b><span class="cj-town"> · Houma</span></a><span class="cj-mi">about 65 mi</span></div><p class="cj-l23">Mondays 6:00–8:30 PM at Terrebonne Parish North Library.</p></li><li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Morgan City Chess Club</b><span class="cj-town"> · Morgan City</span></a><span class="cj-mi">about 70 mi</span></div><p class="cj-l23">1st, 3rd and 5th Tuesday evenings at 5:30 PM at First Baptist Church.</p></li></ul>
+<span class="cj-up"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"></path></svg> Map</span>
+</div></div>
+</div>
+</div></div>
+
+
+
+
+<div class="ch-sec"><div class="cj-r2"><div><div class="ch-flab cj-flab"><span class="ch-code">B</span><h2>Desktop · Near me pressed from 70808</h2><span class="k-meta">screen only, header and strip omitted; drawn at 62%</span><span class="ch-urlchip">/clubs?<b>near=70808</b>&amp;<b>sort=nearest</b></span></div><div class="cj-zB"><div class="ch-frame"><div class="ch-page cj-fb">
+<div class="cj-bar"><div class="cj-in cj-bar-in">
+<div class="cj-field" style="padding-left:5px" role="search"><span class="cj-pill"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7.5"></circle><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path></svg> Near you: Baton Rouge 70808 <i aria-label="Clear the place"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></i></span></div>
+<span class="cj-near cj-near-on" role="button" aria-pressed="true"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Near me</span>
+<span class="k-num-badge ch-mk" style="left:338px;top:4px">1</span>
+<span class="cj-seg" role="group" aria-label="Order"><span>A to Z</span><span class="on">Nearest</span></span>
+<span class="cj-filt" role="button"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg> Filters</span>
+</div></div>
+<div class="cj-map">
+<svg width="1440" height="500" viewBox="0 0 1440 500" role="img" aria-labelledby="cjB-t cjB-d"><title id="cjB-t">Map zoomed to you and your nearest clubs</title><desc id="cjB-d">Zoomed to fit You in Baton Rouge 70808 and the five nearest clubs: Baton Rouge Chess Club (selected, gold), Bluebonnet, Gonzales (hollow), Lafayette (hollow) and Heart of Worship in Opelousas. Houma, Morgan City, the north shore and the New Orleans count circle are also in view.</desc>
+<rect x="0" y="0" width="1440" height="500" fill="#d9e3ed"></rect><g transform="translate(-632 -1127.9) scale(2.6)"><path d="M-2000 -2000 L3000 -2000 L3000 505 L1134.7 497.2 L908.3 487.3 L851.7 480.7 L809.2 493.9 L773.9 517.0 L500 560 L166.8 596.2 L101.7 620.9 L16.8 662.2 L-138.8 777.7 L-2000 1800Z" fill="#ecebe4" stroke="#c9c8c0" stroke-width="1" vector-effect="non-scaling-stroke"></path><path d="M138.5 48.4 L138.5 -2000" fill="none" stroke="#c9c8c0" stroke-width="1.2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"></path><path d="M1245 -2000 L1245 501" fill="none" stroke="#c9c8c0" stroke-width="1.2" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"></path><path d="M138.5 48.4 L544.6 51.7 L554.5 76.4 L544.6 109.5 L565.8 142.4 L578.6 175.5 L561.6 208.5 L533.3 236.5 L514.9 266.2 L500.8 307.5 L495.1 340.5 L480.9 381.7 L748.4 381.7 L741.3 414.7 L744.1 444.4 L744.1 472.5 L755.5 493.9 L766.8 513.7 L773.9 517.0 L759.7 538.4 L780.9 563.2 L795.1 588.0 L773.9 609.4 L795.1 637.5 L823.4 658.9 L844.6 678.7 L816.3 703.4 L795.1 720.0 L773.9 687.0 L738.5 662.2 L710.2 675.4 L696.0 695.2 L667.7 698.5 L632.4 691.9 L597.0 698.5 L568.7 682.0 L533.3 665.5 L512.1 637.5 L480.9 629.2 L448.4 620.9 L413.0 612.7 L377.7 620.9 L335.2 612.7 L285.7 591.2 L236.2 584.7 L186.6 591.2 L166.8 596.2 L164.0 555.0 L183.8 530.2 L185.2 480.7 L197.9 431.2 L207.9 390.0 L210.7 352.0 L189.5 315.7 L168.2 282.7 L138.5 218.4Z" fill="#f7f6f1" stroke="#9aa0ad" stroke-width="1.3" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><ellipse cx="696" cy="518.6" rx="48.1" ry="22.3" fill="#d3e0ec"></ellipse><ellipse cx="639.4" cy="503.8" rx="12.7" ry="9.9" fill="#d3e0ec"></ellipse><ellipse cx="752.6" cy="541.7" rx="21.2" ry="13.2" fill="#d3e0ec"></ellipse><ellipse cx="243.2" cy="569.8" rx="12.7" ry="11.6" fill="#d3e0ec"></ellipse><ellipse cx="164" cy="569.8" rx="7.1" ry="14.8" fill="#d3e0ec"></ellipse><ellipse cx="554.5" cy="566.5" rx="7.1" ry="11.6" fill="#d3e0ec"></ellipse><ellipse cx="503.6" cy="551.7" rx="7.1" ry="9.9" fill="#d3e0ec"></ellipse><ellipse cx="189.5" cy="332.2" rx="5.7" ry="36.3" fill="#d3e0ec"></ellipse><path d="M544.6 -2000 L544.6 51.7 L554.5 76.4 L544.6 109.5 L565.8 142.4 L578.6 175.5 L561.6 208.5 L533.3 236.5 L514.9 266.2 L500.8 307.5 L495.1 340.5 L480.9 381.7 L495.1 414.7 L514.9 439.5 L533.3 455.9 L540.4 472.5 L540.4 493.9 L561.6 522.0 L589.9 535.2 L625.3 540.1 L656.4 546.7 L681.9 558.3 L705.9 556.6 L721.5 571.4 L745.6 604.5 L773.9 637.5 L802.2 670.5 L816.3 695.2" fill="none" stroke="#bfd0e3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M60 -400 L138.5 18.7 L161.2 76.4 L181.0 126.0 L207.9 183.7 L250.3 233.2 L285.7 274.5 L328.1 302.5 L363.5 328.9 L398.9 353.6 L441.3 371.8 L475.3 380.0" fill="none" stroke="#bfd0e3" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M466.8 381.7 L464.0 427.9 L469.6 472.5 L480.9 513.7 L505.0 555.0 L526.2 583.0 L540.4 602.8 L533.3 637.5" fill="none" stroke="#bfd0e3" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M-2000 610 L-700 600 L-49.5 586 L73.4 538.4 L172.5 525.3 L231.9 508.8 L257.4 507.1 L342.3 510.4 L424.3 512.0 L462.6 492.3 L505.0 480.7 L543.2 474.1 L561.6 484.0 L580.0 503.8 L625.3 530.2 L667.7 548.4 L700.3 553.3 L721.5 538.4 L741.3 503.8 L780.9 487.3 L880.0 477.4 L993.2 464.2 L1250 470 L3000 455" fill="none" stroke="#d6d3c8" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M561.6 475.8 L604.1 469.2 L645.1 467.5 L696.0 475.8 L738.5 497.2" fill="none" stroke="#d6d3c8" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M-2000 110 L-700 120 L31.0 134.2 L179.6 137.5 L257.4 130.9 L336.6 129.2 L410.2 134.2 L483.8 147.4 L543.2 158.9 L653.6 163.9 L684 167 L1000 160 L3000 -200" fill="none" stroke="#d6d3c8" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M150 -2000 L150 -200 L179.6 147.4 L222.0 200.2 L272.9 256.3 L321.1 299.2 L363.5 332.2 L384.7 381.7 L410.2 423.0 L418.7 464.2 L424.3 510.4" fill="none" stroke="#d6d3c8" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M700 -2000 L684 167 L646.5 249.7 L646.5 381.7 L645.1 467.5 L643.7 535.2" fill="none" stroke="#d6d3c8" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M-2000 610 L-700 600 L-49.5 586 L73.4 538.4 L172.5 525.3 L231.9 508.8 L257.4 507.1 L342.3 510.4 L424.3 512.0 L462.6 492.3 L505.0 480.7 L543.2 474.1 L561.6 484.0 L580.0 503.8 L625.3 530.2 L667.7 548.4 L700.3 553.3 L721.5 538.4 L741.3 503.8 L780.9 487.3 L880.0 477.4 L993.2 464.2 L1250 470 L3000 455" fill="none" stroke="#ffffff" stroke-width="3.7" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M561.6 475.8 L604.1 469.2 L645.1 467.5 L696.0 475.8 L738.5 497.2" fill="none" stroke="#ffffff" stroke-width="3.7" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M-2000 110 L-700 120 L31.0 134.2 L179.6 137.5 L257.4 130.9 L336.6 129.2 L410.2 134.2 L483.8 147.4 L543.2 158.9 L653.6 163.9 L684 167 L1000 160 L3000 -200" fill="none" stroke="#ffffff" stroke-width="3.7" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M150 -2000 L150 -200 L179.6 147.4 L222.0 200.2 L272.9 256.3 L321.1 299.2 L363.5 332.2 L384.7 381.7 L410.2 423.0 L418.7 464.2 L424.3 510.4" fill="none" stroke="#ffffff" stroke-width="3.7" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path><path d="M700 -2000 L684 167 L646.5 249.7 L646.5 381.7 L645.1 467.5 L643.7 535.2" fill="none" stroke="#ffffff" stroke-width="3.7" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path></g><text x="1143.8" y="203.3" text-anchor="middle" font-size="12" font-weight="500" font-style="italic" fill="#5f6b80" stroke="#d9e3ed" stroke-width="2.5" paint-order="stroke">Lake Pontchartrain</text><text x="624.1" y="218.4" text-anchor="middle" font-size="12" font-weight="500" font-style="italic" fill="#5f6b80" stroke="#d9e3ed" stroke-width="2.5" paint-order="stroke">Atchafalaya Basin</text><text x="803.2" y="343.7" text-anchor="middle" font-size="11" font-weight="500" font-style="italic" fill="#5f6b80" stroke="#d9e3ed" stroke-width="2.5" paint-order="stroke">Lake Verret</text><rect x="588.5" y="135.2" width="30" height="16" rx="4" fill="#ffffff" stroke="#c9c8c0"></rect><text x="603.5" y="146.7" text-anchor="middle" font-size="10" font-weight="700" fill="#555c6b">I-10</text><rect x="442.9" y="128.7" width="30" height="16" rx="4" fill="#ffffff" stroke="#c9c8c0"></rect><text x="457.9" y="140.2" text-anchor="middle" font-size="10" font-weight="700" fill="#555c6b">I-49</text><rect x="1032.1" y="-17.9" width="30" height="16" rx="4" fill="#ffffff" stroke="#c9c8c0"></rect><text x="1047.1" y="-6.4" text-anchor="middle" font-size="10" font-weight="700" fill="#555c6b">I-55</text><circle cx="727.3" cy="172.1" r="2.2" fill="#a3a8b3"></circle><text x="719.3" y="176.1" text-anchor="end" font-size="11" font-weight="500" fill="#6b7180" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Plaquemine</text><circle cx="739.2" cy="110.2" r="2.2" fill="#a3a8b3"></circle><text x="731.2" y="114.2" text-anchor="end" font-size="11" font-weight="500" fill="#6b7180" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Port Allen</text><circle cx="812" cy="245.4" r="2.2" fill="#a3a8b3"></circle><text x="812" y="238.4" text-anchor="middle" font-size="11" font-weight="500" fill="#6b7180" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Donaldsonville</text><circle cx="537.2" cy="283.9" r="2.2" fill="#a3a8b3"></circle><text x="537.2" y="276.9" text-anchor="middle" font-size="11" font-weight="500" fill="#6b7180" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">New Iberia</text><circle cx="533.8" cy="234" r="2.2" fill="#a3a8b3"></circle><text x="533.8" y="249" text-anchor="middle" font-size="11" font-weight="500" fill="#6b7180" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">St. Martinville</text><circle cx="868.2" cy="361.1" r="2.2" fill="#a3a8b3"></circle><text x="868.2" y="354.1" text-anchor="middle" font-size="11" font-weight="500" fill="#6b7180" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Thibodaux</text><circle cx="1045.3" cy="79" r="2.2" fill="#a3a8b3"></circle><text x="1053.3" y="83" text-anchor="start" font-size="11" font-weight="500" fill="#6b7180" stroke="#f7f6f1" stroke-width="3" paint-order="stroke">Hammond</text><text x="449.3" y="86" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Opelousas</text><text x="471.2" y="219.1" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Lafayette</text><text x="789" y="157.3" text-anchor="end" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Bluebonnet Chess Club</text><text x="876" y="210.6" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Gonzales</text><text x="769.4" y="442.2" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Morgan City</text><text x="949.6" y="485.1" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Houma</text><text x="1188.8" y="126.1" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Mandeville</text><text x="1306.4" y="177.4" text-anchor="start" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Slidell</text><text x="1343.1" y="70" text-anchor="end" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">Picayune, MS</text><text x="1188.8" y="343.1" text-anchor="middle" font-size="11.5" font-weight="600" fill="#1a2744" stroke="#ffffff" stroke-width="3.4" paint-order="stroke" stroke-linejoin="round">New Orleans</text><circle cx="449.3" cy="66" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="471.2" cy="199.1" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle><circle cx="785" cy="138.3" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="876" cy="190.6" r="6" fill="#ffffff" stroke="#1a2744" stroke-width="2"></circle><circle cx="769.4" cy="422.2" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="949.6" cy="465.1" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="1188.8" cy="139.1" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="1295.4" cy="173.4" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="1354.1" cy="66" r="6.5" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><circle cx="1188.8" cy="315.1" r="12" fill="#1a2744" stroke="#ffffff" stroke-width="2"></circle><text x="1188.8" y="319.6" text-anchor="middle" font-size="12.5" font-weight="700" fill="#ffffff">8</text><circle cx="766.8" cy="122.7" r="7" fill="#2b6fd6" stroke="#ffffff" stroke-width="3"></circle><text x="754.8" y="126.7" text-anchor="end" font-size="12" font-weight="700" fill="#24508f" stroke="#ffffff" stroke-width="3.4" paint-order="stroke">You</text><ellipse cx="805.8" cy="113.5" rx="7" ry="2.6" fill="#1a2744" fill-opacity=".22"></ellipse><circle cx="805.8" cy="104.5" r="8" fill="#c8a94a" stroke="#1a2744" stroke-width="2.2"></circle>
+</svg>
+<div class="cj-pop" role="dialog" aria-labelledby="cj-popB-h" style="left:828px;top:8px;width:332px;padding:10px 14px 11px">
+<h3 id="cj-popB-h">Baton Rouge Chess Club</h3>
+<p class="cj-pt">Baton Rouge · South Central Louisiana · about 3 mi</p>
+<p class="cj-pl" style="margin-top:5px !important">Saturdays 10:00 AM at Jones Creek Branch Library (G/90+30). Casual play Wednesdays 6:00 PM at Boba ParTea on O'Neil Lane.</p>
+<p class="cj-ps">As the club states it</p>
+<div class="cj-pb" style="margin-top:8px"><a class="k-btn k-btn-navy" href="#">Directions ↗</a><a class="k-btn k-btn-line" href="#">Club page →</a></div>
+<span class="cj-px" aria-label="Close"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span>
+<span class="cj-tail-l" style="top:90px"></span>
+</div>
+
+<div class="ch-ov" style="right:16px;top:16px"><div class="ch-zoom ch-shadow"><span>+</span><span>&#8722;</span><span title="All of Louisiana"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11l8-7 8 7"></path><path d="M6 9.5V20h12V9.5"></path></svg></span></div></div>
+<div class="ch-ov cj-mcap ch-shadow" style="left:16px;bottom:16px"><span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="#1a2744"></circle></svg>times listed</span><span><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="4.5" fill="#ffffff" stroke="#1a2744" stroke-width="1.8"></circle></svg>schedule not listed</span><span><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="8.5" fill="#1a2744"></circle><text x="9" y="12.5" text-anchor="middle" font-size="10" font-weight="700" fill="#ffffff">8</text></svg>several clubs, click to open</span></div>
+
+</div>
+<section class="cj-dir"><div class="cj-in">
+<div class="cj-dh"><h2>Near you · within 75 miles of 70808</h2><p>Times are as each club states them; confirm before a first visit. <span class="k-sample" style="padding:1px 7px;font-size:11px;margin-left:6px">Sample miles</span></p></div>
+<ul class="cj-grid"><li class="cj-card cj-sel"><div class="cj-l1"><a class="cj-nm" href="#"><b>Baton Rouge Chess Club</b><span class="cj-town"> · Baton Rouge</span></a><span class="cj-mi">about 3 mi</span></div><p class="cj-l23">Saturdays 10:00 AM at Jones Creek Branch Library (G/90+30). Casual play Wednesdays 6:00 PM at Boba ParTea on O'Neil Lane.</p></li>
+<li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Bluebonnet Chess Club</b><span class="cj-town"> · Baton Rouge</span></a><span class="cj-mi">about 5 mi</span></div><p class="cj-l23">1st and 3rd Sundays of the month, 4:30–5:30 PM, at Bluebonnet Library.</p></li>
+<li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Gonzales Chess Club</b><span class="cj-town"> · Gonzales</span></a><span class="cj-mi">about 20 mi</span></div><p class="cj-l2">Schedule not listed · Know when they meet? <a href="#">Suggest an update</a></p></li>
+<li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Lafayette Chess Club</b><span class="cj-town"> · Lafayette</span></a><span class="cj-mi">about 55 mi</span></div><p class="cj-l2">Schedule not listed · Know when they meet? <a href="#">Suggest an update</a></p><p class="cj-l3">All skill levels welcome. Hosts the Louisiana Open every Memorial Day weekend and the Lafayette Open in October.</p></li>
+<li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Heart of Worship Church Chess</b><span class="cj-town"> · Opelousas</span></a><span class="cj-mi">about 60 mi</span></div><p class="cj-l23">Fridays 5:30–7:00 PM. Open to anyone; join before church for chess.</p></li>
+<li class="cj-card"><div class="cj-l1"><a class="cj-nm" href="#"><b>Houma Chess Club</b><span class="cj-town"> · Houma</span></a><span class="cj-mi">about 65 mi</span></div><p class="cj-l23">Mondays 6:00–8:30 PM at Terrebonne Parish North Library.</p></li></ul>
+</div></section>
+</div></div></div></div><div class="cj-col"><div class="cj-bnote"><h3>The grid under frame B, one scroll down <span class="k-sample" style="padding:1px 7px;font-size:11px">Sample miles</span></h3>
+<p><b>Near you · within 75 miles of 70808</b> (3 rows): Baton Rouge Chess Club about 3 mi · Bluebonnet about 5 · Gonzales about 20 · Lafayette about 55 · Heart of Worship Church Chess about 60 · Houma about 65 · Morgan City about 70 · Marrero about 75.</p>
+<p><b>The rest of Louisiana</b>, the other 17 by distance: North Kenner Library 78 · Mandeville 80 · Metairie Chess Academy 80 · Greater New Orleans 82 · Downriver 82 · Knight Light about 82 · Strategic Thoughts NOLA about 82 · New Orleans Westbank 84 · Bunkie 85 · Slidell 95 · Pineville Homeschool 110 · Picayune 115 · Casa de Ajedrez 135 · Beauregard Parish Youth 150 · Monroe 190 · Ruston Knights 215 · Shreveport-Bossier 250. The headings carry no counts.</p>
+<p><b>Back to everything:</b> ✕ on the pill (A to Z, state zoom, one heading again) or ⌂ All of Louisiana (zoom out; the two headings and the miles stay until ✕).</p></div><div class="cj-pair"><div class="ch-st"><h3><span>S1</span>Location denied</h3><div class="ch-field ch-focus" style="width:auto"><span class="ch-caret"></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>City, ZIP or club name</span></div><p class="ch-msg" style="font-size:12px"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg><span>We couldn't get your location. Type a city or ZIP.</span></p></div><div class="ch-st"><h3><span>S3</span>Typed "Houston"</h3><div class="ch-field"><span class="ch-typed">Houston</span></div><p class="ch-msg"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg><span>That's outside Louisiana. Picayune, MS is our one club over the line.</span></p><p class="ch-scap">Map at state zoom; grid A to Z.</p></div></div></div></div></div>
+<div class="ch-sec"><div class="cj-r3"><div class="cj-col"><div class="ch-pcol"><p class="ch-pcap"><span class="ch-code">D1</span>Suggest an update</p><div class="ch-sheet" role="dialog" aria-labelledby="cj-sug-h">
+<div class="ch-sh"><b id="cj-sug-h">Suggest an update to Monroe Chess Club</b><span aria-label="Close" style="color:#555c6b"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+<div class="ch-sb">
+<p class="ch-q">What changed?</p>
+<div class="ch-sc"><span class="k-chip k-chip-on">Meeting day or time</span><span class="k-chip">Venue or address</span><span class="k-chip">Cost or who it's for</span><span class="k-chip">Contact</span><span class="k-chip">The club has closed or moved</span><span class="k-chip">Something else</span></div>
+<div class="ch-f"><label>What should the listing say?</label><span class="ch-in ch-ta">e.g. Saturdays moved to 11:00 AM</span></div>
+<div class="ch-f"><label>Your email (optional, in case there's a question)</label><span class="ch-in">&#8203;</span></div>
+<div class="ch-turn"><i></i>Cloudflare Turnstile check</div>
+<a class="k-btn k-btn-navy k-btn-block" href="#">Send to the club's representative</a>
+<div class="ch-done"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span><b>Sent.</b> Monroe Chess Club's representative checks it before anything changes; Marcus Landry, LCA's North Louisiana representative, is copied.</span></div>
+</div>
+</div><span class="k-num-badge ch-mk" style="right:-10px;top:18px">3</span>
+<p class="ch-route">No club representative: "Send to the North Louisiana representative". Open seat: "Send to LCA" (LCA admins keep the listing).</p></div><div class="ch-st"><h3><span>S6</span>Thin card, close up</h3><ul style="list-style:none;margin:0;padding:0"><li class="cj-card cj-scard"><div class="cj-l1"><a class="cj-nm" href="#"><b>Gonzales Chess Club</b><span class="cj-town"> · Gonzales</span></a></div><p class="cj-l2">Schedule not listed · Know when they meet? <a href="#">Suggest an update</a></p></li></ul></div></div><div class="cj-col"><div class="ch-pcol"><p class="ch-pcap"><span class="ch-code">D2</span>Start a club, or Suggest a club</p><div class="ch-sheet" role="dialog" aria-labelledby="cj-start-h">
+<label class="ch-sw"><span class="ch-tog" role="switch" aria-checked="false"></span>This club already exists, you're just missing it</label>
+<div class="ch-sh"><b id="cj-start-h">Start a club</b><span aria-label="Close" style="color:#555c6b"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></div>
+<div class="ch-sb">
+<div class="cj-2c"><div class="ch-f"><label>Club name</label><span class="ch-in">e.g. Zachary Chess Club</span></div><div class="ch-f"><label>City or ZIP</label><span class="ch-in">e.g. Zachary or 70791</span></div></div>
+<div class="ch-f"><label>Where and when it meets, in your words</label><span class="ch-in ch-ta">e.g. Tuesdays 6:30 PM, Zachary Branch Library</span></div>
+<div class="cj-2c"><div class="ch-f"><label>Your name</label><span class="ch-in">&#8203;</span></div><div class="ch-f"><label>Your email (stays private)</label><span class="ch-in">&#8203;</span></div></div>
+<div class="ch-turn"><i></i>Cloudflare Turnstile check</div>
+<a class="k-btn k-btn-navy k-btn-block" href="#">Send to LCA</a>
+</div>
+</div><span class="k-num-badge ch-mk" style="right:-10px;top:18px">4</span>
+<p class="ch-route">Switch on: the title reads "Suggest a club". Routed by zip_regions to the region's representative, or LCA admins while a seat is open.</p></div><div class="ch-st"><h3><span>S5</span>Typed "kni"</h3><div class="ch-field"><span class="ch-typed">kni</span><span class="ch-caret" style="margin-left:0"></span></div><p class="cj-sh2">1 club matches 'kni' · <a href="#">Show all 25</a></p><ul style="list-style:none;margin:8px 0 0;padding:0"><li class="cj-card cj-scard"><div class="cj-l1"><a class="cj-nm" href="#"><b>Knight Light Chess</b><span class="cj-town"> · New Orleans</span></a></div><p class="cj-l2">Schedule not listed · Know when they meet? <a href="#">Suggest an update</a></p></li></ul><p class="ch-scap">The New Orleans 8 lights; the other pins stay.</p></div></div><div class="cj-col"><div class="ch-st"><h3><span>S2</span>Typed "Natchitoches" (no club there)</h3><div class="ch-field" style="padding-left:6px"><span class="cj-pill"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><circle cx="12" cy="12" r="7.5"></circle><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"></path></svg> Near: Natchitoches <i><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></i></span></div><p class="cj-sh2">Near you · within 75 miles of Natchitoches</p><p class="ch-msg"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg><span>No club in Natchitoches yet. The nearest are Pineville Homeschool (about 50 mi), Bunkie (about 70 mi) and Ruston Knights (about 75 mi). <a href="#">Start a club?</a></span></p><div style="margin-top:4px"><div class="ch-mini"><span><b>Pineville Homeschool Chess Club</b></span><i>about 50 mi</i></div><div class="ch-mini"><span><b>Bunkie Chess Club</b></span><i>about 70 mi</i></div><div class="ch-mini" style="border-bottom:0"><span><b>Ruston Knights Chess Club</b></span><i>about 75 mi</i></div></div><p class="cj-sh2">The rest of Louisiana</p><div class="ch-mini" style="border-bottom:0"><span><b>Shreveport-Bossier Chess Club</b></span><i>about 80 mi</i></div><p class="ch-scap">The map zooms to Natchitoches; the notice sits above the first row and all 25 stay on the page, the rest by distance. <span class="k-sample" style="padding:1px 7px;font-size:11px">Sample miles</span></p></div><div class="ch-st"><h3><span>S7</span>Keyboard</h3><div style="display:flex;align-items:center;gap:10px"><span class="cj-skip">Skip to the list</span><span class="ch-scap" style="margin-top:0 !important">sits before the map</span></div><p class="ch-scap">Pins are buttons in A to Z order; Enter opens the popover, Escape closes it. The grid is a list of links; focus on a card lifts its pin.</p></div></div><div class="cj-col"><div style="position:relative"><div class="ch-st"><h3><span>S4</span>Filters open, filtered to nothing</h3><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="cj-filt" style="height:32px;font-size:13px;background:#1a2744;color:#ffffff;border-color:#1a2744"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg> Filters · 2</span><span class="ch-xchip">New Orleans Metro <span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></span><span class="ch-xchip">Scholastic friendly <span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></span></span></div>
+<p class="cj-sh2">No clubs match these filters · <a href="#">Clear filters</a></p>
+<div class="ch-fp"><p class="h">Region</p><div class="ch-cb"><i class=""></i>North Louisiana<em>3</em></div><div class="ch-cb"><i class=""></i>Central Louisiana<em>2</em></div><div class="ch-cb"><i class=""></i>North of Lake Pontchartrain<em>3</em></div><div class="ch-cb"><i class="on"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></i>New Orleans Metro<em>8</em></div><div class="ch-cb"><i class=""></i>South Central Louisiana<em>5</em></div><div class="ch-cb"><i class=""></i>Bayou Region<em>2</em></div><div class="ch-cb"><i class=""></i>Southwest Louisiana<em>2</em></div><p class="h" style="margin-top:8px !important">Only clubs that say so themselves</p><div class="ch-cb"><i class=""></i>Plays on weekends<em>3</em></div><div class="ch-cb"><i class="on"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></i>Scholastic friendly <span class="k-sample" style="padding:0 6px;font-size:10.5px;margin-left:4px">Sample data</span><em>5</em></div><div class="ch-fpf"><a href="#">Clear</a><span class="k-btn k-btn-navy k-btn-sm" style="min-height:32px">Done</span></div></div>
+<p class="ch-scap">With one filter set the heading reads "5 clubs match · Clear filters". Filtered to nothing, the map shows no pins. <span style="font-family:'Geist Mono',ui-monospace,monospace;font-size:11.5px">?region=new-orleans-metro&amp;scholastic=1</span></p><span class="k-num-badge ch-mk" style="right:-10px;top:-10px">5</span></div><span class="k-num-badge ch-mk" style="right:-10px;top:-10px">5</span></div></div></div></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1950}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

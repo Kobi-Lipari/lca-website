@@ -1,0 +1,333 @@
+{
+ "label": "r3-member",
+ "results": [
+  {
+   "board": {
+    "file": "Member-E.dc.html",
+    "title": "Membership · E · Member-E · Benefits first (round 2)",
+    "width": 1440,
+    "page": "membership",
+    "name": "Member-E · Benefits first",
+    "idea": "'What you get' comes before what it costs: Member-B's small benefits card unfolds out of the hero into a full-width 'What you get' band of four tiles placed above the tier cards, so the page says what membership is for before it says a price.",
+    "differs": "Axis: order. Member-B's 'Every membership includes' side card leaves the hero (which becomes one column) and becomes section 1, 'What you get', four full-width tiles ahead of the four tier cards (now section 2). Nothing else moves."
+   },
+   "drawn": {
+    "file": "Member-E.dc.html",
+    "title": "Membership · E · Member-E · Benefits first (round 2)",
+    "width": 1440,
+    "height": 3250,
+    "second_file": "Member-E-2.dc.html",
+    "second_title": "Membership · E · Member-E-2 · Benefits first, phones and states (round 2)",
+    "second_height": 1500,
+    "note": "What: Member-B with one change of order (Axis: order). The hero is now one column, and Member-B's \"Every membership includes\" side card has become section 1, \"What you get\": four full-width tiles (entry to the tournaments LCA runs, a member profile, voting rights, online registration). They come before the four tier cards, so the page says what membership is for before it gives a price. Member-E-2 shows the same order on two 390px phones, plus four states: signed in and active, signed in and expired, the Am I a member? lookup with its four answers, and the thin ledger.\n\nBuilt from: Member-B. The tier cards with their honest family math, the dues ledger with the treasurer's placeholders, \"Membership that takes care of itself\" and the Questions are unchanged. It uses the decided header (Donate · Log in · Join LCA) and footer, and the WS02 phone chrome. Removed: the home-club member counts (page 9), all member-price wording (D11), the Nationals fund card and the expiry placeholder. The live rule, one year from the day you join, is used instead.\n\nK's feedback applied, and what's open for K: The page is service first. Giving is quiet: one cream line near the end (\"Want to give beyond your dues?\") with a Give button to /give, and Donate stays in the header (on phones it is inside Menu). There is no fund, goal or bar. Open for K: are the tiles worth the space they take ahead of the prices? Should the QR card line stay in tile 2? On phones, should there be four tiles or two? Should the expired hero H1 change? The card fee and refund rule still need the board's answer.",
+    "unresolved": []
+   },
+   "review": {
+    "file": "Member-E.dc.html (second part: Member-E-2.dc.html)",
+    "height": 3250,
+    "second_height": 1500,
+    "counts": "Axis: order. Member-B's \"Every membership includes\" side card leaves the hero, which becomes one column, and becomes section 1, \"What you get\": four full-width tiles placed before the four tier cards, which are now section 2.\n\nMain board: natural height 3243px, declared 3250 (limit 3300). Second board: natural height 1451px, declared 1500 (limit 1600). I measured both heights with the fixed root height removed.\n\nChecked against Member-B by a text diff. The only structural change is the order: the side card became section 1. Copy that changed besides that:\n- Text the spec called for: the tile tails, the hero lead's \"same four things\", the treasurer card line, and \"ends\" instead of \"lapses\".\n- Text removed as the spec asked: \"Your club counts\" with its home-club member counts, all member-price wording, the \"Want to give more?\" Nationals card, and the expiry placeholder.\n- The live rule is now used in the \"When does my membership end?\" answer.\n\nCounts on the main board:\n- Tiers: 4, real prices (Adult $15, Scholastic $5, Family $25 for you and up to 3 children with the honest math, Senior $10).\n- \"300+\": 2 (hero H1 and the ledger total).\n- Join and Renew as separate paths: 3 places (the hero, 4 Join buttons and 4 Renew links on the cards, the header).\n- \"Am I a member?\": in the hero, as a lookup.\n- Legend notes: 6 on each board, with badges 1 to 6 on the design.\n- Giving: 1 quiet line with a Give button near the end (\"Most people support LCA by joining and playing\"). Donate stays in the header and footer. There is no fund, goal, bar, urgency copy or cover-the-fee.\n\nDates checked: Wed, Feb 10, 2027; Sat, Feb 13, 2027; Thu, Feb 10, 2028; Tue, Oct 13. Each weekday is correct.\n\nZero hits on both boards for: em dashes, USCF, member price, home-club counts, tax claims, {{ }}, iframes or animation. Grade and birthdate appear only in the FAQ line \"We never ask for a grade, a birthdate or a child's email\". There is no financial-need question. Gold text on light ground only uses #866a1e.",
+    "changes": [
+     "Member-E title strip (right side): now 'Axis: order. What you get comes before what it costs; everything else is Member-B.', so the axis is named by its word as the title strip rule asks.",
+     "Member-E-2 title strip: same axis wording, so the two parts match.",
+     "Member-E footer: replaced the spec's variant line ('Louisiana Chess Association · US Chess state affiliate · since 1915'; Contact LCA, Bylaws & minutes) with the decided F1 footer from Tourn-List-Final. It has a bold name, 'US Chess state affiliate · Louisiana's chess community since 1915', and the links Contact · Website help · Bylaws & rules · Donate.",
+     "Member-E ledger aside: removed the dashed 'Empty states.' annotation box. It was new content that Member-B did not have, and it broke the spec's 'Aside: one card only'. The empty state is already drawn as inset iv on Member-E-2. Legend note 3 now ends 'Empty state (amounts hidden) is inset iv on Member-E-2.'",
+     "Removed the now-unused .me-empty CSS rules.",
+     "Re-rendered both boards and viewed the PNGs. The declared heights and $preview (3250 and 1500) were already the next 50 above the natural heights (3243 and 1451), so they stay.",
+     "Note for the canvas sticky (Member-E): What: Member-B with one change of order (Axis: order). The hero is now one column, and Member-B's \"Every membership includes\" side card has become section 1, \"What you get\": four full-width tiles (entry to the tournaments LCA runs, a member profile, voting rights, online registration). They come before the four tier cards, so the page says what membership is for before it gives a price. Member-E-2 shows the same order on two 390px phones, plus four states: signed in and active, signed in and expired, the Am I a member? lookup with its four answers, and the thin ledger. Built from: Member-B. The tier cards with their honest family math, the dues ledger with the treasurer's placeholders, \"Membership that takes care of itself\" and the Questions are unchanged. It uses the decided header (Donate · Log in · Join LCA) and footer, and the WS02 phone chrome. Removed: the home-club member counts (page 9), all member-price wording (D11), the Nationals fund card and the expiry placeholder; the live rule, one year from the day you join, is used instead. K's feedback applied, and what's open for K: the page is service first. Giving is quiet: one cream line near the end (\"Want to give beyond your dues?\") with a Give button to /give, and Donate stays in the header (on phones it is inside Menu). There is no fund, goal or bar. Open for K: are the tiles worth the space they take ahead of the prices? Should the QR card line stay in tile 2? On phones, should there be four tiles or two? Should the expired hero H1 change? The card fee and refund rule still need the board's answer."
+    ],
+    "remaining_concerns": [
+     "The second board is named Member-E-2.dc.html at 1440x1500, but the spec asked for Member-E-Phones.dc.html at 1440x1000 with insets of about 300x180. The lookup inset needs the height to show all four answers, and the board is still under the 1600 limit.",
+     "The footer now follows the decided chrome (Tourn-List-Final), not the spec's R10 wording. If K wants R10's 'Contact LCA · Bylaws & minutes' line, it is a two-word change.",
+     "Badge 6 is on Questions, and its legend note covers both the Questions order and the give line. The give line has no badge of its own, as the spec says.",
+     "In 'What you get', tile 1's heading wraps to two lines, so its paragraph starts about 4px lower than the other three tiles. This is cosmetic and was left alone.",
+     "The title still reads '(round 2)' with a 'Round 2' tag, as the task named it, even though this is the round 3 spec set.",
+     "The card fee and refund rule are still board-to-confirm placeholders, as they were in Member-B. The four closed answers are hidden paragraphs that exist only for the build.",
+     "Give-A was not part of this review."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Member-F.dc.html",
+    "title": "Membership · F · Member-F · Service story (round 2)",
+    "width": 1440,
+    "page": "membership",
+    "name": "Member-F · Service story",
+    "idea": "'What your dues fund' stops being a ledger and becomes four short stories of the work LCA does (the tournaments it runs, the scholastic program, the State Championship, this website) with no amounts and the treasurer's report as the one link, so the page says in plain words that joining and playing is how LCA is supported.",
+    "differs": "Axis: the money section is told as the service, not the money. Member-B's six-row ledger with [Amount] placeholders and its treasurer's-report aside become a full-width 'What your dues do' band of four photo tiles with no figures, closed by one link to the treasurer's report. Every other region is Member-B's."
+   },
+   "drawn": {
+    "file": "Member-F.dc.html",
+    "title": "Membership · F · Member-F · Service story (round 2)",
+    "width": 1440,
+    "height": 3250,
+    "second_file": "Member-F-2.dc.html",
+    "second_title": "Membership · F · Member-F-2 · Service story, phones and states (round 2)",
+    "second_height": 1350,
+    "note": "What: Member-B with one change, which is the axis. The money section is told as the service, not the money. \"What your dues do\" is a full-width cream band of four story tiles: the tournaments LCA runs, the scholastic program, the State Championship and this website. It shows no amounts and no bars, and the treasurer's report on the Minutes page is the one link to the figures. Part 2 shows it on phones: the first screen, the band scrolled to its link row, and four states (a tile with no photo, no report published, signed in and active, and the Am I a member? answers).\n\nBuilt from: Member-B, with its header (Donate kept), navy hero, tier cards, \"takes care of itself\" strip, Questions and footer. The decided header and footer chrome come from Tourn-List-Final, and the phone chrome is WS02. Removed from Member-B: the club member counts (page 9), all member-price wording (D11), the Nationals fund framing, the expiry placeholder, and the [Amount] ledger with its total.\n\nK's feedback applied: service first. The page says in plain words that most people support LCA by joining and playing. Giving is quiet: Donate stays in the header and there is one cream line near the end with a Give button to /give. Open for K: can LCA supply real photos for tiles 2 to 4 (the hall photo fills tile 1)? Should it be four tiles, or three with the website folded in? The board still has to confirm the card fee and the refund rule.",
+    "unresolved": []
+   },
+   "review": {
+    "file": "Member-F.dc.html (second part: Member-F-2.dc.html)",
+    "height": 3250,
+    "second_height": 1350,
+    "counts": "Axis: the money section is told as the service, not the money. Member-B's six-row [Amount] ledger, its total and the treasurer's-report aside are replaced by a full-width cream \"What your dues do\" band. The band has four story tiles (the tournaments LCA runs, the scholastic program, the State Championship, this website), shows no amounts and no bars, and ends with one link to the treasurer's report. The title strip names this axis in gold-ink #866a1e.\n\nCompared with the Member-B render, every other region matches Member-B: the header with Donate, the navy hero, the four tier cards, the \"takes care of itself\" strip, the Questions and the design notes. The changes outside the axis are the ones the spec requires: club counts removed, member-price wording removed, Nationals framing removed, the expiry placeholder replaced by \"One year from the day you join\", and the Give line added.\n\nWhat I counted on the main board:\n- Tiers: 4, all real (Adult $15, Scholastic $5, Family $25 for you and up to 3 children, Senior $10). The Family card has the honest math and the \"Best value with 3 children\" tag.\n- \"300+\": 2 places (hero H1 and band intro).\n- Join and Renew: separate paths. Hero has a Renew button; each card has a Join button and a Renew link. \"Am I a member?\" is a lookup link.\n- Legend: 6 numbered notes. Badges on the design: 1 to 6.\n- Giving: 1 quiet cream line near the end (\"Want to give beyond your dues?\", a plain sentence that most people support LCA by joining and playing, an outline Give button to /give). Donate stays in the header and footer. No donation hero, fund tiers, progress bars, urgency copy, cover-the-fee or thank-you wall.\n- Wording that must be gone: 0 \"member price\", 0 home-club counts, 0 financial-need questions. \"Grade\" and \"birthdate\" appear only in \"We never ask for a grade, a birthdate...\" and \"sections by grade band\".\n- Dates: 5, all with a correct weekday (Wed, Feb 10, 2027; Sat, Feb 13, 2027; Thu, Feb 10, 2028; Wed, Feb 10; Tue, Oct 13).\n- Other copy rules: 0 em dashes, 0 USCF, 0 \".5\", 0 AI references, 0 animations, 0 holes, 0 iframes.\n- Gold: never text on a light ground. Kickers are #866a1e, and the gold tag is navy text on gold.\n- Tag balance: clean on both files.\n\nHeights: the main board's content measures 3242px against 3250 declared (under 3300). The second board measures 1316px against 1350 declared (under 1600).",
+    "changes": [
+     "Member-F.dc.html: the footer now uses the decided footer from Tourn-List-Final, the same one Member-E uses: rook, bold 'Louisiana Chess Association', 'US Chess state affiliate · Louisiana's chess community since 1915', and Contact · Website help · Bylaws & rules · Donate. It replaces the spec's one-line footer ('Contact LCA', 'Bylaws & minutes'), so the board matches the decided chrome its own note claims.",
+     "Member-F-2.dc.html, phone frame 2 ('What your dues do'): the bottom tab bar cut the Give button in half. I added a .f2-scrolled class (margin-top: -62px) to the band so the frame sits scrolled a little further. The Give line and button are now fully visible above the tabs, the report link row has badge 4 beside it, and the next section's heading peeks in below as natural scroll.",
+     "Re-rendered both boards and checked the header, hero, band, footer and phone frame 2 at full scale. Nothing overlaps, overflows or clips. The only clipping left is the phone screen's own scroll, which is intended. Declared heights and $preview are unchanged (3250 and 1350) because they already match the rendered content rounded up to the next 50."
+    ],
+    "remaining_concerns": [
+     "Footer chrome is now mixed across the siblings. Member-E and Member-F use the decided F1 footer from Tourn-List-Final. Member-G, H, I, J and Give-A still use the spec's 'Contact LCA · Bylaws & minutes' line. One pass should make them all the same.",
+     "Tiles 2 to 4 have no real photos. They show the icon-on-cream thin state with a canvas-only 'Photo: ...' label, and only tile 1 uses the hall photo. Open for K.",
+     "Member-F-2 is 1440x1350, not the spec's 1440x1000. The title strip, legend and grey note add about 300px. It is still under the 1600px limit.",
+     "Phone frame 2 can't fit all four 16:10 tiles in one screen, so it is drawn scrolled to tile 4, the report link and the Give line. Its caption says tiles 1 to 3 sit above.",
+     "Badge 6 (giving quiet) sits on the header's Donate link, because the spec gives the Give line no badge. Placeholders still waiting on the board: the card fee, the refund rule, and the [fiscal year] and [date] on the report link.",
+     "Sticky note text for the canvas: the existing 'drawn' note in round3-specs.json still holds. Its 'Built from' line says 'decided header and footer', which is now true after the footer fix."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Member-G.dc.html",
+    "title": "Membership · G · Member-G · Family first (round 2)",
+    "width": 1440,
+    "page": "membership",
+    "name": "Member-G · Family first",
+    "idea": "The Family card grows into the brief's 'Who's covered?' screen right on the page: the parent's own line, each child ticked 'Covered by this plan' (up to 3), a 4th offered as Scholastic $5 in the same payment, no child email, and a live 'You pay today' with the honest math for that exact number of children; Adult, Scholastic and Senior sit beside it as slim cards.",
+    "differs": "Axis: the Family path is drawn out inline (the WS12 'Who's covered?' screen). Member-B's row of four equal tier cards becomes one wide Family panel holding the coverage ticks and the total, with Adult, Scholastic and Senior as three slim cards stacked beside it. Every other region is Member-B's."
+   },
+   "drawn": {
+    "file": "Member-G.dc.html",
+    "title": "Membership · G · Member-G · Family first (round 2)",
+    "width": 1440,
+    "height": 3250,
+    "second_file": "Member-G-2.dc.html",
+    "second_title": "Membership · G · Member-G-2 · Family first, phone and states (round 2)",
+    "second_height": 1550,
+    "note": "What: Member-B with one thing changed. The Family card grows into the WS12 \"Who's covered?\" screen, filled in right on the page. It has the parent's own line, each child ticked \"Covered by this plan\" (up to 3), a 4th child offered as Scholastic $5 in the same payment, no child email, and a \"You pay today\" total with the honest math for that number of children. Adult, Scholastic and Senior sit beside it as slim cards. Member-G-2 shows the same panel on a 390px phone, with a sticky pay bar, plus four households: four children, one child, no children yet, and a senior parent.\n\nBuilt from: Member-B (the hero, \"What your dues fund\" with the treasurer's placeholders, the \"takes care of itself\" strip, the Questions and the footer), the WS12 \"Who's covered?\" screen, and the decided header, footer and phone chrome. Removed from Member-B: the club member counts, all member-price wording (D11), the Nationals fund framing, the expiry placeholder and the grid of four equal cards.\n\nK's feedback applied: service first and giving quiet. Joining is the main path. Giving is one cream line near the end (\"Want to give beyond your dues?\") with a small Give button that goes to /give, and Donate stays in the header. Open for K: (1) fill in the family on the page, or in a short checkout step? (2) With one child, offer the switch to Adult + Scholastic, or only state the math? (3) On phones, is the sticky pay bar helpful or too pushy? (4) Should the Scholastic add-on for a 4th child be ticked by default? (5) The board still has to confirm the card fee and the refund rule.",
+    "unresolved": []
+   },
+   "review": {
+    "file": "Member-G.dc.html (second part: Member-G-2.dc.html)",
+    "height": 3250,
+    "second_height": 1550,
+    "counts": "Axis: the Family path drawn inline as the WS12 \"Who's covered?\" screen. Member-B's four equal tier cards become one wide Family panel: the You line, Maya and Leo ticked \"Covered by this plan\", Add a family member, the \"2 of 3 child spots used\" counter, \"You pay today $25\" with the 2-child math, and Continue / Buy Adult + 2 Scholastic instead / Renew Family. Adult $15, Scholastic $5 and Senior $10 sit beside it as three slim cards at 28px. The title strip names this axis and it is the only change. Against the Member-B render, the hero, \"What your dues fund\", \"takes care of itself\", Questions and footer are Member-B's.\nCounted on the main board: 6 numbered legend notes, with badges 1 to 6 on the design (badge 6 appears twice, on the Donate header link and on the Give line). 4 real tiers at the right prices. \"300+\" appears twice (hero H1 and ledger total). Join and Renew are separate everywhere: hero See memberships / Renew, Join and Renew on each slim card, Renew Family. \"Am I a member?\" is a lookup link. Giving appears in 1 quiet place: a cream line near the end with a small outline Give button, plus Donate in the header and footer. No hero, fund tiers, bars, urgency, cover-the-fee or thank-you wall. Dates: 0 without a weekday (all 2027 and 2028 dates checked). Em dashes: 0. \"member price\" outside the \"Removed\" notes: 0. USCF: 0. Home-club counts: 0. Grade, birthdate or financial-need questions: 0. The only age question is the yes or no Senior box.\nSecond board: 6 legend notes. 1 phone with the decided tab bar. 4 household insets (four children $30, one child with the $20 switch, none yet, senior parent with the $20 switch), and all of them now carry a Sample data badge.\nRendered content bottoms: 3244px for the main board (declared 3250, limit 3300) and 1529px for the second (declared 1550, limit 1600). No overflow was found. Tags are balanced in both files.",
+    "changes": [
+     "Member-G: replaced the old Member-B footer with the decided Tourn-List-Final footer. It now has a white rook, a bold 'Louisiana Chess Association', 'US Chess state affiliate · Louisiana's chess community since 1915' and the links Contact · Website help · Bylaws & rules · Donate, with 22/24px padding. This matches sibling Member-E.",
+     "Member-G: moved the header's note badge 6 from the Search box's top-right corner to sit over Donate, so it no longer covers the search field border.",
+     "Member-G: removed the invented rule 'A child is never charged twice in one payment.' from the 'Two households?' aside. The rest of the aside repeats the FAQ answer.",
+     "Member-G: cut the design-notes band padding from 12/14 to 8/8px. The longer decided footer had pushed the content 4px past the declared 3250, and it now ends at 3244.",
+     "Member-G-2: phone status bar '10:12' became '10:12 AM' to follow the time rule. It still clears the camera island (text ends at 142px, island starts at 173px).",
+     "Member-G-2: shortened the title-strip axis line to one line ('Axis: the Family path is the brief's Who's covered? screen, drawn inline. Everything else is Member-B.'). The old line wrapped to two lines inside the 56px strip.",
+     "Member-G-2: added a 'Sample data' badge to insets ii, iii and iv, which show invented households. Before, only inset i and the phone had one."
+    ],
+    "remaining_concerns": [
+     "Badge numbers follow the board's own R8 design notes instead of the spec's per-region list. The auto-renew and Questions sections carry no badge, and badge 5 is on the registration check. The legend and badges agree, but the order differs from the brief.",
+     "The footer now follows the decided Tourn-List-Final chrome, as the task asked. The spec's R9 said 'as Member-B', so the footer wording now differs from Member-B and from Member-H. Member-H still uses the old footer and should be aligned in its own review.",
+     "The 'Two households?' aside under the slim cards is copy the spec did not supply (it was taken from the FAQ). It fills the right column but adds a small region Member-B never had.",
+     "The Family panel rows are about 60 to 80px tall instead of the spec's 52px, because each field has a visible label. The board still fits under 3300px.",
+     "On the phone board, only Adult is drawn as a slim card. Scholastic and Senior are reduced to one line of text ('follow in the same shape') to stay under 1600px.",
+     "The board title keeps '(round 2)' as the spec titles it, while K's feedback is dated Tue, Oct 13 and the sibling Clubs boards say round 3. Worth confirming the round label across the six Member variants."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Member-H.dc.html",
+    "title": "Membership · H · Member-H · Renew first (round 2)",
+    "width": 1440,
+    "page": "membership",
+    "name": "Member-H · Renew first",
+    "idea": "Returning members come first: the hero is the Renew path, with the signed-in status card (who is covered, when it ends, 'Renew · $25 → new end date') or, signed out, the 'Am I a member?' lookup in the same slot, and the join path with the four tier cards is the second section.",
+    "differs": "Axis: who the first screen is for. Member-B's join-first hero becomes a renew-first hero with the status card or the lookup; the four tier cards move to section 2 under 'New to LCA?' and lose their per-card Renew links because Renew now lives above; the benefits become one line under the cards. Every other region is Member-B's."
+   },
+   "drawn": {
+    "file": "Member-H.dc.html",
+    "title": "Membership · H · Member-H · Renew first (round 2)",
+    "width": 1440,
+    "height": 3250,
+    "second_file": "Member-H-2.dc.html",
+    "second_title": "Membership · H · Member-H-2 · Renew first, phones and states (round 2)",
+    "second_height": 1350,
+    "note": "What: Member-B with one change, which is who the first screen is for. Returning members come first. Signed in, the hero is the renewal plus a status card showing who is covered, when it ends (Ends in 30 days · Wed, Feb 10, 2027) and \"Renew · $25 → ends Thu, Feb 10, 2028\". Signed out, the same slot holds the Am I a member? lookup (inset B). The four tier cards move to section 2 under \"New to LCA? Pick by who it covers\". They keep Join only, and Family is marked \"Your current plan\". Member-H-2 shows the same thing on phones, plus four states: expired, more than 30 days left, a child's own login and a lookup with no match.\n\nBuilt from: Member-B's tier cards, honest family math, \"What your dues fund\" ledger, the \"takes care of itself\" strip and the Questions, all as they were. It uses the decided header (Donate · My LCA with the to-do count 1, WS02) and footer. Removed: the club member counts, member-price wording (D11), the Nationals fund framing, the per-card Renew links, See memberships and the expiry placeholder.\n\nK's feedback applied: service first. The page opens on keeping a member playing, and \"300+\" stays in the hero lead. Giving is quiet: one cream \"Want to give beyond your dues?\" line near the end links to /give, and Donate stays in the header. Open for K: 1) when signed out, keep \"Already a member?\" as the H1 or change it for first-time visitors; 2) when signed in, should Join on another tier open the gift flow; 3) the board still has to confirm the card fee and the refund rule.",
+    "unresolved": []
+   },
+   "review": {
+    "file": "Member-H.dc.html (with Member-H-2.dc.html)",
+    "height": 3300,
+    "second_height": 1350,
+    "counts": "Axis: who the first screen is for (returning members first). The title strip names it in gold-ink: \"Axis: returning members first (Renew and Am I a member? in the hero, with the status card); the join path second. Everything else is Member-B.\" I compared the render with Member-B side by side, and the changes all belong to that axis or to the removals the spec asks for. The hero is renew-first. Signed in, it shows the status card: Sample data, Family, amber \"Ends in 30 days · Wed, Feb 10, 2027\", the covered names, and \"Renew · $25 → ends Thu, Feb 10, 2028\". The signed-out inset puts the lookup in the same slot. The four tier cards are now section 2 under \"New to LCA? Pick by who it covers\", with Join only and no per-card Renew links. Family is marked \"Your current plan\" and shows Renew · $25. The benefits are one check line under the cards. The ledger, the takes-care-of-itself strip, the Questions and the footnote are Member-B's, with the D11 fixes.\n\nCounted: 4 tiers with real prices (Adult $15, Scholastic $5, Family $25 with the honest math, Senior $10); \"300+\" appears 3 times (hero lead, ledger total, inset lead); Join and Renew are separate paths; \"Am I a member?\" is a hero button plus the lookup card; the legend has 6 numbered notes (badges 1 to 6 all placed); Questions has 6 cards with the first 2 open; the Give line appears once, near the end, saying \"Most people support LCA by joining and playing\". There is no donation hero, no fund tiers or progress bars, no urgency copy, no cover-the-fee and no thank-you wall. There are no home-club member counts, no member-price wording, no financial-need question, and grade and birthdate appear only in \"We never ask for...\". Dates checked against the calendar: Mon Jan 11 2027, Wed Feb 10 2027, Thu Feb 10 2028, Sat Feb 13 2027, Thu Jul 16 2026, Sun Mar 14 2027, Tue Oct 13. The lookup rows give the month only (Mar 2027, Jul 2026), as the spec says. There are 0 em dashes, 0 {{holes}}, 0 iframes, 0 animations, and every tag is balanced with every attribute quoted. Rendered heights: Member-H 3276px, so 3300 is declared (exactly the 3300 maximum); Member-H-2 1306px, so 1350 is declared (limit 1600). Neither render shows any overflow or clipping.",
+    "changes": [
+     "Member-H: replaced the footer copied from Member-B ('Contact LCA · Bylaws & minutes', one meta line) with the decided Tourn-List-Final footer: rook, 'Louisiana Chess Association', 'US Chess state affiliate · Louisiana's chess community since 1915', and Contact · Website help · Bylaws & rules · Donate, with the decided 22/24px padding.",
+     "Member-H: the 'Membership that takes care of itself' heading had drifted into one row with its subtitle pushed to the right. The subtitle is back on its own line under the heading, as in Member-B. The New and Sample data tags stay on the heading line so the board fits under the height limit.",
+     "Member-H: cut the inset section padding from 16/20 to 12/14px. Rendered height is 3276; declared height and $preview changed from 3250 to 3300.",
+     "Member-H-2: the expired inset (Jordan Lewis, Adult) said 'Renew · $25'. It now reads 'Renew · $15 → ends one year from today' because Adult is $15.",
+     "Member-H-2: the 'More than 30 days left' inset (Avery Thomas, Adult) said 'Renew early · $25'. It now reads 'Renew early · $15 · adds a year'. The spec text said $25, but that is the Family price.",
+     "Member-H-2: the expired inset's mini header now reads 'Donate · My LCA 1 ▾ · Renew', matching the decided Nav-Header-Final expired state, where Renew takes the Join slot beside My LCA and its to-do count. Its caption is shortened to match.",
+     "Member-H-2: the 'Lookup, no match' example used jlewis@example.com, which belongs to the expired member shown elsewhere. It is now chessdad84@example.com.",
+     "Member-H-2: legend note 6 said 'No giving on these screens; Donate is in the Menu' while the insets show Donate in the header. It now reads 'Nothing on these screens asks for a gift; on a phone, Donate sits in the Menu.'"
+    ],
+    "remaining_concerns": [
+     "Member-H is now exactly at the 3300px maximum (renders at 3276). Any later addition needs a cut somewhere else, for example the inset hero.",
+     "The spec says 'R10 FOOTER: as Member-B', but the task says to use the decided chrome, so Member-H now has the decided footer. Member-I, Member-J and Give-A still carry the old Member-B footer ('Contact LCA', 'Bylaws & minutes'), while Member-E, F and G use the decided one. The set is inconsistent until those boards are fixed in their own reviews.",
+     "The spec numbers the strip badges as 3 (auto-renew) and 4 (check at registration). The board follows the R9 legend numbering instead (5 on auto-renew, no badge on the registration check). It is consistent with the legend but not with the R5 text.",
+     "The strip's sample auto-renew panel is checked ('Family · $25 on Wed, Feb 10, 2027'), while the hero status card's auto-renew box is unchecked for the same member. The spec asks for both, but K may read it as a contradiction.",
+     "Legend note 2 and the footnote state that Join on another tier opens the gift flow when signed in, and Open for K item 2 asks whether it should. This is fine as a proposal, but K needs to confirm it.",
+     "Canvas sticky note (unchanged from the drawn note, still accurate): What: Member-B with one change, which is who the first screen is for. Returning members come first: signed in, the hero is the renewal plus a status card showing who is covered, when it ends (Ends in 30 days · Wed, Feb 10, 2027) and 'Renew · $25 → ends Thu, Feb 10, 2028'; signed out, the same slot holds the Am I a member? lookup (inset B). The four tier cards move to section 2 under 'New to LCA? Pick by who it covers', keep Join only, and Family is marked 'Your current plan'. Member-H-2 shows the same on phones plus four states: expired, more than 30 days left, a child's own login and a lookup with no match. Built from: Member-B's tier cards, honest family math, ledger, 'takes care of itself' strip and Questions; the decided header (Donate · My LCA with the to-do count 1, WS02) and footer. Removed: club member counts, member-price wording (D11), the Nationals fund framing, the per-card Renew links, See memberships and the expiry placeholder. K's feedback applied: service first; '300+' stays in the hero lead; giving is one cream 'Want to give beyond your dues?' line near the end to /give, and Donate stays in the header. Open for K: 1) when signed out, keep 'Already a member?' as the H1 or change it for first-time visitors; 2) when signed in, should Join on another tier open the gift flow; 3) the board still has to confirm the card fee and the refund rule."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Member-I.dc.html",
+    "title": "Membership · I · Member-I · Compact (round 2)",
+    "width": 1440,
+    "page": "membership",
+    "name": "Member-I · Compact",
+    "idea": "The whole decision fits in the first screen: a short hero with Renew and an inline 'Am I a member?' field, all four prices in one row directly under it with their Join buttons above the fold at 1440 by 900, and everything else on Member-B cut to one line each so the board ends under 1800px.",
+    "differs": "Axis: density. Every Member-B region survives but each is cut to its one line: the hero loses its side card (the benefits become one check line under the tiers) and gains the inline lookup, the tier row sits directly under it, 'takes care of itself' and 'where the money goes' become single rows without sample panels or ledger rows, and the questions become a one-column accordion. Board height under 1800px."
+   },
+   "drawn": {
+    "file": "Member-I.dc.html",
+    "title": "Membership · I · Member-I · Compact (round 2)",
+    "width": 1440,
+    "height": 2200,
+    "second_file": "Member-I-2.dc.html",
+    "second_title": "Membership · I · Member-I-2 · Compact, phones and states (round 2)",
+    "second_height": 1400,
+    "note": "What: Member-B with one change, density (Axis: density). The whole decision fits in the first screen at 1440 by 900. A 200px hero holds See memberships and Renew, with an \"Am I a member?\" field and a Check button inline. The four tier cards sit straight under it, so Renew, the lookup and all four Join buttons are above the red dashed fold line. Everything else is cut to one line or one card: a check line with the four benefits, \"Where the money goes\" and \"Membership that takes care of itself\" as two small cards, the questions as a one-column accordion, and one Give line. From header to footer the page is about 1650px. Member-I-2 shows two 390px phones (the first screen with all four memberships as compact rows, and the scrolled view) and four states: signed in and active, signed in and expired, the four lookup answers, and no treasurer's report yet.\n\nBuilt from: Member-B's tier copy and prices, the honest family math, \"Best value with 3 children\", the four renewal ideas, the dues categories with the treasurer's report link, and the six questions with LCA vs US Chess first. It uses the decided header (Donate · Log in · Join LCA) and footer, and the WS02 phone chrome. Removed: the club member counts (page 9), member-price wording (D11), the Nationals fund framing and the expiry placeholder. Also removed, only to save height: the hero side card, the sample panels and the New tag, the ledger rows and total, the report aside, and the two-column questions.\n\nK's feedback applied: service first. Joining, renewing and checking membership fill the first screen. Giving is quiet: one cream line at the end (\"Want to give beyond your dues?\") with Give going to /give, and Donate stays in the header. Open for K: 1) Is one line each enough for the renewal ideas, or should one sample panel come back? 2) Should the lookup be a field in the hero, or Member-B's link? 3) On phones, the compact rows drop \"Covers 1 player\" and the Renew links, with Renew in the hero. Is that enough? 4) The board still has to confirm the card fee and the refund rule.",
+    "unresolved": [
+     "The board is 2200px tall, not the spec's 1720 (ceiling 1800). The page itself, from header to footer, is about 1650px and meets that limit. The other 550px are the title strip, the 'Notes on this board' legend and the grey note, which sit above the page on every board in the set. The spec's R7 design notes became that legend at the top, with the 'Removed from Member-B for height' line, instead of a card at the bottom.",
+     "The fold guide is drawn 900px below the top of the page header, not at board y = 956, because the legend sits between the strip and the page. Its label sits in the blank gap of the 'Where the money goes' card. The dashed line runs behind the two cards so it does not cross their text.",
+     "Badge 6 (the inline lookup) was added so the legend has six notes. The spec's R7 notes 1 to 5 map to badges 1 to 5: the tier kicker, the money card, the renewal card, Questions and the Give line.",
+     "Second board: it is Member-I-2.dc.html at 1400px, not the spec's Member-I-Phones at 1440 by 1000, so it has room for the legend, the grey note, the frame captions and the 2 by 2 insets. To fit one phone screen, the compact rows are about 64px each, not 120px. Frame 2 shows the US Chess answer open plus a '5 more questions' link, without the closed rows or the 'Prices are per year' line.",
+     "In the phone views the 'Every membership' line was shortened to four two-column check items ('Voting at the annual meeting', 'Registering you and your kids'). The renewal lines were also shortened.",
+     "The phone status bar reads '9:41 AM' to follow the time rule.",
+     "Sample data badges mark Danielle Robichaux / Danielle R., Jordan L., the dates in the signed-in states and the renewal card lines. '[Fiscal year] · updated [date]' and the card fee and refund rule stay as board placeholders."
+    ]
+   },
+   "review": {
+    "file": "Member-I.dc.html (second part: Member-I-2.dc.html)",
+    "height": 2200,
+    "second_height": 1400,
+    "counts": "Axis: density. The whole decision fits in the first screen and every other Member-B region is cut to one line or one card. Compared with the Member-B render, nothing else drifted. The tier copy, prices, Join and Renew links, the honest math, the \"Not sure? Answer two questions\" link, the six questions (LCA vs US Chess first), the treasurer's report link and the header with Donate all match. The benefits now say \"entry to the tournaments LCA runs\" where Member-B said \"member price\".\n\nMeasured at 1440: the header starts at y 544, so the fold line sits at y 1444 (900px below the top of the page). Renew (y 757 to 801), the lookup Check button (678 to 722) and all four Join buttons (1029 to 1075) are above it. The page itself, from header to footer, is 1636px, under the spec's 1800px. The whole board renders at 2180px (declared 2200, limit 3300). Member-I-2 renders at 1367px (declared 1400, limit 1600).\n\nTiers: 4 (Adult $15, Scholastic $5, Family $25 for you and up to 3 children with \"Best value with 3 children\" and the honest math, Senior $10). \"300+\" appears in the H1 on both boards. Join and Renew are separate paths: a Renew button in the hero plus four \"Renew <tier>\" links. \"Am I a member?\" is an inline lookup with four result states (found, expired, not found, rate-limited) on part 2. Questions: 6, one column, only the first open. Legend: 6 numbered notes on each board. Give: 1 quiet cream line at the end (\"Want to give beyond your dues? Most people support LCA by joining and playing...\") with an outline Give button to /give. There is no donation hero, fund tier, progress bar, urgency or cover-the-fee copy, or thank-you wall.\n\nFound 0 of each: home-club member counts, member-price wording, the Nationals fund framing (it is named only in the note as removed), the 12-months placeholder, financial-need question, grade or birthdate field (they appear only in the FAQ line \"We never ask for a grade, a birthdate or a child's email\"), em dashes, USCF, decimal halves in copy (all .5 hits are SVG coordinates), {{holes}}, iframes, animation, AI references.\n\nDates checked: Sat, Feb 13, 2027 and Wed, Feb 10, 2027 are correct weekdays. Gold is never text on a light ground: the strip uses #866a1e, the kickers use #866a1e, and the hero label is #e6cf86 on navy. Tags carry their status in words. \"Sample data\" badges sit on the \"takes care of itself\" card and on every inset. Tags are balanced on both files.",
+    "changes": [
+     "Member-I: changed the footer to match the decided chrome in Tourn-List-Final. It now has the bold 'Louisiana Chess Association', the separate meta line 'US Chess state affiliate · Louisiana's chess community since 1915', the links Contact · Website help · Bylaws & rules · Donate, a white rook instead of gold and footer padding of 22/24px. It used to read 'Contact LCA', 'Bylaws & minutes' and a single combined meta line.",
+     "Member-I: made the fold-guide label (12px, 3px padding) a little smaller, gave it a white ring and moved it so it sits in the empty space inside the 'Where the money goes' card, about 10px clear of the paragraph and the report button. Before, it was crammed 7px under the paragraph.",
+     "Member-I-2: moved badge 6 off the phone bezel next to the Give button. It now sits on the Menu tab of the Scrolled frame (left 352px, top 758px), matching its note ('Donate stays in the Menu sheet').",
+     "Heights checked against the renders: Member-I is 2180px rendered and declared 2200 in both the root style and $preview; Member-I-2 is 1367px rendered and declared 1400. Neither needed a change."
+    ],
+    "remaining_concerns": [
+     "Member-I-2 inset (ii), 'Signed in, expired', shows 'Expired Wed, Feb 10, 2027', which is in the future relative to today (Tue, Oct 13, 2026). The spec dictates that date, so I left it. A past date such as the lookup's 'Expired July 2026' would read more honestly.",
+     "The spec puts the design notes (R7) at the bottom of the page. The designer put them in the top legend instead, as the board pattern requires, so the page has no bottom notes band. The six notes cover the spec's five points plus the inline lookup, and the 'Removed from Member-B for height' line is in the legend box.",
+     "The fold guide is drawn behind the two cream-band cards on purpose, so it does not cross the text in the right card. It shows in the gutters and the gap between the cards, and its label sits in the empty space of the left card. K may read the label as part of the card.",
+     "Member-I-2's compact phone rows drop 'Covers 1 player' and the per-tier Renew links (Renew is in the hero). The board raises this as an open question for K rather than treating it as a defect."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Member-J.dc.html",
+    "title": "Membership · J · Member-J · Long read (round 2)",
+    "width": 1440,
+    "page": "membership",
+    "name": "Member-J · Long read",
+    "idea": "The same page as one 780px column read top to bottom, with the tiers as a four-row table, the ledger as a plain table, the renewal mechanics as four short paragraphs and the six questions answered in full on the page instead of an accordion, so nothing is hidden behind a click and the treasurer can proof it like a letter.",
+    "differs": "Axis: one column, no accordion. Member-B's two- and four-column layout becomes a single centred column: same content, same copy, the questions with their answers written out. Everything else is Member-B's."
+   },
+   "drawn": {
+    "file": "Member-J.dc.html",
+    "title": "Membership · J · Member-J · Long read (round 2)",
+    "width": 1440,
+    "height": 3250,
+    "second_file": "Member-J-2.dc.html",
+    "second_title": "Membership · J · Member-J-2 · Long read, phones and states (round 2)",
+    "second_height": 1400,
+    "note": "What: Member-B laid out as one 780px column that you read top to bottom. The tiers are a four-row table with Join and Renew on every row, the ledger is a plain table, renewal is four short paragraphs, and all six questions show their answers in full with no accordion, so the treasurer can proof the page like a letter. Member-J-2 shows the page on two phones (first screen, and the questions near the end) and four states: signed in and active, signed in and expired, the thin ledger, and the \"Am I a member?\" lookup.\n\nBuilt from: Member-B's copy, the real tiers (Adult $15, Scholastic $5, Family $25 for you and up to 3 children, Senior $10), the honest family math, \"Best value with 3 children\", the ledger placeholders, the renewal mechanics and the six questions, with LCA vs US Chess first. The header and footer are the decided ones, with Donate in the header, the same as Member-E. Removed: the club member counts (page 9), any member-price wording (D11), the Nationals fund card and the term placeholder, and every multi-column region, the sample panels and the chevrons.\n\nK's feedback applied: service first and giving quiet. The page opens with who each membership covers and what it does, and giving is one cream paragraph after the questions, with Give going to the plain /give page (Give-A). Open for K: does 780px read well on a wide screen, or should the tier table break out wider? Should each answer get its own link so a club rep can send it? On phones, is it fine for all six answers to be written out, and is the hero's Renew enough without a Renew on each row? The board still has to confirm the card fee and the refund rule.",
+    "unresolved": [
+     "I found an unfinished draft of this board from an earlier run at scratchpad/partial/Member-J.dc.html. I used it as the starting point and reworked it here. I did not touch the partial copy itself.",
+     "Main board: the content measures 3241px and is declared at 3250, under the 3300 limit. The spec estimated about 2750; writing out all six answers in full is what makes it longer.",
+     "Phone frame 2 is scrolled to the last three answers so the Give paragraph shows right after them. Showing the first two answers would put Give off the screen, so it does not match the spec's 'two Q&As' word for word.",
+     "Phone frame 1: the Senior row sits just above the tab bar, so its last line is partly hidden, and the two math paragraphs are one scroll below the first screen. The caption says so.",
+     "Member-J-2 is 1440x1400, not the 1440x1000 in the spec. The legend and grey note on top of the board need the extra space. It is still under the 1600 limit."
+    ]
+   },
+   "review": {
+    "file": "Member-J.dc.html (second board: Member-J-2.dc.html)",
+    "height": 3250,
+    "second_height": 1400,
+    "counts": "Axis: one column, no accordion. The title strips on both boards say \"Axis: one column, every answer on the page. Everything else is Member-B.\" I compared it with the Member-B render, and the layout is the only thing that changed. Every section below the header sits in one 780px column. The hero side card is now a single check line. The four tier cards are now a four-row table with Join and Renew on every row. The ledger aside is now one report line under a plain table. The four-card strip is now four bold-lead paragraphs. The two-column accordion is now six questions with their answers written out and no chevrons. The tier copy, the honest family math, the ledger rows and their placeholders, and the question copy are all Member-B's. Kept: Adult $15, Scholastic $5, Family $25 with \"Best value with 3 children\", Senior $10. Also kept: \"300+\" in the hero H1 and the ledger total; the hero Renew and a per-row Renew link, separate from Join; \"Am I a member?\" as a lookup link, with the four lookup results on J-2; the full family math, including the Senior + Scholastic line. Removed: the \"Your club counts\" section, all member-price wording (the US Chess answer no longer says \"member price\"), the Nationals fund card and the term placeholder. Giving: one cream paragraph near the end (\"Most people support LCA by joining and playing...\") with a small outline Give button to /give. Donate stays in the header and footer. There is no hero, no fund, no bar, no urgency copy, no cover-the-fee and no thank-you wall. No grade, birthdate or financial-need question; the Family answer says outright that we never ask for a grade or birthdate. Legends: Member-J has 5 numbered notes (badges 1 to 5 on the board), Member-J-2 has 6. Every date carries its weekday (Wed, Feb 10, 2027; Sat, Feb 13, 2027; Thu, Feb 10, 2028; Tue, Oct 13). No em dashes, USCF, .5 values or AI references. Gold appears only as fills and underlines, and gold-ink text uses #866a1e. Status tags have words (Active, Expired, Found, Not found, Too many lookups). Sample data badges are on the ledger, the renewal section and every J-2 inset. Rendered content heights: 3241px (declared 3250, limit 3300) and 1393px (declared 1400, limit 1600). Nothing overflows or overlaps at 1440px; the only clipped element is the intentionally visually-hidden \"Actions\" table header.",
+    "changes": [
+     "Member-J: changed the footer to the decided chrome from Tourn-List-Final. It now has the rook with \"Louisiana Chess Association\", \"US Chess state affiliate · Louisiana's chess community since 1915\" and the links Contact · Website help · Bylaws & rules · Donate. Before, it was an older footer with \"since 1915\", Contact LCA and Bylaws & minutes.",
+     "Member-J: added aria-keyshortcuts=\"Meta+K Control+K\" to the header Search button so it matches the decided header.",
+     "Member-J: removed an unused .mj-back style, left over from a back link the board does not draw.",
+     "Member-J-2: phone status bars now read \"10:12 AM\" instead of \"10:12\", to follow the time rule.",
+     "Member-J-2: the phone footer line now reads \"Louisiana's chess community since 1915\", to match the decided footer.",
+     "Re-rendered both boards and checked the full PNGs and 1x crops (hero, tier table, footer, phone status bars). The declared heights stay at 3250 and 1400, which match the renders rounded up to the next 50."
+    ],
+    "remaining_concerns": [
+     "Member-J is 3250px tall against the spec's \"about 2750\". The written-out answers, the top legend and the bottom design-notes card that the spec asks for (R8) add the height. It is still under the 3300 limit, but there is only 50px of headroom.",
+     "The R8 design-notes card at the bottom repeats most of the top legend. The spec asks for both, so both stay. Design note 5 reads \"Entry fees are the same for everyone (D11)\" rather than the spec's \"No member price (D11)\", so the board never prints the phrase \"member price\". I left that change in place.",
+     "The hero check line wraps to two lines at 780px, while the spec says \"one line\". It reads as one paragraph, so I left it.",
+     "Phone frame 1 ends at the Senior row. The math paragraphs fall below the tab bar (the caption says \"the math follows below\"), and the phone math paragraph leaves out the Senior + Scholastic sentence. The card-fee paragraph is not drawn on the phone.",
+     "The card fee, refund rule, [fiscal year], [date] and all [Amount] cells stay as board-to-confirm placeholders, as in Member-B.",
+     "Canvas sticky note text (from the board's grey note): What: Member-B as one 780px column read top to bottom: tiers and ledger as plain tables, renewal as four paragraphs, all six questions answered in full. Built from: Member-B's copy, tiers, ledger and questions; the decided header (Donate, Log in, Join LCA) and footer. K's feedback applied: service first; giving is one cream paragraph near the end with Give to the plain /give page, and Donate stays in the header. Open for K: does 780px read well on a wide screen; should each question carry its own link; the card fee and refund rule still need the board."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Give-A.dc.html",
+    "title": "Giving · A · One plain page (round 2)",
+    "width": 1440,
+    "page": "membership",
+    "name": "Give-A · The plain /give page",
+    "idea": "A short, quiet /give page whose first sentence says most people support LCA by joining and playing, and which then takes a gift in four taps: once or monthly, four amounts or Other, an optional 'Put it toward' dropdown with no goals or bars, Stripe Checkout, 'Where the money goes' as a link to the treasurer's report, and no tax-deductibility claim.",
+    "differs": "This is not a Member-B variant but the one giving option K asked for. Against Member-C it keeps only the form: no 'choose what your gift does' hero, no purpose funds with goals and progress bars, no money-in and money-out table or trust-fact tiles, no sponsored entries or checkout add-on, no cover-the-fee, no tribute gift, no thank-you wall, no December appeal, no tax-status line."
+   },
+   "drawn": {
+    "file": "Give-A.dc.html",
+    "title": "Giving · A · One plain page (round 2)",
+    "width": 1440,
+    "height": 1550,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "What: This is the one giving option K asked for, a short, quiet /give page. It opens with one sentence: most people support LCA by joining and playing. Then comes one form: Once or Monthly, $10, $25, $50, $100 or Other, an optional \"Put it toward\" dropdown (General, Scholastic program or Equipment) with no goals or bars, and Continue to Stripe. After the form are \"Where the money goes\" as a link to the treasurer's report and a \"Most help isn't money\" line. A 390px phone sits beside the page. Below them are two states (Monthly with an Other amount, and the /give/thanks page) and the thin states.\n\nBuilt from: Member-B's volunteer-board sentence, the 300+ figure and its \"Want to give beyond your dues?\" line, which links here. Also the brief's Donate scope as K kept it, and the decided header, footer and phone chrome. It replaces Member-C. Nothing else comes from Member-C: no purpose hero, fund goals or progress bars, money table, trust tiles, sponsored entries, checkout add-on, cover the fee, tribute gift, thank-you wall, December appeal or tax line.\n\nK's feedback applied: service first, giving quiet. The page has no urgency, no goals and no second ask. Donate stays in the header and footer (WS02). The receipt is the one email from LCA. Open for K: are $10, $25, $50 and $100 the right amounts? Keep \"Put it toward\", or General only? The board still has to supply the check mailing address and confirm LCA's tax status.",
+    "unresolved": [
+     "The spec's R4 design-notes row is the 'Notes on this board' legend at the top (six numbered notes matching badges 1 to 6), not a second card at the bottom. 'Replaces: Member-C' is in the title meta line. A duplicate notes row would have pushed the board past 1600px.",
+     "To stay under 1600px (rendered 1548, declared 1550), the phone caption and the designer margin note ('No tax-status line until the board confirms LCA's status (brief WS12)', badge 5) sit in a narrow column to the right of the phone. The two state frames are drawn at 84% zoom.",
+     "The left column's form puts Amount and 'Put it toward' side by side, and the segmented control sits beside its Monthly hint, so the column fits beside the 844px phone. The order and copy are unchanged from the spec.",
+     "On the phone, the two lock lines are merged into one muted paragraph. The 'Where the money goes' card is cut off at the tab bar (the screen is drawn scrolled to the top). The status bar reads '7:12 PM' to follow the time rule.",
+     "The header Donate link is drawn in its current state (underlined) because /give is where Donate lands; badge 6 sits just above it. No nav section is current.",
+     "Placeholders remain for the board and treasurer: '[fiscal year]' in the report card and '[mailing address: board to supply]' for checks. The $15 monthly gift, the $25 Scholastic gift and danielle@example.com are marked Sample data.",
+     "The 'Volunteer at a scholastic event' link is drawn as a mailto to LouisianaChess@gmail.com. No volunteer page exists to link to."
+    ]
+   },
+   "review": {
+    "file": "Give-A.dc.html",
+    "height": 1550,
+    "second_height": 0,
+    "counts": "Axis: none. Give-A is not a Member-B variant. It is the one plain /give page K asked for, built from Member-B's wording (the volunteer-board sentence, 300+, the \"Want to give beyond your dues?\" link) and the brief's Donate scope. There is no second board. Final size is 1440 x 1550. The content renders to 1547px, and the root height and $preview are both 1550, under the 1600 ceiling. What I counted: 6 numbered legend notes, with badges 1 to 6 all placed on the design. 2 frequency options (Once, Monthly). 4 amounts plus Other ($10, $25, $50, $100, Other). 1 optional \"Put it toward\" select with 3 options (General, Scholastic program, Equipment) and no goals, bars or impact line. 1 gold \"Continue to Stripe · $25\" button. 2 lock lines (LCA never sees or stores your card number; the receipt comes from LCA). 1 \"Where the money goes\" card linking to the treasurer's report and its PDF. 1 \"Most help isn't money\" row with 4 links and a check line. 1 phone at 390x844 that reaches the button in one screen. 3 frames: (a) Monthly with Other, (b) the thank-you page, (c) thin states, now with 5 bullets. 2 \"Sample data\" badges, on frames a and b. The first sentence says people support LCA by joining and playing. The page has no tax-deductibility claim, no donation hero, no fund tiers or progress bars, no urgency, no cover-the-fee and no thank-you wall. The rules checks found 0 em or en dashes, 0 {{holes}}, 0 iframes, 0 uses of USCF, no grade or birthdate field and no financial-need question. All tags are balanced. Gold text uses #866a1e ink, and the gold button has navy text. The header matches Tourn-List-Final when signed out (Donate · Log in · Join LCA), with Donate underlined as the current page.",
+    "changes": [
+     "Footer replaced with the decided Tourn-List-Final footer: the rook and a bold 'Louisiana Chess Association', the line 'US Chess state affiliate · Louisiana's chess community since 1915', and links Contact · Website help · Bylaws & rules · Donate. The board had used the spec's own wording ('Contact LCA', 'Bylaws & minutes'), which does not match the decided chrome.",
+     "Removed the 102px-wide third column. It had squeezed the phone caption and the tax board note into a narrow strip of 2 to 3 words per line. The body is now 760px plus the phone column. The phone caption sits under the phone at 520px wide in two lines. The 'Board note, not page copy' annotation (badge 5) is now one dashed line at the foot of the left column.",
+     "Added the spec's missing thin state for when no treasurer's report has been published yet: 'The treasurer publishes a report after each fiscal year; the latest is on the Minutes page.', shown with no buttons.",
+     "Phone: tightened the spacing so the 'Where the money goes' card is fully visible above the tab dock. Before, the dock cut its link text in half.",
+     "Moved phone badge 1 off the H1 'Give', which it was covering. Moved header badge 6 so it straddles the top edge of the header instead of crowding the Donate link.",
+     "Shortened the six legend notes to two lines each. The grey note now puts its labels (What, Built from, K's feedback applied, Open for K) inline, and 'Built from' says 'From Member-C only the form'. This brought the content back to 1547px after the layout changes, so the declared height stays 1550.",
+     "Trimmed some wording in the thin states and tightened the states row padding. Re-rendered and viewed each round, and checked again for overflow (none), em or en dashes (none) and tag balance (clean)."
+    ],
+    "remaining_concerns": [
+     "Footer: the spec's R5 asks for 'Contact LCA · Website help · Bylaws & minutes · Donate', but the brief says to match the decided chrome, so the board now uses the decided Tourn-List-Final footer (Contact · Website help · Bylaws & rules). If K wants a footer link to the minutes for the treasurer's report, that is a change to the decided footer, not to this board.",
+     "The board keeps its given title, 'Giving · A · One plain page (round 2)', and its 'Round 2' tag, although this is the round 3 review pass. I did not rename it, because the canvas title was given that way.",
+     "Placeholders the board still has to fill: '[fiscal year]' in 'Where the money goes', and '[mailing address: board to supply]' on the check line. The canvas sticky lists both under Open for K.",
+     "The decided boards have no grey 'What / Built from / K's feedback applied / Open for K' box, so this board's version of it is local. It is styled like the other round 3 boards, not copied from a decided board.",
+     "Sticky text for the canvas, from the board's grey note: What: the giving option K asked for, a short /give page with one sentence on how LCA is supported, one form and one report link. Built from: Member-B's wording, the brief's Donate scope and the decided chrome; from Member-C only the form, with no funds, goals, bars, money table, trust tiles, sponsored entries, add-on, cover the fee, tribute, thank-you wall, appeal or tax line. K's feedback applied: service first and giving quiet, with no urgency, no goals and no second ask. Open for K: (1) Are these the right amounts? Keep Put it toward, or General only? (2) For the board: the check address and LCA's tax status."
+    ]
+   }
+  }
+ ]
+}

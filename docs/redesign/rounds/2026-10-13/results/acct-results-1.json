@@ -1,0 +1,271 @@
+{
+ "label": "acct-1",
+ "results": [
+  {
+   "board": {
+    "file": "Account-Int-A.dc.html",
+    "title": "Integration · Int-A · The hub and its rooms (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "The hub and its rooms: My LCA holds every role as a section, each section opens its working room, the word Workspace goes",
+    "idea": "One home at /dashboard for everyone: each grant a person holds adds one section to My LCA that summarises its work, takes one-tap decisions inline and opens its room with one button, while the rooms keep the decided /workspace and /board paths under a 'My LCA › ...' crumb and only lca_admin ever sees /admin.",
+    "differs": "Against Int-B there is no left rail and no area: one long page with buttons out to the rooms, and the rooms stay separate full-width pages at today's paths. Against Int-C there is no second home: a volunteer's roles live on My LCA itself, so Chris's Monday is one list on one page."
+   },
+   "drawn": {
+    "file": "Account-Int-A.dc.html",
+    "title": "Integration · Int-A · The hub and its rooms (round 2)",
+    "width": 1440,
+    "height": 3350,
+    "second_file": "Account-Int-A-2.dc.html",
+    "second_title": "Integration · Int-A · The hub and its rooms, part 2 (round 2)",
+    "second_height": 2950,
+    "note": "What: Int-A, the first of three ways to join My LCA, the working rooms and Admin. My LCA at /dashboard is the one home for everyone. Each role a person holds adds a section there, and each section has one button into its room. The rooms keep the decided /workspace and /board paths, but the word Workspace is gone from the header, the menu and every crumb. Only lca_admin ever opens /admin. Part 1: the title strip, the notes, Open for K (Q1 to Q3), section A (the My LCA menu for Avery, Danielle, Chris, a representative, an officer and an admin, plus the phone sheet, two extra roles, the menu rules, what changed from Nav-IA-Final and the trade-off) and section E (no mode switch, the admin backstop strip). Part 2: section B (the route map and redirects), section C (what is inline, what opens a room, what stays admin-only, for all nine sections) and section D (the crumb bands, Exit console, Back to My LCA, the event strip).\n\nBuilt from: Account-C (one account, many roles), Account-A and B, Work-A to D, Nav-Header-Final (the signed-in bar and the My LCA menu) and Nav-IA-Final (the structure and routes), checked against the frame's role inventory.\n\nK's feedback applied: a good default (a plain member sees You only, with no chips and no role rows). Every section is drawn in full, each with its inline part, its room and its admin-only part. Roles live in My LCA instead of the admin panel. There are options for each: Int-A, B and C for the frame, and options per section and per screen. Open for K: Q1, pick the frame (this board is the baseline). Q2, does the word Workspace survive (default: no; the paths stay). Q3, officers and the president lose the view-only admin panel and get rooms instead (default: withdrawn).",
+    "unresolved": [
+     "The spec's content did not fit on one board under 3400px. Measured as drawn, it came to about 5300px, so it is split into two boards: part 1 (Account-Int-A, 3345px rendered, declared 3350) and part 2 (Account-Int-A-2, 2939px rendered, declared 2950).",
+     "Section order across the two parts is A and E on part 1, then B, C and D on part 2. I kept the spec's letters so that other boards' references (for example 'Int-A cell A1') still match. Each part says where the other sections are.",
+     "To fit the height caps, three legend items moved. The trade-off box is now a cell at the foot of column one in section A on part 1. The seven-tag key is in part 2's title strip. Part 2's legend repeats the six notes in short form and has no grey note of its own; the full notes and the grey note are on part 1.",
+     "In section A each cell shows the 1280px bar as a narrow two-row strip, because the full bar cannot fit in a 437px cell. The open menu is up to 390px wide, not 320px, so the rows wrap less.",
+     "Cell A9 stays in section A on part 1. It was not moved into section B's redirects strip.",
+     "The spec said 'Expired Tue, Sep 30, 2026'. Sep 30, 2026 is a Wednesday, so the board reads 'Expired Wed, Sep 30, 2026'.",
+     "The spec gave gold-ink text as #705718; the copy rules say #866a1e. Gold-ink appears only as rules and the tab bar (#866a1e). No gold text sits on a light ground.",
+     "To fit, I shortened the file and line references in some cells of the section C table and in the route-map notes. Every route, role rule and label is unchanged."
+    ]
+   },
+   "review": {
+    "file": "Account-Int-A.dc.html (part 1) and Account-Int-A-2.dc.html (part 2)",
+    "height": 3400,
+    "second_height": 2950,
+    "counts": "Part 1 renders 3385px at 1440, so it is declared at 3400 (the cap is 3400). Part 2 renders 2945px, declared at 2950 (the cap is 3000). Both legends have six numbered notes. Part 1 uses badges 1, 2 (new), 5 and 6 (twice). Part 2 uses badges 2 to 6. Chris's menu has 11 rows: one to-do, My LCA, the event line, Family, Membership card, five room rows and Log out. The old caption said twelve. Six menu cells (A1 to A6), plus the phone sheet, the 'two more people' card, the rules of the menu and the Was/Is table. Four route cards plus six redirect rows. Nine rows in the inline, room and admin-only table. Four crumb bands, the flow diagram and the live strip. I checked every weekday programmatically and all are correct, including Wed, Sep 30, 2026, which the spec had as Tue. There are no em dashes, no USCF, no '.5' in the copy, no AI references, no grade, birthdate or financial-need question, and every time is written like 9:30 AM. Gold appears as text only on navy (#e6cf86); every gold fill carries navy text. The word Workspace appears only where the board says it goes. The menu counts match the sibling boards: Events you direct (2) on Sun, Oct 25 and (3) on Mon, Oct 5, as Account-K-2, L-2 and Work-E-2 have them. Board inbox (3), Support tickets (4) and My region · 4 to check also match. Tags are balanced, and the overflow and clipping scan found nothing.",
+    "changes": [
+     "Part 1: added an 'At a glance' diagram on the right of the title block, with badge 2. It shows Avery's My LCA as Today and You only, with no chips. Beside it is Chris's My LCA as one long page with seven rows (Today, You, Family · Ella, Events you direct, Your region, Board, LCA office); the four role rows each have an arrow to a gold room chip (Setup and Event day, My region, Board inbox, Support tickets). The footer line reads 'No left rail (that is Int-B) and no second home (that is Int-C). Only lca_admin ever opens /admin.' Before this, part 1 drew only menus that looked almost the same as Int-C's, so the idea and how it differs were not clear at a glance.",
+     "Part 1: the Sample data note pointed to 'cells A4 to A6', but no cell labels exist on the board. It is now a 'Sample data' row in the title strip that names Priya Shah, Camille Broussard and Renée Ortego. The pill moved into the diagram header, set in normal case.",
+     "Part 1: removed the 'Round' row from the title strip (the kicker already says Round 2, and the swappable frame is in Q1). This kept the board under the 3400 cap.",
+     "Part 1: changed Chris's menu caption from 'twelve rows' to 'eleven rows' to match the rows drawn.",
+     "Part 1: declared height and $preview changed from 3350 to 3400 to match the 3385px render.",
+     "Part 2: the live strip said 'Round 3 · 23 of 24 results confirmed', which contradicts the 13 boards and 26 players used on Work-E, Account-L and Nav-Header-Strip. It now reads '12 of 13 results confirmed · 1 to confirm'.",
+     "Part 2: the finishing line 'Round 4 published and 47 players told' now says 26 players.",
+     "Part 2: 'Done · 9 clubs confirmed Mon, Oct 5' now says Mon, Nov 2, because every sibling and the frame put the next monthly check on Mon, Nov 2 and 4 of 9 clubs are unchecked on Oct 5.",
+     "Part 2: the title strip now has a separate 'Replaces' row; 'replaces nothing yet' had been folded into the Built from text.",
+     "Part 2: badges 2 and 4 sat on the gutter between two cards and badge 2 then touched the B chip. They are now on the left edge of their own cards.",
+     "Both parts: every numbered badge now also carries the kit class k-num-badge (no visual change), so the board uses the kit's badge class like Int-B does."
+    ],
+    "remaining_concerns": [
+     "Part 1 renders at 3385px against a hard cap of 3400. Any later addition to part 1 must take space from somewhere else.",
+     "Apart from the badges, both files use their own ia-* classes, not the kit's k-* classes. Int-C does the same; Nav-IA-Final uses the kit. Rebuilding the board on the kit classes would mean redrawing it.",
+     "Part 2 has no grey 'What / Built from / K's feedback applied / Open for K' note. Its legend says the grey note and the trade-off are on part 1. Adding one would push part 2 past the 3000px cap unless section C's table is trimmed.",
+     "The frame contradicts itself on Chris's menu count: its role inventory says 'Events you direct (3)' and its Int-A header says '(2)'. The board follows the siblings: (2) on Sun, Oct 25 and (3) on Mon, Oct 5.",
+     "The frame's Int-A header gives Avery's to-do as the Paul Morphy Open, but the board spec and the Account-D correction use The Baton Rouge Classic. The board keeps the Classic, as the spec says.",
+     "The sibling Account-Int-C-2 has the same '23 of 24 results confirmed' strip that I fixed here. That file was out of scope, so it still disagrees with the 13-board figure.",
+     "Int-A has no picture of a full My LCA page beyond the new small diagram. The spec says the full sections are drawn on Account-D to S, so K needs those boards to see the hub in full.",
+     "Canvas sticky note text: 'Int-A, the hub and its rooms (round 2, two parts). My LCA at /dashboard is the one home: a plain member sees You only; each role adds a section with one-tap decisions and one button into its room (Setup, Event day, My region, Board inbox, Support tickets, Member lookup). The rooms keep the /workspace and /board paths, but the word Workspace leaves the header, the menu and every crumb. Only lca_admin opens /admin. No mode switch. Pick the frame here: Int-A, B or C.'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-Int-B.dc.html",
+    "title": "Integration · Int-B · My LCA as an area with a left rail (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "My LCA as an area with a left rail: the rooms are pages inside it, Admin separate",
+    "idea": "My LCA stops being one page and becomes a small area under /my with a persistent left rail, one entry per grant the person holds, where the working screens (the console, the checklist, My region, the inbox, tickets, email) are pages inside the same shell, so there is no 'summary here, work there' step.",
+    "differs": "Against Int-A the roles are rail entries and short pages instead of sections on one long page, and the console, checklist, My region and inbox render inside the My LCA shell under /my/... instead of as separate rooms under /workspace/...; against Int-C there is one home with a rail, not two homes, and the menu carries no second count."
+   },
+   "drawn": {
+    "file": "Account-Int-B.dc.html",
+    "title": "Integration · Int-B · My LCA as an area with a left rail (round 2)",
+    "width": 1440,
+    "height": 3350,
+    "second_file": "Account-Int-B-2.dc.html",
+    "second_title": "Integration · Int-B · part 2 (round 2)",
+    "second_height": 2500,
+    "note": "What: Option Int-B for the frame joining pages 14 and 15. My LCA becomes a small area under /my with a left rail, one entry per grant (Overview, You, Family, the live event, Events, My region, Board, Member lookup, Settings). The working screens are pages inside it, the menu loses its role rows, and Admin stays separate at /admin. Two parts: header, menu, rail and route map; then what each page holds, how the rail folds, and the admin crossing.\n\nBuilt from: Account-C's sections and Today list, re-cut as rail pages; Account-A and B; Work-A to D (round 1); Nav-Header-Final and Nav-IA-Final for the bar and menu; the frame's role inventory and Today rules.\n\nK's feedback applied: a good default (a plain member sees no rail at all), every section drawn in full as its own page with its working screen, roles hosted in My LCA so only lca_admin ever sees Admin, and options for each (Int-A is the swappable baseline). Open for K: Q1 pick the frame; Q2 confirm the redirects from /workspace and /board/inbox into /my; Q3 the Board page tabs in place of the view-only admin panel.",
+    "unresolved": [
+     "Split into two files: with every spec part in, a single frame rendered at about 3770px, over the 3400px cap, and moving A9 into the redirects strip would not have saved enough. Part 1 (3350) holds the title strip, grey note, legend, section A and section B. Part 2 (2500) holds sections C, D and E, with its own title strip, grey note and the legend repeating notes 1 to 6.",
+     "Spec inconsistency: a plain member gets no rail under two entries, yet the spec gives Renée (admin, A6) a rail of Overview, You and Settings. Her caption now says her Overview also holds the Admin card, so it is its own page and the rail shows. That replaces the spec line 'An admin's rail is a member's'.",
+     "The spec calls Chris's rail (A3) 'ten entries' but lists nine. Nine are drawn.",
+     "In section A the rail is drawn 150px wide inside the 430px cells, because a 240px rail and a 236px menu cannot sit side by side without the menu covering the rail's counts. Section E draws the rail at its true 240px.",
+     "Part 2's live-event row reads 'Round 3 · 8 of 13 results confirmed' (from the frame's tournament Sunday line), while A3 on Sun, Oct 25 reads 'Round 4 pairs at 9:30 AM'. Both are as the spec gives them and should be reconciled across the boards.",
+     "The spec names #705718 for gold-ink, the copy rules name #866a1e. #866a1e was used, and the board has no gold text on a light ground.",
+     "Account-Int-A is not yet in the project, so the key tags and the Admin route card rows come from Int-A's spec text, not from a drawn board."
+    ]
+   },
+   "review": {
+    "file": "Account-Int-B.dc.html (part 2: Account-Int-B-2.dc.html)",
+    "height": 3350,
+    "second_height": 2600,
+    "counts": "Rendered heights: main 3338 (declared 3350, cap 3400) and part 2 2552 (declared 2600, was 2500; cap 3000). Both are 1440 wide. Neither scrolls sideways. The only overflow is the tablet tab row in D, which is drawn on purpose as a scrolling row with a fade. Tags are balanced and the skeleton is byte-identical to Tourn-List-Final apart from the title. Legends: 6 numbered notes on each part. All six badges are placed on part 1 (A1=3, A3=1 and 4, A6=5, B1=2, B5=6). Part 2 places 1, 2, 3, 5 and 6; note 4 says it is drawn on part 1. Section A has 9 cells: Avery, Danielle, Chris, Priya, Camille, Renee, the phone, the text card and the Was/Is table. Section B has 4 route cards plus the redirects strip. Section C is a 9-row table. Section D has 4 fold slices plus the Ways in, Ways back and Between pages lines. Section E has the two rails and the admin strip. Dates: 13 distinct dates, every one carries a weekday and every weekday is correct for 2026. Times all read like 9:30 AM or 7:00 PM. No em dashes, no USCF, no .5, no AI references, no grade, birthdate or financial-need question, no member price. Gold is used only as fills and rules. Gold-ink tabs use #866a1e. The menus match the frame. Avery: to-dos, My LCA, Membership card, Log out. Danielle adds Family and the event line. Chris has 6 rows against Int-A's 11. Renee adds Admin · 12. The rail never has an Admin row. Chris's counts agree with the corrected shared list: 9 things on Mon, Oct 5, with Events 3 and Board 7 (Treasurer 3 plus LCA office 4). On Sun, Oct 25 Events drops to 2 because the G/90 report is gone. Priya's and Camille's counts match Int-A.",
+    "changes": [
+     "Both parts, What note: added how Int-B differs from its siblings, so it reads at a glance. Against Int-A: short rail pages, not one long page (part 2: rooms are rail pages). Against Int-C: one home, not two. Also widened the What column to 1.4fr 1fr 1.25fr 1fr.",
+     "Both parts, title strip 'Round' line: it used to read 'Frame: Int-A ... draws Int-B beside it', which was confusing on the Int-B board. It now reads 'The frame is swappable: the section and screen boards are drawn inside Int-A; this board draws Int-B.'",
+     "Both parts, K's feedback applied note: now says how K's liked On this page section survives. A plain member keeps it (A1), and from the first grant the rail does that job.",
+     "Legend note 3 (both parts) and the A1 caption: changed 'under two entries' to 'with no grant'. Settings sits in every rail, so Avery would otherwise count three entries and the rule contradicted itself. Overview, You and Settings stay one page, and the rail appears with the first grant (a child or an admin role included). The A1 caption now says the menu matches Int-A 'row for row; only the paths read /my' instead of 'exactly'.",
+     "A3 (Chris): the menu's event line now shows its deep link /my/events/:id/live (the way in that the frame names). The caption now says 'Int-A's eleven' rows, not twelve, to match Int-A's own caption.",
+     "A6 (Renee): Overview now shows '3 things'. By the Today rules an admin's queue line and each item assigned to her by name are Today items. The caption now explains this and was shortened so the row does not grow.",
+     "B2 Setup row (part 1) and the D console caption (part 2): Exit console pointed to /my/events/:id, which no route card listed. Both now say /my/events/:id is the event's page and opens on its checklist (/setup).",
+     "Part 2 section E: added a 'Sample data' badge. Its rail counts and the admin queue figure are invented, like section D's.",
+     "Part 2: moved note badge 1 from empty page space to the foot of the desktop rail it describes.",
+     "Part 2: set the declared min-height and $preview height to 2600 to match the render (2552). Part 1 stays at 3350 (render 3338)."
+    ],
+    "remaining_concerns": [
+     "Under Int-B the left rail replaces Account-C's On this page rail for anyone with a grant. That is what the spec's 'removes' field says, but it pulls against K's 'I really like the on this page section' and the brief's 'The On this page rail stays'. The board now says the rail does that job, but K should see it as a real cost of this option.",
+     "Danielle (A2) on event day: by the Today rules her children's event-day line is a Today item, so her Overview could carry '1 thing'. The spec draws no count there. I left it as the spec has it.",
+     "Camille's 'Overview · 6 things' (from the spec) only adds up if her Today list holds the Secretary inbox as one item, 4 assigned tickets and a minutes-not-posted item. The board does not show that breakdown.",
+     "There is no full-size Int-B page and no drawn Overview Today list on this board, only rail slices, a phone sheet, and the D mini frames. The idea reads from section A, but K may want one 1280 Overview drawn to compare with Int-A's long page.",
+     "Sibling Account-Int-A.dc.html renders at 4533px against a declared 3350, and its cells appear to run past the root. That is outside this review, but it should be checked before the frame boards go on the canvas side by side."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-Int-C.dc.html",
+    "title": "Integration · Int-C · My LCA personal, Your work beside it (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "My LCA personal, Your work beside it: a second page holds the Today list and the rooms, Admin separate",
+    "idea": "Two homes for a volunteer and one for everyone else: /dashboard stays personal (You and Family) for every signed-in person, and /work, called Your work, holds the Today list across roles at the top, one card per room and the rooms under it, with its own count in the menu.",
+    "differs": "Against Int-A the role sections leave My LCA for a second page, so the default page has nothing to hide and Your work can be dense; against Int-B the volunteer's screens are a second home with cards, not a rail inside My LCA, and the menu carries a second count, 'Your work · 6', beside the personal one."
+   },
+   "drawn": {
+    "file": "Account-Int-C.dc.html",
+    "title": "Integration · Int-C · My LCA personal, Your work beside it (round 2)",
+    "width": 1440,
+    "height": 3400,
+    "second_file": "Account-Int-C-2.dc.html",
+    "second_title": "Integration · Int-C · part 2: routes, what each home holds, the way there and back (round 2)",
+    "second_height": 2950,
+    "note": "What: Int-C, the third way to join My LCA, the working rooms and Admin. My LCA (/dashboard) stays personal for everyone: You and Family only. Anyone with a role, a seat or a directed event also gets a second home, Your work at /work. It holds the Today list across roles (with the personal items repeated), one card per room and the rooms under it. Admin stays at /admin. Part 1 has the menu for six people, the phone sheet and the two homes side by side on Chris's Monday. Part 2 has the route map with redirects, what each home holds per role, and the way there and back.\n\nBuilt from: Account-C (the Today list and role sections, moved whole onto Your work), Account-A and B (the personal My LCA), Account-G (Chris's corrected Monday list), Work-A (the console band), Nav-Header-Final (the signed-in bar and the My LCA menu) and Nav-IA-Final (the routes, with the Workspace row renamed Your work). Everything is checked against the frame's role inventory. The layout and chrome match Int-A so the three options compare side by side.\n\nK's feedback applied: Avery's page and menu are the same under every option, with no chips and no Your work, so that is the good default. Every section is drawn in full: each role is a card on Your work, with its inline part, its room and its admin-only part (part 2, section C). Roles stay out of the admin panel and only lca_admin sees Admin. This is the third frame beside Int-A and Int-B. Open for K: Q1, pick the frame (Int-A is the baseline; Int-C if the personal page must stay plain at any cost). Q2, confirm that Workspace is renamed Your work at /work, with redirects. Q3, officers lose the view-only admin panel. Q7, a second count in the menu (Your work · 6) beside WS02's personal trigger count.",
+    "unresolved": [
+     "The spec's Monday numbers (Your work list '6 things · 2 are yours' with 'Show 1 more', quiet line '6 things across your roles') conflict with the corrected shared list on Account-G (9 things · 1 is yours, seven open, Show 2 more) and with My LCA's personal Today of 1. I drew Account-G's list, so the quiet line on Mon, Oct 5 reads '8 things across your roles' (the volunteer items only). The Sun, Oct 25 menu keeps the spec's 'Your work · 6'.",
+     "Renee Ortego's Your work row: the spec says 3 queue items assigned to her, but Int-A cell A6 says 2 for the same moment. I drew 2 so the two boards agree.",
+     "The spec asks for one board of about 3250px. With title, legend and sections A to E it measured over 3900px, so it is split the way Int-A is. Part 1 (3373px rendered, declared 3400) holds the title, legend, A and E. Part 2 (2937px rendered, declared 2950) holds B, C and D.",
+     "The spec names gold-ink #705718, but the board rules say #866a1e. No gold text is used on a light ground; #866a1e appears only as underlines and rules.",
+     "The visitor's quote in the Houma report reads '8:00 PM' (not '8 PM' as Account-G has it) to keep the time rule; other boards quoting it may still say 8 PM.",
+     "Officer and president rooms (/work/tickets, /work/email) and the club_rep card are drawn as Proposed or greyed, per Q3 and question 20; they await K."
+    ]
+   },
+   "review": {
+    "file": "Account-Int-C.dc.html (part 2: Account-Int-C-2.dc.html; originals backed up in rv-intc/)",
+    "height": 3400,
+    "second_height": 2950,
+    "counts": "Main board renders at 3359px, so it is declared and previewed at 3400 (cap 3400). Part 2 renders at 2939px, declared 2950 (cap 3000). Both are 1440 wide.\n\nLegend: 6 numbered notes on each part, and every number has a badge on the design. Part 1 badges: 1 Avery, 2 the Your work home, 3 the room cards, 4 Chris's Your work row, 5 the Admin row, 6 the My LCA home. Part 2 badges: 1, 2 and 5 on the B cards, 3 on the C table, 4 on the D flow, 6 on the D1 heading.\n\nRegions in the spec: all present. Title strip, notes and Open for K (Q1, Q2, Q7), A1 to A9 (six menus, the phone sheet, 'Two more people', the 'What changed' table), E (both homes plus the admin strip and the trade-off), B1 to B4 plus the B5 redirects, the C table with 9 rows (Your club greyed), D1 to D5 with the event strip and the flow, and the grey What / Built from / K's feedback applied / Open for K note on both parts.\n\nToday list on Your work matches Account-G: 9 things, 1 is yours. 7 rows are open behind 'Show 2 more'. Before the fold no role has more than 3 rows (Director 2, Representative 2, Treasurer 1, LCA office 1, Ella 1). Ranking: tier 1 first, then tier 3 by longest wait, then tier 4.\n\nHeader and menu: the Your work row appears only for people with a role, a seat or a directed event. Admin · 12 is shown only to lca_admin. The trigger count stays personal (Avery 3, Chris 1, Priya 1, the others none). Nothing reads 'Workspace' or 'Admin panel', and there is no mode switch.\n\nRule scans on both files found 0 em dashes, 0 {{holes}}, 0 iframes, 0 animations, 0 USCF, 0 '.5', 0 grade, birthdate or financial-need questions and 0 AI references. Every weekday matches its date (Sat to Mon, Jan 16 to 18, 2027 checked). Every time reads like '9:30 AM'. Gold text appears only on navy. Every element is closed and every attribute quoted. The skeleton is intact: support.js, the kit link, helmet with one style block, and the data-dc-script block.",
+    "changes": [
+     "Main board: added an 'At a glance · two homes' diagram in the title block, in the same pattern as Int-A's. It shows Avery's single My LCA page; Chris's My LCA with the '8 things ›' quiet line leading to the Your work page (Today · 9, Events you direct, My region, Board, Support tickets, Member lookup); and the rooms off each card. Under it: 'No role sections on My LCA (Int-A), no left rail (Int-B). Only lca_admin opens /admin.' The idea and how it differs from Int-A and Int-B can now be read at the top of the board. The Sample data pill and a short sample line moved into this box.",
+     "Main board: dropped the 'Round' row from the title, since round 2 is already in the kicker and the frame line is in the legend. Shortened notes 2, 4 and 5 and widened the Open for K box from 340 to 390px, so the board stays under 3400 (it was 3470 after the glance went in).",
+     "Main board, section E: removed the 'Ella' label from the My LCA Today row. Only one role contributes items there, and the Today rules say labels are dropped when one role holds every item. The footnote now says 'No role labels'.",
+     "Main board, section E: the Your work row's label went from 'Ella · repeated from My LCA', a design note inside a product chip, to 'Ella'. The sub-line now ends 'also on My LCA'.",
+     "Both parts: the room stub 'Board inbox · 3' is now 'Board · 3', matching the Board card and section naming.",
+     "Part 2: the event strip read 'Round 3 · 23 of 24 results confirmed' and the done line said '47 players told'. Both clashed with the 13 boards in the frame, Work-E and Int-A-2. They now read '12 of 13 results confirmed' and '26 players told', as on Int-A-2.",
+     "Part 2: added a title row 'Against its siblings' in place of 'Round': Int-A keeps the sections on My LCA, Int-B puts them in a left rail, Int-C moves them to Your work as cards with a second count. Part 2 now shows the difference without part 1.",
+     "Part 2: route paths in the B cards ('/about/bylaws, /about/minutes', '/admin/news, /admin/festivals') ran out of their column. They now wrap in place. The C table's last column went from 384 to 382 so the table no longer runs 2px past the content edge.",
+     "Both parts: the <title> now matches the spec and the Int-B naming: 'Integration · Int-C · My LCA personal, Your work beside it (round 2)' and 'Integration · Int-C · part 2 (round 2)'. Numbered badges now carry the kit class k-num-badge alongside ic-n.",
+     "Note text for the canvas sticky: 'Int-C: My LCA stays personal (You and Family) for everyone. A role, a seat or a directed event adds a second page, Your work at /work: the Today list across roles, with the personal rows repeated so Chris's Monday is one list, then one card per room and the rooms under it. A menu row, Your work · 6, has its own count; the trigger count stays personal. Admin stays at /admin for lca_admin only. Against Int-A the roles leave My LCA; against Int-B they are cards on a second page, not a left rail. Two parts: A and E here, B to D on Account-Int-C-2.'"
+    ],
+    "remaining_concerns": [
+     "The main board renders at 3359 of its 3400 cap, so any later addition to part 1 has to be balanced by a cut.",
+     "Section order: part 1 holds A and E, and part 2 holds B, C and D. The spec lists A to E on one board, but one board would pass the cap. Each part names where the other sections are.",
+     "The spec gives two numbers this board does not use. (1) The quiet line: the spec says '6 things across your roles'; the board says '8 things', the 9-item Monday list from Account-G minus Ella's one personal item. The '6' is Chris's Sun, Oct 25 menu. (2) Renée's Your work row: the spec says 3 items assigned to her; the board says 2, to match Int-A. Both are consistent across the board, but the spec text disagrees.",
+     "Like Int-A and Int-B, the board has no full-width decided site header and footer. The decided bar appears as mini headers in each cell of section A, and the menus follow Nav-Header-Final. Adding the full chrome would have to happen on all three integration boards at once, and part 1 has no height left for it.",
+     "In section E the admin backstop's console band reads 'My LCA › Your work › The Baton Rouge Classic › Event day', but the admin arrives from /admin. Int-A has the same issue in its own frame. Whether an admin's crumb should start at Admin is a question for K.",
+     "The phone sheet in A7 shows the admin-only row as a grey line inside the mock ('An admin also sees: Admin · 12 need attention'). That is a design note drawn into the mock rather than a separate inset."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-D.dc.html",
+    "title": "My LCA · D · One column, the card is a section (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "One column, the card is a section",
+    "idea": "The plain member's page is one column in WS13 order, Today first, and the membership card lives inside the Membership section with the US Chess status beside it, so the page reads top to bottom with nothing floating.",
+    "differs": "Where the card lives: on D it is a section the rail jumps to; on E it sits in a sticky side column; on F it is the page's navy header band. Everything else on the three boards is the same page."
+   },
+   "drawn": {
+    "file": "Account-D.dc.html",
+    "title": "My LCA · D · One column, the card is a section (round 2)",
+    "width": 1440,
+    "height": 3400,
+    "second_file": "Account-D-2.dc.html",
+    "second_title": "My LCA · D · The page in its other states (round 2)",
+    "second_height": 2400,
+    "note": "What: Option D for the default My LCA page. Avery, a plain member, sees one column in WS13's order (Today, Membership, Entries, Receipts, Settings), and the On this page rail lists those five parts. The membership card and QR are their own section, with the US Chess status beside them, and \"Show my card\" jumps there. There are no role chips and nothing hints at volunteer work. Part 2 (Account-D-2) shows the new-member empty state, the phone at Today and at Membership, the card sheet, Maya's own My LCA, and the rail and My LCA ▾ menu insets.\n\nBuilt from: Account-A (Avery, Needs attention, the timeline and four-step tracker, the card and QR, US Chess with the nightly check, receipts, History, Settings), Account-C's On this page rail, Account-I and J for Maya's family facts, and the decided header, footer, phone bar and tabs (Nav-Header-Final, Nav-Mobile-Final). Drawn inside Int-A, and the frame can be swapped.\n\nK's feedback applied: a good default with the You section only; every part drawn in full, including the empty, phone and teen states; roles hosted in My LCA under Int-A; options for each, since D, E and F differ only in where the card lives. Open for K: should the card sit second under Today or come first for the desk? Bring back Account-A's milestones or calendar feed? On a phone, also pin a card button in the chip row? Should the empty state's second button be Add a family member or Add your US Chess ID?",
+    "unresolved": [
+     "The spec gives Lafayette Open 2026 and The Casa Chess Tournament the buttons 'See event and enter' and 'Remove'. The decided boards list both as partner events, so I drew 'Registers on the organizer's site ↗' with no Register button and no count, as Account-F does. I also kept F's wording for the details: 'Lafayette Chess Club' rather than 'organizer Tommy LeBlanc', and 'US Chess and FIDE rated' rather than 'Dual-rated'.",
+     "The spec's frame map puts everything on one board under 3400px: Frame A, then B, C, D and the insets, then the legend at y 3100. It does not fit. The title strip and legend sit at the top (task rule), and the full page alone runs about 2850px. So the board is split the way Account-F is: Account-D (title strip, legend, Frame A, 3400px, which is right at the cap: the content renders to 3387px) and Account-D-2 (Frames B, C, C2, D, the rail and menu insets, and a States card, 2400px).",
+     "Frame C draws the phone at the top of the page with Today in view and the chip row under the H1. The phone is not scrolled past the head. A second pair of half-scale phones on D-2 shows the Membership section (card full width, 120px QR, US Chess under it) and the 'Show my card' sheet with a 240px QR.",
+     "Nia Broussard's LCA ID (LCA-26-0412) is invented and carries a Sample data badge. Maya's US Chess ID is left out of the teen inset rather than invented.",
+     "The Today rows sit inside the declared 3400px with almost no slack. Any copy that grows in the final build would need the section gaps tightened again."
+    ]
+   },
+   "review": {
+    "file": "Account-D.dc.html (part 2: Account-D-2.dc.html)",
+    "height": 3400,
+    "second_height": 2400,
+    "counts": "Account-D: the legend has 6 notes (badges 1 to 6 placed on the rail, Today, the card, the email card, Receipts and the frame line). Frame A has 5 rail rows (Today 4, Membership, Entries 2, Receipts, Settings) and 4 Today rows (T2, T2, T2, T4, matching the header count of 3 plus the reminder). Entries has 7 timeline rows: 2 entered, 3 saved partner events, 2 dashed deadlines, with chips All, Entered 2, Saved 3 and Deadlines 2. Receipts and Events played have 4 rows each, and there are 6 Settings cards plus the email card. There are 0 role chips, 0 Workspace or Admin rows and 0 mode switches. Natural render height was 3404 before the fixes and is 3383 after, declared 3400 (the limit is 3400). Account-D-2: the legend has 6 notes and there are 7 frames (B empty state, C phone, D teen inset, i rail, ii menu, C2 phone membership and card sheet, S states). The menu has 3 to-dos then My LCA, Membership card and Log out, with no Family, event or role rows. Natural render height was 2361 before and is 2381 after, declared 2400 (the limit is 3000). Rule scan on both files: 0 em dashes, 0 '.5' in copy, 0 USCF, 0 AI references, 0 grade or birthdate fields, every time in the '7:40 AM' form, no dates without a weekday found. Gold #c8a94a is used as text only on the navy card label, never on a light ground. Partner events (Lafayette Open 2026, Mississippi State Championship, The Casa Chess Tournament) carry only 'Registers on the organizer's site ↗', with no Register button and no count. Sample data badges are on Avery's head, Nia and Maya. Header and footer match the decided chrome: same rook path as Tourn-List-Final, the footer copied exactly, and the My LCA count styled like Nav-Header-Final. All tags are closed, all attributes quoted, and there are no holes, iframes or animation.",
+    "changes": [
+     "Account-D: added a 'How D differs' line to the title strip so the one difference shows at a glance: on D the card is a section in the column that the rail jumps to, on E it sits in a sticky side column, on F it is the page's navy header band, and everything else is the same page.",
+     "Account-D-2: added the same 'How D differs' line to its title strip (with 'and a sheet on phones'); the declared height stays 2400.",
+     "Account-D: Frame A ran 4px past the 3400 limit (natural 3404). To bring it under, the club line ('Clubs you follow · Downriver Chess Club · in the club's words: Mondays and Thursdays, 7:00 PM, Decatur St, New Orleans · Club page') was made to fit on one line (12.5px, no wrap), and the redundant 'A partner event.' sentence was dropped from the Lafayette reminder row in Today (its button already reads 'Registers on the organizer's site ↗'). Natural height is now 3383, declared 3400 in both the root style and $preview.",
+     "Kept the designer's departures from the spec text because they follow real LCA data on the decided boards: Lafayette Open 2026 (organizer Lafayette Chess Club, not 'Tommy LeBlanc') and The Casa Chess Tournament are partner events, so they say 'Registers on the organizer's site ↗' instead of 'See event and enter'. The header count keeps Nav-Header-Final's cream disc rather than the spec's gold disc."
+    ],
+    "remaining_concerns": [
+     "Today rules against the spec: the frame's Today rules admit 'a US Chess membership ending before an entered event, from 7 days before' and only deadlines within 14 days. Avery's US Chess ends Thu, Dec 31 and the Ken Ferguson Memorial Open is Sat, Jan 16, 2027, so on Mon, Oct 5 that row arguably should not be a Today item. The D spec, E, F, G, H and Int-A cell A1 all draw it in Today and in the header count of 3, so I left it for consistency. The frame wording needs a ruling: 7 days before what, and does the personal header count follow the same window?",
+     "The Baton Rouge Classic shows as a partner event ('Registers on the organizer's site') on some decided boards, while every Account board (and the frame, with Chris as its director) treats it as an LCA event with Pay, a tracker and '38 of 60 registered'. That is a data conflict across the canvas, not something this board can settle.",
+     "Phones C2 and the card sheet are drawn at 50%, so their body text is about 6 to 7px on the canvas. They read as thumbnails and are not meant to be read closely.",
+     "Account-D-2 still carries three unused CSS classes (af-bk, af-pl, af-ul) with gold text colour. They are harmless because nothing uses them, but they are dead code.",
+     "Sticky note text for the canvas: 'My LCA · D · One column, the card is a section. Avery, a plain member, on Mon, Oct 5: Today, Membership (the card with US Chess beside it), Entries, Receipts and Settings in one column, with the On this page rail as a plain jump list, no role chips and no Workspace. Part 2 has the new-member empty state, the phone, Maya's own login and the rail and menu insets. Differs from E (card in a sticky side column) and F (card in the navy header band) only in where the card lives. Drawn inside Int-A; the frame is swappable.'"
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-E.dc.html",
+    "title": "My LCA · E · The card keeps watch from the side column (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "The card keeps watch from the side column",
+    "idea": "The same page as Account-D, but the membership card, the US Chess status and the receipts shortcut live in a sticky right column, so the card is always one glance away while the main column scrolls through Today, Entries and Settings.",
+    "differs": "Where the card lives: a sticky right column (E) instead of a section in the flow (D) or the page's header band (F). The rail on E loses the Membership row because the card never leaves the screen."
+   },
+   "drawn": {
+    "file": "Account-E.dc.html",
+    "title": "My LCA · E · The card keeps watch from the side column (round 2)",
+    "width": 1440,
+    "height": 3350,
+    "second_file": "Account-E-2.dc.html",
+    "second_title": "My LCA · E-2 · The side-column page in its other states (round 2)",
+    "second_height": 2250,
+    "note": "What: Option E for the default My LCA page. It is Account-D's page with the membership card, the membership line, US Chess, a receipts shortcut and the followed club moved into a sticky right column, so the QR is always on screen while Today, Entries, Receipts and Settings scroll. The rail drops its Membership row (Today · 4, Entries · 2, Receipts, Settings). On desktop the only head button is Find a tournament. Part 2 (E-2) holds the new-member empty state (Nia, Sample data), the phone with the card sheet half open, Maya's own My LCA as a teen with her own login (Mon, Nov 16), the rail and My LCA ▾ insets, and the 1024 and below-1024 states.\n\nBuilt from: Account-D (the page, its copy and order), Account-A (the card, US Chess and the right-hand column habit) and Account-C (the On this page rail), using the decided header, footer and menu (Nav-Header-Final). Frame: Int-A, swappable. Under Int-B this is the You page the left rail opens; under Int-C it is My LCA with Your work beside it. Only the breadcrumb, the way back and the menu row change.\n\nK's feedback applied: a good default (Avery, a plain member, sees the You section only, with no chips and no role rows), every section drawn in full, roles hosted in My LCA (Int-A), and options for each (D, E and F differ only in where the card lives). Open for K: is narrowing the main column from 876 to 660 worth keeping the card in view? Should the followed club stay in the column or go back under Entries as on D? Below 1024 the column drops under the head and stops being sticky: is that the right point to let go of it? Should the phone sheet also offer \"Print a copy\"?",
+    "unresolved": [
+     "Split into two boards. The spec puts Frames A to D, the insets and the legend on one board under 3400px, but its map leaves out the required title strip and the legend at the top. With all the spec's copy at 660 wide, Frame A alone runs about 2800px. So Account-E (3350) holds the title strip, the legend and the full page, and Account-E-2 (2250) holds Frames B, C and D, the rail and menu insets, and the states.",
+     "The Lafayette Open 2026 and The Casa Chess Tournament are partner events in the decided Tournaments boards. The spec gives them 'See event and enter'; the board follows the copy rule instead. Today item 4 and the Entries rows read 'Registers on the organizer's site ↗' with 'I entered there' and Remove, and have no Register button and no count.",
+     "The designer-only tier marks (Tier 2, Tier 4) sit inside each Today card at the bottom right. Account-D's spec puts them outside the frame's right edge, but on E the sticky column takes that space.",
+     "An earlier draft of Account-E and Account-E-2 was already at these paths from a previous run of this stage. It already carried the spec's corrections, so it was kept as the base. On Account-E-2 the Frame D caption was fixed (it had wrapped behind badge 4) and the declared height went from 2600 to 2250, the rendered 2241 rounded up. Account-E renders at 3344 and is declared 3350. Both renders were checked: no overlaps, overflow or contrast problems."
+    ]
+   },
+   "review": {
+    "file": "Account-E.dc.html (part 2: Account-E-2.dc.html)",
+    "height": 3350,
+    "second_height": 2250,
+    "counts": "Part 1 renders at 3344px at 1440 wide, so it stays declared at 3350 (limit 3400). Part 2 renders at 2241px, so it stays at 2250 (limit 3000). The $preview values match.\n\nLegend: six numbered notes on each part. Each part also has a title strip with Built from, Replaces and K's feedback applied, and a grey What / Built from / K's feedback applied / Open for K note with two open questions.\n\nRegions in the spec, all present:\n- Part 1 (Frame A): page head with only Find a tournament; four-row rail (Today 4, Entries 2, Receipts, Settings) with no Membership row; four Today items in WS13 order with tier marks; Entries timeline with 7 rows, including two dashed deadline rows and the four-step tracker on two entries; the Entries foot line without the club; Receipts and history stacked (4 payment rows, 4 events played); six Settings cards at two per row plus the full-width How we email you card.\n- Side column, five parts (a to e): membership line, navy card with QR and Card options, US Chess, Receipts shortcut, Clubs you follow. A dashed \"sticky\" rule and a ghost of the same column scrolled to Settings.\n- Part 2: Frame B (Nia, empty state), Frame C (phone with the card sheet), Frame D (Maya's own login), the rail inset with D's Membership row struck through, the My LCA menu (To do 3, My LCA, Membership card, Log out; matches Int-A cell A1), and a states panel (busy, empty, event day, teen, 1024 wide, below 1024).\n\nCopy scan of both files: 0 em dashes, 0 USCF, 0 decimal halves, 0 AI references, 0 grade or birthdate fields, 0 Workspace or Admin words, 0 Register buttons on partner events. Every date carries its weekday, and every weekday checked correct against the calendar. Times read 7:00 PM, 10:00 AM and 2:10 AM. Gold appears only as fills, underlines or text on navy. Sample data badges are on Avery, Nia and Maya.\n\nStructure: tags balanced, all attributes quoted, no {{holes}}, no iframes, nothing animated. Header and footer match Nav-Header-Final and Tourn-List-Final, including the cream count disc reading 3 and no Join or Renew.\n\nFrame checks: a plain member sees \"Today\" with no role wording, no chips and no role rows. No room is named and there is no mode switch. Avery's data matches Account-D, including the partner-event treatment of the Lafayette Open and the Casa Chess Tournament.",
+    "changes": [
+     "Account-E-2, Frame C (phone): added the decided bottom tab bar (Tournaments · Clubs · My LCA 3 · Menu, My LCA current), copied from Account-D-2. It was missing, so the phone did not match the decided mobile chrome or D's phone.",
+     "Account-E-2, Frame C: the card sheet now sits at the bottom of the screen and is as tall as its content (it was fixed at top:372px). Before, the amber 'Ends before your Sat, Jan 16 event' pill and the line 'Show this at the desk. The QR checks you in.' were cut off at the bottom of the phone. Now the 160px QR, the membership line, the US Chess line, the pill and the desk line are all visible above the tab bar.",
+     "Account-E-2, Frame B: note badge 1 was inside the 60% frame, which hides anything outside its edges, so the badge was cut in half. Moved it outside the frame and re-placed it next to the Today sentence.",
+     "Account-E-2, Frame B: Settings now shows all six cards as the spec asks ('Settings as region 7'): Privacy, Payments, Family and Sign-in and security added beside Profile and US Chess ID. The lower third of the cropped frame had been empty. Nia's Payments card reads 'No card saved. Stripe can keep one when you next pay.' instead of Avery's card ending 4242.",
+     "Account-E, side column ghost ('The same column, scrolled to Settings'): removed the 0.75 opacity on the mini card. At that opacity the gold MEMBER label and the white text sat on a washed-out navy with poor contrast. The dashed box still marks it as a ghost.",
+     "Both files: heights re-measured after the changes. No change needed: part 1 is 3344px rendered, declared 3350; part 2 is 2241px, declared 2250."
+    ],
+    "remaining_concerns": [
+     "Frame A runs about 2814px tall against the spec's 1440 x 2160. The 660px main column makes Today and the stacked tables taller, so Frames B, C and D, the insets and the states panel are in Account-E-2, not below Frame A. The spec's canvas map (Frame B at y 2200, legend at y 3220) therefore does not apply to the drawn layout.",
+     "The tier marks ('Tier 2', 'Tier 4') sit inside each Today card at the bottom right, not outside the frame's right edge as Account-D's spec puts them. The buttons moved under the text, so there is no room outside. They are dashed annotations, but K could read them as part of the page.",
+     "The fourth Today item (the Lafayette Open reminder) uses the button 'Registers on the organizer's site ↗' instead of the spec's 'See event and enter'. That follows the partner-event rule and matches Account-D and F. The same goes for the Casa Chess Tournament row in Entries. If either event is in fact an LCA event, all three sibling boards need the same change.",
+     "The My LCA count is the decided cream disc with a navy numeral (Nav-Header-Final, and the same on D and F), not the 'gold disc' the spec text describes. I kept the decided chrome.",
+     "On the phone, the sheet opens above the tab bar and the dark overlay covers only the page area, so the decided tabs stay visible. If K would rather have the sheet cover the tab bar, as native sheets do, Account-D-2's phone needs to change the same way.",
+     "Note text for the canvas sticky: 'My LCA · E: the card, US Chess, a receipts shortcut and the followed club keep watch from a sticky right column while Today, Entries, Receipts and Settings scroll. The rail drops its Membership row; on phones Show my card opens the card as a sheet. Part 2 holds the empty state, the phone, Maya's own login, the rail and menu insets and the narrower screens. Drawn inside Int-A; the frame is swappable.'"
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Scanner · I · Review: photo, moves and board, with the game checks: Sheet as the list (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.si-root{box-sizing:border-box;padding:14px 0 16px;background:#ecebe6;color:#1a2744}
+.si-root *{box-sizing:border-box}
+.si-rel{position:relative}
+.si-mk{width:24px;height:24px;font-size:12px;box-shadow:0 0 0 2px #ffffff}
+.si-abs{position:absolute;z-index:6}
+.si-doc{margin:0 40px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:18px 22px 18px}
+.si-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:28px}
+.si-title{font-size:29px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.si-ml{font-size:13.5px;line-height:1.45;color:#3d4556;margin:2px 0 0;max-width:720px}
+.si-ml b{color:#1a2744;font-weight:600}
+.si-round{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12.5px;font-weight:700;letter-spacing:.04em}
+.si-grey{flex:none;width:610px;background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:10px 16px}
+.si-grey > div > p + p{margin-top:8px}
+.si-grey p{font-size:12px;line-height:1.4;color:#2b3446;margin:0}
+.si-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.si-grey ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4;color:#2b3446}
+.si-grey li{margin-bottom:3px}
+.si-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px 14px;margin-top:14px}
+.si-notes{list-style:none;margin:10px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 24px}
+.si-notes li{display:flex;gap:8px;align-items:flex-start;font-size:12px;line-height:1.4;color:#2b3446}
+.si-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.si-notes b{font-weight:600;color:#1a2744}
+.si-from{display:block;margin-top:3px;font-size:11px;color:#555c6b}
+.si-flab{display:flex;align-items:center;gap:12px;margin:14px 40px 8px}
+.si-flab h2{white-space:nowrap;margin:0;font-size:19px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.si-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.si-urlchip{white-space:nowrap;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#3d4556;background:#ffffff;border:1px solid #d9d8d1;border-radius:7px;padding:4px 10px;margin-left:auto}
+.si-frame{width:1440px;background:#ffffff;border-top:1px solid #cfcec6;border-bottom:1px solid #cfcec6;box-shadow:0 20px 50px rgba(16,24,43,.10)}
+.si-frame .k-browser-url{max-width:760px}
+.si-page{background:#f5f5f2;position:relative}
+.si-hd{position:relative;z-index:20}
+.si-hd-in{padding:0 24px;gap:0;height:68px;min-height:68px}
+.si-brand{margin-right:16px}
+.si-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.si-nav{gap:0}
+.si-nav a,.si-navbtn{padding:0 8px !important;white-space:nowrap}
+.si-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;border:0;background:transparent;color:#ffffff;font-size:15px;font-weight:500;cursor:pointer}
+.si-search{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.si-search span{color:rgba(255,255,255,.9)}
+.si-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.si-util .k-ulink{padding:0 4px}
+.si-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font-size:14px;font-weight:500;cursor:pointer}
+.si-band{background:#ffffff;border-bottom:1px solid #dddcd4}
+.si-band-in{padding:20px 24px 12px}
+.si-stepper{display:flex;flex-wrap:nowrap;white-space:nowrap;gap:8px;list-style:none;margin:0;padding:0}
+.si-stepper li{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:99px;border:1px solid #dddcd4;font-size:14px;color:#555c6b;background:#ffffff}
+.si-stepper li.si-done{color:#2f6b45;border-color:#b9d3c1;background:#f1f7f2}
+.si-stepper li.si-now{color:#ffffff;background:#1a2744;border-color:#1a2744;font-weight:600}
+.si-stepper li.si-off{background:#f3f3f0;color:#555c6b}
+.si-tdbtn{background:#f3f3f0 !important;border-color:#dddcd4 !important;color:#6b7180 !important;cursor:not-allowed}
+.si-opened{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13.5px;color:#555c6b}
+.si-main{padding:16px 24px 20px;display:flex;flex-direction:column;gap:14px}
+.si-details{display:flex;justify-content:space-between;align-items:center;gap:24px;padding:12px 16px}
+.si-gl{font-size:16px;color:#1a2744}
+.si-gl b{font-weight:600}
+.si-gsub{font-size:13.5px;color:#555c6b;margin-top:2px}
+.si-chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.si-chips .k-chip{min-height:36px;padding:0 12px;font-size:13.5px;gap:7px}
+.si-ctl{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none}
+.si-pressed{background:#eef0f5 !important;border-color:#1a2744 !important;box-shadow:inset 0 0 0 1px #1a2744}
+.si-sw2{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:#1a2744;border:0;background:transparent;padding:0;min-height:36px}
+.si-sw2 i{display:block;width:36px;height:20px;border-radius:99px;background:#1a2744;position:relative;flex:none;opacity:.6}
+.si-sw2 i::after{content:"";position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#ffffff}
+.si-sw2 small{font-size:12px;color:#555c6b;font-weight:400}
+.si-work{display:grid;grid-template-columns:880px 380px;justify-content:space-between;align-items:start}
+.si-card{padding:14px 18px 14px}
+.si-chead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+/* the photo */
+.si-ground{background:#3b4150;padding:14px 14px 0;border-radius:10px 10px 0 0}
+.si-ground2{background:#3b4150;padding:0 14px 14px;border-radius:0 0 10px 10px}
+.si-sheet{background:#fbfaf3;box-shadow:0 10px 22px rgba(0,0,0,.35);padding:8px 14px 0;border-radius:3px 3px 0 0}
+.si-sheet2{background:#fbfaf3;box-shadow:0 10px 22px rgba(0,0,0,.35);padding:0 14px 8px;border-radius:0 0 3px 3px}
+.si-sh-h{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#6b6f78;border-bottom:1px solid #cfccbd;padding:5px 2px}
+.si-sh-h i{font-family:'Geist Mono',monospace;font-style:italic;font-size:16px;color:#2b3a67}
+.si-r{display:grid;grid-template-columns:40px 1fr 1fr;height:44px;align-items:stretch;border-bottom:1px solid #dcd9cb}
+.si-r > b{font-size:12px;color:#8b8a80;font-weight:500;display:flex;align-items:center;justify-content:center}
+.si-cell{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;height:44px;padding:0 8px 0 14px;border:0;border-left:1px solid #dcd9cb;background:transparent;font:inherit;text-align:left;cursor:pointer;color:#2b3a67}
+.si-empty{cursor:default}
+.si-hw{position:relative;font-family:'Geist Mono',monospace;font-style:italic;font-size:19px;color:#2b3a67;white-space:nowrap}
+.si-smudge{position:absolute;left:-4px;top:1px;width:46px;height:22px;border-radius:50%;background:rgba(60,62,72,.38);filter:blur(4px)}
+.si-plate{display:inline-flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:1px;padding:2px 7px;min-height:22px;border-radius:5px;background:rgba(255,255,255,.9);border:1px solid #d3d6de;line-height:1.2}
+.si-plate b{font-family:'Geist Mono',monospace;font-size:11px;font-weight:500;color:#1a2744}
+.si-tw{display:inline-flex;align-items:center;gap:4px;font-family:Geist,sans-serif;font-size:10.5px;font-weight:600;white-space:nowrap}
+.si-tw-auto{color:#1a2744}
+.si-tw-ok{color:#24573a}
+.si-tw-look{color:#5c450f}
+.si-sw{display:inline-block;width:9px;height:9px;border-radius:2px;flex:none}
+.si-sw-auto{border:1.5px dashed #1a2744}
+.si-sw-ok{background:#d7ead9;border:1.5px solid #2f6b45}
+.si-sw-look{background:#f6e7b8;border:1.5px solid #9a7a1c}
+.si-c-auto{outline:2px dashed #1a2744;outline-offset:-4px}
+.si-c-ok{outline:2px solid #2f6b45;outline-offset:-3px;background:rgba(215,234,217,.55)}
+.si-c-look{background:#f6e7b8}
+.si-sel{z-index:2;box-shadow:inset 0 0 0 1.5px #1a2744,inset 0 0 0 4.5px #c8a94a,inset 0 0 0 6px #1a2744}
+.si-wash{background:rgba(120,124,136,.22)}
+.si-notch{position:relative;height:0}
+.si-notch::before{content:"";position:absolute;right:178px;top:-9px;width:18px;height:18px;background:#ffffff;border-left:2px solid #1a2744;border-top:2px solid #1a2744;transform:rotate(45deg);z-index:3}
+.si-strip{position:relative;margin:0 -4px;border:2px solid #1a2744;border-radius:10px;background:#ffffff;padding:14px 16px 14px;display:grid;grid-template-columns:226px 300px minmax(0,1fr);gap:18px;align-items:start;box-shadow:0 8px 22px rgba(16,24,43,.18)}
+.si-close{position:absolute;right:10px;top:10px}
+.si-crop{position:relative;height:96px;background:#fbfaf3;border:1px solid #d6d2c2;border-radius:8px;display:flex;align-items:center;padding-left:18px;overflow:hidden;box-shadow:inset 0 0 0 2px #f6e7b8}
+.si-crop .si-hw{font-size:40px}
+.si-crop .si-smudge{left:-10px;top:4px;width:120px;height:46px;filter:blur(9px)}
+.si-crop small{position:absolute;left:8px;top:6px;font-size:11px;color:#8b8a80}
+.si-readas{font-family:'Geist Mono',monospace;font-size:20px;font-weight:600;color:#1a2744}
+.si-pill{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:99px;font-size:13px;font-weight:600;white-space:nowrap}
+.si-pill-look{background:#f6e7b8;color:#4a380b;border:1px solid #d9bf6a}
+.si-pill-ok{background:#e1f0e7;color:#145b3a;border:1px solid #b9d3c1}
+.si-pill-auto{background:#ffffff;color:#1a2744;border:1.5px dashed #1a2744}
+.si-pill-grey{background:#eceef2;color:#2b3446;border:1px solid #d6d9e0}
+.si-pill-now{background:#1a2744;color:#ffffff;border:1px solid #1a2744}
+.si-pill-red{background:#f6e3e3;color:#5e1218;border:1px solid #e8c1c1}
+.si-bwrap{display:grid;grid-template-columns:14px minmax(0,1fr);grid-template-rows:auto 16px;column-gap:4px}
+.si-ranks{display:grid;grid-template-rows:repeat(8,1fr);align-items:center;text-align:center;font-size:11px;color:#555c6b}
+.si-files{grid-column:2;display:grid;grid-template-columns:repeat(8,1fr);text-align:center;font-size:11px;color:#555c6b;padding-top:2px}
+.si-bd > div{display:flex;align-items:center;justify-content:center}
+.pc{width:74%;height:74%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1;box-sizing:border-box;font-size:15px}
+.pw{background:#ffffff;color:#1a2744;border:2px solid #1a2744}
+.pb{background:#1a2744;color:#ffffff;border:2px solid #1a2744}
+.pp{width:54%;height:54%;font-size:10px}
+.si-tl{background:#f1dc98 !important}
+.si-td{background:#c7ae62 !important}
+.si-ring{box-shadow:inset 0 0 0 3px #c8a94a,inset 0 0 0 4.5px #1a2744}
+.si-bd-m .pc{font-size:10px;border-width:1.5px}
+.si-bd-m .pp{font-size:7px}
+.si-bd-m .si-ring{box-shadow:inset 0 0 0 2px #c8a94a,inset 0 0 0 3px #1a2744}
+.si-bd-xs .pc{font-size:6.5px;border-width:1px}
+.si-bd-xs .pp{font-size:4.5px}
+.si-bd-xs .si-ring{box-shadow:inset 0 0 0 1.5px #c8a94a}
+.si-navbtns{display:flex;gap:6px}
+.si-tagnote{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:6px;background:#eceef2;color:#2b3446;font-size:11.5px;font-weight:600;white-space:nowrap}
+.si-capfoot{margin-top:10px;font-size:13.5px;color:#555c6b}
+/* drawer */
+.si-drawer{background:#ffffff;border:1px solid #cfcec6;border-left:3px solid #1a2744;border-radius:12px;box-shadow:-14px 10px 34px rgba(16,24,43,.16);padding:14px 16px 16px}
+.si-dt{width:100%;border-collapse:collapse;font-size:14px}
+.si-dt th{text-align:left;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b;padding:6px 8px;border-bottom:1px solid #d6d5cd;background:#fbfbf8}
+.si-dt td{padding:0 8px;height:31px;border-bottom:1px solid #ecebe5;font-family:'Geist Mono',monospace;font-weight:500;color:#1a2744;vertical-align:middle}
+.si-dt td.si-no{font-family:Geist,sans-serif;font-size:12px;color:#555c6b;width:30px;text-align:center}
+.si-dt td.si-tg{height:42px;line-height:1.15}
+.si-dt td.si-dauto{outline:2px dashed #1a2744;outline-offset:-4px}
+.si-dt td.si-dok{background:#e6f1e8}
+.si-dt td.si-dlook{background:#f6e7b8;box-shadow:inset 0 0 0 1.5px #1a2744,inset 0 0 0 4px #c8a94a}
+.si-dt .si-tw{display:flex;margin-top:2px}
+.si-btn-off,.k-btn[disabled]{background:#e6e5df !important;border-color:#e6e5df !important;color:#6b7180 !important;cursor:not-allowed}
+/* checks and bar */
+.si-checks{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}
+.si-checks li{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45;color:#1a2744}
+.si-ok{color:#2f6b45}
+.si-warn{color:#5c450f;font-weight:600}
+.si-warnic{color:#866a1e}
+.si-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#ebeae5;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px}
+/* footer */
+.si-foot{background:#1a2744;color:#ffffff;border-top:3px solid #c8a94a}
+.si-foot a{color:#ffffff;text-decoration:none}
+.si-din{padding:22px 48px 0}
+.si-dgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1.2fr);gap:36px}
+.si-fbrand{display:flex;align-items:center;gap:12px}
+.si-plate2{display:flex;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;border-radius:8px;background:#fbfaf6;color:#1a2744;flex:none;line-height:1}
+.si-plate2 b{font-size:14px;font-weight:700;letter-spacing:.02em;color:#1a2744}
+.si-plate2 small{font-size:7.5px;font-weight:600;color:#555c6b;margin-top:3px;white-space:nowrap}
+.si-bname{font-size:17px;font-weight:700;line-height:1.25;color:#ffffff}
+.si-bp{font-size:14px;line-height:1.45;color:rgba(255,255,255,.82);margin:10px 0 12px;max-width:270px}
+.si-btns{display:flex;gap:10px}
+.si-foot a.k-btn-gold{color:#1a2744}
+.si-dh{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86;margin:4px 0 8px}
+.si-dl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.si-dl li{display:flex;align-items:center;gap:8px;min-height:27px}
+.si-dl a{display:inline-flex;align-items:center;gap:7px;font-size:14.5px;line-height:1.3}
+.si-dbase{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-top:14px;padding:12px 0 14px;border-top:1px solid rgba(255,255,255,.18)}
+.si-trust{font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.82);margin:0}
+.si-trust a{color:#ffffff;text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.55)}
+.si-app{display:flex;align-items:center;gap:10px;flex:none}
+.si-applab{font-size:13.5px;color:rgba(255,255,255,.82)}
+.si-seg{display:inline-flex;border:1px solid rgba(255,255,255,.45);border-radius:9px;overflow:hidden}
+.si-seg button{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:0 13px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:13.5px;font-weight:500;cursor:pointer}
+.si-seg button + button{border-left:1px solid rgba(255,255,255,.25)}
+.si-seg button[aria-checked="true"]{background:#c8a94a;color:#1a2744;font-weight:600}
+.si-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* board 2: states and phone */
+.si-bandx{display:grid;grid-template-columns:minmax(0,1fr) 414px;gap:36px;margin:0 40px;align-items:start}
+.si-blab{display:flex;align-items:center;gap:10px;margin:0 0 10px;white-space:nowrap}
+.si-blab h2{margin:0;font-size:17px;line-height:1.2;font-weight:600}
+.si-sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 16px}
+.si-cap{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#1a2744;margin:0 0 6px;min-height:19px;white-space:nowrap}
+.si-cap span{font-weight:400;color:#555c6b;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.si-dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
+.si-dot-green{background:#2f6b45}.si-dot-amber{background:#c99a1e}.si-dot-grey{background:#858b99}.si-dot-red{background:#b3202f}
+.si-fr{background:#ffffff;border:1px solid #cfcec6;border-radius:12px;overflow:hidden;box-shadow:0 8px 22px rgba(16,24,43,.07);position:relative}
+.si-st{height:262px;padding:11px 12px;display:flex;flex-direction:column;gap:7px}
+.si-ms{background:#3b4150;border-radius:7px;padding:6px}
+.si-ms-in{background:#fbfaf3;border-radius:2px;padding:0 6px}
+.si-ms .si-r{grid-template-columns:22px 1fr 1fr;height:30px}
+.si-ms .si-r > b{font-size:10px}
+.si-ms .si-cell{height:30px;padding:0 4px 0 7px;gap:4px}
+.si-ms .si-hw{font-size:13px}
+.si-ms .si-smudge{width:30px;height:14px;filter:blur(3px)}
+.si-ms .si-plate{padding:1px 5px;min-height:18px}
+.si-ms .si-plate b{font-size:10px}
+.si-ms .si-tw{font-size:9.5px}
+.si-ms .si-sw{width:8px;height:8px}
+.si-ms .si-r.si-tall{height:38px}
+.si-ms .si-tall .si-cell{height:38px}
+.si-ms .si-cell > .si-tw{flex-basis:100%;margin-top:-3px}
+.si-ms .si-c-auto,.si-ms .si-c-ok,.si-ms .si-c-look{flex-wrap:wrap;align-content:center;row-gap:0}
+.si-ms .si-sh-h{font-size:10px;padding:3px 1px}
+.si-ms .si-sh-h i{font-size:12px}
+.si-ms .si-sel{box-shadow:inset 0 0 0 1px #1a2744,inset 0 0 0 3.5px #c8a94a,inset 0 0 0 4.5px #1a2744}
+.si-msg{border-radius:9px;padding:8px 10px;font-size:12.5px;line-height:1.4}
+.si-msg-green{background:#e1f0e7;color:#145b3a;font-weight:600}
+.si-msg-gold{background:#f5ecd2;color:#4a380b}
+.si-msg-grey{background:#efefea;color:#2b3446}
+.si-msg-red{background:#f6e3e3;color:#5e1218}
+.si-tiny{font-size:12px;line-height:1.4;color:#555c6b}
+.si-tinyb{font-size:12.5px;line-height:1.4;color:#1a2744}
+.si-mbtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 11px;border-radius:8px;font-size:12.5px;font-weight:600;border:1px solid #1a2744;background:#ffffff;color:#1a2744;white-space:nowrap}
+.si-mbtn-gold{background:#c8a94a;border-color:#c8a94a;color:#1a2744}
+.si-mbtn-off{background:#e6e5df;border-color:#e6e5df;color:#6b7180}
+.si-mbtn-ghost{border-color:transparent;background:transparent;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px;padding:0 4px}
+.si-mchip{display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 9px;border-radius:99px;border:1px solid #c4c3bb;background:#ffffff;font-size:12px;font-weight:500;color:#1a2744;white-space:nowrap}
+.si-mchip-on{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.si-mchip-next{border-color:#1a2744;box-shadow:inset 0 0 0 1px #1a2744}
+.si-mcl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.si-mcl li{display:flex;gap:6px;align-items:flex-start;font-size:12px;line-height:1.35;color:#1a2744}
+.si-mcl .k-i-sm{width:13px;height:13px;margin-top:1px}
+.si-field{display:flex;flex-direction:column;gap:2px;font-size:10.5px;font-weight:600;color:#555c6b}
+.si-field span{display:flex;align-items:center;height:26px;padding:0 7px;border:1px solid #858b99;border-radius:6px;background:#ffffff;font-size:12px;font-weight:500;color:#1a2744}
+.si-field span.si-ph{color:#6b7180;font-weight:400}
+.si-fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px 7px}
+.si-pager{display:flex;border:1px solid #858b99;border-radius:8px;overflow:hidden}
+.si-pager span{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:40px;font-size:12px;font-weight:600;color:#1a2744;line-height:1.2;text-align:center;padding:2px 4px}
+.si-pager span + span{border-left:1px solid #c4c3bb}
+.si-pager span.on{background:#1a2744;color:#ffffff}
+.si-pager small{font-size:10.5px;font-weight:600;color:#5c450f;display:inline-flex;align-items:center;gap:3px}
+.si-split{display:grid;grid-template-columns:1fr 1fr;gap:10px;height:100%}
+.si-split > div + div{border-left:1px solid #ecebe5;padding-left:10px}
+.si-nophoto{display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border-radius:7px;background:#e4e3dd;color:#2b3446;font-size:12.5px;font-weight:600}
+.si-ml2{display:grid;grid-template-columns:22px 1fr 1fr;align-items:center;height:28px;border-bottom:1px solid #ecebe5;font-size:12.5px}
+.si-ml2 b{font-size:10.5px;font-weight:500;color:#555c6b;text-align:center}
+.si-ml2 span{font-family:'Geist Mono',monospace;font-weight:500;padding-left:6px}
+.si-ml2 .si-tw{font-family:Geist,sans-serif;padding-left:0;font-size:10px}
+.si-ml2 .si-sw{padding:0}
+.si-fail{display:flex;align-items:center;gap:14px;padding:12px 14px}
+/* phone */
+.si-phone{width:414px;height:896px}
+.si-pstatus{flex:none;height:44px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 36px;font-size:14px;font-weight:600;position:relative}
+.si-island{position:absolute;left:50%;top:9px;width:110px;height:30px;margin-left:-55px;border-radius:18px;background:#000000}
+.si-papp{flex:none;height:54px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff}
+.si-pbname{display:flex;flex-direction:column;line-height:1.12;color:#ffffff}
+.si-pbname b{font-size:14px;font-weight:700;white-space:nowrap}
+.si-pbname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.si-psbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.si-pbody{flex:1;position:relative;background:#f5f5f2;overflow:hidden}
+.si-phead{padding:8px 12px 8px;background:#ffffff;border-bottom:1px solid #dddcd4;display:flex;flex-direction:column;gap:7px}
+.si-pphoto{background:#3b4150;padding:8px 8px 0}
+.si-pphoto .si-ms-in{border-radius:2px 2px 0 0}
+.si-pphoto .si-r{grid-template-columns:26px 1fr 1fr;height:44px}
+.si-pphoto .si-cell{height:44px;padding:0 6px 0 9px}
+.si-pphoto .si-hw{font-size:15px}
+.si-pphoto .si-plate b{font-size:10.5px}
+.si-pphoto .si-tw{font-size:10px}
+.si-pphoto .si-sel{box-shadow:inset 0 0 0 1.5px #1a2744,inset 0 0 0 4.5px #c8a94a,inset 0 0 0 6px #1a2744}
+.si-psheet{position:absolute;left:0;right:0;bottom:0;height:60%;background:#ffffff;border-radius:18px 18px 0 0;display:flex;flex-direction:column;box-shadow:0 -10px 30px rgba(16,24,43,.28);border-top:2px solid #1a2744}
+.si-grab{width:40px;height:5px;border-radius:3px;background:#c9c8c0;margin:7px auto 3px;flex:none}
+.si-pscroll{flex:1;overflow:hidden;padding:2px 14px 6px;display:flex;flex-direction:column;gap:8px}
+.si-pact{flex:none;display:grid;grid-template-columns:1.25fr 1fr;gap:10px;padding:9px 14px 10px;border-top:1px solid #e3e2dc;background:#ffffff}
+.si-pcrop{position:relative;width:118px;height:52px;flex:none;background:#fbfaf3;border:1px solid #d6d2c2;border-radius:7px;display:flex;align-items:center;padding-left:10px;overflow:hidden;box-shadow:inset 0 0 0 2px #f6e7b8}
+.si-pcrop .si-hw{font-size:22px}
+.si-pcrop .si-smudge{left:-6px;top:2px;width:70px;height:26px;filter:blur(6px)}
+.si-bd-p{width:176px;flex:none}
+.si-tabbar{flex:none;background:#ffffff;border-top:1px solid #d9d8d1}
+.si-tabbar-in{display:grid;grid-template-columns:repeat(4,1fr);height:54px}
+.si-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#1a2744;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.si-tab svg{width:20px;height:20px}
+.si-tab.on{font-weight:700}
+.si-tab.on::before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.si-safe{height:22px;position:relative}
+.si-homeind{position:absolute;left:50%;bottom:7px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.si-pcap{font-size:13px;line-height:1.45;color:#3d4556;margin:10px 0 0}
+</style>
+</helmet>
+<div class="si-root" style="width:1440px;height:2850px">
+<section class="si-doc" aria-label="About this board">
+<div class="si-doc-top">
+<div>
+<div class="k-row-sm" style="gap:10px"><p class="k-kicker" style="margin:0">16 · Scanner · part 3 of 8 · option 2 of 2 · board 1 of 2</p><span class="si-round">ROUND 2</span></div>
+<h1 class="si-title">Scanner · I · Review: photo, moves and board, with the game checks: Sheet as the list</h1>
+<p class="si-ml" style="margin-top:6px"><b>Built from:</b> Scan-A panels 1 and 4, its labels and chips, the board of panel 3; today&#39;s MoveCell in ScannerPage.tsx; decided chrome.</p>
+<p class="si-ml"><b>Replaces:</b> Scan-A panels 1 to 4. Option 1 for this part is Scan-H, Three panes.</p>
+<p class="si-ml"><b>K&#39;s feedback applied:</b> one scanner in parts, with options per part (Tue, Oct 13, 2026).</p>
+<p class="si-ml"><b>Shown:</b> the laptop at 8:00 PM on Sun, Sep 6. Board 2, Scan-I-2, holds the phone and every state.</p>
+</div>
+<aside class="si-grey" aria-label="Board note">
+<p><b>What</b>Part 3, option 2: the scoresheet photo is the list. Each cell shows the read move beside the handwriting, a flagged cell carries a word, and a tapped cell opens the board in a strip under its row.</p>
+<div>
+<p><b>Built from</b>Scan-A panels 1 and 4, the board of panel 3, today&#39;s MoveCell and its legend.</p>
+<p><b>K&#39;s feedback applied</b>One scanner in parts, with options per part.</p>
+</div>
+<div>
+<p><b>Open for K</b></p>
+<ol>
+<li>Pick this, Scan-H, or each by width.</li>
+<li>Photo retention: drawn kept 30 days (to Tue, Oct 6). This option needs the photo; without it the list is the page.</li>
+<li>A junior&#39;s game: the guardian&#39;s OK once per child or once per game.</li>
+<li>The daily limit resets at midnight UTC or Central.</li>
+</ol>
+</div>
+</aside>
+</div>
+<div class="si-lbox">
+<div class="k-between"><p class="k-label" style="margin:0">Notes on this board</p><span class="k-sample">Sample data · players, ratings, round, board, scan count, times · moves are Morphy&#39;s Opera Game (1858)</span></div>
+<ol class="si-notes"><li><span class="k-num-badge">1</span><span><b>The photo is the list:</b> the read moves typed over each cell with a word per cell, so a parent compares the reading with the handwriting in place and the photo stays large on a phone.<span class="si-from">From Scan-A panel 1: Show what we read, now always on</span></span></li><li><span class="k-num-badge">2</span><span><b>Tapping a cell opens the strip under its row</b> on a laptop, a bottom sheet on a phone, with the crop, the board at that move (fenBefore in types.ts) and First, Back, Forward, Last; the typed list is a drawer.<span class="si-from">From Scan-A panel 3&#39;s board · Scan-B screen 3&#39;s crop</span></span></li><li><span class="k-num-badge">3</span><span><b>Worse for a long game</b> (three pages become a pager) and without a kept photo the drawer list becomes the page, so this option leans on WS15&#39;s 30-day retention (open for K).<span class="si-from">From Scan-A panel 2&#39;s list, now the drawer</span></span></li><li><span class="k-num-badge">4</span><span><b>Three labels in words beside their colour</b> (Check this · Fixed automatically · You checked), mapped from today&#39;s legend in ScannerPage.tsx; the candidates and Confirm belong to part 4.<span class="si-from">From Scan-A labels and chips · today&#39;s MoveCell</span></span></li><li><span class="k-num-badge">5</span><span><b>Game checks in words:</b> legal order, no threefold repetition, the written result against the final position; Save and Export closed until every Check this is resolved (WS15 acceptance 3).<span class="si-from">From Scan-A panel 4</span></span></li><li><span class="k-num-badge">6</span><span><b>Review and fixes run in the browser</b> (decoder.ts in a Web Worker), so the sheet view works offline; the laptop at 8:00 PM opens the draft from My games.<span class="si-from">From Scan-B screen 2&#39;s hand-off · the decoder contract</span></span></li></ol>
+</div>
+</section>
+
+<div class="si-flab"><span class="si-code">A</span><h2>Laptop · Marcus opened the draft and tapped 13...Rxd7 on his photo</h2><span class="k-meta">Sun, Sep 6, 8:00 PM, at home · 1440px</span><span class="si-urlchip">/scanner/review/landry-shah-r4</span></div>
+<div class="si-frame">
+<div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/scanner/review/landry-shah-r4</div></div>
+<div class="si-page">
+<header class="k-header si-hd">
+<div class="k-header-in si-hd-in">
+<a class="k-brand si-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="si-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks si-nav" aria-label="Main">
+<a class="k-nav-on" href="#" aria-current="page">Tournaments</a>
+<a href="#">Clubs</a>
+<a href="#">Scholastic</a>
+<a href="#">News</a>
+<a href="#">Membership</a>
+<button class="si-navbtn" type="button" aria-expanded="false" aria-haspopup="true">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+</nav>
+<a class="si-search" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="si-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility si-util" style="gap:12px">
+<a class="k-ulink" href="#">Donate</a>
+<button class="si-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, signed in as Marcus Landry"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button>
+</div>
+</div>
+</header>
+<div class="si-band">
+<div class="si-band-in">
+<div class="k-between" style="align-items:flex-end;flex-wrap:nowrap">
+<div class="k-stack-sm">
+<div class="k-row-sm" style="flex-wrap:nowrap"><span class="k-kicker">Scoresheet scanner · members only</span><span class="k-sample">Sample data · players, ratings, round, scan count</span></div>
+<div class="k-row" style="gap:16px;flex-wrap:nowrap;display:flex;align-items:center"><h1 class="k-h1" style="margin:0;white-space:nowrap">Check your game</h1>
+<ol class="si-stepper" aria-label="Progress">
+<li class="si-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Photo</li>
+<li class="si-done"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Read · 17 moves</li>
+<li class="si-now" aria-current="step">Check · 1 move left</li>
+<li class="si-off"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save &amp; share</li>
+</ol></div>
+</div>
+<div class="k-stack-sm" style="align-items:flex-end;flex:none">
+<div class="k-row-sm" style="flex-wrap:nowrap">
+<a class="k-btn k-btn-line k-btn-sm" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.3l1.4-2h5.6l1.4 2h2.3A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>Scan another sheet</a>
+<span class="si-rel" style="display:inline-flex"><span class="k-tag" style="position:absolute;right:0;top:-27px">directors only</span><button class="k-btn k-btn-line k-btn-sm si-tdbtn" type="button" disabled><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1"></rect><rect x="13" y="4" width="7" height="7" rx="1"></rect><rect x="4" y="13" width="7" height="7" rx="1"></rect><rect x="13" y="13" width="7" height="7" rx="1"></rect></svg>Directors: scan a whole round</button></span>
+</div>
+<span class="k-small k-muted">16 of 20 scans left today · resets at midnight</span>
+</div>
+</div>
+<p class="si-opened" style="margin-bottom:0"><span class="k-num-badge si-mk">6</span>Opened from My games · Sun, Sep 6 · 8:00 PM · the photo is kept until Tue, Oct 6 unless you save the game.</p>
+</div>
+</div>
+
+<main class="si-main">
+<section class="k-card si-details" aria-label="Game details">
+<div>
+<p class="si-gl" style="margin:0"><b>Marcus Landry</b> 2014 vs <b>Priya Shah</b> 1803 · <b>1-0</b></p>
+<p class="si-gsub" style="margin:2px 0 0">Louisiana State Championship 2026 · Open · Round 4 · Board 6 · Sun, Sep 6 · names and colours matched from the pairings · <a class="k-link" href="#">Edit game details</a></p>
+<div class="si-chips" role="group" aria-label="Filter moves">
+<button class="k-chip k-chip-on" type="button" aria-pressed="true">All moves <span class="k-chip-count">17</span></button>
+<button class="k-chip" type="button" aria-pressed="false"><i class="si-sw si-sw-look" aria-hidden="true"></i>Needs a look <span class="k-chip-count">1</span></button>
+<button class="k-chip" type="button" aria-pressed="false"><i class="si-sw si-sw-auto" aria-hidden="true"></i>Fixed automatically <span class="k-chip-count">1</span></button>
+<button class="k-chip" type="button" aria-pressed="false"><i class="si-sw si-sw-ok" aria-hidden="true"></i>You checked <span class="k-chip-count">1</span></button>
+</div>
+</div>
+<div class="si-ctl">
+<button class="k-btn k-btn-line k-btn-sm si-pressed" type="button" aria-expanded="true" aria-controls="si-drawer"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"></path><circle cx="4.5" cy="6" r="1"></circle><circle cx="4.5" cy="12" r="1"></circle><circle cx="4.5" cy="18" r="1"></circle></svg>Moves list</button>
+<span class="si-sw2" role="switch" aria-checked="true" aria-disabled="true"><i></i>Show what we read <small>always on in this view</small></span>
+</div>
+</section>
+
+<div class="si-work">
+<section class="k-card si-card si-rel" aria-labelledby="si-sh">
+<span class="si-abs" style="left:-12px;top:-12px"><span class="k-num-badge si-mk">1</span></span>
+<div class="si-chead">
+<div class="k-row-sm" style="gap:10px"><h2 id="si-sh" class="k-h3" style="margin:0;font-size:18px">Your scoresheet</h2><span class="k-small k-muted">Sheet 1 of 1</span></div>
+<div class="k-row-sm"><button class="k-iconbtn" type="button" aria-label="Zoom out"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg></button><button class="k-iconbtn" type="button" aria-label="Zoom in"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button><button class="k-iconbtn" type="button" aria-label="Reset zoom"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v5h-5"></path></svg></button></div>
+</div>
+<div class="si-ground">
+<div class="si-sheet" role="group" aria-label="Your photo of the scoresheet, with the move we read typed beside each handwritten move">
+<div class="si-sh-h"><span>White <i>M. Landry</i></span><span>Black <i>P. Shah</i></span></div>
+<div class="si-sh-h"><span>Event <i>LA State Ch.</i></span><span>Rd <i>4</i> · Bd <i>6</i></span></div>
+<div class="si-r"><b>1</b><button class="si-cell" type="button" aria-label="1. e4. Change this move"><span class="si-hw">e4</span><span class="si-plate"><b>e4</b></span></button><button class="si-cell" type="button" aria-label="1… e5. Change this move"><span class="si-hw">e5</span><span class="si-plate"><b>e5</b></span></button></div><div class="si-r"><b>2</b><button class="si-cell" type="button" aria-label="2. Nf3. Change this move"><span class="si-hw">Nf3</span><span class="si-plate"><b>Nf3</b></span></button><button class="si-cell" type="button" aria-label="2… d6. Change this move"><span class="si-hw">d6</span><span class="si-plate"><b>d6</b></span></button></div><div class="si-r"><b>3</b><button class="si-cell" type="button" aria-label="3. d4. Change this move"><span class="si-hw">d4</span><span class="si-plate"><b>d4</b></span></button><button class="si-cell" type="button" aria-label="3… Bg4. Change this move"><span class="si-hw">Bg4</span><span class="si-plate"><b>Bg4</b></span></button></div><div class="si-r"><b>4</b><button class="si-cell" type="button" aria-label="4. dxe5. Change this move"><span class="si-hw">dxe5</span><span class="si-plate"><b>dxe5</b></span></button><button class="si-cell" type="button" aria-label="4… Bxf3. Change this move"><span class="si-hw">Bxf3</span><span class="si-plate"><b>Bxf3</b></span></button></div><div class="si-r"><b>5</b><button class="si-cell" type="button" aria-label="5. Qxf3. Change this move"><span class="si-hw">Qxf3</span><span class="si-plate"><b>Qxf3</b></span></button><button class="si-cell" type="button" aria-label="5… dxe5. Change this move"><span class="si-hw">dxe5</span><span class="si-plate"><b>dxe5</b></span></button></div><div class="si-r"><b>6</b><button class="si-cell" type="button" aria-label="6. Bc4. Change this move"><span class="si-hw">Bc4</span><span class="si-plate"><b>Bc4</b></span></button><button class="si-cell" type="button" aria-label="6… Nf6. Change this move"><span class="si-hw">Nf6</span><span class="si-plate"><b>Nf6</b></span></button></div><div class="si-r"><b>7</b><button class="si-cell si-c-auto" type="button" aria-label="7. Qb3, fixed automatically. Change this move"><span class="si-hw">Qb8</span><span class="si-plate"><b>Qb3</b><span class="si-tw si-tw-auto"><i class="si-sw si-sw-auto" aria-hidden="true"></i>Fixed automatically</span></span></button><button class="si-cell" type="button" aria-label="7… Qe7. Change this move"><span class="si-hw">Qe7</span><span class="si-plate"><b>Qe7</b></span></button></div><div class="si-r"><b>8</b><button class="si-cell" type="button" aria-label="8. Nc3. Change this move"><span class="si-hw">Nc3</span><span class="si-plate"><b>Nc3</b></span></button><button class="si-cell" type="button" aria-label="8… c6. Change this move"><span class="si-hw">c6</span><span class="si-plate"><b>c6</b></span></button></div><div class="si-r"><b>9</b><button class="si-cell" type="button" aria-label="9. Bg5. Change this move"><span class="si-hw">Bg5</span><span class="si-plate"><b>Bg5</b></span></button><button class="si-cell si-c-ok" type="button" aria-label="9… b5, you checked it. Change this move"><span class="si-hw"><em class="si-smudge" aria-hidden="true"></em>b5</span><span class="si-plate"><b>b5</b><span class="si-tw si-tw-ok"><i class="si-sw si-sw-ok" aria-hidden="true"></i>You checked</span></span></button></div><div class="si-r"><b>10</b><button class="si-cell" type="button" aria-label="10. Nxb5. Change this move"><span class="si-hw">Nxb5</span><span class="si-plate"><b>Nxb5</b></span></button><button class="si-cell" type="button" aria-label="10… cxb5. Change this move"><span class="si-hw">cxb5</span><span class="si-plate"><b>cxb5</b></span></button></div><div class="si-r"><b>11</b><button class="si-cell" type="button" aria-label="11. Bxb5+. Change this move"><span class="si-hw">Bxb5+</span><span class="si-plate"><b>Bxb5+</b></span></button><button class="si-cell" type="button" aria-label="11… Nbd7. Change this move"><span class="si-hw">Nbd7</span><span class="si-plate"><b>Nbd7</b></span></button></div><div class="si-r"><b>12</b><button class="si-cell" type="button" aria-label="12. O-O-O. Change this move"><span class="si-hw">O-O-O</span><span class="si-plate"><b>O-O-O</b></span></button><button class="si-cell" type="button" aria-label="12… Rd8. Change this move"><span class="si-hw">Rd8</span><span class="si-plate"><b>Rd8</b></span></button></div><div class="si-r"><b>13</b><button class="si-cell" type="button" aria-label="13. Rxd7. Change this move"><span class="si-hw">Rxd7</span><span class="si-plate"><b>Rxd7</b></span></button><button class="si-cell si-c-look si-sel" type="button" aria-label="13… Rxd7, needs a look. Change this move"><span class="si-hw"><em class="si-smudge" aria-hidden="true"></em>Rxd7</span><span class="si-plate"><b>Rxd7</b><span class="si-tw si-tw-look"><i class="si-sw si-sw-look" aria-hidden="true"></i>Check this</span></span></button></div>
+</div>
+</div>
+<div class="si-notch" aria-hidden="true"></div>
+<section class="si-strip" aria-label="Move 13, Black: Rxd7, check this">
+<span class="si-abs" style="left:-13px;top:-13px"><span class="k-num-badge si-mk">2</span></span>
+<button class="k-iconbtn si-close" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+<div class="k-stack-sm" style="gap:8px">
+<span class="k-label">From your photo</span>
+<div class="si-crop" role="img" aria-label="Black&#39;s move 13 cut from your photo at three times size, smudged"><small>Row 13 · Black · 3x</small><span class="si-hw" style="margin-top:12px"><em class="si-smudge"></em>Rxd7</span></div>
+<div><span class="k-meta">Read as</span><div class="si-readas">Rxd7</div><span class="k-small k-muted">smudged on the sheet</span></div>
+<span class="si-pill si-pill-look" style="align-self:flex-start"><i class="si-sw si-sw-look" aria-hidden="true"></i>Check this</span>
+</div>
+<div class="k-stack-sm" style="gap:6px">
+<span class="k-small" style="font-weight:600">After 13...Rxd7</span>
+<div class="si-bwrap"><div class="si-ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div><div class="k-board si-bd si-bd-l" role="img" aria-label="Position after 13...Rxd7. White: king c1, queen b3, rook h1, bishops b5 and g5, pawns a2 b2 c2 e4 f2 g2 h2. Black: king e8, queen e7, rooks d7 and h8, knight f6, bishop f8, pawns a7 e5 f7 g7 h7. The move's squares d8 and d7 are tinted; d7 carries the gold ring."><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d si-td"></div><div class="k-sq-l"><span class="pc pb">K</span></div><div class="k-sq-d"><span class="pc pb">B</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l si-tl si-ring"><span class="pc pb">R</span></div><div class="k-sq-d"><span class="pc pb">Q</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb">N</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">B</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pb pp">P</span></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">B</span></div><div class="k-sq-l"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">Q</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-l"><span class="pc pw pp">P</span></div><div class="k-sq-d"><span class="pc pw pp">P</span></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"><span class="pc pw">K</span></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"></div><div class="k-sq-d"></div><div class="k-sq-l"><span class="pc pw">R</span></div></div><div class="si-files" aria-hidden="true"><span>a</span><span>b</span><span>c</span><span>d</span><span>e</span><span>f</span><span>g</span><span>h</span></div></div>
+</div>
+<div class="k-stack-sm" style="gap:10px;padding-top:36px">
+<b style="font-size:17px">Move 13 · Black</b>
+<div class="si-navbtns">
+<button class="k-iconbtn" type="button" aria-label="First move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5l-7 7 7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Previous move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Next move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button>
+<button class="k-iconbtn" type="button" aria-label="Last move"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l7 7-7 7"></path></svg></button>
+</div>
+<a class="k-link k-small" href="#">Show the position before this move</a>
+<div class="k-stack-sm" style="gap:5px;margin-top:6px">
+<button class="k-btn k-btn-gold" type="button" style="width:100%">Check this move</button>
+<span class="si-tagnote" style="align-self:flex-start">Opens the fix step · part 4</span>
+</div>
+<button class="k-btn k-btn-ghost" type="button" style="align-self:flex-start;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:4px">Skip for now</button>
+</div>
+</section>
+
+<div class="si-ground2" style="padding-top:12px">
+<div class="si-sheet2" style="padding-top:0">
+<div class="si-r"><b>14</b><button class="si-cell" type="button" aria-label="14. Rd1. Change this move"><span class="si-hw">Rd1</span><span class="si-plate"><b>Rd1</b></span></button><button class="si-cell" type="button" aria-label="14… Qe6. Change this move"><span class="si-hw">Qe6</span><span class="si-plate"><b>Qe6</b></span></button></div><div class="si-r"><b>15</b><button class="si-cell" type="button" aria-label="15. Bxd7+. Change this move"><span class="si-hw">Bxd7+</span><span class="si-plate"><b>Bxd7+</b></span></button><button class="si-cell" type="button" aria-label="15… Nxd7. Change this move"><span class="si-hw">Nxd7</span><span class="si-plate"><b>Nxd7</b></span></button></div><div class="si-r"><b>16</b><button class="si-cell" type="button" aria-label="16. Qb8+. Change this move"><span class="si-hw">Qb8+</span><span class="si-plate"><b>Qb8+</b></span></button><button class="si-cell" type="button" aria-label="16… Nxb8. Change this move"><span class="si-hw">Nxb8</span><span class="si-plate"><b>Nxb8</b></span></button></div><div class="si-r"><b>17</b><button class="si-cell" type="button" aria-label="17. Rd8#. Change this move"><span class="si-hw">Rd8#</span><span class="si-plate"><b>Rd8#</b></span></button><span class="si-cell si-empty"></span></div>
+<div class="si-sh-h" style="border-bottom:0;padding-top:8px"><span>Result <i>1-0</i></span><span>Signed <i>ML</i> · <i>PS</i></span></div>
+</div>
+</div>
+<p class="si-capfoot" style="margin-bottom:0">Tap any cell; the strip opens under its row, so the handwriting, the reading and the board sit together.</p>
+</section>
+
+<div class="k-stack-sm" style="gap:8px">
+<aside id="si-drawer" class="si-drawer si-rel" aria-labelledby="si-dh">
+<span class="si-abs" style="left:-14px;top:-12px"><span class="k-num-badge si-mk">3</span></span>
+<div class="k-between" style="flex-wrap:nowrap;margin-bottom:6px">
+<div><h2 id="si-dh" class="k-h3" style="margin:0;font-size:18px">Moves</h2><span class="k-meta">17 moves, in scoresheet order</span></div>
+<button class="k-iconbtn" type="button" aria-label="Close"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+<table class="si-dt">
+<thead><tr><th style="text-align:center">#</th><th>White</th><th>Black</th></tr></thead>
+<tbody><tr><td class="si-no">1</td><td>e4</td><td>e5</td></tr><tr><td class="si-no">2</td><td>Nf3</td><td>d6</td></tr><tr><td class="si-no">3</td><td>d4</td><td>Bg4</td></tr><tr><td class="si-no">4</td><td>dxe5</td><td>Bxf3</td></tr><tr><td class="si-no">5</td><td>Qxf3</td><td>dxe5</td></tr><tr><td class="si-no">6</td><td>Bc4</td><td>Nf6</td></tr><tr><td class="si-no">7</td><td class="si-tg si-dauto">Qb3<span class="si-tw si-tw-auto"><i class="si-sw si-sw-auto" aria-hidden="true"></i>Fixed automatically</span></td><td>Qe7</td></tr><tr><td class="si-no">8</td><td>Nc3</td><td>c6</td></tr><tr><td class="si-no">9</td><td>Bg5</td><td class="si-tg si-dok">b5<span class="si-tw si-tw-ok"><i class="si-sw si-sw-ok" aria-hidden="true"></i>You checked</span></td></tr><tr><td class="si-no">10</td><td>Nxb5</td><td>cxb5</td></tr><tr><td class="si-no">11</td><td>Bxb5+</td><td>Nbd7</td></tr><tr><td class="si-no">12</td><td>O-O-O</td><td>Rd8</td></tr><tr><td class="si-no">13</td><td>Rxd7</td><td class="si-tg si-dlook">Rxd7<span class="si-tw si-tw-look"><i class="si-sw si-sw-look" aria-hidden="true"></i>Check this</span></td></tr><tr><td class="si-no">14</td><td>Rd1</td><td>Qe6</td></tr><tr><td class="si-no">15</td><td>Bxd7+</td><td>Nxd7</td></tr><tr><td class="si-no">16</td><td>Qb8+</td><td>Nxb8</td></tr><tr><td class="si-no">17</td><td>Rd8#</td><td></td></tr></tbody>
+</table>
+<p class="k-small k-muted" style="margin:10px 0 6px;font-size:13px;line-height:1.45">7. Qb3 was read as "Qb8", which isn&#39;t a legal move there; Qb3 is the only legal match, so it was fixed without asking.</p>
+<button class="k-btn k-btn-line k-btn-sm" type="button" style="border-color:#c4c3bb"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>Undo last change</button>
+<span class="k-meta" style="display:block;margin-top:4px">Last change: you checked 9...b5</span>
+</aside>
+<p class="k-small k-muted" style="margin:0;font-size:13px;line-height:1.45">The typed list is here for people who prefer it, and it is the page when the photo is not kept.</p>
+</div>
+
+</div>
+<section class="k-card si-card si-rel" aria-labelledby="si-gc" style="padding:14px 18px">
+<span class="si-abs" style="left:-12px;top:-12px"><span class="k-num-badge si-mk">4</span></span>
+<div class="k-row-sm" style="margin-bottom:8px;gap:10px"><h2 id="si-gc" class="k-label" style="margin:0">Game checks</h2><span class="k-meta">run in this browser on the moves as read</span></div>
+<ul class="si-checks">
+<li><svg class="k-i si-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span><b class="si-ok">Passed:</b> Every move is legal in order</span></li>
+<li><svg class="k-i si-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span><b class="si-ok">Passed:</b> No position repeated three times</span></li>
+<li><svg class="k-i si-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><span><b class="si-ok">Passed:</b> 17. Rd8# is checkmate, which matches the result written on the sheet, 1-0</span></li>
+<li class="si-warn"><svg class="k-i si-warnic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg><span>Checks run on the moves as read so far · 1 move still to check</span></li>
+</ul>
+</section>
+<section class="si-bar si-rel" aria-label="Save and share, closed">
+<span class="si-abs" style="left:-12px;top:-12px"><span class="k-num-badge si-mk">5</span></span>
+<b class="k-row-sm" style="gap:6px;font-size:15px;color:#3d4556"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Save &amp; share</b>
+<button class="k-btn k-btn-sm" type="button" disabled>Save to My games</button>
+<button class="k-btn k-btn-sm" type="button" disabled>Open in lichess<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"></path></svg></button>
+<button class="k-btn k-btn-sm" type="button" disabled><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"></path></svg>Download PGN</button>
+<span class="si-warn k-row-sm" style="gap:6px;font-size:14px"><svg class="k-i si-warnic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5.5M12 16.5v.5"></path></svg>Resolve 1 flagged move to save</span>
+<span class="si-tagnote" style="margin-left:auto">Part 5 opens here</span>
+</section>
+
+</main>
+<footer class="si-foot">
+<div class="si-din">
+<div class="si-dgrid">
+<div>
+<a class="si-fbrand" href="#" aria-label="Louisiana Chess Association, home"><span class="si-plate2" aria-hidden="true"><b>LCA</b><small>official logo</small></span><span class="si-bname" aria-hidden="true">Louisiana Chess Association</span></a>
+<p class="si-bp">Tournaments, clubs and scholastic chess across the state, run by volunteers.</p>
+<div class="si-btns"><a class="k-btn k-btn-gold k-btn-sm" href="#">Join LCA</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Donate</a></div>
+</div>
+<nav aria-labelledby="si-d1"><h2 class="si-dh" id="si-d1">Play</h2><ul class="si-dl"><li><a href="#">Tournaments</a></li><li><a href="#">Scholastic</a></li><li><a href="#">State champions</a></li><li><a href="#">Scoresheet scanner</a></li></ul></nav>
+<nav aria-labelledby="si-d2"><h2 class="si-dh" id="si-d2">Community</h2><ul class="si-dl"><li><a href="#">Clubs</a></li><li><a href="#">Club map</a></li><li><a href="#">List or update your club</a></li><li><a href="#">News</a></li><li><a href="#" target="_blank" rel="noopener noreferrer">LCA on Facebook ↗<span class="si-sr"> (opens in a new tab)</span></a></li></ul></nav>
+<nav aria-labelledby="si-d3"><h2 class="si-dh" id="si-d3">About LCA</h2><ul class="si-dl"><li><a href="#">About LCA</a></li><li><a href="#">Board &amp; regions</a></li><li><a href="#">Bylaws &amp; rules</a></li><li><a href="#">Minutes</a></li><li><a href="#">Annual meeting</a></li></ul></nav>
+<nav aria-labelledby="si-d4"><h2 class="si-dh" id="si-d4">Contact</h2><ul class="si-dl"><li><a href="mailto:LouisianaChess@gmail.com"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>LouisianaChess@gmail.com</a></li><li><a href="#">Contact</a></li><li><a href="#">Membership help</a></li><li><a href="#">Website help</a></li><li><a href="#">Donate</a></li></ul></nav>
+</div>
+<div class="si-dbase">
+<p class="si-trust">US Chess state affiliate · Louisiana&#39;s chess community since 1915 · <a href="#">Bylaws &amp; rules</a> · <a href="#">Minutes</a> · Site last updated Sun, Sep 6, 2026</p>
+<div class="si-app"><span class="si-applab" id="si-ap">Appearance:</span><div class="si-seg" role="radiogroup" aria-labelledby="si-ap"><button type="button" role="radio" aria-checked="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>System</button><button type="button" role="radio" aria-checked="false">Light</button><button type="button" role="radio" aria-checked="false">Dark</button></div></div>
+</div>
+</div>
+</footer>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2850}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

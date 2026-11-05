@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Membership · J · Member-J-2 · Long read, phones and states (round 2)</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.j2-root{width:1440px;box-sizing:border-box;background:#ecebe6;color:#1a2744}
+.j2-root *{box-sizing:border-box}
+.j2-strip{height:56px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 40px;border-bottom:1px solid #d9d8d1}
+.j2-strip-l{font-size:15px;font-weight:700}
+.j2-strip-r{font-size:14px;font-weight:600;color:#866a1e}
+.j2-doc{padding:14px 28px 0;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px;align-items:start}
+.j2-meta{font-size:13.5px;line-height:1.5;color:#3d4556;margin:0}
+.j2-meta b{color:#1a2744;font-weight:600}
+.j2-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px;margin-top:10px}
+.j2-notes{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px 20px}
+.j2-notes li{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.45}
+.j2-notes .k-num-badge{width:22px;height:22px;font-size:11.5px}
+.j2-grey{background:#efefea;border:1px solid #dddcd4;border-radius:12px;padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:6px 16px}
+.j2-grey p{margin:0;font-size:12.5px;line-height:1.45;color:#2b3446}
+.j2-grey p b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.j2-grey ol{margin:0;padding-left:16px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.j2-stage{display:flex;gap:22px;padding:22px 28px 0;align-items:flex-start}
+.j2-fr{width:410px;flex:none;display:flex;flex-direction:column;gap:12px}
+.j2-cap{min-height:72px;background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:4px;overflow:hidden}
+.j2-oh{display:flex;align-items:center;gap:10px}
+.j2-oc{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 8px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:12px;font-weight:700}
+.j2-oh h3{font-size:16px;line-height:1.25;font-weight:700;margin:0}
+.j2-idea{font-size:12.5px;line-height:1.4;color:#2b3446;margin:0}
+
+/* phone chrome (Tourn-Phones-Final) */
+.j2-phone{width:390px;height:844px;box-sizing:content-box !important;border:10px solid #10182b;border-radius:52px;background:#10182b;position:relative;box-shadow:0 24px 50px rgba(16,24,43,.2);flex:none}
+.j2-scr{position:absolute;inset:0;border-radius:42px;overflow:hidden;display:flex;flex-direction:column;background:#ffffff}
+.j2-status{flex:none;height:47px;background:#1a2744;color:#ffffff;display:flex;align-items:center;justify-content:space-between;padding:4px 30px 0 40px;font-size:15px;font-weight:600;position:relative}
+.j2-island{position:absolute;left:50%;top:11px;width:120px;height:34px;margin-left:-60px;border-radius:20px;background:#000000}
+.j2-statr{display:flex;align-items:center;gap:6px}
+.j2-sig{display:inline-flex;align-items:flex-end;gap:1.5px;height:11px}
+.j2-sig i{display:block;width:3px;background:currentColor;border-radius:1px}
+.j2-sig i:nth-child(1){height:4px}.j2-sig i:nth-child(2){height:6px}.j2-sig i:nth-child(3){height:8.5px}.j2-sig i:nth-child(4){height:11px}
+.j2-batt{display:inline-flex;width:24px;height:12px;border:1.5px solid currentColor;border-radius:4px;padding:1.5px}
+.j2-batt i{display:block;width:70%;background:currentColor;border-radius:1.5px}
+.j2-app{flex:none;height:56px;background:#1a2744;display:flex;align-items:center;gap:8px;padding:0 10px 0 14px;color:#ffffff;border-bottom:1px solid rgba(255,255,255,.12)}
+.j2-brand{display:flex;align-items:center;gap:8px;color:#ffffff;text-decoration:none;min-height:44px;min-width:0}
+.j2-mark{width:28px;height:28px;fill:#ffffff;flex:none}
+.j2-bname{display:flex;flex-direction:column;line-height:1.12}
+.j2-bname b{font-size:14px;font-weight:700;white-space:nowrap}
+.j2-bname span{font-size:11px;font-weight:500;color:rgba(255,255,255,.78)}
+.j2-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.6);border-radius:9px;color:#ffffff;margin-left:auto;flex:none}
+.j2-main{flex:1;min-height:0;overflow:hidden;position:relative;background:#ffffff}
+.j2-tabs{flex:none;background:#ffffff;border-top:1px solid #d9d8d1;position:relative;z-index:5}
+.j2-tabs-in{display:grid;grid-template-columns:repeat(4,1fr);height:55px}
+.j2-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;padding:0;border:0;background:transparent;color:#1a2744;font:inherit;font-size:12px;font-weight:500;line-height:1.2;text-decoration:none}
+.j2-tab svg{width:20px;height:20px}
+.j2-safe{height:34px;position:relative}
+.j2-homeind{position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:#10182b}
+.j2-mk{position:absolute;z-index:40;width:24px;height:24px;font-size:12px;box-shadow:0 0 0 3px #ffffff}
+
+/* phone content */
+.j2-hero{background:#1a2744;color:#ffffff;padding:18px 16px 20px;display:flex;flex-direction:column;gap:9px}
+.j2-hero .j2-lab{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86}
+.j2-h1{font-size:28px;line-height:1.12;font-weight:700;letter-spacing:-.015em;margin:0;color:#ffffff}
+.j2-lead{font-size:15.5px;line-height:1.5;color:#d5d9e3;margin:0}
+.j2-paths{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.j2-look{color:#ffffff;text-decoration:underline;text-underline-offset:4px;font-size:14px;font-weight:600;display:inline-flex;align-items:center;min-height:44px;padding:0 6px}
+.j2-sec{padding:16px 16px 0;display:flex;flex-direction:column;gap:8px}
+.j2-h2{font-size:22px;line-height:1.2;font-weight:700;margin:0}
+.j2-tile{display:flex;gap:12px;align-items:center;min-height:72px;padding:10px 14px;border:1px solid #dddcd4;border-radius:12px;background:#ffffff}
+.j2-tico{width:40px;height:40px;flex:none;border-radius:10px;background:#f1efe7;color:#1a2744;display:flex;align-items:center;justify-content:center}
+.j2-tile b{display:block;font-size:15.5px;line-height:1.3;font-weight:600}
+.j2-tile span{display:block;font-size:13px;line-height:1.4;color:#555c6b;margin-top:2px}
+.j2-tier{border:1px solid #dddcd4;border-radius:12px;background:#ffffff;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.j2-tier.pick{border:2px solid #1a2744}
+.j2-trow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.j2-trow > div:last-child{white-space:nowrap;flex:none}
+.j2-trow h3{font-size:18px;line-height:1.25;font-weight:600;margin:0}
+.j2-price{font-size:30px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.j2-acts{display:flex;align-items:center;gap:12px}
+.j2-acts .k-btn{flex:1}
+
+/* insets */
+.j2-insets{display:grid;grid-template-columns:repeat(2,252px);gap:16px}
+.j2-in{display:flex;flex-direction:column;gap:8px}
+.j2-inh{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700}
+.j2-incap{font-size:12px;line-height:1.4;color:#3d4556;margin:0}
+.j2-box{background:#ffffff;border:1px solid #d9d8d1;border-radius:12px;overflow:hidden;box-shadow:0 8px 20px rgba(16,24,43,.07)}
+.j2-mhd{height:40px;background:#1a2744;color:#ffffff;display:flex;align-items:center;gap:6px;padding:0 10px;font-size:12.5px;font-weight:500}
+.j2-mhd svg.j2-mark{width:20px;height:20px}
+.j2-mhd .j2-push{margin-left:auto;display:flex;align-items:center;gap:10px}
+.j2-mini-btn{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:6px;background:#c8a94a;color:#1a2744;font-size:12px;font-weight:700}
+.j2-mhero{background:#1a2744;color:#ffffff;padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;border-top:1px solid rgba(255,255,255,.12)}
+.j2-mhero b{font-size:15px;line-height:1.2}
+.j2-mhero p{margin:0;font-size:12px;line-height:1.4;color:#d5d9e3}
+.j2-mline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12px;line-height:1.4;color:#ffffff}
+.j2-mline a{color:#ffffff;text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.j2-mbody{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
+.j2-mcard{border:1px solid #dddcd4;border-radius:10px;padding:9px 10px;display:flex;flex-direction:column;gap:5px;font-size:12px;line-height:1.4}
+.j2-mcard b{font-size:13px}
+.j2-mcard .k-btn{min-height:34px;font-size:12px;padding:0 8px}
+.j2-res{border-top:1px solid #ecebe5;padding:8px 0 0;display:flex;flex-direction:column;gap:4px;font-size:12px;line-height:1.4}
+.j2-res .k-tag{align-self:flex-start;font-size:11px;padding:3px 7px}
+.j2-lrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid #ecebe5;font-size:12.5px;font-weight:600}
+.j2-lrow:first-child{border-top:0}
+.j2-lrow i{width:24px;height:24px;flex:none;border-radius:7px;background:#f1efe7;display:block}
+
+/* J: one column on the phone */
+.j2-hero{padding:14px 16px 16px !important;gap:7px !important}
+.j2-main .j2-sec{padding-top:12px}
+.j2-checks{display:flex;flex-wrap:wrap;gap:1px 10px;padding-top:7px;border-top:1px solid rgba(255,255,255,.18);font-size:13.5px;line-height:1.35;color:#d5d9e3}
+.j2-checks b{color:#ffffff;font-weight:600}
+.j2-checks span{display:block;width:100%}
+.j2-checks svg{width:14px;height:14px;color:#e6cf86;vertical-align:-2px;margin-right:5px}
+.j2-checks b{margin-right:6px}
+.j2-tbl{border:1px solid #dddcd4;border-radius:12px;overflow:hidden;background:#ffffff}
+.j2-tr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-top:1px solid #ecebe5}
+.j2-tr:first-child{border-top:0}
+.j2-tr b{display:block;font-size:16px;line-height:1.25;font-weight:600}
+.j2-tr .k-meta{font-size:12.5px;line-height:1.35}
+.j2-tr-r{display:flex;align-items:center;gap:10px;flex:none}
+.j2-tp{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.j2-tr .k-btn{min-height:40px;padding:0 12px;font-size:13.5px}
+.j2-fam{background:#f7f5ee;box-shadow:inset 3px 0 0 #1a2744}
+.j2-p{margin:0;font-size:13.5px;line-height:1.45;color:#3d4556}
+.j2-p b{color:#1a2744}
+.j2-qa{display:flex;flex-direction:column;gap:3px;padding:10px 0;border-top:1px solid #e7e5de}
+.j2-qa h3{margin:0;font-size:16.5px;line-height:1.3;font-weight:600}
+.j2-qa p{margin:0;font-size:15px;line-height:1.45;color:#2b3446}
+.j2-give{margin-top:14px;background:#fbfaf6;border-top:1px solid #e9e7df;border-bottom:1px solid #e9e7df;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.j2-give h3{margin:0;font-size:16.5px;line-height:1.3;font-weight:600}
+.j2-give p{margin:0;font-size:14.5px;line-height:1.45;color:#3d4556}
+.j2-ft{background:#1a2744;border-top:3px solid #c8a94a;color:rgba(255,255,255,.78);padding:12px 16px;font-size:12.5px;line-height:1.4}
+.j2-mtr{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-radius:8px;background:#f7f5ee;font-size:12px;line-height:1.35;box-shadow:inset 3px 0 0 #1a2744}
+.j2-mtr b{font-size:13px}
+</style>
+</helmet>
+<div class="j2-root" style="width:1440px;height:1400px">
+
+<div class="j2-strip"><span class="j2-strip-l">Page 13 · Membership · J-2 · Long read on phones, and the signed-in states</span><span class="j2-strip-r">Axis: one column, every answer on the page. Everything else is Member-B.</span></div>
+
+<section class="j2-doc" aria-label="About this board">
+<div>
+<p class="j2-meta"><b>Built from:</b> Member-B · Round 2 · <b>Axis:</b> one column, no accordion. Phone chrome from the decided phone boards (WS02). <b>Replaces:</b> nothing yet. <b>K's feedback applied (Tue, Oct 13):</b> service first, giving quiet. <b>Shown:</b> 390px phones, signed out; four states for the build.</p>
+<div class="j2-lbox">
+<p class="k-label">Notes on this board</p>
+<ol class="j2-notes">
+<li><span class="k-num-badge">1</span><span><b>Hero stacks:</b> label, H1 at 28px, lead, the three paths in one wrapping row, then the check line, wrapped.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The tier table collapses</b> to four stacked rows, who on the left, price and Join on the right; Family tinted with its true label.</span></li>
+<li><span class="k-num-badge">3</span><span><b>Answers written out</b> on the phone too: no chevrons, nothing behind a tap.</span></li>
+<li><span class="k-num-badge">4</span><span><b>Giving is one paragraph</b> after the questions, Give to /give. Donate also sits in the Menu sheet (WS02).</span></li>
+<li><span class="k-num-badge">5</span><span><b>Signed in:</b> My LCA replaces Join LCA; a renewal adds a year to the end date. Expired: Renew takes the Join slot.</span></li>
+<li><span class="k-num-badge">6</span><span><b>Thin ledger and lookup:</b> names only until figures exist; the lookup gives first name, last initial, tier, status and month.</span></li>
+</ol>
+</div>
+</div>
+<aside class="j2-grey" aria-label="Board note">
+<p><b>What</b>Member-J on a phone, plus four states: signed in (active and expired), the thin ledger, the lookup.</p>
+<p><b>Built from</b>Member-J (part 1) and Member-B's copy; WS02 phone chrome.</p>
+<p><b>K's feedback applied</b>The first screen is who it covers and what it costs; giving stays one paragraph at the end.</p>
+<div><p><b>Open for K</b></p><ol><li>Six written-out answers make a long scroll on a phone. Keep, or add a short "Jump to" list above them?</li><li>Should the phone rows also carry Renew, or is the hero's Renew enough?</li></ol></div>
+</aside>
+</section>
+
+<div class="j2-stage">
+
+<div class="j2-fr">
+<div class="j2-cap"><div class="j2-oh"><span class="j2-oc">1</span><h3>First screen</h3></div><p class="j2-idea">The hero and its check line, then four stacked rows; the math follows below.</p></div>
+<div class="j2-phone" aria-label="First screen">
+<div class="j2-scr">
+<div class="j2-status" aria-hidden="true"><span>10:12 AM</span><span class="j2-island"></span><span class="j2-statr"><span class="j2-sig"><i></i><i></i><i></i><i></i></span><span class="j2-batt"><i></i></span></span></div>
+<div class="j2-app"><a class="j2-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="j2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="j2-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="j2-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<main class="j2-main">
+<div class="j2-hero">
+<span class="j2-lab">Membership</span>
+<h1 class="j2-h1">Join 300+ Louisiana chess players</h1>
+<p class="j2-lead">From $5 a year. Every membership gets the same benefits; the price depends only on who it covers.</p>
+<div class="j2-paths"><a class="k-btn k-btn-gold k-btn-sm" href="#">See memberships</a><a class="k-btn k-btn-on-dark k-btn-sm" href="#">Renew</a><a class="j2-look" href="#">Am I a member?</a></div>
+<div class="j2-checks"><b style="display:block;width:100%">Every membership:</b><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>entry to the tournaments LCA runs</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>a member profile</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>voting at the annual meeting, Labor Day weekend</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>online registration for you and your kids</span></div>
+</div>
+<div class="j2-sec">
+<div class="k-stack-sm" style="gap:2px"><h2 class="j2-h2">Pick by who it covers</h2><a class="k-link k-small" href="#" style="align-self:flex-start">Not sure? Answer two questions</a></div>
+<div class="j2-tbl">
+<div class="j2-tr"><div><b>Adult</b><div class="k-meta">18 and up · covers 1</div></div><div class="j2-tr-r"><span class="j2-tp">$15</span><a class="k-btn k-btn-navy k-btn-sm" href="#">Join · $15</a></div></div>
+<div class="j2-tr"><div><b>Scholastic</b><div class="k-meta">K–12 students · covers 1</div></div><div class="j2-tr-r"><span class="j2-tp">$5</span><a class="k-btn k-btn-navy k-btn-sm" href="#">Join · $5</a></div></div>
+<div class="j2-tr j2-fam"><div><b>Family <span class="k-tag k-tag-gold" style="font-size:11px;padding:3px 6px;vertical-align:2px">Best value with 3 children</span></b><div class="k-meta">You plus up to 3 children · covers up to 4</div></div><div class="j2-tr-r"><span class="j2-tp">$25</span><a class="k-btn k-btn-gold k-btn-sm" href="#">Join · $25</a></div></div>
+<div class="j2-tr"><div><b>Senior</b><div class="k-meta">65 and up · covers 1</div></div><div class="j2-tr-r"><span class="j2-tp">$10</span><a class="k-btn k-btn-navy k-btn-sm" href="#">Join · $10</a></div></div>
+</div>
+<p class="j2-p"><b>Honest math for families:</b> with 1 child, Adult + Scholastic ($20) costs less than Family; with 2 children it's a tie at $25; with 3 children Family saves $5.</p>
+</div>
+</main>
+<nav class="j2-tabs" aria-label="Main"><div class="j2-tabs-in"><a class="j2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="j2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="j2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="j2-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="j2-safe"><span class="j2-homeind"></span></div></nav>
+</div>
+<span class="k-num-badge j2-mk" style="left:-14px;top:124px">1</span>
+<span class="k-num-badge j2-mk" style="left:-14px;top:500px">2</span>
+</div>
+</div>
+
+<div class="j2-fr">
+<div class="j2-cap"><div class="j2-oh"><span class="j2-oc">2</span><h3>Questions, near the end</h3></div><p class="j2-idea">Scrolled: answers in full, no chevrons, then the quiet Give paragraph.</p></div>
+<div class="j2-phone" aria-label="Questions, scrolled near the end">
+<div class="j2-scr">
+<div class="j2-status" aria-hidden="true"><span>10:12 AM</span><span class="j2-island"></span><span class="j2-statr"><span class="j2-sig"><i></i><i></i><i></i><i></i></span><span class="j2-batt"><i></i></span></span></div>
+<div class="j2-app"><a class="j2-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="j2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="j2-bname"><b>Louisiana Chess</b><span>Association</span></span></a><a class="j2-sbtn" href="#" aria-label="Search"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></div>
+<main class="j2-main">
+<div style="padding:4px 16px 0">
+<div class="j2-qa" style="border-top:0;padding-top:6px"><p style="color:#555c6b">…and the event page says which.</p></div>
+<div class="j2-qa"><h3>Who counts as a child on the Family membership?</h3><p>A K–12 student you're the parent or guardian of, added by name in My LCA with a US Chess ID if they have one. We never ask for a grade, a birthdate or a child's email. Family covers you and up to 3; a 4th is a Scholastic membership at $5 in the same payment.</p></div>
+<div class="j2-qa"><h3>Are there any fees on top of the price?</h3><p>[Board to confirm the card fee.] Nothing else. Tournament entry fees are separate and the same for everyone.</p></div>
+<div class="j2-qa"><h3>Can I get a refund?</h3><p>[Board to confirm the refund rule.] If a payment went wrong, write to LouisianaChess@gmail.com and we'll put it right.</p></div>
+<p class="j2-p" style="padding-top:10px;border-top:1px solid #e7e5de">Something else? Ask us: <a class="k-link" href="#">LouisianaChess@gmail.com</a></p>
+</div>
+<div class="j2-give">
+<h3>Want to give beyond your dues?</h3>
+<p>Most people support LCA by joining and playing. If you'd like to give more, you can, once or monthly.</p>
+<a class="k-btn k-btn-line k-btn-sm" href="/give" style="align-self:flex-start">Give</a>
+</div>
+<div class="j2-ft">Louisiana Chess Association · US Chess state affiliate · Louisiana's chess community since 1915</div>
+</main>
+<nav class="j2-tabs" aria-label="Main"><div class="j2-tabs-in"><a class="j2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="j2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="j2-tab" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>Log in</span></a><button class="j2-tab" type="button" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><span>Menu</span></button></div><div class="j2-safe"><span class="j2-homeind"></span></div></nav>
+</div>
+<span class="k-num-badge j2-mk" style="left:-14px;top:150px">3</span>
+<span class="k-num-badge j2-mk" style="left:-14px;top:640px">4</span>
+</div>
+</div>
+
+<div class="j2-insets">
+
+<div class="j2-in">
+<div class="j2-inh"><span class="j2-oc">i</span>Signed in, active<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">5</span></div>
+<p class="j2-incap">My LCA replaces Join LCA; a line under the check line; Family's button renews.</p>
+<div class="j2-box">
+<div class="j2-mhd"><svg class="j2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="j2-push"><span>Donate</span><span>My LCA ▾</span></span></div>
+<div class="j2-mhero"><b>Join 300+ Louisiana chess players</b><p>Every membership: entry to the tournaments LCA runs · a member profile · voting · online registration</p><div class="j2-mline"><span class="k-tag k-tag-open">Active</span><span>You're a member through Wed, Feb 10, 2027 · Family · <a href="#">My LCA</a></span></div></div>
+<div class="j2-mbody">
+<div class="j2-mtr"><div><b>Family</b><div>Covers Danielle, Maya and Leo</div></div><b>$25</b></div>
+<a class="k-btn k-btn-gold k-btn-block" href="#" style="min-height:40px;height:auto;padding:6px 8px;line-height:1.3;white-space:normal;text-align:center;font-size:12.5px">Renew · $25 · through Thu, Feb 10, 2028</a>
+<span class="k-sample" style="align-self:flex-start">Sample data</span>
+</div>
+</div>
+</div>
+
+<div class="j2-in">
+<div class="j2-inh"><span class="j2-oc">ii</span>Signed in, expired<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">5</span></div>
+<p class="j2-incap">Renew takes the Join slot in the header and the hero's first button.</p>
+<div class="j2-box">
+<div class="j2-mhd"><svg class="j2-mark" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="j2-push"><span>Donate</span><span class="j2-mini-btn">Renew</span></span></div>
+<div class="j2-mhero"><b>Join 300+ Louisiana chess players</b><p>From $5 a year. Every membership gets the same benefits.</p><div class="j2-paths" style="gap:6px"><a class="k-btn k-btn-gold k-btn-sm" href="#">Renew · $25</a><a class="j2-mline" href="#">Am I a member?</a></div></div>
+<div class="j2-mbody">
+<div class="j2-mcard"><span class="k-tag k-tag-closed" style="align-self:flex-start">Expired</span><span>Your Family membership ended Wed, Feb 10, 2027. Renew to enter the tournaments LCA runs.</span></div>
+<span class="k-sample" style="align-self:flex-start">Sample data</span>
+</div>
+</div>
+</div>
+
+<div class="j2-in">
+<div class="j2-inh"><span class="j2-oc">iii</span>Thin ledger<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">6</span></div>
+<p class="j2-incap">Before the treasurer enters figures: five rows, no amounts, no total.</p>
+<div class="j2-box">
+<div class="j2-mbody">
+<b style="font-size:15px">What your dues fund</b>
+<div>
+<div class="j2-lrow">Scholastic program</div>
+<div class="j2-lrow">State Championship</div>
+<div class="j2-lrow">Equipment</div>
+<div class="j2-lrow">Website and online registration</div>
+<div class="j2-lrow">Affiliate and admin costs</div>
+</div>
+<p class="j2-incap" style="color:#2b3446">Figures are published after each fiscal year; the latest treasurer's report is on the Minutes page.</p>
+<a class="k-link" href="#" style="font-size:12.5px;align-self:flex-start">Treasurer's reports</a>
+</div>
+</div>
+</div>
+
+<div class="j2-in">
+<div class="j2-inh"><span class="j2-oc">iv</span>Am I a member?<span class="k-num-badge" style="width:22px;height:22px;font-size:11px">6</span></div>
+<p class="j2-incap">The lookup and its four answers. No password, no full names.</p>
+<div class="j2-box">
+<div class="j2-mbody">
+<div class="k-field" style="gap:4px"><label for="j2-look" style="font-size:12.5px">US Chess ID or email</label><input id="j2-look" class="k-input" style="min-height:38px;font-size:13px" value="danielle@example.com"></div>
+<a class="k-btn k-btn-navy k-btn-sm k-btn-block" href="#">Look up</a>
+<div class="j2-res"><span class="k-tag k-tag-open">Found</span><span>Danielle R. · Family · Active · ends February 2027</span></div>
+<div class="j2-res"><span class="k-tag k-tag-closed">Expired</span><span>Jordan L. · Adult · Expired July 2026</span><a class="k-btn k-btn-line k-btn-sm" href="#" style="align-self:flex-start;min-height:32px;font-size:12px">Renew by email link</a></div>
+<div class="j2-res"><span class="k-tag">Not found</span><span>No membership found for that. You may have joined with a different email. Write to LouisianaChess@gmail.com.</span></div>
+<div class="j2-res"><span class="k-tag k-tag-full">Too many lookups</span><span>Too many lookups from this connection. Try again in an hour.</span></div>
+<span class="k-sample" style="align-self:flex-start">Sample data</span>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

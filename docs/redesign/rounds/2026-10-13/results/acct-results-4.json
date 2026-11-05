@@ -1,0 +1,259 @@
+{
+ "label": "acct-4",
+ "results": [
+  {
+   "board": {
+    "file": "Account-Q.dc.html",
+    "title": "My LCA · Q · LCA admin: the summary (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "LCA admin as a summary",
+    "idea": "An admin's My LCA carries one LCA admin section that summarises the Needs attention queue by source in words, the items assigned to this admin by name, the automations line, the live site banner and three shortcuts, so the admin starts the day here and opens Admin with intent.",
+    "differs": "Account-R shrinks the whole section to a single row ('Admin · 12 need attention · Open Admin') and shows nothing of the queue on My LCA; Account-Q draws the queue's shape and the admin's own items on the page."
+   },
+   "drawn": {
+    "file": "Account-Q.dc.html",
+    "title": "My LCA · Q · LCA admin: the summary (round 2)",
+    "width": 1440,
+    "height": 2900,
+    "second_file": "Account-Q-2.dc.html",
+    "second_title": "My LCA · Q-2 · LCA admin: states and the way in (round 2)",
+    "second_height": 1950,
+    "note": "What: Option Q for the LCA admin section of My LCA. It shows Rachel Boudreaux, an LCA admin and adult member (Sample data), on Mon, Oct 5 at 8:40 AM. Her page holds only what she has: You, collapsed to one strip, and LCA admin. The admin section summarises the Needs attention queue by source in words, lists the 2 items assigned to her by name, and carries one automations line, the live banner line and three shortcuts. Open Admin is the way in. Today across your roles holds 5 things, and 1 of them is hers. The header count stays at 1. Part 2 (Q-2) draws the empty, busy and second-factor states, Open Admin landing on Needs attention, an admin entering a TD's console as the backstop, and the rail and menu rows.\n\nBuilt from: Account-C (worded chips, the Today list, the On this page rail, the section anatomy), Work-C (queue by source, Assigned to me, Automations, the self-expiring banner, Log in as with a reason), and Work-I's 12-item queue, which is the room Open Admin lands on. The header and footer are the decided ones. Drawn inside Int-A; the frame is swappable.\n\nK's feedback applied: a good default (only the sections she holds, no Workspace word, Admin only for lca_admin), every section drawn in full (open, empty, busy, second factor), the roles hosted in My LCA, options for each (Q here, R as one row), and the screens joined to the whole (the crumb in, Back to My LCA, the backstop strip). Open for K: the summary (Q) or one row (R)? In Today, the queue as one line plus your own items, or the top three queue items? Should an open seat's clubs reach the admins as queue items, with no Representative section here?",
+    "unresolved": [
+     "The board is split into two parts. With the six-note legend at the top, all of the spec's regions measured 4029px, over the 3000px limit. Account-Q (2900px) holds the title strip, legend, grey note and Frame A, the page. Account-Q-2 (1950px) holds Frame B (states), Frame C (the way in and the backstop) and the rail and menu insets, with its own title strip, a legend of notes 4 and 6, and a grey note.",
+     "I changed the queue data from the spec to match Work-I's shared queue, which is the room Open Admin opens. The spec's Houma items contradict Account-M, Work-G and Work-H: Chris's seat keeps the Bayou Region, so Houma's visitor report is his, not the admins'. Also, approvals always go to the admins, whether or not a seat is open. So the club listing report is now Casa de Ajedrez (Southwest Louisiana seat open, Sat, Sep 26). The assigned approval is Monroe Chess Club Quick Quads, submitted by the North Louisiana representative and waiting 1 day. The oldest item is 9 days, not 4, and Board inbox is oldest 6 days and Approvals oldest 2 days. The spec's other counts stay: 12 items, 4/2/3/2/1/0 by source, 2 assigned to Rachel.",
+     "Two admins are named across the specs: Q and R name Rachel Boudreaux and Work-I and J name Denise Fontenot, both Sample data. I kept Rachel as the spec says. The two names should be unified.",
+     "Work-I and J give the 'Assigned to me' chip as 3, but only rows 3 and 4 of their data are owned by 'You'. Q follows the owners and the Q spec: 2.",
+     "I moved code references off the drawn page into the legend's Data line, because route names in an admin's page copy read as foolish. They are POST /api/admin/queue/assign, requireAdmin with auth.ts lines 141 to 161, and mfaRequired. The 'never shows here' and Today-rule sentences are drawn as dashed board annotations, not page copy.",
+     "Automations line: the monthly club check emails have not run today (next run Mon, Nov 2), so the line says that. It does not say 'ran as scheduled'."
+    ]
+   },
+   "review": {
+    "file": "Account-Q.dc.html (part 2: Account-Q-2.dc.html)",
+    "height": 2950,
+    "second_height": 1950,
+    "counts": "I rendered both parts at their natural height. Account-Q is 1440 x 2907, declared 2950. Account-Q-2 is 1440 x 1910, declared 1950. Both are under the 3000px limit, and the declared height matches $preview in each. The legend has 6 notes on part 1; part 2 repeats only notes 4 and 6. Today has 5 rows (\"5 things · 1 is yours\"): Pay $60, the ticket, the approval, the failed daily emails, and the 12-item queue line. The queue shows 6 sources (4+2+3+2+1+0 = 12), with 2 items assigned to Rachel. The busy state shows 31 items (12+6+5+6+2+0), 5 assigned (3 shown, \"Show two more\") and 2 failed automations. The rail has 3 rows (Today 5, You, LCA admin 12). The menu has 5 rows, and the personal count stays 1. There are 3 states (empty, busy, second factor) and 3 way-in panels (Open Admin landing on Needs attention, the admin backstop on the TD console, the rail and menu rows). Rule checks: every date carries its weekday, and I confirmed each weekday against the calendar. Times read like 6:00 AM. No em dashes, no USCF, no .5, no AI references. Gold appears only as fills and rules, and the gold-ink kickers use #866a1e. Every status tint has its word beside it (Failed, Live now, OK, More than a week, Payment pending, Unpaid). Both parts carry the Sample data badge. No grade, birthdate or need question appears, and no {{holes}}, iframes or animation. The tags are balanced in both files. The header and footer match Tourn-List-Final's decided chrome: Donate · My LCA ▾ with the personal count of 1, and the trust line in the footer. No row says Workspace or Admin panel; both words appear only in board notes that name them in order to rule them out. \"There are no modes to switch\" is on the page. On the console thumbnail, reported results read \"3 waiting for the TD to confirm\", so they are suggestions only.",
+    "changes": [
+     "Account-Q, Club listing reports row: the 9-day Casa de Ajedrez item now reads 'oldest 9 days' and carries the amber 'More than a week' pill. It now matches Work-I's 'over a week' flag and part 2's busy-state rule; before, it was the oldest item in the queue but had no age or flag.",
+     "Account-Q, rail column: added a numbered note card (badge 1) in the empty space under the On this page rail, level with the queue rows. It reads 'Option Q: the summary · On Account-R the same section is one row: \"Admin · 12 need attention · Open Admin\", and none of the queue shows here', so the difference from Account-R shows on the page itself and not only in the title strip.",
+     "Account-Q-2, Admin thumbnail: 'Danielle Robichaux · You' now reads 'Danielle Robichaux · yours', so 'You' no longer looks like a role chip. I made both thumbnails taller (232 to 244, inner area 180 to 192) so the Audit row in the sidebar no longer sits on the clipped edge.",
+     "Account-Q-2, console thumbnail: made the navy band taller (150 to 184) so it fills the taller frame instead of leaving an empty grey strip.",
+     "Re-rendered both parts after the changes and viewed them: no overlap, overflow or clipping. The natural heights are unchanged (2907 and 1910), so 2950 and 1950 stay as declared."
+    ],
+    "remaining_concerns": [
+     "The board does not use the spec's sample queue items. In their place it uses Work-I's queue data, which Account-R also uses: the 'Monroe Chess Club Quick Quads' approval from the North Louisiana representative (waiting 1 day) instead of 'Houma Fall Quads' by Paul Comeaux; the Casa de Ajedrez report under the open Southwest Louisiana seat instead of Houma Chess Club under the open Bayou Region seat; 'oldest 9 days' instead of 4; 'group email, 3 addresses bounced' instead of 1. I kept this deliberately: it matches the sibling board and Work-I, and Houma's report is Chris's on the corrected Account-M and Work-G boards (where his seat holds the Bayou Region's clubs), so using it here would contradict them. Even so, the empty state still names 'you marked the Bayou Region seat vacant', which comes from the spec and Work-I-2. The spec text should be updated to match.",
+     "The 'North Louisiana representative' is written as a role, not a name. Work-I shows it as a placeholder in brackets. If K expects a named person, the Sample data badge covers an invented name, but none of the boards has one.",
+     "The member strip and Today row say 'Payment pending' while the menu's to-do row says 'Unpaid'. Account-R and the decided Nav-Header-Final menu use the same pair, so I left it, but it is two words for one state.",
+     "The second-factor state puts the code references (requireAdmin, auth.ts lines 141 to 161) in the board's data line rather than under the button as the spec wrote. The copy on the page is plainer for the person.",
+     "The en dash appears in date ranges such as 'Sat–Sun, Oct 10–11', exactly as in the spec and on the decided boards. There are no em dashes anywhere."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-R.dc.html",
+    "title": "My LCA · R · LCA admin: one row (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "LCA admin as one row",
+    "idea": "An admin's My LCA is a member's page plus exactly one row, 'Admin · 12 need attention · Open Admin', so nothing of the queue lives on My LCA and Admin stays the only place admin work is seen.",
+    "differs": "Account-Q draws the queue by source, the admin's assigned items, the automations line, the banner and shortcuts inside My LCA; Account-R reduces all of that to one row with a count and one button."
+   },
+   "drawn": {
+    "file": "Account-R.dc.html",
+    "title": "My LCA · R · LCA admin: one row (round 2)",
+    "width": 1440,
+    "height": 2900,
+    "second_file": "Account-R-2.dc.html",
+    "second_title": "My LCA · R-2 · LCA admin: one row, its states and the way in (round 2)",
+    "second_height": 1700,
+    "note": "What: Option R for the LCA admin section of My LCA, drawn inside Int-A. The frame is swappable. An admin's page is a member's page plus exactly one row: \"12 need attention in Admin · oldest 4 days · 2 assigned to you · 1 automation failed\" with Open Admin. Frame A (Account-R) shows Rachel Boudreaux's whole page on Mon, Oct 5 at 1440 wide. Account-R-2 carries the rest: the row's empty, busy and second-factor states, Open Admin landing on Needs attention with Back to My LCA, the four admin lines Today still carries, and the rail row and menu row insets.\n\nBuilt from: Account-C (worded chips, Today across your roles, the On this page rail, the section anatomy) and Account-A (the You section in full: card with QR, US Chess block, the four-step tracker, saved-event reminder, receipts, Settings). Work-C's queue is drawn small as the place Open Admin lands. The menu comes from Nav-Header-Final, with the decided header and footer. The sibling board is Account-Q (the summary).\n\nK's feedback applied: a good default (the page is a member's page first, and no other sections appear for roles she doesn't hold), every section drawn in full with its states, roles hosted in My LCA so only an admin ever opens Admin, options for each (Q against R), and the screens joined to the whole (one door into Admin and the way back). Open for K: one row or Account-Q's summary (open question 8). Today shows the queue as one line plus the items assigned by name, or the top three queue items inline. The row's count waits for the second factor (as drawn), or the row hides until it is confirmed. Keep the \"Overdue\" word on the busy row. Back to My LCA returns to #admin or to the top of the page.",
+    "unresolved": [
+     "The spec puts frames A to D on one board of about 2900px, but the full page alone (You section in full) plus the states, the way in and the insets rendered at 3929px. I split it: Account-R holds the title strip, legend and frame A (2900px); Account-R-2 holds frames B, C and D with its own title strip, legend and grey note (1700px). The canvas needs both files placed side by side.",
+     "The legend sits at the top under the title strip, as the file rules and the decided boards have it, not at the bottom where the spec's region 6 put it. Notes are reworded to fit six short entries per board.",
+     "Legend note 5 in the spec says 'No other person's data appears on this page', but the spec's own Today rows name Danielle Robichaux and Paul Comeaux on items assigned to the admin. I reworded the note to 'no other person's data beyond the two items assigned to her by name; not even a count by source'.",
+     "The failed-email line keeps the spec's and Work-C's masked address 'n***@[domain]'. It reads as a placeholder; K may want a real masked example.",
+     "Rachel Boudreaux, her IDs (LCA-25-0931, US Chess 30244190, rating 1688) and all queue counts and times are invented and carry Sample data badges, since no existing board names an admin."
+    ]
+   },
+   "review": {
+    "file": "Account-R.dc.html (frame A) and Account-R-2.dc.html (frames B, C, D)",
+    "height": 2900,
+    "second_height": 1700,
+    "counts": "Rendered heights: Account-R is 2872 px, declared 2900. Account-R-2 is 1670 px, declared 1700. Both are under the 3000 limit and both $preview blocks match their declared heights. Neither board has horizontal overflow or anything running past 1440 px. Each legend has 6 numbered notes, and every number from 1 to 6 appears as a badge on its board. Account-R carries the title strip with Built from and Replaces, the grey What / Built from / K's feedback applied / Open for K note, the swappable-frame line, and the Sample data badge in two places. Today: 5 rows (1 You, 4 Admin), 'Today across your roles', 'Mon, Oct 5 · most urgent first', '5 things · 1 is yours'. The header pill reads 1 and the header and footer markup match Tourn-List-Final. The rail reads Today 5 · You (current) · Admin 12. The chips are Member · Adult and LCA admin. The 'no modes to switch' line and 'Role looks wrong?' are present. The You section is complete: membership line, card with logo and QR, US Chess block, Next up with the four-step tracker and a Pending pill, the saved Ken Ferguson event with Change and Stop, 2 receipts, and 6 Settings cards with no Text me and no Daily digest. The admin section is one 96 px row with one Open Admin button, followed by the admin-only line. Account-R-2 draws the Empty, Busy and Second factor states, each with its rail and menu rows, the /admin thumbnail with 'Back to My LCA' and the crumb 'My LCA › Admin › Needs attention', Today rows 2 to 5, the rail inset and the full menu inset with the Admin row ringed. Copy checks: no em dashes, no USCF, no '.5' in copy, no AI references, no grade, birthdate or financial-need question. Times are written as 6:00 AM and 2:30 PM, every date has its weekday, and red always sits beside the words Failed or failed. Gold appears only as fills, rules and badges, with gold-ink #866a1e for small gold text. 'Workspace' and 'Admin panel' appear only in Replaces lines and notes that say they are gone. The idea reads at a glance: a member's page with a single admin row at the foot, and note 1 names the one difference from Account-Q.",
+    "changes": [
+     "Account-R-2.dc.html, Busy state: the copy said 'failed' twice ('2 automations failed (Daily emails failed, Stripe payments failed)'). It now reads '2 automations failed (Daily emails, Stripe payments)', which matches the wording on the main row. The word failed and both automation names are in #b42318. Re-rendered: the height did not change and nothing overflows.",
+     "Account-R.dc.html: nothing changed. It already matches the spec, the frame, the sibling Account-Q and the decided chrome."
+    ],
+    "remaining_concerns": [
+     "The spec text is out of date in some places, and the board follows the drawn Account-Q instead (I left it that way on purpose, so the two boards stay identical as the spec requires). Today row 3 reads 'Monroe Chess Club Quick Quads · submitted by the North Louisiana representative · waiting 1 day' where the spec says 'Houma Fall Quads · Paul Comeaux · 5 hours'. The queue line reads 'Oldest 9 days' where the spec says 4 days. The group email line reads '3 addresses bounced' where the spec says '1 bounced'. If the spec is the source of truth, Account-Q and Account-R must be changed together.",
+     "The spec's Busy state asks for a red dot with the word 'Overdue'. Both Account-R-2 and Account-Q-2 draw an amber 'More than a week' pill instead. That pill also appears on the normal-day row in frame A, because the oldest item has waited 9 days. As a result the Busy state differs from the normal row only by its numbers and the second failed automation. Account-R-2's Open for K item 2 raises this with K.",
+     "The spec puts frames A to C, the insets and the legend on one board of about 2900 px. They are split across two files instead: frame A is on Account-R, and frames B, C and D are on Account-R-2. Each file has its own legend. This fits the 3000 px cap and matches how Account-Q and Q-2 are split.",
+     "The /admin thumbnail in Account-R-2 uses 8.5 to 10 px text, which is readable only up close. That is acceptable for a one-third-scale thumbnail but small on the canvas."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Account-S.dc.html",
+    "title": "My LCA · S · The small roles: auditor, one-event director, president, club rep (round 2)",
+    "width": 1440,
+    "page": "account",
+    "name": "The small roles together",
+    "idea": "Four short My LCA pages for the roles that add one small section each, so K can see that the auditor's lookup, a one-event director's single row, the president's two extra lines and a club rep's card (only if K keeps the role) all fit the same page without a Workspace or an Admin.",
+    "differs": "The only board of its kind in this set; it differs from Account-O to R by drawing four different people at once, each with one small section, instead of one heavy volunteer."
+   },
+   "drawn": {
+    "file": "Account-S.dc.html",
+    "title": "My LCA · S · The small roles: auditor, one-event director, president, club rep (round 2)",
+    "width": 1440,
+    "height": 2550,
+    "second_file": "Account-S-2.dc.html",
+    "second_title": "My LCA · S-2 · The small roles, part 2: president, club rep (round 2)",
+    "second_height": 2800,
+    "note": "What: four short My LCA pages for people who each hold one small grant. A is the LCA auditor (Lila Guidry, the inline Member lookup). B is the director of one event (Tommy LeBlanc, a single Lafayette Open 2026 row, drawn under the decided header and the week-phase event strip). C is the president (Gerald Prejean, the Board section plus the two President-only lines). D is the club rep (Paul Comeaux, the Houma Chess Club card), drawn only if K keeps the role. Each excerpt shows the chips, the Today list, the section, its rail row, its menu row and its empty state. A and B are on Account-S; C and D are on Account-S-2.\n\nBuilt from: Account-C (the chips, Today, the On this page rail, the section anatomy, \"Role looks wrong?\"), Work-B (Paul Comeaux, Houma, the Monday meeting statement, Houma Fall Quads in LCA review), Account-A (Lafayette Open 2026, Tommy LeBlanc), the frame's role inventory and Today rules, and Nav-Header-Final. The board is drawn inside Int-A, and the frame can be swapped for Int-B or Int-C.\n\nK's feedback applied: each role lives in My LCA, with no Workspace and no Admin anywhere on the pages. Every section is drawn in full and opens one room. The Today heading rule is shown three ways. The club rep card shows both ways events could be handled. Open for K: keep club_rep (question 20), and if kept, does the rep create the club's events? Withdraw the president's read-only reach over every seat, club and event (question 3)? Should /workspace redirect to My LCA for auditors and one-event directors?",
+    "unresolved": [
+     "The spec asked for one board of about 2560px, but all four excerpts drawn in full measured 4733px. Compressing them would have made the text too small to read, so the board is split in two: Account-S (title, legend, A and B, 2550px) and Account-S-2 (title, legend, C and D, 2800px). Both carry the full title strip, legend and grey note. Only Account-S-2 has its own title, kept parallel to the main one.",
+     "The spec had both 'Round 1 Sat, Oct 10 at 10:00 AM' and 'Round times missing'. I drew the missing times as rounds 2 to 5 so the two lines agree, in the strip and in the Today row.",
+     "I rewrote the Houma meeting statement from the spec's '6:00 to 8:30 PM' to 'Mondays, 6:00 PM to 8:30 PM' to follow the time rule, so it is not the club's exact wording as the spec has it.",
+     "The spec put the legend at the bottom (region 6). I put it at the top, as the board rules and the sibling round-2 boards do.",
+     "The word Workspace appears only in the board notes and in code file names (WorkspacePage.tsx, the /workspace paths). No drawn page, menu or crumb shows it.",
+     "No 'flow' field exists in account-specs.json, so there was nothing to match on that front."
+    ]
+   },
+   "review": {
+    "file": "Account-S.dc.html (part 1: A auditor, B director of one event) and Account-S-2.dc.html (part 2: C president, D club rep). Pre-review copies are in render/out/Account-S.review-orig.html and Account-S-2.review-orig.html. Suggested canvas sticky: \"S · The small roles together. Four people, each with one small grant, on the same My LCA page shape: Lila (auditor) gets Member lookup, Tommy (named on one event) gets Events you direct, Gerald (president) gets Board plus two President-only email lines, and Paul (club rep, only if K keeps the role) gets Your club, drawn both ways for events. No Workspace and no Admin on any of them. Drawn inside Int-A; the frame is swappable.\"",
+    "height": 2600,
+    "second_height": 2800,
+    "counts": "Part 1 was declared at 2550 but measured 2817 high, so on the canvas the content ran past the frame and past the 2600 limit. After the fixes it measures 2590, declared 2600. Part 2 measures 2757, declared 2800 (limit 3000). Each part has 6 legend notes, and badges 1 to 6 are placed on the design. Both parts have the 4-cell grey note (What / Built from / K's feedback applied / Open for K), the title strip with Built from and Replaces, the frame line, and the Sample data badge. There are 4 excerpts: A, B, C and D. Every region the spec names is present: chips, rail, Today, section, menu-row inset, empty-state inset, and the room's way in and way back. Excerpt B carries the decided header, the week-phase event strip and the footer, matched against Tourn-List-Final (same nav, search, Donate · My LCA ▾ with count 1, same footer text). 16 dates checked by script: every weekday is correct, and 'Checked Mon, Jul 6 · 91 days ago' is right. Copy rules: 0 em dashes; no USCF, no AI references, no {{holes}}, no iframes, nothing animated; every '.5' is inside SVG coordinates; all times read 7:00 PM style. No grade, birthdate or financial-need question. Gold appears only as fills, rules and underlines; gold-ink #866a1e is used for kicker text. Tags all close and every attribute is quoted (parser check); one style block and one helmet per file; support.js and kit link present. No horizontal overflow at 1440. The one scrollWidth flag in part 2 is badge 5, which sits on purpose 13px outside its row and still inside the section. Today rules: A shows the empty day (no count, no box); B shows 'Today across your roles · 4 things · 1 is yours', with personal header count 1 and no more than 3 items from one role; C and D show 'Today' for one role, with no labels. The auditor has no Today item. No mode switch anywhere. No Admin row in any menu. The president has no view-only admin.",
+    "changes": [
+     "Part 1 fitted to the 2600 limit (2817 natural down to 2590). On excerpt A, 'The room it opens' moved out of the right column into a wide strip under the Member lookup section, with the crumb, Back to My LCA, the route and a one-line caption. The right column had been making A about 250px taller than its content.",
+     "Excerpt B's copy tightened so its right column no longer drives the height. The 'no member lookup' line is now one line ('No member lookup: it comes with a role, not with one event (WorkspacePage.tsx line 46)'). The empty-state meta line is shorter. The room caption is shorter and still names Exit console and today's /admin/tournaments/:id.",
+     "Root bottom padding cut from 32px to 24px and the excerpt column padding from 14/16px to 12/12px. Part 1's root height and $preview set to 2600.",
+     "Title strip (both parts): 'Shown' and 'K's feedback applied' are now one or two lines each. 'Shown' still names the moment and which excerpts each part holds.",
+     "All four My LCA menu insets now have the 'By role' label before the role rows, as the decided Nav-Header-Final menu has. B's to-do row carries the status in words ('Due soon') on its tint, as the decided To do rows do.",
+     "Excerpt B, Today: Rosa Mendez is now 'Rosa M.'. She is a K–12 scholastic player on the decided boards, so she is under 18, and this is a pre-event entrant list.",
+     "Excerpt C: the email subject 'Lafayette Open this weekend', sent Thu, Oct 1, now reads 'Lafayette Open next weekend'. The event is Sat–Sun, Oct 10–11, so 'this weekend' was wrong on the date shown.",
+     "Excerpt D: Houma Fall Quads now reads '3 Mondays, Mon, Oct 19 to Mon, Nov 2 · 6:00 PM', so both dates carry a weekday."
+    ],
+    "remaining_concerns": [
+     "The spec asks for one board of about 2560px. The designer split it into two parts (A+B, then C+D). I kept the split: 2600 and 2800 are both under their limits. Part 1 now sits right at its limit (natural 2590), so any added line will push it past 2600.",
+     "On excerpt A, the room inset is now a strip in the main column; on B, C and D it is in the right column. The page shape is the same, but the inset position differs on A.",
+     "The auditor lookup shows 'Theo Guidry' in full, as the spec draws it. Theo is the K–8 champion on Tourn-List-States, so he is a minor. A desk lookup is not a pre-event list, so I left it, but K may want minors shortened there too.",
+     "The event strip on B runs to two lines (94px, not the spec's 52px) because it carries the 'Players see' line and the fix-it. The fix-it reads 'Rounds 2 to 5 have no times', not the spec's 'Round times missing', because round 1's 10:00 AM time is shown in the same strip. I left the designer's change.",
+     "Sample data: the badge covers invented counts, tickets and times. The drawn names (Rosa, Devin Batiste, Elise Fontenot, Theo Guidry, Marcus Landry, Tommy LeBlanc, Paul Comeaux) all appear on existing boards. Lila Guidry and Gerald Prejean are named as invented."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Work-E.dc.html",
+    "title": "Workspace · E · TD console, one stage at a time (round 2)",
+    "width": 1440,
+    "page": "workspace",
+    "name": "TD console · one stage at a time",
+    "idea": "The console shows one stage at a time, picked from the rail (check-in, a round's results, Hall TV, close-out); the current stage fills the width under the Next step strip, so a TD at a tablet never scrolls past work that is not now.",
+    "differs": "Work-E switches stages one at a time at full width; Work-F puts every panel on one scrolled page in two columns."
+   },
+   "drawn": {
+    "file": "Work-E.dc.html",
+    "title": "Workspace · E · TD console, one stage at a time (round 2)",
+    "width": 1440,
+    "height": 3300,
+    "second_file": "Work-E-2.dc.html",
+    "second_title": "Workspace · E · TD console, one stage at a time, part 2 (round 2)",
+    "second_height": 2950,
+    "note": "What: Option E for the TD console at /workspace/tournaments/:id/live. The rail picks one stage (Check-in, a round, Hall TV, Close-out), and only that stage fills the width under the Next step strip, so a TD on a tablet never scrolls past work that isn't happening now. Part 1 shows the Round 3 stage at 1440 on Sat, Oct 24, 9:31 PM: the Reported results queue (disagreements first), the tap results grid with Status in words, and the \"Enter a different result\" sheet. Part 2 shows Check-in (Sun 9:14 AM), Close-out (Sun 5:40 PM), Hall TV settings, the 1024×768 tablet, Announcements, Print and QR, the empty, busy and offline states, and the way in and back. Work-F is the other option, with every panel on one scrolled page.\n\nBuilt from: Work-A (band, rail, Next step, check-in rows, results grid, Print and QR, Announcements, rating check); Live-Final-Pairings-2 (Reported results queue and sheet); Live-Final-Standings frame B (close-out); Live-Final-TV inset B1 (Hall TV settings); Account-K (the strip and the Events you direct row); the decided header and footer. Drawn inside Int-A, and the frame is swappable.\n\nK's feedback applied: the console is joined to the whole. You get in from My LCA three ways: the menu's event line, the strip's TD console button, or Event day on Events you direct. The crumb starts at My LCA, Exit console goes back to /dashboard#directing, and \"Done · Back to My LCA\" appears after Publish. No Workspace, no countdown, no Text channel, no club column. Open for K: E or F; whether Print and QR and Announcements stay as stage buttons or become rail stops; where Exit console lands; whether to leave out or pair players who aren't here when you pair.",
+    "unresolved": [
+     "The two frames would not fit on one board, so they are split across two. The main board (3300) holds the title strip, the legend, the grey note and frame A. Work-E-2 (2950) holds frames B to E, the states, Announcements, Print and QR, and the way in and back. To fit under 3000, B and C are drawn at 75% and D at 76% inside fixed-height boxes using a CSS transform (the spec calls them 'scaled'), and the tablet frame E is at 47%. Their small text needs zoom on the canvas.",
+     "Print and QR (Work-E-2, T2) and Announcements (T1) are drawn as sheets opened from buttons in the stage header. The Work-E spec lists them under keeps but never places them.",
+     "Account-K frame B shows round 3 live on Sun, Oct 25 at 11:15 AM, but this spec puts round 3 on Sat, Oct 24 at 7:00 PM with the console shown at 9:31 PM. I followed this spec, so the two boards disagree on round 3's day.",
+     "The header count of 1 is Ella's unpaid November Meet entry. The menu row reads 'Finish payment · Ella · November Meet' with no amount: Account-G has it as $20 due Mon, Oct 5, so naming a price on Sat, Oct 24 would contradict that board.",
+     "The menu inset (Work-E-2, W1) uses 'Events you direct (2)', the frame's integration header count. The role inventory says '(3)'. The other role counts (4 to check, 3, 4) are sample values."
+    ]
+   },
+   "review": {
+    "file": "Work-E.dc.html (part 1) and Work-E-2.dc.html (part 2)",
+    "height": 3300,
+    "second_height": 2950,
+    "counts": "Both parts rendered at 1440 and checked by eye and by measurement. Part 1 renders at 3283px and is declared 3300 (limit 3400). Part 2 renders at 2921px and is declared 2950 (limit 3000). The root height and $preview match on both. There is no horizontal overflow or clipping, apart from frame E's tablet viewport, which crops its content at 768px on purpose. Every tag is balanced and every attribute is quoted.\n\nWhat each part holds:\n- **Legend:** both parts have the same six numbered notes. Part 1's badges 1, 2, 3 and 6 sit on the design; 4 and 5 point to part 2. Part 2 has badges 4, 5 and 6 on its frames.\n- **Part 1, frame A:** the queue has 3 rows (boards 2, 6 and 9), the grid has 13 rows, and sheet A1 is the Enter a different result sheet.\n- **Part 2:** frame B has 8 check-in rows. Frame C has 5 checks and 3 files. Frame D is Hall TV settings with 2 layout options and the 96-player variant. Frame E is the tablet view at 1024×768. There are 3 states, 2 tools (Announcements, Print and QR) and 4 way-in-and-back cards (W1 to W4). The three breadcrumbs (Int-A, B, C) sit in part 1's legend.\n\nCopy rules, grepped in both files: no em dashes, no USCF, no \".5\", no {{holes}}, no iframes, no animation, no AI references, and no grade, birthdate or financial-need question. Every month date carries its weekday and every time reads like \"9:30 AM\". Gold #c8a94a is never text on a light ground; it appears only as underline colour and fills. The only light-gold text, #e6cf86, sits on navy.\n\nSpec and frame: header and footer match Tourn-List-Final and Nav-Header-Final. The crumb starts at My LCA and the word Workspace appears in no crumb or menu row. Exit console goes to /dashboard#directing. No mode switch. Admin appears only as \"never through Admin\". Every reported or scanned result is drawn as a suggestion the TD confirms, and both reports stay on the record. Chris Arceneaux is drawn as Chief TD, and the roster matches the spec's shared data.",
+    "changes": [
+     "Work-E-2: the frame line in the legend is now the spec's full sentence (it had been shortened).",
+     "Work-E-2, frame D (Hall TV, Sat 2:05 PM): the time 'Round 2 pairings posted 2:09 PM' came after the frame's own time; it is now 2:01 PM.",
+     "Work-E-2, frame D: added a compact Next step strip with three done pills (Confirm round 1, Pair round 2, Publish and notify). Note 1 says the strip sits above every stage, and D was the only stage drawn without it. Frame D's scaled box grew from 422px to 482px so nothing clips.",
+     "Work-E-2, frame E (tablet header): added Donate and the ▾ chevron beside My LCA so it matches the decided signed-in header at 1024px. Measured: it fits inside 1024 with 20px padding.",
+     "Work-E-2, Announcements: the chip 'Starts in 10 min' became 'Round start time', and the sent-log line 'Round 2 starts in 10 minutes' became 'Round 2 starts at 2:30 PM'. The spec removes the countdown and asks for absolute times only.",
+     "Work-E-2, W1 menu: the to-do row now reads 'To do: Pay $20 · Ella · November Meet', and the inset is dated 'event mode on, Sun, Oct 25'. Both match Account-K-2, where 'Events you direct (2)' is the Sun, Oct 25 count.",
+     "Work-E-2, W2 card: shortened its subtitle to 'the live strip and the Events you direct row'. The old heading broke across two lines.",
+     "Work-E part 1 and Work-E-2 frame E: the board 6 tag 'Opponent has not reported' is now the grey style the spec asks for, not amber.",
+     "Work-E part 1: the stage label now reads 'Stage on screen, picked on the rail · the other seven stages are one tap away, never below it', so the idea and how it differs from Work-F read at a glance.",
+     "Work-E part 1, the three breadcrumb cards: the /workspace/tournaments/:id/live path now breaks after 'tournaments/', not mid-word."
+    ],
+    "remaining_concerns": [
+     "Sibling mismatch: Work-F-2 shows the menu row 'Events you direct (3)' while Work-E-2 shows (2). The spec gives both numbers (the role inventory says (3), Int-A's header text says (2)). I dated Work-E's W1 Sun, Oct 25 to match Account-K-2, but Work-F-2 should be checked so the two siblings agree.",
+     "Frames B, C and D are drawn at 75% to 76% scale, so their smallest text is roughly 9 to 10px on the canvas. It is readable in the render but small. The tablet frame at 47% is meant as a thumbnail.",
+     "Part 2 repeats part 1's six-note legend, with notes 1 to 3 pointing back to part 1. It stays within six notes, but K reads the same legend twice.",
+     "The Announcements line 'No texts until SMS exists (D8)' cites a decision code inside interface copy. I kept it because it states the D8 rule, but the copy could drop the code.",
+     "W1 omits a Member lookup row for Chris, as Account-K-2 does. Account-Int-A's menu shows the row as Proposed for the officer role. This is left for the frame decision."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Work-F.dc.html",
+    "title": "Workspace · F · TD console, everything in view (round 2)",
+    "width": 1440,
+    "page": "workspace",
+    "name": "TD console · everything in view",
+    "idea": "Every panel of the event day sits on one scrolled page in two columns, the work (queue and results grid) on the left and the tools (Next step, Hall TV, Announcements, Print and QR) on the right, with check-in and close-out below; the rail only scrolls to a panel.",
+    "differs": "Work-F shows every panel at once on one scrolled page; Work-E shows one stage at a time at full width."
+   },
+   "drawn": {
+    "file": "Work-F.dc.html",
+    "title": "Workspace · F · TD console, everything in view (round 2)",
+    "width": 1440,
+    "height": 3350,
+    "second_file": "Work-F-2.dc.html",
+    "second_title": "Workspace · F · TD console, everything in view (round 2) · part 2",
+    "second_height": 2700,
+    "note": "What: Every event-day panel of the TD console sits on one scrolled page in two columns. On the left are the work panels: the Reported results queue, the round 3 results grid and what players see on their phones. On the right are the tools: Next step, Hall TV, Announcements, and Print and QR. Round 4 check-in and Close-out sit below, folded and greyed. The rail only scrolls to a panel and never hides one. Part 2 (Work-F-2) has check-in open (F1), close-out live (F2), the page at 1024×768 with a floating \"Next step: Review board 2\" button, the four states (empty, busy, offline, between rounds) and the way in and back. Shown as of Sat, Oct 24, 2026, 9:31 PM, with Chris Arceneaux as Chief TD.\n\nBuilt from: Work-A's one-page console; the Reported results queue from Live-Final-Pairings-2; the close-out panel from Live-Final-Standings frame B; Hall TV settings from Live-Final-TV inset B1; the decided header, menu, live strip and footer (Nav-Header-Final, Tourn-List-Final). The roster is the shared Work-E / Work-F sample (26 players, 13 boards), marked Sample data.\n\nK's feedback applied, and what is open for K: The console is joined to the whole. You get in from the Events you direct row on My LCA, the menu's event line or the live strip's TD console button. You get out through Exit console, any crumb, or \"Done · Back to My LCA\". The crumb is My LCA › Events you direct › The Baton Rouge Classic › Event day, and the word Workspace is gone. The countdown, the Text channel and the club on rows are removed. A reported result is only ever a suggestion that the TD confirms. The frame is Int-A and swappable, with three crumbs side by side. Open for K: E (one stage at a time) or F (everything in view); whether the close-out checks run during the day (drawn) or only after round 5; keep the floating tablet button or not; whether Mark as submitted unlocks only after the files download (drawn).",
+    "unresolved": [
+     "The board is split in two because everything the spec lists would not fit under 3400px. Work-F (rendered 3336px, declared 3350) holds the title strip, legend, grey note and frame A. Work-F-2 (rendered 2667px, declared 2700) holds insets F1 and F2, frame B, the states and the way in and back. The spec put F1 and F2 'beside' the folded panels; they are drawn on Work-F-2 instead, and the folded panels on Work-F point to them.",
+     "In the 1024×768 tablet frames the six header section links are hidden. I assumed the decided header collapses at tablet width, but Nav-Header-Final does not show that width, so please confirm.",
+     "In F2 the buttons 'Mark as submitted to US Chess' and 'Mark as completed' are drawn greyed while TDEXPORT is held. The spec lists these buttons but does not say how they are gated; this is raised for K in the grey note.",
+     "The to-do row in the menu inset reads 'Pay for Ella · November Meet' with no date, because the spec gives Ella's unpaid entry but not its deadline wording.",
+     "Work-E's inset A1 (the 'Enter a different result' sheet) is not redrawn here. The Work-F spec does not list it, and note 2 covers the same rule."
+    ]
+   },
+   "review": {
+    "file": "Work-F.dc.html (main, 1440 x 3350) and Work-F-2.dc.html (second, 1440 x 2750)",
+    "height": 3350,
+    "second_height": 2750,
+    "counts": "Main board renders at 3336px, declared 3350 (limit 3400). Second board renders at 2723px, declared 2750 (limit 3000). Each board has 6 numbered legend notes. Main board panels: left column has Panel 1 (Reported results, 3 queue rows: board 2 reports disagree, board 6 opponent has not reported, board 9 opponent can't report), Panel 2 (13 grid rows: 8 Confirmed by TD, 1 Reports disagree, 2 Reported by Black or White, 2 Not reported) and Panel 3 (the phone report strip). Right column has 4 tools (Next step with 3 steps and 1 live button, Hall TV, Announcements with 2 sent-log rows, Print and QR with 5 sheets). Below the columns are Panel 4 (check-in, folded) and Panel 5 (close-out, greyed, 3 of 5 checks passing, 3 files held). Rail: 8 stops. Second board: F1 has 8 check-in rows. F2 has 5 checks, 3 files, 4 test steps and 4 after-upload controls. There are 2 tablet frames, 4 states and 1 way-in-and-back inset with 13 menu rows, the live strip, the Events you direct row and the Done line. Copy checks over the text of both files: 0 em dashes, 0 \".5\", 0 USCF, 0 AI references. Every date has its weekday, and every time is in the form 7:00 PM. Gold #c8a94a is used only as a background, border or underline, never as text on light. No grade, birthdate or financial-need question. Both boards carry the Sample data badge. Header matches Nav-Header-Final, and the 1024 header now matches it too. Footer matches Tourn-List-Final's markup. Tags balance in both files. Only the legend badges overhang their boxes, which is deliberate.",
+    "changes": [
+     "Work-F-2: the 'Done · Back to My LCA' bar reused the class wf-done, which the rail also uses for finished stops. Both tablet rails drew their first three stops as pale green boxes. Renamed the bar's class to wf-donebar, and the rails now draw as on part 1.",
+     "Work-F-2: both 1024 tablet headers hid the six sections (visibility:hidden), leaving a gap. They now follow the decided 1024 header: rook mark only, sections shown at 8px padding, compact 112px Search without the ⌘K hint.",
+     "Work-F-2: the My LCA menu inset showed only 5 rows. It now has the same 13 rows as Work-E-2 and the frame's Int-A header: To do: Pay $20 · Ella · November Meet; My LCA; the event line; Family; Membership card; Events you direct (2); My region · 4 to check; Board inbox (3); Support tickets (4); Log out. Added the line 'No row reads Workspace or Admin.'",
+     "Work-F-2: removed the 'Tournament directors only' tag on the close-out panel. The whole console is for directors, so the tag was filler, and Work-E-2 has no such tag.",
+     "Work-F-2: the Busy state listed Board 4 as waiting, but part 1 shows board 4 as Confirmed by TD. Changed it to Board 11, as in Work-E-2.",
+     "Work-F-2: state headings now wrap their status pill onto its own line instead of breaking it mid-phrase. The 'Held · fix the check above' file status now wraps instead of running 4px past its box.",
+     "Both boards: the panels were numbered Panel 1, 2, 3, then 5 and 6. Renumbered the last two to Panel 4 and Panel 5 on part 1, and in the F1 and F2 inset heads on part 2.",
+     "Work-F: the Announcements preset 'Starts in 10 min' and the sent-log line 'Round 2 starts in 10 minutes' broke the absolute-times rule (Q16), even though the spec text lists them. Changed them to 'Round start time' and 'Round 2 starts at 2:30 PM' to match the revised Work-E-2.",
+     "Work-F: in the greyed close-out panel, Rosa Mendez's membership check read 'Needs a fix' in red with a cross. It now reads 'Not passed' in amber with a clock, matching F2, Work-E and the spec.",
+     "Work-F: note 1 now says the rail sticks under the header and jumps to a panel, as the spec says. The Print and QR line is restored to the spec's 'Prints from the tablet or saves a PDF'.",
+     "Work-F: in the results grid the Status column was 2px too narrow for 'Reported by White' and the SECTION heading overflowed its column. Columns changed to 34/56/1fr/156/1fr/156/50. In the queue, the name column was widened from 176px to 200px.",
+     "Declared heights: Work-F stays at 3350 (renders at 3336). Work-F-2 changed from 2700, which was smaller than its 2723px render, to 2750."
+    ],
+    "remaining_concerns": [
+     "The 'Panel 1 to 5' and 'Tool 1 to 4' chips sit inside the drawn product. They help K see that everything is in view, but a reader could take them for real interface labels. The other option is to move them out to the margin as annotations.",
+     "The frame contradicts itself on Chris's count. Its Int-A header text says 'Events you direct (2)', while the director role inventory says the menu row is 'Events you direct (3)' and the rail row 'Events you direct · 3'. I followed the Work-E-2 menu (2). The 'Pay $20' amount also comes from Work-E-2 and is covered only by the board's Sample data badge.",
+     "The spec lists 'Starts in 10 min' and 'Round 2 starts in 10 minutes'. I overrode that for the absolute-times rule and to keep the boards consistent with the revised Work-E-2. The spec text for Work-F itself has not been updated.",
+     "Part 1 shows the rail's sticky behaviour only in the legend note. It is drawn on part 2 (the scrolled tablet frame), not at 1440.",
+     "In the 1024 tablet frame, the band does not show the condensed sync pill 'Synced 9:31 PM' that Work-E-2 frame E draws. The spec for F's frame B does not ask for it, but the two siblings differ there.",
+     "The floating 'Next step' bar in the scrolled tablet frame covers grid row 12. That is how it would look in use, but a reviewer may read it as a drawing overlap."
+    ]
+   }
+  }
+ ]
+}
