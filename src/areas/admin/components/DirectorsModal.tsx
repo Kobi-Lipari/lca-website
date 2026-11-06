@@ -1,6 +1,9 @@
 // src/areas/admin/components/DirectorsModal.tsx
-// Assign or remove tournament directors. Used by admins and club reps; the
-// server (directors.ts) enforces who may assign for which event.
+// Assign or remove tournament directors. Used by admins and club reps, and,
+// with standingDirectors on, by the president on the LCA-run events the
+// president created; the server (directors.ts) enforces who may assign for
+// which event. Naming a director gives them that event alone and never
+// changes their role.
 import { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 
@@ -15,8 +18,17 @@ import {
   type ApiTournamentDirector,
   type ApiTournamentListItem,
 } from '@/lib/api'
+import { FEATURES } from '@/lib/features'
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
+
+/**
+ * The note under the search with standingDirectors on. Naming a director
+ * writes a tournament_directors row and nothing else, so the note says so;
+ * today's note, kept while the switch is off, says the member is given a
+ * role, which no request does.
+ */
+export const DIRECTOR_NOTE = 'A director you add runs this event only. Adding one never changes their role.'
 
 export function DirectorsModal({ tournament, onClose }: {
   tournament: Pick<ApiTournamentListItem, 'id' | 'name'>
@@ -178,8 +190,12 @@ export function DirectorsModal({ tournament, onClose }: {
               )
             )}
             <p className="mt-3 text-xs text-muted-foreground">
-              Members you add are given the Tournament Director role automatically,
-              and it's removed again when they no longer direct any tournaments.
+              {FEATURES.standingDirectors ? DIRECTOR_NOTE : (
+                <>
+                  Members you add are given the Tournament Director role automatically,
+                  and it's removed again when they no longer direct any tournaments.
+                </>
+              )}
             </p>
           </>
         )}

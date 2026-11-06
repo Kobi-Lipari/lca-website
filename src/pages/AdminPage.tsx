@@ -1,5 +1,5 @@
 // src/pages/AdminPage.tsx
-// The LCA admin panel — lca_admin only. Club reps, directors and auditors
+// The LCA admin panel, lca_admin only. Club reps, directors and auditors
 // have their own workspace (WorkspacePage.tsx) instead of a trimmed copy of
 // this page.
 //
@@ -41,14 +41,17 @@ import {
   adminUpdateMemberRole,
   adminUpdateTournament,
   getClubs,
+  getTournamentCreation,
   getTournaments,
   type ApiAdminBoardSeat,
   type ApiAdminMember,
   type ApiClubListItem,
   type ApiSeatHolder,
+  type ApiTournamentCreation,
   type ApiTournamentListItem,
 } from '@/lib/api'
 import { canUseMailing, type MemberRole } from '@/areas/admin/roles'
+import { FEATURES } from '@/lib/features'
 import { REGIONS } from '@/lib/regions'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
@@ -244,7 +247,7 @@ function MembersSection() {
     return () => { cancelled = true }
   }, [])
 
-  // Seat assignment is deliberately NOT a members.role change — a seat is a
+  // Seat assignment is deliberately NOT a members.role change: a seat is a
   // time-bounded grant, so holding one never disturbs whether someone is a
   // club_rep, and losing one never touches their account.
   async function refreshSeats() {
@@ -371,20 +374,45 @@ function MembersSection() {
 
 function TournamentsSection() {
   const viewOnly = useViewOnly()
+  const { role, member } = useAuth()
   const [tournaments, setTournaments] = useState<ApiTournamentListItem[]>([])
   const [clubs, setClubs] = useState<ApiClubListItem[]>([])
+  const [creation, setCreation] = useState<ApiTournamentCreation | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [savingId, setSavingId] = useState<string | null>(null)
+  // With standingDirectors on, an observer or an officer asks the server what
+  // they may create, since the President seat, not the role, is the grant.
+  // The president's list is then read signed in, so it holds who created
+  // each event and the president's own drafts; everyone else's list is
+  // today's. A failed creation answer leaves the section as it is today.
+  const asksCreation = FEATURES.standingDirectors && (role === 'lca_observer' || role === 'lca_officer')
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([getTournaments(), getClubs()])
-      .then(([list, clubList]) => { if (!cancelled) { setTournaments(list); setClubs(clubList) } })
+    const load: Promise<readonly [ApiTournamentListItem[], ApiClubListItem[], ApiTournamentCreation | null]> = asksCreation
+      ? getTournamentCreation()
+        .catch(() => null)
+        .then((answer) => Promise.all([getTournaments({ signedIn: answer?.grant === 'president' }), getClubs()])
+          .then(([list, clubList]) => [list, clubList, answer] as const))
+      : Promise.all([getTournaments(), getClubs()]).then(([list, clubList]) => [list, clubList, null] as const)
+    load
+      .then(([list, clubList, answer]) => { if (!cancelled) { setTournaments(list); setClubs(clubList); setCreation(answer) } })
       .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load tournaments') })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
-  }, [])
+  }, [asksCreation])
+
+  // The president creates LCA-run events from the view-only Admin, with no
+  // club picker, so the wizard sends no club, and names directors on the
+  // LCA-run events they created, as the server's naming rule allows. The
+  // signed-in answer gives an observer every draft on the site, so the
+  // president's section keeps today's list, the listed events, and adds the
+  // president's own drafts alone; the wizard's starting points are the same.
+  const president = FEATURES.standingDirectors && creation?.grant === 'president'
+  const listed = president
+    ? tournaments.filter((t) => t.is_visible === 1 || (!!member && t.created_by === member.id))
+    : tournaments
 
   async function handleClubChange(t: ApiTournamentListItem, clubId: string | null) {
     setSavingId(t.id)
@@ -407,9 +435,9 @@ function TournamentsSection() {
       <ErrorNote error={error} />
       {loading ? <p className="text-muted-foreground" role="status">Loading…</p> : (
         <TournamentList
-          tournaments={tournaments}
-          canCreate={!viewOnly}
-          canAssignDirectors={() => !viewOnly}
+          tournaments={listed}
+          canCreate={!viewOnly || president}
+          canAssignDirectors={(t) => !viewOnly || (president && !!member && t.created_by === member.id && !t.club_id)}
           clubs={viewOnly ? undefined : clubs}
           onClubChange={viewOnly ? undefined : handleClubChange}
           savingId={savingId}

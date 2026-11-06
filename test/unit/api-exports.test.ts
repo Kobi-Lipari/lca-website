@@ -6,11 +6,13 @@
 //
 // - the names '@/lib/api' exports, types included, as the TypeScript checker
 //   resolves them through the barrel, equal the snapshot taken from the
-//   unsplit file (fixtures/api-exports.json)
+//   unsplit file (fixtures/api-exports.json) with the names the area modules
+//   have gained since (fixtures/api-added-since-split.json), each from the
+//   module that fixture names; the snapshot stays as the split left it
 // - each of those names is exported by exactly one of src/lib/http.ts and the
 //   eight src/areas/<area>/api.ts modules, and each module exports only names
-//   from the snapshot, apart from the request helpers http.ts shares with
-//   the areas, which the barrel does not re-export
+//   from the snapshot and the names added since, apart from the request
+//   helpers http.ts shares with the areas, which the barrel does not re-export
 // - at run time the barrel hands back the very functions the area modules
 //   define, so a vi.mock of '@/lib/api' that spreads the original still works
 // - no area module imports '@/lib/api', and http.ts imports nothing from an area
@@ -23,6 +25,10 @@ vi.mock('@/lib/supabase', () => ({ supabase: { auth: { getSession: async () => (
 
 const ROOT = join(__dirname, '../..')
 const SNAPSHOT = JSON.parse(readFileSync(join(__dirname, 'fixtures/api-exports.json'), 'utf8')) as string[]
+/** What the area modules gained after the split: the paths they call, and the names they export with the module that declares each. */
+const ADDED = JSON.parse(readFileSync(join(__dirname, 'fixtures/api-added-since-split.json'), 'utf8')) as { paths: string[]; exports: Record<string, string> }
+/** Every name '@/lib/api' exports today: the split's and the ones added since. */
+const NAMES = [...SNAPSHOT, ...Object.keys(ADDED.exports)]
 const AREAS = ['events', 'registration', 'households', 'live', 'membership', 'clubs', 'admin', 'governance']
 const HTTP = 'src/lib/http.ts'
 const BARREL = 'src/lib/api.ts'
@@ -67,18 +73,20 @@ describe("'@/lib/api' exports what it did before the split", () => {
     expect(SNAPSHOT).not.toContain('authHeaders')
   })
 
-  it('the barrel exports exactly the snapshot, types included', () => {
-    expect(exportsOf(BARREL)).toEqual([...SNAPSHOT].sort())
+  it('the barrel exports exactly the snapshot and the names added since the split, types included', () => {
+    expect(exportsOf(BARREL)).toEqual([...NAMES].sort())
+    expect(Object.keys(ADDED.exports).filter((name) => SNAPSHOT.includes(name))).toEqual([])
   })
 
-  it('each name is exported by exactly one module', () => {
+  it('each name is exported by exactly one module, a name added since the split by the module its fixture names', () => {
     const owners = new Map<string, string[]>()
     for (const file of MODULES) for (const name of exportsOf(file)) owners.set(name, [...(owners.get(name) ?? []), file])
-    const notOnce = SNAPSHOT.filter((name) => owners.get(name)?.length !== 1).map((name) => `${name}: ${(owners.get(name) ?? []).join(', ') || 'none'}`)
+    const notOnce = NAMES.filter((name) => owners.get(name)?.length !== 1).map((name) => `${name}: ${(owners.get(name) ?? []).join(', ') || 'none'}`)
     expect(notOnce).toEqual([])
-    const beyond = [...owners.keys()].filter((name) => !SNAPSHOT.includes(name)).sort()
+    const beyond = [...owners.keys()].filter((name) => !NAMES.includes(name)).sort()
     expect(beyond).toEqual(HTTP_HELPERS)
     for (const name of HTTP_HELPERS) expect(owners.get(name)).toEqual([HTTP])
+    for (const [name, area] of Object.entries(ADDED.exports)) expect(owners.get(name), name).toEqual([`src/areas/${area}/api.ts`])
   })
 
   it('every area has a module with something in it', () => {
@@ -101,7 +109,7 @@ describe("'@/lib/api' exports what it did before the split", () => {
     const values = Object.keys(barrel).sort()
     expect(values.length).toBeGreaterThan(100)
     for (const name of values) {
-      expect(SNAPSHOT, name).toContain(name)
+      expect(NAMES, name).toContain(name)
       const from = modules.filter((m) => name in m)
       expect(from, name).toHaveLength(1)
       expect(barrel[name], name).toBe(from[0][name])

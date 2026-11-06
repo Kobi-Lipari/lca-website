@@ -28,8 +28,9 @@
 //   the removed document's icon and tint, and the Events filter names the
 //   action right after tournament_unpublish;
 // - the delete's one caller on the site is the manage page's danger zone,
-//   drawn for an LCA admin alone, and it throws on any answer that is not a
-//   success, as the verify item on the one 403 says;
+//   drawn for an LCA admin and, since WS08 step 9, with standingDirectors on
+//   for the creator of an unpublished draft with no entries, and it throws on
+//   any answer that is not a success, as the verify item on the one 403 says;
 // - the worker the merge redeploys bundles none of the four files of code
 //   this step changes.
 // It reads the WS08 section of REDESIGN_STATUS.md and the files it names.
@@ -452,7 +453,7 @@ describe('the activity log: the action and its label', () => {
 })
 
 describe('the delete\'s caller on the site, as the verify item on the one 403 says', () => {
-  it('is the manage page alone, from its danger zone, drawn for an LCA admin alone, and the call throws on any answer that is not a success', () => {
+  it('is the manage page alone, from its danger zone, drawn for an LCA admin and, with the switch on, for the creator of an unpublished draft with no entries, and the call throws on any answer that is not a success', () => {
     const callers = walk('src')
       .filter((f) => /\.(ts|tsx)$/.test(f) && f !== 'src/areas/events/api.ts')
       .filter((f) => /\badminDeleteTournament\(/.test(read(f)))
@@ -472,10 +473,14 @@ describe('the delete\'s caller on the site, as the verify item on the one 403 sa
     let at: ts.Node | undefined = wired[0]
     let guarded = false
     while (at) {
-      if (ts.isBinaryExpression(at) && at.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken && flat(at.left.getText(page)) === "myRole === 'lca_admin'") guarded = true
+      // WS08 step 9 widened the guard for an event's creator: an LCA admin, or creatorMayDelete.
+      if (ts.isBinaryExpression(at) && at.operatorToken.kind === ts.SyntaxKind.AmpersandAmpersandToken && flat(at.left.getText(page)) === "(myRole === 'lca_admin' || creatorMayDelete)") guarded = true
       at = at.parent
     }
     expect(guarded).toBe(true)
+    // The creator's half reads the switch first, so with it off the zone is an LCA admin's alone, as before.
+    const creator = nodesOf(page).find((n): n is ts.VariableDeclaration => ts.isVariableDeclaration(n) && n.name.getText(page) === 'creatorMayDelete')
+    expect(flat(creator?.initializer?.getText(page) ?? '').startsWith('FEATURES.standingDirectors && ')).toBe(true)
     expect(entryOf(verify, 'The one 403 for a missing event (WS08 step 5).')).toContain('reads any answer that is not a success as an error, so no page reads the difference')
   })
 })

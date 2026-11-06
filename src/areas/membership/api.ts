@@ -1,15 +1,21 @@
 // src/areas/membership/api.ts
 //
 // The membership area's calls to the site's API: the signed-in member,
-// joining and renewing, donations, the US Chess rating lookup, and the
-// admin member list and export.
+// what they may create and their request for a payout account, joining and
+// renewing, donations, the US Chess rating lookup, and the admin member
+// list and export.
 //
 // Moved whole from src/lib/api.ts by scripts/split-api.ts, following
 // scripts/moves/api-split.json. src/lib/api.ts re-exports everything here,
 // so pages and components may keep importing from '@/lib/api'. A type
 // another area owns is imported from that area's api.ts, never from
-// '@/lib/api', which re-exports this file.
+// '@/lib/api', which re-exports this file. The calls added since the split,
+// getTournamentCreation and requestPayoutAccount, are listed with their
+// types in test/unit/fixtures/api-added-since-split.json.
 
+// Types only: a runtime import of the contracts would bring zod into the site
+// bundle, which npm run check:bundle refuses.
+import type { PayoutRequestResponse, TournamentCreationResponse } from '@domain/contracts'
 import { authHeaders, handleResponse } from '@/lib/http'
 import type { ApiRegistration } from '@/areas/registration/api'
 import type { ApiChild } from '@/areas/households/api'
@@ -60,6 +66,44 @@ export interface ApiDirectedTournament {
   name: string
   date: string
   status: string
+}
+
+/**
+ * What GET /api/me/tournament-creation answers the signed-in member
+ * (tournamentCreationResponseSchema in domain/contracts/me.ts): their grant;
+ * canCreate, whether they may create an LCA-run event, one with no club;
+ * canChargeFees, whether they may set an entry fee above $0; and clubId,
+ * the club they run as its club rep, null for everyone else.
+ */
+export type ApiTournamentCreation = TournamentCreationResponse
+
+/** What the signed-in member may create, as the server reads their grant at this request. */
+export async function getTournamentCreation(): Promise<ApiTournamentCreation> {
+  const response = await fetch('/api/me/tournament-creation', {
+    headers: await authHeaders(),
+  })
+  return handleResponse(response)
+}
+
+/**
+ * What POST /api/me/payout-request answers (payoutRequestResponseSchema in
+ * domain/contracts/me.ts): the member's open payout request, by its id,
+ * kind and status, never its number, and whether this request opened it.
+ */
+export type ApiPayoutRequest = PayoutRequestResponse
+
+/**
+ * Asks LCA for a payout account, naming the event the request is about when
+ * there is one. A member has one request open at a time: asking again
+ * answers the open one, with created false.
+ */
+export async function requestPayoutAccount(tournamentId?: string | null): Promise<ApiPayoutRequest> {
+  const response = await fetch('/api/me/payout-request', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: JSON.stringify({ tournamentId }),
+  })
+  return handleResponse(response)
 }
 
 /**
