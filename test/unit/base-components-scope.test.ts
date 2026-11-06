@@ -11,8 +11,9 @@
 // - The list of statuses and their words is read by StatusBadge and the
 //   fixture page only.
 // - Only the fixture page draws StatusBadge's status path, only the fixture
-//   page, the new header of WS02 step 5 and the Menu sheet of WS02 step 6
-//   draw the Button's gold variant, and no caller gives StatusDot a label.
+//   page, the new header of WS02 step 5, the Menu sheet of WS02 step 6, the
+//   new footer of WS02 step 8 and the fee notice of WS08 step 10 draw the
+//   Button's gold variant, and no caller gives StatusDot a label.
 // - ADMIN_SCROLL, which ScrollPanel generalises, keeps its value and its
 //   ten uses in nine admin files, none of which moves to the panel yet (that
 //   is WS06's and WS08's, as REDESIGN_STATUS.md records).
@@ -67,10 +68,12 @@ describe('the new components are drawn on the fixture page only', () => {
     expect(drawnIn(/<StatusBadge\b[^>]*\bstatus=/)).toEqual([FIXTURE])
   })
 
-  it('only the fixture page, the new header, the Menu sheet and the new footer draw the gold Button', () => {
+  it('only the fixture page, the new header, the Menu sheet, the new footer and the fee notice draw the gold Button', () => {
     // WS02 step 5's header draws Join LCA and Renew as the gold Button, its first place off the fixture page, WS02 step 6's sheet does the same,
-    // and so does WS02 step 8's new footer, in its brand block.
-    expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual(['src/components/layout/MobileMenu.tsx', 'src/components/layout/SiteFooter.tsx', 'src/components/layout/SiteHeader.tsx', FIXTURE].sort())
+    // and so does WS02 step 8's new footer, in its brand block, and WS08 step 10's fee notice, for G1's ask for a payout account.
+    expect(drawnIn(/\bvariant=(?:"gold"|'gold'|\{\s*['"]gold['"]\s*\})/)).toEqual(
+      ['src/areas/admin/components/FeeNotice.tsx', 'src/components/layout/MobileMenu.tsx', 'src/components/layout/SiteFooter.tsx', 'src/components/layout/SiteHeader.tsx', FIXTURE].sort(),
+    )
   })
 
   it('no caller gives StatusDot a label yet, so its one page caller shows its state\'s words', () => {

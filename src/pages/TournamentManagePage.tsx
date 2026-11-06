@@ -1,5 +1,5 @@
 // src/pages/TournamentManagePage.tsx
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   AlertTriangle, ArrowLeft, Download, Eye, EyeOff, FileText, Mail, Plus,
@@ -23,8 +23,10 @@ import {
   adminUpdateGameResult,
   adminUpdateTournament,
   getMe,
+  getTournamentCreation,
   lookupUscfRating,
   offerWaitlistSpot,
+  requestPayoutAccount,
   updateRegistration,
   updateTournamentRegistration,
   type ApiCustomDetail,
@@ -34,6 +36,7 @@ import {
   type ApiRoundScheduleItem,
   type ApiSectionDraft,
   type ApiStanding,
+  type ApiTournamentCreation,
   type ApiTournamentDetail,
   type ApiTournamentGame,
 } from '@/lib/api'
@@ -51,6 +54,9 @@ import { PrizesEditor } from '@/areas/events/components/PrizesEditor'
 import { UsChessUploadPanel } from '@/areas/events/components/UsChessUploadPanel'
 import { Crosstable } from '@/areas/live/components/Crosstable'
 import { PrizeWinners } from '@/areas/events/components/PrizeWinners'
+import { FeeNotice, FeeNoticeStatus } from '@/areas/admin/components/FeeNotice'
+import { FEES_NEED_PAYOUT_ACCOUNT, feesRaised } from '@domain/events/creation'
+import { tierFees } from '@domain/events/sections'
 
 const goldButtonClass = 'bg-lca-gold font-semibold text-brand-navy hover:bg-lca-gold/90'
 
@@ -127,6 +133,64 @@ function normalizeSchedule(
 function gradeNote(range: string): string {
   const r = parseGradeRange(range)
   return r ? gradeRangeText(r.min, r.max) : ''
+}
+
+/** The Registration tab's prices as its boxes hold them, text. */
+interface PricingForm {
+  earlyDeadline: string
+  earlyDiscount: string
+  lateAfter: string
+  lateFee: string
+}
+
+/** A dollar box as the save sends it: blank is $0, and anything below $0 is $0. */
+const amountOf = (v: string) => (v.trim() === '' ? 0 : Math.max(0, Number(v) || 0))
+
+/**
+ * Each section's key in the fee comparison: its id, or for a section added on
+ * the page, the id of a loaded section of the same name that no other section
+ * holds, as the server's save matches a section sent without one
+ * (savedSectionFees in functions/utils/events/sectionsRepo.ts), and otherwise
+ * its name, as a new section.
+ */
+function sectionKeys(edited: readonly ApiSectionDraft[], loaded: readonly ApiSectionDraft[]): string[] {
+  const held = new Set(edited.flatMap((s) => (s.id ? [s.id] : [])))
+  return edited.map((s) => {
+    if (s.id) return s.id
+    const same = loaded.find((l) => !!l.id && l.name === s.name && !held.has(l.id))
+    if (!same?.id) return `new:${s.name}`
+    held.add(same.id)
+    return same.id
+  })
+}
+
+/**
+ * What an entrant pays at each tier of each section, the lists feesRaised
+ * compares (domain/events/creation.ts). The manage answer gives a section its
+ * worked-out prices only, never an own early or late price, so each section
+ * is read with its entry fee as its regular price and no own tier, and the
+ * event's discount and late fee come from the Registration tab's boxes as the
+ * save sends them. That is exact while no section has an own tier price,
+ * which none has until the setup checklist's Fees step sets one.
+ */
+function pricesPaid(sections: readonly ApiSectionDraft[], keys: readonly string[], pricing: PricingForm, entryFee: number) {
+  const event = {
+    entry_fee: entryFee,
+    early_deadline: pricing.earlyDeadline || null,
+    early_discount: amountOf(pricing.earlyDiscount),
+    late_after: pricing.lateAfter || null,
+    late_fee: amountOf(pricing.lateFee),
+  }
+  return sections.map((s, i) => ({ key: keys[i], fees: tierFees({ feeRegular: s.entryFee, feeEarly: null, feeLate: null }, event) }))
+}
+
+/**
+ * The server's refusal of a raised fee, with standingDirectors on: the page
+ * draws it as G1's panel, never in the red strip. With the switch off every
+ * error is drawn as today.
+ */
+function refusedForFees(err: unknown): boolean {
+  return FEATURES.standingDirectors && err instanceof Error && err.message === FEES_NEED_PAYOUT_ACCOUNT
 }
 
 const ALL_SECTIONS = '__all__'
@@ -284,6 +348,15 @@ export function TournamentManagePage() {
   // as the server's delete counts them: the roster and the waitlist below
   // each leave some out.
   const [entryCount, setEntryCount] = useState(0)
+
+  // The fee notices, with standingDirectors on: what the signed-in person may
+  // do with fees, read once as the page opens; whether their payout request
+  // has gone; and whether the server refused a raised fee all the same (a
+  // page loaded before the rule changed), which G1's panel shows in place of
+  // the red strip.
+  const [creation, setCreation] = useState<ApiTournamentCreation | null>(null)
+  const [payoutAsked, setPayoutAsked] = useState(false)
+  const [feeRefused, setFeeRefused] = useState(false)
 
   usePageTitle(tournament ? `Manage ${tournament.name}` : 'Manage Tournament')
 
@@ -469,6 +542,37 @@ export function TournamentManagePage() {
       .catch(() => setMyRole(null))
   }, [])
 
+  // With standingDirectors on, the page asks once what the signed-in person
+  // may do with fees (GET /api/me/tournament-creation): someone who may not
+  // charge one is told before saving a price above the one the page loaded
+  // (G1), and a standing director's fees carry their note (G2). An answer
+  // that fails draws neither; the save's own check still decides.
+  useEffect(() => {
+    if (!FEATURES.standingDirectors) return
+    let cancelled = false
+    getTournamentCreation()
+      .then((answer) => { if (!cancelled) setCreation(answer) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
+
+  // G1's Keep it at $0 takes the panel away with the button pressed in it,
+  // which would drop the focus to the page and start the next Tab again at
+  // its top. The focus goes instead to the box whose price was put back,
+  // once the page has drawn that price, so a screen reader reads the price
+  // as it now is: a section's fee box on the Details tab, or the early-entry
+  // discount or the late fee box on the Registration tab.
+  const feeBoxes = useRef(new Map<string, HTMLInputElement>())
+  const earlyBox = useRef<HTMLInputElement>(null)
+  const lateBox = useRef<HTMLInputElement>(null)
+  /** The box to move the focus to once Keep it at $0's prices are drawn. */
+  const focusAfterKeep = useRef<HTMLInputElement | null>(null)
+  useLayoutEffect(() => {
+    const to = focusAfterKeep.current
+    focusAfterKeep.current = null
+    if (to?.isConnected) to.focus()
+  })
+
   // Default the check-in filter on when any check-ins exist, but never
   // override a choice the TD has made this session.
   useEffect(() => {
@@ -560,6 +664,33 @@ export function TournamentManagePage() {
     rounds: scheduleDirty,
   }
 
+  /** Whether a typed price is above the one the page loaded, at any tier of any section, as the server's fee rule compares a save. */
+  function typedAboveLoaded(s: FormSnapshot): boolean {
+    const loaded = JSON.parse(s.sections) as ApiSectionDraft[]
+    const entryFee = tournament?.entry_fee ?? 0
+    return feesRaised(
+      pricesPaid(loaded, sectionKeys(loaded, loaded), JSON.parse(s.pricing) as PricingForm, entryFee),
+      pricesPaid(sections, sectionKeys(sections, loaded), pricing, entryFee),
+    )
+  }
+  // G1, with standingDirectors on: for someone the creation answer says may
+  // not charge a fee, once a typed price is above the price the page loaded.
+  // It is drawn under the sections table and under the Registration tab's
+  // prices, and while it shows both Save buttons are held, so a one-event
+  // director puts the loaded prices back, or asks for a payout account,
+  // before saving. The server's refusal of a raise, if one comes all the
+  // same, draws it too.
+  const raised = FEATURES.standingDirectors && !!creation && !creation.canChargeFees && !!snap && typedAboveLoaded(snap)
+  const feeNoticeShows = raised || feeRefused
+  // G2, a standing director's note, goes under the sections table alone, and
+  // only on an event they created: it tells them the fees are paid out to
+  // them after the event, which is not so on an event an LCA admin or a club
+  // rep created and named them on. It gives way to G1, which a refused save
+  // can draw for them all the same (a grant lost since the page opened), so
+  // the two never show together.
+  const standingFeeNote = FEATURES.standingDirectors && creation?.grant === 'standing_director' &&
+    !!tournament && !!authMember && tournament.created_by === authMember.id && !feeNoticeShows
+
   function resetFormsFromSnapshot() {
     const s = snapshot
     if (!s) return
@@ -587,6 +718,53 @@ export function TournamentManagePage() {
     setPricing(JSON.parse(s.pricing))
     setRounds(s.rounds)
     setRoundSchedule(JSON.parse(s.roundSchedule) as ApiRoundScheduleItem[])
+    setFeeRefused(false)
+  }
+
+  /**
+   * G1's Keep it at $0: every price the comparison reads goes back to what
+   * the page loaded, each section's entry fee and the whole of the
+   * Registration tab's prices, both dates included, so an event the
+   * president priced goes back to its price and a free one to $0; a section
+   * added on the page goes back to $0, as it reads in the comparison. The
+   * rest of each form is kept as it was typed. For a press from the keyboard
+   * (a click whose detail is 0) the focus, on the button that goes with the
+   * panel, moves to the box whose price was put back: on the Registration tab
+   * the early-entry discount's when its amount or its end changes, and the
+   * late fee's otherwise; on the Details tab the fee box of the first section
+   * whose fee changes, or the first section's. A tap or a mouse press moves
+   * no focus, since a price box given the focus opens the number keyboard on
+   * a tablet.
+   */
+  function keepLoadedPrices(fromKeyboard = true) {
+    const s = snapshot
+    if (!s) return
+    const loaded = JSON.parse(s.sections) as ApiSectionDraft[]
+    const was = JSON.parse(s.pricing) as PricingForm
+    const keys = sectionKeys(sections, loaded)
+    const kept = sections.map((sec, i) => ({ ...sec, entryFee: loaded.find((l) => l.id === keys[i])?.entryFee ?? 0 }))
+    setSections(kept)
+    setPricing(was)
+    setFeeRefused(false)
+    if (!fromKeyboard) return
+    if (activeTab === 'registration') {
+      const earlyChanged = pricing.earlyDiscount !== was.earlyDiscount || pricing.earlyDeadline !== was.earlyDeadline
+      focusAfterKeep.current = earlyChanged ? earlyBox.current : lateBox.current
+    } else {
+      const firstChanged = sections.find((sec, i) => sec.entryFee !== kept[i].entryFee) ?? sections[0]
+      focusAfterKeep.current = (firstChanged && feeBoxes.current.get(firstChanged.name)) || null
+    }
+  }
+
+  /** G1's ask: one payout request about this event; a failed one is drawn as the page's other failed actions are. */
+  async function askForPayoutAccount() {
+    if (!id) return
+    try {
+      await requestPayoutAccount(id)
+      setPayoutAsked(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not send the request')
+    }
   }
 
   function selectTab(next: TabId) {
@@ -632,11 +810,13 @@ export function TournamentManagePage() {
 
     setSaving(true)
     setError(null)
+    setFeeRefused(false)
     try {
       await adminUpdateTournament(id, body)
       await loadManage()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save details')
+      if (refusedForFees(err)) setFeeRefused(true)
+      else setError(err instanceof Error ? err.message : 'Failed to save details')
     } finally {
       setSaving(false)
     }
@@ -652,11 +832,10 @@ export function TournamentManagePage() {
     }
     if (JSON.stringify(pricing) !== s.pricing) {
       const was = JSON.parse(s.pricing) as typeof pricing
-      const amt = (v: string) => (v.trim() === '' ? 0 : Math.max(0, Number(v) || 0))
       if (pricing.earlyDeadline !== was.earlyDeadline) body.earlyDeadline = pricing.earlyDeadline || null
-      if (pricing.earlyDiscount !== was.earlyDiscount) body.earlyDiscount = amt(pricing.earlyDiscount)
+      if (pricing.earlyDiscount !== was.earlyDiscount) body.earlyDiscount = amountOf(pricing.earlyDiscount)
       if (pricing.lateAfter !== was.lateAfter) body.lateAfter = pricing.lateAfter || null
-      if (pricing.lateFee !== was.lateFee) body.lateFee = amt(pricing.lateFee)
+      if (pricing.lateFee !== was.lateFee) body.lateFee = amountOf(pricing.lateFee)
     }
     // Sent only when changed: the server refuses the field from anyone but an
     // LCA admin or the organizing club's rep, which an assigned director
@@ -667,6 +846,7 @@ export function TournamentManagePage() {
 
     setSaving(true)
     setError(null)
+    setFeeRefused(false)
     try {
       if (Object.keys(body).length > 0) {
         await adminUpdateTournament(id, body)
@@ -679,7 +859,8 @@ export function TournamentManagePage() {
       }
       await loadManage()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save registration settings')
+      if (refusedForFees(err)) setFeeRefused(true)
+      else setError(err instanceof Error ? err.message : 'Failed to save registration settings')
     } finally {
       setSaving(false)
     }
@@ -1158,6 +1339,8 @@ export function TournamentManagePage() {
       </div>
 
       <section className="mx-auto max-w-6xl space-y-8 px-6 py-12">
+        {/* With standingDirectors on, the line a screen reader hears as G1 shows, under the sections table or under the prices. It is visually hidden, and drawn first so that no other child's spacing changes. */}
+        {FEATURES.standingDirectors && <FeeNoticeStatus shows={feeNoticeShows} />}
         {error && (
           <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error}
@@ -1373,6 +1556,10 @@ export function TournamentManagePage() {
                             </td>
                             <td className="px-3 py-2">
                               <Input
+                                ref={(box) => {
+                                  if (box) feeBoxes.current.set(s.name, box)
+                                  else feeBoxes.current.delete(s.name)
+                                }}
                                 type="number"
                                 min={0}
                                 className="h-8 w-24"
@@ -1411,6 +1598,10 @@ export function TournamentManagePage() {
                     </table>
                   </div>
                 )}
+                {feeNoticeShows && (
+                  <FeeNotice kind="needs-account" onKeepFree={keepLoadedPrices} onAskForAccount={askForPayoutAccount} asked={payoutAsked} />
+                )}
+                {standingFeeNote && sections.length > 0 && <FeeNotice kind="accepted" />}
               </div>
 
               {/* Custom detail sections */}
@@ -1461,7 +1652,7 @@ export function TournamentManagePage() {
                 <Button
                   type="button"
                   className={goldButtonClass}
-                  disabled={saving || !detailsDirty}
+                  disabled={saving || !detailsDirty || feeNoticeShows}
                   onClick={handleSaveDetails}
                 >
                   {saving ? 'Saving…' : 'Save details'}
@@ -1572,7 +1763,7 @@ export function TournamentManagePage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
                     <Label htmlFor="p-early" className="text-xs">Early-entry discount ($)</Label>
-                    <Input id="p-early" type="number" min={0} placeholder="0" value={pricing.earlyDiscount}
+                    <Input id="p-early" ref={earlyBox} type="number" min={0} placeholder="0" value={pricing.earlyDiscount}
                       onChange={(e) => setPricing((p) => ({ ...p, earlyDiscount: e.target.value }))} />
                     <Input type="datetime-local" aria-label="Early entry ends" value={pricing.earlyDeadline}
                       onChange={(e) => setPricing((p) => ({ ...p, earlyDeadline: e.target.value }))} />
@@ -1580,7 +1771,7 @@ export function TournamentManagePage() {
                   </div>
                   <div className="space-y-1.5">
                     <Label htmlFor="p-late" className="text-xs">Late fee ($)</Label>
-                    <Input id="p-late" type="number" min={0} placeholder="0" value={pricing.lateFee}
+                    <Input id="p-late" ref={lateBox} type="number" min={0} placeholder="0" value={pricing.lateFee}
                       onChange={(e) => setPricing((p) => ({ ...p, lateFee: e.target.value }))} />
                     <Input type="datetime-local" aria-label="Late fee starts" value={pricing.lateAfter}
                       onChange={(e) => setPricing((p) => ({ ...p, lateAfter: e.target.value }))} />
@@ -1592,6 +1783,9 @@ export function TournamentManagePage() {
                 )}
                 {Number(pricing.lateFee) > 0 && !pricing.lateAfter && (
                   <p className="text-xs text-warn-700">Set when the late fee starts, or it won't apply.</p>
+                )}
+                {feeNoticeShows && (
+                  <FeeNotice kind="needs-account" onKeepFree={keepLoadedPrices} onAskForAccount={askForPayoutAccount} asked={payoutAsked} />
                 )}
               </div>
               {showMembershipSwitch && (
@@ -1618,7 +1812,7 @@ export function TournamentManagePage() {
               <Button
                 type="button"
                 className={goldButtonClass}
-                disabled={saving || !registrationDirty}
+                disabled={saving || !registrationDirty || feeNoticeShows}
                 onClick={handleSaveRegistrationSettings}
               >
                 {saving ? 'Saving…' : 'Save registration settings'}
