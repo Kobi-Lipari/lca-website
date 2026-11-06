@@ -81,7 +81,7 @@ async function openEvents(who: { role: string; id: string; club_id?: string | nu
   const member = { id: who.id, role: who.role, club_id: who.club_id ?? null, full_name: 'Gerald Landry' }
   const auth = {
     user: { id: who.id }, member, session: null, role: who.role, loading: false, memberLoading: false,
-    directedTournamentIds: who.directed ?? [], directedTournaments: [],
+    directedTournamentIds: who.directed ?? [], directedTournaments: [], refreshMember: async () => {},
   } as unknown as AuthContextValue
   render(
     <AuthContext.Provider value={auth}>

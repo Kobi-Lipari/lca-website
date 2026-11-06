@@ -1,7 +1,7 @@
 // src/areas/admin/components/TournamentWizard.tsx
 // The new-tournament wizard, shared by the admin panel and the club
 // workspace. Extracted from AdminPage.tsx unchanged apart from: the club
-// picker (admins only — a club rep's events always belong to their club),
+// picker (admins only: a club rep's events always belong to their club),
 // and sending time control / registration close / copied custom details,
 // which the wizard collected but previously never saved.
 import { useState } from 'react'
@@ -24,6 +24,8 @@ import {
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { SectionRulesEditor } from '@/areas/events/components/SectionRulesEditor'
+import { useAuth } from '@/contexts/auth-context'
+import { FEATURES } from '@/lib/features'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -520,16 +522,20 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
 
 /**
  * Owns the wizard's state and the create call. On success it navigates to
- * the new tournament's management page.
+ * the new tournament's management page; with standingDirectors on it first
+ * reads the signed-in member again, so the manage page finds the director
+ * row the create wrote: its guard admits a standing director only to an
+ * event they direct, and it lifts view-only for the president only on one.
  */
 export function TournamentWizard({ templates, clubs, onCancel }: {
   /** Tournaments offered under "From an existing tournament". */
   templates: ApiTournamentListItem[]
-  /** Pass for admins only — shows the organizing-club picker. */
+  /** Pass for admins only: shows the organizing-club picker. */
   clubs?: ApiClubListItem[]
   onCancel: () => void
 }) {
   const navigate = useNavigate()
+  const { refreshMember } = useAuth()
   const [step, setStep] = useState<WizardStep>('template')
   const [wizard, setWizard] = useState<WizardState>(defaultWizard())
   const [creating, setCreating] = useState(false)
@@ -565,6 +571,12 @@ export function TournamentWizard({ templates, clubs, onCancel }: {
         customDetails: wizard.customDetails.length ? wizard.customDetails : undefined,
         ...(clubs ? { clubId: wizard.clubId || null } : {}),
       })
+      // The manage page reads the events the member directs, as they were
+      // read at sign-in. A refresh draws "Loading..." in place of the page
+      // while it runs, and the page is drawn once more after it, at its own
+      // address, since the router moves inside a transition; so it waits for
+      // the switch: with it off a create is followed by no request.
+      if (FEATURES.standingDirectors) await refreshMember()
       navigate(`/admin/tournaments/${String(result.id)}`)
     } catch (err) {
       setCreateError(err instanceof Error ? err.message : 'Failed to create tournament')

@@ -112,6 +112,7 @@ async function openTournaments(role: string, id: string) {
   const member = { id, role, club_id: null, full_name: 'Avery Thibodeaux' }
   const auth = {
     user: { id }, member, session: null, role, loading: false, memberLoading: false, directedTournamentIds: [], directedTournaments: [],
+    refreshMember: async () => {},
   } as unknown as AuthContextValue
   render(
     <AuthContext.Provider value={auth}>

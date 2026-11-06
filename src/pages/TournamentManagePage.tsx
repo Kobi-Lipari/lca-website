@@ -175,12 +175,14 @@ export function TournamentManagePage() {
   const [generating, setGenerating] = useState(false)
   const [savingPairings, setSavingPairings] = useState(false)
 
-  // Role — danger zone is lca_admin only.
+  // The role the Danger zone reads. An LCA admin sees the zone, and with
+  // standingDirectors on so does the creator of an unpublished draft with no
+  // entries (creatorMayDelete, below); the server's DELETE decides either way.
   // NOTE: sourced via getMe() to avoid depending on an auth context this file
   // can't see; if the app has a useAuth() hook exposing member.role, swap it in.
   const [myRole, setMyRole] = useState<string | null>(null)
   // Back links go to the admin panel for admins, the workspace for reps/directors.
-  const { role: authRole, member: authMember } = useAuth()
+  const { role: authRole, member: authMember, directedTournamentIds } = useAuth()
   // Someone directing an event with an ordinary member account works from the workspace.
   const backHref = authRole === 'member' ? '/workspace?tab=events' : toolsHomeFor(authRole, 'tournaments')
   // LCA Officers see events like an observer but without the mailing tools.
@@ -236,7 +238,11 @@ export function TournamentManagePage() {
   const [pairingNotes, setPairingNotes] = useState<string[]>([])
   const [savingStatus, setSavingStatus] = useState(false)
   const [savedGameId, setSavedGameId] = useState<string | null>(null)
-  const viewOnly = useViewOnly()
+  // An observer is view-only here, as on every admin screen, but with
+  // standingDirectors on not on an event they direct: the president works on
+  // the events they create through their director row, and stays view-only
+  // on every other event.
+  const viewOnly = useViewOnly() && !(FEATURES.standingDirectors && !!id && directedTournamentIds.includes(id))
   /** The round the engine will pair next in a section: one past the last paired. */
   const nextRoundFor = (section: string) =>
     games.filter((g) => g.section === section).reduce((max, g) => Math.max(max, g.round), 0) + 1
@@ -274,6 +280,10 @@ export function TournamentManagePage() {
   // Danger zone
   const [deleteConfirmName, setDeleteConfirmName] = useState('')
   const [deletingTournament, setDeletingTournament] = useState(false)
+  // Every entry in the manage answer, waitlisted and withdrawn ones included,
+  // as the server's delete counts them: the roster and the waitlist below
+  // each leave some out.
+  const [entryCount, setEntryCount] = useState(0)
 
   usePageTitle(tournament ? `Manage ${tournament.name}` : 'Manage Tournament')
 
@@ -281,8 +291,8 @@ export function TournamentManagePage() {
 
   /**
    * Everything a fetch result puts on screen, split out from the fetch
-   * itself. The mount effect can then apply it from a promise callback —
-   * a mount effect must not call something that sets state synchronously —
+   * itself. The mount effect can then apply it from a promise callback (a
+   * mount effect must not call something that sets state synchronously),
    * while the nine mutation handlers below still get one loadManage() to
    * await after they change something.
    */
@@ -295,7 +305,7 @@ export function TournamentManagePage() {
     setPrizes(data.prizes ?? [])
 
     // Normalize once so form state, the rounds→schedule sync effect, and the
-    // snapshot all agree — no false "unsaved changes" straight after load.
+    // snapshot all agree: no false "unsaved changes" straight after load.
     const nName = t.name ?? ''
     const nDate = (t.date ?? '').slice(0, 10)
     const nEndDate = (t.end_date ?? '').slice(0, 10)
@@ -388,10 +398,14 @@ export function TournamentManagePage() {
    * page or touching any half-edited form. Used after results and other
    * at-the-board actions, which happen dozens of times a round.
    */
-  /** Waitlisted entries get their own list; everywhere else sees only real entrants. */
+  /**
+   * Waitlisted entries get their own list; everywhere else sees only real
+   * entrants. The Danger zone's count takes every entry, as the server's does.
+   */
   function splitRoster(all: ApiManageRosterPlayer[]) {
     setRoster(all.filter((p) => !p.waitlisted_at))
     setWaitlist(all.filter((p) => p.waitlisted_at && !p.withdrawn_at))
+    setEntryCount(all.length)
   }
 
   async function handleOfferSpot(player: ApiManageRosterPlayer) {
@@ -455,7 +469,7 @@ export function TournamentManagePage() {
       .catch(() => setMyRole(null))
   }, [])
 
-  // Default the check-in filter on when any check-ins exist — but never
+  // Default the check-in filter on when any check-ins exist, but never
   // override a choice the TD has made this session.
   useEffect(() => {
     if (!onlyCheckedInTouched.current) {
@@ -523,6 +537,12 @@ export function TournamentManagePage() {
   const showMembershipSwitch = FEATURES.membershipRequirementSwitch &&
     !!tournament?.club_id &&
     (authRole === 'lca_admin' || (authRole === 'club_rep' && authMember?.club_id === tournament.club_id))
+  // The Danger zone for the event's creator, with standingDirectors on: an
+  // unpublished draft with no entries, every entry counted as the server
+  // counts them, so a draft whose only entry is waitlisted shows no zone.
+  // The server's DELETE decides; it refuses a creator who has lost the grant.
+  const creatorMayDelete = FEATURES.standingDirectors && !!tournament && !!authMember &&
+    tournament.created_by === authMember.id && tournament.is_visible === 0 && entryCount === 0
   const registrationDirty = !!snap && (
     isVisible !== snap.isVisible ||
     registrationStatus !== snap.registrationStatus ||
@@ -652,7 +672,7 @@ export function TournamentManagePage() {
         await adminUpdateTournament(id, body)
       }
       if (statusChanged) {
-        // registration_status lives on its own endpoint — never fold into the main PATCH
+        // registration_status lives on its own endpoint: never fold it into the main PATCH
         await updateTournamentRegistration(id, {
           registration_status: registrationStatus as 'draft' | 'open' | 'closed',
         })
@@ -1144,11 +1164,11 @@ export function TournamentManagePage() {
           </p>
         )}
 
-        <ViewOnlyNote>View only: you can see everything about this event and email its entrants from the Email tab. Changes are made by the organizers.</ViewOnlyNote>
+        <ViewOnlyNote viewOnly={viewOnly}>View only: you can see everything about this event and email its entrants from the Email tab. Changes are made by the organizers.</ViewOnlyNote>
 
         {/* ══════════ DETAILS ══════════ */}
         {activeTab === 'details' && (
-          <ViewOnlyFieldset>
+          <ViewOnlyFieldset viewOnly={viewOnly}>
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-8">
               <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -1454,8 +1474,8 @@ export function TournamentManagePage() {
               </div>
             </div>
 
-            {/* Danger zone — lca_admin only; backend DELETE is requireAdmin regardless */}
-            {myRole === 'lca_admin' && (
+            {/* Danger zone: an LCA admin sees it, and with standingDirectors on so does the creator of an unpublished draft with no entries. The server's DELETE decides who may delete. */}
+            {(myRole === 'lca_admin' || creatorMayDelete) && (
               <div className="rounded-xl border border-destructive/40 bg-destructive/5 p-6 space-y-4">
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="size-5 text-destructive" />
@@ -1494,7 +1514,7 @@ export function TournamentManagePage() {
 
         {/* ══════════ REGISTRATION ══════════ */}
         {activeTab === 'registration' && (
-          <ViewOnlyFieldset>
+          <ViewOnlyFieldset viewOnly={viewOnly}>
           <>
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-6">
               <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -1879,7 +1899,7 @@ export function TournamentManagePage() {
 
         {/* ══════════ ROUNDS ══════════ */}
         {activeTab === 'rounds' && (
-          <ViewOnlyFieldset>
+          <ViewOnlyFieldset viewOnly={viewOnly}>
           <>
             {/* Rounds count + schedule */}
             <div className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
@@ -2238,7 +2258,7 @@ export function TournamentManagePage() {
               )}
             </div>
 
-            {/* USCF rating report */}
+            {/* US Chess rating report */}
             {isRated && (
               <div className="rounded-xl border bg-card p-6 shadow-sm">
                 <div className="flex flex-wrap items-center justify-between gap-3">
