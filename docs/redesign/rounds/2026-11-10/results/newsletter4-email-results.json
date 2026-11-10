@@ -1,0 +1,102 @@
+{
+ "label": "newsletter-round-4-email",
+ "set": "email",
+ "results": [
+  {
+   "board": {
+    "n": 1,
+    "name": "The navy band",
+    "file": "Newsletter-Email-1.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Email-1.dc.html",
+    "height": 2400,
+    "changes": [
+     "Computer view: 'LCA NEWSLETTER' above 'December 2026' in the navy band went from 12px with 0.22em spacing in brand gold #c8a94a to 17px, weight 700, 0.08em spacing, in light gold #efd98a. 'December 2026' stays 36px, still the largest thing in the band.",
+     "Light phone: the same line went from 10.5px with 0.2em spacing in #c8a94a to 15px, weight 700, 0.08em spacing, in #efd98a. The month stays 27px.",
+     "Dark phone: no change needed. It shows the end of the email and its footer, so the band is not on that screen.",
+     "Label strip: the small line now reads 'LCA Newsletter · The email · Option 1' with 'of 5' dropped. The name, the sentence and the one Sample data tag are unchanged.",
+     "Height: content ends at 2392px, so the declared height stays 2400 on the root and in $preview. Nothing else in the file changed. I checked the render at full scale: no overlap or clipping in either band, and the larger line fits easily in the 112px band on the computer and the 88px band on the phone."
+    ],
+    "note": "Email option 1, The navy band: the site's navy header shrunk to an email, with the rook, the month set large in white and a thin gold line, then a clean letter on white. For K's note, the 'LCA NEWSLETTER' line above 'December 2026' is now larger, bolder and a brighter gold, so it is easy to read on the computer and on the phone.",
+    "unresolved": []
+   },
+   "review": null
+  },
+  {
+   "board": {
+    "n": 4,
+    "name": "The bulletin",
+    "file": "Newsletter-Email-4.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Email-4.dc.html",
+    "height": 2500,
+    "changes": [
+     "Label strip small line now reads \"LCA Newsletter · The email · Option 4\" (dropped \"of 5\"); name, sentence and the one Sample data tag unchanged.",
+     "Computer view: the masthead's small line went from 11px weight 600 to 13.5px weight 700 in full navy (#1a2744), letter spacing .16em to .12em so it fits. It now sits on two centred lines: \"DECEMBER 2026 · NO. 2\" / \"LOUISIANA CHESS ASSOCIATION · SINCE 1915\". \"LCA Newsletter\" stays large at 40px.",
+     "Light phone: the same line went from 10.5px to 13px, weight 700, full navy, on three centred lines (\"DECEMBER 2026 · NO. 2\" / \"LOUISIANA CHESS ASSOCIATION\" / \"SINCE 1915\") because the 326px column can't fit it on two.",
+     "Dark phone: no change. It shows the end of the email and its footer, so the masthead isn't in view.",
+     "Measured the natural height at 2476px, so the root and $preview height went from 2450 to 2500, under the 2600 limit. Nothing else in the board changed."
+    ],
+    "note": "Email option 4, The bulletin: a classic masthead between two rules, like the front of a long-printed club bulletin, shown on a computer and on two phones. For K's notes, the small line under \"LCA Newsletter\" (December 2026 · No. 2 · Louisiana Chess Association · Since 1915) is now larger, bolder and in full navy so it is easy to read, and the label strip reads \"Option 4\".",
+    "unresolved": [
+     "On the light phone the bigger masthead line moves the email down about 20px. The last visible line, \"See you over the board,\", is now cut by a few pixels at the mail app's bottom bar. It reads as a scrolling email, as it did before, when \"LCA President\" sat at the same edge. Fixing it fully would mean changing the phone's other content, so I left it."
+    ]
+   },
+   "review": null
+  },
+  {
+   "board": {
+    "n": 5,
+    "name": "The big month",
+    "file": "Newsletter-Email-5.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Email-5.dc.html",
+    "height": 2550,
+    "changes": [
+     "Header small line \"LCA NEWSLETTER · NO. 2\" on the computer view: 12px at 0.24em spacing in brand gold #c8a94a, now 17px, weight 700, 0.08em spacing, light gold #e7cf7a, line height 1.1. \"December\" (76px) is still the largest thing.",
+     "Same line on the light phone: 11px at 0.22em, now 15px at 0.08em in the same light gold. The dark phone shows only the end of the email and its footer, so it has no header line and nothing changed there.",
+     "Label strip small line: \"LCA Newsletter · The email · Option 5 of 5\" now reads \"LCA Newsletter · The email · Option 5\". The name, the sentence and the one Sample data tag are unchanged.",
+     "Declared height (root and $preview) went from 2500 to 2550. The rendered content ends at about 2505, so 2500 would have cut into the bottom padding. Nothing else on the board changed."
+    ],
+    "note": "Email option 5, The big month: a navy cover with December set huge, a numbered list of what is in this issue, and numbered sections below. For K's notes, the \"LCA NEWSLETTER · NO. 2\" line above the month is now larger and in a brighter gold (17px on a computer, 15px on a phone), and the label drops \"of 5\".",
+    "unresolved": [
+     "The rook mark next to the header line is still 30px on the computer and 26px on the phone, so next to the larger text it now looks a little small. I left it alone because the task said to change only the text. It is a one-line change if K wants it to match."
+    ]
+   },
+   "review": null
+  }
+ ],
+ "setCheck": {
+  "per_file": [
+   {
+    "file": "Newsletter-Email-1.dc.html",
+    "height": 2400,
+    "verdict": "\"LCA NEWSLETTER\" now reads clearly in bright light gold above a larger \"December 2026\" on both the computer and phone bands, and the board looks as finished as the other two: an even mail window, a clean letter and a neat cream footer."
+   },
+   {
+    "file": "Newsletter-Email-4.dc.html",
+    "height": 2500,
+    "verdict": "The masthead line is now bold navy at 13.5px on the computer, set between crisp rules under the large \"LCA Newsletter\", and the board matches the other two for finish while clearly being the traditional serif choice."
+   },
+   {
+    "file": "Newsletter-Email-5.dc.html",
+    "height": 2500,
+    "verdict": "\"LCA NEWSLETTER · NO. 2\" now stands out in light gold at the same size and weight as option 1, above the very large \"December\". The cover and numbered sections look as finished as the other two and are clearly the boldest of the three."
+   }
+  ],
+  "changes": [
+   "Newsletter-Email-5.dc.html: the root's declared height and $preview height went from 2550 to 2500, because the rendered content ends at 2486 and the extra 64px left a strip of empty background. I rendered it again at scale 1 and checked it. Nothing else changed.",
+   "Newsletter-Email-1.dc.html and Newsletter-Email-4.dc.html: no edits. They already met the revision's header sizes, the label strip without \"OF 5\" and the right heights (content ends at 2398 and 2475, declared 2400 and 2500).",
+   "Checks made without editing: the December issue text, pulled from the computer view of all three, is the same word for word. The only differences are each option's own masthead, the In this issue list and the section numbers. The footer and captions are unchanged, every weekday checks against the calendar, and there are no em or en dashes, holes or iframes. Tags are balanced, each file has exactly one \"Sample data\" tag, and the skeleton is intact."
+  ],
+  "measurements": "Measured from the rendered page. Option 1, \\\"LCA NEWSLETTER\\\": computer 17px, phone 15px, weight 700, letter spacing 0.08em, colour #efd98a. The dark phone shows the end of the email, so it has no header. Option 4, masthead line: computer 13.5px, phone 13px, weight 700, navy #1a2744. The dark phone shows the end, so it has no masthead. Option 5, \\\"LCA NEWSLETTER · NO. 2\\\": computer 17px, phone 15px, weight 700, letter spacing 0.08em, colour #e7cf7a. The dark phone shows the end, so it has no cover. Label strip small line on all three: 13px, gold-ink #866a1e, reads \\\"LCA Newsletter · The email · Option N\\\" with no \\\"of 5\\\".",
+  "remaining_concerns": [
+   "Option 4's masthead line on the phone is 13px, against about 13.5px on the computer. It is within the revision's \"about 13.5px\" and wraps cleanly onto three lines, so I left it.",
+   "In the dark phone for option 5, the navy footer stretches to fill the screen, which leaves about 45px of empty navy under the Facebook link. It is acceptable but a little looser than options 1 and 4.",
+   "The \"Sample data\" tag on each strip is the only marker of invented content. The issue text names real people from the boards (the State Championship winners), as it did before."
+  ]
+ }
+}

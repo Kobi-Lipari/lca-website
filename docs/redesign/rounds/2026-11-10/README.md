@@ -1,4 +1,4 @@
-# The newsletter, rounds 1 to 3 (Tuesday, November 10, 2026)
+# The newsletter, rounds 1 to 4 (Tuesday, November 10, 2026)
 
 Three rounds on one day for LCA's monthly newsletter. Rounds 1 and 2 are on canvas page "18 · Newsletter"; round 3, ten options for the president, is on page "19 · Newsletter options for the president" (canvas version 25). Round 1 drew four fuller directions (canvas version 23). Round 2 drew the simple version K then asked for, with a board of K's picks (canvas version 24). K picked on Tue, Nov 10, 2026: the simple version first; the page reads left to right as Your picks, Newsletter-E and its part 2, then round 1's A to D as ideas for later.
 
@@ -107,3 +107,16 @@ No option shows a sender address: K decides the addresses together, from the add
 **The lead's suggestion for K's three of each.** Pages 1, 2 and 4: 1 is the safest for a first-time sender, 2 answers "easy to see" best, and 4 is the most striking; 3 competes with 1 and adds clicks, and 5 has the smallest preview. Emails 1, 3 and 4: one that looks like the site, one modern, one traditional; 5 is close to 1, and the plain look of 2 stays available anyway as the "Plain" top under More options.
 
 **The images.** Each board is rendered for sending with `node docs/redesign/tools/render.mjs <board> <out> 1440 2`, which gives a picture 2,880 pixels wide. The images are not kept in the repository.
+
+## Round 4: K's six, revised to K's notes
+
+K kept page options 2, 4 and 5 and email options 1, 4 and 5 (the lead had suggested pages 1, 2 and 4 and emails 1, 3 and 4), and gave four notes. The six boards were revised in place; `newsletter3-specs.json` now carries the `revision`, and `results/newsletter4-page-results.json` and `results/newsletter4-email-results.json` the revision, review and side-by-side check. Canvas version 26: on page 19 the kept six come first in each row, and the four not kept sit further right.
+
+1. **The header's small text.** "LCA NEWSLETTER" above the month is 17 px on a computer and 15 px on a phone, bold, in a light gold, on email options 1 and 5; option 4's masthead line is 13.5 px in full navy. The page options' previews follow.
+2. **Starting from something, very apparent.** A wide bar at the top of the writing area, "Start from a template or a past newsletter", opens a chooser: four pinned templates (Monthly newsletter, Tournament announcement, Results and thanks, Short notice) and the last newsletters, each with "Use this". A newsletter can be pinned as a template. If something is already written, the page asks before replacing it and keeps the words in History.
+3. **A big writing area, made for fingers.** On each page option it is the largest thing on the page: at least 62 percent of the width and at least 520 px tall, with "Make bigger", a "Pull to make taller" handle, and "Hide" on the preview. Tools are at least 44 px tall, the letter's text is 17 px, and each board adds a tablet at a true 820 wide.
+4. **Adding people.** The count reads "167 people will get it: 155 members and 12 you added", with "Add or review people": the members, the people added (typed, pasted or imported from a list, each with where it came from), anyone left out and the total; a tick that the added people asked to get email from LCA; kept in LCA's email bank for next time.
+
+The counts are examples. The newsletter goes to accounts with an active membership (K's decision 28), about 155; the boards first said 243, the number of addresses on all accounts, and the lead corrected the three kept page boards.
+
+For K to decide, raised by note 4: people added by hand only when they asked to get email from LCA (recommended, as drawn), or anyone.
