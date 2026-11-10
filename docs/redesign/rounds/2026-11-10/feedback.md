@@ -37,3 +37,13 @@ all recommended but I like the design concept of allowing for choice, like havin
 On the page's preview, and options for the president:
 
 on the plan for the page, be sure to have the preview of the message easy to see (maybe something to click to bring it up on phone, but it should be a mini thing on the side on desktop since there is the space), also lets get some refined images of options for how the page and sending templates (what the receipients see) for the president to pick when i send them to him tommorrow. maybe 5 options each for me to refine down to 3.
+
+On the ten options, cutting them to six:
+
+okay cloudflare paid then.
+
+in the options, make the "LCA NEWSLETTER" text at the header thing that is abover December 2026 a little larger and easier to see.
+
+Also, I want to make sure something like that 'past newsletters' button is very apparent so they can save alot of times by selecting one our our pinned templates or one of the last ones that they did. I also want  to make sure their writting section doesnt get squished by anytgin or is every to pull bigger so they can edit things by touch without much trouble (big edit area, so no big finger problems). and ensure that they have an easy way to import or manually add in new emails to send this too and preview those along with the originals and their total (keep these in our big email bank).
+
+Lets keep and iterate with these ntoes, on newletter page 2,4, 5 and the email 1, 4, 5
