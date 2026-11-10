@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Newsletter · A · The monthly letter</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.na-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:14px 40px 12px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.na-root *{box-sizing:border-box}
+.na-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.na-doc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px}
+.na-title{font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.na-meta{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0;max-width:1080px}
+.na-meta b{color:#1a2744;font-weight:600}
+.na-quote{margin:10px 0 0;padding:10px 14px;border-left:3px solid #866a1e;background:#ffffff;border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.5;color:#3d4556;max-width:1180px}
+.na-quote p{margin:0}
+.na-quote p+p{margin-top:4px}
+.na-quote b{color:#1a2744}
+.na-legend{display:grid;grid-template-columns:minmax(0,1fr) 640px;gap:20px;margin-top:16px;align-items:start}
+.na-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px}
+.na-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 26px}
+.na-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.na-notes b{font-weight:600}
+.na-grey{background:#f1f0eb;border:1px solid #dddcd4;border-radius:12px;padding:14px 18px;font-size:12.5px;line-height:1.45;color:#3d4556}
+.na-grey p{margin:0 0 6px}
+.na-grey p:last-child{margin:0}
+.na-grey b{color:#1a2744;font-weight:600}
+.na-grey ol{margin:2px 0 0;padding-left:18px;display:grid;grid-template-columns:1fr 1fr;gap:0 22px}
+.na-grey li{margin:0 0 2px}
+
+.na-sec{margin-top:20px}
+.na-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.na-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.na-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.na-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1180px;margin:12px 0 0}
+.na-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.na-browser .k-browser-url{max-width:760px}
+.na-view{position:relative;background:#f5f5f2;overflow:hidden}
+.na-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+.na-bs{width:24px;height:24px;font-size:12px}
+
+/* header (decided, signed in) */
+.na-hd .k-brand{margin-right:16px}
+.na-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.na-rook-sm{width:24px;height:24px}
+.na-nav{gap:0}
+.na-nav a{padding:0 10px;white-space:nowrap}
+.na-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.na-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.na-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.na-util{gap:12px}
+.na-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.na-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:22px}
+.na-foot .k-meta{color:rgba(255,255,255,.78)}
+.na-foot nav a{font-size:14px}
+
+/* crumb + page head */
+.na-crumbbar{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.na-crumbin{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:46px}
+.na-crumb{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:#555c6b}
+.na-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.na-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.na-sep{color:#858b99}
+.na-crumbr{display:flex;align-items:center;gap:14px}
+.na-backlink{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.na-phead{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.na-phead-in{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding-top:14px}
+.na-phead h1{margin:0;font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.na-status{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:15px;color:#3d4556}
+.na-status b{color:#1a2744}
+.na-saved{display:flex;align-items:center;gap:6px;font-size:13.5px;color:#555c6b;padding-bottom:6px}
+.na-tabs{display:flex;gap:4px;margin-top:0}
+.na-pright{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.na-tabs a{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;color:#1a2744;text-decoration:none;font-size:14.5px;font-weight:500;border-bottom:3px solid transparent}
+.na-tabs a.na-on{font-weight:700;border-bottom-color:#866a1e}
+.na-tabs .k-tag{font-size:11.5px}
+
+/* the desk: outline, sheet, rail */
+.na-desk{background:#f1eee4;padding:14px 0 16px}
+.na-cols{display:grid;grid-template-columns:200px 640px 360px;gap:32px;justify-content:center;align-items:start}
+.na-outline{position:sticky;top:16px;background:transparent;padding-top:4px}
+.na-outline h2{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.na-ol{list-style:none;margin:0;padding:0;border-left:2px solid #d9d4c3}
+.na-ol li{padding:7px 0 7px 12px;margin-left:-2px;border-left:2px solid transparent}
+.na-ol li a{display:block;color:#1a2744;text-decoration:none;font-size:14px;font-weight:600;line-height:1.3}
+.na-ol li span{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#555c6b;margin-top:2px}
+.na-ol li.na-olcur{border-left-color:#866a1e}
+.na-ol .na-w{color:#145b3a}
+.na-ol .na-e{color:#664c0c}
+.na-ol .na-x{color:#555c6b}
+.na-ofoot{margin-top:14px;font-size:12.5px;line-height:1.45;color:#555c6b}
+
+.na-sheet{position:relative;background:#ffffff;border:1px solid #dcd7c6;border-radius:4px;box-shadow:0 1px 0 #e6e1d1,0 18px 40px rgba(60,48,20,.12)}
+.na-bar{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:2px;height:48px;padding:0 10px;background:#fbfaf6;border-bottom:1px solid #e3e0d4;border-radius:4px 4px 0 0}
+.na-tool{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 10px;border:0;border-radius:7px;background:transparent;color:#1a2744;font-size:13.5px;font-weight:600}
+.na-tool-on{background:#eceef3}
+.na-barsep{width:1px;height:22px;background:#dddcd4;margin:0 4px}
+.na-barr{margin-left:auto;font-size:12.5px;color:#555c6b;display:flex;align-items:center;gap:6px}
+.na-sin{padding:12px 40px 22px}
+.na-fld{display:grid;grid-template-columns:132px minmax(0,1fr);gap:2px 12px;align-items:baseline;padding:7px 0;border-bottom:1px solid #ecebe4}
+.na-fld label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.na-fld .na-fv{font-size:15.5px;font-weight:600;color:#1a2744;line-height:1.4}
+.na-fld .na-fh{grid-column:2;font-size:12.5px;color:#555c6b}
+.na-mast{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding-bottom:10px;border-bottom:2px solid #c8a94a}
+.na-mast-l{display:flex;align-items:center;gap:10px}
+.na-mast-l svg{width:30px;height:30px;fill:#1a2744}
+.na-mast-l b{display:block;font-size:17px;line-height:1.1}
+.na-mast-l span{display:block;font-size:13px;font-weight:600;color:#866a1e;letter-spacing:.04em}
+.na-mast a{font-size:13px;color:#1a2744}
+.na-fixed{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:#6b7180;background:#f3f2ed;border-radius:5px;padding:3px 7px}
+
+.na-letter{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-size:16px;line-height:1.55;color:#1f2a40}
+.na-letter p{margin:0 0 9px}
+.na-letter a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.na-letter h3{font-family:Geist,system-ui,sans-serif;font-size:19px;line-height:1.25;font-weight:700;color:#1a2744;margin:0;letter-spacing:-.005em}
+.na-shd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 6px}
+.na-shd .na-margin{margin:0}
+.na-letter .na-ev{margin:0 0 9px}
+.na-letter .na-ev b{font-weight:600;color:#1a2744}
+.na-letter .na-evm{display:block;font-family:Geist,system-ui,sans-serif;font-size:15px;line-height:1.45;color:#3d4556;margin-top:1px}
+.na-part{position:relative;margin-top:8px;padding-top:8px;border-top:1px solid #f0efe9}
+.na-part:first-child{border-top:0;padding-top:0}
+.na-margin{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 6px;font-family:Geist,system-ui,sans-serif;font-size:12px;line-height:1.3;color:#6b7180}
+.na-margin a{color:#3d4556;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.na-grip{position:absolute;left:-30px;top:12px;width:18px;height:22px;display:flex;align-items:center;justify-content:center;color:#9aa1b0}
+.na-grip svg{width:14px;height:18px;fill:currentColor}
+.na-dot{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none;vertical-align:-1px;margin-right:6px}
+.na-locked{position:relative}
+.na-lockbar{display:flex;align-items:center;gap:10px;padding:7px 12px;margin:0 0 8px;border-radius:8px;background:#eceef3;border:1px solid #d6d9e2;font-family:Geist,system-ui,sans-serif;font-size:13.5px;color:#1a2744}
+.na-lockbar b{font-weight:700}
+.na-lockbar span{color:#3d4556}
+.na-lockbar .k-num-badge{color:#ffffff}
+.na-ini{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:11.5px;font-weight:700;flex:none;font-family:Geist,system-ui,sans-serif}
+.na-ini-mm{background:#1a2744;color:#ffffff}
+.na-ini-pr{background:#f4ecd4;color:#664c0c;border:1px solid #d9c27c}
+.na-ini-ad{background:#e3eef0;color:#1f4d57;border:1px solid #b9d3d8}
+.na-greyed{color:#8a8f9b}
+.na-greyed h3{color:#7a8090}
+.na-greyed a{color:#8a8f9b}
+.na-empty{border:1.5px dashed #c9c8c0;border-radius:8px;padding:14px 16px;font-family:Geist,system-ui,sans-serif;font-size:14px;color:#555c6b;background:#fbfbf8}
+.na-photo{margin:4px 0 0}
+.na-photo img{width:100%;height:112px;object-fit:cover;border-radius:3px}
+.na-alt{margin-top:6px;font-family:Geist,system-ui,sans-serif}
+.na-alt label{display:block;font-size:12.5px;font-weight:600;color:#1a2744;margin-bottom:4px}
+.na-alt div{min-height:36px;padding:7px 12px;border:1px solid #858b99;border-radius:8px;font-size:14px;line-height:1.4;color:#1a2744;background:#ffffff}
+.na-sig{margin-top:4px}
+.na-footstrip{margin-top:16px;padding:10px 14px;border-radius:8px;background:#f5f5f2;border:1px solid #e3e2dc;font-family:Geist,system-ui,sans-serif;font-size:13px;line-height:1.5;color:#3d4556}
+.na-footstrip b{color:#1a2744}
+
+.na-rail{display:flex;flex-direction:column;gap:16px}
+.na-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px}
+.na-card h2{margin:0;font-size:16px;font-weight:700}
+.na-ch{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.na-ctext{margin:8px 0 0;font-size:14px;line-height:1.5;color:#3d4556}
+.na-ctext b{color:#1a2744}
+.na-rule{margin-top:10px;padding:10px 12px;border-radius:8px;background:#fbf5e3;border:1px solid #ece0b9;font-size:13.5px;line-height:1.5;color:#3d3420}
+.na-rule p{margin:0}
+.na-clinks{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:13.5px}
+.na-clinks a{font-weight:600;color:#1a2744;text-underline-offset:3px}
+.na-ppl{list-style:none;margin:10px 0 0;padding:0}
+.na-ppl li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:center;padding:8px 0;border-top:1px solid #ecebe4}
+.na-ppl li:first-child{border-top:0}
+.na-ppl b{display:block;font-size:14px;line-height:1.3}
+.na-ppl small{display:block;font-size:12.5px;color:#555c6b;line-height:1.35}
+.na-big{font-size:28px;font-weight:700;line-height:1.1;margin-top:8px;letter-spacing:-.01em}
+.na-big span{font-size:15px;font-weight:600;color:#3d4556;letter-spacing:0}
+.na-checks{list-style:none;margin:10px 0 0;padding:0}
+.na-checks li{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13.5px}
+.na-checks li em{font-style:normal;margin-left:auto;font-size:12px;font-weight:600}
+.na-ok{color:#145b3a}
+.na-no{color:#555c6b}
+.na-seg button{min-height:36px;padding:0 13px;font-size:13.5px}
+
+/* frame B panels */
+.na-bgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}
+.na-panel{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.na-ptag{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin:0}
+.na-pnote{margin:0;font-size:13px;line-height:1.5;color:#555c6b}
+.na-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.na-mini{border:1px solid #dddcd4;border-radius:10px;padding:12px 14px;background:#ffffff;display:flex;flex-direction:column;gap:8px}
+.na-mini p{margin:0;font-size:13.5px;line-height:1.45;color:#3d4556}
+.na-mini p b{color:#1a2744}
+.na-mini h3{margin:0;font-size:15px;font-weight:700}
+.na-figs{display:grid;grid-template-columns:repeat(5,auto);gap:6px}
+.na-fig{border:1px solid #dddcd4;border-radius:10px;padding:10px 8px;background:#ffffff}
+.na-fig b{display:block;font-size:24px;line-height:1.1}
+.na-fig span{display:block;font-size:12.5px;font-weight:600;color:#3d4556;margin-top:2px}
+.na-notrack{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:8px;background:#f5f5f2;font-size:13px;line-height:1.45}
+.na-past{list-style:none;margin:0;padding:0}
+.na-past li{padding:12px 0;border-top:1px solid #ecebe4}
+.na-past li:first-child{border-top:0;padding-top:2px}
+.na-past p{margin:0;font-size:14.5px}
+.na-past .na-pl{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;font-size:13.5px}
+.na-past .na-pl a{font-weight:600;color:#1a2744}
+.na-dl{display:grid;grid-template-columns:128px minmax(0,1fr);gap:10px 14px;margin:0;font-size:13.5px;line-height:1.45}
+.na-dl dt{color:#555c6b;font-weight:600}
+.na-dl dd{margin:0;color:#1a2744}
+.na-dl dd small{display:block;color:#555c6b;font-size:12.5px}
+.na-hist{list-style:none;margin:0;padding:0}
+.na-hist li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:6px 0;border-top:1px solid #ecebe4}
+.na-hist li:first-child{border-top:0}
+.na-hist b{font-size:14px}
+.na-hist small{display:block;font-size:12.5px;color:#555c6b;margin-top:1px}
+.na-hist q{grid-column:1 / span 2;font-family:"Source Serif 4",Georgia,serif;font-size:14px;line-height:1.35;color:#3d4556;quotes:none;border-left:3px solid #dddcd4;padding:2px 10px}
+.na-hist .na-cur{background:#fbf5e3;margin:0 -10px;padding:8px 10px;border-radius:8px;border-top:0}
+</style>
+</helmet>
+<div class="na-root" style="width:1440px;height:3350px">
+
+<section class="na-doc" aria-label="About this board">
+<div class="na-doc-top"><div><p class="k-kicker">18 · Newsletter · Option A · The monthly letter · part 1 of 2</p>
+<h1 class="na-title">Newsletter · A · The monthly letter</h1>
+<p class="na-meta" style="margin-top:8px"><b>Built from:</b> Nav-Header-Final (signed-in header) · Work-J (admin chrome, cards, status words) · Work-H-2 (an email written in the workspace) · News-Final (club colour dots, the issue's facts) · Tourn-List-Final (title strip, December Meet) · Home-Final-Phones (phones, part 2)</p>
+<p class="na-meta"><b>Replaces:</b> Nothing yet: first round · <b>Part 2</b> (Newsletter-A-2) shows the December issue as a member receives it.</p></div>
+<span class="k-sample">Sample data · the letter's wording, edit times, report figures</span></div>
+<div class="na-quote"><p><b>K, Fri, Oct 23, 2026:</b> "can i make a monthly newletter be hosted on the site for our leaders to collaborativly edit and it goes out automatically on the same date and time (unless edited) to a list of our members (email list given at first and then all new members get added with an opt-out feature)?"</p><p><b>K, Tue, Nov 10, 2026:</b> "I am ready whenever you are to look at some custom newletter designs, for the page that hosts their creation and management (what ever that needs to be), and how they look when received by the receipient."</p></div>
+<div class="na-legend"><div class="na-lbox"><p class="k-label">Notes on this board</p><ol class="na-notes">
+<li><span class="k-num-badge">1</span><span><b>The sheet is the email.</b> One white column, the email's own width and type: what the leaders type is exactly what arrives. The grey margin lines (handles, who edited, History) are never sent.</span></li>
+<li><span class="k-num-badge">2</span><span><b>One person in a section at a time.</b> "President is editing" locks that section for the others until they leave it. Every section keeps its History, with Restore (B5).</span></li>
+<li><span class="k-num-badge">3</span><span><b>An empty section is left out.</b> Nothing to say about the board this month? Leave it empty and its heading does not go out.</span></li>
+<li><span class="k-num-badge">4</span><span><b>The send rule, open for K:</b> someone must mark the issue ready. The editors get a reminder the day before; if no one marks it, it waits and nothing is sent.</span></li>
+<li><span class="k-num-badge">5</span><span><b>A report without tracking.</b> Sent, delivered, bounced, unsubscribed, spam reports. LCA does not track who opens an email or what they click (B2).</span></li>
+</ol></div>
+<aside class="na-grey" aria-label="Note for the canvas"><p class="k-label">Note for the canvas</p>
+<p><b>What:</b> A letter from LCA to its members, and the page where it is made is that letter, open on the screen: the president's note, then five short sections, mostly words and one photo at most. The least design and the most voice of the four; it gives up pictures, layout and anything that fills itself in, so an issue is only as good as what someone writes that month.</p>
+<p><b>Built from:</b> Nav-Header-Final, Work-J, Work-H-2, News-Final, Tourn-List-Final, Home-Final-Phones.</p>
+<p><b>K's feedback applied:</b> written together on the site by LCA admins, the president and the media manager; out on the same date and time unless changed; to every member email, new members added; opting out stops this list only; no postal address in any email, as K decided.</p>
+<p><b>Open for K:</b></p><ol><li>The send rule: here, someone marks it ready (note 4).</li><li>Writing together: turn-taking with history, or everyone typing at once?</li><li>The day and time: drawn as the 1st of each month at 8:00 AM Central.</li><li>Each issue readable on the site? Drawn: yes.</li><li>Weekly "News by email" (Mondays, 8:00 AM): replaced, or both?</li><li>Opens and clicks are not tracked, as drawn.</li></ol></aside></div>
+</section>
+
+
+<section class="na-sec" aria-labelledby="na-fa">
+<div class="na-flab"><span class="na-code">A</span><h2 id="na-fa">Creating · the December 2026 issue, Mon, Nov 23, 2026, 2:15 PM, signed in as the media manager</h2><span class="k-meta">Admin sidebar folded behind "Admin sections" while writing</span></div>
+<div class="k-browser na-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin/newsletter/2026-12</div></div>
+<div class="na-view">
+<header class="k-header na-hd"><div class="k-wrap-wide k-header-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="na-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a>
+<nav class="k-navlinks na-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="na-navbtn" type="button" aria-haspopup="true" aria-expanded="false">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="na-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="na-kbd" aria-hidden="true">&#8984;K</kbd></a>
+<div class="k-utility na-util"><a class="k-ulink" href="#">Donate</a><button class="na-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, nothing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<div class="na-crumbbar"><div class="k-wrap-wide na-crumbin"><nav aria-label="Breadcrumb"><p class="na-crumb"><a href="#">Admin</a><span class="na-sep" aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p></nav><div class="na-crumbr"><button class="k-btn k-btn-soft k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>Admin sections</button><a class="na-backlink" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to Admin</a></div></div></div>
+<div class="na-phead"><div class="k-wrap-wide"><div class="na-phead-in"><div><h1>Newsletter</h1>
+<p class="na-status" style="margin-bottom:12px"><span class="k-tag k-tag-soon">Draft</span><span><b>December 2026</b> · goes out Tue, Dec 1, 2026 at 8:00 AM Central · in 8 days</span></p></div>
+<div class="na-pright"><p class="na-saved" style="margin:0;padding:0"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Every change saved, 2:15 PM</p>
+<nav class="na-tabs" aria-label="Newsletter"><a class="na-on" href="#" aria-current="page">December 2026 <span class="k-tag k-tag-soon">Draft</span></a><a href="#">Past issues and reports</a><a href="#">Settings</a></nav></div></div></div></div>
+<div class="na-desk"><div class="na-cols">
+
+<nav class="na-outline" aria-labelledby="na-olh"><h2 id="na-olh">In this letter</h2><ol class="na-ol">
+<li><a href="#">A note from the president</a><span class="na-w"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Written</span></li>
+<li><a href="#">Coming up</a><span class="na-w"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Written</span></li>
+<li class="na-olcur"><a href="#">Results</a><span class="na-w"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Written · with the photo</span></li>
+<li><a href="#">From the clubs</a><span class="na-e"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Being edited</span></li>
+<li><a href="#">Scholastic</a><span class="na-w"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Written</span></li>
+<li><a href="#">Board business</a><span class="na-x"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg>Empty</span></li>
+</ol>
+<p class="na-ofoot">Drag a section's handle to move it.</p><p class="na-ofoot" style="margin-top:8px"><b style="color:#1a2744">Added to every issue:</b> the top of the letter, and the footer with "Unsubscribe from the newsletter" and the other links.</p></nav>
+
+<article class="na-sheet" aria-label="The December 2026 letter"><span class="k-num-badge na-b" style="position:absolute;top:-12px;right:-12px">1</span>
+<div class="na-bar" role="toolbar" aria-label="Writing tools">
+<button class="na-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button>
+<button class="na-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button>
+<button class="na-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button>
+<span class="na-barsep" aria-hidden="true"></span>
+<button class="na-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M21 16l-5-5-8 8"></path></svg>Photo<span class="k-meta" style="font-weight:500">(1 of 1 used)</span></button>
+<span class="na-barsep" aria-hidden="true"></span>
+<button class="na-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button>
+<span class="na-barr">Writing in Results</span></div>
+<div class="na-sin">
+<div class="na-fld"><label for="na-subj">Subject</label><div class="na-fv" id="na-subj">LCA Newsletter · December 2026</div></div>
+<div class="na-fld"><label for="na-pre">Inbox preview line</label><div class="na-fv" id="na-pre" style="font-weight:500">Thank you, Sulphur. Ken Ferguson Memorial in January. Two board seats are open.</div><span class="na-fh">Shows after the subject in most inboxes · 79 of 90 characters</span></div>
+
+<div class="na-mast"><div class="na-mast-l"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><div><b>LCA Newsletter</b><span>December 2026</span></div></div><span class="na-fixed"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Same on every issue</span></div>
+
+<div class="na-letter">
+<div class="na-part"><span class="na-grip" aria-hidden="true"><svg viewBox="0 0 14 18"><circle cx="4" cy="3" r="1.6"></circle><circle cx="10" cy="3" r="1.6"></circle><circle cx="4" cy="9" r="1.6"></circle><circle cx="10" cy="9" r="1.6"></circle><circle cx="4" cy="15" r="1.6"></circle><circle cx="10" cy="15" r="1.6"></circle></svg></span>
+<p class="na-margin"><span>A note from the president</span><span>Last edited by President, Sat, Nov 21, 2026, 10:12 AM · <a href="#">History</a></span></p>
+<p>Dear members,</p>
+<p>Thank you to every volunteer who ran the State Championship weekend in Sulphur, and to everyone who stayed to put the boards away.</p>
+<p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month through May, and two board seats we would like to fill.</p>
+<p>One ask. If your membership runs out this winter, please <a href="#">renew</a>, and bring one new player to a club night. That is how every club below began.</p>
+<p class="na-sig" style="margin-bottom:0">See you over the board,<br>LCA President</p></div>
+
+<div class="na-part"><span class="na-grip" aria-hidden="true"><svg viewBox="0 0 14 18"><circle cx="4" cy="3" r="1.6"></circle><circle cx="10" cy="3" r="1.6"></circle><circle cx="4" cy="9" r="1.6"></circle><circle cx="10" cy="9" r="1.6"></circle><circle cx="4" cy="15" r="1.6"></circle><circle cx="10" cy="15" r="1.6"></circle></svg></span>
+<div class="na-shd"><h3>Coming up</h3><p class="na-margin"><span>Last edited by Media manager, Mon, Nov 23, 2026, 1:40 PM · <a href="#">History</a></span></p></div>
+<p class="na-ev"><b>New Orleans Youth Chess December Meet</b><span class="na-evm">Sat, Dec 5, 2026 · New Orleans · LCA event · <a href="#">Register</a></span></p>
+<p class="na-ev"><b>Ken Ferguson Memorial</b><span class="na-evm">Sat to Mon, Jan 16 to 18, 2027 · New Orleans · run by Downriver Chess<br><a href="#">Registers on the organizer's site ↗</a></span></p>
+<p class="na-ev" style="margin-bottom:0"><b>Grand Prix Final</b><span class="na-evm">Sat, May 8, 2027 · New Orleans · the youth season's last meet · <a href="#">Season dates</a></span></p></div>
+
+<div class="na-part"><span class="na-grip" aria-hidden="true"><svg viewBox="0 0 14 18"><circle cx="4" cy="3" r="1.6"></circle><circle cx="10" cy="3" r="1.6"></circle><circle cx="4" cy="9" r="1.6"></circle><circle cx="10" cy="9" r="1.6"></circle><circle cx="4" cy="15" r="1.6"></circle><circle cx="10" cy="15" r="1.6"></circle></svg></span>
+<div class="na-shd"><h3>Results</h3><p class="na-margin"><span>Last edited by Media manager, Mon, Nov 23, 2026, 2:14 PM · <a href="#">History</a></span></p></div>
+<p><b>Marcus Landry wins the 2026 Louisiana State Championship</b> with 4½ of 5 in Sulphur, Sat to Mon, Sep 5 to 7, 2026, among 64 players. Section winners: Open Marcus Landry 4½ · U1800 Devin Batiste 4½ · U1400 Sam Nguyen and Leo Robichaux 4, tied · U1000 Theo Guidry 4½. <a href="#">Full results</a></p>
+<figure class="na-photo" style="margin-left:0;margin-right:0;margin-bottom:0"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Rows of players at their boards during a round in the tournament hall.">
+<figcaption class="na-alt"><label for="na-altt">Describe this photo for people who cannot see it</label><div id="na-altt">Rows of players at their boards during a round in the tournament hall.</div></figcaption></figure></div>
+
+<div class="na-part na-locked"><span class="na-grip" aria-hidden="true"><svg viewBox="0 0 14 18"><circle cx="4" cy="3" r="1.6"></circle><circle cx="10" cy="3" r="1.6"></circle><circle cx="4" cy="9" r="1.6"></circle><circle cx="10" cy="9" r="1.6"></circle><circle cx="4" cy="15" r="1.6"></circle><circle cx="10" cy="15" r="1.6"></circle></svg></span>
+<div class="na-shd"><h3 style="color:#7a8090">From the clubs</h3><p class="na-margin"><span>Last edited by President, Mon, Nov 23, 2026, 2:15 PM · <a href="#">History</a></span></p></div>
+<div class="na-lockbar"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg><span class="na-ini na-ini-pr" style="width:24px;height:24px;font-size:10.5px">PR</span><span><b>President is editing</b> · you can read it; it opens when they leave it</span><span class="k-num-badge na-b na-bs" style="margin-left:auto">2</span></div>
+<div class="na-greyed">
+<p><b><span class="na-dot" style="background:#2f6f9f"></span>Picayune Chess Club</b> keeps quick-rated nights on first Mondays: next Mon, Dec 7, 2026 at 6:00 PM at IHOP. <a href="#">Club page</a></p>
+<p><b><span class="na-dot" style="background:#7a4a9a"></span>Bunkie Chess Club</b> meets Tuesdays, 4:00 PM to 6:00 PM at the Bunkie Library. Ages 8 to 108, free to join. <a href="#">Club page</a></p>
+<p style="margin-bottom:0"><b><span class="na-dot" style="background:#2f6b4f"></span>Baton Rouge Chess Club</b> has casual nights on Wednesdays at Boba ParTea: find a free board or join a game. <a href="#">Club page</a></p></div></div>
+
+<div class="na-part"><span class="na-grip" aria-hidden="true"><svg viewBox="0 0 14 18"><circle cx="4" cy="3" r="1.6"></circle><circle cx="10" cy="3" r="1.6"></circle><circle cx="4" cy="9" r="1.6"></circle><circle cx="10" cy="9" r="1.6"></circle><circle cx="4" cy="15" r="1.6"></circle><circle cx="10" cy="15" r="1.6"></circle></svg></span>
+<div class="na-shd"><h3>Scholastic</h3><p class="na-margin"><span>Last edited by LCA admin, Fri, Nov 20, 2026, 3:30 PM · <a href="#">History</a></span></p></div>
+<p style="margin-bottom:0">For parents: the New Orleans Youth Chess season began Sat, Nov 14, 2026 and runs one Saturday a month to the Grand Prix Final on Sat, May 8, 2027. Players need a US Chess membership. <a href="#">Scholastic</a></p></div>
+
+<div class="na-part"><span class="na-grip" aria-hidden="true"><svg viewBox="0 0 14 18"><circle cx="4" cy="3" r="1.6"></circle><circle cx="10" cy="3" r="1.6"></circle><circle cx="4" cy="9" r="1.6"></circle><circle cx="10" cy="9" r="1.6"></circle><circle cx="4" cy="15" r="1.6"></circle><circle cx="10" cy="15" r="1.6"></circle></svg></span>
+<div class="na-shd"><h3>Board business</h3><p class="na-margin"><span>Not written yet</span></p></div>
+<div class="na-empty" style="display:flex;align-items:center;gap:10px"><span>Nothing here yet. A section left empty is left out of the email.</span><span class="k-num-badge na-b na-bs" style="margin-left:auto">3</span></div></div>
+</div>
+
+</div></article>
+
+<aside class="na-rail" aria-label="Running this issue">
+<section class="na-card" aria-labelledby="na-c1"><div class="na-ch"><h2 id="na-c1">This issue</h2><span class="k-tag k-tag-soon">Draft</span></div>
+<p class="na-ctext"><b>December 2026</b> goes out <b>Tue, Dec 1, 2026 at 8:00 AM Central</b>, in 8 days.</p>
+<p class="na-ctext" style="margin-top:4px">Schedule: the 1st of each month at 8:00 AM Central.</p>
+<div class="na-rule" style="position:relative"><span class="k-num-badge na-b na-bs" style="position:absolute;top:-10px;right:-10px">4</span><p>It goes out on Tue, Dec 1, 2026 at 8:00 AM Central once someone marks it ready. If it is not ready the day before, the three editors get a reminder on Mon, Nov 30, 2026 at 8:00 AM. If it is still not ready, it waits and nothing is sent.</p></div>
+<a class="k-btn k-btn-navy k-btn-block" href="#" style="margin-top:12px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Mark as ready to send</a>
+<div class="na-clinks"><a href="#">Change this month's date or time</a><a href="#">Hold this issue</a></div></section>
+
+<section class="na-card" aria-labelledby="na-c2"><h2 id="na-c2">Who is writing</h2>
+<ul class="na-ppl">
+<li><span class="na-ini na-ini-mm">MM</span><span><b>Media manager (you)</b><small>Writing in Results</small></span></li>
+<li><span class="na-ini na-ini-pr">PR</span><span><b>President</b><small>Editing From the clubs since 2:02 PM</small></span></li>
+<li><span class="na-ini na-ini-ad">AD</span><span><b>LCA admin</b><small>Last here Fri, Nov 20, 2026, 3:30 PM</small></span></li>
+</ul>
+<p class="na-ctext" style="font-size:13px">One person writes in a section at a time. The others can read it while they wait.</p></section>
+
+<section class="na-card" aria-labelledby="na-c3"><h2 id="na-c3">Goes to</h2>
+<p class="na-big">243 <span>addresses</span></p>
+<p class="na-ctext" style="margin-top:4px">Every LCA member with an email address, one email per address.</p>
+<p class="na-ctext" style="margin-top:6px"><span class="k-sample" style="margin-right:6px">Sample data</span>2 have unsubscribed · 1 address bounced and was removed (bounced: the address no longer works).</p>
+<p class="na-ctext" style="margin-top:6px;font-size:13px">New members are added when they join. Leaving the newsletter does not stop tournament or membership email.</p></section>
+
+<section class="na-card" aria-labelledby="na-c4"><h2 id="na-c4">Check before it goes</h2>
+<p class="na-ctext" style="margin-top:8px;font-size:13px;font-weight:600;color:#1a2744">Preview as it arrives</p>
+<div class="k-seg na-seg" role="group" aria-label="Preview" style="margin-top:6px"><button class="k-seg-on" type="button" aria-pressed="true">Computer</button><button type="button" aria-pressed="false">Phone</button><button type="button" aria-pressed="false">Dark</button></div>
+<ul class="na-checks">
+<li class="na-ok"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Subject written<em>Done</em></li>
+<li class="na-ok"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Inbox preview line written<em>Done</em></li>
+<li class="na-ok"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Every link works<em>Done</em></li>
+<li class="na-ok"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>1 photo described<em>Done</em></li>
+<li class="na-no"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle></svg>Board business is empty<em>Left out</em></li>
+</ul>
+<a class="k-btn k-btn-line k-btn-block" href="#" style="margin-top:10px"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</a>
+<p class="na-ctext" style="font-size:12.5px;margin-top:6px">Goes only to your own address, marked "Test".</p></section>
+
+</aside>
+</div></div>
+<footer class="k-footer na-foot"><div class="k-wrap-wide na-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="na-rook na-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div></div>
+
+</section>
+
+<section class="na-sec" aria-labelledby="na-fb">
+<div class="na-flab"><span class="na-code">B</span><h2 id="na-fb">Managing · the parts of the same page that run the newsletter</h2><span class="k-meta">B1 is the rail's top card; B2 and B3 sit under "Past issues and reports", B4 under "Settings"; B5 opens from any History link</span></div>
+<div class="na-bgrid">
+<div class="na-panel" style="grid-column:1 / span 2"><p class="na-ptag">B1 · This issue, in its three states</p>
+<div class="na-states">
+<div class="na-mini"><div class="na-ch"><h3>December 2026</h3><span class="k-tag k-tag-soon">Draft</span></div><p>Goes out <b>Tue, Dec 1, 2026 at 8:00 AM Central</b> once someone marks it ready.</p><a class="k-btn k-btn-navy k-btn-sm k-btn-block" href="#">Mark as ready to send</a></div>
+<div class="na-mini"><div class="na-ch"><h3>December 2026</h3><span class="k-tag k-tag-open">Ready</span></div><p>Marked ready by <b>President</b>, Fri, Nov 27, 2026, 4:05 PM · <a class="k-link" href="#">Take it back</a></p><p>Any change after this needs marking ready again. If someone holds the issue, it reads Held and nothing is sent.</p></div>
+<div class="na-mini"><div class="na-ch"><h3>December 2026</h3><span class="k-tag k-tag-closed">Sent</span></div><p>Sent <b>Tue, Dec 1, 2026 at 8:00 AM</b> to 243 addresses. It can no longer be changed.</p><p><a class="k-link" href="#">See the report</a></p></div>
+</div>
+</div>
+<div class="na-panel"><div class="na-ch"><p class="na-ptag">B5 · History · Coming up</p><a class="k-link k-small" href="#">Close</a></div>
+<ul class="na-hist">
+<li class="na-cur"><span><b>Media manager · now</b><small>Mon, Nov 23, 2026, 1:40 PM</small></span><span class="k-tag k-tag-open">Current</span></li>
+<li><span><b>Media manager</b><small>Mon, Nov 23, 2026, 11:05 AM</small></span><a class="k-link k-small" href="#">Restore</a><q>Added the Grand Prix Final.</q></li>
+<li><span><b>LCA admin</b><small>Fri, Nov 20, 2026, 3:30 PM</small></span><a class="k-link k-small" href="#">Restore</a><q>First version: two events.</q></li>
+</ul></div>
+<div class="na-panel"><p class="na-ptag">B3 · Past issues</p>
+<ul class="na-past">
+<li><p><b>December 2026</b> · <span class="k-tag k-tag-soon">Draft</span> · goes out Tue, Dec 1, 2026</p><div class="na-pl"><a href="#">Open</a></div></li>
+<li><p><b>November 2026</b> · <span class="k-tag k-tag-closed">Sent</span> Mon, Nov 16, 2026 · 243 addresses</p><div class="na-pl"><a href="#">Open</a><a href="#">Start a new issue from this one</a></div></li>
+</ul>
+<p class="na-pnote">Newest first. Starting from an old issue copies its headings and sign-off, not its words.</p></div>
+
+<div class="na-panel" style="position:relative"><span class="k-num-badge na-b" style="position:absolute;top:-12px;right:-12px">5</span><div class="na-ch"><p class="na-ptag">B2 · Report on November 2026</p><span class="k-sample">Sample data</span></div>
+<div class="na-figs"><div class="na-fig"><b>243</b><span>Sent to</span></div><div class="na-fig"><b>240</b><span>Delivered</span></div><div class="na-fig"><b>3</b><span>Bounced</span></div><div class="na-fig"><b>2</b><span style="white-space:nowrap">Unsubscribed</span></div><div class="na-fig"><b>0</b><span>Spam reports</span></div></div>
+<p class="na-pnote">Bounced: the address no longer works, so it is taken off the list.</p>
+<div class="na-notrack"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.2-7.5 9.5-4.3-1.3-7.5-4.9-7.5-9.5V6L12 3z"></path></svg><span>LCA does not track who opens an email or what they click.</span></div></div>
+
+<div class="na-panel"><p class="na-ptag">B4 · Settings</p>
+<dl class="na-dl">
+<dt>Sender name</dt><dd>Louisiana Chess Association</dd>
+<dt>From address</dt><dd>newsletter@news.louisianachess.org<br><span class="k-sample" style="margin-top:4px">Sample data · not decided</span></dd>
+<dt>Replies go to</dt><dd>LouisianaChess@gmail.com</dd>
+</dl></div>
+
+
+</div>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
