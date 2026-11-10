@@ -33,3 +33,7 @@ lets make the newsletter thing much easier to use for now since the rest of the 
 On the eight picks:
 
 all recommended but I like the design concept of allowing for choice, like having the image thing as an option but not default. same thing with screen usage, we can have alot of stuff there but it doesnt necessarily all need to be shown all at teh same time. use of drop downs, other components, etc are nice.
+
+On the page's preview, and options for the president:
+
+on the plan for the page, be sure to have the preview of the message easy to see (maybe something to click to bring it up on phone, but it should be a mini thing on the side on desktop since there is the space), also lets get some refined images of options for how the page and sending templates (what the receipients see) for the president to pick when i send them to him tommorrow. maybe 5 options each for me to refine down to 3.

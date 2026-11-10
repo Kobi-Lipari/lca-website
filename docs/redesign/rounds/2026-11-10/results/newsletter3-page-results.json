@@ -1,0 +1,306 @@
+{
+ "label": "newsletter-round-3-page",
+ "set": "page",
+ "results": [
+  {
+   "board": {
+    "file": "Newsletter-Page-1.dc.html",
+    "title": "Newsletter · the page · option 1 · Steps down the page",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "Steps down the page"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-1.dc.html",
+    "title": "Newsletter · the page · option 1 · Steps down the page",
+    "width": 1440,
+    "height": 2250,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "Option 1 puts the three steps (Write it, Check it, Send it) in white cards down the page, joined by a numbered line, and keeps the December email at the side in a small phone frame. It is best for a first-time sender, who always knows which step comes next and can see what members will get without leaving the page.",
+    "unresolved": [
+     "The side column is about 50px shorter than the steps column, so a little cream space sits under the two quiet links. I left it because the preview frame stays put while the steps scroll.",
+     "To keep the board under 2300 tall, the computer page ends after More options with no site footer, and the message box is drawn scrolled to the Coming up lines (with a scrollbar) instead of showing the whole letter. The side preview shows the top of the email.",
+     "Step 2 is drawn without the 'Test sent at 2:09 PM' line from Newsletter-E, so each step has exactly one thing to do. Only step 1 carries a 'Step 1 of 3 · You are here' label. On steps 2 and 3, the numbered circles on the rail show the order."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-1.dc.html",
+    "height": 2250,
+    "second_height": 0,
+    "counts": "Rendered at scale 1 (1440 x 2250) and checked in close crops. The content ends at 2250: the last caption sits at 2232 with 18px of padding below it. The root height and $preview height are both 2250, which is under the 2300 limit. Tags balance with no unclosed elements. No em or en dashes, no USCF, no {{holes}}, no iframes and nothing animated. Board furniture: one label strip with the kicker \"LCA Newsletter · The page · Option 1 of 5\", the name \"Steps down the page\" and the spec sentence word for word. It has exactly one small \"Sample data\" tag. There is no legend, no numbered badges, no grey note, no chips and no frame letters. Must-keeps: three steps (Write it, Check it, Send it). The tools are Bold, Italic, Heading, List, Link and Undo, with \"Add a photo, event or line\" closed at the end of the row. \"Send a test to me\" is there. \"Send to 243 members\" has its small arrow closed, and \"You will be asked once to confirm\" sits beside it. \"More options\" is closed. Nothing is read from the site: tournaments are typed lines with pasted links. The crumb reads \"Admin / Newsletter\" under the signed-in header. The page says \"Saved automatically at 2:15 PM\". On the computer, the email preview (navy band, about 300 wide, phone-shaped) sits at the side with Phone (chosen) and Computer under it, then only \"Past newsletters\" and \"Who else has this open\". Phone 1 shows the page with \"See the email\" docked at the foot. Phone 2 shows the preview brought up over the page, with \"Back to writing\". The words match Newsletter-E frame A and Newsletter-E-2 frame C1 exactly. Every date, with its weekday: Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026 (in the box's hidden overflow and the sheet's lower part). Other figures: 4½ of 5, 64 players, 243 members. Partner event: \"run by Downriver Chess · Registers on the organizer's site ↗\", with no Register and no count. People are named by role only (LCA President). Gold appears only as the Send button's fill and the ring on step 1. Gold text appears only on navy (the \"LCA NEWSLETTER\" kicker in the band) and as gold-ink #866a1e on the strip kicker. The text colours checked (#555c6b on #f1eee4 and on white, #3d4556, navy) all pass 4.5 to 1.",
+    "changes": [
+     "Desktop message box, three Coming up lines: the line wrap split the link text ('Register on King / Registration ↗') and later left a lone '·' or 'Orleans' on the next line. Fixed by binding each separator dot to the word before it with a no-break space, keeping each pasted link's words together, and setting text-wrap:wrap on .p1-tin p, because the kit's text-wrap:pretty was pushing words down. Each link now sits whole on its own line after its event line.",
+     "Phones: added a grey caption under each phone, as the spec asks for captions under each frame: 'Writing · See the email waits at the foot of the screen.' and 'After pressing See the email · Back to writing closes it.'. I removed the LEFT and RIGHT label paragraphs from the side column and shortened its line to 'The same three steps, one under the other. One button, See the email, brings the email up over the page.'",
+     "Phone 2 sheet subline: changed 'The December email as it will arrive. It changes as you type.', which left 'you type.' alone on the second line, to 'The December email. It changes as you type.' on one line.",
+     "Phone 2 sheet: moved it up from 104px to 98px so the half-clipped 'Newsletter' heading no longer peeks above it. Only the dimmed crumb shows now.",
+     "Spacing: trimmed the root top padding (24 to 20), the gap from strip to browser (22 to 18), the desk padding (22/24 to 20/22), the gap above the phones (26 to 18) and the caption gap, so the board still ends at 2250 with the new captions. The declared height of 2250 now matches the render exactly."
+    ],
+    "remaining_concerns": [
+     "In the small side preview, text is scaled to about 76%, so body text is about 12px and 'to you' about 10px. That is the nature of a mini preview at about 300 wide, but it is below the true type sizes used elsewhere.",
+     "In phone 2, the preview sheet's visible part ends on the 'Coming up' heading just above the Back to writing bar. It reads as content that scrolls on, but a picky eye may see a heading cut off at the fold.",
+     "The phone status bar in the side preview shows '2:15' without PM, as a real phone status bar does (the same convention as E-2's '8:04'). The page itself says 'Saved automatically at 2:15 PM'.",
+     "The phone page marks the progress with small '1 Write it / 2 Check it / 3 Send it' pills. They are page controls, not board chips, but a strict reading of 'no chips' could flag them.",
+     "I did not check the header pixel for pixel against Nav-Header-Final. The phone app bar matches Home-Final-Phones."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-Page-2.dc.html",
+    "title": "Newsletter · the page · option 2 · Write beside the email",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "Write beside the email"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-2.dc.html",
+    "title": "Newsletter · the page · option 2 · Write beside the email",
+    "width": 1440,
+    "height": 2250,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "Option 2 splits the page into two equal halves: the letter being written on the left, and on the right the email as members will get it, shown at about 85 percent size so it reads easily. The three steps and the two send buttons sit in one slim bar across the top, so this option is best for someone who wants to watch each line turn into the finished email as they type it.",
+    "unresolved": [
+     "The decided header has no drawn state between 1024 and 1280 px wide, so at the 1180 px page width the board shows Search as an icon plus the word and keeps both brand-name lines.",
+     "To fit all six writing tools and \"Add a photo, event or line\" on one row in a half-width column, Bold, Italic and Undo appear as standard symbols with accessible names. Heading, List and Link keep their words. On the phone all six tools are symbols, and Add gets its own row.",
+     "The \"Phone\" switch above the computer preview is drawn but not chosen, so only the computer view of the side preview appears on the computer page. The phone view appears in the second phone."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-2.dc.html",
+    "height": 2250,
+    "second_height": 0,
+    "counts": "Rendered at 1440 wide and scale 1 (<scratchpad>/render/out/Page2.full.png). The content measures 2232px, so the root and $preview are declared 2250. That is under the 2300 limit. Furniture: one label strip only. It has the kicker \"LCA Newsletter · The page · Option 2 of 5\", the name \"Write beside the email\", the spec sentence word for word, and exactly 1 \"Sample data\" tag. There are 0 legends, 0 numbered badges, 0 grey notes, 0 chips and 0 frame letters. Three captions sit under the frames: \"On a computer\", \"On a phone\" and \"After pressing See the email\". The three steps appear twice (1 Write, current; 2 Check; 3 Send): once in the bar on the computer and once in the phone row. All 6 tools are there: Bold, Italic, Heading, List, Link, Undo. There are 3 closed controls, all aria-expanded false and none open: \"Add a photo, event or line\" at the end of the tool row (on the phone it sits in a row under the tools), the arrow on Send, and \"More options\" with its four topics. The page has \"Send a test to me\", plus \"Send to 243 members\" with the line \"You will be asked once to confirm before it goes out.\" 243 is the only member figure. Nothing is read from the site: the tournament lines are typed text with pasted links. The side preview is in the look of email option 1 (the navy band) at 0.85 scale, under \"What members will get\", with Computer chosen and Phone to switch. Phone 1 is 390 wide with the decided bezels and a docked \"See the email\" button. Phone 2 shows the preview sheet over the dimmed page, with \"Back to writing\". Every date with its weekday: Mon, Nov 23, 2026 (caption); Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026 (the Picayune line, in the markup but scrolled out of view). \"December 2026\" is a month, not a date. Times: 2:15 PM and 6:00 PM. Results show 4½, never .5. There are 0 em or en dashes, 0 USCF, 0 people named by \"he\" or \"his\", 0 holes, 0 iframes and 0 animations or transitions. Roles only: \"LCA President\" and \"the media manager\". The partner line reads \"run by Downriver Chess · Registers on the organizer's site ↗\". The words match Newsletter-E frame A and Newsletter-E-2 frame C1 sentence for sentence. A tag-balance parse found 0 unclosed elements. Contrast: the smallest grey text is #555c6b on white, cream and the board ground, about 6 to 7:1. The gold-ink kicker is #866a1e on #fbfaf6, about 4.9:1. Gold #c8a94a appears only as the Send button's fill, with navy text on it. The light gold #e6cf86 appears only on the navy band.",
+    "changes": [
+     "Fixed the half-cut line at the foot of the computer's message box. The writing area is now 360px tall instead of 370px, so the box ends cleanly after the Dec 5 line with the cursor, and the Jan 16 line now sits fully below the edge instead of half-cut.",
+     "Fixed the half-cut line at the foot of the side preview ('Orleans · Register on King Registration ↗' was sliced through). The right column is a little tighter: the space under 'Updates as you type' went from 14px to 8px, the grey ground's top padding from 16px to 10px, and the sender row's padding from 10px to 7px. The preview now ends cleanly after the first Coming up line, with no slice of the next one.",
+     "Fixed the line half-hidden behind the 'See the email' dock on phone 1. The phone page moved up 9px: steps margin 12 to 10, saved line 8 to 6, card margin 12 to 10, text top padding 12 to 9. 'The new year starts busy: the Ken' now shows in full above the dock.",
+     "Raised the small '· you are here' beside Write in the steps bar from 12.5px semibold to 13.5px medium. It was under true site type size.",
+     "The board is 10px shorter as a result (content 2242 to 2232). The declared height stays 2250 on both the root and $preview, which matches the render."
+    ],
+    "remaining_concerns": [
+     "The desktop header uses the compact Search button with no ⌘K hint. The full decided header (Nav-Header-Final, and Newsletter-E and Page-4 in this set) has a 220px field with ⌘K. At this 1180 browser width the compact form is defensible, but it differs from options 1 and 4. I left it as is.",
+     "Body text in the side preview is about 13.6px because it is drawn at 0.85 scale, as the spec asks. A label says so ('shown smaller than real size'), but the president may still read it as small text.",
+     "Phone 1 highlights 'My LCA' in the tab bar on an admin page, following the decided bezels. Nothing else on the phone marks it as admin apart from the 'Admin / Newsletter' crumb.",
+     "On phone 1, 'in Sulphur.' falls alone onto its own line in the message box. This is natural wrapping at 390 wide and I left it.",
+     "The canvas note text for the sticky is not drawn on the board, as the presentation rules require. If K wants one: 'Option 2 · Write beside the email: you write on the left and watch the finished email take shape on the right; on a phone, See the email brings it up over the page.'",
+     "A shared file at <scratchpad>/render/measure.mjs was overwritten by another job while I was working. My own scripts now live in <scratchpad>/render/p2/scripts. Before the edits I made a backup at <scratchpad>/render/p2/backup.dc.html."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-Page-3.dc.html",
+    "title": "Newsletter · the page · option 3 · One step at a time",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "One step at a time"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-3.dc.html",
+    "title": "Newsletter · the page · option 3 · One step at a time",
+    "width": 1440,
+    "height": 2250,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "A guided path. The page shows one large card for the current step, with Write it, Check it and Send it in a row of numbered dots above it, Next and Back to move between them, and the December email always shown small at the side. It suits a volunteer who sends a group email only once a month, because there is only ever one thing on the screen to think about.",
+    "unresolved": [
+     "To stay under the 2300 height limit, the message box in step 1 is 212px tall and scrolled to the end of the letter. It shows Baton Rouge, Scholastic and the Board business starter with the cursor, and its scroll bar shows there is more above. The full letter is not on the computer picture, but its top part shows in the side preview.",
+     "The rendered height is 2230px, so the board is declared at 2250. That leaves no room to add anything without going over the limit."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-3.dc.html",
+    "height": 2250,
+    "second_height": 0,
+    "counts": "I counted the following on the board. Label strip: 1 (kicker \"LCA Newsletter · The page · Option 3 of 5\", the name \"One step at a time\", and the sentence word for word from the spec). \"Sample data\" tags: 1, a k-sample in the strip. Legends, numbered badges, grey notes, chips and frame letters: 0. Steps: 3 (Write it, Check it, Send it), shown on the computer, on the phone and in both small pictures. Writing tools: Bold, Italic, Heading, List, Link and Undo, ending in the closed \"Add a photo, event or line\". Closed controls: 3, none open. These are Add (aria-expanded false), the arrow on \"Send to 243 members\" for sending later, and the \"More options\" row. Elements that read from the site: 0. Event lines are typed text with pasted King Registration links. Side preview on the computer: 1. It is \"What members will get\", a small phone-shaped preview in the navy band look of email option 1, with Phone and Computer to switch. Phones: 2, both 390 wide in the decided k-phone bezels. One shows the page with the \"See the email\" button and one shows the preview sheet with \"Back to writing\". The December words match Newsletter-E frame A and Newsletter-E-2 frame C1 exactly. Em dashes 0, en dashes 0, USCF 0, \".5\" in copy 0. The partner event reads \"Registers on the organizer's site ↗\" with no count. People appear only as roles (\"LCA President\"). Dates, each with its weekday, 7 in all: Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027; Sat to Mon, Sep 5 to 7, 2026; Mon, Dec 7, 2026 (with 6:00 PM); Sat, Nov 14, 2026; Tue, Dec 1, 2026, 8:00 AM (in both previews). The times shown are 2:15 PM, 4:00 PM to 6:00 PM, 6:00 PM and 8:00 AM. The rendered height is 2242 px with the root at natural height. The declared root height and the $preview height are both 2250, under the 2300 limit. A tag-balance check finds no unclosed elements.",
+    "changes": [
+     "Added a grey caption under each phone, as the spec asks: \"The page · One button at the foot: See the email.\" and \"After pressing See the email · Back to writing closes it.\" Each fits on one line.",
+     "Shortened the phone column on the left to its heading and one sentence (\"The same one step at a time, with the three steps shown at the top. The email is one button away.\"). The Left and Right descriptions it held now sit in the new captions.",
+     "Added a white fade at the foot of the small side preview, so the half-cut line \"See you over the board\" reads as scrolling content and not as a clipping fault.",
+     "Evened the vertical gaps between the strip, the browser, the step 2 and 3 pictures and the phones to 18 px each (they were 22, 20 and 20), and removed the 12 px padding under the phones. This brought the rendered height back to 2242 after the captions were added (2309 without these trims), so 2250 stays correct for both the root and $preview."
+    ],
+    "remaining_concerns": [
+     "Inside the side preview, the 0.765 scale puts the email text at about 12 px. That suits a small preview, but the president will not be able to read the words there; the larger phone sheet carries the readable version.",
+     "On the first phone, the line \"to a club night.\" is half hidden behind the docked See the email button, as a scrolled page would show it. I left it as it is, without a fade.",
+     "The bottom tab bar on the first phone is taken from the decided bezels. Its \"Tournaments\" label sits close to the screen edge and \"My LCA\" is the active tab on an admin page. I did not change either, because both come from the decided board.",
+     "The status bar on the small preview reads 2:15 (writing time), while the email's own date line reads Tue, Dec 1, 2026, 8:00 AM. This is consistent for a preview shown while writing, but a close reader may notice the two times.",
+     "The moment drawn (Mon, Nov 23, 2026) is not written anywhere on the board. Only \"Saved automatically at 2:15 PM\" shows it, which the flow allows."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-Page-4.dc.html",
+    "title": "Newsletter · the page · option 4 · The letter on the desk",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "The letter on the desk"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-4.dc.html",
+    "title": "Newsletter · the page · option 4 · The letter on the desk",
+    "width": 1440,
+    "height": 2250,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "The letter is written straight onto a white sheet lying on a cream desk. The sheet starts with the email's navy band and uses the email's own type. A slim tool bar floats above the sheet, the same email shows small in a phone frame beside it, and a bar fixed at the foot of the window keeps 2 Check it and 3 Send it always in reach. It is best at showing the writer exactly what members will read while they type, both on a computer and on a phone, with nothing between the words and the finished email.",
+    "unresolved": [
+     "The sheet shows the letter up to the end of Coming up, with the cursor after the third line. Results, From the clubs, Scholastic and Board business sit below the fixed bar, as if not yet written. Showing more of the letter would push the board past the 2300 height limit.",
+     "Step 1 (Write it) is a small numbered label in the left margin beside the tool bar. Steps 2 and 3 are numbered words in the bottom bar, as the spec asks.",
+     "The page on the phone has no Test or Send in view. Its only button is See the email, and the caption does not say where Test and Send sit further down the phone page."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-4.dc.html",
+    "height": 2250,
+    "second_height": 0,
+    "counts": "Label strip: the kicker reads 'LCA NEWSLETTER · THE PAGE · OPTION 4 OF 5', then the name 'The letter on the desk' and the option's sentence word for word. It has exactly 1 'Sample data' tag. There is no legend, no numbered note badge, no grey note, no chip and no frame letter anywhere. The numbered circles 1, 2 and 3 are the steps on the page itself, as the spec asks. Three steps: '1 Write it' beside the sheet; '2 Check it' and '3 Send it' in the bar fixed at the bottom of the window. Six writing tools: Bold, Italic, Heading, List, Link, Undo. Three closed controls, none open: 'Add a photo, event or line' at the end of the tool bar, the arrow on 'Send to 243 members', and 'More options' in the bar. There is 1 confirm line, 'You will be asked once to confirm.' Nothing is read from the site: the tournaments are typed lines with pasted King Registration links. Side preview on the computer: 1, a small phone-shaped frame labelled 'On a phone' with 'Changes as you type' in words beside the green dot. Below the browser are 2 phones in the decided bezels: the page with 'See the email', and the email brought up with 'Back to writing'. Captions: 'On a computer', 'The page on a phone', 'After pressing See the email'. The December words match Newsletter-E frame A and Newsletter-E-2 frame C1. Dates, all with weekdays: Mon, Nov 23, 2026 (computer caption, with 2:15 PM); Sat, Dec 5, 2026; Sat to Mon, Jan 16 to 18, 2027; Sat, May 8, 2027. These appear in the sheet, the side preview and the phones. Time: 2:15 PM. 243 members, used three times. The partner event reads 'Registers on the organizer's site ↗' with no count. People appear by role only (LCA President, the media manager). There are no em or en dashes, no USCF and no AI references. Every tag is closed and the skeleton is as required. The root's declared height and the $preview height are both 2250.",
+    "changes": [
+     "Placeholder 'Write here, or delete this heading.' was grey #8a8f9b on white, 3.2 to 1. It is now #6b7180, 4.9 to 1.",
+     "Second phone: removed the dimmed 'Newsletter' heading behind the preview. The top edge of the preview cut it in half and it read as clipped text. Now only the dimmed crumb shows above the preview.",
+     "Phone-section caption: the button names are now in quotes ('One button at the foot, \"See the email\", brings up the email as members will get it. \"Back to writing\" closes it.'). Without quotes the sentence read awkwardly.",
+     "Browser view is 20px shorter (1124 to 1104) and the fade above the bottom bar is 30px instead of 44. The stray gold rule of the Results heading no longer peeks out under the bar. The letter now ends cleanly on the Coming up line with the text cursor, which stays fully clear of the fade.",
+     "Added 24px of bottom padding to the root. The phone captions had about 1px of room at the board's bottom edge. Rendered height is 2249; declared root and $preview height stay at 2250."
+    ],
+    "remaining_concerns": [
+     "The side preview on the computer is the 390-wide phone email shrunk to 72%, so its body text is about 11.5px. That fits a small preview, but it is the one place on the board where type is not at true size.",
+     "'On a phone' heads two different things: the side preview on the computer page (the spec's own label) and the board's phone section below. A first-time viewer may mix them up. Renaming the lower heading would leave the spec's wording, so I did not do it.",
+     "The first phone shows the top of the page only, so steps 2 and 3 (test and send) do not show on the phone. The spec asks only for the 'See the email' button there.",
+     "In the side preview, the last visible line (the Ken Ferguson Memorial line) sits close to the phone frame's bottom edge. It is not clipped, but it is tight."
+    ]
+   }
+  },
+  {
+   "board": {
+    "file": "Newsletter-Page-5.dc.html",
+    "title": "Newsletter · the page · option 5 · Everything on one screen",
+    "width": 1440,
+    "page": "newsletter-options",
+    "name": "Everything on one screen"
+   },
+   "drawn": {
+    "file": "Newsletter-Page-5.dc.html",
+    "title": "Newsletter · the page · option 5 · Everything on one screen",
+    "width": 1440,
+    "height": 2100,
+    "second_file": "",
+    "second_title": "",
+    "second_height": 0,
+    "note": "The compact option: the whole page fits one laptop screen, with the subject, Send a test to me and Send to 243 members in one strip at the top (numbered 1 Write, 2 Check, 3 Send). The letter fills the left, and a panel on the right holds Preview, Who gets it and Past newsletters, so the email is always in view without any scrolling.",
+    "unresolved": [
+     "The Phone and Computer switch and the tab underline are drawn in navy, not gold, so they stay readable on white. Gold appears only on the Send button and in the email band.",
+     "In this option, \"Who gets it\" appears twice: once as a panel tab (from the spec) and once in the More options line (from the flow's must-keep list). I kept both. K may want to remove one.",
+     "The board shows the computer preview set to Computer (an email 600 wide, shown at about two thirds size, so its body text is small). The phone view under the switch is not drawn here; the second phone shows it."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Page-5.dc.html",
+    "height": 2100,
+    "second_height": 0,
+    "counts": "I rendered the board at scale 1 and 1440 wide. Its content ends at 2054px, so the declared height of 2100 (root and $preview) is correct and under 2300. I checked it in close crops: the label strip, the header and page head, the strip with the three steps, the writing box, the side panel, More options, both phones and the captions.\n\nLabel strip: it is the only board furniture. It has the kicker \"LCA Newsletter · The page · Option 5 of 5\" in #866a1e on cream, the name \"Everything on one screen\", and the option's sentence word for word. There is exactly 1 \"Sample data\" tag (k-sample). There is no legend, no numbered note badge, no grey note, no chips and no frame letters. The navy step numbers 1, 2 and 3 belong to the design.\n\nMust-keeps, all present:\n- The signed-in header from the decided board, and the crumb \"Admin / Newsletter\".\n- 3 steps (Write, Check, Send) beside the subject, the test button and the send button, all in one white strip.\n- All 6 tools: Bold, Italic, Heading, List, Link, Undo.\n- 3 closed controls, none open: \"Add a photo, event or line\" at the end of the tool row; the arrow on Send (aria-expanded false); \"More options\" at the panel's foot.\n- Nothing is read from the site. The event lines are typed, with pasted King Registration links.\n- On the computer, the email preview sits small in the right panel, under the Preview tab (chosen) beside \"Who gets it\" and \"Past newsletters\", with a Phone / Computer switch.\n- Phone 1 shows the page with the \"See the email\" button docked at the foot.\n- Phone 2 shows the preview brought up as a sheet, with \"Back to writing\".\n- The computer page is drawn at a real 1200 wide, 820 tall, with nothing below the fold.\n- \"Saved automatically at 2:15 PM\" appears on the computer and on phone 1.\n- \"Send to 243 members\" appears on both.\n\nWords: they match Newsletter-E frame A and Newsletter-E-2 frame C1 sentence for sentence.\n\nDates, all with weekdays (each appears in the writing box and the side preview where shown):\n- Sat, Dec 5, 2026\n- Sat to Mon, Jan 16 to 18, 2027\n- Sat, May 8, 2027\n- Sat to Mon, Sep 5 to 7, 2026\n- Mon, Dec 7, 2026\n\nCopy rules: no em or en dashes, no \"USCF\", \"4½\" written with the ½, and the partner event says \"Registers on the organizer's site ↗\" with no count. People appear only by role (\"LCA President\"), apart from the players named in the results. No 8:00 AM time appears on this board, so that rule has nothing to apply to. Gold is used as text only on navy (the \"LCA NEWSLETTER\" kicker in the band). The gold \"Send\" button carries navy text.",
+    "changes": [
+     "The small email in the side panel was scaled to 392px inside a 376px box, so 16px of its right side was cut off: the navy band and text ran to the edge with uneven padding. I changed the scale from .6533 to .6267 so the 600px email fits exactly, with equal margins.",
+     "The scrollbar in the side preview drew a grey track and a light line down the navy band. It is now an overlay thumb (translucent grey with a thin white edge) and no track, so it reads cleanly on both the navy and the white.",
+     "The writing box had an orphan line break, '6:00' at the end of one line and 'PM.' on the next. I put '6:00 PM' in a no-wrap span (.p5-nw).",
+     "The line under 'More options' broke in the middle of a phrase ('Words / shown in the inbox'). Each of the four items is now a no-wrap span with balanced wrapping, so it breaks cleanly as 'Top of the email · Who gets it ·' and 'Words shown in the inbox · Where replies go'.",
+     "The breadcrumb separator '/' was darkened from #858b99 (about 3.4:1) to #6b7180 (about 4.9:1) so it clears 4.5:1."
+    ],
+    "remaining_concerns": [
+     "The side preview's email text is about 10px, by design ('shown small'). It reads as a picture of the email rather than as text to read, and the clipped bottom line is cut mid-glyph the way a scrolled box is. Phone 2 shows the same email at full size.",
+     "On the computer the writing box is drawn scrolled down, starting at 'Coming up', so the president's note is above the fold of that box. That fits 'part way through, scrolling inside itself', but a first-time viewer sees the note only in the preview and on the phones.",
+     "The two phones sit centred under the browser with wide margins on either side. The 1200 browser leaves no room to put them beside it at 1440, so beneath is the only fit.",
+     "The 'Who gets it' tab and the 'Who gets it' item in the More options line both come from the spec, so the same words appear twice on the computer.",
+     "During measurement I briefly copied a scratch script (measure.mjs) into docs-wt/docs/redesign/tools and deleted it at once. git status in docs-wt shows a clean tree. The script now lives only in the scratchpad's render folder."
+    ]
+   }
+  }
+ ],
+ "setCheck": {
+  "ranking": [
+   {
+    "file": "Newsletter-Page-1.dc.html",
+    "finish": "Calm and fully finished: three white step cards on a numbered rail, a phone-shaped preview with Phone and Computer switch and two quiet links, balanced spacing throughout.",
+    "distinct": "The only option where all three steps sit down the page at once as stacked cards on a numbered rail; its nearest sibling is option 3, which also pairs a white card with a phone-shaped preview but shows one step at a time."
+   },
+   {
+    "file": "Newsletter-Page-2.dc.html",
+    "finish": "Now as finished as the others: the label strip, frame width, tool row, captions and phone row match the set, so it no longer looks like the outlier.",
+    "distinct": "Two equal halves with the email shown large on a grey ground beside the letter, and the steps squeezed into one slim bar with Test and Send at its right end."
+   },
+   {
+    "file": "Newsletter-Page-3.dc.html",
+    "finish": "Finished and the richest of the five, with the stepper, the one large card, two small pictures of steps 2 and 3, and the phone pair, all evenly spaced.",
+    "distinct": "A guided path with a three-dot stepper, one card holding only the current step and a Next button, plus the two small step pictures that no other option has."
+   },
+   {
+    "file": "Newsletter-Page-4.dc.html",
+    "finish": "The most striking picture: the letter sheet with the navy band on a cream desk, a fixed white send bar at the foot, and a matching phone pair.",
+    "distinct": "You type straight onto the email itself in its own serif type, with a floating tool bar and Test and Send pinned in a bar at the bottom; nothing else in the set looks like it."
+   },
+   {
+    "file": "Newsletter-Page-5.dc.html",
+    "finish": "Tight and finished, with the whole page inside one 820-tall laptop screen and the strip, writing box and tabbed panel all aligned. Its preview is the smallest of the five.",
+    "distinct": "The compact one: subject, Test and Send in one numbered strip at the top, and a three-tab panel (Preview, Who gets it, Past newsletters) beside the writing box."
+   }
+  ],
+  "changes": [
+   "All five: set the root's top padding to 24px and the label strip to the same padding, type sizes and kicker style (34px name, 16px sentence, 12.5px gold-ink kicker, one Sample data tag), so the strips line up across the set.",
+   "Newsletter-Page-2.dc.html, 3, 4 and 5: removed the 'Louisiana Chess / Association' name lines from the desktop header. The decided header (Nav-Header-Final) shows the rook mark alone below 1280px, and every frame here is 1180 to 1200 wide. Option 1 already did this.",
+   "Newsletter-Page-4.dc.html: removed the ⌘K hint from Search and made it icon plus word, as the decided header has it below 1280px.",
+   "Newsletter-Page-2.dc.html: status line 'December 2026 issue · Draft, not sent' changed to 'December 2026 · Draft' (desktop and phone).",
+   "Newsletter-Page-5.dc.html: status line 'Draft, not sent' changed to 'Draft' (desktop and phone).",
+   "Newsletter-Page-2.dc.html: the writing tools now show icon plus word (Bold, Italic, Heading, List, Link, Undo) like the other four, with 'Add a photo, event or line' on a second row of the tool bar. Before, they were bare B and I glyphs and an undo icon.",
+   "Newsletter-Page-2.dc.html: moved the label strip and the browser frame onto the same 120px margins and 1200 width as the others (it was 40px margins with a centred 1180 frame), and left-aligned the 'On a computer' caption.",
+   "Newsletter-Page-2.dc.html and 5: rebuilt the phone row into the majority layout, with an 'On a phone' heading and sentence on the left and the two phones to the right, 56px apart, with left-aligned captions.",
+   "All five: phone captions unified to 'The page · One button at the foot: See the email.' and 'After pressing See the email · Back to writing closes it.' (1 said 'Writing', 4 said 'The page on a phone' with no sentence, and 2 and 5 used other sentences).",
+   "Newsletter-Page-4.dc.html: the phone preview sheet heading 'The email members will get' changed to 'What members will get'.",
+   "All five: the phone preview sheet sub-line is now 'The December email. It changes as you type.' everywhere.",
+   "Newsletter-Page-2.dc.html, 3 and 4: the desktop preview sub-line is now 'It changes as you type.'. Option 2 keeps 'Shown smaller than real size.' after it. The green dots before the line in 2 and 4 are removed.",
+   "Newsletter-Page-1.dc.html, 2 and 3: the side preview and the phone preview sheet now match email option 1 exactly, with the 3px gold rule under the navy band, the gold kicker, and the short gold-ink dash above each section heading (options 4 and 5 already had these).",
+   "Newsletter-Page-4.dc.html: the phone tool bar's bare '+ ⌄' button is now the full 'Add a photo, event or line' control on its own row, like the other four phones.",
+   "Newsletter-Page-2.dc.html: the confirm note 'You will be asked once to confirm before it goes out.' changed to 'You will be asked once to confirm.'",
+   "Newsletter-Page-5.dc.html: the Send note 'You confirm once before it goes' became two lines, '243 members will get it.' and 'You will be asked once to confirm.', so option 5 also shows the count. I also tightened the strip padding and the letter's scroll offset so the cursor line still shows fully inside the fixed 820 view.",
+   "Newsletter-Page-5.dc.html: lowered the phone preview sheet (top 76px to 88px) so the dimmed 'Admin / Newsletter' crumb is no longer half cut behind the grab bar.",
+   "Newsletter-Page-3.dc.html: added the missing home-indicator bar under the left phone's tab bar, so its bottom matches the other phones.",
+   "Newsletter-Page-3.dc.html and 4: phone gap set to 56px (was 40 and 48), so on every board the phones sit at the same x positions; option 3 also gained 24px bottom padding.",
+   "All five: set the root height and $preview to the render rounded up to the next 50 (natural heights 2254, 2224, 2278, 2262, 1982)."
+  ],
+  "heights": [
+   {
+    "file": "Newsletter-Page-1.dc.html",
+    "height": 2300
+   },
+   {
+    "file": "Newsletter-Page-2.dc.html",
+    "height": 2250
+   },
+   {
+    "file": "Newsletter-Page-3.dc.html",
+    "height": 2300
+   },
+   {
+    "file": "Newsletter-Page-4.dc.html",
+    "height": 2300
+   },
+   {
+    "file": "Newsletter-Page-5.dc.html",
+    "height": 2000
+   }
+  ],
+  "remaining_concerns": [
+   "Options 1 and 3 are the closest pair at thumbnail size: both have a white card on the left and a phone-shaped preview on the right. They read apart at full size (stacked cards on a numbered rail versus a top stepper with one card and the two small step pictures), so I did not change either, but if K cuts to three, these two compete most directly.",
+   "The step words differ on purpose because the specs set them: 'Write it / Check it / Send it' in 1, 3 and 4, but 'Write / Check / Send' in 2 and 5. I left them as specified. If K wants the set fully uniform, the fix is two word changes in 2 and 5.",
+   "The desktop header now follows the decided rule for a 1200 frame (rook mark only, Search as icon plus word). That means the 'Louisiana Chess Association' name appears only in the phone headers and the email band. If K would rather the president see the name in the desktop bar too, that would break the decided header's width rule.",
+   "Option 5's side preview is the smallest of the five, about 180px of email visible inside the tabbed panel. It fits the compact spec, but it is the weakest answer to K's 'easy to see' ask.",
+   "Option 5's small preview has a thin scroll indicator drawn over the right end of the navy band. I left it because it is part of the original drawing, but it can read as a stray line at full size.",
+   "Option 4 has no 'More options' item list (only the closed button) because the bottom bar has no room. That matches its spec but reads a little differently from the other four.",
+   "The status line differs by design: 1 and 4 read 'December 2026 · Draft · Saved automatically at 2:15 PM', while 2, 3 and 5 read 'December 2026 · Draft' and show the saved note where their specs put it (bar, card foot, strip)."
+  ]
+ }
+}
