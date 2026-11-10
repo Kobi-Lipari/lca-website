@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Newsletter · B · The issue, with a cover</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.nb-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:36px 40px 56px;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.nb-root *{box-sizing:border-box}
+.nb-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+/* title strip */
+.nb-doc{background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px;padding:24px 26px 26px}
+.nb-doc-top{display:grid;grid-template-columns:minmax(0,1fr) 470px;gap:28px;align-items:start}
+.nb-title{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.015em;margin:6px 0 0}
+.nb-ml{font-size:14.5px;line-height:1.5;color:#3d4556;margin:2px 0 0}
+.nb-ml b{color:#1a2744;font-weight:600}
+.nb-quote{margin:12px 0 0;padding:10px 14px;border-left:3px solid #866a1e;background:#ffffff;border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.5;color:#3d4556}
+.nb-quote b{color:#1a2744}
+.nb-grey{background:#efefea;border:1px solid #dfded6;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.nb-grey p{font-size:12.5px;line-height:1.45;color:#2b3446;margin:0}
+.nb-grey b{display:block;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b;margin-bottom:2px}
+.nb-grey ol{margin:0;padding-left:18px;font-size:12.5px;line-height:1.45;color:#2b3446}
+.nb-grey li{margin-bottom:3px}
+.nb-lbox{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px;margin-top:20px}
+.nb-notes{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 26px}
+.nb-notes li{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.45}
+.nb-notes b{font-weight:600}
+/* frames */
+.nb-sec{margin-top:40px}
+.nb-flab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}
+.nb-flab h2{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em}
+.nb-code{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 9px;border-radius:7px;background:#c8a94a;color:#1a2744;font-weight:700;font-size:13px}
+.nb-cap{font-size:14px;line-height:1.5;color:#3d4556;max-width:1160px;margin:12px 0 0}
+.nb-browser{width:100%;box-shadow:0 14px 34px rgba(16,24,43,.10)}
+.nb-browser .k-browser-url{max-width:760px}
+.nb-view{position:relative;background:#f5f5f2;overflow:hidden}
+.nb-b{position:relative;z-index:2;box-shadow:0 0 0 3px #ffffff}
+.nb-bs{width:24px;height:24px;font-size:12px}
+/* decided header */
+.nb-hd .k-brand{margin-right:16px}
+.nb-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.nb-rook-sm{width:24px;height:24px}
+.nb-nav{gap:0}
+.nb-nav a{padding:0 10px;white-space:nowrap}
+.nb-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500}
+.nb-sbtn{display:inline-flex;align-items:center;gap:8px;width:220px;height:44px;padding:0 8px 0 12px;margin-right:16px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.nb-kbd{margin-left:auto;font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:#e8ecf4;border:1px solid rgba(255,255,255,.4);border-radius:5px;padding:2px 6px;line-height:1.2}
+.nb-util{gap:12px}
+.nb-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500}
+.nb-foot-in{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding-top:20px;padding-bottom:22px}
+.nb-foot .k-meta{color:rgba(255,255,255,.78)}
+.nb-foot nav a{font-size:14px}
+/* the email, 600 wide */
+.em{width:600px;background:#ffffff;color:#1a2744;font-size:16px;line-height:1.6}
+.em a{color:#1a2744;text-decoration:underline;text-underline-offset:3px}
+.em-pre{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 32px;background:#fbfaf6;border-bottom:1px solid #e6e5de;font-size:13px;color:#555c6b}
+.em-pre a{font-weight:600}
+.em-cover{background:#1a2744;color:#ffffff;padding:24px 32px 30px;border-bottom:5px solid #c8a94a}
+.em-ctop{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.em-cbrand{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#e6cf86}
+.em-cbrand svg{width:26px;height:26px;fill:#ffffff;flex:none}
+.em-cdom{font-size:12.5px;color:rgba(255,255,255,.8)}
+.em-month{display:flex;align-items:flex-end;gap:14px;margin:18px 0 18px}
+.em-month b{font-size:100px;line-height:.86;font-weight:700;letter-spacing:-.045em;color:#ffffff}
+.em-month span{font-size:30px;line-height:1;font-weight:600;color:#e6cf86;padding-bottom:4px}
+.em-photo{display:block;width:100%;height:290px;object-fit:cover;border-radius:6px}
+.em-alt{margin:8px 0 0;font-size:12.5px;line-height:1.45;color:rgba(255,255,255,.75)}
+.em-lines{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-direction:column}
+.em-lines li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:center;padding:11px 0;border-top:1px solid rgba(255,255,255,.22)}
+.em-lines li:first-child{border-top:0;padding-top:0}
+.em-lines i{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#c8a94a;color:#1a2744;font-style:normal;font-size:15px;font-weight:700}
+.em-lines a{color:#ffffff;font-size:19px;line-height:1.3;font-weight:600;text-decoration:underline;text-decoration-color:rgba(255,255,255,.45);text-decoration-thickness:1px;text-underline-offset:5px}
+.em-body{padding:8px 32px 8px}
+.em-piece{padding:30px 0 30px;border-top:1px solid #e6e5de}
+.em-piece:first-child{border-top:0}
+.em-ph{display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.em-n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:5px;background:#1a2744;color:#ffffff;font-size:13px;font-weight:700;flex:none}
+.em-k{font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#866a1e}
+.em-h{margin:0 0 12px;font-size:27px;line-height:1.2;font-weight:700;letter-spacing:-.015em}
+.em-lead{margin:0 0 16px;font-size:20px;line-height:1.5;color:#1a2744}
+.em-p{margin:0 0 14px;font-size:16px;line-height:1.65;color:#2b3446}
+.em-pull{margin:20px 0 20px;padding:4px 0 4px 18px;border-left:4px solid #c8a94a;font-size:24px;line-height:1.3;font-weight:700;letter-spacing:-.01em;color:#1a2744}
+.em-sign{margin:4px 0 0;font-size:16px;font-weight:600}
+.em-dates{display:flex;flex-direction:column}
+.em-drow{display:grid;grid-template-columns:64px minmax(0,1fr);gap:16px;padding:14px 0;border-top:1px solid #ecebe5;align-items:start}
+.em-drow:first-child{border-top:0;padding-top:4px}
+.em-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:64px;min-height:64px;padding:6px 2px;border:1px solid #d6d5cd;border-radius:10px;background:#ffffff;line-height:1;text-align:center}
+.em-tile b{font-size:22px;font-weight:700;letter-spacing:-.02em}
+.em-tile span{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#555c6b}
+.em-tile-lca{background:#1a2744;border-color:#1a2744;color:#ffffff}
+.em-tile-lca span{color:#e6cf86}
+.em-tile-wide b{font-size:16px}
+.em-dt{margin:0;font-size:17px;line-height:1.35;font-weight:600}
+.em-dm{margin:3px 0 0;font-size:15px;line-height:1.5;color:#3d4556}
+.em-own{margin:6px 0 0;font-size:15px;line-height:1.5;color:#1a2744;font-style:italic}
+.em-dact{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:8px;font-size:15px}
+.em-tag{display:inline-flex;align-items:center;padding:3px 8px;border-radius:5px;font-size:12px;font-weight:600;line-height:1.3;background:#e8edf4;color:#2d3a52}
+.em-tag-lca{background:#1a2744;color:#ffffff}
+.em-btn{display:inline-flex;align-items:center;min-height:42px;padding:0 18px;border-radius:7px;background:#c8a94a;color:#1a2744 !important;font-size:15px;font-weight:700;text-decoration:none !important}
+.em-out{font-weight:600}
+.em-res{background:#1a2744;color:#ffffff;border-radius:10px;padding:20px 22px;border-top:4px solid #c8a94a}
+.em-res .em-h{color:#ffffff;font-size:23px;margin-bottom:6px}
+.em-res-m{margin:0;font-size:15px;color:rgba(255,255,255,.82)}
+.em-res-w{margin:12px 0 0;padding:12px 0 0;border-top:1px solid rgba(255,255,255,.28);font-size:15px;line-height:1.6;color:#ffffff}
+.em-res-w span{display:block;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#e6cf86;margin-bottom:2px}
+.em-res a{color:#ffffff;font-weight:600;text-decoration-color:#c8a94a;text-decoration-thickness:2px}
+.em-club{display:grid;grid-template-columns:14px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid #ecebe5}
+.em-club:first-of-type{border-top:0;padding-top:2px}
+.em-dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-top:6px}
+.em-cn{margin:0;font-size:13px;font-weight:700;letter-spacing:.04em;color:#3d4556}
+.em-ct{margin:2px 0 0;font-size:17px;line-height:1.35;font-weight:600}
+.em-foot{background:#f1f0eb;padding:26px 32px 30px;font-size:14.5px;line-height:1.55;color:#2b3446}
+.em-foot p{margin:0}
+.em-flinks{display:flex;flex-direction:column;gap:6px;margin:12px 0 0}
+.em-flinks a{font-weight:600}
+.em-fbrand{display:flex;align-items:center;gap:10px;margin:18px 0 0;padding-top:16px;border-top:1px solid #dddcd4;font-size:13.5px;color:#3d4556}
+.em-fbrand svg{width:22px;height:22px;fill:#1a2744;flex:none}
+/* crumb */
+.nb-crumbbar{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.nb-crumbin{display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:46px}
+.nb-crumb{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:#555c6b}
+.nb-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.nb-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.nb-sep{color:#858b99}
+.nb-backlink{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:#1a2744;font-size:14px;font-weight:600;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+/* page head */
+.nb-phead{display:grid;grid-template-columns:minmax(0,1fr) 560px;gap:24px;align-items:start;padding-top:22px}
+.nb-phead h1{margin:2px 0 0;font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.nb-status{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin-top:8px;font-size:15.5px;color:#2b3446}
+.nb-status b{font-weight:600;color:#1a2744}
+.nb-tabs{display:flex;gap:4px;margin-top:14px;border-bottom:1px solid #dddcd4}
+.nb-tab{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-bottom:3px solid transparent;color:#555c6b;font-size:15px;font-weight:600;text-decoration:none;margin-bottom:-1px}
+.nb-tab-on{color:#1a2744;border-bottom-color:#c8a94a}
+.nb-act{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.nb-rule{position:relative;display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:#ffffff;border:1px solid #dddcd4;border-left:4px solid #1a2744;border-radius:8px;font-size:13px;line-height:1.5;color:#3d4556}
+.nb-rule b{color:#1a2744}
+/* builder */
+.nb-build{display:grid;grid-template-columns:290px minmax(0,1fr) 470px;gap:20px;align-items:start;padding-top:18px;padding-bottom:20px}
+.nb-colh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px}
+.nb-colh h2{margin:0;font-size:17px;font-weight:700}
+.nb-pcs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.nb-pc{position:relative;display:grid;grid-template-columns:14px 34px minmax(0,1fr);gap:10px;align-items:start;padding:11px 12px 11px 8px;background:#ffffff;border:1px solid #dddcd4;border-radius:10px}
+.nb-grip{width:14px;height:20px;margin-top:6px;fill:#9aa1b0}
+.nb-pn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:6px;background:#1a2744;color:#ffffff;font-size:14px;font-weight:700}
+.nb-pk{margin:0;font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.nb-pt{margin:1px 0 0;font-size:14.5px;line-height:1.3;font-weight:600}
+.nb-pm{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}
+.nb-pe{margin:4px 0 0;font-size:12px;color:#555c6b;line-height:1.35}
+.nb-pc-on{background:#fbf7e9;border-color:#c8a94a;box-shadow:inset 0 0 0 1px #c8a94a}
+.nb-pc-lock{background:#f6f6f2}
+.nb-pc-empty{background:#fbfbf8;border:1.5px dashed #b9b7ad}
+.nb-pc-empty .nb-pn{background:#ffffff;color:#555c6b;border:1.5px dashed #9aa1b0}
+.nb-thumb{width:34px;height:44px;border-radius:4px;background:#1a2744;border-bottom:3px solid #c8a94a;display:flex;flex-direction:column;justify-content:space-between;padding:4px 3px 3px;overflow:hidden}
+.nb-thumb b{font-size:7.5px;line-height:1;color:#ffffff;font-weight:700;letter-spacing:-.01em}
+.nb-thumb img{width:100%;height:16px;object-fit:cover;border-radius:1px}
+.nb-thumb i{display:block;height:2px;background:rgba(255,255,255,.6);border-radius:1px;margin-top:1px}
+.nb-lock{display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 3px;border-radius:999px;background:#e8e3f3;color:#3f2a73;font-size:12px;font-weight:600;line-height:1.2}
+.nb-av{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:10px;font-weight:700;flex:none;color:#ffffff;letter-spacing:.02em}
+.nb-av-mm{background:#2f6f9f}
+.nb-av-pr{background:#6b3f8f}
+.nb-av-ad{background:#2f6b4f}
+.nb-av-lg{width:36px;height:36px;font-size:13px}
+.nb-add{position:relative;margin-top:12px}
+.nb-menu{margin-top:8px;background:#ffffff;border:1px solid #cfcec6;border-radius:12px;box-shadow:0 14px 30px rgba(16,24,43,.16);padding:6px}
+.nb-mi{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:start;padding:7px 8px;border-radius:8px}
+.nb-mi b{display:block;font-size:14px;line-height:1.3}
+.nb-mi small{display:block;font-size:12px;line-height:1.35;color:#555c6b}
+.nb-mi svg{margin-top:2px;color:#1a2744}
+.nb-mi-on{background:#f3eedc}
+.nb-hint{margin:10px 2px 0;font-size:12.5px;line-height:1.45;color:#555c6b}
+/* middle form */
+.nb-form{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:18px 20px 20px}
+.nb-fh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding-bottom:14px;border-bottom:1px solid #ecebe4}
+.nb-fh h2{margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em}
+.nb-who{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;margin-top:6px;font-size:13px;color:#555c6b}
+.nb-who a{color:#1a2744;font-weight:600}
+.nb-fs{margin-top:18px}
+.nb-fl{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin:0 0 8px;font-size:14.5px;font-weight:700}
+.nb-fl span{font-size:12.5px;font-weight:600;color:#555c6b}
+.nb-req{font-size:12px;font-weight:700;color:#8f1d24;margin-left:4px}
+.nb-photo{position:relative;border-radius:10px;overflow:hidden;border:1px solid #dddcd4}
+.nb-photo img{display:block;width:100%;height:200px;object-fit:cover}
+.nb-photo-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:#fbfbf8;border-top:1px solid #ecebe4;font-size:12.5px;color:#555c6b}
+.nb-ta{width:100%;min-height:62px;padding:9px 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;line-height:1.45;color:#1a2744}
+.nb-inp{display:flex;align-items:center;min-height:42px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;color:#1a2744}
+.nb-inp-on{border:2px solid #1a2744;box-shadow:0 0 0 3px rgba(200,169,74,.35)}
+.nb-caret{display:inline-block;width:1.5px;height:18px;background:#1a2744;margin-left:1px;vertical-align:-3px}
+.nb-fhint{margin:6px 0 0;font-size:12.5px;line-height:1.45;color:#555c6b}
+.nb-nophoto{display:flex;align-items:center;gap:12px;margin-top:10px;padding:10px 12px;border-radius:8px;background:#f5f5f2;font-size:13.5px;line-height:1.45;color:#2b3446}
+.nb-nothumb{width:40px;height:52px;border-radius:4px;background:#1a2744;border-bottom:3px solid #c8a94a;display:flex;align-items:center;justify-content:center;flex:none}
+.nb-nothumb svg{width:22px;height:22px;fill:#ffffff}
+.nb-cl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.nb-cli{display:grid;grid-template-columns:14px 22px 26px minmax(0,1fr);gap:8px;align-items:start;padding:9px 10px 10px 6px;border:1px solid #dddcd4;border-radius:9px;background:#ffffff}
+.nb-cli input{width:20px;height:20px;margin:11px 0 0;accent-color:#1a2744}
+.nb-cli .nb-grip{margin-top:11px}
+.nb-cln{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;margin-top:8px;border-radius:50%;background:#c8a94a;color:#1a2744;font-size:12.5px;font-weight:700}
+.nb-cli .nb-inp{min-height:40px;font-size:14.5px}
+.nb-cfrom{margin:4px 0 0;font-size:12px;color:#555c6b}
+.nb-cli-off{background:#fbfbf8;grid-template-columns:14px 22px minmax(0,1fr)}
+.nb-cli-off p{margin:9px 0 0;font-size:14.5px;color:#3d4556}
+.nb-cli-off input{margin-top:9px}
+.nb-sublab{margin:12px 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.nb-two{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:18px;padding-top:16px;border-top:1px solid #ecebe4}
+/* right preview */
+.nb-prev{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 14px 16px}
+.nb-prevh{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.nb-prevh h2{margin:0;font-size:17px;font-weight:700}
+.nb-live{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:#145b3a}
+.nb-seg{margin-top:10px;width:100%;display:flex}
+.nb-seg button{flex:1;min-height:38px}
+.nb-mailhd{margin-top:12px;padding:9px 12px;border:1px solid #e3e2dc;border-bottom:0;border-radius:10px 10px 0 0;background:#fbfbf8;font-size:12.5px;line-height:1.45;color:#3d4556}
+.nb-mailhd b{color:#1a2744}
+.nb-mini{position:relative;border:1px solid #e3e2dc;border-radius:0 0 10px 10px;overflow:hidden;background:#efeee8;height:640px}
+.nb-mini .em{width:440px}
+.nb-mini .em-pre{padding:7px 18px;font-size:11px}
+.nb-mini .em-cover{padding:16px 20px 18px;border-bottom-width:4px}
+.nb-mini .em-cbrand{font-size:9.5px;gap:7px}
+.nb-mini .em-cbrand svg{width:18px;height:18px}
+.nb-mini .em-cdom{font-size:9.5px}
+.nb-mini .em-month{margin:12px 0 12px;gap:10px}
+.nb-mini .em-month b{font-size:70px}
+.nb-mini .em-month span{font-size:21px;padding-bottom:2px}
+.nb-mini .em-photo{height:196px}
+.nb-mini .em-alt{font-size:10px;margin-top:5px}
+.nb-mini .em-lines{margin-top:12px}
+.nb-mini .em-lines li{grid-template-columns:24px minmax(0,1fr);gap:9px;padding:7px 0}
+.nb-mini .em-lines i{width:24px;height:24px;font-size:11px}
+.nb-mini .em-lines a{font-size:13.5px}
+.nb-mini .em-body{padding:4px 20px}
+.nb-mini .em-piece{padding:18px 0}
+.nb-mini .em-n{width:20px;height:20px;font-size:10.5px}
+.nb-mini .em-k{font-size:9.5px}
+.nb-mini .em-h{font-size:19px;margin-bottom:8px}
+.nb-mini .em-lead{font-size:14px;margin-bottom:8px}
+.nb-mini .em-p{font-size:12px;margin-bottom:8px}
+.nb-outline{position:absolute;left:4px;right:4px;top:30px;height:520px;border:2.5px dashed #866a1e;border-radius:6px;pointer-events:none}
+.nb-outlab{position:absolute;left:14px;top:20px;padding:2px 8px;border-radius:5px;background:#866a1e;color:#ffffff;font-size:11.5px;font-weight:700;letter-spacing:.02em}
+.nb-fade{position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(rgba(239,238,232,0),#efeee8 72%);display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px}
+.nb-fade span{font-size:12.5px;color:#3d4556;border:1px dashed #b9b7ad;border-radius:999px;padding:4px 12px;background:#ffffff}
+.nb-checks{margin-top:14px;padding-top:12px;border-top:1px solid #ecebe4}
+.nb-checks ul{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:6px 12px}
+.nb-checks li{display:flex;align-items:center;gap:7px;font-size:13px;color:#145b3a;font-weight:600}
+.nb-checks li span{color:#1a2744;font-weight:500}
+/* bottom strip */
+.nb-strip{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;padding-bottom:26px}
+.nb-card{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:16px 18px}
+.nb-card h3{margin:0;font-size:16px;font-weight:700}
+.nb-people{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:10px}
+.nb-person{display:flex;align-items:center;gap:10px}
+.nb-person b{display:block;font-size:14px;line-height:1.3}
+.nb-person small{display:block;font-size:12.5px;line-height:1.35;color:#555c6b}
+.nb-cardnote{margin:10px 0 0;font-size:13px;line-height:1.5;color:#3d4556}
+.nb-goes{margin:6px 0 0;font-size:14.5px;line-height:1.5}
+.nb-goes b{font-weight:700}
+/* frame B */
+.nb-stage{background:#f5f5f2;border:1px solid #cfcec6;border-radius:14px;padding:24px;box-shadow:0 14px 34px rgba(16,24,43,.08)}
+.nb-bgrid{display:grid;grid-template-columns:520px minmax(0,1fr);gap:24px;align-items:start}
+.nb-pl{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#555c6b}
+.nb-pl i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:22px;padding:0 6px;border-radius:5px;background:#1a2744;color:#ffffff;letter-spacing:0;font-size:11.5px}
+.nb-evs{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column}
+.nb-ev{display:grid;grid-template-columns:22px 56px minmax(0,1fr);gap:12px;align-items:start;padding:12px 0;border-top:1px solid #ecebe4}
+.nb-ev input{width:20px;height:20px;margin:4px 0 0;accent-color:#1a2744}
+.nb-ev .em-tile{width:56px;min-height:56px}
+.nb-ev .em-tile b{font-size:19px}
+.nb-ev .em-tile-wide b{font-size:13.5px}
+.nb-evt{margin:0;font-size:15px;line-height:1.35;font-weight:600}
+.nb-evm{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:4px;font-size:13px;color:#555c6b}
+.nb-evown{margin-top:8px}
+.nb-evown label{display:block;font-size:12.5px;font-weight:600;color:#3d4556;margin-bottom:4px}
+.nb-evown .nb-inp{min-height:38px;font-size:14px}
+.nb-evown .nb-ph{color:#6b7180}
+.nb-ev-off{opacity:1}
+.nb-ev-off .nb-evt{color:#3d4556;font-weight:500}
+.nb-filt{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.nb-filt .k-chip{min-height:32px;padding:0 12px;font-size:13px}
+.nb-ext{font-size:13px;font-weight:600;color:#1a2744;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.nb-right{display:flex;flex-direction:column;gap:24px}
+.nb-states{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.nb-st{background:#ffffff;border:1px solid #dddcd4;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.nb-st-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.nb-st h4{margin:0;font-size:15px;font-weight:700}
+.nb-st p{margin:0;font-size:13px;line-height:1.5;color:#2b3446}
+.nb-st .k-meta{font-size:12.5px}
+.nb-st-btns{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:2px}
+.nb-st-sent{background:#fbfbf8}
+.nb-sched{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 12px;padding:12px 16px;background:#ffffff;border:1px solid #dddcd4;border-radius:12px}
+.nb-sched p{margin:0;font-size:14.5px}
+.nb-r2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.nb-figs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:12px}
+.nb-fig{padding:9px 10px;border:1px solid #dddcd4;border-radius:9px;background:#fbfbf8}
+.nb-fig b{display:block;font-size:22px;line-height:1.1;font-weight:700}
+.nb-fig span{display:block;font-size:12px;font-weight:600;color:#3d4556;margin-top:2px}
+.nb-set{display:grid;grid-template-columns:128px minmax(0,1fr);gap:9px 12px;margin:12px 0 0;font-size:13.5px;line-height:1.45}
+.nb-set dt{color:#555c6b;font-weight:600}
+.nb-set dd{margin:0}
+.nb-mono{font-family:"Geist Mono",ui-monospace,monospace;font-size:12.5px}
+.nb-shelf{display:flex;gap:22px;align-items:flex-start;margin-top:12px}
+.nb-issue{display:grid;grid-template-columns:132px minmax(0,1fr);gap:16px;align-items:start;flex:1}
+.nb-sc{width:132px;height:176px;border-radius:6px;background:#1a2744;border-bottom:4px solid #c8a94a;padding:10px 10px 8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 8px 18px rgba(16,24,43,.18);overflow:hidden}
+.nb-sc-top{display:flex;align-items:center;gap:5px;font-size:7.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#e6cf86}
+.nb-sc-top svg{width:11px;height:11px;fill:#ffffff}
+.nb-sc b{font-size:24px;line-height:.9;font-weight:700;letter-spacing:-.04em;color:#ffffff}
+.nb-sc img{width:100%;height:56px;object-fit:cover;border-radius:2px}
+.nb-sc i{display:block;font-style:normal;font-size:8px;line-height:1.3;color:#ffffff;border-top:1px solid rgba(255,255,255,.22);padding-top:3px}
+.nb-sc-draft{outline:2px dashed #866a1e;outline-offset:3px}
+.nb-iss-t{margin:0;font-size:16px;font-weight:700}
+.nb-iss-m{margin:6px 0 0;display:flex;flex-direction:column;gap:6px;font-size:13px;color:#3d4556}
+.nb-iss-a{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:10px}
+
+.nb-pk{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.nb-pk .k-tag{text-transform:none;letter-spacing:0;font-size:11.5px;padding:3px 7px}
+.nb-pc{padding:9px 10px 9px 8px}
+.nb-menu{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.nb-mi{grid-template-columns:22px minmax(0,1fr);align-items:center;padding:6px 8px}
+.nb-mi svg{margin-top:0}
+.nb-photo img{height:150px}
+.nb-ta{min-height:0}
+.nb-off{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.nb-off li{display:flex;align-items:center;gap:8px;font-size:13.5px;color:#3d4556}
+.nb-off input{width:18px;height:18px;margin:0;accent-color:#1a2744}
+.nb-two{gap:10px;margin-top:14px;padding-top:12px}
+.nb-fs{margin-top:14px}
+.nb-mini{height:600px}
+.nb-outline{height:520px}
+.nb-people{flex-wrap:nowrap;gap:18px}
+.nb-ev{padding:10px 0}
+.nb-states{gap:12px}
+.nb-shelf{gap:16px}
+.nb-issue{grid-template-columns:100px minmax(0,1fr);gap:12px}
+.nb-sc{width:100px;height:134px;padding:7px 7px 6px;gap:4px}
+.nb-sc b{font-size:18px}
+.nb-sc img{height:40px}
+.nb-sc i{font-size:6.5px;padding-top:2px}
+.nb-doc-top{grid-template-columns:minmax(0,1fr) 540px}
+
+.nb-prow{display:grid;grid-template-columns:200px minmax(0,1fr);gap:14px;align-items:start}
+.nb-prow .nb-photo img{height:118px}
+.nb-photo-bar{padding:6px;gap:4px;justify-content:flex-start}
+.nb-photo-bar .k-btn-sm{min-height:32px;padding:0 10px;font-size:13px}
+.nb-ta{font-size:14px;padding:8px 10px}
+.nb-nophoto{margin-top:12px;padding:8px 12px}
+.nb-nothumb{width:32px;height:42px}
+.nb-cl{gap:6px}
+.nb-cli{padding:6px 10px 7px 6px}
+.nb-cli .nb-inp{min-height:36px}
+.nb-cli input,.nb-cli .nb-grip{margin-top:8px}
+.nb-cln{margin-top:5px}
+.nb-cfrom{margin-top:2px;font-size:11.5px}
+.nb-two{grid-template-columns:1fr 1fr}
+.nb-two .nb-inp{min-height:56px;font-size:14px;line-height:1.4;padding:6px 10px}
+.nb-fh{padding-bottom:10px}
+.nb-form{padding:16px 18px 18px}
+.nb-mini{height:520px}
+.nb-outline{height:510px;top:28px}
+.nb-mini .em-photo{height:170px}
+.nb-pc{gap:8px}
+.nb-pe{margin-top:2px}
+.nb-pt{font-size:14px}
+.nb-colh{margin-bottom:8px}
+.nb-pcs{gap:6px}
+.nb-strip .nb-card{padding:12px 16px}
+.nb-cardnote{margin-top:6px}
+.nb-goes{margin-top:4px}
+.nb-phead{padding-top:16px}
+.nb-tabs{margin-top:10px}
+.nb-build{padding-top:14px;padding-bottom:16px}
+.nb-ev{padding:8px 0}
+.nb-st{padding:12px 14px;gap:7px}
+.nb-st p{font-size:12.5px}
+.nb-figs .nb-fig b{font-size:20px}
+.nb-quote{padding:8px 12px;font-size:13px}
+
+.nb-build{grid-template-columns:270px minmax(0,1fr) 430px}
+.nb-mini .em{width:400px}
+.nb-mini .em-month b{font-size:64px}
+.nb-mini .em-photo{height:150px}
+.nb-mini{height:500px}
+.nb-outline{height:478px}
+.nb-cli .nb-inp{font-size:14px;white-space:nowrap}
+.nb-pk .k-tag{font-size:11px}
+.nb-people{gap:14px}
+.nb-person b{font-size:13.5px}
+.nb-strip .nb-card h3{font-size:15px}
+
+.nb-sched{padding:8px 14px;margin-bottom:10px}
+.nb-sched p{font-size:13.5px}
+.nb-sched .k-btn-sm{min-height:32px;font-size:13px;padding:0 10px}
+.nb-st .k-btn-sm{min-height:32px}
+.nb-right{gap:18px}
+.nb-r2{gap:16px}
+.nb-card{padding:14px 16px}
+.nb-set{margin-top:8px;gap:6px 10px}
+.nb-shelf{margin-top:0}
+.nb-pc-on .nb-thumb{height:40px}
+
+.nb-root{padding-bottom:40px}
+.nb-sec{margin-top:32px}
+
+.nb-outlab{left:auto;right:14px;top:38px}
+.nb-figs{display:flex;flex-wrap:wrap;gap:8px}
+.nb-fig{display:flex;align-items:baseline;gap:6px;padding:6px 10px}
+.nb-fig b{display:inline;font-size:19px}
+.nb-fig span{display:inline;margin:0;font-size:12.5px}
+
+.nb-root{padding-top:30px}
+.nb-sec{margin-top:26px}
+.nb-doc{padding-bottom:20px}
+.nb-pc-on .nb-thumb{height:44px}
+.nb-mini .em{width:100%}
+.nb-mini .em-month b{font-size:60px}
+.nb-checks ul{grid-template-columns:auto auto;justify-content:start;gap:6px 22px}
+.nb-sc img{height:34px}
+
+</style>
+</helmet>
+<div class="nb-root" style="width:1440px;height:3350px">
+<section class="nb-doc" aria-label="About this board">
+<div class="nb-doc-top"><div>
+<p class="k-kicker">18 · Newsletter · Option B · The issue, with a cover · part 1 of 2</p>
+<h1 class="nb-title">Newsletter · B · The issue, with a cover</h1>
+<p class="nb-ml" style="margin-top:10px"><b>Built from:</b> Work-J (admin chrome, cards, status words) · Nav-Header-Final (signed-in header) · Tourn-List-Final (furniture, date tiles, footer) · News-Final (dated rows, club colour dots, facts) · Home-Final-Phones (phone bezels) · the kit</p>
+<p class="nb-ml"><b>Replaces:</b> Nothing yet: first round</p>
+<p class="nb-ml"><b>Shown:</b> /admin/newsletter on Mon, Nov 23, 2026 at 2:15 PM, signed in as the media manager; December 2026 is a Draft. Part 2 (Newsletter-B-2) draws it as a member receives it on Tue, Dec 1, 2026.</p>
+<p class="nb-quote"><b>K, Fri, Oct 23, 2026:</b> "can i make a monthly newletter be hosted on the site for our leaders to collaborativly edit and it goes out automatically on the same date and time (unless edited) to a list of our members (email list given at first and then all new members get added with an opt-out feature)?"<br><b>K, Tue, Nov 10, 2026:</b> "I am ready whenever you are to look at some custom newletter designs, for the page that hosts their creation and management (what ever that needs to be), and how they look when received by the receipient."</p>
+<div style="margin-top:12px"><span class="k-sample">Sample data · edit times, cover lines, subject, inbox preview line, the president's note, November's report figures, the From address</span></div>
+</div>
+<aside class="nb-grey" aria-label="Note for the canvas">
+<p><b>What</b>Every month is an issue with a cover: the month set large, one photo, three cover lines, then a feature and shorter numbered pieces. The page is a builder: pieces on the left, the piece being written in the middle, the email as members get it on the right.</p>
+<p><b>Built from</b>Work-J, Nav-Header-Final, Tourn-List-Final, News-Final, Home-Final-Phones.</p>
+<p><b>K's feedback applied</b>Written together by the media manager, the president and LCA admins; same date and time unless this month's is changed; every member with an email gets it, new members join it, leaving stops this list only; no postal address in any email, as K decided.</p>
+<p><b>Open for K</b></p>
+<ol>
+<li>The send rule. Drawn for B: only once someone marks it ready (note 5).</li>
+<li>Writing together: turn-taking with history, or everyone typing at once?</li>
+<li>The day and time. Drawn: the 1st of each month at 8:00 AM Central.</li>
+<li>Each issue readable on the site by anyone? Drawn: yes.</li>
+<li>News-Final's weekly "News by email" (Mondays, 8:00 AM): replaced, or both run?</li>
+<li>Opens and clicks are not tracked, as drawn.</li>
+</ol>
+</aside>
+</div>
+<div class="nb-lbox"><p class="k-label">Notes on this board</p>
+<ol class="nb-notes">
+<li><span class="k-num-badge">1</span><span><b>Three columns.</b> The pieces on the left, the piece being written in the middle, the email as members get it on the right, updating as anyone types, with the part being changed outlined.</span></li>
+<li><span class="k-num-badge">2</span><span><b>The cover, and what the leaders bring each month:</b> one photo with its one-line description and three cover lines, ticked from the pieces' own headlines.</span></li>
+<li><span class="k-num-badge">3</span><span><b>No photo this month?</b> The cover falls back to the rook mark on navy, so an issue never waits for a picture (part 2, frame D).</span></li>
+<li><span class="k-num-badge">4</span><span><b>An empty piece is left out.</b> Board business says so on its card, and the email closes up around it (part 2, frame C).</span></li>
+<li><span class="k-num-badge">5</span><span><b>The send rule, open for K.</b> Out on the 1st at 8:00 AM Central once someone marks it ready; a reminder the day before; otherwise it waits and nothing is sent.</span></li>
+</ol></div>
+</section>
+
+<section class="nb-sec" aria-labelledby="nb-fa">
+<div class="nb-flab"><span class="nb-code">A</span><h2 id="nb-fa">Creating · December 2026, on Mon, Nov 23, 2026 at 2:15 PM, as the media manager</h2><span class="k-sample">Sample data · edit times, cover lines, subject, inbox preview line</span></div>
+<div class="k-browser nb-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin/newsletter/2026-12</div></div>
+<div class="nb-view">
+<header class="k-header nb-hd"><div class="k-wrap-wide k-header-in"><a class="k-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="nb-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="k-brand-name" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><nav class="k-navlinks nb-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="nb-navbtn" type="button" aria-haspopup="true" aria-expanded="false">About<svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></nav><a class="nb-sbtn" href="#"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span><kbd class="nb-kbd" aria-hidden="true">&#8984;K</kbd></a><div class="k-utility nb-util"><a class="k-ulink" href="#">Donate</a><button class="nb-my" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></header>
+<div class="nb-crumbbar"><div class="k-wrap-wide nb-crumbin"><nav aria-label="Breadcrumb"><p class="nb-crumb"><a href="#">Admin</a><span class="nb-sep" aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p></nav><a class="nb-backlink" href="#"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg>Back to Admin</a></div></div>
+<div class="k-wrap-wide">
+<div class="nb-phead"><div><h1>Newsletter</h1>
+<p class="nb-status"><span class="k-tag k-tag-soon">Draft</span><b>December 2026</b><span>· goes out Tue, Dec 1, 2026 at 8:00 AM Central · in 8 days</span></p>
+<nav class="nb-tabs" aria-label="Newsletter"><a class="nb-tab nb-tab-on" href="#" aria-current="page">This issue</a><a class="nb-tab" href="#">Schedule</a><a class="nb-tab" href="#">Past issues <span class="k-tag">2</span></a><a class="nb-tab" href="#">Who gets it</a><a class="nb-tab" href="#">Settings</a></nav>
+</div>
+<div class="nb-act"><div class="k-row-sm"><button class="k-btn k-btn-line" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button><button class="k-btn k-btn-navy" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Mark as ready to send</button></div>
+<p class="nb-rule"><span class="k-num-badge nb-b nb-bs">5</span><span>It goes out on <b>Tue, Dec 1, 2026 at 8:00 AM Central</b> once someone marks it ready. If it is not ready the day before, the three editors get a reminder on Mon, Nov 30, 2026 at 8:00 AM. If it is still not ready, it waits and nothing is sent.</span></p></div>
+</div>
+
+<div class="nb-build">
+<!-- LEFT -->
+<div>
+<div class="nb-colh"><h2>This issue</h2><span class="k-meta">Drag to reorder</span></div>
+<ol class="nb-pcs" aria-label="Pieces of the December 2026 issue">
+<li class="nb-pc nb-pc-on" aria-current="true"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><span class="nb-thumb" aria-hidden="true"><b>Dec</b><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt=""><span><i></i><i></i><i></i></span></span><div><p class="nb-pk"><span>Cover</span><span class="k-meta" style="text-transform:none;letter-spacing:0;font-weight:600">You are here</span></p><div class="nb-pm" style="margin-top:3px"><span class="k-tag k-tag-open">Photo chosen · 3 cover lines</span></div><p class="nb-pe">You, Mon, Nov 23, 2:12 PM</p></div></li>
+<li class="nb-pc"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><span class="nb-pn">1</span><div><p class="nb-pk"><span>Feature</span><span class="k-tag k-tag-open">Written</span></p><p class="nb-pt">A note from the president</p><p class="nb-pe">President, Fri, Nov 20, 9:05 PM</p></div></li>
+<li class="nb-pc"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><span class="nb-pn">2</span><div><p class="nb-pk"><span>Dates</span><span class="k-tag">4 events</span></p><p class="nb-pt">Coming up</p><p class="nb-pe">LCA admin, Sat, Nov 21, 10:30 AM</p></div></li>
+<li class="nb-pc"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><span class="nb-pn">3</span><div><p class="nb-pk"><span>Result</span><span class="k-tag k-tag-open">Written</span></p><p class="nb-pt">Results</p><p class="nb-pe">LCA admin, Sat, Nov 21, 10:52 AM</p></div></li>
+<li class="nb-pc nb-pc-lock"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><span class="nb-pn">4</span><div><p class="nb-pk">Club news</p><p class="nb-pt">From the clubs</p><div class="nb-pm"><span class="nb-lock"><span class="nb-av nb-av-pr">PR</span><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>President is editing</span></div></div></li>
+<li class="nb-pc"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><span class="nb-pn">5</span><div><p class="nb-pk"><span>Short piece</span><span class="k-tag k-tag-open">Written</span></p><p class="nb-pt">Scholastic</p><p class="nb-pe">You, Thu, Nov 19, 4:20 PM</p></div></li>
+<li class="nb-pc nb-pc-empty"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><span class="nb-pn">6</span><div><p class="nb-pk"><span>Short piece</span><span class="k-num-badge nb-b nb-bs">4</span></p><p class="nb-pt">Board business</p><div class="nb-pm" style="margin-top:3px"><span class="k-tag k-tag-closed">Empty, will be left out</span></div></div></li>
+</ol>
+<div class="nb-add"><button class="k-btn k-btn-line k-btn-block" type="button" aria-expanded="true" aria-haspopup="menu"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a piece</button>
+<div class="nb-menu" role="menu" aria-label="Kinds of piece">
+<div class="nb-mi nb-mi-on" role="menuitem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"></path></svg><b>Feature</b></div>
+<div class="nb-mi" role="menuitem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h8"></path></svg><b>Short piece</b></div>
+<div class="nb-mi" role="menuitem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><b>Dates</b></div>
+<div class="nb-mi" role="menuitem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0V4zM12 13v4M8 20h8M5 5h3M16 5h3"></path></svg><b>Result</b></div>
+<div class="nb-mi" role="menuitem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 3v2M12 19v2M3 12h2M19 12h2"></path></svg><b>Club news</b></div>
+<div class="nb-mi" role="menuitem"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="10" r="1.8"></circle><path d="M21 16l-5-5-8 8"></path></svg><b>Photo</b></div>
+</div></div>
+</div>
+
+<!-- MIDDLE -->
+<div class="nb-form">
+<div class="nb-fh"><div><p class="k-label-gold" style="margin:0">Piece being written</p><h2>Cover</h2>
+<p class="nb-who"><span class="nb-av nb-av-mm">MM</span>Last edited by Media manager (you), Mon, Nov 23, 2:12 PM · <a href="#">History</a></p></div><span class="k-num-badge nb-b">2</span></div>
+<div class="nb-fs nb-prow"><div class="nb-photo"><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at their boards in the tournament hall"><div class="nb-photo-bar"><button class="k-btn k-btn-line k-btn-sm" type="button">Change photo</button><button class="k-btn k-btn-ghost k-btn-sm" type="button">Remove</button></div></div>
+<div><p class="nb-fl" style="margin-bottom:4px">Cover photo <span>One a month</span></p><p class="nb-fl" style="font-size:13.5px;margin-bottom:6px;justify-content:flex-start">Describe this photo for people who cannot see it<em class="nb-req" style="font-style:normal">Required</em></p>
+<div class="nb-ta">Players at their boards in the tournament hall in Sulphur during the State Championship weekend.</div></div></div>
+<div class="nb-nophoto"><span class="nb-nothumb" aria-hidden="true"><svg viewBox="0 0 100 100"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>No photo this month?</b> The cover uses the rook mark on navy. <a class="k-link" href="#">See that cover</a></span><span class="k-num-badge nb-b nb-bs" style="margin-left:auto">3</span></div>
+<div class="nb-fs"><p class="nb-fl">Cover lines, up to three <span>3 of 3 ticked</span></p>
+<ol class="nb-cl">
+<li class="nb-cli"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><input type="checkbox" checked aria-label="Use as cover line"><span class="nb-cln">1</span><div><div class="nb-inp nb-inp-on">Thank you, Sulphur: the State Championship weekend<span class="nb-caret"></span></div><p class="nb-cfrom">From piece 1, A note from the president</p></div></li>
+<li class="nb-cli"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><input type="checkbox" checked aria-label="Use as cover line"><span class="nb-cln">2</span><div><div class="nb-inp">Ken Ferguson Memorial returns, Sat to Mon, Jan 16 to 18, 2027</div><p class="nb-cfrom">From piece 2, Coming up</p></div></li>
+<li class="nb-cli"><svg class="nb-grip" viewBox="0 0 14 20" aria-hidden="true"><circle cx="4" cy="4" r="1.6"></circle><circle cx="10" cy="4" r="1.6"></circle><circle cx="4" cy="10" r="1.6"></circle><circle cx="10" cy="10" r="1.6"></circle><circle cx="4" cy="16" r="1.6"></circle><circle cx="10" cy="16" r="1.6"></circle></svg><input type="checkbox" checked aria-label="Use as cover line"><span class="nb-cln">3</span><div><div class="nb-inp">Two board seats are open</div><p class="nb-cfrom">From piece 1, the president's second paragraph</p></div></li>
+</ol>
+<p class="nb-sublab">Other headlines, not ticked</p>
+<ul class="nb-off"><li><input type="checkbox" aria-label="Use as cover line">Marcus Landry wins the 2026 Louisiana State Championship <span class="k-meta">· piece 3</span></li><li><input type="checkbox" aria-label="Use as cover line">Quick-rated nights stay on first Mondays <span class="k-meta">· piece 4</span></li></ul>
+</div>
+<div class="nb-two">
+<div><p class="nb-fl">Subject <span>51 of 80</span></p><div class="nb-inp">LCA Newsletter · December 2026 · Thank you, Sulphur</div></div>
+<div><p class="nb-fl">Inbox preview line <span>84 of 100</span></p><div class="nb-inp">Ken Ferguson returns in January, two board seats are open, and club nights near you.</div></div>
+</div>
+</div>
+
+<!-- RIGHT -->
+<div class="nb-prev">
+<div class="nb-prevh"><h2 style="display:flex;align-items:center;gap:8px">What members will get<span class="k-num-badge nb-b nb-bs">1</span></h2><span class="nb-live"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Updates as you type</span></div>
+<div class="k-seg nb-seg" role="group" aria-label="Preview as"><button class="k-seg-on" type="button" aria-pressed="true">Computer</button><button type="button" aria-pressed="false">Phone</button><button type="button" aria-pressed="false">Dark</button></div>
+<div class="nb-mailhd"><b>Louisiana Chess Association</b> · LCA Newsletter · December 2026 · Thank you, Sulphur</div>
+<div class="nb-mini">
+<div class="em" style="margin:0 auto">
+<div class="em-pre"><span>LCA Newsletter · December 2026</span><a href="#">Read this issue on the site</a></div>
+<div class="em-cover">
+<div class="em-ctop"><span class="em-cbrand"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>LCA Newsletter · Issue 2</span></div>
+<p class="em-month"><b>December</b><span>2026</span></p>
+<img class="em-photo" src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="Players at their boards in the tournament hall in Sulphur during the State Championship weekend.">
+<ol class="em-lines"><li><i>1</i><a href="#">Thank you, Sulphur: the State Championship weekend</a></li><li><i>2</i><a href="#">Ken Ferguson Memorial returns, Sat to Mon, Jan 16 to 18, 2027</a></li><li><i>3</i><a href="#">Two board seats are open</a></li></ol>
+</div>
+<div class="em-body"><div class="em-piece"><p class="em-ph"><span class="em-n">1</span><span class="em-k">A note from the president</span></p><h3 class="em-h">Thank you, Sulphur</h3><p class="em-lead">To every volunteer who ran the State Championship weekend in Sulphur: thank you.</p><p class="em-p">64 players, six sections and five rounds over Labor Day weekend, and every round started on time.</p></div></div>
+</div>
+<span class="nb-outline" aria-hidden="true"></span><span class="nb-outlab">Cover · being changed</span>
+<div class="nb-fade"><span>Continues: 4 more pieces · Board business left out while empty</span></div>
+</div>
+<div class="nb-checks"><p class="k-label">Before it goes</p><ul>
+<li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done<span>Subject written</span></li>
+<li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done<span>Inbox preview line written</span></li>
+<li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done<span>Every link works</span></li>
+<li><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Done<span>1 photo described</span></li>
+</ul></div>
+</div>
+</div>
+
+<div class="nb-strip">
+<section class="nb-card" aria-labelledby="nb-ppl"><div class="k-between"><h3 id="nb-ppl">People who write it</h3><a class="k-link k-small" href="#">History of this issue</a></div>
+<div class="nb-people">
+<div class="nb-person"><span class="nb-av nb-av-mm nb-av-lg">MM</span><b>Media manager (you)</b></div>
+<div class="nb-person"><span class="nb-av nb-av-pr nb-av-lg">PR</span><b>President</b></div>
+<div class="nb-person"><span class="nb-av nb-av-ad nb-av-lg">AD</span><b>LCA admin</b></div>
+</div>
+<p class="nb-cardnote">One person in a piece at a time; the others can read it until that person leaves. Every piece keeps its history, with Restore.</p></section>
+<section class="nb-card" aria-labelledby="nb-goes"><div class="k-between"><h3 id="nb-goes">Goes to</h3><a class="k-link k-small" href="#">Who gets it</a></div>
+<p class="nb-goes"><b>243 addresses:</b> every LCA member with an email address, one email per address.</p>
+<p class="nb-goes k-meta" style="display:flex;gap:8px;align-items:center;flex-wrap:nowrap"><span class="k-sample">Sample data</span><span>2 have unsubscribed · 1 address bounced (no longer works) and was removed</span></p>
+<p class="nb-cardnote">New members are added when they join. Leaving the newsletter does not stop tournament or membership email.</p></section>
+</div>
+</div>
+<footer class="k-footer nb-foot"><div class="k-wrap-wide nb-foot-in"><div class="k-row-sm" style="gap:10px"><svg class="nb-rook nb-rook-sm" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><b style="font-size:15px">Louisiana Chess Association</b></div><span class="k-meta">US Chess state affiliate · Louisiana's chess community since 1915</span><nav class="k-row" aria-label="Footer" style="gap:18px"><a href="#">Contact</a><a href="#">Website help</a><a href="#">Bylaws &amp; rules</a><a href="#">Donate</a></nav></div></footer>
+</div></div>
+<p class="nb-cap">While an issue is open the builder takes the full width; the admin sidebar folds into the crumb's "Admin" link. The preview is the real email at a smaller size.</p>
+</section>
+
+<section class="nb-sec" aria-labelledby="nb-fb">
+<div class="nb-flab"><span class="nb-code">B</span><h2 id="nb-fb">Managing · the same page's other states and panels, Mon, Nov 23, 2026</h2><span class="k-sample">Sample data · report figures, edit times, the leaders' own lines, November's cover lines, the From address</span></div>
+<div class="nb-stage">
+<div class="nb-bgrid">
+<div>
+<p class="nb-pl"><i>B1</i>The middle column with piece 2 selected</p>
+<div class="nb-form">
+<div class="nb-fh"><div><p class="k-label-gold" style="margin:0">Piece being written · 2 · Dates</p><h2>Coming up</h2>
+<p class="nb-who"><span class="nb-av nb-av-ad">AD</span>Last edited by LCA admin, Sat, Nov 21, 10:30 AM · <a href="#">History</a></p></div><span class="k-tag">4 events</span></div>
+<p class="nb-fhint" style="margin-top:10px;font-size:13.5px;color:#3d4556">Tick events from the site's calendar. Dates, places and buttons come from each event's page, so they stay right if it changes.</p>
+<ul class="nb-evs">
+<li class="nb-ev"><input type="checkbox" checked aria-label="Include"><span class="em-tile em-tile-lca"><span>Sat</span><b>5</b><span>Dec</span></span><div><p class="nb-evt">New Orleans Youth Chess December Meet</p><div class="nb-evm"><span class="k-tag k-tag-lca">LCA event</span><span>New Orleans · Scholastic</span><span class="k-tag k-tag-open">Registration open</span><span>Prints with Register</span></div><div class="nb-evown"><label>Your line (optional)</label><div class="nb-inp">Bring a friend: every section welcomes first-timers.</div></div></div></li>
+<li class="nb-ev"><input type="checkbox" checked aria-label="Include"><span class="em-tile"><span>Mon</span><b>7</b><span>Dec</span></span><div><p class="nb-evt">Picayune Chess Club quick-rated night</p><div class="nb-evm"><span class="em-dot" style="background:#2f6f9f;margin:0" aria-hidden="true"></span><span>Club date · 6:00 PM · IHOP, Picayune</span></div><div class="nb-evm"><a class="nb-ext" href="#">+ Add a line of your own</a></div></div></li>
+<li class="nb-ev"><input type="checkbox" checked aria-label="Include"><span class="em-tile em-tile-wide"><span>Sat to Mon</span><b>16 to 18</b><span>Jan</span></span><div><p class="nb-evt">Ken Ferguson Memorial</p><div class="nb-evm"><span class="k-tag k-tag-ext">Partner event</span><span>New Orleans · Downriver Chess</span><a class="nb-ext" href="#">Registers on the organizer's site ↗</a></div><div class="nb-evown"><label>Your line (optional)</label><div class="nb-inp">A blitz and a scholastic on Sun, Jan 17 as well.</div></div></div></li>
+<li class="nb-ev"><input type="checkbox" checked aria-label="Include"><span class="em-tile em-tile-lca"><span>Sat</span><b>8</b><span>May</span></span><div><p class="nb-evt">New Orleans Youth Chess Grand Prix Final</p><div class="nb-evm"><span class="k-tag k-tag-lca">LCA event</span><span>Ends the season that began Sat, Nov 14, 2026</span></div><div class="nb-evm"><a class="nb-ext" href="#">+ Add a line of your own</a></div></div></li>
+<li class="nb-ev nb-ev-off"><input type="checkbox" aria-label="Include"><span class="em-tile"><span>Every</span><b style="font-size:14px">Thu</b><span>Weekly</span></span><div><p class="nb-evt">New Orleans Westbank Chess Club · Rated Thursdays</p><div class="nb-evm"><span class="em-dot" style="background:#6b3f8f;margin:0" aria-hidden="true"></span><span>Club date · 7:30 PM to 11:30 PM, Gretna · Not ticked</span></div></div></li>
+</ul>
+<p class="nb-fhint" style="margin-top:4px">4 ticked of 9 on the calendar from Tue, Dec 1, 2026 · they print in date order. Partner events never get Register or a count.</p>
+</div>
+</div>
+
+<div class="nb-right">
+<div>
+<p class="nb-pl"><i>B2</i>The schedule and its send rule, in its three states <span class="k-num-badge nb-b nb-bs">5</span></p>
+<div class="nb-sched"><p><b>The 1st of each month at 8:00 AM Central.</b> This month: Tue, Dec 1, 2026.</p><div class="k-row-sm"><button class="k-btn k-btn-line k-btn-sm" type="button">Change this month's date or time</button><button class="k-btn k-btn-line k-btn-sm" type="button">Hold this issue</button></div></div>
+<div class="nb-states">
+<div class="nb-st"><div class="nb-st-top"><h4>December 2026</h4><span class="k-tag k-tag-soon">Draft</span></div><p>Goes out Tue, Dec 1, 2026 at 8:00 AM Central once marked ready.</p><p class="k-meta">Not ready by Mon, Nov 30, 2026 at 8:00 AM: a reminder to the three editors. Still not ready: it waits.</p><div class="nb-st-btns"><button class="k-btn k-btn-navy k-btn-sm" type="button">Mark as ready to send</button></div></div>
+<div class="nb-st"><div class="nb-st-top"><h4>December 2026</h4><span class="k-tag k-tag-open">Ready</span></div><p>Marked ready by the Media manager, Fri, Nov 27, 2026 at 4:10 PM. Goes out in 4 days.</p><p class="k-meta">Any change to a piece puts it back to Draft.</p><div class="nb-st-btns"><button class="k-btn k-btn-line k-btn-sm" type="button">Back to Draft</button></div></div>
+<div class="nb-st nb-st-sent"><div class="nb-st-top"><h4>November 2026</h4><span class="k-tag k-tag-lca">Sent</span></div><p>Sent Mon, Nov 16, 2026 at 8:00 AM Central to 243 addresses.</p><p class="k-meta">A sent email cannot change; its page on the site can be corrected.</p><div class="nb-st-btns"><a class="k-link k-small" href="#">See its report</a></div></div>
+</div>
+</div>
+<div class="nb-r2">
+<div><p class="nb-pl"><i>B3</i>The report on November 2026</p>
+<section class="nb-card"><div class="k-between"><h3>November 2026 · Sent Mon, Nov 16</h3></div>
+<div class="nb-figs"><div class="nb-fig"><b>243</b><span>Sent to</span></div><div class="nb-fig"><b>240</b><span>Delivered</span></div><div class="nb-fig"><b>3</b><span>Bounced</span></div><div class="nb-fig"><b>2</b><span>Unsubscribed</span></div><div class="nb-fig"><b>0</b><span>Spam reports</span></div></div>
+<p class="nb-cardnote">Bounced: the address did not take it. 1 no longer works and was removed; 2 were full inboxes.</p>
+<p class="nb-cardnote" style="display:flex;gap:8px;align-items:flex-start"><svg class="k-i-sm" viewBox="0 0 24 24" aria-hidden="true" style="margin-top:2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7.5v.5"></path></svg><span><b>LCA does not track who opens an email or what they click.</b></span></p></section></div>
+<div><p class="nb-pl"><i>B4</i>Settings</p>
+<section class="nb-card"><h3>Newsletter settings</h3>
+<dl class="nb-set"><dt>Sender name</dt><dd>Louisiana Chess Association</dd><dt>From address</dt><dd><span class="nb-mono" style="word-break:break-all">newsletter@news.louisianachess.org</span><br><span class="k-sample" style="margin-top:4px">Sample data: not decided</span></dd><dt>Replies go to</dt><dd><span class="nb-mono">LouisianaChess@gmail.com</span></dd></dl>
+<div class="k-row-sm" style="margin-top:12px"><button class="k-btn k-btn-line k-btn-sm" type="button">Edit settings</button></div></section></div>
+</div>
+<div><p class="nb-pl"><i>B5</i>Past issues, newest first</p>
+<section class="nb-card"><div class="nb-shelf">
+<div class="nb-issue"><div class="nb-sc nb-sc-draft" aria-hidden="true"><span class="nb-sc-top"><svg viewBox="0 0 100 100"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>Issue 2</span><b>December</b><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt=""><i>Thank you, Sulphur</i><i>Ken Ferguson returns</i><i>Two board seats are open</i></div>
+<div><p class="nb-iss-t">December 2026</p><div class="nb-iss-m"><span><span class="k-tag k-tag-soon">Draft</span></span><span>Goes out Tue, Dec 1, 2026</span></div><div class="nb-iss-a"><a class="k-btn k-btn-line k-btn-sm" href="#">Open</a></div></div></div>
+<div class="nb-issue"><div class="nb-sc" aria-hidden="true"><span class="nb-sc-top"><svg viewBox="0 0 100 100"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg>Issue 1</span><b>November</b><img src="/_blob/31327c563c905dc86de6c8fa4018ecd0" alt="" style="object-position:20% 60%"><i>Landry is state champion</i><i>Youth season under way</i><i>Welcome to the newsletter</i></div>
+<div><p class="nb-iss-t">November 2026</p><div class="nb-iss-m"><span><span class="k-tag k-tag-lca">Sent</span></span><span>Sent Mon, Nov 16, 2026 · 243 addresses</span></div><div class="nb-iss-a"><a class="k-btn k-btn-line k-btn-sm" href="#">Open</a><a class="k-btn k-btn-soft k-btn-sm" href="#">Start a new issue from this one</a></div></div></div>
+</div></section></div>
+</div>
+</div>
+</div>
+<p class="nb-cap">"Start a new issue from this one" copies the pieces and their order with the words cleared. Hold stops this month's issue only.</p>
+</section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3350}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

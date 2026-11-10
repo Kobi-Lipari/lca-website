@@ -1,0 +1,411 @@
+{
+ "results": [
+  {
+   "option": "A",
+   "files": [
+    "Newsletter-A.dc.html",
+    "Newsletter-A-2.dc.html"
+   ],
+   "fixed": {
+    "main_file": "Newsletter-A.dc.html",
+    "main_height": 3400,
+    "second_file": "Newsletter-A-2.dc.html",
+    "second_height": 2950,
+    "changes": [
+     "FIX 1, main board: removed legend note 5 (\"The mailing address line\"). The report note is now 5, and the B2 report panel's badge changed from 6 to 5. The B4 Settings panel lost its badge 5 and its \"Mailing address\" row (the \"Not set\" text and the \"Add an address\" link), so it now shows only Sender name, From address and Replies go to. The outline footnote \"Added to every issue\" dropped \"No address line until one is set.\" The grey note's K's feedback line now ends \"no postal address in any email, as K decided.\" in place of \"no physical address.\" The unused .na-slot CSS rule is gone.",
+     "FIX 1, part 2: removed the dashed address slot and its badge 5 from the computer email's footer, and the slot from the dark Phone 2 footer. Both footers now end with \"You get this newsletter because you are an LCA member.\" and the three links. Removed legend note 5 (\"The address slot\"). The unsubscribe note is now 5, and the frame E heading badge changed from 6 to 5. The grey note's K's feedback line now ends \"no postal address in any email, as K decided.\" in place of \"no physical address shown.\" The unused .em-slot and .np-dark .em-slot CSS rules are gone. Phone 1 and frame E had no address text to remove.",
+     "FIX 2, main board, B2 report on November 2026: the label is now the whole word \"Unsubscribed\" with no soft hyphen and with white-space:nowrap. To give it room, the five figure boxes now size to their contents (grid columns auto, gap 6px, box side padding 8px), so \"Unsubscribed\" sits on one line and \"Delivered\" no longer runs past its box. Part 2 has no report box.",
+     "FIX 3, main board, the \"Check before it goes\" checklist: \"6 links work\" now reads \"Every link works\". The full December issue as drawn on part 2 has 14 links, and 13 while Board business is still empty on Mon, Nov 23, so \"6\" was wrong either way.",
+     "Both boards were rendered again and checked in crops at full scale. There is no overlap, overflow or clipping. Without a fixed height the main board comes to 3389px and part 2 to 2941px, so the declared heights stay at 3400 and 2950 (root style and $preview). The skeleton is unchanged, opening and closing tags still match, and neither file has an em dash, en dash or soft hyphen."
+    ],
+    "legend_notes": [
+     "1 The sheet is the email. One white column, the email's own width and type: what the leaders type is exactly what arrives. The grey margin lines (handles, who edited, History) are never sent.",
+     "2 One person in a section at a time. \"President is editing\" locks that section for the others until they leave it. Every section keeps its History, with Restore (B5).",
+     "3 An empty section is left out. Nothing to say about the board this month? Leave it empty and its heading does not go out.",
+     "4 The send rule, open for K: someone must mark the issue ready. The editors get a reminder the day before; if no one marks it, it waits and nothing is sent.",
+     "5 A report without tracking. Sent, delivered, bounced, unsubscribed, spam reports. LCA does not track who opens an email or what they click (B2)."
+    ],
+    "unresolved": [
+     "The main board's height is 3400. That is the cap itself, not strictly under it. The content measures 3389px without a fixed height and rounds up to 3400, the same declared height the board had before. Bringing it lower would mean changes outside this fix list.",
+     "Not changed, outside the fix list: part 1 draws Board business as empty and left out on Mon, Nov 23, but part 2's received email (Tue, Dec 1) has a filled Board business section with a Minutes link. That is consistent if someone wrote it later, which is one reason the checklist now says \"Every link works\" with no figure.",
+     "Process note: one time, to measure label widths, I put a temporary script in docs-wt/docs/redesign/tools and deleted it right away. Nothing is left there, and none of the other files under canvas-out/project, docs-wt or the repository were changed."
+    ]
+   },
+   "checked": {
+    "main_height": 3350,
+    "second_height": 2950,
+    "address_mentions_left": [],
+    "checks": [
+     {
+      "item": "(1) address, mailing, postal, Not set",
+      "verdict": "fixed by me",
+      "detail": "Nothing about a mailing or postal address is left on either board. The only 'postal' hits are the grey note's 'no postal address in any email, as K decided.' on both boards, which FIX 1(e) asks for. 'Mailing' and 'Not set' have no hits. The other 'address' hits are all email addresses and stay: 243 addresses, one email per address, 1 address bounced, Bounced: the address no longer works, Goes only to your own address, From address, Replies go to. One fix by me: part 2's sender line badge 'Sample data · address not decided' could be read as a postal address, so it now reads 'Sample data · from address not decided'."
+     },
+     {
+      "item": "(2) Email footers end cleanly",
+      "verdict": "fixed by me",
+      "detail": "The computer email on part 2 ends with the sentence and the three links, with no box or stray rule. I set the last footer paragraph's bottom margin to 0, so the space under the links matches the letter's padding. Dark Phone 2 still had about 95px of empty dark screen between the links and the bottom bar, where the slot used to be. I now pin the scroll content to the bottom (flex-end), so the footer sits just above the bottom bar. I replaced the clipped '… free to join.' fragment with the full Baton Rouge Chess Club paragraph so the screen fills naturally. Phone 1 shows only the top of the letter and has no footer. Part 1 has no reduced preview of the email."
+     },
+     {
+      "item": "(3) Legend numbers and badges",
+      "verdict": "fixed by me",
+      "detail": "Both boards have legend notes 1 to 5 and design badges 1 to 5, with no gap. Main board: 1 sheet, 2 lock bar, 3 empty Board business, 4 send-rule box, 5 B2 report. Part 2: 1 inbox, 2 email, 3 Results photo, 4 dark phone, 5 frame E heading. After my phone change, badge 4 was covering words in the Baton Rouge line, so I moved it to the empty centre of the phone's nav bar. It is still on the dark phone that note 4 is about."
+     },
+     {
+      "item": "(4) Settings panel without the removed row",
+      "verdict": "holds",
+      "detail": "B4 shows three rows: Sender name, From address (with its Sample data · not decided badge) and Replies go to. It reads well, with no gap, no orphan badge and no leftover divider. Part 2 has no Settings panel."
+     },
+     {
+      "item": "(5) 'Unsubscribed' whole",
+      "verdict": "holds",
+      "detail": "Checked in a full-scale crop: the B2 box shows 'Unsubscribed' on one line, with no soft hyphen in either file. 'Spam reports' wraps to two lines inside its box. That is readable and not part of FIX 2."
+     },
+     {
+      "item": "(6) Link count",
+      "verdict": "holds",
+      "detail": "The checklist reads 'Every link works' with no figure. No other link count is on either board."
+     },
+     {
+      "item": "(7) No em or en dashes",
+      "verdict": "holds",
+      "detail": "Neither file contains U+2014, U+2013, a soft hyphen or their entities. Ranges use 'to'."
+     },
+     {
+      "item": "(8) Overlap, overflow, clipping, heights",
+      "verdict": "fixed by me",
+      "detail": "The main board measured 3389px, which rounded to 3400, the cap itself. I trimmed spacing to bring it to 3349px: root padding 20/16 to 14/12, desk padding 18/20 to 14/16, the gap between letter sections 10+10 to 8+8, and the 'does not track' line from 13.5px to 13px so it fits on one line. The declared height and $preview are now 3350. Part 2 measures 2941px, so 2950 stays for the root and $preview. A full-scale render of both boards shows no overlap, overflow or clipping. The only element wider than its box is the inbox subject line, which is cut off with '…' on purpose."
+     },
+     {
+      "item": "(9) Skeleton",
+      "verdict": "holds",
+      "detail": "Each file keeps its doctype, charset, title, one support.js line, one kit stylesheet link, x-dc and helmet with the Google Fonts link and one style block, and the closing data-dc-script with $preview. There are no {{holes}}, no iframes and no animation. Every tag is closed and every attribute is quoted (checked with a parser)."
+     }
+    ],
+    "changes": [
+     "Newsletter-A-2.dc.html: dark Phone 2's email area is now pinned to the bottom (display:flex; flex-direction:column; justify-content:flex-end; padding-bottom:16px), so the footer links sit just above the bottom bar with no empty space where the address slot was. The clipped '… free to join.' fragment is replaced by the full Baton Rouge Chess Club paragraph, with its green dot.",
+     "Newsletter-A-2.dc.html: badge 4 moved from top:120px; right:10px, where it covered email text, to the empty centre of the phone's nav bar (top:53px; left:calc(50% - 14px)).",
+     "Newsletter-A-2.dc.html: added .em-foot p:last-child{margin-bottom:0}, so the footer ends evenly after the three links.",
+     "Newsletter-A-2.dc.html: the sender line badge 'Sample data · address not decided' now reads 'Sample data · from address not decided', so it cannot be read as a postal address.",
+     "Newsletter-A.dc.html: spacing trimmed to bring the board under the cap: root padding 20px/16px to 14px/12px, .na-desk padding 18px/20px to 14px/16px, .na-part margin-top and padding-top 10px to 8px, .na-notrack font 13.5px to 13px (now one line). The root height and $preview height went from 3400 to 3350 (rendered 3349px)."
+    ],
+    "remaining_concerns": [
+     "The main board measures 3349px against a declared 3350, which leaves 1px. If the canvas renders fonts a little taller, the extra would eat into the 12px bottom padding before any content is clipped.",
+     "Not in the fix list: B3 Past issues shows the November 2026 issue as sent Mon, Nov 16, 2026. The board's schedule is the 1st of each month, so this may read as inconsistent; it could be presented as a first, one-off issue or moved to a 1st.",
+     "Not in the fix list: part 1 shows Board business as empty and left out on Mon, Nov 23, but part 2's received email (Tue, Dec 1) has a filled Board business section with a Minutes link. That is plausible if someone wrote it later; the checklist says 'Every link works' with no figure, so nothing on the board is false.",
+     "Small, left as is: in part 2's grey note, open item 1 wraps with '1).' alone on the next line, and 'Spam reports' in the B2 report wraps to two lines. Both are readable.",
+     "Renders for review: <scratchpad>/render/out/Newsletter-A-fix.full.png and <scratchpad>/render/out/Newsletter-A-2-fix.full.png (full scale), and <scratchpad>/render/out/Newsletter-A-fix-half.full.png (half scale). My measuring script is at <scratchpad>/render/tools/measure.mjs, in the scratchpad only. Nothing under docs-wt, the repository or other canvas files was touched."
+    ]
+   }
+  },
+  {
+   "option": "B",
+   "files": [
+    "Newsletter-B.dc.html",
+    "Newsletter-B-2.dc.html"
+   ],
+   "fixed": {
+    "main_file": "Newsletter-B.dc.html",
+    "main_height": 3350,
+    "second_file": "Newsletter-B-2.dc.html",
+    "second_height": 2950,
+    "changes": [
+     "FIX 1, main board: removed legend note 6 ('The address slot...'). It was the last note, so notes 1 to 5 and their badges on the design keep their numbers with no gap.",
+     "FIX 1, main board: removed the badge 6 from the B4 Settings label and the whole 'Mailing address' row (the 'Not set' tag, 'This line is left out of emails until an address is added.' and the 'Add an address' link). Sender name, From address and Replies go to are unchanged.",
+     "FIX 1, main board: in the grey note, 'K's feedback applied' now ends '...leaving stops this list only; no postal address in any email, as K decided.' (it used to say 'no mailing address printed'). The reduced email preview in frame A fades out before its footer, so it never showed an address slot and needed no change.",
+     "FIX 1, part 2: removed the dashed address slot and its badge 6 from both email footers (the computer email in frame C and the dark phone 2 in frame D). Each footer now runs: 'You get this newsletter because you are an LCA member.', then the three links, then the existing line 'Louisiana Chess Association · US Chess state affiliate' with the rook mark, which is kept because it is not about an address. Phone 1 shows only the top of the email, so it had no slot.",
+     "FIX 1, part 2: removed legend note 6 ('The address slot under the footer...'). The legend now shows notes 2, 3 and 4 under 'numbers as on part 1', and each still matches its badge on the design.",
+     "FIX 1, part 2: in the grey note, 'K's feedback applied' now reads 'Every member gets it; one click leaves this list only; no postal address in any email, as K decided.' (it used to say 'no address printed').",
+     "FIX 2: no change needed. The only report box is B3 on the main board, and its label 'Unsubscribed' renders whole on one line with no soft hyphen. I checked this in a crop at full scale. Part 2 has no report box.",
+     "FIX 3, main board: changed the 'Before it goes' checklist item from '6 links work' to 'Every link works'. The full issue as drawn has at least 15 links: 'Read this issue on the site', 3 cover lines, Register, Club page, 'Registers on the organizer's site', Scholastic, Full results, 2 Club page links, Scholastic, and the 3 footer links. The top of piece 4 (From the clubs) is never drawn, so no exact figure can be proved, and the line uses no figure.",
+     "FIX 4, part 2: changed the title strip heading to 'Newsletter · B · The issue, as it arrives'. The small line above it still ends 'PART 2 OF 2'. The <title> in the skeleton is unchanged, as the skeleton rule requires.",
+     "Heights: after the fixes the main board measures 3324px and part 2 measures 2906px. Rounded up to the next 50, they stay at the declared 3350 (root and $preview) and 2950 (root and $preview), under the 3400 and 3000 limits. Both files re-rendered at 0.5 and 1.0 and viewed in full and in crops: no overlap, clipping or overflow, every tag closed, and no em or en dashes."
+    ],
+    "legend_notes": [
+     "1 Three columns. The pieces on the left, the piece being written in the middle, the email as members get it on the right, updating as anyone types, with the part being changed outlined.",
+     "2 The cover, and what the leaders bring each month: one photo with its one-line description and three cover lines, ticked from the pieces' own headlines.",
+     "3 No photo this month? The cover falls back to the rook mark on navy, so an issue never waits for a picture (part 2, frame D).",
+     "4 An empty piece is left out. Board business says so on its card, and the email closes up around it (part 2, frame C).",
+     "5 The send rule, open for K. Out on the 1st at 8:00 AM Central once someone marks it ready; a reminder the day before; otherwise it waits and nothing is sent."
+    ],
+    "unresolved": [
+     "Without the address slot, the dark phone 2 in part 2 ends with a short plain dark area below the footer, inside the phone screen. It reads as the end of the email in the mail app, so I left it as it is rather than restyle the phone.",
+     "The .em-slot CSS rules are still in the <style> block of both files, but nothing uses them now. I left them because the fix list asks for no restyling. They are harmless.",
+     "While measuring I briefly wrote a helper script into docs-wt/docs/redesign/tools/ and deleted it straight away. git status in docs-wt is clean, and the helper now lives at <scratchpad>/render/measure.mjs."
+    ]
+   },
+   "checked": {
+    "main_height": 3350,
+    "second_height": 2950,
+    "address_mentions_left": [],
+    "checks": [
+     {
+      "item": "(1) No mailing or postal address mentions left",
+      "verdict": "holds",
+      "detail": "I searched both files for address, mailing, postal and Not set. On the main board the hits are the grey note's 'no postal address in any email, as K decided', 'the From address' (in two Sample data badges and in Settings), '243 addresses: every LCA member with an email address, one email per address', '1 address bounced (no longer works)', 'Bounced: the address did not take it' and 'Sent ... to 243 addresses' (twice). On part 2 the hits are the grey note's 'no postal address in any email, as K decided', 'the From address' (in two Sample data badges) and 'Undo puts the address back at once' in frame E's caption, which means the reader's email address. None of these is about a mailing address. 'Not set', 'mailing' and 'Add an address' no longer appear anywhere."
+     },
+     {
+      "item": "(2) Every email footer ends cleanly after the three links",
+      "verdict": "fixed by me",
+      "detail": "The computer email in part 2's frame C ends: the sentence, the three links, then the rook line 'Louisiana Chess Association · US Chess state affiliate'. There is no empty box or stray rule. Phone 1 and frame A's small preview fade out before the footer, so neither draws one. The dark phone 2 was not clean: its footer stopped about 62px above the bottom of the screen, which left a blank dark band where the address slot used to be. I opened up its spacing a little and made the footer reach the bottom of the screen, so the email now ends flush with no leftover band."
+     },
+     {
+      "item": "(3) Legend numbers run without a gap and every badge matches a note",
+      "verdict": "holds",
+      "detail": "Main board: notes 1 to 5. Badges on the design: 1 on 'What members will get'; 2 on the Cover form; 3 on 'No photo this month?'; 4 on the Board business card; 5 on the send rule and on the B2 label. No badge 6 is left. Part 2: notes 2, 3 and 4 under 'numbers as on part 1'. Badges: 2 on the email cover, 3 on 'No photo this month', 4 on the 'Continues' cut. No other badges are on part 2."
+     },
+     {
+      "item": "(4) Settings panel reads well without the removed row",
+      "verdict": "holds",
+      "detail": "B4 now has Sender name, From address (with its 'Sample data: not decided' badge) and Replies go to, then Edit settings. In a full-scale crop it reads cleanly with no gap. Part 2 has no Settings panel."
+     },
+     {
+      "item": "(5) 'Unsubscribed' is whole wherever it appears",
+      "verdict": "holds",
+      "detail": "B3's figure reads '2 Unsubscribed' on one line. The browser measures it as a single line box 19px tall, and it has no soft hyphen. The only other uses are in lower case in running text ('2 have unsubscribed'), and those do not break."
+     },
+     {
+      "item": "(6) Link counts are true or replaced",
+      "verdict": "holds",
+      "detail": "The main board's 'Before it goes' list reads 'Done Every link works', with no figure. No other link count appears on either board."
+     },
+     {
+      "item": "(7) No em dash and no en dash",
+      "verdict": "holds",
+      "detail": "I searched for both characters and for their HTML entities (&mdash;, &ndash;, &#8212;, &#8211;). There are 0 in each file. Ranges use 'to'."
+     },
+     {
+      "item": "(8) Nothing overlaps or clips, and heights match the render",
+      "verdict": "holds",
+      "detail": "With the height set to auto, the main board measures 3324px and part 2 measures 2906px after my change. Rounded up to the next 50, that is 3350 and 2950, which are exactly the declared root heights and $preview heights, under the 3400 and 3000 limits. An automatic check found no element overflowing. I viewed both boards at 1.0 in 700 to 900px slices and found no overlap, clipping or unreadable contrast."
+     },
+     {
+      "item": "(9) File skeleton intact",
+      "verdict": "holds",
+      "detail": "Both files have: doctype, charset and title; the support.js script line; the kit link /_blob/6107adb451dbab26ee5d89f4189b81f8 once; one <x-dc><helmet> with the Google Fonts link and one <style>; and the data-dc-script block with $preview 1440 wide. A parser check found every tag closed and no unquoted attribute values, with no {{holes}}, iframes or animation."
+     },
+     {
+      "item": "(10) Part 2 heading",
+      "verdict": "holds",
+      "detail": "The h1 reads 'Newsletter · B · The issue, as it arrives'. The kicker above it still ends 'PART 2 OF 2'. The <title> in the skeleton is unchanged."
+     }
+    ],
+    "changes": [
+     "Newsletter-B-2.dc.html: fixed the leftover blank band under the dark phone 2's footer, where the address slot used to be. The phone's clubs, piece and footer spacing are now a little looser: club 13px, piece 22px, footer 20px 16px 24px, rook line 14px. The email is now a flex column in that phone with the footer set to grow, so the footer reaches the bottom of the screen and nothing empty shows below it. The part 2 height is unchanged at 2906px, so it stays declared at 2950.",
+     "Both files: removed the unused .em-slot rules, which styled the address slot: 2 rules on the main board, 3 on part 2 including the dark-mode one. Nothing on the page used them, and neither render changed.",
+     "No copy changes were needed. The other designer's fixes for FIX 1 to FIX 4 held when I checked them."
+    ],
+    "remaining_concerns": [
+     "The dark phone 2 now shows about 57px of footer colour under the rook line, at the rounded bottom of the screen. It reads as the email scrolled to its end, but if K wants the footer tighter, the content above it would need to grow instead.",
+     "The other designer's claimed measurements (3324px and 2906px) are correct. However, the helper they named, <scratchpad>/render/measure.mjs, measures '.nc-root', which is another option's root class, not B's '.nb-root'. Those figures must have come from somewhere else. I measured both boards again with my own script, <scratchpad>/chk-b/m.mjs.",
+     "My measuring script was first written to <scratchpad>/chk/m.mjs, a scratchpad folder that already held files from other work. If a file named m.mjs was already there, it was overwritten. My copy and crops are now in <scratchpad>/chk-b/.",
+     "The checked boxes use the bare boolean 'checked' attribute, which has no quoted value. This is valid HTML, and I left it as the other boards draw it."
+    ]
+   }
+  },
+  {
+   "option": "C",
+   "files": [
+    "Newsletter-C.dc.html",
+    "Newsletter-C-2.dc.html"
+   ],
+   "fixed": {
+    "main_file": "Newsletter-C.dc.html",
+    "main_height": 3350,
+    "second_file": "Newsletter-C-2.dc.html",
+    "second_height": 2950,
+    "changes": [
+     "FIX 1, main board: in the grey note's K's feedback line, 'no physical address.' now reads 'no postal address in any email, as K decided.'",
+     "FIX 1, main board: removed legend note 6 ('The mailing address line...'). Notes 1 to 5 stay as they were and keep their numbers, so no badge needed renumbering.",
+     "FIX 1, main board: removed badge 6 from the B5 Settings panel, and removed the 'Mailing address' row with its 'Not set' tag, its sentence and the 'Add an address' link. The reduced email preview in the right rail is cut before the footer, so it never showed the slot. Also removed the unused .nce-slot CSS rule.",
+     "FIX 1, part 2: in the grey note's K's feedback line, 'no physical address shown.' now reads 'no postal address in any email, as K decided.'",
+     "FIX 1, part 2: removed the dashed address slot and its badge 6 from the computer email's footer. Removed the dashed slot from the dark phone's footer too (phone 1 ends before the footer). Both footers now end with 'You get this newsletter because you are an LCA member.' and the three links. Removed the .nce-slot and .np-dark .nce-slot CSS rules and added .nce-foot p:last-child{margin-bottom:0}, so the footer ends cleanly under the links.",
+     "FIX 1, part 2: legend note 6 was about two things, the address slot and one click to leave. I removed the address part. It now reads 'One click to leave. Leaving stops this list only (frame E).' and keeps number 6, so frame E's badge 6 still points at it. The numbers 1 to 6 run with no gap.",
+     "FIX 2, main board: the November report box showed 'Unsub-scribed' because of a soft hyphen. I removed the &shy; and gave the five boxes uneven widths (64/76/72/102/66 fr) so 'Unsubscribed' fits on one line at the same 12px size. I measured each label against its box and all five fit. Part 2 has no report box.",
+     "FIX 3: I counted every link in the full December issue as this option draws it, footer included: 'Read this issue on the site' 1, 'renew' 1, Coming up 5, Results 2, From the clubs 4, News you may have missed 6, footer 3. That makes 22, so 'Done, 22 of 22' is true and stays as it is.",
+     "Heights: with the root set to auto, the main board measures 3337px and part 2 measures 2947px. The declared heights stay at 3350 and 2950 on both the root and $preview. Both files still close every tag, and neither contains an en dash or em dash."
+    ],
+    "legend_notes": [
+     "1 Most blocks fill themselves: Coming up from the calendar, Results from finished events, From the clubs from club pages, News you may have missed from News. Each card says where.",
+     "2 The note is the only part someone writes, and it is optional: the issue goes out without it. Board business stays left out until someone writes in it.",
+     "3 The send rule, open for K: it goes out by itself, as it stands. \"Hold this issue\" stops this month only; a month with nothing at all is not sent and the editors are told.",
+     "4 What changed since you last looked: a dated list of what the site added on its own, so nobody is surprised by what goes out (B1).",
+     "5 Partner events never get Register. The Ken Ferguson Memorial arrives marked \"Partner event · Registers on the organizer's site ↗\", with no count."
+    ],
+    "unresolved": [
+     "Part 2, legend note 6: the old note covered both the address slot and one click to leave, and frame E's badge 6 points at it. I removed only the address part, so part 2 still has six notes, the last reading 'One click to leave. Leaving stops this list only (frame E).' To get five notes there instead, delete that note and frame E's badge 6. I left them because the leaving part is not about an address."
+    ]
+   },
+   "checked": {
+    "main_height": 3350,
+    "second_height": 2950,
+    "address_mentions_left": [],
+    "checks": [
+     {
+      "item": "(1) Mentions of a mailing or postal address",
+      "verdict": "holds",
+      "detail": "I searched both files and their rendered text for address, mailing, postal and Not set. The only postal hit on each board is the new grey-note clause \"no postal address in any email, as K decided.\" The other hits are email addresses and stay: From address (Settings, the C and D sample badges, the B frame sample badge), \"Replies go to\", \"243 addresses\", \"one email per address\", \"1 address bounced\", \"Bounced means the address no longer works\" and \"to the address you sign in with\". A diff against the pre-fix render shows these removals: legend note 6, the B5 badge 6 and the Mailing address row with its Not set tag and Add an address link (main board); the two dashed slots, the slot's badge 6 and the address half of note 6 (part 2)."
+     },
+     {
+      "item": "(2) Email footers end cleanly after the three links",
+      "verdict": "holds",
+      "detail": "Part 2's computer email and dark phone 2 both end with \"You get this newsletter because you are an LCA member.\" and then Unsubscribe from the newsletter, Choose which LCA emails you get, and LCA on Facebook ↗. The new .nce-foot p:last-child{margin-bottom:0} rule leaves only the footer's own 22px or 18px padding under the links. There is no empty box, stray rule or extra gap. Phone 1 and the reduced preview on the main board stop before the footer, so neither ever had a slot."
+     },
+     {
+      "item": "(3) Legend numbers and badges",
+      "verdict": "holds",
+      "detail": "Main board: notes 1 to 5. The badges are 1 (Coming up), 2 (note card), 3 (banner and B2), 4 (B1) and 5 (partner row). Every note has a badge, every badge has a note, and no orphan 6 is left. Part 2: notes 1 to 6. The badges are 1 (inbox), 2 (Coming up rule), 3 (block end link), 4 (Ken Ferguson row), 5 (dark phone) and 6 (frame E heading). The numbers run with no gap and every badge points at its note."
+     },
+     {
+      "item": "(4) Settings panel without the removed row",
+      "verdict": "holds",
+      "detail": "B5 now reads Sender name, From address (with its Sample data badge) and Replies go to, then Blocks and their order. The spacing is even and nothing is left hanging. Part 2 has no Settings panel."
+     },
+     {
+      "item": "(5) \"Unsubscribed\" whole",
+      "verdict": "holds",
+      "detail": "The &shy; is gone and the five report boxes use uneven widths. Measured in the browser, the \"Unsubscribed\" span is 83px wide in a 99px box and sits on one line. \"Spam reports\" breaks between its two words, which is a normal wrap. Part 2 has no report box."
+     },
+     {
+      "item": "(6) Link count",
+      "verdict": "holds",
+      "detail": "I recounted the full December issue as drawn. Top link 1. Renew 1. Coming up 5 (Register, two Details, Registers on the organizer's site ↗, See every tournament). Results 2. From the clubs 4 (three Club page links and See every club, drawn on part 1). News 6 (three headlines, Scholastic, Minutes, See all news). Footer 3. That makes 22, so \"Done, 22 of 22\" is true."
+     },
+     {
+      "item": "(7) No em or en dashes",
+      "verdict": "holds",
+      "detail": "Neither file contains U+2013, U+2014, &mdash; or &ndash;, in the source or in the rendered text."
+     },
+     {
+      "item": "(8) Overlap, overflow, clipping and heights",
+      "verdict": "holds",
+      "detail": "I rendered both boards at scale 1, cropped them into 900px bands and viewed every band. Nothing overlaps or clips. The script check flagged only the inbox row's preview text, which is cut off with an ellipsis on purpose, as an inbox does. With the root set to auto height the boards measure 3337px (main) and 2947px (part 2), so the declared heights of 3350 and 2950 match on the root and in $preview, both under the 3400 and 3000 limits. render.mjs also ran with the required output names, Newsletter-C-fix and Newsletter-C-2-fix."
+     },
+     {
+      "item": "(9) File skeleton",
+      "verdict": "holds",
+      "detail": "Both files keep the doctype, charset and title, the support.js line, the kit link /_blob/6107adb451dbab26ee5d89f4189b81f8, and <x-dc><helmet> with the Google Fonts link and one <style> block. The data-dc-script block's $preview matches the root height. A parser check finds every tag balanced. There are no {{holes}}, iframes or animations."
+     }
+    ],
+    "changes": [
+     "None. All 9 checks passed, so I left both files as the other designer saved them."
+    ],
+    "remaining_concerns": [
+     "Part 2 still has six legend notes. Note 6 now reads \"One click to leave. Leaving stops this list only (frame E).\" and frame E's badge 6 points at it. I kept it because it is about leaving, not about an address, and removing it would change a note the fix list says to leave alone. If K wants exactly five notes there, delete that note and frame E's badge 6.",
+     "The phones' status bars show the clock as \"8:04\" and \"8:06\" with no AM. This is the phone's own clock, not text in the email, so I left it. If the times rule is meant to cover it, it should read \"8:04 AM\".",
+     "The main board ends about 13px above its declared 3350 and part 2 about 3px above 2950. Both are inside the rounding to the next 50."
+    ]
+   }
+  },
+  {
+   "option": "D",
+   "files": [
+    "Newsletter-D.dc.html",
+    "Newsletter-D-2.dc.html"
+   ],
+   "fixed": {
+    "main_file": "Newsletter-D.dc.html",
+    "main_height": 3350,
+    "second_file": "Newsletter-D-2.dc.html",
+    "second_height": 2950,
+    "changes": [
+     "FIX 1, main board: removed legend note 6 (\"The mailing address line...\"). It was the last note, so notes 1 to 5 and their badges keep their numbers with no gap. Also removed badge 6 from the B6 Settings panel.",
+     "FIX 1, main board: removed the \"Mailing address\" row from B6 Settings, including the \"Not set...\" slot and the \"Add an address\" link.",
+     "FIX 1, main board: the front page's \"Added to every issue\" line now reads \"the footer and its links.\" The sentence \"No address line until one is set.\" is gone.",
+     "FIX 1, main board: the grey note's \"K's feedback applied\" now ends \"...opting out stops this list only; no postal address in any email, as K decided.\"",
+     "FIX 1, part 2: removed the dashed address slot from the computer email footer, along with its badge 6. Also removed it from the dark phone's footer. Phone 1 draws no footer, so nothing changed there. Both footers now end with the member sentence and the three links.",
+     "FIX 1, part 2: note 6 was \"The address slot, and leaving in one click.\" It now reads \"Leaving in one click. Leaving stops this list only (E).\" Badge 6 moved from the old slot to the computer email's footer links (the Unsubscribe link). Six notes remain, with no gaps.",
+     "FIX 1, part 2: the grey note's \"K's feedback applied\" now ends \"...opting out per list; no postal address in any email, as K decided.\"",
+     "FIX 2: the only Unsubscribed label is the B4 report box on the main board. It already shows \"Unsubscribed\" whole on one line in the render (no soft hyphen in the file), so nothing changed. Part 2 has no report box.",
+     "FIX 3, main board: the checklist line \"6 links work\" now reads \"Every link works\". The figure was wrong: the issue drawn in full has 11 links.",
+     "FIX 4, both boards: replaced the lettered-disc CSS (.pc/.pw/.pb/.pp) with chess figures. Each piece is now a solid Unicode character plus U+FE0E: king &#x265A;, queen &#x265B;, rook &#x265C;, bishop &#x265D;, knight &#x265E;, pawn &#x265F;. Font stack: \"Noto Sans Symbols 2\", \"Segoe UI Symbol\", \"Apple Symbols\", \"DejaVu Sans\", sans-serif. Each figure is 78% of its square and centred. Black pieces have a navy #1a2744 fill. White pieces have a white fill with a navy -webkit-text-stroke (at least 1.2px, scaling with the square) and paint-order: stroke fill.",
+     "FIX 4: replaced 84 pieces in total, 21 on each of 4 boards. Main board: the front page board and the side panel board. Part 2: the computer email board and the dark phone board. The queue's empty boards stay empty.",
+     "FIX 4: in the render the figures are real chess glyphs, not empty boxes or emoji. I checked every board square by square in a 2x crop against the given position, and all four match. Rank 8 is at the top, file a at the left, a1 is dark. The piece lists in words are unchanged, and the answer is printed nowhere.",
+     "FIX 4, both boards: the title strip's \"Built from\" said \"Scan-H (board and pieces)\". It now says \"Scan-H (board)\", because the pieces no longer come from the scanner boards. No legend note or grey note mentioned discs.",
+     "Heights: the main board's natural height is now 3338px, so its declared root height and $preview went from 3400 to 3350. Part 2's natural height is 2915px, so it stays at 2950.",
+     "Checks: the skeleton is unchanged, tags balance, and there are no em dashes, en dashes or soft hyphens. Every other element is unchanged."
+    ],
+    "legend_notes": [
+     "1 The front page is the editor. Click a place on it and write it in the panel on the right; the list on the left says how far each place has got.",
+     "2 A masthead with a name. \"Louisiana Chess Bulletin\" is a working name, open for K; \"LCA Newsletter\" is the plain fallback. The volume line counts itself.",
+     "3 Position of the month. Paste a position or set the pieces. The answer is kept back for next month, and the text for people who cannot see the board is written for you.",
+     "4 The queue. Positions and archive items prepared months ahead, so a busy month still has its chess (B2).",
+     "5 The send rule, open for K: someone marks the issue ready. The three editors get a reminder the day before; if no one marks it, it waits and nothing is sent."
+    ],
+    "unresolved": [
+     "Part 2's note 6 covered both the address slot and leaving in one click. I removed only the address part and kept \"Leaving in one click. Leaving stops this list only (E).\" as note 6, with its badge moved to the email's Unsubscribe links. So part 2 still has six notes. If K wants five, delete that note and the badge on the email footer.",
+     "The figures were checked with DejaVu Sans, the only chess-capable font in the renderer. On the canvas the glyph shapes may come from Segoe UI Symbol or Apple Symbols instead. The text presentation selector should prevent emoji, but this could not be seen on those platforms.",
+     "The unused CSS rules .nd-slot (main) and .em-slot (part 2) are still in the style block. They affect nothing visible; I left them so the file has no extra rewording."
+    ]
+   },
+   "checked": {
+    "main_height": 3350,
+    "second_height": 2950,
+    "address_mentions_left": [],
+    "checks": [
+     {
+      "item": "(1) Address words: \"address\", \"mailing\", \"postal\", \"Not set\"",
+      "verdict": "holds",
+      "detail": "No mention of a mailing or postal address is left except the grey note's agreed clause \"no postal address in any email, as K decided\", which is on both boards. The remaining hits are all allowed. Main board: \"243 addresses\" (Goes to card, B3 Sent card, B5 November row), \"Every LCA member with an email address, one email per address\", \"1 address bounced and was removed\", \"Bounced: the address no longer works\" (B4), and B6 \"From address\" plus \"Replies go to\". Part 2: the \"from address\" Sample data badges in the title strip and on frame C. \"Mailing\" and \"Not set\" appear nowhere. The only leftovers are the unused CSS rules .nd-slot and .em-slot, which draw nothing and contain no address words."
+     },
+     {
+      "item": "(2) Email footers end cleanly after the three links",
+      "verdict": "fixed by me",
+      "detail": "The computer email (C) ends with the rule, \"You get this newsletter because you are an LCA member.\" and the three links, then the sheet's normal bottom padding. Phone 1 draws only the top of the email, so it has no footer. Phone 2 (dark) had about 60px of empty dark screen under the links where the slot used to be. I filled that space with the same Archive / Reply / Delete bar Phone 1 uses, in dark colours, so the footer now ends right above the phone's bar. Part 1 draws no reduced copy of the email footer; its \"Added to every issue: the footer and its links.\" strip reads cleanly."
+     },
+     {
+      "item": "(3) Legend numbers and badges",
+      "verdict": "holds",
+      "detail": "Main board: notes 1 to 5 with no gap. Badges: 1 on the front page sheet, 2 on the masthead, 3 on Position of the month, 4 on the queue line and on B2 (both point at the queue note), 5 on the status card. Every note has a badge and every badge has a note. Part 2: notes 1 to 6. Badges: 1 on the inbox row (subject), 2 on the masthead, 3 on Position of the month, 4 on Last month's answer, 5 on the dark phone, 6 on the footer links (leaving in one click, pointing at E). Each badge appears exactly once."
+     },
+     {
+      "item": "(4) Settings panel without the removed row",
+      "verdict": "holds",
+      "detail": "B6 now reads Masthead name (with Working name), Sender name, From address (with Sample data), Replies go to. The rows line up and there is no gap or stray rule. Part 2 has no Settings panel."
+     },
+     {
+      "item": "(5) \"Unsubscribed\" whole",
+      "verdict": "holds",
+      "detail": "B4's figure label reads \"Unsubscribed\" on one line in the 1x render, and the file has no soft hyphen. On part 2, the tag in frame E reads \"Unsubscribed from the newsletter\" on one line."
+     },
+     {
+      "item": "(6) Link counts",
+      "verdict": "holds",
+      "detail": "The main board's checklist says \"Every link works\" with no figure. Neither board shows any other link count."
+     },
+     {
+      "item": "(7) No em or en dashes",
+      "verdict": "holds",
+      "detail": "Neither file contains U+2014, U+2013, &mdash;, &ndash;, a numeric dash entity or a soft hyphen. Ranges use \"to\". I also found no USCF, no \".5\" in copy, no {{holes}}, no iframes, no animation, no \"he\" and none of the listed trade words."
+     },
+     {
+      "item": "(8) Overlap, overflow, clipping, heights",
+      "verdict": "holds",
+      "detail": "With the height set to auto, the main board measures 3338px, so 3350 is declared; part 2 measures 2915px, so 2950 is declared. In both files the root height matches $preview, and both are under the limits (3400 and 3000). The overflow scan found only two intended clips on part 2: the inbox subject cut off with an ellipsis, and Phone 1's scroll area. Viewing every section at 1x showed no overlaps and no unreadable contrast."
+     },
+     {
+      "item": "(9) File skeleton",
+      "verdict": "holds",
+      "detail": "Both files keep the doctype, charset, title, <script src=\"./support.js\"></script>, the kit link /_blob/6107adb451dbab26ee5d89f4189b81f8, and <x-dc><helmet> with the Google Fonts link and exactly one <style>. Each ends with the data-dc-script block whose $preview matches the root height. Tags balance under an HTML parser, and every attribute is quoted except the bare data-dc-script flag that the skeleton itself requires."
+     },
+     {
+      "item": "(10) Chess figures on every drawn board",
+      "verdict": "holds",
+      "detail": "There are four drawn boards, each checked from the DOM square by square and in a 4x crop. Main board, front page board (16px squares) and side panel board (30px squares). Part 2, computer email board and dark phone board. Every board has the same 21 pieces. White: Kc1, Qb3, Rd1, Bg5, pawns a2, b2, c2, e4, f2, g2, h2. Black: Ke8, Qe6, Rh8, Bf8, Nd7, pawns a7, e5, f7, g7, h7. That makes 11 white and 10 black, so 21, not the 22 the check asked for; the position given in the fix has 21 pieces. On every board a1 is dark, rank 8 is at the top and file a at the left. Each piece is a solid Unicode chess figure plus U+FE0E, never a disc. Black is navy fill; white is white fill with a navy stroke. Both read at a glance on cream and on blue-grey squares and inside the dark phone, which keeps its own squares. No empty boxes or emoji appeared (renderer font: DejaVu Sans). The three queue boards in B2 are still empty (64 squares, no pieces). The answer is printed nowhere; only last month's (November) Sample data answer appears in part 2. The title strip now says \"Scan-H (board)\", and no note mentions discs or the scanner pieces."
+     }
+    ],
+    "changes": [
+     "Newsletter-D-2.dc.html: the dark phone (Phone 2) had about 60px of empty screen under the footer links where the address slot used to be. I added the same Archive / Reply / Delete bar that Phone 1 uses, with a new dark-mode rule: .np-dark .np-bot{background:#1c1f23;border-top-color:#2c3036;color:#8fb0f0}. The footer now ends right after the three links. I rendered again and checked: nothing is clipped, and the natural height is still 2915px, so the declared 2950 stays.",
+     "Newsletter-D.dc.html: no changes. Every fix there checked out."
+    ],
+    "remaining_concerns": [
+     "Part 2 keeps six notes. Note 6 is now \"Leaving in one click. Leaving stops this list only (E).\" and its badge is on the email footer's links. This is reasonable, but if K wants the address note dropped entirely, delete note 6 and its badge.",
+     "The check asked for 22 pieces per board, but the position given has 21 (11 white, 10 black). The boards match the given position.",
+     "I could only see the figures in DejaVu Sans, the one chess-capable font in the renderer. On the canvas, Segoe UI Symbol or Apple Symbols may draw them with slightly different shapes. U+FE0E and font-variant-emoji:text should stop emoji, but I could not check that on Windows or macOS.",
+     "The unused CSS rules .nd-slot (main) and .em-slot (part 2, with their .np-em and .np-dark variants) are still in the style blocks. They draw nothing.",
+     "Part 2's grey note quotes K's spelling \"receipient\" inside quotation marks. I left it because it is a quote."
+    ]
+   }
+  }
+ ]
+}
