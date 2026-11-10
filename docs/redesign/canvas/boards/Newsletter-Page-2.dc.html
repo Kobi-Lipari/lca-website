@@ -24,7 +24,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
 /* frames + captions */
 .p2-frame{margin-top:20px;display:flex;flex-direction:column;align-items:stretch}
-.p2-frame+.p2-frame{margin-top:32px}
+.p2-frame+.p2-frame{margin-top:26px}
 .p2-browser{width:1200px}
 .p2-browser .k-browser-url{max-width:560px}
 .p2-view{background:#f5f5f2}
@@ -103,7 +103,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .p2-tools{display:flex;flex-wrap:nowrap;align-items:center;gap:8px;padding:8px;background:#fbfaf6;border-bottom:1px solid #dddcd4;border-radius:8px 8px 0 0}
 .p2-tool{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:44px;min-width:44px;padding:0 9px;white-space:nowrap;border:1px solid #dcdad2;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14px;font-weight:600}
 .p2-add{border-color:#a9acb5;margin-left:auto}
-.p2-text{position:relative;height:528px;overflow:hidden;padding:18px 34px 14px 22px;font-size:17px;line-height:1.6;color:#1f2a40}
+.p2-text{position:relative;height:520px;overflow:hidden;padding:18px 34px 14px 22px;font-size:17px;line-height:1.6;color:#1f2a40}
 .p2-text p{margin:0 0 9px}
 .p2-text h3{margin:18px 0 6px;font-size:19px;line-height:1.3;font-weight:700;color:#1a2744}
 .p2-text h3:first-child{margin-top:0}
@@ -153,7 +153,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .p2-more span{font-size:14px;color:#555c6b}
 
 /* row of three pictures */
-.p2-trio{display:grid;grid-template-columns:384px minmax(0,1fr) 404px;gap:24px;align-items:start}
+.p2-trio{display:grid;grid-template-columns:444px minmax(0,1fr) 404px;gap:24px;align-items:start}
 .p2-mid{align-self:center}
 .p2-pan{background:#ffffff;border:1px solid #cfcec6;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.14);overflow:hidden}
 .p2-panh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 16px 12px 18px;border-bottom:1px solid #e3e2dc}
@@ -179,8 +179,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .p2-fine+.p2-fine{margin-top:6px;padding-top:0;border-top:0}
 
 /* make bigger thumbnail */
-.p2-thumbw{width:100%;height:340px;overflow:hidden;border-radius:12px;box-shadow:0 18px 40px rgba(16,24,43,.14)}
-.p2-big{width:840px;transform:scale(.4333);transform-origin:0 0}
+.p2-thumbw{width:100%;height:300px;overflow:hidden;border-radius:12px;border:1px solid #cfcec6;background:#ffffff;box-shadow:0 18px 40px rgba(16,24,43,.14)}
+.p2-big{width:840px;transform:scale(.3595);transform-origin:0 0}
 .p2-big .k-browser{box-shadow:none}
 .bg-top{display:flex;align-items:center;justify-content:space-between;gap:12px;height:68px;padding:0 14px 0 20px;background:#ffffff;border-bottom:1px solid #e3e2dc}
 .bg-top b{font-size:19px;font-weight:700;white-space:nowrap}
@@ -222,23 +222,23 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .p2-pcap{padding-top:28px}
 .p2-pk{margin:0;font-size:22px;line-height:1.2;font-weight:700;color:#1a2744;letter-spacing:-.01em}
 .p2-ph{margin:8px 0 0;font-size:15.5px;line-height:1.5;color:#3d4556}
-.tb{position:relative;width:844px;height:580px;border:12px solid #10182b;border-bottom:0;border-radius:40px 40px 0 0;background:#f5f5f2;overflow:hidden;box-shadow:0 30px 60px rgba(16,24,43,.18)}
-.tb-fade{position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(rgba(236,235,230,0),#ecebe6);z-index:3}
+.tb{position:relative;width:844px;height:616px;border:12px solid #10182b;border-bottom:0;border-radius:40px 40px 0 0;background:#f5f5f2;overflow:hidden;box-shadow:0 30px 60px rgba(16,24,43,.18)}
+.tb-fade{position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(rgba(236,235,230,0),#ecebe6);z-index:3}
 .tb-app{display:flex;align-items:center;justify-content:space-between;height:64px;padding:0 14px 0 22px;background:#1a2744;color:#ffffff}
 .tb-app .hp-brand b{font-size:15px}
 .tb-btns{display:flex;gap:10px}
-.tb-in{padding:14px 22px 0}
+.tb-in{padding:12px 22px 0}
 .tb-row{display:flex;align-items:center;justify-content:space-between;gap:14px}
 .tb-row h1{margin:4px 0 0;font-size:28px;line-height:1.15;font-weight:700;letter-spacing:-.01em}
 .tb-row .k-btn{min-height:48px;font-size:16px}
 .tb-sub{display:flex;align-items:center;gap:16px;margin-top:10px}
 .tb-sub .ph-steps{margin:0;flex:1}
-.tb-card{margin-top:12px;background:#ffffff;border:1px solid #dcd7c6;border-radius:12px 12px 0 0;border-bottom:0;padding:4px 16px 0}
-.tb-card .p2-start{margin-top:12px;min-height:52px}
+.tb-card{margin-top:12px;background:#ffffff;border:1px solid #dcd7c6;border-radius:12px 12px 0 0;border-bottom:0;padding:0 16px 0}
+.tb-card .p2-start{margin-top:14px;min-height:52px}
 .tb-tools{display:flex;align-items:center;gap:8px;padding:8px;background:#fbfaf6;border:1px solid #858b99;border-bottom:1px solid #dddcd4;border-radius:8px 8px 0 0;margin-top:12px}
 .tb-tools .p2-tool{height:48px;min-width:48px;padding:0 12px;font-size:15px}
 .tb-tools .p2-g{width:48px;padding:0;font-size:18px;font-weight:700}
-.tb-text{padding:16px 22px;border:1px solid #858b99;border-top:0;font-size:18px;line-height:1.6;color:#1f2a40;background:#ffffff}
+.tb-text{padding:14px 22px;border:1px solid #858b99;border-top:0;font-size:18px;line-height:1.6;color:#1f2a40;background:#ffffff}
 .tb-text h3{margin:0 0 6px;font-size:20px;font-weight:700;color:#1a2744}
 .tb-text p{margin:0 0 9px}
 .tb-sel{position:relative;background:#c7dbf7;border-radius:2px}
@@ -348,9 +348,9 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .cx-gh svg{color:#1a2744}
 .cx-gh+.cx-cards{margin-bottom:14px}
 .cx-cards{display:flex;flex-direction:column;gap:8px}
-.cx-card{display:flex;align-items:center;gap:12px;padding:8px;border:1px solid #dcdad2;border-radius:10px;background:#ffffff}
-.cx-mini{position:relative;width:42px;height:54px;flex:none;border:1px solid #c9c8c0;border-radius:4px;background:#ffffff;overflow:hidden;padding:0 5px}
-.cx-mini .b{display:block;height:11px;margin:0 -5px 5px;background:#1a2744}
+.cx-card{display:flex;align-items:center;gap:12px;padding:7px 8px;border:1px solid #dcdad2;border-radius:10px;background:#ffffff}
+.cx-mini{position:relative;width:38px;height:46px;flex:none;border:1px solid #c9c8c0;border-radius:4px;background:#ffffff;overflow:hidden;padding:0 5px}
+.cx-mini .b{display:block;height:9px;margin:0 -5px 5px;background:#1a2744}
 .cx-mini .h{display:block;width:60%;height:3px;margin:4px 0 3px;background:#866a1e;border-radius:1px}
 .cx-mini .l{display:block;height:2px;margin:0 0 3px;background:#c9c8c0;border-radius:1px}
 .cx-mini .s{width:70%}
@@ -358,6 +358,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .cx-ct{flex:1;min-width:0}
 .cx-ct b{display:block;font-size:15px;line-height:1.3;font-weight:600;color:#1a2744}
 .cx-ct span{display:block;font-size:13px;line-height:1.35;color:#555c6b}
+.cx-ct .cx-ctag{display:inline-flex;margin-top:4px;padding:3px 8px;font-size:12px;color:#2d3a52}
 .cx-use{display:inline-flex;align-items:center;min-height:42px;padding:0 13px;border:1px solid #1a2744;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:14px;font-weight:600;white-space:nowrap;flex:none}
 .cx-fine{margin:12px 0 0;padding-top:12px;border-top:1px solid #e3e2dc;font-size:13px;line-height:1.45;color:#555c6b}
 .cx-fine+.cx-fine{margin-top:6px;padding-top:0;border-top:0}
@@ -384,9 +385,61 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .cx-tick{display:flex;align-items:flex-start;gap:10px;margin-top:12px;font-size:14.5px;line-height:1.4;font-weight:600;color:#1a2744}
 .cx-box{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;background:#1a2744;color:#ffffff;flex:none}
 .cx-addbtn{margin-top:10px;width:100%}
+
+/* from row (who it is sent as) */
+.p2-fromrow{display:flex;align-items:center;gap:14px}
+.p2-sel{flex:1;min-width:0;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;padding:0 12px 0 14px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font:inherit;font-size:17px;line-height:1.3;text-align:left}
+.p2-sel>span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p2-sel>svg{flex:none;color:#1a2744}
+.p2-fromnote{flex:none;font-size:14px;color:#555c6b;white-space:nowrap}
+.ph-flrow{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.ph-flrow .p2-flbl{margin:6px 0 5px}
+.ph-flrow small{font-size:12.5px;color:#555c6b}
+.ph-from{margin-top:10px}
+.ph-from .ph-flrow .p2-flbl{margin:0 0 5px;font-size:13.5px}
+.ph-sel{min-height:44px;height:44px;gap:6px;padding:0 8px 0 10px;font-size:14px}
+.tb-fields{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.tb-f{display:grid;grid-template-columns:62px minmax(0,1fr) auto;align-items:center;column-gap:12px}
+.tb-l{font-size:15px;font-weight:600;color:#1a2744}
+.tb-f .p2-sel,.tb-f .p2-inp{min-height:48px;height:48px}
+.tb-f .p2-inp{grid-column:2 / 4}
+
+/* second row of pictures */
+.p2-duo{display:grid;grid-template-columns:424px minmax(0,1fr);gap:24px;align-items:start;margin-top:26px}
+.ct-pan .p2-tool{padding:0 8px}
+.fr-card{display:block}
+.fr-card .p2-flbl{margin:0 0 6px}
+.fr-card>.p2-sel{background:#ffffff}
+.fr-open{border:2px solid #1a2744;padding:0 11px 0 13px;box-shadow:0 0 0 3px rgba(26,39,68,.14)}
+.fr-menu{margin-top:8px;border-radius:12px}
+.fr-menu .cx-panb{padding:10px 10px 14px}
+.fr-menu .cx-gh{margin:2px 6px 6px}
+.fr-list{margin:0 0 10px;padding:0;list-style:none}
+.fr-list li{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 10px;border-radius:8px;font-size:15px;font-weight:500;color:#1a2744}
+.fr-list li.fr-on{background:#eef1f6;font-weight:700}
+.fr-list li .fr-chk{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#1a2744}
+.fr-av{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#1a2744;flex:none}
+.fr-av svg{width:15px;height:15px;fill:#ffffff}
+.fr-dot{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none;margin:0 7px}
+.fr-find{display:flex;align-items:center;gap:8px;min-height:42px;margin:0 2px 6px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;color:#555c6b}
+.fr-find svg{color:#3d4556}
+.fr-menu .cx-fine{margin-left:6px;margin-right:6px}
+.ct-pan{overflow:hidden}
+.ct-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px 11px 20px;border-bottom:1px solid #e3e2dc;background:#fbfaf6}
+.ct-head h3{margin:0;font-size:19px;line-height:1.25;font-weight:700;color:#1a2744}
+.ct-head p{margin:2px 0 0;font-size:13.5px;color:#555c6b;white-space:nowrap}
+.ct-off{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:1px solid #d3d2ca;border-radius:8px;background:#ecebe6;color:#555c6b;font:inherit;font-size:15px;font-weight:600;white-space:nowrap}
+.ct-body{padding:2px 20px 20px}
+.ct-lrow{display:flex;align-items:center;gap:10px;margin:13px 0 6px}
+.ct-lrow .p2-flbl{margin:0}
+.ct-need{border:2px solid #1a2744;padding:0 11px 0 13px;box-shadow:0 0 0 3px rgba(26,39,68,.14);font-weight:600}
+.ct-ph{color:#555c6b}
+.ct-text{padding:12px 22px 14px;font-size:17px;line-height:1.45;color:#555c6b}
+.ct-text p{margin:0 0 3px}
+.ct-text p:last-child{margin-bottom:0}
 </style>
 </helmet>
-<div class="p2-root" style="width:1440px;height:4000px">
+<div class="p2-root" style="width:1440px;height:4750px">
 
 <header class="p2-strip" aria-label="About this option">
 <div><p class="k-kicker" style="margin:0">LCA Newsletter · The page · Option 2</p>
@@ -425,6 +478,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <section class="p2-col p2-left" aria-labelledby="p2-yl">
 <div class="p2-colhead"><h2 id="p2-yl">Your letter</h2><button class="p2-qbtn" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>Make bigger</button></div>
 <button class="p2-start" type="button" aria-haspopup="dialog"><span class="p2-sic"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg></span><span class="p2-st"><b>Start from a template or a past newsletter</b><span>Saves time: pick one, then change the words.</span></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+<label class="p2-flbl" for="p2-from">From</label>
+<div class="p2-fromrow"><button class="p2-sel" id="p2-from" type="button" aria-haspopup="listbox" aria-expanded="false"><span>Louisiana Chess Association · LCA Newsletter</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button><span class="p2-fromnote">Who members see as the sender.</span></div>
 <label class="p2-flbl" for="p2-subj">Subject</label>
 <div class="p2-inp" id="p2-subj">LCA Newsletter · December 2026</div>
 <label class="p2-flbl">Message</label>
@@ -456,7 +511,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <div class="p2-colhead"><h2 id="p2-wm">What members will get</h2><button class="p2-qbtn" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 6.1A9.8 9.8 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-2.8 3.4M6.6 7.6A16.6 16.6 0 0 0 2.5 12s3.5 6 9.5 6a9.3 9.3 0 0 0 4.4-1.1"></path></svg>Hide</button></div>
 <div class="p2-seerow"><div class="k-seg" role="group" aria-label="See it on"><button class="k-seg-on" type="button" aria-pressed="true">Computer</button><button type="button" aria-pressed="false">Phone</button></div><span class="p2-live">Changes as you type.<br>Shown smaller than real size.</span></div>
 <div class="p2-ground">
-<div class="p2-from"><span class="p2-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>LCA Newsletter · December 2026</small></span></div>
+<div class="p2-from"><span class="p2-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association · LCA Newsletter</b><small>LCA Newsletter · December 2026</small></span></div>
 <div class="p2-scale"><article class="em" aria-label="The email as members will get it">
 <div class="em-band"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><b>December 2026</b></span></div>
 <div class="em-in">
@@ -475,7 +530,11 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <h4>From the clubs</h4>
 <p class="em-l">Picayune Chess Club: quick-rated nights on first Mondays, next Mon, Dec 7, 2026 at 6:00 PM. <a href="#">Club page</a></p>
 <p class="em-l">Bunkie Chess Club: Tuesdays, 4:00 PM to 6:00 PM at the Bunkie Library, ages 8 to 108, free to join.</p>
-<p class="em-l">Baton Rouge Chess Club: casual nights every Wednesday.</p>
+<p class="em-l" style="margin-bottom:0">Baton Rouge Chess Club: casual nights every Wednesday.</p>
+<h4>Scholastic</h4>
+<p style="margin-bottom:0">For parents: the New&nbsp;Orleans Youth Chess season began Sat,&nbsp;Nov&nbsp;14,&nbsp;2026, one Saturday a month to May.<br>Players need a US Chess membership. <a href="#">Scholastic page</a></p>
+<h4>Board business</h4>
+<p style="margin-bottom:0">Two regional representative seats are open, Central Louisiana and Southwest Louisiana; reply to this email if you would like to help. Draft minutes of the annual meeting of Sun,&nbsp;Sep&nbsp;6,&nbsp;2026 are posted for members' comments. <a href="#">Read the draft minutes</a></p>
 </div></article></div>
 <span class="p2-gtrack" aria-hidden="true"><span class="p2-gthumb"></span></span>
 </div>
@@ -488,7 +547,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <div class="p2-cap2"><b>On a computer</b><span>Mon, Nov 23, 2026, 2:15 PM: the media manager, part way through the December 2026 issue. The letter takes most of the page; the email sits small beside it.</span></div>
 </section>
 
-<section class="p2-frame" aria-label="Three things the page opens">
+<section class="p2-frame" aria-label="Five things the page opens">
 <div class="p2-trio">
 
 <figure class="cx-fig" aria-label="After pressing Start from a template or a past newsletter">
@@ -498,7 +557,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <p class="cx-gh"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7"></path></svg>Pinned templates</p>
 <div class="cx-cards">
 <div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="h"></i><i class="l"></i><i class="h"></i><i class="l s"></i></span><span class="cx-ct"><b>Monthly newsletter</b><span>The usual six headings</span></span><button class="cx-use" type="button">Use this</button></div>
-<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l s"></i><i class="k"></i></span><span class="cx-ct"><b>Tournament announcement</b><span>One event, with its link</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l s"></i><i class="k"></i></span><span class="cx-ct"><b>Club tournament announcement</b><span>For a club's event. Asks which club.</span><span class="k-tag k-tag-ext cx-ctag">For a club</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l"></i><i class="k"></i></span><span class="cx-ct"><b>LCA tournament announcement</b><span>For an LCA event</span></span><button class="cx-use" type="button">Use this</button></div>
 <div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l s"></i></span><span class="cx-ct"><b>Results and thanks</b><span>After a tournament weekend</span></span><button class="cx-use" type="button">Use this</button></div>
 <div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="l" style="margin-top:8px"></i><i class="l"></i><i class="l s"></i></span><span class="cx-ct"><b>Short notice</b><span>A few lines, no sections</span></span><button class="cx-use" type="button">Use this</button></div>
 </div>
@@ -526,6 +586,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <p>See you over the board,<br>LCA President</p>
 <h3>Coming up</h3>
 <p>Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p>
+<p>Sat to Mon, Jan 16 to 18, 2027 · Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p>
+<p>Sat, May 8, 2027 · New Orleans Youth Chess Grand Prix Final · New Orleans · <a href="#">Details on King Registration ↗</a></p>
 </div>
 </div></div></div>
 <p class="p2-cap3"><b>After pressing Make bigger</b>The letter and its tools fill the window. Make smaller and the Send buttons stay at the top; Show the email brings the preview back.</p>
@@ -539,9 +601,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <ul class="cx-plist">
 <li><span><b>pat@example.com</b><span>Typed in today</span></span><button class="cx-rm" type="button">Remove</button></li>
 <li><span><b>coach.rivers@example.com</b><span>From the list imported Mon, Nov 23, 2026</span></span><button class="cx-rm" type="button">Remove</button></li>
-<li><span><b>chessparent@example.com</b><span>From the list imported Mon, Nov 23, 2026</span></span><button class="cx-rm" type="button">Remove</button></li>
 </ul>
-<p class="cx-more12">and 9 more · <a href="#">Show all 12</a></p>
+<p class="cx-more12">and 10 more · <a href="#">Show all 12</a></p>
 <p class="cx-addh">Add people</p>
 <div class="cx-ways">
 <div class="cx-way"><b>Type or paste email addresses</b><span>one per line, or separated by commas</span><div class="cx-ta">sam@example.com<br>lee@example.com</div></div>
@@ -557,6 +618,61 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <figcaption class="cx-cap"><b>After pressing Add or review people</b>Type, paste or import addresses. The total updates as you add.</figcaption></figure>
 
 </div>
+
+<div class="p2-duo">
+
+<figure class="cx-fig" aria-label="After pressing From">
+<div class="fr-card">
+<label class="p2-flbl">From</label>
+<button class="p2-sel fr-open" type="button" aria-haspopup="listbox" aria-expanded="true"><span>Louisiana Chess Association · LCA Newsletter</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button>
+<div class="cx-pan fr-menu" role="listbox" aria-label="From">
+<div class="cx-panb">
+<p class="cx-gh">From LCA</p>
+<ul class="fr-list">
+<li class="fr-on" role="option" aria-selected="true"><span class="fr-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>LCA Newsletter<span class="fr-chk"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Chosen</span></li>
+<li role="option" aria-selected="false"><span class="fr-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>LCA Tournaments</li>
+</ul>
+<p class="cx-gh">On behalf of a club</p>
+<div class="fr-find"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Find a club</div>
+<ul class="fr-list" style="margin-bottom:0">
+<li role="option" aria-selected="false"><span class="fr-dot" style="background:#2f6b4f" aria-hidden="true"></span>Baton Rouge Chess Club</li><li role="option" aria-selected="false"><span class="fr-dot" style="background:#7a4a9a" aria-hidden="true"></span>Bunkie Chess Club</li><li role="option" aria-selected="false"><span class="fr-dot" style="background:#2f6f9f" aria-hidden="true"></span>Picayune Chess Club</li><li role="option" aria-selected="false"><span class="fr-dot" style="background:#6b3f8f" aria-hidden="true"></span>New Orleans Westbank Chess Club</li><li role="option" aria-selected="false"><span class="fr-dot" style="background:#b5532c" aria-hidden="true"></span>Casa de Ajedrez</li>
+</ul>
+<p class="cx-fine">Members see the club's name as the sender, and their replies go to the club.</p>
+<p class="cx-fine">LCA's footer and one-click unsubscribe stay on every email.</p>
+</div>
+</div>
+</div>
+<figcaption class="cx-cap"><b>After pressing From</b>LCA's own senders first, then the clubs.</figcaption></figure>
+
+<figure class="cx-fig ct-fig" aria-label="After choosing Club tournament announcement">
+<div class="cx-pan ct-pan">
+<div class="ct-head"><div><h3>Your letter</h3><p>Template: Club tournament announcement</p></div><div class="p2-acts"><button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button><button class="ct-off" type="button" disabled="disabled" aria-disabled="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Choose a club first</button></div></div>
+<div class="ct-body">
+<div class="ct-lrow"><label class="p2-flbl">From</label><span class="k-tag k-tag-soon">Needed before you can send</span></div>
+<div class="p2-fromrow"><button class="p2-sel ct-need" type="button" aria-haspopup="listbox" aria-expanded="false"><span>Choose the club this is sent for</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button><span class="p2-fromnote">Who members see as the sender.</span></div>
+<label class="p2-flbl">Subject</label>
+<div class="p2-inp ct-ph">[Tournament name] · [Day and date] · registration is open</div>
+<label class="p2-flbl">Message</label>
+<div class="p2-box">
+<div class="p2-tools" role="toolbar" aria-label="Writing tools">
+<button class="p2-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><button class="p2-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><button class="p2-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button><button class="p2-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button><button class="p2-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button><button class="p2-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button>
+<button class="p2-tool p2-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+</div>
+<div class="ct-text">
+<p>[Tournament name]</p>
+<p>[Day and date]</p>
+<p>[City]</p>
+<p>[Sections and time control]</p>
+<p>[Entry fee]</p>
+<p>[Paste the King Registration link]</p>
+<p>[A line or two from the club]</p>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="cx-cap"><b>After choosing Club tournament announcement</b>Pick the club and the sender, the preview and the footer change with it.</figcaption></figure>
+
+</div>
 </section>
 
 <section class="p2-frame" aria-label="On a tablet">
@@ -570,6 +686,10 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <div class="tb-sub"><ol class="ph-steps" aria-label="Steps"><li class="p2-on" aria-current="step"><span class="p2-n">1</span>Write</li><li aria-hidden="true"><span class="p2-line" style="width:40px"></span></li><li><span class="p2-n">2</span>Check</li><li aria-hidden="true"><span class="p2-line" style="width:40px"></span></li><li><span class="p2-n">3</span>Send</li></ol><p class="ph-saved" style="margin:0"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Saved automatically at 2:15 PM</p></div>
 <div class="tb-card">
 <button class="p2-start" type="button" aria-haspopup="dialog"><span class="p2-sic"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg></span><span class="p2-st"><b>Start from a template or a past newsletter</b><span>Saves time: pick one, then change the words.</span></span><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+<div class="tb-fields">
+<div class="tb-f"><label class="tb-l" for="tb-from">From</label><button class="p2-sel" id="tb-from" type="button" aria-haspopup="listbox" aria-expanded="false"><span>Louisiana Chess Association · LCA Newsletter</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button><span class="p2-fromnote">Who members see as the sender.</span></div>
+<div class="tb-f"><label class="tb-l" for="tb-subj">Subject</label><div class="p2-inp" id="tb-subj">LCA Newsletter · December 2026</div></div>
+</div>
 <div class="tb-tools" role="toolbar" aria-label="Writing tools"><button class="p2-tool p2-g" type="button" aria-label="Bold">B</button><button class="p2-tool p2-g p2-gi" type="button" aria-label="Italic">I</button><button class="p2-tool p2-g" type="button" aria-label="Heading">H</button><button class="p2-tool" type="button" aria-label="List"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg></button><button class="p2-tool" type="button" aria-label="Link"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg></button><button class="p2-tool" type="button" aria-label="Undo"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg></button><button class="p2-tool p2-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button><button class="p2-tool" type="button" aria-label="Make bigger"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button></div>
 <div class="tb-text">
 <h3>A note from the president</h3>
@@ -604,6 +724,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 </ol>
 <p class="ph-saved"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Saved automatically at 2:15 PM</p>
 <button class="p2-start ph-start" type="button" aria-haspopup="dialog"><span class="p2-sic"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg></span><span class="p2-st"><b>Start from a template or a past newsletter</b><span>Saves time: pick one, then change the words.</span></span></button>
+<div class="ph-from"><div class="ph-flrow"><label class="p2-flbl" for="ph-from">From</label><small>Who members see as the sender.</small></div>
+<button class="p2-sel ph-sel" id="ph-from" type="button" aria-haspopup="listbox" aria-expanded="false"><span>Louisiana Chess Association · LCA Newsletter</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
 <div class="ph-card">
 <div class="p2-colhead"><h2>Your letter</h2><button class="p2-qbtn" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>Make bigger</button></div>
 <label class="p2-flbl">Subject</label>
@@ -640,7 +762,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <span class="ph-grab" aria-hidden="true"></span>
 <div class="ph-shead"><h2>What members will get</h2><p>The December email. It changes as you type.</p></div>
 <div class="ph-sground">
-<div class="p2-from"><span class="p2-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>LCA Newsletter · December 2026</small></span></div>
+<div class="p2-from"><span class="p2-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association · LCA&nbsp;Newsletter</b><small>LCA Newsletter · December 2026</small></span></div>
 <article class="ph-em" aria-label="The email">
 <div class="ph-band"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><b>December 2026</b></span></div>
 <div class="ph-emin">
@@ -666,7 +788,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4750}}'>
 class Component extends DCLogic {
   renderVals() { return {}; }
 }

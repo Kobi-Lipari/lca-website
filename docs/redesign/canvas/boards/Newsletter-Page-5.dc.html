@@ -156,7 +156,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .em-in>.em-h:first-child{margin-top:0}
 
 /* row of three pictures */
-.p5-trio{display:grid;grid-template-columns:384px minmax(0,1fr) 404px;gap:24px;align-items:start}
+.p5-trio{display:grid;grid-template-columns:444px minmax(0,1fr) 404px;gap:24px;align-items:start}
 .p5-pan{background:#ffffff;border:1px solid #cfcec6;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.14);overflow:hidden}
 .p5-panh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:16px 16px 12px 18px;border-bottom:1px solid #e3e2dc}
 .p5-panh h3{margin:0;font-size:18px;line-height:1.3;font-weight:700;letter-spacing:-.005em;color:#1a2744}
@@ -188,7 +188,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 /* make bigger thumbnail */
 .p5-mid{display:flex;flex-direction:column;align-self:center}
 .p5-thumbw{width:100%;height:364px;overflow:hidden;border-radius:12px;border:1px solid #cfcec6;box-shadow:0 18px 40px rgba(16,24,43,.14);background:#ffffff}
-.p5-bigw{width:840px;transform:scale(.4333);transform-origin:0 0}
+.p5-bigw{width:840px;transform:scale(.3619);transform-origin:0 0}
 .bg-bar{display:flex;align-items:center;gap:8px;height:34px;padding:0 14px;background:#eeede8;border-bottom:1px solid #d9d8d1}
 .bg-bar i{display:block;width:11px;height:11px;border-radius:50%;background:#cfcdc4}
 .bg-top{display:flex;align-items:center;justify-content:space-between;gap:12px;height:72px;padding:0 16px 0 22px;background:#ffffff;border-bottom:1px solid #e3e2dc}
@@ -291,14 +291,14 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .q-start>span:not(.p5-start-ic){flex:1;min-width:0}
 .q-start b{display:block;font-size:15px;line-height:1.3;font-weight:700}
 .q-start em{display:block;font-style:normal;font-size:13px;line-height:1.35;color:#555c6b}
-.q-ctl{display:flex;flex-direction:column;gap:10px;padding:10px 12px 10px 8px;background:#ffffff;border:1px solid #dcd7c6;border-radius:12px}
-.q-row{display:grid;grid-template-columns:42px minmax(0,1fr);gap:8px;align-items:start}
-.q-row .p5-step{width:42px;padding-top:6px}
-.q-row .p5-n{width:28px;height:28px;font-size:14px}
-.q-row .p5-w{font-size:11.5px}
-.q-fl{display:flex;flex-direction:column;justify-content:center;height:52px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff}
+.q-ctl{display:flex;flex-direction:column;gap:10px;margin:0 -14px;padding:12px 14px 12px;background:#ffffff;border:1px solid #dcd7c6;border-width:1px 0;border-radius:0}
+.q-row{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start}
+.q-row .p5-step{width:auto;flex-direction:row;justify-content:flex-start;gap:8px;padding-top:0}
+.q-row .p5-n{width:26px;height:26px;font-size:13.5px}
+.q-row .p5-w{font-size:14px;font-weight:700}
+.q-fl{display:flex;flex-direction:column;justify-content:center;height:52px;padding:0 10px;border:1px solid #858b99;border-radius:8px;background:#ffffff}
 .q-fl small{font-size:12px;line-height:1.2;font-weight:600;color:#555c6b}
-.q-fl span{margin-top:2px;font-size:15px;line-height:1.3;color:#1a2744;white-space:nowrap}
+.q-fl span{margin-top:2px;font-size:14px;line-height:1.3;color:#1a2744;white-space:nowrap}
 .q-saved{margin-top:6px;font-size:12.5px}
 .q-write{display:flex;flex-direction:column;background:#ffffff;border:1px solid #858b99;border-radius:12px;overflow:hidden}
 .q-bar{flex:none;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;padding:6px 8px;background:#fbfaf6;border-bottom:1px solid #dddcd4}
@@ -399,11 +399,87 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 .cx-tick{display:flex;align-items:flex-start;gap:10px;margin-top:12px;font-size:14.5px;line-height:1.4;font-weight:600;color:#1a2744}
 .cx-box{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:5px;background:#1a2744;color:#ffffff;flex:none}
 .cx-addbtn{margin-top:10px;width:100%}
+/* from row (sender) */
+.p5-bar-r{display:grid;grid-template-columns:42px minmax(0,1fr) auto 42px auto 42px auto;column-gap:12px;row-gap:10px;align-items:start}
+.p5-bar-r>.p5-s1{grid-area:1/1/3/2}
+.p5-bar-r>.p5-from{grid-area:1/2}
+.p5-bar-r>.p5-fromnote{grid-area:1/3/2/8;align-self:center}
+.p5-bar-r>.p5-ctl-subj{grid-area:2/2}
+.p5-bar-r>.p5-vr{grid-area:2/3;align-self:stretch}
+.p5-bar-r>.p5-s2{grid-area:2/4}
+.p5-bar-r>.p5-c2{grid-area:2/5}
+.p5-bar-r>.p5-s3{grid-area:2/6}
+.p5-bar-r>.p5-c3{grid-area:2/7}
+.p5-from{width:100%;padding:0;font:inherit;text-align:left;cursor:pointer}
+.p5-from .p5-subj-v{flex:1;min-width:0}
+.p5-from>svg{flex:none;margin-right:14px;color:#1a2744}
+.p5-subj-l{min-width:75px}
+.p5-fromnote{margin:0;font-size:14px;line-height:1.3;color:#555c6b;white-space:nowrap}
+.p5-env dd.p5-wrap{white-space:normal}
+
+/* tablet and phone from rows */
+.tb-strip{display:grid;grid-template-columns:38px minmax(0,1fr) auto;column-gap:10px;row-gap:10px;align-items:center}
+.tb-strip>.p5-step{grid-area:1/1/3/2;align-self:start;padding-top:2px}
+.tb-strip>.p5-from{grid-area:1/2;height:48px}
+.tb-strip>.tb-fnote{grid-area:1/3;font-size:13.5px}
+.tb-strip>.tb-subj{grid-area:2/2}
+.tb-strip>.k-btn{grid-area:2/3}
+.q-from{display:flex;align-items:center;gap:6px;width:100%;height:52px;padding:0 8px 0 10px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font:inherit;text-align:left;color:#1a2744}
+.q-from>span{flex:1;min-width:0;display:flex;flex-direction:column}
+.q-from small{font-size:12px;line-height:1.2;font-weight:600;color:#555c6b}
+.q-from b{margin-top:2px;font-size:14px;line-height:1.3;font-weight:400;color:#1a2744;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q-from>svg{flex:none}
+.q-fnote{margin:6px 0 10px;font-size:12.5px}
+
+/* chooser: five pinned templates */
+.cx-ct .cx-ctag{display:inline-flex;margin-top:4px;padding:3px 8px;font-size:12px;color:#2d3a52}
+
+/* second row of smaller pictures */
+.p5-row2{display:grid;grid-template-columns:384px minmax(0,1fr);gap:24px;align-items:start;margin-top:40px}
+.fr-lbl{display:block;margin:0 0 6px;font-size:13.5px;font-weight:600;color:#3d4556}
+.fr-field{display:flex;align-items:center;gap:6px;width:100%;height:46px;padding:0 10px 0 12px;border:2px solid #1a2744;border-radius:8px;background:#ffffff;box-shadow:0 0 0 3px rgba(26,39,68,.14);font:inherit;font-size:16px;color:#1a2744;text-align:left;white-space:nowrap}
+.fr-field span{flex:1;min-width:0}
+.fr-menu{margin-top:8px;border-radius:12px}
+.fr-menu .cx-panb{padding:10px 10px 14px}
+.fr-menu .cx-gh{margin:2px 6px 6px}
+.fr-list{margin:0 0 10px;padding:0;list-style:none}
+.fr-list li{display:flex;align-items:center;gap:10px;min-height:40px;padding:0 10px;border-radius:8px;font-size:15px;font-weight:500;color:#1a2744}
+.fr-list li.fr-on{background:#eef1f6;font-weight:700}
+.fr-chk{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:#1a2744}
+.fr-av{display:flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#1a2744;flex:none}
+.fr-av svg{width:15px;height:15px;fill:#ffffff}
+.fr-dot{display:inline-block;width:12px;height:12px;border-radius:50%;flex:none;margin:0 7px}
+.fr-find{display:flex;align-items:center;gap:8px;min-height:42px;margin:0 2px 6px;padding:0 12px;border:1px solid #858b99;border-radius:8px;background:#ffffff;font-size:15px;color:#555c6b}
+.fr-find svg{color:#3d4556}
+.fr-menu .cx-fine{margin-left:6px;margin-right:6px}
+
+/* after choosing club tournament announcement */
+.ct-desk{display:flex;flex-direction:column;gap:12px;padding:14px;background:#f1eee4;border:1px solid #cfcec6;border-radius:14px;box-shadow:0 18px 40px rgba(16,24,43,.14)}
+.ct-bar .p5-bar-r{grid-template-columns:42px minmax(0,1fr) auto}
+.ct-bar .p5-bar-r>.p5-s1{grid-area:1/1/3/2}
+.ct-bar .ct-from{grid-area:1/2}
+.ct-bar .ct-tag{grid-area:1/3;align-self:center}
+.ct-bar .ct-subj{grid-area:2/2/3/4}
+.ct-need{border:2px solid #1a2744;box-shadow:0 0 0 3px rgba(26,39,68,.14)}
+.ct-need .p5-subj-l{align-self:stretch;margin:0}
+.ct-need .p5-subj-v{font-weight:600}
+.ct-tag{font-size:12.5px;padding:5px 10px}
+.ct-ph{color:#555c6b}
+.ct-acts{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#f7f5ee;border-top:1px solid #e6e1d1}
+.ct-act{display:flex;align-items:center;gap:10px}
+.ct-sn{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:600;color:#1a2744}
+.ct-sn .p5-n{width:28px;height:28px;font-size:14px}
+.ct-acts .p5-test{background:#ffffff}
+.ct-off{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 18px;border:1px solid #d3d2ca;border-radius:8px;background:#ecebe6;color:#555c6b;font:inherit;font-size:15px;font-weight:600;white-space:nowrap}
+.ct-write .p5-whd small{margin-left:10px}
+.ct-text{padding:16px 24px 18px;font-size:17px;line-height:1.6;color:#555c6b}
+.ct-text p{margin:0}
+.ct-text .p5-caret{height:20px;margin:0 2px 0 0;vertical-align:-4px}
 </style>
 </helmet>
-<div class="p5-root" style="width:1440px;height:4000px">
+<div class="p5-root" style="width:1440px;height:4750px">
 <div class="p5-col">
-<header class="p5-strip-l" aria-label="About this option"><div><p class="p5-kick">LCA Newsletter · The page · Option 5</p><h1 class="p5-name">Everything on one screen</h1><p class="p5-say">Everything fits on one screen with no scrolling: write on the left, and a panel on the right switches between the preview and the rest.</p></div><span class="k-sample p5-tag">Sample data</span></header>
+<header class="p5-strip-l" aria-label="About this option"><div><p class="p5-kick">LCA Newsletter · The page · Option 5</p><h1 class="p5-name">Everything on one screen</h1><p class="p5-say">Everything is in reach at the top of one screen: write on the left, and a panel on the right switches between the preview and who gets it.</p></div><span class="k-sample p5-tag">Sample data</span></header>
 
 <figure class="p5-fig"><div class="k-browser p5-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin/newsletter</div></div>
 <div class="p5-view">
@@ -416,13 +492,15 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <button class="p5-start" type="button" aria-haspopup="dialog" aria-expanded="false"><span class="p5-start-ic" aria-hidden="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg></span><b>Start from a template or a past newsletter</b><em>Saves time: pick one, then change the words.</em><span class="p5-start-r"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span></button>
 <div class="p5-bar" role="group" aria-label="Write it, check it, send it">
 <div class="p5-bar-r">
-<div class="p5-step"><span class="p5-n" aria-hidden="true">1</span><span class="p5-w">Write</span></div>
+<div class="p5-step p5-s1"><span class="p5-n" aria-hidden="true">1</span><span class="p5-w">Write</span></div>
+<button class="p5-subj p5-from" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p5-subj-l">From</span><span class="p5-subj-v">Louisiana Chess Association · LCA Newsletter</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<p class="p5-fromnote">Who members see as the sender.</p>
 <div class="p5-ctl p5-ctl-subj"><label class="p5-subj" for="p5-s"><span class="p5-subj-l">Subject</span><span class="p5-subj-v" id="p5-s">LCA Newsletter · December 2026</span></label><p class="p5-note"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Saved automatically at 2:15 PM</p></div>
 <span class="p5-vr" aria-hidden="true"></span>
-<div class="p5-step"><span class="p5-n" aria-hidden="true">2</span><span class="p5-w">Check</span></div>
-<div class="p5-ctl"><button class="k-btn p5-test" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button><p class="p5-note">Goes only to your own address</p></div>
-<div class="p5-step"><span class="p5-n" aria-hidden="true">3</span><span class="p5-w">Send</span></div>
-<div class="p5-ctl"><div class="p5-split" role="group" aria-label="Send"><button class="k-btn k-btn-gold p5-send" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"></path></svg>Send to 167 people</button><button class="p5-arrow" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Other ways to send, such as later"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div><p class="p5-note">You will be asked once to confirm.</p></div>
+<div class="p5-step p5-s2"><span class="p5-n" aria-hidden="true">2</span><span class="p5-w">Check</span></div>
+<div class="p5-ctl p5-c2"><button class="k-btn p5-test" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button><p class="p5-note">Goes only to your own address</p></div>
+<div class="p5-step p5-s3"><span class="p5-n" aria-hidden="true">3</span><span class="p5-w">Send</span></div>
+<div class="p5-ctl p5-c3"><div class="p5-split" role="group" aria-label="Send"><button class="k-btn k-btn-gold p5-send" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"></path></svg>Send to 167 people</button><button class="p5-arrow" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Other ways to send, such as later"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div><p class="p5-note">You will be asked once to confirm.</p></div>
 </div>
 <div class="p5-who"><p class="p5-who-t" style="margin:0"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8.5" r="3.5"></circle><path d="M2.5 20c.7-3.5 3.3-5.5 6.5-5.5s5.8 2 6.5 5.5M16 5.2a3.5 3.5 0 0 1 0 6.6M18 14.8c2 .7 3.2 2.5 3.6 5.2"></path></svg><span><b>167 people will get it:</b> 155 members and 12 you added</span></p><button class="k-btn k-btn-line" type="button" aria-haspopup="dialog"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"></path><path d="M19 8v6M16 11h6"></path></svg>Add or review people</button><span class="p5-who-r">Kept in LCA's email bank for next time</span></div>
 </div>
@@ -449,7 +527,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <div class="p5-phd"><div><b>What members will get</b><small>It changes as you type.</small></div><button class="k-btn p5-hide" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 6.1A9.6 9.6 0 0 1 12 6c6 0 9.5 6 9.5 6a17 17 0 0 1-3 3.7M6.6 6.6C4 8.3 2.5 12 2.5 12s3.5 6 9.5 6a9.6 9.6 0 0 0 4.4-1M9.9 9.9a3 3 0 0 0 4.2 4.2"></path></svg>Hide</button></div>
 <div class="p5-segrow"><div class="k-seg p5-seg" role="group" aria-label="Show the email on"><button type="button" aria-pressed="false">Phone</button><button class="k-seg-on" type="button" aria-pressed="true">Computer</button></div></div>
 <div class="p5-well"><div class="p5-mail">
-<dl class="p5-env"><dt>From</dt><dd>Louisiana Chess Association</dd><dt>Subject</dt><dd>LCA Newsletter · December 2026</dd></dl>
+<dl class="p5-env"><dt>From</dt><dd class="p5-wrap">Louisiana Chess Association · LCA&nbsp;Newsletter</dd><dt>Subject</dt><dd>LCA Newsletter · December 2026</dd></dl>
 <div class="p5-mini" aria-label="The email, small, as it will arrive on a computer"><div class="p5-mini-in"><div class="em">
 <div class="em-band"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026</strong></span></div>
 <div class="em-in">
@@ -481,7 +559,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <p class="cx-gh"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h6l-1 6 3 3H7l3-3zM12 13v7"></path></svg>Pinned templates</p>
 <div class="cx-cards">
 <div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="h"></i><i class="l"></i><i class="h"></i><i class="l s"></i></span><span class="cx-ct"><b>Monthly newsletter</b><span>The usual six headings</span></span><button class="cx-use" type="button">Use this</button></div>
-<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l s"></i><i class="k"></i></span><span class="cx-ct"><b>Tournament announcement</b><span>One event, with its link</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l s"></i><i class="k"></i></span><span class="cx-ct"><b>Club tournament announcement</b><span>For a club's event. Asks which club.</span><span class="k-tag k-tag-ext cx-ctag">For a club</span></span><button class="cx-use" type="button">Use this</button></div>
+<div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l"></i><i class="k"></i></span><span class="cx-ct"><b>LCA tournament announcement</b><span>For an LCA event</span></span><button class="cx-use" type="button">Use this</button></div>
 <div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="b"></i><i class="h"></i><i class="l"></i><i class="l"></i><i class="l"></i><i class="l s"></i></span><span class="cx-ct"><b>Results and thanks</b><span>After a tournament weekend</span></span><button class="cx-use" type="button">Use this</button></div>
 <div class="cx-card"><span class="cx-mini" aria-hidden="true"><i class="l" style="margin-top:8px"></i><i class="l"></i><i class="l s"></i></span><span class="cx-ct"><b>Short notice</b><span>A few lines, no sections</span></span><button class="cx-use" type="button">Use this</button></div>
 </div>
@@ -500,7 +579,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <div class="bg-bar" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="bg-top"><div class="bg-btns"><button class="k-btn p5-big" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>Show the email</button><button class="k-btn p5-big" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"></path></svg>Make smaller</button></div><div class="bg-btns"><button class="k-btn p5-test" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button><div class="p5-split"><button class="k-btn k-btn-gold p5-send" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"></path></svg>Send to 167 people</button><button class="p5-arrow" type="button" aria-label="Other ways to send, such as later"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div></div>
 <div class="bg-tools"><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button><button class="p5-tool p5-add" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
-<div class="bg-text"><h3>A note from the president</h3><p>Dear members,</p><p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p><p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p><p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p><p>See you over the board,<br>LCA President</p><h3>Coming up</h3><p>Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p><p>Sat to Mon, Jan 16 to 18, 2027 · Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p></div>
+<div class="bg-text"><h3>A note from the president</h3><p>Dear members,</p><p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p><p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p><p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p><p>See you over the board,<br>LCA President</p><h3>Coming up</h3><p>Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p><p>Sat to Mon, Jan 16 to 18, 2027 · Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p><p>Sat, May 8, 2027 · New Orleans Youth Chess Grand Prix Final · New Orleans · <a href="#">Details on King Registration ↗</a></p><h3>Results</h3><p><b>Marcus Landry wins the 2026 Louisiana State Championship</b> with 4½ of 5 in Sulphur, Sat to Mon, Sep 5 to 7, 2026, among 64 players.</p></div>
 </div></div><figcaption class="p5-cap p5-capv"><b>After pressing Make bigger</b><span>The letter and its tools fill the window. Make smaller and the Send buttons stay in reach at the top.</span></figcaption></figure>
 
 <figure class="cx-fig" aria-label="After pressing Add or review people">
@@ -512,9 +591,8 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <ul class="cx-plist">
 <li><span><b>pat@example.com</b><span>Typed in today</span></span><button class="cx-rm" type="button">Remove</button></li>
 <li><span><b>coach.rivers@example.com</b><span>From the list imported Mon, Nov 23, 2026</span></span><button class="cx-rm" type="button">Remove</button></li>
-<li><span><b>chessparent@example.com</b><span>From the list imported Mon, Nov 23, 2026</span></span><button class="cx-rm" type="button">Remove</button></li>
 </ul>
-<p class="cx-more12">and 9 more · <a href="#">Show all 12</a></p>
+<p class="cx-more12">and 10 more · <a href="#">Show all 12</a></p>
 <p class="cx-addh">Add people</p>
 <div class="cx-ways">
 <div class="cx-way"><b>Type or paste email addresses</b><span>one per line, or separated by commas</span><div class="cx-ta">sam@example.com<br>lee@example.com</div></div>
@@ -530,6 +608,50 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <figcaption class="cx-cap"><b>After pressing Add or review people</b>It opens in place, in the Who gets it tab beside the letter. The total updates as you add.</figcaption></figure>
 </div>
 
+<div class="p5-row2">
+<figure class="cx-fig" aria-label="After pressing From">
+<div class="fr-card">
+<span class="fr-lbl">From</span>
+<button class="fr-field" type="button" aria-haspopup="listbox" aria-expanded="true"><span>Louisiana Chess Association · LCA Newsletter</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"></path></svg></button>
+<div class="cx-pan fr-menu" role="listbox" aria-label="From">
+<div class="cx-panb">
+<p class="cx-gh">From LCA</p>
+<ul class="fr-list">
+<li class="fr-on" role="option" aria-selected="true"><span class="fr-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>LCA Newsletter<span class="fr-chk"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Chosen</span></li>
+<li role="option" aria-selected="false"><span class="fr-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span>LCA Tournaments</li>
+</ul>
+<p class="cx-gh">On behalf of a club</p>
+<div class="fr-find"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg>Find a club</div>
+<ul class="fr-list" style="margin-bottom:0">
+<li role="option" aria-selected="false"><span class="fr-dot" style="background:#2f6b4f" aria-hidden="true"></span>Baton Rouge Chess Club</li><li role="option" aria-selected="false"><span class="fr-dot" style="background:#7a4a9a" aria-hidden="true"></span>Bunkie Chess Club</li><li role="option" aria-selected="false"><span class="fr-dot" style="background:#2f6f9f" aria-hidden="true"></span>Picayune Chess Club</li><li role="option" aria-selected="false"><span class="fr-dot" style="background:#6b3f8f" aria-hidden="true"></span>New Orleans Westbank Chess Club</li><li role="option" aria-selected="false"><span class="fr-dot" style="background:#b5532c" aria-hidden="true"></span>Casa de Ajedrez</li>
+</ul>
+<p class="cx-fine">Members see the club's name as the sender, and their replies go to the club.</p>
+<p class="cx-fine">LCA's footer and one-click unsubscribe stay on every email.</p>
+</div>
+</div>
+</div>
+<figcaption class="cx-cap"><b>After pressing From</b>LCA's own senders first, then the clubs.</figcaption></figure>
+
+<figure class="cx-fig" aria-label="After choosing Club tournament announcement">
+<div class="ct-desk">
+<div class="p5-bar ct-bar" role="group" aria-label="Write it, check it, send it">
+<div class="p5-bar-r">
+<div class="p5-step p5-s1"><span class="p5-n" aria-hidden="true">1</span><span class="p5-w">Write</span></div>
+<button class="p5-subj p5-from ct-from ct-need" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p5-subj-l">From</span><span class="p5-subj-v">Choose the club this is sent for</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button>
+<span class="k-tag k-tag-soon ct-tag">Needed before you can send</span>
+<label class="p5-subj ct-subj"><span class="p5-subj-l">Subject</span><span class="p5-subj-v ct-ph">[Tournament name] · [Day and date] · registration is open</span></label>
+</div>
+<div class="ct-acts"><div class="ct-act"><span class="ct-sn"><span class="p5-n" aria-hidden="true">2</span>Check</span><button class="k-btn p5-test" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button></div><div class="ct-act"><span class="ct-sn"><span class="p5-n" aria-hidden="true">3</span>Send</span><button class="ct-off" type="button" disabled="disabled" aria-disabled="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path></svg>Choose a club first</button></div></div>
+</div>
+<section class="p5-write ct-write" aria-label="Your letter">
+<div class="p5-whd"><p style="margin:0"><b>Your letter</b><small>Template: Club tournament announcement</small></p><button class="k-btn p5-big" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>Make bigger</button></div>
+<div class="p5-tools" role="toolbar" aria-label="Writing tools"><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button><button class="p5-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button><button class="p5-tool p5-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+<div class="ct-text" role="textbox" aria-multiline="true" aria-label="The announcement"><p><span class="p5-caret" aria-hidden="true"></span>[Tournament name]</p><p>[Day and date]</p><p>[City]</p><p>[Sections and time control]</p><p>[Entry fee]</p><p>[Paste the King Registration link]</p><p>[A line or two from the club]</p></div>
+</section>
+</div>
+<figcaption class="cx-cap"><b>After choosing Club tournament announcement</b>Pick the club and the sender, the preview and the footer change with it.</figcaption></figure>
+</div>
+
 <div class="p5-tabrow p5-sect">
 <div class="p5-pcap"><p class="p5-pk">On a tablet, by touch</p><p class="p5-ph">The letter fills the width at 18px. Every tool is a finger-sized button, and See the email brings the preview up.</p><p class="p5-ph">Drawn at a true 820 wide; the top part of the page.</p></div>
 <figure class="p5-fig" aria-label="On a tablet"><div class="tb">
@@ -537,7 +659,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <div class="tb-in">
 <div class="tb-row"><div><p class="p5-crumb"><a href="#">Admin</a><span class="p5-sep" aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p><h1>Newsletter</h1></div><button class="k-btn k-btn-navy" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>See the email</button></div>
 <button class="p5-start tb-start" type="button" aria-haspopup="dialog"><span class="p5-start-ic" aria-hidden="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg></span><b>Start from a template or a past newsletter</b><em>Saves time: pick one, then change the words.</em><span class="p5-start-r"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></span></button>
-<div class="tb-strip"><div class="p5-step"><span class="p5-n" aria-hidden="true">1</span><span class="p5-w">Write</span></div><label class="p5-subj" for="tb-s"><span class="p5-subj-l">Subject</span><span class="p5-subj-v" id="tb-s">LCA Newsletter · December 2026</span></label><button class="k-btn k-btn-line" type="button" style="min-height:48px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"></path><path d="M19 8v6M16 11h6"></path></svg>Add or review people</button></div>
+<div class="tb-strip"><div class="p5-step"><span class="p5-n" aria-hidden="true">1</span><span class="p5-w">Write</span></div><button class="p5-subj p5-from" type="button" aria-haspopup="listbox" aria-expanded="false"><span class="p5-subj-l">From</span><span class="p5-subj-v">Louisiana Chess Association · LCA Newsletter</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button><p class="p5-fromnote tb-fnote">Who members see as the sender.</p><label class="p5-subj tb-subj" for="tb-s"><span class="p5-subj-l">Subject</span><span class="p5-subj-v" id="tb-s">LCA Newsletter · December 2026</span></label><button class="k-btn k-btn-line" type="button" style="min-height:48px"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"></path><path d="M19 8v6M16 11h6"></path></svg>Add or review people</button></div>
 <section class="tb-write" aria-label="Your letter">
 <div class="tb-tools" role="toolbar" aria-label="Writing tools"><button class="p5-tool" type="button" aria-label="Bold"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg></button><button class="p5-tool" type="button" aria-label="Italic"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg></button><button class="p5-tool" type="button" aria-label="Heading"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg></button><button class="p5-tool" type="button" aria-label="List"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg></button><button class="p5-tool" type="button" aria-label="Link"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg></button><button class="p5-tool" type="button" aria-label="Undo"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg></button><button class="p5-tool p5-add" type="button" style="margin-left:0"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line</button><button class="k-btn p5-big" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>Make bigger</button></div>
 <div class="tb-text"><h3>A note from the president</h3><p>Dear members,</p><p>Thank you to every volunteer who ran the State Championship weekend in <span class="tb-sel">Sulphur<span class="tb-hl" aria-hidden="true"></span><span class="tb-hr" aria-hidden="true"></span><span class="tb-pop" aria-hidden="true"><span>Bold</span><span>Italic</span><span>Link</span></span></span>.</p><p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p><p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p></div>
@@ -548,12 +670,12 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 </div>
 
 <div class="p5-phones p5-sect">
-<div class="p5-pcap"><p class="p5-pk">On a phone</p><p class="p5-ph">Start from sits first, then the subject and the letter with large tools. Check and Send follow under the letter.</p><p class="p5-ph">One button at the foot, See the email, brings up the panel with Preview first.</p></div>
+<div class="p5-pcap"><p class="p5-pk">On a phone</p><p class="p5-ph">Start from sits first, then who it is from, the subject and the letter with large tools. Check and Send follow under the letter.</p><p class="p5-ph">One button at the foot, See the email, brings up the panel with Preview first.</p></div>
 <figure class="p5-fig" aria-label="The page on a phone"><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header>
 <main class="k-phone-scroll q-scroll">
 <div class="q-head"><p class="p5-crumb"><a href="#">Admin</a><span class="p5-sep" aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p><div class="q-tl"><h1 class="q-h1">Newsletter</h1><p class="q-meta"><b>December 2026</b> · Draft</p></div></div>
 <button class="q-start" type="button" aria-haspopup="dialog"><span class="p5-start-ic" aria-hidden="true"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8a1.5 1.5 0 0 1 1.5 1.5v15.5L12 17l-5.5 3.5V5A1.5 1.5 0 0 1 8 3.5z"></path></svg></span><span><b>Start from a template or a past newsletter</b><em>Saves time: pick one, then change the words.</em></span></button>
-<div class="q-ctl"><div class="q-row"><div class="p5-step"><span class="p5-n" aria-hidden="true">1</span><span class="p5-w">Write</span></div><div><label class="q-fl" for="q-s"><small>Subject</small><span id="q-s">LCA Newsletter · December 2026</span></label><p class="p5-note q-saved"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Saved automatically at 2:15 PM</p></div></div></div>
+<div class="q-ctl"><div class="q-row"><div class="p5-step"><span class="p5-n" aria-hidden="true">1</span><span class="p5-w">Write</span></div><div><button class="q-from" type="button" aria-haspopup="listbox" aria-expanded="false"><span><small>From</small><b>Louisiana Chess Association · LCA Newsletter</b></span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button><p class="p5-note q-fnote">Who members see as the sender.</p><label class="q-fl" for="q-s"><small>Subject</small><span id="q-s">LCA Newsletter · December 2026</span></label><p class="p5-note q-saved"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Saved automatically at 2:15 PM</p></div></div></div>
 <section class="q-write" aria-label="Your letter">
 <div class="q-bar" role="toolbar" aria-label="Writing tools"><button class="q-tool" type="button" aria-label="Bold"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg></button><button class="q-tool" type="button" aria-label="Italic"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg></button><button class="q-tool" type="button" aria-label="Heading"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg></button><button class="q-tool" type="button" aria-label="List"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg></button><button class="q-tool" type="button" aria-label="Link"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg></button><button class="q-tool" type="button" aria-label="Undo"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg></button></div>
 <div class="q-addrow"><button class="p5-tool p5-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button><button class="k-btn p5-big" type="button" aria-label="Make bigger"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg></button></div>
@@ -576,7 +698,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 <div class="q-grab" aria-hidden="true"><i></i></div>
 <div class="q-shead"><div><h2 id="q-sh">What members will get</h2><p>The December email. It changes as you type.</p></div></div>
 <div class="p5-tabs q-tabs" role="tablist" aria-label="Beside the letter"><button class="p5-tab p5-tab-on" type="button" role="tab" aria-selected="true">Preview</button><button class="p5-tab" type="button" role="tab" aria-selected="false">Who gets it<span class="p5-cnt">167</span></button></div>
-<div class="q-sbody"><div class="q-mh"><p class="q-subj">LCA Newsletter · December 2026</p><div class="q-who"><span class="q-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>to you</small></span></div></div>
+<div class="q-sbody"><div class="q-mh"><p class="q-subj">LCA Newsletter · December 2026</p><div class="q-who"><span class="q-av"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association · LCA&nbsp;Newsletter</b><small>to you</small></span></div></div>
 <div class="np-em">
 <div class="np-band"><svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><strong>December 2026</strong></span></div>
 <div class="np-in">
@@ -595,7 +717,7 @@ body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4000}}'>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":4750}}'>
 class Component extends DCLogic {
   renderVals() { return {}; }
 }

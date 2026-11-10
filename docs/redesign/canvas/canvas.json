@@ -1785,7 +1785,7 @@
    "y": 0
   },
   "Newsletter-Page-2.dc.html": {
-   "h": 4000,
+   "h": 4750,
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 2 · Write beside the email · kept, revised to K's notes",
    "w": 1440,
@@ -1801,7 +1801,7 @@
    "y": 0
   },
   "Newsletter-Page-4.dc.html": {
-   "h": 4000,
+   "h": 4700,
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 4 · The letter on the desk · kept, revised to K's notes",
    "w": 1440,
@@ -1809,7 +1809,7 @@
    "y": 0
   },
   "Newsletter-Page-5.dc.html": {
-   "h": 4000,
+   "h": 4750,
    "page": "newsletter-options",
    "title": "Newsletter · the page · option 5 · Everything on one screen · kept, revised to K's notes",
    "w": 1440,
@@ -1822,7 +1822,7 @@
    "title": "Newsletter · the email · option 1 · The navy band · kept, revised to K's notes",
    "w": 1440,
    "x": 640,
-   "y": 4440
+   "y": 5190
   },
   "Newsletter-Email-2.dc.html": {
    "h": 2250,
@@ -1830,7 +1830,7 @@
    "title": "Newsletter · the email · option 2 · The plain letter · not kept",
    "w": 1440,
    "x": 5680,
-   "y": 4440
+   "y": 5190
   },
   "Newsletter-Email-3.dc.html": {
    "h": 2400,
@@ -1838,7 +1838,7 @@
    "title": "Newsletter · the email · option 3 · The card · not kept",
    "w": 1440,
    "x": 7200,
-   "y": 4440
+   "y": 5190
   },
   "Newsletter-Email-4.dc.html": {
    "h": 2500,
@@ -1846,7 +1846,7 @@
    "title": "Newsletter · the email · option 4 · The bulletin · kept, revised to K's notes",
    "w": 1440,
    "x": 2160,
-   "y": 4440
+   "y": 5190
   },
   "Newsletter-Email-5.dc.html": {
    "h": 2500,
@@ -1854,7 +1854,31 @@
    "title": "Newsletter · the email · option 5 · The big month · kept, revised to K's notes",
    "w": 1440,
    "x": 3680,
-   "y": 4440
+   "y": 5190
+  },
+  "Newsletter-Tournament-1.dc.html": {
+   "page": "newsletter-options",
+   "w": 1440,
+   "h": 2200,
+   "x": 640,
+   "y": 8130,
+   "title": "Newsletter · a club's tournament send-out · in the look of email option 1 · The navy band"
+  },
+  "Newsletter-Tournament-4.dc.html": {
+   "page": "newsletter-options",
+   "w": 1440,
+   "h": 2350,
+   "x": 2160,
+   "y": 8130,
+   "title": "Newsletter · a club's tournament send-out · in the look of email option 4 · The bulletin"
+  },
+  "Newsletter-Tournament-5.dc.html": {
+   "page": "newsletter-options",
+   "w": 1440,
+   "h": 2400,
+   "x": 3680,
+   "y": 8130,
+   "title": "Newsletter · a club's tournament send-out · in the look of email option 5 · The big month"
   }
  },
  "createdOnFiles": {
@@ -3618,7 +3642,7 @@
    "text": "The email · K's three, revised to K's notes: options 1, 4 and 5",
    "w": 240,
    "x": 640,
-   "y": 4120
+   "y": 4870
   },
   "b_newsletter_options": {
    "fill": "teal",
@@ -3626,7 +3650,7 @@
    "w": 560,
    "x": 0,
    "y": 0,
-   "text": "Options for the LCA president (Tue, Nov 10, 2026). K cut round 3's ten to six and gave four notes; these six are revised to them.\n\nTop row, the page where the newsletter is written and sent: options 2, 4 and 5. Each now has a wide \"Start from a template or a past newsletter\" bar (pinned templates and last newsletters), a writing area that is the largest thing on the page (\"Make bigger\", \"Pull to make taller\", \"Hide\" on the preview, tools sized for fingers, a tablet drawn), and \"167 people will get it: 155 members and 12 you added\" with \"Add or review people\".\n\nBottom row, the email members receive: options 1, 4 and 5, with the small header text larger and clearer.\n\nThe counts are examples: the newsletter goes to active members, about 155. No sender address is shown: K decides the addresses from the address map.\n\nThe four options K did not keep are further right in each row."
+   "text": "Options for the LCA president (Tue, Nov 10, 2026).\n\nTop row, the page where the newsletter is written and sent: K's three, options 2, 4 and 5. Each has a wide \"Start from a template or a past newsletter\" bar, a writing area that is the largest thing on the page, \"167 people will get it: 155 members and 12 you added\" with \"Add or review people\", and a \"From\" choice of sender: LCA, or a club the email is sent on behalf of.\n\nMiddle row, the email members receive: K's three looks, options 1, 4 and 5.\n\nBottom row, new: a club's tournament send-out in each of those three looks, so clubs can announce their tournaments to LCA's members.\n\nThe counts and the tournament are examples. No sender address is shown: K decides the addresses from the address map.\n\nThe four options K did not keep are further right in the first two rows."
   },
   "t_newsletter_options_page_no": {
    "kind": "title1",
@@ -3644,7 +3668,16 @@
    "text": "Not kept: email options 2 and 3",
    "w": 240,
    "x": 5680,
-   "y": 4120
+   "y": 4870
+  },
+  "t_newsletter_options_tournament": {
+   "kind": "title1",
+   "maxW": 4400,
+   "page": "newsletter-options",
+   "text": "A club's tournament send-out · one in each of K's three email looks",
+   "w": 240,
+   "x": 640,
+   "y": 7810
   }
  },
  "order": [
@@ -3871,7 +3904,10 @@
   "Newsletter-Email-2.dc.html",
   "Newsletter-Email-3.dc.html",
   "Newsletter-Email-4.dc.html",
-  "Newsletter-Email-5.dc.html"
+  "Newsletter-Email-5.dc.html",
+  "Newsletter-Tournament-1.dc.html",
+  "Newsletter-Tournament-4.dc.html",
+  "Newsletter-Tournament-5.dc.html"
  ],
  "pages": [
   {

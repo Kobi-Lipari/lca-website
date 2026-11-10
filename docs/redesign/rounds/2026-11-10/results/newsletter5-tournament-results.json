@@ -1,0 +1,192 @@
+{
+ "label": "newsletter-round-5-tournament",
+ "set": "tournament",
+ "results": [
+  {
+   "board": {
+    "n": 1,
+    "look": "the navy band",
+    "file": "Newsletter-Tournament-1.dc.html",
+    "like": "Newsletter-Email-1.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Tournament-1.dc.html",
+    "height": 2200,
+    "changes": [
+     "New board copied from Newsletter-Email-1.dc.html: same skeleton, kit link, fonts, one style block, label strip form, 780 plus 390 grid, mail window, phone frames, type, colours, gold-ink heading rules and cream footer, so it is plainly the same family as the navy band. Root is 1440 wide and fixed. Rendered height is 2173, so the root and $preview height are both 2200.",
+     "Label strip: the small line reads 'LCA Newsletter · A tournament send-out · In the look of email option 1', then the name 'A club's tournament announcement', the given sentence word for word, and one 'Sample data' tag. No other board furniture.",
+     "Mail window: the sender is 'Baton Rouge Chess Club' with a green club-colour 'BR' avatar (#2f6b4f, the colour News-Final uses for this club) and small grey 'through the Louisiana Chess Association'. No address anywhere. Subject 'Baton Rouge Winter Open · Sat, Jan 9, 2027 · registration is open', received Mon, Dec 7, 2026, 9:00 AM.",
+     "Navy band header: on the computer, 'TOURNAMENT · FROM BATON ROUGE CHESS CLUB' runs across the top at 17px, weight 700, letter spacing .08em, in light gold #efd98a. Below it are the rook, 'Baton Rouge Winter Open' at 36px and 'Sat, Jan 9, 2027 · Baton Rouge' in white at 19px. On the phone, the small line is 15px and breaks evenly over two lines, and the event name is 29px on two lines.",
+     "Two-sentence welcome from the club, inviting players of every level, then 'The details' as six label and value rows: When, Where, Sections, Rounds and time control, Entry fee, Registration. They use the sample tournament's facts word for word. The rows are two columns on the computer and stack label above value on the phone. The two prices are set large and bold so the price is easy to find, and there is no member price.",
+     "One action in a cream panel: a navy 'Register on King Registration ↗' button with a gold bottom edge, in the band's own style. Under it the same link as plain underlined text: 'If the button does not show, use this link: https://www.kingregistration.com/…'.",
+     "'Good to know' with the set-and-clock line and the US Chess membership line, then 'Who runs it' with 'Run by Baton Rouge Chess Club. Questions? Reply to this email and it reaches the club.'",
+     "Footer in the option 1 style: 'You get tournament email from LCA because you are an LCA member.', then the three links 'Unsubscribe from tournament email', 'Choose which LCA emails you get' and 'LCA on Facebook ↗', then a thin rule and the small line 'Sent through the Louisiana Chess Association for Baton Rouge Chess Club.' No postal address.",
+     "Light phone: the top of the email, from the subject to the start of 'The details'. Dark phone: the end of the email, from the Register panel to the full footer, in the mail app's dark setting with the button kept white on dark navy. Captions read 'On a computer', 'On a phone' and 'On a phone, dark setting'.",
+     "Checked at scale 1 with crops. Fixed the header line and event name wrapping in the computer band, the footer's last line being cut off on the dark phone, a lone '$35' at the end of a line, and 'The details' heading being left alone at the bottom of the light phone. Copy checked: no em or en dashes, a weekday on every date, times as '9:00 AM', 'US Chess', no email addresses, every tag closed."
+    ],
+    "note": "The tournament send-out in the navy band look, sent by Baton Rouge Chess Club through LCA: the event's name and day sit in the band, and the price and the Register on King Registration button come right after a short list of facts. It is shown on a computer, on a phone and on a phone in the dark setting, with the club's name as the sender and LCA's one-click unsubscribe footer.",
+    "unresolved": [
+     "The spec puts the welcome and the facts before the button, so on the light phone the first screen shows the event's name and day but not the price or the Register button. The dark phone shows the button. If the president wants the price and Register within the first phone screen, a short 'Entry $25 · Register' line under the band would do it, but it would add to the spec's order.",
+     "The club's avatar uses the club's colour (#2f6b4f) with the letters 'BR'. The spec did not name an avatar for a club sender, so K may prefer the LCA rook there."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Tournament-1.dc.html",
+    "height": 2200,
+    "counts": "Rendered at scale 1: the content is 2175px tall, so the declared height is 2200 (root and $preview both say 2200, under the 2700 limit). Furniture: one label strip and exactly one \"Sample data\" tag, with no legend, badges, chips or frame letters. 3 pictures and 3 captions: \"On a computer\", \"On a phone\", \"On a phone, dark setting\". These are the same captions the newsletter sibling uses. Dates: 10 date mentions, all with a weekday. They are Sat, Jan 9, 2027 (6 times), Mon, Dec 7, 2026 (2), Sat, Jan 2, 2027 (1) and Fri, Jan 8, 2027 (1), and I checked each against a calendar. Times: 9:00 AM, 11:30 AM, 2:00 PM, 4:30 PM, 8:00 PM, and 9:00 AM for when it was received. The computer email has all 7 parts: header band, the club's sentences, 6 facts (When, Where, Sections, Rounds and time control, Entry fee, Registration), one button with the same link as underlined text under it, Good to know (2 lines), Who runs it, and the footer (its sentence, 3 links and the \"Sent through\" line). The light phone shows the top of the email through the first line of When. The dark phone shows from the button to the footer. Sender: \"Baton Rouge Chess Club\", with \"through the Louisiana Chess Association\" under it in all three views. It has no address and uses the club's green #2f6b4f, the same as on the page boards. Every copy check came back clean: 0 em or en dashes, 0 \"USCF\", 0 email or postal addresses, 0 member prices or discounts, 0 {{holes}}, 0 iframes, 0 animations. All tags are closed, all attributes are quoted, and no element overflows.",
+    "changes": [
+     "Phone subject line: it wrapped with a dot at the start of a line ('· registration is open'). I put a non-breaking space before each dot, and one inside 'Winter Open' on the phone, so it now reads 'Baton Rouge Winter Open ·' / 'Sat, Jan 9, 2027 ·' / 'registration is open'. I did the same on the computer for consistency.",
+     "Light phone: the screen cut off right after the 'When' label, so the label looked like it had lost its value. I shortened the club's second paragraph to 'Players of every level are welcome, and young players have a section of their own. We hope to see you there.' I used the same words in both views, and this also drops the jargon 'title chase'. I then set the phone top padding to 25px so the cut lands cleanly after the first full line of When ('Sat, Jan 9, 2027. Rounds at 9:00 AM,'), the same way the newsletter sibling's phone ends.",
+     "Dark phone: the 'Sent through the Louisiana Chess Association for Baton Rouge Chess Club.' line was clipped about 4px by the mail app's bottom bar, and the footer's bottom padding was cut off. The cause was a .np-em .np-in rule that overrode the end view's own padding. I made the end view's selector more specific (14px top, 6px bottom) and set its heading top margin to 16px. The footer now ends 7px above the bar with its full padding.",
+     "Text under the button ('If the button does not show, use this link:'): raised from 14.5px to 15px on the computer and from 14px to 14.5px on the phone, for readability.",
+     "Checked and left unchanged: the label strip wording, the sender, the subject, the received time Mon, Dec 7, 2026, 9:00 AM, the facts word for word, the footer, the band header text at 17px/15px in light gold #efd98a on navy, gold-ink rules on the light ground, underlined links, one column, the body at 16px on the computer and 15.5 to 16px on the phone, and the declared height of 2200, which already matched the render."
+    ],
+    "remaining_concerns": [
+     "The captions are the sibling's own ('On a phone', 'On a phone, dark setting'), as the spec asks. They do not say that the first phone shows the top and the second shows the end. If the president needs that spelled out, both email-1 boards should change together.",
+     "Neither phone shows Where (after its first line), Rounds and time control, Entry fee or Registration, because of how the email is cut between the two screens. The full set of facts appears only in the computer view. The facts that do appear match word for word.",
+     "The light gold on the band is #efd98a, and the newsletter sibling uses the same. It meets the 'light gold, #e7cf7a or lighter' rule.",
+     "The 'Sent through...' line is 13px on the computer and 14px on the phone, which is small but readable. It is the one small line the spec asks for, so I left it."
+    ]
+   }
+  },
+  {
+   "board": {
+    "n": 4,
+    "look": "the bulletin",
+    "file": "Newsletter-Tournament-4.dc.html",
+    "like": "Newsletter-Email-4.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Tournament-4.dc.html",
+    "height": 2450,
+    "changes": [
+     "New board drawn in email option 4's look (the bulletin). Its skeleton, label strip, mail window, phone frames, Source Serif type, navy rules, gold-ink section heads and footer styling are copied from Newsletter-Email-4.dc.html, with the root 1440 wide and declared at 2450 (the content ends at 2401).",
+     "Label strip: the small line 'LCA Newsletter · A tournament send-out · In the look of email option 4', the name 'A club's tournament announcement', the sentence word for word, and one 'Sample data' tag. No other board furniture.",
+     "Mail window: the subject 'Baton Rouge Winter Open · Sat, Jan 9, 2027 · registration is open', received Mon, Dec 7, 2026, 9:00 AM. The sender reads 'Baton Rouge Chess Club' with the grey words 'through the Louisiana Chess Association' and a round avatar in the club's green from News-Final, marked BR. No address is shown.",
+     "Masthead: the rook, then 'Baton Rouge Winter Open' between the rules, then the line 'A TOURNAMENT FROM BATON ROUGE CHESS CLUB · SAT, JAN 9, 2027'.",
+     "Straight under the masthead, a ruled cream box so the eye finds the event first. It has two halves, When (Sat, Jan 9, 2027, Baton Rouge, first round 9:00 AM) and Entry fee ($25 through Sat, Jan 2, 2027, then $35). Below them is the one navy button 'Register on King Registration ↗', then the same link as plain underlined text ('Button not showing? Use this link: https://www.kingregistration.com/…'), then 'Registration closes Fri, Jan 8, 2027 at 8:00 PM.'",
+     "'From the club': a lead line and two plain sentences inviting every level, signed 'Baton Rouge Chess Club'.",
+     "'The details': each fact is a label beside its value on the computer, and the label sits above the value on the phone. The six rows are When, Where, Sections, Rounds and time control, Entry fee and Registration, using the sample facts word for word.",
+     "'Good to know' gives the set and clock line and the US Chess membership line. 'Who runs it' reads 'Run by Baton Rouge Chess Club. Questions? Reply to this email and it reaches the club.'",
+     "Footer in the bulletin's style: 'You get tournament email from LCA because you are an LCA member.', then the three links (Unsubscribe from tournament email, Choose which LCA emails you get, LCA on Facebook ↗), then 'Sent through the Louisiana Chess Association for Baton Rouge Chess Club.' and the rook. No postal address and no email address.",
+     "Light phone: the top of the email at 9:04, where the name, the day, the price and the Register button all show without scrolling. Dark phone: the end at 9:06, from the Registration row through the footer.",
+     "Checked: no em or en dashes, every date carries its weekday, times written as '9:00 AM', 'US Chess', no member price, gold-ink #866a1e for gold text on light grounds, every tag closed, and the root height matches the $preview height (2450)."
+    ],
+    "note": "The tournament send-out in the bulletin look: Baton Rouge Chess Club announces the Baton Rouge Winter Open through LCA, with the masthead between rules and a ruled box right under it that holds the day, the entry fee and the one Register button. The full facts, good to know and who runs it follow, and the footer carries the tournament-email unsubscribe and the line saying it was sent through LCA for the club.",
+    "unresolved": [
+     "The order of the email's parts was changed on purpose. The spec lists the club's sentences, then the facts, then the button. To meet the rule that the name, the day, the price and the Register button come first, the price, the day and the single button sit in a box straight under the masthead, ahead of the club's sentences and the full facts. So the day and the fee appear twice: once in that box and once in 'The details'.",
+     "On the phone, the box's two halves are narrow, so 'Sat, Jan 9, 2027' and the price line each wrap onto more lines. The halves still balance, and the button stays in view without scrolling.",
+     "The club's two sentences and the 'BR' initials on the avatar are invented. The single Sample data tag covers them."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Tournament-4.dc.html",
+    "height": 2350,
+    "counts": "The board renders 2325px tall, so the root and $preview are declared at 1440 x 2350, under the 2700 limit. There is 1 \"Sample data\" tag (k-sample), and the label strip is the only board furniture: no legend, badges, chips, grey note or frame letters. The email has 1 button (\"Register on King Registration ↗\"), with the same link as underlined text under it (\"https://www.kingregistration.com/…\"). The footer has 1 sentence, 3 links and 1 \"Sent through\" line. There are 3 pictures with 3 captions: \"On a computer\", \"On a phone\" and \"On a phone, dark setting\", the same as the sibling Newsletter-Email-4. I found 5 distinct dates and checked each against a calendar: Mon, Dec 7, 2026 (received); Sat, Jan 9, 2027 (also in the masthead as SAT, JAN 9, 2027); Sat, Jan 2, 2027 (price change); Fri, Jan 8, 2027 (registration closes). All weekdays are correct. Times are 9:00 AM, 11:30 AM, 2:00 PM, 4:30 PM, 8:00 PM and 9:00 AM received. There are 0 em or en dashes, 0 USCF, 0 email addresses, 0 postal addresses, 0 member prices, 0 {{holes}}, 0 iframes and 0 animations. Every tag is balanced; a parser found no open or mismatched elements. Body text is 16.5px on the computer and 16px on the phone, the facts are 16.5px on the computer and 15.5px on the phone, and the masthead line is 13.5px on the computer and 13px on the phone. The layout is one column and every link is underlined.",
+    "changes": [
+     "Put the email back in the spec's order: header, then the club's sentences, then the facts, then the one button, then Good to know, Who runs it and the footer. Before, a registration box with the button sat above the club's sentences, which did not match Newsletter-Tournament-1.",
+     "Removed the duplicate facts at the top of that box (When / Entry fee, including 'first round 9:00 AM', which was not word for word). The box now sits after The details and holds a small gold-ink label 'Registration is open', the button, 'Button not showing? Use this link:' with the underlined link, and 'Registration closes Fri, Jan 8, 2027 at 8:00 PM.' The date is kept on one line.",
+     "Raised the box's link line and closing line from 15 to 15.5px up to 16px on the computer, so all body text there is at least 16px (15px on the phone).",
+     "Shortened the club's middle sentence to 'Every level is welcome. There is a section for players under 1400 and one just for scholastic players, K to 12.' (dropped 'so it makes a good first rated tournament and a real test for stronger players'). Changed it in both views so the copy stays the same. On the light phone the view now ends cleanly after the club's sign-off, where before a line was cut in half at the toolbar.",
+     "Light phone: shows the top of the email (masthead, From the club, sign-off), with no cramped two-column fact pair and no half-cut link.",
+     "Dark phone: used to start on a lone 'Registration' row taken out of its list. It now starts cleanly at Good to know, then Who runs it and the full footer, following the sibling's way of showing the end.",
+     "Removed the dark-setting styles that no longer had anything to style.",
+     "Set the declared root height and the $preview height from 2450 to 2350 to match the 2325px render."
+    ],
+    "remaining_concerns": [
+     "The spec asks for the masthead line 'A TOURNAMENT FROM BATON ROUGE CHESS CLUB · SAT, JAN 9, 2027'. At the look's 13.5px with letter spacing it does not fit on one line in the 520px column, so it breaks before the date and the middle dot is dropped. This matches how the sibling breaks 'DECEMBER 2026 · NO. 2 / LOUISIANA CHESS ASSOCIATION · SINCE 1915'.",
+     "The club avatar is the initials 'BR' on Baton Rouge's club colour #2f6b4f, the colour News-Final uses for its dot. Tournament-1 does the same, but no decided board has drawn a club avatar in a mail window before.",
+     "The dark phone ends with about 130px of empty dark screen below the footer's rook. That is a true end of the email, but the button does not appear in the dark setting. The register box, Good to know, Who runs it and the footer together are about 110px taller than the phone screen, so they cannot all show at once.",
+     "The sender line on the computer reads 'Baton Rouge Chess Club' in bold with 'through the Louisiana Chess Association' in grey beside it on the same line, while Tournament-1 puts the grey words on their own line. Both follow the spec; the two boards differ slightly."
+    ]
+   }
+  },
+  {
+   "board": {
+    "n": 5,
+    "look": "the big month",
+    "file": "Newsletter-Tournament-5.dc.html",
+    "like": "Newsletter-Email-5.dc.html"
+   },
+   "drawn": {
+    "file": "Newsletter-Tournament-5.dc.html",
+    "height": 2550,
+    "changes": [
+     "New board, built on the skeleton of Newsletter-Email-5.dc.html: same head, kit link, Google Fonts link, one style block, data-dc-script. The root is 1440 wide and the root and $preview are both declared at 2550; the content renders 2526 tall.",
+     "Copied unchanged from email option 5: the label strip, the mail window, both phone frames, the type, the colours, the navy block with its gold rule, the navy section squares and the navy footer. The kicker reads 'LCA Newsletter · A tournament send-out · In the look of email option 5', the name is 'A club's tournament announcement' with the given sentence, and there is one Sample data tag.",
+     "Mail header: the subject 'Baton Rouge Winter Open · Sat, Jan 9, 2027 · registration is open'. The sender is 'Baton Rouge Chess Club' with the grey words 'through the Louisiana Chess Association', no address, and the green BR club avatar matching Tournament-1 and Tournament-4. Received Mon, Dec 7, 2026, 9:00 AM.",
+     "The big navy block has the rook and 'TOURNAMENT · FROM BATON ROUGE CHESS CLUB' at 17px in light gold. Below it 'Baton Rouge Winter Open' is very large on two lines (70px, 46px on the phone), then the date 'Sat, Jan 9, 2027' in gold with '· Baton Rouge'.",
+     "In the block, the first things the eye lands on are a price panel ('$25 entry', with 'through Sat, Jan 2, 2027, then $35' under it) and a gold Register on King Registration ↗ button. Under them is an 'At a glance' list in place of 'In this issue': Rounds, Sections, Rated and Closes, with gold labels on navy.",
+     "Body: two warm sentences from the club, then 'The details' as six label-over-value cells in two tidy columns (When, Where, Sections, Rounds and time control, Entry fee, Registration). The sample tournament's facts are used word for word.",
+     "One action block: a navy panel with a gold bottom rule holding the button, and under it the plain underlined link 'https://www.kingregistration.com/…' for mail apps that hide buttons. Then 'Good to know' (set and clock, US Chess membership) and 'Who runs it' (the reply line).",
+     "Footer in option 5's navy style: the tournament-email sentence, the three links (Unsubscribe from tournament email, Choose which LCA emails you get, LCA on Facebook ↗), and a thin rule above 'Sent through the Louisiana Chess Association for Baton Rouge Chess Club.' No postal or email address anywhere.",
+     "Light-setting phone: the top of the email, with the name, date, price and full-width Register button all above the fold. Dark-setting phone: the end of the email, from the action block through Good to know, Who runs it and the whole footer, with no clipping.",
+     "Self-check over three renders at scale 0.5 and 1. Fixed a cramped price block, a washed-out button label in the dark setting and a clipped dark footer. Checked for no em or en dashes, no old initials, no {{holes}} and no iframes, and that every element is closed."
+    ],
+    "note": "A club's tournament send-out in the look of email option 5: the event's name, its day, the $25 price and a gold Register button all sit in the big navy block, where a member sees them first. The facts, Good to know, who runs it and LCA's footer follow, shown on a computer, on a phone and on a phone in the dark setting.",
+    "unresolved": [
+     "The Register button appears twice, once in the navy header so it is found first and once after the facts with the plain-link fallback. The spec asks for 'one clear action', so if exactly one button is wanted, drop the one in the header.",
+     "The two sentences from the club are invented in the same words as Tournament-1, so the three looks read alike. The Sample data tag covers them.",
+     "In the light-setting phone the 'At a glance' list is cut by the mail app's bottom bar, the way a partly scrolled email looks. This is on purpose."
+    ]
+   },
+   "review": {
+    "file": "Newsletter-Tournament-5.dc.html",
+    "height": 2400,
+    "counts": "The final render is 1440 by 2383 px, so the declared height is 2400 (the root and $preview both say 2400, under the 2700 limit). There is one \"Sample data\" tag, and the label strip is the only furniture: no legend, badges, chips or frame letters. There are 3 pictures with 3 captions: \"On a computer\", \"On a phone\" and \"On a phone, dark setting\". Each email now has exactly 1 Register button: the computer email has 1, and the dark phone shows the same button again because it is the end of the same email. The plain-text link \"https://www.kingregistration.com/…\" sits under the button in both places. Five dates appear, each with its weekday, and all five match the calendar: Sat, Jan 9, 2027; Sat, Jan 2, 2027; Fri, Jan 8, 2027; Mon, Dec 7, 2026 (received); and the subject's Sat, Jan 9, 2027. Times: 9:00 AM, 11:30 AM, 2:00 PM, 4:30 PM and 8:00 PM, plus the received time of 9:00 AM. The file has 0 em or en dashes, 0 \"USCF\", 0 email or postal addresses and 0 member prices. The footer has 1 sentence, 3 underlined links and the \"Sent through\" line, and is the same on the computer and the dark phone. The six fact labels (When, Where, Sections, Rounds and time control, Entry fee, Registration) match the sample tournament word for word. The tags are balanced, with no {{holes}}, iframes or animation. Neither phone screen overflows sideways. The dark phone's content is 652 px, which exactly fills its 652 px screen (it was 668, which clipped the footer).",
+    "changes": [
+     "Removed the second Register button from the header, on the computer and the light phone. The header had a box with '$25 entry' and its own 'Register on King Registration' button, so the computer email had two buttons and the spec allows one. The single button with the link under it now sits only after the facts, as part 4. The header is now kicker, name, gold date and 'At a glance', which also matches the newsletter look's 'In this issue' block more closely.",
+     "Changed 'At a glance' to Rounds, Sections, Entry ('$25 through Sat, Jan 2, 2027, then $35') and Closes ('Fri, Jan 8, 2027 at 8:00 PM, on King Registration'), dropping the 'Rated' row that reordered the time-control fact. The light phone now shows the same four rows (it had two).",
+     "Fixed the dark phone's footer: the 'Sent through the Louisiana Chess Association for Baton Rouge Chess Club.' line was clipped against the mail app's bottom bar (16 px of overflow). Tightened the top padding (22 to 12), the section gaps (20 to 18) and the action block's padding (16 to 14), so the footer now ends with its own padding inside the screen.",
+     "Phone subject: tied each middle dot to the word before it with a non-breaking space, so no line of the wrapped subject starts with '·'.",
+     "Light phone: added the club's two opening sentences after the header so the email continues past the screen edge, as a real top-of-email view would.",
+     "Set the root height and $preview height from 2550 to 2400, the rendered 2383 rounded up to the next 50."
+    ],
+    "remaining_concerns": [
+     "On the light phone the navy header fills the whole screen, so only a thin white strip of the club's sentences shows above the mail app's bottom bar. It reads as the email continuing, but a president might see it as a small gap. The fix would be shrinking the phone header, which I left alone to keep the large type of the big-month look.",
+     "The section headings use small icons in the navy square (calendar, tick, reply arrow) where the newsletter look uses the numbers 1 to 6. I kept this because a single-event email has no numbered contents, but it is a slight departure from the sibling.",
+     "The mail window's title bar reads just 'Baton Rouge Winter Open', not the full subject as on the newsletter board. I kept it because the full subject is long; the full subject is shown in the message header.",
+     "The facts block uses two columns on the computer. The phones do not show that part of the email, so the stacking on a phone (label above value) is not drawn on this board."
+    ]
+   }
+  }
+ ],
+ "setCheck": {
+  "per_file": [
+   {
+    "file": "Newsletter-Tournament-1.dc.html",
+    "height": 2200,
+    "verdict": "Ready to send. It is plainly the navy-band look of email option 1, the shared parts now match the other two boards word for word, and it renders at 2175px with nothing overlapping or clipped."
+   },
+   {
+    "file": "Newsletter-Tournament-4.dc.html",
+    "height": 2350,
+    "verdict": "Ready to send. It keeps option 4's serif masthead and ruled headings, and its subject, sender line, club sentences, facts and link line now match the set. Its dark phone shows the Register box like the other two, and it renders at 2341px."
+   },
+   {
+    "file": "Newsletter-Tournament-5.dc.html",
+    "height": 2400,
+    "verdict": "Ready to send. It keeps option 5's big navy block with the At a glance list, and its window title, phone subject and club sentences now match the set. It renders at 2383px with no clipping."
+   }
+  ],
+  "changes": [
+   "All three boards: the page <title> is now 'Tournament send-out 1', '... 4' and '... 5'. These were three different long titles before.",
+   "All three boards: the facts now say '5&nbsp;second delay', with a no-break space, so 'second' no longer sits alone at the start of a line in 'Rounds and time control'.",
+   "Tournament-1: the mail window's title bar now shows the full subject 'Baton Rouge Winter Open · Sat, Jan 9, 2027 · registration is open', as Newsletter-Email-1, -4 and -5 do. Before, it showed only the event name.",
+   "Tournament-5: the same full subject in the title bar. The subject on the computer and phone now uses the same no-break spaces as Tournament-1, so all three phones break it in the same three lines.",
+   "Tournament-5: the club's second sentence now matches the other two: 'Players of every level are welcome, and young players have a section of their own. We hope to see you there.' The old 'from a first rated game to a title chase' wording is gone, on the computer and on the phone.",
+   "Tournament-4: the sender is now 'Baton Rouge Chess Club' with 'through the Louisiana Chess Association' as a small grey line under it, as on boards 1 and 5. Before, the two sat inline on one line. The received time and the phone subject use the same no-break spaces as the other two boards, and the BR initials are 15px to match.",
+   "Tournament-4: the club's words are now the same two sentences as boards 1 and 5. The first is the large lede, the second follows, and the bulletin's small-caps 'BATON ROUGE CHESS CLUB' sign-off stays. This replaces 'Come play a full Saturday...' and 'We hope to see you at the board'.",
+   "Tournament-4: 'Where' now reads 'Baton Rouge; the exact place is on the registration page.' (spec wording, as on boards 1 and 5) on the computer and the phone. The Registration close date and time are kept together on one line, and the link line now reads 'If the button does not show, use this link:' to match boards 1 and 5.",
+   "Tournament-4: the dark phone now starts with the Register button and link in a dark version of the bulletin's boxed style, as boards 1 and 5 do. The scroll is anchored to the bottom so the whole footer, the 'Sent through' line and the rook end mark show. The empty space below the footer is gone.",
+   "I measured each board's real content height after the edits: 2175, 2341 and 2383px. Rounded up to the next 50 these give the existing declared heights (2200, 2350, 2400), so the root and $preview values were already right and are unchanged.",
+   "Checks run, all passing: no em or en dashes; no 'USCF', no '.5', no '@' address and no member price or discount in the visible text. Every tag in all three files closes. Every date has its weekday, checked against a calendar: Sat, Jan 9, 2027; Sat, Jan 2, 2027; Fri, Jan 8, 2027; Mon, Dec 7, 2026."
+  ],
+  "remaining_concerns": [
+   "Each look keeps a few things of its own that the other two do not show. Board 4 adds a 'Registration is open' label (gold-ink) and repeats 'Registration closes Fri, Jan 8, 2027 at 8:00 PM.' inside its Register box. Board 5 repeats the main facts in its 'At a glance' list in the header. The wording of each still matches the facts list exactly. I kept them as part of each look; remove them if the president should see exactly the same parts on all three.",
+   "The arrow on the Register button is an inline SVG icon on boards 1 and 5 and the ↗ text character on board 4. The words are the same, but the arrows look slightly different.",
+   "On the dark phones of boards 4 and 5, the top edge of the Register box is cut off under the mail app's top bar, as if the reader has scrolled down. This is on purpose, but board 1 shows its box whole.",
+   "When I wrote my first crops I overwrote two scratch files that already existed in the render folder: <scratchpad>/render/set/crop.py and <scratchpad>/render/set/side.png. My crop.py is a plain crop script and side.png is an overview of these boards. I then moved my own work to <scratchpad>/render/tset. Nothing in the project or the docs worktree was touched."
+  ]
+ }
+}
