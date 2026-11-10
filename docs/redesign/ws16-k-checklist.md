@@ -41,7 +41,7 @@ Where to read each value: Amazon SES, Identities, `louisianachess.org`, the **Au
 
 After Save, Cloudflare's record list must show each name with `louisianachess.org` at most once. If it appears twice, edit the name to the part before `.louisianachess.org`. (Amazon warns that some DNS hosts add the domain to a pasted name; Cloudflare's page does not say how its Name field treats one, so check.)
 
-Leave alone: the root MX (LCA's mailboxes), the root SPF record, the `_dmarc` record (it stays `p=none`; if Amazon's page suggests a DMARC record, do not add a second one), and Resend's `send.` records and `resend._domainkey` (they stay until a week after Resend is removed). Do read the `_dmarc` record once: if it holds `adkim=s` or `aspf=s` (strict alignment), tell the lead before deciding the address map, since under strict alignment mail from a subdomain passes DMARC only with that subdomain's own signing key. The identity's page shows **Verified** and DKIM **Successful**, usually within an hour and at most 72 hours.
+Leave alone: the root MX (it leads to the website; no mailbox exists at the domain, and this work does not change that), the root SPF record, the `_dmarc` record (it stays `p=none`; if Amazon's page suggests a DMARC record, do not add a second one), and Resend's `send.` records and `resend._domainkey` (they stay until a week after Resend is removed). Do read the `_dmarc` record once: if it holds `adkim=s` or `aspf=s` (strict alignment), tell the lead before deciding the address map, since under strict alignment mail from a subdomain passes DMARC only with that subdomain's own signing key. The identity's page shows **Verified** and DKIM **Successful**, usually within an hour and at most 72 hours.
 
 ### 4. The configuration set, the topic and the event destination
 
@@ -228,7 +228,7 @@ K decides every address and domain form together, once, from the lead's address 
 
 ### E. Over the next days
 
-19. The three alarms, and Amazon SES's reputation page (Amazon SES, Reputation metrics) for the bounce and complaint rates. Gmail passes Amazon no spam reports, so Google's rate is not on that page; if K wants it, Google Postmaster Tools needs one TXT record at the root (it leaves the mailboxes alone) and may show nothing at LCA's volume. Google asks senders to keep spam reports below 0.10% and never to reach 0.30%.
+19. The three alarms, and Amazon SES's reputation page (Amazon SES, Reputation metrics) for the bounce and complaint rates. Gmail passes Amazon no spam reports, so Google's rate is not on that page; if K wants it, Google Postmaster Tools needs one TXT record at the root (it changes nothing else) and may show nothing at LCA's volume. Google asks senders to keep spam reports below 0.10% and never to reach 0.30%.
 20. Once in a while, Amazon SNS, Topics, `lca-mail-events`: the site's subscription is still there and Confirmed. A notification carries an address that can remove the subscription; only the site receives notifications, over HTTPS, and it keeps none of them, but if the subscription is ever gone, the alarm above cannot see it.
 
 If Amazon has not approved by switch-on day, parts A and B still go ahead, Resend keeps carrying event and account mail, and parts C to E follow once Amazon has approved and section 10 is done.
