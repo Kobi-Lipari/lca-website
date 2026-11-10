@@ -1,6 +1,6 @@
-# The newsletter, rounds 1 and 2 (Tuesday, November 10, 2026)
+# The newsletter, rounds 1 to 3 (Tuesday, November 10, 2026)
 
-Two rounds on one day for LCA's monthly newsletter, both on canvas page "18 · Newsletter". Round 1 drew four fuller directions (canvas version 23). Round 2 drew the simple version K then asked for, with a board of K's picks (canvas version 24). K picked on Tue, Nov 10, 2026: the simple version first; the page reads left to right as Your picks, Newsletter-E and its part 2, then round 1's A to D as ideas for later.
+Three rounds on one day for LCA's monthly newsletter. Rounds 1 and 2 are on canvas page "18 · Newsletter"; round 3, ten options for the president, is on page "19 · Newsletter options for the president" (canvas version 25). Round 1 drew four fuller directions (canvas version 23). Round 2 drew the simple version K then asked for, with a board of K's picks (canvas version 24). K picked on Tue, Nov 10, 2026: the simple version first; the page reads left to right as Your picks, Newsletter-E and its part 2, then round 1's A to D as ideas for later.
 
 - `feedback.md`: K's words, verbatim.
 - `newsletter-specs.json`: what every designer was given. `fb` is K's words and how they were read, `flow` is what the four options share (the moment drawn, the five frames, the managing facts, the email's footer, the sample issue, the checked weekdays, the open questions), and `boards` holds each option's spec.
@@ -81,3 +81,29 @@ Drawn this way unless K says otherwise: one person writes at a time and the othe
 **How round 2 was checked.** Before the second designer's review, a first-time volunteer walked the page through from the drawing alone: write the issue, add a tournament with its link, send a test, send it, then find each extra. They finished without being shown, and their fourteen stalls were fixed by plainer words and order, among them: the how-to for a link and a tournament line moved right under the writing tools; "Add" became "Add a photo, event or line"; the count reads "243 members will get it"; the page says "Saved automatically"; "Past issues" became "Past newsletters"; the event form gained "Add this line" and "Cancel". Five of their points were not taken. Three keep K's rule: More options stays a closed row under step 3, "Send the test to someone else" stays under the arrow, and the "Optional" chips stay on the board. Two were for room: "Who is here" stays in the drawn moment, now saying it shows only while someone else has the page open, and no extra panel shows the untouched page, which frame B5 and a note on frame A cover.
 
 **Where it is built.** The first newsletter, the week of Monday, November 16, 2026, goes out from today's Group email page (the mail plan's part one). Newsletter-E is the page the newsletter part builds after it.
+
+## Round 3: ten options for the president
+
+K asked for the message preview to be easy to see on the page ("a mini thing on the side on desktop", and something to press on a phone), and for "refined images of options for how the page and sending templates (what the receipients see) for the president to pick", about five of each, which K cuts to three before sending them on Wednesday, November 11, 2026.
+
+The ten are presentation boards: one option each, a label strip with the option's name and one plain sentence, and no working notes. `newsletter3-specs.json` holds what the designers were given, and `results/newsletter3-page-results.json` and `results/newsletter3-email-results.json` hold the draw, the review and the side-by-side check of each set.
+
+**The page, five options** (`Newsletter-Page-1` to `Newsletter-Page-5`). Every one keeps K's picks and rule: three steps, links pasted by hand, the extras behind closed controls, and the email shown small at the side on a computer and behind one button, "See the email", on a phone.
+1. Steps down the page: three numbered cards down the page, the email in a phone-shaped frame at the side.
+2. Write beside the email: the letter on the left, the email on the right at a readable size, the steps in one slim bar.
+3. One step at a time: one card for the current step, with Next and Back.
+4. The letter on the desk: you type onto the letter sheet itself, in the email's own type, with Test and Send in a bar at the foot.
+5. Everything on one screen: one strip for subject, test and send, and a tabbed panel with the preview first.
+
+**The email, five options** (`Newsletter-Email-1` to `Newsletter-Email-5`). Every one carries the same December 2026 issue word for word, in one column, with no photo and the same footer, drawn on a computer, on a phone and on a phone in the dark setting.
+1. The navy band: a dark blue band with the rook and the month, then a clean letter.
+2. The plain letter: no colour block, all serif, like a personal letter.
+3. The card: a cream ground with the newsletter on a white rounded card.
+4. The bulletin: a classic masthead between rules.
+5. The big month: the month in huge letters on dark blue, with a list of what is inside.
+
+No option shows a sender address: K decides the addresses together, from the address map, before any is fixed.
+
+**The lead's suggestion for K's three of each.** Pages 1, 2 and 4: 1 is the safest for a first-time sender, 2 answers "easy to see" best, and 4 is the most striking; 3 competes with 1 and adds clicks, and 5 has the smallest preview. Emails 1, 3 and 4: one that looks like the site, one modern, one traditional; 5 is close to 1, and the plain look of 2 stays available anyway as the "Plain" top under More options.
+
+**The images.** Each board is rendered for sending with `node docs/redesign/tools/render.mjs <board> <out> 1440 2`, which gives a picture 2,880 pixels wide. The images are not kept in the repository.

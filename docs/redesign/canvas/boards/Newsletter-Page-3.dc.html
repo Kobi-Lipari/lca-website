@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Newsletter · the page · option 3 · One step at a time</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="/_blob/6107adb451dbab26ee5d89f4189b81f8">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&amp;display=swap">
+<style>
+body{margin:0;background:#ecebe6;font-family:Geist,system-ui,sans-serif;color:#1a2744}
+.p3-root{width:1440px;margin:0 auto;box-sizing:border-box;padding:16px 0 0;background:#ecebe6;color:#1a2744;font-family:Geist,system-ui,sans-serif}
+.p3-root *{box-sizing:border-box}
+.p3-col{width:1200px;margin:0 auto}
+
+/* label strip */
+.p3-strip{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;padding:14px 24px 15px;background:#fbfaf6;border:1px solid #d9d8d1;border-radius:14px}
+.p3-kick{margin:0;font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#866a1e}
+.p3-name{margin:6px 0 0;font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.018em;color:#1a2744}
+.p3-say{margin:8px 0 0;font-size:16px;line-height:1.45;color:#3d4556}
+.p3-tag{flex:none;margin-top:2px;white-space:nowrap}
+
+.p3-fig{margin:0}
+.p3-col>.p3-fig{margin-top:18px}
+.p3-cap{display:flex;align-items:baseline;gap:10px;margin-top:10px;font-size:14px;line-height:1.45;color:#555c6b}
+.p3-cap b{font-size:15px;font-weight:600;color:#1a2744;white-space:nowrap}
+
+/* browser and decided header */
+.p3-browser{width:1200px;box-shadow:0 18px 44px rgba(16,24,43,.12)}
+.p3-browser .k-browser-url{max-width:640px}
+.p3-view{background:#f5f5f2}
+.p3-wrap{width:100%;padding:0 24px}
+.p3-hin{padding:0 24px;gap:0;height:68px;min-height:68px}
+.p3-brand{margin-right:14px}
+.p3-rook{width:30px;height:30px;fill:#ffffff;flex:none}
+.p3-nav{gap:0}
+.p3-nav a{padding:0 8px;white-space:nowrap}
+.p3-navbtn{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 8px;border:0;background:transparent;color:#ffffff;font:inherit;font-size:15px;font-weight:500;white-space:nowrap}
+.p3-search{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 12px;margin-right:12px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.45);color:#ffffff;text-decoration:none;font-size:14.5px;font-weight:500;flex:none}
+.p3-util{gap:10px}
+.p3-util .k-ulink{padding:0 4px}
+.p3-my{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:transparent;color:#ffffff;font:inherit;font-size:14px;font-weight:500;white-space:nowrap}
+
+.p3-phead{background:#ffffff;border-bottom:1px solid #e3e2dc}
+.p3-phead-in{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-top:14px;padding-bottom:16px}
+.p3-crumb{display:flex;align-items:center;gap:8px;margin:0;font-size:14px;color:#555c6b}
+.p3-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.p3-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.p3-sep{color:#858b99}
+.p3-tline{display:flex;align-items:baseline;gap:18px;margin-top:6px}
+.p3-phead h1{margin:0;font-size:32px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.p3-quiettxt{font-size:15px;color:#555c6b}
+.p3-quiettxt b{color:#1a2744;font-weight:600}
+
+/* the desk */
+.p3-desk{background:#f1eee4;padding:18px 24px 22px}
+.p3-cols{display:grid;grid-template-columns:768px 316px;gap:44px;justify-content:center;align-items:start}
+
+/* the three steps */
+.p3-steps{list-style:none;margin:0 0 16px;padding:0;display:flex;align-items:center;justify-content:center;gap:0}
+.p3-sti{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600;color:#555c6b;white-space:nowrap}
+.p3-dot{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:2px solid #b7b1a0;background:#ffffff;color:#555c6b;font-size:16px;font-weight:700;line-height:1;flex:none}
+.p3-sti-now{color:#1a2744;font-weight:700}
+.p3-sti-now .p3-dot{background:#1a2744;border-color:#1a2744;color:#ffffff;box-shadow:0 0 0 4px #f1eee4,0 0 0 6px #c8a94a}
+.p3-sti-done .p3-dot{background:#ffffff;border-color:#1a2744;color:#1a2744}
+.p3-sti-done{color:#1a2744}
+.p3-line{display:block;width:88px;height:2px;margin:0 16px;background:#cdc6ae;flex:none}
+.p3-line-done{background:#1a2744}
+.p3-steps-sm{margin:0 0 8px}
+.p3-steps-sm .p3-sti{font-size:14px;gap:8px}
+.p3-steps-sm .p3-dot{width:28px;height:28px;font-size:13.5px}
+.p3-steps-sm .p3-sti-now .p3-dot{box-shadow:0 0 0 3px #f1eee4,0 0 0 5px #c8a94a}
+.p3-steps-sm .p3-line{width:40px;margin:0 10px}
+
+/* the step card */
+.p3-card{background:#ffffff;border:1px solid #dcd7c6;border-radius:14px;box-shadow:0 12px 30px rgba(16,24,43,.07);overflow:hidden}
+.p3-cin{padding:18px 28px 20px}
+.p3-ch{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 14px}
+.p3-ch h2{margin:0;font-size:26px;line-height:1.2;font-weight:700;letter-spacing:-.012em}
+.p3-of{font-size:14px;font-weight:600;color:#555c6b;white-space:nowrap}
+.p3-flbl{display:block;font-size:14px;font-weight:600;color:#1a2744;margin:0 0 6px}
+.p3-inp{display:flex;align-items:center;min-height:46px;padding:0 14px;border:1px solid #858b99;border-radius:8px;background:#ffffff;color:#1a2744;font-size:16px}
+.p3-box{position:relative;margin-top:16px;border:1px solid #858b99;border-radius:8px;background:#ffffff;overflow:hidden}
+.p3-bar{display:flex;align-items:center;gap:2px;height:48px;padding:0 7px;background:#fbfaf6;border-bottom:1px solid #dddcd4}
+.p3-tool{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 9px;white-space:nowrap;border:0;border-radius:7px;background:transparent;color:#1a2744;font:inherit;font-size:13.5px;font-weight:600}
+.p3-tsep{display:block;width:1px;height:22px;background:#dddcd4;margin:0 6px;flex:none}
+.p3-add{border:1px solid #c9c8c0;background:#ffffff;padding:0 8px 0 10px}
+.p3-text{position:relative;height:212px;overflow:hidden}
+.p3-tin{position:absolute;left:0;right:0;bottom:0;padding:14px 28px 16px 18px;font-size:15px;line-height:1.55;color:#1f2a40}
+.p3-tin p{margin:0 0 6px}
+.p3-tin h3{margin:14px 0 4px;font-size:17px;line-height:1.3;font-weight:700;color:#1a2744}
+.p3-tin h3:first-child{margin-top:0}
+.p3-tin a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.p3-starter{color:#6b7180}
+.p3-caret{display:inline-block;width:2px;height:19px;margin-right:1px;vertical-align:-4px;background:#1a2744}
+.p3-scroll{position:absolute;top:6px;right:5px;bottom:6px;width:6px;border-radius:3px;background:#efeee9}
+.p3-scroll i{position:absolute;left:0;right:0;bottom:0;height:34%;border-radius:3px;background:#a9aebb}
+.p3-cfoot{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 28px;background:#fbfaf6;border-top:1px solid #e6e1d1}
+.p3-saved{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#3d4556}
+.p3-saved .k-i{color:#145b3a}
+.p3-next{min-height:48px;padding:0 22px;font-size:16px}
+.p3-back{min-height:44px;padding:0 14px 0 10px;font-size:15px}
+
+/* side preview */
+.p3-side h2{margin:0;font-size:19px;line-height:1.25;font-weight:700;letter-spacing:-.01em}
+.p3-sub{margin:4px 0 14px;font-size:14px;line-height:1.45;color:#555c6b}
+.p3-sw{display:flex;margin:0 0 14px}
+.p3-sw .k-seg{width:100%}
+.p3-sw .k-seg button{flex:1;min-height:38px;padding:0 12px}
+.p3-mini{position:relative;width:300px;height:445px;margin:0 auto;border-radius:42px;border:10px solid #10182b;background:#ffffff;overflow:hidden;box-shadow:0 18px 36px rgba(16,24,43,.18)}
+.p3-mini-scr{position:absolute;inset:0;overflow:hidden}
+.p3-mini-in{width:366px;transform:scale(.7650);transform-origin:0 0}
+.p3-live{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 0;font-size:13.5px;color:#555c6b}
+.p3-live i{display:block;width:8px;height:8px;border-radius:50%;background:#145b3a}
+
+/* the email at phone width (email option 1: the navy band) */
+.pm-sb{display:flex;justify-content:space-between;align-items:center;height:44px;padding:0 26px;font-size:15px;font-weight:600;color:#1a2744}
+.pm-sbi{display:flex;gap:6px;align-items:center}
+.pm-sbi i{display:block;width:16px;height:10px;border-radius:2px;background:currentColor}
+.pm-sbi i+i{width:22px;height:11px;border-radius:3px;border:1.5px solid currentColor;background:transparent}
+.pm-nav{display:flex;justify-content:space-between;align-items:center;height:42px;padding:0 14px;font-size:16px;color:#2d5fb5}
+.pm-head{padding:6px 18px 12px;border-bottom:1px solid #ecebe4}
+.pm-subj{margin:0;font-size:20px;line-height:1.25;font-weight:600;color:#1a2744}
+.pm-who{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;align-items:center;margin-top:10px}
+.pm-av{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#1a2744}
+.pm-av svg{width:20px;height:20px;fill:#ffffff}
+.pm-who b{display:block;font-size:14.5px;color:#1a2744}
+.pm-who small{display:block;font-size:13px;color:#555c6b}
+.pm-em{padding:0 18px 14px;font-family:"Source Serif 4",Georgia,serif;font-size:16px;line-height:1.6;color:#1f2a40}
+.pm-em p{margin:0 0 10px}
+.pm-em .pm-l{margin:0 0 9px}
+.pm-em a{color:#1a2744;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.pm-em h4{margin:16px 0 6px;font-family:Geist,Arial,sans-serif;font-size:18px;line-height:1.25;font-weight:700;color:#1a2744}
+.pm-band{display:flex;align-items:center;gap:10px;padding:16px 18px;margin:0 -18px 14px;background:#1a2744;color:#ffffff;font-family:Geist,Arial,sans-serif}
+.pm-band svg{width:30px;height:30px;fill:#ffffff;flex:none}
+.pm-band small{display:block;font-size:10px;letter-spacing:.18em;font-weight:700;color:#e6cf86}
+.pm-band b{display:block;font-size:24px;line-height:1.1}
+.pm-band+h4{margin-top:0}
+
+/* the other two steps, small */
+.p3-others{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:18px;align-items:stretch}
+.p3-others>.p3-fig{display:flex;flex-direction:column}
+.p3-others .p3-mdesk{flex:1;display:flex;flex-direction:column}
+.p3-others .p3-card{flex:1;display:flex;flex-direction:column}
+.p3-others .p3-cin{flex:1}
+.p3-mdesk{background:#f1eee4;border:1px solid #e0dccd;border-radius:14px;padding:12px 16px 16px}
+.p3-mp{margin:0;font-size:15.5px;line-height:1.5;color:#3d4556}
+.p3-mp b{color:#1a2744}
+.p3-hint{margin:6px 0 0;font-size:13.5px;line-height:1.45;color:#555c6b}
+.p3-act{display:flex;align-items:center;gap:12px;margin-top:14px}
+.p3-split{display:inline-flex;align-items:stretch;flex:none}
+.p3-send{min-height:48px;padding:0 20px;font-size:16px;border-radius:8px 0 0 8px}
+.p3-arrow{display:inline-flex;align-items:center;justify-content:center;width:44px;min-height:48px;padding:0;border:1px solid #c8a94a;border-left:1px solid #8f7a35;border-radius:0 8px 8px 0;background:#c8a94a;color:#1a2744}
+.p3-more{display:flex;align-items:center;gap:14px;width:100%;min-height:46px;margin-top:14px;padding:0 14px;border:1px solid #dcd7c6;border-radius:10px;background:#fbfaf6;color:#1a2744;font:inherit;text-align:left}
+.p3-more b{display:inline-flex;align-items:center;gap:6px;font-size:15px;font-weight:600;white-space:nowrap}
+.p3-more span{font-size:13px;color:#555c6b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p3-others .p3-cin{padding:14px 22px 16px}
+.p3-others .p3-ch{margin-bottom:8px}
+.p3-others .p3-ch h2{font-size:22px}
+.p3-others .p3-cfoot{padding:10px 22px}
+.p3-others .p3-next{min-height:44px;font-size:15px;padding:0 18px}
+
+/* phones */
+.p3-phones{display:grid;grid-template-columns:minmax(0,1fr) 390px 390px;gap:40px;margin-top:18px;padding-bottom:0;align-items:start}
+.p3-pcap{padding-top:24px}
+.p3-phones .p3-cap{margin-top:10px;padding:0 4px}
+.p3-mini-scr:after{content:"";position:absolute;left:0;right:0;bottom:0;height:44px;background:linear-gradient(rgba(255,255,255,0),#ffffff)}
+.p3-pk{margin:0;font-size:22px;line-height:1.2;font-weight:700;color:#1a2744;letter-spacing:-.01em}
+.p3-ph{margin:8px 0 18px;font-size:15.5px;line-height:1.5;color:#3d4556}
+.p3-pl{margin:0 0 12px;font-size:14.5px;line-height:1.5;color:#555c6b}
+.p3-pl b{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1a2744;margin-bottom:2px}
+.hp-app{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;height:56px;padding:0 10px 0 16px;background:#1a2744;color:#ffffff}
+.hp-brand{display:flex;align-items:center;gap:9px;color:#ffffff;text-decoration:none;min-height:44px}
+.hp-rook{width:28px;height:28px;fill:#ffffff;flex:none}
+.hp-bn{display:flex;flex-direction:column;line-height:1.12}
+.hp-bn b{font-size:14px;font-weight:700}
+.hp-bn span{font-size:11px;font-weight:500;color:rgba(255,255,255,.8)}
+.hp-sbtn{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid rgba(255,255,255,.55);border-radius:9px;color:#ffffff;box-sizing:border-box}
+.hp-i20{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.hp-tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);height:56px;background:#ffffff;border-top:1px solid #d9d8d1}
+.hp-tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;border:0;background:transparent;padding:0;color:#555c6b;text-decoration:none;font:inherit;font-size:12px;font-weight:500;line-height:1.1}
+.hp-tab-on{color:#1a2744;font-weight:700}
+.hp-tab-on:before{content:"";position:absolute;top:0;left:22%;right:22%;height:3px;border-radius:0 0 3px 3px;background:#866a1e}
+.hp-safe{flex:none;height:24px;background:#ffffff;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px}
+.hp-safe i{display:block;width:124px;height:5px;border-radius:3px;background:#10182b}
+
+.pp-scroll{background:#f1eee4;padding:12px 16px 0}
+.pp-crumb{display:flex;gap:8px;margin:0;font-size:13.5px;color:#555c6b}
+.pp-crumb a{color:#1a2744;font-weight:500;text-decoration:underline;text-decoration-color:#9aa1b0;text-underline-offset:3px}
+.pp-crumb span[aria-current]{color:#1a2744;font-weight:600}
+.pp-h1{margin:6px 0 0;font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.015em}
+.pp-saved{margin:4px 0 0;font-size:13.5px;color:#555c6b}
+.pp-saved b{color:#1a2744;font-weight:600}
+.pp-steps{list-style:none;display:flex;align-items:center;justify-content:space-between;margin:14px 0 14px;padding:0}
+.pp-steps .p3-sti{font-size:13.5px;gap:6px}
+.pp-steps .p3-dot{width:26px;height:26px;font-size:13px;border-width:2px}
+.pp-steps .p3-sti-now .p3-dot{box-shadow:0 0 0 3px #f1eee4,0 0 0 5px #c8a94a}
+.pp-steps .p3-line{width:auto;flex:1;min-width:10px;margin:0 8px}
+.pp-card{background:#ffffff;border:1px solid #dcd7c6;border-radius:14px;padding:14px 14px 14px}
+.pp-ch{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 10px}
+.pp-ch h2{margin:0;font-size:21px;line-height:1.2;font-weight:700}
+.pp-ch span{font-size:13px;font-weight:600;color:#555c6b}
+.pp-inp{font-size:15px;min-height:44px}
+.pp-box{margin-top:12px}
+.pp-bar{display:grid;grid-template-columns:repeat(6,1fr);height:46px;padding:0 4px;align-items:center;background:#fbfaf6;border-bottom:1px solid #dddcd4}
+.pp-tool{display:inline-flex;align-items:center;justify-content:center;height:44px;border:0;background:transparent;color:#1a2744;padding:0}
+.pp-addrow{padding:6px 8px;border-bottom:1px solid #ecebe4;background:#fbfaf6}
+.pp-addrow .p3-add{height:34px}
+.pp-text{padding:10px 12px 12px;font-size:15px;line-height:1.5;color:#1f2a40}
+.pp-text p{margin:0 0 6px}
+.pp-text h3{margin:10px 0 4px;font-size:16.5px;line-height:1.3;font-weight:700;color:#1a2744}
+.pp-text h3:first-child{margin-top:0}
+.pp-text a{color:#1a2744;text-decoration:underline;text-underline-offset:3px}
+.pp-dock{flex:none;padding:10px 16px 10px;background:#ffffff;border-top:1px solid #d9d8d1;box-shadow:0 -6px 14px rgba(16,24,43,.07);position:relative;z-index:2}
+.pp-see{min-height:48px;font-size:16px}
+.pp-dim{position:absolute;left:0;right:0;top:56px;bottom:0;background:rgba(16,24,43,.55)}
+.pp-sheet{position:absolute;left:0;right:0;top:70px;bottom:0;z-index:3;display:flex;flex-direction:column;background:#ffffff;border-radius:18px 18px 0 0;overflow:hidden;box-shadow:0 -10px 30px rgba(16,24,43,.25)}
+.pp-grab{display:flex;justify-content:center;padding:8px 0 2px;flex:none}
+.pp-grab i{display:block;width:40px;height:5px;border-radius:3px;background:#c9c8c0}
+.pp-shead{flex:none;padding:6px 18px 12px;border-bottom:1px solid #e3e2dc}
+.pp-shead h2{margin:0;font-size:19px;line-height:1.25;font-weight:700}
+.pp-shead p{margin:3px 0 0;font-size:13.5px;line-height:1.4;color:#555c6b}
+.pp-sbody{flex:1;overflow:hidden;background:#ffffff}
+.pp-sbody .pm-head{padding-top:12px}
+.pm-band{border-bottom:3px solid #c8a94a}
+.pm-band small{color:#c8a94a}
+.pm-em h4:before{content:"";display:block;width:24px;height:3px;background:#866a1e;margin-bottom:8px}
+
+.p3-root{padding-top:24px}
+.p3-strip{padding:16px 24px 17px}
+.p3-phones{gap:56px}
+.p3-root{padding-bottom:24px}
+</style>
+</helmet>
+<div class="p3-root" style="width:1440px;height:2300px">
+<div class="p3-col">
+<header class="p3-strip" aria-label="About this option"><div><p class="p3-kick">LCA Newsletter · The page · Option 3 of 5</p><h1 class="p3-name">One step at a time</h1><p class="p3-say">One step fills the screen at a time, with Next and Back, so there is never more than one thing to think about.</p></div><span class="k-sample p3-tag">Sample data</span></header>
+<figure class="p3-fig"><div class="k-browser p3-browser"><div class="k-browser-bar"><i></i><i></i><i></i><div class="k-browser-url">louisianachess.org/admin/newsletter</div></div>
+<div class="p3-view">
+<header class="k-header p3-hd"><div class="k-header-in p3-hin"><a class="k-brand p3-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="p3-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></a>
+<nav class="k-navlinks p3-nav" aria-label="Main"><a href="#">Tournaments</a><a href="#">Clubs</a><a href="#">Scholastic</a><a href="#">News</a><a href="#">Membership</a><button class="p3-navbtn" type="button" aria-haspopup="true" aria-expanded="false">About<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></nav>
+<a class="p3-search" href="#" aria-keyshortcuts="Meta+K Control+K"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg><span>Search</span></a>
+<div class="k-utility p3-util"><a class="k-ulink" href="#">Donate</a><button class="p3-my" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="My LCA, nothing to do"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg></button></div></div></header>
+<div class="p3-phead"><div class="p3-wrap p3-phead-in"><div><nav aria-label="Breadcrumb"><p class="p3-crumb"><a href="#">Admin</a><span class="p3-sep" aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p></nav><div class="p3-tline"><h1>Newsletter</h1><span class="p3-quiettxt"><b>December 2026</b> · Draft</span></div></div><button class="k-btn k-btn-soft k-btn-sm" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>Admin sections</button></div></div>
+<div class="p3-desk"><div class="p3-cols">
+<div class="p3-main">
+<ol class="p3-steps" aria-label="Three steps"><li class="p3-sti p3-sti-now" aria-current="step"><span class="p3-dot" aria-hidden="true">1</span><span>Write it</span></li><li class="p3-line" aria-hidden="true"></li><li class="p3-sti"><span class="p3-dot" aria-hidden="true">2</span><span>Check it</span></li><li class="p3-line" aria-hidden="true"></li><li class="p3-sti"><span class="p3-dot" aria-hidden="true">3</span><span>Send it</span></li></ol>
+<section class="p3-card" aria-labelledby="p3-h1"><div class="p3-cin">
+<div class="p3-ch"><h2 id="p3-h1">Write it</h2><span class="p3-of">Step 1 of 3</span></div>
+<label class="p3-flbl" for="p3-subj">Subject</label>
+<div class="p3-inp" id="p3-subj">LCA Newsletter · December 2026</div>
+<div class="p3-box"><div class="p3-bar" role="toolbar" aria-label="Writing tools"><button class="p3-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg>Bold</button><button class="p3-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg>Italic</button><button class="p3-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg>Heading</button><button class="p3-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg>List</button><button class="p3-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg>Link</button><button class="p3-tool" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg>Undo</button><span class="p3-tsep" aria-hidden="true"></span><button class="p3-tool p3-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+<div class="p3-text" role="textbox" aria-multiline="true" aria-label="The newsletter"><div class="p3-tin">
+<h3>A note from the president</h3>
+<p>Dear members,</p>
+<p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p>
+<p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p>See you over the board,<br>LCA President</p>
+<h3>Coming up</h3>
+<p>Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p>
+<p>Sat to Mon, Jan 16 to 18, 2027 · Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p>
+<p>Sat, May 8, 2027 · New Orleans Youth Chess Grand Prix Final · New Orleans · <a href="#">Details on King Registration ↗</a></p>
+<h3>Results</h3>
+<p><b>Marcus Landry wins the 2026 Louisiana State Championship</b> with 4½ of 5 in Sulphur, Sat to Mon, Sep 5 to 7, 2026, among 64 players. Section winners: Open Marcus Landry 4½ · U1800 Devin Batiste 4½ · U1400 Sam Nguyen and Leo Robichaux 4, tied · U1000 Theo Guidry 4½. <a href="#">Full results ↗</a></p>
+<h3>From the clubs</h3>
+<p>Picayune Chess Club: quick-rated nights on first Mondays, next Mon, Dec 7, 2026 at 6:00 PM. <a href="#">Club page</a></p>
+<p>Bunkie Chess Club: Tuesdays, 4:00 PM to 6:00 PM, Bunkie Library. Ages 8 to 108, free to join. <a href="#">Club page</a></p>
+<p>Baton Rouge Chess Club: casual nights on Wednesdays at Boba ParTea. <a href="#">Club page</a></p>
+<h3>Scholastic</h3>
+<p>For parents: the New Orleans Youth Chess season began Sat, Nov 14, 2026, one Saturday a month to May.<br>Players need a US Chess membership. <a href="#">Scholastic page</a></p>
+<h3>Board business</h3>
+<p class="p3-starter" style="margin-bottom:0"><span class="p3-caret" aria-hidden="true"></span>Write here, or delete this heading.</p>
+</div><span class="p3-scroll" aria-hidden="true"><i></i></span></div>
+</div></div>
+<div class="p3-cfoot"><span class="p3-saved"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg>Saved automatically at 2:15 PM</span><button class="k-btn k-btn-navy p3-next" type="button">Next: check it<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button></div>
+</section>
+</div>
+<aside class="p3-side" aria-labelledby="p3-pv">
+<h2 id="p3-pv">What members will get</h2>
+<p class="p3-sub">It changes as you type.</p>
+<div class="p3-sw"><div class="k-seg" role="group" aria-label="Show the email on"><button class="k-seg-on" type="button" aria-pressed="true">Phone</button><button type="button" aria-pressed="false">Computer</button></div></div>
+<div class="p3-mini" aria-label="The email, small, as it will arrive on a phone"><div class="p3-mini-scr"><div class="p3-mini-in">
+<div class="pm-sb"><span>2:15</span><span class="pm-sbi"><i></i><i></i></span></div>
+<div class="pm-nav"><span>‹ Inbox</span><span>Reply</span></div>
+<div class="pm-head"><p class="pm-subj">LCA Newsletter · December 2026</p><div class="pm-who"><span class="pm-av"><svg class="" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>to me · Tue, Dec 1, 2026, 8:00 AM</small></span></div></div>
+<div class="pm-em">
+<div class="pm-band"><svg class="" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><b>December 2026</b></span></div>
+<h4>A note from the president</h4>
+<p>Dear members,</p>
+<p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p>
+<p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p>See you over the board,<br>LCA President</p>
+<h4>Coming up</h4>
+<p class="pm-l">Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p>
+<p class="pm-l">Sat to Mon, Jan 16 to 18, 2027 · Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p>
+<p class="pm-l">Sat, May 8, 2027 · New Orleans Youth Chess Grand Prix Final · New Orleans · <a href="#">Details on King Registration ↗</a></p>
+<h4>Results</h4>
+<p><b>Marcus Landry wins the 2026 Louisiana State Championship</b> with 4½ of 5 in Sulphur, Sat to Mon, Sep 5 to 7, 2026, among 64 players.</p>
+</div>
+</div></div></div>
+</aside>
+</div></div>
+</div></div><figcaption class="p3-cap"><b>On a computer</b><span>Step 1 of 3. Next and Back move through the steps; the email at the side stays in view through all three.</span></figcaption></figure>
+<div class="p3-others">
+<figure class="p3-fig" aria-label="Step 2 in the same card"><div class="p3-mdesk">
+<ol class="p3-steps p3-steps-sm" aria-label="Three steps"><li class="p3-sti p3-sti-done"><span class="p3-dot" aria-hidden="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span>Write it</span></li><li class="p3-line p3-line-done" aria-hidden="true"></li><li class="p3-sti p3-sti-now" aria-current="step"><span class="p3-dot" aria-hidden="true">2</span><span>Check it</span></li><li class="p3-line" aria-hidden="true"></li><li class="p3-sti"><span class="p3-dot" aria-hidden="true">3</span><span>Send it</span></li></ol>
+<section class="p3-card" aria-labelledby="p3-h2"><div class="p3-cin">
+<div class="p3-ch"><h2 id="p3-h2">Check it</h2><span class="p3-of">Step 2 of 3</span></div>
+<p class="p3-mp">Send yourself a copy and read it on your phone before the members get it.</p>
+<div class="p3-act"><button class="k-btn k-btn-line" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3.5 6.5L12 13l8.5-6.5"></path></svg>Send a test to me</button></div>
+</div>
+<div class="p3-cfoot"><button class="k-btn k-btn-ghost p3-back" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Back</button><button class="k-btn k-btn-navy p3-next" type="button">Next: send it<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></button></div>
+</section></div>
+<figcaption class="p3-cap"><b>Step 2</b><span>After Next: the same card now holds only the test.</span></figcaption></figure>
+<figure class="p3-fig" aria-label="Step 3 in the same card"><div class="p3-mdesk">
+<ol class="p3-steps p3-steps-sm" aria-label="Three steps"><li class="p3-sti p3-sti-done"><span class="p3-dot" aria-hidden="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span>Write it</span></li><li class="p3-line p3-line-done" aria-hidden="true"></li><li class="p3-sti p3-sti-done"><span class="p3-dot" aria-hidden="true"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"></path></svg></span><span>Check it</span></li><li class="p3-line p3-line-done" aria-hidden="true"></li><li class="p3-sti p3-sti-now" aria-current="step"><span class="p3-dot" aria-hidden="true">3</span><span>Send it</span></li></ol>
+<section class="p3-card" aria-labelledby="p3-h3"><div class="p3-cin">
+<div class="p3-ch"><h2 id="p3-h3">Send it</h2><span class="p3-of">Step 3 of 3</span></div>
+<p class="p3-mp"><b>243 members will get it:</b> every LCA member with an email address.</p>
+<button class="p3-more" type="button" aria-expanded="false"><b>More options<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></b><span>Top of the email · Who gets it · Words shown in the inbox · Where replies go</span></button>
+</div>
+<div class="p3-cfoot"><button class="k-btn k-btn-ghost p3-back" type="button"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"></path></svg>Back</button><div class="p3-split" role="group" aria-label="Send"><button class="k-btn k-btn-gold p3-send" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"></path></svg>Send to 243 members</button><button class="p3-arrow" type="button" aria-haspopup="menu" aria-expanded="false" aria-label="Send later"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div></div>
+</section></div>
+<figcaption class="p3-cap"><b>Step 3</b><span>Sending asks once to confirm. The arrow is for sending later.</span></figcaption></figure>
+</div>
+<div class="p3-phones">
+<div class="p3-pcap"><p class="p3-pk">On a phone</p><p class="p3-ph">The same one step at a time, with the three steps shown at the top. The email is one button away.</p></div>
+<figure class="p3-fig" aria-label="The page on a phone"><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header>
+<main class="k-phone-scroll pp-scroll">
+<p class="pp-crumb"><a href="#">Admin</a><span aria-hidden="true">/</span><span aria-current="page">Newsletter</span></p>
+<h1 class="pp-h1">Newsletter</h1>
+<p class="pp-saved"><b>December 2026</b> · Draft · Saved at 2:15 PM</p>
+<ol class="pp-steps" aria-label="Three steps"><li class="p3-sti p3-sti-now" aria-current="step"><span class="p3-dot" aria-hidden="true">1</span><span>Write it</span></li><li class="p3-line" aria-hidden="true"></li><li class="p3-sti"><span class="p3-dot" aria-hidden="true">2</span><span>Check it</span></li><li class="p3-line" aria-hidden="true"></li><li class="p3-sti"><span class="p3-dot" aria-hidden="true">3</span><span>Send it</span></li></ol>
+<section class="pp-card" aria-labelledby="pp-h1"><div class="pp-ch"><h2 id="pp-h1">Write it</h2><span>Step 1 of 3</span></div>
+<label class="p3-flbl" for="pp-subj">Subject</label>
+<div class="p3-inp pp-inp" id="pp-subj">LCA Newsletter · December 2026</div>
+<div class="p3-box pp-box">
+<div class="pp-bar" role="toolbar" aria-label="Writing tools"><button class="pp-tool" type="button" aria-label="Bold"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a3.5 3.5 0 0 1 0 7H7zM7 12h7a3.5 3.5 0 0 1 0 7H7z"></path></svg></button><button class="pp-tool" type="button" aria-label="Italic"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5h8M6 19h8M14 5l-4 14"></path></svg></button><button class="pp-tool" type="button" aria-label="Heading"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14M18 5v14M6 12h12"></path></svg></button><button class="pp-tool" type="button" aria-label="List"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"></path></svg></button><button class="pp-tool" type="button" aria-label="Link"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"></path></svg></button><button class="pp-tool" type="button" aria-label="Undo"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"></path></svg></button></div>
+<div class="pp-addrow"><button class="p3-tool p3-add" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a photo, event or line<svg class="k-i k-i-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+<div class="pp-text">
+<h3>A note from the president</h3>
+<p>Dear members,</p>
+<p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p>
+<p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+</div></div>
+</section>
+</main>
+<div class="pp-dock"><button class="k-btn k-btn-navy k-btn-block pp-see" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6.5 9.5-6.5 9.5 6.5 9.5 6.5-3.5 6.5-9.5 6.5S2.5 12 2.5 12z"></path><circle cx="12" cy="12" r="2.6"></circle></svg>See the email</button></div>
+<nav class="hp-tabs" aria-label="Main"><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="2"></rect><path d="M3 9.5h18M8 2.5v4M16 2.5v4"></path></svg><span>Tournaments</span></a><a class="hp-tab" href="#"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg><span>Clubs</span></a><a class="hp-tab hp-tab-on" href="#" aria-current="page"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c1-4 4-6 7.5-6s6.5 2 7.5 6"></path></svg><span>My LCA</span></a><button class="hp-tab" type="button" aria-expanded="false"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg><span>Menu</span></button></nav><div class="hp-safe" aria-hidden="true"><i></i></div>
+</div></div><figcaption class="p3-cap"><b>The page</b><span>One button at the foot: See the email.</span></figcaption></figure>
+<figure class="p3-fig" aria-label="After pressing See the email"><div class="k-phone"><div class="k-phone-screen"><header class="hp-app"><a class="hp-brand" href="#" aria-label="Louisiana Chess Association, home"><svg class="hp-rook" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span class="hp-bn" aria-hidden="true"><b>Louisiana Chess</b><span>Association</span></span></a><a class="hp-sbtn" href="#" aria-label="Search"><svg class="hp-i20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20.5 20.5l-4.5-4.5"></path></svg></a></header>
+<div class="pp-dim" aria-hidden="true"></div>
+<section class="pp-sheet" role="dialog" aria-modal="true" aria-labelledby="pp-sh">
+<div class="pp-grab" aria-hidden="true"><i></i></div>
+<div class="pp-shead"><h2 id="pp-sh">What members will get</h2><p>The December email. It changes as you type.</p></div>
+<div class="pp-sbody"><div class="pm-head"><p class="pm-subj">LCA Newsletter · December 2026</p><div class="pm-who"><span class="pm-av"><svg class="" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg></span><span><b>Louisiana Chess Association</b><small>to me · Tue, Dec 1, 2026, 8:00 AM</small></span></div></div>
+<div class="pm-em">
+<div class="pm-band"><svg class="" viewBox="0 0 100 100" aria-hidden="true"><path d="M5 7.1H16.6V23H28.3V7.1H39.9V23H51.6V7.1H63.2L65.4 25L56.5 40.7L54.2 54.1H90L94.5 74.3L90 78.7H99L92.3 89.9H87.8L83.3 96.6L74.4 94.4L67.7 98.9L49.8 83.2H43L40.8 87.7L9.5 83.2L16.2 49.6L5 31.7V7.1Z"></path></svg><span><small>LCA NEWSLETTER</small><b>December 2026</b></span></div>
+<h4>A note from the president</h4>
+<p>Dear members,</p>
+<p>Thank you to every volunteer who ran the State Championship weekend in Sulphur.</p>
+<p>The new year starts busy: the Ken Ferguson Memorial in January, a youth meet every month to May.</p>
+<p>One ask: please <a href="#">renew your membership</a>, and bring one new player to a club night.</p>
+<p>See you over the board,<br>LCA President</p>
+<h4>Coming up</h4>
+<p class="pm-l">Sat, Dec 5, 2026 · New Orleans Youth Chess December Meet · New Orleans · <a href="#">Register on King Registration ↗</a></p>
+<p class="pm-l">Sat to Mon, Jan 16 to 18, 2027 · Ken Ferguson Memorial · New Orleans · run by Downriver Chess · <a href="#">Registers on the organizer's site ↗</a></p>
+<p class="pm-l">Sat, May 8, 2027 · New Orleans Youth Chess Grand Prix Final · New Orleans · <a href="#">Details on King Registration ↗</a></p>
+<h4>Results</h4>
+<p><b>Marcus Landry wins the 2026 Louisiana State Championship</b> with 4½ of 5 in Sulphur, Sat to Mon, Sep 5 to 7, 2026, among 64 players.</p>
+</div></div>
+<div class="pp-dock"><button class="k-btn k-btn-navy k-btn-block pp-see" type="button"><svg class="k-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>Back to writing</button></div>
+<div class="hp-safe" aria-hidden="true"><i></i></div>
+</section>
+</div></div><figcaption class="p3-cap"><b>After pressing See the email</b><span>Back to writing closes it.</span></figcaption></figure>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
