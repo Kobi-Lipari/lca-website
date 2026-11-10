@@ -352,6 +352,11 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
   )
 }
 
+/** The words a failed payout request is drawn with: in the wizard's error line, and in the sections step's status line while G1 shows. */
+function askFailedWords(err: unknown): string {
+  return err instanceof Error ? err.message : 'Could not send the request'
+}
+
 function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, payoutAsked, onAskForAccount }: {
   w: WizardState; set: (p: Partial<WizardState>) => void
   onBack: () => void; onNext: () => void; onDraft: () => void; copiedFrom?: string
@@ -362,6 +367,19 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, p
   onAskForAccount: () => Promise<void>
 }) {
   const [custom, setCustom] = useState('')
+  // A failed ask's words, the wizard's error line's own, which the status
+  // line says while G1 shows. The next press of the ask clears them, and they
+  // go with the panel, so Keep it at $0, which takes it away, clears them too.
+  const [askFailure, setAskFailure] = useState<string | null>(null)
+  const askForAccount = async () => {
+    setAskFailure(null)
+    try {
+      await onAskForAccount()
+    } catch (err) {
+      setAskFailure(askFailedWords(err))
+      throw err
+    }
+  }
   // The fee boxes by section name, and the one to move the focus to once
   // Keep it at $0's fees are drawn: the panel goes with the button pressed
   // in it, which would drop the focus to the page.
@@ -403,12 +421,13 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, p
   // director's note, can show.
   const feesNeedAccount = FEATURES.standingDirectors && !!creation && !creation.canChargeFees && w.sections.some((s) => s.entryFee > 0)
   const standingFeeNote = FEATURES.standingDirectors && creation?.grant === 'standing_director' && w.sections.length > 0
+  if (askFailure && !feesNeedAccount) setAskFailure(null)
 
   return (
     <div className="flex gap-6 p-5">
       <div className="flex-1 min-w-0">
-        {/* With standingDirectors on, the line a screen reader hears as G1 shows under the fee table; visually hidden, it moves nothing. */}
-        {FEATURES.standingDirectors && <FeeNoticeStatus shows={feesNeedAccount} />}
+        {/* With standingDirectors on, the line a screen reader hears as G1 shows under the fee table, and after a failed ask the error line's words; visually hidden, it moves nothing. */}
+        {FEATURES.standingDirectors && <FeeNoticeStatus shows={feesNeedAccount} failure={askFailure} />}
         <PreviewBanner w={w} />
         {copiedFrom && (
           <div className="mb-4 flex items-center gap-2 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-3 py-2 text-xs text-gold-ink-badge">
@@ -468,7 +487,7 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, p
         )}
         {feesNeedAccount && (
           <div className="mt-4">
-            <FeeNotice kind="needs-account" onKeepFree={keepFree} onAskForAccount={onAskForAccount} asked={payoutAsked} />
+            <FeeNotice kind="needs-account" onKeepFree={keepFree} onAskForAccount={askForAccount} asked={payoutAsked} />
           </div>
         )}
         {standingFeeNote && (
@@ -615,13 +634,18 @@ export function TournamentWizard({ templates, clubs, onCancel }: {
     getTournamentCreation().then(setCreation).catch(() => {})
   }
 
-  /** G1's ask, about no event yet; a failed one is drawn in the wizard's own error line. */
+  /**
+   * G1's ask, about no event yet. A failed one is drawn in the wizard's own
+   * error line, and the promise rejects, so the sections step's status line
+   * says the same words and the panel puts the focus back on the ask.
+   */
   async function askForPayoutAccount() {
     try {
       await requestPayoutAccount()
       setPayoutAsked(true)
     } catch (err) {
-      setCreateError(err instanceof Error ? err.message : 'Could not send the request')
+      setCreateError(askFailedWords(err))
+      throw err
     }
   }
 

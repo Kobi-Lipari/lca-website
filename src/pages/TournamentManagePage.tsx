@@ -351,12 +351,14 @@ export function TournamentManagePage() {
 
   // The fee notices, with standingDirectors on: what the signed-in person may
   // do with fees, read once as the page opens; whether their payout request
-  // has gone; and whether the server refused a raised fee all the same (a
-  // page loaded before the rule changed), which G1's panel shows in place of
-  // the red strip.
+  // has gone; whether the server refused a raised fee all the same (a page
+  // loaded before the rule changed), which G1's panel shows in place of the
+  // red strip; and a failed ask's words, the red strip's own, which the
+  // status line says while the panel shows, until the next press.
   const [creation, setCreation] = useState<ApiTournamentCreation | null>(null)
   const [payoutAsked, setPayoutAsked] = useState(false)
   const [feeRefused, setFeeRefused] = useState(false)
+  const [askFailure, setAskFailure] = useState<string | null>(null)
 
   usePageTitle(tournament ? `Manage ${tournament.name}` : 'Manage Tournament')
 
@@ -561,12 +563,16 @@ export function TournamentManagePage() {
   // its top. The focus goes instead to the box whose price was put back,
   // once the page has drawn that price, so a screen reader reads the price
   // as it now is: a section's fee box on the Details tab, or the early-entry
-  // discount or the late fee box on the Registration tab.
+  // discount or the late fee box on the Registration tab. An event with no
+  // live section, where only a refused save draws the panel, has no fee box,
+  // so the Add button beside the custom section's name takes the focus: the
+  // last control before the panel's place, in the same card.
   const feeBoxes = useRef(new Map<string, HTMLInputElement>())
   const earlyBox = useRef<HTMLInputElement>(null)
   const lateBox = useRef<HTMLInputElement>(null)
-  /** The box to move the focus to once Keep it at $0's prices are drawn. */
-  const focusAfterKeep = useRef<HTMLInputElement | null>(null)
+  const addSectionButton = useRef<HTMLButtonElement>(null)
+  /** The control to move the focus to once Keep it at $0's prices are drawn. */
+  const focusAfterKeep = useRef<HTMLElement | null>(null)
   useLayoutEffect(() => {
     const to = focusAfterKeep.current
     focusAfterKeep.current = null
@@ -682,6 +688,9 @@ export function TournamentManagePage() {
   // same, draws it too.
   const raised = FEATURES.standingDirectors && !!creation && !creation.canChargeFees && !!snap && typedAboveLoaded(snap)
   const feeNoticeShows = raised || feeRefused
+  // A failed ask's words go with the panel that drew them, so a panel drawn
+  // again later says its title and not an old failure.
+  if (askFailure && !feeNoticeShows) setAskFailure(null)
   // G2, a standing director's note, goes under the sections table alone, and
   // only on an event they created: it tells them the fees are paid out to
   // them after the event, which is not so on an event an LCA admin or a club
@@ -732,9 +741,10 @@ export function TournamentManagePage() {
    * panel, moves to the box whose price was put back: on the Registration tab
    * the early-entry discount's when its amount or its end changes, and the
    * late fee's otherwise; on the Details tab the fee box of the first section
-   * whose fee changes, or the first section's. A tap or a mouse press moves
+   * whose fee changes, or the first section's, and with no live section the
+   * Add button beside the custom section's name. A tap or a mouse press moves
    * no focus, since a price box given the focus opens the number keyboard on
-   * a tablet.
+   * a tablet. The press clears a failed ask's words from the status line.
    */
   function keepLoadedPrices(fromKeyboard = true) {
     const s = snapshot
@@ -746,24 +756,34 @@ export function TournamentManagePage() {
     setSections(kept)
     setPricing(was)
     setFeeRefused(false)
+    setAskFailure(null)
     if (!fromKeyboard) return
     if (activeTab === 'registration') {
       const earlyChanged = pricing.earlyDiscount !== was.earlyDiscount || pricing.earlyDeadline !== was.earlyDeadline
       focusAfterKeep.current = earlyChanged ? earlyBox.current : lateBox.current
     } else {
       const firstChanged = sections.find((sec, i) => sec.entryFee !== kept[i].entryFee) ?? sections[0]
-      focusAfterKeep.current = (firstChanged && feeBoxes.current.get(firstChanged.name)) || null
+      focusAfterKeep.current = (firstChanged && feeBoxes.current.get(firstChanged.name)) || addSectionButton.current
     }
   }
 
-  /** G1's ask: one payout request about this event; a failed one is drawn as the page's other failed actions are. */
+  /**
+   * G1's ask: one payout request about this event. A failed one is drawn as
+   * the page's other failed actions are, in the red strip, and the status
+   * line says the same words until the next press; the promise rejects, so
+   * the panel puts the focus back on the ask.
+   */
   async function askForPayoutAccount() {
     if (!id) return
+    setAskFailure(null)
     try {
       await requestPayoutAccount(id)
       setPayoutAsked(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not send the request')
+      const words = err instanceof Error ? err.message : 'Could not send the request'
+      setError(words)
+      setAskFailure(words)
+      throw err
     }
   }
 
@@ -1339,8 +1359,8 @@ export function TournamentManagePage() {
       </div>
 
       <section className="mx-auto max-w-6xl space-y-8 px-6 py-12">
-        {/* With standingDirectors on, the line a screen reader hears as G1 shows, under the sections table or under the prices. It is visually hidden, and drawn first so that no other child's spacing changes. */}
-        {FEATURES.standingDirectors && <FeeNoticeStatus shows={feeNoticeShows} />}
+        {/* With standingDirectors on, the line a screen reader hears as G1 shows, under the sections table or under the prices, and after a failed ask the red strip's words. It is visually hidden, and drawn first so that no other child's spacing changes. */}
+        {FEATURES.standingDirectors && <FeeNoticeStatus shows={feeNoticeShows} failure={askFailure} />}
         {error && (
           <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {error}
@@ -1527,7 +1547,7 @@ export function TournamentManagePage() {
                     onChange={(e) => setCustomPreset(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomSection() } }}
                   />
-                  <Button type="button" variant="outline" onClick={addCustomSection}>
+                  <Button ref={addSectionButton} type="button" variant="outline" onClick={addCustomSection}>
                     <Plus className="size-4" />Add
                   </Button>
                 </div>

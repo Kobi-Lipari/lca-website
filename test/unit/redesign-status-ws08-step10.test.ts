@@ -6,10 +6,12 @@
 // fee and G2 under a standing director's fees, and the close of the first
 // part in the record, with the hand-ons, K's items and the Checkpoint L
 // section. Like the record tests of WS08 steps 1 to 9, this file reads only
-// the WS08 section and the date at the start of the date line, never every
-// table row or heading of the file, and it reads no count or figure from the
-// code: the counts and the bytes the block and the section give are pinned
-// here as text. Pinned here: the step's block, after WS08 step 9's and before
+// the WS08 section, the date at the start of the date line and one line
+// outside the section, WS02's follow-up "The Admin row without a count (WS02
+// step 17)", which it finds by its head words to hold that a name the step
+// quotes stands in the record, never every table row or heading of the file,
+// and it reads no count or figure from the code: the counts and the bytes the
+// block and the section give are pinned here as text. Pinned here: the step's block, after WS08 step 9's and before
 // the Checkpoint L section and the four lists, with its parts in order, every
 // file it names and figures that agree with each other; the Status line's
 // tail while this step is the latest and checkpoint L waits for its merge;
@@ -23,7 +25,14 @@
 // its place, and the sentence that ends each of the three follow-ups tagged
 // with this step; every record line the step names by its head words, which
 // must stand in the record under those words; the plain-language rules over
-// everything the step wrote; and the date.
+// everything the step wrote; and the date. What checkpoint L's merge-safety
+// review wrote is pinned with the step's own: its parts of the Files and Pins
+// moved bullets, its sentences in the G1 bullet and the judgement calls, K's
+// items with WS08 step 1's rule for the President seat's holder, the PR line
+// by the pull request's number, the Checkpoint L section's figures on the
+// tree the review leaves, and the sentences it adds to WS08 step 7's decision
+// on the payout request and to WS08 step 8's pins moved; the section's
+// checks are the block's with the review's cases added.
 import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
@@ -129,8 +138,8 @@ const latestStep = Math.max(0, ...[...ws08.matchAll(/^### WS08 step (\d+): /gm)]
 /** The PR line's parts for checkpoints J and K, which WS08 steps 4 and 7 wrote and this step keeps word for word. */
 const J_PART = '**PR:** checkpoint J (steps 1 to 3) was draft pull request 123, merged into `main` as `73943e1` on Wednesday, November 4, 2026; '
 const K_PART = 'checkpoint K (steps 4 to 6) was draft pull request 124, merged into `main` as `9d3b13b` on Thursday, November 5, 2026; '
-/** The PR line's part for checkpoint L, as this step writes it before the pull request is open. */
-const L_PART = 'checkpoint L (steps 7 to 10) is a draft pull request to be opened from this branch now that WS08 step 10 is built, its number written here once it is open; each merged on its own.'
+/** The PR line's part for checkpoint L, as checkpoint L's merge-safety review writes it once the pull request is open, by its number. */
+const L_PART = 'checkpoint L (steps 7 to 10) is draft pull request 125, opened from this branch on Friday, November 6, 2026 once WS08 step 10 was built; each merged on its own.'
 /** What this step added to an older line: from `from` to the end of the line. */
 const closing = (line: string, from: string) => (line.includes(from) ? line.slice(line.indexOf(from)) : '')
 
@@ -221,12 +230,22 @@ const sentenceIn = (item: string, from: string, to: string) => {
 /** The name of a chunk before its hash, and its size, as the Build bullet and the section list the files that take new names. */
 const sized = (text: string) => new Map([...text.matchAll(/`([A-Za-z]+)` \(([\d,]+)\)/g)].map((m) => [m[1], num(m[2])] as const))
 
-/** Everything this step wrote, each piece on its own. */
+/** WS08 step 7's decision on the payout request, and the opening words of the sentence checkpoint L's merge-safety review ends it with. */
+const PAYOUT_DECISION = 'A second payout request answers the open one, and one statement decides it (WS08 step 7).'
+const PAYOUT_OPENS = 'From checkpoint L\'s merge-safety review: the code holds less than this decision\'s first sentence says, and the tables do not hold that sentence.'
+/** WS08 step 8's entry on api-split-modules among its pins moved, and the opening words of the sentence the review ends it with. */
+const SPLIT_PIN = '  - `test/unit/api-split-modules.test.ts`: '
+const SPLIT_OPENS = 'From checkpoint L\'s merge-safety review, one change this entry left out: '
+const payoutDecision = entries(decisions).find((l) => head(l) === PAYOUT_DECISION) ?? ''
+const splitPin = part(BEFORE[9]).split('\n').find((l) => l.startsWith(SPLIT_PIN)) ?? ''
+
+/** Everything this step wrote, each piece on its own, with the two sentences checkpoint L's merge-safety review ends older entries with. */
 const written = [
   block, checkpoint, ...tagged(decisions), ...tagged(deviations), ...tagged(verify),
   ...tagged(followUps).map((entry) => closing(entry, 'Handed on in WS08 step 10')),
   statusLine.slice(STATUS_PREFIX.length), closing(prLine, 'checkpoint L (steps 7 to 10)'),
   ...MAP_SENTENCES.map(([id, sentence, , before]) => sentenceIn(mapItem(id), sentence, before)), date?.[0] ?? '',
+  closing(payoutDecision, PAYOUT_OPENS), closing(splitPin, SPLIT_OPENS),
 ]
 
 describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
@@ -287,6 +306,24 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
       'and no other test that existed before this step changes.',
       'and `FeeNoticeStatus`, the polite status line, visually hidden, that holds G1\'s title while the panel shows',
     ]) expect(files, piece).toContain(piece)
+    // Checkpoint L's merge-safety review: one line under the bullet, after the step's commit, whose figures the bullet keeps.
+    const review = files.split('\n').filter((l) => l.startsWith('  - At checkpoint L\'s merge-safety review, '))
+    expect(review).toHaveLength(1)
+    for (const piece of [
+      'after this step\'s commit, `16c188a`, whose counts, bytes and checks this block keeps, the Checkpoint L section giving the finished tree\'s',
+      '`src/areas/admin/components/FeeNotice.tsx` (G1\'s two buttons take `h-auto min-h-8 max-w-full whitespace-normal py-1 text-left`',
+      'a failed ask, the caller\'s promise rejecting, puts the focus back on the ask once it is free', '`FeeNoticeStatus` takes `failure`, a failed ask\'s words',
+      '`src/pages/TournamentManagePage.tsx` (a failed ask\'s words in the status line as well as in the red strip',
+      'a ref on the Add button beside the custom section\'s name', '`src/areas/admin/components/TournamentWizard.tsx` (the same in the sections step',
+      '`functions/api/me/payout-request.ts` and `functions/api/me/tournament-creation.ts` (comments only',
+      '`test/unit/fee-notice.test.tsx` (18, 15 at this step\'s commit: ', '`test/unit/manage-page-fee-notice.test.tsx` (32, 30 at this step\'s commit: ',
+      '`test/unit/manage-page-fee-notice-edges.test.tsx` (19, 17 at this step\'s commit: ', '`test/unit/wizard-fee-notice.test.tsx` (12, 11 at this step\'s commit: ',
+      '"the 1:30 AM hour on Sunday, November 1, 2026, which clocks in Chicago repeat", its value unchanged',
+      '`test/unit/redesign-status-ws08-step10.test.ts` (38, as before: the pins that move with the review\'s words, which Pins moved lists)',
+      'the dash\'s line in the verify item "The wizard\'s dash and its requests (WS08 step 10)"',
+      'The stylesheet gains the two rules G1\'s buttons take that no other file used, `min-h-8` and `whitespace-normal`',
+      'Nothing else changes at the review: nothing under `functions/utils/`, `domain/`, `migrations/`, `workers/`, `scripts/` or `scanner/`',
+    ]) expect(review[0], piece).toContain(piece)
   })
 
   it('gives G1 in K\'s words, as information, where it shows and for whom, what Keep it at $0 and the ask do, the refusal drawn as the panel, and the wizard\'s', () => {
@@ -317,7 +354,7 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
       'Once the ask has gone, the focus moves to Keep it at $0, since the ask\'s button then reads as asked and stays disabled',
       'on the Details tab the fee box of the first section whose fee changes, or the first section\'s, and on the Registration tab the early-entry discount box when its amount or its end changes and the late fee box otherwise',
       'the wizard\'s Keep it at $0 does the same, moving it to the fee box of the first section whose fee was above $0.',
-      'The ask calls `requestPayoutAccount(id)`, `POST /api/me/payout-request` with the event\'s id, which opens one `payout_request` ticket in Admin\'s support list, one per member, as WS08 step 7 built it',
+      'The ask calls `requestPayoutAccount(id)`, `POST /api/me/payout-request` with the event\'s id, which opens a `payout_request` ticket in Admin\'s support list unless one of the member\'s payout requests is open or in progress, which it then answers, as WS08 step 7 built it',
       'the press held by a ref as well as by state, so two presses before the first render ask once, and then reads "Asked. LCA has your request." and stays disabled',
       'As the panel shows, a screen reader hears its title: `FeeNoticeStatus` draws a polite status line, `role="status"`, visually hidden, which holds "Entry fees need a payout account first" while the panel shows and nothing otherwise',
       'whether the panel comes as a price is typed or as a refused save is drawn (WCAG 2.2, 4.1.3, status messages)',
@@ -327,7 +364,12 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
       'and hold the save until Keep it at $0, a discard or the next save; any other error is drawn in today\'s strip',
       'In the wizard, G1 is wired for WS09\'s regional representatives, the first creators not on D24\'s list',
       'since the wizard loads no prices, and its Keep it at $0 puts every section at $0; every grant that may create may charge today, so it shows to nobody.',
+      'At checkpoint L\'s merge-safety review G1\'s two buttons wrap their words and shrink with the panel, so at 320 CSS px neither crosses the panel\'s edge and the page does not scroll sideways',
+      'a failed ask puts the focus back on the ask once it is free, and the status line says the words the error line draws in the title\'s place until the next press',
+      'Keep it at $0 from the keyboard on the Details tab of an event with no live section, where only a refused save draws the panel and no fee box is left, moves the focus to the Add button beside the custom section\'s name.',
     ]) expect(g1, piece).toContain(piece)
+    // The review words the payout request as what the code holds, so the bullet no longer says one per member.
+    expect(g1).not.toContain('one per member')
   })
 
   it('gives G2 in K\'s words, where it shows, and that no checkout sends money anywhere but LCA\'s account', () => {
@@ -357,7 +399,7 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
     const items = bullet(block, '- **K\'s items.**')
     for (const piece of [
       'What K does before `standingDirectors` goes on is one judgement call below, "K\'s items before standingDirectors goes on (WS08 step 10)"',
-      'K\'s two read-only production reads, the look at the pages on a throwaway preview, and the one change that turns the switch and the constant on together',
+      'K\'s two read-only production reads, the look at the pages on a throwaway preview, with the sign-in key it needs first, the payout request\'s two emails to settle, and the one change that turns the switch and the constant on together',
       'The decisions K is asked for before checkpoint L merges are in the Checkpoint L section\'s Before merging bullet, each with the record line it comes from.',
     ]) expect(items, piece).toContain(piece)
   })
@@ -387,6 +429,24 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
       'its import of `SectionRulesEditor` from another area, moves from line 26 to line 29 with the three lines its import of the client gains',
       '`test/unit/area-boundaries.test.ts` holds it by file and import', 'WS01\'s follow-up "Imports across areas" still names line 26, as WS01 wrote it',
     ]) expect(pins, piece).toContain(piece)
+    // Checkpoint L's merge-safety review: one line under the bullet, each pin it moves with its old and new form.
+    const review = pins.split('\n').filter((l) => l.startsWith('  - At checkpoint L\'s merge-safety review, '))
+    expect(review).toHaveLength(1)
+    for (const piece of [
+      'every one in this checkpoint\'s own tests and none in a closed one',
+      'In `test/unit/manage-page-fee-notice.test.tsx`, its case on a failed ask found the words by `findByText`, which now finds two places, the red strip and the status line that holds the same words',
+      'In this record\'s own test, `test/unit/redesign-status-ws08-step10.test.ts`, each pin from its old form to its new: ',
+      '"which opens one `payout_request` ticket in Admin\'s support list, one per member, as WS08 step 7 built it" to "which opens a `payout_request` ticket',
+      '"now at line 554" to "at line 556 at this step\'s commit and at line 575 after the review\'s fixes"',
+      '"whose holder\'s role must be `lca_observer` or `lca_officer`" to "whose holder\'s role is `lca_observer`, as the brief keeps it, or `lca_admin`, who stays an admin and creates as one"',
+      '"so K sets the role to `lca_observer` first" to "where the holder is an `lca_officer`, a `club_rep`, a `member` or an `lca_auditor`, K sets the role to `lca_observer` first"',
+      '"(a draft pull request to be opened from this branch)" to "(draft pull request 125)"', '"Twelve files" to "Thirteen files"', '`index-CMYi2if3.js` to `index-B5Ime947.js`',
+      '"`FeeNotice-BJPf5_PW.js` at 5,773" to "`FeeNotice-sQ7Arhzx.js` at 5,994"',
+      'the words the list of the 41 renamed files is read after, "their only change the names of the files they import: " to "the names they take from it: "',
+      '"No email goes from a preview: ordering rule 1 keeps the live Resend key out of the Preview environment", to README.md\'s Safe previews rule',
+      '"The figures of WS08 step 10, the checkpoint\'s last step", the block\'s own, to the figures of the gate on the finished tree, the block\'s with the review\'s cases added',
+      'add no case, so the test keeps its 38', 'its header now names the one line it reads outside the section',
+    ]) expect(review[0], piece).toContain(piece)
   })
 
   it('gives its judgement calls, the four hand-ons and K\'s items among them in bold, each once', () => {
@@ -429,9 +489,27 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
       'WS08 step 1\'s claims test, `test/unit/redesign-status-ws08-step1-claims.test.ts` (line 87), holds that more than four map items still end with the words WS08 step 1 wrote',
       'The pin holds closed history, so it stays as it is',
       'So every map item but those two holds a sentence of the step that proved it, built a part of it or handed it on, and those two say in WS08 step 1\'s words that they are handed on.',
-      'The wizard\'s draft note keeps its em dash, now at line 554',
+      'The wizard\'s draft note keeps its em dash, at line 556 at this step\'s commit and at line 575 after the review\'s fixes',
       'The questions for K are not answered here: WS08 step 8\'s four and WS08 step 9\'s two, and the open questions of WS08 steps 3, 4 and 6, are collected in the Checkpoint L section\'s Before merging bullet',
+      // What checkpoint L's merge-safety review adds to the judgement calls.
+      'A third place, which checkpoint L\'s merge-safety review found: the page compares the live sections the manage answer gives, while the server\'s save reads every row, the archived ones included',
+      'so a raise on an event whose only priced section is archived, or one made in the save that removes a priced section, a save the API takes and today\'s page cannot send, shows no panel and leaves Save free until the server refuses the save',
+      'K can expect G1 to appear only after the press there',
+      'At checkpoint L\'s merge-safety review a failed ask puts the focus back on the ask, for every kind of press, in an effect of the panel\'s own once the render that frees it is drawn',
+      'Keep it at $0 from the keyboard moves the focus to the Add button beside the custom section\'s name, the last control before the panel\'s place, in the same card',
+      'the page passes the error line\'s words to `FeeNoticeStatus`, whose polite line says them in the title\'s place while the panel shows',
+      'and clears them at the next press of the ask and when the panel goes', 'The error strip itself, which every page draws with the switch off, is as it was.',
+      'G1\'s two buttons take `h-auto min-h-8 max-w-full whitespace-normal py-1 text-left` at checkpoint L\'s merge-safety review',
+      'at 320 CSS px the page is 320 px wide, the panel runs from 49 to 271', 'and the ask from 94 to 254, 160 px wide on two lines, 50 px high',
+      'at 360 the page is 360 px wide, the panel runs to 311 and the ask to 294, 200 px wide',
+      'so it grows by 83 bytes and takes a new name; no element drawn with every switch off carries either, and `test/a11y/baseline.json` is unchanged.',
+      'A member\'s reply on a resolved payout ticket reopens it beside a newer open one, as checkpoint L\'s merge-safety review found',
+      '(lines 69 to 75 of `functions/api/support/[id].ts`)',
+      'a request opens nothing while one of the member\'s payout requests is open or in progress, two requests in flight together open one, and a second request answers the open one',
+      'no code changes for it in this round', 'The question for K: whether the reply should leave a resolved payout request closed while another of the member\'s is open',
+      'its part for checkpoint L names draft pull request 125, opened from this branch on Friday, November 6, 2026 once WS08 step 10 was built, its number written at checkpoint L\'s merge-safety review',
     ]) expect(calls, piece).toContain(piece)
+    expect(calls).not.toContain('now at line 554')
   })
 
   it('gives the four hand-ons, each with what its part takes and the record lines it comes from, and K\'s items in their order', () => {
@@ -448,6 +526,8 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
       '`test/unit/published-review-closure.test.ts`, whose list that run\'s import of `sendPublishedReviewNotice` makes false, rewritten with it',
       '`recordRun` on that run once WS09 builds `automation_runs`', 'D23\'s rating report stage on every event, reading `lcaAffiliateAllowed`, "D23 noted (WS08 step 1)"',
       '"An officer president in the console part (WS08 step 1)" and "A guest\'s assignment lists a hidden draft (WS08 step 2)"',
+      'the Danger zone for a creator who has lost the grant, from checkpoint L\'s merge-safety review',
+      'sees it and meets "Forbidden" in the red strip when the server refuses the delete', 'and the page, which now reads the creation answer, could hide it from them',
     ]) expect(consolePart, piece).toContain(piece)
     for (const piece of [
       'The admin home part, which builds the admin home, Needs attention and `ADMIN_HOME_ON`, takes: the `published_review` row in place of the email while `ADMIN_HOME_ON` is set, with Done and its audit entry',
@@ -471,8 +551,16 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
     const steps = [
       'After checkpoint L has merged, and before `standingDirectors` goes on: K\'s two read-only reads of production, one statement each and never a write, reporting names and never emails, as "K\'s two production reads before standingDirectors goes on (WS08 step 1)" gives them',
       'first the members who hold `tournament_director` today, K taking the role from any who should not create',
-      'and second the President seat\'s active assignment, whose holder\'s role must be `lca_observer` or `lca_officer`',
-      'so K sets the role to `lca_observer` first', 'then K\'s look at the pages on a throwaway preview, as the Checkpoint L section\'s preview bullet lists it',
+      'and second the President seat\'s active assignment, whose holder\'s role is `lca_observer`, as the brief keeps it, or `lca_admin`, who stays an admin and creates as one',
+      'as the decision "The seat is the grant (WS08 step 1)" has it',
+      'where the holder is an `lca_officer`, a `club_rep`, a `member` or an `lca_auditor`, K sets the role to `lca_observer` first',
+      'and "this part does not support an officer president", as "An officer president in the console part (WS08 step 1)" says',
+      'then K\'s look at the pages on a throwaway preview, as the Checkpoint L section\'s preview bullet lists it',
+      'for which the Preview environment needs the sign-in service\'s server key, `SUPABASE_SERVICE_ROLE_KEY`, set first',
+      '`functions/utils/auth.ts` builds its sign-in client from it', 'listing no secret on Tuesday, November 10, 2026, so that every signed-in request on a preview answered 500',
+      'a preview shares the sign-in service with the live site, as `e2e-preview.yml` warns', 'how K wants to sign in there is a question for K',
+      'then the two emails of the payout request that WS08 step 7\'s judgement calls keep as they are, settled before the switch goes on',
+      'the admins\' note names the member twice in its subject, and the member\'s confirmation ends its plain-text part with a dash before the association\'s name',
       'and then one change that turns `standingDirectors` on in `src/lib/features.ts` together with `CREATION_ROLES_ON` in `functions/utils/events/creation.ts` and takes `standingDirectors` out of the WS08 list in `test/unit/features.test.ts`',
       'since `test/unit/creation-switch.test.ts` and `test/unit/features.test.ts` fail anything else',
       'The defaults of Q2, Q3, Q4 and Q37 stand until K says otherwise, as "K\'s questions for WS08, with their defaults (WS08 step 1)" sets them.',
@@ -480,6 +568,15 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the step block', () => {
     const at = steps.map((piece) => kItems.indexOf(piece))
     for (const [i, piece] of steps.entries()) expect(at[i], piece).toBeGreaterThan(-1)
     expect([...at].sort((a, b) => a - b)).toEqual(at)
+    // WS08 step 1's rule for the seat's holder, and none other: an officer is never left as the holder, and the roles K changes are named.
+    expect(kItems).not.toMatch(/must be `lca_observer` or `lca_officer`|where it is neither/)
+    // The follow-ups' words are quoted as WS08 step 1 wrote them.
+    const reads = entries(followUps).find((l) => head(l) === 'K\'s two production reads before standingDirectors goes on (WS08 step 1).') ?? ''
+    const officer = entries(followUps).find((l) => head(l) === 'An officer president in the console part (WS08 step 1).') ?? ''
+    const READS_WORDS = 'an `lca_officer` president could create from the view-only Admin but not email the event\'s entrants, a `member` or `lca_auditor` has no page to create from, and a `club_rep` who holds the seat creates only its own club\'s events, or is refused when it has no club, and never the LCA-run events the brief gives the president'
+    expect(reads).toContain(READS_WORDS)
+    expect(kItems).toContain(`"${READS_WORDS}"`)
+    expect(officer).toContain('this part does not support an officer president')
   })
 
   it('gives the lint as unchanged, the build file by file against the base, and each figure of the checks once', () => {
@@ -526,7 +623,7 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the lines outside the block', () => 
     expect(prLine.startsWith(`${J_PART}${K_PART}`)).toBe(true)
     const lPart = closing(prLine, 'checkpoint L (steps 7 to 10)')
     expect(lPart).toMatch(/to be opened|pull request \d+|merged/)
-    if (latestStep === 10 && opening.includes('(a draft pull request to be opened from this branch)')) expect(lPart).toBe(L_PART)
+    if (latestStep === 10 && opening.includes('(draft pull request 125)')) expect(lPart).toBe(L_PART)
     expect(prLine).not.toContain('is pending')
     expect(prLine).not.toMatch(/\bnone yet\b/)
   })
@@ -654,6 +751,8 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the Checkpoint L section', () => {
       'redeploys the daily-emails worker with its bundle unchanged, since none of them is in its import closure',
       '`test/unit/published-review-closure.test.ts` and `test/unit/search-worker-closure.test.ts` hold',
       'a dry run of its bundle on `9d3b13b`\'s tree, exported read-only, and on the finished tree gives the same `index.js`, 32,757 bytes, byte for byte',
+      'with checkpoint L\'s merge-safety review\'s fixes', 'The review\'s fixes change no file it imports, and the dry run made again on the tree they leave gives the same file.',
+      'The review\'s fixes change the comments at the top of the two new handlers and nothing they do.',
       'While `CREATION_ROLES_ON` is unset, every endpoint that existed answers, writes and refuses as today',
       '`GET /api/me/tournament-creation` answers a signed-in member their own grant under today\'s rules',
       'with `canChargeFees` true, and 401 signed out',
@@ -662,16 +761,25 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the Checkpoint L section', () => {
       'No page calls either endpoint while the switch is off, and every page is today\'s: the wizard\'s create is followed by the navigation and by no request, with no refresh of the member',
       'No window. Checkpoint L carries no migration, so no answer depends on which of the migration job and the Pages build finishes first.',
       'a production build of `main`\'s tree at `9d3b13b` and one of the finished tree give 227 files and 228 in `dist`, 189 and 190 of them in `dist/assets`',
-      '172 are the same, path for path and byte for byte, the stylesheet `index-Dxhkeo-q.css` at 130,292 bytes and the switches chunk `features--b6t5tBm.js` at 685 among them, every switch off',
-      'Twelve files of `dist/assets` change size, each by its name before the hash and its size on `main` and after',
-      'the main script, `index-Ci_BhDMR.js` at 549,814 bytes to `index-CMYi2if3.js` at 550,347',
-      'One file goes, `SectionRulesEditor-B-rSIBXU.js` at 3,260 bytes, its code now in `FeeNotice-BJPf5_PW.js` at 5,773 with `FeeNotice`, and one more is new, `sections-BfEDugbO.js` at 273',
-      '41 files of `dist/assets` take new names at the same size, their only change the names of the files they import',
+      '171 are the same, path for path and byte for byte, the switches chunk `features--b6t5tBm.js` at 685 bytes among them, every switch off',
+      'Thirteen files of `dist/assets` change size, each by its name before the hash and its size on `main` and after',
+      'the main script, `index-Ci_BhDMR.js` at 549,814 bytes to `index-B5Ime947.js` at 550,347',
+      'the stylesheet, `index-Dxhkeo-q.css` at 130,292 bytes to `index-De3UpPLs.css` at 130,375, with the two rules G1\'s buttons take at the merge-safety review, `min-h-8` and `whitespace-normal`',
+      'One file goes, `SectionRulesEditor-B-rSIBXU.js` at 3,260 bytes, its code now in `FeeNotice-sQ7Arhzx.js` at 5,994 with `FeeNotice`, and one more is new, `sections-BfEDugbO.js` at 273',
+      '41 files of `dist/assets` take new names at the same size, their only change the names they import, the files\' names and, for those that import from the main script, the names they take from it',
       '`index.html`, 2,212 bytes in both, names the new main script',
-      'A tab left open across the deploy that then asks for one of the renamed files by its old name reloads once, through the stale-tab reload of WS02 step 1.',
-      'Nothing a visitor sees: every page a visitor reaches is as it was, the event page loading one small file more with the same code',
-      'every answer as it was but for `POST /api/me/payout-request`, which answers 403 where it answered 405 and which no page calls; `test/a11y/baseline.json` is unchanged.',
+      'A tab left open across the deploy that then asks for one of the renamed files by its old name reloads once, through the stale-tab reload of WS02 step 1, unless the tab has reloaded once already this session, when it shows the error screen until it is reloaded by hand.',
+      'These figures come from builds made here without the Pages build\'s `VITE_` values.',
+      'which gives the Pages build\'s own files byte for byte, as the review found, the main script is `index-xBX31BFi.js` at 549,724 bytes on `main`, the one the live site served on Tuesday, November 10, 2026, and `index-BEO-j5HC.js` at 550,257 after',
+      '`FeeNotice` is `FeeNotice-CFGF9A8T.js` at 5,994', '`AdminClubPage` goes from 25,196 bytes to 25,195', '`clubMap` and `LCAMap` take new names at 6,848 and 6,592',
+      'Nothing a visitor sees: every page a visitor reaches is as it was, the event page and the manage page each loading one small file more, `sections` at 273 bytes, with the same code',
+      'and the manage page, Admin and `/workspace` loading `FeeNotice`, 5,994 bytes, where they loaded `SectionRulesEditor`, 3,260 bytes',
+      'every answer is as it was but for the two new endpoints, which no page calls with the switch off',
+      '`GET /api/me/tournament-creation`, which answers JSON, 401 signed out and the caller\'s own grant signed in, where the static host answered the site\'s page',
+      'and `POST /api/me/payout-request`, which answers 403 where it answered 405; `test/a11y/baseline.json` is unchanged.',
     ]) expect(production, piece).toContain(piece)
+    // The stylesheet is no longer among the files that stay the same.
+    expect(production).not.toContain('172 are the same')
   })
 
   it('says no preview migration is needed, gives the decisions K is asked for with their record lines, what K looks at on a throwaway preview, and how to roll the merge back', () => {
@@ -685,12 +793,14 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the Checkpoint L section', () => {
       'the follow-up "The fee tiers\' follow-ups wait for the Fees step (WS08 step 4)"', 'the decision "The president names directors on LCA-run events alone (WS08 step 6)"',
       'WS08 step 8\'s four questions, among its judgement calls', 'WS08 step 9\'s two, among its judgement calls',
       'WS08 step 10\'s two deviations, "G1 for a price typed above the one the page loaded (WS08 step 10)" and "Keep it at $0 puts back the prices the page loaded (WS08 step 10)"',
+      'and WS08 step 10\'s question, among its judgement calls, whether a member\'s reply on a resolved payout ticket should leave it closed while another of the member\'s payout requests is open',
       'Each keeps its default until K answers, and none changes what this merge ships',
     ]) expect(before, piece).toContain(piece)
     const rollback = bullet(checkpoint, '- **Rollback.**')
     for (const piece of [
       '`git revert -m 1 <merge sha>` on `main` and push', 'so `deploy-worker.yml` redeploys the worker, its bundle the same', 'No migration job starts',
       'nothing in the database needs undoing', '`POST /api/me/payout-request` answering 405 again', 'revert the revert commit',
+      'the payout request refusing after the sign-in check, before the body or any ticket is read',
     ]) expect(rollback, piece).toContain(piece)
     const preview = bullet(checkpoint, '- **What K looks at on a throwaway preview.**')
     for (const piece of [
@@ -704,19 +814,32 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the Checkpoint L section', () => {
       'the president\'s New tournament on Admin › Tournaments, and the Directors button on the event the president created',
       'a one-event director\'s G1 panel on the manage page after typing a price above the loaded one, with Save held and Keep it at $0 putting the price back',
       'the payout ticket in Admin › Support tickets after the ask', 'the Members page\'s role select reading "Standing director", with its one line',
-      'No email goes from a preview: ordering rule 1 keeps the live Resend key out of the Preview environment',
+      'G1 on the manage page at 320 CSS px', '"Asked. LCA has your request." read in the ask\'s button, which is inactive by then',
+      'Signing in there needs the sign-in service\'s server key in the Preview environment first, as K\'s items before the switch say.',
+      'README.md\'s Safe previews section leaves the Resend key off previews until test mail is wanted, so while the Preview environment holds no email key nothing is sent from it',
+      'if it holds one, a standing director\'s first publish there emails every LCA admin in the preview\'s database, as the Checkpoint K section\'s preview bullet says: that is the email to look at, and only the preview\'s admins get it',
+      'the ask\'s ticket emails its note to the contact address `wrangler.toml` gives the preview, the live site\'s own, and its confirmation to the member who asked',
     ]) expect(preview, piece).toContain(piece)
+    // The email is README.md's Safe previews rule, never ordering rule 1 alone.
+    expect(preview).not.toContain('ordering rule 1')
   })
 
-  it('gives the checks at its end as the figures of WS08 step 10, the same as the block\'s', () => {
+  it('gives the checks at its end as the gate on the finished tree after the review\'s fixes: the block\'s figures with the review\'s cases added', () => {
     const checks = bullet(checkpoint, '- **Checks at the end of the checkpoint.**')
-    expect(checks).toContain('The figures of WS08 step 10, the checkpoint\'s last step')
+    expect(checks).toContain('The figures of the gate on the checkpoint\'s finished tree, WS08 step 10 with the merge-safety review\'s fixes')
     expect(checks).toContain('no error in a file checkpoint L touches')
     const unit = /unit ([\d,]+) in (\d+) files and integration ([\d,]+) in (\d+), every one passing/.exec(checks)
     expect(unit, 'the counts in the checkpoint\'s checks').not.toBeNull()
     const blockUnit = /unit ([\d,]+) tests in (\d+) files/.exec(checksLine)
     const blockIntegration = /integration ([\d,]+) in (\d+) files/.exec(checksLine)
-    expect([unit![1], unit![2]]).toEqual([blockUnit?.[1], blockUnit?.[2]])
+    // The review adds cases to four of the step's unit files, as the Files bullet's line on the review counts them, and no file.
+    const review = bullet(block, '- **Files.**').split('\n').find((l) => l.startsWith('  - At checkpoint L\'s merge-safety review, ')) ?? ''
+    const gains = [...review.matchAll(/`[^`]+` \((\d+), (\d+) at this step's commit: /g)].map((m) => Number(m[1]) - Number(m[2]))
+    expect(gains).toEqual([3, 2, 2, 1])
+    const added = gains.reduce((a, n) => a + n, 0)
+    expect(num(unit![1])).toBe(num(blockUnit![1]) + added)
+    expect(unit![2]).toBe(blockUnit?.[2])
+    expect(checks).toContain(`the unit tests WS08 step 10's ${blockUnit![1]} with the ${added} cases the review added`)
     expect([unit![3], unit![4]]).toEqual([blockIntegration?.[1], blockIntegration?.[2]])
     const run = /`npm run test:a11y`, once, ([\d,]+) tests, ([\d,]+) that run and ([\d,]+) that skip/.exec(checks)
     const blockRun = /`npm run test:a11y` ([\d,]+) tests, ([\d,]+) that run and ([\d,]+) that skip/.exec(checksLine)
@@ -736,6 +859,16 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the four lists', () => {
     for (const list of [decisions, deviations, verify, followUps]) {
       for (const entry of entries(list)) expect(entry).toMatch(/^- \*\*[^*]+ \(WS08 step (?:[1-9]|10)\)\.\*\* \S/)
     }
+    // Checkpoint L's merge-safety review ends WS08 step 7's decision on the payout request with one sentence, on what the code holds,
+    // and WS08 step 8's entry on api-split-modules among its pins moved with one, on the case that entry left out.
+    expect(payoutDecision.split(PAYOUT_OPENS)).toHaveLength(2)
+    for (const piece of [
+      'A request opens nothing while one of the member\'s payout requests is open or in progress, two requests in flight together open one, and a second request answers the open one',
+      'while a member\'s reply on a resolved payout ticket reopens it beside a newer open one (lines 69 to 75 of `functions/api/support/[id].ts`), so two can then stand open',
+      'WS08 step 10\'s judgement call on it puts the question to K, and no code changes for it.',
+    ]) expect(closing(payoutDecision, PAYOUT_OPENS), piece).toContain(piece)
+    expect(splitPin.split(SPLIT_OPENS)).toHaveLength(2)
+    expect(closing(splitPin, SPLIT_OPENS)).toContain('its case "gives each name to http or one of the eight areas" reads the joined map, `JOINED`, where it read the split\'s map, `MAP`')
   })
 
   it('stands its entries together in each list, the decision before WS08 step 7\'s, the deviations and the verify items after WS08 step 9\'s and before WS08 step 7\'s', () => {
@@ -810,7 +943,7 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the four lists', () => {
       'so `FeeNotice` joins it there, the one pin this step moves.',
     ]) expect(gold, piece).toContain(piece)
     for (const piece of [
-      'the draft note\'s em dash is at line 506 of `src/areas/admin/components/TournamentWizard.tsx` on `5448de2`, where the plan has 503, and at line 554 after this step',
+      'the draft note\'s em dash is at line 506 of `src/areas/admin/components/TournamentWizard.tsx` on `5448de2`, where the plan has 503, and at line 556 after this step and at line 575 after the review\'s fixes',
       '`test/unit/wizard-refresh.test.tsx` holds, at lines 170, 185, 188 and 199, every request a create makes with the switch on',
       'so the wizard asks for the creation answer as its sections step first opens',
     ]) expect(wizard, piece).toContain(piece)
@@ -965,17 +1098,21 @@ describe('REDESIGN_STATUS.md, WS08 step 10: the figures agree', () => {
   it('gives the checkpoint\'s files against main\'s head as the sum of their parts, and the same sizes after as the block gives', () => {
     const changed = between(site, 'change size, each by its name before the hash and its size on `main` and after: ', '. One file goes')
     const chunks = new Map([...changed.matchAll(/`([A-Za-z]+)`(?:,[^`;]*?)? ([\d,]+) to ([\d,]+)/g)].map((m) => [m[1], [num(m[2]), num(m[3])] as const]))
-    // The main script and eleven chunks.
-    expect(chunks.size + 1).toBe(12)
-    expect(chunks.get('TournamentManagePage')).toEqual([85352, 88178])
-    expect(chunks.get('TournamentList')).toEqual([41145, 42907])
+    // The main script, the stylesheet, which gains G1's two rules at the merge-safety review, and eleven chunks.
+    expect(chunks.size + 2).toBe(13)
+    expect(changed).toContain('the stylesheet, `index-Dxhkeo-q.css` at 130,292 bytes to `index-De3UpPLs.css` at 130,375')
+    const sheet = changed.match(/at ([\d,]+) bytes to `index-De3UpPLs\.css` at ([\d,]+)/)
+    expect(sheet && num(sheet[2]) - num(sheet[1])).toBe(83)
+    // The manage page's chunk and the chunk that holds the wizard after the review's fixes, and the rest as the block gives them.
+    expect(chunks.get('TournamentManagePage')).toEqual([85352, 88317])
+    expect(chunks.get('TournamentList')).toEqual([41145, 43057])
     expect(chunks.get('TournamentDetailPage')).toEqual([37648, 37424])
     expect(chunks.get('AdminPage')?.[1]).toBe(92035)
     expect(chunks.get('DashboardPage')?.[1]).toBe(28621)
-    const renamed = sized(between(site, 'their only change the names of the files they import: ', '; and `index.html`'))
+    const renamed = sized(between(site, 'the names they take from it: ', '; and `index.html`'))
     expect(renamed.size).toBe(41)
-    expect(172 + 12 + 1 + renamed.size + 1).toBe(227)
-    expect(172 + 12 + 2 + renamed.size + 1).toBe(228)
+    expect(171 + 13 + 1 + renamed.size + 1).toBe(227)
+    expect(171 + 13 + 2 + renamed.size + 1).toBe(228)
     // Each file the block gives as taking a new name at the same size is one the section gives the same way at that size, or one that
     // changed size since main's head, at the size the block gives.
     const blockRenamed = sized(between(build, 'each by its name before the hash and its size in bytes on both sides: ', '; `index.html`'))

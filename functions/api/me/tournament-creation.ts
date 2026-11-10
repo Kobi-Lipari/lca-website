@@ -3,10 +3,11 @@
 // GET /api/me/tournament-creation: what the signed-in member may create, the
 // creation rules' answer (domain/events/creation.ts) for the person their
 // database half reads (functions/utils/events/creation.ts), and nothing
-// about anyone else. The setup checklist, Events you direct and My LCA's
-// line read it once their pages come (WS08 steps 8 and 10); no page calls it
-// yet. Its contract is tournamentCreationResponseSchema in
-// domain/contracts/me.ts.
+// about anyone else. Behind standingDirectors, four pages call it: the
+// Workspace page's Events list and Admin's Tournaments, for New tournament
+// (WS08 step 8), and the manage page and the wizard's sections step, for
+// the fee notices (WS08 step 10). Its contract is
+// tournamentCreationResponseSchema in domain/contracts/me.ts.
 //
 // canCreate is the answer for an LCA-run event, one with no club, so a club
 // rep reads false here and creates through its own club as today, the page

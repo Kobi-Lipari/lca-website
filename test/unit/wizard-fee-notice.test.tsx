@@ -9,7 +9,9 @@
 // shows the panel, Keep it at $0 sets every section's fee to $0, and the ask
 // posts one payout request about no event yet; as the panel shows, a polite
 // status line, visually hidden and there from the step's start, says its
-// title. With the switch off the step is today's and nothing is asked. The
+// title, and after a failed ask the wizard's error line's words until the
+// next press, the focus back on the ask. With the switch off the step is
+// today's and nothing is asked. The
 // real wizard runs through the real client, with fetch stubbed, so every
 // request it makes is seen.
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -254,6 +256,38 @@ describe('the fee notes on the wizard\'s sections step', () => {
     await screen.findByRole('button', { name: 'Asked. LCA has your request.' })
     expect(requestsTo('POST', PAYOUT)).toHaveLength(1)
     expect(JSON.parse(requestsTo('POST', PAYOUT)[0].body ?? '')).toEqual({})
+  })
+
+  it('say a failed ask\'s words in the status line, the wizard\'s error line\'s own, put the focus back on the ask, and clear them at the next press', async () => {
+    answers[`GET ${CREATION}`] = { status: 200, body: NO_FEES_GRANT }
+    answers[`POST ${PAYOUT}`] = { status: 403, body: { error: 'Not available yet.' } }
+    openWizard()
+    await fillBasics()
+    await openSections()
+    const [line] = liveLines()
+    fireEvent.click(screen.getByRole('button', { name: 'Open' }))
+    fireEvent.change(fees()[0], { target: { value: '15' } })
+    expect(line.textContent).toBe(G1)
+    const ask = screen.getByRole('button', { name: 'Ask LCA to set up my payout account' })
+    ask.focus()
+    fireEvent.click(ask)
+    // A browser drops the focus to the page from the button the press disabled; jsdom keeps it there, so the case moves it away.
+    const elsewhere = screen.getByRole('button', { name: 'Add' })
+    elsewhere.focus()
+    expect(document.activeElement).toBe(elsewhere)
+    await waitFor(() => expect(line.textContent).toBe('Not available yet.'))
+    // No new words on the step: besides the hidden line, only the wizard's error line draws them.
+    const drawn = screen.getAllByText('Not available yet.').filter((el) => el !== line)
+    expect(drawn.map((el) => el.className.split(' ').includes('text-destructive'))).toEqual([true])
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Ask LCA to set up my payout account' })))
+    // The next press of the ask clears the words, and Keep it at $0, which takes the panel away, leaves the line empty.
+    fireEvent.click(screen.getByRole('button', { name: 'Ask LCA to set up my payout account' }))
+    expect(line.textContent).toBe(G1)
+    await waitFor(() => expect(line.textContent).toBe('Not available yet.'))
+    fireEvent.click(screen.getByRole('button', { name: 'Keep it at $0' }))
+    expect(line.textContent).toBe('')
+    fireEvent.change(fees()[0], { target: { value: '15' } })
+    expect(line.textContent).toBe(G1)
   })
 
   it('draw neither note when the answer fails', async () => {

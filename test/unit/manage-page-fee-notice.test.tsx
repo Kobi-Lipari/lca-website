@@ -12,7 +12,9 @@
 // refusal of a raised fee, if one comes all the same, is drawn as the panel
 // and never in the red strip. As the panel shows, a polite status line,
 // visually hidden and there from the start, says its title, so a screen
-// reader hears it. A standing director's fees carry G2's note and no panel,
+// reader hears it; after a failed ask it says the red strip's words until
+// the next press, and the focus goes back on the ask. A standing director's
+// fees carry G2's note and no panel,
 // on an event they created only, and never beside the panel. With the
 // switch off the page is today's: no creation call, no panel, no status
 // line and the refusal in today's strip. The real page runs through the
@@ -356,9 +358,61 @@ describe('the ask for a payout account', () => {
     await openManage('details')
     typeIn(feeOf('Open'), '30')
     fireEvent.click(screen.getByRole('button', { name: ASK }))
-    await screen.findByText('Not available yet.')
+    // The red strip draws the words; the status line, visually hidden, holds them as well.
+    await waitFor(() => expect(screen.getAllByText('Not available yet.').filter((el) => !el.classList.contains('sr-only'))).toHaveLength(1))
+    const [strip] = screen.getAllByText('Not available yet.').filter((el) => !el.classList.contains('sr-only'))
+    expect(strip.className.split(' ')).toContain('text-destructive')
     await waitFor(() => expect(isDisabled(ASK)).toBe(false))
     expect(requestsTo('POST', PAYOUT)).toHaveLength(1)
+  })
+
+  it('says a failed ask\'s words in the status line, the red strip\'s own, puts the focus back on the ask, and clears them at the next press', async () => {
+    answers[`POST ${PAYOUT}`] = { status: 403, body: { error: 'Not available yet.' } }
+    await openManage('details')
+    const [line] = liveLines()
+    typeIn(feeOf('Open'), '30')
+    expect(line.textContent).toBe(G1)
+    const ask = screen.getByRole('button', { name: ASK })
+    ask.focus()
+    fireEvent.click(ask)
+    // A browser drops the focus to the page from the button the press disabled; jsdom keeps it there, so the case moves it away.
+    const elsewhere = screen.getByLabelText('Tournament name')
+    elsewhere.focus()
+    expect(document.activeElement).toBe(elsewhere)
+    await waitFor(() => expect(line.textContent).toBe('Not available yet.'))
+    // No new words on the page: besides the hidden line, only the red strip draws them.
+    const drawn = screen.getAllByText('Not available yet.').filter((el) => el !== line)
+    expect(drawn.map((el) => el.className.split(' ').includes('text-destructive'))).toEqual([true])
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: ASK })))
+    // The next press of the ask clears the words: the line says the panel's title again while the ask is sent.
+    answers[`POST ${PAYOUT}`] = { status: 201, body: { ticket: { id: 'tk-1', kind: 'payout_request', status: 'open' }, created: true } }
+    fireEvent.click(screen.getByRole('button', { name: ASK }))
+    expect(line.textContent).toBe(G1)
+    await screen.findByRole('button', { name: ASKED })
+    expect(line.textContent).toBe(G1)
+    expect(requestsTo('POST', PAYOUT)).toHaveLength(2)
+  })
+
+  it('clears a failed ask\'s words with the panel, gone through Keep it at $0 or a price typed back, so a panel drawn again says its title', async () => {
+    answers[`POST ${PAYOUT}`] = { status: 403, body: { error: 'Not available yet.' } }
+    await openManage('details')
+    const [line] = liveLines()
+    typeIn(feeOf('Open'), '30')
+    fireEvent.click(screen.getByRole('button', { name: ASK }))
+    await waitFor(() => expect(line.textContent).toBe('Not available yet.'))
+    fireEvent.click(screen.getByRole('button', { name: KEEP }))
+    expect(panel()).toBeNull()
+    expect(line.textContent).toBe('')
+    typeIn(feeOf('Open'), '30')
+    expect(line.textContent).toBe(G1)
+    fireEvent.click(screen.getByRole('button', { name: ASK }))
+    await waitFor(() => expect(line.textContent).toBe('Not available yet.'))
+    // The loaded price typed back takes the panel away with no press, and the words with it.
+    typeIn(feeOf('Open'), '25')
+    expect(panel()).toBeNull()
+    expect(line.textContent).toBe('')
+    typeIn(feeOf('Open'), '35')
+    expect(line.textContent).toBe(G1)
   })
 })
 

@@ -2,18 +2,20 @@
 //
 // POST /api/me/payout-request: "Ask LCA to set up my payout account", the
 // second button of the panel a fee above $0 shows to someone who may not
-// charge one (D24; its page comes with WS08 step 10). It opens a support
-// ticket of kind payout_request for the signed-in member, which the LCA
-// admins see in Admin's support list today, and answers the member's open
-// one instead while it is open or in progress, so a member has one open
-// request at a time. The rule is the one statement createTicket runs
+// charge one (D24). It opens a support ticket of kind payout_request for
+// the signed-in member, which the LCA admins see in Admin's support list
+// today, and answers the member's open one instead while one of their
+// payout requests is open or in progress, so a request then opens nothing.
+// The rule is the one statement createTicket runs
 // (functions/utils/admin/tickets.ts), so two requests in flight together
 // open one ticket. Its contract is in domain/contracts/me.ts. The answer
 // names the ticket by its id and never its number, which is for staff and
 // board members only, as the member's own support pages keep it.
 //
 // Refused with 403 while CREATION_ROLES_ON is unset, so the server opens no
-// such ticket until the switch goes on. No page calls it yet.
+// such ticket until the switch goes on. Behind standingDirectors, G1's ask
+// calls it from the manage page, about the event, and from the wizard's
+// sections step, about no event yet (WS08 step 10).
 import type { Env, MemberRow } from '../../types'
 import { isResponse, requireAuthedMember } from '../../utils/auth'
 import { errorResponse, handleOptions, jsonResponse, parseBody } from '../../utils/response'

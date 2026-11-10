@@ -5,7 +5,9 @@
 // lowered prices, a raise made across both tabs, a blank or negative box,
 // midnight and the hour DST repeats in America/Chicago as a "Late fee starts"
 // value, an event with no sections, replays of Keep it at $0 and of the ask,
-// and the server's refusal when the creation answer never arrived.
+// the server's refusal when the creation answer never arrived, a raise only
+// the server can see, and where the focus goes after Keep it at $0 when no
+// fee box is left.
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -207,7 +209,7 @@ describe('ties, lowered prices and unusual boxes', () => {
 describe('midnight and the repeated hour in America/Chicago', () => {
   it.each([
     ['midnight', '2026-12-01T00:00'],
-    ['the hour 2026-11-01 01:30 that clocks in Chicago repeat', '2026-11-01T01:30'],
+    ['the 1:30 AM hour on Sunday, November 1, 2026, which clocks in Chicago repeat', '2026-11-01T01:30'],
     ['the last minute of the day', '2026-12-01T23:59'],
   ])('shows the panel for a late fee starting at %s, and Keep it at $0 clears the date', async (_name, when) => {
     await openManage('registration', { late_fee: 5 })
@@ -315,5 +317,49 @@ describe('no sections, and a refusal with no creation answer', () => {
     expect(sent.location).toBe('Baton Rouge, LA')
     expect(JSON.stringify(sent)).not.toMatch(/"entryFee":30/)
     expect(panel()).toBeNull()
+  })
+})
+
+describe('a raise only the server can see, and the focus with no fee box left', () => {
+  it('shows no panel for a late fee on an event whose only priced section is archived, until the server refuses the save, which it draws as the panel', async () => {
+    // The manage answer gives the live sections alone, here one free section, while the server's comparison reads the archived
+    // row's price as well, so the raise is the server's to find.
+    answers[`PATCH ${EVENT}`] = { status: 403, body: { error: FEES_NEED_PAYOUT_ACCOUNT } }
+    await openManage('registration', { entry_fee: 0, sections: [section('sec-blitz', 'Blitz', 0)] })
+    typeIn(screen.getByLabelText('Late fee ($)'), '5')
+    typeIn(screen.getByLabelText('Late fee starts'), '2026-12-01T09:00')
+    expect(panel()).toBeNull()
+    expect(isDisabled('Save registration settings')).toBe(false)
+    fireEvent.click(screen.getByRole('button', { name: 'Save registration settings' }))
+    await waitFor(() => expect(panel()).not.toBeNull())
+    expect(requestsTo('PATCH', EVENT)).toHaveLength(1)
+    expect(screen.queryByText(FEES_NEED_PAYOUT_ACCOUNT)).toBeNull()
+    expect(redClasses()).toEqual([])
+    expect(isDisabled('Save registration settings')).toBe(true)
+  })
+
+  it('moves the focus, for Keep it at $0 from the keyboard on an event with no live section, to the Add button beside the custom section\'s name', async () => {
+    // With no live section only a refused save draws the panel, and no fee box is there to take the focus.
+    answers[`PATCH ${EVENT}`] = { status: 403, body: { error: FEES_NEED_PAYOUT_ACCOUNT } }
+    await openManage('details', { sections: [], entry_fee: 0 })
+    fireEvent.change(screen.getByLabelText('Location (city)'), { target: { value: 'Baton Rouge, LA' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save details' }))
+    await waitFor(() => expect(panel()).not.toBeNull())
+    expect(screen.queryAllByRole('table')).toEqual([])
+    const keep = screen.getByRole('button', { name: KEEP })
+    keep.focus()
+    fireEvent.click(keep)
+    expect(panel()).toBeNull()
+    const add = screen.getAllByRole('button', { name: 'Add' })
+    expect(add).toHaveLength(1)
+    expect(document.activeElement).toBe(add[0])
+    // A tap or a mouse press moves no focus, as on a fee box.
+    fireEvent.click(screen.getByRole('button', { name: 'Save details' }))
+    await waitFor(() => expect(panel()).not.toBeNull())
+    const again = screen.getByRole('button', { name: KEEP })
+    again.focus()
+    fireEvent.click(again, { detail: 1 })
+    expect(panel()).toBeNull()
+    expect(document.activeElement).not.toBe(add[0])
   })
 })

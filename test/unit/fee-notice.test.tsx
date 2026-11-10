@@ -5,16 +5,19 @@
 // heading, K's body word for word, Keep it at $0, the ask for a payout
 // account as the Button's gold variant, and the line on who can charge fees
 // for now. The ask is disabled from the press until its promise settles, so
-// a double tap asks once, a failed ask leaves it free again, and once the
-// caller says the request went it reads "Asked. LCA has your request." G2,
-// "accepted", is the one paragraph a standing director reads under their
-// fees. Both are navy words on the info tint with an "i" beside them, and
-// neither draws a destructive class, a dash or US Chess's old initials.
-// FeeNoticeStatus is the polite status line, visually hidden, that holds
-// G1's title while the panel shows, so a screen reader hears it. And,
-// as G2 tells a standing director (Q3), no file of the server, the site, the
-// shared rules or the workers routes a payment to a connected account, so
-// every payment stays in LCA's own Stripe account.
+// a double tap asks once, a failed ask leaves it free again with the focus
+// back on it, and once the caller says the request went it reads "Asked. LCA
+// has your request." Both buttons wrap their words and shrink with the
+// panel, so on a narrow screen neither runs past its edge. G2, "accepted",
+// is the one paragraph a standing director reads under their fees. Both are
+// navy words on the info tint with an "i" beside them, and neither draws a
+// destructive class, a dash or US Chess's old initials. FeeNoticeStatus is
+// the polite status line, visually hidden, that holds G1's title while the
+// panel shows, so a screen reader hears it, and a failed ask's words in its
+// place once the caller passes them. And, as G2 tells a standing director
+// (Q3), no file of the server, the site, the shared rules or the workers
+// routes a payment to a connected account, so every payment stays in LCA's
+// own Stripe account.
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { useState } from 'react'
@@ -95,6 +98,20 @@ describe('G1: entry fees need a payout account first', () => {
     for (const name of [KEEP, ASK]) expect(button(name).type).toBe('button')
   })
 
+  it('lets both buttons wrap their words and shrink with the panel, asked or not, so on a narrow screen neither runs past its edge', () => {
+    // The Button's own one-line classes give way: it keeps its height on one line and grows as its words wrap, never wider than the panel.
+    const wraps = ['h-auto', 'min-h-8', 'max-w-full', 'whitespace-normal', 'py-1', 'text-left']
+    for (const asked of [false, true]) {
+      render(<FeeNotice kind="needs-account" onKeepFree={() => {}} onAskForAccount={() => {}} asked={asked} />)
+      for (const name of [KEEP, asked ? ASKED : ASK]) {
+        const classes = button(name).className.split(' ')
+        for (const cls of wraps) expect(classes, `${name}: ${cls}`).toContain(cls)
+        for (const cls of ['whitespace-nowrap', 'h-8']) expect(classes, `${name}: ${cls}`).not.toContain(cls)
+      }
+      cleanup()
+    }
+  })
+
   it('calls onKeepFree when Keep it at $0 is pressed, saying whether the press came from the keyboard, and asks nothing', () => {
     const keep = vi.fn()
     const ask = vi.fn()
@@ -151,6 +168,28 @@ describe('G1: entry fees need a payout account first', () => {
     expect(ask).toHaveBeenCalledTimes(2)
   })
 
+  it('puts the focus back on the ask once a failed ask leaves it free, since the press disabled it', async () => {
+    const first = deferred()
+    const ask = vi.fn(() => first.promise)
+    render(
+      <>
+        <div tabIndex={-1} data-testid="page" />
+        <FeeNotice kind="needs-account" onKeepFree={() => {}} onAskForAccount={ask} />
+      </>,
+    )
+    button(ASK).focus()
+    fireEvent.click(button(ASK))
+    expect(button(ASK).disabled).toBe(true)
+    // A browser drops the focus to the page from a button the press disabled; jsdom keeps it there, so the case moves it to the page.
+    const page = screen.getByTestId('page')
+    page.focus()
+    expect(document.activeElement).toBe(page)
+    await act(async () => { first.reject(new Error('Not available yet.')) })
+    // jsdom gives no focus to a disabled button, so the focus is back on the ask only once the ask is free.
+    await waitFor(() => expect(document.activeElement).toBe(button(ASK)))
+    expect(button(ASK).disabled).toBe(false)
+  })
+
   it('reads as asked and asks nothing when the request has already gone', () => {
     const ask = vi.fn()
     render(<FeeNotice kind="needs-account" onKeepFree={() => {}} onAskForAccount={ask} asked />)
@@ -205,6 +244,20 @@ describe('the line a screen reader hears as G1 shows', () => {
     cleanup()
     render(<FeeNotice kind="needs-account" onKeepFree={() => {}} onAskForAccount={() => {}} />)
     expect(textOf(screen.getByRole('heading'))).toBe(TITLE)
+  })
+
+  it('says a failed ask\'s words in the title\'s place while the panel shows, its title again once they are cleared, and nothing once the panel has gone', () => {
+    const { rerender } = render(<FeeNoticeStatus shows />)
+    const line = screen.getByRole('status')
+    expect(line.textContent).toBe(TITLE)
+    rerender(<FeeNoticeStatus shows failure="Not available yet." />)
+    // The same line, so a screen reader reads the failure as the change in what it holds.
+    expect(screen.getByRole('status')).toBe(line)
+    expect(line.textContent).toBe('Not available yet.')
+    rerender(<FeeNoticeStatus shows failure={null} />)
+    expect(line.textContent).toBe(TITLE)
+    rerender(<FeeNoticeStatus shows={false} failure="Not available yet." />)
+    expect(line.textContent).toBe('')
   })
 })
 

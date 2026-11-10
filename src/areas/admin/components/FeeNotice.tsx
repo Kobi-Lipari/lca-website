@@ -13,19 +13,24 @@
 // The ask is the Button's gold variant. It is disabled from the press until
 // its promise settles, so a double tap asks once, and once the caller says
 // the request went (asked), it reads "Asked. LCA has your request." and stays
-// disabled. A failed ask leaves it free to press again; the caller draws the
-// failure. Once the request has gone the focus moves to Keep it at $0, since
-// the ask's button stays disabled and a disabled button cannot keep the
-// focus. Keep it at $0 tells the caller whether the press came from the
-// keyboard (a click whose detail is 0), so the caller moves the focus into a
-// price box only then: a tap or a mouse press would open the number keyboard
-// on a tablet.
+// disabled. A failed ask leaves it free to press again: the caller draws the
+// failure and rejects the promise, and the focus goes back to the ask once
+// it is free, since the press disabled it and a disabled button cannot keep
+// the focus. Once the request has gone the focus moves to Keep it at $0, for
+// the same reason. Keep it at $0 tells the caller whether the press came
+// from the keyboard (a click whose detail is 0), so the caller moves the
+// focus into a price box only then: a tap or a mouse press would open the
+// number keyboard on a tablet. Both buttons wrap their words and shrink
+// with the panel, so on a narrow screen neither runs past its edge and the
+// page never scrolls sideways (WCAG 2.2, 1.4.10, reflow).
 //
 // G1's panel appears as a price is typed, or when the server refuses a save,
 // and a note is not read out when it appears, so FeeNoticeStatus gives the
 // caller a polite status line, visually hidden, that holds G1's title while
 // the panel shows: a screen reader says it without the focus moving (WCAG
-// 2.2, 4.1.3, status messages).
+// 2.2, 4.1.3, status messages). After a failed ask the line says the
+// failure's words, the ones the page's error line draws, until the next
+// press.
 import { useEffect, useId, useRef, useState } from 'react'
 import { Info } from 'lucide-react'
 
@@ -37,12 +42,18 @@ const PANEL = 'rounded-lg border border-info-200 bg-info-50 px-4 py-3 text-sm te
 /** G1's title, K's words: the panel's heading, and what FeeNoticeStatus says while the panel shows. */
 const NEEDS_ACCOUNT_TITLE = 'Entry fees need a payout account first'
 
+/**
+ * G1's two buttons on a narrow screen: the words wrap and the button is never wider than the panel, so at 320 CSS px neither crosses
+ * the panel's edge. One line keeps the Button's own height; a wrapped label grows the button, with a little room above and below.
+ */
+const WRAPS = 'h-auto min-h-8 max-w-full whitespace-normal py-1 text-left'
+
 export interface FeeNoticeProps {
   /** needs-account: G1, the payout account comes first. accepted: G2, a standing director's fee is taken. */
   kind: 'needs-account' | 'accepted'
   /** G1's "Keep it at $0": the caller puts back the prices the page loaded; fromKeyboard is true for a press from the keyboard, when the caller may move the focus. */
   onKeepFree?: (fromKeyboard: boolean) => void
-  /** G1's ask: the caller sends the payout request, once per press. */
+  /** G1's ask: the caller sends the payout request, once per press, and draws a failure itself; its promise rejects when the ask failed, so the focus goes back to the ask. */
   onAskForAccount?: () => Promise<void> | void
   /** Whether the request has gone; the ask then reads as done and stays disabled. */
   asked?: boolean
@@ -64,6 +75,14 @@ export function FeeNotice({ kind, onKeepFree, onAskForAccount, asked = false }: 
       keepButton.current?.focus()
     }
   }, [asked])
+  /** The ask's button, which takes the focus back after a failed ask. */
+  const askButton = useRef<HTMLButtonElement>(null)
+  // Failed asks are counted, and the count changes in the same render that
+  // frees the button, so the focus goes back to it once it can take it.
+  const [failures, setFailures] = useState(0)
+  useEffect(() => {
+    if (failures > 0) askButton.current?.focus()
+  }, [failures])
 
   async function ask() {
     if (inFlight.current || asked) return
@@ -75,6 +94,7 @@ export function FeeNotice({ kind, onKeepFree, onAskForAccount, asked = false }: 
     } catch {
       pressed.current = false
       // The caller draws its own failure; the button is free to press again.
+      setFailures((n) => n + 1)
     } finally {
       inFlight.current = false
       setPending(false)
@@ -108,10 +128,10 @@ export function FeeNotice({ kind, onKeepFree, onAskForAccount, asked = false }: 
             pays it out to you. Until then, your event can run at $0.
           </p>
           <div className="flex flex-wrap gap-2" aria-live="polite">
-            <Button ref={keepButton} type="button" variant="outline" onClick={(event) => onKeepFree?.(event.detail === 0)}>
+            <Button ref={keepButton} type="button" variant="outline" className={WRAPS} onClick={(event) => onKeepFree?.(event.detail === 0)}>
               Keep it at $0
             </Button>
-            <Button type="button" variant="gold" disabled={pending || asked} onClick={ask}>
+            <Button ref={askButton} type="button" variant="gold" className={WRAPS} disabled={pending || asked} onClick={ask}>
               {asked ? 'Asked. LCA has your request.' : 'Ask LCA to set up my payout account'}
             </Button>
           </div>
@@ -127,12 +147,14 @@ export function FeeNotice({ kind, onKeepFree, onAskForAccount, asked = false }: 
  * holding the panel's title, K's words, so the change is announced and the focus stays where it is. A live region is read out only
  * when what it holds changes, so the caller draws this line from before the panel can show, once for every place the panel may take,
  * and passes whether the panel shows. It takes no space, and drawn first in its container it changes no other child's spacing, so
- * nothing on the page moves.
+ * nothing on the page moves. After a failed ask the caller passes `failure`, the words its error line draws, which the line says in
+ * the title's place while the panel shows, so the failure is heard with no new words on the page; the caller clears them at the next
+ * press.
  */
-export function FeeNoticeStatus({ shows }: { shows: boolean }) {
+export function FeeNoticeStatus({ shows, failure = null }: { shows: boolean; failure?: string | null }) {
   return (
     <p role="status" aria-live="polite" className="sr-only">
-      {shows ? NEEDS_ACCOUNT_TITLE : ''}
+      {shows ? failure || NEEDS_ACCOUNT_TITLE : ''}
     </p>
   )
 }
