@@ -19,7 +19,10 @@
 //   before, proves the text is the same; it fails for a name missing from the
 //   barrel, a name in two modules, a module importing the barrel, an index
 //   file re-exporting an api module, and an edited declaration
-// - --check passes on the committed map and the real tree
+// - --check passes on the real tree against the committed map and the
+//   snapshot joined with the names the area modules have gained since the
+//   split (test/unit/fixtures/api-added-since-split.json), which the map and
+//   the snapshot, the split's own record, leave out
 import { afterAll, describe, expect, it } from 'vitest'
 import { spawnSync } from 'node:child_process'
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
@@ -482,22 +485,45 @@ describe('--check on a split fixture', () => {
 })
 
 describe('--check on the committed map and the real tree', () => {
-  it('passes', () => {
-    const r = tool(['--check'])
-    expect(r.status, r.stdout + r.stderr).toBe(0)
-    expect(r.stdout).toContain('Barrel: 182 names, snapshot 182: the same set.')
-    expect(r.stdout).toContain('Problems: 0')
-  })
+  const map = JSON.parse(readFileSync(join(ROOT, 'scripts/moves/api-split.json'), 'utf8')) as Record<string, string>
+  const snapshot = JSON.parse(readFileSync(join(ROOT, 'test/unit/fixtures/api-exports.json'), 'utf8')) as string[]
+  /** The names the area modules have gained since the split, each with the module that declares it. */
+  const added = (JSON.parse(readFileSync(join(ROOT, 'test/unit/fixtures/api-added-since-split.json'), 'utf8')) as { exports: Record<string, string> }).exports
 
-  it('fails on the real tree when the committed map is changed to move a name', () => {
-    const dir = join(work, 'real-tree')
-    for (const f of ['src/lib/api.ts', 'src/lib/http.ts', 'test/unit/fixtures/api-exports.json', ...AREAS.map((a) => `src/areas/${a}/api.ts`), ...AREAS.map((a) => `src/areas/${a}/index.ts`)]) {
+  /** A copy of the real client in a folder of its own, with the map and the snapshot the check reads there. */
+  const realTree = (name: string, joinedMap: Record<string, string>, joinedSnapshot: string[]) => {
+    const dir = join(work, name)
+    for (const f of ['src/lib/api.ts', 'src/lib/http.ts', ...AREAS.map((a) => `src/areas/${a}/api.ts`), ...AREAS.map((a) => `src/areas/${a}/index.ts`)]) {
       mkdirSync(dirname(join(dir, f)), { recursive: true })
       cpSync(join(ROOT, f), join(dir, f))
     }
-    const map = JSON.parse(readFileSync(join(ROOT, 'scripts/moves/api-split.json'), 'utf8')) as Record<string, string>
     mkdirSync(join(dir, 'scripts/moves'), { recursive: true })
-    writeFileSync(join(dir, 'scripts/moves/api-split.json'), JSON.stringify({ ...map, getClubs: 'events' }))
+    writeFileSync(join(dir, 'scripts/moves/api-split.json'), JSON.stringify(joinedMap))
+    mkdirSync(join(dir, 'test/unit/fixtures'), { recursive: true })
+    writeFileSync(join(dir, 'test/unit/fixtures/api-exports.json'), JSON.stringify(joinedSnapshot))
+    return dir
+  }
+
+  it('passes with the names added since the split joined to the map and the snapshot', () => {
+    const r = tool(['--check', '--root', realTree('real-tree-joined', { ...map, ...added }, [...snapshot, ...Object.keys(added)])])
+    expect(r.status, r.stdout + r.stderr).toBe(0)
+    expect(r.stdout).toContain(`Barrel: ${182 + Object.keys(added).length} names, snapshot ${182 + Object.keys(added).length}: the same set.`)
+    expect(r.stdout).toContain('Problems: 0')
+  })
+
+  it('finds exactly the names added since the split, and nothing else, when they are not joined', () => {
+    const r = tool(['--check'])
+    expect(r.status).toBe(1)
+    expect(r.stdout).toContain(`'@/lib/api' now also exports: `)
+    for (const [name, area] of Object.entries(added)) {
+      expect(r.stdout, name).toContain(name)
+      expect(r.stdout, name).toContain(`src/areas/${area}/api.ts declares names the map gives elsewhere or not at all: `)
+    }
+    expect(r.stdout).toContain(`Problems: ${1 + new Set(Object.values(added)).size}`)
+  })
+
+  it('fails on the real tree when the committed map is changed to move a name', () => {
+    const dir = realTree('real-tree', { ...map, ...added, getClubs: 'events' }, [...snapshot, ...Object.keys(added)])
     const r = tool(['--check', '--root', dir])
     expect(r.status).toBe(1)
     expect(r.stdout).toContain('declares names the map gives elsewhere or not at all: getClubs')

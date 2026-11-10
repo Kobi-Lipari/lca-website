@@ -1,12 +1,16 @@
 // src/pages/WorkspacePage.tsx
 // The club / event workspace: the tools page for club reps, tournament
 // directors and auditors. It replaces the old practice of sending them into
-// a trimmed-down copy of the admin panel — each role sees only what it can
+// a trimmed-down copy of the admin panel: each role sees only what it can
 // actually use, and the admin panel is left to admins.
 //
 //   club_rep            → My club · Events (create + manage) · Member lookup
 //   tournament_director → Events (the ones they direct) · Member lookup
 //   lca_auditor         → Member lookup
+//
+// With standingDirectors on, a tournament director is a standing director:
+// their Events list gains New tournament when the server's creation answer
+// says they may create, and shows the events they created.
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Building2, ExternalLink, Search, Trophy, Users } from 'lucide-react'
@@ -19,12 +23,15 @@ import { useAuth } from '@/contexts/auth-context'
 import {
   adminGetClub,
   adminGetMembers,
+  getTournamentCreation,
   getTournaments,
   type ApiAdminMember,
   type ApiClubDetail,
+  type ApiTournamentCreation,
   type ApiTournamentListItem,
 } from '@/lib/api'
 import { ROLE_LABELS, WORKSPACE_ROLES } from '@/areas/admin/roles'
+import { FEATURES } from '@/lib/features'
 import { cn } from '@/lib/utils'
 import { usePageTitle } from '@/hooks/usePageTitle'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
@@ -226,35 +233,49 @@ function EventsPanel({ role, clubId, memberId, directedTournamentIds }: {
   directedTournamentIds: string[]
 }) {
   const [tournaments, setTournaments] = useState<ApiTournamentListItem[] | null>(null)
+  const [creation, setCreation] = useState<ApiTournamentCreation | null>(null)
   const [error, setError] = useState<string | null>(null)
+  // With standingDirectors on, a tournament director asks the server what
+  // they may create, and reads the list signed in, so it holds the drafts
+  // they direct, the ones they created among them, with who created each.
+  // A failed creation answer leaves the list without New tournament; the
+  // list itself is still read signed in.
+  const standing = FEATURES.standingDirectors && role === 'tournament_director'
 
   useEffect(() => {
     let cancelled = false
-    getTournaments()
-      .then((list) => { if (!cancelled) setTournaments(list) })
+    const load: Promise<readonly [ApiTournamentListItem[], ApiTournamentCreation | null]> = standing
+      ? Promise.all([getTournaments({ signedIn: true }), getTournamentCreation().catch(() => null)])
+      : getTournaments().then((list) => [list, null] as const)
+    load
+      .then(([list, answer]) => { if (!cancelled) { setTournaments(list); setCreation(answer) } })
       .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load tournaments') })
     return () => { cancelled = true }
-  }, [])
+  }, [standing])
 
   if (error) return <p className="text-sm text-destructive">{error}</p>
   if (!tournaments) return <p className="text-muted-foreground" role="status">Loading…</p>
 
   // The list endpoint also returns every public event; keep only the ones
-  // this person can manage — their club's, plus any they direct.
+  // this person can manage: their club's, plus any they direct. A standing
+  // director's own events count too, since the events they direct were read
+  // at sign-in and one created since is not among them yet.
   const directed = new Set(directedTournamentIds)
   const mine = tournaments.filter((t) =>
-    (role === 'club_rep' && clubId && t.club_id === clubId) || directed.has(t.id))
+    (role === 'club_rep' && clubId && t.club_id === clubId) || directed.has(t.id) ||
+    (standing && !!memberId && t.created_by === memberId))
 
   const ownClub = (t: ApiTournamentListItem) => role === 'club_rep' && !!clubId && t.club_id === clubId
+  const creates = FEATURES.standingDirectors && creation?.canCreate === true
 
   return (
     <TournamentList
       tournaments={mine}
-      canCreate={role === 'club_rep' && !!clubId && !!memberId}
+      canCreate={(role === 'club_rep' && !!clubId && !!memberId) || creates}
       canAssignDirectors={ownClub}
       emptyHint={role === 'club_rep'
         ? 'Create your club’s first tournament to get started.'
-        : 'Events you’re assigned to direct will appear here.'}
+        : creates ? undefined : 'Events you’re assigned to direct will appear here.'}
     />
   )
 }

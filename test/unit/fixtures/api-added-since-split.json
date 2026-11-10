@@ -1,0 +1,12 @@
+{
+  "paths": [
+    "/api/me/payout-request",
+    "/api/me/tournament-creation"
+  ],
+  "exports": {
+    "ApiPayoutRequest": "membership",
+    "ApiTournamentCreation": "membership",
+    "getTournamentCreation": "membership",
+    "requestPayoutAccount": "membership"
+  }
+}

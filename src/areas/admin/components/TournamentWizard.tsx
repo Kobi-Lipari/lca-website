@@ -1,10 +1,10 @@
 // src/areas/admin/components/TournamentWizard.tsx
 // The new-tournament wizard, shared by the admin panel and the club
 // workspace. Extracted from AdminPage.tsx unchanged apart from: the club
-// picker (admins only — a club rep's events always belong to their club),
+// picker (admins only: a club rep's events always belong to their club),
 // and sending time control / registration close / copied custom details,
 // which the wizard collected but previously never saved.
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft, ArrowRight, Check, Copy, Pencil, Plus, Trophy, X,
@@ -16,14 +16,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   adminCreateTournament,
+  getTournamentCreation,
+  requestPayoutAccount,
   type ApiClubListItem,
   type ApiCustomDetail,
   type ApiSectionDraft,
+  type ApiTournamentCreation,
   type ApiTournamentListItem,
 } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { GOLD_BUTTON as GOLD } from '@/lib/brand'
 import { SectionRulesEditor } from '@/areas/events/components/SectionRulesEditor'
+import { useAuth } from '@/contexts/auth-context'
+import { FEATURES } from '@/lib/features'
+import { FeeNotice, FeeNoticeStatus } from './FeeNotice'
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -346,17 +352,61 @@ function StepBasics({ w, set, onBack, onNext, onDraft, clubs }: {
   )
 }
 
-function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
+/** The words a failed payout request is drawn with: in the wizard's error line, and in the sections step's status line while G1 shows. */
+function askFailedWords(err: unknown): string {
+  return err instanceof Error ? err.message : 'Could not send the request'
+}
+
+function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom, creation, payoutAsked, onAskForAccount }: {
   w: WizardState; set: (p: Partial<WizardState>) => void
   onBack: () => void; onNext: () => void; onDraft: () => void; copiedFrom?: string
+  /** What the signed-in person may do with fees, read with standingDirectors on; null until read, or when the read fails. */
+  creation: ApiTournamentCreation | null
+  /** Whether the payout request has gone. */
+  payoutAsked: boolean
+  onAskForAccount: () => Promise<void>
 }) {
   const [custom, setCustom] = useState('')
+  // A failed ask's words, the wizard's error line's own, which the status
+  // line says while G1 shows. The next press of the ask clears them, and they
+  // go with the panel, so Keep it at $0, which takes it away, clears them too.
+  const [askFailure, setAskFailure] = useState<string | null>(null)
+  const askForAccount = async () => {
+    setAskFailure(null)
+    try {
+      await onAskForAccount()
+    } catch (err) {
+      setAskFailure(askFailedWords(err))
+      throw err
+    }
+  }
+  // The fee boxes by section name, and the one to move the focus to once
+  // Keep it at $0's fees are drawn: the panel goes with the button pressed
+  // in it, which would drop the focus to the page.
+  const feeBoxes = useRef(new Map<string, HTMLInputElement>())
+  const focusAfterKeep = useRef<HTMLInputElement | null>(null)
+  useLayoutEffect(() => {
+    const to = focusAfterKeep.current
+    focusAfterKeep.current = null
+    if (to?.isConnected) to.focus()
+  })
   const addPreset = (name: string) => {
     if (w.sections.some((s) => s.name === name)) return
     set({ sections: [...w.sections, { name, entryFee: 0 }] })
   }
   const removeSection = (name: string) => set({ sections: w.sections.filter((s) => s.name !== name) })
   const updateFee = (name: string, val: string) => set({ sections: w.sections.map((s) => s.name === name ? { ...s, entryFee: Number(val) } : s) })
+  // Keep it at $0: every section's fee to 0, as updateFee writes one, in one
+  // update, since updateFee called for each section would start each time
+  // from the same sections and keep only the last change. For a press from
+  // the keyboard the focus goes to the fee box of the first section whose fee
+  // was above $0; a tap or a mouse press moves none, since a fee box given the
+  // focus opens the number keyboard on a tablet.
+  const keepFree = (fromKeyboard = true) => {
+    const first = w.sections.find((s) => s.entryFee > 0) ?? w.sections[0]
+    focusAfterKeep.current = fromKeyboard ? (first && feeBoxes.current.get(first.name)) || null : null
+    set({ sections: w.sections.map((s) => ({ ...s, entryFee: 0 })) })
+  }
   const updatePrize = (name: string, val: string) => set({ sections: w.sections.map((s) => s.name === name ? { ...s, prizeFund: val } : s) })
   const addCustom = () => {
     const n = custom.trim()
@@ -364,10 +414,20 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
     set({ sections: [...w.sections, { name: n, entryFee: 0 }] })
     setCustom('')
   }
+  // The fee notes under the fee table, with standingDirectors on. G1 is wired
+  // for WS09's regional representatives, the first creators not on D24's
+  // list: the wizard loads no prices, so any fee above $0 reads as a raise.
+  // Every grant that may create may charge today, so only G2, a standing
+  // director's note, can show.
+  const feesNeedAccount = FEATURES.standingDirectors && !!creation && !creation.canChargeFees && w.sections.some((s) => s.entryFee > 0)
+  const standingFeeNote = FEATURES.standingDirectors && creation?.grant === 'standing_director' && w.sections.length > 0
+  if (askFailure && !feesNeedAccount) setAskFailure(null)
 
   return (
     <div className="flex gap-6 p-5">
       <div className="flex-1 min-w-0">
+        {/* With standingDirectors on, the line a screen reader hears as G1 shows under the fee table, and after a failed ask the error line's words; visually hidden, it moves nothing. */}
+        {FEATURES.standingDirectors && <FeeNoticeStatus shows={feesNeedAccount} failure={askFailure} />}
         <PreviewBanner w={w} />
         {copiedFrom && (
           <div className="mb-4 flex items-center gap-2 rounded-lg border border-lca-gold/30 bg-lca-gold/8 px-3 py-2 text-xs text-gold-ink-badge">
@@ -406,7 +466,8 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
               <div className="grid" style={{ gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr) minmax(0,1.1fr) 32px' }}>
                 <div className="flex items-center px-3 py-2 text-sm font-medium">{s.name}</div>
                 <div className="flex items-center px-2 py-1.5">
-                  <Input type="number" min={0} value={s.entryFee} onChange={(e) => updateFee(s.name, e.target.value)}
+                  <Input ref={(box) => { if (box) feeBoxes.current.set(s.name, box); else feeBoxes.current.delete(s.name) }}
+                    type="number" min={0} value={s.entryFee} onChange={(e) => updateFee(s.name, e.target.value)}
                     className="h-8 text-sm" style={{ paddingTop: '6px', paddingBottom: '2px' }} />
                 </div>
                 <div className="flex items-center px-2 py-1.5">
@@ -422,6 +483,16 @@ function StepSections({ w, set, onBack, onNext, onDraft, copiedFrom }: {
               </div>
               </div>
             ))}
+          </div>
+        )}
+        {feesNeedAccount && (
+          <div className="mt-4">
+            <FeeNotice kind="needs-account" onKeepFree={keepFree} onAskForAccount={askForAccount} asked={payoutAsked} />
+          </div>
+        )}
+        {standingFeeNote && (
+          <div className="mt-4">
+            <FeeNotice kind="accepted" />
           </div>
         )}
         <div className="mt-4">
@@ -520,23 +591,62 @@ function StepReview({ w, onBack, onCreate, creating, error }: {
 
 /**
  * Owns the wizard's state and the create call. On success it navigates to
- * the new tournament's management page.
+ * the new tournament's management page; with standingDirectors on it first
+ * reads the signed-in member again, so the manage page finds the director
+ * row the create wrote: its guard admits a standing director only to an
+ * event they direct, and it lifts view-only for the president only on one.
  */
 export function TournamentWizard({ templates, clubs, onCancel }: {
   /** Tournaments offered under "From an existing tournament". */
   templates: ApiTournamentListItem[]
-  /** Pass for admins only — shows the organizing-club picker. */
+  /** Pass for admins only: shows the organizing-club picker. */
   clubs?: ApiClubListItem[]
   onCancel: () => void
 }) {
   const navigate = useNavigate()
+  const { refreshMember } = useAuth()
   const [step, setStep] = useState<WizardStep>('template')
   const [wizard, setWizard] = useState<WizardState>(defaultWizard())
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
+  // The fee notes on the sections step, with standingDirectors on: what the
+  // signed-in person may do with fees, and whether their payout request has
+  // gone.
+  const [creation, setCreation] = useState<ApiTournamentCreation | null>(null)
+  const [creationAsked, setCreationAsked] = useState(false)
+  const [payoutAsked, setPayoutAsked] = useState(false)
 
   function patchWizard(patch: Partial<WizardState>) {
     setWizard((prev) => ({ ...prev, ...patch }))
+  }
+
+  /**
+   * Opens the sections step. With standingDirectors on, the first time it
+   * opens, the wizard asks what the signed-in person may do with fees, for
+   * the notes under the fee table; it never asks as it opens, so a draft
+   * saved from the basics is followed by no other request. A failed answer
+   * draws no note.
+   */
+  function openSections() {
+    setStep('sections')
+    if (!FEATURES.standingDirectors || creationAsked) return
+    setCreationAsked(true)
+    getTournamentCreation().then(setCreation).catch(() => {})
+  }
+
+  /**
+   * G1's ask, about no event yet. A failed one is drawn in the wizard's own
+   * error line, and the promise rejects, so the sections step's status line
+   * says the same words and the panel puts the focus back on the ask.
+   */
+  async function askForPayoutAccount() {
+    try {
+      await requestPayoutAccount()
+      setPayoutAsked(true)
+    } catch (err) {
+      setCreateError(askFailedWords(err))
+      throw err
+    }
   }
 
   const copiedFromName = wizard.templateType === 'existing' && wizard.existingTournamentId
@@ -565,6 +675,12 @@ export function TournamentWizard({ templates, clubs, onCancel }: {
         customDetails: wizard.customDetails.length ? wizard.customDetails : undefined,
         ...(clubs ? { clubId: wizard.clubId || null } : {}),
       })
+      // The manage page reads the events the member directs, as they were
+      // read at sign-in. A refresh draws "Loading..." in place of the page
+      // while it runs, and the page is drawn once more after it, at its own
+      // address, since the router moves inside a transition; so it waits for
+      // the switch: with it off a create is followed by no request.
+      if (FEATURES.standingDirectors) await refreshMember()
       navigate(`/admin/tournaments/${String(result.id)}`)
     } catch (err) {
       setCreateError(err instanceof Error ? err.message : 'Failed to create tournament')
@@ -582,8 +698,13 @@ export function TournamentWizard({ templates, clubs, onCancel }: {
       </div>
       {step !== 'template' && <StepBar current={step} />}
       {step === 'template' && <StepTemplate w={wizard} set={patchWizard} tournaments={templates} onNext={() => setStep('basics')} />}
-      {step === 'basics' && <StepBasics w={wizard} set={patchWizard} clubs={clubs} onBack={() => setStep('template')} onNext={() => setStep('sections')} onDraft={handleCreate} />}
-      {step === 'sections' && <StepSections w={wizard} set={patchWizard} onBack={() => setStep('basics')} onNext={() => setStep('schedule')} onDraft={handleCreate} copiedFrom={copiedFromName} />}
+      {step === 'basics' && <StepBasics w={wizard} set={patchWizard} clubs={clubs} onBack={() => setStep('template')} onNext={openSections} onDraft={handleCreate} />}
+      {step === 'sections' && (
+        <StepSections
+          w={wizard} set={patchWizard} onBack={() => setStep('basics')} onNext={() => setStep('schedule')} onDraft={handleCreate} copiedFrom={copiedFromName}
+          creation={creation} payoutAsked={payoutAsked} onAskForAccount={askForPayoutAccount}
+        />
+      )}
       {step === 'schedule' && <StepSchedule w={wizard} onBack={() => setStep('sections')} onNext={() => setStep('review')} onDraft={handleCreate} />}
       {step === 'review' && <StepReview w={wizard} onBack={() => setStep('schedule')} onCreate={handleCreate} creating={creating} error={createError} />}
       {createError && step !== 'review' && (

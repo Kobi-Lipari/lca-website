@@ -59,9 +59,10 @@ describe('collectRoutes', () => {
 describe('collectRoutes on the real functions folder', () => {
   const real = collectRoutes(join(__dirname, '../../functions')).map((s) => s.join('/'))
 
-  it('finds the 89 handler files under api plus the page routes', () => {
-    // 88 at the end of checkpoint F; functions/api/search.ts, a new route rather than a moved one, is the 89th since WS02 step 9.
-    expect(real.filter((r) => r.startsWith('api/')).length).toBe(89)
+  it('finds the 91 handler files under api plus the page routes', () => {
+    // 88 at the end of checkpoint F; functions/api/search.ts, a new route rather than a moved one, is the 89th since WS02 step 9;
+    // functions/api/me/tournament-creation.ts and functions/api/me/payout-request.ts, two new routes, are the 90th and 91st since WS08 step 7.
+    expect(real.filter((r) => r.startsWith('api/')).length).toBe(91)
     expect(real).toEqual(expect.arrayContaining(['tournaments/[id]', 'clubs/[id]', 'news/[slug]']))
   })
 

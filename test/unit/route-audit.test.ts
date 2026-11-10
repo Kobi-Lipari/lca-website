@@ -5,8 +5,11 @@
 // The client is src/lib/api.ts (now a barrel), the shared helpers in
 // src/lib/http.ts and each area's src/areas/<area>/api.ts. The paths found
 // across all of them must be the same set as before the client was split
-// by area (fixtures/api-fetch-paths.json, taken from the unsplit api.ts), so
-// a file left out of the scan cannot drop coverage unnoticed.
+// by area (fixtures/api-fetch-paths.json, taken from the unsplit api.ts),
+// with the paths the area modules have called since
+// (fixtures/api-added-since-split.json), so a file left out of the scan
+// cannot drop coverage unnoticed. The split's fixture stays as the split
+// left it; a new call adds its path to the second.
 import { describe, expect, it } from 'vitest'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -16,6 +19,8 @@ const ROOT = join(__dirname, '../..')
 const FUNCTIONS_DIR = join(ROOT, 'functions')
 const AREAS_DIR = join(ROOT, 'src/areas')
 const PATHS_BEFORE_SPLIT = JSON.parse(readFileSync(join(__dirname, 'fixtures/api-fetch-paths.json'), 'utf8')) as string[]
+/** What the area modules gained after the split: the paths they call, and the names they export with the module that declares each. */
+const ADDED = JSON.parse(readFileSync(join(__dirname, 'fixtures/api-added-since-split.json'), 'utf8')) as { paths: string[]; exports: Record<string, string> }
 
 /** Every file of the site's API client, relative to the repository root. */
 const API_FILES = [
@@ -63,8 +68,13 @@ describe('route audit: every API client fetch path has a serving file', () => {
     expect(fetchPaths.length).toBeGreaterThan(20)
   })
 
-  it('found the same paths as the unsplit api.ts', () => {
-    expect(fetchPaths).toEqual([...PATHS_BEFORE_SPLIT].sort())
+  it('found the same paths as the unsplit api.ts, with the paths added since the split', () => {
+    expect(fetchPaths).toEqual([...PATHS_BEFORE_SPLIT, ...ADDED.paths].sort())
+  })
+
+  it('adds no path the split already had, and none twice', () => {
+    expect(ADDED.paths.filter((path) => PATHS_BEFORE_SPLIT.includes(path))).toEqual([])
+    expect(new Set(ADDED.paths).size).toBe(ADDED.paths.length)
   })
 
   for (const path of fetchPaths) {

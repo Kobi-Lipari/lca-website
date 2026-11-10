@@ -1,3 +1,5 @@
+import { FEATURES } from '@/lib/features'
+
 /** Least to most privileged; the admin panel offers them in this order. */
 export type MemberRole =
   | 'member'
@@ -24,9 +26,20 @@ export const ROLE_LABELS: Record<MemberRole, string> = {
   lca_officer: 'LCA Officer',
   lca_observer: 'LCA Observer',
   club_rep: 'Club Representative',
-  tournament_director: 'Tournament Director',
+  // With standingDirectors on, the role is named for what it is (D20). A
+  // getter, so the switch is read each time a page draws the label.
+  get tournament_director() {
+    return FEATURES.standingDirectors ? 'Standing director' : 'Tournament Director'
+  },
   lca_admin: 'LCA Admin',
 }
+
+/**
+ * The one line on what the standing director role allows (D20, Q4), drawn
+ * beside the role choice on the Members page while standingDirectors is on.
+ */
+export const STANDING_DIRECTOR_LINE =
+  'A standing director creates and runs their own LCA-run tournaments here. An LCA admin grants the role on the Members page.'
 
 export function isMemberRole(value: string | undefined | null): value is MemberRole {
   return !!value && MEMBER_ROLES.includes(value as MemberRole)
